@@ -1,4 +1,5 @@
-table-validation-pipeline
-=========================
+# Tabular Validator
 
-Validate a data table against a validation pipleine
+A toolkit for validating tabular data through a validation pipeline.
+
+See `docs` for more information.

@@ -1,0 +1,14 @@
+.Python
+.DS_Store
+.idea
+.projectile
+*.sublime-project
+*.sublime-workspace
+__pycache__/
+*.py[cod]
+/cli/build
+/cli/dist
+/cli/*.egg-info
+/docs/_build
+/docs/_static
+/docs/_templates
