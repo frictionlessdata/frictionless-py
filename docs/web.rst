@@ -3,8 +3,7 @@ Web
 
 Validation pipelines can be run over HTTP with Tabular Validator Web.
 
-Tabular Validator Web is a designed to be used either standalone or as a micro-service as part of a larger project.
-
+The Web library is designed to be used either as a standalone HTTP service (exposed via a *Flask app*), or, as a part of a larger Flask app (by using the API component as a *Flask blueprint*).
 
 Spec
 ----
