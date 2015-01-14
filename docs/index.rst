@@ -1,7 +1,7 @@
-Welcome to Table Validation Pipeline's documentation!
-=====================================================
+Welcome to Tabular Validator's documentation!
+=============================================
 
-Table Validation Pipeline is a pipeline interface for validating tabular data.
+Tabular Validator is a pipeline interface for validating tabular data.
 
 A **data source** is passed through a pipeline of **validators**.
 
@@ -13,7 +13,7 @@ In return, the client receives a **report** on validations performed.
 Design goals
 ============
 
-High-level design goals for Table Validation Pipeline:
+High-level design goals for Tabular Validator:
 
 * Validate tabular data in CSV and JSON formats
 * Provide a suite of small tools that each implement a type of validation to run
@@ -53,8 +53,8 @@ Table of contents
 
    quickstart
    tutorial
-   api-design
    validators
+   pipeline
    web
 
 
@@ -68,6 +68,6 @@ Indices and tables
 
 .. _`Mailing list`: openspending-dev@lists.okfn.org
 .. _`IRC channel`: #openspending
-.. _`Documentation`:
-.. _`Issues`: https://github.com/okfn/table-validation-pipeline/issues
-.. _`Code`: https://github.com/okfn/table-validation-pipeline
+.. _`Documentation`: http://tabular-validator.readthedocs.org/
+.. _`Issues`: https://github.com/okfn/tabular-validator/issues
+.. _`Code`: https://github.com/okfn/tabular-validator

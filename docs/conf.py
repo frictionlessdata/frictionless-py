@@ -246,8 +246,9 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'TableValidationPipeline', 'Table Validation Pipeline Documentation',
-   'Open Knowledge Foundation', 'TableValidationPipeline', 'One line description of project.',
+  ('index', 'Tabular Validator', 'Tabular Validator Documentation',
+   'Open Knowledge Foundation', 'Tabular Validator',
+   'Tabular Validator is a pipeline interface for validating tabular data.',
    'Miscellaneous'),
 ]
 
