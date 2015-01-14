@@ -16,7 +16,7 @@ The web API will expose the following endpoints.
 Index [ / ]
 +++++++++++
 
-Get·list·of·all·available API·endpoints as JSON, with description of what they do.
+Get list of all available API endpoints as JSON, with description of what they do.
 
 Also nice if it returns an HTML version if visited in browser.
 
