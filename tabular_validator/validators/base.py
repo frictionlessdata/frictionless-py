@@ -13,7 +13,7 @@ class Validator(object):
         self.fail_fast = fail_fast
         self.transform = transform
         self.report_limit = report_limit
-        self.report = reporter.Report(self.name)
+        self.report = reporter.Report(self.name, schema=utilities.report_schema)
 
     def run(self, data_source, headers=None, is_table=False):
 

@@ -12,3 +12,13 @@ def builtin_validators():
 
 
 DEFAULT_PIPELINE = ('structure',)
+
+
+# a schema for the reporter.Report() instances used by validators
+report_schema = {
+    'name': {'type': str},
+    'category': {'type': str},
+    'level': {'type': str},
+    'position': {'type': int},
+    'message': {'type': str}
+}
