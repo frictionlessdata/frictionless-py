@@ -20,34 +20,11 @@ Get list of all available API endpoints as JSON, with description of what they d
 
 Also nice if it returns an HTML version if visited in browser.
 
-Submit [ /submit/ ]
-+++++++++++++++++++
-
-POST data for submission.
-
-Data would be meta data like user/department name, and all data and spec files.
-
-**Return object**:
-
-* Status (success of submit action)
-* Job number (in initial non-queued implementation, will return the actual report as JSON, if success)
-
-Submit Bulk [ /submit/bulk/ ]
-+++++++++++++++++++++++++++++
-
-POST data for bulk submission.
-
-Data would be a CSV file (format TBD), where each row is data for submission.
-
-**Return object**:
-
-* Status (success of submit action)
-* Job numbers (for each row)
 
 Jobs [ /jobs/ ]
 +++++++++++++++
 
-GET a (paginated) list of jobs, ordered by submit date.
+**GET a (paginated) list of jobs, ordered by submit date.**
 
 **Filters**:
 
@@ -60,10 +37,28 @@ GET a (paginated) list of jobs, ordered by submit date.
 * ID (unique identifier for job)
 * State (e.g.: queued/processing/completed)
 
+**POST data for submission.**
+
+Data would be meta data like user/department name, and all data and spec files.
+
+**Return object**:
+
+* Status (success of submit action)
+* Job number (in initial non-queued implementation, will return the actual report as JSON, if success)
+
+**POST data for bulk submission.**
+
+Data would be a CSV file (format TBD), where each row is data for submission.
+
+**Return object**:
+
+* Status (success of submit action)
+* Job numbers (for each row)
+
 Jobs [ /jobs/<ID>/ ]
 ++++++++++++++++++++
 
-GET a detailed result on a given job
+**GET a detailed result on a given job.**
 
 **Return object**:
 
@@ -72,6 +67,15 @@ GET a detailed result on a given job
 * Raw sources (list of objects, where each object is the passed in data and spec files for the job, i.e.: links to their persistent location)
 * Data (link to the (probably transformed) data file)
 * Report (object - the generated report, either inlined or a file ref.)
+
+**PUT data for submission.**
+
+Updates an existing job, triggering a new validation with new (updated) data.
+
+**Return object**:
+
+* Status (success of submit action)
+* Job number (in initial non-queued implementation, will return the actual report as JSON, if success)
 
 File persistence
 ****************
