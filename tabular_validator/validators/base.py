@@ -6,8 +6,10 @@ class Validator(object):
 
     """Base Validator class. Validator implementations should inherit."""
 
-    def __init__(self, name=None, fail_fast=False, transform=True, report_limit=1000):
-        self.name = name or self.__class__.__name__.lower()
+    name = None
+
+    def __init__(self, fail_fast=False, transform=True, report_limit=1000):
+        self.name = self.name or self.__class__.__name__.lower()
         self.fail_fast = fail_fast
         self.transform = transform
         self.report_limit = report_limit
