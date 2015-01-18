@@ -19,7 +19,6 @@ def test():
     cover = coverage.coverage()
     cover.start()
     test_path = os.path.abspath(os.path.join(os.path.dirname(CLI_DIR), 'tests'))
-    print(test_path)
     suite = unittest.TestLoader().discover(test_path)
     runner = unittest.TextTestRunner(verbosity=2)
     runner.run(suite)

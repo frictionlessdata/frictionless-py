@@ -53,6 +53,7 @@ class ValidationPipeline(object):
         self.table_schema = table_schema
         self.csv_dialect = csv_dialect
         self.options = options or {}
+        self.openfiles = []
 
         # Check that any/all spec files are validly formed
         valid = self.validate_spec()
@@ -60,6 +61,7 @@ class ValidationPipeline(object):
             raise exceptions.InvalidSpec
 
         self.table = utilities.DataTable(data_source)
+        self.openfiles.extend(self.table.openfiles)
         self.report = {}
 
         self.builtins = utilities.builtin_validators()
@@ -76,8 +78,8 @@ class ValidationPipeline(object):
 
     def validate_spec(self):
         """Validate any/all spec files."""
-
-        if any([self.data_package, self.table_schema, self.csv_dialect]):
+        specs = [self.data_package, self.table_schema, self.csv_dialect]
+        if any(specs):
             sv = SpecValidator(data_package=self.data_package,
                                table_schema=self.table_schema,
                                csv_dialect=self.csv_dialect)
@@ -107,6 +109,7 @@ class ValidationPipeline(object):
         """Register a validator on the pipeline."""
 
         validator_class = self.resolve_validator(validator_name)
+        options = options or {}
         validator = validator_class(**options)
 
         if position is None:
@@ -125,7 +128,7 @@ class ValidationPipeline(object):
             """Set/maintain the valid state of the run."""
             if not process_valid and run_valid:
                 return False
-            return True
+            return run_valid
 
         # pre_run
         for validator in self.pipeline:
@@ -148,7 +151,7 @@ class ValidationPipeline(object):
             if hasattr(validator, 'run_row'):
                 # TODO: on transform, create a new stream out of returned rows
                 for index, row in enumerate(self.table.values):
-                    _valid, row = validator.run_row(self.table.headers, index, row)
+                    _valid, index, row = validator.run_row(self.table.headers, index, row)
                     valid = _run_valid(_valid, valid)
                     if not _valid and validator.fail_fast:
                         return valid, self.generate_report()

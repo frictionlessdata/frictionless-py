@@ -31,18 +31,20 @@ class Validator(object):
 
         # The valid state of the run
         valid = True
+        openfiles = []
 
         # if is_table, then data_source is already a table
         if is_table:
             table = data_source
         else:
             table = utilities.DataTable(data_source, headers=headers)
+            openfiles.append(data_source)
 
         def _run_valid(process_valid, run_valid):
             """Set/maintain the valid state of the run."""
             if not process_valid and run_valid:
                 return False
-            return True
+            return run_valid
 
         # pre_run
         if hasattr(self, 'pre_run'):
@@ -62,7 +64,7 @@ class Validator(object):
         if hasattr(self, 'run_row'):
             # TODO: on transform, create a new stream out of returned rows
             for index, row in enumerate(table.values):
-                _valid, row = self.run_row(table.headers, index, row)
+                _valid, index, row = self.run_row(table.headers, index, row)
                 valid = _run_valid(_valid, valid)
                 if not _valid and self.fail_fast:
                     return valid, self.report
@@ -82,5 +84,8 @@ class Validator(object):
             valid = _run_valid(_valid, valid)
             if not _valid and self.fail_fast:
                 return valid, self.report
+
+        for f in openfiles:
+            f.close()
 
         return valid, self.report

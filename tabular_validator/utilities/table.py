@@ -12,7 +12,7 @@ class DataTable(object):
 
     def __init__(self, data_source, headers=None):
 
-        self._openfiles = []
+        self.openfiles = []
         self.stream = self.to_textstream(data_source)
         self.headers, self.values = self.extract(headers)
 
@@ -60,7 +60,7 @@ class DataTable(object):
         elif parse.urlparse(data_source).scheme in self.REMOTE_SCHEMES:
             f, h = request.urlretrieve(data_source)
             stream = io.open(f, encoding='utf-8')
-            self._openfiles.append(stream)
+            self.openfiles.append(stream)
             return stream
 
         elif isinstance(data_source, str) and not os.path.exists(data_source):
@@ -68,7 +68,7 @@ class DataTable(object):
 
         else:
             stream = io.open(data_source, encoding='utf-8')
-            self._openfiles.append(stream)
+            self.openfiles.append(stream)
             return stream
 
     def get_headers(self, line):
