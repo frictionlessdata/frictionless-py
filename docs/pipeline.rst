@@ -62,7 +62,22 @@ Validator options
 Instantiating the pipeline
 **************************
 
-TBD
+WIP
+
+`job_id`
+++++++++
+
+A unique identifier for this job. It will be used to creating a directory inside workspace, and therefore should be unique.
+
+`workspace`
++++++++++++
+
+A directory for persisting files that are read from and written to in job processing.
+
+`dry_run`
++++++++++
+
+If `dry_run` is True, any files that have been written to the workspace will be removed on job completion.
 
 Running the pipeline
 ********************

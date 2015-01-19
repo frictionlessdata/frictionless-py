@@ -38,13 +38,17 @@ class ValidationPipeline(object):
 
     def __init__(self, validators=None, data_package=None, data_source=None,
                  data_format='csv', table_schema=None, csv_dialect=None,
-                 options=None):
+                 options=None, job_id=None, workspace=None, dry_run=None):
 
         # TODO: Handle data_format (CSV, JSON)
         # TODO: Pass csv_dialect to the table constructor
         # TODO: Handle data_package and everything that means
         # TODO: Handle cases where validators arguments are not valid
         # TODO: Ensure that options looks legit
+
+        # TODO: Support job_id
+        # TODO: Support workspace
+        # TODO: Support dry_run
 
         self.validators = validators
         self.data_package = data_package
