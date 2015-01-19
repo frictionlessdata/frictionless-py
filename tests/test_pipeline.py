@@ -1,11 +1,11 @@
 import os
 import io
-from .base import BaseTestCase
 from tabular_validator.pipeline import ValidationPipeline
 from tabular_validator import exceptions
+from tests import base
 
 
-class TestPipeline(BaseTestCase):
+class TestPipeline(base.BaseTestCase):
 
     def setUp(self):
         super(TestPipeline, self).setUp()

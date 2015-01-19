@@ -1,0 +1,20 @@
+language: python
+
+python:
+  - 2.7
+  - 3.3
+  - 3.4
+
+install:
+  - pip install -r requirements/test.txt --use-mirrors
+
+before_script:
+  - mkdir -p shippable/testresults
+  - mkdir -p shippable/codecoverage
+
+script:
+  - python cli/main.py test
+
+notifications:
+  email:
+   - paulywalsh@gmail.com

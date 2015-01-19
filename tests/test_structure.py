@@ -2,10 +2,10 @@ import os
 import io
 from tabular_validator import validators
 from tabular_validator.pipeline import ValidationPipeline
-from .base import BaseTestCase
+from tests import base
 
 
-class TestStructureValidator(BaseTestCase):
+class TestStructureValidator(base.BaseTestCase):
 
     def test_in_standalone_empty_rows(self):
         filepath = os.path.join(self.data_dir, 'empty_rows.csv')
@@ -92,7 +92,7 @@ class TestStructureValidator(BaseTestCase):
             self.assertTrue(result)
 
 
-class TestStructureValidatorPipeline(BaseTestCase):
+class TestStructureValidatorPipeline(base.BaseTestCase):
 
     def test_in_pipeline_empty_rows(self):
         filepath = os.path.join(self.data_dir, 'empty_rows.csv')

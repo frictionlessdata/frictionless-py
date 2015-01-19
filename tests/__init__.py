@@ -1,4 +1,5 @@
-from .pipeline import *
-from .spec import *
-from .structure import *
-# from .schema import *
+from . import base
+from .test_pipeline import *
+from .test_spec import *
+from .test_structure import *
+from .test_schema import *
