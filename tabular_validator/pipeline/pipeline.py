@@ -1,3 +1,9 @@
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+
 import importlib
 from ..validators import SpecValidator
 from .. import utilities
@@ -78,7 +84,8 @@ class ValidationPipeline(object):
                 options = self.options.get(validator_class.name, {})
                 self.pipeline.append(validator_class(**options))
         else:
-            self.pipeline = [self.builtins[v]() for v in utilities.DEFAULT_PIPELINE]
+            self.pipeline = [self.builtins[v]() for v in
+                             utilities.DEFAULT_PIPELINE]
 
     def validate_spec(self):
         """Validate any/all spec files."""

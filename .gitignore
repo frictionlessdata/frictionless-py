@@ -6,6 +6,8 @@
 *.sublime-workspace
 __pycache__/
 *.py[cod]
+.coverage
+shippable/*
 /docs/_build
 /docs/_static
 /docs/_templates

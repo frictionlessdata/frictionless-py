@@ -1,4 +1,4 @@
 Click==3.3
+requests==2.5.1
 jsonschema==2.4.0
-
 git+https://github.com/okfn/reporter.git#egg=reporter

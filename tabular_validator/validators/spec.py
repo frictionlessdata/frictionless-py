@@ -1,9 +1,11 @@
-import io
-import json
-import codecs
-from urllib import request, parse
-# from jsonschema import Draft4Validator, SchemaError
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+
 from . import base
+from .. import utilities
 
 
 class SpecValidator(base.Validator):
@@ -12,8 +14,8 @@ class SpecValidator(base.Validator):
 
     Args:
         data_package: a valid data pakage spec
-        table_schema: a valid JSON Schema spec (e.g.: JSON Table Schema spec)
-        csv_dialect: a valid CSV dialect source
+        table_schema: a valid JSON Table Schema spec
+        csv_dialect: a valid CSV dialect spec
 
     """
 
@@ -40,60 +42,53 @@ class SpecValidator(base.Validator):
         return all([valid_d, valid_t, valid_c])
 
     def validate_data_package(self):
-        """Validate that a Data Package descriptor is well formed."""
+        """Validate that a Data Package file is well formed."""
+
+        if not self.data_package:
+            return True
+
         try:
             self.package_spec = self.load_source(self.data_package)
-            return True
+            if not self.package_spec:
+                return False
+            else:
+                return True
+
         except ValueError:
-            # TODO: set on report
-            return False
-            # TODO: check it is actually as expected
+             return False
 
     def validate_table_schema(self):
-        """Validate that a JSON Table Schema descriptor is well formed."""
+        """Validate that a JSON Table Schema file is well formed."""
+
+        if not self.table_schema:
+            return True
+
         try:
             self.schema_spec = self.load_source(self.table_schema)
             if not self.schema_spec:
                 return False
             else:
                 return True
-        except ValueError:
-            # TODO: set on report
-            return False
 
-        # try:
-        #     valid = Draft4Validator.check_schema(self.schema_spec)
-        #     return valid
-        # except SchemaError:
-        #     # TODO: set on report
-        #     return False
+        except ValueError:
+            return False
 
     def validate_csv_dialect(self):
-        """Validate that a CSV Dialect descriptor is well formed."""
+        """Validate that a CSV Dialect file is well formed."""
+
+        if not self.csv_dialect:
+            return True
+
         try:
             self.dialect_spec = self.load_source(self.csv_dialect)
-            return True
+            if not self.dialect_spec:
+                return False
+            else:
+                return True
+
         except ValueError:
-            # TODO: set on report
             return False
-        # TODO: Check it is actually as expected
 
     def load_source(self, source):
         """Load a spec source into a Python data structure."""
-
-        if isinstance(source, (dict, list)):
-            # The source has already been loaded
-            return source
-
-        if source is None:
-            return None
-
-        elif parse.urlparse(source).scheme in self.REMOTE_SCHEMES:
-            payload = codecs.decode(
-                request.urlopen(source).read(), 'utf-8')
-            return json.loads(payload)
-
-        else:
-            with io.open(source) as stream:
-                source = json.load(stream)
-            return source
+        return utilities.load_json_source(source)

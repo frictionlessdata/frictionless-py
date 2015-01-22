@@ -6,6 +6,9 @@ omit =
     */requirements*
     setup.py
 
+[xml]
+output = shippable/codecoverage/coverage.xml
+
 [report]
 # Regexes for lines to exclude from consideration
 exclude_lines =

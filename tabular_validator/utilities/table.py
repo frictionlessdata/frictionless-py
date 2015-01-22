@@ -1,7 +1,14 @@
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+
 import os
 import io
 import csv
-from urllib import parse, request
+import requests
+from .. import compat
 
 
 class DataTable(object):
@@ -57,10 +64,10 @@ class DataTable(object):
         if isinstance(data_source, io.IOBase):
             return data_source
 
-        elif parse.urlparse(data_source).scheme in self.REMOTE_SCHEMES:
-            f, h = request.urlretrieve(data_source)
-            stream = io.open(f, encoding='utf-8')
-            self.openfiles.append(stream)
+        elif compat.parse.urlparse(data_source).scheme in self.REMOTE_SCHEMES:
+            with compat.NamedTemporaryFile(mode='w+t', encoding='utf-8') as tmp:
+                tmp.write(requests.get(data_source).text)
+                stream = io.open(tmp.name, encoding='utf-8')
             return stream
 
         elif isinstance(data_source, str) and not os.path.exists(data_source):

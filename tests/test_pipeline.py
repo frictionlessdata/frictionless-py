@@ -1,3 +1,9 @@
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+
 import os
 import io
 from tabular_validator.pipeline import ValidationPipeline
@@ -65,8 +71,6 @@ class TestPipeline(base.BaseTestCase):
         self.assertTrue(pipeline)
 
     def test_validate_spec_invalid(self):
-        #pipeline = ValidationPipeline(data_source=self.data_string,
-        #                              table_schema=self.schema_invalid)
         self.assertRaises(exceptions.InvalidSpec, ValidationPipeline,
                           data_source=self.data_string,
                           table_schema=self.schema_invalid)
