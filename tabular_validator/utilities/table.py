@@ -70,7 +70,8 @@ class DataTable(object):
                 stream = io.open(tmp.name, encoding='utf-8')
             return stream
 
-        elif isinstance(data_source, str) and not os.path.exists(data_source):
+        elif isinstance(data_source, compat.str) and not \
+                os.path.exists(data_source):
             return io.StringIO(data_source)
 
         else:
