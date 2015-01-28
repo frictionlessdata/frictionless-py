@@ -1,0 +1,14 @@
+{
+    "fields": [
+        {
+            "name": "id",
+            "title": "Identifier",
+            "type": "integer"
+        },
+        {
+            "name": "title",
+            "title": "Title",
+            "type": "string"
+        }
+    ]
+}

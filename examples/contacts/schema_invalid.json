@@ -1,0 +1,98 @@
+{
+    "fields": [
+        {
+            "name": "first_name",
+            "title": "First Name",
+            "type": "string",
+             "description": "The first name of the person"
+        },
+        {
+            "name": "last_name",
+            "title": "Last Name",
+            "type": "integer",
+            "description": "The last name of the person"
+        },
+        {
+            "name": "gender",
+            "title": "Gender",
+            "type": "string",
+            "description": "The gender of the person."
+        },
+        {
+            "name": "age",
+            "title": "Age",
+            "description": "The age of this person."
+        },
+        {
+            "name": "period_employed",
+            "title": "Period Employed",
+            "description": "The period of employment, in years (eg: 2.6 Y)."
+        },
+        {
+            "name": "period_employed_start",
+            "title": "Employment Start",
+            "description": "The date this person started employment."
+        },
+        {
+            "name": "daily_start",
+            "title": "Daily Start",
+            "description": "Usual start time for this person."
+        },
+        {
+            "name": "daily_end",
+            "title": "Daily End",
+            "description": "Usual end time for this person."
+        },
+        {
+            "name": "is_management",
+            "title": "Is Management",
+            "description": "Is this person part of upper management."
+        },
+        {
+            "name": "avatar",
+            "title": "Avatar",
+            "description": "A photo of this person."
+        },
+        {
+            "name": "interests",
+            "title": "Interests",
+            "description": "Declared interests of this person (work-related)."
+        },
+        {
+            "name": "home_location",
+            "title": "Home Location",
+            "description": "A geopoint for this person's home address."
+        },
+        {
+            "name": "position_title",
+            "title": "Position Title",
+            "description": "This person's position in the company."
+        },
+        {
+            "name": "extra",
+            "title": "Extra",
+            "description": "Extra information about this person."
+        },
+        {
+            "name": "notes",
+            "title": "Notes",
+            "description": "Add any relevant notes for HR."
+        }
+    ],
+    "primaryKey": [
+        "first_name",
+        "last_name",
+        "period_employed",
+        "home_location"
+    ],
+    "foreignKeys": [
+        {
+            "fields": "position_title",
+            "reference": {
+                "datapackage": "",
+                "resource": "positions",
+                "fields": "name"
+            }
+        }
+    ]
+}
