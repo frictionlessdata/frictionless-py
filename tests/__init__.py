@@ -6,6 +6,5 @@ from __future__ import unicode_literals
 
 from . import base
 from .test_pipeline import *
-from .test_spec import *
 from .test_structure import *
 from .test_schema import *

@@ -17,20 +17,19 @@ class DataTable(object):
 
     REMOTE_SCHEMES = ('http', 'https', 'ftp', 'ftps')
 
-    def __init__(self, data_source, headers=None):
+    def __init__(self, data_source, headers=None, filepath=None):
 
         self.openfiles = []
+        self.filepath = filepath
         self.stream = self.to_textstream(data_source)
         self.headers, self.values = self.extract(headers)
 
     def extract(self, headers=None):
+        """Extract headers and values from the data stream."""
 
-        # TODO: Support headers at any index, with any delimiter and associated
         headers = headers or self.get_headers(self.stream.readline())
-        # TODO: json, accept hints for start of stream data, etc.
-        values = csv.reader(self.stream)
-        # reset the stream for others to possibly consume
-        self.stream.seek(0)
+        values = csv.reader(self.stream, quotechar="'")
+
         return headers, values
 
     def to_dict(self):

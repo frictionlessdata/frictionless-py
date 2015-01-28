@@ -7,7 +7,6 @@ from __future__ import unicode_literals
 import os
 import io
 import json
-import codecs
 import requests
 from .. import compat
 
@@ -16,9 +15,8 @@ def builtin_validators():
     """Return dict of public builtin validators. Avoids circular import."""
     from .. import validators
     return {
-        'spec': validators.SpecValidator,
-        'structure': validators.StructureValidator,
-        'schema': validators.SchemaValidator
+        validators.StructureValidator.name: validators.StructureValidator,
+        validators.TableSchemaValidator.name: validators.TableSchemaValidator
     }
 
 
@@ -31,17 +29,16 @@ report_schema = {
     'name': {'type': compat.str},
     'category': {'type': compat.str},
     'level': {'type': compat.str},
-    'position': {'type': int},
+    'position': {'type': (int, type(None))},
     'message': {'type': compat.str}
 }
 
 
 def load_json_source(source):
 
-    """Load a source, expected to be JSON, into a Python data structure."""
+    """Load a JSON source, from string, URL or buffer,  into a Python type."""
 
     if source is None:
-        # consider raising instead of returning None
         return None
 
     elif isinstance(source, (dict, list)):
@@ -55,4 +52,6 @@ def load_json_source(source):
         return json.loads(source)
 
     else:
-        return json.load(io.open(source, encoding='utf-8'))
+        with io.open(source, encoding='utf-8') as stream:
+            source = json.load(io.open(source, encoding='utf-8'))
+        return source

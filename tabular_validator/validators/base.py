@@ -5,7 +5,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import reporter
-from .. import utilities
+from ..utilities import data_table, helpers
 
 
 class Validator(object):
@@ -19,7 +19,7 @@ class Validator(object):
         self.fail_fast = fail_fast
         self.transform = transform
         self.report_limit = report_limit
-        self.report = reporter.Report(self.name, schema=utilities.report_schema)
+        self.report = reporter.Report(self.name, schema=helpers.report_schema)
 
     def run(self, data_source, headers=None, is_table=False):
 
@@ -45,7 +45,7 @@ class Validator(object):
         if is_table:
             table = data_source
         else:
-            table = utilities.DataTable(data_source, headers=headers)
+            table = data_table.DataTable(data_source, headers=headers)
             openfiles.append(data_source)
 
         def _run_valid(process_valid, run_valid):
