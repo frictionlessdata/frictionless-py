@@ -141,4 +141,4 @@ class StructureValidator(base.Validator):
         if self.transform and any([is_dupe, is_empty, is_defective]):
             row = None
 
-        return valid, index, row
+        return valid, headers, index, row

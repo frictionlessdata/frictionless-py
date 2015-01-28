@@ -31,16 +31,15 @@ class TableSchemaValidator(base.Validator):
     def schema_model(self, schema_source):
         return table_schema.JSONTableSchema(schema_source)
 
-    def pre_run(self, table):
+    def pre_run(self, headers, values):
         if self.schema is None:
             # make a schema
             # TODO: 50 here is arbitrary
-            sample_data = [row for row in table.values][:50]
-            table.stream.seek(0)
-            guessed_schema = table_schema.make(table.headers, sample_data)
+            sample_data = [row for row in values][:50]
+            guessed_schema = table_schema.make(headers, sample_data)
             self.schema = self.schema_model(guessed_schema)
 
-        return True, table
+        return True, headers, values
 
     def run_header(self, headers):
 
@@ -122,4 +121,4 @@ class TableSchemaValidator(base.Validator):
         if self.transform:
             pass
 
-        return valid, index, row
+        return valid, headers, index, row

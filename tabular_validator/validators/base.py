@@ -48,6 +48,8 @@ class Validator(object):
             table = data_table.DataTable(data_source, headers=headers)
             openfiles.append(data_source)
 
+        headers, values = table.headers, table.values
+
         def _run_valid(process_valid, run_valid):
             """Set/maintain the valid state of the run."""
             if not process_valid and run_valid:
@@ -56,14 +58,14 @@ class Validator(object):
 
         # pre_run
         if hasattr(self, 'pre_run'):
-            _valid, table = self.pre_run(table)
+            _valid, headers, values = self.pre_run(headers, values)
             valid = _run_valid(_valid, valid)
             if not _valid and self.fail_fast:
                 return valid, self.report
 
         # run_header
         if hasattr(self, 'run_header'):
-            _valid, table.headers = self.run_header(table.headers)
+            _valid, headers = self.run_header(headers)
             valid = _run_valid(_valid, valid)
             if not _valid and self.fail_fast:
                 return valid, self.report
@@ -71,14 +73,13 @@ class Validator(object):
         # run_row
         if hasattr(self, 'run_row'):
             # TODO: on transform, create a new stream out of returned rows
-            for index, row in enumerate(table.values):
-                _valid, index, row = self.run_row(table.headers, index, row)
+            for index, row in enumerate(values):
+                _valid, headers, index, row = self.run_row(headers, index, row)
                 valid = _run_valid(_valid, valid)
                 if not _valid and self.fail_fast:
                     return valid, self.report
 
         # run_column
-        # TODO: ensure work is on transformed data (after run_row)
         # if hasattr(self, 'run_column'):
         #     for index, column in enumerate(table.by_column):
         #         _valid, column = self.run_column(index, column)
@@ -88,7 +89,7 @@ class Validator(object):
 
         # post_run
         if hasattr(self, 'post_run'):
-            _valid, table = self.post_run(table)
+            _valid, headers, values = self.post_run(headers, values)
             valid = _run_valid(_valid, valid)
             if not _valid and self.fail_fast:
                 return valid, self.report

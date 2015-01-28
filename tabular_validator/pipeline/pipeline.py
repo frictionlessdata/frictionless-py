@@ -10,6 +10,7 @@ import importlib
 import shutil
 import tempfile
 import json
+import csv
 from ..utilities import data_table, data_package, csv_dialect, helpers
 from .. import exceptions
 
@@ -66,8 +67,8 @@ class ValidationPipeline(object):
                 raise exceptions.InvalidSpec
             else:
                 if not self.dry_run:
-                    self.write_file(json.dumps(self.data_package),
-                                    'data_package.json')
+                    self.create_file(json.dumps(self.data_package),
+                                     'data_package.json')
         else:
             self.data_package = None
 
@@ -79,13 +80,20 @@ class ValidationPipeline(object):
                 raise exceptions.InvalidSpec
             else:
                 if not self.dry_run:
-                    self.write_file(json.dumps(self.csv_dialect),
-                                    'csv_dialect.json')
+                    self.create_file(json.dumps(self.csv_dialect),
+                                     'csv_dialect.json')
         else:
             self.csv_dialect = None
 
-        # data source
+        # original data source
+        self.create_file('', 'data_source.csv')
         self.table = data_table.DataTable(data_source)
+
+        # transformed data_source
+        self.create_file('', 'transformed.csv')
+        self.transform = None # Becomes a DataTable if transform occurs
+
+        # files we need to close later
         self.openfiles.extend(self.table.openfiles)
 
         # container for validator reports
@@ -105,8 +113,8 @@ class ValidationPipeline(object):
             self.pipeline = [self.builtins[v]() for v in
                              helpers.DEFAULT_PIPELINE]
 
-    def write_file(self, data, name):
-        """Write a file to the pipeline workspace."""
+    def create_file(self, data, name):
+        """Create a file in the pipeline workspace."""
 
         filepath = os.path.join(self.workspace, name)
         with io.open(filepath, mode='w+t',encoding='utf-8') as destfile:
@@ -146,6 +154,7 @@ class ValidationPipeline(object):
 
         # default valid state
         valid = True
+        headers, values = self.table.headers, self.table.values
 
         def _run_valid(process_valid, run_valid):
             """Set/maintain the valid state of this run."""
@@ -153,49 +162,59 @@ class ValidationPipeline(object):
                 return False
             return run_valid
 
-        # pre_run
         for validator in self.pipeline:
+
+            if validator.transform:
+                if self.transform:
+                    headers, values = self.transform.headers, self.transform.values
+                _t = os.path.join(self.workspace, 'transform.csv')
+                transform = io.open(_t, mode='w+t', encoding='utf-8')
+                csvtransform = csv.writer(transform)
+
+            # pre_run
             if hasattr(validator, 'pre_run'):
-                _valid, table = validator.pre_run(self.table)
+                _valid, headers, values = validator.pre_run(headers, values)
                 valid = _run_valid(_valid, valid)
                 if not _valid and validator.fail_fast:
                     return valid, self.generate_report()
 
-        # run_header
-        for validator in self.pipeline:
+            # run_header
             if hasattr(validator, 'run_header'):
-                _valid, self.table.headers = validator.run_header(self.table.headers)
+                _valid, headers = validator.run_header(headers)
                 valid = _run_valid(_valid, valid)
                 if not _valid and validator.fail_fast:
                     return valid, self.generate_report()
 
-        # run_row
-        for validator in self.pipeline:
+            # run_row
             if hasattr(validator, 'run_row'):
-                # TODO: on transform, create a new stream out of returned rows
-                for index, row in enumerate(self.table.values):
-                    _valid, index, row = validator.run_row(self.table.headers, index, row)
+                for index, row in enumerate(values):
+                    old_row = row
+                    _valid, headers, index, row = validator.run_row(headers, index, row)
                     valid = _run_valid(_valid, valid)
                     if not _valid and validator.fail_fast:
                         return valid, self.generate_report()
 
-        # run_column
-        # TODO: ensure work is on transformed data (after run_row)
-        # for validator in self.pipeline:
-        #     if hasattr(validator, 'run_column'):
-        #         for index, column in enumerate(self.table.by_column):
-        #             _valid, column = validator.run_column(index, column)
-        #             valid = _run_valid(_valid, valid)
-        #             if not _valid and validator.fail_fast:
-        #                 return valid, self.generate_report()
+                    if validator.transform and row is not None:
+                        csvtransform.writerow(row)
 
-        # post_run
-        for validator in self.pipeline:
+            # run_column
+            # if hasattr(validator, 'run_column'):
+            #     for index, column in enumerate(self.table.by_column):
+            #         _valid, column = validator.run_column(index, column)
+            #         valid = _run_valid(_valid, valid)
+            #         if not _valid and validator.fail_fast:
+            #             return valid, self.generate_report()
+
+            # post_run
             if hasattr(validator, 'post_run'):
-                _valid, self.table = validator.post_run(self.table)
+                _valid, headers, values = validator.post_run(headers, values)
                 valid = _run_valid(_valid, valid)
                 if not _valid and validator.fail_fast:
                     return valid, self.generate_report()
+
+            if validator.transform:
+                self.transform = data_table.DataTable(transform, headers=headers,
+                                                      filepath=_t)
 
         # `dry_run` tasks
         if self.dry_run:
