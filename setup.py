@@ -14,7 +14,8 @@ setup(
     include_package_data=True,
     install_requires=[
         'Click>=3.3',
-        'jsonschema>=2.4.0'
+        'jsonschema>=2.4.0',
+	'requests>=2.5.1'
     ],
     dependency_links=[
         'git+https://github.com/okfn/reporter.git#egg=reporter'
