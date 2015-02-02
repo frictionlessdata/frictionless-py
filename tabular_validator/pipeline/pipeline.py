@@ -105,9 +105,9 @@ class ValidationPipeline(object):
 
         # instantiate all the validators in the pipeline with options.
         self.builtins = helpers.builtin_validators()
-        if validators:
+        if self.validators:
             self.pipeline = []
-            for v in validators:
+            for v in self.validators:
                 validator_class = self.resolve_validator(v)
                 options = self.options.get(validator_class.name, {})
                 self.pipeline.append(validator_class(**options))
