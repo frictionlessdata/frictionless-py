@@ -1,9 +1,33 @@
 Web
 ===
 
-Validation pipelines can be run over HTTP with Tabular Validator Web.
+Validation pipelines can be run over HTTP with Tabular Validator Web, which provides a JSON-based web API around tabular-validator.
 
-The Web library is designed to be used either as a standalone HTTP service (exposed via a *Flask app*), or, as a part of a larger Flask app (by using the API component as a *Flask blueprint*).
+Tabulator instance
+------------------
+
+We have an instance configured for use at http://tabulator.herokuapp.com/
+
+This is under constant development, and is not guaranteed to be stable. Please do report any bugs at https://github.com/okfn/tabular-validator-web/issues
+
+The instance currently supports:
+
+* POST requests to the /jobs endpoint to validate a data source
+   * Returns: A JSON response with a nested report
+
+Examples
+********
+
+To quickly get started checking a Tabular Validator Web instance, clone the repository and run the following command:
+
+```
+# `instance_url` is any url to the root of a Tabular Validator Web instance (no trailing slash)
+# `one|two|three` one, two and three are each example data payloads. Choose one.
+python cli/main.py examples [instance_url] [one|two|three]
+
+# e.g.:
+python cli.main.py examples http://tabulator.herokuapp.com one
+```
 
 Spec
 ----
