@@ -6,8 +6,6 @@ from __future__ import unicode_literals
 
 import os
 import io
-import csv
-import requests
 from .. import compat
 
 
@@ -28,7 +26,7 @@ class DataTable(object):
         """Extract headers and values from the data stream."""
 
         headers = headers or self.get_headers(self.stream.readline())
-        values = csv.reader(self.stream, quotechar="'")
+        values = compat.csv.reader(self.stream, quotechar="'")
 
         return headers, values
 

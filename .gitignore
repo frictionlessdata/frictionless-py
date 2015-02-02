@@ -6,6 +6,8 @@
 *.sublime-workspace
 __pycache__/
 *.py[cod]
+/dist/
+/*.egg-info
 .coverage
 shippable/*
 /docs/_build

@@ -19,6 +19,7 @@ is_py27 = (is_py2 and _ver[1] == 7)
 if is_py2:
     import urlparse as parse
     from urllib2 import urlopen
+    import unicodecsv as csv
     builtin_str = str
     bytes = str
     str = unicode
@@ -29,6 +30,7 @@ if is_py2:
 elif is_py3:
     from urllib import parse
     from urllib.request import urlopen
+    import csv
     builtin_str = str
     str = str
     bytes = bytes
