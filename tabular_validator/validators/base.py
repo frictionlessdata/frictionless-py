@@ -4,7 +4,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import reporter
+import tellme
 from ..utilities import data_table, helpers
 
 
@@ -19,7 +19,7 @@ class Validator(object):
         self.fail_fast = fail_fast
         self.transform = transform
         self.report_limit = report_limit
-        self.report = reporter.Report(self.name, schema=helpers.report_schema)
+        self.report = tellme.Report(self.name, schema=helpers.report_schema)
 
     def run(self, data_source, headers=None, is_table=False):
 

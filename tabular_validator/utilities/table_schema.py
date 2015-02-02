@@ -9,7 +9,7 @@ import json
 import datetime
 import time
 import decimal
-import reporter
+import tellme
 from .. import compat
 from . import helpers
 
@@ -60,7 +60,7 @@ def validate(schema, report=None):
     valid = True
 
     if report is None:
-        report = reporter.Report(schema=helpers.report_schema)
+        report = tellme.Report(schema=helpers.report_schema)
 
     # a schema is a hash
     if not isinstance(schema, dict):
