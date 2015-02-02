@@ -52,22 +52,17 @@ class DataTable(object):
         Returns:
             A utf-8 encoded text stream.
 
-        Raises:
-            IOError: if this
-            ValueError: if that
         """
 
-        # TODO: always coerce to utf-8 encoded text streams
-        # TODO: Handle various errors (open file, http errors, etc.)
-
         if isinstance(data_source, io.IOBase):
-            return data_source
+            if isinstance(data_source, io.TextIOBase):
+                return data_source
+            else:
+                return io.TextIOWrapper(data_source)
 
         elif compat.parse.urlparse(data_source).scheme in self.REMOTE_SCHEMES:
-            with compat.NamedTemporaryFile(mode='w+t', encoding='utf-8') as tmp:
-                tmp.write(requests.get(data_source).text)
-                stream = io.open(tmp.name, encoding='utf-8')
-            return stream
+            return io.TextIOWrapper(compat.urlopen(data_source),
+                                    encoding='utf-8')
 
         elif isinstance(data_source, compat.str) and not \
                 os.path.exists(data_source):
