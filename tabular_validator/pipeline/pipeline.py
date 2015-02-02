@@ -86,11 +86,13 @@ class ValidationPipeline(object):
             self.csv_dialect = None
 
         # original data source
-        self.create_file('', 'data_source.csv')
+        if not self.dry_run:
+            self.create_file('', 'data_source.csv')
         self.table = data_table.DataTable(data_source)
 
         # transformed data_source
-        self.create_file('', 'transformed.csv')
+        if not self.dry_run:
+            self.create_file('', 'transform.csv')
         self.transform = None # Becomes a DataTable if transform occurs
 
         # files we need to close later
