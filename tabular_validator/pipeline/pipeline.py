@@ -218,15 +218,10 @@ class ValidationPipeline(object):
                 self.transform = data_table.DataTable(transform, headers=headers,
                                                       filepath=_t)
 
-        # `dry_run` tasks
-        if self.dry_run:
-            self.rm_workspace()
-
         return valid, self.generate_report()
 
     def rm_workspace(self):
         """Remove this run's workspace from disk."""
-
         return shutil.rmtree(self.workspace)
 
     def generate_report(self):
