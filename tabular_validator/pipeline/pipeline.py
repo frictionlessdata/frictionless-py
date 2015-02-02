@@ -166,10 +166,10 @@ class ValidationPipeline(object):
 
         for validator in self.pipeline:
 
-            if validator.transform:
+            if validator.transform and not self.dry_run:
                 if self.transform:
                     headers, values = self.transform.headers, self.transform.values
-                _t = os.path.join(self.workspace, 'transform.csv')
+                _t = os.path.join(self.workspace, 'transformed.csv')
                 transform = io.open(_t, mode='w+t', encoding='utf-8')
                 csvtransform = csv.writer(transform)
 
@@ -196,7 +196,7 @@ class ValidationPipeline(object):
                     if not _valid and validator.fail_fast:
                         return valid, self.generate_report()
 
-                    if validator.transform and row is not None:
+                    if validator.transform and not self.dry_run and row is not None:
                         csvtransform.writerow(row)
 
             # run_column
@@ -214,7 +214,7 @@ class ValidationPipeline(object):
                 if not _valid and validator.fail_fast:
                     return valid, self.generate_report()
 
-            if validator.transform:
+            if validator.transform and not self.dry_run:
                 self.transform = data_table.DataTable(transform, headers=headers,
                                                       filepath=_t)
 
