@@ -25,9 +25,9 @@ class DataTable(object):
     def extract(self, headers=None):
         """Extract headers and values from the data stream."""
         if compat.is_py2:
-            quote_char = compat.str("'")
+            quotechar = compat.str("'")
         else:
-            quote_char = "'"
+            quotechar = "'"
 
         headers = headers or self.get_headers(self.stream.readline())
         values = compat.csv.reader(self.stream, quotechar=quotechar)
