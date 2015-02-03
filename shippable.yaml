@@ -6,7 +6,7 @@ python:
   - 3.4
 
 install:
-  - pip install -r requirements/test.txt --use-mirrors
+  - if ["$VIRTUALENV_PYTHON" == "2.7"]; then pip install -r test-py2.txt; else pip install -r test.txt; fi
 
 before_script:
   - mkdir -p shippable/testresults
