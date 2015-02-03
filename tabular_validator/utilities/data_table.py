@@ -30,7 +30,7 @@ class DataTable(object):
             quote_char = "'"
 
         headers = headers or self.get_headers(self.stream.readline())
-        values = compat.csv.reader(self.stream, quotechar="'")
+        values = compat.csv.reader(self.stream, quotechar=quotechar)
 
         return headers, values
 
