@@ -70,13 +70,13 @@
         {
             "name": "interests",
             "title": "Interests",
-            "type": "array",
+            "type": "string",
             "description": "Declared interests of this person (work-related)."
         },
         {
             "name": "home_location",
             "title": "Home Location",
-            "type": "geopoint",
+            "type": "string",
             "description": "A geopoint for this person's home address."
         },
         {
@@ -88,7 +88,7 @@
         {
             "name": "extra",
             "title": "Extra",
-            "type": "object",
+            "type": "string",
             "description": "Extra information about this person."
         },
         {

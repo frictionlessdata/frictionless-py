@@ -15,23 +15,23 @@ class DataTable(object):
 
     REMOTE_SCHEMES = ('http', 'https', 'ftp', 'ftps')
 
-    def __init__(self, data_source, headers=None, filepath=None):
-
+    def __init__(self, data_source, headers=None):
         self.openfiles = []
-        self.filepath = filepath
-        self.stream = self.to_textstream(data_source)
-        self.headers, self.values = self.extract(headers)
+        self.data_source = data_source
+        self.passed_headers = headers
+        self.stream = self.to_textstream(self.data_source)
+        self.headers, self.values = self.extract(self.passed_headers)
+
+    def replay(self):
+        """Replay the stream."""
+        self.stream = self.to_textstream(self.data_source)
+        self.headers, self.values = self.extract(self.passed_headers)
+        return self.headers, self.values
 
     def extract(self, headers=None):
         """Extract headers and values from the data stream."""
-        if compat.is_py2:
-            quotechar = compat.str("'")
-        else:
-            quotechar = "'"
-
         headers = headers or self.get_headers(self.stream.readline())
-        values = compat.csv.reader(self.stream, quotechar=quotechar)
-
+        values = compat.csv.reader(self.stream)
         return headers, values
 
     def to_dict(self):

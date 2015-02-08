@@ -49,7 +49,7 @@ class ValidationPipeline(object):
     def __init__(self, validators=None, data_source=None,
                  data_package_source=None, csv_dialect_source=None,
                  data_format='csv', options=None,
-                 workspace=None, dry_run=None):
+                 workspace=None, dry_run=True):
 
         self.validators = validators
         self.data_source = data_source
@@ -60,7 +60,7 @@ class ValidationPipeline(object):
         self.openfiles = []
 
         # data package source
-        if data_package_source is not None:
+        if data_package_source:
             _valid, self.data_package = data_package.validate(
                 data_package_source)
             if not _valid:
@@ -73,7 +73,7 @@ class ValidationPipeline(object):
             self.data_package = None
 
         # csv dialect source
-        if csv_dialect_source is not None:
+        if csv_dialect_source:
             _valid, self.csv_dialect = csv_dialect.validate(
                 csv_dialect_source)
             if not _valid:
@@ -166,10 +166,17 @@ class ValidationPipeline(object):
 
         for validator in self.pipeline:
 
+            # replay the table
+            headers, values = self.table.replay()
+
             if validator.transform and not self.dry_run:
                 if self.transform:
+                    self.transform.stream.seek(0)
                     headers, values = self.transform.headers, self.transform.values
                 _t = os.path.join(self.workspace, 'transformed.csv')
+                # transform stream
+                # raw = io.BufferedRandom(io.BytesIO())
+                # stream = io.TextIOWrapper(raw)
                 transform = io.open(_t, mode='w+t', encoding='utf-8')
                 csvtransform = csv.writer(transform)
 
@@ -215,8 +222,7 @@ class ValidationPipeline(object):
                     return valid, self.generate_report()
 
             if validator.transform and not self.dry_run:
-                self.transform = data_table.DataTable(transform, headers=headers,
-                                                      filepath=_t)
+                self.transform = data_table.DataTable(transform, headers=headers)
 
         return valid, self.generate_report()
 

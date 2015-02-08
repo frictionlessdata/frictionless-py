@@ -129,7 +129,7 @@ class TestTableSchemaValidator(base.BaseTestCase):
                  io.open(schema_filepath) as schema_stream:
             schema = json.load(schema_stream)
             options = {'tableschema': {'table_schema_source': schema}}
-            validator = ValidationPipeline(validators=('tableschema',),
+            validator = ValidationPipeline(validators=('structure', 'tableschema',),
                                            data_source=data_filepath,
                                            options=options)
             result, report = validator.run()
