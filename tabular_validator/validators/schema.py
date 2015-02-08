@@ -23,7 +23,7 @@ class TableSchemaValidator(base.Validator):
 
         self.ignore_field_order = ignore_field_order
         self.table_schema_source = table_schema_source
-        if self.table_schema_source is None:
+        if not self.table_schema_source:
             self.schema = None
         else:
             self.schema = self.schema_model(self.table_schema_source)
