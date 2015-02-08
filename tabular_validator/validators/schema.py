@@ -44,79 +44,79 @@ class TableSchemaValidator(base.Validator):
     def run_header(self, headers):
 
         valid = True
+        if self.schema:
+            if self.ignore_field_order:
+                if not (set(headers) == set(self.schema.headers)):
+                    valid = False
+                    self.report.write({
+                        'name': 'Incorrect·Header',
+                        'category': 'headers',
+                        'level': 'error',
+                        'position': None,
+                        'message': 'The headers do not match the schema'
+                    })
 
-        if self.ignore_field_order:
-            if not (set(headers) == set(self.schema.headers)):
-                valid = False
-                self.report.write({
-                    'name': 'Incorrect·Header',
-                    'category': 'headers',
-                    'level': 'error',
-                    'position': None,
-                    'message': 'The headers do not match the schema'
-                })
-
-        else:
-            if not (headers == self.schema.headers):
-                valid = False
-                self.report.write({
-                    'name': 'Incorrect Headers',
-                    'category': 'headers',
-                    'level': 'error',
-                    'position': None,
-                    'message': 'The headers do not match the schema'
-                })
+            else:
+                if not (headers == self.schema.headers):
+                    valid = False
+                    self.report.write({
+                        'name': 'Incorrect Headers',
+                        'category': 'headers',
+                        'level': 'error',
+                        'position': None,
+                        'message': 'The headers do not match the schema'
+                    })
 
         return valid, headers
 
     def run_row(self, headers, index, row):
 
         valid = True
+        if self.schema:
+            if not len(headers) == len(row):
+                valid = False
+                self.report.write({
+                    'name': 'Incorrect Dimensions',
+                    'category': 'row',
+                    'level': 'error',
+                    'position': index,
+                    'message': 'The row does not match the header dimensions.'
+                })
 
-        if not len(headers) == len(row):
-            valid = False
-            self.report.write({
-                'name': 'Incorrect Dimensions',
-                'category': 'row',
-                'level': 'error',
-                'position': index,
-                'message': 'The row does not match the header dimensions.'
-            })
-
-        else:
-            for k, v in zip(headers, row):
-                # check type and format
-                if not self.schema.cast(k, v):
-                    valid = False
-                    self.report.write({
-                        'name': 'Incorrect type',
-                        'category': 'row',
-                        'level': 'error',
-                        'position': index,
-                        'message': ('The cell {0} is of the wrong '
-                                    'type'.format(k))
-                    })
-
-                # TODO: Check format
-
-                # CONSTRAINTS
-                constraints = self.schema.get_constraints(k)
-                if constraints:
-                    # check constraints.required
-                    if constraints.get('required') and not v:
+            else:
+                for k, v in zip(headers, row):
+                    # check type and format
+                    if not self.schema.cast(k, v):
                         valid = False
                         self.report.write({
-                            'name': 'Missing required field',
+                            'name': 'Incorrect type',
                             'category': 'row',
                             'level': 'error',
                             'position': index,
-                            'message': ('The cell {0} has no value, but '
-                                        'is required'.format(k))
+                            'message': ('The cell {0} is of the wrong '
+                                        'type'.format(k))
                         })
 
-                # TODO: check constraints.unique
+                    # TODO: Check format
 
-                # TODO: check constraints.min* and constraints.max*
+                    # CONSTRAINTS
+                    constraints = self.schema.get_constraints(k)
+                    if constraints:
+                        # check constraints.required
+                        if constraints.get('required') and not v:
+                            valid = False
+                            self.report.write({
+                                'name': 'Missing required field',
+                                'category': 'row',
+                                'level': 'error',
+                                'position': index,
+                                'message': ('The cell {0} has no value, but '
+                                            'is required'.format(k))
+                            })
+
+                    # TODO: check constraints.unique
+
+                    # TODO: check constraints.min* and constraints.max*
 
         if self.transform:
             pass
