@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 
 import sys
 import tempfile
+import io
 
 
 _ver = sys.version_info
@@ -18,13 +19,19 @@ is_py27 = (is_py2 and _ver[1] == 7)
 
 if is_py2:
     import urlparse as parse
-    from urllib2 import urlopen
+    from urllib2 import urlopen as builtin_urlopen
     import unicodecsv as csv
     builtin_str = str
     bytes = str
     str = unicode
     basestring = basestring
     numeric_types = (int, long, float)
+
+    def urlopen(*args):
+        """urlopen that returns a readable, writable and seekable stream."""
+        stream = io.BufferedRandom(io.BytesIO())
+        stream.write(builtin_urlopen(*args).read())
+        return stream
 
 
 elif is_py3:
