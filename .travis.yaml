@@ -1,0 +1,12 @@
+language: python
+python:
+  - 2.7
+  - 3.4
+install:
+  - if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then pip install -r requirements/test-py27.txt --use-mirrors; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == '3.4' ]]; then pip install -r requirements/test.txt --use-mirrors; fi
+  - pip install coveralls
+script:
+  - py.test --cov tabular_validator --cov-config .coveragerc --cov-report term-missing
+after_success:
+  - coveralls
