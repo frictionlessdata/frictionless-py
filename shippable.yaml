@@ -14,7 +14,3 @@ before_script:
 
 script:
   - PYTHONPATH=. py.test --cov tabular_validator --cov-config .coveragerc --cov-report xml --junitxml=shippable/testresults/tests.xml
-
-notifications:
-  email:
-   - paulywalsh@gmail.com
