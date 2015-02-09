@@ -5,6 +5,7 @@ python:
   - 3.4
 install:
   - if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then pip install -r requirements/test-py27.txt --use-mirrors; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == '3.3' ]]; then pip install -r requirements/test.txt --use-mirrors; fi
   - if [[ $TRAVIS_PYTHON_VERSION == '3.4' ]]; then pip install -r requirements/test.txt --use-mirrors; fi
   - pip install coveralls
 script:
