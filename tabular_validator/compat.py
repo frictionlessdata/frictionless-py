@@ -31,6 +31,7 @@ if is_py2:
         """urlopen that returns a readable, writable and seekable stream."""
         stream = io.BufferedRandom(io.BytesIO())
         stream.write(builtin_urlopen(*args).read())
+        stream.seek(0)
         return stream
 
 
