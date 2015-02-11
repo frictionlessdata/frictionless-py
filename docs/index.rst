@@ -36,7 +36,7 @@ Start at one of the following channels:
 
 `Mailing list`_: Discussion takes place on the openspending-dev mailing list
 
-`IRC channel_`: We also have discussions on #openspending-dev at Freenode
+`IRC Channel_`: We also have discussions on #openspending-dev at Freenode
 
 `Documentation`_: An overview of the features that are currently in place.
 
@@ -56,7 +56,6 @@ Table of contents
    validators
    pipeline
    cli
-   web
 
 
 Indices and tables
