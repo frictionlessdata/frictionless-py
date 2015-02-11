@@ -23,7 +23,7 @@ class TestStructureValidator(base.BaseTestCase):
 
     def test_in_pipeline_empty_rows(self):
         filepath = os.path.join(self.data_dir, 'empty_rows.csv')
-        validator = Pipeline(validators=('structure',), data=filepath)
+        validator = Pipeline(filepath, validators=('structure',))
         result, report = validator.run()
 
         self.assertFalse(result)
@@ -39,7 +39,7 @@ class TestStructureValidator(base.BaseTestCase):
     def test_in_pipeline_empty_rows_allowed(self):
         filepath = os.path.join(self.data_dir, 'empty_rows.csv')
         options = {'structure': {'ignore_empty_rows': True}}
-        validator = Pipeline(validators=('structure',), data=filepath,
+        validator = Pipeline(filepath, validators=('structure',),
                              options=options)
         result, report = validator.run()
 
@@ -55,8 +55,7 @@ class TestStructureValidator(base.BaseTestCase):
 
     def test_in_pipeline_duplicate_rows(self):
         filepath = os.path.join(self.data_dir, 'duplicate_rows.csv')
-        validator = Pipeline(validators=('structure',),
-                             data=filepath)
+        validator = Pipeline(filepath, validators=('structure',))
         result, report = validator.run()
 
         self.assertFalse(result)
@@ -73,7 +72,7 @@ class TestStructureValidator(base.BaseTestCase):
     def test_in_pipeline_duplicate_rows_allowed(self):
         filepath = os.path.join(self.data_dir, 'duplicate_rows.csv')
         options = {'structure': {'ignore_duplicate_rows': True}}
-        validator = Pipeline(validators=('structure',), data=filepath,
+        validator = Pipeline(filepath, validators=('structure',),
                              options=options)
         result, report = validator.run()
 
@@ -89,7 +88,7 @@ class TestStructureValidator(base.BaseTestCase):
 
     def test_in_pipeline_headerless_columns(self):
         filepath = os.path.join(self.data_dir, 'headerless_columns.csv')
-        validator = Pipeline(validators=('structure',), data=filepath)
+        validator = Pipeline(filepath, validators=('structure',))
         result, report = validator.run()
 
         self.assertFalse(result)
@@ -106,7 +105,7 @@ class TestStructureValidator(base.BaseTestCase):
     def test_in_pipeline_headerless_columns_allowed(self):
         filepath = os.path.join(self.data_dir, 'headerless_columns.csv')
         options = {'structure': {'ignore_headerless_columns': True}}
-        validator = Pipeline(validators=('structure',), data=filepath,
+        validator = Pipeline(filepath, validators=('structure',),
                              options=options)
         result, report = validator.run()
 
@@ -122,7 +121,7 @@ class TestStructureValidator(base.BaseTestCase):
 
     def test_in_pipeline_duplicate_column_headers(self):
         filepath = os.path.join(self.data_dir, 'duplicate_columns.csv')
-        validator = Pipeline(validators=('structure',), data=filepath)
+        validator = Pipeline(filepath, validators=('structure',))
         result, report = validator.run()
 
         self.assertFalse(result)
@@ -139,7 +138,7 @@ class TestStructureValidator(base.BaseTestCase):
     def test_in_pipeline_duplicate_column_headers_allowed(self):
         filepath = os.path.join(self.data_dir, 'duplicate_columns.csv')
         options = {'structure': {'ignore_duplicate_columns': True}}
-        validator = Pipeline(validators=('structure',), data=filepath,
+        validator = Pipeline(filepath, validators=('structure',),
                              options=options)
         result, report = validator.run()
 
@@ -155,7 +154,7 @@ class TestStructureValidator(base.BaseTestCase):
 
     def test_in_pipeline_defective_rows(self):
         filepath = os.path.join(self.data_dir, 'defective_rows.csv')
-        validator = Pipeline(validators=('structure',), data=filepath)
+        validator = Pipeline(filepath, validators=('structure',))
         result, report = validator.run()
 
         self.assertFalse(result)
@@ -172,7 +171,7 @@ class TestStructureValidator(base.BaseTestCase):
     def test_in_pipeline_defective_rows_allowed(self):
         filepath = os.path.join(self.data_dir, 'defective_rows.csv')
         options = {'structure': {'ignore_defective_rows': True}}
-        validator = Pipeline(validators=('structure',), data=filepath,
+        validator = Pipeline(filepath, validators=('structure',),
                              options=options)
         result, report = validator.run()
 

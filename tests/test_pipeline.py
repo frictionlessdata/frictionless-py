@@ -29,38 +29,41 @@ class TestPipeline(base.BaseTestCase):
         super(TestPipeline, self).tearDown()
 
     def test_from_stream(self):
-        pipeline = Pipeline(data=self.data_stream)
+        pipeline = Pipeline(self.data_stream)
         result, report = pipeline.run()
         self.assertTrue(pipeline.table)
 
     def test_from_filepath(self):
-        pipeline = Pipeline(data=self.data_filepath)
+        pipeline = Pipeline(self.data_filepath)
         result, report = pipeline.run()
         self.assertTrue(pipeline.table)
 
     def test_from_url(self):
-        pipeline = Pipeline(data=self.data_url)
+        pipeline = Pipeline(self.data_url)
         result, report = pipeline.run()
         self.assertTrue(pipeline.table)
 
     def test_from_string(self):
-        pipeline = Pipeline(data=self.data_string)
+        pipeline = Pipeline(self.data_string)
         result, report = pipeline.run()
         self.assertTrue(pipeline.table)
 
     def test_register_validator_append(self):
-        pipeline = Pipeline(data=self.data_string)
+        pipeline = Pipeline(self.data_string)
         self.assertEqual(len(pipeline.pipeline), 1)
         pipeline.register_validator('schema')
         self.assertEqual(len(pipeline.pipeline), 2)
 
     def test_register_validator_insert(self):
-        pipeline = Pipeline(data=self.data_string)
+        pipeline = Pipeline(self.data_string)
         self.assertEqual(len(pipeline.pipeline), 1)
         pipeline.register_validator('schema', position=0)
         self.assertEqual(len(pipeline.pipeline), 2)
 
     def test_resolve_validator(self):
-        pipeline = Pipeline(data=self.data_string)
+        pipeline = Pipeline(self.data_string)
         val = pipeline.resolve_validator('structure')
         self.assertEqual(val.__name__, 'StructureValidator')
+
+    def test_raise_if_data_none(self):
+        self.assertRaises(exceptions.PipelineBuildError, Pipeline, None)

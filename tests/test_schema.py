@@ -102,8 +102,8 @@ class TestTableSchemaValidator(base.BaseTestCase):
                  io.open(schema_filepath) as schema_stream:
             schema = json.load(schema_stream)
             options = {'schema':{'schema': schema}}
-            validator = Pipeline(validators=('schema',),
-                                 data=data_filepath,
+            validator = Pipeline(data_filepath,
+                                 validators=('schema',),
                                  options=options)
             result, report = validator.run()
 
@@ -129,8 +129,8 @@ class TestTableSchemaValidator(base.BaseTestCase):
                  io.open(schema_filepath) as schema_stream:
             schema = json.load(schema_stream)
             options = {'schema': {'schema': schema}}
-            validator = Pipeline(validators=('structure', 'schema',),
-                                 data=data_filepath,
+            validator = Pipeline(data_filepath,
+                                 validators=('structure', 'schema',),
                                  options=options)
             result, report = validator.run()
 

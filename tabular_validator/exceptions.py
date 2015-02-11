@@ -6,3 +6,7 @@ from __future__ import unicode_literals
 
 class InvalidSpec(Exception):
     pass
+
+
+class PipelineBuildError(Exception):
+    pass

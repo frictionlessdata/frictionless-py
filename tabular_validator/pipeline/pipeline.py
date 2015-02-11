@@ -45,8 +45,11 @@ class Pipeline(object):
 
     """
 
-    def __init__(self, validators=None, data=None, dialect=None, format='csv',
+    def __init__(self, data, validators=None, dialect=None, format='csv',
                  options=None, workspace=None, dry_run=True):
+
+        if data is None:
+            raise exceptions.PipelineBuildError
 
         self.validators = validators
         self.data = data
