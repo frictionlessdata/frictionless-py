@@ -11,7 +11,7 @@ class StructureValidator(base.Validator):
 
     name = 'structure'
 
-    def __init__(self, fail_fast=False, transform=True, report_limit=1000,
+    def __init__(self, fail_fast=False, transform=False, report_limit=1000,
                  ignore_empty_rows=False, ignore_duplicate_rows=False,
                  ignore_defective_rows=False, ignore_empty_columns=False,
                  ignore_duplicate_columns=False,

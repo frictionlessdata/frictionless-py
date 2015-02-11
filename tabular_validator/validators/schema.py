@@ -14,7 +14,7 @@ class SchemaValidator(base.Validator):
 
     name = 'schema'
 
-    def __init__(self, fail_fast=False, transform=True, report_limit=1000,
+    def __init__(self, fail_fast=False, transform=False, report_limit=1000,
                  schema=None, ignore_field_order=True, **kwargs):
 
         super(SchemaValidator, self).__init__(
