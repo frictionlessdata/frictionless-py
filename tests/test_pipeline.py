@@ -6,7 +6,7 @@ from __future__ import unicode_literals
 
 import os
 import io
-from tabular_validator.pipeline import ValidationPipeline
+from tabular_validator.pipeline import Pipeline
 from tabular_validator import exceptions
 from tests import base
 
@@ -29,38 +29,38 @@ class TestPipeline(base.BaseTestCase):
         super(TestPipeline, self).tearDown()
 
     def test_from_stream(self):
-        pipeline = ValidationPipeline(data_source=self.data_stream)
+        pipeline = Pipeline(data=self.data_stream)
         result, report = pipeline.run()
         self.assertTrue(pipeline.table)
 
     def test_from_filepath(self):
-        pipeline = ValidationPipeline(data_source=self.data_filepath)
+        pipeline = Pipeline(data=self.data_filepath)
         result, report = pipeline.run()
         self.assertTrue(pipeline.table)
 
     def test_from_url(self):
-        pipeline = ValidationPipeline(data_source=self.data_url)
+        pipeline = Pipeline(data=self.data_url)
         result, report = pipeline.run()
         self.assertTrue(pipeline.table)
 
     def test_from_string(self):
-        pipeline = ValidationPipeline(data_source=self.data_string)
+        pipeline = Pipeline(data=self.data_string)
         result, report = pipeline.run()
         self.assertTrue(pipeline.table)
 
     def test_register_validator_append(self):
-        pipeline = ValidationPipeline(data_source=self.data_string)
+        pipeline = Pipeline(data=self.data_string)
         self.assertEqual(len(pipeline.pipeline), 1)
-        pipeline.register_validator('tableschema')
+        pipeline.register_validator('schema')
         self.assertEqual(len(pipeline.pipeline), 2)
 
     def test_register_validator_insert(self):
-        pipeline = ValidationPipeline(data_source=self.data_string)
+        pipeline = Pipeline(data=self.data_string)
         self.assertEqual(len(pipeline.pipeline), 1)
-        pipeline.register_validator('tableschema', position=0)
+        pipeline.register_validator('schema', position=0)
         self.assertEqual(len(pipeline.pipeline), 2)
 
     def test_resolve_validator(self):
-        pipeline = ValidationPipeline(data_source=self.data_string)
+        pipeline = Pipeline(data=self.data_string)
         val = pipeline.resolve_validator('structure')
         self.assertEqual(val.__name__, 'StructureValidator')

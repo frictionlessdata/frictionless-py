@@ -15,7 +15,7 @@ from ..utilities import data_table, data_package, csv_dialect, helpers
 from .. import exceptions
 
 
-class ValidationPipeline(object):
+class Pipeline(object):
 
     """Validate a (tabular) data source through a validation pipeline.
 
@@ -26,10 +26,9 @@ class ValidationPipeline(object):
         * Each name can be a string path to a validator
             * e.g., ['custompackage.CustomValidator', 'schema']
             * Custom validator must implement the Validator API
-    * data_package_source: A stream, filepath, string or URL to a Data Package
-    * data_source: A buffer, filepath, string or URL to the table data
-    * data_format: The format of `data_source`. 'csv' or 'json'
-    * csv_dialect_source: A buffer, filepath, string or URL to a CSV dialect spec
+    * data: A buffer, filepath, string or URL to the table data
+    * format: The format of `data_source`. 'csv' or 'json'
+    * dialect: A buffer, filepath, string or URL to a CSV dialect spec
     * options: a dict configuration object for the validation pipeline
         * Each validator has its options nested under its 'shortname'
         * Custom validators have options nested under cls.__name__.lower()
@@ -46,49 +45,33 @@ class ValidationPipeline(object):
 
     """
 
-    def __init__(self, validators=None, data_source=None,
-                 data_package_source=None, csv_dialect_source=None,
-                 data_format='csv', options=None,
-                 workspace=None, dry_run=True):
+    def __init__(self, validators=None, data=None, dialect=None, format='csv',
+                 options=None, workspace=None, dry_run=True):
 
         self.validators = validators
-        self.data_source = data_source
-        self.data_format = data_format
+        self.data = data
+        self.format = format
         self.options = options or {}
         self.workspace = workspace or tempfile.mkdtemp()
         self.dry_run = dry_run
         self.openfiles = []
 
-        # data package source
-        if data_package_source:
-            _valid, self.data_package = data_package.validate(
-                data_package_source)
-            if not _valid:
-                raise exceptions.InvalidSpec
-            else:
-                if not self.dry_run:
-                    self.create_file(json.dumps(self.data_package),
-                                     'data_package.json')
-        else:
-            self.data_package = None
-
         # csv dialect source
-        if csv_dialect_source:
-            _valid, self.csv_dialect = csv_dialect.validate(
-                csv_dialect_source)
+        if dialect:
+            _valid, self.dialect = csv_dialect.validate(dialect)
             if not _valid:
                 raise exceptions.InvalidSpec
             else:
                 if not self.dry_run:
-                    self.create_file(json.dumps(self.csv_dialect),
-                                     'csv_dialect.json')
+                    self.create_file(json.dumps(self.dialect),
+                                     'dialect.json')
         else:
-            self.csv_dialect = None
+            self.dialect = None
 
         # original data source
         if not self.dry_run:
-            self.create_file('', 'data_source.csv')
-        self.table = data_table.DataTable(data_source)
+            self.create_file('', 'data.csv')
+        self.table = data_table.DataTable(data)
 
         # transformed data_source
         if not self.dry_run:

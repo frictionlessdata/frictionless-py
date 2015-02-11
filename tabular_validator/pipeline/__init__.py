@@ -4,7 +4,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from .pipeline import ValidationPipeline
+from .pipeline import Pipeline
 
 
-__all__ = ['ValidationPipeline']
+__all__ = ['Pipeline']

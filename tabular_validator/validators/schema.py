@@ -8,28 +8,27 @@ from . import base
 from ..utilities import table_schema
 
 
-class TableSchemaValidator(base.Validator):
+class SchemaValidator(base.Validator):
 
     """Validate data against a JSON Table Schema."""
 
-    name = 'tableschema'
+    name = 'schema'
 
     def __init__(self, fail_fast=False, transform=True, report_limit=1000,
-                 table_schema_source=None, ignore_field_order=True, **kwargs):
+                 schema=None, ignore_field_order=True, **kwargs):
 
-        super(TableSchemaValidator, self).__init__(
+        super(SchemaValidator, self).__init__(
             fail_fast=fail_fast, transform=transform,
             report_limit=report_limit)
 
         self.ignore_field_order = ignore_field_order
-        self.table_schema_source = table_schema_source
-        if not self.table_schema_source:
+        if not schema:
             self.schema = None
         else:
-            self.schema = self.schema_model(self.table_schema_source)
+            self.schema = self.schema_model(schema)
 
-    def schema_model(self, schema_source):
-        return table_schema.JSONTableSchema(schema_source)
+    def schema_model(self, schema):
+        return table_schema.JSONTableSchema(schema)
 
 #    def pre_run(self, headers, values):
 #        if self.schema is None:

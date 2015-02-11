@@ -16,7 +16,7 @@ def builtin_validators():
     from .. import validators
     return {
         validators.StructureValidator.name: validators.StructureValidator,
-        validators.TableSchemaValidator.name: validators.TableSchemaValidator
+        validators.SchemaValidator.name: validators.SchemaValidator
     }
 
 

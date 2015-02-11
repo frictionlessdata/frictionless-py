@@ -6,7 +6,7 @@ from __future__ import unicode_literals
 
 from .base import Validator
 from .structure import StructureValidator
-from .schema import TableSchemaValidator
+from .schema import SchemaValidator
 
 
-__all__ = ['Validator', 'StructureValidator', 'TableSchemaValidator']
+__all__ = ['Validator', 'StructureValidator', 'SchemaValidator']
