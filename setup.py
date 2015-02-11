@@ -16,7 +16,7 @@ is_py3 = (_ver[0] == 3)
 dependencies = [
     'Click>=3.3',
     'jsonschema>=2.4.0',
-    'tellme>=0.1.0'
+    'tellme>=0.1.1'
 ]
 
 if is_py2:

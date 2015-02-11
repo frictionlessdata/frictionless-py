@@ -1,4 +1,4 @@
 Click==3.3
 requests==2.5.1
 jsonschema==2.4.0
-tellme>=0.1.0
+tellme>=0.1.1
