@@ -43,7 +43,7 @@ if is_py2:
                 yield line.encode('utf-8')
 
         reader = csv.reader(iterenc_utf8(data), dialect=dialect, **kwargs)
-        for row in csv_reader:
+        for row in reader:
             yield [str(cell, 'utf-8') for cell in row]
 
 
