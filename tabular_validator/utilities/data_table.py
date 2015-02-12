@@ -31,7 +31,7 @@ class DataTable(object):
     def extract(self, headers=None):
         """Extract headers and values from the data stream."""
         headers = headers or self.get_headers(self.stream.readline())
-        values = compat.csv.reader(self.stream)
+        values = compat.csv_reader(self.stream)
         return headers, values
 
     def to_dict(self):

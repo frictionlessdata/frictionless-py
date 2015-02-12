@@ -19,9 +19,6 @@ dependencies = [
     'tellme>=0.1.1'
 ]
 
-if is_py2:
-    dependencies.append('unicodecsv>=0.9.4')
-
 with io.open('README.md', mode='r+t', encoding='utf-8') as stream:
     readme = stream.read()
 
