@@ -46,17 +46,27 @@ class Pipeline(object):
     """
 
     def __init__(self, data, validators=None, dialect=None, format='csv',
-                 options=None, workspace=None, dry_run=True):
+                 options=None, workspace=None, dry_run=True, row_limit=20000,
+                 report_limit=1000):
 
         if data is None:
             raise exceptions.PipelineBuildError
 
-        self.validators = validators
+        self.validators = validators or helpers.DEFAULT_PIPELINE
+        self.pipeline = []
         self.data = data
         self.format = format
         self.options = options or {}
         self.workspace = workspace or tempfile.mkdtemp()
         self.dry_run = dry_run
+        if row_limit <= 30000:
+            self.row_limit = row_limit
+        else:
+            self.row_limit = 30000
+        if report_limit <= 1000:
+            self.report_limit = report_limit
+        else:
+            self.report_limit = 1000
         self.openfiles = []
 
         # csv dialect source
@@ -90,16 +100,14 @@ class Pipeline(object):
         self.report = {}
 
         # instantiate all the validators in the pipeline with options.
-        self.builtins = helpers.builtin_validators()
-        if self.validators:
-            self.pipeline = []
-            for v in self.validators:
-                validator_class = self.resolve_validator(v)
-                options = self.options.get(validator_class.name, {})
-                self.pipeline.append(validator_class(**options))
-        else:
-            self.pipeline = [self.builtins[v]() for v in
-                             helpers.DEFAULT_PIPELINE]
+        for v in self.validators:
+            validator_class = self.resolve_validator(v)
+            options = self.options.get(validator_class.name, {})
+            if not options.get('row_limit'):
+                options['row_limit'] = self.row_limit
+            if not options.get('report_limit'):
+                options['report_limit'] = self.report_limit
+            self.pipeline.append(validator_class(**options))
 
     def create_file(self, data, name):
         """Create a file in the pipeline workspace."""
@@ -111,8 +119,8 @@ class Pipeline(object):
     def resolve_validator(self, validator_name):
         """Return a validator class."""
 
-        if validator_name in self.builtins:
-            validator_class = self.builtins[validator_name]
+        if validator_name in helpers.builtin_validators():
+            validator_class = helpers.builtin_validators()[validator_name]
         else:
             # resolve a custom validator
             _module, _class = validator_name.rsplit('.', 1)

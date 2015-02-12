@@ -12,9 +12,9 @@ class StructureValidator(base.Validator):
     name = 'structure'
 
     def __init__(self, fail_fast=False, transform=False, report_limit=1000,
-                 ignore_empty_rows=False, ignore_duplicate_rows=False,
-                 ignore_defective_rows=False, ignore_empty_columns=False,
-                 ignore_duplicate_columns=False,
+                 row_limit=30000, ignore_empty_rows=False,
+                 ignore_duplicate_rows=False, ignore_defective_rows=False,
+                 ignore_empty_columns=False, ignore_duplicate_columns=False,
                  ignore_headerless_columns=False, empty_strings=None):
 
         # TODO: `self.seen` should be maintained in a file or something
@@ -22,7 +22,8 @@ class StructureValidator(base.Validator):
 
         super(StructureValidator, self).__init__(fail_fast=fail_fast,
                                                  transform=transform,
-                                                 report_limit=report_limit)
+                                                 report_limit=report_limit,
+                                                 row_limit=row_limit)
 
         self.ignore_empty_rows = ignore_empty_rows
         self.ignore_duplicate_rows = ignore_duplicate_rows
