@@ -2,3 +2,4 @@ Click==3.3
 requests==2.5.1
 jsonschema==2.4.0
 tellme>=0.1.2
+jtskit>=0.1.4

@@ -4,8 +4,8 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import jtskit
 from . import base
-from ..utilities import table_schema
 
 
 class SchemaValidator(base.Validator):
@@ -28,7 +28,7 @@ class SchemaValidator(base.Validator):
             self.schema = self.schema_model(schema)
 
     def schema_model(self, schema):
-        return table_schema.JSONTableSchema(schema)
+        return jtskit.models.JSONTableSchema(schema)
 
 #    def pre_run(self, headers, values):
 #        if self.schema is None:

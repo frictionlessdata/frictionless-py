@@ -16,16 +16,14 @@ is_py3 = (_ver[0] == 3)
 dependencies = [
     'Click>=3.3',
     'jsonschema>=2.4.0',
-    'tellme>=0.1.2'
+    'tellme>=0.1.2',
+    'jtskit>=0.1.4'
 ]
-
-with io.open('README.md', mode='r+t', encoding='utf-8') as stream:
-    readme = stream.read()
 
 setup(
     name='tabular-validator',
-    description='A toolkit for validating tabular data through a validation pipeline.',
-    long_description=readme,
+    description='A toolkit for validating tabular data through a pipeline.',
+    long_description='A toolkit for validating tabular data through a pipeline.',
     version='0.1.0',
     author='Open Knowledge Foundation',
     author_email='info@okfn.org',
