@@ -16,7 +16,7 @@ is_py3 = (_ver[0] == 3)
 dependencies = [
     'Click>=3.3',
     'jsonschema>=2.4.0',
-    'tellme>=0.1.1'
+    'tellme>=0.1.2'
 ]
 
 with io.open('README.md', mode='r+t', encoding='utf-8') as stream:

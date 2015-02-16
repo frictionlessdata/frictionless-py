@@ -47,7 +47,7 @@ class Pipeline(object):
 
     def __init__(self, data, validators=None, dialect=None, format='csv',
                  options=None, workspace=None, dry_run=True, row_limit=20000,
-                 report_limit=1000):
+                 report_limit=1000, report_stream=None):
 
         if data is None:
             raise exceptions.PipelineBuildError
@@ -107,6 +107,8 @@ class Pipeline(object):
                 options['row_limit'] = self.row_limit
             if not options.get('report_limit'):
                 options['report_limit'] = self.report_limit
+            if report_stream and not options.get('report_stream'):
+                options['report_stream'] = report_stream
             self.pipeline.append(validator_class(**options))
 
     def create_file(self, data, name):

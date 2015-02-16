@@ -14,7 +14,8 @@ class Validator(object):
 
     name = None
 
-    def __init__(self, fail_fast=False, transform=False, report_limit=1000, row_limit=30000):
+    def __init__(self, fail_fast=False, transform=False, report_limit=1000,
+                 row_limit=30000, report_stream=None):
         self.name = self.name or self.__class__.__name__.lower()
         self.fail_fast = fail_fast
         self.transform = transform
@@ -26,7 +27,18 @@ class Validator(object):
             self.report_limit = report_limit
         else:
             self.report_limit = 1000
-        self.report = tellme.Report(self.name, schema=helpers.report_schema)
+
+        if report_stream:
+            report_backend = 'client'
+        else:
+            report_backend = 'yaml'
+
+        report_options = {
+            'schema': helpers.report_schema,
+            'backend': report_backend,
+            'client_stream': report_stream
+        }
+        self.report = tellme.Report(self.name, **report_options)
 
     def run(self, data_source, headers=None, is_table=False):
 
