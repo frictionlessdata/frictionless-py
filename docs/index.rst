@@ -3,7 +3,7 @@ Welcome to Tabular Validator's documentation!
 
 Tabular Validator is a pipeline interface for validating tabular data.
 
-A **data source** is passed through a pipeline of **validators**.
+**data** (currently: as CSV) is passed through a pipeline of **validators**.
 
 Optionally, the data source is **transformed** as it passes through the pipeline.
 

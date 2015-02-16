@@ -1,9 +1,9 @@
 Tutorials
 =========
 
+**WIP**
 
-Validating a file for correct structure
----------------------------------------
+TODO: This is not complete.
 
 Implementing a custom validator
 -------------------------------
