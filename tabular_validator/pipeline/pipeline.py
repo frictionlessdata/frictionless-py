@@ -175,6 +175,7 @@ class Pipeline(object):
             valid, self.report[validator.name], self.data = \
                 validator.run(self.data, is_table=True)
 
+            # if a validator returns invalid, we stop the pipeline
             if not valid:
                 return valid, self.generate_report()
 
