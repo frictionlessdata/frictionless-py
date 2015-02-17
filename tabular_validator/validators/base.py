@@ -51,24 +51,12 @@ class Validator(object):
             is_table: if True, data_source is a DataTable instance
 
         Returns:
-            a tuple of `valid, report`
+            a tuple of `valid, report, data_table`
             valid: boolean indicating if the data is valid
             report: instance of reporter.Report
+            data: a data_table.DataTable object containing the output data
 
         """
-
-        # The valid state of the run
-        valid = True
-        openfiles = []
-
-        # if is_table, then data_source is already a table
-        if is_table:
-            table = data_source
-        else:
-            table = data_table.DataTable(data_source, headers=headers)
-            openfiles.append(data_source)
-
-        headers, values = table.headers, table.values
 
         def _run_valid(process_valid, run_valid):
             """Set/maintain the valid state of the run."""
@@ -76,16 +64,25 @@ class Validator(object):
                 return False
             return run_valid
 
+        valid = True
+        openfiles = []
+
+        if is_table:
+            data = data_source
+        else:
+            data = data_table.DataTable(data_source, headers=headers)
+            openfiles.extend(data.openfiles)
+
         # pre_run
         if hasattr(self, 'pre_run'):
-            _valid, headers, values = self.pre_run(headers, values)
+            _valid, data = self.pre_run(data)
             valid = _run_valid(_valid, valid)
             if not _valid and self.fail_fast:
                 return valid, self.report
 
         # run_header
         if hasattr(self, 'run_header'):
-            _valid, headers = self.run_header(headers)
+            _valid, data.headers = self.run_header(data.headers)
             valid = _run_valid(_valid, valid)
             if not _valid and self.fail_fast:
                 return valid, self.report
@@ -93,23 +90,16 @@ class Validator(object):
         # run_row
         if hasattr(self, 'run_row'):
             # TODO: on transform, create a new stream out of returned rows
-            for index, row in enumerate(values):
-                _valid, headers, index, row = self.run_row(headers, index, row)
-                valid = _run_valid(_valid, valid)
-                if not _valid and self.fail_fast:
-                    return valid, self.report
-
-        # run_column
-        # if hasattr(self, 'run_column'):
-        #     for index, column in enumerate(table.by_column):
-        #         _valid, column = self.run_column(index, column)
-        #         valid = _run_valid(_valid, valid)
-        #         if not _valid and self.fail_fast:
-        #             return valid, self.report
+            for index, row in enumerate(data.values):
+                if index < self.row_limit:
+                    _valid, data.headers, index, row = self.run_row(data.headers, index, row)
+                    valid = _run_valid(_valid, valid)
+                    if not _valid and self.fail_fast:
+                        return valid, self.report
 
         # post_run
         if hasattr(self, 'post_run'):
-            _valid, headers, values = self.post_run(headers, values)
+            _valid, data = self.post_run(data)
             valid = _run_valid(_valid, valid)
             if not _valid and self.fail_fast:
                 return valid, self.report
@@ -117,4 +107,4 @@ class Validator(object):
         for f in openfiles:
             f.close()
 
-        return valid, self.report
+        return valid, self.report, data

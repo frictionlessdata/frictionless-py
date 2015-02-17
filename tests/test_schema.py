@@ -90,7 +90,7 @@ class TestTableSchemaValidator(base.BaseTestCase):
                  io.open(schema_filepath) as schema_stream:
             schema = json.load(schema_stream)
             validator = validators.SchemaValidator(schema=schema)
-            result, report = validator.run(data_stream)
+            result, report, data = validator.run(data_stream)
 
             self.assertTrue(result)
 
@@ -117,7 +117,7 @@ class TestTableSchemaValidator(base.BaseTestCase):
                  io.open(schema_filepath) as schema_stream:
             schema = json.load(schema_stream)
             validator = validators.SchemaValidator(schema=schema)
-            result, report = validator.run(data_stream)
+            result, report, data = validator.run(data_stream)
 
             self.assertFalse(result)
 
@@ -132,6 +132,7 @@ class TestTableSchemaValidator(base.BaseTestCase):
             validator = Pipeline(data_filepath,
                                  validators=('structure', 'schema',),
                                  options=options)
+#            import pytest;pytest.set_trace()
             result, report = validator.run()
 
             self.assertFalse(result)

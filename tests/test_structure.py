@@ -17,7 +17,7 @@ class TestStructureValidator(base.BaseTestCase):
         filepath = os.path.join(self.data_dir, 'empty_rows.csv')
         with io.open(filepath) as stream:
             validator = validators.StructureValidator()
-            result, report = validator.run(stream)
+            result, report, data = validator.run(stream)
 
             self.assertFalse(result)
 
@@ -32,7 +32,7 @@ class TestStructureValidator(base.BaseTestCase):
         filepath = os.path.join(self.data_dir, 'empty_rows.csv')
         with io.open(filepath) as stream:
             validator = validators.StructureValidator(ignore_empty_rows=True)
-            result, report = validator.run(stream)
+            result, report, data = validator.run(stream)
 
             self.assertTrue(result)
 
@@ -49,7 +49,7 @@ class TestStructureValidator(base.BaseTestCase):
         filepath = os.path.join(self.data_dir, 'duplicate_rows.csv')
         with io.open(filepath) as stream:
             validator = validators.StructureValidator()
-            result, report = validator.run(stream)
+            result, report, data = validator.run(stream)
 
             self.assertFalse(result)
 
@@ -65,7 +65,7 @@ class TestStructureValidator(base.BaseTestCase):
         with io.open(filepath) as stream:
             validator = validators.StructureValidator(
                 ignore_duplicate_rows=True)
-            result, report = validator.run(stream)
+            result, report, data = validator.run(stream)
 
             self.assertTrue(result)
 
@@ -82,7 +82,7 @@ class TestStructureValidator(base.BaseTestCase):
         filepath = os.path.join(self.data_dir, 'headerless_columns.csv')
         with io.open(filepath) as stream:
             validator = validators.StructureValidator()
-            result, report = validator.run(stream)
+            result, report, data = validator.run(stream)
 
             self.assertFalse(result)
 
@@ -98,7 +98,7 @@ class TestStructureValidator(base.BaseTestCase):
         with io.open(filepath) as stream:
             validator = validators.StructureValidator(
                 ignore_headerless_columns=True)
-            result, report = validator.run(stream)
+            result, report, data = validator.run(stream)
 
             self.assertTrue(result)
 
@@ -115,7 +115,7 @@ class TestStructureValidator(base.BaseTestCase):
         filepath = os.path.join(self.data_dir, 'duplicate_columns.csv')
         with io.open(filepath) as stream:
             validator = validators.StructureValidator()
-            result, report = validator.run(stream)
+            result, report, data = validator.run(stream)
 
             self.assertFalse(result)
 
@@ -131,7 +131,7 @@ class TestStructureValidator(base.BaseTestCase):
         with io.open(filepath) as stream:
             validator = validators.StructureValidator(
                 ignore_duplicate_columns=True)
-            result, report = validator.run(stream)
+            result, report, data = validator.run(stream)
 
             self.assertTrue(result)
 
@@ -148,7 +148,7 @@ class TestStructureValidator(base.BaseTestCase):
         filepath = os.path.join(self.data_dir, 'defective_rows.csv')
         with io.open(filepath) as stream:
             validator = validators.StructureValidator()
-            result, report = validator.run(stream)
+            result, report, data = validator.run(stream)
 
             self.assertFalse(result)
 
@@ -164,7 +164,7 @@ class TestStructureValidator(base.BaseTestCase):
         with io.open(filepath) as stream:
             validator = validators.StructureValidator(
                 ignore_defective_rows=True)
-            result, report = validator.run(stream)
+            result, report, data = validator.run(stream)
 
             self.assertTrue(result)
 

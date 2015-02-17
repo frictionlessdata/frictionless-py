@@ -45,77 +45,95 @@ class Pipeline(object):
 
     """
 
+    ROW_LIMIT_MAX = 30000
+    REPORT_LIMIT_MAX = 1000
+    SOURCE_FILENAME = 'source.csv'
+    TRANSFORM_FILENAME = 'transform.csv'
+    DIALECT_FILENAME = 'dialect.json'
+
     def __init__(self, data, validators=None, dialect=None, format='csv',
-                 options=None, workspace=None, dry_run=True, row_limit=20000,
-                 report_limit=1000, report_stream=None):
+                 options=None, workspace=None, dry_run=True, transform=True,
+                 row_limit=20000, report_limit=1000, report_stream=None):
 
         if data is None:
             raise exceptions.PipelineBuildError
 
+        self.openfiles = []
         self.validators = validators or helpers.DEFAULT_PIPELINE
-        self.pipeline = []
-        self.data = data
+        self.dialect = self.get_dialect(dialect)
         self.format = format
         self.options = options or {}
         self.workspace = workspace or tempfile.mkdtemp()
         self.dry_run = dry_run
-        if row_limit <= 30000:
-            self.row_limit = row_limit
-        else:
-            self.row_limit = 30000
-        if report_limit <= 1000:
-            self.report_limit = report_limit
-        else:
-            self.report_limit = 1000
-        self.openfiles = []
+        self.transform = transform
+        self.row_limit = self.get_row_limit(row_limit)
+        self.report_limit = self.get_report_limit(report_limit)
+        self.report_stream = report_stream
+        self.pipeline = self.get_pipeline()
+        self.data = data_table.DataTable(data)
+        self.report = {}
+        self.openfiles.extend(self.data.openfiles)
 
-        # csv dialect source
-        if dialect:
-            _valid, self.dialect = csv_dialect.validate(dialect)
+        if not self.dry_run:
+            self.init_workspace()
+
+    def init_workspace(self):
+        """Initalize the workspace for this run."""
+
+        self.create_file(self.data.values, self.SOURCE_FILENAME, self.data.headers)
+        self.create_file('', self.TRANSFORM_FILENAME)
+        self.create_file(json.dumps(self.dialect), self.DIALECT_FILENAME)
+
+    def get_pipeline(self):
+        """Get the pipeline for this instance."""
+
+        pipeline = []
+        for name in self.validators:
+            _class = self.resolve_validator(name)
+            options = self.options.get(_class.name, {})
+            # override options with those we accept directly from the pipeline
+            options['row_limit'] = self.row_limit
+            options['report_limit'] = self.report_limit
+            options['report_stream'] = self.report_stream
+            options['transform'] = self.transform
+            pipeline.append(_class(**options))
+
+        return pipeline
+
+    def get_dialect(self, dialect_source):
+        """Get a CSV dialect instance for this data."""
+
+        if dialect_source:
+            _valid, rv = csv_dialect.validate(dialect_source)
             if not _valid:
                 raise exceptions.InvalidSpec
-            else:
-                if not self.dry_run:
-                    self.create_file(json.dumps(self.dialect),
-                                     'dialect.json')
+            return rv
         else:
-            self.dialect = None
+            return None
 
-        # original data source
-        if not self.dry_run:
-            self.create_file('', 'data.csv')
-        self.table = data_table.DataTable(data)
+    def get_row_limit(self, passed_limit):
+        """Return the row limit, locked to an upper limit."""
 
-        # transformed data_source
-        if not self.dry_run:
-            self.create_file('', 'transform.csv')
-        self.transform = None # Becomes a DataTable if transform occurs
+        if passed_limit > self.ROW_LIMIT_MAX:
+            return self.ROW_LIMIT_MAX
+        else:
+            return passed_limit
 
-        # files we need to close later
-        self.openfiles.extend(self.table.openfiles)
+    def get_report_limit(self, passed_limit):
+        """Return the report_limit, locked to an upper limit."""
 
-        # container for validator reports
-        # TODO: Reimplement this as a 'meta' reporter.Report instance
-        # i.e.: it should be an interface over yaml or sql backend, not dict
-        self.report = {}
+        if passed_limit > self.REPORT_LIMIT_MAX:
+            return self.REPORT_LIMIT_MAX
+        else:
+            return passed_limit
 
-        # instantiate all the validators in the pipeline with options.
-        for v in self.validators:
-            validator_class = self.resolve_validator(v)
-            options = self.options.get(validator_class.name, {})
-            if not options.get('row_limit'):
-                options['row_limit'] = self.row_limit
-            if not options.get('report_limit'):
-                options['report_limit'] = self.report_limit
-            if report_stream and not options.get('report_stream'):
-                options['report_stream'] = report_stream
-            self.pipeline.append(validator_class(**options))
-
-    def create_file(self, data, name):
+    def create_file(self, data, name, headers=None):
         """Create a file in the pipeline workspace."""
 
         filepath = os.path.join(self.workspace, name)
         with io.open(filepath, mode='w+t',encoding='utf-8') as destfile:
+            if headers:
+                destfile.write(','.join(headers))
             destfile.write(data)
 
     def resolve_validator(self, validator_name):
@@ -148,88 +166,36 @@ class Pipeline(object):
             self.pipeline.insert(position, validator)
 
     def run(self):
-        """Run the validation pipeline."""
+        """Run the pipeline."""
 
-        # default valid state
         valid = True
-        headers, values = self.table.headers, self.table.values
-
-        def _run_valid(process_valid, run_valid):
-            """Set/maintain the valid state of this run."""
-            if not process_valid and run_valid:
-                return False
-            return run_valid
 
         for validator in self.pipeline:
 
-            # replay the table
-            headers, values = self.table.replay()
+            valid, self.report[validator.name], self.data = \
+                validator.run(self.data, is_table=True)
 
-            if validator.transform and not self.dry_run:
-                if self.transform:
-                    self.transform.stream.seek(0)
-                    headers, values = self.transform.headers, self.transform.values
-                _t = os.path.join(self.workspace, 'transformed.csv')
-                # transform stream
-                # raw = io.BufferedRandom(io.BytesIO())
-                # stream = io.TextIOWrapper(raw)
-                transform = io.open(_t, mode='w+t', encoding='utf-8')
-                csvtransform = csv.writer(transform)
+            if not valid:
+                return valid, self.generate_report()
 
-            # pre_run
-            if hasattr(validator, 'pre_run'):
-                _valid, headers, values = validator.pre_run(headers, values)
-                valid = _run_valid(_valid, valid)
-                if not _valid and validator.fail_fast:
-                    return valid, self.generate_report()
-
-            # run_header
-            if hasattr(validator, 'run_header'):
-                _valid, headers = validator.run_header(headers)
-                valid = _run_valid(_valid, valid)
-                if not _valid and validator.fail_fast:
-                    return valid, self.generate_report()
-
-            # run_row
-            if hasattr(validator, 'run_row'):
-                for index, row in enumerate(values):
-                    old_row = row
-                    _valid, headers, index, row = validator.run_row(headers, index, row)
-                    valid = _run_valid(_valid, valid)
-                    if not _valid and validator.fail_fast:
-                        return valid, self.generate_report()
-
-                    if validator.transform and not self.dry_run and row is not None:
-                        csvtransform.writerow(row)
-
-            # run_column
-            # if hasattr(validator, 'run_column'):
-            #     for index, column in enumerate(self.table.by_column):
-            #         _valid, column = validator.run_column(index, column)
-            #         valid = _run_valid(_valid, valid)
-            #         if not _valid and validator.fail_fast:
-            #             return valid, self.generate_report()
-
-            # post_run
-            if hasattr(validator, 'post_run'):
-                _valid, headers, values = validator.post_run(headers, values)
-                valid = _run_valid(_valid, valid)
-                if not _valid and validator.fail_fast:
-                    return valid, self.generate_report()
-
-            if validator.transform and not self.dry_run:
-                self.transform = data_table.DataTable(transform, headers=headers)
+            if not self.dry_run and self.transform:
+                # TODO: do what we'll do with transform data, workspace, etc.
+                pass
+            else:
+                self.data.replay()
 
         return valid, self.generate_report()
 
     def rm_workspace(self):
         """Remove this run's workspace from disk."""
+
         return shutil.rmtree(self.workspace)
 
     def generate_report(self):
         """Run the report generator for each validator in the pipeline."""
 
-        for validator in self.pipeline:
-            self.report[validator.name] = validator.report.generate()
+        generated = dict(self.report)
+        for k, v in generated.items():
+            generated[k] = v.generate()
 
-        return self.report
+        return generated

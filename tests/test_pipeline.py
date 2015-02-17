@@ -31,22 +31,22 @@ class TestPipeline(base.BaseTestCase):
     def test_from_stream(self):
         pipeline = Pipeline(self.data_stream)
         result, report = pipeline.run()
-        self.assertTrue(pipeline.table)
+        self.assertTrue(pipeline.data)
 
     def test_from_filepath(self):
         pipeline = Pipeline(self.data_filepath)
         result, report = pipeline.run()
-        self.assertTrue(pipeline.table)
+        self.assertTrue(pipeline.data)
 
     def test_from_url(self):
         pipeline = Pipeline(self.data_url)
         result, report = pipeline.run()
-        self.assertTrue(pipeline.table)
+        self.assertTrue(pipeline.data)
 
     def test_from_string(self):
         pipeline = Pipeline(self.data_string)
         result, report = pipeline.run()
-        self.assertTrue(pipeline.table)
+        self.assertTrue(pipeline.data)
 
     def test_register_validator_append(self):
         pipeline = Pipeline(self.data_string)

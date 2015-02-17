@@ -32,15 +32,15 @@ class SchemaValidator(base.Validator):
     def schema_model(self, schema):
         return jtskit.models.JSONTableSchema(schema)
 
-#    def pre_run(self, headers, values):
+#    def pre_run(self, data_table):
 #        if self.schema is None:
 #            # make a schema
 #            # TODO: 50 here is arbitrary
-#            sample_data = [row for row in values][:50]
-#            guessed_schema = table_schema.make(headers, sample_data)
+#            sample_data = [row for row in data_table.values][:50]
+#            guessed_schema = table_schema.make(data_table.headers, sample_data)
 #            self.schema = self.schema_model(guessed_schema)
 #
-#        return True, headers, values
+#        return True, data_table
 
     def run_header(self, headers):
 
