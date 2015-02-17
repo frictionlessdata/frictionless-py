@@ -16,6 +16,7 @@ class Validator(object):
 
     def __init__(self, fail_fast=False, transform=False, report_limit=1000,
                  row_limit=30000, report_stream=None):
+
         self.name = self.name or self.__class__.__name__.lower()
         self.fail_fast = fail_fast
         self.transform = transform

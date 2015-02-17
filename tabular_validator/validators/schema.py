@@ -15,11 +15,13 @@ class SchemaValidator(base.Validator):
     name = 'schema'
 
     def __init__(self, fail_fast=False, transform=False, report_limit=1000,
-                 row_limit=30000, schema=None, ignore_field_order=True, **kwargs):
+                 row_limit=30000, schema=None, ignore_field_order=True,
+                 report_stream=None, **kwargs):
 
         super(SchemaValidator, self).__init__(
             fail_fast=fail_fast, transform=transform,
-            report_limit=report_limit, row_limit=row_limit)
+            report_limit=report_limit, row_limit=row_limit,
+            report_stream=report_stream)
 
         self.ignore_field_order = ignore_field_order
         if not schema:

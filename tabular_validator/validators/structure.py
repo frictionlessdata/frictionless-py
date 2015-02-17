@@ -15,15 +15,15 @@ class StructureValidator(base.Validator):
                  row_limit=30000, ignore_empty_rows=False,
                  ignore_duplicate_rows=False, ignore_defective_rows=False,
                  ignore_empty_columns=False, ignore_duplicate_columns=False,
-                 ignore_headerless_columns=False, empty_strings=None):
+                 ignore_headerless_columns=False, empty_strings=None,
+                 report_stream=None, **kwargs):
 
         # TODO: `self.seen` should be maintained in a file or something
         # TODO: Check for empty columns
 
-        super(StructureValidator, self).__init__(fail_fast=fail_fast,
-                                                 transform=transform,
-                                                 report_limit=report_limit,
-                                                 row_limit=row_limit)
+        super(StructureValidator, self).__init__(
+            fail_fast=fail_fast, transform=transform, report_limit=report_limit,
+            row_limit=row_limit, report_stream=report_stream)
 
         self.ignore_empty_rows = ignore_empty_rows
         self.ignore_duplicate_rows = ignore_duplicate_rows
