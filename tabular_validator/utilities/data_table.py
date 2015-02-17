@@ -24,7 +24,12 @@ class DataTable(object):
 
     def replay(self):
         """Replay the stream."""
-        self.stream = self.to_textstream(self.data_source)
+
+        if self.stream.seekable():
+            self.stream.seek(0)
+        else:
+            self.stream = self.to_textstream(self.data_source)
+
         self.headers, self.values = self.extract(self.passed_headers)
         return self.headers, self.values
 
