@@ -1,0 +1,23 @@
+{
+    "fields": [
+        {
+            "name": "id",
+            "title": "ID",
+            "type": "integer",
+            "description": "The id."
+        },
+        {
+            "name": "name",
+            "title": "Name",
+            "type": "string",
+            "description": "The name."
+        },
+        {
+            "name": "age",
+            "title": "Age",
+            "type": "integer",
+            "description": "The age."
+        }
+    ],
+    "primaryKey": "id"
+}
