@@ -17,7 +17,7 @@ dependencies = [
     'Click>=3.3',
     'jsonschema>=2.4.0',
     'chardet>=2.3.0',
-    'tellme>=0.1.4',
+    'tellme>=0.1.5',
     'jtskit>=0.1.4'
 ]
 
