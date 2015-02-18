@@ -151,15 +151,17 @@ class Pipeline(object):
         """Create a file in the pipeline workspace."""
 
         filepath = os.path.join(self.workspace, name)
-        with io.open(filepath, mode='w+t',encoding='utf-8') as destfile:
+        with io.open(filepath, mode='w+t', encoding='utf-8') as destfile:
             if headers:
                 destfile.write(','.join(headers))
 
             if isinstance(data, compat.str):
                 destfile.write(data)
+            elif isinstance(data, compat.bytes):
+                # TODO: We should not ever deal with bytes here: see why we are (or if we still are)
+                destfile.write(data.decode('utf-8'))
             else:
-                for line in data:
-                    destfile.write(line)
+                destfile.write(data.read())
                 data.seek(0)
 
     def resolve_validator(self, validator_name):
