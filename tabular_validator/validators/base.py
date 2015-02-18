@@ -4,8 +4,10 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import io
 import tellme
 from ..utilities import data_table, helpers
+from .. import exceptions
 
 
 class Validator(object):
@@ -13,21 +15,26 @@ class Validator(object):
     """Base Validator class. Validator implementations should inherit."""
 
     name = None
+    ROW_LIMIT_MAX = 30000
+    REPORT_LIMIT_MAX = 1000
 
     def __init__(self, fail_fast=False, transform=False, report_limit=1000,
                  row_limit=30000, report_stream=None):
 
+        if report_stream:
+            report_stream_tests = [isinstance(report_stream, io.TextIOBase),
+                                   report_stream.writable(),
+                                   report_stream.seekable()]
+
+            if not all(report_stream_tests):
+                _msg = '`report_stream` must be a seekable and writable text stream.'
+                raise exceptions.ValidatorBuildError(_msg)
+
         self.name = self.name or self.__class__.__name__.lower()
         self.fail_fast = fail_fast
         self.transform = transform
-        if row_limit <= 30000:
-            self.row_limit = row_limit
-        else:
-            self.row_limit = 30000
-        if report_limit <= 1000:
-            self.report_limit = report_limit
-        else:
-            self.report_limit = 1000
+        self.row_limit = self.get_row_limit(row_limit)
+        self.report_limit = self.get_report_limit(report_limit)
 
         if report_stream:
             report_backend = 'client'
@@ -37,9 +44,26 @@ class Validator(object):
         report_options = {
             'schema': helpers.report_schema,
             'backend': report_backend,
-            'client_stream': report_stream
+            'client_stream': report_stream,
+            'limit': report_limit
         }
         self.report = tellme.Report(self.name, **report_options)
+
+    def get_row_limit(self, passed_limit):
+        """Return the row limit, locked to an upper limit."""
+
+        if passed_limit > self.ROW_LIMIT_MAX:
+            return self.ROW_LIMIT_MAX
+        else:
+            return passed_limit
+
+    def get_report_limit(self, passed_limit):
+        """Return the report_limit, locked to an upper limit."""
+
+        if passed_limit > self.REPORT_LIMIT_MAX:
+            return self.REPORT_LIMIT_MAX
+        else:
+            return passed_limit
 
     def run(self, data_source, headers=None, is_table=False):
 
@@ -78,14 +102,14 @@ class Validator(object):
             _valid, data = self.pre_run(data)
             valid = _run_valid(_valid, valid)
             if not _valid and self.fail_fast:
-                return valid, self.report
+                return valid, self.report, data
 
         # run_header
         if hasattr(self, 'run_header'):
             _valid, data.headers = self.run_header(data.headers)
             valid = _run_valid(_valid, valid)
             if not _valid and self.fail_fast:
-                return valid, self.report
+                return valid, self.report, data
 
         # run_row
         if hasattr(self, 'run_row'):
@@ -95,14 +119,14 @@ class Validator(object):
                     _valid, data.headers, index, row = self.run_row(data.headers, index, row)
                     valid = _run_valid(_valid, valid)
                     if not _valid and self.fail_fast:
-                        return valid, self.report
+                        return valid, self.report, data
 
         # post_run
         if hasattr(self, 'post_run'):
             _valid, data = self.post_run(data)
             valid = _run_valid(_valid, valid)
             if not _valid and self.fail_fast:
-                return valid, self.report
+                return valid, self.report, data
 
         for f in openfiles:
             f.close()

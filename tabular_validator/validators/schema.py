@@ -45,58 +45,80 @@ class SchemaValidator(base.Validator):
     def run_header(self, headers):
 
         valid = True
+
         if self.schema:
             if self.ignore_field_order:
                 if not (set(headers) == set(self.schema.headers)):
+
                     valid = False
-                    self.report.write({
+                    entry = {
                         'name': 'Incorrect·Header',
                         'category': 'headers',
                         'level': 'error',
                         'position': None,
                         'message': 'The headers do not match the schema'
-                    })
+                    }
+
+                    self.report.write(entry)
+                    if self.fail_fast:
+                        return valid, headers
 
             else:
                 if not (headers == self.schema.headers):
+
                     valid = False
-                    self.report.write({
+                    entry = {
                         'name': 'Incorrect Headers',
                         'category': 'headers',
                         'level': 'error',
                         'position': None,
                         'message': 'The headers do not match the schema'
-                    })
+                    }
+
+                    self.report.write(entry)
+                    if self.fail_fast:
+                        return valid, headers
 
         return valid, headers
 
     def run_row(self, headers, index, row):
 
         valid = True
+
         if self.schema:
-            if not len(headers) == len(row):
+            if not (len(headers) == len(row)):
+
                 valid = False
-                self.report.write({
+                entry = {
                     'name': 'Incorrect Dimensions',
                     'category': 'row',
                     'level': 'error',
                     'position': index,
                     'message': 'The row does not match the header dimensions.'
-                })
+                }
+
+                self.report.write(entry)
+                if self.fail_fast:
+                    return valid, headers, index, row
 
             else:
                 for k, v in zip(headers, row):
                     # check type and format
                     if not self.schema.cast(k, v):
+
                         valid = False
-                        self.report.write({
+                        entry = {
                             'name': 'Incorrect type',
                             'category': 'row',
                             'level': 'error',
                             'position': index,
                             'message': ('The cell {0} is of the wrong '
                                         'type'.format(k))
-                        })
+                        }
+
+                        self.report.write(entry)
+                        if self.fail_fast:
+                            return valid, headers, index, row
 
                     # TODO: Check format
 
@@ -105,21 +127,22 @@ class SchemaValidator(base.Validator):
                     if constraints:
                         # check constraints.required
                         if constraints.get('required') and not v:
+
                             valid = False
-                            self.report.write({
+                            entry = {
                                 'name': 'Missing required field',
                                 'category': 'row',
                                 'level': 'error',
                                 'position': index,
                                 'message': ('The cell {0} has no value, but '
                                             'is required'.format(k))
-                            })
+                            }
+
+                            self.report.write(entry)
+                            if self.fail_fast:
+                                return valid, headers, index, row
 
                     # TODO: check constraints.unique
-
                     # TODO: check constraints.min* and constraints.max*
-
-        if self.transform:
-            pass
 
         return valid, headers, index, row

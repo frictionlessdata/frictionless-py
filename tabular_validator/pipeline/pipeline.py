@@ -13,6 +13,7 @@ import json
 import csv
 from ..utilities import data_table, data_package, csv_dialect, helpers
 from .. import exceptions
+from .. import compat
 
 
 class Pipeline(object):
@@ -56,15 +57,25 @@ class Pipeline(object):
                  row_limit=20000, report_limit=1000, report_stream=None):
 
         if data is None:
-            raise exceptions.PipelineBuildError
+            _msg = '`data` must be a filepath, url or stream.'
+            raise exceptions.PipelineBuildError(_msg)
+
+        if report_stream:
+            report_stream_tests = [isinstance(report_stream, io.TextIOBase),
+                                   report_stream.writable(),
+                                   report_stream.seekable()]
+
+            if not all(report_stream_tests):
+                _msg = '`report_stream` must be a seekable and writable text stream.'
+                raise exceptions.PipelineBuildError(_msg)
 
         self.openfiles = []
         self.validators = validators or helpers.DEFAULT_PIPELINE
         self.dialect = self.get_dialect(dialect)
         self.format = format
         self.options = options or {}
-        self.workspace = workspace or tempfile.mkdtemp()
         self.dry_run = dry_run
+        self.workspace = self.get_workspace(workspace)
         self.transform = transform
         self.row_limit = self.get_row_limit(row_limit)
         self.report_limit = self.get_report_limit(report_limit)
@@ -80,9 +91,18 @@ class Pipeline(object):
     def init_workspace(self):
         """Initalize the workspace for this run."""
 
-        self.create_file(self.data.values, self.SOURCE_FILENAME, self.data.headers)
+        self.create_file(self.data.stream, self.SOURCE_FILENAME, self.data.headers)
         self.create_file('', self.TRANSFORM_FILENAME)
         self.create_file(json.dumps(self.dialect), self.DIALECT_FILENAME)
+
+    def get_workspace(self, filepath):
+        """Return a workspace for this run."""
+        # TODO: use pudo/barn
+
+        if not self.dry_run:
+            return filepath or tempfile.mkdtemp()
+
+        return None
 
     def get_pipeline(self):
         """Get the pipeline for this instance."""
@@ -134,7 +154,13 @@ class Pipeline(object):
         with io.open(filepath, mode='w+t',encoding='utf-8') as destfile:
             if headers:
                 destfile.write(','.join(headers))
-            destfile.write(data)
+
+            if isinstance(data, compat.str):
+                destfile.write(data)
+            else:
+                for line in data:
+                    destfile.write(line)
+                data.seek(0)
 
     def resolve_validator(self, validator_name):
         """Return a validator class."""

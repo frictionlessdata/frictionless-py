@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 
 import os
 import io
+import chardet
 from .. import compat
 
 
@@ -14,6 +15,7 @@ class DataTable(object):
     """Convert a data source into a formatted (csv, json) utf-8 text stream."""
 
     REMOTE_SCHEMES = ('http', 'https', 'ftp', 'ftps')
+    DEFAULT_ENCODING = 'utf-8'
 
     def __init__(self, data_source, headers=None):
         self.openfiles = []
@@ -57,7 +59,7 @@ class DataTable(object):
                 Can be a stream, a string, a file path, or a URL path.
 
         Returns:
-            A utf-8 encoded text stream.
+            A `self.DEFAULT_ENCODING` encoded text stream (utf-8).
 
         """
 
