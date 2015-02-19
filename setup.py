@@ -25,7 +25,7 @@ setup(
     name='tabular-validator',
     description='A toolkit for validating tabular data through a pipeline.',
     long_description='A toolkit for validating tabular data through a pipeline.',
-    version='0.1.0',
+    version='0.1.1',
     author='Open Knowledge Foundation',
     author_email='info@okfn.org',
     url='http://okfn.org',
