@@ -19,12 +19,11 @@ Each value in the `validators` list is expected to be a string describing the pa
 Optionally, for builtin validators, the `validator.name` property can be used as a shorthand convenience.
 
 **Example**
-::
-    validators = ['spec', 'structure']  # short hand names for builtin validators
-    validators = ['my_module.CustomValidatorOne', 'my_module.CustomValidatorTwo']  # import from string
-    validators = ['spec', 'my_module.CustomValidatorTwo']  # both combined
 
-Each Validator class is expected to conform to the following API in order to validate, transform and report correctly.
+::
+    validators = ['structure', 'schema']  # short hand names for builtin validators
+    validators = ['my_module.CustomValidatorOne', 'my_module.CustomValidatorTwo']  # import from string
+    validators = ['structure', 'my_module.CustomValidatorTwo']  # both combined
 
 Register by instance method
 +++++++++++++++++++++++++++
@@ -36,6 +35,7 @@ Registering new validators this way will by default append the new validators to
 You can define the position in the pipeline explicitly using the `position` argument.
 
 **Example**
+
 ::
     pipeline = Pipeline(args, kwargs)
     pipeline.register_validator('structure', structure_options)
@@ -49,6 +49,7 @@ Validator options
 `options` should be a dict, with each top-level key being the name of the validator.
 
 **Example**
+
 ::
     pipeline_options = {
         'structure': {
@@ -120,6 +121,16 @@ The caller (e.g., the pipeline class) is responsible for persisting transformed 
 `report_limit` is an int that defaults to `1000`, and refers to the maximum amount of entries that this validator can write to a report.
 
 If this number is reached, the validator should stop processing.
+
+`row_limit`
++++++++++++
+
+`row_limit` is an int that defaults to `20000`, and refers to the maximum amount of rows that this validator will process.
+
+`report_stream`
++++++++++++++++
+
+`report_stream` allows calling code to pass in a writable, seekable text stream to write report entries to.
 
 
 Validator attributes

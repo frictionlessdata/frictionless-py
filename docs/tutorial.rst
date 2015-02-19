@@ -1,12 +1,12 @@
 Tutorials
 =========
 
-**WIP**
+Some tutorials for using and extending Tabular Validator.
 
-TODO: This is not complete.
-
-Implementing a custom validator
+1. Implementing a custom validator
 -------------------------------
+
+# TODO: This is unifinished.
 
 Implementing a custom validator that can be invoked in a pipeline is easy.
 

@@ -1,6 +1,10 @@
 Validators
 ==========
 
+Tabular Validator ships with a set of core validator classes.
+
+All validators can be used as standalone validators, as well as being part of a validation pipeline.
+
 StructureValidator
 ------------------
 
@@ -18,4 +22,8 @@ If no schema is passed, optionally creates a schema from the data.
 Custom
 ------
 
-It is easy to write your own custom validators. See the Tutorial for an example.
+When working with Tabular Validator as a library, it is possible to call custom validators in your pipeline.
+
+We have the start of some documentation of this in the Tutorials section.
+
+A better entry point now may be to see the existing validators and use those as a starting point for implementing your own.

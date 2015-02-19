@@ -34,13 +34,13 @@ You can contribute to the project with content, code, and ideas!
 
 Start at one of the following channels:
 
-`Mailing list`_: Discussion takes place on the openspending-dev mailing list
+`Mailing list`_: Discussion takes place on the openspending-dev mailing list.
 
-`IRC Channel_`: We also have discussions on #openspending-dev at Freenode
+`IRC channel_`: We also have discussions on #openspending-dev at Freenode.
 
 `Documentation`_: An overview of the features that are currently in place.
 
-`Issues`_: See current issues, the backlog, and/or file a new issue
+`Issues`_: See current issues, the backlog, and/or file a new issue.
 
 `Code`_: Get the code here.
 
