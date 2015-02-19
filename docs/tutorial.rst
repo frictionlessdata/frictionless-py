@@ -6,7 +6,7 @@ Some tutorials for using and extending Tabular Validator.
 1. Implementing a custom validator
 -------------------------------
 
-# TODO: This is unifinished.
+# TODO: This is unfinished.
 
 Implementing a custom validator that can be invoked in a pipeline is easy.
 
