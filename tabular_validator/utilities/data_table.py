@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 
 import os
 import io
+import codecs
 import chardet
 from .. import compat
 
@@ -63,26 +64,92 @@ class DataTable(object):
 
         """
 
+        # textstream = open('tmp.txt', mode='w+t', encoding=self.DEFAULT_ENCODING)
+        textstream = io.TextIOWrapper(io.BufferedRandom(io.BytesIO()), encoding=self.DEFAULT_ENCODING)
+        self.openfiles.append(textstream)
+
         if isinstance(data_source, io.IOBase):
+
             if isinstance(data_source, io.TextIOBase):
+
+                # if not data_source.encoding == self.DEFAULT_ENCODING:
+                #    return
                 return data_source
+
             else:
-                return io.TextIOWrapper(data_source)
+
+                stream_encoding = self._detect_stream_encoding(data_source)
+                textstream = self._decode_to_textstream(data_source, stream_encoding, textstream)
+
+                return textstream
 
         elif compat.parse.urlparse(data_source).scheme in self.REMOTE_SCHEMES:
-            return io.TextIOWrapper(compat.urlopen(data_source),
-                                    encoding='utf-8')
+
+            stream = self._stream_from_url(data_source)
+            stream_encoding = self._detect_stream_encoding(stream)
+            textstream = self._decode_to_textstream(stream, stream_encoding, textstream)
+
+            return textstream
 
         elif isinstance(data_source, compat.str) and not \
                 os.path.exists(data_source):
-            return io.StringIO(data_source)
+
+            stream_encoding = self._detect_stream_encoding(data_source)
+            textstream = self._decode_to_textstream(data_source, stream_encoding, textstream)
+
+            return textstream
 
         else:
-            stream = io.open(data_source, encoding='utf-8')
+
+            stream = io.open(data_source, mode='r+b')
             self.openfiles.append(stream)
-            return stream
+            stream_encoding = self._detect_stream_encoding(stream)
+            textstream = self._decode_to_textstream(stream, stream_encoding, textstream)
+
+            return textstream
 
     def get_headers(self, line):
         """Get headers from line."""
         headers = line.rstrip('\n').split(',')
         return headers
+
+    def _stream_from_url(self, url):
+        """Return a seekable and readable stream from a URL."""
+
+        stream = io.BufferedRandom(io.BytesIO())
+        stream.write(compat.urlopen(url).read())
+        stream.seek(0)
+
+        return stream
+
+    def _detect_stream_encoding(self, stream):
+        """Return best guess at encoding of stream."""
+
+        if isinstance(stream, compat.str):
+            if isinstance(stream, compat.bytes):
+                sample = stream[:2000]
+            else:
+                sample = compat.to_bytes(stream)[:2000]
+        else:
+            sample = stream.read(2000)
+            stream.seek(0)
+
+        encoding = chardet.detect(sample)['encoding']
+
+        return encoding
+
+    def _decode_to_textstream(self, stream, encoding, textstream):
+        """Return a textstream in `self.DEFAULT_ENCODING`"""
+
+        if isinstance(stream, compat.str):
+            _stream = io.StringIO()
+            _stream.write(stream)
+            stream = _stream
+
+        decoder = codecs.iterdecode(stream, encoding)
+        for line in decoder:
+            textstream.write(line.encode(self.DEFAULT_ENCODING).decode(self.DEFAULT_ENCODING))
+
+        textstream.seek(0)
+
+        return textstream

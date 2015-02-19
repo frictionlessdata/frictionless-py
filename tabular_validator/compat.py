@@ -20,20 +20,12 @@ is_py27 = (is_py2 and _ver[1] == 7)
 
 if is_py2:
     import urlparse as parse
-    from urllib2 import urlopen as builtin_urlopen
+    from urllib2 import urlopen
     builtin_str = str
     bytes = str
     str = unicode
     basestring = basestring
     numeric_types = (int, long, float)
-
-    def urlopen(*args):
-        """urlopen that returns a readable, writable and seekable stream."""
-        stream = io.BufferedRandom(io.BytesIO())
-        stream.write(builtin_urlopen(*args).read())
-        stream.seek(0)
-        return stream
-
 
     def csv_reader(data, dialect=csv.excel, **kwargs):
         """Read text stream (unicode on Py2.7) as CSV."""
@@ -56,6 +48,19 @@ elif is_py3:
     bytes = bytes
     basestring = (str, bytes)
     numeric_types = (int, float)
+
+
+def to_bytes(str):
+    """Convert a text string to a byte string"""
+    return str.encode('utf-8')
+
+
+def to_builtin_str(str):
+    """Convert a text string to the built-in `str` on the runtime."""
+    if is_py2:
+        return str.encode('utf-8')
+    else:
+        return str
 
 
 def NamedTemporaryFile(mode='w+t', encoding='utf-8', **kwargs):

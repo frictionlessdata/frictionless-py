@@ -18,7 +18,7 @@ class TestPipeline(base.BaseTestCase):
 
         super(TestPipeline, self).setUp()
         self.data_filepath = os.path.join(self.data_dir, 'valid.csv')
-        self.data_url = 'http://index.okfn.org/api/places.csv'
+        self.data_url = 'https://raw.githubusercontent.com/rgrp/dataset-gla/master/data/all.csv'
         self.data_string = """id,name,age\n234,John,37\n235,Jill,27"""
         self.data_stream = io.open(self.data_filepath)
         self.schema_valid = os.path.join(self.data_dir, 'schema_valid_simple.json')
