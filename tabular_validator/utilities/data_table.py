@@ -145,10 +145,13 @@ class DataTable(object):
             _stream = io.StringIO()
             _stream.write(stream)
             stream = _stream
+            stream.seek(0)
+        else:
+            stream = codecs.iterdecode(stream, encoding)
 
-        decoder = codecs.iterdecode(stream, encoding)
-        for line in decoder:
-            textstream.write(line.encode(self.DEFAULT_ENCODING).decode(self.DEFAULT_ENCODING))
+        for line in stream:
+            recoded = line.encode(self.DEFAULT_ENCODING).decode(self.DEFAULT_ENCODING)
+            textstream.write(recoded)
 
         textstream.seek(0)
 

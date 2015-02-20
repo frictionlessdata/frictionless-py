@@ -62,7 +62,7 @@ class TestJungle(base.BaseTestCase):
 
     def test_gla_source_five(self):
 
-        data = os.path.join(self.data_dir, 'jungle', 'gla-2011-13-P10-250.csv')
+        data = os.path.join(self.data_dir, 'jungle', 'gla-2012-13-P10-250.csv')
         pipeline = Pipeline(data)
         result, report = pipeline.run()
 
