@@ -26,11 +26,14 @@ REMOTE_SCHEMES = ('http', 'https', 'ftp', 'ftps')
 
 # a schema for the reporter.Report() instances used by validators
 report_schema = {
-    'name': {'type': compat.str},
-    'category': {'type': compat.str},
-    'level': {'type': compat.str},
-    'position': {'type': (int, type(None))},
-    'message': {'type': compat.str}
+    'result_category': {'type': compat.str},
+    'result_level': {'type': compat.str},
+    'result_message': {'type': compat.str},
+    'result_type': {'type': compat.str},
+    'row_index': {'type': (int, type(None))},
+    'row_name': {'type': compat.str},
+    'column_index': {'type': (int, type(None))},
+    'column_name': {'type': compat.str}
 }
 
 

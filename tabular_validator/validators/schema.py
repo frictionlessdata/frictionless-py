@@ -42,7 +42,7 @@ class SchemaValidator(base.Validator):
 #
 #        return True, data_table
 
-    def run_header(self, headers):
+    def run_header(self, headers, header_index=0):
 
         valid = True
 
@@ -51,13 +51,16 @@ class SchemaValidator(base.Validator):
                 if not (set(headers) == set(self.schema.headers)):
 
                     valid = False
-                    entry = {
-                        'name': 'Incorrect·Header',
-                        'category': 'headers',
-                        'level': 'error',
-                        'position': None,
-                        'message': 'The headers do not match the schema'
-                    }
+                    _msg = ('The headers do not match the schema.')
+                    _type = 'Incorrect Headers'
+                    entry = self.make_entry(
+                        self.RESULT_CATEGORY_HEADER,
+                        self.RESULT_LEVEL_ERROR,
+                        _msg,
+                        _type,
+                        header_index,
+                        self.RESULT_HEADER_ROW_NAME
+                    )
 
                     self.report.write(entry)
                     if self.fail_fast:
@@ -67,13 +70,16 @@ class SchemaValidator(base.Validator):
                 if not (headers == self.schema.headers):
 
                     valid = False
-                    entry = {
-                        'name': 'Incorrect Headers',
-                        'category': 'headers',
-                        'level': 'error',
-                        'position': None,
-                        'message': 'The headers do not match the schema'
-                    }
+                    _msg = ('The headers do not match the schema.')
+                    _type = 'Incorrect Headers'
+                    entry = self.make_entry(
+                        self.RESULT_CATEGORY_HEADER,
+                        self.RESULT_LEVEL_ERROR,
+                        _msg,
+                        _type,
+                        header_index,
+                        self.RESULT_HEADER_ROW_NAME,
+                    )
 
                     self.report.write(entry)
                     if self.fail_fast:
@@ -84,59 +90,72 @@ class SchemaValidator(base.Validator):
     def run_row(self, headers, index, row):
 
         valid = True
+        row_name = self.get_row_id(headers, row)
 
         if self.schema:
             if not (len(headers) == len(row)):
 
                 valid = False
-                entry = {
-                    'name': 'Incorrect Dimensions',
-                    'category': 'row',
-                    'level': 'error',
-                    'position': index,
-                    'message': 'The row does not match the header dimensions.'
-                }
+                _msg = ('The row does not match the header dimensions.')
+                _type = 'Incorrect Dimensions'
+                entry = self.make_entry(
+                    self.RESULT_CATEGORY_ROW,
+                    self.RESULT_LEVEL_ERROR,
+                    _msg,
+                    _type,
+                    index,
+                    row_name,
+                )
 
                 self.report.write(entry)
                 if self.fail_fast:
                     return valid, headers, index, row
 
             else:
-                for k, v in zip(headers, row):
+                for column_name, column_value in zip(headers, row):
                     # check type and format
-                    if not self.schema.cast(k, v):
+                    if not self.schema.cast(column_name, column_value):
 
                         valid = False
-                        entry = {
-                            'name': 'Incorrect type',
-                            'category': 'row',
-                            'level': 'error',
-                            'position': index,
-                            'message': ('The cell {0} is of the wrong '
-                                        'type'.format(k))
-                        }
+                        _msg = ('The value is not a valid '
+                                '{0}'.format(self.schema.get_type(column_name)))
+                        _type = 'Incorrect Value Type'
+                        entry = self.make_entry(
+                            self.RESULT_CATEGORY_ROW,
+                            self.RESULT_LEVEL_ERROR,
+                            _msg,
+                            _type,
+                            index,
+                            row_name,
+                            headers.index(column_name),
+                            column_name
+                        )
 
                         self.report.write(entry)
                         if self.fail_fast:
                             return valid, headers, index, row
 
-                    # TODO: Check format
-
                     # CONSTRAINTS
-                    constraints = self.schema.get_constraints(k)
+                    constraints = self.schema.get_constraints(column_name)
                     if constraints:
                         # check constraints.required
-                        if constraints.get('required') and not v:
+                        if constraints.get('required') and not column_value:
 
                             valid = False
-                            entry = {
-                                'name': 'Missing required field',
-                                'category': 'row',
-                                'level': 'error',
-                                'position': index,
-                                'message': ('The cell {0} has no value, but '
-                                            'is required'.format(k))
-                            }
+                            _msg = ('A value is required for {0},'
+                                    ' but one is no present in this row.'
+                                    ''.format(column_name))
+                            _type = 'Missing Value in Required Field'
+                            entry = self.make_entry(
+                                self.RESULT_CATEGORY_ROW,
+                                self.RESULT_LEVEL_ERROR,
+                                _msg,
+                                _type,
+                                index,
+                                row_name,
+                                headers.index(column_name),
+                                column_name
+                            )
 
                             self.report.write(entry)
                             if self.fail_fast:

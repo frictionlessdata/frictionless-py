@@ -17,6 +17,12 @@ class Validator(object):
     name = None
     ROW_LIMIT_MAX = 30000
     REPORT_LIMIT_MAX = 1000
+    RESULT_CATEGORY_HEADER = 'header'
+    RESULT_CATEGORY_ROW = 'row'
+    RESULT_LEVEL_ERROR = 'error'
+    RESULT_LEVEL_WARNING = 'warning'
+    RESULT_LEVEL_INFO = 'info'
+    RESULT_HEADER_ROW_NAME = 'headers'
 
     def __init__(self, fail_fast=False, transform=False, report_limit=1000,
                  row_limit=30000, report_stream=None):
@@ -64,6 +70,30 @@ class Validator(object):
             return self.REPORT_LIMIT_MAX
         else:
             return passed_limit
+
+    def get_row_id(self, headers, row):
+        """Return an identifying for a row, or None if not able to detect."""
+        ids = ('id', '_id')
+        for k, v in zip(headers, row):
+            if k in ids:
+                return v
+        return ''
+
+    def make_entry(self, result_category, result_level, result_message,
+                   result_type, row_index=None, row_name='', column_index=None,
+                   column_name=''):
+        """Return a report entry."""
+
+        return {
+            'result_category': result_category,
+            'result_level': result_level,
+            'result_message': result_message,
+            'result_type': result_type,
+            'row_index': row_index,
+            'row_name': row_name,
+            'column_index': column_index,
+            'column_name': column_name
+        }
 
     def run(self, data_source, headers=None, is_table=False):
 

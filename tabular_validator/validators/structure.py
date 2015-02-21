@@ -34,7 +34,7 @@ class StructureValidator(base.Validator):
         self.empty_strings = empty_strings or ('',)
         self.seen = {}
 
-    def run_header(self, headers):
+    def run_header(self, headers, header_index=0):
 
         valid = True
 
@@ -42,59 +42,87 @@ class StructureValidator(base.Validator):
         if not self.ignore_headerless_columns:
             for index, header in enumerate(headers):
                 if header in self.empty_strings:
+
                     valid = False
-                    self.report.write({
-                        'name': 'Empty Header',
-                        'category': 'headers',
-                        'level': 'error',
-                        'position': index,
-                        'message': ('The header at position {0} was found '
-                                    'to be empty.'.format(index))
-                    })
+                    _msg = ('The header in column {0} was found '
+                            'to be empty.'.format(index))
+                    _type = 'Empty Header'
+                    entry = self.make_entry(
+                        self.RESULT_CATEGORY_HEADER,
+                        self.RESULT_LEVEL_ERROR,
+                        _msg,
+                        _type,
+                        header_index,
+                        self.RESULT_HEADER_ROW_NAME,
+                        index,
+                        header
+                    )
+
+                    self.report.write(entry)
+                    if self.fail_fast:
+                        return valid, headers
 
         # check for duplicate columns
         if not self.ignore_duplicate_columns:
             if len(set(headers)) != len(headers):
+
                 valid = False
                 dupes = [(index, header) for index, header in
                          enumerate(headers) if
                          header.count(header) > 1]
-                for dupe in dupes:
-                    self.report.write({
-                        'name': 'Duplicate Header',
-                        'category': 'headers',
-                        'level': 'error',
-                        'position': dupe[0],
-                        'message': ('The header at position {0} was found '
-                                    'to have duplicates.'.format(dupe[0]))
-                    })
+                _type = 'Duplicate Header'
 
-        if self.transform:
-            for index, header in enumerate(headers):
-                if header in self.empty_strings:
-                    headers[index] = None
+                for dupe in dupes:
+                    _msg = ('The header in column {0} was found '
+                            'to have duplicates.'.format(dupe[0]))
+                    entry = self.make_entry(
+                        self.RESULT_CATEGORY_HEADER,
+                        self.RESULT_LEVEL_ERROR,
+                        _msg,
+                        _type,
+                        header_index,
+                        self.RESULT_HEADER_ROW_NAME,
+                        dupe[0],
+                        dupe[1]
+                    )
+
+                    self.report.write(entry)
+                    if self.fail_fast:
+                        return valid, headers
 
         return valid, headers
 
     def run_row(self, headers, index, row):
 
         valid, is_dupe, is_empty, is_defective = True, False, False, False
+        row_name = self.get_row_id(row, headers)
 
         # check if row is duplicate
         if not self.ignore_duplicate_rows:
             _rep = hash(frozenset(row))
+
             if _rep in self.seen:
+
                 self.seen[_rep].append(index)
                 valid = False
                 is_dupe = True
-                self.report.write({
-                    'name': 'Duplicate Row',
-                    'category': 'rows',
-                    'level': 'error',
-                    'position': index,
-                    'message': 'Row {0} duplicates rows {1}'.format(
-                        index, self.seen[_rep])
-                })
+                _msg = ('Row {0} duplicates the following rows '
+                        'which have already been seen: '
+                        '{1}.'.format(index, self.seen[_rep]))
+                _type = 'Duplicate Row'
+                entry = self.make_entry(
+                    self.RESULT_CATEGORY_ROW,
+                    self.RESULT_LEVEL_ERROR,
+                    _msg,
+                    _type,
+                    index,
+                    row_name
+                )
+
+                self.report.write(entry)
+                if self.fail_fast:
+                    return valid, headers, index, row
+
             else:
                 self.seen[_rep] = [index]
 
@@ -103,41 +131,65 @@ class StructureValidator(base.Validator):
             as_set = set(row)
             if len(as_set) == 1 and \
                     set(self.empty_strings).intersection(as_set):
+
                 valid = False
                 is_empty = True
-                self.report.write({
-                    'name': 'Empty Row',
-                    'category': 'rows',
-                    'level': 'error',
-                    'position': index,
-                    'message': 'Row {0} is empty'.format(index)
-                })
+                _msg = ('Row {0} is empty.'.format(index))
+                _type = 'Empty Row'
+                entry = self.make_entry(
+                    self.RESULT_CATEGORY_ROW,
+                    self.RESULT_LEVEL_ERROR,
+                    _msg,
+                    _type,
+                    index,
+                    row_name
+                )
+
+                self.report.write(entry)
+                if self.fail_fast:
+                    return valid, headers, index, row
 
         # check if row is defective
         if not self.ignore_defective_rows:
             if len(headers) < len(row):
+
                 valid = False
                 is_defective = True
-                self.report.write({
-                    'name': 'Defective Row',
-                    'category': 'rows',
-                    'level': 'error',
-                    'position': index,
-                    'message': ('Row {0} is defective '
-                                '(more data than headers)'.format(index))
-                })
+                _msg = ('Row {0} is defective: it contains '
+                        'more data than headers.'.format(index))
+                _type = 'Defective Row'
+                entry = self.make_entry(
+                    self.RESULT_CATEGORY_ROW,
+                    self.RESULT_LEVEL_ERROR,
+                    _msg,
+                    _type,
+                    index,
+                    row_name
+                )
+
+                self.report.write(entry)
+                if self.fail_fast:
+                    return valid, headers, index, row
 
             elif len(headers) < len(row):
+
                 valid = False
                 is_defective = True
-                self.report.write({
-                    'name': 'Defective Row',
-                    'category': 'rows',
-                    'level': 'error',
-                    'position': index,
-                    'message': ('Row {0} is defective '
-                                '(less data than headers)'.format(index))
-                })
+                _msg = ('Row {0} is defective: it contains '
+                        'less data than headers.'.format(index))
+                _type = 'Defective Row'
+                entry = self.make_entry(
+                    self.RESULT_CATEGORY_ROW,
+                    self.RESULT_LEVEL_ERROR,
+                    _msg,
+                    _type,
+                    index,
+                    row_name
+                )
+
+                self.report.write(entry)
+                if self.fail_fast:
+                    return valid, headers, index, row
 
         if self.transform and any([is_dupe, is_empty, is_defective]):
             row = None
