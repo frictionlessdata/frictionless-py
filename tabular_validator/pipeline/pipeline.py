@@ -224,7 +224,34 @@ class Pipeline(object):
         """Run the report generator for each validator in the pipeline."""
 
         generated = dict(self.report)
-        for k, v in generated.items():
-            generated[k] = v.generate()
+        for name, report in generated.items():
+            generated[name] = report.generate()
+
+        generated['summary'] = self.make_report_summary(generated)
 
         return generated
+
+    def make_report_summary(self, generated_report):
+        """Return a summary of the generated report."""
+
+        # TODO: See how to refactor this and run per validator, then aggregate *that* on the pipeline
+        # TODO: (idea) pass in a func and args to the report object itself, to set stats on meta at generate time?
+
+        summary = {}
+        _results = []
+
+        # flatten out all results
+        for report in generated_report.values():
+            _results.extend(report['results'])
+
+        summary['total_row_count'] = self.row_limit
+        summary['bad_row_count'] = len(set([r['row_index'] for r in _results if
+                                            r['result_category'] == 'row' and
+                                            r['result_level'] == 'error']))
+        summary['bad_column_count'] = len(set([r['column_index'] for r in _results if
+                                               r['result_category'] == 'row' and
+                                               r['result_level'] == 'error']))
+        summary['columns'] = [{'name': header, 'index': index} for
+                              index, header in enumerate(self.data.headers)]
+
+        return summary

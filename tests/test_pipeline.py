@@ -233,7 +233,7 @@ class TestPipeline(base.BaseTestCase):
     def test_generate_report(self):
 
         pipeline = Pipeline(self.data_string, dry_run=False)
-        self.assertEqual(pipeline.generate_report(), {})
+        self.assertEqual(len(pipeline.generate_report()), 1)
 
     # def test_run_valid_dry_run(self):
     #     self.assertTrue(False)
