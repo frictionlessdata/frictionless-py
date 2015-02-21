@@ -213,9 +213,9 @@ class TestSchemaValidator(base.BaseTestCase):
 
         filepath = os.path.join(self.data_dir, 'fail_fast_two_schema_errors.csv')
         schema = os.path.join(self.data_dir, 'test_schema.json')
-        options = {'schema': {'fail_fast': True, 'schema': schema}}
+        options = {'schema': {'schema': schema}}
         validator = Pipeline(filepath, validators=('schema',),
-                             options=options)
+                             fail_fast=True, options=options)
         result, report = validator.run()
 
         self.assertEqual(len(report['schema']['results']), 1)

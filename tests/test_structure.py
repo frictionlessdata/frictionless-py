@@ -230,9 +230,9 @@ class TestStructureValidator(base.BaseTestCase):
     def test_pipeline_fail_fast_true(self):
 
         filepath = os.path.join(self.data_dir, 'fail_fast_two_structure_errors.csv')
-        options = {'structure': {'fail_fast': True}}
+        options = {}
         validator = Pipeline(filepath, validators=('structure',),
-                             options=options)
+                             fail_fast=True, options=options)
         result, report = validator.run()
 
         self.assertEqual(len(report['structure']['results']), 1)

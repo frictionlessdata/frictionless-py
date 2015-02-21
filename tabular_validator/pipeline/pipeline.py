@@ -54,7 +54,8 @@ class Pipeline(object):
 
     def __init__(self, data, validators=None, dialect=None, format='csv',
                  options=None, workspace=None, dry_run=True, transform=True,
-                 row_limit=20000, report_limit=1000, report_stream=None):
+                 fail_fast=False, row_limit=20000, report_limit=1000,
+                 report_stream=None):
 
         if data is None:
             _msg = '`data` must be a filepath, url or stream.'
@@ -77,6 +78,7 @@ class Pipeline(object):
         self.dry_run = dry_run
         self.workspace = self.get_workspace(workspace)
         self.transform = transform
+        self.fail_fast = fail_fast
         self.row_limit = self.get_row_limit(row_limit)
         self.report_limit = self.get_report_limit(report_limit)
         self.report_stream = report_stream
@@ -116,6 +118,7 @@ class Pipeline(object):
             options['report_limit'] = self.report_limit
             options['report_stream'] = self.report_stream
             options['transform'] = self.transform
+            options['fail_fast'] = self.fail_fast
             pipeline.append(_class(**options))
 
         return pipeline
