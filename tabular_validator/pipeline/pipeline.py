@@ -234,11 +234,13 @@ class Pipeline(object):
         for name, report in generated.items():
             generated[name] = report.generate()
 
-        generated['summary'] = self.make_report_summary(generated)
+        # TODO: row count
+        row_count = self.pipeline[0].row_count
+        generated['summary'] = self.make_report_summary(generated, row_count)
 
         return generated
 
-    def make_report_summary(self, generated_report):
+    def make_report_summary(self, generated_report, row_count=None):
         """Return a summary of the generated report."""
 
         # TODO: See how to refactor this and run per validator, then aggregate *that* on the pipeline
@@ -251,13 +253,15 @@ class Pipeline(object):
         for report in generated_report.values():
             _results.extend(report['results'])
 
-        summary['total_row_count'] = self.row_limit
+        summary['total_row_count'] = row_count or self.row_limit
         summary['bad_row_count'] = len(set([r['row_index'] for r in _results if
                                             r['result_category'] == 'row' and
-                                            r['result_level'] == 'error']))
+                                            r['result_level'] == 'error' and
+                                            r['row_index'] is not None]))
         summary['bad_column_count'] = len(set([r['column_index'] for r in _results if
                                                r['result_category'] == 'row' and
-                                               r['result_level'] == 'error']))
+                                               r['result_level'] == 'error' and
+                                               r['column_index'] is not None]))
         summary['columns'] = [{'name': header, 'index': index} for
                               index, header in enumerate(self.data.headers)]
 

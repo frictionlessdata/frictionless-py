@@ -42,6 +42,7 @@ class Validator(object):
         self.row_limit = self.get_row_limit(row_limit)
         self.report_limit = self.get_report_limit(report_limit)
         self.header_index = header_index
+        self.row_count = None
 
         if report_stream:
             report_backend = 'client'
@@ -149,6 +150,8 @@ class Validator(object):
             # TODO: on transform, create a new stream out of returned rows
             for index, row in enumerate(data.values):
                 if index < self.row_limit:
+                    # keep a count of rows processed
+                    self.row_count = (index + 1)
                     _valid, data.headers, index, row = self.run_row(data.headers, index, row)
                     valid = _run_valid(_valid, valid)
                     if not _valid and self.fail_fast:

@@ -253,6 +253,16 @@ class TestPipeline(base.BaseTestCase):
 
         self.assertFalse(result)
 
+    def test_report_summary(self):
+
+        filepath = os.path.join(self.data_dir, 'invalid_header_index_1.csv')
+        options = {}
+        validator = Pipeline(filepath, options=options, header_index=1)
+        result, report = validator.run()
+
+        self.assertEqual(report['summary']['bad_row_count'], 1)
+        self.assertEqual(report['summary']['total_row_count'], 9)
+
     # def test_run_valid_dry_run(self):
     #     self.assertTrue(False)
 
