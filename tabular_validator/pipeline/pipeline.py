@@ -51,11 +51,12 @@ class Pipeline(object):
     SOURCE_FILENAME = 'source.csv'
     TRANSFORM_FILENAME = 'transform.csv'
     DIALECT_FILENAME = 'dialect.json'
+    DATA_FORMATS = ('csv', 'excel', 'json')
 
     def __init__(self, data, validators=None, dialect=None, format='csv',
                  options=None, workspace=None, dry_run=True, transform=True,
                  fail_fast=False, row_limit=20000, report_limit=1000,
-                 report_stream=None):
+                 report_stream=None, header_index=0):
 
         if data is None:
             _msg = '`data` must be a filepath, url or stream.'
@@ -82,8 +83,10 @@ class Pipeline(object):
         self.row_limit = self.get_row_limit(row_limit)
         self.report_limit = self.get_report_limit(report_limit)
         self.report_stream = report_stream
+        self.header_index = header_index
         self.pipeline = self.get_pipeline()
-        self.data = data_table.DataTable(data)
+        self.data = data_table.DataTable(data, format=self.format,
+                                         header_index=self.header_index)
         self.report = {}
         self.openfiles.extend(self.data.openfiles)
 
@@ -119,6 +122,7 @@ class Pipeline(object):
             options['report_stream'] = self.report_stream
             options['transform'] = self.transform
             options['fail_fast'] = self.fail_fast
+            options['header_index'] = self.header_index
             pipeline.append(_class(**options))
 
         return pipeline

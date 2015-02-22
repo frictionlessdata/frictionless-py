@@ -117,3 +117,19 @@ class TestJungle(base.BaseTestCase):
         result, report = pipeline.run()
 
         self.assertTrue(pipeline.data)
+
+    def test_messytables_source_six(self):
+
+        data = os.path.join(self.data_dir, 'jungle', 'messytables-excel_properties.xls')
+        pipeline = Pipeline(data, format='excel')
+        result, report = pipeline.run()
+
+        self.assertTrue(pipeline.data)
+
+    def test_multilingual_xlsx(self):
+
+        data = os.path.join(self.data_dir, 'jungle', 'multilingual.xlsx')
+        pipeline = Pipeline(data, format='excel')
+        result, report = pipeline.run()
+
+        self.assertTrue(pipeline.data)

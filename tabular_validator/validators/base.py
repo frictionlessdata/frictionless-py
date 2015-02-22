@@ -25,7 +25,7 @@ class Validator(object):
     RESULT_HEADER_ROW_NAME = 'headers'
 
     def __init__(self, fail_fast=False, transform=False, report_limit=1000,
-                 row_limit=30000, report_stream=None):
+                 row_limit=30000, report_stream=None, header_index=0):
 
         if report_stream:
             report_stream_tests = [isinstance(report_stream, io.TextIOBase),
@@ -41,6 +41,7 @@ class Validator(object):
         self.transform = transform
         self.row_limit = self.get_row_limit(row_limit)
         self.report_limit = self.get_report_limit(report_limit)
+        self.header_index = header_index
 
         if report_stream:
             report_backend = 'client'
@@ -124,7 +125,8 @@ class Validator(object):
         if is_table:
             data = data_source
         else:
-            data = data_table.DataTable(data_source, headers=headers)
+            data = data_table.DataTable(data_source, headers=headers,
+                                        header_index=self.header_index)
             openfiles.extend(data.openfiles)
 
         # pre_run
@@ -136,7 +138,8 @@ class Validator(object):
 
         # run_header
         if hasattr(self, 'run_header'):
-            _valid, data.headers = self.run_header(data.headers)
+            _valid, data.headers = self.run_header(data.headers,
+                                                   header_index=self.header_index)
             valid = _run_valid(_valid, valid)
             if not _valid and self.fail_fast:
                 return valid, self.report, data

@@ -7,7 +7,9 @@ from __future__ import unicode_literals
 import os
 import io
 import codecs
+import datetime
 import chardet
+import xlrd
 from .. import compat
 
 
@@ -17,11 +19,17 @@ class DataTable(object):
 
     REMOTE_SCHEMES = ('http', 'https', 'ftp', 'ftps')
     DEFAULT_ENCODING = 'utf-8'
+    FORMATS = ('csv', 'excel', 'json')
 
-    def __init__(self, data_source, headers=None):
+    def __init__(self, data_source, headers=None, format='csv',
+                 header_index=0, excel_sheet_index=0):
+
         self.openfiles = []
         self.data_source = data_source
         self.passed_headers = headers
+        self.format = format
+        self.header_index = header_index
+        self.excel_sheet_index = excel_sheet_index
         self.stream = self.to_textstream(self.data_source)
         self.headers, self.values = self.extract(self.passed_headers)
 
@@ -38,7 +46,7 @@ class DataTable(object):
 
     def extract(self, headers=None):
         """Extract headers and values from the data stream."""
-        headers = headers or self.get_headers(self.stream.readline())
+        headers = headers or self.get_headers(self.stream)
         values = compat.csv_reader(self.stream)
         return headers, values
 
@@ -67,6 +75,10 @@ class DataTable(object):
         # textstream = open('tmp.txt', mode='w+t', encoding=self.DEFAULT_ENCODING)
         textstream = io.TextIOWrapper(io.BufferedRandom(io.BytesIO()), encoding=self.DEFAULT_ENCODING)
         self.openfiles.append(textstream)
+
+        if self.format in ('excel', 'json'):
+            format_handler = getattr(self, '{0}_data_source'.format(self.format))
+            data_source = format_handler(data_source)
 
         if isinstance(data_source, io.IOBase):
 
@@ -108,9 +120,47 @@ class DataTable(object):
 
             return textstream
 
-    def get_headers(self, line):
-        """Get headers from line."""
-        headers = line.rstrip('\n').split(',')
+    def excel_data_source(self, data_source):
+        """Get a data_source out of an Excel file."""
+
+        # TODO: Need to flesh out this implementation quite a bit. See messytables
+
+        out = io.TextIOWrapper(io.BufferedRandom(io.BytesIO()), encoding=self.DEFAULT_ENCODING)
+
+        workbook = xlrd.open_workbook(data_source)
+        sheet = workbook.sheet_by_index(self.excel_sheet_index)
+        row_count = sheet.nrows
+
+        for row_index in range(row_count):
+
+            values = []
+
+            for cell in sheet.row(row_index):
+
+                # TODO: this is very naive force to string
+                if cell.ctype == 3:
+                    value = datetime.datetime(
+                        *xlrd.xldate_as_tuple(cell.value, sheet.book.datemode)
+                    ).isoformat()
+                else:
+                    value = cell.value
+
+                values.append(compat.str(cell.value))
+                _data = ','.join(values)
+
+            out.write('{0}\n'.format(_data))
+
+        out.seek(0)
+        return out
+
+    def get_headers(self, stream):
+        """Get headers from stream."""
+
+        for index, line in enumerate(stream):
+            if index == self.header_index:
+                headers = line.rstrip('\n').split(',')
+                break
+
         return headers
 
     def _stream_from_url(self, url):

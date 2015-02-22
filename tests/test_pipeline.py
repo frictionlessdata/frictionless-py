@@ -235,6 +235,24 @@ class TestPipeline(base.BaseTestCase):
         pipeline = Pipeline(self.data_string, dry_run=False)
         self.assertEqual(len(pipeline.generate_report()), 1)
 
+    def test_header_index_valid(self):
+
+        filepath = os.path.join(self.data_dir, 'valid_header_index_3.csv')
+        options = {}
+        validator = Pipeline(filepath, options=options, header_index=3)
+        result, report = validator.run()
+
+        self.assertTrue(result)
+
+    def test_header_index_invalid(self):
+
+        filepath = os.path.join(self.data_dir, 'invalid_header_index_1.csv')
+        options = {}
+        validator = Pipeline(filepath, options=options, header_index=1)
+        result, report = validator.run()
+
+        self.assertFalse(result)
+
     # def test_run_valid_dry_run(self):
     #     self.assertTrue(False)
 
