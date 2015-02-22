@@ -11,6 +11,7 @@ import shutil
 import tempfile
 import json
 import csv
+import decimal
 from ..utilities import data_table, data_package, csv_dialect, helpers
 from .. import exceptions
 from .. import compat
@@ -248,12 +249,20 @@ class Pipeline(object):
 
         summary = {}
         _results = []
+        row_count = row_count or self.row_limit
+
+        def get_type_errors(column_name, results, row_count):
+            match_count = len([r for r in results if
+                               r['result_type'] == 'Incorrect Value Type' and
+                               r['column_name'] == column_name])
+
+            return int((match_count/row_count) * 100)
 
         # flatten out all results
         for report in generated_report.values():
             _results.extend(report['results'])
 
-        summary['total_row_count'] = row_count or self.row_limit
+        summary['total_row_count'] = row_count
         summary['bad_row_count'] = len(set([r['row_index'] for r in _results if
                                             r['result_category'] == 'row' and
                                             r['result_level'] == 'error' and
@@ -262,7 +271,9 @@ class Pipeline(object):
                                                r['result_category'] == 'row' and
                                                r['result_level'] == 'error' and
                                                r['column_index'] is not None]))
-        summary['columns'] = [{'name': header, 'index': index} for
-                              index, header in enumerate(self.data.headers)]
+        summary['columns'] = [{'name': header, 'index': index,
+                               'incorrect_type_percent': get_type_errors(
+                                   header, _results, row_count)}
+                              for index, header in enumerate(self.data.headers)]
 
         return summary

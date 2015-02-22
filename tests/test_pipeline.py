@@ -7,6 +7,7 @@ from __future__ import unicode_literals
 import os
 import io
 import json
+import decimal
 from tabular_validator.pipeline import Pipeline
 from tabular_validator import exceptions
 from tests import base
@@ -262,6 +263,21 @@ class TestPipeline(base.BaseTestCase):
 
         self.assertEqual(report['summary']['bad_row_count'], 1)
         self.assertEqual(report['summary']['total_row_count'], 9)
+
+    def test_report_summary_incorrect_type(self):
+
+        filepath = os.path.join(self.data_dir, 'fail_fast_two_schema_errors.csv')
+        schema = os.path.join(self.data_dir, 'test_schema.json')
+        options = {'schema': {'schema': schema}}
+        validator = Pipeline(filepath, validators=('schema',), options=options, fail_fast=True)
+        result, report = validator.run()
+
+        for col in report['summary']['columns']:
+            if col['name'] == 'id':
+                out = col['incorrect_type_percent']
+                break
+
+        self.assertEqual(out, 33)
 
     # def test_run_valid_dry_run(self):
     #     self.assertTrue(False)
