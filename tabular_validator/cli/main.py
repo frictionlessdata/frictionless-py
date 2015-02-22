@@ -12,9 +12,9 @@ import coverage
 
 
 CLI_DIR = os.path.abspath(os.path.dirname(__file__))
-REPO_DIR = os.path.abspath(os.path.dirname(CLI_DIR))
+REPO_DIR = os.path.abspath(os.path.dirname(os.path.dirname(CLI_DIR)))
 sys.path.insert(1, REPO_DIR)
-from tabular_validator.pipeline import ValidationPipeline
+from tabular_validator import pipeline as pipeline
 
 
 @click.group()
@@ -23,17 +23,29 @@ def cli():
 
 
 @cli.command()
-@click.argument('data_source')
-def pipeline(data_source):
-    """Run a validation pipeline over a data source."""
+@click.argument('data')
+@click.option('--schema')
+@click.option('--format', default='csv', type=click.Choice(['csv', 'excel', 'json']))
+@click.option('--dry_run', is_flag=True)
+@click.option('--fail_fast', is_flag=True)
+@click.option('--row_limit', default=20000, type=int)
+@click.option('--report_limit', default=1000, type=int)
+def validate(data, schema, format, dry_run, fail_fast, row_limit, report_limit):
+    """Run a pipeline."""
 
-    pipeline = ValidationPipeline(data_source=data_source)
-    valid, report = pipeline.run()
+    options = {}
+    if schema:
+        options['schema'] = {'schema': schema}
+
+    validator = pipeline.Pipeline(data, format=format, fail_fast=fail_fast,
+                                  dry_run=dry_run, row_limit=row_limit,
+                                  report_limit=report_limit)
+    valid, report = validator.run()
 
     if valid:
-        click.echo('The data source is valid.')
+        click.echo('The data source is valid.\n')
     else:
-        click.echo('The data source is not valid.')
+        click.echo('The data source is not valid.\n')
     click.echo('Following is a report::\n')
     click.echo(report)
 
