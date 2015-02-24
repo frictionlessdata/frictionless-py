@@ -262,6 +262,7 @@ class Pipeline(object):
         for report in generated_report.values():
             _results.extend(report['results'])
 
+        summary['header_index'] = self.header_index
         summary['total_row_count'] = row_count
         summary['bad_row_count'] = len(set([r['row_index'] for r in _results if
                                             r['result_category'] == 'row' and

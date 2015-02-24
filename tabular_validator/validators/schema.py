@@ -58,6 +58,7 @@ class SchemaValidator(base.Validator):
                         self.RESULT_LEVEL_ERROR,
                         _msg,
                         _type,
+                        headers,
                         header_index,
                         self.RESULT_HEADER_ROW_NAME
                     )
@@ -77,6 +78,7 @@ class SchemaValidator(base.Validator):
                         self.RESULT_LEVEL_ERROR,
                         _msg,
                         _type,
+                        headers,
                         header_index,
                         self.RESULT_HEADER_ROW_NAME,
                     )
@@ -103,6 +105,7 @@ class SchemaValidator(base.Validator):
                     self.RESULT_LEVEL_ERROR,
                     _msg,
                     _type,
+                    row,
                     index,
                     row_name,
                 )
@@ -125,6 +128,7 @@ class SchemaValidator(base.Validator):
                             self.RESULT_LEVEL_ERROR,
                             _msg,
                             _type,
+                            row,
                             index,
                             row_name,
                             headers.index(column_name),
@@ -151,6 +155,7 @@ class SchemaValidator(base.Validator):
                                 self.RESULT_LEVEL_ERROR,
                                 _msg,
                                 _type,
+                                row,
                                 index,
                                 row_name,
                                 headers.index(column_name),

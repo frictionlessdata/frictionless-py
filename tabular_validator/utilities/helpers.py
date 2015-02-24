@@ -30,6 +30,7 @@ report_schema = {
     'result_level': {'type': compat.str},
     'result_message': {'type': compat.str},
     'result_type': {'type': compat.str},
+    'result_context': {'type': list},
     'row_index': {'type': (int, type(None))},
     'row_name': {'type': compat.str},
     'column_index': {'type': (int, type(None))},

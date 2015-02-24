@@ -52,6 +52,7 @@ class StructureValidator(base.Validator):
                         self.RESULT_LEVEL_ERROR,
                         _msg,
                         _type,
+                        headers,
                         header_index,
                         self.RESULT_HEADER_ROW_NAME,
                         index,
@@ -80,6 +81,7 @@ class StructureValidator(base.Validator):
                         self.RESULT_LEVEL_ERROR,
                         _msg,
                         _type,
+                        headers,
                         header_index,
                         self.RESULT_HEADER_ROW_NAME,
                         dupe[0],
@@ -115,6 +117,7 @@ class StructureValidator(base.Validator):
                     self.RESULT_LEVEL_ERROR,
                     _msg,
                     _type,
+                    row,
                     index,
                     row_name
                 )
@@ -141,6 +144,7 @@ class StructureValidator(base.Validator):
                     self.RESULT_LEVEL_ERROR,
                     _msg,
                     _type,
+                    row,
                     index,
                     row_name
                 )
@@ -163,6 +167,7 @@ class StructureValidator(base.Validator):
                     self.RESULT_LEVEL_ERROR,
                     _msg,
                     _type,
+                    row,
                     index,
                     row_name
                 )
@@ -183,6 +188,7 @@ class StructureValidator(base.Validator):
                     self.RESULT_LEVEL_ERROR,
                     _msg,
                     _type,
+                    row,
                     index,
                     row_name
                 )
