@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/okfn/tabular-validator.png?label=ready&title=Ready)](https://waffle.io/okfn/tabular-validator)
 # Tabular Validator
 
 [![Travis Build Status](https://travis-ci.org/okfn/tabular-validator.svg?branch=master)](https://travis-ci.org/okfn/tabular-validator)
