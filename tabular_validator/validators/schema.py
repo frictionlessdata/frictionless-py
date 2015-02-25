@@ -8,6 +8,30 @@ import jtskit
 from . import base
 
 
+RESULTS = {
+    'incorrect_headers': {
+        'id': 'incorrect_headers',
+        'name': 'Incorrect Headers',
+        'msg': 'The headers do not match the schema.'
+    },
+    'incorrect_dimensions': {
+        'id': 'incorrect_dimensions',
+        'name': 'Incorrect Dimensions',
+        'msg': 'The row dimensions do not match the header dimensions.'
+    },
+    'incorrect_type': {
+        'id': 'incorrect_type',
+        'name': 'Incorrect Type',
+        'msg': 'The value is not a valid {0}.'
+    },
+    'required_field': {
+        'id': 'required_field',
+        'name': 'Required Field',
+        'msg': 'Column {0} is a required field, but no value can be found in this row.'
+    }
+}
+
+
 class SchemaValidator(base.Validator):
 
     """Validate data against a JSON Table Schema."""
@@ -51,13 +75,13 @@ class SchemaValidator(base.Validator):
                 if not (set(headers) == set(self.schema.headers)):
 
                     valid = False
-                    _msg = ('The headers do not match the schema.')
-                    _type = 'Incorrect Headers'
+                    _type = RESULTS['incorrect_headers']
                     entry = self.make_entry(
                         self.RESULT_CATEGORY_HEADER,
                         self.RESULT_LEVEL_ERROR,
-                        _msg,
-                        _type,
+                        _type['msg'],
+                        _type['id'],
+                        _type['name'],
                         headers,
                         header_index,
                         self.RESULT_HEADER_ROW_NAME
@@ -71,13 +95,13 @@ class SchemaValidator(base.Validator):
                 if not (headers == self.schema.headers):
 
                     valid = False
-                    _msg = ('The headers do not match the schema.')
-                    _type = 'Incorrect Headers'
+                    _type = RESULTS['incorrect_headers']
                     entry = self.make_entry(
                         self.RESULT_CATEGORY_HEADER,
                         self.RESULT_LEVEL_ERROR,
-                        _msg,
-                        _type,
+                        _type['msg'],
+                        _type['id'],
+                        _type['name'],
                         headers,
                         header_index,
                         self.RESULT_HEADER_ROW_NAME,
@@ -98,13 +122,13 @@ class SchemaValidator(base.Validator):
             if not (len(headers) == len(row)):
 
                 valid = False
-                _msg = ('The row does not match the header dimensions.')
-                _type = 'Incorrect Dimensions'
+                _type = RESULTS['incorrect_dimensions']
                 entry = self.make_entry(
                     self.RESULT_CATEGORY_ROW,
                     self.RESULT_LEVEL_ERROR,
-                    _msg,
-                    _type,
+                    _type['msg'],
+                    _type['id'],
+                    _type['name'],
                     row,
                     index,
                     row_name,
@@ -120,14 +144,13 @@ class SchemaValidator(base.Validator):
                     if not self.schema.cast(column_name, column_value):
 
                         valid = False
-                        _msg = ('The value is not a valid '
-                                '{0}'.format(self.schema.get_type(column_name)))
-                        _type = 'Incorrect Value Type'
+                        _type = RESULTS['incorrect_type']
                         entry = self.make_entry(
                             self.RESULT_CATEGORY_ROW,
                             self.RESULT_LEVEL_ERROR,
-                            _msg,
-                            _type,
+                            _type['msg'].format(self.schema.get_type(column_name)),
+                            _type['id'],
+                            _type['name'],
                             row,
                             index,
                             row_name,
@@ -146,15 +169,13 @@ class SchemaValidator(base.Validator):
                         if constraints.get('required') and not column_value:
 
                             valid = False
-                            _msg = ('A value is required for {0},'
-                                    ' but one is no present in this row.'
-                                    ''.format(column_name))
-                            _type = 'Missing Value in Required Field'
+                            _type = RESULTS['required_field']
                             entry = self.make_entry(
                                 self.RESULT_CATEGORY_ROW,
                                 self.RESULT_LEVEL_ERROR,
-                                _msg,
-                                _type,
+                                _type['msg'].format(column_name),
+                                _type['id'],
+                                _type['name'],
                                 row,
                                 index,
                                 row_name,

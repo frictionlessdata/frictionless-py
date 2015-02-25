@@ -7,6 +7,35 @@ from __future__ import unicode_literals
 from . import base
 
 
+RESULTS = {
+    'empty_header': {
+        'id': 'empty_header',
+        'name': 'Empty Header',
+        'msg': 'The header in column {0} was found to be empty.'
+    },
+    'duplicate_header': {
+        'id': 'duplicate_header',
+        'name': 'Duplicate Header',
+        'msg': 'The header in column {0} was found to have duplicates.'
+    },
+    'defective_row': {
+        'id': 'defective_row',
+        'name': 'Defective Row',
+        'msg': 'Row {0} is defective: the dimensions are incorrect compared to headers.'
+    },
+    'duplicate_row': {
+        'id': 'duplicate_row',
+        'name': 'Duplicate Row',
+        'msg': 'Row {0} duplicates the following rows which have already been seen: {1}.'
+    },
+    'empty_row': {
+        'id': 'empty_row',
+        'name': 'Empty Row',
+        'msg': 'Row {0} is empty.'
+    }
+}
+
+
 class StructureValidator(base.Validator):
 
     name = 'structure'
@@ -44,14 +73,13 @@ class StructureValidator(base.Validator):
                 if header in self.empty_strings:
 
                     valid = False
-                    _msg = ('The header in column {0} was found '
-                            'to be empty.'.format(index))
-                    _type = 'Empty Header'
+                    _type = RESULTS['empty_header']
                     entry = self.make_entry(
                         self.RESULT_CATEGORY_HEADER,
                         self.RESULT_LEVEL_ERROR,
-                        _msg,
-                        _type,
+                        _type['msg'].format(index),
+                        _type['id'],
+                        _type['name'],
                         headers,
                         header_index,
                         self.RESULT_HEADER_ROW_NAME,
@@ -71,16 +99,15 @@ class StructureValidator(base.Validator):
                 dupes = [(index, header) for index, header in
                          enumerate(headers) if
                          header.count(header) > 1]
-                _type = 'Duplicate Header'
+                _type = RESULTS['duplicate_header']
 
                 for dupe in dupes:
-                    _msg = ('The header in column {0} was found '
-                            'to have duplicates.'.format(dupe[0]))
                     entry = self.make_entry(
                         self.RESULT_CATEGORY_HEADER,
                         self.RESULT_LEVEL_ERROR,
-                        _msg,
-                        _type,
+                        _type['msg'].format(dupe[0]),
+                        _type['id'],
+                        _type['name'],
                         headers,
                         header_index,
                         self.RESULT_HEADER_ROW_NAME,
@@ -108,15 +135,13 @@ class StructureValidator(base.Validator):
                 self.seen[_rep].append(index)
                 valid = False
                 is_dupe = True
-                _msg = ('Row {0} duplicates the following rows '
-                        'which have already been seen: '
-                        '{1}.'.format(index, self.seen[_rep]))
-                _type = 'Duplicate Row'
+                _type = RESULTS['duplicate_row']
                 entry = self.make_entry(
                     self.RESULT_CATEGORY_ROW,
                     self.RESULT_LEVEL_ERROR,
-                    _msg,
-                    _type,
+                    _type['msg'].format(index, self.seen[_rep]),
+                    _type['id'],
+                    _type['name'],
                     row,
                     index,
                     row_name
@@ -137,13 +162,13 @@ class StructureValidator(base.Validator):
 
                 valid = False
                 is_empty = True
-                _msg = ('Row {0} is empty.'.format(index))
-                _type = 'Empty Row'
+                _type = RESULTS['empty_row']
                 entry = self.make_entry(
                     self.RESULT_CATEGORY_ROW,
                     self.RESULT_LEVEL_ERROR,
-                    _msg,
-                    _type,
+                    _type['msg'].format(index),
+                    _type['id'],
+                    _type['name'],
                     row,
                     index,
                     row_name
@@ -159,14 +184,13 @@ class StructureValidator(base.Validator):
 
                 valid = False
                 is_defective = True
-                _msg = ('Row {0} is defective: it contains '
-                        'more data than headers.'.format(index))
-                _type = 'Defective Row'
+                _type = RESULTS['defective_row']
                 entry = self.make_entry(
                     self.RESULT_CATEGORY_ROW,
                     self.RESULT_LEVEL_ERROR,
-                    _msg,
-                    _type,
+                    _type['msg'].format(index),
+                    _type['id'],
+                    _type['name'],
                     row,
                     index,
                     row_name
@@ -180,14 +204,13 @@ class StructureValidator(base.Validator):
 
                 valid = False
                 is_defective = True
-                _msg = ('Row {0} is defective: it contains '
-                        'less data than headers.'.format(index))
-                _type = 'Defective Row'
+                _type = RESULTS['defective_row']
                 entry = self.make_entry(
                     self.RESULT_CATEGORY_ROW,
                     self.RESULT_LEVEL_ERROR,
-                    _msg,
-                    _type,
+                    _type['msg'].format(index),
+                    _type['id'],
+                    _type['name'],
                     row,
                     index,
                     row_name

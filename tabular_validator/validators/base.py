@@ -82,7 +82,7 @@ class Validator(object):
         return ''
 
     def make_entry(self, result_category, result_level, result_message,
-                   result_type, result_context, row_index=None, row_name='',
+                   result_id, result_name, result_context, row_index=None, row_name='',
                    column_index=None, column_name=''):
         """Return a report entry."""
 
@@ -90,7 +90,8 @@ class Validator(object):
             'result_category': result_category,
             'result_level': result_level,
             'result_message': result_message,
-            'result_type': result_type,
+            'result_id': result_id,
+            'result_name': result_name,
             'result_context': result_context,
             'row_index': row_index,
             'row_name': row_name,
