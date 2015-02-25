@@ -122,7 +122,7 @@ class TestPipeline(base.BaseTestCase):
                              report_limit=1, options=options)
         result, report = validator.run()
 
-        self.assertEqual(len(report['structure']['results']), 1)
+        self.assertEqual(len([r for r in report['results'] if r['validator'] == 'structure']), 1)
 
     def test__report_limit_out_range(self):
 
@@ -141,7 +141,7 @@ class TestPipeline(base.BaseTestCase):
                              row_limit=3, options=options)
         result, report = validator.run()
 
-        self.assertEqual(len(report['structure']['results']), 1)
+        self.assertEqual(len([r for r in report['results'] if r['validator'] == 'structure']), 1)
 
     def test_row_limit_out_range(self):
 
@@ -161,7 +161,7 @@ class TestPipeline(base.BaseTestCase):
 
         result, report = validator.run()
 
-        self.assertEqual(len(report['schema']['results']), 0)
+        self.assertEqual(len([r for r in report['results'] if r['validator'] == 'schema']), 0)
 
         report_stream.seek(0)
         for line in report_stream:
@@ -234,7 +234,7 @@ class TestPipeline(base.BaseTestCase):
     def test_generate_report(self):
 
         pipeline = Pipeline(self.data_string, dry_run=False)
-        self.assertEqual(len(pipeline.generate_report()), 1)
+        self.assertEqual(len(pipeline.generate_report()['results']), 0)
 
     def test_header_index_valid(self):
 

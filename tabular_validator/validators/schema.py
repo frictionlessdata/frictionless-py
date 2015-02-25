@@ -40,12 +40,12 @@ class SchemaValidator(base.Validator):
 
     def __init__(self, fail_fast=False, transform=False, report_limit=1000,
                  row_limit=30000, schema=None, ignore_field_order=True,
-                 report_stream=None, **kwargs):
+                 report_stream=None, report=None, **kwargs):
 
         super(SchemaValidator, self).__init__(
             fail_fast=fail_fast, transform=transform,
             report_limit=report_limit, row_limit=row_limit,
-            report_stream=report_stream)
+            report_stream=report_stream, report=report)
 
         self.ignore_field_order = ignore_field_order
         if not schema:
@@ -77,6 +77,7 @@ class SchemaValidator(base.Validator):
                     valid = False
                     _type = RESULTS['incorrect_headers']
                     entry = self.make_entry(
+                        self.name,
                         self.RESULT_CATEGORY_HEADER,
                         self.RESULT_LEVEL_ERROR,
                         _type['msg'],
@@ -97,6 +98,7 @@ class SchemaValidator(base.Validator):
                     valid = False
                     _type = RESULTS['incorrect_headers']
                     entry = self.make_entry(
+                        self.name,
                         self.RESULT_CATEGORY_HEADER,
                         self.RESULT_LEVEL_ERROR,
                         _type['msg'],
@@ -124,6 +126,7 @@ class SchemaValidator(base.Validator):
                 valid = False
                 _type = RESULTS['incorrect_dimensions']
                 entry = self.make_entry(
+                    self.name,
                     self.RESULT_CATEGORY_ROW,
                     self.RESULT_LEVEL_ERROR,
                     _type['msg'],
@@ -146,6 +149,7 @@ class SchemaValidator(base.Validator):
                         valid = False
                         _type = RESULTS['incorrect_type']
                         entry = self.make_entry(
+                            self.name,
                             self.RESULT_CATEGORY_ROW,
                             self.RESULT_LEVEL_ERROR,
                             _type['msg'].format(self.schema.get_type(column_name)),
@@ -171,6 +175,7 @@ class SchemaValidator(base.Validator):
                             valid = False
                             _type = RESULTS['required_field']
                             entry = self.make_entry(
+                                self.name,
                                 self.RESULT_CATEGORY_ROW,
                                 self.RESULT_LEVEL_ERROR,
                                 _type['msg'].format(column_name),

@@ -45,14 +45,14 @@ class StructureValidator(base.Validator):
                  ignore_duplicate_rows=False, ignore_defective_rows=False,
                  ignore_empty_columns=False, ignore_duplicate_columns=False,
                  ignore_headerless_columns=False, empty_strings=None,
-                 report_stream=None, **kwargs):
+                 report_stream=None, report=None, **kwargs):
 
         # TODO: `self.seen` should be maintained in a file or something
         # TODO: Check for empty columns
 
         super(StructureValidator, self).__init__(
             fail_fast=fail_fast, transform=transform, report_limit=report_limit,
-            row_limit=row_limit, report_stream=report_stream)
+            row_limit=row_limit, report_stream=report_stream, report=report)
 
         self.ignore_empty_rows = ignore_empty_rows
         self.ignore_duplicate_rows = ignore_duplicate_rows
@@ -75,6 +75,7 @@ class StructureValidator(base.Validator):
                     valid = False
                     _type = RESULTS['empty_header']
                     entry = self.make_entry(
+                        self.name,
                         self.RESULT_CATEGORY_HEADER,
                         self.RESULT_LEVEL_ERROR,
                         _type['msg'].format(index),
@@ -103,6 +104,7 @@ class StructureValidator(base.Validator):
 
                 for dupe in dupes:
                     entry = self.make_entry(
+                        self.name,
                         self.RESULT_CATEGORY_HEADER,
                         self.RESULT_LEVEL_ERROR,
                         _type['msg'].format(dupe[0]),
@@ -137,6 +139,7 @@ class StructureValidator(base.Validator):
                 is_dupe = True
                 _type = RESULTS['duplicate_row']
                 entry = self.make_entry(
+                    self.name,
                     self.RESULT_CATEGORY_ROW,
                     self.RESULT_LEVEL_ERROR,
                     _type['msg'].format(index, self.seen[_rep]),
@@ -164,6 +167,7 @@ class StructureValidator(base.Validator):
                 is_empty = True
                 _type = RESULTS['empty_row']
                 entry = self.make_entry(
+                    self.name,
                     self.RESULT_CATEGORY_ROW,
                     self.RESULT_LEVEL_ERROR,
                     _type['msg'].format(index),
@@ -186,6 +190,7 @@ class StructureValidator(base.Validator):
                 is_defective = True
                 _type = RESULTS['defective_row']
                 entry = self.make_entry(
+                    self.name,
                     self.RESULT_CATEGORY_ROW,
                     self.RESULT_LEVEL_ERROR,
                     _type['msg'].format(index),
@@ -206,6 +211,7 @@ class StructureValidator(base.Validator):
                 is_defective = True
                 _type = RESULTS['defective_row']
                 entry = self.make_entry(
+                    self.name,
                     self.RESULT_CATEGORY_ROW,
                     self.RESULT_LEVEL_ERROR,
                     _type['msg'].format(index),

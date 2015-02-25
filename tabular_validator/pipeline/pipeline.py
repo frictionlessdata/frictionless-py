@@ -12,6 +12,7 @@ import tempfile
 import json
 import csv
 import decimal
+import tellme
 from ..utilities import data_table, data_package, csv_dialect, helpers
 from .. import exceptions
 from .. import compat
@@ -63,15 +64,6 @@ class Pipeline(object):
             _msg = '`data` must be a filepath, url or stream.'
             raise exceptions.PipelineBuildError(_msg)
 
-        if report_stream:
-            report_stream_tests = [isinstance(report_stream, io.TextIOBase),
-                                   report_stream.writable(),
-                                   report_stream.seekable()]
-
-            if not all(report_stream_tests):
-                _msg = '`report_stream` must be a seekable and writable text stream.'
-                raise exceptions.PipelineBuildError(_msg)
-
         self.openfiles = []
         self.validators = validators or helpers.DEFAULT_PIPELINE
         self.dialect = self.get_dialect(dialect)
@@ -85,10 +77,32 @@ class Pipeline(object):
         self.report_limit = self.get_report_limit(report_limit)
         self.report_stream = report_stream
         self.header_index = header_index
+
+        if self.report_stream:
+            report_stream_tests = [isinstance(self.report_stream, io.TextIOBase),
+                                   self.report_stream.writable(),
+                                   self.report_stream.seekable()]
+
+            if not all(report_stream_tests):
+                _msg = '`report_stream` must be a seekable and writable text stream.'
+                raise exceptions.PipelineBuildError(_msg)
+
+            report_backend = 'client'
+        else:
+            report_backend = 'yaml'
+
+        report_options = {
+            'schema': helpers.report_schema,
+            'backend': report_backend,
+            'client_stream': report_stream,
+            'limit': report_limit
+        }
+
+        self.report = tellme.Report('Pipeline', **report_options)
+
         self.pipeline = self.get_pipeline()
         self.data = data_table.DataTable(data, format=self.format,
                                          header_index=self.header_index)
-        self.report = {}
         self.openfiles.extend(self.data.openfiles)
 
         if not self.dry_run:
@@ -124,6 +138,7 @@ class Pipeline(object):
             options['transform'] = self.transform
             options['fail_fast'] = self.fail_fast
             options['header_index'] = self.header_index
+            options['report'] = self.report
             pipeline.append(_class(**options))
 
         return pipeline
@@ -208,8 +223,7 @@ class Pipeline(object):
 
         for validator in self.pipeline:
 
-            valid, self.report[validator.name], self.data = \
-                validator.run(self.data, is_table=True)
+            valid, _, self.data = validator.run(self.data, is_table=True)
 
             # if a validator returns invalid, we stop the pipeline
             if not valid:
@@ -229,26 +243,21 @@ class Pipeline(object):
         return shutil.rmtree(self.workspace)
 
     def generate_report(self):
-        """Run the report generator for each validator in the pipeline."""
+        """Return the report with a summary."""
 
-        generated = dict(self.report)
-        for name, report in generated.items():
-            generated[name] = report.generate()
-
-        # TODO: row count
         row_count = self.pipeline[0].row_count
+        generated = self.report.generate()
         generated['summary'] = self.make_report_summary(generated, row_count)
 
         return generated
 
     def make_report_summary(self, generated_report, row_count=None):
-        """Return a summary of the generated report."""
+        """Return a report summary."""
 
-        # TODO: See how to refactor this and run per validator, then aggregate *that* on the pipeline
-        # TODO: (idea) pass in a func and args to the report object itself, to set stats on meta at generate time?
+        # TODO: Refactor the whole summary on report thing?
 
         summary = {}
-        _results = []
+        _results = generated_report['results']
         row_count = row_count or self.row_limit
 
         def get_type_errors(column_name, results, row_count):
@@ -257,10 +266,6 @@ class Pipeline(object):
                                r['column_name'] == column_name])
 
             return int((match_count/row_count) * 100)
-
-        # flatten out all results
-        for report in generated_report.values():
-            _results.extend(report['results'])
 
         summary['header_index'] = self.header_index
         summary['total_row_count'] = row_count

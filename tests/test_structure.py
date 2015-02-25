@@ -235,7 +235,7 @@ class TestStructureValidator(base.BaseTestCase):
                              fail_fast=True, options=options)
         result, report = validator.run()
 
-        self.assertEqual(len(report['structure']['results']), 1)
+        self.assertEqual(len(report['results']), 1)
 
     def test_standalone_fail_fast_false(self):
 
@@ -254,7 +254,7 @@ class TestStructureValidator(base.BaseTestCase):
                              options=options)
         result, report = validator.run()
 
-        self.assertEqual(len(report['structure']['results']), 2)
+        self.assertEqual(len(report['results']), 2)
 
     # def test_standalone_transform_true(self):
     #     filepath = os.path.join(self.data_dir, 'headerless_columns.csv')
@@ -297,7 +297,7 @@ class TestStructureValidator(base.BaseTestCase):
                              report_limit=1, options=options)
         result, report = validator.run()
 
-        self.assertEqual(len(report['structure']['results']), 1)
+        self.assertEqual(len(report['results']), 1)
 
     def test_standalone_report_limit_out_range(self):
 
@@ -331,7 +331,7 @@ class TestStructureValidator(base.BaseTestCase):
                              row_limit=2, options=options)
         result, report = validator.run()
 
-        self.assertEqual(len(report['structure']['results']), 0)
+        self.assertEqual(len(report['results']), 0)
 
     def test_standalone_row_limit_out_range(self):
 
@@ -374,7 +374,7 @@ class TestStructureValidator(base.BaseTestCase):
 
         result, report = validator.run()
 
-        self.assertEqual(len(report['structure']['results']), 0)
+        self.assertEqual(len(report['results']), 0)
 
         report_stream.seek(0)
         for line in report_stream:

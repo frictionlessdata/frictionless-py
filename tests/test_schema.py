@@ -218,7 +218,7 @@ class TestSchemaValidator(base.BaseTestCase):
                              fail_fast=True, options=options)
         result, report = validator.run()
 
-        self.assertEqual(len(report['schema']['results']), 1)
+        self.assertEqual(len(report['results']), 1)
 
     def test_standalone_fail_fast_false(self):
 
@@ -239,7 +239,7 @@ class TestSchemaValidator(base.BaseTestCase):
                              options=options)
         result, report = validator.run()
 
-        self.assertEqual(len(report['schema']['results']), 4)
+        self.assertEqual(len(report['results']), 4)
 
     # def test_standalone_transform_true(self):
     #     self.assertTrue(False)
@@ -272,7 +272,7 @@ class TestSchemaValidator(base.BaseTestCase):
                              report_limit=1, options=options)
         result, report = validator.run()
 
-        self.assertEqual(len(report['schema']['results']), 1)
+        self.assertEqual(len(report['results']), 1)
         self.assertEqual(validator.report_limit, 1)
         self.assertEqual(validator.pipeline[0].report_limit, 1)
 
@@ -311,7 +311,7 @@ class TestSchemaValidator(base.BaseTestCase):
                              row_limit=2, options=options)
         result, report = validator.run()
 
-        self.assertEqual(len(report['schema']['results']), 0)
+        self.assertEqual(len(report['results']), 0)
         self.assertEqual(validator.row_limit, 2)
         self.assertEqual(validator.pipeline[0].row_limit, 2)
 
@@ -356,7 +356,7 @@ class TestSchemaValidator(base.BaseTestCase):
 
         result, report = validator.run()
 
-        self.assertEqual(len(report['schema']['results']), 0)
+        self.assertEqual(len(report['results']), 0)
 
         report_stream.seek(0)
         for line in report_stream:

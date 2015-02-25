@@ -24,17 +24,9 @@ class Validator(object):
     RESULT_LEVEL_INFO = 'info'
     RESULT_HEADER_ROW_NAME = 'headers'
 
-    def __init__(self, fail_fast=False, transform=False, report_limit=1000,
-                 row_limit=30000, report_stream=None, header_index=0):
-
-        if report_stream:
-            report_stream_tests = [isinstance(report_stream, io.TextIOBase),
-                                   report_stream.writable(),
-                                   report_stream.seekable()]
-
-            if not all(report_stream_tests):
-                _msg = '`report_stream` must be a seekable and writable text stream.'
-                raise exceptions.ValidatorBuildError(_msg)
+    def __init__(self, fail_fast=False, transform=False, row_limit=30000,
+                 header_index=0, report=None, report_limit=1000,
+                 report_stream=None):
 
         self.name = self.name or self.__class__.__name__.lower()
         self.fail_fast = fail_fast
@@ -44,18 +36,30 @@ class Validator(object):
         self.header_index = header_index
         self.row_count = None
 
-        if report_stream:
-            report_backend = 'client'
-        else:
-            report_backend = 'yaml'
+        if report is None:
+            if report_stream:
+                report_stream_tests = [isinstance(report_stream, io.TextIOBase),
+                                       report_stream.writable(),
+                                       report_stream.seekable()]
 
-        report_options = {
-            'schema': helpers.report_schema,
-            'backend': report_backend,
-            'client_stream': report_stream,
-            'limit': report_limit
-        }
-        self.report = tellme.Report(self.name, **report_options)
+                if not all(report_stream_tests):
+                    _msg = '`report_stream` must be a seekable and writable text stream.'
+                    raise exceptions.ValidatorBuildError(_msg)
+
+                report_backend = 'client'
+            else:
+                report_backend = 'yaml'
+
+            report_options = {
+                'schema': helpers.report_schema,
+                'backend': report_backend,
+                'client_stream': report_stream,
+                'limit': report_limit
+            }
+
+            self.report = tellme.Report(self.name, **report_options)
+        else:
+            self.report = report
 
     def get_row_limit(self, passed_limit):
         """Return the row limit, locked to an upper limit."""
@@ -81,12 +85,13 @@ class Validator(object):
                 return v
         return ''
 
-    def make_entry(self, result_category, result_level, result_message,
+    def make_entry(self, validator, result_category, result_level, result_message,
                    result_id, result_name, result_context, row_index=None, row_name='',
                    column_index=None, column_name=''):
         """Return a report entry."""
 
         return {
+            'validator': validator,
             'result_category': result_category,
             'result_level': result_level,
             'result_message': result_message,

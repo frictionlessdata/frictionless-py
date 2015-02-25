@@ -120,7 +120,7 @@ RESULTS = {
         'name': 'Invalid primaryKey Value',
         'msg': 'A JSON Table Schema primaryKey value must be present in the schema field names.'
     },
-'invalid_primarykey_type': {
+    'invalid_primarykey_type': {
         'id': 'invalid_primarykey_type',
         'name': 'Invalid primaryKey Type',
         'msg': 'A JSON Table Schema primaryKey must be either a string or an array.'
@@ -264,6 +264,7 @@ def validate(schema, report=None):
         valid = False
         _type = RESULTS['invalid_schema']
         entry = {
+            'validator': 'schema',
             'result_category': RESULT_CATEGORY_SCHEMA,
             'result_level': RESULT_LEVEL_ERROR,
             'result_message': _type['msg'],
@@ -286,6 +287,7 @@ def validate(schema, report=None):
         valid = False
         _type = RESULTS['missing_fields']
         entry = {
+            'validator': 'schema',
             'result_category': RESULT_CATEGORY_SCHEMA,
             'result_level': RESULT_LEVEL_ERROR,
             'result_message': _type['msg'],
@@ -308,6 +310,7 @@ def validate(schema, report=None):
         valid = False
         _type = RESULTS['invalid_fields']
         entry = {
+            'validator': 'schema',
             'result_category': RESULT_CATEGORY_SCHEMA,
             'result_level': RESULT_LEVEL_ERROR,
             'result_message': _type['msg'],
@@ -330,6 +333,7 @@ def validate(schema, report=None):
         valid = False
         _type = RESULTS['invalid_field']
         entry = {
+            'validator': 'schema',
             'result_category': RESULT_CATEGORY_SCHEMA,
             'result_level': RESULT_LEVEL_ERROR,
             'result_message': _type['msg'],
@@ -349,6 +353,7 @@ def validate(schema, report=None):
         valid = False
         _type = RESULTS['incomplete_field']
         entry = {
+            'validator': 'schema',
             'result_category': RESULT_CATEGORY_SCHEMA,
             'result_level': RESULT_LEVEL_ERROR,
             'result_message': _type['msg'],
@@ -370,6 +375,7 @@ def validate(schema, report=None):
         valid = False
         _type = RESULTS['invalid_field_constraints']
         entry = {
+            'validator': 'schema',
             'result_category': RESULT_CATEGORY_SCHEMA,
             'result_level': RESULT_LEVEL_ERROR,
             'result_message': _type['msg'],
@@ -395,6 +401,7 @@ def validate(schema, report=None):
             valid = False
             _type = RESULTS['invalid_required_constraint']
             entry = {
+                'validator': 'schema',
                 'result_category': RESULT_CATEGORY_SCHEMA,
                 'result_level': RESULT_LEVEL_ERROR,
                 'result_message': _type['msg'],
@@ -415,6 +422,7 @@ def validate(schema, report=None):
             valid = False
             _type = RESULTS['invalid_minlength_integer']
             entry = {
+                'validator': 'schema',
                 'result_category': RESULT_CATEGORY_SCHEMA,
                 'result_level': RESULT_LEVEL_ERROR,
                 'result_message': _type['msg'],
@@ -435,6 +443,7 @@ def validate(schema, report=None):
             valid = False
             _type = RESULTS['invalid_maxlength_integer']
             entry = {
+                'validator': 'schema',
                 'result_category': RESULT_CATEGORY_SCHEMA,
                 'result_level': RESULT_LEVEL_ERROR,
                 'result_message': _type['msg'],
@@ -455,6 +464,7 @@ def validate(schema, report=None):
             valid = False
             _type = RESULTS['invalid_unique_constraint']
             entry = {
+                'validator': 'schema',
                 'result_category': RESULT_CATEGORY_SCHEMA,
                 'result_level': RESULT_LEVEL_ERROR,
                 'result_message': _type['msg'],
@@ -475,6 +485,7 @@ def validate(schema, report=None):
             valid = False
             _type = RESULTS['invalid_pattern_constraint']
             entry = {
+                'validator': 'schema',
                 'result_category': RESULT_CATEGORY_SCHEMA,
                 'result_level': RESULT_LEVEL_ERROR,
                 'result_message': _type['msg'],
@@ -498,6 +509,7 @@ def validate(schema, report=None):
                 valid = False
                 _type = RESULTS['invalid_minimum_constraint_integer']
                 entry = {
+                    'validator': 'schema',
                     'result_category': RESULT_CATEGORY_SCHEMA,
                     'result_level': RESULT_LEVEL_ERROR,
                     'result_message': _type['msg'],
@@ -518,6 +530,7 @@ def validate(schema, report=None):
                 valid = False
                 _type = RESULTS['invalid_minimum_constraint_date']
                 entry = {
+                    'validator': 'schema',
                     'result_category': RESULT_CATEGORY_SCHEMA,
                     'result_level': RESULT_LEVEL_ERROR,
                     'result_message': _type['msg'],
@@ -538,6 +551,7 @@ def validate(schema, report=None):
                 valid = False
                 _type = RESULTS['invalid_minimum_constraint_time']
                 entry = {
+                    'validator': 'schema',
                     'result_category': RESULT_CATEGORY_SCHEMA,
                     'result_level': RESULT_LEVEL_ERROR,
                     'result_message': _type['msg'],
@@ -558,6 +572,7 @@ def validate(schema, report=None):
                 valid = False
                 _type = RESULTS['invalid_minimum_constraint_datetime']
                 entry = {
+                    'validator': 'schema',
                     'result_category': RESULT_CATEGORY_SCHEMA,
                     'result_level': RESULT_LEVEL_ERROR,
                     'result_message': _type['msg'],
@@ -576,6 +591,7 @@ def validate(schema, report=None):
                 valid = False
                 _type = RESULTS['invalid_minimum_constraint_not_supported']
                 entry = {
+                    'validator': 'schema',
                     'result_category': RESULT_CATEGORY_SCHEMA,
                     'result_level': RESULT_LEVEL_ERROR,
                     'result_message': _type['msg'],
@@ -599,6 +615,7 @@ def validate(schema, report=None):
                 valid = False
                 _type = RESULTS['invalid_maximum_constraint_integer']
                 entry = {
+                    'validator': 'schema',
                     'result_category': RESULT_CATEGORY_SCHEMA,
                     'result_level': RESULT_LEVEL_ERROR,
                     'result_message': _type['msg'],
@@ -619,6 +636,7 @@ def validate(schema, report=None):
                 valid = False
                 _type = RESULTS['invalid_maximum_constraint_date']
                 entry = {
+                    'validator': 'schema',
                     'result_category': RESULT_CATEGORY_SCHEMA,
                     'result_level': RESULT_LEVEL_ERROR,
                     'result_message': _type['msg'],
@@ -639,6 +657,7 @@ def validate(schema, report=None):
                 valid = False
                 _type = RESULTS['invalid_maximum_constraint_time']
                 entry = {
+                    'validator': 'schema',
                     'result_category': RESULT_CATEGORY_SCHEMA,
                     'result_level': RESULT_LEVEL_ERROR,
                     'result_message': _type['msg'],
@@ -659,6 +678,7 @@ def validate(schema, report=None):
                 valid = False
                 _type = RESULTS['invalid_maximum_constraint_datetime']
                 entry = {
+                    'validator': 'schema',
                     'result_category': RESULT_CATEGORY_SCHEMA,
                     'result_level': RESULT_LEVEL_ERROR,
                     'result_message': _type['msg'],
@@ -677,6 +697,7 @@ def validate(schema, report=None):
                 valid = False
                 _type = RESULTS['invalid_maximum_constraint_not_supported']
                 entry = {
+                    'validator': 'schema',
                     'result_category': RESULT_CATEGORY_SCHEMA,
                     'result_level': RESULT_LEVEL_ERROR,
                     'result_message': _type['msg'],
@@ -699,6 +720,7 @@ def validate(schema, report=None):
             valid = False
             _type = RESULTS['invalid_primarykey_type']
             entry = {
+                'validator': 'schema',
                 'result_category': RESULT_CATEGORY_SCHEMA,
                 'result_level': RESULT_LEVEL_ERROR,
                 'result_message': _type['msg'],
@@ -719,6 +741,7 @@ def validate(schema, report=None):
                 valid = False
                 _type = RESULTS['invalid_primarykey_value']
                 entry = {
+                    'validator': 'schema',
                     'result_category': RESULT_CATEGORY_SCHEMA,
                     'result_level': RESULT_LEVEL_ERROR,
                     'result_message': _type['msg'],
@@ -739,6 +762,7 @@ def validate(schema, report=None):
                     valid = False
                     _type = RESULTS['invalid_primarykey_value']
                     entry = {
+                        'validator': 'schema',
                         'result_category': RESULT_CATEGORY_SCHEMA,
                         'result_level': RESULT_LEVEL_ERROR,
                         'result_message': _type['msg'],
@@ -761,7 +785,8 @@ def validate(schema, report=None):
             valid = False
             _type = RESULTS['invalid_foreignkeys_type']
             result = {
-                'category_entry': RESULT_CATEGORY_SCHEMA,
+                'validator': 'schema',
+                'result_category': RESULT_CATEGORY_SCHEMA,
                 'result_level': RESULT_LEVEL_ERROR,
                 'result_message': _type['msg'],
                 'result_id': _type['id'],
@@ -781,6 +806,7 @@ def validate(schema, report=None):
             valid = False
             _type = RESULTS['invalid_foreignkey_type']
             entry = {
+                'validator': 'schema',
                 'result_category': RESULT_CATEGORY_SCHEMA,
                 'result_level': RESULT_LEVEL_ERROR,
                 'result_message': _type['msg'],
@@ -801,6 +827,7 @@ def validate(schema, report=None):
             valid = False
             _type = RESULTS['invalid_foreignkey_value']
             entry = {
+                'validator': 'schema',
                 'result_category': RESULT_CATEGORY_SCHEMA,
                 'result_level': RESULT_LEVEL_ERROR,
                 'result_message': _type['msg'],
@@ -821,6 +848,7 @@ def validate(schema, report=None):
             valid = False
             _type = RESULTS['invalid_foreignkey_field_type']
             entry = {
+                'validator': 'schema',
                 'result_category': RESULT_CATEGORY_SCHEMA,
                 'result_level': RESULT_LEVEL_ERROR,
                 'result_message': _type['msg'],
@@ -844,6 +872,7 @@ def validate(schema, report=None):
                     valid = False
                     _type = RESULTS['invalid_foreignkey_fields']
                     entry = {
+                        'validator': 'schema',
                         'result_category': RESULT_CATEGORY_SCHEMA,
                         'result_level': RESULT_LEVEL_ERROR,
                         'result_message': _type['msg'],
@@ -865,6 +894,7 @@ def validate(schema, report=None):
                         valid = False
                         _type = RESULTS['invalid_foreignkey_field']
                         entry = {
+                            'validator': 'schema',
                             'result_category': RESULT_CATEGORY_SCHEMA,
                             'result_level': RESULT_LEVEL_ERROR,
                             'result_message': _type['msg'],
@@ -884,6 +914,7 @@ def validate(schema, report=None):
                 valid = False
                 _type = RESULTS['invalid_foreignkey_reference_type']
                 entry = {
+                    'validator': 'schema',
                     'result_category': RESULT_CATEGORY_SCHEMA,
                     'result_level': RESULT_LEVEL_ERROR,
                     'result_message': _type['msg'],
@@ -903,6 +934,7 @@ def validate(schema, report=None):
                 valid = False
                 _type = RESULTS['invalid_foreignkey_reference_value']
                 entry = {
+                    'validator': 'schema',
                     'result_category': RESULT_CATEGORY_SCHEMA,
                     'result_level': RESULT_LEVEL_ERROR,
                     'result_message': _type['msg'],
@@ -922,6 +954,7 @@ def validate(schema, report=None):
                 valid = False
                 _type = RESULTS['invalid_foreignkey_reference_fields']
                 entry = {
+                    'validator': 'schema',
                     'result_category': RESULT_CATEGORY_SCHEMA,
                     'result_level': RESULT_LEVEL_ERROR,
                     'result_message': _type['msg'],
@@ -943,6 +976,7 @@ def validate(schema, report=None):
                     valid = False
                     _type = RESULTS['invalid_foreignkey_reference_names']
                     entry = {
+                        'validator': 'schema',
                         'result_category': RESULT_CATEGORY_SCHEMA,
                         'result_level': RESULT_LEVEL_ERROR,
                         'result_message': _type['msg'],
@@ -962,6 +996,7 @@ def validate(schema, report=None):
                     valid = False
                     _type = RESULTS['invalid_foreignkey_reference_value']
                     entry = {
+                        'validator': 'schema',
                         'result_category': RESULT_CATEGORY_SCHEMA,
                         'result_level': RESULT_LEVEL_ERROR,
                         'result_message': _type['msg'],
