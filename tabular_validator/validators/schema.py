@@ -152,7 +152,7 @@ class SchemaValidator(base.Validator):
                             self.name,
                             self.RESULT_CATEGORY_ROW,
                             self.RESULT_LEVEL_ERROR,
-                            _type['msg'].format(self.schema.get_type(column_name)),
+                            _type['msg'].format(self.schema.get_type(column_name).name.title()),
                             _type['id'],
                             _type['name'],
                             row,
