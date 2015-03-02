@@ -1,2 +1,2 @@
 first_name,last_name,gender,age,period_employed,period_employed_start,daily_start,daily_end,is_management,avatar,interests,home_location,position_title,extra,notes
-Paul,Walsh,M,39,3.25,2012-01-05,08:00:00,17:00:00,Y,<BINARY>,"['Python','Node','Open Web']","32.123,34.211",product_manager,"{'married': true,'kids': 2}",
+Paul,Walsh,M,39,3.25,2012-01-05,08:00:00,17:00:00,Y,YW4gZXhhbXBsZQ==,"['Python','Node','Open Web']","32.123,34.211",product_manager,"{'married': true,'kids': 2}",

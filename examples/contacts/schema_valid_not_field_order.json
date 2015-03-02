@@ -64,7 +64,8 @@
         {
             "name": "avatar",
             "title": "Avatar",
-            "type": "binary",
+            "type": "string",
+            "format": "binary",
             "description": "A photo of this person."
         },
         {
@@ -95,7 +96,10 @@
             "name": "notes",
             "title": "Notes",
             "type": "any",
-            "description": "Add any relevant notes for HR."
+            "description": "Add any relevant notes for HR.",
+            "constraints": {
+                "required": false
+            }
         }
     ],
     "primaryKey": [

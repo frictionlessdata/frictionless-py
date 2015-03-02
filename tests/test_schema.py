@@ -108,6 +108,7 @@ class TestSchemaValidator(base.BaseTestCase):
             validator = Pipeline(data_filepath,
                                  validators=('schema',),
                                  options=options)
+
             result, report = validator.run()
 
             self.assertTrue(result)
@@ -228,7 +229,7 @@ class TestSchemaValidator(base.BaseTestCase):
             validator = validators.SchemaValidator(schema=schema)
             result, report, data = validator.run(stream)
 
-            self.assertEqual(len(report.generate()['results']), 4)
+            self.assertEqual(len(report.generate()['results']), 7)
 
     def test_pipeline_fail_fast_false(self):
 
@@ -239,7 +240,7 @@ class TestSchemaValidator(base.BaseTestCase):
                              options=options)
         result, report = validator.run()
 
-        self.assertEqual(len(report['results']), 4)
+        self.assertEqual(len(report['results']), 7)
 
     # def test_standalone_transform_true(self):
     #     self.assertTrue(False)
