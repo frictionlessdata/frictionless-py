@@ -130,29 +130,34 @@ class StructureValidator(base.Validator):
 
         # check if row is duplicate
         if not self.ignore_duplicate_rows:
+
             _rep = hash(frozenset(row))
 
             if _rep in self.seen:
 
-                self.seen[_rep].append(index)
-                valid = False
-                is_dupe = True
-                _type = RESULTS['duplicate_row']
-                entry = self.make_entry(
-                    self.name,
-                    self.RESULT_CATEGORY_ROW,
-                    self.RESULT_LEVEL_ERROR,
-                    _type['msg'].format(index, self.seen[_rep]),
-                    _type['id'],
-                    _type['name'],
-                    row,
-                    index,
-                    row_name
-                )
+                # don't keep writing results for totally empty rows
+                if set(row) == set(['']):
+                    pass
+                else:
+                    self.seen[_rep].append(index)
+                    valid = False
+                    is_dupe = True
+                    _type = RESULTS['duplicate_row']
+                    entry = self.make_entry(
+                        self.name,
+                        self.RESULT_CATEGORY_ROW,
+                        self.RESULT_LEVEL_ERROR,
+                        _type['msg'].format(index, self.seen[_rep]),
+                        _type['id'],
+                        _type['name'],
+                        row,
+                        index,
+                        row_name
+                    )
 
-                self.report.write(entry)
-                if self.fail_fast:
-                    return valid, headers, index, row
+                    self.report.write(entry)
+                    if self.fail_fast:
+                        return valid, headers, index, row
 
             else:
                 self.seen[_rep] = [index]

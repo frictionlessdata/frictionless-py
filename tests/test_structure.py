@@ -411,6 +411,7 @@ class TestStructureValidator(base.BaseTestCase):
             self.assertTrue(result)
 
     def test_pipeline_report_stream_none(self):
+
         filepath = os.path.join(self.data_dir, 'valid.csv')
         report_stream = None
         options = {}
@@ -419,3 +420,19 @@ class TestStructureValidator(base.BaseTestCase):
         result, report = validator.run()
 
         self.assertTrue(result)
+
+    def test_standalone_empty_rows_are_not_duplicatable(self):
+
+        filepath = os.path.join(self.data_dir, 'empty_rows_multiple.csv')
+        validator = validators.StructureValidator(fail_fast=False)
+        result, report, data = validator.run(filepath)
+
+        self.assertEqual(len(report.generate()['results']), 11)
+
+    def test_pipeline_empty_rows_are_not_duplicatable(self):
+
+        filepath = os.path.join(self.data_dir, 'empty_rows_multiple.csv')
+        validator = Pipeline(filepath, validators=('structure',), fail_fast=False)
+        result, report = validator.run()
+
+        self.assertEqual(len(report['results']), 11)
