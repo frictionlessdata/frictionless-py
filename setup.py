@@ -19,14 +19,14 @@ dependencies = [
     'chardet>=2.3.0',
     'xlrd>=0.9.3',
     'tellme>=0.1.6',
-    'jtskit>=0.1.8'
+    'jtskit>=0.2.0'
 ]
 
 setup(
     name='tabular-validator',
     description='A toolkit for validating tabular data through a pipeline.',
     long_description='A toolkit for validating tabular data through a pipeline.',
-    version='0.2.2',
+    version='0.2.3',
     author='Open Knowledge Foundation',
     author_email='info@okfn.org',
     url='http://okfn.org',

@@ -27,7 +27,12 @@ RESULTS = {
     'required_field': {
         'id': 'required_field',
         'name': 'Required Field',
-        'msg': 'Column {0} is a required field, but no value can be found in this row.'
+        'msg': 'Column {0} is a required field, but no value can be found in row {1}.'
+    },
+    'nonrequired_field_empty': {
+        'id': 'nonrequired_field_empty',
+        'name': 'Non-Required Field (Empty/Null)',
+        'msg': 'Column {0} is a non-required field, and has a null value in row {1}.'
     }
 }
 
@@ -144,7 +149,7 @@ class SchemaValidator(base.Validator):
             else:
                 for column_name, column_value in zip(headers, row):
                     # check type and format
-                    if not self.schema.cast(column_name, column_value):
+                    if self.schema.cast(column_name, column_value) is False:
 
                         valid = False
                         _type = RESULTS['incorrect_type']
@@ -168,29 +173,49 @@ class SchemaValidator(base.Validator):
 
                     # CONSTRAINTS
                     constraints = self.schema.get_constraints(column_name)
-                    if constraints:
-                        # check constraints.required
-                        if constraints.get('required') and not column_value:
 
-                            valid = False
-                            _type = RESULTS['required_field']
-                            entry = self.make_entry(
-                                self.name,
-                                self.RESULT_CATEGORY_ROW,
-                                self.RESULT_LEVEL_ERROR,
-                                _type['msg'].format(column_name),
-                                _type['id'],
-                                _type['name'],
-                                row,
-                                index,
-                                row_name,
-                                headers.index(column_name),
-                                column_name
+                    if constraints['required'] is True and \
+                       (column_value in self.schema.NULL_VALUES):
+
+                        valid = False
+                        _type = RESULTS['required_field']
+                        entry = self.make_entry(
+                            self.name,
+                            self.RESULT_CATEGORY_ROW,
+                            self.RESULT_LEVEL_ERROR,
+                            _type['msg'].format(column_name, index),
+                            _type['id'],
+                            _type['name'],
+                            row,
+                            index,
+                            row_name,
+                            headers.index(column_name),
+                            column_name
                             )
 
-                            self.report.write(entry)
-                            if self.fail_fast:
-                                return valid, headers, index, row
+                        self.report.write(entry)
+                        if self.fail_fast:
+                            return valid, headers, index, row
+
+                    if constraints['required'] is False and \
+                           (column_value in self.schema.NULL_VALUES):
+                        # add info result
+                        _type = RESULTS['nonrequired_field_empty']
+                        entry = self.make_entry(
+                            self.name,
+                            self.RESULT_CATEGORY_ROW,
+                            self.RESULT_LEVEL_INFO,
+                            _type['msg'].format(column_name, index),
+                            _type['id'],
+                            _type['name'],
+                            row,
+                            index,
+                            row_name,
+                            headers.index(column_name),
+                            column_name
+                        )
+
+                        self.report.write(entry)
 
                     # TODO: check constraints.unique
                     # TODO: check constraints.min* and constraints.max*

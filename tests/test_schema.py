@@ -400,3 +400,20 @@ class TestSchemaValidator(base.BaseTestCase):
         result, report = validator.run()
 
         self.assertTrue(result)
+
+    def test_standalone_info_result_for_required_false(self):
+        filepath = os.path.join(self.data_dir, 'required_false.csv')
+        schema = os.path.join(self.data_dir, 'required_false_schema.json')
+        validator = validators.SchemaValidator(schema=schema)
+        result, report, data = validator.run(filepath)
+
+        self.assertEqual(len(report.generate()['results']), 1)
+
+    def test_pipeline_info_result_for_required_false(self):
+        filepath = os.path.join(self.data_dir, 'required_false.csv')
+        schema = os.path.join(self.data_dir, 'required_false_schema.json')
+        options = {'schema': {'schema': schema}}
+        validator = Pipeline(filepath, validators=('schema',), options=options)
+        result, report = validator.run()
+
+        self.assertEqual(len(report['results']), 1)
