@@ -7,6 +7,7 @@ from __future__ import unicode_literals
 import os
 import io
 from tabular_validator.pipeline import Pipeline
+from tabular_validator import validators
 from tabular_validator import exceptions
 from tests import base
 
@@ -133,3 +134,30 @@ class TestJungle(base.BaseTestCase):
         result, report = pipeline.run()
 
         self.assertTrue(pipeline.data)
+
+    def test_hmt_bis_one(self):
+
+        data = 'https://www.gov.uk/government/uploads/system/uploads/attachment_data/file/363726/BIS_spending_over__25_000_July_2014.csv'
+        encoding = 'ISO-8859-2'
+        pipeline = Pipeline(data, encoding=encoding)
+        result, report = pipeline.run()
+
+        self.assertTrue(pipeline.data)
+
+    def test_pipeline_hmt_bbsrc_one(self):
+
+        data = 'http://www.bbsrc.ac.uk/nmsruntime/saveasdialog.aspx?lID=6795&sID=12031'
+        encoding = 'ISO-8859-2'
+        pipeline = Pipeline(data, encoding=encoding)
+        result, report = pipeline.run()
+
+        self.assertTrue(pipeline.data)
+
+    def test_standalone_hmt_bbsrc_one(self):
+
+        data = 'http://www.bbsrc.ac.uk/nmsruntime/saveasdialog.aspx?lID=6795&sID=12031'
+        encoding = 'ISO-8859-2'
+        validator = validators.StructureValidator()
+        result, report, data = validator.run(data, encoding=encoding)
+
+        self.assertTrue(data)

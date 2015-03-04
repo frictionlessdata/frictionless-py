@@ -104,7 +104,7 @@ class Validator(object):
             'column_name': column_name
         }
 
-    def run(self, data_source, headers=None, is_table=False):
+    def run(self, data_source, headers=None, encoding=None, is_table=False):
 
         """Run this validator on data_source.
 
@@ -134,6 +134,7 @@ class Validator(object):
             data = data_source
         else:
             data = data_table.DataTable(data_source, headers=headers,
+                                        encoding=encoding,
                                         header_index=self.header_index)
             openfiles.extend(data.openfiles)
 

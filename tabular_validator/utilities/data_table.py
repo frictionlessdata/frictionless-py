@@ -22,12 +22,13 @@ class DataTable(object):
     FORMATS = ('csv', 'excel', 'json')
 
     def __init__(self, data_source, headers=None, format='csv',
-                 header_index=0, excel_sheet_index=0):
+                 encoding=None, header_index=0, excel_sheet_index=0):
 
         self.openfiles = []
         self.data_source = data_source
         self.passed_headers = headers
         self.format = format
+        self.encoding = encoding
         self.header_index = header_index
         self.excel_sheet_index = excel_sheet_index
         self.stream = self.to_textstream(self.data_source)
@@ -174,6 +175,9 @@ class DataTable(object):
 
     def _detect_stream_encoding(self, stream):
         """Return best guess at encoding of stream."""
+
+        if self.encoding:
+            return self.encoding
 
         if isinstance(stream, compat.str):
             if isinstance(stream, compat.bytes):

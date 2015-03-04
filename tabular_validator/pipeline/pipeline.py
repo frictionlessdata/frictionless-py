@@ -56,9 +56,9 @@ class Pipeline(object):
     DATA_FORMATS = ('csv', 'excel', 'json')
 
     def __init__(self, data, validators=None, dialect=None, format='csv',
-                 options=None, workspace=None, dry_run=True, transform=True,
-                 fail_fast=False, row_limit=20000, report_limit=1000,
-                 report_stream=None, header_index=0):
+                 encoding=None, options=None, workspace=None, dry_run=True,
+                 transform=True, fail_fast=False, row_limit=20000,
+                 report_limit=1000, report_stream=None, header_index=0):
 
         if data is None:
             _msg = '`data` must be a filepath, url or stream.'
@@ -68,6 +68,7 @@ class Pipeline(object):
         self.validators = validators or helpers.DEFAULT_PIPELINE
         self.dialect = self.get_dialect(dialect)
         self.format = format
+        self.encoding = encoding
         self.options = options or {}
         self.dry_run = dry_run
         self.workspace = self.get_workspace(workspace)
@@ -102,6 +103,7 @@ class Pipeline(object):
 
         self.pipeline = self.get_pipeline()
         self.data = data_table.DataTable(data, format=self.format,
+                                         encoding=encoding,
                                          header_index=self.header_index)
         self.openfiles.extend(self.data.openfiles)
 
