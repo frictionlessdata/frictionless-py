@@ -26,7 +26,7 @@ class Validator(object):
 
     def __init__(self, fail_fast=False, transform=False, row_limit=30000,
                  header_index=0, report=None, report_limit=1000,
-                 report_stream=None):
+                 report_stream=None, result_level='error'):
 
         self.name = self.name or self.__class__.__name__.lower()
         self.fail_fast = fail_fast
@@ -35,6 +35,7 @@ class Validator(object):
         self.report_limit = self.get_report_limit(report_limit)
         self.header_index = header_index
         self.row_count = None
+        self.result_level = result_level
 
         if report is None:
             if report_stream:

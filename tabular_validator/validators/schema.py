@@ -45,12 +45,13 @@ class SchemaValidator(base.Validator):
 
     def __init__(self, fail_fast=False, transform=False, report_limit=1000,
                  row_limit=30000, schema=None, ignore_field_order=True,
-                 report_stream=None, report=None, **kwargs):
+                 report_stream=None, report=None, result_level='error',
+                 **kwargs):
 
         super(SchemaValidator, self).__init__(
             fail_fast=fail_fast, transform=transform,
             report_limit=report_limit, row_limit=row_limit,
-            report_stream=report_stream, report=report)
+            report_stream=report_stream, report=report, result_level=result_level)
 
         self.ignore_field_order = ignore_field_order
         if not schema:
@@ -198,7 +199,8 @@ class SchemaValidator(base.Validator):
                             return valid, headers, index, row
 
                     if constraints['required'] is False and \
-                           (column_value in self.schema.NULL_VALUES):
+                           (column_value in self.schema.NULL_VALUES) and \
+                           self.result_level == self.RESULT_LEVEL_INFO:
                         # add info result
                         _type = RESULTS['nonrequired_field_empty']
                         entry = self.make_entry(

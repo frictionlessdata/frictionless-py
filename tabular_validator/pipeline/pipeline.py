@@ -58,7 +58,8 @@ class Pipeline(object):
     def __init__(self, data, validators=None, dialect=None, format='csv',
                  encoding=None, options=None, workspace=None, dry_run=True,
                  transform=True, fail_fast=False, row_limit=20000,
-                 report_limit=1000, report_stream=None, header_index=0):
+                 report_limit=1000, report_stream=None, header_index=0,
+                 break_on_invalid_processor=True):
 
         if data is None:
             _msg = '`data` must be a filepath, url or stream.'
@@ -78,6 +79,7 @@ class Pipeline(object):
         self.report_limit = self.get_report_limit(report_limit)
         self.report_stream = report_stream
         self.header_index = header_index
+        self.break_on_invalid_processor = break_on_invalid_processor
 
         if self.report_stream:
             report_stream_tests = [isinstance(self.report_stream, io.TextIOBase),
@@ -227,8 +229,9 @@ class Pipeline(object):
 
             valid, _, self.data = validator.run(self.data, is_table=True)
 
-            # if a validator returns invalid, we stop the pipeline
-            if not valid:
+            # if a validator returns invalid, we stop the pipeline,
+            # unless break_on_invalid_processor is False
+            if not valid and self.break_on_invalid_processor:
                 return valid, self.generate_report()
 
             if not self.dry_run and self.transform:
