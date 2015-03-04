@@ -223,11 +223,18 @@ class Pipeline(object):
     def run(self):
         """Run the pipeline."""
 
+        def _run_valid(process_valid, run_valid):
+            """Set/maintain the valid state of the run."""
+            if not process_valid and run_valid:
+                return False
+            return run_valid
+
         valid = True
 
         for validator in self.pipeline:
 
-            valid, _, self.data = validator.run(self.data, is_table=True)
+            _valid, _, self.data = validator.run(self.data, is_table=True)
+            valid = _run_valid(_valid, valid)
 
             # if a validator returns invalid, we stop the pipeline,
             # unless break_on_invalid_processor is False
