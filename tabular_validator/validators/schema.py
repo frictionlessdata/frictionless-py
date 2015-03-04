@@ -12,7 +12,7 @@ RESULTS = {
     'incorrect_headers': {
         'id': 'incorrect_headers',
         'name': 'Incorrect Headers',
-        'msg': 'The headers do not match the schema.'
+        'msg': 'The headers do not match the schema. Data has {0}, but they should be {1}.'
     },
     'incorrect_dimensions': {
         'id': 'incorrect_dimensions',
@@ -85,7 +85,7 @@ class SchemaValidator(base.Validator):
                         self.name,
                         self.RESULT_CATEGORY_HEADER,
                         self.RESULT_LEVEL_ERROR,
-                        _type['msg'],
+                        _type['msg'].format(headers, self.schema.headers),
                         _type['id'],
                         _type['name'],
                         headers,
@@ -106,7 +106,7 @@ class SchemaValidator(base.Validator):
                         self.name,
                         self.RESULT_CATEGORY_HEADER,
                         self.RESULT_LEVEL_ERROR,
-                        _type['msg'],
+                        _type['msg'].format(headers, self.schema.headers),
                         _type['id'],
                         _type['name'],
                         headers,
