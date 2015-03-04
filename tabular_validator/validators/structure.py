@@ -4,6 +4,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import copy
 from . import base
 
 
@@ -139,6 +140,7 @@ class StructureValidator(base.Validator):
                 if set(row) == set(['']):
                     pass
                 else:
+                    previous_instances = copy.deepcopy(self.seen[_rep])
                     self.seen[_rep].append(index)
                     valid = False
                     is_dupe = True
@@ -147,7 +149,7 @@ class StructureValidator(base.Validator):
                         self.name,
                         self.RESULT_CATEGORY_ROW,
                         self.RESULT_LEVEL_ERROR,
-                        _type['msg'].format(index, self.seen[_rep]),
+                        _type['msg'].format(index, previous_instances),
                         _type['id'],
                         _type['name'],
                         row,
