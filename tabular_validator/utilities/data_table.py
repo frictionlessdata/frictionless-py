@@ -126,9 +126,14 @@ class DataTable(object):
 
         # TODO: Need to flesh out this implementation quite a bit. See messytables
 
+        if compat.parse.urlparse(data_source).scheme in self.REMOTE_SCHEMES:
+            instream = compat.urlopen(data_source).read()
+            workbook = xlrd.open_workbook(file_contents=instream)
+        else:
+            workbook = xlrd.open_workbook(data_source)
+
         out = io.TextIOWrapper(io.BufferedRandom(io.BytesIO()), encoding=self.DEFAULT_ENCODING)
 
-        workbook = xlrd.open_workbook(data_source)
         sheet = workbook.sheet_by_index(self.excel_sheet_index)
         row_count = sheet.nrows
 
@@ -176,16 +181,18 @@ class DataTable(object):
     def _detect_stream_encoding(self, stream):
         """Return best guess at encoding of stream."""
 
+        sample_length = 10000
+
         if self.encoding:
             return self.encoding
 
         if isinstance(stream, compat.str):
             if isinstance(stream, compat.bytes):
-                sample = stream[:2000]
+                sample = stream[:sample_length]
             else:
-                sample = compat.to_bytes(stream)[:2000]
+                sample = compat.to_bytes(stream)[:sample_length]
         else:
-            sample = stream.read(2000)
+            sample = stream.read(sample_length)
             stream.seek(0)
 
         encoding = chardet.detect(sample)['encoding']

@@ -144,7 +144,15 @@ class TestJungle(base.BaseTestCase):
 
         self.assertTrue(pipeline.data)
 
-    def test_pipeline_hmt_bbsrc_one(self):
+    def test_htm_bis_two(self):
+        # excel
+        data = 'https://www.gov.uk/government/uploads/system/uploads/attachment_data/file/84167/BIS_monthly_spend_December_2012.xls'
+        pipeline = Pipeline(data, format='excel')
+        result, report = pipeline.run()
+
+        self.assertTrue(pipeline.data)
+
+    def test_pipeline_hmt_bbsrc(self):
 
         data = 'http://www.bbsrc.ac.uk/nmsruntime/saveasdialog.aspx?lID=6795&sID=12031'
         encoding = 'ISO-8859-2'
@@ -153,11 +161,11 @@ class TestJungle(base.BaseTestCase):
 
         self.assertTrue(pipeline.data)
 
-    def test_standalone_hmt_bbsrc_one(self):
+    def test_standalone_hmt_bbsrc(self):
 
         data = 'http://www.bbsrc.ac.uk/nmsruntime/saveasdialog.aspx?lID=6795&sID=12031'
         encoding = 'ISO-8859-2'
         validator = validators.StructureValidator()
-        result, report, data = validator.run(data, encoding=encoding)
+        result, report, data = validator.run(data, encoding=None)
 
         self.assertTrue(data)
