@@ -167,6 +167,7 @@ class DataTable(object):
                 headers = line.rstrip('\n').split(',')
                 break
 
+        headers = [h.strip() for h in headers]
         return headers
 
     def _stream_from_url(self, url):

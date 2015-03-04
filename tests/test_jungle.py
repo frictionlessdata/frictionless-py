@@ -137,7 +137,7 @@ class TestJungle(base.BaseTestCase):
 
     def test_hmt_bis_one(self):
 
-        data = 'https://www.gov.uk/government/uploads/system/uploads/attachment_data/file/363726/BIS_spending_over__25_000_July_2014.csv'
+        data = os.path.join(self.data_dir, 'hmt','BIS_spending_over__25_000_July_2014.csv')
         encoding = 'ISO-8859-2'
         pipeline = Pipeline(data, encoding=encoding)
         result, report = pipeline.run()
@@ -146,7 +146,7 @@ class TestJungle(base.BaseTestCase):
 
     def test_htm_bis_two(self):
         # excel
-        data = 'https://www.gov.uk/government/uploads/system/uploads/attachment_data/file/84167/BIS_monthly_spend_December_2012.xls'
+        data = os.path.join(self.data_dir, 'hmt','BIS_monthly_spend_December_2012.xls')
         pipeline = Pipeline(data, format='excel')
         result, report = pipeline.run()
 
@@ -154,7 +154,7 @@ class TestJungle(base.BaseTestCase):
 
     def test_pipeline_hmt_bbsrc(self):
 
-        data = 'http://www.bbsrc.ac.uk/nmsruntime/saveasdialog.aspx?lID=6795&sID=12031'
+        data = os.path.join(self.data_dir, 'hmt','1011-bbsrc-25k-spend-return.csv')
         encoding = 'ISO-8859-2'
         pipeline = Pipeline(data, encoding=encoding)
         result, report = pipeline.run()
@@ -163,7 +163,7 @@ class TestJungle(base.BaseTestCase):
 
     def test_standalone_hmt_bbsrc(self):
 
-        data = 'http://www.bbsrc.ac.uk/nmsruntime/saveasdialog.aspx?lID=6795&sID=12031'
+        data =  os.path.join(self.data_dir, 'hmt','1011-bbsrc-25k-spend-return.csv')
         encoding = 'ISO-8859-2'
         validator = validators.StructureValidator()
         result, report, data = validator.run(data, encoding=None)
