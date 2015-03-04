@@ -78,7 +78,7 @@ class SchemaValidator(base.Validator):
 
         if self.schema:
             if self.ignore_field_order:
-                if not (set(headers) == set(self.schema.headers)):
+                if not (set(headers).issuperset(set(self.schema.required_headers))):
 
                     valid = False
                     _type = RESULTS['incorrect_headers']
@@ -99,7 +99,8 @@ class SchemaValidator(base.Validator):
                         return valid, headers
 
             else:
-                if not (headers == self.schema.headers):
+                header_length = len(headers)
+                if not (headers == self.schema.required_headers[:header_length]):
 
                     valid = False
                     _type = RESULTS['incorrect_headers']
