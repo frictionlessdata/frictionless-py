@@ -99,13 +99,6 @@
             "constraints": {
                 "required": false
             }
-        },
-        {
-            "name": "VAT registration number",
-            "type": "string",
-            "constraints": {
-                "required": false
-            }
         }
     ]
 }
