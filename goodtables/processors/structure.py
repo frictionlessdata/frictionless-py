@@ -37,7 +37,7 @@ RESULTS = {
 }
 
 
-class StructureValidator(base.Validator):
+class StructureProcessor(base.Processor):
 
     name = 'structure'
 
@@ -52,7 +52,7 @@ class StructureValidator(base.Validator):
         # TODO: `self.seen` should be maintained in a file or something
         # TODO: Check for empty columns
 
-        super(StructureValidator, self).__init__(
+        super(StructureProcessor, self).__init__(
             fail_fast=fail_fast, transform=transform, report_limit=report_limit,
             row_limit=row_limit, report_stream=report_stream, report=report,
             result_level=result_level)

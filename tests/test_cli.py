@@ -7,9 +7,9 @@ from __future__ import unicode_literals
 import os
 import io
 import subprocess
-from tabular_validator.pipeline import Pipeline
-from tabular_validator import exceptions
-from tabular_validator import compat
+from goodtables.pipeline import Pipeline
+from goodtables import exceptions
+from goodtables import compat
 from tests import base
 
 
@@ -30,7 +30,7 @@ class TestCLI(base.BaseTestCase):
 
     def test_from_url(self):
 
-        c = ['python', 'tabular_validator/cli/main.py', 'validate',
+        c = ['python', 'goodtables/cli/main.py', 'validate',
              self.data_url]
         result = subprocess.check_output(c)
 
@@ -38,7 +38,7 @@ class TestCLI(base.BaseTestCase):
 
     def test_from_filepath(self):
 
-        c = ['python', 'tabular_validator/cli/main.py', 'validate',
+        c = ['python', 'goodtables/cli/main.py', 'validate',
              self.data_filepath]
         result = subprocess.check_output(c)
 
@@ -46,7 +46,7 @@ class TestCLI(base.BaseTestCase):
 
     def test_with_schema(self):
 
-        c = ['python', 'tabular_validator/cli/main.py', 'validate',
+        c = ['python', 'goodtables/cli/main.py', 'validate',
              self.data_filepath, '--schema', self.schema_filepath]
         result = subprocess.check_output(c)
 

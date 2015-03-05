@@ -13,4 +13,4 @@ before_script:
   - mkdir -p shippable/codecoverage
 
 script:
-  - PYTHONPATH=. py.test --cov tabular_validator --cov-config .coveragerc --cov-report xml --junitxml=shippable/testresults/tests.xml
+  - PYTHONPATH=. py.test --cov goodtables --cov-config .coveragerc --cov-report xml --junitxml=shippable/testresults/tests.xml

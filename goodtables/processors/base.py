@@ -10,9 +10,9 @@ from ..utilities import data_table, helpers
 from .. import exceptions
 
 
-class Validator(object):
+class Processor(object):
 
-    """Base Validator class. Validator implementations should inherit."""
+    """Base Processor class. Processor implementations should inherit."""
 
     name = None
     ROW_LIMIT_MAX = 30000
@@ -45,7 +45,7 @@ class Validator(object):
 
                 if not all(report_stream_tests):
                     _msg = '`report_stream` must be a seekable and writable text stream.'
-                    raise exceptions.ValidatorBuildError(_msg)
+                    raise exceptions.ProcessorBuildError(_msg)
 
                 report_backend = 'client'
             else:
@@ -86,13 +86,13 @@ class Validator(object):
                 return v
         return ''
 
-    def make_entry(self, validator, result_category, result_level, result_message,
+    def make_entry(self, processor, result_category, result_level, result_message,
                    result_id, result_name, result_context, row_index=None, row_name='',
                    column_index=None, column_name=''):
         """Return a report entry."""
 
         return {
-            'validator': validator,
+            'processor': processor,
             'result_category': result_category,
             'result_level': result_level,
             'result_message': result_message,
@@ -107,7 +107,7 @@ class Validator(object):
 
     def run(self, data_source, headers=None, encoding=None, is_table=False):
 
-        """Run this validator on data_source.
+        """Run this processor on data_source.
 
         Args:
             data_source: the data source as string, URL, filepath or stream

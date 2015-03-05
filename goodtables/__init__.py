@@ -5,10 +5,10 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from . import pipeline
-from . import validators
+from . import processors
 from . import utilities
 from . import exceptions
 from . import compat
 
 
-__all__ = ['pipeline', 'validators', 'utilities', 'exceptions', 'compat']
+__all__ = ['pipeline', 'processors', 'utilities', 'exceptions', 'compat']

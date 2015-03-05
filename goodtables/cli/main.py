@@ -14,7 +14,7 @@ import coverage
 CLI_DIR = os.path.abspath(os.path.dirname(__file__))
 REPO_DIR = os.path.abspath(os.path.dirname(os.path.dirname(CLI_DIR)))
 sys.path.insert(1, REPO_DIR)
-from tabular_validator import pipeline as pipeline
+from goodtables.pipeline import Pipeline
 
 
 @click.group()
@@ -37,10 +37,10 @@ def validate(data, schema, format, dry_run, fail_fast, row_limit, report_limit):
     if schema:
         options['schema'] = {'schema': schema}
 
-    validator = pipeline.Pipeline(data, format=format, fail_fast=fail_fast,
-                                  dry_run=dry_run, row_limit=row_limit,
-                                  report_limit=report_limit)
-    valid, report = validator.run()
+    pipeline = Pipeline(data, format=format, fail_fast=fail_fast,
+                        dry_run=dry_run, row_limit=row_limit,
+                        report_limit=report_limit)
+    valid, report = pipeline.run()
 
     if valid:
         click.echo('The data source is valid.\n')

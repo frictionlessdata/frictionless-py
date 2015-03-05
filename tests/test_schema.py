@@ -7,10 +7,10 @@ from __future__ import unicode_literals
 import os
 import io
 import json
-from tabular_validator import validators
-from tabular_validator import exceptions
-from tabular_validator.pipeline import Pipeline
-from tabular_validator.utilities import table_schema
+from goodtables import processors
+from goodtables import exceptions
+from goodtables.pipeline import Pipeline
+from goodtables.utilities import table_schema
 from tests import base
 
 
@@ -81,7 +81,7 @@ class TestValidateSchema(base.BaseTestCase):
         self.assertFalse(valid)
 
 
-class TestSchemaValidator(base.BaseTestCase):
+class TestSchemaProcessor(base.BaseTestCase):
 
     def test_standalone_schema_valid_simple(self):
 
@@ -91,7 +91,7 @@ class TestSchemaValidator(base.BaseTestCase):
         with io.open(data_filepath) as data_stream, \
                  io.open(schema_filepath) as schema_stream:
             schema = json.load(schema_stream)
-            validator = validators.SchemaValidator(schema=schema)
+            validator = processors.SchemaProcessor(schema=schema)
             result, report, data = validator.run(data_stream)
 
             self.assertTrue(result)
@@ -106,7 +106,7 @@ class TestSchemaValidator(base.BaseTestCase):
             schema = json.load(schema_stream)
             options = {'schema':{'schema': schema}}
             validator = Pipeline(data_filepath,
-                                 validators=('schema',),
+                                 processors=('schema',),
                                  options=options)
 
             result, report = validator.run()
@@ -121,7 +121,7 @@ class TestSchemaValidator(base.BaseTestCase):
         with io.open(data_filepath) as data_stream, \
                  io.open(schema_filepath) as schema_stream:
             schema = json.load(schema_stream)
-            validator = validators.SchemaValidator(schema=schema)
+            validator = processors.SchemaProcessor(schema=schema)
             result, report, data = validator.run(data_stream)
 
             self.assertFalse(result)
@@ -136,7 +136,7 @@ class TestSchemaValidator(base.BaseTestCase):
             schema = json.load(schema_stream)
             options = {'schema': {'schema': schema}}
             validator = Pipeline(data_filepath,
-                                 validators=('structure', 'schema',),
+                                 processors=('structure', 'schema',),
                                  options=options)
             result, report = validator.run()
 
@@ -150,7 +150,7 @@ class TestSchemaValidator(base.BaseTestCase):
         with io.open(data_filepath) as data_stream, \
                  io.open(schema_filepath) as schema_stream:
             schema = json.load(schema_stream)
-            validator = validators.SchemaValidator(schema=schema)
+            validator = processors.SchemaProcessor(schema=schema)
             result, report, data = validator.run(data_stream)
 
             self.assertTrue(result)
@@ -165,7 +165,7 @@ class TestSchemaValidator(base.BaseTestCase):
             schema = json.load(schema_stream)
             options = {'schema':{'schema': schema}}
             validator = Pipeline(data_filepath,
-                                 validators=('schema',),
+                                 processors=('schema',),
                                  options=options)
             result, report = validator.run()
 
@@ -178,7 +178,7 @@ class TestSchemaValidator(base.BaseTestCase):
         with io.open(data_filepath) as data_stream, \
                  io.open(schema_filepath) as schema_stream:
             schema = json.load(schema_stream)
-            validator = validators.SchemaValidator(schema=schema,
+            validator = processors.SchemaProcessor(schema=schema,
                                                    ignore_field_order=False)
             result, report, data = validator.run(data_stream)
 
@@ -194,7 +194,7 @@ class TestSchemaValidator(base.BaseTestCase):
             schema = json.load(schema_stream)
             options = {'schema':{'schema': schema, 'ignore_field_order': False}}
             validator = Pipeline(data_filepath,
-                                 validators=('schema',),
+                                 processors=('schema',),
                                  options=options)
             result, report = validator.run()
 
@@ -205,7 +205,7 @@ class TestSchemaValidator(base.BaseTestCase):
         filepath = os.path.join(self.data_dir, 'fail_fast_two_schema_errors.csv')
         schema = os.path.join(self.data_dir, 'test_schema.json')
         with io.open(filepath) as stream:
-            validator = validators.SchemaValidator(fail_fast=True, schema=schema)
+            validator = processors.SchemaProcessor(fail_fast=True, schema=schema)
             result, report, data = validator.run(stream)
 
             self.assertEqual(len(report.generate()['results']), 1)
@@ -215,7 +215,7 @@ class TestSchemaValidator(base.BaseTestCase):
         filepath = os.path.join(self.data_dir, 'fail_fast_two_schema_errors.csv')
         schema = os.path.join(self.data_dir, 'test_schema.json')
         options = {'schema': {'schema': schema}}
-        validator = Pipeline(filepath, validators=('schema',),
+        validator = Pipeline(filepath, processors=('schema',),
                              fail_fast=True, options=options)
         result, report = validator.run()
 
@@ -226,7 +226,7 @@ class TestSchemaValidator(base.BaseTestCase):
         filepath = os.path.join(self.data_dir, 'fail_fast_two_schema_errors.csv')
         schema = os.path.join(self.data_dir, 'test_schema.json')
         with io.open(filepath) as stream:
-            validator = validators.SchemaValidator(schema=schema)
+            validator = processors.SchemaProcessor(schema=schema)
             result, report, data = validator.run(stream)
 
             self.assertEqual(len(report.generate()['results']), 7)
@@ -236,7 +236,7 @@ class TestSchemaValidator(base.BaseTestCase):
         filepath = os.path.join(self.data_dir, 'fail_fast_two_schema_errors.csv')
         schema = os.path.join(self.data_dir, 'test_schema.json')
         options = {'schema': {'schema': schema}}
-        validator = Pipeline(filepath, validators=('schema',),
+        validator = Pipeline(filepath, processors=('schema',),
                              options=options)
         result, report = validator.run()
 
@@ -259,7 +259,7 @@ class TestSchemaValidator(base.BaseTestCase):
         filepath = os.path.join(self.data_dir, 'report_limit_schema.csv')
         schema = os.path.join(self.data_dir, 'test_schema.json')
         with io.open(filepath) as stream:
-            validator = validators.SchemaValidator(report_limit=1, schema=schema)
+            validator = processors.SchemaProcessor(report_limit=1, schema=schema)
             result, report, data = validator.run(stream)
 
             self.assertEqual(len(report.generate()['results']), 1)
@@ -269,7 +269,7 @@ class TestSchemaValidator(base.BaseTestCase):
         filepath = os.path.join(self.data_dir, 'report_limit_schema.csv')
         schema = os.path.join(self.data_dir, 'test_schema.json')
         options = {'schema': {'schema': schema}}
-        validator = Pipeline(filepath, validators=('schema',),
+        validator = Pipeline(filepath, processors=('schema',),
                              report_limit=1, options=options)
         result, report = validator.run()
 
@@ -279,8 +279,8 @@ class TestSchemaValidator(base.BaseTestCase):
 
     def test_standalone_report_limit_out_range(self):
 
-        limit = validators.SchemaValidator.REPORT_LIMIT_MAX
-        validator = validators.SchemaValidator(report_limit=(limit + 1))
+        limit = processors.SchemaProcessor.REPORT_LIMIT_MAX
+        validator = processors.SchemaProcessor(report_limit=(limit + 1))
 
         self.assertEqual(validator.report_limit, limit)
 
@@ -288,7 +288,7 @@ class TestSchemaValidator(base.BaseTestCase):
 
         filepath = os.path.join(self.data_dir, 'valid.csv')
         limit = Pipeline.REPORT_LIMIT_MAX
-        validator = Pipeline(filepath, validators=('schema',), report_limit=(limit + 1))
+        validator = Pipeline(filepath, processors=('schema',), report_limit=(limit + 1))
 
         self.assertEqual(validator.report_limit, limit)
         self.assertEqual(validator.pipeline[0].report_limit, limit)
@@ -298,7 +298,7 @@ class TestSchemaValidator(base.BaseTestCase):
         filepath = os.path.join(self.data_dir, 'row_limit_schema.csv')
         schema = os.path.join(self.data_dir, 'test_schema.json')
         with io.open(filepath) as stream:
-            validator = validators.SchemaValidator(row_limit=2, schema=schema)
+            validator = processors.SchemaProcessor(row_limit=2, schema=schema)
             result, report, data = validator.run(stream)
 
             self.assertEqual(len(report.generate()['results']), 0)
@@ -308,7 +308,7 @@ class TestSchemaValidator(base.BaseTestCase):
         filepath = os.path.join(self.data_dir, 'row_limit_schema.csv')
         schema = os.path.join(self.data_dir, 'test_schema.json')
         options = {'schema': {'schema': schema}}
-        validator = Pipeline(filepath, validators=('schema',),
+        validator = Pipeline(filepath, processors=('schema',),
                              row_limit=2, options=options)
         result, report = validator.run()
 
@@ -318,8 +318,8 @@ class TestSchemaValidator(base.BaseTestCase):
 
     def test_standalone_row_limit_out_range(self):
 
-        limit = validators.SchemaValidator.ROW_LIMIT_MAX
-        validator = validators.SchemaValidator(row_limit=(limit + 1))
+        limit = processors.SchemaProcessor.ROW_LIMIT_MAX
+        validator = processors.SchemaProcessor(row_limit=(limit + 1))
 
         self.assertEqual(validator.row_limit, limit)
 
@@ -327,7 +327,7 @@ class TestSchemaValidator(base.BaseTestCase):
 
         filepath = os.path.join(self.data_dir, 'valid.csv')
         limit = Pipeline.ROW_LIMIT_MAX
-        validator = Pipeline(filepath, validators=('schema',), row_limit=(limit + 1))
+        validator = Pipeline(filepath, processors=('schema',), row_limit=(limit + 1))
 
         self.assertEqual(validator.row_limit, limit)
         self.assertEqual(validator.pipeline[0].row_limit, limit)
@@ -337,7 +337,7 @@ class TestSchemaValidator(base.BaseTestCase):
         filepath = os.path.join(self.data_dir, 'valid.csv')
         report_stream = io.TextIOWrapper(io.BufferedRandom(io.BytesIO()))
         with io.open(filepath) as stream:
-            validator = validators.SchemaValidator(
+            validator = processors.SchemaProcessor(
                 report_stream=report_stream)
             result, report, data = validator.run(stream)
 
@@ -352,7 +352,7 @@ class TestSchemaValidator(base.BaseTestCase):
         filepath = os.path.join(self.data_dir, 'valid.csv')
         report_stream = io.TextIOWrapper(io.BufferedRandom(io.BytesIO()))
         options = {}
-        validator = Pipeline(filepath, validators=('schema',),
+        validator = Pipeline(filepath, processors=('schema',),
                              report_stream=report_stream, options=options)
 
         result, report = validator.run()
@@ -367,8 +367,8 @@ class TestSchemaValidator(base.BaseTestCase):
 
         filepath = os.path.join(self.data_dir, 'valid.csv')
         report_stream = io.BufferedReader(io.BytesIO())
-        self.assertRaises(exceptions.ValidatorBuildError,
-                          validators.SchemaValidator,
+        self.assertRaises(exceptions.ProcessorBuildError,
+                          processors.SchemaProcessor,
                           report_stream=report_stream)
 
     def test_pipeline_report_stream_invalid(self):
@@ -377,7 +377,7 @@ class TestSchemaValidator(base.BaseTestCase):
         report_stream = io.BufferedReader(io.BytesIO())
         options = {}
         args = [filepath]
-        kwargs = {'report_stream': report_stream, 'validators': ('schema',), 'options': options}
+        kwargs = {'report_stream': report_stream, 'processors': ('schema',), 'options': options}
         self.assertRaises(exceptions.PipelineBuildError, Pipeline, *args, **kwargs)
 
     def test_standalone_report_stream_none(self):
@@ -385,7 +385,7 @@ class TestSchemaValidator(base.BaseTestCase):
         filepath = os.path.join(self.data_dir, 'valid.csv')
         report_stream = None
         with io.open(filepath) as stream:
-            validator = validators.SchemaValidator(
+            validator = processors.SchemaProcessor(
                 report_stream=report_stream)
             result, report, data = validator.run(stream)
 
@@ -395,7 +395,7 @@ class TestSchemaValidator(base.BaseTestCase):
         filepath = os.path.join(self.data_dir, 'valid.csv')
         report_stream = None
         options = {}
-        validator = Pipeline(filepath, validators=('schema',),
+        validator = Pipeline(filepath, processors=('schema',),
                              report_stream=report_stream, options=options)
         result, report = validator.run()
 
@@ -404,7 +404,7 @@ class TestSchemaValidator(base.BaseTestCase):
     def test_standalone_info_result_for_required_false(self):
         filepath = os.path.join(self.data_dir, 'required_false.csv')
         schema = os.path.join(self.data_dir, 'required_false_schema.json')
-        validator = validators.SchemaValidator(schema=schema, result_level='info')
+        validator = processors.SchemaProcessor(schema=schema, result_level='info')
         result, report, data = validator.run(filepath)
 
         self.assertEqual(len(report.generate()['results']), 1)
@@ -413,7 +413,7 @@ class TestSchemaValidator(base.BaseTestCase):
         filepath = os.path.join(self.data_dir, 'required_false.csv')
         schema = os.path.join(self.data_dir, 'required_false_schema.json')
         options = {'schema': {'schema': schema, 'result_level': 'info'}}
-        validator = Pipeline(filepath, validators=('schema',), options=options)
+        validator = Pipeline(filepath, processors=('schema',), options=options)
         result, report = validator.run()
 
         self.assertEqual(len(report['results']), 1)

@@ -15,7 +15,7 @@ class PipelineBuildError(Exception):
         self.msg = msg or 'Could not build the pipeline.'
 
 
-class ValidatorBuildError(Exception):
+class ProcessorBuildError(Exception):
 
     def __init__(self, msg=None):
-        self.msg = msg or 'Could not build the validator.'
+        self.msg = msg or 'Could not build the processor.'

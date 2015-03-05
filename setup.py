@@ -23,10 +23,10 @@ dependencies = [
 ]
 
 setup(
-    name='tabular-validator',
-    description='A toolkit for validating tabular data through a pipeline.',
-    long_description='A toolkit for validating tabular data through a pipeline.',
-    version='0.3.0',
+    name='goodtables',
+    description='Validate and process tabular data.',
+    long_description='Validate and process tabular data.',
+    version='0.3.1',
     author='Open Knowledge Foundation',
     author_email='info@okfn.org',
     url='http://okfn.org',
@@ -48,7 +48,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'tv = tabular_validator.cli.main:cli',
+            'goodtables = goodtables.cli.main:cli',
         ]
     },
 )

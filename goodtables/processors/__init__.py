@@ -4,9 +4,9 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from .base import Validator
-from .structure import StructureValidator
-from .schema import SchemaValidator
+from .base import Processor
+from .structure import StructureProcessor
+from .schema import SchemaProcessor
 
 
-__all__ = ['Validator', 'StructureValidator', 'SchemaValidator']
+__all__ = ['Processor', 'StructureProcessor', 'SchemaProcessor']

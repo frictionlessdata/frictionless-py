@@ -11,12 +11,12 @@ import requests
 from .. import compat
 
 
-def builtin_validators():
-    """Return dict of public builtin validators. Avoids circular import."""
-    from .. import validators
+def builtin_processors():
+    """Return dict of public builtin processors. Avoids circular import."""
+    from .. import processors
     return {
-        validators.StructureValidator.name: validators.StructureValidator,
-        validators.SchemaValidator.name: validators.SchemaValidator
+        processors.StructureProcessor.name: processors.StructureProcessor,
+        processors.SchemaProcessor.name: processors.SchemaProcessor
     }
 
 
@@ -26,7 +26,7 @@ REMOTE_SCHEMES = ('http', 'https', 'ftp', 'ftps')
 
 # a schema for the reporter.Report() instances used by validators
 report_schema = {
-    'validator': {'type': compat.str},
+    'processor': {'type': compat.str},
     'result_category': {'type': compat.str},
     'result_level': {'type': compat.str},
     'result_message': {'type': compat.str},

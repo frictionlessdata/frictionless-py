@@ -8,8 +8,8 @@ import os
 import io
 import json
 import decimal
-from tabular_validator.pipeline import Pipeline
-from tabular_validator import exceptions
+from goodtables.pipeline import Pipeline
+from goodtables import exceptions
 from tests import base
 
 
@@ -57,28 +57,28 @@ class TestPipeline(base.BaseTestCase):
 
         self.assertTrue(pipeline.data)
 
-    def test_register_validator_append(self):
+    def test_register_processor_append(self):
 
         pipeline = Pipeline(self.data_string)
         self.assertEqual(len(pipeline.pipeline), 1)
 
-        pipeline.register_validator('schema')
+        pipeline.register_processor('schema')
         self.assertEqual(len(pipeline.pipeline), 2)
 
-    def test_register_validator_insert(self):
+    def test_register_processor_insert(self):
 
         pipeline = Pipeline(self.data_string)
         self.assertEqual(len(pipeline.pipeline), 1)
 
-        pipeline.register_validator('schema', position=0)
+        pipeline.register_processor('schema', position=0)
         self.assertEqual(len(pipeline.pipeline), 2)
 
-    def test_resolve_validator(self):
+    def test_resolve_processor(self):
 
         pipeline = Pipeline(self.data_string)
-        val = pipeline.resolve_validator('structure')
+        val = pipeline.resolve_processor('structure')
 
-        self.assertEqual(val.__name__, 'StructureValidator')
+        self.assertEqual(val.__name__, 'StructureProcessor')
 
     def test_raise_if_data_none(self):
         self.assertRaises(exceptions.PipelineBuildError, Pipeline, None)
@@ -118,11 +118,11 @@ class TestPipeline(base.BaseTestCase):
 
         filepath = os.path.join(self.data_dir, 'report_limit_structure.csv')
         options = {}
-        validator = Pipeline(filepath, validators=('structure',),
+        validator = Pipeline(filepath, processors=('structure',),
                              report_limit=1, options=options)
         result, report = validator.run()
 
-        self.assertEqual(len([r for r in report['results'] if r['validator'] == 'structure']), 1)
+        self.assertEqual(len([r for r in report['results'] if r['processor'] == 'structure']), 1)
 
     def test__report_limit_out_range(self):
 
@@ -137,11 +137,11 @@ class TestPipeline(base.BaseTestCase):
 
         filepath = os.path.join(self.data_dir, 'row_limit_structure.csv')
         options = {}
-        validator = Pipeline(filepath, validators=('structure',),
+        validator = Pipeline(filepath, processors=('structure',),
                              row_limit=3, options=options)
         result, report = validator.run()
 
-        self.assertEqual(len([r for r in report['results'] if r['validator'] == 'structure']), 1)
+        self.assertEqual(len([r for r in report['results'] if r['processor'] == 'structure']), 1)
 
     def test_row_limit_out_range(self):
 
@@ -156,12 +156,12 @@ class TestPipeline(base.BaseTestCase):
         filepath = os.path.join(self.data_dir, 'valid.csv')
         report_stream = io.TextIOWrapper(io.BufferedRandom(io.BytesIO()))
         options = {}
-        validator = Pipeline(filepath, validators=('schema',),
+        validator = Pipeline(filepath, processors=('schema',),
                              report_stream=report_stream, options=options)
 
         result, report = validator.run()
 
-        self.assertEqual(len([r for r in report['results'] if r['validator'] == 'schema']), 0)
+        self.assertEqual(len([r for r in report['results'] if r['processor'] == 'schema']), 0)
 
         report_stream.seek(0)
         for line in report_stream:
@@ -269,7 +269,7 @@ class TestPipeline(base.BaseTestCase):
         filepath = os.path.join(self.data_dir, 'fail_fast_two_schema_errors.csv')
         schema = os.path.join(self.data_dir, 'test_schema.json')
         options = {'schema': {'schema': schema}}
-        validator = Pipeline(filepath, validators=('schema',), options=options, fail_fast=True)
+        validator = Pipeline(filepath, processors=('schema',), options=options, fail_fast=True)
         result, report = validator.run()
 
         for col in report['summary']['columns']:

@@ -23,20 +23,20 @@ class Pipeline(object):
     """Validate a (tabular) data source through a validation pipeline.
 
     Args:
-    * validators: A list of validator names to process `data_source`
-        * Each name can be a 'shortname' for the default validators
-            * e.g., ['structure', 'tableschema']
-        * Each name can be a string path to a validator
+    * processors: A list of processor names to process `data_source`
+        * Each name can be a 'shortname' for the default processors
+            * e.g., ['structure', 'schema']
+        * Each name can be a string path to a processor
             * e.g., ['custompackage.CustomValidator', 'schema']
-            * Custom validator must implement the Validator API
+            * Custom processors must implement the Validator API
     * data: A buffer, filepath, string or URL to the table data
     * format: The format of `data_source`. 'csv' or 'json'
     * dialect: A buffer, filepath, string or URL to a CSV dialect spec
-    * options: a dict configuration object for the validation pipeline
-        * Each validator has its options nested under its 'shortname'
-        * Custom validators have options nested under cls.__name__.lower()
+    * options: a dict configuration object for the pipeline
+        * Each processor has its options nested under its 'shortname'
+        * Custom processors have options nested under cls.__name__.lower()
         * e.g.:
-            {'structure': {#options}, 'customvalidator': {#options}}
+            {'structure': {#options}, 'customprocessor': {#options}}
     * workspace: path to directory for files. e.g.: '/my/path'
     * dry_run: No files are persisted after the run has been completed
 
@@ -44,7 +44,7 @@ class Pipeline(object):
         A tuple of `valid, report`, where `valid` is a boolean expressing
         validity according to the whole pipeline, and report is a dict
         of the entire pipeline report where each top-level key matches
-        a validator in the pipeline.
+        a processor in the pipeline.
 
     """
 
@@ -55,7 +55,7 @@ class Pipeline(object):
     DIALECT_FILENAME = 'dialect.json'
     DATA_FORMATS = ('csv', 'excel', 'json')
 
-    def __init__(self, data, validators=None, dialect=None, format='csv',
+    def __init__(self, data, processors=None, dialect=None, format='csv',
                  encoding=None, options=None, workspace=None, dry_run=True,
                  transform=True, fail_fast=False, row_limit=20000,
                  report_limit=1000, report_stream=None, header_index=0,
@@ -66,7 +66,7 @@ class Pipeline(object):
             raise exceptions.PipelineBuildError(_msg)
 
         self.openfiles = []
-        self.validators = validators or helpers.DEFAULT_PIPELINE
+        self.processors = processors or helpers.DEFAULT_PIPELINE
         self.dialect = self.get_dialect(dialect)
         self.format = format
         self.encoding = encoding
@@ -132,8 +132,8 @@ class Pipeline(object):
         """Get the pipeline for this instance."""
 
         pipeline = []
-        for name in self.validators:
-            _class = self.resolve_validator(name)
+        for name in self.processors:
+            _class = self.resolve_processor(name)
             options = self.options.get(_class.name, {})
             # override options with those we accept directly from the pipeline
             options['row_limit'] = self.row_limit
@@ -191,34 +191,34 @@ class Pipeline(object):
                 destfile.write(data.read())
                 data.seek(0)
 
-    def resolve_validator(self, validator_name):
-        """Return a validator class."""
+    def resolve_processor(self, processor_name):
+        """Return a processor class."""
 
-        if validator_name in helpers.builtin_validators():
-            validator_class = helpers.builtin_validators()[validator_name]
+        if processor_name in helpers.builtin_processors():
+            processor_class = helpers.builtin_processors()[processor_name]
         else:
-            # resolve a custom validator
-            _module, _class = validator_name.rsplit('.', 1)
+            # resolve a custom processor
+            _module, _class = processor_name.rsplit('.', 1)
             try:
-                validator_class = getattr(importlib.import_module(_module),
+                processor_class = getattr(importlib.import_module(_module),
                                           _class)
             except ImportError as e:
                 # TODO: something better here
                 raise e
 
-        return validator_class
+        return processor_class
 
-    def register_validator(self, validator_name, options=None, position=None):
-        """Register a validator on the pipeline."""
+    def register_processor(self, processor_name, options=None, position=None):
+        """Register a processor on the pipeline."""
 
-        validator_class = self.resolve_validator(validator_name)
+        processor_class = self.resolve_processor(processor_name)
         options = options or {}
-        validator = validator_class(**options)
+        processor = processor_class(**options)
 
         if position is None:
-            self.pipeline.append(validator)
+            self.pipeline.append(processor)
         else:
-            self.pipeline.insert(position, validator)
+            self.pipeline.insert(position, processor)
 
     def run(self):
         """Run the pipeline."""
@@ -231,9 +231,9 @@ class Pipeline(object):
 
         valid = True
 
-        for validator in self.pipeline:
+        for processor in self.pipeline:
 
-            _valid, _, self.data = validator.run(self.data, is_table=True)
+            _valid, _, self.data = processor.run(self.data, is_table=True)
             valid = _run_valid(_valid, valid)
 
             # if a validator returns invalid, we stop the pipeline,

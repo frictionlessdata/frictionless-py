@@ -7,19 +7,19 @@ from __future__ import unicode_literals
 import os
 import io
 import json
-from tabular_validator import validators
-from tabular_validator import exceptions
-from tabular_validator.pipeline import Pipeline
+from goodtables import processors
+from goodtables import exceptions
+from goodtables.pipeline import Pipeline
 from tests import base
 
 
-class TestStructureValidator(base.BaseTestCase):
+class TestStructureProcessor(base.BaseTestCase):
 
     def test_standalone_ignore_empty_rows_false(self):
 
         filepath = os.path.join(self.data_dir, 'empty_rows.csv')
         with io.open(filepath) as stream:
-            validator = validators.StructureValidator()
+            validator = processors.StructureProcessor()
             result, report, data = validator.run(stream)
 
             self.assertFalse(result)
@@ -27,7 +27,7 @@ class TestStructureValidator(base.BaseTestCase):
     def test_pipeline_ignore_empty_rows_false(self):
 
         filepath = os.path.join(self.data_dir, 'empty_rows.csv')
-        validator = Pipeline(filepath, validators=('structure',))
+        validator = Pipeline(filepath, processors=('structure',))
         result, report = validator.run()
 
         self.assertFalse(result)
@@ -36,7 +36,7 @@ class TestStructureValidator(base.BaseTestCase):
 
         filepath = os.path.join(self.data_dir, 'empty_rows.csv')
         with io.open(filepath) as stream:
-            validator = validators.StructureValidator(ignore_empty_rows=True)
+            validator = processors.StructureProcessor(ignore_empty_rows=True)
             result, report, data = validator.run(stream)
 
             self.assertTrue(result)
@@ -45,7 +45,7 @@ class TestStructureValidator(base.BaseTestCase):
 
         filepath = os.path.join(self.data_dir, 'empty_rows.csv')
         options = {'structure': {'ignore_empty_rows': True}}
-        validator = Pipeline(filepath, validators=('structure',),
+        validator = Pipeline(filepath, processors=('structure',),
                              options=options)
         result, report = validator.run()
 
@@ -55,7 +55,7 @@ class TestStructureValidator(base.BaseTestCase):
 
         filepath = os.path.join(self.data_dir, 'duplicate_rows.csv')
         with io.open(filepath) as stream:
-            validator = validators.StructureValidator()
+            validator = processors.StructureProcessor()
             result, report, data = validator.run(stream)
 
             self.assertFalse(result)
@@ -63,7 +63,7 @@ class TestStructureValidator(base.BaseTestCase):
     def test_pipeline_ignore_duplicate_rows_false(self):
 
         filepath = os.path.join(self.data_dir, 'duplicate_rows.csv')
-        validator = Pipeline(filepath, validators=('structure',))
+        validator = Pipeline(filepath, processors=('structure',))
         result, report = validator.run()
 
         self.assertFalse(result)
@@ -72,7 +72,7 @@ class TestStructureValidator(base.BaseTestCase):
 
         filepath = os.path.join(self.data_dir, 'duplicate_rows.csv')
         with io.open(filepath) as stream:
-            validator = validators.StructureValidator(
+            validator = processors.StructureProcessor(
                 ignore_duplicate_rows=True)
             result, report, data = validator.run(stream)
 
@@ -82,7 +82,7 @@ class TestStructureValidator(base.BaseTestCase):
 
         filepath = os.path.join(self.data_dir, 'duplicate_rows.csv')
         options = {'structure': {'ignore_duplicate_rows': True}}
-        validator = Pipeline(filepath, validators=('structure',),
+        validator = Pipeline(filepath, processors=('structure',),
                              options=options)
         result, report = validator.run()
 
@@ -92,7 +92,7 @@ class TestStructureValidator(base.BaseTestCase):
 
         filepath = os.path.join(self.data_dir, 'defective_rows.csv')
         with io.open(filepath) as stream:
-            validator = validators.StructureValidator()
+            validator = processors.StructureProcessor()
             result, report, data = validator.run(stream)
 
             self.assertFalse(result)
@@ -100,7 +100,7 @@ class TestStructureValidator(base.BaseTestCase):
     def test_pipeline_ignore_defective_rows_false(self):
 
         filepath = os.path.join(self.data_dir, 'defective_rows.csv')
-        validator = Pipeline(filepath, validators=('structure',))
+        validator = Pipeline(filepath, processors=('structure',))
         result, report = validator.run()
 
         self.assertFalse(result)
@@ -109,7 +109,7 @@ class TestStructureValidator(base.BaseTestCase):
 
         filepath = os.path.join(self.data_dir, 'defective_rows.csv')
         with io.open(filepath) as stream:
-            validator = validators.StructureValidator(
+            validator = processors.StructureProcessor(
                 ignore_defective_rows=True)
             result, report, data = validator.run(stream)
 
@@ -119,7 +119,7 @@ class TestStructureValidator(base.BaseTestCase):
 
         filepath = os.path.join(self.data_dir, 'defective_rows.csv')
         options = {'structure': {'ignore_defective_rows': True}}
-        validator = Pipeline(filepath, validators=('structure',),
+        validator = Pipeline(filepath, processors=('structure',),
                              options=options)
         result, report = validator.run()
 
@@ -129,7 +129,7 @@ class TestStructureValidator(base.BaseTestCase):
 
         filepath = os.path.join(self.data_dir, 'duplicate_columns.csv')
         with io.open(filepath) as stream:
-            validator = validators.StructureValidator()
+            validator = processors.StructureProcessor()
             result, report, data = validator.run(stream)
 
             self.assertFalse(result)
@@ -137,7 +137,7 @@ class TestStructureValidator(base.BaseTestCase):
     def test_pipeline_ignore_duplicate_columns_false(self):
 
         filepath = os.path.join(self.data_dir, 'duplicate_columns.csv')
-        validator = Pipeline(filepath, validators=('structure',))
+        validator = Pipeline(filepath, processors=('structure',))
         result, report = validator.run()
 
         self.assertFalse(result)
@@ -146,7 +146,7 @@ class TestStructureValidator(base.BaseTestCase):
 
         filepath = os.path.join(self.data_dir, 'duplicate_columns.csv')
         with io.open(filepath) as stream:
-            validator = validators.StructureValidator(
+            validator = processors.StructureProcessor(
                 ignore_duplicate_columns=True)
             result, report, data = validator.run(stream)
 
@@ -156,7 +156,7 @@ class TestStructureValidator(base.BaseTestCase):
 
         filepath = os.path.join(self.data_dir, 'duplicate_columns.csv')
         options = {'structure': {'ignore_duplicate_columns': True}}
-        validator = Pipeline(filepath, validators=('structure',),
+        validator = Pipeline(filepath, processors=('structure',),
                              options=options)
         result, report = validator.run()
 
@@ -166,7 +166,7 @@ class TestStructureValidator(base.BaseTestCase):
 
         filepath = os.path.join(self.data_dir, 'headerless_columns.csv')
         with io.open(filepath) as stream:
-            validator = validators.StructureValidator()
+            validator = processors.StructureProcessor()
             result, report, data = validator.run(stream)
 
             self.assertFalse(result)
@@ -174,7 +174,7 @@ class TestStructureValidator(base.BaseTestCase):
     def test_pipeline_ignore_headerless_columns_false(self):
 
         filepath = os.path.join(self.data_dir, 'headerless_columns.csv')
-        validator = Pipeline(filepath, validators=('structure',))
+        validator = Pipeline(filepath, processors=('structure',))
         result, report = validator.run()
 
         self.assertFalse(result)
@@ -183,7 +183,7 @@ class TestStructureValidator(base.BaseTestCase):
 
         filepath = os.path.join(self.data_dir, 'headerless_columns.csv')
         with io.open(filepath) as stream:
-            validator = validators.StructureValidator(
+            validator = processors.StructureProcessor(
                 ignore_headerless_columns=True)
             result, report, data = validator.run(stream)
 
@@ -193,7 +193,7 @@ class TestStructureValidator(base.BaseTestCase):
 
         filepath = os.path.join(self.data_dir, 'headerless_columns.csv')
         options = {'structure': {'ignore_headerless_columns': True}}
-        validator = Pipeline(filepath, validators=('structure',),
+        validator = Pipeline(filepath, processors=('structure',),
                              options=options)
         result, report = validator.run()
 
@@ -203,7 +203,7 @@ class TestStructureValidator(base.BaseTestCase):
 
         filepath = os.path.join(self.data_dir, 'empty_rows_custom.csv')
         with io.open(filepath) as stream:
-            validator = validators.StructureValidator(empty_strings=('-',))
+            validator = processors.StructureProcessor(empty_strings=('-',))
             result, report, data = validator.run(stream)
 
             self.assertFalse(result)
@@ -212,7 +212,7 @@ class TestStructureValidator(base.BaseTestCase):
 
         filepath = os.path.join(self.data_dir, 'empty_rows_custom.csv')
         options = {'structure': {'empty_strings': ('-',)}}
-        validator = Pipeline(filepath, validators=('structure',),
+        validator = Pipeline(filepath, processors=('structure',),
                              options=options)
         result, report = validator.run()
 
@@ -222,7 +222,7 @@ class TestStructureValidator(base.BaseTestCase):
 
         filepath = os.path.join(self.data_dir, 'fail_fast_two_structure_errors.csv')
         with io.open(filepath) as stream:
-            validator = validators.StructureValidator(fail_fast=True)
+            validator = processors.StructureProcessor(fail_fast=True)
             result, report, data = validator.run(stream)
 
             self.assertEqual(len(report.generate()['results']), 1)
@@ -231,7 +231,7 @@ class TestStructureValidator(base.BaseTestCase):
 
         filepath = os.path.join(self.data_dir, 'fail_fast_two_structure_errors.csv')
         options = {}
-        validator = Pipeline(filepath, validators=('structure',),
+        validator = Pipeline(filepath, processors=('structure',),
                              fail_fast=True, options=options)
         result, report = validator.run()
 
@@ -241,7 +241,7 @@ class TestStructureValidator(base.BaseTestCase):
 
         filepath = os.path.join(self.data_dir, 'fail_fast_two_structure_errors.csv')
         with io.open(filepath) as stream:
-            validator = validators.StructureValidator()
+            validator = processors.StructureProcessor()
             result, report, data = validator.run(stream)
 
             self.assertEqual(len(report.generate()['results']), 2)
@@ -250,7 +250,7 @@ class TestStructureValidator(base.BaseTestCase):
 
         filepath = os.path.join(self.data_dir, 'fail_fast_two_structure_errors.csv')
         options = {}
-        validator = Pipeline(filepath, validators=('structure',),
+        validator = Pipeline(filepath, processors=('structure',),
                              options=options)
         result, report = validator.run()
 
@@ -259,7 +259,7 @@ class TestStructureValidator(base.BaseTestCase):
     # def test_standalone_transform_true(self):
     #     filepath = os.path.join(self.data_dir, 'headerless_columns.csv')
     #     with io.open(filepath) as stream:
-    #         validator = validators.StructureValidator(
+    #         validator = processors.StructureProcessor(
     #             ignore_headerless_columns=True)
     #         result, report, data = validator.run(stream)
 
@@ -271,7 +271,7 @@ class TestStructureValidator(base.BaseTestCase):
     # def test_standalone_transform_false(self):
     #     filepath = os.path.join(self.data_dir, 'headerless_columns.csv')
     #     with io.open(filepath) as stream:
-    #         validator = validators.StructureValidator(
+    #         validator = processors.StructureProcessor(
     #             ignore_headerless_columns=True)
     #         result, report, data = validator.run(stream)
 
@@ -284,7 +284,7 @@ class TestStructureValidator(base.BaseTestCase):
 
         filepath = os.path.join(self.data_dir, 'report_limit_structure.csv')
         with io.open(filepath) as stream:
-            validator = validators.StructureValidator(report_limit=1)
+            validator = processors.StructureProcessor(report_limit=1)
             result, report, data = validator.run(stream)
 
             self.assertEqual(len(report.generate()['results']), 1)
@@ -293,7 +293,7 @@ class TestStructureValidator(base.BaseTestCase):
 
         filepath = os.path.join(self.data_dir, 'report_limit_structure.csv')
         options = {}
-        validator = Pipeline(filepath, validators=('structure',),
+        validator = Pipeline(filepath, processors=('structure',),
                              report_limit=1, options=options)
         result, report = validator.run()
 
@@ -301,8 +301,8 @@ class TestStructureValidator(base.BaseTestCase):
 
     def test_standalone_report_limit_out_range(self):
 
-        limit = validators.StructureValidator.REPORT_LIMIT_MAX
-        validator = validators.StructureValidator(report_limit=(limit + 1))
+        limit = processors.StructureProcessor.REPORT_LIMIT_MAX
+        validator = processors.StructureProcessor(report_limit=(limit + 1))
 
         self.assertEqual(validator.report_limit, limit)
 
@@ -318,7 +318,7 @@ class TestStructureValidator(base.BaseTestCase):
 
         filepath = os.path.join(self.data_dir, 'row_limit_structure.csv')
         with io.open(filepath) as stream:
-            validator = validators.StructureValidator(row_limit=2)
+            validator = processors.StructureProcessor(row_limit=2)
             result, report, data = validator.run(stream)
 
             self.assertEqual(len(report.generate()['results']), 0)
@@ -327,7 +327,7 @@ class TestStructureValidator(base.BaseTestCase):
 
         filepath = os.path.join(self.data_dir, 'row_limit_structure.csv')
         options = {}
-        validator = Pipeline(filepath, validators=('structure',),
+        validator = Pipeline(filepath, processors=('structure',),
                              row_limit=2, options=options)
         result, report = validator.run()
 
@@ -335,8 +335,8 @@ class TestStructureValidator(base.BaseTestCase):
 
     def test_standalone_row_limit_out_range(self):
 
-        limit = validators.StructureValidator.ROW_LIMIT_MAX
-        validator = validators.StructureValidator(row_limit=(limit + 1))
+        limit = processors.StructureProcessor.ROW_LIMIT_MAX
+        validator = processors.StructureProcessor(row_limit=(limit + 1))
 
         self.assertEqual(validator.row_limit, limit)
 
@@ -354,7 +354,7 @@ class TestStructureValidator(base.BaseTestCase):
         filepath = os.path.join(self.data_dir, 'valid.csv')
         report_stream = io.TextIOWrapper(io.BufferedRandom(io.BytesIO()))
         with io.open(filepath) as stream:
-            validator = validators.StructureValidator(
+            validator = processors.StructureProcessor(
                 report_stream=report_stream)
             result, report, data = validator.run(stream)
 
@@ -369,7 +369,7 @@ class TestStructureValidator(base.BaseTestCase):
         filepath = os.path.join(self.data_dir, 'valid.csv')
         report_stream = io.TextIOWrapper(io.BufferedRandom(io.BytesIO()))
         options = {}
-        validator = Pipeline(filepath, validators=('structure',),
+        validator = Pipeline(filepath, processors=('structure',),
                              report_stream=report_stream, options=options)
 
         result, report = validator.run()
@@ -384,8 +384,8 @@ class TestStructureValidator(base.BaseTestCase):
 
         filepath = os.path.join(self.data_dir, 'valid.csv')
         report_stream = io.BufferedReader(io.BytesIO())
-        self.assertRaises(exceptions.ValidatorBuildError,
-                          validators.StructureValidator,
+        self.assertRaises(exceptions.ProcessorBuildError,
+                          processors.StructureProcessor,
                           report_stream=report_stream)
 
     def test_pipeline_report_stream_invalid(self):
@@ -404,7 +404,7 @@ class TestStructureValidator(base.BaseTestCase):
         filepath = os.path.join(self.data_dir, 'valid.csv')
         report_stream = None
         with io.open(filepath) as stream:
-            validator = validators.StructureValidator(
+            validator = processors.StructureProcessor(
                 report_stream=report_stream)
             result, report, data = validator.run(stream)
 
@@ -415,7 +415,7 @@ class TestStructureValidator(base.BaseTestCase):
         filepath = os.path.join(self.data_dir, 'valid.csv')
         report_stream = None
         options = {}
-        validator = Pipeline(filepath, validators=('structure',),
+        validator = Pipeline(filepath, processors=('structure',),
                              report_stream=report_stream, options=options)
         result, report = validator.run()
 
@@ -424,7 +424,7 @@ class TestStructureValidator(base.BaseTestCase):
     def test_standalone_empty_rows_are_not_duplicatable(self):
 
         filepath = os.path.join(self.data_dir, 'empty_rows_multiple.csv')
-        validator = validators.StructureValidator(fail_fast=False)
+        validator = processors.StructureProcessor(fail_fast=False)
         result, report, data = validator.run(filepath)
 
         self.assertEqual(len(report.generate()['results']), 11)
@@ -432,7 +432,7 @@ class TestStructureValidator(base.BaseTestCase):
     def test_pipeline_empty_rows_are_not_duplicatable(self):
 
         filepath = os.path.join(self.data_dir, 'empty_rows_multiple.csv')
-        validator = Pipeline(filepath, validators=('structure',), fail_fast=False)
+        validator = Pipeline(filepath, processors=('structure',), fail_fast=False)
         result, report = validator.run()
 
         self.assertEqual(len(report['results']), 11)

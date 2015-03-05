@@ -37,9 +37,9 @@ RESULTS = {
 }
 
 
-class SchemaValidator(base.Validator):
+class SchemaProcessor(base.Processor):
 
-    """Validate data against a JSON Table Schema."""
+    """Process data against a JSON Table Schema."""
 
     name = 'schema'
 
@@ -48,7 +48,7 @@ class SchemaValidator(base.Validator):
                  report_stream=None, report=None, result_level='error',
                  **kwargs):
 
-        super(SchemaValidator, self).__init__(
+        super(SchemaProcessor, self).__init__(
             fail_fast=fail_fast, transform=transform,
             report_limit=report_limit, row_limit=row_limit,
             report_stream=report_stream, report=report, result_level=result_level)

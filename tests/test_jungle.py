@@ -6,9 +6,9 @@ from __future__ import unicode_literals
 
 import os
 import io
-from tabular_validator.pipeline import Pipeline
-from tabular_validator import validators
-from tabular_validator import exceptions
+from goodtables.pipeline import Pipeline
+from goodtables import processors
+from goodtables import exceptions
 from tests import base
 
 
@@ -165,7 +165,7 @@ class TestJungle(base.BaseTestCase):
 
         data =  os.path.join(self.data_dir, 'hmt','1011-bbsrc-25k-spend-return.csv')
         encoding = 'ISO-8859-2'
-        validator = validators.StructureValidator()
+        validator = processors.StructureProcessor()
         result, report, data = validator.run(data, encoding=None)
 
         self.assertTrue(data)
