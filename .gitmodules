@@ -1,3 +1,0 @@
-[submodule "tabular_validator/schemas"]
-	path = tabular_validator/schemas
-	url = https://github.com/dataprotocols/schemas.git
