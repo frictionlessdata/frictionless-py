@@ -12,27 +12,37 @@ RESULTS = {
     'empty_header': {
         'id': 'empty_header',
         'name': 'Empty Header',
-        'msg': 'The header in column {0} was found to be empty.'
+        'msg': 'The header in column {0} was found to be empty.',
+        'help': '',
+        'help_edit': ''
     },
     'duplicate_header': {
         'id': 'duplicate_header',
         'name': 'Duplicate Header',
-        'msg': 'The header in column {0} was found to have duplicates.'
+        'msg': 'The header in column {0} was found to have duplicates.',
+        'help': '',
+        'help_edit': ''
     },
     'defective_row': {
         'id': 'defective_row',
         'name': 'Defective Row',
-        'msg': 'Row {0} is defective: the dimensions are incorrect compared to headers.'
+        'msg': 'Row {0} is defective: the dimensions are incorrect compared to headers.',
+        'help': '',
+        'help_edit': ''
     },
     'duplicate_row': {
         'id': 'duplicate_row',
         'name': 'Duplicate Row',
-        'msg': 'Row {0} duplicates the following rows which have already been seen: {1}.'
+        'msg': 'Row {0} duplicates the following rows which have already been seen: {1}.',
+        'help': '',
+        'help_edit': ''
     },
     'empty_row': {
         'id': 'empty_row',
         'name': 'Empty Row',
-        'msg': 'Row {0} is empty.'
+        'msg': 'Row {0} is empty.',
+        'help': '',
+        'help_edit': ''
     }
 }
 
@@ -40,6 +50,7 @@ RESULTS = {
 class StructureProcessor(base.Processor):
 
     name = 'structure'
+    RESULT_TYPES = RESULTS
 
     def __init__(self, fail_fast=False, transform=False, report_limit=1000,
                  row_limit=30000, ignore_empty_rows=False,

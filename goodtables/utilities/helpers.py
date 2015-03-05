@@ -40,6 +40,17 @@ report_schema = {
 }
 
 
+def get_report_result_types():
+    """Return a list of all builtin result types."""
+
+    result_types = []
+
+    for processor in builtin_processors().values():
+        result_types.extend([r[1] for r in
+                             tuple(processor.RESULT_TYPES.items())])
+
+    return result_types
+
 def load_json_source(source):
 
     """Load a JSON source, from string, URL or buffer,  into a Python type."""

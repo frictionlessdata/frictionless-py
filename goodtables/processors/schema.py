@@ -12,27 +12,37 @@ RESULTS = {
     'incorrect_headers': {
         'id': 'incorrect_headers',
         'name': 'Incorrect Headers',
-        'msg': 'The headers do not match the schema. Data has {0}, but they should be {1}.'
+        'msg': 'The headers do not match the schema. Data has {0}, but they should be {1}.',
+        'help': '',
+        'help_edit': ''
     },
     'incorrect_dimensions': {
         'id': 'incorrect_dimensions',
         'name': 'Incorrect Dimensions',
-        'msg': 'The row dimensions do not match the header dimensions.'
+        'msg': 'The row dimensions do not match the header dimensions.',
+        'help': '',
+        'help_edit': ''
     },
     'incorrect_type': {
         'id': 'incorrect_type',
         'name': 'Incorrect Type',
-        'msg': 'The value is not a valid {0}.'
+        'msg': 'The value is not a valid {0}.',
+        'help': '',
+        'help_edit': ''
     },
     'required_field': {
         'id': 'required_field',
         'name': 'Required Field',
-        'msg': 'Column {0} is a required field, but no value can be found in row {1}.'
+        'msg': 'Column {0} is a required field, but no value can be found in row {1}.',
+        'help': '',
+        'help_edit': ''
     },
     'nonrequired_field_empty': {
         'id': 'nonrequired_field_empty',
         'name': 'Non-Required Field (Empty/Null)',
-        'msg': 'Column {0} is a non-required field, and has a null value in row {1}.'
+        'msg': 'Column {0} is a non-required field, and has a null value in row {1}.',
+        'help': '',
+        'help_edit': ''
     }
 }
 
@@ -42,6 +52,7 @@ class SchemaProcessor(base.Processor):
     """Process data against a JSON Table Schema."""
 
     name = 'schema'
+    RESULT_TYPES = RESULTS
 
     def __init__(self, fail_fast=False, transform=False, report_limit=1000,
                  row_limit=30000, schema=None, ignore_field_order=True,
