@@ -1,0 +1,3 @@
+[submodule "goodtables/schemas"]
+	path = goodtables/schemas
+	url = https://github.com/dataprotocols/schemas.git
