@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# Tabular Validator documentation build configuration file, created by
+# Good Tables documentation build configuration file, created by
 # sphinx-quickstart on Sat Dec 27 02:03:05 2014.
 #
 # This file is execfile()d with the current directory set to its
@@ -49,8 +49,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'Table Validation Pipeline'
-copyright = '2014, Open Knowledge Foundation'
+project = 'Good Tables'
+copyright = '2015, Open Knowledge Foundation'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -182,7 +182,7 @@ html_static_path = ['_static']
 #html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'TableValidationPipelinedoc'
+htmlhelp_basename = 'GoodTablesdoc'
 
 
 # -- Options for LaTeX output ---------------------------------------------
@@ -202,7 +202,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  ('index', 'TableValidationPipeline.tex', 'Table Validation Pipeline Documentation',
+  ('index', 'GoodTables.tex', 'Good Tables Documentation',
    'Open Knowledge Foundation', 'manual'),
 ]
 
@@ -232,7 +232,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'tablevalidationpipeline', 'Table Validation Pipeline Documentation',
+    ('index', 'goodtables', 'Good Tables Pipeline Documentation',
      ['Open Knowledge Foundation'], 1)
 ]
 
@@ -246,9 +246,9 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'Tabular Validator', 'Tabular Validator Documentation',
-   'Open Knowledge Foundation', 'Tabular Validator',
-   'Tabular Validator is a pipeline interface for validating tabular data.',
+  ('index', 'Good Tables', 'Good Tables Documentation',
+   'Open Knowledge Foundation', 'Good Tables',
+   'Validate and process tabular data.',
    'Miscellaneous'),
 ]
 

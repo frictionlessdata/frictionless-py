@@ -1,10 +1,10 @@
 Tutorials
 =========
 
-Some tutorials for using and extending Tabular Validator.
+Some tutorials for using and extending Good Tables.
 
-1. Implementing a custom validator
--------------------------------
+1. Implementing a custom processor
+----------------------------------
 
 # TODO: This is unfinished.
 

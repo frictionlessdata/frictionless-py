@@ -1,23 +1,23 @@
-Welcome to Tabular Validator's documentation!
+Welcome to Good Tables's documentation!
 =============================================
 
-Tabular Validator is a pipeline interface for validating tabular data.
+Good Tables is a pipeline interface for processing tabular data.
 
-**data** (currently: as CSV) is passed through a pipeline of **validators**.
+**data** (currently: as CSV and Excel) is passed through a pipeline of **processors**.
 
 Optionally, the data source is **transformed** as it passes through the pipeline.
 
-In return, the client receives a **report** on validations performed.
+In return, the client receives a **report** on processing performed.
 
 
 Design goals
 ============
 
-High-level design goals for Tabular Validator:
+High-level design goals for Good Tables:
 
-* Validate tabular data in CSV and JSON formats
-* Provide a suite of small tools that each implement a type of validation to run
-* Provide a pipeline API for registering built-in and custom validators
+* Process tabular data in CSV, Excel and JSON formats
+* Provide a suite of small tools that each implement a type of processing to run
+* Provide a pipeline API for registering built-in and custom processors
 * Components should be easily usable in 3rd party (Python) code
 
 
@@ -69,6 +69,6 @@ Indices and tables
 
 .. _`Mailing list`: openspending-dev@lists.okfn.org
 .. _`IRC channel`: #openspending
-.. _`Documentation`: http://tabular-validator.readthedocs.org/
-.. _`Issues`: https://github.com/okfn/tabular-validator/issues
-.. _`Code`: https://github.com/okfn/tabular-validator
+.. _`Documentation`: http://goodtables.readthedocs.org/
+.. _`Issues`: https://github.com/okfn/goodtables/issues
+.. _`Code`: https://github.com/okfn/goodtables
