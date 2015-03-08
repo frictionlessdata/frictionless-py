@@ -240,7 +240,7 @@ class Pipeline(object):
             # if a validator returns invalid, we stop the pipeline,
             # unless break_on_invalid_processor is False
             if not valid and self.break_on_invalid_processor:
-                return valid, self.generate_report()
+                break
 
             if not self.dry_run and self.transform:
                 # TODO: do what we'll do with transform data, workspace, etc.
