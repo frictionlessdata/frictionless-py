@@ -9,3 +9,4 @@ from .test_pipeline import *
 from .test_structure import *
 from .test_schema import *
 from .test_cli import *
+from .test_batch import *

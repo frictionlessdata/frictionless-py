@@ -5,10 +5,11 @@ The results of any validation run, either by a standalone validator, or a pipeli
 
 Each validator writes to a `tellme.Report` instance (See the `TellMe`_ library for more information on its API).
 
-Reports can then be generated in a variety of output formats supported by `TellMe`.
+Reports can then be generated in a variety of output formats supported by `TellMe`_.
 
 Pipeline reports
 ----------------
+
 In a pipeline, the `pipeline.Pipeline` class collects the reports from each validator into a `self.report` dictionary.
 
 Additional calculations are performed for a summary, and this dictionary is returned as the report object.
@@ -18,6 +19,7 @@ So, a pipeline report will have a structure as follows:
 ::
 
     {
+        'success': True,
         'summary': {#summary},
         'validator_one_name': {#summary}, {#results},
         'validator_two_name': {#summary}, {#results}
@@ -57,3 +59,6 @@ Report summary schema
         'bad_columns': # int,
         'columns': [# list of dicts with position, name, type conformance (%) per column]
     }
+
+
+.. _`TellMe`: https://github.com/okfn/tellme

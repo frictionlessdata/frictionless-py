@@ -5,6 +5,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from .pipeline import Pipeline
+from .batch import Batch
 
 
-__all__ = ['Pipeline']
+__all__ = ['Pipeline', 'Batch']

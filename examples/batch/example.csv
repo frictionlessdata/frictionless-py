@@ -1,0 +1,4 @@
+data,schema
+https://raw.githubusercontent.com/okfn/goodtables/master/examples/contacts/people.csv,https://raw.githubusercontent.com/okfn/goodtables/master/examples/contacts/schema_valid.json
+https://raw.githubusercontent.com/okfn/goodtables/master/examples/required_false.csv,https://raw.githubusercontent.com/okfn/goodtables/master/examples/test_schema.json
+https://raw.githubusercontent.com/okfn/goodtables/master/examples/row_limit_structure.csv,
