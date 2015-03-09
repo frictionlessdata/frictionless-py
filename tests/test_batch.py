@@ -52,3 +52,13 @@ class TestPipeline(base.BaseTestCase):
         rv = batch.run()
 
         self.assertTrue(rv)
+
+
+    def test_result_aggregator(self):
+
+        from goodtables.utilities import jobnik
+
+        batch = Batch(self.batch_csv, pipeline_post_process_handler=jobnik.aggregator)
+        rv = batch.run()
+
+        self.assertTrue(rv)

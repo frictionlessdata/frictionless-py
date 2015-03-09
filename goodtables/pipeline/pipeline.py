@@ -248,11 +248,13 @@ class Pipeline(object):
             else:
                 self.data.replay()
 
+        self.generate_report()
+
         if self.post_process_handler:
             # TODO: handle what happens in here
             self.post_process_handler(self)
 
-        return valid, self.generate_report()
+        return valid, self.generated_report
 
     def rm_workspace(self):
         """Remove this run's workspace from disk."""
@@ -263,10 +265,10 @@ class Pipeline(object):
         """Return the report with a summary."""
 
         row_count = self.pipeline[0].row_count
-        generated = self.report.generate()
-        generated['summary'] = self.make_report_summary(generated, row_count)
+        self.generated_report = self.report.generate()
+        self.generated_report['summary'] = self.make_report_summary(self.generated_report, row_count)
 
-        return generated
+        return self.generated_report
 
     def make_report_summary(self, generated_report, row_count=None):
         """Return a report summary."""
