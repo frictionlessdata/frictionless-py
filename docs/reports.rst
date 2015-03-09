@@ -57,6 +57,7 @@ Report summary schema
 ---------------------
 
 ::
+
     {
         'message': '# a summary message',
         'total_rows': # int,
