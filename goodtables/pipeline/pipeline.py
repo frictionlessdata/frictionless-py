@@ -59,7 +59,7 @@ class Pipeline(object):
                  encoding=None, options=None, workspace=None, dry_run=True,
                  transform=True, fail_fast=False, row_limit=20000,
                  report_limit=1000, report_stream=None, header_index=0,
-                 break_on_invalid_processor=True, post_process_handler=None):
+                 break_on_invalid_processor=True, post_task=None):
 
         if data is None:
             _msg = '`data` must be a filepath, url or stream.'
@@ -80,7 +80,7 @@ class Pipeline(object):
         self.report_stream = report_stream
         self.header_index = header_index
         self.break_on_invalid_processor = break_on_invalid_processor
-        self.post_process_handler = post_process_handler
+        self.post_task = post_task
 
         if self.report_stream:
             report_stream_tests = [isinstance(self.report_stream, io.TextIOBase),
@@ -250,9 +250,9 @@ class Pipeline(object):
 
         self.generate_report()
 
-        if self.post_process_handler:
+        if self.post_task:
             # TODO: handle what happens in here
-            self.post_process_handler(self)
+            self.post_task(self)
 
         return valid, self.generated_report
 

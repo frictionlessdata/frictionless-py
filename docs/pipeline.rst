@@ -1,10 +1,7 @@
 Pipeline
 ========
 
-Naturally, the `pipeline.Pipeline` class implements the validation pipeline.
-
-Spec
-----
+Naturally, the `pipeline.Pipeline` class implements the processing pipeline.
 
 Validator registration
 **********************

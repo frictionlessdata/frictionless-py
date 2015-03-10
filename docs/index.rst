@@ -55,6 +55,7 @@ Table of contents
    tutorial
    validators
    pipeline
+   batch
    reports
    cli
 

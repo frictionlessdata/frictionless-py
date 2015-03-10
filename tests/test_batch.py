@@ -37,7 +37,7 @@ class TestPipeline(base.BaseTestCase):
         def say_hi(pipeline):
             return 'Hi!'
 
-        batch = Batch(self.batch_csv, pipeline_post_process_handler=say_hi)
+        batch = Batch(self.batch_csv, pipeline_post_task=say_hi)
         rv = batch.run()
 
         self.assertTrue(rv)
@@ -48,7 +48,7 @@ class TestPipeline(base.BaseTestCase):
         def say_hi(batch):
             return 'Hi!'
 
-        batch = Batch(self.batch_csv, batch_post_process_handler=say_hi)
+        batch = Batch(self.batch_csv, post_task=say_hi)
         rv = batch.run()
 
         self.assertTrue(rv)

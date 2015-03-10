@@ -15,8 +15,7 @@ class Batch(object):
 
     def __init__(self, source, source_type='csv', data_key='data',
                  schema_key='schema', pipeline_options=None,
-                 batch_post_process_handler=None,
-                 pipeline_post_process_handler=None):
+                 post_task=None, pipeline_post_task=None):
 
         # `csv` and `dp` (data package) as supported source types
         # data_key is required, but schema_key is not
@@ -27,8 +26,8 @@ class Batch(object):
         self.schema_key = schema_key
         self.dataset = self.get_dataset()
         self.pipeline_options = pipeline_options or {}
-        self.batch_post_process_handler = batch_post_process_handler
-        self.pipeline_post_process_handler = pipeline_post_process_handler
+        self.post_task = post_task
+        self.pipeline_post_task = pipeline_post_task
         self.pipeline = None
 
     def get_dataset(self):
@@ -81,7 +80,7 @@ class Batch(object):
         options['schema']['schema'] = schema
 
         return pipeline.Pipeline(data, options=options,
-                                 post_process_handler=self.pipeline_post_process_handler)
+                                 post_task=self.pipeline_post_task)
 
     def run(self):
         """Run the batch."""
@@ -92,8 +91,8 @@ class Batch(object):
             pipeline = self.pipeline_factory(data['data'], data['schema'])
             pipeline.run()
 
-        if self.batch_post_process_handler:
+        if self.post_task:
             # TODO: handle errors from here, etc.
-            self.batch_post_process_handler(self)
+            self.post_task(self)
 
         return True
