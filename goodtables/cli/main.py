@@ -11,9 +11,9 @@ import click
 import coverage
 
 
-#CLI_DIR = os.path.abspath(os.path.dirname(__file__))
-#REPO_DIR = os.path.abspath(os.path.dirname(os.path.dirname(CLI_DIR)))
-#sys.path.insert(1, REPO_DIR)
+CLI_DIR = os.path.abspath(os.path.dirname(__file__))
+REPO_DIR = os.path.abspath(os.path.dirname(os.path.dirname(CLI_DIR)))
+sys.path.insert(1, REPO_DIR)
 from goodtables.pipeline import Pipeline
 
 

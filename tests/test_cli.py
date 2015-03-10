@@ -16,7 +16,6 @@ from tests import base
 class TestCLI(base.BaseTestCase):
 
     def setUp(self):
-
         super(TestCLI, self).setUp()
         self.data_filepath = os.path.join(self.data_dir, 'contacts', 'people.csv')
         self.schema_filepath = os.path.join(self.data_dir, 'contacts', 'schema_valid.json')
