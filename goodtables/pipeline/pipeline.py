@@ -281,7 +281,7 @@ class Pipeline(object):
 
         def get_type_errors(column_name, results, row_count):
             match_count = len([r for r in results if
-                               r['result_id'] == 'incorrect_type' and
+                               r['result_id'] == 'schema_003' and
                                r['column_name'] == column_name])
 
             return int((match_count/row_count) * 100)

@@ -9,36 +9,36 @@ from . import base
 
 
 RESULTS = {
-    'incorrect_headers': {
-        'id': 'incorrect_headers',
+    'schema_001': {
+        'id': 'schema_001',
         'name': 'Incorrect Headers',
         'msg': 'The headers do not match the schema. Data has {0}, but they should be {1}.',
         'help': '',
         'help_edit': ''
     },
-    'incorrect_dimensions': {
-        'id': 'incorrect_dimensions',
+    'schema_002': {
+        'id': 'schema_002',
         'name': 'Incorrect Dimensions',
         'msg': 'The row dimensions do not match the header dimensions.',
         'help': '',
         'help_edit': ''
     },
-    'incorrect_type': {
-        'id': 'incorrect_type',
+    'schema_003': {
+        'id': 'schema_003',
         'name': 'Incorrect Type',
         'msg': 'The value is not a valid {0}.',
         'help': '',
         'help_edit': ''
     },
-    'required_field': {
-        'id': 'required_field',
+    'schema_004': {
+        'id': 'schema_004',
         'name': 'Required Field',
         'msg': 'Column {0} is a required field, but no value can be found in row {1}.',
         'help': '',
         'help_edit': ''
     },
-    'nonrequired_field_empty': {
-        'id': 'nonrequired_field_empty',
+    'schema_005': {
+        'id': 'schema_005',
         'name': 'Non-Required Field (Empty/Null)',
         'msg': 'Column {0} is a non-required field, and has a null value in row {1}.',
         'help': '',
@@ -92,7 +92,7 @@ class SchemaProcessor(base.Processor):
                 if not (set(headers).issuperset(set(self.schema.required_headers))):
 
                     valid = False
-                    _type = RESULTS['incorrect_headers']
+                    _type = RESULTS['schema_001']
                     entry = self.make_entry(
                         self.name,
                         self.RESULT_CATEGORY_HEADER,
@@ -114,7 +114,7 @@ class SchemaProcessor(base.Processor):
                 if not (headers == self.schema.required_headers[:header_length]):
 
                     valid = False
-                    _type = RESULTS['incorrect_headers']
+                    _type = RESULTS['schema_001']
                     entry = self.make_entry(
                         self.name,
                         self.RESULT_CATEGORY_HEADER,
@@ -142,7 +142,7 @@ class SchemaProcessor(base.Processor):
             if not (len(headers) == len(row)):
 
                 valid = False
-                _type = RESULTS['incorrect_dimensions']
+                _type = RESULTS['schema_002']
                 entry = self.make_entry(
                     self.name,
                     self.RESULT_CATEGORY_ROW,
@@ -165,7 +165,7 @@ class SchemaProcessor(base.Processor):
                     if self.schema.cast(column_name, column_value) is False:
 
                         valid = False
-                        _type = RESULTS['incorrect_type']
+                        _type = RESULTS['schema_003']
                         entry = self.make_entry(
                             self.name,
                             self.RESULT_CATEGORY_ROW,
@@ -191,7 +191,7 @@ class SchemaProcessor(base.Processor):
                        (column_value in self.schema.NULL_VALUES):
 
                         valid = False
-                        _type = RESULTS['required_field']
+                        _type = RESULTS['schema_004']
                         entry = self.make_entry(
                             self.name,
                             self.RESULT_CATEGORY_ROW,
@@ -214,7 +214,7 @@ class SchemaProcessor(base.Processor):
                            (column_value in self.schema.NULL_VALUES) and \
                            self.result_level == self.RESULT_LEVEL_INFO:
                         # add info result
-                        _type = RESULTS['nonrequired_field_empty']
+                        _type = RESULTS['schema_005']
                         entry = self.make_entry(
                             self.name,
                             self.RESULT_CATEGORY_ROW,

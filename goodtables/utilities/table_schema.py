@@ -15,224 +15,179 @@ RESULT_LEVEL_WARNING = 'warning'
 RESULT_LEVEL_ERROR = 'error'
 
 RESULTS = {
-    'incorrect_headers': {
-        'id': 'incorrect_headers',
+    'schema_050': {
+        'id': 'schema_050',
         'name': 'Incorrect Headers',
         'msg': 'The headers do not match the schema.'
     },
-    'incorrect_headers': {
-        'id': 'incorrect_headers',
-        'name': 'Incorrect Headers',
-        'msg': 'The headers do not match the schema.'
-    },
-    'incorrect_headers': {
-        'id': 'incorrect_headers',
-        'name': 'Incorrect Headers',
-        'msg': 'The headers do not match the schema.'
-    },
-    'incorrect_headers': {
-        'id': 'incorrect_headers',
-        'name': 'Incorrect Headers',
-        'msg': 'The headers do not match the schema.'
-    },
-    'incorrect_headers': {
-        'id': 'incorrect_headers',
-        'name': 'Incorrect Headers',
-        'msg': 'The headers do not match the schema.'
-    },
-    'incorrect_headers': {
-        'id': 'incorrect_headers',
-        'name': 'Incorrect Headers',
-        'msg': 'The headers do not match the schema.'
-    },
-    'incorrect_headers': {
-        'id': 'incorrect_headers',
-        'name': 'Incorrect Headers',
-        'msg': 'The headers do not match the schema.'
-    },
-    'incorrect_headers': {
-        'id': 'incorrect_headers',
-        'name': 'Incorrect Headers',
-        'msg': 'The headers do not match the schema.'
-    },
-    'incorrect_headers': {
-        'id': 'incorrect_headers',
-        'name': 'Incorrect Headers',
-        'msg': 'The headers do not match the schema.'
-    },
-    'invalid_foreignkey_reference_names': {
-        'id': 'invalid_foreignkey_reference_names',
+    'schema_051': {
+        'id': 'schema_051',
         'name': 'Invalid Value for foreignKey Reference',
         'msg': 'A JSON Table Schema foreignKey.reference must match field names.'
     },
-    'invalid_foreignkey_reference_value': {
-        'id': 'invalid_foreignkey_reference_value',
+    'schema_052': {
+        'id': 'schema_052',
         'name': 'Invalid Value for foreignKey Reference',
         'msg': 'A JSON Table Schema must have a fields key.'
     },
-    'invalid_foreignkey_reference_fields': {
-        'id': 'invalid_foreignkey_reference_fields',
+    'schema_053': {
+        'id': 'schema_053',
         'name': 'Invalid Value for foreignKey Reference',
         'msg': 'A JSON Table Schema foreignKey.reference must have a fields key.'
     },
-    'invalid_foreignkey_reference_type': {
-        'id': 'invalid_foreignkey_reference_type',
+    'schema_054': {
+        'id': 'schema_054',
         'name': 'Invalid Type for foreignKey Reference',
         'msg': 'A JSON Table Schema foreignKey.refernce must be a hash.'
     },
-    'invalid_foreignkey_reference_value': {
-        'id': 'invalid_foreignkey_reference_value',
+    'schema_055': {
+        'id': 'schema_055',
         'name': 'Invalid Value for foreignKey Reference',
         'msg': 'A JSON Table Schema foreignKey.reference must have a resource key.'
     },
-    'invalid_foreignkey_field': {
-        'id': 'invalid_foreignkey_field',
+    'schema_056': {
+        'id': 'schema_056',
         'name': 'Invalid Value in foreignKey Field',
         'msg': 'A JSON Table Schema foreignKey.fields value must correspond with field names.'
     },
-    'invalid_foreignkey_fields': {
-        'id': 'invalid_foreignkey_fields',
+    'schema_057': {
+        'id': 'schema_057',
         'name': 'Invalid Value in foreignKey Fields',
         'msg': 'A JSON Table Schema foreignKey.fields value must correspond with field names.'
     },
-    'invalid_foreignkey_field_type': {
-        'id': 'invalid_foreignkey_field_type',
+    'schema_058': {
+        'id': 'schema_058',
         'name': 'Invalid Field Type in foreignKey',
         'msg': 'A JSON Table Schema foreignKey.fields type must be a string or an array.'
     },
-    'invalid_foreignkey_value': {
-        'id': 'invalid_foreignkey_value',
+    'schema_059': {
+        'id': 'schema_059',
         'name': 'Invalid foreignKey Value',
         'msg': 'A JSON Table Schema foreignKey must have a fields key.'
     },
-    'invalid_foreignkey_type': {
-        'id': 'invalid_foreignkey_type',
+    'schema_060': {
+        'id': 'schema_060',
         'name': 'Invalid foreignKey Type',
         'msg': 'A JSON Table Schema foreignKey must be a hash.'
     },
-    'invalid_foreignkeys_type': {
-        'id': 'invalid_foreignkeys_type',
+    'schema_061': {
+        'id': 'schema_061',
         'name': 'Invalid foreignKeys Type',
         'msg': 'A JSON Table Schema foreignKeys must be an array.'
     },
-    'invalid_primarykey_value': {
-        'id': 'invalid_primarykey_value',
+    'schema_062': {
+        'id': 'schema_062',
         'name': 'Invalid primaryKey Value',
         'msg': 'A JSON Table Schema primaryKey value must be present in the schema field names.'
     },
-    'invalid_primarykey_type': {
-        'id': 'invalid_primarykey_type',
+    'schema_063': {
+        'id': 'schema_063',
         'name': 'Invalid primaryKey Type',
         'msg': 'A JSON Table Schema primaryKey must be either a string or an array.'
     },
-    'invalid_maximum_constraint_not_supported': {
-        'id': 'invalid_maximum_constraint_not_supported',
+    'schema_064': {
+        'id': 'schema_064',
         'name': 'Invalid Maximum Constraint',
         'msg': 'A JSON Table Schema maximum constraint is present with unclear application (field is not an integer or a date).'
     },
-    'invalid_maximum_constraint_datetime': {
-        'id': 'invalid_maximum_constraint_datetime',
+    'schema_065': {
+        'id': 'schema_065',
         'name': 'Invalid Maximum Constraint',
         'msg': 'A JSON Table Schema maximum constraint which is a datetime is only valid if the encompassing field is also a datetime.'
     },
-    'invalid_maximum_constraint_time': {
-        'id': 'invalid_maximum_constraint_time',
+    'schema_066': {
+        'id': 'schema_066',
         'name': 'Invalid Maximum Constraint',
         'msg': 'A JSON Table Schema maximum constraint which is a time is only valid if the encompassing field is also a time.'
     },
-    'invalid_maximum_constraint_date': {
-        'id': 'invalid_maximum_constraint_date',
+    'schema_067': {
+        'id': 'schema_067',
         'name': 'Invalid Maximum Constraint',
         'msg': 'A JSON Table Schema maximum constraint which is a date is only valid if the encompassing field is also a date.'
     },
-    'invalid_maximum_constraint_integer': {
-        'id': 'invalid_maximum_constraint_integer',
+    'schema_068': {
+        'id': 'schema_068',
         'name': 'Invalid Maximum Constraint',
         'msg': 'A JSON Table Schema maximum constraint which is a integer is only valid if the encompassing field is also a integer.'
     },
-    'invalid_minimum_constraint_not_supported': {
-        'id': 'invalid_minimum_constraint_not_supported',
+    'schema_069': {
+        'id': 'schema_069',
         'name': 'Invalid Minimum Constraint',
         'msg': 'A JSON Table Schema minimum constraint is present with unclear application (field is not an integer or a date).'
     },
-    'invalid_minimum_constraint_datetime': {
-        'id': 'invalid_minimum_constraint_datetime',
+    'schema_070': {
+        'id': 'schema_070',
         'name': 'Invalid Minimum Constraint',
         'msg': 'A JSON Table Schema minimum constraint which is a datetime is only valid if the encompassing field is also a datetime.'
     },
-    'invalid_minimum_constraint_time': {
-        'id': 'invalid_minimum_constraint_time',
+    'schema_071': {
+        'id': 'schema_071',
         'name': 'Invalid Minimum Constraint',
         'msg': 'A JSON Table Schema minimum constraint which is a time is only valid if the encompassing field is also a time.'
     },
-    'invalid_minimum_constraint_date': {
-        'id': 'invalid_minimum_constraint_date',
+    'schema_072': {
+        'id': 'schema_072',
         'name': 'Invalid Minimum Constraint',
         'msg': 'A JSON Table Schema minimum constraint which is a date is only valid if the encompassing field is also a date.'
     },
-    'invalid_minimum_constraint_integer': {
-        'id': 'invalid_minimum_constraint_integer',
+    'schema_073': {
+        'id': 'schema_073',
         'name': 'Invalid Minimum Constraint',
         'msg': 'A JSON Table Schema minimum constraint which is a integer is only valid if the encompassing field is also a integer.'
     },
-    'invalid_pattern_constraint': {
-        'id': 'invalid_pattern_constraint',
+    'schema_074': {
+        'id': 'schema_074',
         'name': 'Invalid Pattern Constraint',
         'msg': 'A JSON Table Schema pattern constraint must be a string.'
     },
-    'invalid_unique_constraint': {
-        'id': 'invalid_unique_constraint',
+    'schema_075': {
+        'id': 'schema_075',
         'name': 'Invalid Unique Constraint',
         'msg': 'A JSON Table Schema unique constraint must be a boolean.'
     },
-    'invalid_maxlength_integer': {
-        'id': 'invalid_maxlength_integer',
+    'schema_076': {
+        'id': 'schema_076',
         'name': 'Invalid maxLength Value',
         'msg': 'A JSON Table Schema maxLength constraint must be an integer.'
     },
-    'invalid_minlength_integer': {
-        'id': 'invalid_minlength_integer',
+    'schema_077': {
+        'id': 'schema_077',
         'name': 'Invalid minLength Value',
         'msg': 'A JSON Table Schema minLength constraint must be an integer.'
     },
-    'invalid_required_constraint': {
-        'id': 'invalid_required_constraint',
+    'schema_078': {
+        'id': 'schema_078',
         'name': 'Invalid Required Constraint',
         'msg': 'A JSON Table Schema required constraint must be a boolean.'
     },
-    'incomplete_field': {
-        'id': 'incomplete_field',
+    'schema_079': {
+        'id': 'schema_079',
         'name': 'Incomplete Field',
         'msg': 'A JSON Table Schema field must have a name key.'
     },
-    'invalid_field': {
-        'id': 'invalid_field',
+    'schema_080': {
+        'id': 'schema_080',
         'name': 'Invalid Field',
         'msg': 'Each field in a JSON Table Schema must be a hash.'
     },
-    'invalid_field_constraints': {
-        'id': 'invalid_field_constraints',
+    'schema_081': {
+        'id': 'schema_081',
         'name': 'Invalid Field Constraints',
         'msg': 'A JSON Table Schema field constraint must be a hash.'
     },
-    'invalid_fields': {
-        'id': 'invalid_fields',
+    'schema_082': {
+        'id': 'schema_082',
         'name': 'Invalid Fields',
         'msg': 'A JSON Table Schema must have an array of fields.'
     },
-    'invalid_schema': {
-        'id': 'invalid_schema',
+    'schema_083': {
+        'id': 'schema_083',
         'name': 'Invalid Schema',
         'msg': 'A JSON Table Schema must be a hash.'
     },
-    'missing_fields': {
-        'id': 'missing_fields',
+    'schema_084': {
+        'id': 'schema_084',
         'name': 'Missing Fields',
-        'msg': 'A JSON Table Schema must have a fields key.'
-    },
-    'invalid_foreignkey_reference_value': {
-        'id': 'invalid_foreignkey_reference_value',
-        'name': 'Invalid Value for foreignKey Reference',
         'msg': 'A JSON Table Schema must have a fields key.'
     },
 }
@@ -262,7 +217,7 @@ def validate(schema, report=None):
     if not isinstance(schema, dict):
 
         valid = False
-        _type = RESULTS['invalid_schema']
+        _type = RESULTS['schema_083']
         entry = {
             'processor': 'schema',
             'result_category': RESULT_CATEGORY_SCHEMA,
@@ -285,7 +240,7 @@ def validate(schema, report=None):
     if not schema.get('fields'):
 
         valid = False
-        _type = RESULTS['missing_fields']
+        _type = RESULTS['schema_084']
         entry = {
             'processor': 'schema',
             'result_category': RESULT_CATEGORY_SCHEMA,
@@ -308,7 +263,7 @@ def validate(schema, report=None):
     if not isinstance(schema.get('fields'), list):
 
         valid = False
-        _type = RESULTS['invalid_fields']
+        _type = RESULTS['schema_058']
         entry = {
             'processor': 'schema',
             'result_category': RESULT_CATEGORY_SCHEMA,
@@ -331,7 +286,7 @@ def validate(schema, report=None):
     if not all([isinstance(o, dict) for o in schema['fields']]):
 
         valid = False
-        _type = RESULTS['invalid_field']
+        _type = RESULTS['schema_080']
         entry = {
             'processor': 'schema',
             'result_category': RESULT_CATEGORY_SCHEMA,
@@ -351,7 +306,7 @@ def validate(schema, report=None):
     if not all([o.get('name') for o in schema['fields']]):
 
         valid = False
-        _type = RESULTS['incomplete_field']
+        _type = RESULTS['schema_079']
         entry = {
             'processor': 'schema',
             'result_category': RESULT_CATEGORY_SCHEMA,
@@ -373,7 +328,7 @@ def validate(schema, report=None):
                schema['fields'] if o.get('constraints')]):
 
         valid = False
-        _type = RESULTS['invalid_field_constraints']
+        _type = RESULTS['schema_081']
         entry = {
             'processor': 'schema',
             'result_category': RESULT_CATEGORY_SCHEMA,
@@ -399,7 +354,7 @@ def validate(schema, report=None):
                 isinstance(constraints['required'], bool):
 
             valid = False
-            _type = RESULTS['invalid_required_constraint']
+            _type = RESULTS['schema_078']
             entry = {
                 'processor': 'schema',
                 'result_category': RESULT_CATEGORY_SCHEMA,
@@ -420,7 +375,7 @@ def validate(schema, report=None):
                 isinstance(constraints['minLength'], int):
 
             valid = False
-            _type = RESULTS['invalid_minlength_integer']
+            _type = RESULTS['schema_077']
             entry = {
                 'processor': 'schema',
                 'result_category': RESULT_CATEGORY_SCHEMA,
@@ -441,7 +396,7 @@ def validate(schema, report=None):
                 isinstance(constraints['maxLength'], int):
 
             valid = False
-            _type = RESULTS['invalid_maxlength_integer']
+            _type = RESULTS['schema_076']
             entry = {
                 'processor': 'schema',
                 'result_category': RESULT_CATEGORY_SCHEMA,
@@ -462,7 +417,7 @@ def validate(schema, report=None):
                 isinstance(constraints['unique'], bool):
 
             valid = False
-            _type = RESULTS['invalid_unique_constraint']
+            _type = RESULTS['schema_075']
             entry = {
                 'processor': 'schema',
                 'result_category': RESULT_CATEGORY_SCHEMA,
@@ -483,7 +438,7 @@ def validate(schema, report=None):
                 isinstance(constraints['pattern'], compat.str):
 
             valid = False
-            _type = RESULTS['invalid_pattern_constraint']
+            _type = RESULTS['schema_074']
             entry = {
                 'processor': 'schema',
                 'result_category': RESULT_CATEGORY_SCHEMA,
@@ -507,7 +462,7 @@ def validate(schema, report=None):
                     isinstance(constraints['minimum'], int):
 
                 valid = False
-                _type = RESULTS['invalid_minimum_constraint_integer']
+                _type = RESULTS['schema_073']
                 entry = {
                     'processor': 'schema',
                     'result_category': RESULT_CATEGORY_SCHEMA,
@@ -528,7 +483,7 @@ def validate(schema, report=None):
                     isinstance(constraints['minimum'], datetime.date):
 
                 valid = False
-                _type = RESULTS['invalid_minimum_constraint_date']
+                _type = RESULTS['schema_072']
                 entry = {
                     'processor': 'schema',
                     'result_category': RESULT_CATEGORY_SCHEMA,
@@ -549,7 +504,7 @@ def validate(schema, report=None):
                     isinstance(constraints['minimum'], datetime.time):
 
                 valid = False
-                _type = RESULTS['invalid_minimum_constraint_time']
+                _type = RESULTS['schema_071']
                 entry = {
                     'processor': 'schema',
                     'result_category': RESULT_CATEGORY_SCHEMA,
@@ -570,7 +525,7 @@ def validate(schema, report=None):
                     isinstance(constraints['minimum'], datetime.datetime):
 
                 valid = False
-                _type = RESULTS['invalid_minimum_constraint_datetime']
+                _type = RESULTS['schema_070']
                 entry = {
                     'processor': 'schema',
                     'result_category': RESULT_CATEGORY_SCHEMA,
@@ -589,7 +544,7 @@ def validate(schema, report=None):
             else:
 
                 valid = False
-                _type = RESULTS['invalid_minimum_constraint_not_supported']
+                _type = RESULTS['schema_069']
                 entry = {
                     'processor': 'schema',
                     'result_category': RESULT_CATEGORY_SCHEMA,
@@ -613,7 +568,7 @@ def validate(schema, report=None):
                     isinstance(constraints['maximum'], int):
 
                 valid = False
-                _type = RESULTS['invalid_maximum_constraint_integer']
+                _type = RESULTS['schema_068']
                 entry = {
                     'processor': 'schema',
                     'result_category': RESULT_CATEGORY_SCHEMA,
@@ -634,7 +589,7 @@ def validate(schema, report=None):
                     isinstance(constraints['maximum'], datetime.date):
 
                 valid = False
-                _type = RESULTS['invalid_maximum_constraint_date']
+                _type = RESULTS['schema_067']
                 entry = {
                     'processor': 'schema',
                     'result_category': RESULT_CATEGORY_SCHEMA,
@@ -655,7 +610,7 @@ def validate(schema, report=None):
                     isinstance(constraints['maximum'], datetime.time):
 
                 valid = False
-                _type = RESULTS['invalid_maximum_constraint_time']
+                _type = RESULTS['schema_066']
                 entry = {
                     'processor': 'schema',
                     'result_category': RESULT_CATEGORY_SCHEMA,
@@ -676,7 +631,7 @@ def validate(schema, report=None):
                     isinstance(constraints['maximum'], datetime.datetime):
 
                 valid = False
-                _type = RESULTS['invalid_maximum_constraint_datetime']
+                _type = RESULTS['schema_065']
                 entry = {
                     'processor': 'schema',
                     'result_category': RESULT_CATEGORY_SCHEMA,
@@ -695,7 +650,7 @@ def validate(schema, report=None):
             else:
 
                 valid = False
-                _type = RESULTS['invalid_maximum_constraint_not_supported']
+                _type = RESULTS['schema_064']
                 entry = {
                     'processor': 'schema',
                     'result_category': RESULT_CATEGORY_SCHEMA,
@@ -718,7 +673,7 @@ def validate(schema, report=None):
         if not isinstance(schema['primaryKey'], (compat.str, list)):
 
             valid = False
-            _type = RESULTS['invalid_primarykey_type']
+            _type = RESULTS['schema_063']
             entry = {
                 'processor': 'schema',
                 'result_category': RESULT_CATEGORY_SCHEMA,
@@ -739,7 +694,7 @@ def validate(schema, report=None):
             if not schema['primaryKey'] in [f['name'] for f in schema['fields']]:
 
                 valid = False
-                _type = RESULTS['invalid_primarykey_value']
+                _type = RESULTS['schema_062']
                 entry = {
                     'processor': 'schema',
                     'result_category': RESULT_CATEGORY_SCHEMA,
@@ -760,7 +715,7 @@ def validate(schema, report=None):
                 if not k in [f['name'] for f in schema['fields']]:
 
                     valid = False
-                    _type = RESULTS['invalid_primarykey_value']
+                    _type = RESULTS['schema_062']
                     entry = {
                         'processor': 'schema',
                         'result_category': RESULT_CATEGORY_SCHEMA,
@@ -783,7 +738,7 @@ def validate(schema, report=None):
         if not isinstance(schema['foreignKeys'], list):
 
             valid = False
-            _type = RESULTS['invalid_foreignkeys_type']
+            _type = RESULTS['schema_061']
             result = {
                 'processor': 'schema',
                 'result_category': RESULT_CATEGORY_SCHEMA,
@@ -804,7 +759,7 @@ def validate(schema, report=None):
                    schema['foreignKeys']]):
 
             valid = False
-            _type = RESULTS['invalid_foreignkey_type']
+            _type = RESULTS['schema_058']
             entry = {
                 'processor': 'schema',
                 'result_category': RESULT_CATEGORY_SCHEMA,
@@ -825,7 +780,7 @@ def validate(schema, report=None):
                    schema['foreignKeys']]):
 
             valid = False
-            _type = RESULTS['invalid_foreignkey_value']
+            _type = RESULTS['schema_059']
             entry = {
                 'processor': 'schema',
                 'result_category': RESULT_CATEGORY_SCHEMA,
@@ -846,7 +801,7 @@ def validate(schema, report=None):
                    for o in schema['foreignKeys']]):
 
             valid = False
-            _type = RESULTS['invalid_foreignkey_field_type']
+            _type = RESULTS['schema_060']
             entry = {
                 'processor': 'schema',
                 'result_category': RESULT_CATEGORY_SCHEMA,
@@ -870,7 +825,7 @@ def validate(schema, report=None):
                                             schema['fields']]:
 
                     valid = False
-                    _type = RESULTS['invalid_foreignkey_fields']
+                    _type = RESULTS['schema_056']
                     entry = {
                         'processor': 'schema',
                         'result_category': RESULT_CATEGORY_SCHEMA,
@@ -892,7 +847,7 @@ def validate(schema, report=None):
                                      schema['fields']]:
 
                         valid = False
-                        _type = RESULTS['invalid_foreignkey_field']
+                        _type = RESULTS['schema_056']
                         entry = {
                             'processor': 'schema',
                             'result_category': RESULT_CATEGORY_SCHEMA,
@@ -912,7 +867,7 @@ def validate(schema, report=None):
             if not isinstance(fk.get('reference'), dict):
 
                 valid = False
-                _type = RESULTS['invalid_foreignkey_reference_type']
+                _type = RESULTS['schema_054']
                 entry = {
                     'processor': 'schema',
                     'result_category': RESULT_CATEGORY_SCHEMA,
@@ -932,7 +887,7 @@ def validate(schema, report=None):
             if not 'resource' in fk.get('reference', {}):
 
                 valid = False
-                _type = RESULTS['invalid_foreignkey_reference_value']
+                _type = RESULTS['schema_052']
                 entry = {
                     'processor': 'schema',
                     'result_category': RESULT_CATEGORY_SCHEMA,
@@ -952,7 +907,7 @@ def validate(schema, report=None):
             if not 'fields' in fk.get('reference', {}):
 
                 valid = False
-                _type = RESULTS['invalid_foreignkey_reference_fields']
+                _type = RESULTS['schema_053']
                 entry = {
                     'processor': 'schema',
                     'result_category': RESULT_CATEGORY_SCHEMA,
@@ -974,7 +929,7 @@ def validate(schema, report=None):
                 if not isinstance(fk['reference']['fields'], compat.str):
 
                     valid = False
-                    _type = RESULTS['invalid_foreignkey_reference_names']
+                    _type = RESULTS['schema_051']
                     entry = {
                         'processor': 'schema',
                         'result_category': RESULT_CATEGORY_SCHEMA,
@@ -994,7 +949,7 @@ def validate(schema, report=None):
                 if not len(fk.get('fields')) == len(fk['reference']['fields']):
 
                     valid = False
-                    _type = RESULTS['invalid_foreignkey_reference_value']
+                    _type = RESULTS['schema_052']
                     entry = {
                         'processor': 'schema',
                         'result_category': RESULT_CATEGORY_SCHEMA,

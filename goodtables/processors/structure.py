@@ -9,36 +9,36 @@ from . import base
 
 
 RESULTS = {
-    'empty_header': {
-        'id': 'empty_header',
+    'structure_001': {
+        'id': 'structure_001',
         'name': 'Empty Header',
         'msg': 'The header in column {0} was found to be empty.',
         'help': '',
         'help_edit': ''
     },
-    'duplicate_header': {
-        'id': 'duplicate_header',
+    'structure_002': {
+        'id': 'structure_002',
         'name': 'Duplicate Header',
         'msg': 'The header in column {0} was found to have duplicates.',
         'help': '',
         'help_edit': ''
     },
-    'defective_row': {
-        'id': 'defective_row',
+    'structure_003': {
+        'id': 'structure_003',
         'name': 'Defective Row',
         'msg': 'Row {0} is defective: the dimensions are incorrect compared to headers.',
         'help': '',
         'help_edit': ''
     },
-    'duplicate_row': {
-        'id': 'duplicate_row',
+    'structure_004': {
+        'id': 'structure_004',
         'name': 'Duplicate Row',
         'msg': 'Row {0} duplicates the following rows which have already been seen: {1}.',
         'help': '',
         'help_edit': ''
     },
-    'empty_row': {
-        'id': 'empty_row',
+    'structure_005': {
+        'id': 'structure_005',
         'name': 'Empty Row',
         'msg': 'Row {0} is empty.',
         'help': '',
@@ -87,7 +87,7 @@ class StructureProcessor(base.Processor):
                 if header in self.empty_strings:
 
                     valid = False
-                    _type = RESULTS['empty_header']
+                    _type = RESULTS['structure_001']
                     entry = self.make_entry(
                         self.name,
                         self.RESULT_CATEGORY_HEADER,
@@ -114,7 +114,7 @@ class StructureProcessor(base.Processor):
                 dupes = [(index, header) for index, header in
                          enumerate(headers) if
                          header.count(header) > 1]
-                _type = RESULTS['duplicate_header']
+                _type = RESULTS['structure_002']
 
                 for dupe in dupes:
                     entry = self.make_entry(
@@ -157,7 +157,7 @@ class StructureProcessor(base.Processor):
                     self.seen[_rep].append(index)
                     valid = False
                     is_dupe = True
-                    _type = RESULTS['duplicate_row']
+                    _type = RESULTS['structure_004']
                     entry = self.make_entry(
                         self.name,
                         self.RESULT_CATEGORY_ROW,
@@ -185,7 +185,7 @@ class StructureProcessor(base.Processor):
 
                 valid = False
                 is_empty = True
-                _type = RESULTS['empty_row']
+                _type = RESULTS['structure_005']
                 entry = self.make_entry(
                     self.name,
                     self.RESULT_CATEGORY_ROW,
@@ -208,7 +208,7 @@ class StructureProcessor(base.Processor):
 
                 valid = False
                 is_defective = True
-                _type = RESULTS['defective_row']
+                _type = RESULTS['structure_003']
                 entry = self.make_entry(
                     self.name,
                     self.RESULT_CATEGORY_ROW,
@@ -229,7 +229,7 @@ class StructureProcessor(base.Processor):
 
                 valid = False
                 is_defective = True
-                _type = RESULTS['defective_row']
+                _type = RESULTS['structure_003']
                 entry = self.make_entry(
                     self.name,
                     self.RESULT_CATEGORY_ROW,
