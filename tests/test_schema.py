@@ -417,3 +417,18 @@ class TestSchemaProcessor(base.BaseTestCase):
         result, report = validator.run()
 
         self.assertEqual(len(report['results']), 1)
+
+    def test_standalone_infer_schema(self):
+        filepath = os.path.join(self.data_dir, 'valid.csv')
+        validator = processors.SchemaProcessor(infer_schema=True)
+        result, report, data = validator.run(filepath)
+
+        self.assertEqual(len(report.generate()['results']), 0)
+
+    def test_pipeline_infer_schema(self):
+        filepath = os.path.join(self.data_dir, 'valid.csv')
+        options = {'schema': {'infer_schema': True}}
+        validator = Pipeline(filepath, processors=('schema',), options=options)
+        result, report = validator.run()
+
+        self.assertEqual(len(report['results']), 0)

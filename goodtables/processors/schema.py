@@ -57,13 +57,14 @@ class SchemaProcessor(base.Processor):
     def __init__(self, fail_fast=False, transform=False, report_limit=1000,
                  row_limit=30000, schema=None, ignore_field_order=True,
                  report_stream=None, report=None, result_level='error',
-                 **kwargs):
+                 infer_schema=False, **kwargs):
 
         super(SchemaProcessor, self).__init__(
             fail_fast=fail_fast, transform=transform,
             report_limit=report_limit, row_limit=row_limit,
             report_stream=report_stream, report=report, result_level=result_level)
 
+        self.infer_schema = infer_schema
         self.ignore_field_order = ignore_field_order
         if not schema:
             self.schema = None
@@ -73,15 +74,15 @@ class SchemaProcessor(base.Processor):
     def schema_model(self, schema):
         return jtskit.models.JSONTableSchema(schema)
 
-#    def pre_run(self, data_table):
-#        if self.schema is None:
-#            # make a schema
-#            # TODO: 50 here is arbitrary
-#            sample_data = [row for row in data_table.values][:50]
-#            guessed_schema = table_schema.make(data_table.headers, sample_data)
-#            self.schema = self.schema_model(guessed_schema)
-#
-#        return True, data_table
+    def pre_run(self, data_table):
+       # TODO: implement this now that it is supported in JTSKit
+       if self.schema is None:
+           if self.infer_schema:
+               # TODO: read data for sample of a few hundred rows and rewind
+               sample_values = data_table.get_sample(300)
+               self.schema = self.schema_model(jtskit.infer(data_table.headers, sample_values))
+
+       return True, data_table
 
     def run_header(self, headers, header_index=0):
 

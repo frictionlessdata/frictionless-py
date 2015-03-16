@@ -51,6 +51,19 @@ class DataTable(object):
         values = compat.csv_reader(self.stream)
         return headers, values
 
+    def get_sample(self, row_limit):
+        """Get a sample of data, as a CSV reader, up to a max of `row_limit`."""
+
+        sample = io.TextIOWrapper(io.BufferedRandom(io.BytesIO()), encoding=self.DEFAULT_ENCODING)
+        for index, row in enumerate(self.stream):
+            if not index > row_limit:
+                break
+            else:
+                sample.write(row)
+        self.replay()
+
+        return compat.csv_reader(sample)
+
     def to_dict(self):
         raise NotImplementedError
 
