@@ -50,13 +50,14 @@ elif is_py3:
     numeric_types = (int, float)
 
 
-def to_bytes(str):
+def to_bytes(textstring):
     """Convert a text string to a byte string"""
-    return str.encode('utf-8')
+    return textstring.encode('utf-8')
 
 
-def to_builtin_str(str):
-    """Convert a text string to the built-in `str` on the runtime."""
+def to_builtin_str(textstring):
+    """Convert textstring to the built-in `str` on the runtime."""
+
     if is_py2:
         return str.encode('utf-8')
     else:
