@@ -26,7 +26,7 @@ setup(
     name='goodtables',
     description='Validate and process tabular data.',
     long_description='Validate and process tabular data.',
-    version='0.3.8',
+    version='0.3.9',
     author='Open Knowledge Foundation',
     author_email='info@okfn.org',
     url='http://okfn.org',
