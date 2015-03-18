@@ -167,8 +167,8 @@ class DataTable(object):
                     value = cell.value
 
                 values.append(compat.str(cell.value))
-                _data = ','.join(values)
 
+            _data = ','.join('"{0}"'.format(v) for v in values)
             out.write('{0}\n'.format(_data))
 
         out.seek(0)
@@ -182,7 +182,7 @@ class DataTable(object):
                 headers = line.rstrip('\n').split(',')
                 break
 
-        headers = [h.strip() for h in headers]
+        headers = [h.strip(' "') for h in headers]
         return headers
 
     def _stream_from_url(self, url):
