@@ -140,9 +140,17 @@ class DataTable(object):
         """Get a data_source out of an Excel file."""
 
         # TODO: Need to flesh out this implementation quite a bit. See messytables
+        instream = None
+        try:
+            if compat.parse.urlparse(data_source).scheme in self.REMOTE_SCHEMES:
+                instream = compat.urlopen(data_source).read()
+        except Exception:
+            try:
+                instream = data_source.read()
+            except Exception:
+                pass
 
-        if compat.parse.urlparse(data_source).scheme in self.REMOTE_SCHEMES:
-            instream = compat.urlopen(data_source).read()
+        if instream:
             workbook = xlrd.open_workbook(file_contents=instream)
         else:
             workbook = xlrd.open_workbook(data_source)
@@ -166,7 +174,7 @@ class DataTable(object):
                 else:
                     value = cell.value
 
-                values.append(compat.str(cell.value))
+                values.append(compat.str(value))
 
             _data = ','.join('"{0}"'.format(v) for v in values)
             out.write('{0}\n'.format(_data))

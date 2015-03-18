@@ -17,7 +17,7 @@
         {
             "name": "Date of Payment",
             "type": "date",
-            "format": "fmt:DD/MM/YYYY",
+            "format": "any",
             "constraints": {
                 "required": true
             }
