@@ -10,7 +10,7 @@ install:
   - pip install coveralls
 
 script:
-  - py.test --cov goodtables --cov-config .coveragerc --cov-report term-missing
+  - PYTHONPATH=. py.test --cov goodtables --cov-config .coveragerc --cov-report term-missing
 
 after_success:
   - coveralls
