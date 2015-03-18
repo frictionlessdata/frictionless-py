@@ -5,8 +5,8 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from . import pipeline
-from ..utilities import data_table
 from ..utilities import helpers
+from .. import datatable
 
 
 class Batch(object):
@@ -39,7 +39,7 @@ class Batch(object):
         """Get the dataset from a CSV file for this batch process."""
 
         dataset = []
-        resources = data_table.DataTable(self.source)
+        resources = datatable.DataTable(self.source)
 
         data_index = resources.headers.index(self.data_key)
         schema_index = None

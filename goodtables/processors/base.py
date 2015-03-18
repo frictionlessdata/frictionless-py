@@ -6,7 +6,8 @@ from __future__ import unicode_literals
 
 import io
 import tellme
-from ..utilities import data_table, helpers
+from ..utilities import helpers
+from .. import datatable
 from .. import exceptions
 
 
@@ -134,9 +135,9 @@ class Processor(object):
         if is_table:
             data = data_source
         else:
-            data = data_table.DataTable(data_source, headers=headers,
-                                        encoding=encoding,
-                                        header_index=self.header_index)
+            data = datatable.DataTable(data_source, headers=headers,
+                                       encoding=encoding,
+                                       header_index=self.header_index)
             openfiles.extend(data.openfiles)
 
         # pre_run

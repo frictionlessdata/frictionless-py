@@ -13,7 +13,8 @@ import json
 import csv
 import decimal
 import tellme
-from ..utilities import data_table, data_package, csv_dialect, helpers
+from ..utilities import data_package, csv_dialect, helpers
+from .. import datatable
 from .. import exceptions
 from .. import compat
 
@@ -105,9 +106,9 @@ class Pipeline(object):
         self.report = tellme.Report('Pipeline', **report_options)
 
         self.pipeline = self.get_pipeline()
-        self.data = data_table.DataTable(data, format=self.format,
-                                         encoding=encoding,
-                                         header_index=self.header_index)
+        self.data = datatable.DataTable(data, format=self.format,
+                                        encoding=encoding,
+                                        header_index=self.header_index)
         self.openfiles.extend(self.data.openfiles)
 
         if not self.dry_run:
