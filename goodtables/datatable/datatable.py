@@ -56,11 +56,13 @@ class DataTable(object):
 
         sample = io.TextIOWrapper(io.BufferedRandom(io.BytesIO()), encoding=self.DEFAULT_ENCODING)
         for index, row in enumerate(self.stream):
-            if not index > row_limit:
+            if index > row_limit:
                 break
             else:
                 sample.write(row)
+
         self.replay()
+        sample.seek(0)
 
         return compat.csv_reader(sample)
 
