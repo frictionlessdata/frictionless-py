@@ -185,12 +185,12 @@ class DataTable(object):
     def get_headers(self, stream):
         """Get headers from stream."""
 
-        for index, line in enumerate(stream):
+        reader = compat.csv_reader(stream)
+        for index, line in enumerate(reader):
             if index == self.header_index:
-                headers = line.rstrip('\n').split(',')
+                headers = line
                 break
 
-        headers = [h.strip(' "') for h in headers]
         return headers
 
     def _stream_from_url(self, url):
