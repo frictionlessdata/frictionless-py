@@ -55,6 +55,9 @@ class Pipeline(object):
     TRANSFORM_FILENAME = 'transform.csv'
     DIALECT_FILENAME = 'dialect.json'
     DATA_FORMATS = ('csv', 'excel', 'json')
+    DATATABLE_ERRORS = (exceptions.DataSourceHTTPError,
+                        exceptions.DataSourceIsHTMLError,
+                        exceptions.DataSourceDecodeError)
 
     def __init__(self, data, processors=None, dialect=None, format='csv',
                  encoding=None, options=None, workspace=None, dry_run=True,
@@ -106,9 +109,14 @@ class Pipeline(object):
         self.report = tellme.Report('Pipeline', **report_options)
 
         self.pipeline = self.get_pipeline()
-        self.data = datatable.DataTable(data, format=self.format,
-                                        encoding=encoding,
-                                        header_index=self.header_index)
+
+        try:
+            self.data = datatable.DataTable(data, format=self.format,
+                                            encoding=encoding,
+                                            header_index=self.header_index)
+        except self.DATATABLE_ERRORS as e:
+            raise exceptions.PipelineBuildError(e.msg)
+
         self.openfiles.extend(self.data.openfiles)
 
         if not self.dry_run:

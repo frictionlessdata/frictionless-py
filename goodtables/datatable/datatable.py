@@ -10,6 +10,8 @@ import codecs
 import datetime
 import chardet
 import xlrd
+from bs4 import BeautifulSoup
+from .. import exceptions
 from .. import compat
 
 
@@ -32,6 +34,13 @@ class DataTable(object):
         self.header_index = header_index
         self.excel_sheet_index = excel_sheet_index
         self.stream = self.to_textstream(self.data_source)
+
+        self.test_stream = self._sample_stream()
+
+        if self._stream_is_html():
+            # prevent trying to work with an HTML page
+            raise exceptions.DataSourceIsHTMLError()
+
         self.headers, self.values = self.extract(self.passed_headers)
 
     def replay(self):
@@ -54,16 +63,9 @@ class DataTable(object):
     def get_sample(self, row_limit):
         """Get a sample of data, as a CSV reader, up to a max of `row_limit`."""
 
-        sample = io.TextIOWrapper(io.BufferedRandom(io.BytesIO()), encoding=self.DEFAULT_ENCODING)
-        for index, row in enumerate(self.stream):
-            if index > row_limit:
-                break
-            else:
-                sample.write(row)
+        sample = self._sample_stream(row_limit)
 
         self.replay()
-        sample.seek(0)
-
         return compat.csv_reader(sample)
 
     def to_dict(self):
@@ -143,7 +145,7 @@ class DataTable(object):
         instream = None
         try:
             if compat.parse.urlparse(data_source).scheme in self.REMOTE_SCHEMES:
-                instream = compat.urlopen(data_source).read()
+                instream = self._stream_from_url(data_source).read()
         except Exception:
             try:
                 instream = data_source.read()
@@ -197,7 +199,13 @@ class DataTable(object):
         """Return a seekable and readable stream from a URL."""
 
         stream = io.BufferedRandom(io.BytesIO())
-        stream.write(compat.urlopen(url).read())
+
+        try:
+            document = compat.urlopen(url)
+        except compat.HTTPError as e:
+            raise exceptions.DataSourceHTTPError()
+
+        stream.write(document.read())
         stream.seek(0)
 
         return stream
@@ -234,10 +242,36 @@ class DataTable(object):
         else:
             stream = codecs.iterdecode(stream, encoding)
 
-        for line in stream:
-            recoded = line.encode(self.DEFAULT_ENCODING).decode(self.DEFAULT_ENCODING)
-            textstream.write(recoded)
+        try:
+
+            for line in stream:
+                recoded = line.encode(self.DEFAULT_ENCODING).decode(self.DEFAULT_ENCODING)
+                textstream.write(recoded)
+
+        except UnicodeDecodeError as e:
+            raise exceptions.DataSourceDecodeError
 
         textstream.seek(0)
 
         return textstream
+
+    def _sample_stream(self, row_limit=100):
+
+        sample = io.TextIOWrapper(io.BufferedRandom(io.BytesIO()), encoding=self.DEFAULT_ENCODING)
+        for index, row in enumerate(self.stream):
+            if index > row_limit:
+                break
+            else:
+                sample.write(row)
+
+        self.stream.seek(0)
+        sample.seek(0)
+        return sample
+
+    def _stream_is_html(self):
+        """Guess if a source is actually an HTML document."""
+
+        _sample = self.test_stream.read()
+
+        self.test_stream.seek(0)
+        return bool(BeautifulSoup(_sample, 'html.parser').find())

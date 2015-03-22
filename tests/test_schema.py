@@ -432,3 +432,26 @@ class TestSchemaProcessor(base.BaseTestCase):
         result, report = validator.run()
 
         self.assertEqual(len(report['results']), 0)
+
+    def test_processor_run_error_when_data_http_error(self):
+
+        data_source = 'https://okfn.org/this-url-cant-possibly-exist-so-lets-test-404/'
+        processor = processors.SchemaProcessor()
+
+        self.assertRaises(exceptions.ProcessorBuildError, processor.run, data_source)
+
+    def test_processor_run_error_when_data_html_error(self):
+
+        data_source = 'https://www.google.com/'
+        processor = processors.SchemaProcessor()
+
+        self.assertRaises(exceptions.ProcessorBuildError, processor.run, data_source)
+
+    def test_processor_run_error_when_wrong_encoding(self):
+
+        data_source = os.path.join(self.data_dir, 'hmt','BIS_spending_over__25_000_July_2014.csv')
+        encoding = 'UTF-8'  # should be 'ISO-8859-2'
+        processor = processors.SchemaProcessor()
+
+        self.assertRaises(exceptions.ProcessorBuildError, processor.run,
+                          data_source, encoding=encoding)

@@ -24,6 +24,9 @@ class Processor(object):
     RESULT_LEVEL_WARNING = 'warning'
     RESULT_LEVEL_INFO = 'info'
     RESULT_HEADER_ROW_NAME = 'headers'
+    DATATABLE_ERRORS = (exceptions.DataSourceHTTPError,
+                        exceptions.DataSourceIsHTMLError,
+                        exceptions.DataSourceDecodeError)
 
     def __init__(self, fail_fast=False, transform=False, row_limit=30000,
                  header_index=0, report=None, report_limit=1000,
@@ -106,7 +109,8 @@ class Processor(object):
             'column_name': column_name
         }
 
-    def run(self, data_source, headers=None, encoding=None, is_table=False):
+    def run(self, data_source, headers=None, format='csv', encoding=None,
+            is_table=False):
 
         """Run this processor on data_source.
 
@@ -135,9 +139,13 @@ class Processor(object):
         if is_table:
             data = data_source
         else:
-            data = datatable.DataTable(data_source, headers=headers,
-                                       encoding=encoding,
-                                       header_index=self.header_index)
+            try:
+                data = datatable.DataTable(data_source, headers=headers,
+                                           format=format, encoding=encoding,
+                                           header_index=self.header_index)
+            except self.DATATABLE_ERRORS as e:
+                raise exceptions.ProcessorBuildError(e.msg)
+
             openfiles.extend(data.openfiles)
 
         # pre_run
