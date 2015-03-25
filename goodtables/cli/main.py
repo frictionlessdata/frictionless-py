@@ -38,6 +38,7 @@ def pipeline(data, schema, format, dry_run, fail_fast, row_limit, report_limit):
                                    report_limit=report_limit)
 
     valid, report = processor.run()
+
     click.echo(json.dumps(report, ensure_ascii=True))
 
 
@@ -47,7 +48,8 @@ def pipeline(data, schema, format, dry_run, fail_fast, row_limit, report_limit):
 @click.option('--fail_fast', is_flag=True)
 @click.option('--row_limit', default=20000, type=int)
 @click.option('--report_limit', default=1000, type=int)
-def structure(data, format, fail_fast, row_limit, report_limit):
+@click.option('--output', default='txt', type=click.Choice(['txt', 'json']))
+def structure(data, format, fail_fast, row_limit, report_limit, output):
 
     """Run a Good Tables StructureProcessor."""
 
@@ -56,8 +58,22 @@ def structure(data, format, fail_fast, row_limit, report_limit):
                                               report_limit=report_limit)
 
     valid, report, data = processor.run(data)
-    click.echo(json.dumps(report.generate(), ensure_ascii=True))
 
+    valid_msg = 'Well done! The data is valid :)\n'.upper()
+    invalid_msg = 'Oops.The data is invalid :(\n'.upper()
+
+    if output == 'json':
+        exclude = None
+    else:
+        exclude = ['result_context', 'processor', 'row_name', 'result_category',
+                   'column_index', 'column_name', 'result_level']
+
+    if valid:
+        click.echo(click.style(valid_msg, fg='green'))
+    else:
+        click.echo(click.style(invalid_msg, fg='red'))
+
+    click.echo(report.generate(output, exclude=exclude))
 
 @cli.command()
 @click.argument('data')
@@ -66,7 +82,8 @@ def structure(data, format, fail_fast, row_limit, report_limit):
 @click.option('--fail_fast', is_flag=True)
 @click.option('--row_limit', default=20000, type=int)
 @click.option('--report_limit', default=1000, type=int)
-def schema(data, schema, format, fail_fast, row_limit, report_limit):
+@click.option('--output', default='txt', type=click.Choice(['txt', 'json']))
+def schema(data, schema, format, fail_fast, row_limit, report_limit, output):
 
     """Run a Good Tables SchemaProcessor."""
 
@@ -75,7 +92,22 @@ def schema(data, schema, format, fail_fast, row_limit, report_limit):
                                            report_limit=report_limit)
 
     valid, report, data = processor.run(data)
-    click.echo(json.dumps(report.generate(), ensure_ascii=True))
+
+    if output == 'json':
+        exclude = None
+    else:
+        exclude = ['result_context', 'processor', 'row_name', 'result_category',
+                   'column_index', 'column_name', 'result_level']
+
+    valid_msg = 'Well done! The data is valid :)\n'.upper()
+    invalid_msg = 'Oops.The data is invalid :(\n'.upper()
+
+    if valid:
+        click.echo(click.style(valid_msg, fg='green'))
+    else:
+        click.echo(click.style(invalid_msg, fg='red'))
+
+    click.echo(report.generate(output, exclude=exclude))
 
 
 if __name__ == '__main__':

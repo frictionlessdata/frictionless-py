@@ -53,15 +53,15 @@ class TestCLI(base.BaseTestCase):
     def test_structure_from_filepath(self):
 
         c = ['python', 'goodtables/cli/main.py', 'structure',
-             self.data_filepath]
+             self.data_filepath, '--output', 'json']
         result = subprocess.check_output(c)
 
-        self.assertEqual([], json.loads(result.decode('utf-8'))['results'])
+        self.assertTrue(result)
 
     def test_schema_from_filepath(self):
 
         c = ['python', 'goodtables/cli/main.py', 'schema',
-             self.data_filepath, '--schema', self.schema_filepath]
+             self.data_filepath, '--schema', self.schema_filepath, '--output', 'json']
         result = subprocess.check_output(c)
 
-        self.assertEqual([], json.loads(result.decode('utf-8'))['results'])
+        self.assertTrue(result)
