@@ -63,7 +63,8 @@ class Pipeline(object):
                  encoding=None, options=None, workspace=None, dry_run=True,
                  transform=True, fail_fast=False, row_limit=20000,
                  report_limit=1000, report_stream=None, header_index=0,
-                 break_on_invalid_processor=True, post_task=None):
+                 break_on_invalid_processor=True, post_task=None,
+                 report_post_task=None):
 
         if data is None:
             _msg = '`data` must be a filepath, url or stream.'
@@ -82,6 +83,7 @@ class Pipeline(object):
         self.row_limit = self.get_row_limit(row_limit)
         self.report_limit = self.get_report_limit(report_limit)
         self.report_stream = report_stream
+        self.report_post_task = report_post_task or helpers.pipeline_stats
         self.header_index = header_index
         self.break_on_invalid_processor = break_on_invalid_processor
         self.post_task = post_task
@@ -102,8 +104,9 @@ class Pipeline(object):
         report_options = {
             'schema': helpers.report_schema,
             'backend': report_backend,
-            'client_stream': report_stream,
-            'limit': report_limit
+            'client_stream': self.report_stream,
+            'limit': self.report_limit,
+            'post_task': self.report_post_task
         }
 
         self.report = tellme.Report('Pipeline', **report_options)
@@ -257,57 +260,21 @@ class Pipeline(object):
             else:
                 self.data.replay()
 
-        self.generate_report()
+        self.set_report_meta()
 
         if self.post_task:
             # TODO: handle what happens in here
             self.post_task(self)
 
-        return valid, self.generated_report
+        return valid, self.report
 
     def rm_workspace(self):
         """Remove this run's workspace from disk."""
 
         return shutil.rmtree(self.workspace)
 
-    def generate_report(self):
-        """Return the report with a summary."""
-
-        row_count = self.pipeline[0].row_count
-        self.generated_report = self.report.generate()
-        self.generated_report['summary'] = self.make_report_summary(self.generated_report, row_count)
-
-        return self.generated_report
-
-    def make_report_summary(self, generated_report, row_count=None):
-        """Return a report summary."""
-
-        # TODO: Refactor the whole summary on report thing?
-
-        summary = {}
-        _results = generated_report['results']
-        row_count = row_count or self.row_limit
-
-        def get_type_errors(column_name, results, row_count):
-            match_count = len([r for r in results if
-                               r['result_id'] == 'schema_003' and
-                               r['column_name'] == column_name])
-
-            return int((match_count/row_count) * 100)
-
-        summary['header_index'] = self.header_index
-        summary['total_row_count'] = row_count
-        summary['bad_row_count'] = len(set([r['row_index'] for r in _results if
-                                            r['result_category'] == 'row' and
-                                            r['result_level'] == 'error' and
-                                            r['row_index'] is not None]))
-        summary['bad_column_count'] = len(set([r['column_index'] for r in _results if
-                                               r['result_category'] == 'row' and
-                                               r['result_level'] == 'error' and
-                                               r['column_index'] is not None]))
-        summary['columns'] = [{'name': header, 'index': index,
-                               'incorrect_type_percent': get_type_errors(
-                                   header, _results, row_count)}
-                              for index, header in enumerate(self.data.headers)]
-
-        return summary
+    def set_report_meta(self):
+        """Set information and statistics for this run on report['meta']."""
+        self.report.meta['row_count'] = self.pipeline[0].row_count or 1
+        self.report.meta['header_index'] = self.header_index
+        self.report.meta['headers'] = self.data.headers

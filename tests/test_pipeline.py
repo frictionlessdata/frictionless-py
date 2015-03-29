@@ -122,7 +122,7 @@ class TestPipeline(base.BaseTestCase):
                              report_limit=1, options=options)
         result, report = validator.run()
 
-        self.assertEqual(len([r for r in report['results'] if r['processor'] == 'structure']), 1)
+        self.assertEqual(len([r for r in report.generate()['results'] if r['processor'] == 'structure']), 1)
 
     def test__report_limit_out_range(self):
 
@@ -141,7 +141,7 @@ class TestPipeline(base.BaseTestCase):
                              row_limit=3, options=options)
         result, report = validator.run()
 
-        self.assertEqual(len([r for r in report['results'] if r['processor'] == 'structure']), 1)
+        self.assertEqual(len([r for r in report.generate()['results'] if r['processor'] == 'structure']), 1)
 
     def test_row_limit_out_range(self):
 
@@ -161,7 +161,7 @@ class TestPipeline(base.BaseTestCase):
 
         result, report = validator.run()
 
-        self.assertEqual(len([r for r in report['results'] if r['processor'] == 'schema']), 0)
+        self.assertEqual(len([r for r in report.generate()['results'] if r['processor'] == 'schema']), 0)
 
         report_stream.seek(0)
         for line in report_stream:
@@ -231,10 +231,11 @@ class TestPipeline(base.BaseTestCase):
 
         self.assertFalse(os.path.exists(pipeline.workspace))
 
-    def test_generate_report(self):
+    def test_set_report_meta(self):
 
         pipeline = Pipeline(self.data_string, dry_run=False)
-        self.assertEqual(len(pipeline.generate_report()['results']), 0)
+        pipeline.set_report_meta()
+        self.assertEqual(len(pipeline.report.generate()['meta']['headers']), 3)
 
     def test_header_index_valid(self):
 
@@ -260,9 +261,10 @@ class TestPipeline(base.BaseTestCase):
         options = {}
         validator = Pipeline(filepath, options=options, header_index=1)
         result, report = validator.run()
+        generated = report.generate()
 
-        self.assertEqual(report['summary']['bad_row_count'], 1)
-        self.assertEqual(report['summary']['total_row_count'], 9)
+        self.assertEqual(generated['meta']['bad_row_count'], 1)
+        self.assertEqual(generated['meta']['row_count'], 9)
 
     def test_report_summary_incorrect_type(self):
 
@@ -272,9 +274,9 @@ class TestPipeline(base.BaseTestCase):
         validator = Pipeline(filepath, processors=('schema',), options=options, fail_fast=True)
         result, report = validator.run()
 
-        for col in report['summary']['columns']:
+        for col in report.generate()['meta']['columns']:
             if col['name'] == 'id':
-                out = col['incorrect_type_percent']
+                out = col['bad_type_percent']
                 break
 
         self.assertEqual(out, 33)

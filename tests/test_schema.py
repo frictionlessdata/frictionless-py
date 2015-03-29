@@ -192,7 +192,7 @@ class TestSchemaProcessor(base.BaseTestCase):
         with io.open(data_filepath) as data_stream, \
                  io.open(schema_filepath) as schema_stream:
             schema = json.load(schema_stream)
-            options = {'schema':{'schema': schema, 'ignore_field_order': False}}
+            options = {'schema': {'schema': schema, 'ignore_field_order': False}}
             validator = Pipeline(data_filepath,
                                  processors=('schema',),
                                  options=options)
@@ -219,7 +219,7 @@ class TestSchemaProcessor(base.BaseTestCase):
                              fail_fast=True, options=options)
         result, report = validator.run()
 
-        self.assertEqual(len(report['results']), 1)
+        self.assertEqual(len(report.generate()['results']), 1)
 
     def test_standalone_fail_fast_false(self):
 
@@ -240,7 +240,7 @@ class TestSchemaProcessor(base.BaseTestCase):
                              options=options)
         result, report = validator.run()
 
-        self.assertEqual(len(report['results']), 7)
+        self.assertEqual(len(report.generate()['results']), 7)
 
     # def test_standalone_transform_true(self):
     #     self.assertTrue(False)
@@ -273,7 +273,7 @@ class TestSchemaProcessor(base.BaseTestCase):
                              report_limit=1, options=options)
         result, report = validator.run()
 
-        self.assertEqual(len(report['results']), 1)
+        self.assertEqual(len(report.generate()['results']), 1)
         self.assertEqual(validator.report_limit, 1)
         self.assertEqual(validator.pipeline[0].report_limit, 1)
 
@@ -312,7 +312,7 @@ class TestSchemaProcessor(base.BaseTestCase):
                              row_limit=2, options=options)
         result, report = validator.run()
 
-        self.assertEqual(len(report['results']), 0)
+        self.assertEqual(len(report.generate()['results']), 0)
         self.assertEqual(validator.row_limit, 2)
         self.assertEqual(validator.pipeline[0].row_limit, 2)
 
@@ -357,7 +357,7 @@ class TestSchemaProcessor(base.BaseTestCase):
 
         result, report = validator.run()
 
-        self.assertEqual(len(report['results']), 0)
+        self.assertEqual(len(report.generate()['results']), 0)
 
         report_stream.seek(0)
         for line in report_stream:
@@ -416,7 +416,7 @@ class TestSchemaProcessor(base.BaseTestCase):
         validator = Pipeline(filepath, processors=('schema',), options=options)
         result, report = validator.run()
 
-        self.assertEqual(len(report['results']), 1)
+        self.assertEqual(len(report.generate()['results']), 1)
 
     def test_standalone_infer_schema(self):
         filepath = os.path.join(self.data_dir, 'valid.csv')
@@ -431,7 +431,7 @@ class TestSchemaProcessor(base.BaseTestCase):
         validator = Pipeline(filepath, processors=('schema',), options=options)
         result, report = validator.run()
 
-        self.assertEqual(len(report['results']), 0)
+        self.assertEqual(len(report.generate()['results']), 0)
 
     def test_processor_run_error_when_data_http_error(self):
 
@@ -471,4 +471,4 @@ class TestSchemaProcessor(base.BaseTestCase):
         validator = Pipeline(filepath, processors=('schema',), options=options)
         result, report = validator.run()
 
-        self.assertEqual(len(report['results']), 1)
+        self.assertEqual(len(report.generate()['results']), 1)

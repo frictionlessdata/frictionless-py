@@ -51,6 +51,43 @@ def get_report_result_types():
 
     return result_types
 
+
+def pipeline_stats(report):
+    """Generates high-level pipeline statistics from a report."""
+
+    def _bad_type_percent(column_name, results, row_count):
+        """Return a percentage for amount of data with bad type in a column."""
+
+        match_count = len([r for r in results if
+                           r['result_id'] == 'schema_003' and
+                           r['column_name'] == column_name])
+
+        return int((match_count/row_count) * 100)
+
+    bad_row_count = len(set([r['row_index'] for r in report['results'] if
+                             r['result_category'] == 'row' and
+                             r['result_level'] == 'error' and
+                             r['row_index'] is not None]))
+
+    bad_column_count = len(set([r['column_index'] for r in report['results'] if
+                                r['result_category'] == 'row' and
+                                r['result_level'] == 'error' and
+                                r['column_index'] is not None]))
+
+    columns = [{'name': header, 'index': index,
+                'bad_type_percent': _bad_type_percent(header, report['results'],
+                                                      report['meta']['row_count'])}
+               for index, header in enumerate(report['meta']['headers'])]
+
+    report['meta'].update({
+        'bad_row_count': bad_row_count,
+        'bad_column_count': bad_column_count,
+        'columns': columns
+    })
+
+    return report
+
+
 def load_json_source(source):
 
     """Load a JSON source, from string, URL or buffer,  into a Python type."""

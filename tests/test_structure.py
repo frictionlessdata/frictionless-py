@@ -235,7 +235,7 @@ class TestStructureProcessor(base.BaseTestCase):
                              fail_fast=True, options=options)
         result, report = validator.run()
 
-        self.assertEqual(len(report['results']), 1)
+        self.assertEqual(len(report.generate()['results']), 1)
 
     def test_standalone_fail_fast_false(self):
 
@@ -254,7 +254,7 @@ class TestStructureProcessor(base.BaseTestCase):
                              options=options)
         result, report = validator.run()
 
-        self.assertEqual(len(report['results']), 2)
+        self.assertEqual(len(report.generate()['results']), 2)
 
     # def test_standalone_transform_true(self):
     #     filepath = os.path.join(self.data_dir, 'headerless_columns.csv')
@@ -297,7 +297,7 @@ class TestStructureProcessor(base.BaseTestCase):
                              report_limit=1, options=options)
         result, report = validator.run()
 
-        self.assertEqual(len(report['results']), 1)
+        self.assertEqual(len(report.generate()['results']), 1)
 
     def test_standalone_report_limit_out_range(self):
 
@@ -331,7 +331,7 @@ class TestStructureProcessor(base.BaseTestCase):
                              row_limit=2, options=options)
         result, report = validator.run()
 
-        self.assertEqual(len(report['results']), 0)
+        self.assertEqual(len(report.generate()['results']), 0)
 
     def test_standalone_row_limit_out_range(self):
 
@@ -374,7 +374,7 @@ class TestStructureProcessor(base.BaseTestCase):
 
         result, report = validator.run()
 
-        self.assertEqual(len(report['results']), 0)
+        self.assertEqual(len(report.generate()['results']), 0)
 
         report_stream.seek(0)
         for line in report_stream:
@@ -435,7 +435,7 @@ class TestStructureProcessor(base.BaseTestCase):
         validator = Pipeline(filepath, processors=('structure',), fail_fast=False)
         result, report = validator.run()
 
-        self.assertEqual(len(report['results']), 11)
+        self.assertEqual(len(report.generate()['results']), 11)
 
     def test_processor_run_error_when_data_http_error(self):
 
@@ -453,7 +453,7 @@ class TestStructureProcessor(base.BaseTestCase):
 
     def test_processor_run_error_when_wrong_encoding(self):
 
-        data_source = os.path.join(self.data_dir, 'hmt','BIS_spending_over__25_000_July_2014.csv')
+        data_source = os.path.join(self.data_dir, 'hmt', 'BIS_spending_over__25_000_July_2014.csv')
         encoding = 'UTF-8'  # should be 'ISO-8859-2'
         processor = processors.StructureProcessor()
 
