@@ -455,3 +455,20 @@ class TestSchemaProcessor(base.BaseTestCase):
 
         self.assertRaises(exceptions.ProcessorBuildError, processor.run,
                           data_source, encoding=encoding)
+
+    def test_standalone_field_unique(self):
+        filepath = os.path.join(self.data_dir, 'unique_field.csv')
+        schema = os.path.join(self.data_dir, 'unique_field.json')
+        validator = processors.SchemaProcessor(schema=schema)
+        result, report, data = validator.run(filepath)
+
+        self.assertEqual(len(report.generate()['results']), 1)
+
+    def test_pipeline_field_unique(self):
+        filepath = os.path.join(self.data_dir, 'unique_field.csv')
+        schema = os.path.join(self.data_dir, 'unique_field.json')
+        options = {'schema': {'schema': schema}}
+        validator = Pipeline(filepath, processors=('schema',), options=options)
+        result, report = validator.run()
+
+        self.assertEqual(len(report['results']), 1)

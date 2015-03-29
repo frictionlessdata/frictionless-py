@@ -43,6 +43,13 @@ RESULTS = {
         'msg': 'Column {0} is a non-required field, and has a null value in row {1}.',
         'help': '',
         'help_edit': ''
+    },
+    'schema_006': {
+        'id': 'schema_006',
+        'name': 'Unique Field',
+        'msg': 'Column {0} is a unique field, yet the value {1} already exists.',
+        'help': '',
+        'help_edit': ''
     }
 }
 
@@ -71,16 +78,16 @@ class SchemaProcessor(base.Processor):
         else:
             self.schema = self.schema_model(schema)
 
+        self._uniques = {}
+
     def schema_model(self, schema):
         return jtskit.models.JSONTableSchema(schema)
 
     def pre_run(self, data_table):
-       # TODO: implement this now that it is supported in JTSKit
-       if self.schema is None:
-           if self.infer_schema:
-               # TODO: read data for sample of a few hundred rows and rewind
-               sample_values = data_table.get_sample(300)
-               self.schema = self.schema_model(jtskit.infer(data_table.headers, sample_values))
+
+       if (self.schema is None) and self.infer_schema:
+           sample_values = data_table.get_sample(300)
+           self.schema = self.schema_model(jtskit.infer(data_table.headers, sample_values))
 
        return True, data_table
 
@@ -232,7 +239,32 @@ class SchemaProcessor(base.Processor):
 
                         self.report.write(entry)
 
-                    # TODO: check constraints.unique
+                    if constraints.get('unique') is True:
+
+                        if not self._uniques.get(column_name):
+                            self._uniques[column_name] = set([column_value])
+
+                        elif column_value in self._uniques[column_name]:
+                            _type = RESULTS['schema_006']
+                            entry = self.make_entry(
+                                self.name,
+                                self.RESULT_CATEGORY_ROW,
+                                self.RESULT_LEVEL_ERROR,
+                                _type['msg'].format(column_name, column_value),
+                                _type['id'],
+                                _type['name'],
+                                row,
+                                index,
+                                row_name,
+                                headers.index(column_name),
+                                column_name
+                            )
+
+                            self.report.write(entry)
+
+                        else:
+                            self._uniques[column_name].add(column_value)
+
                     # TODO: check constraints.min* and constraints.max*
 
         return valid, headers, index, row

@@ -20,6 +20,7 @@ class Processor(object):
     REPORT_LIMIT_MAX = 1000
     RESULT_CATEGORY_HEADER = 'header'
     RESULT_CATEGORY_ROW = 'row'
+    RESULT_CATEGORY_COLUMN = 'column'
     RESULT_LEVEL_ERROR = 'error'
     RESULT_LEVEL_WARNING = 'warning'
     RESULT_LEVEL_INFO = 'info'

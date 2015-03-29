@@ -4,7 +4,6 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import copy
 from . import base
 
 
@@ -74,8 +73,12 @@ class StructureProcessor(base.Processor):
         self.ignore_empty_columns = ignore_empty_columns
         self.ignore_duplicate_columns = ignore_duplicate_columns
         self.ignore_headerless_columns = ignore_headerless_columns
-        self.empty_strings = empty_strings or ('',)
+        if empty_strings:
+            self.empty_strings = frozenset(empty_strings)
+        else:
+            self.empty_strings = frozenset([''])
         self.seen = {}
+        self._repempty = frozenset([''])
 
     def run_header(self, headers, header_index=0):
 
@@ -141,20 +144,20 @@ class StructureProcessor(base.Processor):
 
         valid, is_dupe, is_empty, is_defective = True, False, False, False
         row_name = self.get_row_id(row, headers)
+        _repset = frozenset(row)
+        _rephash = hash(_repset)
 
         # check if row is duplicate
         if not self.ignore_duplicate_rows:
 
-            _rep = hash(frozenset(row))
-
-            if _rep in self.seen:
+            if _rephash in self.seen:
 
                 # don't keep writing results for totally empty rows
-                if set(row) == set(['']):
+                if _repset == self._repempty:
                     pass
                 else:
-                    previous_instances = copy.deepcopy(self.seen[_rep])
-                    self.seen[_rep].append(index)
+                    previous_instances = list(self.seen[_rephash])
+                    self.seen[_rephash].append(index)
                     valid = False
                     is_dupe = True
                     _type = RESULTS['structure_004']
@@ -175,13 +178,12 @@ class StructureProcessor(base.Processor):
                         return valid, headers, index, row
 
             else:
-                self.seen[_rep] = [index]
+                self.seen[_rephash] = [index]
 
         # check if row is empty
         if not self.ignore_empty_rows:
-            as_set = set(row)
-            if len(as_set) == 1 and \
-                    set(self.empty_strings).intersection(as_set):
+            if len(_repset) == 1 and ((_repset == self._repempty) or \
+                                      self.empty_strings.intersection(_repset)):
 
                 valid = False
                 is_empty = True
