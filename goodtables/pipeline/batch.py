@@ -89,7 +89,7 @@ class Batch(object):
                 if pkg.get('base'):
                     data = '{0}{1}'.format(pkg['base'], entry['path'])
                 else:
-                    data = entry['path']
+                    data = os.path.join(self.source, entry['path'])
             else:
                 data = entry.get('data')
 
