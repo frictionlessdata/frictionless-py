@@ -39,7 +39,7 @@ class TestPipeline(base.BaseTestCase):
         batch = Batch(self.batch_csv, pipeline_post_task=say_hi)
         rv = batch.run()
 
-        self.assertTrue(rv)
+        self.assertFalse(rv)
 
 
     def test_batch_with_batch_post_processor(self):
@@ -50,7 +50,7 @@ class TestPipeline(base.BaseTestCase):
         batch = Batch(self.batch_csv, post_task=say_hi)
         rv = batch.run()
 
-        self.assertTrue(rv)
+        self.assertFalse(rv)
 
     def test_bad_post_task_raises(self):
 
