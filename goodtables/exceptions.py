@@ -38,3 +38,9 @@ class DataSourceDecodeError(Exception):
     def __init__(self, msg=None):
         self.msg = msg or ('The data source cannot be decoded using the '
                            'declared or detected encoding.')
+
+
+class InvalidHandlerError(Exception):
+
+    def __init__(self, msg=None):
+        self.msg = msg or 'The passed handler is not valid.'

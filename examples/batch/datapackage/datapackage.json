@@ -1,0 +1,30 @@
+{
+    "resources": [
+        {
+            "path": "data/valid.csv",
+            "schema": {
+                "fields": [
+                    {
+                        "name": "id",
+                        "title": "ID",
+                        "type": "integer",
+                        "description": "The id."
+                    },
+                    {
+                        "name": "name",
+                        "title": "Name",
+                        "type": "string",
+                        "description": "The name."
+                    },
+                    {
+                        "name": "slug",
+                        "title": "Slug",
+                        "type": "string",
+                        "description": "The slug."
+                    }
+                ],
+                "primaryKey": "id"
+            }
+        }
+    ]
+}

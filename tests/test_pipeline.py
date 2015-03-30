@@ -301,6 +301,20 @@ class TestPipeline(base.BaseTestCase):
         self.assertRaises(exceptions.PipelineBuildError, Pipeline, data_source,
                           encoding=encoding)
 
+    def test_bad_post_task_raises(self):
+
+        filepath = os.path.join(self.data_dir, 'valid.csv')
+        say_hi = 'Say Hi!'
+        self.assertRaises(exceptions.InvalidHandlerError, Pipeline,
+                          filepath, post_task=say_hi)
+
+    def test_bad_report_post_task_raises(self):
+
+        filepath = os.path.join(self.data_dir, 'valid.csv')
+        say_hi = 'Say Hi!'
+        self.assertRaises(exceptions.InvalidHandlerError, Pipeline,
+                          filepath, report_post_task=say_hi)
+
     # def test_run_valid_dry_run(self):
     #     self.assertTrue(False)
 

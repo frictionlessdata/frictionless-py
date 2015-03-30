@@ -4,6 +4,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import os
 from . import pipeline
 from ..utilities import helpers
 from .. import datatable
@@ -11,14 +12,22 @@ from .. import datatable
 
 class Batch(object):
 
-    """Run a validation pipeline batch process."""
+    """Run a pipeline batch process.
+
+    Args:
+    * `source`: path to the source file
+    * `source_type`: 'csv' or 'datapackage'
+    * `data_key`: The key for the data (only used when source_type is 'csv')
+    * `schema_key`: The key for the schema (only used when source_type is 'csv').
+    * `pipeline_options`: Options to pass to each pipeline instance.
+    * `post_task`: Task handler to run after all pipelines have run.
+    * `pipeline_post_task`: Task handler passed to each pipeline instance.
+
+    """
 
     def __init__(self, source, source_type='csv', data_key='data',
                  schema_key='schema', pipeline_options=None,
                  post_task=None, pipeline_post_task=None):
-
-        # `csv` and `dp` (data package) as supported source types
-        # data_key is required, but schema_key is not
 
         self.source = source
         self.source_type = source_type
@@ -26,9 +35,13 @@ class Batch(object):
         self.schema_key = schema_key
         self.dataset = self.get_dataset()
         self.pipeline_options = pipeline_options or {}
+        self.pipeline = None
+
+        helpers.validate_handler(post_task, 1)
+        helpers.validate_handler(pipeline_post_task, 1)
+
         self.post_task = post_task
         self.pipeline_post_task = pipeline_post_task
-        self.pipeline = None
 
     def get_dataset(self):
         """Get the dataset for this batch process."""
@@ -57,17 +70,33 @@ class Batch(object):
 
         return dataset
 
-    def get_dataset_dp(self):
+    def get_dataset_datapackage(self):
         """Get the dataset from a Data Package for this batch process."""
 
+        _name = 'datapackage.json'
+        descriptor = os.path.join(self.source, _name)
         dataset = []
-        dp = helpers.load_json_source(self.source)
+        # TODO: We want to use https://github.com/tryggvib/datapackage here
+        # but, in order to do so, we need these issues resolved:
+        # https://github.com/tryggvib/datapackage/issues/35
+        # https://github.com/tryggvib/datapackage/issues/33
+        pkg = helpers.load_json_source(descriptor)
+        for entry in pkg['resources']:
 
-        for entry in dp['resources']:
-            # TODO: need to place the path inside the content of the dp: i.e.: the URL
-            rv = {'data': entry['path'], 'schema': entry.get('schema')}
+            if entry.get('url'):
+                data = entry['url']
+            elif entry.get('path'):
+                if pkg.get('base'):
+                    data = '{0}{1}'.format(pkg['base'], entry['path'])
+                else:
+                    data = entry['path']
+            else:
+                data = entry.get('data')
 
-            dataset.append(rv)
+            dataset.append({
+                'data': data,
+                'schema': entry.get('schema')
+            })
 
         return dataset
 
@@ -87,12 +116,14 @@ class Batch(object):
 
         # TODO: parallelize
 
+        reports = []
+
         for data in self.dataset:
             pipeline = self.pipeline_factory(data['data'], data['schema'])
-            pipeline.run()
+            result, report = pipeline.run()
+            reports.append(report)
 
         if self.post_task:
-            # TODO: handle errors from here, etc.
             self.post_task(self)
 
         return True

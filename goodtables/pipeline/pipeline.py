@@ -83,9 +83,13 @@ class Pipeline(object):
         self.row_limit = self.get_row_limit(row_limit)
         self.report_limit = self.get_report_limit(report_limit)
         self.report_stream = report_stream
-        self.report_post_task = report_post_task or helpers.pipeline_stats
         self.header_index = header_index
         self.break_on_invalid_processor = break_on_invalid_processor
+
+        helpers.validate_handler(report_post_task)
+        helpers.validate_handler(post_task)
+
+        self.report_post_task = report_post_task or helpers.pipeline_stats
         self.post_task = post_task
 
         if self.report_stream:

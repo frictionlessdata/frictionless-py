@@ -143,6 +143,7 @@ class DataTable(object):
 
         # TODO: Need to flesh out this implementation quite a bit. See messytables
         instream = None
+
         try:
             if compat.parse.urlparse(data_source).scheme in self.REMOTE_SCHEMES:
                 instream = self._stream_from_url(data_source).read()

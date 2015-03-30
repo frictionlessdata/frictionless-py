@@ -7,8 +7,10 @@ from __future__ import unicode_literals
 import os
 import io
 import json
+import inspect
 import requests
 from .. import compat
+from .. import exceptions
 
 
 def builtin_processors():
@@ -109,3 +111,28 @@ def load_json_source(source):
         with io.open(source, encoding='utf-8') as stream:
             source = json.load(io.open(source, encoding='utf-8'))
         return source
+
+
+def validate_handler(handler, argcount=1):
+
+    """Validate a handler.
+
+    Args:
+        * `handler`: the supposed handler, which is a function
+        * `argcount`: the count of args the handler should take
+        (not including self if handler is a method)
+    """
+
+    if handler is None:
+        return True
+    else:
+        if not callable(handler):
+            raise exceptions.InvalidHandlerError
+
+        if inspect.ismethod(handler):
+            # extra arg for self
+            argcount += 1
+
+        spec = inspect.getargspec(handler)
+        if not len(spec[0]) == argcount:
+            raise exceptions.InvalidHandlerError
