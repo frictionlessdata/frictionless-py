@@ -130,4 +130,4 @@ class Batch(object):
         if self.post_task:
             self.post_task(self)
 
-        return any([report.count for report in self.reports])
+        return not any([report.count for report in self.reports])

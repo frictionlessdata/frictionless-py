@@ -39,7 +39,7 @@ def pipeline(data, schema, format, dry_run, fail_fast, row_limit, report_limit):
 
     valid, report = processor.run()
 
-    click.echo(json.dumps(report, ensure_ascii=True))
+    click.echo(json.dumps(report.generate(), ensure_ascii=True))
 
 
 @cli.command()
