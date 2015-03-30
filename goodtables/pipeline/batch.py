@@ -35,7 +35,8 @@ class Batch(object):
         self.schema_key = schema_key
         self.dataset = self.get_dataset()
         self.pipeline_options = pipeline_options or {}
-        self.pipeline = None
+        self.current_pipeline = None
+        self.reports = []
 
         helpers.validate_handler(post_task, 1)
         helpers.validate_handler(pipeline_post_task, 1)
@@ -104,26 +105,29 @@ class Batch(object):
         """Construct a pipeline."""
 
         options = self.pipeline_options or {}
-        if options.get('schema') is None:
-            options['schema'] = {}
-        options['schema']['schema'] = schema
+        if options.get('options') is None:
+            options['options'] = {}
 
-        return pipeline.Pipeline(data, options=options,
-                                 post_task=self.pipeline_post_task)
+        if options['options'].get('schema') is None:
+            options['options']['schema'] = {}
+
+        options['options']['schema']['schema'] = schema
+
+        return pipeline.Pipeline(data, post_task=self.pipeline_post_task,
+                                 **options)
 
     def run(self):
         """Run the batch."""
 
         # TODO: parallelize
 
-        reports = []
-
         for data in self.dataset:
-            pipeline = self.pipeline_factory(data['data'], data['schema'])
-            result, report = pipeline.run()
-            reports.append(report)
+            self.current_pipeline = self.pipeline_factory(data['data'],
+                                                          data['schema'])
+            result, report = self.current_pipeline.run()
+            self.reports.append(report)
 
         if self.post_task:
             self.post_task(self)
 
-        return True
+        return any([report.count for report in self.reports])
