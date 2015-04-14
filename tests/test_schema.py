@@ -11,6 +11,7 @@ from goodtables import processors
 from goodtables import exceptions
 from goodtables.pipeline import Pipeline
 from goodtables.utilities import table_schema
+from jtskit.exceptions import InvalidJSONError, InvalidSchemaError
 from tests import base
 
 
@@ -473,10 +474,47 @@ class TestSchemaProcessor(base.BaseTestCase):
 
         self.assertEqual(len(report.generate()['results']), 1)
 
-    def test_case_insensitive_headers(self):
+    def test_standalone_case_insensitive_headers(self):
         filepath = os.path.join(self.data_dir, 'case_insensitive_headers.csv')
         schema = os.path.join(self.data_dir, 'test_schema.json')
         validator = processors.SchemaProcessor(schema=schema, case_insensitive_headers=True)
         result, report, data = validator.run(filepath)
 
         self.assertEqual(len(report.generate()['results']), 0)
+
+    def test_pipeline_case_insensitive_headers(self):
+        filepath = os.path.join(self.data_dir, 'case_insensitive_headers.csv')
+        schema = os.path.join(self.data_dir, 'test_schema.json')
+        options = {'schema': {'schema': schema, 'case_insensitive_headers': True}}
+        validator = Pipeline(filepath, processors=('schema',), options=options)
+        result, report = validator.run()
+
+        self.assertEqual(len(report.generate()['results']), 0)
+
+    def test_standalone_invalid_schema_json_raises(self):
+        schema = os.path.join(self.data_dir, 'valid.csv')
+
+        self.assertRaises(exceptions.ProcessorBuildError, processors.SchemaProcessor,
+                          schema=schema)
+
+    def test_standalone_invalid_schema_jts_raises(self):
+        schema = 'https://raw.githubusercontent.com/okfn/jtskit-py/master/examples/schema_invalid_empty.json'
+
+        self.assertRaises(exceptions.ProcessorBuildError, processors.SchemaProcessor,
+                          schema=schema)
+
+    def test_pipeline_invalid_schema_json_raises(self):
+        filepath = os.path.join(self.data_dir, 'case_insensitive_headers.csv')
+        schema = os.path.join(self.data_dir, 'valid.csv')
+        options = {'schema': {'schema': schema}}
+
+        self.assertRaises(exceptions.PipelineBuildError, Pipeline, filepath,
+                          processors=('schema',), options=options)
+
+    def test_pipeline_invalid_schema_jts_raises(self):
+        filepath = os.path.join(self.data_dir, 'case_insensitive_headers.csv')
+        schema = 'https://raw.githubusercontent.com/okfn/jtskit-py/master/examples/schema_invalid_empty.json'
+        options = {'schema': {'schema': schema}}
+
+        self.assertRaises(exceptions.PipelineBuildError, Pipeline, filepath,
+                          processors=('schema',), options=options)

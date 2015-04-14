@@ -25,9 +25,7 @@ class Processor(object):
     RESULT_LEVEL_WARNING = 'warning'
     RESULT_LEVEL_INFO = 'info'
     RESULT_HEADER_ROW_NAME = 'headers'
-    DATATABLE_ERRORS = (exceptions.DataSourceHTTPError,
-                        exceptions.DataSourceIsHTMLError,
-                        exceptions.DataSourceDecodeError)
+    RAISES = (exceptions.ProcessorBuildError,)
 
     def __init__(self, fail_fast=False, transform=False, row_limit=30000,
                  header_index=0, report=None, report_limit=1000,
@@ -144,7 +142,7 @@ class Processor(object):
                 data = datatable.DataTable(data_source, headers=headers,
                                            format=format, encoding=encoding,
                                            header_index=self.header_index)
-            except self.DATATABLE_ERRORS as e:
+            except datatable.DataTable.RAISES as e:
                 raise exceptions.ProcessorBuildError(e.msg)
 
             openfiles.extend(data.openfiles)

@@ -22,6 +22,9 @@ class DataTable(object):
     REMOTE_SCHEMES = ('http', 'https', 'ftp', 'ftps')
     DEFAULT_ENCODING = 'utf-8'
     FORMATS = ('csv', 'excel', 'json')
+    RAISES = (exceptions.DataSourceHTTPError,
+              exceptions.DataSourceIsHTMLError,
+              exceptions.DataSourceDecodeError)
 
     def __init__(self, data_source, headers=None, format='csv',
                  encoding=None, header_index=0, excel_sheet_index=0):

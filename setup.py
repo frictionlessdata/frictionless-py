@@ -19,7 +19,7 @@ dependencies = [
     'chardet>=2.3.0',
     'xlrd>=0.9.3',
     'tellme>=0.2.4',
-    'jtskit>=0.2.5',
+    'jtskit>=0.2.7',
     'beautifulsoup4>=4.3.2'
 ]
 
@@ -27,7 +27,7 @@ setup(
     name='goodtables',
     description='Validate and process tabular data.',
     long_description='Validate and process tabular data.',
-    version='0.5.1',
+    version='0.5.2',
     author='Open Knowledge Foundation',
     author_email='info@okfn.org',
     url='http://okfn.org',

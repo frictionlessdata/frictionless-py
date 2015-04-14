@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 
 import jtskit
 from . import base
+from .. import exceptions
 
 
 RESULTS = {
@@ -82,7 +83,12 @@ class SchemaProcessor(base.Processor):
         self._uniques = {}
 
     def schema_model(self, schema):
-        return jtskit.models.SchemaModel(schema, self.case_insensitive_headers)
+        try:
+            model = jtskit.models.SchemaModel(schema, self.case_insensitive_headers)
+        except (jtskit.exceptions.InvalidJSONError, jtskit.exceptions.InvalidSchemaError) as e:
+            raise exceptions.ProcessorBuildError(e.msg)
+
+        return model
 
     def pre_run(self, data_table):
 

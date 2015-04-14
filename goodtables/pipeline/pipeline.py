@@ -55,9 +55,6 @@ class Pipeline(object):
     TRANSFORM_FILENAME = 'transform.csv'
     DIALECT_FILENAME = 'dialect.json'
     DATA_FORMATS = ('csv', 'excel', 'json')
-    DATATABLE_ERRORS = (exceptions.DataSourceHTTPError,
-                        exceptions.DataSourceIsHTMLError,
-                        exceptions.DataSourceDecodeError)
 
     def __init__(self, data, processors=None, dialect=None, format='csv',
                  encoding=None, options=None, workspace=None, dry_run=True,
@@ -121,7 +118,7 @@ class Pipeline(object):
             self.data = datatable.DataTable(data, format=self.format,
                                             encoding=encoding,
                                             header_index=self.header_index)
-        except self.DATATABLE_ERRORS as e:
+        except datatable.DataTable.RAISES as e:
             raise exceptions.PipelineBuildError(e.msg)
 
         self.openfiles.extend(self.data.openfiles)
@@ -160,7 +157,12 @@ class Pipeline(object):
             options['fail_fast'] = self.fail_fast
             options['header_index'] = self.header_index
             options['report'] = self.report
-            pipeline.append(_class(**options))
+
+            try:
+                instance = _class(**options)
+                pipeline.append(instance)
+            except _class.RAISES as e:
+                raise exceptions.PipelineBuildError(e.msg)
 
         return pipeline
 
