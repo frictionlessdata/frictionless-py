@@ -472,3 +472,11 @@ class TestSchemaProcessor(base.BaseTestCase):
         result, report = validator.run()
 
         self.assertEqual(len(report.generate()['results']), 1)
+
+    def test_case_insensitive_headers(self):
+        filepath = os.path.join(self.data_dir, 'case_insensitive_headers.csv')
+        schema = os.path.join(self.data_dir, 'test_schema.json')
+        validator = processors.SchemaProcessor(schema=schema, case_insensitive_headers=True)
+        result, report, data = validator.run(filepath)
+
+        self.assertEqual(len(report.generate()['results']), 0)

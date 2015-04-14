@@ -64,7 +64,7 @@ class SchemaProcessor(base.Processor):
     def __init__(self, fail_fast=False, transform=False, report_limit=1000,
                  row_limit=30000, schema=None, ignore_field_order=True,
                  report_stream=None, report=None, result_level='error',
-                 infer_schema=False, **kwargs):
+                 infer_schema=False, case_insensitive_headers=False, **kwargs):
 
         super(SchemaProcessor, self).__init__(
             fail_fast=fail_fast, transform=transform,
@@ -72,6 +72,7 @@ class SchemaProcessor(base.Processor):
             report_stream=report_stream, report=report, result_level=result_level)
 
         self.infer_schema = infer_schema
+        self.case_insensitive_headers = case_insensitive_headers
         self.ignore_field_order = ignore_field_order
         if not schema:
             self.schema = None
@@ -81,7 +82,7 @@ class SchemaProcessor(base.Processor):
         self._uniques = {}
 
     def schema_model(self, schema):
-        return jtskit.models.JSONTableSchema(schema)
+        return jtskit.models.SchemaModel(schema, self.case_insensitive_headers)
 
     def pre_run(self, data_table):
 
@@ -94,6 +95,9 @@ class SchemaProcessor(base.Processor):
     def run_header(self, headers, header_index=0):
 
         valid = True
+
+        if self.case_insensitive_headers:
+            headers = [name.lower() for name in headers]
 
         if self.schema:
             if self.ignore_field_order:
