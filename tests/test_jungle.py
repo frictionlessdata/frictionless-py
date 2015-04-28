@@ -137,24 +137,40 @@ class TestJungle(base.BaseTestCase):
 
     def test_hmt_bis_one(self):
 
-        data = os.path.join(self.data_dir, 'hmt','BIS_spending_over__25_000_July_2014.csv')
+        data = os.path.join(self.data_dir, 'hmt', 'BIS_spending_over__25_000_July_2014.csv')
+        schema = os.path.join(self.data_dir, 'hmt', 'bis-modified.json')
         encoding = 'ISO-8859-2'
-        pipeline = Pipeline(data, encoding=encoding)
+        options = {'schema': {'schema': schema}}
+        pipeline = Pipeline(data, processors=('structure', 'schema'),
+                            options=options, encoding=encoding)
         result, report = pipeline.run()
 
         self.assertTrue(pipeline.data)
 
-    def test_htm_bis_two(self):
+    def test_hmt_bis_two(self):
         # excel
-        data = os.path.join(self.data_dir, 'hmt','BIS_monthly_spend_December_2012.xls')
-        pipeline = Pipeline(data, format='excel')
+        data = os.path.join(self.data_dir, 'hmt', 'BIS_monthly_spend_December_2012.xls')
+        schema = os.path.join(self.data_dir, 'hmt', 'bis-modified.json')
+        options = {'schema': {'schema': schema}}
+        pipeline = Pipeline(data, processors=('structure', 'schema'),
+                            options=options, format='excel')
+        result, report = pipeline.run()
+
+        self.assertTrue(pipeline.data)
+
+    def test_hmt_three(self):
+        data = 'https://www.gov.uk/government/uploads/system/uploads/attachment_data/file/407609/Publishable_December_2014_Spend.csv'
+        schema = os.path.join(self.data_dir, 'hmt', 'spend-publishing-schema.json')
+        options = {'schema': {'schema': schema}}
+        pipeline = Pipeline(data, processors=('structure', 'schema'),
+                            options=options)
         result, report = pipeline.run()
 
         self.assertTrue(pipeline.data)
 
     def test_pipeline_hmt_bbsrc(self):
 
-        data = os.path.join(self.data_dir, 'hmt','1011-bbsrc-25k-spend-return.csv')
+        data = os.path.join(self.data_dir, 'hmt', '1011-bbsrc-25k-spend-return.csv')
         encoding = 'ISO-8859-2'
         pipeline = Pipeline(data, encoding=encoding)
         result, report = pipeline.run()
@@ -163,8 +179,7 @@ class TestJungle(base.BaseTestCase):
 
     def test_standalone_hmt_bbsrc(self):
 
-        data =  os.path.join(self.data_dir, 'hmt','1011-bbsrc-25k-spend-return.csv')
-        encoding = 'ISO-8859-2'
+        data = os.path.join(self.data_dir, 'hmt', '1011-bbsrc-25k-spend-return.csv')
         validator = processors.StructureProcessor()
         result, report, data = validator.run(data, encoding=None)
 
