@@ -64,8 +64,9 @@ class SchemaProcessor(base.Processor):
 
     def __init__(self, fail_fast=False, transform=False, report_limit=1000,
                  row_limit=30000, schema=None, ignore_field_order=True,
-                 report_stream=None, report=None, result_level='error',
-                 infer_schema=False, case_insensitive_headers=False, **kwargs):
+                 report_stream=None, report=None,
+                 result_level='error', infer_schema=False,
+                 case_insensitive_headers=False, **kwargs):
 
         super(SchemaProcessor, self).__init__(
             fail_fast=fail_fast, transform=transform,
@@ -92,11 +93,11 @@ class SchemaProcessor(base.Processor):
 
     def pre_run(self, data_table):
 
-       if (self.schema is None) and self.infer_schema:
-           sample_values = data_table.get_sample(300)
-           self.schema = self.schema_model(jtskit.infer(data_table.headers, sample_values))
+        if (self.schema is None) and self.infer_schema:
+            sample_values = data_table.get_sample(300)
+            self.schema = self.schema_model(jtskit.infer(data_table.headers, sample_values))
 
-       return True, data_table
+        return True, data_table
 
     def run_header(self, headers, header_index=0):
 
@@ -179,88 +180,23 @@ class SchemaProcessor(base.Processor):
 
             else:
                 for column_name, column_value in zip(headers, row):
-                    # check type and format
-                    if self.schema.cast(column_name, column_value) is False:
 
-                        valid = False
-                        _type = RESULTS['schema_003']
-                        entry = self.make_entry(
-                            self.name,
-                            self.RESULT_CATEGORY_ROW,
-                            self.RESULT_LEVEL_ERROR,
-                            _type['msg'].format(self.schema.get_type(column_name).name.title()),
-                            _type['id'],
-                            _type['name'],
-                            row,
-                            index,
-                            row_name,
-                            headers.index(column_name),
-                            column_name
-                        )
+                    # handle case where column_name not even in schema
+                    if not self.schema.has_field(column_name):
+                        pass
 
-                        self.report.write(entry)
-                        if self.fail_fast:
-                            return valid, headers, index, row
+                    # we know the field is in the schema
+                    else:
+                        # check type and format
+                        if self.schema.cast(column_name, column_value) is False:
 
-                    # CONSTRAINTS
-                    constraints = self.schema.get_constraints(column_name)
-
-                    if constraints['required'] is True and \
-                       (column_value in self.schema.NULL_VALUES):
-
-                        valid = False
-                        _type = RESULTS['schema_004']
-                        entry = self.make_entry(
-                            self.name,
-                            self.RESULT_CATEGORY_ROW,
-                            self.RESULT_LEVEL_ERROR,
-                            _type['msg'].format(column_name, index),
-                            _type['id'],
-                            _type['name'],
-                            row,
-                            index,
-                            row_name,
-                            headers.index(column_name),
-                            column_name
-                            )
-
-                        self.report.write(entry)
-                        if self.fail_fast:
-                            return valid, headers, index, row
-
-                    if constraints['required'] is False and \
-                           (column_value in self.schema.NULL_VALUES) and \
-                           self.result_level == self.RESULT_LEVEL_INFO:
-                        # add info result
-                        _type = RESULTS['schema_005']
-                        entry = self.make_entry(
-                            self.name,
-                            self.RESULT_CATEGORY_ROW,
-                            self.RESULT_LEVEL_INFO,
-                            _type['msg'].format(column_name, index),
-                            _type['id'],
-                            _type['name'],
-                            row,
-                            index,
-                            row_name,
-                            headers.index(column_name),
-                            column_name
-                        )
-
-                        self.report.write(entry)
-
-                    if constraints.get('unique') is True:
-
-                        if not self._uniques.get(column_name):
-                            self._uniques[column_name] = set([column_value])
-
-                        elif column_value in self._uniques[column_name]:
-                            _type = RESULTS['schema_006']
+                            valid = False
+                            _type = RESULTS['schema_003']
                             entry = self.make_entry(
                                 self.name,
                                 self.RESULT_CATEGORY_ROW,
                                 self.RESULT_LEVEL_ERROR,
-                                _type['msg'].format(column_name, column_value),
+                                _type['msg'].format(self.schema.get_type(column_name).name.title()),
                                 _type['id'],
                                 _type['name'],
                                 row,
@@ -271,10 +207,86 @@ class SchemaProcessor(base.Processor):
                             )
 
                             self.report.write(entry)
+                            if self.fail_fast:
+                                return valid, headers, index, row
 
-                        else:
-                            self._uniques[column_name].add(column_value)
+                        # CONSTRAINTS
+                        constraints = self.schema.get_constraints(column_name)
 
-                    # TODO: check constraints.min* and constraints.max*
+                        if constraints['required'] is True and \
+                           (column_value in self.schema.NULL_VALUES):
+
+                            valid = False
+                            _type = RESULTS['schema_004']
+                            entry = self.make_entry(
+                                self.name,
+                                self.RESULT_CATEGORY_ROW,
+                                self.RESULT_LEVEL_ERROR,
+                                _type['msg'].format(column_name, index),
+                                _type['id'],
+                                _type['name'],
+                                row,
+                                index,
+                                row_name,
+                                headers.index(column_name),
+                                column_name
+                            )
+
+                            self.report.write(entry)
+                            if self.fail_fast:
+                                return valid, headers, index, row
+
+                        if constraints['required'] is False and \
+                           (column_value in self.schema.NULL_VALUES) and \
+                           self.result_level == self.RESULT_LEVEL_INFO:
+                            # add info result
+                            _type = RESULTS['schema_005']
+                            entry = self.make_entry(
+                                self.name,
+                                self.RESULT_CATEGORY_ROW,
+                                self.RESULT_LEVEL_INFO,
+                                _type['msg'].format(column_name, index),
+                                _type['id'],
+                                _type['name'],
+                                row,
+                                index,
+                                row_name,
+                                headers.index(column_name),
+                                column_name
+                            )
+
+                            self.report.write(entry)
+                            if self.fail_fast:
+                                return valid, headers, index, row
+
+                        if constraints.get('unique') is True:
+
+                            if not self._uniques.get(column_name):
+                                self._uniques[column_name] = set([column_value])
+
+                            elif column_value in self._uniques[column_name]:
+                                _type = RESULTS['schema_006']
+                                entry = self.make_entry(
+                                    self.name,
+                                    self.RESULT_CATEGORY_ROW,
+                                    self.RESULT_LEVEL_ERROR,
+                                    _type['msg'].format(column_name, column_value),
+                                    _type['id'],
+                                    _type['name'],
+                                    row,
+                                    index,
+                                    row_name,
+                                    headers.index(column_name),
+                                    column_name
+                                )
+
+                                self.report.write(entry)
+                                if self.fail_fast:
+                                    return valid, headers, index, row
+
+                            else:
+                                self._uniques[column_name].add(column_value)
+
+                        # TODO: check constraints.min* and constraints.max*
 
         return valid, headers, index, row
