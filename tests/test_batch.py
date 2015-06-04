@@ -5,7 +5,6 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import os
-import io
 from goodtables.pipeline import Batch
 from goodtables import exceptions
 from tests import base
@@ -40,7 +39,6 @@ class TestPipeline(base.BaseTestCase):
         rv = batch.run()
 
         self.assertFalse(rv)
-
 
     def test_batch_with_batch_post_processor(self):
 

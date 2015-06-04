@@ -27,13 +27,13 @@ class Processor(object):
     RESULT_HEADER_ROW_NAME = 'headers'
     RAISES = (exceptions.ProcessorBuildError,)
 
-    def __init__(self, fail_fast=False, transform=False, row_limit=30000,
+    def __init__(self, fail_fast=False, transform=True, row_limit=30000,
                  header_index=0, report=None, report_limit=1000,
                  report_stream=None, result_level='error'):
 
         self.name = self.name or self.__class__.__name__.lower()
         self.fail_fast = fail_fast
-        self.transform = transform
+        self.transform = True
         self.row_limit = self.get_row_limit(row_limit)
         self.report_limit = self.get_report_limit(report_limit)
         self.header_index = header_index
@@ -89,9 +89,9 @@ class Processor(object):
                 return v
         return ''
 
-    def make_entry(self, processor, result_category, result_level, result_message,
-                   result_id, result_name, result_context, row_index=None, row_name='',
-                   column_index=None, column_name=''):
+    def make_entry(self, processor, result_category, result_level,
+                   result_message, result_id, result_name, result_context,
+                   row_index=None, row_name='', column_index=None, column_name=''):
         """Return a report entry."""
 
         return {

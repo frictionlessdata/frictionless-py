@@ -7,7 +7,6 @@ from __future__ import unicode_literals
 import os
 import io
 import json
-import decimal
 from goodtables.pipeline import Pipeline
 from goodtables import exceptions
 from tests import base
@@ -82,37 +81,6 @@ class TestPipeline(base.BaseTestCase):
 
     def test_raise_if_data_none(self):
         self.assertRaises(exceptions.PipelineBuildError, Pipeline, None)
-
-    def test_dry_run_true(self):
-
-        pipeline = Pipeline(self.data_string, dry_run=True)
-        self.assertTrue(pipeline.dry_run)
-
-    def test_dry_run_false(self):
-
-        pipeline = Pipeline(self.data_string, dry_run=False)
-        self.assertFalse(pipeline.dry_run)
-
-    def test_workspace_local_implicit(self):
-
-        pipeline = Pipeline(self.data_string, dry_run=False)
-        self.assertTrue(pipeline.workspace)
-
-    # def test_workspace_local_explicit(self):
-    #     pipeline = Pipeline(self.data_string, workspace='tmp', dry_run=False)
-    #     self.assertTrue(pipeline.workspace)
-
-    # def test_workspace_s3(self):
-    #     self.assertTrue(False)
-
-    # def test_workspace_none(self):
-    #     self.assertTrue(False)
-
-    # def test_transform_true(self):
-    #     self.assertTrue(False)
-
-    # def test_transform_false(self):
-    #     self.assertTrue(False)
 
     def test__report_limit_in_range(self):
 
@@ -202,38 +170,9 @@ class TestPipeline(base.BaseTestCase):
     # def test_data_not_csv(self):
     #     self.assertTrue(False)
 
-    def test_init_workspace(self):
-
-        pipeline = Pipeline(self.data_string, dry_run=False)
-
-        self.assertTrue(os.path.exists(
-            os.path.join(pipeline.workspace, 'source.csv')))
-        self.assertTrue(os.path.exists(
-            os.path.join(pipeline.workspace, 'transform.csv')))
-        self.assertTrue(os.path.exists(
-            os.path.join(pipeline.workspace, 'dialect.json')))
-
-    def test_create_file(self):
-
-        filepath = 'example.file'
-        headers = ['first', 'second', 'three']
-        row = '1,2,3\n'
-        pipeline = Pipeline(self.data_string, dry_run=False)
-        pipeline.create_file(row, filepath, headers=headers)
-
-        self.assertTrue(os.path.exists(os.path.join(pipeline.workspace, filepath)))
-
-    def test_rm_workspace(self):
-
-        pipeline = Pipeline(self.data_string, dry_run=False)
-        self.assertTrue(pipeline.workspace)
-        pipeline.rm_workspace()
-
-        self.assertFalse(os.path.exists(pipeline.workspace))
-
     def test_set_report_meta(self):
 
-        pipeline = Pipeline(self.data_string, dry_run=False)
+        pipeline = Pipeline(self.data_string)
         pipeline.set_report_meta()
         self.assertEqual(len(pipeline.report.generate()['meta']['headers']), 3)
 
@@ -314,15 +253,3 @@ class TestPipeline(base.BaseTestCase):
         say_hi = 'Say Hi!'
         self.assertRaises(exceptions.InvalidHandlerError, Pipeline,
                           filepath, report_post_task=say_hi)
-
-    # def test_run_valid_dry_run(self):
-    #     self.assertTrue(False)
-
-    # def test_run_invalid_dry_run(self):
-    #     self.assertTrue(False)
-
-    # def test_run_valid_transform(self):
-    #     self.assertTrue(False)
-
-    # def test_run_invalid_transform(self):
-    #     self.assertTrue(False)

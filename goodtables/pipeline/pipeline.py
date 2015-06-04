@@ -4,17 +4,12 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import os
 import io
 import importlib
-import shutil
-import tempfile
-import json
 import tellme
 from ..utilities import csv_dialect, helpers
 from .. import datatable
 from .. import exceptions
-from .. import compat
 
 
 class Pipeline(object):
@@ -36,8 +31,6 @@ class Pipeline(object):
         * Custom processors have options nested under cls.__name__.lower()
         * e.g.:
             {'structure': {#options}, 'customprocessor': {#options}}
-    * workspace: path to directory for files. e.g.: '/my/path'
-    * dry_run: No files are persisted after the run has been completed
 
     Returns:
         A tuple of `valid, report`, where `valid` is a boolean expressing
@@ -49,17 +42,14 @@ class Pipeline(object):
 
     ROW_LIMIT_MAX = 30000
     REPORT_LIMIT_MAX = 1000
-    SOURCE_FILENAME = 'source.csv'
-    TRANSFORM_FILENAME = 'transform.csv'
     DIALECT_FILENAME = 'dialect.json'
     DATA_FORMATS = ('csv', 'excel', 'json')
 
     def __init__(self, data, processors=None, dialect=None, format='csv',
-                 encoding=None, options=None, workspace=None, dry_run=True,
-                 transform=True, fail_fast=False, row_limit=20000,
-                 report_limit=1000, report_stream=None, header_index=0,
-                 break_on_invalid_processor=True, post_task=None,
-                 report_post_task=None):
+                 transform=True, encoding=None, options=None, fail_fast=False,
+                 row_limit=20000, report_limit=1000, report_stream=None,
+                 header_index=0, break_on_invalid_processor=True,
+                 post_task=None, report_post_task=None):
 
         if data is None:
             _msg = '`data` must be a filepath, url or stream.'
@@ -71,8 +61,6 @@ class Pipeline(object):
         self.format = format
         self.encoding = encoding
         self.options = options or {}
-        self.dry_run = dry_run
-        self.workspace = self.get_workspace(workspace)
         self.transform = transform
         self.fail_fast = fail_fast
         self.row_limit = self.get_row_limit(row_limit)
@@ -120,25 +108,6 @@ class Pipeline(object):
             raise e
 
         self.openfiles.extend(self.data.openfiles)
-
-        if not self.dry_run:
-            self.init_workspace()
-
-    def init_workspace(self):
-        """Initalize the workspace for this run."""
-
-        self.create_file(self.data.stream, self.SOURCE_FILENAME, self.data.headers)
-        self.create_file('', self.TRANSFORM_FILENAME)
-        self.create_file(json.dumps(self.dialect), self.DIALECT_FILENAME)
-
-    def get_workspace(self, filepath):
-        """Return a workspace for this run."""
-        # TODO: use pudo/barn
-
-        if not self.dry_run:
-            return filepath or tempfile.mkdtemp()
-
-        return None
 
     def get_pipeline(self):
         """Get the pipeline for this instance."""
@@ -191,23 +160,6 @@ class Pipeline(object):
         else:
             return passed_limit
 
-    def create_file(self, data, name, headers=None):
-        """Create a file in the pipeline workspace."""
-
-        filepath = os.path.join(self.workspace, name)
-        with io.open(filepath, mode='w+t', encoding='utf-8') as destfile:
-            if headers:
-                destfile.write(','.join(headers))
-
-            if isinstance(data, compat.str):
-                destfile.write(data)
-            elif isinstance(data, compat.bytes):
-                # TODO: We should not ever deal with bytes here: see why we are (or if we still are)
-                destfile.write(data.decode('utf-8'))
-            else:
-                destfile.write(data.read())
-                data.seek(0)
-
     def resolve_processor(self, processor_name):
         """Return a processor class."""
 
@@ -258,11 +210,7 @@ class Pipeline(object):
             if not valid and self.break_on_invalid_processor:
                 break
 
-            if not self.dry_run and self.transform:
-                # TODO: do what we'll do with transform data, workspace, etc.
-                pass
-            else:
-                self.data.replay()
+            self.data.replay()
 
         self.set_report_meta()
 
@@ -271,11 +219,6 @@ class Pipeline(object):
             self.post_task(self)
 
         return valid, self.report
-
-    def rm_workspace(self):
-        """Remove this run's workspace from disk."""
-
-        return shutil.rmtree(self.workspace)
 
     def set_report_meta(self):
         """Set information and statistics for this run on report['meta']."""

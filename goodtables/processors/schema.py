@@ -6,7 +6,6 @@ from __future__ import unicode_literals
 
 import jtskit
 from . import base
-from .. import exceptions
 
 
 RESULTS = {
@@ -62,16 +61,16 @@ class SchemaProcessor(base.Processor):
     name = 'schema'
     RESULT_TYPES = RESULTS
 
-    def __init__(self, fail_fast=False, transform=False, report_limit=1000,
+    def __init__(self, fail_fast=False, report_limit=1000,
                  row_limit=30000, schema=None, ignore_field_order=True,
                  report_stream=None, report=None,
                  result_level='error', infer_schema=False,
                  case_insensitive_headers=False, **kwargs):
 
         super(SchemaProcessor, self).__init__(
-            fail_fast=fail_fast, transform=transform,
-            report_limit=report_limit, row_limit=row_limit,
-            report_stream=report_stream, report=report, result_level=result_level)
+            fail_fast=fail_fast, report_limit=report_limit,
+            row_limit=row_limit, report_stream=report_stream, report=report,
+            result_level=result_level)
 
         self.infer_schema = infer_schema
         self.case_insensitive_headers = case_insensitive_headers

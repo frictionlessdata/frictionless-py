@@ -64,16 +64,6 @@ Instantiating the pipeline
 
 TODO: This is not complete
 
-`workspace`
-+++++++++++
-
-A directory for persisting files that are read from and written to in job processing.
-
-`dry_run`
-+++++++++
-
-If `dry_run` is True, any files that have been written to the workspace will be removed on job completion.
-
 Running the pipeline
 ********************
 
