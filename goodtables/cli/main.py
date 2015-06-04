@@ -21,11 +21,10 @@ def cli():
 @click.argument('data')
 @click.option('--schema')
 @click.option('--format', default='csv', type=click.Choice(['csv', 'excel']))
-@click.option('--dry_run', is_flag=True)
 @click.option('--fail_fast', is_flag=True)
 @click.option('--row_limit', default=20000, type=int)
 @click.option('--report_limit', default=1000, type=int)
-def pipeline(data, schema, format, dry_run, fail_fast, row_limit, report_limit):
+def pipeline(data, schema, format, fail_fast, row_limit, report_limit):
 
     """Run a Good Tables pipeline."""
 
@@ -34,7 +33,7 @@ def pipeline(data, schema, format, dry_run, fail_fast, row_limit, report_limit):
         options['schema'] = {'schema': schema}
 
     processor = _pipeline.Pipeline(data, format=format, fail_fast=fail_fast,
-                                   dry_run=dry_run, row_limit=row_limit,
+                                   row_limit=row_limit,
                                    report_limit=report_limit)
 
     valid, report = processor.run()
