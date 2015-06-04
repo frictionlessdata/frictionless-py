@@ -233,6 +233,9 @@ class DataTable(object):
             stream.seek(0)
 
         encoding = chardet.detect(sample)['encoding']
+        # default to utf-8 for safety
+        if encoding == 'ascii':
+            encoding = 'utf-8'
 
         return encoding
 
