@@ -285,20 +285,20 @@ class TestPipeline(base.BaseTestCase):
 
         data_source = 'https://okfn.org/this-url-cant-possibly-exist-so-lets-test-404/'
 
-        self.assertRaises(exceptions.PipelineBuildError, Pipeline, data_source)
+        self.assertRaises(exceptions.DataSourceHTTPError, Pipeline, data_source)
 
     def test_pipeline_build_error_when_data_html_error(self):
 
         data_source = 'https://www.google.com/'
 
-        self.assertRaises(exceptions.PipelineBuildError, Pipeline, data_source)
+        self.assertRaises(exceptions.DataSourceIsHTMLError, Pipeline, data_source)
 
     def test_pipeline_build_error_when_wrong_encoding(self):
 
         data_source = os.path.join(self.data_dir, 'hmt','BIS_spending_over__25_000_July_2014.csv')
         encoding = 'UTF-8'  # should be 'ISO-8859-2'
 
-        self.assertRaises(exceptions.PipelineBuildError, Pipeline, data_source,
+        self.assertRaises(exceptions.DataSourceDecodeError, Pipeline, data_source,
                           encoding=encoding)
 
     def test_bad_post_task_raises(self):

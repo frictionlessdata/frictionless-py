@@ -143,7 +143,7 @@ class Processor(object):
                                            format=format, encoding=encoding,
                                            header_index=self.header_index)
             except datatable.DataTable.RAISES as e:
-                raise exceptions.ProcessorBuildError(e.msg)
+                raise e
 
             openfiles.extend(data.openfiles)
 

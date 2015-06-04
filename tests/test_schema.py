@@ -439,14 +439,14 @@ class TestSchemaProcessor(base.BaseTestCase):
         data_source = 'https://okfn.org/this-url-cant-possibly-exist-so-lets-test-404/'
         processor = processors.SchemaProcessor()
 
-        self.assertRaises(exceptions.ProcessorBuildError, processor.run, data_source)
+        self.assertRaises(exceptions.DataSourceHTTPError, processor.run, data_source)
 
     def test_processor_run_error_when_data_html_error(self):
 
         data_source = 'https://www.google.com/'
         processor = processors.SchemaProcessor()
 
-        self.assertRaises(exceptions.ProcessorBuildError, processor.run, data_source)
+        self.assertRaises(exceptions.DataSourceIsHTMLError, processor.run, data_source)
 
     def test_processor_run_error_when_wrong_encoding(self):
 
@@ -454,7 +454,7 @@ class TestSchemaProcessor(base.BaseTestCase):
         encoding = 'UTF-8'  # should be 'ISO-8859-2'
         processor = processors.SchemaProcessor()
 
-        self.assertRaises(exceptions.ProcessorBuildError, processor.run,
+        self.assertRaises(exceptions.DataSourceDecodeError, processor.run,
                           data_source, encoding=encoding)
 
     def test_standalone_field_unique(self):
@@ -494,13 +494,13 @@ class TestSchemaProcessor(base.BaseTestCase):
     def test_standalone_invalid_schema_json_raises(self):
         schema = os.path.join(self.data_dir, 'valid.csv')
 
-        self.assertRaises(exceptions.ProcessorBuildError, processors.SchemaProcessor,
+        self.assertRaises(InvalidJSONError, processors.SchemaProcessor,
                           schema=schema)
 
     def test_standalone_invalid_schema_jts_raises(self):
         schema = 'https://raw.githubusercontent.com/okfn/jtskit-py/master/examples/schema_invalid_empty.json'
 
-        self.assertRaises(exceptions.ProcessorBuildError, processors.SchemaProcessor,
+        self.assertRaises(InvalidSchemaError, processors.SchemaProcessor,
                           schema=schema)
 
     def test_pipeline_invalid_schema_json_raises(self):
@@ -508,7 +508,7 @@ class TestSchemaProcessor(base.BaseTestCase):
         schema = os.path.join(self.data_dir, 'valid.csv')
         options = {'schema': {'schema': schema}}
 
-        self.assertRaises(exceptions.PipelineBuildError, Pipeline, filepath,
+        self.assertRaises(InvalidJSONError, Pipeline, filepath,
                           processors=('schema',), options=options)
 
     def test_pipeline_invalid_schema_jts_raises(self):
@@ -516,5 +516,5 @@ class TestSchemaProcessor(base.BaseTestCase):
         schema = 'https://raw.githubusercontent.com/okfn/jtskit-py/master/examples/schema_invalid_empty.json'
         options = {'schema': {'schema': schema}}
 
-        self.assertRaises(exceptions.PipelineBuildError, Pipeline, filepath,
+        self.assertRaises(InvalidSchemaError, Pipeline, filepath,
                           processors=('schema',), options=options)

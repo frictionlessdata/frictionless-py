@@ -87,7 +87,7 @@ class SchemaProcessor(base.Processor):
         try:
             model = jtskit.models.SchemaModel(schema, self.case_insensitive_headers)
         except (jtskit.exceptions.InvalidJSONError, jtskit.exceptions.InvalidSchemaError) as e:
-            raise exceptions.ProcessorBuildError(e.msg)
+            raise e
 
         return model
 

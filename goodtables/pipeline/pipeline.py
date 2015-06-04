@@ -10,10 +10,8 @@ import importlib
 import shutil
 import tempfile
 import json
-import csv
-import decimal
 import tellme
-from ..utilities import data_package, csv_dialect, helpers
+from ..utilities import csv_dialect, helpers
 from .. import datatable
 from .. import exceptions
 from .. import compat
@@ -119,7 +117,7 @@ class Pipeline(object):
                                             encoding=encoding,
                                             header_index=self.header_index)
         except datatable.DataTable.RAISES as e:
-            raise exceptions.PipelineBuildError(e.msg)
+            raise e
 
         self.openfiles.extend(self.data.openfiles)
 
@@ -162,7 +160,7 @@ class Pipeline(object):
                 instance = _class(**options)
                 pipeline.append(instance)
             except _class.RAISES as e:
-                raise exceptions.PipelineBuildError(e.msg)
+                raise e
 
         return pipeline
 

@@ -449,7 +449,7 @@ class TestStructureProcessor(base.BaseTestCase):
         data_source = 'https://www.google.com/'
         processor = processors.StructureProcessor()
 
-        self.assertRaises(exceptions.ProcessorBuildError, processor.run, data_source)
+        self.assertRaises(exceptions.DataSourceIsHTMLError, processor.run, data_source)
 
     def test_processor_run_error_when_wrong_encoding(self):
 
@@ -457,5 +457,5 @@ class TestStructureProcessor(base.BaseTestCase):
         encoding = 'UTF-8'  # should be 'ISO-8859-2'
         processor = processors.StructureProcessor()
 
-        self.assertRaises(exceptions.ProcessorBuildError, processor.run,
+        self.assertRaises(exceptions.DataSourceDecodeError, processor.run,
                           data_source, encoding=encoding)
