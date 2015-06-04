@@ -46,10 +46,11 @@ class Pipeline(object):
     DATA_FORMATS = ('csv', 'excel', 'json')
 
     def __init__(self, data, processors=None, dialect=None, format='csv',
-                 transform=True, encoding=None, options=None, fail_fast=False,
-                 row_limit=20000, report_limit=1000, report_stream=None,
-                 header_index=0, break_on_invalid_processor=True,
-                 post_task=None, report_post_task=None):
+                 transform=True, encoding=None, decode_strategy='replace',
+                 options=None, fail_fast=False, row_limit=20000,
+                 report_limit=1000, report_stream=None, header_index=0,
+                 break_on_invalid_processor=True, post_task=None,
+                 report_post_task=None):
 
         if data is None:
             _msg = '`data` must be a filepath, url or stream.'
@@ -60,6 +61,7 @@ class Pipeline(object):
         self.dialect = self.get_dialect(dialect)
         self.format = format
         self.encoding = encoding
+        self.decode_strategy = decode_strategy
         self.options = options or {}
         self.transform = transform
         self.fail_fast = fail_fast
@@ -103,6 +105,7 @@ class Pipeline(object):
         try:
             self.data = datatable.DataTable(data, format=self.format,
                                             encoding=encoding,
+                                            decode_strategy=decode_strategy,
                                             header_index=self.header_index)
         except datatable.DataTable.RAISES as e:
             raise e

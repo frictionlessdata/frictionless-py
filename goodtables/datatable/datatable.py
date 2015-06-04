@@ -27,13 +27,15 @@ class DataTable(object):
               exceptions.DataSourceDecodeError)
 
     def __init__(self, data_source, headers=None, format='csv',
-                 encoding=None, header_index=0, excel_sheet_index=0):
+                 encoding=None, decode_strategy='replace',
+                 header_index=0, excel_sheet_index=0):
 
         self.openfiles = []
         self.data_source = data_source
         self.passed_headers = headers
         self.format = format
         self.encoding = encoding
+        self.decode_strategy = decode_strategy
         self.header_index = header_index
         self.excel_sheet_index = excel_sheet_index
         self.stream = self.to_textstream(self.data_source)
@@ -93,7 +95,6 @@ class DataTable(object):
 
         """
 
-        # textstream = open('tmp.txt', mode='w+t', encoding=self.DEFAULT_ENCODING)
         textstream = io.TextIOWrapper(io.BufferedRandom(io.BytesIO()), encoding=self.DEFAULT_ENCODING)
         self.openfiles.append(textstream)
 
@@ -244,7 +245,7 @@ class DataTable(object):
             stream = _stream
             stream.seek(0)
         else:
-            stream = codecs.iterdecode(stream, encoding)
+            stream = codecs.iterdecode(stream, encoding, self.decode_strategy)
 
         try:
 

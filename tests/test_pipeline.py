@@ -238,7 +238,7 @@ class TestPipeline(base.BaseTestCase):
         encoding = 'UTF-8'  # should be 'ISO-8859-2'
 
         self.assertRaises(exceptions.DataSourceDecodeError, Pipeline, data_source,
-                          encoding=encoding)
+                          encoding=encoding, decode_strategy=None)
 
     def test_bad_post_task_raises(self):
 

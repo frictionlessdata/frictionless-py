@@ -109,7 +109,7 @@ class Processor(object):
         }
 
     def run(self, data_source, headers=None, format='csv', encoding=None,
-            is_table=False):
+            decode_strategy='replace', is_table=False):
 
         """Run this processor on data_source.
 
@@ -141,6 +141,7 @@ class Processor(object):
             try:
                 data = datatable.DataTable(data_source, headers=headers,
                                            format=format, encoding=encoding,
+                                           decode_strategy=decode_strategy,
                                            header_index=self.header_index)
             except datatable.DataTable.RAISES as e:
                 raise e

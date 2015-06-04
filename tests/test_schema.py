@@ -455,7 +455,7 @@ class TestSchemaProcessor(base.BaseTestCase):
         processor = processors.SchemaProcessor()
 
         self.assertRaises(exceptions.DataSourceDecodeError, processor.run,
-                          data_source, encoding=encoding)
+                          data_source, encoding=encoding, decode_strategy=None)
 
     def test_standalone_field_unique(self):
         filepath = os.path.join(self.data_dir, 'unique_field.csv')

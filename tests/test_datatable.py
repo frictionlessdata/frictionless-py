@@ -5,12 +5,8 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import os
-import io
-import json
-import subprocess
 from goodtables import datatable
 from goodtables import exceptions
-from goodtables import compat
 from tests import base
 
 
@@ -55,6 +51,14 @@ class TestDataTable(base.BaseTestCase):
 
         data_source = os.path.join(self.data_dir, 'hmt','BIS_spending_over__25_000_July_2014.csv')
         encoding = 'UTF-8'  # should be 'ISO-8859-2'
-
         self.assertRaises(exceptions.DataSourceDecodeError, datatable.DataTable,
-                          data_source, encoding=encoding)
+                          data_source, encoding=encoding, decode_strategy=None)
+
+    def test_wrong_encoding_replaces(self):
+
+        data_source = os.path.join(self.data_dir, 'hmt','BIS_spending_over__25_000_July_2014.csv')
+        encoding = 'UTF-8'  # should be 'ISO-8859-2'
+        decode_strategy = 'replace'
+        data = datatable.DataTable(data_source, encoding=encoding, decode_strategy=decode_strategy)
+
+        self.assertTrue(data)

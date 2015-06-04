@@ -458,4 +458,4 @@ class TestStructureProcessor(base.BaseTestCase):
         processor = processors.StructureProcessor()
 
         self.assertRaises(exceptions.DataSourceDecodeError, processor.run,
-                          data_source, encoding=encoding)
+                          data_source, encoding=encoding, decode_strategy=None)
