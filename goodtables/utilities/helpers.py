@@ -130,7 +130,7 @@ def group_results(report):
             if result['row_index'] is not None:
 
                 # set the result context on the group
-                if index == 0:
+                if not groups[result['row_index']].get('result_context'):
                     groups[result['row_index']]['result_context'] = result['result_context']
 
                 groups[result['row_index']]['results'].append(result)
