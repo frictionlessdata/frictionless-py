@@ -50,7 +50,7 @@ class Pipeline(object):
                  options=None, fail_fast=False, row_limit=20000,
                  report_limit=1000, report_stream=None, header_index=0,
                  break_on_invalid_processor=True, post_task=None,
-                 report_post_task=None):
+                 report_type='basic'):
 
         if data is None:
             _msg = '`data` must be a filepath, url or stream.'
@@ -71,10 +71,13 @@ class Pipeline(object):
         self.header_index = header_index
         self.break_on_invalid_processor = break_on_invalid_processor
 
-        helpers.validate_handler(report_post_task)
         helpers.validate_handler(post_task)
 
-        self.report_post_task = report_post_task or helpers.pipeline_stats
+        if report_type == 'grouped':
+            self.report_post_task = helpers.grouped_report
+        else:
+            self.report_post_task = helpers.basic_report
+
         self.post_task = post_task
 
         if self.report_stream:

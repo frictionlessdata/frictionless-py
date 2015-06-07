@@ -8,6 +8,7 @@ import os
 import io
 import json
 from goodtables.pipeline import Pipeline
+from goodtables.utilities import helpers
 from goodtables import exceptions
 from tests import base
 
@@ -247,9 +248,13 @@ class TestPipeline(base.BaseTestCase):
         self.assertRaises(exceptions.InvalidHandlerError, Pipeline,
                           filepath, post_task=say_hi)
 
-    def test_bad_report_post_task_raises(self):
+    def test_report_results_grouped_by_rows(self):
 
-        filepath = os.path.join(self.data_dir, 'valid.csv')
-        say_hi = 'Say Hi!'
-        self.assertRaises(exceptions.InvalidHandlerError, Pipeline,
-                          filepath, report_post_task=say_hi)
+        filepath = os.path.join(self.data_dir, 'fail_fast_two_schema_errors.csv')
+        schema = os.path.join(self.data_dir, 'test_schema.json')
+        options = {'schema': {'schema': schema}}
+        validator = Pipeline(filepath, processors=('schema',), options=options,
+                             fail_fast=True, report_type='grouped')
+        result, report = validator.run()
+        generated = report.generate()
+        self.assertEqual(1, len(generated['results']))

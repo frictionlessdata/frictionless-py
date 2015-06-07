@@ -54,8 +54,26 @@ def get_report_result_types():
     return result_types
 
 
-def pipeline_stats(report):
-    """Generates high-level pipeline statistics from a report."""
+def basic_report(report):
+    """Run meta statistics."""
+
+    report = set_meta_stats(report)
+
+    return report
+
+
+def grouped_report(report):
+    """Run meta statistics and group the results by row."""
+
+    report = set_meta_stats(report)
+    report = group_results(report)
+
+    return report
+
+
+def set_meta_stats(report):
+
+    """Set run statistics on the report meta object."""
 
     def _bad_type_percent(column_name, results, row_count):
         """Return a percentage for amount of data with bad type in a column."""
@@ -87,6 +105,44 @@ def pipeline_stats(report):
         'columns': columns
     })
 
+    return report
+
+
+def group_results(report):
+
+    """Group report results by row."""
+
+    _rows = set([r['row_index'] for r in report['results']
+                 if r['row_index'] is not None])
+
+    def make_groups(results, rows):
+        groups = {}
+
+        for row in rows:
+            groups.update({
+                row: {
+                    'row_index': row,
+                    'results': []
+                }
+            })
+
+        for index, result in enumerate(results):
+            if result['row_index'] is not None:
+
+                # set the result context on the group
+                if index == 0:
+                    groups[result['row_index']]['result_context'] = result['result_context']
+
+                groups[result['row_index']]['results'].append(result)
+
+                # remove stuff we do not require per result
+                del result['result_context']
+                del result['row_index']
+
+        return groups
+
+    report['results'] = sorted([{k: v} for k, v in make_groups(report['results'], _rows).items()],
+                               key=lambda result: list(result.keys())[0])
     return report
 
 
