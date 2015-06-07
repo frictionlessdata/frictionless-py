@@ -10,8 +10,8 @@ from . import base
 RESULTS = {
     'structure_001': {
         'id': 'structure_001',
-        'name': 'Empty Header',
-        'msg': 'The header in column {0} was found to be empty.',
+        'name': 'Missing Header',
+        'msg': 'Column {0} is missing a header.',
         'help': '',
         'help_edit': ''
     },

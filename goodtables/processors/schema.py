@@ -12,7 +12,9 @@ RESULTS = {
     'schema_001': {
         'id': 'schema_001',
         'name': 'Incorrect Headers',
-        'msg': 'The headers do not match the schema. Data has {0}, but they should be {1}.',
+        'msg': ('There is a mismatch between the headers according to the '
+                'schema, and those found in the data. The schema says the '
+                'headers should be: {0}.'),
         'help': '',
         'help_edit': ''
     },
@@ -115,7 +117,7 @@ class SchemaProcessor(base.Processor):
                         self.name,
                         self.RESULT_CATEGORY_HEADER,
                         self.RESULT_LEVEL_ERROR,
-                        _type['msg'].format(headers, self.schema.headers),
+                        _type['msg'].format(', '.join(self.schema.headers)),
                         _type['id'],
                         _type['name'],
                         headers,
