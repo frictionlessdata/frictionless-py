@@ -4,7 +4,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import jtskit
+import jsontableschema
 from . import base
 
 
@@ -86,8 +86,8 @@ class SchemaProcessor(base.Processor):
 
     def schema_model(self, schema):
         try:
-            model = jtskit.models.SchemaModel(schema, self.case_insensitive_headers)
-        except (jtskit.exceptions.InvalidJSONError, jtskit.exceptions.InvalidSchemaError) as e:
+            model = jsontableschema.model.SchemaModel(schema, self.case_insensitive_headers)
+        except (jsontableschema.exceptions.InvalidJSONError, jsontableschema.exceptions.InvalidSchemaError) as e:
             raise e
 
         return model
@@ -96,7 +96,7 @@ class SchemaProcessor(base.Processor):
 
         if (self.schema is None) and self.infer_schema:
             sample_values = data_table.get_sample(300)
-            self.schema = self.schema_model(jtskit.infer(data_table.headers, sample_values))
+            self.schema = self.schema_model(jsontableschema.infer(data_table.headers, sample_values))
 
         return True, data_table
 
@@ -189,7 +189,14 @@ class SchemaProcessor(base.Processor):
                     # we know the field is in the schema
                     else:
                         # check type and format
-                        if self.schema.cast(column_name, column_value) is False:
+                        try:
+                            schema_cast = self.schema.cast(column_name,
+                                                           column_value)
+                        except (jsontableschema.exceptions.InvalidCastError,
+                                jsontableschema.exceptions.ConstraintError):
+                            schema_cast = False
+
+                        if schema_cast is False:
 
                             valid = False
                             _type = RESULTS['schema_003']

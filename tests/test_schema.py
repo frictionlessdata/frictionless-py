@@ -11,7 +11,7 @@ from goodtables import processors
 from goodtables import exceptions
 from goodtables.pipeline import Pipeline
 from goodtables.utilities import table_schema
-from jtskit.exceptions import InvalidJSONError, InvalidSchemaError
+from jsontableschema.exceptions import InvalidJSONError, InvalidSchemaError
 from tests import base
 
 
@@ -498,7 +498,7 @@ class TestSchemaProcessor(base.BaseTestCase):
                           schema=schema)
 
     def test_standalone_invalid_schema_jts_raises(self):
-        schema = 'https://raw.githubusercontent.com/okfn/jtskit-py/master/examples/schema_invalid_empty.json'
+        schema = 'https://raw.githubusercontent.com/okfn/jsontableschema-py/master/examples/schema_invalid_empty.json'
 
         self.assertRaises(InvalidSchemaError, processors.SchemaProcessor,
                           schema=schema)
@@ -513,7 +513,7 @@ class TestSchemaProcessor(base.BaseTestCase):
 
     def test_pipeline_invalid_schema_jts_raises(self):
         filepath = os.path.join(self.data_dir, 'case_insensitive_headers.csv')
-        schema = 'https://raw.githubusercontent.com/okfn/jtskit-py/master/examples/schema_invalid_empty.json'
+        schema = 'https://raw.githubusercontent.com/okfn/jsontableschema-py/master/examples/schema_invalid_empty.json'
         options = {'schema': {'schema': schema}}
 
         self.assertRaises(InvalidSchemaError, Pipeline, filepath,
