@@ -19,7 +19,7 @@ dependencies = [
     'chardet>=2.3.0',
     'xlrd>=0.9.3',
     'tellme>=0.2.4',
-    'jtskit>=0.2.7',
+    'jsontableschema>=0.5.1',
     'beautifulsoup4>=4.3.2'
 ]
 
