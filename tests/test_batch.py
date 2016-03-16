@@ -66,7 +66,7 @@ class TestPipeline(base.BaseTestCase):
 
     def test_batch_with_batch_sleep_time(self):
         def normal_time():
-            batch = Batch(self.batch_csv, sleep_time=0})
+            batch = Batch(self.batch_csv, sleep=0)
             start = timer(); batch.run(); end = timer()
             return end - start
 
@@ -76,7 +76,7 @@ class TestPipeline(base.BaseTestCase):
             return end - start
 
         def greater_time():
-            batch = Batch(self.batch_csv, sleep_time=3})
+            batch = Batch(self.batch_csv, sleep=3)
             start = timer(); batch.run(); end = timer()
             return end - start
 
