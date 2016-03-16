@@ -5,6 +5,8 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import os
+from timeit import default_timer as timer
+
 from goodtables.pipeline import Batch
 from goodtables import exceptions
 from tests import base
@@ -61,3 +63,21 @@ class TestPipeline(base.BaseTestCase):
         say_hi = 'Say Hi!'
         self.assertRaises(exceptions.InvalidHandlerError, Batch,
                           self.batch_csv, pipeline_post_task=say_hi)
+
+    def test_batch_with_batch_sleep_time(self):
+        def normal_time():
+            batch = Batch(self.batch_csv, batch_options={'sleep_time': 0})
+            start = timer(); batch.run(); end = timer()
+            return end - start
+
+        def default_time():
+            batch = Batch(self.batch_csv)
+            start = timer(); batch.run(); end = timer()
+            return end - start
+
+        def greater_time():
+            batch = Batch(self.batch_csv, batch_options={'sleep_time': 3})
+            start = timer(); batch.run(); end = timer()
+            return end - start
+
+        self.assertTrue(normal_time < default_time < greater_time)

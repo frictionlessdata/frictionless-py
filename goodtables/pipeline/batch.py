@@ -5,6 +5,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import os
+import time
 from . import pipeline
 from ..utilities import helpers
 from .. import datatable
@@ -19,6 +20,9 @@ class Batch(object):
     * `source_type`: 'csv' or 'datapackage'
     * `data_key`: The key for the data (only used when source_type is 'csv')
     * `schema_key`: The key for the schema (only used when source_type is 'csv').
+    * `batch_options`: Options to pass to each batch instance.
+        * Set a sleep time (in seconds) between pipelines
+            * e.g., {'sleep_time': 0.5}
     * `pipeline_options`: Options to pass to each pipeline instance.
     * `post_task`: Task handler to run after all pipelines have run.
     * `pipeline_post_task`: Task handler passed to each pipeline instance.
@@ -26,13 +30,14 @@ class Batch(object):
     """
 
     def __init__(self, source, source_type='csv', data_key='data',
-                 schema_key='schema', pipeline_options=None,
+                 schema_key='schema', batch_options=None, pipeline_options=None,
                  post_task=None, pipeline_post_task=None):
 
         self.source = source
         self.source_type = source_type
         self.data_key = data_key
         self.schema_key = schema_key
+        self.batch_options = batch_options or {}
         self.dataset = self.get_dataset()
         self.pipeline_options = pipeline_options or {}
         self.current_pipeline = None
@@ -126,6 +131,7 @@ class Batch(object):
                                                           data['schema'])
             result, report = self.current_pipeline.run()
             self.reports.append(report)
+            time.sleep(self.batch_options.get('sleep_time', 1))
 
         if self.post_task:
             self.post_task(self)
