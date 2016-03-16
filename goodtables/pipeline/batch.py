@@ -131,7 +131,12 @@ class Batch(object):
                                                           data['schema'])
             result, report = self.current_pipeline.run()
             self.reports.append(report)
-            time.sleep(self.batch_options.get('sleep_time', 1))
+            try:
+                sleep_time = float(self.batch_options.get('sleep_time', ''))
+            except ValueError:
+                sleep_time = 1
+
+            time.sleep(sleep_time)
 
         if self.post_task:
             self.post_task(self)
