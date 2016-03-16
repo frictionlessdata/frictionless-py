@@ -20,9 +20,7 @@ class Batch(object):
     * `source_type`: 'csv' or 'datapackage'
     * `data_key`: The key for the data (only used when source_type is 'csv')
     * `schema_key`: The key for the schema (only used when source_type is 'csv').
-    * `batch_options`: Options to pass to each batch instance.
-        * Set a sleep time (in seconds) between pipelines
-            * e.g., {'sleep_time': 0.5}
+    * `sleep`:  The time (in seconds) to wait beteween pipelines
     * `pipeline_options`: Options to pass to each pipeline instance.
     * `post_task`: Task handler to run after all pipelines have run.
     * `pipeline_post_task`: Task handler passed to each pipeline instance.
@@ -30,14 +28,13 @@ class Batch(object):
     """
 
     def __init__(self, source, source_type='csv', data_key='data',
-                 schema_key='schema', batch_options=None, pipeline_options=None,
+                 schema_key='schema', sleep=1, pipeline_options=None,
                  post_task=None, pipeline_post_task=None):
 
         self.source = source
         self.source_type = source_type
         self.data_key = data_key
         self.schema_key = schema_key
-        self.batch_options = batch_options or {}
         self.dataset = self.get_dataset()
         self.pipeline_options = pipeline_options or {}
         self.current_pipeline = None
@@ -48,6 +45,10 @@ class Batch(object):
 
         self.post_task = post_task
         self.pipeline_post_task = pipeline_post_task
+
+        if not isinstance(sleep, (int, float)):
+            raise ValueError('Received non int or float for the \'sleep\' argument.')
+        self.sleep = sleep
 
     def get_dataset(self):
         """Get the dataset for this batch process."""
@@ -131,12 +132,8 @@ class Batch(object):
                                                           data['schema'])
             result, report = self.current_pipeline.run()
             self.reports.append(report)
-            try:
-                sleep_time = float(self.batch_options.get('sleep_time', ''))
-            except ValueError:
-                sleep_time = 1
 
-            time.sleep(sleep_time)
+            time.sleep(self.sleep)
 
         if self.post_task:
             self.post_task(self)
