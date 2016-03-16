@@ -80,4 +80,4 @@ class TestPipeline(base.BaseTestCase):
             start = timer(); batch.run(); end = timer()
             return end - start
 
-        self.assertTrue(normal_time < default_time < greater_time)
+        self.assertTrue(normal_time() < default_time() < greater_time())
