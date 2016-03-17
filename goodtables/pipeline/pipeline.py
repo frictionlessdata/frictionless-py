@@ -231,3 +231,4 @@ class Pipeline(object):
         self.report.meta['row_count'] = self.pipeline[0].row_count or 1
         self.report.meta['header_index'] = self.header_index
         self.report.meta['headers'] = self.data.headers
+        self.report.meta['encoding'] = self.data.encoding

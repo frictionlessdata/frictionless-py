@@ -258,3 +258,9 @@ class TestPipeline(base.BaseTestCase):
         result, report = validator.run()
         generated = report.generate()
         self.assertEqual(1, len(generated['results']))
+
+    def test_encoding_present_on_report_meta(self):
+
+        pipeline = Pipeline(self.data_string)
+        pipeline.set_report_meta()
+        self.assertEqual(pipeline.report.generate()['meta']['encoding'], 'utf-8')
