@@ -203,12 +203,13 @@ class DataTable(object):
     def _stream_from_url(self, url):
         """Return a seekable and readable stream from a URL."""
 
+
         stream = io.BufferedRandom(io.BytesIO())
 
         try:
             document = compat.urlopen(url)
         except compat.HTTPError as e:
-            raise exceptions.DataSourceHTTPError()
+            raise exceptions.DataSourceHTTPError(msg=None, status=e.getcode())
 
         stream.write(document.read())
         stream.seek(0)

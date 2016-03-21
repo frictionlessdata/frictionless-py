@@ -221,12 +221,18 @@ class TestPipeline(base.BaseTestCase):
 
         self.assertEqual(out, 33)
 
-    def test_pipeline_build_error_when_data_http_error(self):
+    def test_pipeline_error_report_when_data_http_error(self):
 
-        data_source = 'https://okfn.org/this-url-cant-possibly-exist-so-lets-test-404/'
-
-        self.assertRaises(exceptions.DataSourceHTTPError, Pipeline, data_source)
-
+        data_source = 'https://github.com/frictionlessdata/goodtables/blob/master/.travis.yaml'
+        validator = Pipeline(data_source, processors=('structure',), options={}, fail_fast=True)
+        result, report = validator.run()
+        generated_report = report.generate()
+        report_results = generated_report['results']
+    
+        self.assertFalse(result)
+        self.assertEqual(len(report_results), 1)
+        self.assertEqual(report_results[0]['result_id'], 'http_404')
+        
     def test_pipeline_build_error_when_data_html_error(self):
 
         data_source = 'https://www.google.com/'

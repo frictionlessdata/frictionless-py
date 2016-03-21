@@ -10,17 +10,33 @@ from ..utilities import helpers
 from .. import datatable
 from .. import exceptions
 
+RESULTS = {
+    'http_404': exceptions.DataSourceHTTPError(msg='The data source was not found.',
+                                               status=404).as_result('Not Found'),
+    'http_403': exceptions.DataSourceHTTPError(msg='Access to datasource was forbidden',
+                                               status=403).as_result('Forbidden'),
+    'http_401': exceptions.DataSourceHTTPError(msg='The data source required authentication',
+                                               status=401).as_result('Unauthorized'),
+    'http_500': exceptions.DataSourceHTTPError(msg='The data source server was unavailable.',                                           
+                                               status=500).as_result('Internal Server Error'),
+    'http_503': exceptions.DataSourceHTTPError(msg='The data source server was unavailable.',
+                                               status=503).as_result('Server Unavailable')
+}
+
+
 
 class Processor(object):
 
     """Base Processor class. Processor implementations should inherit."""
-
+    
     name = None
+    RESULT_TYPES = RESULTS
     ROW_LIMIT_MAX = 30000
     REPORT_LIMIT_MAX = 1000
     RESULT_CATEGORY_HEADER = 'header'
     RESULT_CATEGORY_ROW = 'row'
     RESULT_CATEGORY_COLUMN = 'column'
+    RESULT_CATEGORY_FILE = 'file'
     RESULT_LEVEL_ERROR = 'error'
     RESULT_LEVEL_WARNING = 'warning'
     RESULT_LEVEL_INFO = 'info'
@@ -90,10 +106,10 @@ class Processor(object):
         return ''
 
     def make_entry(self, processor, result_category, result_level,
-                   result_message, result_id, result_name, result_context,
+                   result_message, result_id, result_name, result_context=[],
                    row_index=None, row_name='', column_index=None, column_name=''):
         """Return a report entry."""
-
+    
         return {
             'processor': processor,
             'result_category': result_category,
@@ -143,10 +159,31 @@ class Processor(object):
                                            format=format, encoding=encoding,
                                            decode_strategy=decode_strategy,
                                            header_index=self.header_index)
+                                           
+                openfiles.extend(data.openfiles)
+            
             except datatable.DataTable.RAISES as e:
-                raise e
+                valid = False
+                data = None
+                if isinstance(e, exceptions.DataSourceHTTPError):
+                    error_type = 'http_{0}'.format(e.status)
+                    _type = self.RESULT_TYPES[error_type]
+                    entry = self.make_entry(
+                        processor = self.name,
+                        result_category = self.RESULT_CATEGORY_FILE,
+                        result_level = self.RESULT_LEVEL_ERROR,
+                        result_message = _type.get('msg', ''),
+                        result_id = _type.get('id', ''),
+                        result_name = _type.get('name', '')
+                    )
+                    self.report.write(entry)
+                    return valid, self.report, ''
 
-            openfiles.extend(data.openfiles)
+                elif isinstance(e, exceptions.DataSourceDecodeError):
+                    raise e
+                elif isinstance(e, exceptions.DataSourceIsHTMLError):
+                    raise e
+
 
         # pre_run
         if hasattr(self, 'pre_run'):

@@ -436,10 +436,18 @@ class TestSchemaProcessor(base.BaseTestCase):
 
     def test_processor_run_error_when_data_http_error(self):
 
-        data_source = 'https://okfn.org/this-url-cant-possibly-exist-so-lets-test-404/'
+        data_source = 'https://github.com/frictionlessdata/goodtables/blob/master/.travis.yaml'
         processor = processors.SchemaProcessor()
+        
+        result, report, data = processor.run(data_source)
+        generated_report = report.generate()
+        report_results = generated_report['results']
 
-        self.assertRaises(exceptions.DataSourceHTTPError, processor.run, data_source)
+        # self.assertRaises(exceptions.DataSourceHTTPError, Pipeline, data_source)
+    
+        self.assertFalse(result)
+        self.assertEqual(len(report_results), 1)
+        self.assertEqual(report_results[0]['result_id'], 'http_404')
 
     def test_processor_run_error_when_data_html_error(self):
 

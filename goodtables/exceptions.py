@@ -23,8 +23,18 @@ class ProcessorBuildError(Exception):
 
 class DataSourceHTTPError(Exception):
 
-    def __init__(self, msg=None):
+    def __init__(self, msg=None, status=None):
         self.msg = msg or 'The data source is on a URL that returns an HTTP Error.'
+        self.status = status
+        
+    def as_result(self, name=''):
+        return {
+            'id': 'http_{0}'.format(self.status),
+            'name': name if name else self.msg,
+            'msg': self.msg,
+            'help': '',
+            'help_edit': ''
+        }
 
 
 class DataSourceIsHTMLError(Exception):
