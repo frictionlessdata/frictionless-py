@@ -10,6 +10,7 @@ import codecs
 import datetime
 import chardet
 import xlrd
+import zipfile
 from bs4 import BeautifulSoup
 from .. import exceptions
 from .. import compat
@@ -23,8 +24,8 @@ class DataTable(object):
     DEFAULT_ENCODING = 'utf-8'
     FORMATS = ('csv', 'excel', 'json')
     RAISES = (exceptions.DataSourceHTTPError,
-              exceptions.DataSourceIsHTMLError,
-              exceptions.DataSourceDecodeError)
+              exceptions.DataSourceDecodeError,
+              exceptions.DataSourceFormatUnsupportedError)
 
     def __init__(self, data_source, headers=None, format='csv',
                  encoding=None, decode_strategy='replace',
@@ -40,13 +41,8 @@ class DataTable(object):
         self.header_index = header_index
         self.excel_sheet_index = excel_sheet_index
         self.stream = self.to_textstream(self.data_source)
-
-        self.test_stream = self._sample_stream()
-
-        if self._stream_is_html():
-            # prevent trying to work with an HTML page
-            raise exceptions.DataSourceIsHTMLError()
-
+        self.test_stream = self._sample_stream() 
+       
         self.headers, self.values = self.extract(self.passed_headers)
 
     def replay(self):
@@ -95,7 +91,7 @@ class DataTable(object):
             A `self.DEFAULT_ENCODING` encoded text stream (utf-8).
 
         """
-
+        
         textstream = io.TextIOWrapper(io.BufferedRandom(io.BytesIO()), encoding=self.DEFAULT_ENCODING)
         self.openfiles.append(textstream)
 
@@ -206,12 +202,13 @@ class DataTable(object):
     def _stream_from_url(self, url):
         """Return a seekable and readable stream from a URL."""
 
+
         stream = io.BufferedRandom(io.BytesIO())
 
         try:
             document = compat.urlopen(url)
         except compat.HTTPError as e:
-            raise exceptions.DataSourceHTTPError()
+            raise exceptions.DataSourceHTTPError(msg=None, status=e.getcode())
 
         stream.write(document.read())
         stream.seek(0)
@@ -222,7 +219,9 @@ class DataTable(object):
         """Return best guess at encoding of stream."""
 
         sample_length = 10000
-
+    
+        self._check_for_unsupported_format(stream)
+        
         if self.passed_encoding:
             return self.passed_encoding
 
@@ -279,10 +278,44 @@ class DataTable(object):
         sample.seek(0)
         return sample
 
-    def _stream_is_html(self):
+    def _stream_is_html(self, test_stream):
         """Guess if a source is actually an HTML document."""
+        
+        _sample = test_stream.read()
+        test_stream.seek(0)
 
-        _sample = self.test_stream.read()
-
-        self.test_stream.seek(0)
         return bool(BeautifulSoup(_sample, 'html.parser').find())
+        
+    def _stream_is_zip(self, test_stream):
+        """Guess if a source is a zip archive. """
+        
+        file_signitures = ["\x1f\x8b\x08", "\x42\x5a\x68", "\x50\x4b\x03\x04"]
+        max_len = max(len(x) for x in file_signitures)
+        bytes_string = test_stream.read(max_len)
+        
+        if isinstance(bytes_string, compat.str):
+            bytes_string = compat.to_bytes(bytes_string)
+        
+        for signiture in file_signitures:
+            bytes_signiture = bytearray()
+            bytes_signiture.extend(map(ord, signiture))
+            if bytes_string.startswith(bytes_signiture):
+                return True
+                
+        return False
+        
+    def _check_for_unsupported_format(self, stream): 
+        """Check if a source is zip or html. """
+        
+        if isinstance(stream, compat.str):
+            test_stream = io.StringIO(stream)
+        else:
+            test_stream = stream
+            
+        test_stream.seek(0)
+        
+        for file_format in ['zip','html']: 
+            if  getattr(self, '_stream_is_{0}'.format(file_format))(test_stream):
+                raise exceptions.DataSourceFormatUnsupportedError(file_format=file_format)
+            else:
+                test_stream.seek(0)
