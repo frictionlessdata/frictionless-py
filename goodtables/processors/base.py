@@ -12,15 +12,22 @@ from .. import exceptions
 
 RESULTS = {
     'http_404': exceptions.DataSourceHTTPError(msg='The data source was not found.',
-                                               status=404).as_result('Not Found'),
+                                               status=404).as_result(),
     'http_403': exceptions.DataSourceHTTPError(msg='Access to datasource was forbidden',
-                                               status=403).as_result('Forbidden'),
+                                               status=403).as_result(),
     'http_401': exceptions.DataSourceHTTPError(msg='The data source required authentication',
-                                               status=401).as_result('Unauthorized'),
+                                               status=401).as_result(),
     'http_500': exceptions.DataSourceHTTPError(msg='The data source server was unavailable.',                                           
-                                               status=500).as_result('Internal Server Error'),
+                                               status=500).as_result(),
     'http_503': exceptions.DataSourceHTTPError(msg='The data source server was unavailable.',
-                                               status=503).as_result('Server Unavailable')
+                                               status=503).as_result(),
+    'data_html_error': exceptions.DataSourceFormatUnsupportedError(msg='',
+                                                                  file_format='html').as_result(),
+    'data_zip_error': exceptions.DataSourceFormatUnsupportedError(msg='',
+                                                                  file_format='zip').as_result(),    
+    'data_tar_error': exceptions.DataSourceFormatUnsupportedError(msg='',
+                                                                  file_format='tar').as_result(),                                                              
+    'data_decode_error': exceptions.DataSourceDecodeError().as_result()
 }
 
 
@@ -168,22 +175,24 @@ class Processor(object):
                 if isinstance(e, exceptions.DataSourceHTTPError):
                     error_type = 'http_{0}'.format(e.status)
                     _type = self.RESULT_TYPES[error_type]
-                    entry = self.make_entry(
-                        processor = self.name,
-                        result_category = self.RESULT_CATEGORY_FILE,
-                        result_level = self.RESULT_LEVEL_ERROR,
-                        result_message = _type.get('msg', ''),
-                        result_id = _type.get('id', ''),
-                        result_name = _type.get('name', '')
-                    )
-                    self.report.write(entry)
-                    return valid, self.report, ''
-
+                    
                 elif isinstance(e, exceptions.DataSourceDecodeError):
-                    raise e
-                elif isinstance(e, exceptions.DataSourceIsHTMLError):
-                    raise e
-
+                    _type = self.RESULT_TYPES['data_decode_error']
+                    
+                elif isinstance(e, exceptions.DataSourceFormatUnsupportedError):
+                    error_type = 'data_{0}_error'.format(e.file_format)
+                    _type = self.RESULT_TYPES[error_type]
+                    
+                entry = self.make_entry(
+                    processor = 'base',
+                    result_category = self.RESULT_CATEGORY_FILE,
+                    result_level = self.RESULT_LEVEL_ERROR,
+                    result_message = _type.get('msg', ''),
+                    result_id = _type.get('id', ''),
+                    result_name = _type.get('name', '')
+                )
+                self.report.write(entry)
+                return valid, self.report, ''
 
         # pre_run
         if hasattr(self, 'pre_run'):

@@ -228,24 +228,64 @@ class TestPipeline(base.BaseTestCase):
         result, report = validator.run()
         generated_report = report.generate()
         report_results = generated_report['results']
-    
+        
         self.assertFalse(result)
         self.assertEqual(len(report_results), 1)
         self.assertEqual(report_results[0]['result_id'], 'http_404')
         
-    def test_pipeline_build_error_when_data_html_error(self):
-
+    def test_pipeline_error_report_when_data_html_error(self):
+        
         data_source = 'https://www.google.com/'
-
-        self.assertRaises(exceptions.DataSourceIsHTMLError, Pipeline, data_source)
-
-    def test_pipeline_build_error_when_wrong_encoding(self):
+        validator = Pipeline(data_source, processors=('structure',), options={}, fail_fast=True)
+        result, report = validator.run()
+        generated_report = report.generate()
+        report_results = generated_report['results']
+        
+        self.assertFalse(result)
+        self.assertEqual(len(report_results), 1)
+        self.assertEqual(report_results[0]['result_id'], 'data_html_error')
+        
+    def test_pipeline_error_report_when_data_zip_error(self):
+        
+        data_sources = ['gzip_csv.gz', 'zip_csv.zip']
+        for file_name in data_sources:
+            data_source = os.path.join(self.data_dir, 'hmt', file_name)
+            validator = Pipeline(data_source, processors=('structure',), options={}, fail_fast=True)
+            result, report = validator.run()
+            generated_report = report.generate()
+            report_results = generated_report['results']
+            
+            self.assertFalse(result)
+            self.assertEqual(len(report_results), 1)
+            self.assertEqual(report_results[0]['result_id'], 'data_zip_error')
+            
+    def test_pipeline_error_report_when_data_tar_error(self):
+        
+        data_source = os.path.join(self.data_dir, 'hmt', 'tar_folder_of_csvs.tar')
+        validator = Pipeline(data_source, processors=('structure',), options={}, fail_fast=True)
+        result, report = validator.run()
+        generated_report = report.generate()
+        report_results = generated_report['results']
+        
+        self.assertFalse(result)
+        self.assertEqual(len(report_results), 1)
+        self.assertEqual(report_results[0]['result_id'], 'data_tar_error')
+        
+        
+    def test_pipeline_error_report_when_wrong_encoding(self):
 
         data_source = os.path.join(self.data_dir, 'hmt','BIS_spending_over__25_000_July_2014.csv')
         encoding = 'UTF-8'  # should be 'ISO-8859-2'
-
-        self.assertRaises(exceptions.DataSourceDecodeError, Pipeline, data_source,
-                          encoding=encoding, decode_strategy=None)
+        
+        validator = Pipeline(data_source, processors=('structure',), fail_fast=True, encoding=encoding, decode_strategy=None, options={})
+        result, report = validator.run()
+        generated_report = report.generate()
+        report_results = generated_report['results']
+    
+        self.assertFalse(result)
+        self.assertEqual(len(report_results), 1)
+        self.assertEqual(report_results[0]['result_id'], 'data_decode_error')
+        
 
     def test_bad_post_task_raises(self):
 

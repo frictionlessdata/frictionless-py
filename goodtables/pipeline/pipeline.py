@@ -113,11 +113,7 @@ class Pipeline(object):
             self.openfiles.extend(self.data.openfiles)
             
         except datatable.DataTable.RAISES as e:
-            if isinstance(e, exceptions.DataSourceHTTPError): 
                 self.data = data
-            else:
-                raise e
-
        
 
     def get_pipeline(self):
@@ -214,9 +210,11 @@ class Pipeline(object):
         for processor in self.pipeline:
             
             if isinstance(self.data, datatable.DataTable):
-                _valid, _, self.data = processor.run(self.data, is_table=True)
+                _valid, _, self.data = processor.run(self.data, is_table=True,
+                    encoding=self.encoding, decode_strategy=self.decode_strategy)
             else:
-                _valid, _, self.data = processor.run(self.data, is_table=False)
+                _valid, _, self.data = processor.run(self.data, is_table=False,
+                    encoding=self.encoding, decode_strategy=self.decode_strategy)
                 
             valid = _run_valid(_valid, valid)
             

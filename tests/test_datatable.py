@@ -29,7 +29,7 @@ class TestDataTable(base.BaseTestCase):
 
         data_source = 'https://www.google.com/'
 
-        self.assertRaises(exceptions.DataSourceIsHTMLError,
+        self.assertRaises(exceptions.DataSourceFormatUnsupportedError,
                           datatable.DataTable, data_source)
 
 
