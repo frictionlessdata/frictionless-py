@@ -24,9 +24,7 @@ RESULTS = {
     'data_html_error': exceptions.DataSourceFormatUnsupportedError(msg='',
                                                                   file_format='html').as_result(),
     'data_zip_error': exceptions.DataSourceFormatUnsupportedError(msg='',
-                                                                  file_format='zip').as_result(),    
-    'data_tar_error': exceptions.DataSourceFormatUnsupportedError(msg='',
-                                                                  file_format='tar').as_result(),                                                              
+                                                                  file_format='zip').as_result(), 
     'data_decode_error': exceptions.DataSourceDecodeError().as_result()
 }
 

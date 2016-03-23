@@ -10,8 +10,8 @@ import codecs
 import datetime
 import chardet
 import xlrd
-import StringIO
-import magic
+import zipfile
+import shutil
 from bs4 import BeautifulSoup
 from .. import exceptions
 from .. import compat
@@ -275,34 +275,46 @@ class DataTable(object):
         sample.seek(0)
         return sample
 
-    def _stream_is_html(self, _sample):
+    def _stream_is_html(self, test_stream):
         """Guess if a source is actually an HTML document."""
         
+        _sample = test_stream.read()
+        test_stream.seek(0)
+
         return bool(BeautifulSoup(_sample, 'html.parser').find())
         
-    def _stream_is_zip(self, _sample):
+    def _stream_is_zip(self, test_stream):
         """Guess if a source is a zip archive. """
-    
-        return('zip' in magic.from_buffer(_sample).lower())
         
-    def _stream_is_tar(self, _sample):
-        """Guess if a source is a tar archive. """
-      
-        return('tar' in magic.from_buffer(_sample).lower())
+        file_signitures = ["\x1f\x8b\x08", "\x42\x5a\x68", "\x50\x4b\x03\x04"]
+        max_len = max(len(x) for x in file_signitures)
+        bytes_string = test_stream.read(max_len)
+        
+        if isinstance(bytes_string, compat.str):
+            bytes_string = compat.to_bytes(bytes_string)
+        
+        for signiture in file_signitures:
+            bytes_signiture = bytearray()
+            bytes_signiture.extend(map(ord, signiture))
+            if bytes_string.startswith(bytes_signiture):
+                return True
+                
+        return False
         
     def _check_for_unsupported_format(self, stream): 
-        """Check if a source is tar, zip or html. """
+        """Check if a source is zip or html. """
         
-        # print(test_stream.__class__.__name__)
         if isinstance(stream, compat.str):
-            test_stream = StringIO.StringIO(stream)
+            test_stream = io.StringIO(stream)
         else:
             test_stream = stream
             
-        _sample = test_stream.read()
         test_stream.seek(0)
         
-        
-        for file_format in ['zip','html','tar']: 
-            if  getattr(self, '_stream_is_{0}'.format(file_format))(_sample):
+        for file_format in ['zip','html']: 
+            if  getattr(self, '_stream_is_{0}'.format(file_format))(test_stream):
                 raise exceptions.DataSourceFormatUnsupportedError(file_format=file_format)
+            else:
+                test_stream.seek(0)
+            
+            

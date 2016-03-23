@@ -258,19 +258,6 @@ class TestPipeline(base.BaseTestCase):
             self.assertFalse(result)
             self.assertEqual(len(report_results), 1)
             self.assertEqual(report_results[0]['result_id'], 'data_zip_error')
-            
-    def test_pipeline_error_report_when_data_tar_error(self):
-        
-        data_source = os.path.join(self.data_dir, 'hmt', 'tar_folder_of_csvs.tar')
-        validator = Pipeline(data_source, processors=('structure',), options={}, fail_fast=True)
-        result, report = validator.run()
-        generated_report = report.generate()
-        report_results = generated_report['results']
-        
-        self.assertFalse(result)
-        self.assertEqual(len(report_results), 1)
-        self.assertEqual(report_results[0]['result_id'], 'data_tar_error')
-        
         
     def test_pipeline_error_report_when_wrong_encoding(self):
 
