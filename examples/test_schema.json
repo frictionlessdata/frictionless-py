@@ -4,19 +4,28 @@
             "name": "id",
             "title": "ID",
             "type": "integer",
-            "description": "The id."
+            "description": "The id.",
+            "constraints": {
+                "required": true
+            }
         },
         {
             "name": "name",
             "title": "Name",
             "type": "string",
-            "description": "The name."
+            "description": "The name.",
+            "constraints": {
+                "required": true
+            }
         },
         {
             "name": "age",
             "title": "Age",
             "type": "integer",
-            "description": "The age."
+            "description": "The age.",
+            "constraints": {
+                "required": true
+            }
         }
     ],
     "primaryKey": "id"

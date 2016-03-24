@@ -62,9 +62,9 @@ class DataTable(object):
 
     def extract(self, headers=None):
         """Extract headers and values from the data stream."""
-        headers = headers or self.get_headers(self.stream)
-        values = compat.csv_reader(self.stream)
-        return headers, values
+        reader = compat.csv_reader(self.stream)
+        headers = headers or self.get_headers(self.stream, reader)
+        return headers, reader
 
     def get_sample(self, row_limit):
         """Get a sample of data, as a CSV reader, up to a max of `row_limit`."""
@@ -118,7 +118,8 @@ class DataTable(object):
 
                 return textstream
 
-        elif compat.parse.urlparse(data_source).scheme in self.REMOTE_SCHEMES:
+        elif isinstance(data_source, compat.str) and \
+                        compat.parse.urlparse(data_source).scheme in self.REMOTE_SCHEMES:
 
             stream = self._stream_from_url(data_source)
             self.encoding = self._detect_stream_encoding(stream)
@@ -126,7 +127,7 @@ class DataTable(object):
 
             return textstream
 
-        elif isinstance(data_source, compat.str) and not \
+        elif (isinstance(data_source, compat.str) or isinstance(data_source, compat.bytes)) and not \
                 os.path.exists(data_source):
 
             self.encoding = self._detect_stream_encoding(data_source)
@@ -190,10 +191,11 @@ class DataTable(object):
         out.seek(0)
         return out
 
-    def get_headers(self, stream):
+    def get_headers(self, stream, reader = None):
         """Get headers from stream."""
 
-        reader = compat.csv_reader(stream)
+        if reader is None:
+            reader = compat.csv_reader(stream)
         for index, line in enumerate(reader):
             if index == self.header_index:
                 headers = line
@@ -225,10 +227,9 @@ class DataTable(object):
             return self.passed_encoding
 
         if isinstance(stream, compat.str):
-            if isinstance(stream, compat.bytes):
-                sample = stream[:sample_length]
-            else:
-                sample = compat.to_bytes(stream)[:sample_length]
+            sample = compat.to_bytes(stream)[:sample_length]
+        elif isinstance(stream, compat.bytes):
+            sample = stream[:sample_length]
         else:
             sample = stream.read(sample_length)
             stream.seek(0)
@@ -243,7 +244,9 @@ class DataTable(object):
     def _decode_to_textstream(self, stream, encoding, textstream):
         """Return a textstream in `self.DEFAULT_ENCODING`"""
 
-        if isinstance(stream, compat.str):
+        if isinstance(stream, compat.bytes):
+            stream = codecs.iterdecode([stream], encoding, self.decode_strategy)
+        elif isinstance(stream, compat.str):
             _stream = io.StringIO()
             _stream.write(stream)
             stream = _stream
@@ -252,7 +255,6 @@ class DataTable(object):
             stream = codecs.iterdecode(stream, encoding, self.decode_strategy)
 
         try:
-
             for line in stream:
                 recoded = line.encode(self.DEFAULT_ENCODING).decode(self.DEFAULT_ENCODING)
                 textstream.write(recoded)
