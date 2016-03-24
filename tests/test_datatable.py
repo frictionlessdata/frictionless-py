@@ -62,3 +62,16 @@ class TestDataTable(base.BaseTestCase):
         data = datatable.DataTable(data_source, encoding=encoding, decode_strategy=decode_strategy)
 
         self.assertTrue(data)
+
+    def test_set_decoding_on_self_when_detected(self):
+
+        data_source = os.path.join(self.data_dir, 'jungle','VilleMTP_MTP_BudgetPri_2015.csv')
+        data = datatable.DataTable(data_source)
+        self.assertEqual(data.encoding, 'windows-1252')
+
+    def test_set_decoding_on_self_when_passed(self):
+
+        data_source = os.path.join(self.data_dir, 'jungle','VilleMTP_MTP_BudgetPri_2015.csv')
+        encoding = 'windows-1252'
+        data = datatable.DataTable(data_source, encoding=encoding)
+        self.assertEqual(data.encoding, data.passed_encoding)

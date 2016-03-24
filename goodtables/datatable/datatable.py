@@ -10,8 +10,6 @@ import codecs
 import datetime
 import chardet
 import xlrd
-import zipfile
-import shutil
 from bs4 import BeautifulSoup
 from .. import exceptions
 from .. import compat
@@ -36,7 +34,8 @@ class DataTable(object):
         self.data_source = data_source
         self.passed_headers = headers
         self.format = format
-        self.encoding = encoding
+        self.passed_encoding = encoding
+        self.encoding = None
         self.decode_strategy = decode_strategy
         self.header_index = header_index
         self.excel_sheet_index = excel_sheet_index
@@ -109,23 +108,23 @@ class DataTable(object):
 
             else:
 
-                stream_encoding = self._detect_stream_encoding(data_source)
-                textstream = self._decode_to_textstream(data_source, stream_encoding, textstream)
+                self.encoding = self._detect_stream_encoding(data_source)
+                textstream = self._decode_to_textstream(data_source, self.encoding, textstream)
 
                 return textstream
 
         elif compat.parse.urlparse(data_source).scheme in self.REMOTE_SCHEMES:
 
             stream = self._stream_from_url(data_source)
-            stream_encoding = self._detect_stream_encoding(stream)
-            textstream = self._decode_to_textstream(stream, stream_encoding, textstream)
+            self.encoding = self._detect_stream_encoding(stream)
+            textstream = self._decode_to_textstream(stream, self.encoding, textstream)
 
             return textstream
 
         elif isinstance(data_source, compat.str) and not os.path.exists(data_source):
 
-            stream_encoding = self._detect_stream_encoding(data_source)
-            textstream = self._decode_to_textstream(data_source, stream_encoding, textstream)
+            self.encoding = self._detect_stream_encoding(data_source)
+            textstream = self._decode_to_textstream(data_source, self.encoding, textstream)
 
             return textstream
 
@@ -133,8 +132,8 @@ class DataTable(object):
 
             stream = io.open(data_source, mode='r+b')
             self.openfiles.append(stream)
-            stream_encoding = self._detect_stream_encoding(stream)
-            textstream = self._decode_to_textstream(stream, stream_encoding, textstream)
+            self.encoding = self._detect_stream_encoding(stream)
+            textstream = self._decode_to_textstream(stream, self.encoding, textstream)
 
             return textstream
 
@@ -216,7 +215,7 @@ class DataTable(object):
         """Return best guess at encoding of stream."""
 
         sample_length = 10000
-        
+
         self._check_for_unsupported_format(stream)
         
         if self.encoding:

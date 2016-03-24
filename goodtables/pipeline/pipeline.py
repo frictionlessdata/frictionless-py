@@ -235,11 +235,15 @@ class Pipeline(object):
 
     def set_report_meta(self):
         """Set information and statistics for this run on report['meta']."""
+
         if self.data:
             self.report.meta['row_count'] = self.pipeline[0].row_count or 1
             self.report.meta['header_index'] = self.header_index
             self.report.meta['headers'] = self.data.headers
+            self.report.meta['encoding'] = self.data.encoding
         else: 
             self.report.meta['row_count'] = 0
             self.report.meta['header_index'] = 0
             self.report.meta['headers'] = []
+            self.report.meta['encoding'] = ''
+
