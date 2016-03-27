@@ -221,7 +221,8 @@ class SchemaProcessor(base.Processor):
                         # CONSTRAINTS
                         constraints = self.schema.get_constraints(column_name)
 
-                        if constraints['required'] is True and \
+                        if constraints is not None and \
+                           constraints.get('required', False) is True and \
                            (column_value in self.schema.NULL_VALUES):
 
                             valid = False
@@ -244,7 +245,8 @@ class SchemaProcessor(base.Processor):
                             if self.fail_fast:
                                 return valid, headers, index, row
 
-                        if constraints['required'] is False and \
+                        if constraints is not None and \
+                           constraints.get('required', False) is False and \
                            (column_value in self.schema.NULL_VALUES) and \
                            self.result_level == self.RESULT_LEVEL_INFO:
                             # add info result

@@ -8,6 +8,7 @@ import sys
 import tempfile
 import io
 import csv
+from itertools import islice, chain
 
 
 _ver = sys.version_info
@@ -30,11 +31,21 @@ if is_py2:
     def csv_reader(data, dialect=csv.excel, **kwargs):
         """Read text stream (unicode on Py2.7) as CSV."""
 
+        first_lines = list(islice(data, 10))
+        try:
+            dialect = csv.Sniffer().sniff(''.join(first_lines))
+            dialect.delimiter = dialect.delimiter.encode('utf-8')
+            dialect.quotechar = dialect.quotechar.encode('utf-8')
+        except csv.Error:
+            dialect = csv.excel
+
         def iterenc_utf8(data):
             for line in data:
                 yield line.encode('utf-8')
 
-        reader = csv.reader(iterenc_utf8(data), dialect=dialect, **kwargs)
+        iter = chain(first_lines, data)
+        iter = iterenc_utf8(iter)
+        reader = csv.reader(iter, dialect=dialect, **kwargs)
         for row in reader:
             yield [str(cell, 'utf-8') for cell in row]
 
@@ -43,12 +54,25 @@ elif is_py3:
     from urllib import parse
     from urllib.request import urlopen
     from urllib.error import HTTPError
-    csv_reader = csv.reader
     builtin_str = str
     str = str
     bytes = bytes
     basestring = (str, bytes)
     numeric_types = (int, float)
+
+    def csv_reader(data, **kwargs):
+        def line_iterator(data):
+            for line in data:
+                yield line
+        iter = line_iterator(data)
+        first_lines = list(islice(iter, 10))
+        try:
+            dialect = csv.Sniffer().sniff(''.join(first_lines))
+        except csv.Error:
+            dialect = csv.excel
+        iter = chain(first_lines, iter)
+        return csv.reader(iter, dialect, **kwargs)
+
 
 
 def to_bytes(textstring):
