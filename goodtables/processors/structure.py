@@ -206,28 +206,7 @@ class StructureProcessor(base.Processor):
 
         # check if row is defective
         if not self.ignore_defective_rows:
-            if len(headers) < len(row):
-
-                valid = False
-                is_defective = True
-                _type = RESULTS['structure_003']
-                entry = self.make_entry(
-                    self.name,
-                    self.RESULT_CATEGORY_ROW,
-                    self.RESULT_LEVEL_ERROR,
-                    _type['msg'],
-                    _type['id'],
-                    _type['name'],
-                    row,
-                    index,
-                    row_name
-                )
-
-                self.report.write(entry)
-                if self.fail_fast:
-                    return valid, headers, index, row
-
-            elif len(headers) < len(row):
+            if len(headers) != len(row):
 
                 valid = False
                 is_defective = True
