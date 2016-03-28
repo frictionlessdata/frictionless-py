@@ -35,14 +35,14 @@ RESULTS = {
     'schema_004': {
         'id': 'schema_004',
         'name': 'Required Field',
-        'msg': 'Column {0} is a required field, but no value can be found in row {1}.',
+        'msg': 'Column {0} is a required field, but it contains no value.',
         'help': '',
         'help_edit': ''
     },
     'schema_005': {
         'id': 'schema_005',
         'name': 'Non-Required Field (Empty/Null)',
-        'msg': 'Column {0} is a non-required field, and has a null value in row {1}.',
+        'msg': 'Column {0} is a non-required field, and has a null value.',
         'help': '',
         'help_edit': ''
     },
@@ -221,7 +221,8 @@ class SchemaProcessor(base.Processor):
                         # CONSTRAINTS
                         constraints = self.schema.get_constraints(column_name)
 
-                        if constraints['required'] is True and \
+                        if constraints is not None and \
+                           constraints.get('required', False) is True and \
                            (column_value in self.schema.NULL_VALUES):
 
                             valid = False
@@ -230,7 +231,7 @@ class SchemaProcessor(base.Processor):
                                 self.name,
                                 self.RESULT_CATEGORY_ROW,
                                 self.RESULT_LEVEL_ERROR,
-                                _type['msg'].format(column_name, index),
+                                _type['msg'].format(column_name),
                                 _type['id'],
                                 _type['name'],
                                 row,
@@ -244,7 +245,8 @@ class SchemaProcessor(base.Processor):
                             if self.fail_fast:
                                 return valid, headers, index, row
 
-                        if constraints['required'] is False and \
+                        if constraints is not None and \
+                           constraints.get('required', False) is False and \
                            (column_value in self.schema.NULL_VALUES) and \
                            self.result_level == self.RESULT_LEVEL_INFO:
                             # add info result
@@ -253,7 +255,7 @@ class SchemaProcessor(base.Processor):
                                 self.name,
                                 self.RESULT_CATEGORY_ROW,
                                 self.RESULT_LEVEL_INFO,
-                                _type['msg'].format(column_name, index),
+                                _type['msg'].format(column_name),
                                 _type['id'],
                                 _type['name'],
                                 row,
