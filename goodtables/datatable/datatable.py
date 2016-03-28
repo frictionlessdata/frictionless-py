@@ -114,7 +114,7 @@ class DataTable(object):
 
                 return textstream
 
-        elif isinstance(data_source, compat.str) and \
+        elif (isinstance(data_source, compat.str) or isinstance(data_source, compat.bytes)) and \
                         compat.parse.urlparse(data_source).scheme in self.REMOTE_SCHEMES:
 
             stream = self._stream_from_url(data_source)

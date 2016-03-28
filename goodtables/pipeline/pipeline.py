@@ -57,6 +57,7 @@ class Pipeline(object):
             raise exceptions.PipelineBuildError(_msg)
 
         self.openfiles = []
+        self.data_source = data
         self.processors = processors or helpers.DEFAULT_PIPELINE
         self.dialect = self.get_dialect(dialect)
         self.format = format
@@ -106,14 +107,14 @@ class Pipeline(object):
         self.pipeline = self.get_pipeline()
 
         try:
-            self.data = datatable.DataTable(data, format=self.format,
+            self.data = datatable.DataTable(self.data_source, format=self.format,
                                             encoding=encoding,
                                             decode_strategy=decode_strategy,
                                             header_index=self.header_index)
             self.openfiles.extend(self.data.openfiles)
             
-        except datatable.DataTable.RAISES as e:
-                self.data = data
+        except datatable.DataTable.RAISES:
+            self.data = self.data_source
        
 
     def get_pipeline(self):
@@ -213,7 +214,7 @@ class Pipeline(object):
                 _valid, _, self.data = processor.run(self.data, is_table=True,
                     encoding=self.encoding, decode_strategy=self.decode_strategy)
             else:
-                _valid, _, self.data = processor.run(self.data, is_table=False,
+                _valid, _, self.data = processor.run(self.data_source, is_table=False,
                     encoding=self.encoding, decode_strategy=self.decode_strategy)
                 
             valid = _run_valid(_valid, valid)
