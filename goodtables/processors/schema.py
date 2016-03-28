@@ -35,14 +35,14 @@ RESULTS = {
     'schema_004': {
         'id': 'schema_004',
         'name': 'Required Field',
-        'msg': 'Column {0} is a required field, but no value can be found in row {1}.',
+        'msg': 'Column {0} is a required field, but it contains no value.',
         'help': '',
         'help_edit': ''
     },
     'schema_005': {
         'id': 'schema_005',
         'name': 'Non-Required Field (Empty/Null)',
-        'msg': 'Column {0} is a non-required field, and has a null value in row {1}.',
+        'msg': 'Column {0} is a non-required field, and has a null value.',
         'help': '',
         'help_edit': ''
     },
@@ -231,7 +231,7 @@ class SchemaProcessor(base.Processor):
                                 self.name,
                                 self.RESULT_CATEGORY_ROW,
                                 self.RESULT_LEVEL_ERROR,
-                                _type['msg'].format(column_name, index),
+                                _type['msg'].format(column_name),
                                 _type['id'],
                                 _type['name'],
                                 row,
@@ -255,7 +255,7 @@ class SchemaProcessor(base.Processor):
                                 self.name,
                                 self.RESULT_CATEGORY_ROW,
                                 self.RESULT_LEVEL_INFO,
-                                _type['msg'].format(column_name, index),
+                                _type['msg'].format(column_name),
                                 _type['id'],
                                 _type['name'],
                                 row,
