@@ -269,7 +269,8 @@ class SchemaProcessor(base.Processor):
                             if self.fail_fast:
                                 return valid, headers, index, row
 
-                        if constraints.get('unique') is True:
+                        if constraints is not None and \
+                            constraints.get('unique') is True:
 
                             if not self._uniques.get(column_name):
                                 self._uniques[column_name] = set([column_value])
