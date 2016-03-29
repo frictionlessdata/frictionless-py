@@ -31,8 +31,9 @@ class TestCLI(base.BaseTestCase):
         c = ['python', 'goodtables/cli/main.py', 'pipeline',
              self.data_url]
         result = subprocess.check_output(c)
-
-        self.assertEqual([], json.loads(result.decode('utf-8'))['results'])
+   
+        json_result= json.loads(result.decode('utf-8'))['results']
+        self.assertEqual([], json_result)
 
     def test_pipeline_from_filepath(self):
 

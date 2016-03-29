@@ -57,6 +57,7 @@ class Pipeline(object):
             raise exceptions.PipelineBuildError(_msg)
 
         self.openfiles = []
+        self.data_source = data
         self.processors = processors or helpers.DEFAULT_PIPELINE
         self.dialect = self.get_dialect(dialect)
         self.format = format
@@ -106,14 +107,15 @@ class Pipeline(object):
         self.pipeline = self.get_pipeline()
 
         try:
-            self.data = datatable.DataTable(data, format=self.format,
+            self.data = datatable.DataTable(self.data_source, format=self.format,
                                             encoding=encoding,
                                             decode_strategy=decode_strategy,
                                             header_index=self.header_index)
-        except datatable.DataTable.RAISES as e:
-            raise e
-
-        self.openfiles.extend(self.data.openfiles)
+            self.openfiles.extend(self.data.openfiles)
+            
+        except datatable.DataTable.RAISES:
+            self.data = self.data_source
+       
 
     def get_pipeline(self):
         """Get the pipeline for this instance."""
@@ -207,10 +209,16 @@ class Pipeline(object):
         valid = True
 
         for processor in self.pipeline:
-
-            _valid, _, self.data = processor.run(self.data, is_table=True)
+            
+            if isinstance(self.data, datatable.DataTable):
+                _valid, _, self.data = processor.run(self.data, is_table=True,
+                    encoding=self.encoding, decode_strategy=self.decode_strategy)
+            else:
+                _valid, _, self.data = processor.run(self.data_source, is_table=False,
+                    encoding=self.encoding, decode_strategy=self.decode_strategy)
+                
             valid = _run_valid(_valid, valid)
-
+            
             # if a validator returns invalid, we stop the pipeline,
             # unless break_on_invalid_processor is False
             if not valid and self.break_on_invalid_processor:
@@ -228,7 +236,15 @@ class Pipeline(object):
 
     def set_report_meta(self):
         """Set information and statistics for this run on report['meta']."""
-        self.report.meta['row_count'] = self.pipeline[0].row_count or 1
-        self.report.meta['header_index'] = self.header_index
-        self.report.meta['headers'] = self.data.headers
-        self.report.meta['encoding'] = self.data.encoding
+
+        if self.data:
+            self.report.meta['row_count'] = self.pipeline[0].row_count or 1
+            self.report.meta['header_index'] = self.header_index
+            self.report.meta['headers'] = self.data.headers
+            self.report.meta['encoding'] = self.data.encoding
+        else: 
+            self.report.meta['row_count'] = 0
+            self.report.meta['header_index'] = 0
+            self.report.meta['headers'] = []
+            self.report.meta['encoding'] = ''
+

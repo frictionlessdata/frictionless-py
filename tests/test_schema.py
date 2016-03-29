@@ -436,26 +436,42 @@ class TestSchemaProcessor(base.BaseTestCase):
 
     def test_processor_run_error_when_data_http_error(self):
 
-        data_source = 'https://okfn.org/this-url-cant-possibly-exist-so-lets-test-404/'
+        data_source = 'https://github.com/frictionlessdata/goodtables/blob/master/.travis.yaml'
         processor = processors.SchemaProcessor()
-
-        self.assertRaises(exceptions.DataSourceHTTPError, processor.run, data_source)
+        
+        result, report, data = processor.run(data_source)
+        generated_report = report.generate()
+        report_results = generated_report['results']
+    
+        self.assertFalse(result)
+        self.assertEqual(len(report_results), 1)
+        self.assertEqual(report_results[0]['result_id'], 'http_404')
 
     def test_processor_run_error_when_data_html_error(self):
 
         data_source = 'https://www.google.com/'
         processor = processors.SchemaProcessor()
-
-        self.assertRaises(exceptions.DataSourceIsHTMLError, processor.run, data_source)
-
+        result, report, data = processor.run(data_source=data_source)
+        generated_report = report.generate()
+        report_results = generated_report['results']
+    
+        self.assertFalse(result)
+        self.assertEqual(len(report_results), 1)
+        self.assertEqual(report_results[0]['result_id'], 'data_html_error')
+        
     def test_processor_run_error_when_wrong_encoding(self):
 
         data_source = os.path.join(self.data_dir, 'hmt','BIS_spending_over__25_000_July_2014.csv')
         encoding = 'UTF-8'  # should be 'ISO-8859-2'
         processor = processors.SchemaProcessor()
-
-        self.assertRaises(exceptions.DataSourceDecodeError, processor.run,
-                          data_source, encoding=encoding, decode_strategy=None)
+        result, report, data = processor.run(data_source=data_source,
+                                             encoding=encoding, decode_strategy=None)
+        generated_report = report.generate()
+        report_results = generated_report['results']
+    
+        self.assertFalse(result)
+        self.assertEqual(len(report_results), 1)
+        self.assertEqual(report_results[0]['result_id'], 'data_decode_error')
 
     def test_standalone_field_unique(self):
         filepath = os.path.join(self.data_dir, 'unique_field.csv')
