@@ -11,35 +11,35 @@ RESULTS = {
     'structure_001': {
         'id': 'structure_001',
         'name': 'Missing Header',
-        'msg': 'Column {0} is missing a header.',
+        'msg': 'Headers column is empty.',
         'help': '',
         'help_edit': ''
     },
     'structure_002': {
         'id': 'structure_002',
         'name': 'Duplicate Header',
-        'msg': 'The header in column {0} was found to have duplicates.',
+        'msg': 'A header column is duplicated.',
         'help': '',
         'help_edit': ''
     },
     'structure_003': {
         'id': 'structure_003',
         'name': 'Defective Row',
-        'msg': 'Row {0} is defective: the dimensions are incorrect compared to headers.',
+        'msg': 'The row dimensions are incorrect compared to headers.',
         'help': '',
         'help_edit': ''
     },
     'structure_004': {
         'id': 'structure_004',
         'name': 'Duplicate Row',
-        'msg': 'Row {0} duplicates the following rows which have already been seen: {1}.',
+        'msg': 'The exact same row has been seen before (a duplicate).',
         'help': '',
         'help_edit': ''
     },
     'structure_005': {
         'id': 'structure_005',
         'name': 'Empty Row',
-        'msg': 'Row {0} is empty.',
+        'msg': 'Row is empty.',
         'help': '',
         'help_edit': ''
     }
@@ -96,7 +96,7 @@ class StructureProcessor(base.Processor):
                         self.name,
                         self.RESULT_CATEGORY_HEADER,
                         self.RESULT_LEVEL_ERROR,
-                        _type['msg'].format(index),
+                        _type['msg'],
                         _type['id'],
                         _type['name'],
                         headers,
@@ -125,7 +125,7 @@ class StructureProcessor(base.Processor):
                         self.name,
                         self.RESULT_CATEGORY_HEADER,
                         self.RESULT_LEVEL_ERROR,
-                        _type['msg'].format(dupe[0]),
+                        _type['msg'],
                         _type['id'],
                         _type['name'],
                         headers,
@@ -166,7 +166,7 @@ class StructureProcessor(base.Processor):
                         self.name,
                         self.RESULT_CATEGORY_ROW,
                         self.RESULT_LEVEL_ERROR,
-                        _type['msg'].format(index, previous_instances),
+                        _type['msg'],
                         _type['id'],
                         _type['name'],
                         row,
@@ -193,7 +193,7 @@ class StructureProcessor(base.Processor):
                     self.name,
                     self.RESULT_CATEGORY_ROW,
                     self.RESULT_LEVEL_ERROR,
-                    _type['msg'].format(index),
+                    _type['msg'],
                     _type['id'],
                     _type['name'],
                     row,
@@ -207,7 +207,7 @@ class StructureProcessor(base.Processor):
 
         # check if row is defective
         if not self.ignore_defective_rows:
-            if len(headers) < len(row):
+            if len(headers) != len(row):
 
                 valid = False
                 is_defective = True
@@ -216,28 +216,7 @@ class StructureProcessor(base.Processor):
                     self.name,
                     self.RESULT_CATEGORY_ROW,
                     self.RESULT_LEVEL_ERROR,
-                    _type['msg'].format(index),
-                    _type['id'],
-                    _type['name'],
-                    row,
-                    index,
-                    row_name
-                )
-
-                self.report.write(entry)
-                if self.fail_fast:
-                    return valid, headers, index, row
-
-            elif len(headers) < len(row):
-
-                valid = False
-                is_defective = True
-                _type = RESULTS['structure_003']
-                entry = self.make_entry(
-                    self.name,
-                    self.RESULT_CATEGORY_ROW,
-                    self.RESULT_LEVEL_ERROR,
-                    _type['msg'].format(index),
+                    _type['msg'],
                     _type['id'],
                     _type['name'],
                     row,

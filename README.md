@@ -1,7 +1,7 @@
 # Good Tables
 
-[![Travis Build Status](https://travis-ci.org/okfn/goodtables.svg?branch=master)](https://travis-ci.org/okfn/goodtables)
-[![Coveralls](http://img.shields.io/coveralls/okfn/goodtables.svg?branch=master)](https://coveralls.io/r/okfn/goodtables?branch=master)
+[![Travis Build Status](https://travis-ci.org/frictionlessdata/goodtables.svg?branch=master)](https://travis-ci.org/frictionlessdata/goodtables)
+[![Coveralls](http://img.shields.io/coveralls/frictionlessdata/goodtables.svg?branch=master)](https://coveralls.io/r/frictionlessdata/goodtables?branch=master)
 
 A toolkit for processing tabular data through a pipeline.
 
