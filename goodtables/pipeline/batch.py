@@ -5,6 +5,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import os
+import time
 from . import pipeline
 from ..utilities import helpers
 from .. import datatable
@@ -19,6 +20,7 @@ class Batch(object):
     * `source_type`: 'csv' or 'datapackage'
     * `data_key`: The key for the data (only used when source_type is 'csv')
     * `schema_key`: The key for the schema (only used when source_type is 'csv').
+    * `sleep`:  The time (in seconds) to wait beteween pipelines
     * `pipeline_options`: Options to pass to each pipeline instance.
     * `post_task`: Task handler to run after all pipelines have run.
     * `pipeline_post_task`: Task handler passed to each pipeline instance.
@@ -26,7 +28,7 @@ class Batch(object):
     """
 
     def __init__(self, source, source_type='csv', data_key='data',
-                 schema_key='schema', pipeline_options=None,
+                 schema_key='schema', sleep=1, pipeline_options=None,
                  post_task=None, pipeline_post_task=None):
 
         self.source = source
@@ -43,6 +45,10 @@ class Batch(object):
 
         self.post_task = post_task
         self.pipeline_post_task = pipeline_post_task
+
+        if not isinstance(sleep, (int, float)):
+            raise ValueError('Received non int or float for the \'sleep\' argument.')
+        self.sleep = sleep
 
     def get_dataset(self):
         """Get the dataset for this batch process."""
@@ -126,6 +132,8 @@ class Batch(object):
                                                           data['schema'])
             result, report = self.current_pipeline.run()
             self.reports.append(report)
+
+            time.sleep(self.sleep)
 
         if self.post_task:
             self.post_task(self)
