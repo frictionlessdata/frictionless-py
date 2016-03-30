@@ -230,7 +230,7 @@ class TestSchemaProcessor(base.BaseTestCase):
             validator = processors.SchemaProcessor(schema=schema)
             result, report, data = validator.run(stream)
 
-            self.assertEqual(len(report.generate()['results']), 7)
+            self.assertEqual(len(report.generate()['results']), 6)
 
     def test_pipeline_fail_fast_false(self):
 
@@ -241,7 +241,7 @@ class TestSchemaProcessor(base.BaseTestCase):
                              options=options)
         result, report = validator.run()
 
-        self.assertEqual(len(report.generate()['results']), 7)
+        self.assertEqual(len(report.generate()['results']), 6)
 
     # def test_standalone_transform_true(self):
     #     self.assertTrue(False)
