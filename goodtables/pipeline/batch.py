@@ -28,7 +28,7 @@ class Batch(object):
     """
 
     def __init__(self, source, source_type='csv', data_key='data',
-                 schema_key='schema', sleep=1, pipeline_options=None,
+                 schema_key='schema', sleep=None, pipeline_options=None,
                  post_task=None, pipeline_post_task=None):
 
         self.source = source
@@ -46,7 +46,7 @@ class Batch(object):
         self.post_task = post_task
         self.pipeline_post_task = pipeline_post_task
 
-        if not isinstance(sleep, (int, float)):
+        if sleep and not isinstance(sleep, (int, float)):
             raise ValueError('Received non int or float for the \'sleep\' argument.')
         self.sleep = sleep
 
@@ -132,8 +132,9 @@ class Batch(object):
                                                           data['schema'])
             result, report = self.current_pipeline.run()
             self.reports.append(report)
-
-            time.sleep(self.sleep)
+            
+            if self.sleep:
+                time.sleep(self.sleep)
 
         if self.post_task:
             self.post_task(self)
