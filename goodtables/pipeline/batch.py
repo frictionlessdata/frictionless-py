@@ -27,14 +27,16 @@ class Batch(object):
 
     """
 
-    def __init__(self, source, source_type='csv', data_key='data',
-                 schema_key='schema', sleep=None, pipeline_options=None,
-                 post_task=None, pipeline_post_task=None):
+    def __init__(self, source, source_type='csv', sleep=None, data_key='data', 
+                 schema_key='schema', format_key='format', encoding_key='encoding',
+                 pipeline_options=None, post_task=None, pipeline_post_task=None):
 
         self.source = source
         self.source_type = source_type
         self.data_key = data_key
         self.schema_key = schema_key
+        self.format_key = format_key
+        self.encoding_key = encoding_key
         self.dataset = self.get_dataset()
         self.pipeline_options = pipeline_options or {}
         self.current_pipeline = None
@@ -62,16 +64,20 @@ class Batch(object):
         resources = datatable.DataTable(self.source)
 
         data_index = resources.headers.index(self.data_key)
-        schema_index = None
-        if self.schema_key:
-            schema_index = resources.headers.index(self.schema_key)
+        keys_header_index = {}
+        
+        for key in [self.schema_key, self.format_key, self.encoding_key]:
+            if key in resources.headers:
+                keys_header_index[key] = resources.headers.index(key)
 
         for entry in resources.values:
 
-            rv = {'data': entry[data_index], 'schema': None}
-
-            if schema_index is not None:
-                rv['schema'] = entry[schema_index]
+            rv = {'data': entry[data_index], 'schema': None, 'encoding': None,
+                  'format': None}
+            
+            for key, index in keys_header_index.items():
+                if index is not None:
+                    rv[key] = entry[index]
 
             dataset.append(rv)
 
@@ -107,7 +113,7 @@ class Batch(object):
 
         return dataset
 
-    def pipeline_factory(self, data, schema):
+    def pipeline_factory(self, data, schema, format, encoding):
         """Construct a pipeline."""
 
         options = self.pipeline_options or {}
@@ -116,9 +122,13 @@ class Batch(object):
 
         if options['options'].get('schema') is None:
             options['options']['schema'] = {}
-
+            
         options['options']['schema']['schema'] = schema
-
+            
+        if encoding: options['encoding'] = encoding
+        if format:   options['format'] = format
+        
+        print(options)
         return pipeline.Pipeline(data, post_task=self.pipeline_post_task,
                                  **options)
 
@@ -128,8 +138,11 @@ class Batch(object):
         # TODO: parallelize
 
         for data in self.dataset:
-            self.current_pipeline = self.pipeline_factory(data['data'],
-                                                          data['schema'])
+            pipeline = self.pipeline_factory(data=data['data'],
+                                             schema=data['schema'],
+                                             format=data['format'], 
+                                             encoding=data['encoding'])
+            self.current_pipeline = pipeline
             result, report = self.current_pipeline.run()
             self.reports.append(report)
             
