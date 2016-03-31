@@ -24,7 +24,7 @@ class TestPipeline(base.BaseTestCase):
 
         batch = Batch(self.batch_csv)
 
-        self.assertEqual(len(batch.dataset), 3)
+        self.assertEqual(len(batch.dataset), 4)
 
     def test_batch_from_datapackage(self):
 
