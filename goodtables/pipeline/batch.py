@@ -127,8 +127,7 @@ class Batch(object):
             
         if encoding: options['encoding'] = encoding
         if format:   options['format'] = format
-        
-        print(options)
+
         return pipeline.Pipeline(data, post_task=self.pipeline_post_task,
                                  **options)
 
