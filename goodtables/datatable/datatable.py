@@ -307,6 +307,8 @@ class DataTable(object):
 
         if isinstance(stream, compat.str):
             test_stream = io.StringIO(stream)
+        elif isinstance(stream, compat.bytes):
+            test_stream = io.BytesIO(stream)
         else:
             test_stream = stream
 
