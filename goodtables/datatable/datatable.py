@@ -305,8 +305,12 @@ class DataTable(object):
     def _check_for_unsupported_format(self, stream):
         """Check if a source is zip or html. """
 
+        
         if isinstance(stream, compat.str):
             test_stream = io.StringIO(stream)
+        elif isinstance(stream, compat.bytes):
+            str_stream = stream
+            test_stream = io.StringIO(str_stream.decode('utf-8'))
         else:
             test_stream = stream
 
