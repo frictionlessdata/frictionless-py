@@ -41,8 +41,7 @@ class DataTable(object):
         self.header_index = header_index
         self.excel_sheet_index = excel_sheet_index
         self.stream = self.to_textstream(self.data_source)
-        self.test_stream = self._sample_stream() 
-       
+        self.test_stream = self._sample_stream()
         self.headers, self.values = self.extract(self.passed_headers)
 
     def replay(self):
@@ -90,7 +89,7 @@ class DataTable(object):
             A `self.DEFAULT_ENCODING` encoded text stream (utf-8).
 
         """
-        
+
         textstream = io.TextIOWrapper(io.BufferedRandom(io.BytesIO()), encoding=self.DEFAULT_ENCODING)
         self.openfiles.append(textstream)
 
@@ -113,7 +112,7 @@ class DataTable(object):
 
                 return textstream
 
-        elif (isinstance(data_source, compat.str) or isinstance(data_source, compat.bytes)) and \
+        elif isinstance(data_source, compat.str) and \
                         compat.parse.urlparse(data_source).scheme in self.REMOTE_SCHEMES:
 
             stream = self._stream_from_url(data_source)
