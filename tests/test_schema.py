@@ -438,11 +438,11 @@ class TestSchemaProcessor(base.BaseTestCase):
 
         data_source = 'https://github.com/frictionlessdata/goodtables/blob/master/.travis.yaml'
         processor = processors.SchemaProcessor()
-        
+
         result, report, data = processor.run(data_source)
         generated_report = report.generate()
         report_results = generated_report['results']
-    
+
         self.assertFalse(result)
         self.assertEqual(len(report_results), 1)
         self.assertEqual(report_results[0]['result_id'], 'http_404')
@@ -454,11 +454,11 @@ class TestSchemaProcessor(base.BaseTestCase):
         result, report, data = processor.run(data_source=data_source)
         generated_report = report.generate()
         report_results = generated_report['results']
-    
+
         self.assertFalse(result)
         self.assertEqual(len(report_results), 1)
         self.assertEqual(report_results[0]['result_id'], 'data_html_error')
-        
+
     def test_processor_run_error_when_wrong_encoding(self):
 
         data_source = os.path.join(self.data_dir, 'hmt','BIS_spending_over__25_000_July_2014.csv')
@@ -468,7 +468,7 @@ class TestSchemaProcessor(base.BaseTestCase):
                                              encoding=encoding, decode_strategy=None)
         generated_report = report.generate()
         report_results = generated_report['results']
-    
+
         self.assertFalse(result)
         self.assertEqual(len(report_results), 1)
         self.assertEqual(report_results[0]['result_id'], 'data_decode_error')
@@ -514,7 +514,7 @@ class TestSchemaProcessor(base.BaseTestCase):
                           schema=schema)
 
     def test_standalone_invalid_schema_jts_raises(self):
-        schema = 'https://raw.githubusercontent.com/okfn/jsontableschema-py/master/examples/schema_invalid_empty.json'
+        schema = 'https://raw.githubusercontent.com/frictionlessdata/jsontableschema-py/master/data/schema_invalid_empty.json'
 
         self.assertRaises(InvalidSchemaError, processors.SchemaProcessor,
                           schema=schema)
@@ -529,7 +529,7 @@ class TestSchemaProcessor(base.BaseTestCase):
 
     def test_pipeline_invalid_schema_jts_raises(self):
         filepath = os.path.join(self.data_dir, 'case_insensitive_headers.csv')
-        schema = 'https://raw.githubusercontent.com/okfn/jsontableschema-py/master/examples/schema_invalid_empty.json'
+        schema = 'https://raw.githubusercontent.com/frictionlessdata/jsontableschema-py/master/data/schema_invalid_empty.json'
         options = {'schema': {'schema': schema}}
 
         self.assertRaises(InvalidSchemaError, Pipeline, filepath,
