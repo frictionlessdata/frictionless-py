@@ -10,7 +10,6 @@ import codecs
 import datetime
 import chardet
 import xlrd
-import zipfile
 from bs4 import BeautifulSoup
 from .. import exceptions
 from .. import compat
@@ -185,7 +184,7 @@ class DataTable(object):
         out.seek(0)
         return out
 
-    def get_headers(self, stream, reader = None):
+    def get_headers(self, stream, reader=None):
         """Get headers from stream."""
 
         if reader is None:
@@ -206,7 +205,7 @@ class DataTable(object):
         try:
             document = compat.urlopen(url)
         except compat.HTTPError as e:
-            raise exceptions.DataSourceHTTPError(msg=None, status=e.getcode())
+            raise exceptions.DataSourceHTTPError(msg=e.msg, status=e.getcode())
 
         stream.write(document.read())
         stream.seek(0)
@@ -281,7 +280,6 @@ class DataTable(object):
 
         _sample = test_stream.read()
         test_stream.seek(0)
-
         return bool(BeautifulSoup(_sample, 'html.parser').find())
 
     def _stream_is_zip(self, test_stream):
@@ -305,7 +303,6 @@ class DataTable(object):
     def _check_for_unsupported_format(self, stream):
         """Check if a source is zip or html. """
 
-        
         if isinstance(stream, compat.str):
             test_stream = io.StringIO(stream)
         elif isinstance(stream, compat.bytes):
@@ -316,8 +313,9 @@ class DataTable(object):
 
         test_stream.seek(0)
 
-        for file_format in ['zip','html']:
+        for file_format in ['zip', 'html']:
             if  getattr(self, '_stream_is_{0}'.format(file_format))(test_stream):
                 raise exceptions.DataSourceFormatUnsupportedError(file_format=file_format)
             else:
                 test_stream.seek(0)
+                

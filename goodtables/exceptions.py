@@ -22,22 +22,11 @@ class ProcessorBuildError(Exception):
 
 
 class DataSourceHTTPError(Exception):
-    
-    STATUS_NAMES = { 404: 'Not Found', 403: 'Forbidden', 401: 'Unauthorized',
-                     500: 'Internal Server Error', 503: 'Server Unavailable'}
 
     def __init__(self, msg=None, status=None):
-        self.msg = msg or 'The data source is on a URL that returns an HTTP Error.'
+        self.msg = 'The data source server responded with an error: {0}'.format(msg)
         self.status = status
-        
-    def as_result(self, name=''):
-        return {
-            'id': 'http_{0}'.format(self.status),
-            'name': name or self.STATUS_NAMES.get(self.status, self.msg),
-            'msg': self.msg,
-            'help': '',
-            'help_edit': ''
-        }
+        self.name = '{0} error'.format(msg).title()
 
         
 class DataSourceFormatUnsupportedError(Exception):
@@ -45,17 +34,7 @@ class DataSourceFormatUnsupportedError(Exception):
     def __init__(self, msg=None, file_format=None):
         self.file_format = file_format or 'unsupported'
         self.msg = msg or 'The data source format is {0}.'.format(self.file_format.upper())
-            
-            
-    def as_result(self, name=''):
-        return {
-            'id': 'data_{0}_error'.format(self.file_format),
-            'name': name or self.msg,
-            'msg': self.msg,
-            'help': '',
-            'help_edit': ''
-        }   
-        
+        self.name = 'Data Source {0} Error'.format(self.file_format)
 
 
 class DataSourceDecodeError(Exception):
@@ -64,14 +43,7 @@ class DataSourceDecodeError(Exception):
         self.msg = msg or ('The data source cannot be decoded using the '
                            'declared or detected encoding.')
                            
-    def as_result(self, name=''):
-        return {
-            'id': 'data_decode_error',
-            'name': name or 'Unable to decode data source',
-            'msg': self.msg,
-            'help': '',
-            'help_edit': ''
-        } 
+        self.name = 'Data Source Decode Error'
 
 
 class InvalidHandlerError(Exception):

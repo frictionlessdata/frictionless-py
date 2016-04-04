@@ -10,32 +10,11 @@ from ..utilities import helpers
 from .. import datatable
 from .. import exceptions
 
-RESULTS = {
-    'http_404': exceptions.DataSourceHTTPError(msg='The data source was not found.',
-                                               status=404).as_result(),
-    'http_403': exceptions.DataSourceHTTPError(msg='Access to datasource was forbidden',
-                                               status=403).as_result(),
-    'http_401': exceptions.DataSourceHTTPError(msg='The data source required authentication',
-                                               status=401).as_result(),
-    'http_500': exceptions.DataSourceHTTPError(msg='The data source server was unavailable.',                                           
-                                               status=500).as_result(),
-    'http_503': exceptions.DataSourceHTTPError(msg='The data source server was unavailable.',
-                                               status=503).as_result(),
-    'data_html_error': exceptions.DataSourceFormatUnsupportedError(msg='',
-                                                                  file_format='html').as_result(),
-    'data_zip_error': exceptions.DataSourceFormatUnsupportedError(msg='',
-                                                                  file_format='zip').as_result(), 
-    'data_decode_error': exceptions.DataSourceDecodeError().as_result()
-}
-
-
-
 class Processor(object):
     
     """Base Processor class. Processor implementations should inherit."""
     
     name = None
-    RESULT_TYPES = RESULTS
     ROW_LIMIT_MAX = 30000
     REPORT_LIMIT_MAX = 1000
     RESULT_CATEGORY_HEADER = 'header'
@@ -111,7 +90,7 @@ class Processor(object):
         return ''
 
     def make_entry(self, processor, result_category, result_level,
-                   result_message, result_id, result_name, result_context=[],
+                   result_message, result_id, result_name, result_context,
                    row_index=None, row_name='', column_index=None, column_name=''):
         """Return a report entry."""
     
@@ -163,31 +142,27 @@ class Processor(object):
                                            format=format, encoding=encoding,
                                            decode_strategy=decode_strategy,
                                            header_index=self.header_index)
-                                           
                 openfiles.extend(data.openfiles)
-            
             except datatable.DataTable.RAISES as e:
                 valid = False
                 data = None
                 if isinstance(e, exceptions.DataSourceHTTPError):
-                    error_type = 'http_{0}'.format(e.status)
-                    _type = self.RESULT_TYPES[error_type]
-                    
+                    error_type = 'http_{0}_error'.format(e.status)
                 elif isinstance(e, exceptions.DataSourceDecodeError):
-                    _type = self.RESULT_TYPES['data_decode_error']
-                    
+                    error_type = 'data_decode_error'
                 elif isinstance(e, exceptions.DataSourceFormatUnsupportedError):
                     error_type = 'data_{0}_error'.format(e.file_format)
-                    _type = self.RESULT_TYPES[error_type]
                     
                 entry = self.make_entry(
-                    processor = 'base',
-                    result_category = self.RESULT_CATEGORY_FILE,
-                    result_level = self.RESULT_LEVEL_ERROR,
-                    result_message = _type.get('msg', ''),
-                    result_id = _type.get('id', ''),
-                    result_name = _type.get('name', '')
+                    processor='base',
+                    result_category=self.RESULT_CATEGORY_FILE,
+                    result_level=self.RESULT_LEVEL_ERROR,
+                    result_message=e.msg,
+                    result_id=error_type,
+                    result_name=e.name,
+                    result_context=[]
                 )
+                    
                 self.report.write(entry)
                 return valid, self.report, ''
 

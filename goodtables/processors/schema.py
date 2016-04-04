@@ -61,8 +61,7 @@ class SchemaProcessor(base.Processor):
     """Process data against a JSON Table Schema."""
 
     name = 'schema'
-    RESULT_TYPES = base.Processor.RESULT_TYPES
-    RESULT_TYPES.update(RESULTS)
+    RESULT_TYPES = RESULTS
 
 
     def __init__(self, fail_fast=False, report_limit=1000,
