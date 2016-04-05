@@ -49,9 +49,8 @@ RESULTS = {
 class StructureProcessor(base.Processor):
 
     name = 'structure'
-    RESULT_TYPES = base.Processor.RESULT_TYPES
-    RESULT_TYPES.update(RESULTS)
-
+    RESULT_TYPES = RESULTS
+    
     def __init__(self, fail_fast=False, transform=False, report_limit=1000,
                  row_limit=30000, ignore_empty_rows=False,
                  ignore_duplicate_rows=False, ignore_defective_rows=False,

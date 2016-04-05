@@ -445,7 +445,7 @@ class TestSchemaProcessor(base.BaseTestCase):
 
         self.assertFalse(result)
         self.assertEqual(len(report_results), 1)
-        self.assertEqual(report_results[0]['result_id'], 'http_404')
+        self.assertEqual(report_results[0]['result_id'], 'http_404_error')
 
     def test_processor_run_error_when_data_html_error(self):
 
@@ -515,7 +515,6 @@ class TestSchemaProcessor(base.BaseTestCase):
 
     def test_standalone_invalid_schema_jts_raises(self):
         schema = 'https://raw.githubusercontent.com/frictionlessdata/jsontableschema-py/master/data/schema_invalid_empty.json'
-
         self.assertRaises(InvalidSchemaError, processors.SchemaProcessor,
                           schema=schema)
 

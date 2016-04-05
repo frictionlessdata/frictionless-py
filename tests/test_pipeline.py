@@ -231,7 +231,7 @@ class TestPipeline(base.BaseTestCase):
         
         self.assertFalse(result)
         self.assertEqual(len(report_results), 1)
-        self.assertEqual(report_results[0]['result_id'], 'http_404')
+        self.assertEqual(report_results[0]['result_id'], 'http_404_error')
         
     def test_pipeline_error_report_when_data_html_error(self):
         
