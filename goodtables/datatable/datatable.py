@@ -14,6 +14,7 @@ import csv
 from bs4 import BeautifulSoup
 from .. import exceptions
 from .. import compat
+from ..utilities import helpers
 
 
 class DataTable(object):
@@ -114,7 +115,7 @@ class DataTable(object):
                 return textstream
 
         elif isinstance(data_source, compat.str) and \
-                        compat.parse.urlparse(data_source).scheme in self.REMOTE_SCHEMES:
+                        compat.urlparse(data_source).scheme in self.REMOTE_SCHEMES:
 
             stream = self._stream_from_url(data_source)
             self.encoding = self._detect_stream_encoding(stream)
@@ -147,7 +148,7 @@ class DataTable(object):
         instream = None
         
         try:
-            if compat.parse.urlparse(data_source).scheme in self.REMOTE_SCHEMES:
+            if compat.urlparse(data_source).scheme in self.REMOTE_SCHEMES:
                 instream = self._stream_from_url(data_source).read()
         except Exception:
             try:
@@ -211,11 +212,11 @@ class DataTable(object):
     def _stream_from_url(self, url):
         """Return a seekable and readable stream from a URL."""
 
-
         stream = io.BufferedRandom(io.BytesIO())
+        valid_url = helpers.make_valid_url(url)
 
         try:
-            document = compat.urlopen(url)
+            document = compat.urlopen(valid_url)
         except compat.HTTPError as e:
             raise exceptions.DataSourceHTTPError(status=e.getcode())
 

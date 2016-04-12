@@ -157,8 +157,9 @@ def load_json_source(source):
         # the source has already been loaded
         return source
 
-    elif compat.parse.urlparse(source).scheme in REMOTE_SCHEMES:
-        return json.loads(requests.get(source).text)
+    elif compat.urlparse(source).scheme in REMOTE_SCHEMES:
+        valid_url = make_valid_url(source)
+        return json.loads(requests.get(valid_url).text)
 
     elif isinstance(source, compat.str) and not os.path.exists(source):
         return json.loads(source)
@@ -192,3 +193,17 @@ def validate_handler(handler, argcount=1):
         spec = inspect.getargspec(handler)
         if not len(spec[0]) == argcount:
             raise exceptions.InvalidHandlerError
+
+def make_valid_url(url):
+    """Make sure url doesn't contain unsupported characters
+
+    Args:
+        * `url`: a url string
+    """
+    
+    scheme, netloc, path, query, fragment = compat.urlsplit(url)
+    quoted_path = compat.quote(path.encode('utf-8'))
+    quoted_query = compat.quote_plus(query.encode('utf-8'))
+    new_url_tuple = (scheme, netloc, quoted_path, quoted_query, fragment)
+    quoted_url = compat.urlunsplit(new_url_tuple)
+    return quoted_url
