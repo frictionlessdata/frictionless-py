@@ -197,6 +197,7 @@ class DataTable(object):
 
         if reader is None:
             reader = compat.csv_reader(stream)
+
         for index, line in enumerate(reader):
             if index == self.header_index:
                 headers = line

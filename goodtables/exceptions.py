@@ -4,7 +4,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from . import compat
+
 
 class InvalidSpec(Exception):
     pass
@@ -25,6 +25,9 @@ class ProcessorBuildError(Exception):
 class DataSourceHTTPError(Exception):
 
     def __init__(self, msg=None, status=None, name=None):
+
+        from goodtables import compat
+
         self.status = status
         self.msg = msg or ('The data source server responded with an error: '
                            '{0}.').format(compat.responses.get(self.status, ''))
