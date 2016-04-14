@@ -24,7 +24,8 @@ class DataTable(object):
     FORMATS = ('csv', 'excel', 'json')
     RAISES = (exceptions.DataSourceHTTPError,
               exceptions.DataSourceDecodeError,
-              exceptions.DataSourceFormatUnsupportedError)
+              exceptions.DataSourceFormatUnsupportedError,
+              exceptions.DataSourceMalformatedError)
 
     def __init__(self, data_source, headers=None, format='csv',
                  encoding=None, decode_strategy='replace',
@@ -141,8 +142,9 @@ class DataTable(object):
         """Get a data_source out of an Excel file."""
 
         # TODO: Need to flesh out this implementation quite a bit. See messytables
+        
         instream = None
-
+        
         try:
             if compat.parse.urlparse(data_source).scheme in self.REMOTE_SCHEMES:
                 instream = self._stream_from_url(data_source).read()
@@ -151,11 +153,13 @@ class DataTable(object):
                 instream = data_source.read()
             except Exception:
                 pass
-
-        if instream:
-            workbook = xlrd.open_workbook(file_contents=instream)
-        else:
-            workbook = xlrd.open_workbook(data_source)
+        try:
+            if instream:
+                workbook = xlrd.open_workbook(file_contents=instream)
+            else:
+                workbook = xlrd.open_workbook(data_source)
+        except xlrd.biffh.XLRDError as e:
+            raise exceptions.DataSourceMalformatedError(msg=e.args[0], file_format='excel')
 
         out = io.TextIOWrapper(io.BufferedRandom(io.BytesIO()), encoding=self.DEFAULT_ENCODING)
 
@@ -170,11 +174,15 @@ class DataTable(object):
 
                 # TODO: this is very naive force to string
                 if cell.ctype == 3:
-                    value = datetime.datetime(
-                        *xlrd.xldate_as_tuple(cell.value, sheet.book.datemode)
-                    ).isoformat()
+                    try:
+                        value = datetime.datetime(
+                            *xlrd.xldate_as_tuple(cell.value, sheet.book.datemode)
+                        ).isoformat()
+                    except xlrd.xldate.XLDateError as e:
+                        raise exceptions.DataSourceMalformatedError(msg=e.args[0],
+                                                               file_format='excel')
                 else:
-                    value = cell.value
+                        value = cell.value
 
                 values.append(compat.str(value))
 
@@ -205,7 +213,7 @@ class DataTable(object):
         try:
             document = compat.urlopen(url)
         except compat.HTTPError as e:
-            raise exceptions.DataSourceHTTPError(msg=e.msg, status=e.getcode())
+            raise exceptions.DataSourceHTTPError(status=e.getcode())
 
         stream.write(document.read())
         stream.seek(0)
