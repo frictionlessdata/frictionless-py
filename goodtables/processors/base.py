@@ -152,6 +152,8 @@ class Processor(object):
                     error_type = 'data_decode_error'
                 elif isinstance(e, exceptions.DataSourceFormatUnsupportedError):
                     error_type = 'data_{0}_error'.format(e.file_format)
+                elif isinstance(e, exceptions.DataSourceMalformatedError):
+                    error_type = 'invalid_{0}_error'.format(format)
                     
                 entry = self.make_entry(
                     processor='base',

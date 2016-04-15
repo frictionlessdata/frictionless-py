@@ -9,7 +9,7 @@ import tempfile
 import io
 import csv
 from itertools import islice, chain
-
+from goodtables import exceptions
 
 _ver = sys.version_info
 is_py2 = (_ver[0] == 2)
@@ -22,6 +22,7 @@ is_py27 = (is_py2 and _ver[1] == 7)
 if is_py2:
     import urlparse as parse
     from urllib2 import urlopen, HTTPError
+    from httplib import responses
     builtin_str = str
     bytes = str
     str = unicode
@@ -45,15 +46,20 @@ if is_py2:
 
         iter = chain(first_lines, data)
         iter = iterenc_utf8(iter)
-        reader = csv.reader(iter, dialect=dialect, **kwargs)
-        for row in reader:
-            yield [str(cell, 'utf-8') for cell in row]
+        csv.field_size_limit(20000000)
+        try:
+            reader = csv.reader(iter, dialect=dialect, **kwargs)
+            for row in reader:
+                yield [str(cell, 'utf-8') for cell in row]
+        except TypeError as e:
+            raise exceptions.DataSourceMalformatedError(msg=e.args[0], file_format='csv')
 
 
 elif is_py3:
     from urllib import parse
     from urllib.request import urlopen
     from urllib.error import HTTPError
+    from http.client import responses
     builtin_str = str
     str = str
     bytes = bytes
@@ -61,6 +67,7 @@ elif is_py3:
     numeric_types = (int, float)
 
     def csv_reader(data, **kwargs):
+
         def line_iterator(data):
             for line in data:
                 yield line
@@ -71,8 +78,11 @@ elif is_py3:
         except csv.Error:
             dialect = csv.excel
         iter = chain(first_lines, iter)
-        return csv.reader(iter, dialect, **kwargs)
-
+        csv.field_size_limit(20000000)
+        try:
+            return csv.reader(iter, dialect, **kwargs)
+        except TypeError as e:
+            raise exceptions.DataSourceMalformatedError(msg=e.args[0], file_format='csv')
 
 
 def to_bytes(textstring):

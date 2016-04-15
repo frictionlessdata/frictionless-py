@@ -263,8 +263,8 @@ class TestPipeline(base.BaseTestCase):
 
         data_source = os.path.join(self.data_dir, 'hmt','BIS_spending_over__25_000_July_2014.csv')
         encoding = 'UTF-8'  # should be 'ISO-8859-2'
-        
-        validator = Pipeline(data_source, processors=('structure',), fail_fast=True, encoding=encoding, decode_strategy=None, options={})
+        validator = Pipeline(data_source, processors=('structure',), fail_fast=True,
+                             encoding=encoding, decode_strategy=None, options={})
         result, report = validator.run()
         generated_report = report.generate()
         report_results = generated_report['results']
@@ -273,6 +273,17 @@ class TestPipeline(base.BaseTestCase):
         self.assertEqual(len(report_results), 1)
         self.assertEqual(report_results[0]['result_id'], 'data_decode_error')
         
+    def test_pipeline_error_report_when_invalid_excel_error(self):
+        
+        data_source = os.path.join(self.data_dir, 'hmt', 'invalid_excel.xlsx')
+        validator = Pipeline(data_source, fail_fast=True, format='excel')
+        result, report = validator.run()
+        generated_report = report.generate()
+        report_results = generated_report['results']
+        
+        self.assertFalse(result)
+        self.assertEqual(len(report_results), 1)
+        self.assertEqual(report_results[0]['result_id'], 'invalid_excel_error')
 
     def test_bad_post_task_raises(self):
 

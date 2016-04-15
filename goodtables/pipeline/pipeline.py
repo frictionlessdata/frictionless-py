@@ -215,8 +215,8 @@ class Pipeline(object):
                     encoding=self.encoding, decode_strategy=self.decode_strategy)
             else:
                 _valid, _, self.data = processor.run(self.data_source, is_table=False,
-                    encoding=self.encoding, decode_strategy=self.decode_strategy)
-                
+                                            decode_strategy=self.decode_strategy,
+                                            encoding=self.encoding, format=self.format)
             valid = _run_valid(_valid, valid)
             
             # if a validator returns invalid, we stop the pipeline,
