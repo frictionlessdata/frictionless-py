@@ -10,6 +10,7 @@ import codecs
 import datetime
 import chardet
 import xlrd
+import csv
 from bs4 import BeautifulSoup
 from .. import exceptions
 from .. import compat
@@ -197,13 +198,15 @@ class DataTable(object):
 
         if reader is None:
             reader = compat.csv_reader(stream)
+        try:
+            for index, line in enumerate(reader):
+                if index == self.header_index:
+                    headers = line
+                    break
 
-        for index, line in enumerate(reader):
-            if index == self.header_index:
-                headers = line
-                break
-
-        return headers
+            return headers
+        except csv.Error as e:
+            raise exceptions.DataSourceMalformatedError(msg=e.args[0], file_format='csv')
 
     def _stream_from_url(self, url):
         """Return a seekable and readable stream from a URL."""

@@ -85,7 +85,6 @@ elif is_py3:
             raise exceptions.DataSourceMalformatedError(msg=e.args[0], file_format='csv')
 
 
-
 def to_bytes(textstring):
     """Convert a text string to a byte string"""
     return textstring.encode('utf-8')
