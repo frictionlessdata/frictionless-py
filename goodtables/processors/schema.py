@@ -7,14 +7,15 @@ from __future__ import unicode_literals
 import jsontableschema
 from . import base
 
-
 RESULTS = {
     'schema_001': {
         'id': 'schema_001',
         'name': 'Incorrect Headers',
-        'msg': ('There is a mismatch between the headers according to the '
-                'schema, and those found in the data. The schema says the '
-                'headers should be: {0}.'),
+        'msg': {
+            'missing': 'Missing required column headings: {0}.',
+            'misplaced': ('Misplaced column headings: {0}. Please respect the order'
+                          ' set by the schema or change `ignore_field_order` to true.')
+        },
         'help': '',
         'help_edit': ''
     },
@@ -109,16 +110,21 @@ class SchemaProcessor(base.Processor):
             headers = [name.lower() for name in headers]
 
         if self.schema:
-            if self.ignore_field_order:
-                if not (set(headers).issuperset(set(self.schema.required_headers))):
+            required_headers = self.schema.required_headers
+            required_headers_set = set(required_headers)
+            headers_set = set(headers)
 
+            if self.ignore_field_order:
+                if not headers_set.issuperset(required_headers_set):
+
+                    missing_set = required_headers_set.difference(headers_set)
                     valid = False
                     _type = RESULTS['schema_001']
                     entry = self.make_entry(
                         self.name,
                         self.RESULT_CATEGORY_HEADER,
                         self.RESULT_LEVEL_ERROR,
-                        _type['msg'].format(', '.join(self.schema.headers)),
+                        _type['msg']['missing'].format(', '.join(missing_set)),
                         _type['id'],
                         _type['name'],
                         headers,
@@ -131,16 +137,22 @@ class SchemaProcessor(base.Processor):
                         return valid, headers
 
             else:
-                header_length = len(headers)
-                if not (headers == self.schema.required_headers[:header_length]):
+                req_headers_len = len(required_headers)
+                target_headers = headers[:req_headers_len]
+                if not (target_headers == required_headers):
 
+                    missing_set = required_headers_set.difference(headers_set)
+                    misplaced_set = [th for th, rh in zip(target_headers, required_headers)
+                                     if th != rh]
                     valid = False
                     _type = RESULTS['schema_001']
+                    msg = lambda set, key: _type['msg'][key].format(', '.join(set)) if set else ''
                     entry = self.make_entry(
                         self.name,
                         self.RESULT_CATEGORY_HEADER,
                         self.RESULT_LEVEL_ERROR,
-                        _type['msg'].format(headers, self.schema.headers),
+                        ' '.join([msg(missing_set, 'missing'),
+                                 msg(misplaced_set, 'misplaced')]),
                         _type['id'],
                         _type['name'],
                         headers,
