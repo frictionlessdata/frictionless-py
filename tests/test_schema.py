@@ -230,7 +230,7 @@ class TestSchemaProcessor(base.BaseTestCase):
             validator = processors.SchemaProcessor(schema=schema)
             result, report, data = validator.run(stream)
 
-            self.assertEqual(len(report.generate()['results']), 6)
+            self.assertEqual(len(report.generate()['results']), 5)
 
     def test_pipeline_fail_fast_false(self):
 
@@ -241,7 +241,7 @@ class TestSchemaProcessor(base.BaseTestCase):
                              options=options)
         result, report = validator.run()
 
-        self.assertEqual(len(report.generate()['results']), 6)
+        self.assertEqual(len(report.generate()['results']), 5)
 
     # def test_standalone_transform_true(self):
     #     self.assertTrue(False)
@@ -506,6 +506,16 @@ class TestSchemaProcessor(base.BaseTestCase):
         result, report = validator.run()
 
         self.assertEqual(len(report.generate()['results']), 0)
+
+    def test_standalone_process_extra_fields(self):
+        filepath = os.path.join(self.data_dir, 'contacts', 'people.csv')
+        schema = os.path.join(self.data_dir, 'contacts', 'schema_incomplete_fields.json')
+        validator = processors.SchemaProcessor(schema=schema, case_insensitive_headers=True,
+                                               process_extra_fields=True, result_level='info')
+        result, report, data = validator.run(filepath)
+        reports = report.generate()
+
+        self.assertTrue(any('schema_008' in res.values() for res in reports['results']))
 
     def test_standalone_invalid_schema_json_raises(self):
         schema = os.path.join(self.data_dir, 'valid.csv')
