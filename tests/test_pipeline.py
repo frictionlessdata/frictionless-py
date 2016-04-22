@@ -224,7 +224,7 @@ class TestPipeline(base.BaseTestCase):
     def test_pipeline_error_report_when_data_http_error(self):
 
         data_source = 'https://github.com/frictionlessdata/goodtables/blob/master/.travis.yaml'
-        validator = Pipeline(data_source, processors=('structure',), options={}, fail_fast=True)
+        validator = Pipeline(data_source, fail_fast=True)
         result, report = validator.run()
         generated_report = report.generate()
         report_results = generated_report['results']
@@ -233,10 +233,22 @@ class TestPipeline(base.BaseTestCase):
         self.assertEqual(len(report_results), 1)
         self.assertEqual(report_results[0]['result_id'], 'http_404_error')
         
+    def test_pipeline_group_error_report_when_http_error(self):
+
+        data_source = 'https://github.com/frictionlessdata/goodtables/blob/master/.travis.yaml'
+        validator = Pipeline(data_source, report_type='grouped', fail_fast=True)
+        result, report = validator.run()
+        generated_report = report.generate()
+        report_results = generated_report['results'][0]['']['results']
+
+        self.assertFalse(result)
+        self.assertEqual(len(report_results), 1)
+        self.assertEqual(report_results[0]['result_id'], 'http_404_error')
+
     def test_pipeline_error_report_when_data_html_error(self):
         
         data_source = 'https://www.google.com/'
-        validator = Pipeline(data_source, processors=('structure',), options={}, fail_fast=True)
+        validator = Pipeline(data_source, fail_fast=True)
         result, report = validator.run()
         generated_report = report.generate()
         report_results = generated_report['results']
@@ -250,7 +262,7 @@ class TestPipeline(base.BaseTestCase):
         data_sources = ['gzip_csv.gz', 'zip_csv.zip']
         for file_name in data_sources:
             data_source = os.path.join(self.data_dir, 'hmt', file_name)
-            validator = Pipeline(data_source, processors=('structure',), options={}, fail_fast=True)
+            validator = Pipeline(data_source, fail_fast=True)
             result, report = validator.run()
             generated_report = report.generate()
             report_results = generated_report['results']
@@ -263,8 +275,8 @@ class TestPipeline(base.BaseTestCase):
 
         data_source = os.path.join(self.data_dir, 'hmt','BIS_spending_over__25_000_July_2014.csv')
         encoding = 'UTF-8'  # should be 'ISO-8859-2'
-        validator = Pipeline(data_source, processors=('structure',), fail_fast=True,
-                             encoding=encoding, decode_strategy=None, options={})
+        validator = Pipeline(data_source, fail_fast=True, encoding=encoding, 
+                             decode_strategy=None, options={})
         result, report = validator.run()
         generated_report = report.generate()
         report_results = generated_report['results']

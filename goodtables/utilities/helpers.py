@@ -112,6 +112,14 @@ def group_results(report):
 
     """Group report results by row."""
 
+    # If the report is a base error
+    base_reports = [result for result in report['results']
+                    if result['processor'] == 'base']
+    if any(base_reports):
+        group_report = {'':{'result_context': [], 'results': base_reports }}
+        report['results']= [ group_report ]
+        return report
+
     _rows = set([r['row_index'] for r in report['results']
                  if r['row_index'] is not None])
 

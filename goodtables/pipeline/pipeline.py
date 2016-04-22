@@ -224,7 +224,8 @@ class Pipeline(object):
             if not valid and self.break_on_invalid_processor:
                 break
 
-            self.data.replay()
+            if self.data:
+                self.data.replay()
 
         self.set_report_meta()
 
