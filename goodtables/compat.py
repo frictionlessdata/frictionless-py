@@ -20,7 +20,8 @@ is_py27 = (is_py2 and _ver[1] == 7)
 
 
 if is_py2:
-    import urlparse as parse
+    from urlparse import urlparse, urlsplit, urlunsplit
+    from urllib import quote, quote_plus
     from urllib2 import urlopen, HTTPError
     from httplib import responses
     builtin_str = str
@@ -56,7 +57,7 @@ if is_py2:
 
 
 elif is_py3:
-    from urllib import parse
+    from urllib.parse import urlparse, urlsplit, urlunsplit, quote, quote_plus
     from urllib.request import urlopen
     from urllib.error import HTTPError
     from http.client import responses

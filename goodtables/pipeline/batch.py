@@ -61,7 +61,7 @@ class Batch(object):
         """Get the dataset from a CSV file for this batch process."""
 
         dataset = []
-        resources = datatable.DataTable(self.source)
+        resources = datatable.DataTable(self.source, encoding='utf-8')
 
         data_index = resources.headers.index(self.data_key)
         keys_header_index = {}
