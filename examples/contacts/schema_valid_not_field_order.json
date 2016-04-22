@@ -5,21 +5,25 @@
             "title": "Last Name",
             "type": "string",
             "format": "",
-            "description": "The last name of the person"
+            "description": "The last name of the person",
+            "constraints": {"required": true}
         },
         {
             "name": "first_name",
             "title": "First Name",
             "type": "string",
             "format": "",
-            "description": "The first name of the person"
+            "description": "The first name of the person",
+            "constraints": {"required": true}
+
         },
         {
             "name": "gender",
             "title": "Gender",
             "type": "string",
             "format": "",
-            "description": "The gender of the person."
+            "description": "The gender of the person.",
+            "constraints": {"required": true}
         },
         {
             "name": "age",

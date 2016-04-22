@@ -6,15 +6,17 @@ from __future__ import unicode_literals
 
 import jsontableschema
 from . import base
-
+import copy
 
 RESULTS = {
     'schema_001': {
         'id': 'schema_001',
         'name': 'Incorrect Headers',
-        'msg': ('There is a mismatch between the headers according to the '
-                'schema, and those found in the data. The schema says the '
-                'headers should be: {0}.'),
+        'msg': {
+            'missing': 'Missing required column headings: {0}.',
+            'misplaced': ('Misplaced column headings: {0}. Please respect the order'
+                          ' set by the schema or change \"ignore_field_order\" to true.')
+        },
         'help': '',
         'help_edit': ''
     },
@@ -28,28 +30,43 @@ RESULTS = {
     'schema_003': {
         'id': 'schema_003',
         'name': 'Incorrect Type',
-        'msg': 'The value is not a valid {0}.',
+        'msg': 'The value \"{0}\" in column \"{1}\" is not a valid {2}.',
         'help': '',
         'help_edit': ''
     },
     'schema_004': {
         'id': 'schema_004',
         'name': 'Required Field',
-        'msg': 'Column {0} is a required field, but it contains no value.',
+        'msg': 'Column \"{0}\" is a required field, but it contains no value.',
         'help': '',
         'help_edit': ''
     },
     'schema_005': {
         'id': 'schema_005',
         'name': 'Non-Required Field (Empty/Null)',
-        'msg': 'Column {0} is a non-required field, and has a null value.',
+        'msg': 'Column \"{0}\" is a non-required field, and has a null value.',
         'help': '',
         'help_edit': ''
     },
     'schema_006': {
         'id': 'schema_006',
         'name': 'Unique Field',
-        'msg': 'Column {0} is a unique field, yet the value {1} already exists.',
+        'msg': 'Column \"{0}\" is a unique field, yet the value \"{1}\" already exists.',
+        'help': '',
+        'help_edit': ''
+    },
+    'schema_007': {
+        'id': 'schema_007',
+        'name': 'Incorrect Type Extra Field',
+        'msg': ('Column \"{0}\" is an extra field.'
+                'However, the value \"{1}\" is not a valid {2}.'),
+        'help': '',
+        'help_edit': ''
+    },
+    'schema_008': {
+        'id': 'schema_008',
+        'name': 'Extra Field (Empty/Null)',
+        'msg': 'Column \"{0}\" is an extra field and it has a null value.',
         'help': '',
         'help_edit': ''
     }
@@ -66,8 +83,8 @@ class SchemaProcessor(base.Processor):
 
     def __init__(self, fail_fast=False, report_limit=1000,
                  row_limit=30000, schema=None, ignore_field_order=True,
-                 report_stream=None, report=None,
-                 result_level='error', infer_schema=False,
+                 report_stream=None, report=None, result_level='error',
+                 infer_schema=False, process_extra_fields=False,
                  case_insensitive_headers=False, **kwargs):
 
         super(SchemaProcessor, self).__init__(
@@ -78,6 +95,8 @@ class SchemaProcessor(base.Processor):
         self.infer_schema = infer_schema
         self.case_insensitive_headers = case_insensitive_headers
         self.ignore_field_order = ignore_field_order
+        self.process_extra_fields = process_extra_fields
+
         if not schema:
             self.schema = None
         else:
@@ -95,9 +114,21 @@ class SchemaProcessor(base.Processor):
 
     def pre_run(self, data_table):
 
+        sample_values = data_table.get_sample(300)
+
         if (self.schema is None) and self.infer_schema:
-            sample_values = data_table.get_sample(300)
             self.schema = self.schema_model(jsontableschema.infer(data_table.headers, sample_values))
+
+        if self.schema and self.process_extra_fields:
+            self.extra_fields = (set(data_table.headers)).difference(set(self.schema.headers))
+            infered_schema = jsontableschema.infer(data_table.headers, sample_values)
+            complete_schema_dict = self.schema._to_python()
+
+            for field in infered_schema['fields']:
+                if field['name'] in self.extra_fields:
+                    complete_schema_dict['fields'].append(copy.deepcopy(field))
+
+            self.schema = self.schema_model(complete_schema_dict)
 
         return True, data_table
 
@@ -109,16 +140,20 @@ class SchemaProcessor(base.Processor):
             headers = [name.lower() for name in headers]
 
         if self.schema:
-            if self.ignore_field_order:
-                if not (set(headers).issuperset(set(self.schema.required_headers))):
+            required_headers = self.schema.required_headers
+            required_headers_set = set(required_headers)
+            headers_set = set(headers)
 
+            if self.ignore_field_order:
+                if not headers_set.issuperset(required_headers_set):
+                    missing_set = required_headers_set.difference(headers_set)
                     valid = False
                     _type = RESULTS['schema_001']
                     entry = self.make_entry(
                         self.name,
                         self.RESULT_CATEGORY_HEADER,
                         self.RESULT_LEVEL_ERROR,
-                        _type['msg'].format(', '.join(self.schema.headers)),
+                        _type['msg']['missing'].format(', '.join(missing_set)),
                         _type['id'],
                         _type['name'],
                         headers,
@@ -131,16 +166,22 @@ class SchemaProcessor(base.Processor):
                         return valid, headers
 
             else:
-                header_length = len(headers)
-                if not (headers == self.schema.required_headers[:header_length]):
+                req_headers_len = len(required_headers)
+                target_headers = headers[:req_headers_len]
 
+                if not (target_headers == required_headers):
+                    missing_set = required_headers_set.difference(headers_set)
+                    misplaced_set = [th for th, rh in zip(target_headers, required_headers)
+                                     if th != rh]
                     valid = False
                     _type = RESULTS['schema_001']
+                    msg = lambda set, key: _type['msg'][key].format(', '.join(set)) if set else ''
                     entry = self.make_entry(
                         self.name,
                         self.RESULT_CATEGORY_HEADER,
                         self.RESULT_LEVEL_ERROR,
-                        _type['msg'].format(headers, self.schema.headers),
+                        ' '.join([msg(missing_set, 'missing'),
+                                 msg(misplaced_set, 'misplaced')]),
                         _type['id'],
                         _type['name'],
                         headers,
@@ -189,36 +230,6 @@ class SchemaProcessor(base.Processor):
 
                     # we know the field is in the schema
                     else:
-                        # check type and format
-                        try:
-                            schema_cast = self.schema.cast(column_name,
-                                                           column_value)
-                        except (jsontableschema.exceptions.InvalidCastError,
-                                jsontableschema.exceptions.ConstraintError):
-                            schema_cast = False
-
-                        if schema_cast is False:
-
-                            valid = False
-                            _type = RESULTS['schema_003']
-                            entry = self.make_entry(
-                                self.name,
-                                self.RESULT_CATEGORY_ROW,
-                                self.RESULT_LEVEL_ERROR,
-                                _type['msg'].format(self.schema.get_type(column_name).name.title()),
-                                _type['id'],
-                                _type['name'],
-                                row,
-                                index,
-                                row_name,
-                                headers.index(column_name),
-                                column_name
-                            )
-
-                            self.report.write(entry)
-                            if self.fail_fast:
-                                return valid, headers, index, row
-
                         # CONSTRAINTS
                         constraints = self.schema.get_constraints(column_name)
 
@@ -270,6 +281,30 @@ class SchemaProcessor(base.Processor):
                             if self.fail_fast:
                                 return valid, headers, index, row
 
+                        if self.process_extra_fields and \
+                           column_name in self.extra_fields and \
+                           column_value in self.schema.NULL_VALUES and \
+                           self.result_level == self.RESULT_LEVEL_INFO:
+
+                            _type = RESULTS['schema_008']
+                            entry = self.make_entry(
+                                self.name,
+                                self.RESULT_CATEGORY_ROW,
+                                self.RESULT_LEVEL_INFO,
+                                _type['msg'].format(column_name),
+                                _type['id'],
+                                _type['name'],
+                                row,
+                                index,
+                                row_name,
+                                headers.index(column_name),
+                                column_name
+                            )
+
+                            self.report.write(entry)
+                            if self.fail_fast:
+                                return valid, headers, index, row
+
                         if constraints is not None and \
                             constraints.get('unique') is True:
 
@@ -300,5 +335,62 @@ class SchemaProcessor(base.Processor):
                                 self._uniques[column_name].add(column_value)
 
                         # TODO: check constraints.min* and constraints.max*
+                        # check type and format
+                        try:
+                            schema_cast = self.schema.cast(column_name,
+                                                           column_value)
+                        except (jsontableschema.exceptions.InvalidCastError,
+                                jsontableschema.exceptions.ConstraintError):
+                            schema_cast = False
+
+                        if schema_cast is False:
+                            expected_type = self.schema.get_type(column_name).name.title()
+
+                            if self.process_extra_fields and \
+                               column_name in self.extra_fields and \
+                               self.result_level == self.RESULT_LEVEL_INFO:
+
+                                _type = RESULTS['schema_007']
+                                entry = self.make_entry(
+                                    self.name,
+                                    self.RESULT_CATEGORY_ROW,
+                                    self.RESULT_LEVEL_INFO,
+                                    _type['msg'].format(column_name, column_value,
+                                                        expected_type),
+                                    _type['id'],
+                                    _type['name'],
+                                    row,
+                                    index,
+                                    row_name,
+                                    headers.index(column_name),
+                                    column_name
+                                )
+
+                                self.report.write(entry)
+                                if self.fail_fast:
+                                    return valid, headers, index, row
+
+                            else:
+
+                                valid = False
+                                _type = RESULTS['schema_003']
+                                entry = self.make_entry(
+                                    self.name,
+                                    self.RESULT_CATEGORY_ROW,
+                                    self.RESULT_LEVEL_ERROR,
+                                    _type['msg'].format(column_value, column_name,
+                                                        expected_type),
+                                    _type['id'],
+                                    _type['name'],
+                                    row,
+                                    index,
+                                    row_name,
+                                    headers.index(column_name),
+                                    column_name
+                                )
+
+                                self.report.write(entry)
+                                if self.fail_fast:
+                                    return valid, headers, index, row
 
         return valid, headers, index, row
