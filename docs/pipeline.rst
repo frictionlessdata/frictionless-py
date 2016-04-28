@@ -16,7 +16,6 @@ Each value in the `validators` list is expected to be a string describing the pa
 Optionally, for builtin validators, the `validator.name` property can be used as a shorthand convenience.
 
 **Example**
-
 ::
     validators = ['structure', 'schema']  # short hand names for builtin validators
     validators = ['my_module.CustomValidatorOne', 'my_module.CustomValidatorTwo']  # import from string
@@ -32,7 +31,6 @@ Registering new validators this way will by default append the new validators to
 You can define the position in the pipeline explicitly using the `position` argument.
 
 **Example**
-
 ::
     pipeline = Pipeline(args, kwargs)
     pipeline.register_validator('structure', structure_options)
@@ -46,7 +44,6 @@ Validator options
 `options` should be a dict, with each top-level key being the name of the validator.
 
 **Example**
-
 ::
     pipeline_options = {
         'structure': {
