@@ -147,14 +147,19 @@ class DataTable(object):
         
         instream = None
         
-        try:
-            if compat.urlparse(data_source).scheme in self.REMOTE_SCHEMES:
-                instream = self._stream_from_url(data_source).read()
-        except Exception:
+        if compat.urlparse(data_source).scheme in self.REMOTE_SCHEMES:
+            instream = self._stream_from_url(data_source).read()
+        else:
             try:
+                data_source.seek(0)
                 instream = data_source.read()
-            except Exception:
-                pass
+            except AttributeError:
+                if os.path.exists(data_source):
+                    pass
+                else:
+                    msg = 'data source has to be a stream or a path to be processed as excel'
+                    raise exceptions.DataSourceMalformatedError(msg, file_format='excel')
+
         try:
             if instream:
                 workbook = xlrd.open_workbook(file_contents=instream)
