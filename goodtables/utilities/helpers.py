@@ -208,7 +208,11 @@ def make_valid_url(url):
     Args:
         * `url`: a url string
     """
-    
+    if '/+/http' in url:
+        glue = '/+/'
+        quoted = [make_valid_url(unquoted) for unquoted in url.split(glue)]
+        return (glue).join(quoted)
+
     scheme, netloc, path, query, fragment = compat.urlsplit(url)
     quoted_path = compat.quote(path.encode('utf-8'))
     quoted_query = compat.quote_plus(query.encode('utf-8'))

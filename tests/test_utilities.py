@@ -19,3 +19,15 @@ class TestUtilities(base.BaseTestCase):
 
     def test_get_report_result_types(self):
         self.assertTrue(utilities.helpers.get_report_result_types())
+
+    def test_make_valid_composed_url(self):
+        url = ('http://webarchive.nationalarchives.gov.uk/+/'
+               'http://www.nio.gov.uk/transaction_spend_data_august_10_northern_ireland_office.xls')
+        assertion = '+' in utilities.helpers.make_valid_url(url)
+        self.assertTrue(assertion)
+
+    def test_make_valid_url(self):
+        url = ('http://goodtables.okfnlabs.org/reports?'
+              'data_url=http://data.defra.gov.uk/ops/government_procurement_card/over_£500_GPC_apr_2013.csv')
+        assertion = '£' not in utilities.helpers.make_valid_url(url)
+        self.assertTrue(assertion)
