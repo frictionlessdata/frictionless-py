@@ -221,10 +221,10 @@ class TestPipeline(base.BaseTestCase):
 
         self.assertEqual(out, 33)
 
-    def test_pipeline_error_report_when_data_http_error(self):
+    def test_pipeline_error_report_when_data_http_error(self, format='csv'):
 
         data_source = 'https://github.com/frictionlessdata/goodtables/blob/master/.travis.yaml'
-        validator = Pipeline(data_source, fail_fast=True)
+        validator = Pipeline(data_source, format=format, fail_fast=True)
         result, report = validator.run()
         generated_report = report.generate()
         report_results = generated_report['results']
@@ -233,6 +233,9 @@ class TestPipeline(base.BaseTestCase):
         self.assertEqual(len(report_results), 1)
         self.assertEqual(report_results[0]['result_id'], 'http_404_error')
         
+    def test_excel_pipeline_error_report_when_data_http_error(self):
+        self.test_pipeline_error_report_when_data_http_error(format='excel')
+
     def test_pipeline_group_error_report_when_http_error(self):
 
         data_source = 'https://github.com/frictionlessdata/goodtables/blob/master/.travis.yaml'
@@ -320,3 +323,4 @@ class TestPipeline(base.BaseTestCase):
         pipeline = Pipeline(self.data_string)
         pipeline.set_report_meta()
         self.assertEqual(pipeline.report.generate()['meta']['encoding'], 'utf-8')
+    
