@@ -323,4 +323,16 @@ class TestPipeline(base.BaseTestCase):
         pipeline = Pipeline(self.data_string)
         pipeline.set_report_meta()
         self.assertEqual(pipeline.report.generate()['meta']['encoding'], 'utf-8')
-    
+
+    def test_invalid_options(self):
+
+        args = {'data': self.data_filepath}
+        as_list = dict({ 'options': ['invalid']}, **args)
+        invalid_processor = dict({'options': {'invalid': {}}}, **args)
+        invalid_processor_options = dict({'options': {'schema': {'invalid': {}}}}, **args)
+
+        self.assertRaises(exceptions.InvalidPipelineOptions, Pipeline, **as_list)
+        self.assertRaises(exceptions.InvalidPipelineOptions, Pipeline,
+                          **invalid_processor)
+        self.assertRaises(exceptions.InvalidPipelineOptions, Pipeline,
+                          **invalid_processor_options)

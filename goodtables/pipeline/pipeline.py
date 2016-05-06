@@ -7,9 +7,11 @@ from __future__ import unicode_literals
 import io
 import importlib
 import tellme
+import inspect
 from ..utilities import csv_dialect, helpers
 from .. import datatable
 from .. import exceptions
+from ..processors import base
 
 
 class Pipeline(object):
@@ -120,6 +122,7 @@ class Pipeline(object):
     def get_pipeline(self):
         """Get the pipeline for this instance."""
 
+        self.validate_options()
         pipeline = []
         for name in self.processors:
             _class = self.resolve_processor(name)
@@ -128,10 +131,10 @@ class Pipeline(object):
             options['row_limit'] = self.row_limit
             options['report_limit'] = self.report_limit
             options['report_stream'] = self.report_stream
-            options['transform'] = self.transform
             options['fail_fast'] = self.fail_fast
-            options['header_index'] = self.header_index
             options['report'] = self.report
+            options['transform'] = self.transform
+            options['header_index'] = self.header_index
 
             try:
                 instance = _class(**options)
@@ -140,6 +143,35 @@ class Pipeline(object):
                 raise e
 
         return pipeline
+
+    def validate_options(self):
+        """Validates the options parameter."""
+
+        if not isinstance(self.options, dict):
+            msg = 'Pipeline \'options\' argument must be a dict.'
+            raise exceptions.InvalidPipelineOptions(msg)
+
+        if not set(self.options.keys()).issubset(set(self.processors)):
+            unknown_opts = set(self.options.keys()).difference(set(self.processors))
+            msg = ('Option(s) \'{0}\' don\'t correspond to any required '
+                   'processor.').format(','.join(unknown_opts))
+            raise exceptions.InvalidPipelineOptions(msg)
+
+        for processor_name in self.processors:
+            passed_opts = self.options.get(processor_name, {})
+            processor = self.resolve_processor(processor_name)
+            processor_args, _, _, _, = inspect.getargspec(processor.__init__)
+            base_args, _, _, _, = inspect.getargspec(base.Processor.__init__)
+            available_opts = processor_args[1::]
+            available_opts.extend(base_args[1::])
+            invalid_opts = [option for option in passed_opts.keys()
+                                   if option not in available_opts]
+            if invalid_opts:
+                msg = ('Option(s) \'{0}\' are not valid arguments for {1} '
+                       'processor.').format(','.join(invalid_opts), processor_name)
+                raise exceptions.InvalidPipelineOptions(msg)
+
+        return None
 
     def get_dialect(self, dialect_source):
         """Get a CSV dialect instance for this data."""

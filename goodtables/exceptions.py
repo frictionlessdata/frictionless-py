@@ -5,7 +5,6 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 
-
 class InvalidSpec(Exception):
     pass
 
@@ -62,3 +61,8 @@ class InvalidHandlerError(Exception):
 
     def __init__(self, msg=None):
         self.msg = msg or 'The passed handler is not valid.'
+
+class InvalidPipelineOptions(ValueError):
+
+    def __init__(self, msg=None):
+        self.msg = msg or 'Some of the options are not valid.'

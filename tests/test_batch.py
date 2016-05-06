@@ -18,13 +18,14 @@ class TestPipeline(base.BaseTestCase):
 
         super(TestPipeline, self).setUp()
         self.batch_csv = os.path.join(self.data_dir, 'batch', 'example.csv')
+        self.pipeline_options = {'processors': ['schema', 'structure']}
         self.batch_datapackage = os.path.join(self.data_dir, 'batch', 'datapackage')
 
     def test_batch_from_csv(self):
 
-        batch = Batch(self.batch_csv)
+        batch = Batch(self.batch_csv, pipeline_options=self.pipeline_options)
 
-        self.assertEqual(len(batch.dataset), 5)
+        self.assertEqual(len(batch.dataset), 4)
 
     def test_batch_from_datapackage(self):
 
@@ -37,7 +38,8 @@ class TestPipeline(base.BaseTestCase):
         def say_hi(pipeline):
             return 'Hi!'
 
-        batch = Batch(self.batch_csv, pipeline_post_task=say_hi)
+        batch = Batch(self.batch_csv, pipeline_post_task=say_hi,
+                      pipeline_options=self.pipeline_options)
         rv = batch.run()
 
         self.assertFalse(rv)
@@ -47,7 +49,8 @@ class TestPipeline(base.BaseTestCase):
         def say_hi(batch):
             return 'Hi!'
 
-        batch = Batch(self.batch_csv, post_task=say_hi)
+        batch = Batch(self.batch_csv, post_task=say_hi,
+                      pipeline_options=self.pipeline_options)
         rv = batch.run()
 
         self.assertFalse(rv)
@@ -67,12 +70,12 @@ class TestPipeline(base.BaseTestCase):
     def test_batch_with_batch_sleep_time(self):
 
         def default_time():
-            batch = Batch(self.batch_csv)
+            batch = Batch(self.batch_csv, pipeline_options=self.pipeline_options)
             start = timer(); batch.run(); end = timer()
             return end - start
 
         def custom_sleep_time():
-            batch = Batch(self.batch_csv, sleep=3)
+            batch = Batch(self.batch_csv, sleep=3, pipeline_options=self.pipeline_options)
             start = timer(); batch.run(); end = timer()
             return end - start
 

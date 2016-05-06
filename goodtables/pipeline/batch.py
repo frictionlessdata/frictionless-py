@@ -119,11 +119,12 @@ class Batch(object):
         options = self.pipeline_options or {}
         if options.get('options') is None:
             options['options'] = {}
-
-        if options['options'].get('schema') is None:
-            options['options']['schema'] = {}
             
-        options['options']['schema']['schema'] = schema
+        if schema is not None:
+            if options['options'].get('schema') is None:
+                options['options']['schema'] = {}
+
+            options['options']['schema']['schema'] = schema
             
         if encoding: options['encoding'] = encoding
         if format:   options['format'] = format
