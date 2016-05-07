@@ -122,6 +122,7 @@ class Pipeline(object):
     def get_pipeline(self):
         """Get the pipeline for this instance."""
 
+        self.validate_processors()
         self.validate_options()
         pipeline = []
         for name in self.processors:
@@ -143,6 +144,16 @@ class Pipeline(object):
                 raise e
 
         return pipeline
+
+    def validate_processors(self):
+        """Validates the processors parameter"""
+
+        if not isinstance(self.processors, (list, tuple, set)):
+            msg = 'The \'processors\' argument must be a list, tuple or set.'
+            raise exceptions.InvalidPipelineOptions(msg)
+
+        for processor_name in self.processors:
+            self.resolve_processor(processor_name)
 
     def validate_options(self):
         """Validates the options parameter."""
@@ -211,9 +222,10 @@ class Pipeline(object):
             try:
                 processor_class = getattr(importlib.import_module(_module),
                                           _class)
-            except ImportError as e:
-                # TODO: something better here
-                raise e
+            except ImportError:
+                msg = ('The processsor \'{0}\' could not be resolved due to an '
+                       'Import Error.').format(processor_name)
+                raise exceptions.InvalidPipelineOptions(msg)
 
         return processor_class
 

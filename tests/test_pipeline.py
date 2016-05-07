@@ -336,3 +336,14 @@ class TestPipeline(base.BaseTestCase):
                           **invalid_processor)
         self.assertRaises(exceptions.InvalidPipelineOptions, Pipeline,
                           **invalid_processor_options)
+
+    def test_invalid_processors(self):
+
+        args = {'data': self.data_filepath}
+        not_iterable = dict({ 'processors': 'invalid'}, **args)
+        unavailable_processor = dict({ 'processors': ['invalid.invalid']}, **args)
+
+        self.assertRaises(exceptions.InvalidPipelineOptions, Pipeline,
+                          **not_iterable)
+        self.assertRaises(exceptions.InvalidPipelineOptions, Pipeline,
+                          **unavailable_processor)
