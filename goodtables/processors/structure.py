@@ -11,14 +11,14 @@ RESULTS = {
     'structure_001': {
         'id': 'structure_001',
         'name': 'Missing Header',
-        'msg': 'Headers column is empty.',
+        'msg': 'Header column number {0} is empty.',
         'help': '',
         'help_edit': ''
     },
     'structure_002': {
         'id': 'structure_002',
         'name': 'Duplicate Header',
-        'msg': 'A header column is duplicated.',
+        'msg': 'The header column \"{0}\" is duplicated.',
         'help': '',
         'help_edit': ''
     },
@@ -95,7 +95,7 @@ class StructureProcessor(base.Processor):
                         self.name,
                         self.RESULT_CATEGORY_HEADER,
                         self.RESULT_LEVEL_ERROR,
-                        _type['msg'],
+                        _type['msg'].format(index),
                         _type['id'],
                         _type['name'],
                         headers,
@@ -116,7 +116,7 @@ class StructureProcessor(base.Processor):
                 valid = False
                 dupes = [(index, header) for index, header in
                          enumerate(headers) if
-                         header.count(header) > 1]
+                         headers.count(header) > 1]
                 _type = RESULTS['structure_002']
 
                 for dupe in dupes:
@@ -124,7 +124,7 @@ class StructureProcessor(base.Processor):
                         self.name,
                         self.RESULT_CATEGORY_HEADER,
                         self.RESULT_LEVEL_ERROR,
-                        _type['msg'],
+                        _type['msg'].format(dupe[1]),
                         _type['id'],
                         _type['name'],
                         headers,
