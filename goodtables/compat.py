@@ -33,7 +33,7 @@ if is_py2:
     def csv_reader(data, dialect=csv.excel, **kwargs):
         """Read text stream (unicode on Py2.7) as CSV."""
 
-        first_lines = list(islice(data, 10))
+        first_lines = list(islice(data, 5))
         try:
             dialect = csv.Sniffer().sniff(''.join(first_lines))
             dialect.delimiter = dialect.delimiter.encode('utf-8')
@@ -73,7 +73,7 @@ elif is_py3:
             for line in data:
                 yield line
         iter = line_iterator(data)
-        first_lines = list(islice(iter, 10))
+        first_lines = list(islice(iter, 5))
         try:
             dialect = csv.Sniffer().sniff(''.join(first_lines))
         except csv.Error:
