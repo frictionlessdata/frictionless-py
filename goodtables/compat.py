@@ -30,10 +30,10 @@ if is_py2:
     basestring = basestring
     numeric_types = (int, long, float)
 
-    def csv_reader(data, dialect=csv.excel, **kwargs):
+    def csv_reader(data, dialect=csv.excel, header_index=0, **kwargs):
         """Read text stream (unicode on Py2.7) as CSV."""
 
-        first_lines = list(islice(data, 5))
+        first_lines = list(islice(data, header_index, header_index + 2))
         try:
             dialect = csv.Sniffer().sniff(''.join(first_lines))
             dialect.delimiter = dialect.delimiter.encode('utf-8')
@@ -67,18 +67,20 @@ elif is_py3:
     basestring = (str, bytes)
     numeric_types = (int, float)
 
-    def csv_reader(data, **kwargs):
+    def csv_reader(data, header_index, **kwargs):
 
         def line_iterator(data):
             for line in data:
                 yield line
-        iter = line_iterator(data)
-        first_lines = list(islice(iter, 5))
+
+        first_lines = list(islice(data, header_index, header_index + 2))
+        data.seek(0)
         try:
             dialect = csv.Sniffer().sniff(''.join(first_lines))
         except csv.Error:
             dialect = csv.excel
-        iter = chain(first_lines, iter)
+
+        iter = line_iterator(data)
         csv.field_size_limit(20000000)
         try:
             return csv.reader(iter, dialect, **kwargs)
