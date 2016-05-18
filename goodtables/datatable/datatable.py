@@ -8,7 +8,7 @@ import os
 import io
 import codecs
 import datetime
-import chardet
+import cchardet as chardet
 import xlrd
 import csv
 from bs4 import BeautifulSoup
@@ -248,7 +248,7 @@ class DataTable(object):
             sample = stream.read(sample_length)
             stream.seek(0)
 
-        encoding = chardet.detect(sample)['encoding']
+        encoding = chardet.detect(sample)['encoding'].lower()
         # default to utf-8 for safety
         if encoding == 'ascii':
             encoding = 'utf-8'
