@@ -8,7 +8,8 @@ import sys
 import tempfile
 import io
 import csv
-from itertools import islice, chain
+import re
+from itertools import islice
 from goodtables import exceptions
 
 _ver = sys.version_info
@@ -34,18 +35,18 @@ if is_py2:
         """Read text stream (unicode on Py2.7) as CSV."""
 
         first_lines = list(islice(data, header_index, header_index + 2))
-        try:
-            dialect = csv.Sniffer().sniff(''.join(first_lines))
-            dialect.delimiter = dialect.delimiter.encode('utf-8')
-            dialect.quotechar = dialect.quotechar.encode('utf-8')
-        except csv.Error:
-            dialect = csv.excel
-
+        dialect = detect_dialect(first_lines)
+        
+        while not re.findall('[^\w ]', dialect.delimiter): 
+            first_lines.extend(list(data.readline()))
+            dialect = detect_dialect(first_lines)
+            
         def iterenc_utf8(data):
             for line in data:
                 yield line.encode('utf-8')
 
-        iter = chain(first_lines, data)
+        data.seek(0)
+        iter = data
         iter = iterenc_utf8(iter)
         csv.field_size_limit(20000000)
         try:
@@ -54,6 +55,19 @@ if is_py2:
                 yield [str(cell, 'utf-8') for cell in row]
         except TypeError as e:
             raise exceptions.DataSourceMalformatedError(msg=e.args[0], file_format='csv')
+    
+                
+        
+    def detect_dialect(sample):
+        """Detect delimiter and quote chars"""
+
+        try:
+            dialect = csv.Sniffer().sniff(''.join(sample))
+            dialect.delimiter = dialect.delimiter.encode('utf-8')
+            dialect.quotechar = dialect.quotechar.encode('utf-8')
+            return dialect
+        except csv.Error:
+            return csv.excel
 
 
 elif is_py3:
@@ -74,18 +88,28 @@ elif is_py3:
                 yield line
 
         first_lines = list(islice(data, header_index, header_index + 2))
-        data.seek(0)
-        try:
-            dialect = csv.Sniffer().sniff(''.join(first_lines))
-        except csv.Error:
-            dialect = csv.excel
+        dialect = detect_dialect(first_lines)
 
+        while not re.findall('[^\w ]', dialect.delimiter): 
+            first_lines.extend(list(data.readline()))
+            dialect = detect_dialect(first_lines)
+
+        data.seek(0)
         iter = line_iterator(data)
         csv.field_size_limit(20000000)
         try:
             return csv.reader(iter, dialect, **kwargs)
         except TypeError as e:
             raise exceptions.DataSourceMalformatedError(msg=e.args[0], file_format='csv')
+        
+    def detect_dialect(sample):
+        """Detect delimiter and quote chars"""
+
+        try:
+            dialect = csv.Sniffer().sniff(''.join(sample))
+            return dialect
+        except csv.Error:
+            return csv.excel
 
 
 def to_bytes(textstring):
