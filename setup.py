@@ -16,7 +16,7 @@ is_py3 = (_ver[0] == 3)
 dependencies = [
     'Click>=3.3',
     'jsonschema>=2.4.0',
-    'chardet>=2.3.0',
+    'cchardet>=1.0.0',
     'xlrd>=0.9.3',
     'tellme>=0.2.4',
     'jsontableschema>=0.5.1',
@@ -27,7 +27,7 @@ setup(
     name='goodtables',
     description='Validate and process tabular data.',
     long_description='Validate and process tabular data.',
-    version='0.7.2',
+    version='0.7.3',
     author='Open Knowledge Foundation',
     author_email='info@okfn.org',
     url='http://okfn.org',
