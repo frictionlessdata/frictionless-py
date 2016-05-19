@@ -37,7 +37,7 @@ if is_py2:
         first_lines = list(islice(data, header_index, header_index + 2))
         dialect = detect_dialect(first_lines)
         
-        while not re.findall('[^\w ]', dialect.delimiter): 
+        while re.findall('[\w ]', dialect.delimiter):
             first_lines.append(data.readline())
             dialect = detect_dialect(first_lines)
             
@@ -90,7 +90,7 @@ elif is_py3:
         first_lines = list(islice(data, header_index, header_index + 2))
         dialect = detect_dialect(first_lines)
 
-        while not re.findall('[^\w ]', dialect.delimiter): 
+        while re.findall('[\w ]', dialect.delimiter):
             first_lines.append(data.readline())
             dialect = detect_dialect(first_lines)
 
