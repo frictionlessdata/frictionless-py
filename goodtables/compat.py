@@ -38,7 +38,7 @@ if is_py2:
         dialect = detect_dialect(first_lines)
         
         while not re.findall('[^\w ]', dialect.delimiter): 
-            first_lines.extend(list(data.readline()))
+            first_lines.append(data.readline())
             dialect = detect_dialect(first_lines)
             
         def iterenc_utf8(data):
@@ -91,7 +91,7 @@ elif is_py3:
         dialect = detect_dialect(first_lines)
 
         while not re.findall('[^\w ]', dialect.delimiter): 
-            first_lines.extend(list(data.readline()))
+            first_lines.append(data.readline())
             dialect = detect_dialect(first_lines)
 
         data.seek(0)
