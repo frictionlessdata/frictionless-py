@@ -1,7 +1,7 @@
 click==3.3
 requests==2.5.1
 jsonschema==2.4.0
-chardet==2.3.0
+cchardet>=1.0.0
 xlrd>=0.9.3
 tellme>=0.2.4
 jsontableschema>=0.5.1
