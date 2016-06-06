@@ -233,7 +233,7 @@ class DataTable(object):
     def _detect_stream_encoding(self, stream):
         """Return best guess at encoding of stream."""
 
-        sample_length = 10000
+        sample_length = 64*1024
 
         self._check_for_unsupported_format(stream)
 
