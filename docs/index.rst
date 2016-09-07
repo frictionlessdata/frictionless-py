@@ -3,7 +3,7 @@ Welcome to Good Tables's documentation!
 
 Good Tables is a python library and command line tool for validating and transforming tabular data.
 
-**Tabular data** in the form of CSV or Excel is passed through a pipeline of **validators**. These validators can **check structure**, for example are their blank rows or columns, do rows have the same length as the header etc, and they can also **validate against a schema**, for example does the data have the expected columns, is the data of the right type (are dates actually dates).
+**Tabular data** in the form of CSV or Excel is passed through a pipeline of **processors**. These processors can **check structure**, for example are their blank rows or columns, do rows have the same length as the header etc, and they can also **validate against a schema**, for example does the data have the expected columns, is the data of the right type (are dates actually dates).
 
 Optionally, the data source is **transformed** as it passes through the pipeline.
 
@@ -30,7 +30,7 @@ Table of contents
 
    quickstart
    tutorial
-   validators
+   processors
    pipeline
    batch
    reports
