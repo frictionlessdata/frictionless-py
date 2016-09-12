@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 
 import os
 import io
+import re
 import json
 import inspect
 import requests
@@ -202,8 +203,9 @@ def validate_handler(handler, argcount=1):
         if not len(spec[0]) == argcount:
             raise exceptions.InvalidHandlerError
 
+
 def make_valid_url(url):
-    """Make sure url doesn't contain unsupported characters
+    """Urlencode all non-ascii characters in url path and query
 
     Args:
         * `url`: a url string
@@ -214,8 +216,18 @@ def make_valid_url(url):
         return (glue).join(quoted)
 
     scheme, netloc, path, query, fragment = compat.urlsplit(url)
-    quoted_path = compat.quote(path.encode('utf-8'))
-    quoted_query = compat.quote_plus(query.encode('utf-8'))
-    new_url_tuple = (scheme, netloc, quoted_path, quoted_query, fragment)
+    path = url_encode_non_ascii(path)
+    query = url_encode_non_ascii(query)
+    new_url_tuple = (scheme, netloc, path, query, fragment)
     quoted_url = compat.urlunsplit(new_url_tuple)
     return quoted_url
+
+
+def url_encode_non_ascii(element):
+    # http://stackoverflow.com/questions/4389572/how-to-fetch-a-non-ascii-url-with-python-urlopen
+    pattern = '[\x80-\xFF]'.encode('utf-8')
+    element = element.encode('utf-8')
+    replace = lambda char: ('%%%02x' % ord(char.group(0))).encode('utf-8')
+    element = re.sub(pattern, replace, element)
+    element = element.decode('utf-8')
+    return element
