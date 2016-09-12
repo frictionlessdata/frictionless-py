@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 
 import os
 import io
+import re
 import json
 import inspect
 import requests
@@ -202,6 +203,7 @@ def validate_handler(handler, argcount=1):
         if not len(spec[0]) == argcount:
             raise exceptions.InvalidHandlerError
 
+
 def make_valid_url(url):
     """Make sure url doesn't contain unsupported characters
 
@@ -214,8 +216,12 @@ def make_valid_url(url):
         return (glue).join(quoted)
 
     scheme, netloc, path, query, fragment = compat.urlsplit(url)
-    quoted_path = compat.quote(path.encode('utf-8'))
-    quoted_query = compat.quote_plus(query.encode('utf-8'))
-    new_url_tuple = (scheme, netloc, quoted_path, quoted_query, fragment)
+    encoded_path = url_encode_non_ascii(path)
+    encoded_query = url_encode_non_ascii(query)
+    new_url_tuple = (scheme, netloc, encoded_path, encoded_query, fragment)
     quoted_url = compat.urlunsplit(new_url_tuple)
     return quoted_url
+
+
+def url_encode_non_ascii(text):
+    return re.sub('[\x80-\xFF]', lambda c: '%%%02x' % ord(c.group(0)), text)
