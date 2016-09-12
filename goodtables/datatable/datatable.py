@@ -59,7 +59,7 @@ class DataTable(object):
 
     def extract(self, headers=None):
         """Extract headers and values from the data stream."""
-        reader = compat.csv_reader(self.stream)
+        reader = compat.csv_reader(self.stream, self.header_index)
         headers = headers or self.get_headers(self.stream, reader)
         return headers, reader
 
@@ -69,7 +69,7 @@ class DataTable(object):
         sample = self._sample_stream(row_limit)
 
         self.replay()
-        return compat.csv_reader(sample)
+        return compat.csv_reader(sample, self.header_index)
 
     def to_dict(self):
         raise NotImplementedError
@@ -203,7 +203,7 @@ class DataTable(object):
         """Get headers from stream."""
 
         if reader is None:
-            reader = compat.csv_reader(stream)
+            reader = compat.csv_reader(stream, self.header_index)
         try:
             for index, line in enumerate(reader):
                 if index == self.header_index:
