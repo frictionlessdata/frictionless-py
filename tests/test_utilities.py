@@ -31,3 +31,7 @@ class TestUtilities(base.BaseTestCase):
               'data_url=http://data.defra.gov.uk/ops/government_procurement_card/over_£500_GPC_apr_2013.csv')
         assertion = '£' not in utilities.helpers.make_valid_url(url)
         self.assertTrue(assertion)
+
+    def test_make_valid_url_dont_break_query(self):
+        url = 'http://next.openspending.org/fdp-adapter/convert?url=https%3A%2F%2Fraw.githubusercontent.com%2Fkravets-levko%2Fdata%2Fmaster%2Ftest.xlsx.csv'
+        self.assertEqual(utilities.helpers.make_valid_url(url), url)
