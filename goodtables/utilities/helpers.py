@@ -224,4 +224,5 @@ def make_valid_url(url):
 
 
 def url_encode_non_ascii(text):
+    # http://stackoverflow.com/questions/4389572/how-to-fetch-a-non-ascii-url-with-python-urlopen
     return re.sub('[\x80-\xFF]', lambda c: '%%%02x' % ord(c.group(0)), text)
