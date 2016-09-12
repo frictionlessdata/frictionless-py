@@ -205,7 +205,7 @@ def validate_handler(handler, argcount=1):
 
 
 def make_valid_url(url):
-    """Make sure url doesn't contain unsupported characters
+    """Urlencode all non-ascii characters in url path and query
 
     Args:
         * `url`: a url string
