@@ -216,13 +216,18 @@ def make_valid_url(url):
         return (glue).join(quoted)
 
     scheme, netloc, path, query, fragment = compat.urlsplit(url)
-    encoded_path = url_encode_non_ascii(path)
-    encoded_query = url_encode_non_ascii(query)
-    new_url_tuple = (scheme, netloc, encoded_path, encoded_query, fragment)
+    path = url_encode_non_ascii(path)
+    query = url_encode_non_ascii(query)
+    new_url_tuple = (scheme, netloc, path, query, fragment)
     quoted_url = compat.urlunsplit(new_url_tuple)
     return quoted_url
 
 
-def url_encode_non_ascii(text):
+def url_encode_non_ascii(element):
     # http://stackoverflow.com/questions/4389572/how-to-fetch-a-non-ascii-url-with-python-urlopen
-    return re.sub('[\x80-\xFF]', lambda c: '%%%02x' % ord(c.group(0)), text)
+    pattern = '[\x80-\xFF]'.encode('utf-8')
+    element = element.encode('utf-8')
+    replace = lambda char: ('%%%02x' % ord(char.group(0))).encode('utf-8')
+    element = re.sub(pattern, replace, element)
+    element = element.decode('utf-8')
+    return element
