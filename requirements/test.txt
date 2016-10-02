@@ -1,4 +1,0 @@
-coverage
-pytest
-pytest-cov
-git+https://github.com/mverteuil/pytest-ipdb.git
