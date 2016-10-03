@@ -1,0 +1,192 @@
+{
+    "report": {
+        "dataset": [
+            "time",
+            "valid",
+            "table-count",
+            "tables"
+        ],
+        "table": [
+            "time",
+            "valid",
+            "headers",
+            "row-count",
+            "error-count",
+            "errors"
+        ],
+        "error": [
+            "row",
+            "code",
+            "message",
+            "row-number",
+            "col-number"
+        ]
+    },
+    "checks": [
+        {
+          "code": "scheme-error",
+          "type": "source",
+          "context": "table",
+          "requires": []
+        },
+        {
+          "code": "format-error",
+          "type": "source",
+          "context": "table",
+          "requires": []
+        },
+        {
+          "code": "encoding-error",
+          "type": "source",
+          "context": "table",
+          "requires": []
+        },
+        {
+          "code": "http-error",
+          "type": "source",
+          "context": "table",
+          "requires": []
+        },
+        {
+          "code": "io-error",
+          "type": "source",
+          "context": "table",
+          "requires": []
+        },
+        {
+          "code": "blank-header",
+          "type": "structure",
+          "context": "head",
+          "requires": []
+        },
+        {
+          "code": "duplicate-header",
+          "type": "structure",
+          "context": "head",
+          "requires": []
+        },
+        {
+          "code": "unordered-headers",
+          "type": "schema",
+          "context": "head",
+          "requires": []
+        },
+        {
+          "code": "extra-header",
+          "type": "schema",
+          "context": "head",
+          "requires": []
+        },
+        {
+          "code": "missing-header",
+          "type": "schema",
+          "context": "head",
+          "requires": []
+        },
+        {
+          "code": "extra-value",
+          "type": "structure",
+          "context": "body",
+          "requires": []
+        },
+        {
+          "code": "missing-value",
+          "type": "structure",
+          "context": "body",
+          "requires": []
+        },
+        {
+          "code": "blank-row",
+          "type": "structure",
+          "context": "body",
+          "requires": [
+              "extra-value",
+              "missing-value"
+          ]
+        },
+        {
+          "code": "duplicate-row",
+          "type": "structure",
+          "context": "body",
+          "requires": [
+              "extra-value",
+              "missing-value"
+          ]
+        },
+        {
+          "code": "required-constraint",
+          "type": "schema",
+          "context": "body",
+          "requires": [
+              "extra-value",
+              "missing-value"
+          ]
+        },
+        {
+          "code": "pattern-constraint",
+          "type": "schema",
+          "context": "body",
+          "requires": [
+              "extra-value",
+              "missing-value"
+          ]
+        },
+        {
+          "code": "bad-value",
+          "type": "schema",
+          "context": "body",
+          "requires": [
+              "extra-value",
+              "missing-value"
+          ]
+        },
+        {
+          "code": "unique-constraint",
+          "type": "schema",
+          "context": "body",
+          "requires": [
+              "bad-value"
+          ]
+        },
+        {
+          "code": "enumerable-constraint",
+          "type": "schema",
+          "context": "body",
+          "requires": [
+              "bad-value"
+          ]
+        },
+        {
+          "code": "minimum-constraint",
+          "type": "schema",
+          "context": "body",
+          "requires": [
+              "bad-value"
+          ]
+        },
+        {
+          "code": "maximum-constraint",
+          "type": "schema",
+          "context": "body",
+          "requires": [
+              "bad-value"
+          ]
+        },
+        {
+          "code": "minimum-length-constraint",
+          "type": "schema",
+          "context": "body",
+          "requires": [
+              "bad-value"
+          ]
+        },
+        {
+          "code": "maximum-length-constraint",
+          "type": "schema",
+          "context": "body",
+          "requires": [
+              "bad-value"
+          ]
+        }
+    ]
+}

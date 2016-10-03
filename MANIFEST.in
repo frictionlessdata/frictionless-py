@@ -1,0 +1,10 @@
+global-include *.json
+global-include *.yml
+global-include *.txt
+global-include VERSION
+include LICENSE.md
+include Makefile
+include pylama.ini
+include pytest.ini
+include README.md
+include tox.ini
