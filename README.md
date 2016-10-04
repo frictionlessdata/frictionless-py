@@ -133,6 +133,7 @@ $ python -m goodtables.cli
 Usage: cli.py [OPTIONS] COMMAND [ARGS]...
 
 Options:
+  --table-limit INTEGER
   --row-limit INTEGER
   --error-limit INTEGER
   --help                 Show this message and exit.

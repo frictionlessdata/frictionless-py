@@ -12,6 +12,7 @@ from .inspector import Inspector
 # Module API
 
 @click.group()
+@click.option('--table-limit', type=int)
 @click.option('--row-limit', type=int)
 @click.option('--error-limit', type=int)
 @click.pass_context
