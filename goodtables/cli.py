@@ -4,12 +4,9 @@ from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
-import six
-import json
 import click
 from pprint import pformat
 from .inspector import Inspector
-from . import exceptions
 
 
 # Module API

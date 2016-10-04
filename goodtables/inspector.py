@@ -6,11 +6,8 @@ from __future__ import unicode_literals
 
 import io
 import os
-import six
 import json
 import datetime
-from copy import copy
-from functools import partial
 from six.moves import zip_longest
 from multiprocessing.pool import ThreadPool
 from . import checks as checks_module
@@ -160,7 +157,7 @@ class Inspector(object):
         elif isinstance(config, dict):
             default = True not in config.values()
             checks = [check for check in checks
-                    if config.get(check['code'], default)]
+                if config.get(check['code'], default)]
 
         # Unknown checks
         else:
