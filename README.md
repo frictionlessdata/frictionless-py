@@ -41,12 +41,20 @@ print(inspector.inspect('data/invalid.csv'))
 # 'tables': [
 #    {'time': 0.027,
 #     'valid': False',
+#     'headers': ['id', 'name', ''],
 #     'row-count': 4,
 #     'error-count': 2,
-#     'headers': ['id', 'name', ''],
 #     'errors': [
-#        {'code': 'blank-header', 'error-number': 1, 'field-number': 3, ...},
-#        {'code': 'blank-row', 'error-number': 2, 'row': [], 'row-number': 3, ...}]}]}
+#        {'row': None,
+#         'code': 'blank-header',
+#         'message': 'Blank header',
+#         'row-number': None,
+#         'col-number': 2},
+#        {'row': [],
+#         'code': 'blank-row',
+#         'message': 'Blank row',
+#         'row-number': 3,
+#         'col-number': None}]}]}
 ```
 
 ### Overview
@@ -104,6 +112,7 @@ An API definition:
 
 ```
 Inspector(checks='all',
+          table_limit=10,
           row_limit=1000,
           error_limit=1000)
     inspect(source, profile='table', **options)
@@ -161,11 +170,13 @@ from goodtables import Inspector
 from jsontableschema import Table
 
 def custom_profile(source, **options):
+    dataset = []
     for item in source:
-        yield { # table
+        dataset.append({
             'table': Table(...),
             'extra': {...},
-        }
+        })
+    return dataset
 
 inspector = Inspector()
 inspector.inspect(source, profile=custrom_profile)
@@ -178,27 +189,24 @@ For now public API for custom checks is not available. If it will be implemented
 ```python
 from goodtables import Inspector
 
-def custom_check(headers, schema):
-    for header in headers:
-        yield { # error
-            'value': 'value',
-        }
+def custom_check(columns, sample):
+    errors = []
+    for column in columns:
+        errors.append({
+            'message': 'Custom error',
+            'row-number': column['row-number'],
+            'col-number': column['row-number'],
+        })
+    return errors
 
-inspector = Inspector(checks={
-    'custom-check': {
-        'after': 'duplicate-headers',
-        'func': custom_check,
-        # follow the spec below
-        'name': 'Custom Check',
-        'code': 'custom-check',
-        'type': 'structure',
-        'context': 'head',
-        'requires': [],
-        'message': 'Custom message with {value}',
-        'description': 'Custom description',
-        'weight': 10,
-    }
-})
+inspector = Inspector(custom_checks=[{
+    'after': 'duplicate-headers',
+    'func': custom_check,
+    'code': 'custom-check',
+    'type': 'structure',
+    'context': 'head',
+    'requires': [],
+}])
 ```
 
 ## Read More
