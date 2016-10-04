@@ -22,7 +22,7 @@ class Inspector(object):
 
     Args:
         checks (str/dict): inspection checks
-        row_limit (int): upper limit for tables
+        table_limit (int): upper limit for tables
         row_limit (int): upper limit for rows
         error_limit (int): upper limit for errors
 

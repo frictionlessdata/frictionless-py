@@ -14,7 +14,7 @@ Goodtables is a simple utility library to inspect tabular data.
 - source, structure and schema checks
 - support of different input data profiles
 - parallel computation for multitable profiles
-- builtin CLI and non-blocking API
+- builtin command-line interface
 
 ## Getting Started
 
@@ -84,7 +84,7 @@ Contexts and field/rows coordinates are presented on a figure 1:
 
 ### Profiles
 
-Table is a main concept in goodtables. The simplest option is to pass to `Inspector.inspect` path and other options for one table (see example above). But when multitable parallized inspection is needed profiles could be used to process a dataset:
+Table is a main concept in goodtables. The simplest option is to pass to `Inspector.inspect` path and other options for one table (see example above). But when multitable parallized inspection is needed profiles could be used to process a dataset.
 
 Goodtables supports the following profiles:
 - table
@@ -185,18 +185,18 @@ inspector.inspect(source, profile=custrom_profile)
 
 ### Is it possible to use custom checks?
 
-For now public API for custom checks is not available. If it will be implemented an interface will be simple (an example for the `head` context):
+For now public API for custom checks is not available. If it will be implemented an interface will be simple (an example for the `body` context):
 
 ```python
 from goodtables import Inspector
 
-def custom_check(columns, sample):
+def custom_check(cells, sample):
     errors = []
-    for column in columns:
+    for cell in cells:
         errors.append({
             'message': 'Custom error',
-            'row-number': column['row-number'],
-            'col-number': column['row-number'],
+            'row-number': cell['row-number'],
+            'col-number': cell['row-number'],
         })
     return errors
 
@@ -205,7 +205,7 @@ inspector = Inspector(custom_checks=[{
     'func': custom_check,
     'code': 'custom-check',
     'type': 'structure',
-    'context': 'head',
+    'context': 'body',
     'requires': [],
 }])
 ```
