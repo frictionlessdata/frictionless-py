@@ -129,8 +129,6 @@ class Inspector(object):
         # Get all checks
         checks = []
         for check in spec['checks']:
-            if check['type'] == 'source':
-                continue
             attr = check['code'].replace('-', '_')
             if not hasattr(checks_module, attr):
                 message = 'Check "%s" is not supported' % check['code']
