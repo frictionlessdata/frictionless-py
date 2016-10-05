@@ -10,7 +10,7 @@ import jsontableschema
 # Module API
 
 def jsontableschema_error(exception):
-    error = []
+    errors = []
     if isinstance(exception, jsontableschema.exceptions.InvalidSchemaError):
         errors.append({
             'message': 'JSON Table Schema validation error',

@@ -173,8 +173,8 @@ class Inspector(object):
         elif isinstance(config, dict):
             default = True not in config.values()
             checks = [check for check in checks
-                if config.get(check['code'], default)
-                or check['type'] in ['source']]
+                if check['type'] in ['source'] or
+                config.get(check['code'], default)]
 
         # Unknown checks
         else:

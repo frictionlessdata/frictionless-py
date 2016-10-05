@@ -10,7 +10,7 @@ import datapackage
 # Module API
 
 def datapackage_error(exception):
-    error = []
+    errors = []
     if isinstance(exception, datapackage.exceptions.ValidationError):
         errors.append({
             'message': 'Datapackage validation error',
