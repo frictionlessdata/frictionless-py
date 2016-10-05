@@ -70,9 +70,9 @@ All errors in a report are standartised and described in data quality spec - htt
 
 #### Error types
 
-- source errors - data can't be loaded or parsed
-- structure errors - general tabular errors like duplicate headers
-- schema errors - error of checks against JSON Table Schema
+- source - data can't be loaded or parsed
+- structure - general tabular errors like duplicate headers
+- schema - error of checks against JSON Table Schema
 
 #### Error contexts
 
@@ -80,7 +80,7 @@ All errors in a report are standartised and described in data quality spec - htt
 - head - headers errors
 - body - contents errors
 
-Contexts and field/rows coordinates are presented on a figure 1:
+Contexts and rows/columns coordinates are presented on a figure 1:
 
 ![Table](files/table.png)
 
