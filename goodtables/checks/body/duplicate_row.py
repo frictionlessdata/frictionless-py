@@ -15,7 +15,7 @@ def duplicate_row(row_number, columns, state):
     pointer = hash(json.dumps(list(column['value'] for column in columns)))
     references = rindex.setdefault(pointer, [])
     if references:
-        columns.clear()
+        del columns[:]
         errors.append({
             'message': 'Duplicate row: %s' % references,
             'row-number': row_number,

@@ -10,7 +10,7 @@ from __future__ import unicode_literals
 def blank_row(row_number, columns, state=None):
     errors = []
     if not list(filter(lambda column: column['value'], columns)):
-        columns.clear()
+        del columns[:]
         errors.append({
             'message': 'Blank row',
             'row-number': row_number,
