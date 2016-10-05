@@ -21,6 +21,10 @@ from .body.constraints.pattern_constraint import pattern_constraint
 from .body.constraints.required_constraint import required_constraint
 from .body.constraints.unique_constraint import unique_constraint
 
+# Context: dataset
+from .dataset.datapackage_error import datapackage_error
+from .dataset.jsontableschema_error import jsontableschema_error
+
 # Context: head
 from .head.blank_header import blank_header
 from .head.duplicate_header import duplicate_header

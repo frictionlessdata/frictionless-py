@@ -67,12 +67,19 @@ class Inspector(object):
 
         """
 
+        # Start timer
+        start = datetime.datetime.now()
+
         # Defaults
         if profile is None:
             profile = 'table'
 
-        # Start timer
-        start = datetime.datetime.now()
+        # Prepare vars
+        tables = []
+        extras = []
+        errors = []
+        reports = []
+        fatal_error = False
 
         # Get profile function
         if not hasattr(profiles, profile):
@@ -81,28 +88,37 @@ class Inspector(object):
         profile_func = getattr(profiles, profile)
 
         # Get tables/extras
-        tables = []
-        extras = []
-        dataset = profile_func(source, **options)
-        for count, item in enumerate(dataset, start=1):
-            tables.append(item['table'])
-            extras.append(item['extra'])
-            if count >= self.__table_limit:
-                break
-
-        # Create tasks
-        tasks = []
-        pool = ThreadPool(processes=len(tables))
-        for table in tables:
-            tasks.append(pool.apply_async(
-                self.__inspect_table, (table,)))
+        try:
+            dataset = profile_func(source, **options)
+            for count, item in enumerate(dataset, start=1):
+                tables.append(item['table'])
+                extras.append(item['extra'])
+                if count >= self.__table_limit:
+                    break
+        except Exception as exception:
+            fatal_error = True
+            checks = self.__filter_checks(context='dataset')
+            for check in checks:
+                for error in check['func'](exception):
+                    error.update({
+                        'row': None,
+                        'code': check['code'],
+                    })
+                    errors.append(error)
+            if not errors:
+                raise
 
         # Collect reports
-        reports = []
-        for task, extra in zip(tasks, extras):
-            report = task.get()
-            report.update(extra)
-            reports.append(report)
+        if not fatal_error:
+            tasks = []
+            pool = ThreadPool(processes=len(tables))
+            for table in tables:
+                tasks.append(pool.apply_async(
+                    self.__inspect_table, (table,)))
+            for task, extra in zip(tasks, extras):
+                report = task.get()
+                report.update(extra)
+                reports.append(report)
 
         # Stop timer
         stop = datetime.datetime.now()
@@ -110,9 +126,11 @@ class Inspector(object):
         # Compose report
         report = {
             'time': round((stop - start).total_seconds(), 3),
-            'valid': all(report['valid'] for report in reports),
+            'valid': not bool(errors) and all(report['valid'] for report in reports),
+            'error-count': len(errors) + sum(len(report['errors']) for report in reports),
             'table-count': len(tables),
             'tables': reports,
+            'errors': errors,
         }
 
         return report
@@ -144,18 +162,19 @@ class Inspector(object):
         # Structure checks
         elif config == 'structure':
             checks = [check for check in checks
-                if check['type'] == 'structure']
+                if check['type'] in ['source', 'structure']]
 
         # Schema checks
         elif config == 'schema':
             checks = [check for check in checks
-                if check['type'] == 'schema']
+                if check['type'] in ['source', 'schema']]
 
         # Custom checks
         elif isinstance(config, dict):
             default = True not in config.values()
             checks = [check for check in checks
-                if config.get(check['code'], default)]
+                if config.get(check['code'], default)
+                or check['type'] in ['source']]
 
         # Unknown checks
         else:
@@ -239,6 +258,8 @@ class Inspector(object):
             checks = self.__filter_checks(context='head')
             for check in checks:
                 for error in check['func'](columns, sample):
+                    if not columns:
+                        break
                     error.update({
                         'row': None,
                         'code': check['code'],
@@ -259,14 +280,14 @@ class Inspector(object):
                     for number, (header, value) in enumerate(iterator, start=1):
                         column = {'number': number}
                         if header is not _FILLVALUE:
-                            colref = collmap.get(number, {})
+                            colref = colmap.get(number, {})
                             column['header'] = colref.get('header') or header
                             column['field'] = colref.get('field')
                         if value is not _FILLVALUE:
                             column['value'] = value
                         columns.append(column)
                     for check in checks:
-                        if not cells:
+                        if not columns:
                             break
                         state = states.setdefault(check['code'], {})
                         for error in check['func'](row_number, columns, state):

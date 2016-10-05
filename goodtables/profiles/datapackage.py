@@ -13,6 +13,7 @@ from datapackage import DataPackage
 def datapackage(source, **options):
     dataset = []
     datapackage = DataPackage(source, **options)
+    datapackage.validate()
     for resource in datapackage.resources:
         path = resource.remote_data_path or resource.local_data_path
         table = Table(path, schema=resource.descriptor['schema'])

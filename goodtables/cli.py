@@ -5,6 +5,7 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 import click
+import json as json_module
 from pprint import pformat
 from .inspector import Inspector
 
@@ -12,26 +13,30 @@ from .inspector import Inspector
 # Module API
 
 @click.group()
+@click.option('--json', is_flag=True)
 @click.option('--table-limit', type=int)
 @click.option('--row-limit', type=int)
 @click.option('--error-limit', type=int)
 @click.pass_context
-def cli(ctx, **options):
+def cli(ctx, json, **options):
     ctx.obj['inspector'] = Inspector(**options)
+    ctx.obj['json'] = json
 
 
 @cli.command()
 @click.argument('source')
 @click.pass_context
 def ckan(ctx, source, **options):
-    _report(ctx.obj['inspector'], source, profile='ckan', **options)
+    report = ctx.obj['inspector'].inspect(source, profile='ckan', **options)
+    _print_report(report, json=ctx.obj['json'])
 
 
 @cli.command()
 @click.argument('source')
 @click.pass_context
 def datapackage(ctx, source, **options):
-    _report(ctx.obj['inspector'], source, profile='datapackage', **options)
+    report = ctx.obj['inspector'].inspect(source, profile='datapackage', **options)
+    _print_report(report, json=ctx.obj['json'])
 
 
 @cli.command()
@@ -39,17 +44,26 @@ def datapackage(ctx, source, **options):
 @click.option('--schema')
 @click.pass_context
 def table(ctx, source, **options):
-    _report(ctx.obj['inspector'], source, profile='table', **options)
+    report = ctx.obj['inspector'].inspect(source, profile='table', **options)
+    _print_report(report, json=ctx.obj['json'])
 
 
 # Internal
-def _report(inspector, source, profile, **options):
-    report = inspector.inspect(source, profile=profile, **options)
+def _print_report(report, json=False):
+    if json:
+        return print(json_module.dumps(report, indent=4))
     color = 'green' if report['valid'] else 'red'
     tables = report.pop('tables')
-    click.secho('REPORT', bold=True)
-    click.secho('='*6, bold=True)
+    errors = report.pop('errors')
+    click.secho('DATASET', bold=True)
+    click.secho('='*7, bold=True)
     click.secho(pformat(report), fg=color, bold=True)
+    if errors:
+        click.secho('-'*9, bold=True)
+    for error in errors:
+        template = '[{row-number},{col-number}] [{code}] {message}'
+        message = template.format(**error)
+        click.secho(message)
     for table_number, table in enumerate(tables, start=1):
         click.secho('\nTABLE [%s]' % table_number, bold=True)
         click.secho('='*9, bold=True)
