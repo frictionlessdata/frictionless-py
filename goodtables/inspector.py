@@ -137,74 +137,6 @@ class Inspector(object):
 
     # Internal
 
-    def __prepare_checks(self, config):
-
-        # Load spec
-        base = os.path.dirname(__file__)
-        path = os.path.join(base, 'spec.json')
-        spec = json.load(io.open(path, encoding='utf-8'))
-
-        # Get all checks
-        checks = []
-        for check in spec['checks']:
-            attr = check['code'].replace('-', '_')
-            if not hasattr(checks_module, attr):
-                message = 'Check "%s" is not supported' % check['code']
-                raise exceptions.GoodtablesException(message)
-            func = getattr(checks_module, attr)
-            check['func'] = func
-            checks.append(check)
-
-        # All checks
-        if config == 'all':
-            pass
-
-        # Structure checks
-        elif config == 'structure':
-            checks = [check for check in checks
-                if check['type'] in ['source', 'structure']]
-
-        # Schema checks
-        elif config == 'schema':
-            checks = [check for check in checks
-                if check['type'] in ['source', 'schema']]
-
-        # Custom checks
-        elif isinstance(config, dict):
-            default = True not in config.values()
-            checks = [check for check in checks
-                if check['type'] in ['source'] or
-                config.get(check['code'], default)]
-
-        # Unknown checks
-        else:
-            message = 'Checks config "%s" is not supported' % config
-            raise exceptions.GoodtablesException(message)
-
-        # Ensure requires
-        codes = set()
-        for check in checks:
-            if not set(check['requires']).issubset(codes):
-                message = 'Check "%s" requires all checks "%s" before'
-                message = message % (check['code'], check['requires'])
-                raise exceptions.GoodtablesException(message)
-            codes.add(check['code'])
-
-        return checks
-
-    def __filter_checks(self, type=None, context=None):
-
-        # Apply filter
-        checks = []
-        for check in self.__checks:
-            if type and check['type'] != type:
-                continue
-            if context and check['context'] != context:
-                continue
-            checks.append(check)
-
-        return checks
-
     def __inspect_table(self, table):
 
         # Start timer
@@ -314,6 +246,74 @@ class Inspector(object):
         }
 
         return report
+
+    def __prepare_checks(self, config):
+
+        # Load spec
+        base = os.path.dirname(__file__)
+        path = os.path.join(base, 'spec.json')
+        spec = json.load(io.open(path, encoding='utf-8'))
+
+        # Get all checks
+        checks = []
+        for check in spec['checks']:
+            attr = check['code'].replace('-', '_')
+            if not hasattr(checks_module, attr):
+                message = 'Check "%s" is not supported' % check['code']
+                raise exceptions.GoodtablesException(message)
+            func = getattr(checks_module, attr)
+            check['func'] = func
+            checks.append(check)
+
+        # All checks
+        if config == 'all':
+            pass
+
+        # Structure checks
+        elif config == 'structure':
+            checks = [check for check in checks
+                if check['type'] in ['source', 'structure']]
+
+        # Schema checks
+        elif config == 'schema':
+            checks = [check for check in checks
+                if check['type'] in ['source', 'schema']]
+
+        # Custom checks
+        elif isinstance(config, dict):
+            default = True not in config.values()
+            checks = [check for check in checks
+                if check['type'] in ['source'] or
+                config.get(check['code'], default)]
+
+        # Unknown checks
+        else:
+            message = 'Checks config "%s" is not supported' % config
+            raise exceptions.GoodtablesException(message)
+
+        # Ensure requires
+        codes = set()
+        for check in checks:
+            if not set(check['requires']).issubset(codes):
+                message = 'Check "%s" requires all checks "%s" before'
+                message = message % (check['code'], check['requires'])
+                raise exceptions.GoodtablesException(message)
+            codes.add(check['code'])
+
+        return checks
+
+    def __filter_checks(self, type=None, context=None):
+
+        # Filted checks
+        checks = []
+        for check in self.__checks:
+            if type and check['type'] != type:
+                continue
+            if context and check['context'] != context:
+                continue
+            checks.append(check)
+
+        return checks
 
 
 # Internal
