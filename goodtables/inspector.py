@@ -173,7 +173,7 @@ class Inspector(object):
 
         return checks
 
-    def __filter_checks(self, type=None, context=None, ecodes=None):
+    def __filter_checks(self, type=None, context=None):
 
         # Apply filter
         checks = []
@@ -181,8 +181,6 @@ class Inspector(object):
             if type and check['type'] != type:
                 continue
             if context and check['context'] != context:
-                continue
-            if ecodes and ecodes.intersection(check['requires']):
                 continue
             checks.append(check)
 
