@@ -7,5 +7,5 @@ from __future__ import unicode_literals
 
 # Module API
 
-def enumerable_constraint(cells, state=None):
+def enumerable_constraint(row_number, columns, state=None):
     return []

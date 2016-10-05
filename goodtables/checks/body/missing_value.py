@@ -9,14 +9,14 @@ from copy import copy
 
 # Module API
 
-def missing_value(cells, state=None):
+def missing_value(row_number, columns, state=None):
     errors = []
-    for cell in copy(cells):
-        if 'value' not in cell:
-            cells.remove(cell)
+    for column in copy(columns):
+        if 'value' not in column:
+            columns.remove(column)
             errors.append({
                 'message': 'Missing value',
-                'row-number': cell['row-number'],
-                'col-number': cell['col-number'],
+                'row-number': row_number,
+                'col-number': column['number'],
             })
     return errors

@@ -7,5 +7,5 @@ from __future__ import unicode_literals
 
 # Module API
 
-def pattern_constraint(cells, state=None):
+def pattern_constraint(row_number, columns, state=None):
     return []

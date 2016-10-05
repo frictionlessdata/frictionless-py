@@ -10,5 +10,5 @@ from goodtables import checks
 # Test
 
 def test_maximum_length_constraint():
-    cells = []
-    assert checks.maximum_length_constraint(cells) == []
+    columns = []
+    assert checks.maximum_length_constraint(1, columns) == []

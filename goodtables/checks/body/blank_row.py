@@ -7,11 +7,10 @@ from __future__ import unicode_literals
 
 # Module API
 
-def blank_row(cells, state=None):
+def blank_row(row_number, columns, state=None):
     errors = []
-    row_number = cells[0]['row-number']
-    if not list(filter(lambda cell: cell['value'], cells)):
-        cells.clear()
+    if not list(filter(lambda column: column['value'], columns)):
+        columns.clear()
         errors.append({
             'message': 'Blank row',
             'row-number': row_number,

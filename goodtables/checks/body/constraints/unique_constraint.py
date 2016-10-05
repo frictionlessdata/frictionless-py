@@ -7,5 +7,5 @@ from __future__ import unicode_literals
 
 # Module API
 
-def unique_constraint(cells, state):
+def unique_constraint(row_number, columns, state):
     return []

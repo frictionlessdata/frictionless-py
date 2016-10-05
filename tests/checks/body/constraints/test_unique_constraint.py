@@ -10,6 +10,6 @@ from goodtables import checks
 # Test
 
 def test_unique_constraint():
-    cells = []
     state = {}
-    assert checks.unique_constraint(cells, state) == []
+    columns = []
+    assert checks.unique_constraint(1, columns, state) == []

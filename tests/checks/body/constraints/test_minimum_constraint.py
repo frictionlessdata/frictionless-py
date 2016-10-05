@@ -10,5 +10,5 @@ from goodtables import checks
 # Test
 
 def test_minimum_constraint():
-    cells = []
-    assert checks.minimum_constraint(cells) == []
+    columns = []
+    assert checks.minimum_constraint(1, columns) == []

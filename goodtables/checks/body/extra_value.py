@@ -9,14 +9,14 @@ from copy import copy
 
 # Module API
 
-def extra_value(cells, state=None):
+def extra_value(row_number, columns, state=None):
     errors = []
-    for cell in copy(cells):
-        if 'header' not in cell:
-            cells.remove(cell)
+    for column in copy(columns):
+        if 'header' not in column:
+            columns.remove(column)
             errors.append({
                 'message': 'Extra value',
-                'row-number': cell['row-number'],
-                'col-number': cell['col-number'],
+                'row-number': row_number,
+                'col-number': column['number'],
             })
     return errors

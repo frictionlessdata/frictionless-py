@@ -7,5 +7,5 @@ from __future__ import unicode_literals
 
 # Module API
 
-def maximum_constraint(cells, state=None):
+def maximum_constraint(row_number, columns, state=None):
     return []

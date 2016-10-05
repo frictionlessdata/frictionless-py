@@ -10,5 +10,5 @@ from goodtables import checks
 # Test
 
 def test_pattern_constraint():
-    cells = []
-    assert checks.pattern_constraint(cells) == []
+    columns = []
+    assert checks.pattern_constraint(1, columns) == []

@@ -249,28 +249,27 @@ class Inspector(object):
         if not fatal_error:
             states = {}
             checks = self.__filter_checks(context='body')
+            colmap = {column['number']: column for column in columns}
             with stream:
                 for row_number, headers, row in stream.iter(extended=True):
                     if row_number >= self.__row_limit:
                         break
-                    cells = []
-                    iterator = zip_longest(columns, row, fillvalue=_FILLVALUE)
-                    for col_number, (column, value) in enumerate(iterator, start=1):
-                        cell = {
-                            'row-number': row_number,
-                            'col-number': col_number,
-                        }
-                        if column is not _FILLVALUE:
-                            cell['header'] = column['header']
-                            cell['field'] = column['field']
+                    columns = []
+                    iterator = zip_longest(headers, row, fillvalue=_FILLVALUE)
+                    for number, (header, value) in enumerate(iterator, start=1):
+                        column = {'number': number}
+                        if header is not _FILLVALUE:
+                            colref = collmap.get(number, {})
+                            column['header'] = colref.get('header') or header
+                            column['field'] = colref.get('field')
                         if value is not _FILLVALUE:
-                            cell['value'] = value
-                        cells.append(cell)
+                            column['value'] = value
+                        columns.append(column)
                     for check in checks:
                         if not cells:
                             break
                         state = states.setdefault(check['code'], {})
-                        for error in check['func'](cells, state):
+                        for error in check['func'](row_number, columns, state):
                             error.update({
                                 'row': row,
                                 'code': check['code'],

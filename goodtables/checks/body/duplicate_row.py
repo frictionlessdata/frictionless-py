@@ -9,14 +9,13 @@ import json
 
 # Module API
 
-def duplicate_row(cells, state):
+def duplicate_row(row_number, columns, state):
     errors = []
-    row_number = cells[0]['row-number']
-    revert_index = state.setdefault('revert_index', {})
-    pointer = hash(json.dumps(list(cell['value'] for cell in cells)))
-    references = revert_index.setdefault(pointer, [])
+    rindex = state.setdefault('rindex', {})
+    pointer = hash(json.dumps(list(column['value'] for column in columns)))
+    references = rindex.setdefault(pointer, [])
     if references:
-        cells.clear()
+        columns.clear()
         errors.append({
             'message': 'Duplicate row: %s' % references,
             'row-number': row_number,

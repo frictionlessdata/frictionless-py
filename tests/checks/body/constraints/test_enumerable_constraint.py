@@ -10,5 +10,5 @@ from goodtables import checks
 # Test
 
 def test_enumerable_constraint():
-    fields = []
-    assert checks.enumerable_constraint(fields) == []
+    columns = []
+    assert checks.enumerable_constraint(1, columns) == []

@@ -11,35 +11,31 @@ from goodtables import checks
 # Test
 
 def test_missing_value():
-    cells = [
-        {'row-number': 1,
-         'col-number': 1,
+    columns = [
+        {'number': 1,
          'header': 'name1',
          'value': 'value',
          'field': None},
-        {'row-number': 1,
-         'col-number': 2,
+        {'number': 2,
          'header': 'name2',
          'value': 'value',
          'field': None},
     ]
-    assert checks.missing_value(cells) == []
-    assert len(cells) == 2
+    assert checks.missing_value(1, columns) == []
+    assert len(columns) == 2
 
 
 def test_missing_value_problem():
-    cells = [
-        {'row-number': 1,
-         'col-number': 1,
+    columns = [
+        {'number': 1,
          'header': 'name1',
          'value': 'value',
          'field': None},
-        {'row-number': 1,
-         'col-number': 2,
+        {'number': 2,
          'header': 'name2',
          'field': None},
     ]
-    assert checks.missing_value(cells) == [
+    assert checks.missing_value(1, columns) == [
         {'message': 'Missing value', 'row-number': 1, 'col-number': 2},
     ]
-    assert len(cells) == 1
+    assert len(columns) == 1

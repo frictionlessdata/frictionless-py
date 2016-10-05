@@ -10,16 +10,16 @@ import jsontableschema
 
 # Module API
 
-def bad_value(cells, state=None):
+def bad_value(row_number, columns, state=None):
     errors = []
-    for cell in copy(cells):
+    for column in copy(columns):
         try:
-            cell['value'] = cell['field'].cast_value(cell['value'])
+            column['value'] = column['field'].cast_value(column['value'])
         except jsontableschema.exceptions.JsonTableSchemaException:
-            cells.remove(cell)
+            columns.remove(column)
             errors.append({
                 'message': 'Bad value',
-                'row-number': cell['row-number'],
-                'col-number': cell['col-number'],
+                'row-number': row_number,
+                'col-number': column['number'],
             })
     return errors

@@ -10,25 +10,23 @@ from goodtables import checks
 # Test
 
 def test_blank_row():
-    cells = [
-        {'row-number': 1,
-         'col-number': 1,
+    columns = [
+        {'number': 1,
          'header': 'name1',
          'value': 'value',
          'field': None},
     ]
-    assert checks.blank_row(cells) == []
+    assert checks.blank_row(1, columns) == []
 
 
 def test_blank_row_problem():
-    cells = [
-        {'row-number': 1,
-         'col-number': 1,
+    columns = [
+        {'number': 1,
          'header': 'name1',
          'value': '',
          'field': None},
     ]
-    assert checks.blank_row(cells) == [
+    assert checks.blank_row(1, columns) == [
         {'message': 'Blank row', 'row-number': 1, 'col-number': None},
     ]
-    assert cells == []
+    assert columns == []
