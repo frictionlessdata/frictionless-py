@@ -4,7 +4,9 @@
             "time",
             "valid",
             "table-count",
-            "tables"
+            "error-count",
+            "tables",
+            "errors"
         ],
         "table": [
             "time",
@@ -23,6 +25,18 @@
         ]
     },
     "checks": [
+        {
+          "code": "jsontableschema-error",
+          "type": "source",
+          "context": "dataset",
+          "requires": []
+        },
+        {
+          "code": "datapackage-error",
+          "type": "source",
+          "context": "dataset",
+          "requires": []
+        },
         {
           "code": "scheme-error",
           "type": "source",
