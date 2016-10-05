@@ -37,7 +37,9 @@ print(inspector.inspect('data/invalid.csv'))
 # will print
 #{'time': 0.029,
 # 'valid': False',
+# 'error-count': 2,
 # 'table-count': 1,
+# 'errors': [],
 # 'tables': [
 #    {'time': 0.027,
 #     'valid': False',
