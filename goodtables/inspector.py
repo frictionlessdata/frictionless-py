@@ -67,12 +67,12 @@ class Inspector(object):
 
         """
 
-        # Start timer
-        start = datetime.datetime.now()
-
         # Defaults
         if profile is None:
             profile = 'table'
+
+        # Start timer
+        start = datetime.datetime.now()
 
         # Get profile function
         if not hasattr(profiles, profile):
