@@ -124,6 +124,7 @@ class Inspector(object):
         stop = datetime.datetime.now()
 
         # Compose report
+        errors = errors[:self.__error_limit]
         report = {
             'time': round((stop - start).total_seconds(), 3),
             'valid': not bool(errors) and all(report['valid'] for report in reports),
