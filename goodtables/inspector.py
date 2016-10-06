@@ -8,7 +8,6 @@ import io
 import os
 import json
 import datetime
-from copy import copy
 from six.moves import zip_longest
 from multiprocessing.pool import ThreadPool
 from . import checks as checks_module
