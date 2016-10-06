@@ -87,10 +87,14 @@ class Inspector(object):
         fatal_error = False
 
         # Get profile function
-        if not hasattr(profiles, profile):
+        profile_func = None
+        if callable(profile):
+            profile_func = profile
+        elif hasattr(profiles, profile):
+            profile_func = getattr(profiles, profile)
+        if not profile_func:
             message = 'Profile "%s" is not supported' % profile
             raise exceptions.GoodtablesException(message)
-        profile_func = getattr(profiles, profile)
 
         # Get tables/extras
         try:

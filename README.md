@@ -97,16 +97,43 @@ Goodtables supports the following profiles:
 
 A profile proceses passed source and options and return it as a dataset containing tables with extras for the following inspection.
 
+#### Custom profiles
+
+> Custom checks is not a part of SemVer versionning. If you use it programatically please pin concrete `goodtables` version to your requirements file.
+
+User could pass to `Inspector.inspect` callable profile to setup custom dataset extraction:
+
+```python
+from goodtables import Inspector
+from jsontableschema import Table
+
+def custom_profile(source, **options):
+    dataset = []
+    for table in source:
+        dataset.append({
+            'table': Table(...),
+            'extra': {...},
+        })
+    return dataset
+
+inspector = Inspector()
+inspector.inspect(source, profile=custrom_profile)
+```
+
+See builtin profiles to learn more about the dataset extration protocol. A custom profiles feature is experimental and not documented for now.
+
 ### Checks
 
 List of checks for an inspection could be customized on `Inspector.inspect` call. Let's explore options on an example:
 
 ```python
 inspector = Inspector()
-inspector.inspect('path.csv', checks='all/structure/schema') # presets
+inspector.inspect('path.csv', checks='all/structure/schema') # preset
 inspector.inspect('path.csv', checks={'bad-headers': False}) # exclude
-inspector.inspect('path.csv', checks={'bad-headers': True}) # include
+inspector.inspect('path.csv', checks={'bad-headers': True}) # cherry-pick
 ```
+
+Check gets input data from framework based on context (e.g. `columns` and `sample` for `head` context) and returns list of errors.
 
 #### Custom checks
 
@@ -196,27 +223,6 @@ For now we use `inspector` word because we create reports as result of an inspec
 ### Is it possible to stream reporting?
 
 For now - it's not. But it's under considiration. Not for multitable profiles because of parallelizm but for one table it could be exposed to public API because internally it's how goodtables works. Question here is what should be streamed - errors or valid/invalid per row indication with errors etc. We would be happy to see a real world use case for this feature.
-
-### Is it possible to use custom profile?
-
-For now public API for custom profiles is not available. If it will be implemented an interface will be simple:
-
-```python
-from goodtables import Inspector
-from jsontableschema import Table
-
-def custom_profile(source, **options):
-    dataset = []
-    for item in source:
-        dataset.append({
-            'table': Table(...),
-            'extra': {...},
-        })
-    return dataset
-
-inspector = Inspector()
-inspector.inspect(source, profile=custrom_profile)
-```
 
 ## Read More
 
