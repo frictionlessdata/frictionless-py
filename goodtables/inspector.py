@@ -7,7 +7,9 @@ from __future__ import unicode_literals
 import io
 import os
 import json
+import inspect
 import datetime
+from functools import partial
 from six.moves import zip_longest
 from multiprocessing.pool import ThreadPool
 from . import checks as checks_module
@@ -36,7 +38,9 @@ class Inspector(object):
                  custom_checks=None,
                  table_limit=None,
                  row_limit=None,
-                 error_limit=None):
+                 error_limit=None,
+                 order_fields=None,
+                 infer_fields=None):
 
         # Defaults
         if custom_checks is None:
@@ -47,12 +51,18 @@ class Inspector(object):
             row_limit = 1000
         if error_limit is None:
             error_limit = 1000
+        if order_fields is None:
+            order_fields = False
+        if infer_fields is None:
+            infer_fields = False
 
         # Set attributes
-        self.__checks = self.__prepare_checks(checks, custom_checks)
         self.__table_limit = table_limit
         self.__row_limit = row_limit
         self.__error_limit = error_limit
+        self.__order_fields = order_fields
+        self.__infer_fields = infer_fields
+        self.__checks = self.__prepare_checks(checks, custom_checks)
 
     def inspect(self, source, profile=None, **options):
         """Inspect source with given profile and options.
@@ -318,6 +328,14 @@ class Inspector(object):
                 message = message % (check['code'], check['requires'])
                 raise exceptions.GoodtablesException(message)
             codes.add(check['code'])
+
+        # Bind options
+        for check in checks:
+            args, _, _, _ = inspect.getargspec(check['func'])
+            if 'order_fields' in args:
+                check['func'] = partial(check['func'], order_fields=self.__order_fields)
+            if 'infer_fields' in args:
+                check['func'] = partial(check['func'], infer_fields=self.__infer_fields)
 
         return checks
 

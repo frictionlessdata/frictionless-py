@@ -9,20 +9,22 @@ from jsontableschema import Schema, infer
 
 # Module API
 
-def extra_header(columns, sample):
+def extra_header(columns, sample, infer_fields=False):
     errors = []
     for column in columns:
         if 'field' not in column:
-            column_sample = []
-            for row in sample:
-                value = None
-                if len(row) > column['number']:
-                    value = row[column['number']]
-                column_sample.append(value)
-            column['field'] = Schema(infer([column['header']], column_sample)).fields[0]
             errors.append({
                 'message': 'Extra header',
                 'row-number': None,
                 'col-number': column['number'],
             })
+            if infer_fields:
+                column_sample = []
+                for row in sample:
+                    value = None
+                    if len(row) > column['number']:
+                        value = row[column['number']]
+                    column_sample.append(value)
+                descriptor = infer([column['header']], column_sample)
+                column['field'] = Schema(descriptor).fields[0]
     return errors

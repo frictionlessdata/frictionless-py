@@ -9,7 +9,7 @@ from copy import copy
 
 # Module API
 
-def unordered_headers(columns, sample=None):
+def unordered_headers(columns, sample=None, order_fields=False):
     errors = []
     headers = set(column['name'] for column in columns if 'name' in column)
     field_names = set(column['field'].name for column in columns if 'field' in column)

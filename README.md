@@ -174,9 +174,12 @@ An API definition:
 
 ```
 Inspector(checks='all',
+          custom_checks=[],
           table_limit=10,
           row_limit=1000,
-          error_limit=1000)
+          error_limit=1000,
+          order_fields=False,
+          infer_fields=False)
     inspect(source, profile='table', **options)
 ```
 
@@ -195,9 +198,12 @@ $ python -m goodtables.cli
 Usage: cli.py [OPTIONS] COMMAND [ARGS]...
 
 Options:
+  --json
   --table-limit INTEGER
   --row-limit INTEGER
   --error-limit INTEGER
+  --order-fields
+  --infer-fields
   --help                 Show this message and exit.
 
 Commands:
