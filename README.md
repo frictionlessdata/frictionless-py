@@ -8,6 +8,8 @@
 
 Goodtables is a simple utility library to inspect tabular data.
 
+> Version v0.8 has renewed API introduced in NOT backward-compatibility manner. Previous version could be found [here](https://github.com/frictionlessdata/goodtables-py/tree/4b85254cc0358c0caf85bbd41d0c2023df99fb9b).
+
 ## Features
 
 - tabular data inspection and validation
