@@ -84,7 +84,7 @@ All errors in a report are standartised and described in data quality spec - htt
 
 Contexts and rows/columns coordinates are presented on a figure 1:
 
-![Table](files/table.png)
+![Dataset](files/dataset.png)
 
 ### Profiles
 
@@ -103,10 +103,41 @@ List of checks for an inspection could be customized on `Inspector.inspect` call
 
 ```python
 inspector = Inspector()
-inspector.inspect('path.csv', checks='structure/schema') # presets
+inspector.inspect('path.csv', checks='all/structure/schema') # presets
 inspector.inspect('path.csv', checks={'bad-headers': False}) # exclude
 inspector.inspect('path.csv', checks={'bad-headers': True}) # include
 ```
+
+#### Custom checks
+
+> Custom checks is not a part of SemVer versionning. If you use it programatically please pin concrete `goodtables` version to your requirements file.
+
+Inspector accept additonal argument `custom_checks` to insert user defined checks into inspection pipeline (example for `body` context):
+
+```python
+from goodtables import Inspector
+
+def custom_check(row_number, columns,  sample):
+    errors = []
+    for column in columns:
+        errors.append({
+            'message': 'Custom error',
+            'row-number': row_number,
+            'col-number': column['number'],
+        })
+    return errors
+
+inspector = Inspector(checks='structure', custom_checks=[{
+    'func': custom_check,
+    'after': 'extra-value',
+    'code': 'custom-check',
+    'type': 'structure',
+    'context': 'body',
+    'requires': [],
+}])
+```
+
+User could use one of specification codes to override a standard check. See builtin checks to learn more about checking protocol. A custom checks feature is experimental and not documented for now.
 
 ## Documentation
 
@@ -185,33 +216,6 @@ def custom_profile(source, **options):
 
 inspector = Inspector()
 inspector.inspect(source, profile=custrom_profile)
-```
-
-### Is it possible to use custom checks?
-
-For now public API for custom checks is not available. If it will be implemented an interface will be simple (an example for the `body` context):
-
-```python
-from goodtables import Inspector
-
-def custom_check(cells, sample):
-    errors = []
-    for cell in cells:
-        errors.append({
-            'message': 'Custom error',
-            'row-number': cell['row-number'],
-            'col-number': cell['row-number'],
-        })
-    return errors
-
-inspector = Inspector(custom_checks=[{
-    'after': 'duplicate-headers',
-    'func': custom_check,
-    'code': 'custom-check',
-    'type': 'structure',
-    'context': 'body',
-    'requires': [],
-}])
 ```
 
 ## Read More

@@ -8,6 +8,7 @@ import io
 import os
 import json
 import datetime
+from copy import copy
 from six.moves import zip_longest
 from multiprocessing.pool import ThreadPool
 from . import checks as checks_module
@@ -22,6 +23,7 @@ class Inspector(object):
 
     Args:
         checks (str/dict): inspection checks
+        custom_checks (list): custom checks
         table_limit (int): upper limit for tables
         row_limit (int): upper limit for rows
         error_limit (int): upper limit for errors
@@ -32,11 +34,14 @@ class Inspector(object):
 
     def __init__(self,
                  checks='all',
+                 custom_checks=None,
                  table_limit=None,
                  row_limit=None,
                  error_limit=None):
 
         # Defaults
+        if custom_checks is None:
+            custom_checks = []
         if table_limit is None:
             table_limit = 10
         if row_limit is None:
@@ -45,7 +50,7 @@ class Inspector(object):
             error_limit = 1000
 
         # Set attributes
-        self.__checks = self.__prepare_checks(checks)
+        self.__checks = self.__prepare_checks(checks, custom_checks)
         self.__table_limit = table_limit
         self.__row_limit = row_limit
         self.__error_limit = error_limit
@@ -248,14 +253,14 @@ class Inspector(object):
 
         return report
 
-    def __prepare_checks(self, config):
+    def __prepare_checks(self, config, custom):
 
         # Load spec
         base = os.path.dirname(__file__)
         path = os.path.join(base, 'spec.json')
         spec = json.load(io.open(path, encoding='utf-8'))
 
-        # Get all checks
+        # Get standard checks
         checks = []
         for check in spec['checks']:
             attr = check['code'].replace('-', '_')
@@ -265,6 +270,16 @@ class Inspector(object):
             func = getattr(checks_module, attr)
             check['func'] = func
             checks.append(check)
+
+        # Add custom checks
+        for check in custom:
+            checkmap = {check: index for index, check in enumerate(checks)}
+            if check['code'] in checkmap:
+                checks[checkmap[checks['code']]] = check
+            elif check['before'] in checkmap:
+                checks.insert(checkmap[checks['before']], check)
+            elif check['after'] in checkmap:
+                checks.insert(checkmap[checks['after']] + 1, check)
 
         # All checks
         if config == 'all':
