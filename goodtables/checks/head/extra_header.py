@@ -14,20 +14,23 @@ def extra_header(columns, sample, infer_fields=False):
     errors = []
     for column in copy(columns):
         if 'field' not in column:
+            # Add error
             errors.append({
                 'message': 'Extra header',
                 'row-number': None,
                 'col-number': column['number'],
             })
-            if not infer_fields:
+            # Infer field
+            if infer_fields:
+                column_sample = []
+                for row in sample:
+                    value = None
+                    if len(row) > column['number']:
+                        value = row[column['number']]
+                    column_sample.append(value)
+                descriptor = infer([column['header']], column_sample)
+                column['field'] = Schema(descriptor).fields[0]
+            # Remove column
+            else:
                 columns.remove(column)
-                continue
-            column_sample = []
-            for row in sample:
-                value = None
-                if len(row) > column['number']:
-                    value = row[column['number']]
-                column_sample.append(value)
-            descriptor = infer([column['header']], column_sample)
-            column['field'] = Schema(descriptor).fields[0]
     return errors

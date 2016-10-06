@@ -13,10 +13,12 @@ def extra_value(row_number, columns, state=None):
     errors = []
     for column in copy(columns):
         if 'header' not in column:
-            columns.remove(column)
+            # Add error
             errors.append({
                 'message': 'Extra value',
                 'row-number': row_number,
                 'col-number': column['number'],
             })
+            # Remove column
+            columns.remove(column)
     return errors

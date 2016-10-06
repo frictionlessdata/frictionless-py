@@ -13,10 +13,12 @@ def missing_header(columns, sample=None):
     errors = []
     for column in copy(columns):
         if 'header' not in column:
-            columns.remove(column)
+            # Add error
             errors.append({
                 'message': 'Missing header',
                 'row-number': None,
                 'col-number': column['number'],
             })
+            # Remove column
+            columns.remove(column)
     return errors

@@ -12,6 +12,7 @@ import jsontableschema
 def jsontableschema_error(exception):
     errors = []
     if isinstance(exception, jsontableschema.exceptions.InvalidSchemaError):
+        # Add error
         errors.append({
             'message': 'JSON Table Schema validation error',
             'row-number': None,

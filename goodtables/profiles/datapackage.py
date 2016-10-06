@@ -21,6 +21,7 @@ def datapackage(source, **options):
             'datapackage': datapackage.descriptor.get('name'),
             'resource': resource.descriptor.get('name'),
         }
+        # Add table
         dataset.append({
             'table': table,
             'extra': extra,

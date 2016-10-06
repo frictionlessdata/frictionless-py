@@ -12,6 +12,7 @@ import tabulator
 def format_error(exception):
     errors = []
     if isinstance(exception, tabulator.exceptions.TabulatorException):
+        # Add error
         errors.append({
             'message': 'Format error',
             'row-number': None,

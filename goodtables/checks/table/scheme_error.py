@@ -12,6 +12,7 @@ import tabulator
 def scheme_error(exception):
     errors = []
     if isinstance(exception, tabulator.exceptions.TabulatorException):
+        # Add error
         errors.append({
             'message': 'Scheme error',
             'row-number': None,

@@ -12,6 +12,7 @@ import tabulator
 def io_error(exception):
     errors = []
     if isinstance(exception, tabulator.exceptions.TabulatorException):
+        # Add erorr
         errors.append({
             'message': 'IO error',
             'row-number': None,

@@ -24,6 +24,7 @@ def ckan(source, **options):
                 'resource': resource['name'],
                 'publisher': package['organization']['name']
             }
+            # Add table
             dataset.append({
                 'table': table,
                 'extra': extra,

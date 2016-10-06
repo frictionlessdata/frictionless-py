@@ -16,10 +16,12 @@ def bad_value(row_number, columns, state=None):
         try:
             column['value'] = column['field'].cast_value(column['value'])
         except jsontableschema.exceptions.JsonTableSchemaException:
-            columns.remove(column)
+            # Add error
             errors.append({
                 'message': 'Bad value',
                 'row-number': row_number,
                 'col-number': column['number'],
             })
+            # Remove column
+            columns.remove(column)
     return errors

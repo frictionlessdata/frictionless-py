@@ -12,6 +12,7 @@ import datapackage
 def datapackage_error(exception):
     errors = []
     if isinstance(exception, datapackage.exceptions.ValidationError):
+        # Add error
         errors.append({
             'message': 'Datapackage validation error',
             'row-number': None,

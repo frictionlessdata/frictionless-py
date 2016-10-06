@@ -20,10 +20,10 @@ def unordered_headers(columns, sample=None, order_fields=False):
             field_name = column['field'].name
         if header != field_name:
             if header in field_names or field_name in headers:
-                columns.remove(column)
                 errors.append({
                      'message': 'Unordered headers',
                      'row-number': None,
                      'col-number': column['number'],
                 })
+                columns.remove(column)
     return errors

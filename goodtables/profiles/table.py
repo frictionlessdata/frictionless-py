@@ -11,6 +11,7 @@ from jsontableschema import Table
 
 def table(source, **options):
     dataset = []
+    # Add table
     dataset.append({
         'table': Table(source, **options),
         'extra': {},

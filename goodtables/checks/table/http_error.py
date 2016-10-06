@@ -12,6 +12,7 @@ import tabulator
 def http_error(exception):
     errors = []
     if isinstance(exception, tabulator.exceptions.TabulatorException):
+        # Add error
         errors.append({
             'message': 'HTTP error',
             'row-number': None,

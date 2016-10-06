@@ -13,10 +13,12 @@ def missing_value(row_number, columns, state=None):
     errors = []
     for column in copy(columns):
         if 'value' not in column:
-            columns.remove(column)
+            # Add error
             errors.append({
                 'message': 'Missing value',
                 'row-number': row_number,
                 'col-number': column['number'],
             })
+            # Remove column
+            columns.remove(column)
     return errors

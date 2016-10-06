@@ -12,6 +12,7 @@ import tabulator
 def encoding_error(exception):
     errors = []
     if isinstance(exception, tabulator.exceptions.TabulatorException):
+        # Add error
         errors.append({
             'message': 'Encoding error',
             'row-number': None,
