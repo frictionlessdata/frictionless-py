@@ -26,13 +26,13 @@
     },
     "checks": [
         {
-          "code": "jsontableschema-error",
+          "code": "datapackage-error",
           "type": "source",
           "context": "dataset",
           "requires": []
         },
         {
-          "code": "datapackage-error",
+          "code": "jsontableschema-error",
           "type": "source",
           "context": "dataset",
           "requires": []
