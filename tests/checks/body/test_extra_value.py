@@ -35,6 +35,6 @@ def test_extra_value_problem():
          'value': 'value'},
     ]
     assert checks.extra_value(1, columns) == [
-        {'message': 'Extra value', 'row-number': 1, 'col-number': 2, },
+        {'message': 'Extra value', 'row-number': 1, 'column-number': 2, },
     ]
     assert len(columns) == 1

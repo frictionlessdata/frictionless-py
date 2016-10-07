@@ -18,5 +18,5 @@ def test_encoding_error_good():
 def test_encoding_error_bad():
     exception = tabulator.exceptions.TabulatorException()
     assert checks.encoding_error(exception) == [
-        {'message': 'Encoding error', 'row-number': None, 'col-number': None, },
+        {'message': 'Encoding error', 'row-number': None, 'column-number': None, },
     ]

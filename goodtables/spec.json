@@ -21,7 +21,7 @@
             "code",
             "message",
             "row-number",
-            "col-number"
+            "column-number"
         ]
     },
     "checks": [

@@ -16,6 +16,6 @@ def jsontableschema_error(exception):
         errors.append({
             'message': 'JSON Table Schema validation error',
             'row-number': None,
-            'col-number': None,
+            'column-number': None,
         })
     return errors

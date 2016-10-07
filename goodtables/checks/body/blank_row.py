@@ -14,7 +14,7 @@ def blank_row(row_number, columns, state=None):
         errors.append({
             'message': 'Blank row',
             'row-number': row_number,
-            'col-number': None,
+            'column-number': None,
         })
         # Clear columns
         del columns[:]

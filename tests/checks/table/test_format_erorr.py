@@ -18,5 +18,5 @@ def test_format_error_good():
 def test_format_error_bad():
     exception = tabulator.exceptions.TabulatorException()
     assert checks.format_error(exception) == [
-        {'message': 'Format error', 'row-number': None, 'col-number': None, },
+        {'message': 'Format error', 'row-number': None, 'column-number': None, },
     ]

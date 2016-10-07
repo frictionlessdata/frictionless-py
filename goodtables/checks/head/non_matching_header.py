@@ -23,7 +23,7 @@ def non_matching_header(columns, sample=None, order_fields=False):
                 errors.append({
                      'message': 'Non matching header',
                      'row-number': None,
-                     'col-number': column['number'],
+                     'column-number': column['number'],
                 })
                 columns.remove(column)
     return errors

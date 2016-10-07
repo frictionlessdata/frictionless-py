@@ -63,7 +63,7 @@ def _print_report(report, json=False):
     if errors:
         click.secho('-'*9, bold=True)
     for error in errors:
-        template = '[{row-number},{col-number}] [{code}] {message}'
+        template = '[{row-number},{column-number}] [{code}] {message}'
         message = template.format(**error)
         click.secho(message)
     for table_number, table in enumerate(tables, start=1):
@@ -75,7 +75,7 @@ def _print_report(report, json=False):
         if errors:
             click.secho('-'*9, bold=True)
         for error in errors:
-            template = '[{row-number},{col-number}] [{code}] {message}'
+            template = '[{row-number},{column-number}] [{code}] {message}'
             message = template.format(**error)
             click.secho(message)
 

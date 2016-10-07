@@ -16,6 +16,6 @@ def io_error(exception):
         errors.append({
             'message': 'IO error',
             'row-number': None,
-            'col-number': None,
+            'column-number': None,
         })
     return errors

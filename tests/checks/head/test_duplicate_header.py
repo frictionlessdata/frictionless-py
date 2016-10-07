@@ -23,5 +23,5 @@ def test_duplicate_header_bad():
         {'number': 2, 'header': 'name', 'field': None},
     ]
     assert checks.duplicate_header(columns) == [
-        {'message': 'Duplicate header', 'row-number': None, 'col-number': 2},
+        {'message': 'Duplicate header', 'row-number': None, 'column-number': 2},
     ]

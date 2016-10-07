@@ -16,6 +16,6 @@ def datapackage_error(exception):
         errors.append({
             'message': 'Datapackage validation error',
             'row-number': None,
-            'col-number': None,
+            'column-number': None,
         })
     return errors

@@ -20,7 +20,7 @@ def bad_value(row_number, columns, state=None):
             errors.append({
                 'message': 'Bad value',
                 'row-number': row_number,
-                'col-number': column['number'],
+                'column-number': column['number'],
             })
             # Remove column
             columns.remove(column)

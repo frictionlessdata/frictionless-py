@@ -16,6 +16,6 @@ def encoding_error(exception):
         errors.append({
             'message': 'Encoding error',
             'row-number': None,
-            'col-number': None,
+            'column-number': None,
         })
     return errors

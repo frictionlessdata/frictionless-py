@@ -36,6 +36,6 @@ def test_missing_value_problem():
          'field': None},
     ]
     assert checks.missing_value(1, columns) == [
-        {'message': 'Missing value', 'row-number': 1, 'col-number': 2},
+        {'message': 'Missing value', 'row-number': 1, 'column-number': 2},
     ]
     assert len(columns) == 1

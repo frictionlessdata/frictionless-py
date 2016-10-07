@@ -19,7 +19,7 @@ def duplicate_row(row_number, columns, state):
         errors.append({
             'message': 'Duplicate row: %s' % references,
             'row-number': row_number,
-            'col-number': None,
+            'column-number': None,
         })
         # Clear columns
         del columns[:]

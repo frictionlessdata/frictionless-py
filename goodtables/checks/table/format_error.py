@@ -16,6 +16,6 @@ def format_error(exception):
         errors.append({
             'message': 'Format error',
             'row-number': None,
-            'col-number': None,
+            'column-number': None,
         })
     return errors

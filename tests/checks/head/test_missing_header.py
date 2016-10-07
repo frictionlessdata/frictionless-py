@@ -25,6 +25,6 @@ def test_missing_header_problem():
         {'number': 2, 'field': Field({'name': 'name2'})},
     ]
     assert checks.missing_header(columns) == [
-        {'message': 'Missing header', 'row-number': None, 'col-number': 2},
+        {'message': 'Missing header', 'row-number': None, 'column-number': 2},
     ]
     assert len(columns) == 1

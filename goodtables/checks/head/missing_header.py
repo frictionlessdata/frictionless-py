@@ -17,7 +17,7 @@ def missing_header(columns, sample=None):
             errors.append({
                 'message': 'Missing header',
                 'row-number': None,
-                'col-number': column['number'],
+                'column-number': column['number'],
             })
             # Remove column
             columns.remove(column)

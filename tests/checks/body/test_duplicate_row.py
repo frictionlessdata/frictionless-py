@@ -43,5 +43,5 @@ def test_duplicate_row_problem():
     ]
     assert checks.duplicate_row(1, columns1, state) == []
     assert checks.duplicate_row(2, columns2, state) == [
-        {'message': 'Duplicate row: [1]', 'row-number': 2, 'col-number': None},
+        {'message': 'Duplicate row: [1]', 'row-number': 2, 'column-number': None},
     ]

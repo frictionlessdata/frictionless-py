@@ -18,5 +18,5 @@ def test_scheme_error_good():
 def test_scheme_error_bad():
     exception = tabulator.exceptions.TabulatorException()
     assert checks.scheme_error(exception) == [
-        {'message': 'Scheme error', 'row-number': None, 'col-number': None, },
+        {'message': 'Scheme error', 'row-number': None, 'column-number': None, },
     ]

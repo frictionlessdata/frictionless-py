@@ -18,5 +18,5 @@ def test_io_error_good():
 def test_io_error_bad():
     exception = tabulator.exceptions.TabulatorException()
     assert checks.io_error(exception) == [
-        {'message': 'IO error', 'row-number': None, 'col-number': None, },
+        {'message': 'IO error', 'row-number': None, 'column-number': None, },
     ]

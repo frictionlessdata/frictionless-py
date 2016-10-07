@@ -27,6 +27,6 @@ def test_blank_row_problem():
          'field': None},
     ]
     assert checks.blank_row(1, columns) == [
-        {'message': 'Blank row', 'row-number': 1, 'col-number': None},
+        {'message': 'Blank row', 'row-number': 1, 'column-number': None},
     ]
     assert columns == []

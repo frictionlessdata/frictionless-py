@@ -16,7 +16,7 @@ def duplicate_header(columns, sample=None):
             errors.append({
                 'message': 'Duplicate header',
                 'row-number': None,
-                'col-number': column['number'],
+                'column-number': column['number'],
             })
             continue
         headers.add(column['header'])

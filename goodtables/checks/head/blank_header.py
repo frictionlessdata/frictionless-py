@@ -15,6 +15,6 @@ def blank_header(columns, sample=None):
             errors.append({
                 'message': 'Blank header',
                 'row-number': None,
-                'col-number': column['number'],
+                'column-number': column['number'],
             })
     return errors

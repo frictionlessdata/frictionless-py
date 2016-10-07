@@ -16,6 +16,6 @@ def scheme_error(exception):
         errors.append({
             'message': 'Scheme error',
             'row-number': None,
-            'col-number': None,
+            'column-number': None,
         })
     return errors

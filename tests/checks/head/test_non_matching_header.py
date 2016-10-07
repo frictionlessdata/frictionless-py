@@ -27,7 +27,7 @@ def test_non_matching_header_problem():
         {'number': 3, 'header': 'name3'},
     ]
     assert checks.non_matching_header(fields) == [
-        {'message': 'Non matching header', 'row-number': None, 'col-number': 1},
-        {'message': 'Non matching header', 'row-number': None, 'col-number': 2},
+        {'message': 'Non matching header', 'row-number': None, 'column-number': 1},
+        {'message': 'Non matching header', 'row-number': None, 'column-number': 2},
     ]
     assert len(fields) == 1

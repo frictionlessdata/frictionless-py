@@ -21,5 +21,5 @@ def test_blank_header_bad():
         {'number': 1, 'header': '', 'field': None},
     ]
     assert checks.blank_header(columns) == [
-        {'message': 'Blank header', 'row-number': None, 'col-number': 1},
+        {'message': 'Blank header', 'row-number': None, 'column-number': 1},
     ]

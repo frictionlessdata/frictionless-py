@@ -16,6 +16,6 @@ def http_error(exception):
         errors.append({
             'message': 'HTTP error',
             'row-number': None,
-            'col-number': None,
+            'column-number': None,
         })
     return errors

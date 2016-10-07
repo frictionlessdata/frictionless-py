@@ -30,6 +30,6 @@ def test_bad_value_problem():
          'field': Field({'name': 'name', 'type': 'integer'})},
     ]
     assert checks.bad_value(1, columns) == [
-        {'message': 'Bad value', 'row-number': 1,  'col-number': 1},
+        {'message': 'Bad value', 'row-number': 1,  'column-number': 1},
     ]
     assert len(columns) == 0

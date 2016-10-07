@@ -53,12 +53,12 @@ print(inspector.inspect('data/invalid.csv'))
 #         'code': 'blank-header',
 #         'message': 'Blank header',
 #         'row-number': None,
-#         'col-number': 2},
+#         'column-number': 2},
 #        {'row': [],
 #         'code': 'blank-row',
 #         'message': 'Blank row',
 #         'row-number': 3,
-#         'col-number': None}]}]}
+#         'column-number': None}]}]}
 ```
 
 ### Overview
@@ -150,7 +150,7 @@ def custom_check(row_number, columns,  sample):
         errors.append({
             'message': 'Custom error',
             'row-number': row_number,
-            'col-number': column['number'],
+            'column-number': column['number'],
         })
     return errors
 

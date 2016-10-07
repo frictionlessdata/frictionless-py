@@ -18,7 +18,7 @@ def extra_header(columns, sample, infer_fields=False):
             errors.append({
                 'message': 'Extra header',
                 'row-number': None,
-                'col-number': column['number'],
+                'column-number': column['number'],
             })
             # Infer field
             if infer_fields:

@@ -18,5 +18,5 @@ def test_http_error_good():
 def test_http_error_bad():
     exception = tabulator.exceptions.TabulatorException()
     assert checks.http_error(exception) == [
-        {'message': 'HTTP error', 'row-number': None, 'col-number': None, },
+        {'message': 'HTTP error', 'row-number': None, 'column-number': None, },
     ]
