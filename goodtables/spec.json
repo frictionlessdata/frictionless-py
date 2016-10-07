@@ -80,7 +80,7 @@
           "requires": []
         },
         {
-          "code": "unordered-headers",
+          "code": "non-matching-header",
           "type": "schema",
           "context": "head",
           "requires": []
@@ -89,13 +89,25 @@
           "code": "extra-header",
           "type": "schema",
           "context": "head",
-          "requires": ["unordered-headers"]
+          "requires": []
         },
         {
           "code": "missing-header",
           "type": "schema",
           "context": "head",
-          "requires": ["unordered-headers"]
+          "requires": []
+        },
+        {
+          "code": "blank-row",
+          "type": "structure",
+          "context": "body",
+          "requires": []
+        },
+        {
+          "code": "duplicate-row",
+          "type": "structure",
+          "context": "body",
+          "requires": []
         },
         {
           "code": "extra-value",
@@ -108,24 +120,6 @@
           "type": "structure",
           "context": "body",
           "requires": []
-        },
-        {
-          "code": "blank-row",
-          "type": "structure",
-          "context": "body",
-          "requires": [
-              "extra-value",
-              "missing-value"
-          ]
-        },
-        {
-          "code": "duplicate-row",
-          "type": "structure",
-          "context": "body",
-          "requires": [
-              "extra-value",
-              "missing-value"
-          ]
         },
         {
           "code": "required-constraint",

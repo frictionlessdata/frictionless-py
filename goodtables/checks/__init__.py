@@ -30,7 +30,7 @@ from .head.blank_header import blank_header
 from .head.duplicate_header import duplicate_header
 from .head.extra_header import extra_header
 from .head.missing_header import missing_header
-from .head.unordered_headers import unordered_headers
+from .head.non_matching_header import non_matching_header
 
 # Context: table
 from .table.encoding_error import encoding_error

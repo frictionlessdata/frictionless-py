@@ -12,7 +12,7 @@ import json
 def duplicate_row(row_number, columns, state):
     errors = []
     rindex = state.setdefault('rindex', {})
-    pointer = hash(json.dumps(list(column['value'] for column in columns)))
+    pointer = hash(json.dumps(list(column.get('value') for column in columns)))
     references = rindex.setdefault(pointer, [])
     if references:
         # Add error

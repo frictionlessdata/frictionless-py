@@ -9,7 +9,7 @@ from copy import copy
 
 # Module API
 
-def unordered_headers(columns, sample=None, order_fields=False):
+def non_matching_header(columns, sample=None, order_fields=False):
     errors = []
     headers = set(column['name'] for column in columns if 'name' in column)
     field_names = set(column['field'].name for column in columns if 'field' in column)
@@ -21,7 +21,7 @@ def unordered_headers(columns, sample=None, order_fields=False):
         if header != field_name:
             if header in field_names or field_name in headers:
                 errors.append({
-                     'message': 'Unordered headers',
+                     'message': 'Non matching header',
                      'row-number': None,
                      'col-number': column['number'],
                 })

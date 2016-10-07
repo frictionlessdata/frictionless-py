@@ -10,24 +10,24 @@ from goodtables import checks
 
 # Test
 
-def test_unordered_headers():
+def test_non_matching_header():
     fields = [
         {'number': 1, 'header': 'name1', 'field': Field({'name': 'name1'})},
         {'number': 2, 'header': 'name2', 'field': Field({'name': 'name2'})},
         {'number': 3, 'header': 'name3'},
     ]
-    assert checks.unordered_headers(fields) == []
+    assert checks.non_matching_header(fields) == []
     assert len(fields) == 3
 
 
-def test_unordered_headers_problem():
+def test_non_matching_header_problem():
     fields = [
         {'number': 1, 'header': 'name1', 'field': Field({'name': 'name2'})},
         {'number': 2, 'header': 'name2', 'field': Field({'name': 'name1'})},
         {'number': 3, 'header': 'name3'},
     ]
-    assert checks.unordered_headers(fields) == [
-        {'message': 'Unordered headers', 'row-number': None, 'col-number': 1},
-        {'message': 'Unordered headers', 'row-number': None, 'col-number': 2},
+    assert checks.non_matching_header(fields) == [
+        {'message': 'Non matching header', 'row-number': None, 'col-number': 1},
+        {'message': 'Non matching header', 'row-number': None, 'col-number': 2},
     ]
     assert len(fields) == 1

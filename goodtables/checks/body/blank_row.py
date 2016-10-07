@@ -9,7 +9,7 @@ from __future__ import unicode_literals
 
 def blank_row(row_number, columns, state=None):
     errors = []
-    if not list(filter(lambda column: column['value'], columns)):
+    if not list(filter(lambda column: column.get('value'), columns)):
         # Add error
         errors.append({
             'message': 'Blank row',
