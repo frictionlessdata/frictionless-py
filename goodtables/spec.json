@@ -89,13 +89,13 @@
           "code": "extra-header",
           "type": "schema",
           "context": "head",
-          "requires": []
+          "requires": ["unordered-headers"]
         },
         {
           "code": "missing-header",
           "type": "schema",
           "context": "head",
-          "requires": []
+          "requires": ["unordered-headers"]
         },
         {
           "code": "extra-value",
