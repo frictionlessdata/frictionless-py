@@ -185,7 +185,7 @@ def custom_check(row_number, columns,  sample):
         })
     return errors
 
-inspector = Inspector(checks='structure', custom_errors=[...])
+inspector = Inspector(checks='structure')
 ```
 See builtin checks to learn more about checking protocol.
 
@@ -242,11 +242,10 @@ Inspector(checks='all',
           row_limit=1000,
           error_limit=1000,
           order_fields=False,
-          infer_fields=False,
-          ~custom_errors=[])
+          infer_fields=False)
     inspect(source, profile='table', **options)
 ~@profile(name)
-~@check(name)
+~@check(error)
 exceptions
 ~cli
 ```
