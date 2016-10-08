@@ -8,8 +8,6 @@ import io
 import os
 import six
 import json
-import datetime
-from . import exceptions
 
 
 # Module API

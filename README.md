@@ -80,6 +80,8 @@ As a result of inspection goodtables returns a report dictionary. It includes va
 
 > https://github.com/roll/goodtables-next/tree/master/goodtables/spec.json
 
+#### Errors
+
 Report errors are categorized by type:
 
 - source - data can't be loaded or parsed
@@ -172,7 +174,7 @@ from goodtables import Inspector, check
 # For builtin error
 @check('blank-row')
 # For custom error (use after/before argument to set an insertion position)
-@check({'code': custom-error', 'type': 'structure', 'context': 'body'}, after='blank-row')
+@check({'code': 'custom-error', 'type': 'structure', 'context': 'body'}, after='blank-row')
 def custom_check(row_number, columns,  sample):
     errors = []
     for column in columns:
