@@ -91,7 +91,7 @@ inspector.inspect('datapackage.json', profile='datapackage')
 
 A profile proceses passed source and options and return it as a dataset containing tables with extras for the following inspection.
 
-### Builtin profiles
+#### Builtin profiles
 
 Goodtables by default supports the following profiles:
 
