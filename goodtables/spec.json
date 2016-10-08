@@ -27,6 +27,16 @@
     },
     "errors": [
         {
+          "code": "io-error",
+          "type": "source",
+          "context": "any"
+        },
+        {
+          "code": "http-error",
+          "type": "source",
+          "context": "any"
+        },
+        {
           "code": "datapackage-error",
           "type": "source",
           "context": "dataset"
@@ -48,16 +58,6 @@
         },
         {
           "code": "encoding-error",
-          "type": "source",
-          "context": "table"
-        },
-        {
-          "code": "http-error",
-          "type": "source",
-          "context": "table"
-        },
-        {
-          "code": "io-error",
           "type": "source",
           "context": "table"
         },

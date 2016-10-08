@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 
 import inspect
 import datetime
+import tabulator
 from functools import partial
 from six.moves import zip_longest
 from multiprocessing.pool import ThreadPool
@@ -161,7 +162,7 @@ class Inspector(object):
         row_number = 0
         fatal_error = False
 
-        # Table checks
+        # Prepare table
         try:
             table.stream.open()
             stream = table.stream
@@ -173,30 +174,46 @@ class Inspector(object):
             sample = stream.sample
         except Exception as exception:
             fatal_error = True
-            checks = self.__get_checks(context='table')
-            for check in checks:
-                for error in check['func'](exception):
-                    error.update({
-                        'row': None,
-                        'code': check['code'],
-                    })
-                    errors.append(error)
-            if not errors:
+            # https://github.com/frictionlessdata/goodtables-py/issues/115
+            if isinstance(exception, tabulator.exceptions.TabulatorException):
+                code = 'io-error'
+                message = 'IO error'
+            elif isinstance(exception, tabulator.exceptions.TabulatorException):
+                code = 'http-error'
+                message = 'HTTP error'
+            elif isinstance(exception, tabulator.exceptions.TabulatorException):
+                code = 'scheme-error'
+                message = 'Scheme error'
+            elif isinstance(exception, tabulator.exceptions.TabulatorException):
+                code = 'format-error'
+                message = 'Format error'
+            elif isinstance(exception, tabulator.exceptions.TabulatorException):
+                code = 'encoding-error'
+                message = 'Encoding error'
+            else:
                 raise
+            errors.append({
+                'row': None,
+                'code': code,
+                'message': message,
+                'row-number': None,
+                'column-number': None,
+            })
 
         # Prepare columns
-        columns = []
-        fields = [None] * len(headers)
-        if schema is not None:
-            fields = schema.fields
-        iterator = zip_longest(headers, fields, fillvalue=_FILLVALUE)
-        for number, (header, field) in enumerate(iterator, start=1):
-            column = {'number': number}
-            if header is not _FILLVALUE:
-                column['header'] = header
-            if field is not _FILLVALUE:
-                column['field'] = field
-            columns.append(column)
+        if not fatal_error:
+            columns = []
+            fields = [None] * len(headers)
+            if schema is not None:
+                fields = schema.fields
+            iterator = zip_longest(headers, fields, fillvalue=_FILLVALUE)
+            for number, (header, field) in enumerate(iterator, start=1):
+                column = {'number': number}
+                if header is not _FILLVALUE:
+                    column['header'] = header
+                if field is not _FILLVALUE:
+                    column['field'] = field
+                columns.append(column)
 
         # Head checks
         if not fatal_error:
@@ -265,34 +282,29 @@ class Inspector(object):
         # Prepare checks
         checks = []
         for error in registry.errors:
-            try:
-                check_func = registry.checks[error['code']]
-            except KeyError:
-                message = 'Check for error "%s" is not registered' % error['code']
-                raise exceptions.GoodtablesException(message)
-            checks.append({
-                'func': check_func,
-                'code': error['code'],
-                'type': error['type'],
-                'context': error['context'],
-            })
+            if error['code'] in registry.checks:
+                checks.append({
+                    'func': registry.checks[error['code']],
+                    'code': error['code'],
+                    'type': error['type'],
+                    'context': error['context'],
+                })
 
         # Filter structure checks
         if config == 'structure':
             checks = [check for check in checks
-                if check['type'] in ['source', 'structure']]
+                if check['type'] == 'structure']
 
         # Filter schema checks
         elif config == 'schema':
             checks = [check for check in checks
-                if check['type'] in ['source', 'schema']]
+                if check['type'] == 'schema']
 
         # Filter granular checks
         elif isinstance(config, dict):
             default = True not in config.values()
             checks = [check for check in checks
-                if check['type'] in ['source'] or
-                config.get(check['code'], default)]
+                if config.get(check['code'], default)]
 
         # Unknown filter
         elif config != 'all':

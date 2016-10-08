@@ -90,6 +90,7 @@ Report errors are categorized by type:
 
 Report errors are categorized by context:
 
+- any - generic errors like IO, HTTP error
 - dataset - the whole dataset errors like invalid datapackage
 - table - the whole table errors like bad encoding
 - head - headers errors

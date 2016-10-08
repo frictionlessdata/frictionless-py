@@ -31,10 +31,3 @@ from .head.duplicate_header import duplicate_header
 from .head.extra_header import extra_header
 from .head.missing_header import missing_header
 from .head.non_matching_header import non_matching_header
-
-# Context: table
-from .table.encoding_error import encoding_error
-from .table.format_error import format_error
-from .table.http_error import http_error
-from .table.io_error import io_error
-from .table.scheme_error import scheme_error
