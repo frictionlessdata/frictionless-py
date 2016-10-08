@@ -78,6 +78,7 @@ All errors in a report are standartised and described in data quality spec - htt
 
 #### Error contexts
 
+- dataset - the whole dataset errors like invalid datapackage
 - table - the whole table errors like bad encoding
 - head - headers errors
 - body - contents errors
