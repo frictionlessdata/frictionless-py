@@ -166,7 +166,7 @@ Goodtables by default supports the following checks:
 
 > Provisional API not following SemVer. If you use it as a part of other program please pin concrete `goodtables` version to your requirements file.
 
-To register a custom check user could use a `check(error)` decorator. This way the builtin check could be overriden (use error code like `duplicate-row` instead of dictionary like in example below) or could be added a check for a custom error (use `after/before` argument to set a insertion position):
+To register a custom check user could use a `check(error)` decorator. This way the builtin check could be overriden (use error code like `duplicate-row` instead of dictionary like in example below) or could be added a check for a custom error (use `after/before` argument to set an insertion position):
 
 ```python
 from goodtables import Inspector, check
