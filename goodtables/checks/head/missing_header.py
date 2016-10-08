@@ -5,10 +5,12 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 from copy import copy
+from ...registry import check
 
 
 # Module API
 
+@check('missing-header')
 def missing_header(columns, sample=None):
     errors = []
     for column in copy(columns):

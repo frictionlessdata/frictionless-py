@@ -6,11 +6,13 @@ from __future__ import unicode_literals
 
 from copy import copy
 import jsontableschema
+from ...registry import check
 
 
 # Module API
 
-def bad_value(row_number, columns, state=None):
+@check('non-castable-value')
+def non_castable_value(row_number, columns, state=None):
     errors = []
     for column in copy(columns):
         try:
@@ -18,7 +20,7 @@ def bad_value(row_number, columns, state=None):
         except jsontableschema.exceptions.JsonTableSchemaException:
             # Add error
             errors.append({
-                'message': 'Bad value',
+                'message': 'Non castable value',
                 'row-number': row_number,
                 'column-number': column['number'],
             })

@@ -5,10 +5,12 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 import datapackage
+from ...registry import check
 
 
 # Module API
 
+@check('datapackage-error')
 def datapackage_error(exception):
     errors = []
     if isinstance(exception, datapackage.exceptions.ValidationError):

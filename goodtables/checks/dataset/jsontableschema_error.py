@@ -5,10 +5,12 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 import jsontableschema
+from ...registry import check
 
 
 # Module API
 
+@check('jsontableschema-error')
 def jsontableschema_error(exception):
     errors = []
     if isinstance(exception, jsontableschema.exceptions.InvalidSchemaError):

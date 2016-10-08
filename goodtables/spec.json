@@ -1,4 +1,5 @@
 {
+    "version": "0.1.0",
     "report": {
         "dataset": [
             "time",
@@ -24,177 +25,131 @@
             "column-number"
         ]
     },
-    "checks": [
+    "errors": [
         {
           "code": "datapackage-error",
           "type": "source",
-          "context": "dataset",
-          "requires": []
+          "context": "dataset"
         },
         {
           "code": "jsontableschema-error",
           "type": "source",
-          "context": "dataset",
-          "requires": []
+          "context": "dataset"
         },
         {
           "code": "scheme-error",
           "type": "source",
-          "context": "table",
-          "requires": []
+          "context": "table"
         },
         {
           "code": "format-error",
           "type": "source",
-          "context": "table",
-          "requires": []
+          "context": "table"
         },
         {
           "code": "encoding-error",
           "type": "source",
-          "context": "table",
-          "requires": []
+          "context": "table"
         },
         {
           "code": "http-error",
           "type": "source",
-          "context": "table",
-          "requires": []
+          "context": "table"
         },
         {
           "code": "io-error",
           "type": "source",
-          "context": "table",
-          "requires": []
+          "context": "table"
         },
         {
           "code": "blank-header",
           "type": "structure",
-          "context": "head",
-          "requires": []
+          "context": "head"
         },
         {
           "code": "duplicate-header",
           "type": "structure",
-          "context": "head",
-          "requires": []
+          "context": "head"
         },
         {
           "code": "non-matching-header",
           "type": "schema",
-          "context": "head",
-          "requires": []
+          "context": "head"
         },
         {
           "code": "extra-header",
           "type": "schema",
-          "context": "head",
-          "requires": []
+          "context": "head"
         },
         {
           "code": "missing-header",
           "type": "schema",
-          "context": "head",
-          "requires": []
+          "context": "head"
         },
         {
           "code": "blank-row",
           "type": "structure",
-          "context": "body",
-          "requires": []
+          "context": "body"
         },
         {
           "code": "duplicate-row",
           "type": "structure",
-          "context": "body",
-          "requires": []
+          "context": "body"
         },
         {
           "code": "extra-value",
           "type": "structure",
-          "context": "body",
-          "requires": []
+          "context": "body"
         },
         {
           "code": "missing-value",
           "type": "structure",
-          "context": "body",
-          "requires": []
+          "context": "body"
         },
         {
           "code": "required-constraint",
           "type": "schema",
-          "context": "body",
-          "requires": [
-              "extra-value",
-              "missing-value"
-          ]
+          "context": "body"
         },
         {
           "code": "pattern-constraint",
           "type": "schema",
-          "context": "body",
-          "requires": [
-              "extra-value",
-              "missing-value"
-          ]
+          "context": "body"
         },
         {
-          "code": "bad-value",
+          "code": "non-castable-value",
           "type": "schema",
-          "context": "body",
-          "requires": [
-              "extra-value",
-              "missing-value"
-          ]
+          "context": "body"
         },
         {
           "code": "unique-constraint",
           "type": "schema",
-          "context": "body",
-          "requires": [
-              "bad-value"
-          ]
+          "context": "body"
         },
         {
           "code": "enumerable-constraint",
           "type": "schema",
-          "context": "body",
-          "requires": [
-              "bad-value"
-          ]
+          "context": "body"
         },
         {
           "code": "minimum-constraint",
           "type": "schema",
-          "context": "body",
-          "requires": [
-              "bad-value"
-          ]
+          "context": "body"
         },
         {
           "code": "maximum-constraint",
           "type": "schema",
-          "context": "body",
-          "requires": [
-              "bad-value"
-          ]
+          "context": "body"
         },
         {
           "code": "minimum-length-constraint",
           "type": "schema",
-          "context": "body",
-          "requires": [
-              "bad-value"
-          ]
+          "context": "body"
         },
         {
           "code": "maximum-length-constraint",
           "type": "schema",
-          "context": "body",
-          "requires": [
-              "bad-value"
-          ]
+          "context": "body"
         }
     ]
 }

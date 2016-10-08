@@ -5,11 +5,11 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 # Context: body
-from .body.bad_value import bad_value
 from .body.blank_row import blank_row
 from .body.duplicate_row import duplicate_row
 from .body.extra_value import extra_value
 from .body.missing_value import missing_value
+from .body.non_castable_value import non_castable_value
 
 # Context: body/constraints
 from .body.constraints.enumerable_constraint import enumerable_constraint

@@ -6,10 +6,12 @@ from __future__ import unicode_literals
 
 from copy import copy
 from jsontableschema import Schema, infer
+from ...registry import check
 
 
 # Module API
 
+@check('extra-header')
 def extra_header(columns, sample, infer_fields=False):
     errors = []
     for column in copy(columns):

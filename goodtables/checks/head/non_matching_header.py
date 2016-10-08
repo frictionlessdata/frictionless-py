@@ -5,10 +5,12 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 from copy import copy
+from ...registry import check
 
 
 # Module API
 
+@check('non-matching-header')
 def non_matching_header(columns, sample=None, order_fields=False):
     errors = []
     headers = set(column['name'] for column in columns if 'name' in column)

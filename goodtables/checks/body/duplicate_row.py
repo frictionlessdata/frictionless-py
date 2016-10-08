@@ -5,10 +5,12 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 import json
+from ...registry import check
 
 
 # Module API
 
+@check('duplicate-row')
 def duplicate_row(row_number, columns, state):
     errors = []
     rindex = state.setdefault('rindex', {})

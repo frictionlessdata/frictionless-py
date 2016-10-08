@@ -12,9 +12,9 @@ import datetime
 from functools import partial
 from six.moves import zip_longest
 from multiprocessing.pool import ThreadPool
-from . import checks as checks_module
 from . import exceptions
-from . import profiles
+from . import registry
+registry.register_builtin()
 
 
 # Module API
@@ -23,28 +23,30 @@ class Inspector(object):
     """Datasets inspector.
 
     Args:
-        checks (str/dict): inspection checks
-        custom_checks (list): custom checks
+        checks (str/dict): checks filter
         table_limit (int): upper limit for tables
         row_limit (int): upper limit for rows
         error_limit (int): upper limit for errors
+        order_fields (bool): allow field ordering
+        infer_fields (bool): allow field inferring
+        custom_errors (list): add custom errors to spec
 
     """
 
     # Public
 
     def __init__(self,
-                 checks='all',
-                 custom_checks=None,
+                 checks=None,
                  table_limit=None,
                  row_limit=None,
                  error_limit=None,
                  order_fields=None,
-                 infer_fields=None):
+                 infer_fields=None,
+                 custom_errors=None):
 
         # Defaults
-        if custom_checks is None:
-            custom_checks = []
+        if checks is None:
+            checks = 'all'
         if table_limit is None:
             table_limit = 10
         if row_limit is None:
@@ -55,6 +57,8 @@ class Inspector(object):
             order_fields = False
         if infer_fields is None:
             infer_fields = False
+        if custom_errors is None:
+            custom_errors = []
 
         # Set attributes
         self.__table_limit = table_limit
@@ -62,7 +66,7 @@ class Inspector(object):
         self.__error_limit = error_limit
         self.__order_fields = order_fields
         self.__infer_fields = infer_fields
-        self.__checks = self.__prepare_checks(checks, custom_checks)
+        self.__checks = self.__prepare_checks(checks, custom_errors)
 
     def inspect(self, source, profile=None, **options):
         """Inspect source with given profile and options.
@@ -96,13 +100,10 @@ class Inspector(object):
         fatal_error = False
 
         # Get profile function
-        profile_func = None
-        if callable(profile):
-            profile_func = profile
-        elif hasattr(profiles, profile):
-            profile_func = getattr(profiles, profile)
-        if not profile_func:
-            message = 'Profile "%s" is not supported' % profile
+        try:
+            profile_func = registry.profiles[profile]
+        except KeyError:
+            message = 'Profile "%s" is not registered' % profile
             raise exceptions.GoodtablesException(message)
 
         # Get tables/extras
@@ -266,68 +267,60 @@ class Inspector(object):
 
         return report
 
-    def __prepare_checks(self, config, custom):
+    def __prepare_checks(self, config, custom_errors):
 
         # Load spec
         base = os.path.dirname(__file__)
         path = os.path.join(base, 'spec.json')
         spec = json.load(io.open(path, encoding='utf-8'))
 
-        # Get standard checks
+        # Prepare errors
+        errors = spec['errors']
+        for error in custom_errors:
+            mapping = {error: index for index, error in enumerate(errors)}
+            if error['code'] in mapping:
+                errors[mappin[errors['code']]] = error
+            elif error['before'] in mapping:
+                errors.insert(mappin[errors['before']], error)
+            elif error['after'] in mapping:
+                errors.insert(mappin[errors['after']] + 1, error)
+
+        # Prepare checks
         checks = []
-        for check in spec['checks']:
-            attr = check['code'].replace('-', '_')
-            if not hasattr(checks_module, attr):
-                message = 'Check "%s" is not supported' % check['code']
+        for error in errors:
+            try:
+                check_func = registry.checks[error['code']]
+            except KeyError:
+                message = 'Check for error "%s" is not registered' % error['code']
                 raise exceptions.GoodtablesException(message)
-            func = getattr(checks_module, attr)
-            check['func'] = func
-            checks.append(check)
+            checks.append({
+                'func': check_func,
+                'code': error['code'],
+                'type': error['type'],
+                'context': error['context'],
+            })
 
-        # Add custom checks
-        for check in custom:
-            checkmap = {check: index for index, check in enumerate(checks)}
-            if check['code'] in checkmap:
-                checks[checkmap[checks['code']]] = check
-            elif check['before'] in checkmap:
-                checks.insert(checkmap[checks['before']], check)
-            elif check['after'] in checkmap:
-                checks.insert(checkmap[checks['after']] + 1, check)
-
-        # All checks
-        if config == 'all':
-            pass
-
-        # Structure checks
-        elif config == 'structure':
+        # Filter structure checks
+        if config == 'structure':
             checks = [check for check in checks
                 if check['type'] in ['source', 'structure']]
 
-        # Schema checks
+        # Filter schema checks
         elif config == 'schema':
             checks = [check for check in checks
                 if check['type'] in ['source', 'schema']]
 
-        # Custom checks
+        # Filter granular checks
         elif isinstance(config, dict):
             default = True not in config.values()
             checks = [check for check in checks
                 if check['type'] in ['source'] or
                 config.get(check['code'], default)]
 
-        # Unknown checks
-        else:
-            message = 'Checks config "%s" is not supported' % config
+        # Unknown filter
+        elif config != 'all':
+            message = 'Checks filter "%s" is not supported' % config
             raise exceptions.GoodtablesException(message)
-
-        # Ensure requires
-        codes = set()
-        for check in checks:
-            if not set(check['requires']).issubset(codes):
-                message = 'Check "%s" requires all checks "%s" before'
-                message = message % (check['code'], check['requires'])
-                raise exceptions.GoodtablesException(message)
-            codes.add(check['code'])
 
         # Bind options
         for check in checks:

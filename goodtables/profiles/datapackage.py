@@ -6,10 +6,12 @@ from __future__ import unicode_literals
 
 from jsontableschema import Table
 from datapackage import DataPackage
+from ..registry import profile
 
 
 # Module API
 
+@profile('datapackage')
 def datapackage(source, **options):
     dataset = []
     datapackage = DataPackage(source, **options)

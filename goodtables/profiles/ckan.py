@@ -6,10 +6,12 @@ from __future__ import unicode_literals
 
 import requests
 from jsontableschema import Table
+from ..registry import profile
 
 
 # Module API
 
+@profile('ckan')
 def ckan(source, **options):
     dataset = []
     url = '%s/api/3/action/package_search' % source

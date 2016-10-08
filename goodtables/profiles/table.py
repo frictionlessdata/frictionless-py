@@ -5,10 +5,12 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 from jsontableschema import Table
+from ..registry import profile
 
 
 # Module API
 
+@profile('table')
 def table(source, **options):
     dataset = []
     # Add table

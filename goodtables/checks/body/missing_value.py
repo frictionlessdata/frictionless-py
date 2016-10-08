@@ -5,10 +5,12 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 from copy import copy
+from ...registry import check
 
 
 # Module API
 
+@check('missing-value')
 def missing_value(row_number, columns, state=None):
     errors = []
     for column in copy(columns):
