@@ -26,7 +26,6 @@ class Inspector(object):
         error_limit (int): upper limit for errors
         order_fields (bool): allow field ordering
         infer_fields (bool): allow field inferring
-        custom_errors (list): add custom errors to spec
 
     """
 
@@ -38,8 +37,7 @@ class Inspector(object):
                  row_limit=None,
                  error_limit=None,
                  order_fields=None,
-                 infer_fields=None,
-                 custom_errors=None):
+                 infer_fields=None):
 
         # Defaults
         if checks is None:
@@ -54,8 +52,6 @@ class Inspector(object):
             order_fields = False
         if infer_fields is None:
             infer_fields = False
-        if custom_errors is None:
-            custom_errors = []
 
         # Set attributes
         self.__table_limit = table_limit
@@ -63,7 +59,7 @@ class Inspector(object):
         self.__error_limit = error_limit
         self.__order_fields = order_fields
         self.__infer_fields = infer_fields
-        self.__checks = self.__prepare_checks(checks, custom_errors)
+        self.__checks = self.__prepare_checks(checks)
 
     def inspect(self, source, profile=None, **options):
         """Inspect source with given profile and options.
@@ -113,7 +109,7 @@ class Inspector(object):
                     break
         except Exception as exception:
             fatal_error = True
-            checks = self.__filter_checks(context='dataset')
+            checks = self.__get_checks(context='dataset')
             for check in checks:
                 for error in check['func'](exception):
                     error.update({
@@ -170,14 +166,14 @@ class Inspector(object):
             table.stream.open()
             stream = table.stream
             schema = None
-            if self.__filter_checks(type='schema'):
+            if self.__get_checks(type='schema'):
                 # Schema infer if needed
                 schema = table.schema
             headers = stream.headers
             sample = stream.sample
         except Exception as exception:
             fatal_error = True
-            checks = self.__filter_checks(context='table')
+            checks = self.__get_checks(context='table')
             for check in checks:
                 for error in check['func'](exception):
                     error.update({
@@ -204,7 +200,7 @@ class Inspector(object):
 
         # Head checks
         if not fatal_error:
-            checks = self.__filter_checks(context='head')
+            checks = self.__get_checks(context='head')
             for check in checks:
                 for error in check['func'](columns, sample):
                     if not columns:
@@ -218,7 +214,7 @@ class Inspector(object):
         # Body checks
         if not fatal_error:
             states = {}
-            checks = self.__filter_checks(context='body')
+            checks = self.__get_checks(context='body')
             colmap = {column['number']: column for column in columns}
             with stream:
                 for row_number, headers, row in stream.iter(extended=True):
@@ -264,7 +260,7 @@ class Inspector(object):
 
         return report
 
-    def __prepare_checks(self, config, custom_errors):
+    def __prepare_checks(self, config):
 
         # Prepare checks
         checks = []
@@ -315,7 +311,7 @@ class Inspector(object):
 
         return checks
 
-    def __filter_checks(self, type=None, context=None):
+    def __get_checks(self, type=None, context=None):
 
         # Filted checks
         checks = []
