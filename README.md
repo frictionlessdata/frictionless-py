@@ -210,7 +210,7 @@ inspector = Inspector(custom_errors=[{
     'context': 'body',
 }])
 ```
-It will be checks by the check we have created above. See specification errors to learn more about goodtables errors.
+It will be checked by the check we have created above. See specification errors to learn more about goodtables errors.
 
 ### CLI
 
