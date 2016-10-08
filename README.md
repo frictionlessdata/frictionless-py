@@ -125,6 +125,48 @@ inspector.inspect(source, profile='custom-profile')
 
 See builtin profiles to learn more about the dataset extration protocol.
 
+### Checks
+
+Check is a main inspection actor in goodtables. Every check is associated with a specification error. Checking order is the same as order of errors in the specification.  List of checks could be customized using inspector's `checks` argument. Let's explore options on an example:
+
+```python
+inspector = Inspector(checks='all/structure/schema') # preset
+inspector = Inspector(checks={'bad-headers': False}) # exclude
+inspector = Inspector(checks={'bad-headers': True}) # cherry-pick
+```
+
+Check gets input data from framework based on context (e.g. `columns` and `sample` for `head` context) and returns list of corresponding errors.
+
+#### Buitin checks
+
+Goodtables by default supports the following checks:
+
+ - [check for every error from the specification]
+
+#### Custom checks
+
+> Provisional API not following SemVer. If you use it as a part of other program please pin concrete `goodtables` version to your requirements file.
+
+To register a custom check user could use a `check(error)` decorator. This way the builtin check could be overriden or could be added a check for a custom error:
+
+```python
+from goodtables import Inspector, check
+
+@check('custom-error')
+def custom_check(row_number, columns,  sample):
+    errors = []
+    for column in columns:
+        errors.append({
+            'message': 'Custom error',
+            'row-number': row_number,
+            'column-number': column['number'],
+        })
+    return errors
+
+inspector = Inspector(checks='structure', custom_errors=[...])
+```
+This custom check will do nothing for now but next we will add a `custom-error` for it. See builtin checks to learn more about checking protocol.
+
 ### Errors
 
 A report contains list of errors found in the given dataset. All errors have a code and other useful information. See the specification for more information.
@@ -168,50 +210,7 @@ inspector = Inspector(custom_errors=[{
     'context': 'body',
 }])
 ```
-For not it changes nothing - read below how to add a custom check assocated with a custom error. See specification errors to learn more about goodtables errors.
-
-### Checks
-
-Check is a main inspection actor in goodtables. Every check is associated with one of specification errors. Checking order is the same as order of errors in the specification.  List of checks could be customized using inspector's `checks` argument. Let's explore options on an example:
-
-```python
-inspector = Inspector(checks='all/structure/schema') # preset
-inspector = Inspector(checks={'bad-headers': False}) # exclude
-inspector = Inspector(checks={'bad-headers': True}) # cherry-pick
-```
-
-Check gets input data from framework based on context (e.g. `columns` and `sample` for `head` context) and returns list of corresponding errors.
-
-#### Buitin checks
-
-Goodtables by default supports the following checks:
-
- - [check for every error from the specification]
-
-#### Custom checks
-
-> Provisional API not following SemVer. If you use it as a part of other program please pin concrete `goodtables` version to your requirements file.
-
-To register a custom check user could use a `check(error)` decorator. This way the builtin check could be overriden or could be added a check for a custom error. Let's write a custom check for the `custom-error` described above:
-
-```python
-from goodtables import Inspector, check
-
-@check('custom-error')
-def custom_check(row_number, columns,  sample):
-    errors = []
-    for column in columns:
-        errors.append({
-            'message': 'Custom error',
-            'row-number': row_number,
-            'column-number': column['number'],
-        })
-    return errors
-
-inspector = Inspector(checks='structure', custom_errors=[...])
-```
-
-See builtin checks to learn more about checking protocol.
+It will be checks by the check we have created above. See specification errors to learn more about goodtables errors.
 
 ### CLI
 
