@@ -188,13 +188,13 @@ Errors are splitted on contexts based on error context:
 - head - headers errors
 - body - contents errors
 
-### Buitin erorrs
+#### Buitin erorrs
 
 Goodtables by default supports the following errors:
 
 - [every error from the specification]
 
-### Custom errors
+#### Custom errors
 
 > Provisional API not following SemVer. If you use it as a part of other program please pin concrete `goodtables` version to your requirements file.
 
