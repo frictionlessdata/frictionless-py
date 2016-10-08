@@ -72,7 +72,7 @@ Goodtables support different sources for an inspection. But it should be convert
 
 ![Dataset](files/dataset.png)
 
-As a result of inspection goodtables returns a report dictionary. It includes valid flag, count of errors, list of reports per table etc. See example above for an instance.  A report structure and all errors are standartised and described in data quality spec:
+As a result of inspection goodtables returns a report dictionary. It includes valid flag, count of errors, list of reports per table etc. See example above for an instance.  A report structure and all errors are standartised and described in **data quality spec**:
 
 > https://github.com/roll/goodtables-next/tree/master/goodtables/spec.json.
 

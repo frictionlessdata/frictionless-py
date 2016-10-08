@@ -326,9 +326,11 @@ class Inspector(object):
         for check in checks:
             args, _, _, _ = inspect.getargspec(check['func'])
             if 'order_fields' in args:
-                check['func'] = partial(check['func'], order_fields=self.__order_fields)
+                check['func'] = partial(check['func'],
+                    order_fields=self.__order_fields)
             if 'infer_fields' in args:
-                check['func'] = partial(check['func'], infer_fields=self.__infer_fields)
+                check['func'] = partial(check['func'],
+                    infer_fields=self.__infer_fields)
 
         return checks
 
