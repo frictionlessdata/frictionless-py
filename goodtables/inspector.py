@@ -279,11 +279,11 @@ class Inspector(object):
         for error in custom_errors:
             mapping = {error: index for index, error in enumerate(errors)}
             if error['code'] in mapping:
-                errors[mappin[errors['code']]] = error
+                errors[mapping[errors['code']]] = error
             elif error['before'] in mapping:
-                errors.insert(mappin[errors['before']], error)
+                errors.insert(mapping[errors['before']], error)
             elif error['after'] in mapping:
-                errors.insert(mappin[errors['after']] + 1, error)
+                errors.insert(mapping[errors['after']] + 1, error)
 
         # Prepare checks
         checks = []

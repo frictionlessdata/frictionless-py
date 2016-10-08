@@ -10,6 +10,7 @@ from __future__ import unicode_literals
 profiles = {}
 checks = {}
 
+
 def profile(name):
     """Register profile.
     """
@@ -29,5 +30,5 @@ def check(error):
 
 
 def register_builtin():
-    from . import profiles
-    from . import checks
+    from . import profiles  # noqa
+    from . import checks  # noqa
