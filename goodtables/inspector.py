@@ -269,25 +269,9 @@ class Inspector(object):
 
     def __prepare_checks(self, config, custom_errors):
 
-        # Load spec
-        base = os.path.dirname(__file__)
-        path = os.path.join(base, 'spec.json')
-        spec = json.load(io.open(path, encoding='utf-8'))
-
-        # Prepare errors
-        errors = spec['errors']
-        for error in custom_errors:
-            mapping = {error: index for index, error in enumerate(errors)}
-            if error['code'] in mapping:
-                errors[mapping[errors['code']]] = error
-            elif error['before'] in mapping:
-                errors.insert(mapping[errors['before']], error)
-            elif error['after'] in mapping:
-                errors.insert(mapping[errors['after']] + 1, error)
-
         # Prepare checks
         checks = []
-        for error in errors:
+        for error in registry.errors:
             try:
                 check_func = registry.checks[error['code']]
             except KeyError:

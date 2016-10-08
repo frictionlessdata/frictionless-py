@@ -68,13 +68,30 @@ Goodtables inspects your tabular data to find errors in source, structure and sc
 - `inspector.inspect(source, profile=<profile>, **options)` should be called
 - a returning value will be a report dictionary
 
+#### Dataset
+
 Goodtables support different sources for an inspection. But it should be convertable to dataset presented on a figure 1. Details will be explained in the next sections:
 
 ![Dataset](files/dataset.png)
 
-As a result of inspection goodtables returns a report dictionary. It includes valid flag, count of errors, list of reports per table etc. See example above for an instance.  A report structure and all errors are standartised and described in **data quality spec**:
+#### Report
+
+As a result of inspection goodtables returns a report dictionary. It includes valid flag, count of errors, list of reports per table including errors etc. See example above for an instance.  A report structure and all errors are standartised and described in **data quality spec**:
 
 > https://github.com/roll/goodtables-next/tree/master/goodtables/spec.json
+
+Report errors are categorized by type:
+
+- source - data can't be loaded or parsed
+- structure - general tabular errors like duplicate headers
+- schema - error of checks against JSON Table Schema
+
+Report errors are categorized by context:
+
+- dataset - the whole dataset errors like invalid datapackage
+- table - the whole table errors like bad encoding
+- head - headers errors
+- body - contents errors
 
 ### Profiles
 
@@ -152,7 +169,10 @@ To register a custom check user could use a `check(error)` decorator. This way t
 ```python
 from goodtables import Inspector, check
 
-@check('custom-error')
+# For builtin error
+@check('blank-row')
+# For custom error (use after/before argument to set an insertion position)
+@check({'code': custom-error', 'type': 'structure', 'context': 'body'}, after='blank-row')
 def custom_check(row_number, columns,  sample):
     errors = []
     for column in columns:
@@ -165,52 +185,7 @@ def custom_check(row_number, columns,  sample):
 
 inspector = Inspector(checks='structure', custom_errors=[...])
 ```
-This custom check will do nothing for now but next we will add a `custom-error` for it. See builtin checks to learn more about checking protocol.
-
-### Errors
-
-A report contains list of errors found in the given dataset. All errors have a code and other useful information. See the specification for more information.
-
-#### Error types
-
-Errors are splitted on types based on error type:
-
-- source - data can't be loaded or parsed
-- structure - general tabular errors like duplicate headers
-- schema - error of checks against JSON Table Schema
-
-#### Error contexts
-
-Errors are splitted on contexts based on error context:
-
-- dataset - the whole dataset errors like invalid datapackage
-- table - the whole table errors like bad encoding
-- head - headers errors
-- body - contents errors
-
-#### Buitin erorrs
-
-Goodtables by default supports the following errors:
-
-- [every error from the specification]
-
-#### Custom errors
-
-> Provisional API not following SemVer. If you use it as a part of other program please pin concrete `goodtables` version to your requirements file.
-
-An user could alter or extend error specification using inspector's `custom_errors` argument. Let's add `custom-error`:
-
-```python
-inspector = Inspector(custom_errors=[{
-    # Define position
-    'after/before': 'extra-value',
-    # Follow the spec
-    'code': 'custom-error',
-    'type': 'structure',
-    'context': 'body',
-}])
-```
-It will be checked by the check we have created above. See specification errors to learn more about goodtables errors.
+See builtin checks to learn more about checking protocol.
 
 ### CLI
 
