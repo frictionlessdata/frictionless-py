@@ -11,4 +11,8 @@ from ....registry import check
 
 @check('unique-constraint')
 def unique_constraint(row_number, columns, state):
-    return []
+    errors = []
+    for column in columns:
+        if len(column) == 4:
+            pass
+    return errors

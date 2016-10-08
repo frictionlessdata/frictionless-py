@@ -13,11 +13,12 @@ from ...registry import check
 def blank_header(columns, sample=None):
     errors = []
     for column in columns:
-        if not column['header']:
-            # Add error
-            errors.append({
-                'message': 'Blank header',
-                'row-number': None,
-                'column-number': column['number'],
-            })
+        if 'header' in column:
+            if not column['header']:
+                # Add error
+                errors.append({
+                    'message': 'Blank header',
+                    'row-number': None,
+                    'column-number': column['number'],
+                })
     return errors

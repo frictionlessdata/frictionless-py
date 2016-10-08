@@ -11,4 +11,8 @@ from ....registry import check
 
 @check('minimum-length-constraint')
 def minimum_length_constraint(row_number, columns, state=None):
-    return []
+    errors = []
+    for column in columns:
+        if len(column) == 4:
+            pass
+    return errors

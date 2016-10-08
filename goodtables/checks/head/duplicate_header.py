@@ -14,13 +14,14 @@ def duplicate_header(columns, sample=None):
     errors = []
     headers = set()
     for column in columns:
-        if column['header'] in headers:
-            # Add error
-            errors.append({
-                'message': 'Duplicate header',
-                'row-number': None,
-                'column-number': column['number'],
-            })
-            continue
-        headers.add(column['header'])
+        if 'header' in column:
+            if column['header'] in headers:
+                # Add error
+                errors.append({
+                    'message': 'Duplicate header',
+                    'row-number': None,
+                    'column-number': column['number'],
+                })
+                continue
+            headers.add(column['header'])
     return errors
