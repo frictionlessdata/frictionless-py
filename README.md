@@ -195,7 +195,7 @@ See builtin checks to learn more about checking protocol.
 
 ### CLI
 
-> Provisional API not following SemVer. If you use it as a part of other program please pin concrete `goodtables` version to your requirements file.
+> It's a provisional API excluded from SemVer. If you use it as a part of other program please pin concrete `goodtables` version to your requirements file.
 
 All common goodtables tasks could be done using a command-line interface (command per profile):
 
