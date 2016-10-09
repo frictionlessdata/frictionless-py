@@ -121,7 +121,7 @@ Goodtables by default supports the following profiles:
 
 #### Custom profiles
 
-> Provisional API not following SemVer. If you use it as a part of other program please pin concrete `goodtables` version to your requirements file.
+> It's a provisional API excluded from SemVer. If you use it as a part of other program please pin concrete `goodtables` version to your requirements file.
 
 To register a custom profile user could use a `profile(name)` decorator. This way the builtin profile could be overriden or could be added a custom profile.
 
@@ -171,7 +171,7 @@ Goodtables by default supports the following checks:
 
 #### Custom checks
 
-> Provisional API not following SemVer. If you use it as a part of other program please pin concrete `goodtables` version to your requirements file.
+> It's a provisional API excluded from SemVer. If you use it as a part of other program please pin concrete `goodtables` version to your requirements file.
 
 To register a custom check user could use a `check(error)` decorator. This way the builtin check could be overriden (use error code like `duplicate-row` instead of dictionary like in example below) or could be added a check for a custom error (use `after/before` argument to set an insertion position):
 
