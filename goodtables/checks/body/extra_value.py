@@ -11,16 +11,15 @@ from ...registry import check
 # Module API
 
 @check('extra-value')
-def extra_value(row_number, columns, state=None):
-    errors = []
+def extra_value(errors, columns, row_number, state=None):
     for column in copy(columns):
         if 'header' not in column:
             # Add error
             errors.append({
+                'code': 'extra-value',
                 'message': 'Extra value',
                 'row-number': row_number,
                 'column-number': column['number'],
             })
             # Remove column
             columns.remove(column)
-    return errors

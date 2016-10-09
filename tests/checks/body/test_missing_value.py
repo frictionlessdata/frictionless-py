@@ -11,6 +11,7 @@ from goodtables import checks
 # Test
 
 def test_missing_value():
+    errors = []
     columns = [
         {'number': 1,
          'header': 'name1',
@@ -21,11 +22,13 @@ def test_missing_value():
          'value': 'value',
          'field': None},
     ]
-    assert checks.missing_value(1, columns) == []
+    checks.missing_value(errors, columns, 1)
+    assert len(errors) == 0
     assert len(columns) == 2
 
 
 def test_missing_value_problem():
+    errors = []
     columns = [
         {'number': 1,
          'header': 'name1',
@@ -35,7 +38,11 @@ def test_missing_value_problem():
          'header': 'name2',
          'field': None},
     ]
-    assert checks.missing_value(1, columns) == [
-        {'message': 'Missing value', 'row-number': 1, 'column-number': 2},
+    checks.missing_value(errors, columns, 1)
+    assert errors == [
+        {'code': 'missing-value',
+         'message': 'Missing value',
+         'row-number': 1,
+         'column-number': 2},
     ]
     assert len(columns) == 1

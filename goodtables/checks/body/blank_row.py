@@ -10,15 +10,14 @@ from ...registry import check
 # Module API
 
 @check('blank-row')
-def blank_row(row_number, columns, state=None):
-    errors = []
+def blank_row(errors, columns, row_number, state=None):
     if not list(filter(lambda column: column.get('value'), columns)):
         # Add error
         errors.append({
+            'code': 'blank-row',
             'message': 'Blank row',
             'row-number': row_number,
             'column-number': None,
         })
         # Clear columns
         del columns[:]
-    return errors

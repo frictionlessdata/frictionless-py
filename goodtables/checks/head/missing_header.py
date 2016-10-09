@@ -11,16 +11,15 @@ from ...registry import check
 # Module API
 
 @check('missing-header')
-def missing_header(columns, sample=None):
-    errors = []
+def missing_header(errors, columns, sample=None):
     for column in copy(columns):
         if 'header' not in column:
             # Add error
             errors.append({
+                'code': 'missing-header',
                 'message': 'Missing header',
                 'row-number': None,
                 'column-number': column['number'],
             })
             # Remove column
             columns.remove(column)
-    return errors

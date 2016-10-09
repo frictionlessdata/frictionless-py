@@ -109,7 +109,7 @@ inspector = Inspector()
 inspector.inspect('datapackage.json', profile='datapackage')
 ```
 
-A profile proceses passed source and options and fills dataset with tables and extras for the following inspection. If any errors have happened a profile should return a list of them (an empty list otherwise).
+A profile proceses passed source and options and fills dataset with tables and extras for the following inspection. If any errors have happened a profile should add them to errors list.
 
 #### Builtin profiles
 
@@ -161,7 +161,7 @@ inspector = Inspector(checks={'bad-headers': False}) # exclude
 inspector = Inspector(checks={'bad-headers': True}) # cherry-pick
 ```
 
-Check gets input data from framework based on context (e.g. `columns, sample` for `head` context) and returns list of corresponding errors.
+Check gets input data from framework based on context (e.g. `columns, sample` for `head` context) and update errors and columns lists in-place.
 
 #### Buitin checks
 
@@ -179,15 +179,14 @@ To register a custom check user could use a `check(error)` decorator. This way t
 from goodtables import Inspector, check
 
 @check({'code': 'custom-error', 'type': 'structure', 'context': 'body'}, after='blank-row')
-def custom_check(row_number, columns,  sample):
-    errors = []
+def custom_check(errors, columns, row_number,  sample):
     for column in columns:
         errors.append({
             'message': 'Custom error',
             'row-number': row_number,
             'column-number': column['number'],
         })
-    return errors
+        columns.remove(column)
 
 inspector = Inspector(checks='structure')
 ```

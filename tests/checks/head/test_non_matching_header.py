@@ -11,23 +11,33 @@ from goodtables import checks
 # Test
 
 def test_non_matching_header():
-    fields = [
+    errors = []
+    columns = [
         {'number': 1, 'header': 'name1', 'field': Field({'name': 'name1'})},
         {'number': 2, 'header': 'name2', 'field': Field({'name': 'name2'})},
         {'number': 3, 'header': 'name3'},
     ]
-    assert checks.non_matching_header(fields) == []
-    assert len(fields) == 3
+    checks.non_matching_header(errors, columns)
+    assert len(errors) == 0
+    assert len(columns) == 3
 
 
 def test_non_matching_header_problem():
-    fields = [
+    errors = []
+    columns = [
         {'number': 1, 'header': 'name1', 'field': Field({'name': 'name2'})},
         {'number': 2, 'header': 'name2', 'field': Field({'name': 'name1'})},
         {'number': 3, 'header': 'name3'},
     ]
-    assert checks.non_matching_header(fields) == [
-        {'message': 'Non matching header', 'row-number': None, 'column-number': 1},
-        {'message': 'Non matching header', 'row-number': None, 'column-number': 2},
+    checks.non_matching_header(errors, columns)
+    assert errors == [
+        {'code': 'non-matching-header',
+         'message': 'Non matching header',
+         'row-number': None,
+         'column-number': 1},
+        {'code': 'non-matching-header',
+         'message': 'Non matching header',
+         'row-number': None,
+         'column-number': 2},
     ]
-    assert len(fields) == 1
+    assert len(columns) == 1

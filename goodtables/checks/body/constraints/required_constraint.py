@@ -10,9 +10,8 @@ from ....registry import check
 # Module API
 
 @check('required-constraint')
-def required_constraint(row_number, columns, state=None):
-    errors = []
+def required_constraint(errors, columns, row_number, state=None):
+    # https://github.com/frictionlessdata/goodtables-py/issues/116
     for column in columns:
         if len(column) == 4:
             pass
-    return errors

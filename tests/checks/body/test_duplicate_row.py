@@ -10,7 +10,7 @@ from goodtables import checks
 # Test
 
 def test_duplicate_row():
-    state = {}
+    errors = []
     columns1 = [
         {'number': 1,
          'header': 'name1',
@@ -23,12 +23,16 @@ def test_duplicate_row():
          'value': 'value2',
          'field': None},
     ]
-    assert checks.duplicate_row(1, columns1, state) == []
-    assert checks.duplicate_row(2, columns2, state) == []
+    state = {}
+    checks.duplicate_row(errors, columns1, 1, state=state)
+    checks.duplicate_row(errors, columns2, 2, state=state)
+    assert len(errors) == 0
+    assert len(columns1) == 1
+    assert len(columns2) == 1
 
 
 def test_duplicate_row_problem():
-    state = {}
+    errors = []
     columns1 = [
         {'number': 1,
          'header': 'name1',
@@ -41,7 +45,14 @@ def test_duplicate_row_problem():
          'value': 'value',
          'field': None},
     ]
-    assert checks.duplicate_row(1, columns1, state) == []
-    assert checks.duplicate_row(2, columns2, state) == [
-        {'message': 'Duplicate row: [1]', 'row-number': 2, 'column-number': None},
+    state = {}
+    checks.duplicate_row(errors, columns1, 1, state=state)
+    checks.duplicate_row(errors, columns2, 2, state=state)
+    assert errors == [
+        {'code': 'duplicate-row',
+         'message': 'Duplicate row: [1]',
+         'row-number': 2,
+         'column-number': None},
     ]
+    assert len(columns1) == 1
+    assert len(columns2) == 0

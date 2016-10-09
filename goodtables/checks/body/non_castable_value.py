@@ -12,8 +12,7 @@ from ...registry import check
 # Module API
 
 @check('non-castable-value')
-def non_castable_value(row_number, columns, state=None):
-    errors = []
+def non_castable_value(errors, columns, row_number, state=None):
     for column in copy(columns):
         if len(column) == 4:
             try:
@@ -21,10 +20,10 @@ def non_castable_value(row_number, columns, state=None):
             except jsontableschema.exceptions.JsonTableSchemaException:
                 # Add error
                 errors.append({
+                    'code': 'non-castable-value',
                     'message': 'Non castable value',
                     'row-number': row_number,
                     'column-number': column['number'],
                 })
                 # Remove column
                 columns.remove(column)
-    return errors

@@ -10,15 +10,14 @@ from ...registry import check
 # Module API
 
 @check('blank-header')
-def blank_header(columns, sample=None):
-    errors = []
+def blank_header(errors, columns, sample=None):
     for column in columns:
         if 'header' in column:
             if not column['header']:
                 # Add error
                 errors.append({
+                    'code': 'blank-header',
                     'message': 'Blank header',
                     'row-number': None,
                     'column-number': column['number'],
                 })
-    return errors

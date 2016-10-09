@@ -10,16 +10,25 @@ from goodtables import checks
 # Test
 
 def test_blank_header_good():
+    errors = []
     columns = [
         {'number': 1, 'header': 'name', 'field': None},
     ]
-    assert checks.blank_header(columns) == []
+    checks.blank_header(errors, columns)
+    assert len(errors) == 0
+    assert len(columns) == 1
 
 
 def test_blank_header_bad():
+    errors = []
     columns = [
         {'number': 1, 'header': '', 'field': None},
     ]
-    assert checks.blank_header(columns) == [
-        {'message': 'Blank header', 'row-number': None, 'column-number': 1},
+    checks.blank_header(errors, columns)
+    assert errors == [
+        {'code': 'blank-header',
+         'message': 'Blank header',
+         'row-number': None,
+         'column-number': 1},
     ]
+    assert len(columns) == 1

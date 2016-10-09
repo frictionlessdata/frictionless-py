@@ -102,7 +102,7 @@ class Inspector(object):
 
         # Prepare dataset
         dataset = []
-        for error in  profile_func(dataset, source, **options):
+        for error in profile_func(dataset, source, **options):
             fatal_error = True
             error.update({
                 'row': None,
@@ -219,12 +219,9 @@ class Inspector(object):
             for check in checks:
                 if not columns:
                     break
-                for error in check['func'](columns, sample):
-                    error.update({
-                        'row': None,
-                        'code': check['code'],
-                    })
-                    errors.append(error)
+                check['func'](errors, columns, sample)
+            for error in errors:
+                error['row'] = None
 
         # Body checks
         if not fatal_error:
@@ -250,12 +247,11 @@ class Inspector(object):
                         if not columns:
                             break
                         state = states.setdefault(check['code'], {})
-                        for error in check['func'](row_number, columns, state):
-                            error.update({
-                                'row': row,
-                                'code': check['code'],
-                            })
-                            errors.append(error)
+                        check['func'](errors, columns, row_number, state)
+                    for error in reversed(errors):
+                        if 'row' in error:
+                            break
+                        error['row'] = row
                     if len(errors) >= self.__error_limit:
                         break
 

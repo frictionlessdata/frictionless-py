@@ -10,9 +10,8 @@ from ....registry import check
 # Module API
 
 @check('unique-constraint')
-def unique_constraint(row_number, columns, state):
-    errors = []
+def unique_constraint(errors, columns, row_number, state):
+    # https://github.com/frictionlessdata/goodtables-py/issues/116
     for column in columns:
         if len(column) == 4:
             pass
-    return errors

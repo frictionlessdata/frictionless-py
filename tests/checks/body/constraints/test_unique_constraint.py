@@ -11,5 +11,8 @@ from goodtables import checks
 
 def test_unique_constraint():
     state = {}
+    errors = []
     columns = []
-    assert checks.unique_constraint(1, columns, state) == []
+    checks.unique_constraint(errors, columns, 1, state=state)
+    assert len(errors) == 0
+    assert len(columns) == 0

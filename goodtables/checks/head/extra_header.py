@@ -12,12 +12,12 @@ from ...registry import check
 # Module API
 
 @check('extra-header')
-def extra_header(columns, sample, infer_fields=False):
-    errors = []
+def extra_header(errors, columns, sample, infer_fields=False):
     for column in copy(columns):
         if 'field' not in column:
             # Add error
             errors.append({
+                'code': 'extra-header',
                 'message': 'Extra header',
                 'row-number': None,
                 'column-number': column['number'],
@@ -35,4 +35,3 @@ def extra_header(columns, sample, infer_fields=False):
             # Remove column
             else:
                 columns.remove(column)
-    return errors
