@@ -12,8 +12,7 @@ from ..registry import profile
 # Module API
 
 @profile('table')
-def table(dataset, source, schema=None, **options):
-    errors = []
+def table(errors, tables, source, schema=None, **options):
 
     # Validate schema
     if schema is not None:
@@ -31,9 +30,7 @@ def table(dataset, source, schema=None, **options):
 
     # Add table
     if not errors:
-        dataset.append({
+        tables.append({
             'table': Table(source, schema, **options),
             'extra': {},
         })
-
-    return errors

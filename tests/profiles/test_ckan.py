@@ -10,7 +10,8 @@ from goodtables import profiles
 # Test
 
 def test_ckan():
-    dataset = []
-    errors = profiles.ckan(dataset, 'http://data.surrey.ca')
-    assert len(dataset) == 8
+    errors = []
+    tables = []
+    profiles.ckan(errors, tables, 'http://data.surrey.ca')
     assert len(errors) == 0
+    assert len(tables) == 8

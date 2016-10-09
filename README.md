@@ -109,7 +109,7 @@ inspector = Inspector()
 inspector.inspect('datapackage.json', profile='datapackage')
 ```
 
-A profile proceses passed source and options and fills dataset with tables and extras for the following inspection. If any errors have happened a profile should add them to errors list.
+A profile proceses passed source and options and fills tables list for the following inspection. If any errors have happened a profile should add them to errors list.
 
 #### Builtin profiles
 
@@ -130,11 +130,10 @@ from jsontableschema import Table
 from goodtables import Inspector, profile
 
 @profile('custom-profile')
-def custom_profile(dataset, source, **options):
-    errors = []
+def custom_profile(errors, tables, source, **options):
     for table in source:
         try:
-            dataset.append({
+            tables.append({
                 'table': Table(...),
                 'extra': {...},
             })
@@ -143,7 +142,6 @@ def custom_profile(dataset, source, **options):
                 'code': 'error-code',
                 'message': 'Error message',
             })
-    return errors
 
 inspector = Inspector()
 inspector.inspect(source, profile='custom-profile')

@@ -7,6 +7,7 @@ from __future__ import unicode_literals
 import inspect
 import datetime
 import tabulator
+from copy import copy
 from functools import partial
 from six.moves import zip_longest
 from multiprocessing.pool import ThreadPool
@@ -87,11 +88,9 @@ class Inspector(object):
             profile = 'table'
 
         # Prepare vars
-        tables = []
-        extras = []
         errors = []
+        tables = []
         reports = []
-        fatal_error = False
 
         # Prepare profile
         try:
@@ -100,35 +99,21 @@ class Inspector(object):
             message = 'Profile "%s" is not registered' % profile
             raise exceptions.GoodtablesException(message)
 
-        # Prepare dataset
-        dataset = []
-        for error in profile_func(dataset, source, **options):
-            fatal_error = True
-            error.update({
-                'row': None,
-                'row-number': None,
-                'column-number': None,
-            })
-            errors.append(error)
-
-        # Prepare tables/reports
-        if not fatal_error:
-            for count, item in enumerate(dataset, start=1):
-                tables.append(item['table'])
-                extras.append(item['extra'])
-                if count >= self.__table_limit:
-                    break
+        # Prepare tables
+        profile_func(errors, tables, source, **options)
+        tables = tables[:self.__table_limit]
+        for error in errors:
+            error['row'] = None
 
         # Collect reports
-        if not fatal_error:
+        if not errors:
             tasks = []
             pool = ThreadPool(processes=len(tables))
             for table in tables:
                 tasks.append(pool.apply_async(
-                    self.__inspect_table, (table,)))
-            for task, extra in zip(tasks, extras):
+                    self.__inspect_table, (table['table'], table['extra'])))
+            for task in tasks:
                 report = task.get()
-                report.update(extra)
                 reports.append(report)
 
         # Stop timer
@@ -149,7 +134,7 @@ class Inspector(object):
 
     # Internal
 
-    def __inspect_table(self, table):
+    def __inspect_table(self, table, extra):
 
         # Start timer
         start = datetime.datetime.now()
@@ -260,14 +245,15 @@ class Inspector(object):
 
         # Compose report
         errors = errors[:self.__error_limit]
-        report = {
+        report = copy(extra)
+        report.update({
             'time': round((stop - start).total_seconds(), 3),
             'valid': not bool(errors),
             'error-count': len(errors),
             'row-count': row_number,
             'headers': headers,
             'errors': errors,
-        }
+        })
 
         return report
 

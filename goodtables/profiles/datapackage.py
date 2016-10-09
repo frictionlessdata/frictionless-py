@@ -12,8 +12,7 @@ from ..registry import profile
 # Module API
 
 @profile('datapackage')
-def datapackage(dataset, source, **options):
-    errors = []
+def datapackage(errors, tables, source, **options):
 
     # Validate datapackage
     datapackage = DataPackage(source, **options)
@@ -32,9 +31,7 @@ def datapackage(dataset, source, **options):
                 'datapackage': datapackage.descriptor.get('name'),
                 'resource': resource.descriptor.get('name'),
             }
-            dataset.append({
+            tables.append({
                 'table': table,
                 'extra': extra,
             })
-
-    return errors
