@@ -12,8 +12,10 @@ from ..registry import profile
 # Module API
 
 @profile('ckan')
-def ckan(source, **options):
-    dataset = []
+def ckan(dataset, source, **options):
+    errors = []
+
+    # Add tables
     url = '%s/api/3/action/package_search' % source
     data = requests.get(url).json()
     for package in data['result']['results']:
@@ -26,9 +28,9 @@ def ckan(source, **options):
                 'resource': resource['name'],
                 'publisher': package['organization']['name']
             }
-            # Add table
             dataset.append({
                 'table': table,
                 'extra': extra,
             })
-    return dataset
+
+    return errors

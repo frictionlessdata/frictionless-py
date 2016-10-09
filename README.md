@@ -109,7 +109,7 @@ inspector = Inspector()
 inspector.inspect('datapackage.json', profile='datapackage')
 ```
 
-A profile proceses passed source and options and return it as a dataset containing tables with extras for the following inspection.
+A profile proceses passed source and options and fills dataset with tables and extras for the following inspection. If any errors have happened a profile should return a list of them (an empty list otherwise).
 
 #### Builtin profiles
 
@@ -130,14 +130,20 @@ from jsontableschema import Table
 from goodtables import Inspector, profile
 
 @profile('custom-profile')
-def custom_profile(source, **options):
-    dataset = []
+def custom_profile(dataset, source, **options):
+    errors = []
     for table in source:
-        dataset.append({
-            'table': Table(...),
-            'extra': {...},
-        })
-    return dataset
+        try:
+            dataset.append({
+                'table': Table(...),
+                'extra': {...},
+            })
+        except Exception:
+            errors.append({
+                'code': 'error-code',
+                'message': 'Error message',
+            })
+    return errors
 
 inspector = Inspector()
 inspector.inspect(source, profile='custom-profile')
@@ -155,7 +161,7 @@ inspector = Inspector(checks={'bad-headers': False}) # exclude
 inspector = Inspector(checks={'bad-headers': True}) # cherry-pick
 ```
 
-Check gets input data from framework based on context (e.g. `columns` and `sample` for `head` context) and returns list of corresponding errors.
+Check gets input data from framework based on context (e.g. `columns, sample` for `head` context) and returns list of corresponding errors.
 
 #### Buitin checks
 

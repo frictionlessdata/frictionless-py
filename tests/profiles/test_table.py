@@ -10,5 +10,7 @@ from goodtables import profiles
 # Test
 
 def test_table():
-    dataset = profiles.table('data/valid.csv')
+    dataset = []
+    errors = profiles.table(dataset, 'data/valid.csv')
     assert len(dataset) == 1
+    assert len(errors) == 0

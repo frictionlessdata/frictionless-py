@@ -93,33 +93,31 @@ class Inspector(object):
         reports = []
         fatal_error = False
 
-        # Get profile function
+        # Prepare profile
         try:
             profile_func = registry.profiles[profile]
         except KeyError:
             message = 'Profile "%s" is not registered' % profile
             raise exceptions.GoodtablesException(message)
 
-        # Get tables/extras
-        try:
-            dataset = profile_func(source, **options)
+        # Prepare dataset
+        dataset = []
+        for error in  profile_func(dataset, source, **options):
+            fatal_error = True
+            error.update({
+                'row': None,
+                'row-number': None,
+                'column-number': None,
+            })
+            errors.append(error)
+
+        # Prepare tables/reports
+        if not fatal_error:
             for count, item in enumerate(dataset, start=1):
                 tables.append(item['table'])
                 extras.append(item['extra'])
                 if count >= self.__table_limit:
                     break
-        except Exception as exception:
-            fatal_error = True
-            checks = self.__get_checks(context='dataset')
-            for check in checks:
-                for error in check['func'](exception):
-                    error.update({
-                        'row': None,
-                        'code': check['code'],
-                    })
-                    errors.append(error)
-            if not errors:
-                raise
 
         # Collect reports
         if not fatal_error:

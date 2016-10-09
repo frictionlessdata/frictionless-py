@@ -10,5 +10,7 @@ from goodtables import profiles
 # Test
 
 def test_datapackage():
-    dataset = profiles.datapackage('data/datapackages/valid/datapackage.json')
+    dataset = []
+    errors = profiles.datapackage(dataset, 'data/datapackages/valid/datapackage.json')
     assert len(dataset) == 2
+    assert len(errors) == 0
