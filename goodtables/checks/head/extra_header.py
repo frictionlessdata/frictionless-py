@@ -15,13 +15,6 @@ from ...registry import check
 def extra_header(errors, columns, sample, infer_fields=False):
     for column in copy(columns):
         if 'field' not in column:
-            # Add error
-            errors.append({
-                'code': 'extra-header',
-                'message': 'Extra header',
-                'row-number': None,
-                'column-number': column['number'],
-            })
             # Infer field
             if infer_fields:
                 column_sample = []
@@ -32,6 +25,12 @@ def extra_header(errors, columns, sample, infer_fields=False):
                     column_sample.append(value)
                 descriptor = infer([column['header']], column_sample)
                 column['field'] = Schema(descriptor).fields[0]
-            # Remove column
+            # Add error/remove column
             else:
+                errors.append({
+                    'code': 'extra-header',
+                    'message': 'Extra header',
+                    'row-number': None,
+                    'column-number': column['number'],
+                })
                 columns.remove(column)
