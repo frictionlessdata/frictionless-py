@@ -141,6 +141,8 @@ def custom_profile(errors, tables, source, **options):
             errors.append({
                 'code': 'error-code',
                 'message': 'Error message',
+                'row-number': None,
+                'column-number': None,
             })
 
 inspector = Inspector()
@@ -180,6 +182,7 @@ from goodtables import Inspector, check
 def custom_check(errors, columns, row_number,  state=None):
     for column in columns:
         errors.append({
+            'code': 'custom-error',
             'message': 'Custom error',
             'row-number': row_number,
             'column-number': column['number'],
