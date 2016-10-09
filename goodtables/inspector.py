@@ -217,9 +217,9 @@ class Inspector(object):
         if not fatal_error:
             checks = self.__get_checks(context='head')
             for check in checks:
+                if not columns:
+                    break
                 for error in check['func'](columns, sample):
-                    if not columns:
-                        break
                     error.update({
                         'row': None,
                         'code': check['code'],
