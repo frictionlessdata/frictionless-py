@@ -21,6 +21,7 @@ from .inspector import Inspector
 @click.option('--infer-fields', is_flag=True)
 @click.pass_context
 def cli(ctx, json, **options):
+    options = {key: value for key, value in options.items() if value is not None}
     ctx.obj['inspector'] = Inspector(**options)
     ctx.obj['json'] = json
 

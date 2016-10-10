@@ -38,50 +38,32 @@ class Inspector(object):
     # Public
 
     def __init__(self,
-                 checks=None,
-                 table_limit=None,
-                 row_limit=None,
-                 error_limit=None,
-                 order_fields=None,
-                 infer_fields=None,
-                 custom_profiles=None,
-                 custom_checks=None):
-
-        # Defaults
-        if checks is None:
-            checks = 'all'
-        if table_limit is None:
-            table_limit = 10
-        if row_limit is None:
-            row_limit = 1000
-        if error_limit is None:
-            error_limit = 1000
-        if order_fields is None:
-            order_fields = False
-        if infer_fields is None:
-            infer_fields = False
-        if custom_profiles is None:
-            custom_profiles = []
-        if custom_checks is None:
-            custom_checks = []
+                 checks='all',
+                 table_limit=10,
+                 row_limit=1000,
+                 error_limit=1000,
+                 order_fields=False,
+                 infer_fields=False,
+                 custom_profiles=[],
+                 custom_checks=[]):
 
         # Set attributes
         self.__table_limit = table_limit
         self.__row_limit = row_limit
         self.__error_limit = error_limit
-        self.__order_fields = order_fields
-        self.__infer_fields = infer_fields
+        self.__order_fields = copy(order_fields)
+        self.__infer_fields = copy(infer_fields)
         self.__profiles = self.__prepare_profiles(custom_profiles)
         self.__checks = self.__prepare_checks(checks, custom_checks)
 
-    def inspect(self, source, profile=None, **options):
+    def inspect(self, source, profile='table', **options):
         """Inspect source with given profile and options.
 
         Args:
             source (mixed): source to inspect
             profile (str): dataset profile
                 supported profiles:
-                    - table (default)
+                    - table
                     - datapackage
                     - ckan
             options (dict): source options
@@ -93,10 +75,6 @@ class Inspector(object):
 
         # Start timer
         start = datetime.datetime.now()
-
-        # Defaults
-        if profile is None:
-            profile = 'table'
 
         # Prepare vars
         errors = []
