@@ -6,7 +6,7 @@ from __future__ import unicode_literals
 
 import jsontableschema
 from jsontableschema import Table, validate
-from ..registry import profile
+from ..register import profile
 
 
 # Module API

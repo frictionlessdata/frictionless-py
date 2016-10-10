@@ -145,7 +145,7 @@ def custom_profile(errors, tables, source, **options):
                 'column-number': None,
             })
 
-inspector = Inspector()
+inspector = Inspector(custom_profiles=[custom_profile])
 inspector.inspect(source, profile='custom-profile')
 ```
 
@@ -189,7 +189,7 @@ def custom_check(errors, columns, row_number,  state=None):
         })
         columns.remove(column)
 
-inspector = Inspector(checks='structure')
+inspector = Inspector(custom_checks=[custom_check])
 ```
 See builtin checks to learn more about checking protocol.
 
@@ -246,7 +246,9 @@ Inspector(checks='all',
           row_limit=1000,
           error_limit=1000,
           order_fields=False,
-          infer_fields=False)
+          infer_fields=False,
+          custom_profiles=[],
+          custom_checks=[])
     inspect(source, profile='table', **options)
 ~@profile(name)
 ~@check(error)

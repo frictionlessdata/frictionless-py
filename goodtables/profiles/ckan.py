@@ -6,7 +6,7 @@ from __future__ import unicode_literals
 
 import requests
 from jsontableschema import Table
-from ..registry import profile
+from ..register import profile
 
 
 # Module API

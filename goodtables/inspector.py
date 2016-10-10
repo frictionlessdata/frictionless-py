@@ -4,16 +4,20 @@ from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
+import io
+import os
+import json
 import inspect
 import datetime
 import tabulator
 from copy import copy
+from itertools import chain
 from functools import partial
 from six.moves import zip_longest
 from multiprocessing.pool import ThreadPool
+from . import profiles as profiles_module
+from . import checks as checks_module
 from . import exceptions
-from . import registry
-registry.register_builtin()
 
 
 # Module API
@@ -39,7 +43,9 @@ class Inspector(object):
                  row_limit=None,
                  error_limit=None,
                  order_fields=None,
-                 infer_fields=None):
+                 infer_fields=None,
+                 custom_profiles=None,
+                 custom_checks=None):
 
         # Defaults
         if checks is None:
@@ -54,6 +60,10 @@ class Inspector(object):
             order_fields = False
         if infer_fields is None:
             infer_fields = False
+        if custom_profiles is None:
+            custom_profiles = []
+        if custom_checks is None:
+            custom_checks = []
 
         # Set attributes
         self.__table_limit = table_limit
@@ -61,7 +71,8 @@ class Inspector(object):
         self.__error_limit = error_limit
         self.__order_fields = order_fields
         self.__infer_fields = infer_fields
-        self.__checks = self.__prepare_checks(checks)
+        self.__profiles = self.__prepare_profiles(custom_profiles)
+        self.__checks = self.__prepare_checks(checks, custom_checks)
 
     def inspect(self, source, profile=None, **options):
         """Inspect source with given profile and options.
@@ -94,7 +105,7 @@ class Inspector(object):
 
         # Prepare profile
         try:
-            profile_func = registry.profiles[profile]
+            profile_func = self.__profiles[profile]
         except KeyError:
             message = 'Profile "%s" is not registered' % profile
             raise exceptions.GoodtablesException(message)
@@ -257,14 +268,43 @@ class Inspector(object):
 
         return report
 
-    def __prepare_checks(self, config):
+    def __prepare_profiles(self, custom):
+
+        # Prepare profiles
+        profiles = {}
+        for profile in chain(vars(profiles_module).values(), custom):
+            descriptor = getattr(profile, 'profile', None)
+            if descriptor:
+                profiles[descriptor['name']] = profile
+
+        return profiles
+
+    def __prepare_checks(self, config, custom):
+
+        # Prepare errors/checkmap
+        errors = []
+        checkmap = {}
+        base = os.path.dirname(__file__)
+        path = os.path.join(base, 'spec.json')
+        spec = json.load(io.open(path, encoding='utf-8'))
+        errors.extend(spec['errors'])
+        for check in chain(vars(checks_module).values(), custom):
+            descriptor = getattr(check, 'check', None)
+            if descriptor:
+                error = descriptor['error']
+                errormap = {error['code']: index for index, error in enumerate(errors)}
+                if descriptor['before'] in errormap:
+                    errors.insert(errormap[descriptor['before']], error)
+                if descriptor['after'] in errormap:
+                    errors.insert(errormap[descriptor['after']] + 1, error)
+                checkmap[error['code']] = check
 
         # Prepare checks
         checks = []
-        for error in registry.errors:
-            if error['code'] in registry.checks:
+        for error in errors:
+            if error['code'] in checkmap:
                 checks.append({
-                    'func': registry.checks[error['code']],
+                    'func': checkmap[error['code']],
                     'code': error['code'],
                     'type': error['type'],
                     'context': error['context'],
