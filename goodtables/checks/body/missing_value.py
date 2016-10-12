@@ -15,9 +15,11 @@ def missing_value(errors, columns, row_number, state=None):
     for column in copy(columns):
         if 'value' not in column:
             # Add error
+            message = 'Row %s has missing value in column %s'
+            message = message % (row_number, column['number'])
             errors.append({
                 'code': 'missing-value',
-                'message': 'Missing value',
+                'message': message,
                 'row-number': row_number,
                 'column-number': column['number'],
             })

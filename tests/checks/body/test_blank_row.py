@@ -22,7 +22,7 @@ def test_blank_row():
     assert len(columns) == 1
 
 
-def test_blank_row_problem():
+def test_blank_row_problem(log):
     errors = []
     columns = [
         {'number': 1,
@@ -31,10 +31,7 @@ def test_blank_row_problem():
          'field': None},
     ]
     checks.blank_row(errors, columns, 1)
-    assert errors == [
-        {'code': 'blank-row',
-         'message': 'Blank row',
-         'row-number': 1,
-         'column-number': None},
+    assert log(errors) == [
+        (1, None, 'blank-row'),
     ]
     assert len(columns) == 0

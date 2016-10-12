@@ -31,7 +31,7 @@ def test_duplicate_row():
     assert len(columns2) == 1
 
 
-def test_duplicate_row_problem():
+def test_duplicate_row_problem(log):
     errors = []
     columns1 = [
         {'number': 1,
@@ -48,11 +48,8 @@ def test_duplicate_row_problem():
     state = {}
     checks.duplicate_row(errors, columns1, 1, state=state)
     checks.duplicate_row(errors, columns2, 2, state=state)
-    assert errors == [
-        {'code': 'duplicate-row',
-         'message': 'Duplicate row: [1]',
-         'row-number': 2,
-         'column-number': None},
+    assert log(errors) == [
+        (2, None, 'duplicate-row'),
     ]
     assert len(columns1) == 1
     assert len(columns2) == 0

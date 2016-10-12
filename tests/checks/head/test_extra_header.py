@@ -13,8 +13,12 @@ from goodtables import checks
 def test_extra_header():
     errors = []
     columns = [
-        {'number': 1, 'header': 'name1', 'field': Field({'name': 'name1'})},
-        {'number': 2, 'header': 'name2', 'field': Field({'name': 'name2'})},
+        {'number': 1,
+         'header': 'name1',
+         'field': Field({'name': 'name1'})},
+        {'number': 2,
+         'header': 'name2',
+         'field': Field({'name': 'name2'})},
     ]
     sample = []
     checks.extra_header(errors, columns, sample=sample)
@@ -22,31 +26,34 @@ def test_extra_header():
     assert len(columns) == 2
 
 
-def test_extra_header_problem():
-    errors = []
-    columns = [
-        {'number': 1, 'header': 'name1', 'field': Field({'name': 'name1'})},
-        {'number': 2, 'header': 'name2'},
-    ]
-    sample = []
-    checks.extra_header(errors, columns, sample=sample)
-    assert errors == [
-        {'code': 'extra-header',
-         'message': 'Extra header',
-         'row-number': None,
-         'column-number': 2},
-    ]
-    assert len(columns) == 1
-
-
 def test_extra_header_infer():
     errors = []
     columns = [
-        {'number': 1, 'header': 'name1', 'field': Field({'name': 'name1'})},
-        {'number': 2, 'header': 'name2'},
+        {'number': 1,
+         'header': 'name1',
+         'field': Field({'name': 'name1'})},
+        {'number': 2,
+         'header': 'name2'},
     ]
     sample = []
     checks.extra_header(errors, columns, sample=sample, infer_fields=True)
     assert len(errors) == 0
     assert len(columns) == 2
     assert columns[1]['field'].name == 'name2'
+
+
+def test_extra_header_problem(log):
+    errors = []
+    columns = [
+        {'number': 1,
+         'header': 'name1',
+         'field': Field({'name': 'name1'})},
+        {'number': 2,
+         'header': 'name2'},
+    ]
+    sample = []
+    checks.extra_header(errors, columns, sample=sample)
+    assert log(errors) == [
+        (None, 2, 'extra-header'),
+    ]
+    assert len(columns) == 1

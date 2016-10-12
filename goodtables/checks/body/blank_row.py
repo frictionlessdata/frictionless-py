@@ -13,9 +13,10 @@ from ...register import check
 def blank_row(errors, columns, row_number, state=None):
     if not list(filter(lambda column: column.get('value'), columns)):
         # Add error
+        message = 'Row %s is completely blank' % row_number
         errors.append({
             'code': 'blank-row',
-            'message': 'Blank row',
+            'message': message,
             'row-number': row_number,
             'column-number': None,
         })

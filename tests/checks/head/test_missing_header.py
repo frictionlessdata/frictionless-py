@@ -13,25 +13,29 @@ from goodtables import checks
 def test_missing_header():
     errors = []
     columns = [
-        {'number': 1, 'header': 'name1', 'field': Field({'name': 'name1'})},
-        {'number': 2, 'header': 'name2', 'field': Field({'name': 'name2'})},
+        {'number': 1,
+         'header': 'name1',
+         'field': Field({'name': 'name1'})},
+        {'number': 2,
+         'header': 'name2',
+         'field': Field({'name': 'name2'})},
     ]
     checks.missing_header(errors, columns)
     assert len(errors) == 0
     assert len(columns) == 2
 
 
-def test_missing_header_problem():
+def test_missing_header_problem(log):
     errors = []
     columns = [
-        {'number': 1, 'header': 'name1', 'field': Field({'name': 'name1'})},
-        {'number': 2, 'field': Field({'name': 'name2'})},
+        {'number': 1,
+         'header': 'name1',
+         'field': Field({'name': 'name1'})},
+        {'number': 2,
+         'field': Field({'name': 'name2'})},
     ]
     checks.missing_header(errors, columns)
-    assert errors == [
-        {'code': 'missing-header',
-         'message': 'Missing header',
-         'row-number': None,
-         'column-number': 2},
+    assert log(errors) == [
+        (None, 2, 'missing-header'),
     ]
     assert len(columns) == 1

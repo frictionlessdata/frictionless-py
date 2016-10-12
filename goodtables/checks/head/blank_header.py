@@ -15,9 +15,10 @@ def blank_header(errors, columns, sample=None):
         if 'header' in column:
             if not column['header']:
                 # Add error
+                message = 'Header in column %s is completely blank' % column['number']
                 errors.append({
                     'code': 'blank-header',
-                    'message': 'Blank header',
+                    'message': message,
                     'row-number': None,
                     'column-number': column['number'],
                 })

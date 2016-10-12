@@ -23,7 +23,7 @@ def test_non_castable_value():
     assert columns[0]['value'] == 1
 
 
-def test_non_castable_value_problem():
+def test_non_castable_value_problem(log):
     errors = []
     columns = [
         {'number': 1,
@@ -32,10 +32,7 @@ def test_non_castable_value_problem():
          'field': Field({'name': 'name', 'type': 'integer'})},
     ]
     checks.non_castable_value(errors, columns, 1)
-    assert errors == [
-        {'code': 'non-castable-value',
-         'message': 'Non castable value',
-         'row-number': 1,
-         'column-number': 1},
+    assert log(errors) == [
+        (1, 1, 'non-castable-value'),
     ]
     assert len(columns) == 0

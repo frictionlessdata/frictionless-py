@@ -27,9 +27,10 @@ def extra_header(errors, columns, sample, infer_fields=False):
                 column['field'] = Schema(descriptor).fields[0]
             # Add error/remove column
             else:
+                message = 'Headers have extra header in column %s' % column['number']
                 errors.append({
                     'code': 'extra-header',
-                    'message': 'Extra header',
+                    'message': message,
                     'row-number': None,
                     'column-number': column['number'],
                 })

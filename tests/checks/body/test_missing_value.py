@@ -27,7 +27,7 @@ def test_missing_value():
     assert len(columns) == 2
 
 
-def test_missing_value_problem():
+def test_missing_value_problem(log):
     errors = []
     columns = [
         {'number': 1,
@@ -39,10 +39,7 @@ def test_missing_value_problem():
          'field': None},
     ]
     checks.missing_value(errors, columns, 1)
-    assert errors == [
-        {'code': 'missing-value',
-         'message': 'Missing value',
-         'row-number': 1,
-         'column-number': 2},
+    assert log(errors) == [
+        (1, 2, 'missing-value'),
     ]
     assert len(columns) == 1

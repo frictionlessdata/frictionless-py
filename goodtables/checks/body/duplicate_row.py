@@ -17,9 +17,11 @@ def duplicate_row(errors, columns, row_number, state):
     references = rindex.setdefault(pointer, [])
     if references:
         # Add error
+        message = 'Row %s is duplicated to row(s) %s'
+        message = message % (row_number, ', '.join(map(str, references)))
         errors.append({
             'code': 'duplicate-row',
-            'message': 'Duplicate row: %s' % references,
+            'message': message,
             'row-number': row_number,
             'column-number': None,
         })

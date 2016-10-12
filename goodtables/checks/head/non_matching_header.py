@@ -19,9 +19,11 @@ def non_matching_header(errors, columns, sample=None, order_fields=False):
             if len(column) == 3:
                 if column['header'] != column['field'].name:
                     # Add error
+                    message = 'Header in column %s doesn\'t match field name (name: %s)'
+                    message = message % (column['number'], column['field'].name)
                     errors.append({
                         'code': 'non-matching-header',
-                        'message': 'Non matching header',
+                        'message': message,
                         'row-number': None,
                         'column-number': column['number'],
                     })

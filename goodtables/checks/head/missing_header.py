@@ -15,9 +15,10 @@ def missing_header(errors, columns, sample=None):
     for column in copy(columns):
         if 'header' not in column:
             # Add error
+            message = 'Headers have missing header in column %s' % column['number']
             errors.append({
                 'code': 'missing-header',
-                'message': 'Missing header',
+                'message': message,
                 'row-number': None,
                 'column-number': column['number'],
             })

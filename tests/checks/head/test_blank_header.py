@@ -9,26 +9,27 @@ from goodtables import checks
 
 # Test
 
-def test_blank_header_good():
+def test_blank_header():
     errors = []
     columns = [
-        {'number': 1, 'header': 'name', 'field': None},
+        {'number': 1,
+         'header': 'name',
+         'field': None},
     ]
     checks.blank_header(errors, columns)
     assert len(errors) == 0
     assert len(columns) == 1
 
 
-def test_blank_header_bad():
+def test_blank_header_problem(log):
     errors = []
     columns = [
-        {'number': 1, 'header': '', 'field': None},
+        {'number': 1,
+         'header': '',
+         'field': None},
     ]
     checks.blank_header(errors, columns)
-    assert errors == [
-        {'code': 'blank-header',
-         'message': 'Blank header',
-         'row-number': None,
-         'column-number': 1},
+    assert log(errors) == [
+        (None, 1, 'blank-header'),
     ]
     assert len(columns) == 1

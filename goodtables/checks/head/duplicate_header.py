@@ -11,16 +11,18 @@ from ...register import check
 
 @check('duplicate-header')
 def duplicate_header(errors, columns, sample=None):
-    headers = set()
+    rindex = {}
     for column in columns:
         if 'header' in column:
-            if column['header'] in headers:
+            references = rindex.setdefault(column['header'], [])
+            if references:
                 # Add error
+                message = 'Header in column %s is duplicated to header in column(s) %s'
+                message = message % (column['number'], ', '.join(map(str, references)))
                 errors.append({
                     'code': 'duplicate-header',
-                    'message': 'Duplicate header',
+                    'message': message,
                     'row-number': None,
                     'column-number': column['number'],
                 })
-                continue
-            headers.add(column['header'])
+            references.append(column['number'])

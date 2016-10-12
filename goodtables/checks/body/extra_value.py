@@ -15,9 +15,11 @@ def extra_value(errors, columns, row_number, state=None):
     for column in copy(columns):
         if 'header' not in column:
             # Add error
+            message = 'Row %s has extra value in column %s'
+            message = message % (row_number, column['number'])
             errors.append({
                 'code': 'extra-value',
-                'message': 'Extra value',
+                'message': message,
                 'row-number': row_number,
                 'column-number': column['number'],
             })

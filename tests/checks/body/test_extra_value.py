@@ -27,7 +27,7 @@ def test_extra_value():
     assert len(columns) == 2
 
 
-def test_extra_value_problem():
+def test_extra_value_problem(log):
     errors = []
     columns = [
         {'number': 1,
@@ -38,10 +38,7 @@ def test_extra_value_problem():
          'value': 'value'},
     ]
     checks.extra_value(errors, columns, 1)
-    assert errors == [
-        {'code': 'extra-value',
-         'message': 'Extra value',
-         'row-number': 1,
-         'column-number': 2, },
+    assert log(errors) == [
+        (1, 2, 'extra-value'),
     ]
     assert len(columns) == 1

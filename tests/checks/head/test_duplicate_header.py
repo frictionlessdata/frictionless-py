@@ -9,28 +9,33 @@ from goodtables import checks
 
 # Test
 
-def test_duplicate_header_good():
+def test_duplicate_header():
     errors = []
     columns = [
-        {'number': 1, 'header': 'name1', 'field': None},
-        {'number': 2, 'header': 'name2', 'field': None},
+        {'number': 1,
+         'header': 'name1',
+         'field': None},
+        {'number': 2,
+         'header': 'name2',
+         'field': None},
     ]
     checks.duplicate_header(errors, columns)
     assert len(errors) == 0
     assert len(columns) == 2
 
 
-def test_duplicate_header_bad():
+def test_duplicate_header_problem(log):
     errors = []
     columns = [
-        {'number': 1, 'header': 'name', 'field': None},
-        {'number': 2, 'header': 'name', 'field': None},
+        {'number': 1,
+         'header': 'name',
+         'field': None},
+        {'number': 2,
+         'header': 'name',
+         'field': None},
     ]
     checks.duplicate_header(errors, columns)
-    assert errors == [
-        {'code': 'duplicate-header',
-         'message': 'Duplicate header',
-         'row-number': None,
-         'column-number': 2},
+    assert log(errors) == [
+        (None, 2, 'duplicate-header'),
     ]
     assert len(columns) == 2
