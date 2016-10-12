@@ -10,7 +10,7 @@ from goodtables import checks
 
 # Test
 
-def test_non_matching_header():
+def test_non_matching_header(log):
     errors = []
     columns = [
         {'number': 1,
@@ -23,7 +23,7 @@ def test_non_matching_header():
          'header': 'name3'},
     ]
     checks.non_matching_header(errors, columns)
-    assert len(errors) == 0
+    assert log(errors) == []
     assert len(columns) == 3
 
 

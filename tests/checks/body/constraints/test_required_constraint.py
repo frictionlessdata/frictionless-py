@@ -9,9 +9,9 @@ from goodtables import checks
 
 # Test
 
-def test_required_constraint():
+def test_required_constraint(log):
     errors = []
     columns = []
     checks.required_constraint(errors, columns, 1)
-    assert len(errors) == 0
+    assert log(errors) == []
     assert len(columns) == 0

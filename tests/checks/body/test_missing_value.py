@@ -10,7 +10,7 @@ from goodtables import checks
 
 # Test
 
-def test_missing_value():
+def test_missing_value(log):
     errors = []
     columns = [
         {'number': 1,
@@ -23,7 +23,7 @@ def test_missing_value():
          'field': None},
     ]
     checks.missing_value(errors, columns, 1)
-    assert len(errors) == 0
+    assert log(errors) == []
     assert len(columns) == 2
 
 

@@ -10,7 +10,7 @@ from goodtables import checks
 
 # Test
 
-def test_extra_header():
+def test_extra_header(log):
     errors = []
     columns = [
         {'number': 1,
@@ -22,11 +22,11 @@ def test_extra_header():
     ]
     sample = []
     checks.extra_header(errors, columns, sample=sample)
-    assert len(errors) == 0
+    assert log(errors) == []
     assert len(columns) == 2
 
 
-def test_extra_header_infer():
+def test_extra_header_infer(log):
     errors = []
     columns = [
         {'number': 1,
@@ -37,7 +37,7 @@ def test_extra_header_infer():
     ]
     sample = []
     checks.extra_header(errors, columns, sample=sample, infer_fields=True)
-    assert len(errors) == 0
+    assert log(errors) == []
     assert len(columns) == 2
     assert columns[1]['field'].name == 'name2'
 

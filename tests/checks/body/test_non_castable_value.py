@@ -9,7 +9,7 @@ from goodtables import checks
 
 # Test
 
-def test_non_castable_value():
+def test_non_castable_value(log):
     errors = []
     columns = [
         {'number': 1,
@@ -18,7 +18,7 @@ def test_non_castable_value():
          'field': Field({'name': 'name', 'type': 'integer'})},
     ]
     checks.non_castable_value(errors, columns, 1)
-    assert len(errors) == 0
+    assert log(errors) == []
     assert len(columns) == 1
     assert columns[0]['value'] == 1
 

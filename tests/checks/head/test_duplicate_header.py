@@ -9,7 +9,7 @@ from goodtables import checks
 
 # Test
 
-def test_duplicate_header():
+def test_duplicate_header(log):
     errors = []
     columns = [
         {'number': 1,
@@ -20,7 +20,7 @@ def test_duplicate_header():
          'field': None},
     ]
     checks.duplicate_header(errors, columns)
-    assert len(errors) == 0
+    assert log(errors) == []
     assert len(columns) == 2
 
 

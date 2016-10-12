@@ -9,10 +9,10 @@ from goodtables import checks
 
 # Test
 
-def test_unique_constraint():
+def test_unique_constraint(log):
     state = {}
     errors = []
     columns = []
     checks.unique_constraint(errors, columns, 1, state=state)
-    assert len(errors) == 0
+    assert log(errors) == []
     assert len(columns) == 0

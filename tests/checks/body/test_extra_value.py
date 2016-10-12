@@ -10,7 +10,7 @@ from goodtables import checks
 
 # Test
 
-def test_extra_value():
+def test_extra_value(log):
     errors = []
     columns = [
         {'number': 1,
@@ -23,7 +23,7 @@ def test_extra_value():
          'field': None},
     ]
     checks.extra_value(errors, columns, 1)
-    assert len(errors) == 0
+    assert log(errors) == []
     assert len(columns) == 2
 
 
