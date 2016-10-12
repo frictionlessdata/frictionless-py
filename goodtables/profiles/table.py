@@ -26,6 +26,8 @@ def table(errors, tables, source, schema=None, **options):
                 errors.append({
                     'code': 'jsontableschema-error',
                     'message': str(error),
+                    'row-number': None,
+                    'column-number': None,
                 })
 
     # Add table

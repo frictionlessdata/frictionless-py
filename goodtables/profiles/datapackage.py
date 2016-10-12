@@ -19,7 +19,9 @@ def datapackage(errors, tables, source, **options):
     for exception in datapackage.iter_errors():
         errors.append({
             'code': 'datapackage-error',
-            'message': str(exception),
+            'message': str(exception).splitlines()[0],
+            'row-number': None,
+            'column-number': None,
         })
 
     # Add tables
