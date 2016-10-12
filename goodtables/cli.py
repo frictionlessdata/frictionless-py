@@ -67,6 +67,7 @@ def _print_report(report, json=False):
     if errors:
         click.secho('-'*9, bold=True)
     for error in errors:
+        error = {key: value or '-' for key, value in error.items()}
         template = '[{row-number},{column-number}] [{code}] {message}'
         message = template.format(**error)
         click.secho(message)
@@ -79,6 +80,7 @@ def _print_report(report, json=False):
         if errors:
             click.secho('-'*9, bold=True)
         for error in errors:
+            error = {key: value or '-' for key, value in error.items()}
             template = '[{row-number},{column-number}] [{code}] {message}'
             message = template.format(**error)
             click.secho(message)
