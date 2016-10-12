@@ -1,6 +1,6 @@
 from pprint import pprint
-from goodtables import Inspector, exceptions
+from goodtables import Inspector
 
 inspector = Inspector()
-pprint(inspector.inspect(
-    'data/datapackages/valid/datapackage.json', profile='datapackage'))
+report = inspector.inspect('data/datapackages/valid/datapackage.json', profile='datapackage')
+pprint(report)
