@@ -204,8 +204,6 @@ class Inspector(object):
             colmap = {column['number']: column for column in columns}
             with stream:
                 for row_number, headers, row in stream.iter(extended=True):
-                    if row_number >= self.__row_limit:
-                        break
                     columns = []
                     iterator = zip_longest(headers, row, fillvalue=_FILLVALUE)
                     for number, (header, value) in enumerate(iterator, start=1):
@@ -226,6 +224,8 @@ class Inspector(object):
                         if 'row' in error:
                             break
                         error['row'] = row
+                    if row_number >= self.__row_limit:
+                        break
                     if len(errors) >= self.__error_limit:
                         break
 
