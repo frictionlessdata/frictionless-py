@@ -16,7 +16,7 @@ def log():
         result = []
         def pack_error(error, table_number='skip'):
             error = [error['row-number'], error['column-number'], error['code']]
-            if table_number is not 'skip':
+            if table_number != 'skip':
                 error = [table_number] + error
             return tuple(error)
         if isinstance(struct, list):
