@@ -13,12 +13,13 @@ from .inspector import Inspector
 # Module API
 
 @click.group()
-@click.option('--json', is_flag=True)
+@click.option('--checks')
 @click.option('--table-limit', type=int)
 @click.option('--row-limit', type=int)
 @click.option('--error-limit', type=int)
 @click.option('--order-fields', is_flag=True)
 @click.option('--infer-fields', is_flag=True)
+@click.option('--json', is_flag=True)
 @click.pass_context
 def cli(ctx, json, **options):
     options = {key: value for key, value in options.items() if value is not None}
