@@ -32,6 +32,7 @@ def cli(ctx, json, **options):
 def ckan(ctx, source, **options):
     report = ctx.obj['inspector'].inspect(source, profile='ckan', **options)
     _print_report(report, json=ctx.obj['json'])
+    exit(not report['valid'])
 
 
 @cli.command()
@@ -40,6 +41,7 @@ def ckan(ctx, source, **options):
 def datapackage(ctx, source, **options):
     report = ctx.obj['inspector'].inspect(source, profile='datapackage', **options)
     _print_report(report, json=ctx.obj['json'])
+    exit(not report['valid'])
 
 
 @cli.command()
@@ -49,6 +51,7 @@ def datapackage(ctx, source, **options):
 def table(ctx, source, **options):
     report = ctx.obj['inspector'].inspect(source, profile='table', **options)
     _print_report(report, json=ctx.obj['json'])
+    exit(not report['valid'])
 
 
 # Internal
