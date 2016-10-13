@@ -25,7 +25,7 @@ def table(errors, tables, source, schema=None, **options):
             for error in exception.errors:
                 errors.append({
                     'code': 'jsontableschema-error',
-                    'message': str(error),
+                    'message': str(error).splitlines()[0],
                     'row-number': None,
                     'column-number': None,
                 })
