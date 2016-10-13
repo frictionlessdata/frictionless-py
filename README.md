@@ -117,7 +117,6 @@ Goodtables by default supports the following profiles:
 
 - table
 - datapackage
-- ckan
 
 #### Custom profiles
 
@@ -213,7 +212,6 @@ Options:
   --help                 Show this message and exit.
 
 Commands:
-  ckan
   datapackage
   table
 ```

@@ -31,15 +31,6 @@ def cli(ctx, json, **options):
 @cli.command()
 @click.argument('source')
 @click.pass_context
-def ckan(ctx, source, **options):
-    report = ctx.obj['inspector'].inspect(source, profile='ckan', **options)
-    _print_report(report, json=ctx.obj['json'])
-    exit(not report['valid'])
-
-
-@cli.command()
-@click.argument('source')
-@click.pass_context
 def datapackage(ctx, source, **options):
     report = ctx.obj['inspector'].inspect(source, profile='datapackage', **options)
     _print_report(report, json=ctx.obj['json'])

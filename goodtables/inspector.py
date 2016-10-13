@@ -65,7 +65,6 @@ class Inspector(object):
                 supported profiles:
                     - table
                     - datapackage
-                    - ckan
             options (dict): source options
 
         Returns:
