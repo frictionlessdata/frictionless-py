@@ -1,0 +1,130 @@
+{
+    "version": "0.1.0",
+    "errors": [
+        {
+          "code": "io-error",
+          "type": "source",
+          "context": "any"
+        },
+        {
+          "code": "http-error",
+          "type": "source",
+          "context": "any"
+        },
+        {
+          "code": "datapackage-error",
+          "type": "source",
+          "context": "dataset"
+        },
+        {
+          "code": "jsontableschema-error",
+          "type": "source",
+          "context": "dataset"
+        },
+        {
+          "code": "scheme-error",
+          "type": "source",
+          "context": "table"
+        },
+        {
+          "code": "format-error",
+          "type": "source",
+          "context": "table"
+        },
+        {
+          "code": "encoding-error",
+          "type": "source",
+          "context": "table"
+        },
+        {
+          "code": "blank-header",
+          "type": "structure",
+          "context": "head"
+        },
+        {
+          "code": "duplicate-header",
+          "type": "structure",
+          "context": "head"
+        },
+        {
+          "code": "non-matching-header",
+          "type": "schema",
+          "context": "head"
+        },
+        {
+          "code": "extra-header",
+          "type": "schema",
+          "context": "head"
+        },
+        {
+          "code": "missing-header",
+          "type": "schema",
+          "context": "head"
+        },
+        {
+          "code": "blank-row",
+          "type": "structure",
+          "context": "body"
+        },
+        {
+          "code": "duplicate-row",
+          "type": "structure",
+          "context": "body"
+        },
+        {
+          "code": "extra-value",
+          "type": "structure",
+          "context": "body"
+        },
+        {
+          "code": "missing-value",
+          "type": "structure",
+          "context": "body"
+        },
+        {
+          "code": "required-constraint",
+          "type": "schema",
+          "context": "body"
+        },
+        {
+          "code": "pattern-constraint",
+          "type": "schema",
+          "context": "body"
+        },
+        {
+          "code": "non-castable-value",
+          "type": "schema",
+          "context": "body"
+        },
+        {
+          "code": "unique-constraint",
+          "type": "schema",
+          "context": "body"
+        },
+        {
+          "code": "enumerable-constraint",
+          "type": "schema",
+          "context": "body"
+        },
+        {
+          "code": "minimum-constraint",
+          "type": "schema",
+          "context": "body"
+        },
+        {
+          "code": "maximum-constraint",
+          "type": "schema",
+          "context": "body"
+        },
+        {
+          "code": "minimum-length-constraint",
+          "type": "schema",
+          "context": "body"
+        },
+        {
+          "code": "maximum-length-constraint",
+          "type": "schema",
+          "context": "body"
+        }
+    ]
+}

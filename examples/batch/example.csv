@@ -1,5 +1,0 @@
-data,schema,format
-https://raw.githubusercontent.com/okfn/goodtables/master/examples/contacts/people.csv,https://raw.githubusercontent.com/okfn/goodtables/master/examples/contacts/schema_valid.json,csv
-https://raw.githubusercontent.com/okfn/goodtables/master/examples/required_false.csv,https://raw.githubusercontent.com/okfn/goodtables/master/examples/test_schema.json,csv
-https://raw.githubusercontent.com/okfn/goodtables/master/examples/row_limit_structure.csv,,csv
-https://raw.githubusercontent.com/okfn/goodtables/master/examples/april-to-may-12th-2010.xls,,excel

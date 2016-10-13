@@ -4,8 +4,5 @@ from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
-import goodtables
-
-
-def test_cli():
-    pass
+from .datapackage import datapackage
+from .table import table
