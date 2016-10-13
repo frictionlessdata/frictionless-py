@@ -46,6 +46,11 @@ setup(
     install_requires=INSTALL_REQUIRES,
     tests_require=TESTS_REQUIRE,
     extras_require={'develop': TESTS_REQUIRE},
+    entry_points={
+        'console_scripts': [
+            'goodtables = goodtables.cli:cli',
+        ]
+    },
     zip_safe=False,
     long_description=README,
     description='Goodtables is a framework to inspect tabular data.',
@@ -54,7 +59,13 @@ setup(
     url='https://github.com/frictionlessdata/goodtables',
     license='MIT',
     keywords=[
-        'data',
+        'data validation',
+        'frictionless data',
+        'open data',
+        'json schema',
+        'json table schema',
+        'data package',
+        'tabular data package',
     ],
     classifiers=[
         'Development Status :: 4 - Beta',

@@ -23,6 +23,7 @@ from .inspector import Inspector
 @click.pass_context
 def cli(ctx, json, **options):
     options = {key: value for key, value in options.items() if value is not None}
+    ctx.obj = {}
     ctx.obj['inspector'] = Inspector(**options)
     ctx.obj['json'] = json
 
@@ -90,4 +91,4 @@ def _print_report(report, json=False):
 # Main program
 
 if __name__ == '__main__':
-    cli(obj={})
+    cli()

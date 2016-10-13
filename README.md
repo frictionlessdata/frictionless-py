@@ -200,7 +200,7 @@ See builtin checks to learn more about checking protocol.
 All common goodtables tasks could be done using a command-line interface (command per profile):
 
 ```
-$ python -m goodtables.cli
+$ goodtables
 Usage: cli.py [OPTIONS] COMMAND [ARGS]...
 
 Options:
@@ -221,7 +221,7 @@ Commands:
 For example write a following command to the shell:
 
 ```
-$ python -m goodtables.cli table data/invalid.csv
+$ goodtables table data/invalid.csv
 ```
 
 And a report (the same as in the initial example) will be printed to the standard output.
