@@ -145,22 +145,17 @@ class Inspector(object):
             sample = stream.sample
         except Exception as exception:
             fatal_error = True
-            # https://github.com/frictionlessdata/goodtables-py/issues/115
-            if isinstance(exception, tabulator.exceptions.TabulatorException):
-                code = 'io-error'
-                message = 'IO error'
-            elif isinstance(exception, tabulator.exceptions.TabulatorException):
-                code = 'http-error'
-                message = 'HTTP error'
-            elif isinstance(exception, tabulator.exceptions.TabulatorException):
+            message = str(exception)
+            if isinstance(exception, tabulator.exceptions.SchemeError):
                 code = 'scheme-error'
-                message = 'Scheme error'
-            elif isinstance(exception, tabulator.exceptions.TabulatorException):
+            elif isinstance(exception, tabulator.exceptions.FormatError):
                 code = 'format-error'
-                message = 'Format error'
-            elif isinstance(exception, tabulator.exceptions.TabulatorException):
+            elif isinstance(exception, tabulator.exceptions.EncodingError):
                 code = 'encoding-error'
-                message = 'Encoding error'
+            elif isinstance(exception, tabulator.exceptions.IOError):
+                code = 'io-error'
+            elif isinstance(exception, tabulator.exceptions.HTTPError):
+                code = 'http-error'
             else:
                 raise
             errors.append({
