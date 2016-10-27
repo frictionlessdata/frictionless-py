@@ -178,7 +178,12 @@ To register a custom check user could use a `check(error)` decorator. This way t
 ```python
 from goodtables import Inspector, check
 
-@check({'code': 'custom-error', 'type': 'structure', 'context': 'body'}, after='blank-row')
+error = {
+    'code': 'custom-error',
+    'type': 'structure',
+    'context': 'body',
+}
+@check(error, after='blank-row')
 def custom_check(errors, columns, row_number,  state=None):
     for column in columns:
         errors.append({

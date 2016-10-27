@@ -12,7 +12,9 @@ from ..register import preset
 # Module API
 
 @preset('datapackage')
-def datapackage(errors, tables, source, **options):
+def datapackage(source, **options):
+    errors = []
+    tables = []
 
     # Validate datapackage
     datapackage = DataPackage(source, **options)
@@ -37,3 +39,5 @@ def datapackage(errors, tables, source, **options):
                 'table': table,
                 'extra': extra,
             })
+
+    return errors, tables

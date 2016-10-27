@@ -10,8 +10,6 @@ from goodtables import presets
 # Test
 
 def test_table():
-    errors = []
-    tables = []
-    presets.table(errors, tables, 'data/valid.csv')
+    errors, tables = presets.table('data/valid.csv')
     assert len(errors) == 0
     assert len(tables) == 1

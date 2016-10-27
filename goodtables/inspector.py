@@ -75,11 +75,6 @@ class Inspector(object):
         # Start timer
         start = datetime.datetime.now()
 
-        # Prepare vars
-        errors = []
-        tables = []
-        reports = []
-
         # Prepare preset
         try:
             preset_func = self.__presets[preset]
@@ -88,12 +83,13 @@ class Inspector(object):
             raise exceptions.GoodtablesException(message)
 
         # Prepare tables
-        preset_func(errors, tables, source, **options)
+        errors, tables = preset_func(source, **options)
         tables = tables[:self.__table_limit]
         for error in errors:
             error['row'] = None
 
         # Collect reports
+        reports = []
         if not errors:
             tasks = []
             pool = ThreadPool(processes=len(tables))

@@ -4,7 +4,9 @@ from jsontableschema import Table
 from goodtables import Inspector, preset
 
 @preset('csvdir')
-def csvdir(errors, tables, source):
+def csvdir(source):
+    errors = []
+    tables = []
     for name in os.listdir(source):
         path = os.path.join(source, name)
         if name.endswith('.csv'):
@@ -12,6 +14,7 @@ def csvdir(errors, tables, source):
                 'table': Table(path),
                 'extra': {'filename': name},
             })
+    return errors, tables
 
 
 inspector = Inspector(custom_presets=[csvdir])

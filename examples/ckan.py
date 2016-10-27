@@ -4,7 +4,9 @@ from jsontableschema import Table
 from goodtables import Inspector, preset
 
 @preset('ckan')
-def ckan_preset(errors, tables, source, **options):
+def ckan_preset(source, **options):
+    errors = []
+    tables = []
     url = '%s/api/3/action/package_search' % source
     data = requests.get(url).json()
     for package in data['result']['results']:
@@ -21,6 +23,7 @@ def ckan_preset(errors, tables, source, **options):
                 'table': table,
                 'extra': extra,
             })
+    return errors, tables
 
 inspector = Inspector(custom_presets=[ckan_preset])
 report = inspector.inspect('http://data.surrey.ca', preset='ckan')
