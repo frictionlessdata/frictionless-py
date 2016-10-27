@@ -1,10 +1,10 @@
 import requests
 from pprint import pprint
 from jsontableschema import Table
-from goodtables import Inspector, profile
+from goodtables import Inspector, preset
 
-@profile('ckan')
-def ckan_profile(errors, tables, source, **options):
+@preset('ckan')
+def ckan_preset(errors, tables, source, **options):
     url = '%s/api/3/action/package_search' % source
     data = requests.get(url).json()
     for package in data['result']['results']:
@@ -22,6 +22,6 @@ def ckan_profile(errors, tables, source, **options):
                 'extra': extra,
             })
 
-inspector = Inspector(custom_profiles=[ckan_profile])
-report = inspector.inspect('http://data.surrey.ca', profile='ckan')
+inspector = Inspector(custom_presets=[ckan_preset])
+report = inspector.inspect('http://data.surrey.ca', preset='ckan')
 pprint(report)

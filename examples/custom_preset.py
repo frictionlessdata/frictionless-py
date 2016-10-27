@@ -1,9 +1,9 @@
 import os
 from pprint import pprint
 from jsontableschema import Table
-from goodtables import Inspector, profile
+from goodtables import Inspector, preset
 
-@profile('csvdir')
+@preset('csvdir')
 def csvdir(errors, tables, source):
     for name in os.listdir(source):
         path = os.path.join(source, name)
@@ -14,6 +14,6 @@ def csvdir(errors, tables, source):
             })
 
 
-inspector = Inspector(custom_profiles=[csvdir])
-report = inspector.inspect('data', profile='csvdir')
+inspector = Inspector(custom_presets=[csvdir])
+report = inspector.inspect('data', preset='csvdir')
 pprint(report)

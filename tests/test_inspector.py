@@ -52,14 +52,14 @@ def test_inspector_table_invalid_error_limit(log):
 def test_inspector_datapackage_valid(log):
     inspector = Inspector()
     report = inspector.inspect(
-        'data/datapackages/valid/datapackage.json', profile='datapackage')
+        'data/datapackages/valid/datapackage.json', preset='datapackage')
     assert log(report) == []
 
 
 def test_inspector_datapackage_invalid(log):
     inspector = Inspector()
     report = inspector.inspect(
-        'data/datapackages/invalid/datapackage.json', profile='datapackage')
+        'data/datapackages/invalid/datapackage.json', preset='datapackage')
     assert log(report) == [
         (1, 3, None, 'blank-row'),
         (2, 4, None, 'blank-row'),
@@ -69,7 +69,7 @@ def test_inspector_datapackage_invalid(log):
 def test_inspector_datapackage_invalid_table_limit(log):
     inspector = Inspector(table_limit=1)
     report = inspector.inspect(
-        'data/datapackages/invalid/datapackage.json', profile='datapackage')
+        'data/datapackages/invalid/datapackage.json', preset='datapackage')
     assert log(report) == [
         (1, 3, None, 'blank-row'),
     ]

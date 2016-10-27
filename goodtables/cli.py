@@ -32,7 +32,7 @@ def cli(ctx, json, **options):
 @click.argument('source')
 @click.pass_context
 def datapackage(ctx, source, **options):
-    report = ctx.obj['inspector'].inspect(source, profile='datapackage', **options)
+    report = ctx.obj['inspector'].inspect(source, preset='datapackage', **options)
     _print_report(report, json=ctx.obj['json'])
     exit(not report['valid'])
 
@@ -42,7 +42,7 @@ def datapackage(ctx, source, **options):
 @click.option('--schema')
 @click.pass_context
 def table(ctx, source, **options):
-    report = ctx.obj['inspector'].inspect(source, profile='table', **options)
+    report = ctx.obj['inspector'].inspect(source, preset='table', **options)
     _print_report(report, json=ctx.obj['json'])
     exit(not report['valid'])
 
