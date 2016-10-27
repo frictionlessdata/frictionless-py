@@ -14,8 +14,8 @@ Goodtables is a framework to inspect tabular data.
 
 - tabular data inspection and validation
 - source, structure and schema checks
-- support of different input data profiles
-- parallel computation for multitable profiles
+- support for different input data presets
+- parallel computation for multitable datasets
 - builtin command-line interface
 
 ## Getting Started
@@ -66,7 +66,7 @@ print(inspector.inspect('data/invalid.csv'))
 
 Goodtables inspects your tabular data to find errors in source, structure and schema. As presented in an example above to inspect data:
 - `Inspector(**options)` class should be instantiated
-- `inspector.inspect(source, profile=<profile>, **options)` should be called
+- `inspector.inspect(source, preset=<preset>, **options)` should be called
 - a returning value will be a report dictionary
 
 #### Dataset
@@ -97,9 +97,9 @@ Report errors are categorized by context:
 - head - headers errors
 - body - contents errors
 
-### Profiles
+### Presets
 
-Table is a main inspection object in goodtables. The simplest option is to pass to `Inspector.inspect` path and other options for one table (see example above). But when multitable parallized inspection is needed profiles could be used to process a dataset.
+Table is a main inspection object in goodtables. The simplest option is to pass to `Inspector.inspect` path and other options for one table (see example above). But when multitable parallized inspection is needed different presets could be used to process a dataset.
 
 Let's see how to inspect a datapackage:
 
@@ -107,30 +107,30 @@ Let's see how to inspect a datapackage:
 from goodtables import Inspector
 
 inspector = Inspector()
-inspector.inspect('datapackage.json', profile='datapackage')
+inspector.inspect('datapackage.json', preset='datapackage')
 ```
 
-A profile proceses passed source and options and fills tables list for the following inspection. If any errors have happened a profile should add them to errors list.
+A preset function proceses passed source and options and fills tables list for the following inspection. If any errors have happened a preset function should add them to errors list.
 
-#### Builtin profiles
+#### Builtin presets
 
-Goodtables by default supports the following profiles:
+Goodtables by default supports the following presets:
 
 - table
 - datapackage
 
-#### Custom profiles
+#### Custom presets
 
 > It's a provisional API excluded from SemVer. If you use it as a part of other program please pin concrete `goodtables` version to your requirements file.
 
-To register a custom profile user could use a `profile(name)` decorator. This way the builtin profile could be overriden or could be added a custom profile.
+To register a custom preset user could use a `preset(name)` decorator. This way the builtin preset could be overriden or could be added a custom preset.
 
 ```python
 from jsontableschema import Table
-from goodtables import Inspector, profile
+from goodtables import Inspector, preset
 
-@profile('custom-profile')
-def custom_profile(errors, tables, source, **options):
+@preset('custom-preset')
+def custom_preset(errors, tables, source, **options):
     for table in source:
         try:
             tables.append({
@@ -145,18 +145,18 @@ def custom_profile(errors, tables, source, **options):
                 'column-number': None,
             })
 
-inspector = Inspector(custom_profiles=[custom_profile])
-inspector.inspect(source, profile='custom-profile')
+inspector = Inspector(custom_presets=[custom_preset])
+inspector.inspect(source, preset='custom-preset')
 ```
 
-See builtin profiles to learn more about the dataset extration protocol.
+See builtin presets to learn more about the dataset extration protocol.
 
 ### Checks
 
 Check is a main inspection actor in goodtables. Every check is associated with a specification error. Checking order is the same as order of errors in the specification.  List of checks could be customized using inspector's `checks` argument. Let's explore options on an example:
 
 ```python
-inspector = Inspector(checks='all/structure/schema') # preset
+inspector = Inspector(checks='all/structure/schema') # type
 inspector = Inspector(checks={'bad-headers': False}) # exclude
 inspector = Inspector(checks={'bad-headers': True}) # cherry-pick
 ```
@@ -178,7 +178,12 @@ To register a custom check user could use a `check(error)` decorator. This way t
 ```python
 from goodtables import Inspector, check
 
-@check({'code': 'custom-error', 'type': 'structure', 'context': 'body'}, after='blank-row')
+error = {
+    'code': 'custom-error',
+    'type': 'structure',
+    'context': 'body',
+}
+@check(error, after='blank-row')
 def custom_check(errors, columns, row_number,  state=None):
     for column in columns:
         errors.append({
@@ -197,7 +202,7 @@ See builtin checks to learn more about checking protocol.
 
 > It's a provisional API excluded from SemVer. If you use it as a part of other program please pin concrete `goodtables` version to your requirements file.
 
-All common goodtables tasks could be done using a command-line interface (command per profile):
+All common goodtables tasks could be done using a command-line interface (command per preset):
 
 ```
 $ goodtables
@@ -233,7 +238,7 @@ For now we use `inspector` word because we create reports as result of an inspec
 
 ### Is it possible to stream reporting?
 
-For now - it's not. But it's under considiration. Not for multitable profiles because of parallelizm but for one table it could be exposed to public API because internally it's how goodtables works. Question here is what should be streamed - errors or valid/invalid per row indication with errors etc. We would be happy to see a real world use case for this feature.
+For now - it's not. But it's under considiration. Not for multitable datasets because of parallelizm but for one table it could be exposed to public API because internally it's how goodtables works. Question here is what should be streamed - errors or valid/invalid per row indication with errors etc. We would be happy to see a real world use case for this feature.
 
 ## API Reference
 
@@ -246,10 +251,10 @@ Inspector(checks='all',
           error_limit=1000,
           order_fields=False,
           infer_fields=False,
-          custom_profiles=[],
+          custom_presets=[],
           custom_checks=[])
-    inspect(source, profile='table', **options)
-~@profile(name)
+    inspect(source, preset='table', **options)
+~@preset(name)
 ~@check(error)
 exceptions
 ~cli

@@ -4,14 +4,12 @@ from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
-from goodtables import profiles
+from goodtables import presets
 
 
 # Test
 
-def test_datapackage():
-    errors = []
-    tables = []
-    profiles.datapackage(errors, tables, 'data/datapackages/valid/datapackage.json')
+def test_table():
+    errors, tables = presets.table('data/valid.csv')
     assert len(errors) == 0
-    assert len(tables) == 2
+    assert len(tables) == 1

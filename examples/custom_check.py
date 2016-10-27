@@ -2,7 +2,12 @@ from pprint import pprint
 from jsontableschema import Table
 from goodtables import Inspector, check
 
-@check({'code': 'unicode-found', 'type': 'structure', 'context': 'body'}, after='duplicate-row')
+error = {
+    'code': 'unicode-found',
+    'type': 'structure',
+    'context': 'body',
+}
+@check(error, after='duplicate-row')
 def unicode_found(errors, columns, row_number, state=None):
     for column in columns:
         if len(column) == 4:

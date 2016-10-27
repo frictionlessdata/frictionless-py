@@ -7,11 +7,11 @@ from __future__ import unicode_literals
 
 # Module API
 
-def profile(name):
-    """Register profile.
+def preset(name):
+    """Register preset.
     """
     def decorator(func):
-        func.profile = {
+        func.preset = {
             'name': name,
         }
         return func

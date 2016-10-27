@@ -15,7 +15,7 @@ from itertools import chain
 from functools import partial
 from six.moves import zip_longest
 from multiprocessing.pool import ThreadPool
-from . import profiles as profiles_module
+from . import presets as presets_module
 from . import checks as checks_module
 from . import exceptions
 
@@ -44,7 +44,7 @@ class Inspector(object):
                  error_limit=1000,
                  order_fields=False,
                  infer_fields=False,
-                 custom_profiles=[],
+                 custom_presets=[],
                  custom_checks=[]):
 
         # Set attributes
@@ -53,16 +53,16 @@ class Inspector(object):
         self.__error_limit = error_limit
         self.__order_fields = copy(order_fields)
         self.__infer_fields = copy(infer_fields)
-        self.__profiles = self.__prepare_profiles(custom_profiles)
+        self.__presets = self.__prepare_presets(custom_presets)
         self.__checks = self.__prepare_checks(checks, custom_checks)
 
-    def inspect(self, source, profile='table', **options):
-        """Inspect source with given profile and options.
+    def inspect(self, source, preset='table', **options):
+        """Inspect source with given preset and options.
 
         Args:
             source (mixed): source to inspect
-            profile (str): dataset profile
-                supported profiles:
+            preset (str): dataset extraction preset
+                supported presets:
                     - table
                     - datapackage
             options (dict): source options
@@ -75,25 +75,21 @@ class Inspector(object):
         # Start timer
         start = datetime.datetime.now()
 
-        # Prepare vars
-        errors = []
-        tables = []
-        reports = []
-
-        # Prepare profile
+        # Prepare preset
         try:
-            profile_func = self.__profiles[profile]
+            preset_func = self.__presets[preset]
         except KeyError:
-            message = 'Profile "%s" is not registered' % profile
+            message = 'Preset "%s" is not registered' % preset
             raise exceptions.GoodtablesException(message)
 
         # Prepare tables
-        profile_func(errors, tables, source, **options)
+        errors, tables = preset_func(source, **options)
         tables = tables[:self.__table_limit]
         for error in errors:
             error['row'] = None
 
         # Collect reports
+        reports = []
         if not errors:
             tasks = []
             pool = ThreadPool(processes=len(tables))
@@ -240,16 +236,16 @@ class Inspector(object):
 
         return report
 
-    def __prepare_profiles(self, custom):
+    def __prepare_presets(self, custom):
 
-        # Prepare profiles
-        profiles = {}
-        for profile in chain(vars(profiles_module).values(), custom):
-            descriptor = getattr(profile, 'profile', None)
+        # Prepare presets
+        presets = {}
+        for preset in chain(vars(presets_module).values(), custom):
+            descriptor = getattr(preset, 'preset', None)
             if descriptor:
-                profiles[descriptor['name']] = profile
+                presets[descriptor['name']] = preset
 
-        return profiles
+        return presets
 
     def __prepare_checks(self, config, custom):
 

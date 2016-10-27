@@ -6,13 +6,15 @@ from __future__ import unicode_literals
 
 import jsontableschema
 from jsontableschema import Table, validate
-from ..register import profile
+from ..register import preset
 
 
 # Module API
 
-@profile('table')
-def table(errors, tables, source, schema=None, **options):
+@preset('table')
+def table(source, schema=None, **options):
+    errors = []
+    tables = []
 
     # Validate schema
     if schema is not None:
@@ -36,3 +38,5 @@ def table(errors, tables, source, schema=None, **options):
             'table': Table(source, schema, **options),
             'extra': {},
         })
+
+    return errors, tables

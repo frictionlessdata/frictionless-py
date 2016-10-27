@@ -6,13 +6,15 @@ from __future__ import unicode_literals
 
 from jsontableschema import Table
 from datapackage import DataPackage
-from ..register import profile
+from ..register import preset
 
 
 # Module API
 
-@profile('datapackage')
-def datapackage(errors, tables, source, **options):
+@preset('datapackage')
+def datapackage(source, **options):
+    errors = []
+    tables = []
 
     # Validate datapackage
     datapackage = DataPackage(source, **options)
@@ -37,3 +39,5 @@ def datapackage(errors, tables, source, **options):
                 'table': table,
                 'extra': extra,
             })
+
+    return errors, tables
