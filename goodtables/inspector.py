@@ -9,11 +9,13 @@ import os
 import json
 import inspect
 import datetime
+import operator
 import tabulator
 from copy import copy
 from itertools import chain
 from functools import partial
 from six.moves import zip_longest
+from jsontableschema import Schema, infer
 from multiprocessing.pool import ThreadPool
 from . import presets as presets_module
 from . import checks as checks_module
@@ -27,9 +29,9 @@ class Inspector(object):
 
     Args:
         checks (str/dict): checks filter
+        error_limit (int): upper limit for errors
         table_limit (int): upper limit for tables
         row_limit (int): upper limit for rows
-        error_limit (int): upper limit for errors
         order_fields (bool): allow field ordering
         infer_fields (bool): allow field inferring
 
@@ -39,22 +41,24 @@ class Inspector(object):
 
     def __init__(self,
                  checks='all',
+                 error_limit=1000,
                  table_limit=10,
                  row_limit=1000,
-                 error_limit=1000,
-                 order_fields=False,
+                 infer_schema=False,
                  infer_fields=False,
+                 order_fields=False,
                  custom_presets=[],
                  custom_checks=[]):
 
         # Set attributes
+        self.__error_limit = error_limit
         self.__table_limit = table_limit
         self.__row_limit = row_limit
-        self.__error_limit = error_limit
-        self.__order_fields = copy(order_fields)
-        self.__infer_fields = copy(infer_fields)
-        self.__presets = self.__prepare_presets(custom_presets)
-        self.__checks = self.__prepare_checks(checks, custom_checks)
+        self.__infer_schema = infer_schema
+        self.__infer_fields = infer_fields
+        self.__order_fields = order_fields
+        self.__presets = self.__prepare_presets(copy(custom_presets))
+        self.__checks = self.__prepare_checks(checks, copy(custom_checks))
 
     def inspect(self, source, preset='table', **options):
         """Inspect source with given preset and options.
@@ -94,8 +98,7 @@ class Inspector(object):
             tasks = []
             pool = ThreadPool(processes=len(tables))
             for table in tables:
-                tasks.append(pool.apply_async(
-                    self.__inspect_table, (table['table'], table['extra'])))
+                tasks.append(pool.apply_async(self.__inspect_table, (table,)))
             for task in tasks:
                 report = task.get()
                 reports.append(report)
@@ -118,7 +121,7 @@ class Inspector(object):
 
     # Internal
 
-    def __inspect_table(self, table, extra):
+    def __inspect_table(self, table):
 
         # Start timer
         start = datetime.datetime.now()
@@ -128,17 +131,22 @@ class Inspector(object):
         headers = None
         row_number = 0
         fatal_error = False
+        checks = copy(self.__checks)
+        stream = table['stream']
+        schema = table['schema']
+        extra = table['extra']
 
         # Prepare table
         try:
-            table.stream.open()
-            stream = table.stream
-            schema = None
-            if self.__get_checks(type='schema'):
-                # Schema infer if needed
-                schema = table.schema
-            headers = stream.headers
+            stream.open()
             sample = stream.sample
+            headers = stream.headers
+            if self.__filter_checks(checks, type='schema'):
+                if schema is None:
+                    if self.__infer_schema:
+                        schema = Schema(infer(headers, sample))
+            if schema is None:
+                checks = self.__filter_checks(checks, type='schema', inverse=True)
         except Exception as exception:
             fatal_error = True
             message = str(exception)
@@ -179,8 +187,8 @@ class Inspector(object):
 
         # Head checks
         if not fatal_error:
-            checks = self.__get_checks(context='head')
-            for check in checks:
+            head_checks = self.__filter_checks(checks, context='head')
+            for check in head_checks:
                 if not columns:
                     break
                 check['func'](errors, columns, sample)
@@ -190,8 +198,8 @@ class Inspector(object):
         # Body checks
         if not fatal_error:
             states = {}
-            checks = self.__get_checks(context='body')
             colmap = {column['number']: column for column in columns}
+            body_checks = self.__filter_checks(checks, context='body')
             with stream:
                 for row_number, headers, row in stream.iter(extended=True):
                     columns = []
@@ -205,7 +213,7 @@ class Inspector(object):
                         if value is not _FILLVALUE:
                             column['value'] = value
                         columns.append(column)
-                    for check in checks:
+                    for check in body_checks:
                         if not columns:
                             break
                         state = states.setdefault(check['code'], {})
@@ -280,13 +288,11 @@ class Inspector(object):
 
         # Filter structure checks
         if config == 'structure':
-            checks = [check for check in checks
-                if check['type'] == 'structure']
+            checks = self.__filter_checks(checks, type='structure')
 
         # Filter schema checks
         elif config == 'schema':
-            checks = [check for check in checks
-                if check['type'] == 'schema']
+            checks = self.__filter_checks(checks, type='schema')
 
         # Filter granular checks
         elif isinstance(config, dict):
@@ -311,18 +317,21 @@ class Inspector(object):
 
         return checks
 
-    def __get_checks(self, type=None, context=None):
+    def __filter_checks(self, checks, type=None, context=None, inverse=False):
 
         # Filted checks
-        checks = []
-        for check in self.__checks:
-            if type and check['type'] != type:
+        result = []
+        comparator = operator.ne
+        if inverse:
+            comparator = operator.eq
+        for check in checks:
+            if type and comparator(check['type'], type):
                 continue
-            if context and check['context'] != context:
+            if context and comparator(check['context'], context):
                 continue
-            checks.append(check)
+            result.append(check)
 
-        return checks
+        return result
 
 
 # Internal

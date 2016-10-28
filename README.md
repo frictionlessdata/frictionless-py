@@ -126,15 +126,17 @@ Goodtables by default supports the following presets:
 To register a custom preset user could use a `preset(name)` decorator. This way the builtin preset could be overriden or could be added a custom preset.
 
 ```python
-from jsontableschema import Table
+from tabulator import Stream
+from jsontableschema import Schema
 from goodtables import Inspector, preset
 
 @preset('custom-preset')
-def custom_preset(errors, tables, source, **options):
+def custom_preset(source, **options):
     for table in source:
         try:
             tables.append({
-                'table': Table(...),
+                'stream':  Stream(...),
+                'schema': Schema(...),
                 'extra': {...},
             })
         except Exception:
@@ -210,11 +212,12 @@ Usage: cli.py [OPTIONS] COMMAND [ARGS]...
 
 Options:
   --json
+  --error-limit INTEGER
   --table-limit INTEGER
   --row-limit INTEGER
-  --error-limit INTEGER
-  --order-fields
+  --infer-schema
   --infer-fields
+  --order-fields
   --help                 Show this message and exit.
 
 Commands:
@@ -249,8 +252,9 @@ Inspector(checks='all',
           table_limit=10,
           row_limit=1000,
           error_limit=1000,
-          order_fields=False,
+          infer_schema=False,
           infer_fields=False,
+          order_fields=False,
           custom_presets=[],
           custom_checks=[])
     inspect(source, preset='table', **options)
