@@ -210,9 +210,9 @@ Usage: cli.py [OPTIONS] COMMAND [ARGS]...
 
 Options:
   --json
+  --error-limit INTEGER
   --table-limit INTEGER
   --row-limit INTEGER
-  --error-limit INTEGER
   --order-fields
   --infer-fields
   --help                 Show this message and exit.

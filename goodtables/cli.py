@@ -14,9 +14,9 @@ from .inspector import Inspector
 
 @click.group()
 @click.option('--checks')
+@click.option('--error-limit', type=int)
 @click.option('--table-limit', type=int)
 @click.option('--row-limit', type=int)
-@click.option('--error-limit', type=int)
 @click.option('--order-fields', is_flag=True)
 @click.option('--infer-fields', is_flag=True)
 @click.option('--json', is_flag=True)

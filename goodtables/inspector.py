@@ -27,9 +27,9 @@ class Inspector(object):
 
     Args:
         checks (str/dict): checks filter
+        error_limit (int): upper limit for errors
         table_limit (int): upper limit for tables
         row_limit (int): upper limit for rows
-        error_limit (int): upper limit for errors
         order_fields (bool): allow field ordering
         infer_fields (bool): allow field inferring
 
@@ -39,22 +39,22 @@ class Inspector(object):
 
     def __init__(self,
                  checks='all',
+                 error_limit=1000,
                  table_limit=10,
                  row_limit=1000,
-                 error_limit=1000,
                  order_fields=False,
                  infer_fields=False,
                  custom_presets=[],
                  custom_checks=[]):
 
         # Set attributes
+        self.__error_limit = error_limit
         self.__table_limit = table_limit
         self.__row_limit = row_limit
-        self.__error_limit = error_limit
-        self.__order_fields = copy(order_fields)
-        self.__infer_fields = copy(infer_fields)
-        self.__presets = self.__prepare_presets(custom_presets)
-        self.__checks = self.__prepare_checks(checks, custom_checks)
+        self.__order_fields = order_fields
+        self.__infer_fields = infer_fields
+        self.__presets = self.__prepare_presets(copy(custom_presets))
+        self.__checks = self.__prepare_checks(checks, copy(custom_checks))
 
     def inspect(self, source, preset='table', **options):
         """Inspect source with given preset and options.
