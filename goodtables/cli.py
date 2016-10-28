@@ -17,8 +17,9 @@ from .inspector import Inspector
 @click.option('--error-limit', type=int)
 @click.option('--table-limit', type=int)
 @click.option('--row-limit', type=int)
-@click.option('--order-fields', is_flag=True)
+@click.option('--infer-schema', is_flag=True)
 @click.option('--infer-fields', is_flag=True)
+@click.option('--order-fields', is_flag=True)
 @click.option('--json', is_flag=True)
 @click.pass_context
 def cli(ctx, json, **options):

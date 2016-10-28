@@ -1,5 +1,4 @@
 from pprint import pprint
-from jsontableschema import Table
 from goodtables import Inspector, check
 
 error = {

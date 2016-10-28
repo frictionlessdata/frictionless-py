@@ -1,6 +1,7 @@
 import os
 from pprint import pprint
-from jsontableschema import Table
+from tabulator import Stream
+from jsontableschema import Schema
 from goodtables import Inspector, preset
 
 @preset('csvdir')
@@ -11,8 +12,11 @@ def csvdir(source):
         path = os.path.join(source, name)
         if name.endswith('.csv'):
             tables.append({
-                'table': Table(path),
-                'extra': {'filename': name},
+                'stream': Stream(path, headers=1),
+                'schema': None,
+                'extra': {
+                    'filename': name,
+                },
             })
     return errors, tables
 

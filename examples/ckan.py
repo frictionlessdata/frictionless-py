@@ -1,6 +1,6 @@
 import requests
 from pprint import pprint
-from jsontableschema import Table
+from tabulator import Stream
 from goodtables import Inspector, preset
 
 @preset('ckan')
@@ -11,18 +11,16 @@ def ckan_preset(source, **options):
     data = requests.get(url).json()
     for package in data['result']['results']:
         for resource in package['resources']:
-            if not resource['url'].endswith('.csv'):
-                continue
-            table = Table(resource['url'])
-            extra = {
-                'dataset': package['title'],
-                'resource': resource['name'],
-                'publisher': package['organization']['name']
-            }
-            tables.append({
-                'table': table,
-                'extra': extra,
-            })
+            if resource['url'].endswith('.csv'):
+                tables.append({
+                    'stream': Stream(resource['url'], headers=1),
+                    'schema': None,
+                    'extra': {
+                        'dataset': package['title'],
+                        'resource': resource['name'],
+                        'publisher': package['organization']['name']
+                    },
+                })
     return errors, tables
 
 inspector = Inspector(custom_presets=[ckan_preset])
