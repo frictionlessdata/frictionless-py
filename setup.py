@@ -25,7 +25,7 @@ INSTALL_REQUIRES = [
     'click>=6.6,<7.0a',
     'requests>=2.10,<3.0a',
     'tabulator>=0.10,<1.0a',
-    'jsontableschema>=0.7,<1.0a',
+    'jsontableschema>=0.8.2,<1.0a',
     'datapackage>=0.8,<1.0a',
 ]
 TESTS_REQUIRE = [
