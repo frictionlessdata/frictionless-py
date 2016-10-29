@@ -21,7 +21,7 @@ def unique_constraint(errors, columns, row_number, state):
                     # Add error
                     mesrows = ', '.join(map(str, references + [row_number]))
                     message = 'Rows %s has unique constraint violation in column %s'
-                    message = message % (mesrows , column['number'])
+                    message = message % (mesrows, column['number'])
                     errors.append({
                         'code': 'unique-constraint',
                         'message': message,
