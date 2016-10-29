@@ -16,7 +16,8 @@ def non_castable_value(errors, columns, row_number, state=None):
     for column in copy(columns):
         if len(column) == 4:
             try:
-                column['value'] = column['field'].cast_value(column['value'])
+                column['value'] = column['field'].cast_value(
+                    column['value'], skip_constraints=True)
             except jsontableschema.exceptions.JsonTableSchemaException:
                 # Add error
                 message = 'Row %s has non castable value in column %s'

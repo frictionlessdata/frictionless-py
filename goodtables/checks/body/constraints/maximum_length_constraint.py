@@ -11,7 +11,16 @@ from ....register import check
 
 @check('maximum-length-constraint')
 def maximum_length_constraint(errors, columns, row_number, state=None):
-    # https://github.com/frictionlessdata/goodtables-py/issues/116
     for column in columns:
         if len(column) == 4:
-            pass
+            valid = column['field'].test_value(column['value'], constraint='maxLength')
+            if not valid:
+                # Add error
+                message = 'Row %s has maxLength constraint violation in column %s'
+                message = message % (row_number, column['number'])
+                errors.append({
+                    'code': 'maximum-length-constraint',
+                    'message': message,
+                    'row-number': row_number,
+                    'column-number': column['number'],
+                })
