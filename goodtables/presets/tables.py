@@ -4,9 +4,6 @@ from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
-import jsontableschema
-from tabulator import Stream
-from jsontableschema import Schema, validate
 from .table import table as table_preset
 from ..register import preset
 
