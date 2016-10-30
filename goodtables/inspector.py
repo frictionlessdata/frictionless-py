@@ -142,9 +142,8 @@ class Inspector(object):
             sample = stream.sample
             headers = stream.headers
             if self.__filter_checks(checks, type='schema'):
-                if schema is None:
-                    if self.__infer_schema:
-                        schema = Schema(infer(headers, sample))
+                if schema is None and self.__infer_schema:
+                    schema = Schema(infer(headers, sample))
             if schema is None:
                 checks = self.__filter_checks(checks, type='schema', inverse=True)
         except Exception as exception:
