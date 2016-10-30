@@ -7,6 +7,8 @@ from __future__ import unicode_literals
 from goodtables import Inspector
 
 
+# Tests [table]
+
 def test_inspector_table_valid(log):
     inspector = Inspector()
     report = inspector.inspect('data/valid.csv')
@@ -48,6 +50,30 @@ def test_inspector_table_invalid_row_limit(log):
         (1, 2, 4, 'missing-value'),
     ]
 
+
+# Tests [tables]
+
+def test_inspector_tables_invalid(log):
+    inspector = Inspector(infer_schema=True)
+    report = inspector.inspect([
+        {'source': 'data/valid.csv',
+         'schema': {'fields': [{'name': 'id'}, {'name': 'name'}]}},
+        {'source': 'data/invalid.csv'},
+    ], preset='tables')
+    assert log(report) == [
+        (2, None, 3, 'blank-header'),
+        (2, None, 4, 'duplicate-header'),
+        (2, 2, 3, 'missing-value'),
+        (2, 2, 4, 'missing-value'),
+        (2, 3, None, 'duplicate-row'),
+        (2, 4, None, 'blank-row'),
+        (2, 5, 5, 'extra-value'),
+        (2, 5, 3, 'non-castable-value'),
+        (2, 5, 4, 'non-castable-value'),
+    ]
+
+
+# Tests [datapackage]
 
 def test_inspector_datapackage_valid(log):
     inspector = Inspector()
