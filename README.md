@@ -117,6 +117,7 @@ A preset function proceses passed source and options and fills tables list for t
 Goodtables by default supports the following presets:
 
 - table
+- tables
 - datapackage
 
 #### Custom presets
@@ -204,7 +205,7 @@ See builtin checks to learn more about checking protocol.
 
 > It's a provisional API excluded from SemVer. If you use it as a part of other program please pin concrete `goodtables` version to your requirements file.
 
-All common goodtables tasks could be done using a command-line interface (command per preset):
+All common goodtables tasks could be done using a command-line interface (command per preset excluding `tables`):
 
 ```
 $ goodtables

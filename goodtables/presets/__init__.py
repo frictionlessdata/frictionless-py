@@ -6,3 +6,4 @@ from __future__ import unicode_literals
 
 from .datapackage import datapackage
 from .table import table
+from .tables import tables
