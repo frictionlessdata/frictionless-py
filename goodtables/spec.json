@@ -3,37 +3,37 @@
     "errors": [
         {
           "code": "io-error",
-          "type": "source",
+          "type": "general",
           "context": "any"
         },
         {
           "code": "http-error",
-          "type": "source",
+          "type": "general",
           "context": "any"
         },
         {
           "code": "datapackage-error",
-          "type": "source",
+          "type": "general",
           "context": "dataset"
         },
         {
           "code": "jsontableschema-error",
-          "type": "source",
+          "type": "general",
           "context": "dataset"
         },
         {
           "code": "scheme-error",
-          "type": "source",
+          "type": "general",
           "context": "table"
         },
         {
           "code": "format-error",
-          "type": "source",
+          "type": "general",
           "context": "table"
         },
         {
           "code": "encoding-error",
-          "type": "source",
+          "type": "general",
           "context": "table"
         },
         {
