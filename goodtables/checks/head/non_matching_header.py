@@ -4,6 +4,7 @@ from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
+import re
 from copy import copy
 from ...register import check
 
@@ -27,9 +28,18 @@ def non_matching_header(errors, columns, sample=None, order_fields=False):
                         'row-number': None,
                         'column-number': column['number'],
                     })
-                    # Remove column
-                    columns.remove(column)
+                    if _slugify(column['header']) != _slugify(column['field'].name):
+                        # Remove column
+                        columns.remove(column)
 
     # Field ordering
     else:
         raise NotImplementedError()
+
+
+# Internal
+
+def _slugify(string):
+    string = re.sub(r'[\W_]+', '', string)
+    string = string.lower()
+    return string
