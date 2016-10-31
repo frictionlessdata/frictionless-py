@@ -44,10 +44,12 @@ def non_matching_header(errors, columns, sample=None, order_fields=False):
             if _slugify(header) != _slugify(field_name):
                 # If there is the match in next columns - swap fields
                 for column in columns[index+1:]:
+                    # We've found field matching given header
                     if _slugify(header) == _slugify(_get_field_name(column)):
                         _swap_fields(columns[index], column)
                         break
                     if field_name:
+                        # Given field matches some header also swap
                         if _slugify(field_name) == _slugify(column.get('header')):
                             _swap_fields(columns[index], column)
         # Run check with no field ordering
