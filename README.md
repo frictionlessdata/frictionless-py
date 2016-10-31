@@ -13,7 +13,7 @@ Goodtables is a framework to inspect tabular data.
 ## Features
 
 - tabular data inspection and validation
-- source, structure and schema checks
+- general, structure and schema checks
 - support for different input data presets
 - parallel computation for multitable datasets
 - builtin command-line interface
@@ -64,7 +64,7 @@ print(inspector.inspect('data/invalid.csv'))
 
 ### Inspection
 
-Goodtables inspects your tabular data to find errors in source, structure and schema. As presented in an example above to inspect data:
+Goodtables inspects your tabular data to find general, structure and schema errors. As presented in an example above to inspect data:
 - `Inspector(**options)` class should be instantiated
 - `inspector.inspect(source, preset=<preset>, **options)` should be called
 - a returning value will be a report dictionary
@@ -85,7 +85,7 @@ As a result of inspection goodtables returns a report dictionary. It includes va
 
 Report errors are categorized by type:
 
-- source - data can't be loaded or parsed
+- general - data can't be loaded or parsed
 - structure - general tabular errors like duplicate headers
 - schema - error of checks against JSON Table Schema
 
