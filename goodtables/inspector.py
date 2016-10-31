@@ -149,7 +149,9 @@ class Inspector(object):
         except Exception as exception:
             fatal_error = True
             message = str(exception)
-            if isinstance(exception, tabulator.exceptions.SchemeError):
+            if isinstance(exception, tabulator.exceptions.SourceError):
+                code = 'source-error'
+            elif isinstance(exception, tabulator.exceptions.SchemeError):
                 code = 'scheme-error'
             elif isinstance(exception, tabulator.exceptions.FormatError):
                 code = 'format-error'

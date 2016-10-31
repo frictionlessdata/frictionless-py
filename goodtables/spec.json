@@ -22,6 +22,11 @@
           "context": "dataset"
         },
         {
+          "code": "source-error",
+          "type": "general",
+          "context": "table"
+        },
+        {
           "code": "scheme-error",
           "type": "general",
           "context": "table"
