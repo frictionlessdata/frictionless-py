@@ -204,11 +204,12 @@ class Inspector(object):
                     columns = []
                     iterator = zip_longest(headers, row, fillvalue=_FILLVALUE)
                     for number, (header, value) in enumerate(iterator, start=1):
+                        colref = colmap.get(number, {})
                         column = {'number': number}
                         if header is not _FILLVALUE:
-                            colref = colmap.get(number, {})
-                            column['header'] = colref.get('header') or header
-                            column['field'] = colref.get('field')
+                            column['header'] = colref.get('header', header)
+                        if 'field' in colref:
+                            column['field'] = colref['field']
                         if value is not _FILLVALUE:
                             column['value'] = value
                         columns.append(column)
