@@ -4,7 +4,11 @@ from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
+import io
+import os
+import yaml
 import pytest
+import fnmatch
 
 
 @pytest.fixture(scope='session')
@@ -30,3 +34,16 @@ def log():
                     result.append(pack_error(error, table_number))
         return result
     return fixture
+
+
+def pytest_generate_tests(metafunc):
+    if 'feature' in metafunc.fixturenames:
+        features = {}
+        for root, dirnames, filenames in os.walk('features'):
+            for filename in fnmatch.filter(filenames, '*.yml'):
+                filepath = os.path.join(root, filename)
+                features.update(yaml.load(io.open(filepath, encoding='utf-8')))
+        params = []
+        for name in sorted(features):
+            params.append([name, features[name]])
+        metafunc.parametrize('name, feature', params)
