@@ -1,0 +1,72 @@
+{
+    "fields": [
+        {
+            "name": "first_name",
+            "title": "First Name",
+            "type": "string",
+            "format": "",
+            "description": "The first name of the person"
+        },
+        {
+            "name": "last_name",
+            "title": "Last Name",
+            "type": "string",
+            "format": "",
+            "description": "The last name of the person"
+        },
+        {
+            "name": "gender",
+            "title": "Gender",
+            "type": "string",
+            "format": "",
+            "description": "The gender of the person."
+        },
+        {
+            "name": "age",
+            "title": "Age",
+            "type": "integer",
+            "description": "The age of this person."
+        },
+        {
+            "name": "period_employed",
+            "title": "Period Employed",
+            "type": "number",
+            "description": "The period of employment, in years (eg: 2.6 Y)."
+        },
+        {
+            "name": "is_management",
+            "title": "Is Management",
+            "type": "boolean",
+            "format": "",
+            "description": "Is this person part of upper management."
+        },
+        {
+            "name": "home_location",
+            "title": "Home Location",
+            "type": "string",
+            "description": "A geopoint for this person's home address."
+        },
+        {
+            "name": "position_title",
+            "title": "Position Title",
+            "type": "string",
+            "description": "This person's position in the company."
+        }
+    ],
+    "primaryKey": [
+        "first_name",
+        "last_name",
+        "period_employed",
+        "home_location"
+    ],
+    "foreignKeys": [
+        {
+            "fields": "position_title",
+            "reference": {
+                "datapackage": "",
+                "resource": "positions",
+                "fields": "name"
+            }
+        }
+    ]
+}
