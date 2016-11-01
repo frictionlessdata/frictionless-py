@@ -1,0 +1,9 @@
+fail_fast_two_structure_errors:
+  config:
+    checks: structure
+    error_limit: 3
+  source: data/fail_fast_two_structure_errors.csv
+  report:
+    - [1, 4, null, 'blank-row']
+    - [1, 5, 4, 'extra-value']
+    - [1, 5, 5, 'extra-value']

@@ -1,0 +1,7 @@
+unique_field:
+  config:
+    checks: schema
+  source: data/unique_field.csv
+  schema: data/unique_field.json
+  report:
+    - [1, 10, 1, 'unique-constraint']

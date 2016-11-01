@@ -1,0 +1,6 @@
+row_limit_structure:
+  config:
+    checks: structure
+    row_limit: 3
+  source: data/row_limit_structure.csv
+  report: []

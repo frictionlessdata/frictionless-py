@@ -1,0 +1,14 @@
+empty_rows_multiple:
+  source: data/empty_rows_multiple.csv
+  report:
+    - [1, 4, null, 'blank-row']
+    - [1, 5, null, 'blank-row']
+    - [1, 6, null, 'blank-row']
+    - [1, 7, null, 'blank-row']
+    - [1, 8, null, 'blank-row']
+    - [1, 9, null, 'blank-row']
+    - [1, 10, null, 'blank-row']
+    - [1, 11, null, 'blank-row']
+    - [1, 12, null, 'blank-row']
+    - [1, 13, null, 'blank-row']
+    - [1, 14, null, 'blank-row']

@@ -11,4 +11,4 @@ def test_features(log, name, feature):
     inspector = Inspector(**feature.pop('config', {}))
     expect = list(map(lambda item: tuple(item), feature.pop('report')))
     actual = log(inspector.inspect(**feature))
-    assert expect == actual
+    assert actual == expect

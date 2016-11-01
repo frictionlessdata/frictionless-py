@@ -42,7 +42,7 @@ def pytest_generate_tests(metafunc):
         for root, dirnames, filenames in os.walk('features'):
             for filename in fnmatch.filter(filenames, '*.yml'):
                 filepath = os.path.join(root, filename)
-                features.update(yaml.load(io.open(filepath, encoding='utf-8')))
+                features.update(yaml.load(io.open(filepath, encoding='utf-8')) or {})
         params = []
         for name in sorted(features):
             params.append([name, features[name]])

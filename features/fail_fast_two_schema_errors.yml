@@ -1,0 +1,10 @@
+fail_fast_two_schema_errors:
+  config:
+    checks: schema
+    error_limit: 3
+  source: data/fail_fast_two_schema_errors.csv
+  schema: data/test_schema.json
+  report:
+    - [1, 4, 2, 'required-constraint']
+    - [1, 4, 3, 'required-constraint']
+    - [1, 4, 1, 'non-castable-value']
