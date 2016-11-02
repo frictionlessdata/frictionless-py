@@ -1,0 +1,4 @@
+empty_rows:
+  source: data/empty_rows.csv
+  report:
+    - [1, 4, null, 'blank-row']

@@ -1,0 +1,4 @@
+duplicate_rows:
+  source: data/duplicate_rows.csv
+  report:
+    - [1, 4, null, 'duplicate-row']
