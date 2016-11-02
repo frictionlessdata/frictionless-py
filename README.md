@@ -1,7 +1,7 @@
 # goodtables
 
-[![Travis](https://img.shields.io/travis/frictionlessdata/goodtables/master.svg)](https://travis-ci.org/frictionlessdata/goodtables)
-[![Coveralls](http://img.shields.io/coveralls/frictionlessdata/goodtables.svg?branch=master)](https://coveralls.io/r/frictionlessdata/goodtables?branch=master)
+[![Travis](https://img.shields.io/travis/frictionlessdata/goodtables-py/master.svg)](https://travis-ci.org/frictionlessdata/goodtables-py)
+[![Coveralls](http://img.shields.io/coveralls/frictionlessdata/goodtables-py.svg?branch=master)](https://coveralls.io/r/frictionlessdata/goodtables-py?branch=master)
 [![PyPi](https://img.shields.io/pypi/v/goodtables.svg)](https://pypi.python.org/pypi/goodtables)
 [![SemVer](https://img.shields.io/badge/versions-SemVer-brightgreen.svg)](http://semver.org/)
 [![Gitter](https://img.shields.io/gitter/room/frictionlessdata/chat.svg)](https://gitter.im/frictionlessdata/chat)
@@ -23,8 +23,7 @@ Goodtables is a framework to inspect tabular data.
 ### Installation
 
 ```bash
-$ pip install git+https://github.com/frictionlessdata/goodtables-py@next
-$ # pip install goodtables - under development
+$ pip install goodtables --pre
 ```
 
 ### Example
