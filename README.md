@@ -23,8 +23,7 @@ Goodtables is a framework to inspect tabular data.
 ### Installation
 
 ```bash
-$ pip install git+https://github.com/frictionlessdata/goodtables-py@next
-$ # pip install goodtables - under development
+$ pip install goodtables --pre
 ```
 
 ### Example
