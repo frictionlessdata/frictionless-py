@@ -269,15 +269,14 @@ class Inspector(object):
             error.update({'code': code})
             errors.append(error)
         for check in chain(vars(checks_module).values(), custom):
-            descriptor = getattr(check, 'check', None)
-            if descriptor:
-                error = descriptor['error']
-                errormap = {error['code']: index for index, error in enumerate(errors)}
-                if descriptor['before'] in errormap:
-                    errors.insert(errormap[descriptor['before']], error)
-                if descriptor['after'] in errormap:
-                    errors.insert(errormap[descriptor['after']] + 1, error)
-                checkmap[error['code']] = check
+            desc = getattr(check, 'check', None)
+            if desc:
+                errormap = {desc['code']: index for index, error in enumerate(errors)}
+                if desc['before'] in errormap:
+                    errors.insert(errormap[desc['before']], desc)
+                if desc['after'] in errormap:
+                    errors.insert(errormap[desc['after']] + 1, desc)
+                checkmap[desc['code']] = check
 
         # Prepare checks
         checks = []
