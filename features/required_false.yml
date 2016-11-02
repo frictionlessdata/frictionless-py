@@ -1,0 +1,4 @@
+required_false:
+  source: data/required_false.csv
+  schema: data/required_false_schema.json
+  report: []

@@ -73,7 +73,7 @@ Goodtables inspects your tabular data to find general, structure and schema erro
 
 Goodtables support different sources for an inspection. But it should be convertable to dataset presented on a figure 1. Details will be explained in the next sections:
 
-![Dataset](files/dataset.png)
+![Dataset](data/dataset.png)
 
 #### Report
 

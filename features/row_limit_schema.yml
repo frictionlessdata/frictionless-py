@@ -1,0 +1,7 @@
+row_limit_schema:
+  config:
+    checks: schema
+    row_limit: 3
+  source: data/row_limit_schema.csv
+  schema: data/test_schema.json
+  report: []

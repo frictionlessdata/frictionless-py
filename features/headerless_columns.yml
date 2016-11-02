@@ -1,0 +1,4 @@
+headerless_columns:
+  source: data/headerless_columns.csv
+  report:
+    - [1, null, 2, 'blank-header']

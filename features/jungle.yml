@@ -1,0 +1,29 @@
+gla-250-report-2013-14-P07:
+  config:
+    error_limit: 1
+  source: data/jungle/gla-250-report-2013-14-P07.csv
+  report:
+    - [1, null, 2, 'blank-header']
+
+
+gla-250-report-2014-15-P07:
+  config:
+    error_limit: 1
+  source: data/jungle/gla-250-report-2014-15-P07.csv
+  report:
+    - [1, null, 1, 'blank-header']
+
+
+gla-250-report-2014-15-P08:
+  config:
+    error_limit: 1
+  source: data/jungle/gla-250-report-2014-15-P08.csv
+  report:
+    - [1, null, 1, 'blank-header']
+
+
+multilingual:
+  config:
+    error_limit: 1
+  source: data/jungle/multilingual.xlsx
+  report: []

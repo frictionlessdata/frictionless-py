@@ -1,0 +1,11 @@
+# Hey, this CSV has some invalid data in it
+id,name,slug
+,,
+ag,Antigua and Barbuda,antigua-and-barbuda
+ar,Argentina,argentina
+am,Armenia,armenia
+aw,Aruba,aruba
+au,Australia,australia
+at,Austria,austria
+bd,Bangladesh,bangladesh
+be,Belgium,belgium

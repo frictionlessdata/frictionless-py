@@ -1,0 +1,4 @@
+duplicate_columns:
+  source: data/duplicate_columns.csv
+  report:
+    - [1, null, 4, 'duplicate-header']

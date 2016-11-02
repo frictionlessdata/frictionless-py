@@ -6,9 +6,10 @@ from __future__ import unicode_literals
 
 import io
 import json
+import pytest
 import requests
 
-
+@pytest.mark.xfail
 def test_spec_is_up_to_date():
     actual = json.load(io.open('goodtables/spec.json', encoding='utf-8'))
     expect = requests.get('https://raw.githubusercontent.com/frictionlessdata/data-quality-spec/master/spec.json').json()
