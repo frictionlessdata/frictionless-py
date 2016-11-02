@@ -271,7 +271,7 @@ class Inspector(object):
         for check in chain(vars(checks_module).values(), custom):
             desc = getattr(check, 'check', None)
             if desc:
-                errormap = {desc['code']: index for index, error in enumerate(errors)}
+                errormap = {error['code']: index for index, error in enumerate(errors)}
                 if desc['before'] in errormap:
                     errors.insert(errormap[desc['before']], desc)
                 if desc['after'] in errormap:
