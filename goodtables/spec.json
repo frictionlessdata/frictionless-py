@@ -1,161 +1,221 @@
 {
     "version": "1.0.0-alpha1",
-    "errors": [
-        {
-          "code": "io-error",
-          "type": "general",
+    "errors": {
+
+
+        "io-error": {
+          "name": "IO Error",
+          "type": "source",
           "context": "any",
+          "weight": 100,
+          "message": "The data source returned an IO Error of type {error_type}",
           "description": ""
         },
-        {
-          "code": "http-error",
-          "type": "general",
+        "http-error": {
+          "name": "HTTP Error",
+          "type": "source",
           "context": "any",
+          "weight": 100,
+          "message": "The data source returned an HTTP error with a status code of {status_code}",
           "description": ""
         },
-        {
-          "code": "datapackage-error",
-          "type": "general",
+        "datapackage-error": {
+          "name": "DataPackage Error",
+          "type": "source",
           "context": "dataset",
+          "weight": 100,
+          "message": "DataPackage error: {error_message}",
           "description": ""
         },
-        {
-          "code": "jsontableschema-error",
-          "type": "general",
+        "jsontableschema-error": {
+          "name": "JSON Table Schema Error",
+          "type": "source",
           "context": "dataset",
+          "weight": 100,
+          "message": "JSON Table Schema error: {error_message}",
           "description": ""
         },
-        {
-          "code": "source-error",
-          "type": "general",
+        "source-error": {
+          "name": "Source Error",
+          "type": "source",
           "context": "table",
+          "weight": 100,
+          "message": "The data source has not supported or has inconsistent contents; no tabular data can be extracted",
           "description": ""
         },
-        {
-          "code": "scheme-error",
-          "type": "general",
+        "scheme-error": {
+          "name": "Scheme Error",
+          "type": "source",
           "context": "table",
+          "weight": 100,
+          "message": "The data source is in an unknown scheme; no tabular data can be extracted",
           "description": ""
         },
-        {
-          "code": "format-error",
-          "type": "general",
+        "format-error": {
+          "name": "Format Error",
+          "type": "source",
           "context": "table",
+          "weight": 100,
+          "message": "The data source is in an unknown format; no tabular data can be extracted",
           "description": ""
         },
-        {
-          "code": "encoding-error",
-          "type": "general",
+        "encoding-error": {
+          "name": "Encoding Error",
+          "type": "source",
           "context": "table",
+          "weight": 100,
+          "message": "The data source could not be successfully decoded with {encoding} encoding",
           "description": ""
         },
-        {
-          "code": "blank-header",
+
+
+        "blank-header": {
+          "name": "Blank Header",
           "type": "structure",
           "context": "head",
+          "weight": 3,
+          "message": "Header in column {column_number} is blank",
           "description": ""
         },
-        {
-          "code": "duplicate-header",
+        "duplicate-header": {
+          "name": "Duplicate Header",
           "type": "structure",
           "context": "head",
+          "weight": 3,
+          "message": "Header in column {column_number} is duplicated to header in column(s) {column_numbers}",
           "description": ""
         },
-        {
-          "code": "non-matching-header",
+        "blank-row": {
+          "name": "Blank Row",
+          "type": "structure",
+          "context": "body",
+          "weight": 9,
+          "message": "Row {row_number} is completely blank",
+          "description": ""
+        },
+        "duplicate-row": {
+          "name": "Duplicate Row",
+          "type": "structure",
+          "context": "body",
+          "weight": 5,
+          "message": "Row {row_number} is duplicated to row(s) {row_numbers}",
+          "description": ""
+        },
+        "extra-value": {
+          "name": "Extra Value",
+          "type": "structure",
+          "context": "body",
+          "weight": 9,
+          "message": "Row {row_number} has an extra value in column {column_number}",
+          "description": ""
+        },
+        "missing-value": {
+          "name": "Missing Value",
+          "type": "structure",
+          "context": "body",
+          "weight": 9,
+          "message": "Row {row_number} has a missing value in column {column_number}",
+          "description": ""
+        },
+
+
+        "non-matching-header": {
+          "name": "Non-Matching Header",
           "type": "schema",
           "context": "head",
+          "weight": 9,
+          "message": "Header in column {column_number} doesn't match field name {field_name}",
           "description": ""
         },
-        {
-          "code": "extra-header",
+        "extra-header": {
+          "name": "Extra Header",
           "type": "schema",
           "context": "head",
+          "weight": 9,
+          "message": "There is an extra header in column {column_number}",
           "description": ""
         },
-        {
-          "code": "missing-header",
+        "missing-header": {
+          "name": "Missing Header",
           "type": "schema",
           "context": "head",
+          "weight": 9,
+          "message": "There is a missing header in column {column_number}",
           "description": ""
         },
-        {
-          "code": "blank-row",
-          "type": "structure",
-          "context": "body",
-          "description": ""
-        },
-        {
-          "code": "duplicate-row",
-          "type": "structure",
-          "context": "body",
-          "description": ""
-        },
-        {
-          "code": "extra-value",
-          "type": "structure",
-          "context": "body",
-          "description": ""
-        },
-        {
-          "code": "missing-value",
-          "type": "structure",
-          "context": "body",
-          "description": ""
-        },
-        {
-          "code": "required-constraint",
+        "required-constraint": {
+          "name": "Required Constraint",
           "type": "schema",
           "context": "body",
+          "weight": 9,
+          "message": "Column {column_number} is a required field, but row {row_number} has no value",
           "description": ""
         },
-        {
-          "code": "pattern-constraint",
+        "pattern-constraint": {
+          "name": "Pattern Constraint",
           "type": "schema",
           "context": "body",
+          "weight": 7,
+          "message": "The value {value} in row {row_number} and column {column_number} does not conform to the pattern constraint of {constraint}",
           "description": ""
         },
-        {
-          "code": "non-castable-value",
+        "non-castable-value": {
+          "name": "Non-Castable Value",
           "type": "schema",
           "context": "body",
+          "weight": 9,
+          "message": "Row {row_number} has non castable value in column {column_number} (type: {field_type}, format: {field_format})",
           "description": ""
         },
-        {
-          "code": "unique-constraint",
+        "unique-constraint": {
+          "name": "Unique Constraint",
           "type": "schema",
           "context": "body",
+          "weight": 9,
+          "message": "Rows {row_numbers} has unique constraint violation in column {column_number}",
           "description": ""
         },
-        {
-          "code": "enumerable-constraint",
+        "enumerable-constraint": {
+          "name": "Enumerable Constraint",
           "type": "schema",
           "context": "body",
+          "weight": 7,
+          "message": "The value {value} in row {row_number} and column {column_number} does not conform to the given enumeration: {constraint}",
           "description": ""
         },
-        {
-          "code": "minimum-constraint",
+        "minimum-constraint": {
+          "name": "Minimum Constraint",
           "type": "schema",
           "context": "body",
+          "weight": 7,
+          "message": "The value {value} in row {row_number} and column {column_number} does not conform to the minimum constraint of {constraint}",
           "description": ""
         },
-        {
-          "code": "maximum-constraint",
+        "maximum-constraint": {
+          "name": "Maximum Constraint",
           "type": "schema",
           "context": "body",
+          "weight": 7,
+          "message": "The value {value} in row {row_number} and column {column_number} does not conform to the maximum constraint of {constraint}",
           "description": ""
         },
-        {
-          "code": "minimum-length-constraint",
+        "minimum-length-constraint": {
+          "name": "Minimum Length Constraint",
           "type": "schema",
           "context": "body",
+          "weight": 7,
+          "message": "The value {value} in row {row_number} and column {column_number} does not conform to the minimum length constraint of {constraint}",
           "description": ""
         },
-        {
-          "code": "maximum-length-constraint",
+        "maximum-length-constraint": {
+          "name": "Maximum Length Constraint",
           "type": "schema",
           "context": "body",
+          "weight": 7,
+          "message": "The value {value} in row {row_number} and column {column_number} does not conform to the maximum length constraint of {constraint}",
           "description": ""
         }
-    ]
+
+
+    }
 }

@@ -262,6 +262,7 @@ Inspector(checks='all',
 ~@preset(name)
 ~@check(error)
 exceptions
+spec
 ~cli
 ```
 
