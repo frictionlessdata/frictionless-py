@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 
 from copy import copy
 from jsontableschema import Schema, infer
+from ...spec import spec
 from ...register import check
 
 
@@ -27,7 +28,8 @@ def extra_header(errors, columns, sample, infer_fields=False):
                 column['field'] = Schema(descriptor).fields[0]
             # Add error/remove column
             else:
-                message = 'Headers have extra header in column %s' % column['number']
+                message = spec['errors']['extra-header']['message']
+                message = message.format(column_number=column['number'])
                 errors.append({
                     'code': 'extra-header',
                     'message': message,

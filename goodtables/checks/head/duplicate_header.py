@@ -4,6 +4,7 @@ from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
+from ...spec import spec
 from ...register import check
 
 
@@ -17,8 +18,10 @@ def duplicate_header(errors, columns, sample=None):
             references = rindex.setdefault(column['header'], [])
             if references:
                 # Add error
-                message = 'Header in column %s is duplicated to header in column(s) %s'
-                message = message % (column['number'], ', '.join(map(str, references)))
+                message = spec['errors']['duplicate-header']['message']
+                message = message.format(
+                    column_number=column['number'],
+                    column_numbers=', '.join(map(str, references)))
                 errors.append({
                     'code': 'duplicate-header',
                     'message': message,

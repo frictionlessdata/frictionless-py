@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 
 import re
 from copy import copy
+from ...spec import spec
 from ...register import check
 
 
@@ -20,8 +21,10 @@ def non_matching_header(errors, columns, sample=None, order_fields=False):
             if len(column) == 3:
                 if column['header'] != column['field'].name:
                     # Add error
-                    message = 'Header in column %s doesn\'t match field name (name: %s)'
-                    message = message % (column['number'], column['field'].name)
+                    message = spec['errors']['non-matching-header']['message']
+                    message = message.format(
+                        column_number=column['number'],
+                        field_name=column['field'].name)
                     errors.append({
                         'code': 'non-matching-header',
                         'message': message,

@@ -5,6 +5,7 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 from copy import copy
+from ...spec import spec
 from ...register import check
 
 
@@ -15,8 +16,10 @@ def missing_value(errors, columns, row_number, state=None):
     for column in copy(columns):
         if 'value' not in column:
             # Add error
-            message = 'Row %s has missing value in column %s'
-            message = message % (row_number, column['number'])
+            message = spec['errors']['missing-value']['message']
+            message = message.format(
+                row_number=row_number,
+                column_number=column['number'])
             errors.append({
                 'code': 'missing-value',
                 'message': message,
