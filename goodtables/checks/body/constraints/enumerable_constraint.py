@@ -4,6 +4,7 @@ from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
+from ....spec import spec
 from ....register import check
 
 
@@ -16,8 +17,12 @@ def enumerable_constraint(errors, columns, row_number, state=None):
             valid = column['field'].test_value(column['value'], constraint='enum')
             if not valid:
                 # Add error
-                message = 'Row %s has enum constraint violation in column %s'
-                message = message % (row_number, column['number'])
+                message = spec['errors']['enumerable-constraint']['message']
+                message = message.format(
+                    value=column['value'],
+                    row_number=row_number,
+                    column_number=column['number'],
+                    constraint=column['field'].constraints['enum'])
                 errors.append({
                     'code': 'enumerable-constraint',
                     'message': message,

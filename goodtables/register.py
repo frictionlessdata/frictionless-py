@@ -18,14 +18,14 @@ def preset(name):
     return decorator
 
 
-def check(error, before=None, after=None):
+def check(code, type=None, context=None, before=None, after=None):
     """Register check.
     """
-    if not isinstance(error, dict):
-        error = {'code': error}
     def decorator(func):
         func.check = {
-            'error': error,
+            'code': code,
+            'type': type,
+            'context': context,
             'before': before,
             'after': after,
         }

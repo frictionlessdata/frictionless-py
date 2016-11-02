@@ -5,6 +5,7 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 from copy import copy
+from ...spec import spec
 from ...register import check
 
 
@@ -15,7 +16,8 @@ def missing_header(errors, columns, sample=None):
     for column in copy(columns):
         if 'header' not in column:
             # Add error
-            message = 'Headers have missing header in column %s' % column['number']
+            message = spec['errors']['missing-header']['message']
+            message = message.format(column_number=column['number'])
             errors.append({
                 'code': 'missing-header',
                 'message': message,

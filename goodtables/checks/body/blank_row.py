@@ -4,6 +4,7 @@ from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
+from ...spec import spec
 from ...register import check
 
 
@@ -13,7 +14,8 @@ from ...register import check
 def blank_row(errors, columns, row_number, state=None):
     if not list(filter(lambda column: column.get('value'), columns)):
         # Add error
-        message = 'Row %s is completely blank' % row_number
+        message = spec['errors']['blank-row']['message']
+        message = message.format(row_number=row_number)
         errors.append({
             'code': 'blank-row',
             'message': message,

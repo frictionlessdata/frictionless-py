@@ -4,6 +4,7 @@ from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
+from ...spec import spec
 from ...register import check
 
 
@@ -15,7 +16,8 @@ def blank_header(errors, columns, sample=None):
         if 'header' in column:
             if not column['header']:
                 # Add error
-                message = 'Header in column %s is completely blank' % column['number']
+                message = spec['errors']['blank-header']['message']
+                message = message.format(column_number=column['number'])
                 errors.append({
                     'code': 'blank-header',
                     'message': message,

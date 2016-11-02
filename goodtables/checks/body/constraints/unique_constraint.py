@@ -4,6 +4,7 @@ from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
+from ....spec import spec
 from ....register import check
 
 
@@ -19,9 +20,10 @@ def unique_constraint(errors, columns, row_number, state):
                 references = rindex.setdefault(column['value'], [])
                 if references:
                     # Add error
-                    mesrows = ', '.join(map(str, references + [row_number]))
-                    message = 'Rows %s has unique constraint violation in column %s'
-                    message = message % (mesrows, column['number'])
+                    message = spec['errors']['unique-constraint']['message']
+                    message = message.format(
+                        row_numbers=', '.join(map(str, references + [row_number])),
+                        column_number=column['number'])
                     errors.append({
                         'code': 'unique-constraint',
                         'message': message,

@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 
 from copy import copy
 import jsontableschema
+from ...spec import spec
 from ...register import check
 
 
@@ -20,10 +21,12 @@ def non_castable_value(errors, columns, row_number, state=None):
                     column['value'], skip_constraints=True)
             except jsontableschema.exceptions.JsonTableSchemaException:
                 # Add error
-                message = 'Row %s has non castable value in column %s'
-                message = message % (row_number, column['number'])
-                message += ' (type: "%s", format: "%s")'
-                message = message % (column['field'].type, column['field'].format)
+                message = spec['errors']['non-castable-value']['message']
+                message = message.format(
+                    row_number=row_number,
+                    column_number=column['number'],
+                    field_type=column['field'].type,
+                    field_format=column['field'].format)
                 errors.append({
                     'code': 'non-castable-value',
                     'message': message,

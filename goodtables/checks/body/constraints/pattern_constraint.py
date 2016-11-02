@@ -5,6 +5,7 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 from copy import copy
+from ....spec import spec
 from ....register import check
 
 
@@ -17,8 +18,12 @@ def pattern_constraint(errors, columns, row_number, state=None):
             valid = column['field'].test_value(column['value'], constraint='pattern')
             if not valid:
                 # Add error
-                message = 'Row %s has pattern constraint violation in column %s'
-                message = message % (row_number, column['number'])
+                message = spec['errors']['pattern-constraint']['message']
+                message = message.format(
+                    value=column['value'],
+                    row_number=row_number,
+                    column_number=column['number'],
+                    constraint=column['field'].constraints['pattern'])
                 errors.append({
                     'code': 'pattern-constraint',
                     'message': message,

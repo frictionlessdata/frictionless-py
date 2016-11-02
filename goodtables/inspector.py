@@ -4,9 +4,6 @@ from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
-import io
-import os
-import json
 import inspect
 import datetime
 import operator
@@ -20,6 +17,8 @@ from multiprocessing.pool import ThreadPool
 from . import presets as presets_module
 from . import checks as checks_module
 from . import exceptions
+from . import config
+from .spec import spec
 
 
 # Module API
@@ -257,25 +256,24 @@ class Inspector(object):
 
         return presets
 
-    def __prepare_checks(self, config, custom):
+    def __prepare_checks(self, setup, custom):
 
         # Prepare errors/checkmap
         errors = []
         checkmap = {}
-        base = os.path.dirname(__file__)
-        path = os.path.join(base, 'spec.json')
-        spec = json.load(io.open(path, encoding='utf-8'))
-        errors.extend(spec['errors'])
+        for code in config.CHECKS:
+            error = copy(spec['errors'][code])
+            error.update({'code': code})
+            errors.append(error)
         for check in chain(vars(checks_module).values(), custom):
-            descriptor = getattr(check, 'check', None)
-            if descriptor:
-                error = descriptor['error']
+            desc = getattr(check, 'check', None)
+            if desc:
                 errormap = {error['code']: index for index, error in enumerate(errors)}
-                if descriptor['before'] in errormap:
-                    errors.insert(errormap[descriptor['before']], error)
-                if descriptor['after'] in errormap:
-                    errors.insert(errormap[descriptor['after']] + 1, error)
-                checkmap[error['code']] = check
+                if desc['before'] in errormap:
+                    errors.insert(errormap[desc['before']], desc)
+                if desc['after'] in errormap:
+                    errors.insert(errormap[desc['after']] + 1, desc)
+                checkmap[desc['code']] = check
 
         # Prepare checks
         checks = []
@@ -289,22 +287,22 @@ class Inspector(object):
                 })
 
         # Filter structure checks
-        if config == 'structure':
+        if setup == 'structure':
             checks = self.__filter_checks(checks, type='structure')
 
         # Filter schema checks
-        elif config == 'schema':
+        elif setup == 'schema':
             checks = self.__filter_checks(checks, type='schema')
 
         # Filter granular checks
-        elif isinstance(config, dict):
-            default = True not in config.values()
+        elif isinstance(setup, dict):
+            default = True not in setup.values()
             checks = [check for check in checks
-                if config.get(check['code'], default)]
+                if setup.get(check['code'], default)]
 
         # Unknown filter
-        elif config != 'all':
-            message = 'Checks filter "%s" is not supported' % config
+        elif setup != 'all':
+            message = 'Checks filter "%s" is not supported' % setup
             raise exceptions.GoodtablesException(message)
 
         # Bind options

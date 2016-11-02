@@ -5,6 +5,7 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 import json
+from ...spec import spec
 from ...register import check
 
 
@@ -17,8 +18,10 @@ def duplicate_row(errors, columns, row_number, state):
     references = rindex.setdefault(pointer, [])
     if references:
         # Add error
-        message = 'Row %s is duplicated to row(s) %s'
-        message = message % (row_number, ', '.join(map(str, references)))
+        message = spec['errors']['duplicate-row']['message']
+        message = message.format(
+            row_number=row_number,
+            row_numbers=', '.join(map(str, references)))
         errors.append({
             'code': 'duplicate-row',
             'message': message,

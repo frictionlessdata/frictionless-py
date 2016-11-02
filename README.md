@@ -124,7 +124,7 @@ Goodtables by default supports the following presets:
 
 > It's a provisional API excluded from SemVer. If you use it as a part of other program please pin concrete `goodtables` version to your requirements file.
 
-To register a custom preset user could use a `preset(name)` decorator. This way the builtin preset could be overriden or could be added a custom preset.
+To register a custom preset user could use a `preset` decorator. This way the builtin preset could be overriden or could be added a custom preset.
 
 ```python
 from tabulator import Stream
@@ -176,17 +176,12 @@ Goodtables by default supports the following checks:
 
 > It's a provisional API excluded from SemVer. If you use it as a part of other program please pin concrete `goodtables` version to your requirements file.
 
-To register a custom check user could use a `check(error)` decorator. This way the builtin check could be overriden (use error code like `duplicate-row` instead of dictionary like in example below) or could be added a check for a custom error (use `after/before` argument to set an insertion position):
+To register a custom check user could use a `check` decorator. This way the builtin check could be overriden (use the spec error code like `duplicate-row`) or could be added a check for a custom error (use `type`, `context` and `after/before` arguments):
 
 ```python
 from goodtables import Inspector, check
 
-error = {
-    'code': 'custom-error',
-    'type': 'structure',
-    'context': 'body',
-}
-@check(error, after='blank-row')
+@check('custom-error', type='structure', context='body', after='blank-row')
 def custom_check(errors, columns, row_number,  state=None):
     for column in columns:
         errors.append({
@@ -262,6 +257,7 @@ Inspector(checks='all',
 ~@preset(name)
 ~@check(error)
 exceptions
+spec
 ~cli
 ```
 
