@@ -78,6 +78,10 @@ def _slugify(string):
 
 
 def _swap_fields(column1, column2):
-    field1 = column1['field']
-    column1['field'] = column2['field']
+    field1 = column1.get('field')
+    column1['field'] = column2.get('field')
     column2['field'] = field1
+    if column1['field'] is None:
+        del column1['field']
+    if column2['field'] is None:
+        del column2['field']
