@@ -47,6 +47,7 @@ print(inspector.inspect('data/invalid.csv'))
 #     'valid': False',
 #     'headers': ['id', 'name', ''],
 #     'row-count': 4,
+#     'source': 'data/invalid.csv'
 #     'error-count': 2,
 #     'errors': [
 #        {'row': None,
@@ -135,6 +136,7 @@ def custom_preset(source, **options):
     for table in source:
         try:
             tables.append({
+                'source':  str(source),
                 'stream':  Stream(...),
                 'schema': Schema(...),
                 'extra': {...},
