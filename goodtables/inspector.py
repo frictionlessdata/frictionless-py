@@ -131,6 +131,7 @@ class Inspector(object):
         row_number = 0
         fatal_error = False
         checks = copy(self.__checks)
+        source = table['source']
         stream = table['stream']
         schema = table['schema']
         extra = table['extra']
@@ -240,6 +241,7 @@ class Inspector(object):
             'error-count': len(errors),
             'row-count': row_number,
             'headers': headers,
+            'source': source,
             'errors': errors,
         })
 
