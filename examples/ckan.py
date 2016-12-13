@@ -13,6 +13,7 @@ def ckan_preset(source, **options):
         for resource in package['resources']:
             if resource['url'].endswith('.csv'):
                 tables.append({
+                    'source': resource['url'],
                     'stream': Stream(resource['url'], headers=1),
                     'schema': None,
                     'extra': {
