@@ -12,6 +12,7 @@ def csvdir(source):
         path = os.path.join(source, name)
         if name.endswith('.csv'):
             tables.append({
+                'source': path,
                 'stream': Stream(path, headers=1),
                 'schema': None,
                 'extra': {
