@@ -23,6 +23,7 @@ def non_castable_value(errors, columns, row_number, state=None):
                 # Add error
                 message = spec['errors']['non-castable-value']['message']
                 message = message.format(
+                    value=column['value'],
                     row_number=row_number,
                     column_number=column['number'],
                     field_type=column['field'].type,

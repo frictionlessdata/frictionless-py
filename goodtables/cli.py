@@ -8,6 +8,7 @@ import click
 import json as json_module
 from pprint import pformat
 from .inspector import Inspector
+click.disable_unicode_literals_warning = True
 
 
 # Module API
