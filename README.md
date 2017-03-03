@@ -8,7 +8,7 @@
 
 Goodtables is a framework to inspect tabular data.
 
-> Version v1.0.0-alpha8 has BREAKING CHANGE - preset `tables` and preset `datapackages` has been merged into universal `nested` preset.
+> [BREAKING] Version v1.0.0-alpha8 has merged preset `tables` and preset `datapackages` into universal `nested` preset.
 
 > Version v1.0 has renewed API introduced in NOT backward-compatibility manner. Previous version could be found [here](https://github.com/frictionlessdata/goodtables-py/tree/4b85254cc0358c0caf85bbd41d0c2023df99fb9b).
 
