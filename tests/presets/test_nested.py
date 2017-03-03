@@ -9,7 +9,7 @@ from goodtables import presets
 
 # Test
 
-def test_datapackages():
+def test_nested():
     errors, tables = presets.nested([
         {'source': 'data/valid.csv'},
         {'source': 'data/invalid.csv', 'preset': 'table'},
