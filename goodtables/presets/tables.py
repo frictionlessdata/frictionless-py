@@ -4,6 +4,7 @@ from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
+from copy import deepcopy
 from .table import table as table_preset
 from ..register import preset
 
@@ -16,6 +17,7 @@ def tables(items):
     tables = []
 
     # Add errors, tables
+    items = deepcopy(items)
     for item in items:
         source = item.pop('source')
         item_errors, item_tables = table_preset(source, **item)
