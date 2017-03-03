@@ -8,7 +8,7 @@ from goodtables import Inspector
 
 
 def test_features(log, name, feature):
-    inspector = Inspector(**feature.pop('config', {}))
+    inspector = Inspector(**feature.pop('settings', {}))
     expect = list(map(lambda item: tuple(item), feature.pop('report')))
     actual = log(inspector.inspect(**feature))
     assert actual == expect

@@ -1,5 +1,5 @@
 unique_field:
-  config:
+  settings:
     checks: schema
   source: data/unique_field.csv
   schema: data/unique_field.json

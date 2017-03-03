@@ -1,5 +1,5 @@
 fail_fast_two_structure_errors:
-  config:
+  settings:
     checks: structure
     error_limit: 3
   source: data/fail_fast_two_structure_errors.csv
