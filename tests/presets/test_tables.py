@@ -11,7 +11,7 @@ from goodtables import presets
 
 def test_tables():
     errors, tables = presets.tables([
-        {'source': 'data/valid.csv'},
+        'data/valid.csv',
         {'source': 'data/invalid.csv'},
     ])
     assert len(errors) == 0
