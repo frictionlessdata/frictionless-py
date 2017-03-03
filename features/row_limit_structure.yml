@@ -1,5 +1,5 @@
 row_limit_structure:
-  config:
+  settings:
     checks: structure
     row_limit: 3
   source: data/row_limit_structure.csv

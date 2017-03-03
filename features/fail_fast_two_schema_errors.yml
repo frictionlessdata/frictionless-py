@@ -1,5 +1,5 @@
 fail_fast_two_schema_errors:
-  config:
+  settings:
     checks: schema
     error_limit: 3
   source: data/fail_fast_two_schema_errors.csv

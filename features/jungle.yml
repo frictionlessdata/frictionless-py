@@ -1,5 +1,5 @@
 gla-250-report-2013-14-P07:
-  config:
+  settings:
     error_limit: 1
   source: data/jungle/gla-250-report-2013-14-P07.csv
   report:
@@ -7,7 +7,7 @@ gla-250-report-2013-14-P07:
 
 
 gla-250-report-2014-15-P07:
-  config:
+  settings:
     error_limit: 1
   source: data/jungle/gla-250-report-2014-15-P07.csv
   report:
@@ -15,7 +15,7 @@ gla-250-report-2014-15-P07:
 
 
 gla-250-report-2014-15-P08:
-  config:
+  settings:
     error_limit: 1
   source: data/jungle/gla-250-report-2014-15-P08.csv
   report:
@@ -23,7 +23,7 @@ gla-250-report-2014-15-P08:
 
 
 multilingual:
-  config:
+  settings:
     error_limit: 1
   source: data/jungle/multilingual.xlsx
   report: []
