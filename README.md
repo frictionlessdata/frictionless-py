@@ -122,7 +122,7 @@ Goodtables by default supports the following presets:
 
 - table
 - datapackage
-- nested (a special preset allows to nest `inspect` calls - see https://github.com/frictionlessdata/goodtables-py/blob/master/examples/datapackages.py)
+- nested (a special preset allows to nest `inspect` calls - see https://github.com/frictionlessdata/goodtables-py/blob/master/examples/nested.py)
 
 #### Custom presets
 
