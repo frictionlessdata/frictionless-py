@@ -8,6 +8,8 @@
 
 Goodtables is a framework to inspect tabular data.
 
+> Version v1.0.0-alpha8 has BREAKING CHANGE - preset `tables` and preset `datapackages` has been merged into universal `nested` preset.
+
 > Version v1.0 has renewed API introduced in NOT backward-compatibility manner. Previous version could be found [here](https://github.com/frictionlessdata/goodtables-py/tree/4b85254cc0358c0caf85bbd41d0c2023df99fb9b).
 
 ## Features
@@ -117,9 +119,8 @@ A preset function proceses passed source and options and fills tables list for t
 Goodtables by default supports the following presets:
 
 - table
-- tables
 - datapackage
-- datapackages
+- nested (a special preset allows to nest `inspect` calls - see https://github.com/frictionlessdata/goodtables-py/blob/master/examples/datapackages.py)
 
 #### Custom presets
 

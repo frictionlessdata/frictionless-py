@@ -83,6 +83,8 @@ class Inspector(object):
         # Prepare preset
         try:
             preset_func = self.__presets[preset]
+            if preset == 'nested':
+                options['presets'] = self.__presets
         except KeyError:
             message = 'Preset "%s" is not registered' % preset
             raise exceptions.GoodtablesException(message)
