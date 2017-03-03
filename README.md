@@ -119,6 +119,7 @@ Goodtables by default supports the following presets:
 - table
 - tables
 - datapackage
+- datapackages
 
 #### Custom presets
 

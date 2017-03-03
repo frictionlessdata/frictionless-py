@@ -6,14 +6,14 @@ from __future__ import unicode_literals
 
 import six
 from copy import deepcopy
-from .table import table as table_preset
+from .datapackage import datapackage as datapackage_preset
 from ..register import preset
 
 
 # Module API
 
-@preset('tables')
-def tables(items):
+@preset('datapackages')
+def datapackages(items):
     errors = []
     tables = []
 
@@ -21,10 +21,10 @@ def tables(items):
     items = deepcopy(items)
     for item in items:
         if isinstance(item, six.string_types):
-            item_errors, item_tables = table_preset(item)
+            item_errors, item_tables = datapackage_preset(item)
         else:
             source = item.pop('source')
-            item_errors, item_tables = table_preset(source, **item)
+            item_errors, item_tables = datapackage_preset(source, **item)
         errors.extend(item_errors)
         tables.extend(item_tables)
 

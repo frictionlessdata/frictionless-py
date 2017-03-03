@@ -67,7 +67,9 @@ class Inspector(object):
             preset (str): dataset extraction preset
                 supported presets:
                     - table
+                    - tables
                     - datapackage
+                    - datapackages
             options (dict): source options
 
         Returns:
@@ -93,7 +95,7 @@ class Inspector(object):
 
         # Collect reports
         reports = []
-        if not errors:
+        if tables:
             tasks = []
             pool = ThreadPool(processes=len(tables))
             for table in tables:

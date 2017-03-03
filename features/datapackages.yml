@@ -1,0 +1,8 @@
+datapackages:
+  source:
+    - data/datapackages/valid/datapackage.json
+    - source: data/datapackages/invalid/datapackage.json
+  preset: datapackages
+  report:
+    - [3, 3, null, 'blank-row']
+    - [4, 4, null, 'blank-row']
