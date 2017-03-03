@@ -93,7 +93,7 @@ class Inspector(object):
 
         # Collect reports
         reports = []
-        if not errors:
+        if tables:
             tasks = []
             pool = ThreadPool(processes=len(tables))
             for table in tables:
