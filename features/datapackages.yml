@@ -1,8 +1,10 @@
 datapackages:
   source:
     - source: data/datapackages/valid/datapackage.json
+      preset: datapackage
     - source: data/datapackages/invalid/datapackage.json
-  preset: datapackages
+      preset: datapackage
+  preset: nested
   report:
     - [3, 3, null, 'blank-row']
     - [4, 4, null, 'blank-row']
