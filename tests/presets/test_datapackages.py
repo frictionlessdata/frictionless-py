@@ -11,7 +11,7 @@ from goodtables import presets
 
 def test_datapackages():
     errors, tables = presets.datapackages([
-        'data/datapackages/valid/datapackage.json',
+        {'source': 'data/datapackages/valid/datapackage.json'},
         {'source': 'data/datapackages/invalid/datapackage.json'},
     ])
     assert len(errors) == 0
