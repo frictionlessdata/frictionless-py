@@ -1,6 +1,6 @@
 datapackages:
   source:
-    - data/datapackages/valid/datapackage.json
+    - source: data/datapackages/valid/datapackage.json
     - source: data/datapackages/invalid/datapackage.json
   preset: datapackages
   report:
