@@ -67,7 +67,9 @@ class Inspector(object):
             preset (str): dataset extraction preset
                 supported presets:
                     - table
+                    - tables
                     - datapackage
+                    - datapackages
             options (dict): source options
 
         Returns:

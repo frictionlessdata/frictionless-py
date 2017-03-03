@@ -5,5 +5,6 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 from .datapackage import datapackage
+from .datapackages import datapackages
 from .table import table
 from .tables import tables
