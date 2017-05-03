@@ -238,11 +238,11 @@ And a report (the same as in the initial example) will be printed to the standar
 
 ### Is it an inspection or validation?
 
-For now we use `inspector` word because we create reports as result of an inspection. One difference to validation - goodtables will not raise an exception if dataset is invalid.  Final naming is under considiration and based on exposed methods (only `inspect` or like `inspect/validate/stream`).
+For now we use the word `inspector` because we create reports as the result of an inspection. One difference to validation - goodtables will not raise an exception if the dataset is invalid.  Final naming is under consideration and based on exposed methods (only `inspect` or like `inspect/validate/stream`).
 
 ### Is it possible to stream reporting?
 
-For now - it's not. But it's under considiration. Not for multitable datasets because of parallelizm but for one table it could be exposed to public API because internally it's how goodtables works. Question here is what should be streamed - errors or valid/invalid per row indication with errors etc. We would be happy to see a real world use case for this feature.
+For now - it's not. But it's under consideration. Not for multitable datasets because of parallelizm, but for one table it could be exposed to public via API because internally that's how goodtables works.  The question here is "what should be streamed?" - errors, or valid/invalid per row indication with errors, etc.  We would be happy to see a real world use case for this feature.
 
 ## API Reference
 
