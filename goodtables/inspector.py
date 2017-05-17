@@ -152,32 +152,8 @@ class Inspector(object):
                 checks = self.__filter_checks(checks, type='schema', inverse=True)
         except Exception as exception:
             fatal_error = True
-            message = str(exception)
-            if isinstance(exception, tabulator.exceptions.SourceError):
-                code = 'source-error'
-            elif isinstance(exception, tabulator.exceptions.SchemeError):
-                code = 'scheme-error'
-            elif isinstance(exception, tabulator.exceptions.FormatError):
-                code = 'format-error'
-            elif isinstance(exception, tabulator.exceptions.EncodingError):
-                code = 'encoding-error'
-            elif isinstance(exception, tabulator.exceptions.IOError):
-                code = 'io-error'
-            elif isinstance(exception, tabulator.exceptions.HTTPError):
-                code = 'http-error'
-            else:
-                # In the perfect world `tabulator` should catch and wrap 100%
-                # of all possible errors (providing error type as exception class).
-                # But for now it's not achieved yet so we fallback here to source error:
-                # https://github.com/frictionlessdata/tabulator-py/issues/167
-                code = 'source-error'
-            errors.append({
-                'row': None,
-                'code': code,
-                'message': message,
-                'row-number': None,
-                'column-number': None,
-            })
+            error = self.__compose_error_from_exception(exception)
+            errors.append(error)
 
         # Prepare columns
         if not fatal_error:
@@ -210,7 +186,17 @@ class Inspector(object):
             colmap = {column['number']: column for column in columns}
             body_checks = self.__filter_checks(checks, context='body')
             with stream:
-                for row_number, headers, row in stream.iter(extended=True):
+                extended_rows = stream.iter(extended=True)
+                while True:
+                    try:
+                        row_number, headers, row = next(extended_rows)
+                    except StopIteration:
+                        break
+                    except Exception as exception:
+                        fatal_error = True
+                        error = self.__compose_error_from_exception(exception)
+                        errors.append(error)
+                        break
                     columns = []
                     iterator = zip_longest(headers, row, fillvalue=_FILLVALUE)
                     for number, (header, value) in enumerate(iterator, start=1):
@@ -342,6 +328,29 @@ class Inspector(object):
             result.append(check)
 
         return result
+
+    def __compose_error_from_exception(self, exception):
+        code = 'source-error'
+        message = str(exception)
+        if isinstance(exception, tabulator.exceptions.SourceError):
+            code = 'source-error'
+        elif isinstance(exception, tabulator.exceptions.SchemeError):
+            code = 'scheme-error'
+        elif isinstance(exception, tabulator.exceptions.FormatError):
+            code = 'format-error'
+        elif isinstance(exception, tabulator.exceptions.EncodingError):
+            code = 'encoding-error'
+        elif isinstance(exception, tabulator.exceptions.IOError):
+            code = 'io-error'
+        elif isinstance(exception, tabulator.exceptions.HTTPError):
+            code = 'http-error'
+        return {
+            'row': None,
+            'code': code,
+            'message': message,
+            'row-number': None,
+            'column-number': None,
+        }
 
 
 # Internal
