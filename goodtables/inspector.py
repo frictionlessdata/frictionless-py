@@ -166,7 +166,11 @@ class Inspector(object):
             elif isinstance(exception, tabulator.exceptions.HTTPError):
                 code = 'http-error'
             else:
-                raise
+                # In the perfect world `tabulator` should catch and wrap 100%
+                # of all possible errors (providing error type as exception class).
+                # But for now it's not achieved yet so we fallback here to source error:
+                # https://github.com/frictionlessdata/tabulator-py/issues/167
+                code = 'source-error'
             errors.append({
                 'row': None,
                 'code': code,

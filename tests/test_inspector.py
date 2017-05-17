@@ -106,9 +106,12 @@ def test_inspector_tables_invalid(log):
 def test_inspector_catch_all_open_exceptions(log):
     inspector = Inspector()
     report = inspector.inspect('data/latin1.csv', encoding='utf-8')
+    assert log(report) == [
+        (1, None, None, 'source-error'),
+    ]
 
 
 def test_inspector_catch_all_iter_exceptions(log):
     inspector = Inspector()
-    # Resucing sample size here to get raise on iter, not on open
-    report = inspector.inspect([['h'], [1], 'bad'], sample_size=2)
+    # Reducing sample size to get raise on iter, not on open
+    report = inspector.inspect([['h'], [1], 'bad'], sample_size=1)
