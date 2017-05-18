@@ -21,12 +21,12 @@ def read(*paths):
 PACKAGE = 'goodtables'
 NAME = PACKAGE.replace('_', '-')
 INSTALL_REQUIRES = [
-    'six>=1.9,<2.0a',
-    'click>=6.6,<7.0a',
-    'requests>=2.10,<3.0a',
-    'tabulator>=0.10,<1.0a',
-    'jsontableschema>=0.8.2,<1.0a',
-    'datapackage>=0.8,<1.0a',
+    'six>=1.9,<2.0',
+    'click>=6.6,<7.0',
+    'requests>=2.10,<3.0',
+    'tabulator[ods]>=1.0.0a4,<2.0',
+    'jsontableschema>=0.8.2,<1.0',
+    'datapackage>=0.8,<1.0',
 ]
 TESTS_REQUIRE = [
     'pylama',

@@ -99,3 +99,22 @@ def test_inspector_tables_invalid(log):
         (2, 5, 3, 'non-castable-value'),
         (2, 5, 4, 'non-castable-value'),
     ]
+
+
+# Tests [exceptions]
+
+def test_inspector_catch_all_open_exceptions(log):
+    inspector = Inspector()
+    report = inspector.inspect('data/latin1.csv', encoding='utf-8')
+    assert log(report) == [
+        (1, None, None, 'source-error'),
+    ]
+
+
+def test_inspector_catch_all_iter_exceptions(log):
+    inspector = Inspector()
+    # Reducing sample size to get raise on iter, not on open
+    report = inspector.inspect([['h'], [1], 'bad'], sample_size=1)
+    assert log(report) == [
+        (1, None, None, 'source-error'),
+    ]
