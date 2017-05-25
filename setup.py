@@ -24,9 +24,10 @@ INSTALL_REQUIRES = [
     'six>=1.9,<2.0',
     'click>=6.6,<7.0',
     'requests>=2.10,<3.0',
-    'tabulator[ods]>=1.0.0a4,<2.0',
-    'jsontableschema>=0.8.2,<1.0',
-    'datapackage>=0.8,<1.0',
+    'tabulator[ods]>=1.0.0a5,<2.0',
+    # TODO: update after specs-v1
+    'jsontableschema>=0.10.1,<1.0',
+    'datapackage>=0.8.9,<1.0',
 ]
 TESTS_REQUIRE = [
     'pylama',
