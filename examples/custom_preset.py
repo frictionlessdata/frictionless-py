@@ -6,7 +6,7 @@ from goodtables import Inspector, preset
 
 @preset('csvdir')
 def csvdir(source):
-    errors = []
+    warnings = []
     tables = []
     for name in os.listdir(source):
         path = os.path.join(source, name)
@@ -19,7 +19,7 @@ def csvdir(source):
                     'filename': name,
                 },
             })
-    return errors, tables
+    return warnings, tables
 
 
 inspector = Inspector(custom_presets=[csvdir])
