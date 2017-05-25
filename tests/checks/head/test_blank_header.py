@@ -9,7 +9,7 @@ from goodtables import checks
 
 # Test
 
-def test_blank_header(log):
+def test_check_blank_header(log):
     errors = []
     columns = [
         {'number': 1,
@@ -21,7 +21,7 @@ def test_blank_header(log):
     assert len(columns) == 1
 
 
-def test_blank_header_problem(log):
+def test_check_blank_header_problem(log):
     errors = []
     columns = [
         {'number': 1,

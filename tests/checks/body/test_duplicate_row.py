@@ -9,7 +9,7 @@ from goodtables import checks
 
 # Test
 
-def test_duplicate_row(log):
+def test_check_duplicate_row(log):
     errors = []
     columns1 = [
         {'number': 1,
@@ -31,7 +31,7 @@ def test_duplicate_row(log):
     assert len(columns2) == 1
 
 
-def test_duplicate_row_problem(log):
+def test_check_duplicate_row_problem(log):
     errors = []
     columns1 = [
         {'number': 1,

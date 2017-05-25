@@ -9,7 +9,7 @@ from goodtables import checks
 
 # Test
 
-def test_maximum_length_constraint(log):
+def test_check_maximum_length_constraint(log):
     errors = []
     columns = []
     checks.maximum_length_constraint(errors, columns, 1)
