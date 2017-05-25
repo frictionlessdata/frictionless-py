@@ -13,3 +13,22 @@ def test_datapackage():
     warnings, tables = presets.datapackage('data/datapackages/valid/datapackage.json')
     assert len(warnings) == 0
     assert len(tables) == 2
+
+
+def test_datapackage_non_tabular_datapackage_issue_170():
+    warnings, tables = presets.datapackage('data/non_tabular_datapackage.json')
+    assert len(warnings) == 0
+    assert len(tables) == 0
+
+
+def test_datapackage_mixed_datapackage_issue_170():
+    warnings, tables = presets.datapackage('data/mixed_datapackage.json')
+    assert len(warnings) == 0
+    assert len(tables) == 1
+
+
+def test_datapackage_invalid_json_issue_192():
+    warnings, tables = presets.datapackage('data/invalid_json.json')
+    assert len(warnings) == 1
+    assert len(tables) == 0
+    assert 'Unable to parse JSON' in warnings[0]
