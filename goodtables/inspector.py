@@ -370,5 +370,5 @@ def _compose_error_from_exception(exception):
 
 
 def _sort_errors(errors):
-    return sorted(errors, key=
-        lambda error: (error['row-number'] or 0, error['column-number']))
+    return sorted(errors, key=lambda error:
+        (error['row-number'] or 0, error['column-number']))
