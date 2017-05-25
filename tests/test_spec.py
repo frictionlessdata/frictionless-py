@@ -11,7 +11,6 @@ import requests
 from goodtables.spec import spec
 
 
-@pytest.mark.xfail
 def test_spec_is_up_to_date():
     origin_spec = requests.get('https://raw.githubusercontent.com/frictionlessdata/data-quality-spec/master/spec.json').json()
     assert spec == origin_spec, 'run `make spec` to update the spec'
