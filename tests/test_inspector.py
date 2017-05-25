@@ -7,7 +7,7 @@ from __future__ import unicode_literals
 from goodtables import Inspector
 
 
-# Tests [table]
+# Preset: table
 
 def test_inspector_table_valid(log):
     inspector = Inspector()
@@ -51,7 +51,7 @@ def test_inspector_table_invalid_row_limit(log):
     ]
 
 
-# Tests [datapackage]
+# Preset: datapackage
 
 def test_inspector_datapackage_valid(log):
     inspector = Inspector()
@@ -79,7 +79,7 @@ def test_inspector_datapackage_invalid_table_limit(log):
     ]
 
 
-# Tests [nested]
+# Preset: nested
 
 def test_inspector_tables_invalid(log):
     inspector = Inspector(infer_schema=True)
@@ -101,7 +101,7 @@ def test_inspector_tables_invalid(log):
     ]
 
 
-# Tests [exceptions]
+# Catch exceptions
 
 def test_inspector_catch_all_open_exceptions(log):
     inspector = Inspector()
@@ -118,3 +118,64 @@ def test_inspector_catch_all_iter_exceptions(log):
     assert log(report) == [
         (1, None, None, 'source-error'),
     ]
+
+
+# Warnings
+
+def test_inspector_warnings_no():
+    inspector = Inspector()
+    source = 'data/datapackages/invalid/datapackage.json'
+    report = inspector.inspect(source, preset='datapackage')
+    assert len(report['warnings']) == 0
+
+
+def test_inspector_warnings_bad_datapackage_json():
+    inspector = Inspector()
+    source = 'data/invalid_json.json'
+    report = inspector.inspect(source, preset='datapackage')
+    assert len(report['warnings']) == 1
+    assert 'Unable to parse JSON' in report['warnings'][0]
+
+
+def test_inspector_warnings_table_limit():
+    inspector = Inspector(table_limit=1)
+    source = 'data/datapackages/invalid/datapackage.json'
+    report = inspector.inspect(source, preset='datapackage')
+    assert len(report['warnings']) == 1
+    assert 'table(s) limit' in report['warnings'][0]
+
+
+def test_inspector_warnings_row_limit():
+    inspector = Inspector(row_limit=1)
+    source = 'data/datapackages/invalid/datapackage.json'
+    report = inspector.inspect(source, preset='datapackage')
+    assert len(report['warnings']) == 2
+    assert 'row(s) limit' in report['warnings'][0]
+    assert 'row(s) limit' in report['warnings'][1]
+
+
+def test_inspector_warnings_error_limit():
+    inspector = Inspector(error_limit=1)
+    source = 'data/datapackages/invalid/datapackage.json'
+    report = inspector.inspect(source, preset='datapackage')
+    assert len(report['warnings']) == 2
+    assert 'error(s) limit' in report['warnings'][0]
+    assert 'error(s) limit' in report['warnings'][1]
+
+
+def test_inspector_warnings_table_and_row_limit():
+    inspector = Inspector(table_limit=1, row_limit=1)
+    source = 'data/datapackages/invalid/datapackage.json'
+    report = inspector.inspect(source, preset='datapackage')
+    assert len(report['warnings']) == 2
+    assert 'table(s) limit' in report['warnings'][0]
+    assert 'row(s) limit' in report['warnings'][1]
+
+
+def test_inspector_warnings_table_and_error_limit():
+    inspector = Inspector(table_limit=1, error_limit=1)
+    source = 'data/datapackages/invalid/datapackage.json'
+    report = inspector.inspect(source, preset='datapackage')
+    assert len(report['warnings']) == 2
+    assert 'table(s) limit' in report['warnings'][0]
+    assert 'error(s) limit' in report['warnings'][1]
