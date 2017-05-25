@@ -9,7 +9,6 @@ from jsontableschema import Schema
 from jsontableschema.exceptions import SchemaValidationError
 from datapackage import DataPackage
 from ..register import preset
-from ..spec import spec
 
 
 # Module API

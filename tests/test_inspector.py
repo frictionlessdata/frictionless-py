@@ -25,9 +25,9 @@ def test_inspector_table_invalid(log):
         (1, 2, 4, 'missing-value'),
         (1, 3, None, 'duplicate-row'),
         (1, 4, None, 'blank-row'),
-        (1, 5, 5, 'extra-value'),
         (1, 5, 3, 'non-castable-value'),
         (1, 5, 4, 'non-castable-value'),
+        (1, 5, 5, 'extra-value'),
     ]
 
 
@@ -95,9 +95,9 @@ def test_inspector_tables_invalid(log):
         (2, 2, 4, 'missing-value'),
         (2, 3, None, 'duplicate-row'),
         (2, 4, None, 'blank-row'),
-        (2, 5, 5, 'extra-value'),
         (2, 5, 3, 'non-castable-value'),
         (2, 5, 4, 'non-castable-value'),
+        (2, 5, 5, 'extra-value'),
     ]
 
 

@@ -9,7 +9,6 @@ import jsontableschema
 from tabulator import Stream
 from jsontableschema import Schema, validate
 from ..register import preset
-from ..spec import spec
 
 
 # Module API
@@ -30,7 +29,6 @@ def table(source, schema=None, **options):
             # TODO: after tableschema-v1 will be ready
             # - we should use Schema(strict=False) to handle schema errors on inspection
             # - it means we don't need to validate schema here, mess with helpers etc
-            descriptor = schema
             try:
                 from jsontableschema.helpers import load_json_source
                 loaded_descriptor = load_json_source(schema)
