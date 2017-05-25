@@ -28,6 +28,7 @@ Goodtables is a framework to inspect tabular data.
 
 ```bash
 $ pip install goodtables --pre
+$ pip install goodtables[ods] --pre # With ods format support
 ```
 
 ### Example
