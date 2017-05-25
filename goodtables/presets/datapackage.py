@@ -19,14 +19,22 @@ def datapackage(source, **options):
     warnings = []
     tables = []
 
-    # Prepare datapackage
-    datapackage = DataPackage(source, **options)
-    for exception in datapackage.iter_errors():
+    # Load datapackage
+    try:
+        datapackage = DataPackage(source, **options)
+    except Exception as error:
         warnings.append(
-            'Data Package "%s" has a validation error "%s"' %
-            (source, str(exception).splitlines()[0]))
+            'Data Package "%s" has a loading error "%s"' %
+            (source, error))
 
-    # Add tables
+    # Validate datapackage
+    if not warnings:
+        for error in datapackage.iter_errors():
+            warnings.append(
+                'Data Package "%s" has a validation error "%s"' %
+                (source, str(error).splitlines()[0]))
+
+    # Extract datapackage tables
     if not warnings:
         for resource in datapackage.resources:
             # TODO: after datapackage-v1 will be ready
@@ -35,10 +43,10 @@ def datapackage(source, **options):
             path = resource.remote_data_path or resource.local_data_path
             try:
                 schema = Schema(resource.descriptor['schema'])
-            except SchemaValidationError as exception:
+            except SchemaValidationError as error:
                 warnings.append(
                     'Data Package "%s" has a validation error "%s"' %
-                    (source, str(exception).splitlines()[0]))
+                    (source, str(error).splitlines()[0]))
                 continue
             except Exception:
                 continue

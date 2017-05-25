@@ -91,7 +91,11 @@ class Inspector(object):
 
         # Prepare tables
         warnings, tables = preset_func(source, **options)
-        tables = tables[:self.__table_limit]
+        if len(tables) > self.__table_limit:
+            warnings.append(
+                'Dataset inspection has reached %s table(s) limit' %
+                (self.__table_limit))
+            tables = tables[:self.__table_limit]
 
         # Collect table reports
         table_reports = []
@@ -218,8 +222,14 @@ class Inspector(object):
                             break
                         error['row'] = row
                     if row_number >= self.__row_limit:
+                        warnings.append(
+                            'Table "%s" inspection has reached %s row(s) limit' %
+                            (source, self.__row_limit))
                         break
                     if len(errors) >= self.__error_limit:
+                        warnings.append(
+                            'Table "%s" inspection has reached %s error(s) limit' %
+                            (source, self.__error_limit))
                         break
 
         # Stop timer

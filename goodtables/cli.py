@@ -55,17 +55,14 @@ def _print_report(report, json=False):
         return print(json_module.dumps(report, indent=4))
     color = 'green' if report['valid'] else 'red'
     tables = report.pop('tables')
-    errors = report.pop('errors')
+    warnings = report.pop('warnings')
     click.secho('DATASET', bold=True)
     click.secho('='*7, bold=True)
     click.secho(pformat(report), fg=color, bold=True)
-    if errors:
+    if warnings:
         click.secho('-'*9, bold=True)
-    for error in errors:
-        error = {key: value or '-' for key, value in error.items()}
-        template = '[{row-number},{column-number}] [{code}] {message}'
-        message = template.format(**error)
-        click.secho(message)
+    for warning in warnings:
+        click.secho('Warning: %s' % warning, fg='yellow')
     for table_number, table in enumerate(tables, start=1):
         click.secho('\nTABLE [%s]' % table_number, bold=True)
         click.secho('='*9, bold=True)
