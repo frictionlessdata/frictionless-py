@@ -24,10 +24,14 @@ INSTALL_REQUIRES = [
     'six>=1.9,<2.0',
     'click>=6.6,<7.0',
     'requests>=2.10,<3.0',
-    'tabulator[ods]>=1.0.0a5,<2.0',
+    'tabulator>=1.0.0a5,<2.0',
     # TODO: update after specs-v1
     'jsontableschema>=0.10.1,<1.0',
     'datapackage>=0.8.9,<1.0',
+]
+INSTALL_FORMAT_ODS_REQUIRES = [
+    'ezodf>=0.3,<2.0',
+    'lxml>=3.0,<4.0',
 ]
 TESTS_REQUIRE = [
     'pylama',
@@ -46,7 +50,10 @@ setup(
     include_package_data=True,
     install_requires=INSTALL_REQUIRES,
     tests_require=TESTS_REQUIRE,
-    extras_require={'develop': TESTS_REQUIRE},
+    extras_require={
+        'develop': TESTS_REQUIRE,
+        'ods': INSTALL_FORMAT_ODS_REQUIRES,
+    },
     entry_points={
         'console_scripts': [
             'goodtables = goodtables.cli:cli',
