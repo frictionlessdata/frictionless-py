@@ -10,7 +10,7 @@ from goodtables import presets
 # Test
 
 def test_nested():
-    errors, tables = presets.nested([
+    warnings, tables = presets.nested([
         {'source': 'data/valid.csv'},
         {'source': 'data/invalid.csv', 'preset': 'table'},
         {'source': 'data/datapackages/valid/datapackage.json', 'preset': 'datapackage'},
@@ -20,5 +20,5 @@ def test_nested():
         'nested': presets.nested,
         'datapackage': presets.datapackage,
     })
-    assert len(errors) == 0
+    assert len(warnings) == 0
     assert len(tables) == 6

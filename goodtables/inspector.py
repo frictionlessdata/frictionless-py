@@ -90,34 +90,32 @@ class Inspector(object):
             raise exceptions.GoodtablesException(message)
 
         # Prepare tables
-        errors, tables = preset_func(source, **options)
+        warnings, tables = preset_func(source, **options)
         tables = tables[:self.__table_limit]
-        for error in errors:
-            error['row'] = None
 
-        # Collect reports
-        reports = []
+        # Collect table reports
+        table_reports = []
         if tables:
             tasks = []
             pool = ThreadPool(processes=len(tables))
             for table in tables:
                 tasks.append(pool.apply_async(self.__inspect_table, (table,)))
             for task in tasks:
-                report = task.get()
-                reports.append(report)
+                table_warnings, table_report = task.get()
+                warnings.extend(table_warnings)
+                table_reports.append(table_report)
 
         # Stop timer
         stop = datetime.datetime.now()
 
         # Compose report
-        errors = errors[:self.__error_limit]
         report = {
             'time': round((stop - start).total_seconds(), 3),
-            'valid': not bool(errors) and all(report['valid'] for report in reports),
-            'error-count': len(errors) + sum(len(report['errors']) for report in reports),
+            'valid': all(item['valid'] for item in table_reports),
+            'error-count': sum(len(item['errors']) for item in table_reports),
             'table-count': len(tables),
-            'tables': reports,
-            'errors': errors,
+            'tables': table_reports,
+            'warnings': warnings,
         }
 
         return report
@@ -131,6 +129,7 @@ class Inspector(object):
 
         # Prepare vars
         errors = []
+        warnings = []
         headers = None
         row_number = 0
         fatal_error = False
@@ -226,7 +225,7 @@ class Inspector(object):
         # Stop timer
         stop = datetime.datetime.now()
 
-        # Compose report
+        # Compose table report
         errors = errors[:self.__error_limit]
         report = copy(extra)
         report.update({
@@ -239,7 +238,7 @@ class Inspector(object):
             'errors': errors,
         })
 
-        return report
+        return warnings, report
 
     def __prepare_presets(self, custom):
 

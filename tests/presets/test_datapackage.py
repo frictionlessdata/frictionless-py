@@ -10,6 +10,6 @@ from goodtables import presets
 # Test
 
 def test_datapackage():
-    errors, tables = presets.datapackage('data/datapackages/valid/datapackage.json')
-    assert len(errors) == 0
+    warnings, tables = presets.datapackage('data/datapackages/valid/datapackage.json')
+    assert len(warnings) == 0
     assert len(tables) == 2
