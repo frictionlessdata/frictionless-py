@@ -13,7 +13,7 @@ client = dropbox.dropbox.Dropbox(ACCESS_TOKEN)
 
 @preset('dropbox')
 def dropbox_preset(source, **options):
-    errors = []
+    warnings = []
     tables = []
     for item in client.files_list_folder(source).entries:
         if item.path_lower.endswith('.csv'):
@@ -26,7 +26,7 @@ def dropbox_preset(source, **options):
                     'folder': source,
                 },
             })
-    return errors, tables
+    return warnings, tables
 
 inspector = Inspector(custom_presets=[dropbox_preset])
 report = inspector.inspect(FOLDER, preset='dropbox')

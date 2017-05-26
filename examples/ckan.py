@@ -5,7 +5,7 @@ from goodtables import Inspector, preset
 
 @preset('ckan')
 def ckan_preset(source, **options):
-    errors = []
+    warnings = []
     tables = []
     url = '%s/api/3/action/package_search' % source
     data = requests.get(url).json()
@@ -22,7 +22,7 @@ def ckan_preset(source, **options):
                         'publisher': package['organization']['name']
                     },
                 })
-    return errors, tables
+    return warnings, tables
 
 inspector = Inspector(custom_presets=[ckan_preset])
 report = inspector.inspect('http://data.surrey.ca', preset='ckan')

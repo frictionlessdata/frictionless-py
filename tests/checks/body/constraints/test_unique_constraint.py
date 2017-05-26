@@ -9,7 +9,7 @@ from goodtables import checks
 
 # Test
 
-def test_unique_constraint(log):
+def test_check_unique_constraint(log):
     state = {}
     errors = []
     columns = []

@@ -46,7 +46,7 @@ print(inspector.inspect('data/invalid.csv'))
 # 'valid': False',
 # 'error-count': 2,
 # 'table-count': 1,
-# 'errors': [],
+# 'warnings': [],
 # 'tables': [
 #    {'time': 0.027,
 #     'valid': False',
@@ -90,15 +90,13 @@ As a result of inspection goodtables returns a report dictionary. It includes va
 
 Report errors are categorized by type:
 
-- general - data can't be loaded or parsed
+- source - data can't be loaded or parsed
 - structure - general tabular errors like duplicate headers
 - schema - error of checks against JSON Table Schema
 
 Report errors are categorized by context:
 
-- any - generic errors like IO, HTTP error
-- dataset - the whole dataset errors like invalid datapackage
-- table - the whole table errors like bad encoding
+- table - the whole table errors like IO, HTTP or encoding error
 - head - headers errors
 - body - contents errors
 
@@ -115,7 +113,7 @@ inspector = Inspector()
 inspector.inspect('datapackage.json', preset='datapackage')
 ```
 
-A preset function proceses passed source and options and fills tables list for the following inspection. If any errors have happened a preset function should add them to errors list.
+A preset function proceses passed source and options and fills tables list for the following inspection. If any issues have happened a preset function should add them to warnings list.
 
 #### Builtin presets
 
@@ -138,6 +136,8 @@ from goodtables import Inspector, preset
 
 @preset('custom-preset')
 def custom_preset(source, **options):
+    warnings = []
+    tables = []
     for table in source:
         try:
             tables.append({
@@ -147,12 +147,8 @@ def custom_preset(source, **options):
                 'extra': {...},
             })
         except Exception:
-            errors.append({
-                'code': 'error-code',
-                'message': 'Error message',
-                'row-number': None,
-                'column-number': None,
-            })
+            warnings.append('Warning message')
+    return warnings, tables
 
 inspector = Inspector(custom_presets=[custom_preset])
 inspector.inspect(source, preset='custom-preset')

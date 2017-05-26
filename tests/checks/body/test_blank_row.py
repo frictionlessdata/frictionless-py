@@ -9,7 +9,7 @@ from goodtables import checks
 
 # Test
 
-def test_blank_row(log):
+def test_check_blank_row(log):
     errors = []
     columns = [
         {'number': 1,
@@ -22,7 +22,7 @@ def test_blank_row(log):
     assert len(columns) == 1
 
 
-def test_blank_row_problem(log):
+def test_check_blank_row_problem(log):
     errors = []
     columns = [
         {'number': 1,

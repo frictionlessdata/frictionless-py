@@ -13,10 +13,10 @@ from .. import exceptions
 
 @preset('nested')
 def nested(source, presets):
-    errors = []
+    warnings = []
     tables = []
 
-    # Add errors, tables
+    # Add warnings, tables
     source = deepcopy(source)
     for item in source:
         preset = item.pop('preset', 'table')
@@ -28,8 +28,8 @@ def nested(source, presets):
         except KeyError:
             message = 'Preset "%s" is not registered' % preset
             raise exceptions.GoodtablesException(message)
-        item_errors, item_tables = preset_func(**item)
-        errors.extend(item_errors)
+        item_warnings, item_tables = preset_func(**item)
+        warnings.extend(item_warnings)
         tables.extend(item_tables)
 
-    return errors, tables
+    return warnings, tables

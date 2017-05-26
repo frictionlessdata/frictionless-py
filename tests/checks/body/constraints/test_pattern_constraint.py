@@ -9,7 +9,7 @@ from goodtables import checks
 
 # Test
 
-def test_pattern_constraint(log):
+def test_check_pattern_constraint(log):
     errors = []
     columns = []
     checks.pattern_constraint(errors, columns, 1)

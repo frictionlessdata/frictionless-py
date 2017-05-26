@@ -9,7 +9,7 @@ from goodtables import checks
 
 # Test
 
-def test_non_castable_value(log):
+def test_check_non_castable_value(log):
     errors = []
     columns = [
         {'number': 1,
@@ -23,7 +23,7 @@ def test_non_castable_value(log):
     assert columns[0]['value'] == 1
 
 
-def test_non_castable_value_problem(log):
+def test_check_non_castable_value_problem(log):
     errors = []
     columns = [
         {'number': 1,

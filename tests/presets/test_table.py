@@ -9,7 +9,14 @@ from goodtables import presets
 
 # Test
 
-def test_table():
-    errors, tables = presets.table('data/valid.csv')
-    assert len(errors) == 0
+def test_preset_table():
+    warnings, tables = presets.table('data/valid.csv')
+    assert len(warnings) == 0
     assert len(tables) == 1
+
+
+def test_preset_table_but_got_datapackage_issue_187():
+    warnings, tables = presets.table('data/datapackages/valid/datapackage.json')
+    assert len(warnings) == 1
+    assert len(tables) == 0
+    assert 'Use "datapackage" preset' in warnings[0]

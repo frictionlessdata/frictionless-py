@@ -10,7 +10,7 @@ from goodtables import checks
 
 # Test
 
-def test_missing_header(log):
+def test_check_missing_header(log):
     errors = []
     columns = [
         {'number': 1,
@@ -25,7 +25,7 @@ def test_missing_header(log):
     assert len(columns) == 2
 
 
-def test_missing_header_problem(log):
+def test_check_missing_header_problem(log):
     errors = []
     columns = [
         {'number': 1,

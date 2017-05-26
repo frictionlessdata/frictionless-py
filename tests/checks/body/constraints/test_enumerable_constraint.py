@@ -9,7 +9,7 @@ from goodtables import checks
 
 # Test
 
-def test_enumerable_constraint(log):
+def test_check_enumerable_constraint(log):
     errors = []
     columns = []
     checks.enumerable_constraint(errors, columns, 1)

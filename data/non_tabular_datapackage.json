@@ -1,0 +1,13 @@
+{
+    "name": "non-tabular",
+    "resources": [
+        {
+            "name": "data",
+            "path": "datapackages/valid/data.csv"
+        },
+        {
+            "name": "data2",
+            "path": "datapackages/valid/data2.csv"
+        }
+    ]
+}

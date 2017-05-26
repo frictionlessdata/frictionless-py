@@ -9,7 +9,7 @@ from goodtables import checks
 
 # Test
 
-def test_minimum_constraint(log):
+def test_check_minimum_constraint(log):
     errors = []
     columns = []
     checks.minimum_constraint(errors, columns, 1)

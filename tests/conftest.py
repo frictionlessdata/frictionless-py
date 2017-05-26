@@ -27,8 +27,6 @@ def log():
             for error in struct:
                 result.append(pack_error(error))
         if isinstance(struct, dict):
-            for error in struct['errors']:
-                result.append(pack_error(error))
             for table_number, table in enumerate(struct['tables'], start=1):
                 for error in table['errors']:
                     result.append(pack_error(error, table_number))
