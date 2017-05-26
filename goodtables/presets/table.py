@@ -8,7 +8,7 @@ import six
 import jsontableschema
 from tabulator import Stream
 from jsontableschema import Schema, validate
-from ..register import preset
+from ..decorators import preset
 
 
 # Module API

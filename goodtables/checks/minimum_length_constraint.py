@@ -5,7 +5,7 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 from ..spec import spec
-from ..register import check
+from ..decorators import check
 
 
 # Module API

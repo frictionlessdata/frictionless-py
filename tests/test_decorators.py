@@ -7,5 +7,5 @@ from __future__ import unicode_literals
 import goodtables
 
 
-def test_register():
+def test_decorators():
     pass

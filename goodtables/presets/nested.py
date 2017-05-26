@@ -5,7 +5,7 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 from copy import deepcopy
-from ..register import preset
+from ..decorators import preset
 from .. import exceptions
 
 

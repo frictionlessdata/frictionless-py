@@ -6,7 +6,7 @@ from __future__ import unicode_literals
 
 import json
 from ..spec import spec
-from ..register import check
+from ..decorators import check
 
 
 # Module API

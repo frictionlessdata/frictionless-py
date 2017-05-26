@@ -5,5 +5,5 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 from .inspector import Inspector
-from .register import preset, check
+from .decorators import preset, check
 from .spec import spec
