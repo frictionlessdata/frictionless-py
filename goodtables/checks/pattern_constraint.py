@@ -5,25 +5,27 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 from copy import copy
-from ....spec import spec
-from ....register import check
+from ..spec import spec
+from ..register import check
 
 
 # Module API
 
-@check('required-constraint')
-def required_constraint(errors, columns, row_number, state=None):
+@check('pattern-constraint')
+def pattern_constraint(errors, columns, row_number, state=None):
     for column in copy(columns):
         if len(column) == 4:
-            valid = column['field'].test_value(column['value'], constraint='required')
+            valid = column['field'].test_value(column['value'], constraint='pattern')
             if not valid:
                 # Add error
-                message = spec['errors']['required-constraint']['message']
+                message = spec['errors']['pattern-constraint']['message']
                 message = message.format(
+                    value=column['value'],
                     row_number=row_number,
-                    column_number=column['number'])
+                    column_number=column['number'],
+                    constraint=column['field'].constraints['pattern'])
                 errors.append({
-                    'code': 'required-constraint',
+                    'code': 'pattern-constraint',
                     'message': message,
                     'row-number': row_number,
                     'column-number': column['number'],

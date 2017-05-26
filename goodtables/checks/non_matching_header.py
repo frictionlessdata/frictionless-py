@@ -6,8 +6,8 @@ from __future__ import unicode_literals
 
 import re
 from copy import copy
-from ...spec import spec
-from ...register import check
+from ..spec import spec
+from ..register import check
 
 
 # Module API

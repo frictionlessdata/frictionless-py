@@ -5,8 +5,8 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 import json
-from ...spec import spec
-from ...register import check
+from ..spec import spec
+from ..register import check
 
 
 # Module API

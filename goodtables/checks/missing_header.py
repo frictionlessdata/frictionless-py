@@ -5,25 +5,23 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 from copy import copy
-from ...spec import spec
-from ...register import check
+from ..spec import spec
+from ..register import check
 
 
 # Module API
 
-@check('missing-value')
-def missing_value(errors, columns, row_number, state=None):
+@check('missing-header')
+def missing_header(errors, columns, sample=None):
     for column in copy(columns):
-        if 'value' not in column:
+        if 'header' not in column:
             # Add error
-            message = spec['errors']['missing-value']['message']
-            message = message.format(
-                row_number=row_number,
-                column_number=column['number'])
+            message = spec['errors']['missing-header']['message']
+            message = message.format(column_number=column['number'])
             errors.append({
-                'code': 'missing-value',
+                'code': 'missing-header',
                 'message': message,
-                'row-number': row_number,
+                'row-number': None,
                 'column-number': column['number'],
             })
             # Remove column
