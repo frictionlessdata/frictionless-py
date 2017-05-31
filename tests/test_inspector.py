@@ -4,6 +4,7 @@ from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
+import pytest
 from goodtables import Inspector
 
 
@@ -183,6 +184,15 @@ def test_inspector_warnings_table_and_error_limit():
 
 # Empty source
 
+@pytest.mark.xfail
 def test_inspector_empty_source():
     inspector = Inspector()
     report = inspector.inspect('data/empty.csv')
+
+
+# No headers source
+
+@pytest.mark.xfail
+def test_inspector_no_headers():
+    inspector = Inspector()
+    report = inspector.inspect('data/no_headers.csv', headers=None)
