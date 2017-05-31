@@ -319,10 +319,10 @@ def _prepare_checks(setup, custom, order_fields, infer_fields):
 
     # Bind options
     for check in checks:
-        args, _, _, _ = inspect.getargspec(check['func'])
-        if 'order_fields' in args:
+        parameters = inspect.signature(check['func']).parameters
+        if 'order_fields' in parameters:
             check['func'] = partial(check['func'], order_fields=order_fields)
-        if 'infer_fields' in args:
+        if 'infer_fields' in parameters:
             check['func'] = partial(check['func'], infer_fields=infer_fields)
 
     return checks
