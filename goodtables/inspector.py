@@ -4,6 +4,7 @@ from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
+import six
 import inspect
 import datetime
 import operator
@@ -323,7 +324,10 @@ def _prepare_checks(setup, custom, order_fields, infer_fields):
 
     # Bind options
     for check in checks:
-        parameters = inspect.signature(check['func']).parameters
+        if six.PY2:
+            parameters, _, _, _ = inspect.getargspec(check['func'])
+        else:
+            parameters = inspect.signature(check['func']).parameters
         if 'order_fields' in parameters:
             check['func'] = partial(check['func'], order_fields=order_fields)
         if 'infer_fields' in parameters:
