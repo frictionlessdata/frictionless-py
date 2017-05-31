@@ -4,6 +4,7 @@ from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
+import six
 import inspect
 import datetime
 import operator
@@ -133,7 +134,7 @@ class Inspector(object):
         # Prepare vars
         errors = []
         warnings = []
-        headers = None
+        headers = []
         row_number = 0
         fatal_error = False
         checks = copy(self.__checks)
@@ -147,6 +148,8 @@ class Inspector(object):
             stream.open()
             sample = stream.sample
             headers = stream.headers
+            if headers is None:
+                headers = [None] * len(sample[0]) if sample else []
             if _filter_checks(checks, type='schema'):
                 if schema is None and self.__infer_schema:
                     schema = Schema(infer(headers, sample))
@@ -174,13 +177,14 @@ class Inspector(object):
 
         # Head checks
         if not fatal_error:
-            head_checks = _filter_checks(checks, context='head')
-            for check in head_checks:
-                if not columns:
-                    break
-                check['func'](errors, columns, sample)
-            for error in errors:
-                error['row'] = None
+            if None not in headers:
+                head_checks = _filter_checks(checks, context='head')
+                for check in head_checks:
+                    if not columns:
+                        break
+                    check['func'](errors, columns, sample)
+                for error in errors:
+                    error['row'] = None
 
         # Body checks
         if not fatal_error:
@@ -191,7 +195,7 @@ class Inspector(object):
                 extended_rows = stream.iter(extended=True)
                 while True:
                     try:
-                        row_number, headers, row = next(extended_rows)
+                        row_number, _, row = next(extended_rows)
                     except StopIteration:
                         break
                     except Exception as exception:
@@ -235,6 +239,7 @@ class Inspector(object):
         stop = datetime.datetime.now()
 
         # Compose report
+        headers = headers if None not in headers else None
         errors = errors[:self.__error_limit]
         errors = _sort_errors(errors)
         report = copy(extra)
@@ -319,10 +324,13 @@ def _prepare_checks(setup, custom, order_fields, infer_fields):
 
     # Bind options
     for check in checks:
-        args, _, _, _ = inspect.getargspec(check['func'])
-        if 'order_fields' in args:
+        if six.PY2:
+            parameters, _, _, _ = inspect.getargspec(check['func'])
+        else:
+            parameters = inspect.signature(check['func']).parameters
+        if 'order_fields' in parameters:
             check['func'] = partial(check['func'], order_fields=order_fields)
-        if 'infer_fields' in args:
+        if 'infer_fields' in parameters:
             check['func'] = partial(check['func'], infer_fields=infer_fields)
 
     return checks

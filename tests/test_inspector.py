@@ -4,6 +4,7 @@ from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
+import pytest
 from goodtables import Inspector
 
 
@@ -179,3 +180,22 @@ def test_inspector_warnings_table_and_error_limit():
     assert len(report['warnings']) == 2
     assert 'table(s) limit' in report['warnings'][0]
     assert 'error(s) limit' in report['warnings'][1]
+
+
+# Empty source
+
+def test_inspector_empty_source():
+    inspector = Inspector()
+    report = inspector.inspect('data/empty.csv')
+    assert report['tables'][0]['row-count'] == 0
+    assert report['tables'][0]['error-count'] == 0
+
+
+# No headers source
+
+def test_inspector_no_headers():
+    inspector = Inspector()
+    report = inspector.inspect('data/invalid_no_headers.csv', headers=None)
+    assert report['tables'][0]['row-count'] == 3
+    assert report['tables'][0]['error-count'] == 1
+    assert report['tables'][0]['errors'][0]['code'] == 'extra-value'
