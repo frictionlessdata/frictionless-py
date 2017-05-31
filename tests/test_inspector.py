@@ -184,15 +184,18 @@ def test_inspector_warnings_table_and_error_limit():
 
 # Empty source
 
-@pytest.mark.xfail
 def test_inspector_empty_source():
     inspector = Inspector()
     report = inspector.inspect('data/empty.csv')
+    assert report['tables'][0]['row-count'] == 0
+    assert report['tables'][0]['error-count'] == 0
 
 
 # No headers source
 
-@pytest.mark.xfail
 def test_inspector_no_headers():
     inspector = Inspector()
-    report = inspector.inspect('data/no_headers.csv', headers=None)
+    report = inspector.inspect('data/invalid_no_headers.csv', headers=None)
+    assert report['tables'][0]['row-count'] == 3
+    assert report['tables'][0]['error-count'] == 1
+    assert report['tables'][0]['errors'][0]['code'] == 'extra-value'
