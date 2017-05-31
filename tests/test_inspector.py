@@ -179,3 +179,10 @@ def test_inspector_warnings_table_and_error_limit():
     assert len(report['warnings']) == 2
     assert 'table(s) limit' in report['warnings'][0]
     assert 'error(s) limit' in report['warnings'][1]
+
+
+# Empty source
+
+def test_inspector_empty_source():
+    inspector = Inspector()
+    report = inspector.inspect('data/empty.csv')
