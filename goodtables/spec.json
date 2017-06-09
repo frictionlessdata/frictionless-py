@@ -116,8 +116,8 @@
           "type": "schema",
           "context": "head",
           "weight": 9,
-          "message": "Header in column {column_number} doesn't match field name {field_name}",
-          "description": "One of the data source headers doens't match the field name defined in the schema.\n\n How it could be resolved:\n - Rename header in the data source or field in the schema\n - If this error should be ignored disable `non-matching-header` check in {validator}."
+          "message": "Header in column {column_number} doesn't match field name {field_name} in the schema",
+          "description": "One of the data source headers doesn't match the field name defined in the schema.\n\n How it could be resolved:\n - Rename header in the data source or field in the schema\n - If this error should be ignored disable `non-matching-header` check in {validator}."
         },
         "extra-header": {
           "name": "Extra Header",
@@ -157,7 +157,7 @@
           "context": "body",
           "weight": 7,
           "message": "The value {value} in row {row_number} and column {column_number} does not conform to the pattern constraint of {constraint}",
-          "description": "This field value should conform to constraint pattern.\n\n How it could be resolved:\n - If this value is not correct, update the value.\n - If value is correct, then remove the `pattern` constraint from the schema.\n - If this error should be ignored disable `pattern-constraint` check in {validator}."
+          "description": "This field value should conform to constraint pattern.\n\n How it could be resolved:\n - If this value is not correct, update the value.\n - If value is correct, then remove or refine the `pattern` constraint in the schema.\n - If this error should be ignored disable `pattern-constraint` check in {validator}."
         },
         "unique-constraint": {
           "name": "Unique Constraint",
@@ -173,7 +173,7 @@
           "context": "body",
           "weight": 7,
           "message": "The value {value} in row {row_number} and column {column_number} does not conform to the given enumeration: {constraint}",
-          "description": "This field value should be equal to one of the constraint enumeration.\n\n How it could be resolved:\n - If this value is not correct, update the value.\n - If value is correct, then remove the `enum` constraint from the schema.\n - If this error should be ignored disable `enumerable-constraint` check in {validator}."
+          "description": "This field value should be equal to one of the values in the enumeration constraint.\n\n How it could be resolved:\n - If this value is not correct, update the value.\n - If value is correct, then remove or refine the `enum` constraint in the schema.\n - If this error should be ignored disable `enumerable-constraint` check in {validator}."
         },
         "minimum-constraint": {
           "name": "Minimum Constraint",
@@ -181,7 +181,7 @@
           "context": "body",
           "weight": 7,
           "message": "The value {value} in row {row_number} and column {column_number} does not conform to the minimum constraint of {constraint}",
-          "description": "This field value should be greater or equal than constraint value.\n\n How it could be resolved:\n - If this value is not correct, update the value.\n - If value is correct, then remove the `minimum` constraint from the schema.\n - If this error should be ignored disable `minimum-constraint` check in {validator}."
+          "description": "This field value should be greater or equal than constraint value.\n\n How it could be resolved:\n - If this value is not correct, update the value.\n - If value is correct, then remove or refine the `minimum` constraint in the schema.\n - If this error should be ignored disable `minimum-constraint` check in {validator}."
         },
         "maximum-constraint": {
           "name": "Maximum Constraint",
@@ -189,7 +189,7 @@
           "context": "body",
           "weight": 7,
           "message": "The value {value} in row {row_number} and column {column_number} does not conform to the maximum constraint of {constraint}",
-          "description": "This field value should be less or equal than constraint value.\n\n How it could be resolved:\n - If this value is not correct, update the value.\n - If value is correct, then remove the `maximum` constraint from the schema.\n - If this error should be ignored disable `maximum-constraint` check in {validator}."
+          "description": "This field value should be less or equal than constraint value.\n\n How it could be resolved:\n - If this value is not correct, update the value.\n - If value is correct, then remove or refine the `maximum` constraint in the schema.\n - If this error should be ignored disable `maximum-constraint` check in {validator}."
         },
         "minimum-length-constraint": {
           "name": "Minimum Length Constraint",
@@ -197,7 +197,7 @@
           "context": "body",
           "weight": 7,
           "message": "The value {value} in row {row_number} and column {column_number} does not conform to the minimum length constraint of {constraint}",
-          "description": "A lenght of this field value should be greater or equal than schema constraint value.\n\n How it could be resolved:\n - If this value is not correct, update the value.\n - If value is correct, then remove the `minimumLength` constraint from the schema.\n - If this error should be ignored disable `minimum-length-constraint` check in {validator}."
+          "description": "A lenght of this field value should be greater or equal than schema constraint value.\n\n How it could be resolved:\n - If this value is not correct, update the value.\n - If value is correct, then remove or refine the `minimumLength` constraint in the schema.\n - If this error should be ignored disable `minimum-length-constraint` check in {validator}."
         },
         "maximum-length-constraint": {
           "name": "Maximum Length Constraint",
@@ -205,7 +205,7 @@
           "context": "body",
           "weight": 7,
           "message": "The value {value} in row {row_number} and column {column_number} does not conform to the maximum length constraint of {constraint}",
-          "description": "A lenght of this field value should be less or equal than schema constraint value.\n\n How it could be resolved:\n - If this value is not correct, update the value.\n - If value is correct, then remove the `maximumLength` constraint from the schema.\n - If this error should be ignored disable `maximum-length-constraint` check in {validator}."
+          "description": "A lenght of this field value should be less or equal than schema constraint value.\n\n How it could be resolved:\n - If this value is not correct, update the value.\n - If value is correct, then remove or refine the `maximumLength` constraint in the schema.\n - If this error should be ignored disable `maximum-length-constraint` check in {validator}."
         }
 
 
