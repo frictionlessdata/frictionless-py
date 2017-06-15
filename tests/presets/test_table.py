@@ -20,3 +20,10 @@ def test_preset_table_but_got_datapackage_issue_187():
     assert len(warnings) == 1
     assert len(tables) == 0
     assert 'Use "datapackage" preset' in warnings[0]
+
+
+def test_preset_table_invalid_json_issue_196():
+    warnings, tables = presets.table('valid.csv', schema='data/invalid_json.json')
+    assert len(warnings) == 1
+    assert len(tables) == 0
+    assert 'has a loading error' in warnings[0]
