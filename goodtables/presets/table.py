@@ -39,6 +39,10 @@ def table(source, schema=None, **options):
                     warnings.append(
                         'Table schema "%s" has a validation error "%s"' %
                         (schema, str(error).splitlines()[0]))
+            except Exception as error:
+                warnings.append(
+                    'Table Schema "%s" has a loading error "%s"' %
+                    (schema, error))
 
     # Add table
     if not warnings:
