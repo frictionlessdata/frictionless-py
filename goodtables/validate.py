@@ -4,6 +4,7 @@ from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
+import six
 from .inspector import Inspector
 
 
@@ -26,8 +27,22 @@ def validate(source, **options):
     settings['custom_checks'] = options.pop('custom_checks', None)
     settings = {key: value for key, value in settings.items() if value is not None}
 
+    # Extract/infer preset
+    preset = options.pop('preset', None)
+    if preset is None:
+        preset = 'table'
+        if isinstance(source, six.string_types):
+            if source.endswith('datapackage.json'):
+                preset = 'datapackage'
+        elif isinstance(source, dict):
+            if 'resources' in source:
+                preset = 'datapackage'
+        elif isinstance(source, list):
+            if source and isinstance(source[0], dict) and 'source' in source[0]:
+                preset = 'nested'
+
     # Validate
     inspector = Inspector(**settings)
-    report = inspector.inspect(source, **options)
+    report = inspector.inspect(source, preset=preset, **options)
 
     return report

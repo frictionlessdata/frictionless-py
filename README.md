@@ -83,8 +83,6 @@ Report errors are standartised and described in [Data Quality Spec](https://gith
 
 #### Presets
 
-
-
 To work with different kind of datasets we use `preset` argument for `validate` function. As said by default we use `table` preset. Let's validate a [data package](http://specs.frictionlessdata.io/data-package/). As a result we get report of the same form but it will be having more that 1 table if there are more than 1 resource in data package:
 
 ```py
@@ -112,9 +110,10 @@ By default a datasource will be validated against all available Data Quality Spe
 
 #### `validate(source, **options)`
 
+- [Dataset]
+- `preset (str)` - dataset type could be `table` (default), `datapackage`, `nested` or custom. For the most cases preset will be inferred from the source.
 - [Dataset:table]
 - `source (path/url/dict/file-like)` - validation source containing data table
-- `preset (str)` - source preset. Should be `table` for table validation (default).
 - `schema (path/url/dict/file-like)` - Table Schema to validate data source against
 - `headers (list/int)` - headers list or source row number containing headers. If number is given for plain source headers row and all rows before will be removed and for keyed source no rows will be removed.
 - `scheme (str)` - source scheme with `file` as default. For the most cases scheme will be inferred from source. See [list of the supported schemes](https://github.com/frictionlessdata/tabulator-py#schemes).
@@ -124,11 +123,9 @@ By default a datasource will be validated against all available Data Quality Spe
 - `<name> (<type>)` - additional options supported by different schema and format. See [list of schema options](https://github.com/frictionlessdata/tabulator-py#schemes) and [list of format options](https://github.com/frictionlessdata/tabulator-py#schemes).
 - [Dataset:datapackage]
 - `source (path/url/dict/file-like)` - validation source containing data package descriptor
-- `preset (str)` - source preset. Should be `datapackage` for Data Package validation.
 - `<name> (<type>)` - options to pass to Data Package constructor
 - [Dataset:nested]
 - `source (dict[])` - list of dictionaries with keys named after source option names
-- `preset (str)` - source preset. Should be `nested` for nested validation.
 - [Settings]
 - `checks (str/dict)` - checks configuration
 - `infer_schema (bool)` - infer schema if not passed
