@@ -233,13 +233,6 @@ report = validate('data.csv', custom_checks=[custom_check])
 ```
 See builtin checks to learn more about checking protocol.
 
-### Inspector
-
-> This API could be deprecated in the future. It's recommended to use `validate` counterpart.
-
-#### `Inspector(**settings)`
-#### `inspector.inspect(source, **source_options)`
-
 ### Spec
 
 Data Quality Spec is shipped with the library:
@@ -295,6 +288,13 @@ Options:
   --version              Show the version and exit.
   --help                 Show this message and exit.
 ```
+
+### Inspector
+
+> This API could be deprecated in the future. It's recommended to use `validate` counterpart.
+
+#### `Inspector(**settings)`
+#### `inspector.inspect(source, **source_options)`
 
 ## Contributing
 
