@@ -266,32 +266,35 @@ Base class for all `goodtables` exceptions.
 
 > It’s a provisional API. If you use it as a part of other program please pin concrete `goodtables` version to your requirements file.
 
-All common goodtables tasks could be done using a command-line interface (command per preset excluding `tables`). For example write a following command to the shell:
+All common goodtables tasks could be done using a command-line interface. For example write a following command to the shell to inspect a data table or a data package:
 
 ```
-$ goodtables invalid.csv
+$ goodtables data.csv
+$ goodtables datapackage.json
 ```
 
-And a report (the same as in the initial example) will be printed to the standard output in nicely-formatted way.
+And the `goodtables` report will be printed to the standard output in nicely-formatted way.
 
 #### `$ goodtables`
 
 ```
-Usage: cli.py [OPTIONS] COMMAND [ARGS]...
+Usage: cli.py [OPTIONS] SOURCE
+
+  https://github.com/frictionlessdata/goodtables-py#cli
 
 Options:
-  --json
-  --error-limit INTEGER
-  --table-limit INTEGER
-  --row-limit INTEGER
+  --preset TEXT
+  --schema TEXT
+  --checks TEXT
   --infer-schema
   --infer-fields
   --order-fields
+  --error-limit INTEGER
+  --table-limit INTEGER
+  --row-limit INTEGER
+  --json
+  --version              Show the version and exit.
   --help                 Show this message and exit.
-
-Commands:
-  datapackage
-  table
 ```
 
 ## Contributing
