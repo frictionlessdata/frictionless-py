@@ -5,13 +5,13 @@
 [![PyPi](https://img.shields.io/pypi/v/goodtables.svg)](https://pypi.python.org/pypi/goodtables)
 [![Gitter](https://img.shields.io/gitter/room/frictionlessdata/chat.svg)](https://gitter.im/frictionlessdata/chat)
 
-Goodtables is a framework to inspect tabular data.
+Goodtables is a framework to validate tabular data.
 
 > Version v1.0 includes various important changes. Please read a [migration guide](#v10).
 
 ## Features
 
-- tabular data inspection and validation
+- tabular data validation
 - general, structure and schema checks
 - support for different input data presets
 - support various source schemes and formats
@@ -99,7 +99,7 @@ report = validate([{'source': 'data1.csv'}, {'source': 'data2.csv'}], preset='ne
 
 #### Checks
 
-Check is a main inspection actor in goodtables. Every check is associated with a Data Quality Spec error. List of checks could be customized using `checks` argument. Let's explore options on an example:
+Check is a main validation actor in goodtables. Every check is associated with a Data Quality Spec error. List of checks could be customized using `checks` argument. Let's explore options on an example:
 
 ```python
 report = validate('data.csv', checks='structure') # only structure checks
@@ -128,7 +128,7 @@ By default a datasource will be validated against all available Data Quality Spe
 - `<name> (<type>)` - options to pass to Data Package constructor
 - [Dataset:nested]
 - `source (dict[])` - list of dictionaries with keys named after source option names
-- `preset (str)` - source preset. Should be `nested` for Data Package validation.
+- `preset (str)` - source preset. Should be `nested` for nested validation.
 - [Settings]
 - `checks (str/dict)` - checks configuration
 - `infer_schema (bool)` - infer schema if not passed
@@ -142,7 +142,7 @@ By default a datasource will be validated against all available Data Quality Spe
 - [Report]
 - `(dict)` - returns a `goodtables` report
 
-### Working with schema
+### Validation against schema
 
 If we run a simple table validation there will not be schema checks involved:
 

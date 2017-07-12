@@ -25,6 +25,8 @@ click.disable_unicode_literals_warning = True
 @click.version_option(goodtables.__version__, message='%(version)s')
 @click.pass_context
 def cli(ctx, json, **options):
+    """https://github.com/frictionlessdata/goodtables-py#cli
+    """
     options = {key: value for key, value in options.items() if value is not None}
     ctx.obj = {}
     ctx.obj['inspector'] = goodtables.Inspector(**options)

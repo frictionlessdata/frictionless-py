@@ -7,5 +7,7 @@ from __future__ import unicode_literals
 import goodtables
 
 
+# Tests
+
 def test_decorators():
     pass

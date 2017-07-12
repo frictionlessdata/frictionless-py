@@ -4,11 +4,12 @@ from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
-from goodtables import Inspector
+from goodtables import validate
 
+
+# Tests
 
 def test_features(log, name, feature):
-    inspector = Inspector(**feature.pop('settings', {}))
     expect = list(map(lambda item: tuple(item), feature.pop('report')))
-    actual = log(inspector.inspect(**feature))
+    actual = log(validate(**feature))
     assert actual == expect
