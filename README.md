@@ -83,13 +83,15 @@ With `goodtables` different kind of tabular datasets could be validated. Tabular
 To work with different kind of datasets we use `preset` argument for `validate` function. By default it will be inferred with `table` as a fallback value. Let's validate a [data package](http://specs.frictionlessdata.io/data-package/). As a result we get report of the same form but it will be having more that 1 table if there are more than 1 resource in data package:
 
 ```py
-report = validate('datapackage.json', preset='datapackage')
+# `datapackage` preset will be inferred
+report = validate('datapackage.json')
 ```
 
 To validate list of files we use `nested` preset. For nested preset first argument should be a list containing dictionaries with keys named after `validate` argument names. First argument is a `source` and we talk other arguments in next sections. Technically `goodtables` validates list of tables in parallel so it should be effective to do many tables validation in one run:
 
 ```py
-report = validate([{'source': 'data1.csv'}, {'source': 'data2.csv'}], preset='nested')
+# `nested` preset will be inferred
+report = validate([{'source': 'data1.csv'}, {'source': 'data2.csv'}])
 ```
 
 #### Checks
