@@ -25,17 +25,6 @@ from .spec import spec
 # Module API
 
 class Inspector(object):
-    """Datasets inspector.
-
-    Args:
-        checks (str/dict): checks filter
-        error_limit (int): upper limit for errors
-        table_limit (int): upper limit for tables
-        row_limit (int): upper limit for rows
-        order_fields (bool): allow field ordering
-        infer_fields (bool): allow field inferring
-
-    """
 
     # Public
 
@@ -49,6 +38,8 @@ class Inspector(object):
                  order_fields=False,
                  custom_presets=[],
                  custom_checks=[]):
+        """https://github.com/frictionlessdata/goodtables-py#inspector
+        """
 
         # Set attributes
         self.__error_limit = error_limit
@@ -60,21 +51,7 @@ class Inspector(object):
             order_fields=order_fields, infer_fields=infer_fields)
 
     def inspect(self, source, preset='table', **options):
-        """Inspect source with given preset and options.
-
-        Args:
-            source (mixed): source to inspect
-            preset (str): dataset extraction preset
-                supported presets:
-                    - table
-                    - tables
-                    - datapackage
-                    - datapackages
-            options (dict): source options
-
-        Returns:
-            dict: report
-
+        """https://github.com/frictionlessdata/goodtables-py#inspector
         """
 
         # Start timer

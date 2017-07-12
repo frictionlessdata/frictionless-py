@@ -259,6 +259,12 @@ spec['errors'] # list of errors
 
 - `(dict)` - returns Data Quality Spec
 
+### Exceptions
+
+#### `exceptions.GoodtablesException`
+
+Base class for all `goodtables` exceptions.
+
 ### CLI
 
 > It’s a provisional API. If you use it as a part of other program please pin concrete `goodtables` version to your requirements file.

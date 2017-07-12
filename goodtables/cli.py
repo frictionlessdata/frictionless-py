@@ -5,9 +5,9 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 import click
+import goodtables
 import json as json_module
 from pprint import pformat
-from .inspector import Inspector
 click.disable_unicode_literals_warning = True
 
 
@@ -22,11 +22,12 @@ click.disable_unicode_literals_warning = True
 @click.option('--infer-fields', is_flag=True)
 @click.option('--order-fields', is_flag=True)
 @click.option('--json', is_flag=True)
+@click.version_option(goodtables.__version__, message='%(version)s')
 @click.pass_context
 def cli(ctx, json, **options):
     options = {key: value for key, value in options.items() if value is not None}
     ctx.obj = {}
-    ctx.obj['inspector'] = Inspector(**options)
+    ctx.obj['inspector'] = goodtables.Inspector(**options)
     ctx.obj['json'] = json
 
 
