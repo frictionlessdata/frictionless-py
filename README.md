@@ -1,138 +1,195 @@
-# goodtables
+# goodtables-py
 
 [![Travis](https://img.shields.io/travis/frictionlessdata/goodtables-py/master.svg)](https://travis-ci.org/frictionlessdata/goodtables-py)
 [![Coveralls](http://img.shields.io/coveralls/frictionlessdata/goodtables-py.svg?branch=master)](https://coveralls.io/r/frictionlessdata/goodtables-py?branch=master)
 [![PyPi](https://img.shields.io/pypi/v/goodtables.svg)](https://pypi.python.org/pypi/goodtables)
-[![SemVer](https://img.shields.io/badge/versions-SemVer-brightgreen.svg)](http://semver.org/)
 [![Gitter](https://img.shields.io/gitter/room/frictionlessdata/chat.svg)](https://gitter.im/frictionlessdata/chat)
 
-Goodtables is a framework to inspect tabular data.
+Goodtables is a framework to validate tabular data.
 
-> [BREAKING] Version `v1.0.0-alpha8` has merged preset `tables` and preset `datapackages` into universal `nested` preset.
-
----
-
-> [BREAKING] Version `v1.0` has renewed API introduced in NOT backward-compatibility manner. Previous version could be found [here](https://github.com/frictionlessdata/goodtables-py/tree/4b85254cc0358c0caf85bbd41d0c2023df99fb9b).
+> Version v1.0 includes various important changes. Please read a [migration guide](#v10).
 
 ## Features
 
-- tabular data inspection and validation
+- tabular data validation
 - general, structure and schema checks
 - support for different input data presets
-- parallel computation for multitable datasets
+- support various source schemes and formats
+- parallel computation for multi-table datasets
 - builtin command-line interface
 
 ## Getting Started
 
 ### Installation
 
+The package use semantic versioning. It means that major versions  could include breaking changes. It's highly recommended to specify `tabulator` version range if you use `setup.py` or `requirements.txt` file e.g. `goodtables<2.0`.
+
 ```bash
-$ pip install goodtables --pre
-$ pip install goodtables[ods] --pre # With ods format support
+$ pip install goodtables
+$ pip install goodtables[ods] # With ods format support
 ```
 
 ### Example
 
-Let's start with the simple example:
+Let's start with a simple example. We just run `validate` function against our data table. As a result we get a `goodtables` report.
 
 ```python
-from goodtables import Inspector
+from goodtables import validate
 
-inspector = Inspector()
-print(inspector.inspect('data/invalid.csv'))
-
-# will print
-#{'time': 0.029,
-# 'valid': False',
-# 'error-count': 2,
-# 'table-count': 1,
-# 'warnings': [],
-# 'tables': [
-#    {'time': 0.027,
-#     'valid': False',
-#     'headers': ['id', 'name', ''],
-#     'row-count': 4,
-#     'source': 'data/invalid.csv'
-#     'error-count': 2,
-#     'errors': [
-#        {'row': None,
-#         'code': 'blank-header',
-#         'message': 'Blank header',
-#         'row-number': None,
-#         'column-number': 2},
-#        {'row': [],
-#         'code': 'blank-row',
-#         'message': 'Blank row',
-#         'row-number': 3,
-#         'column-number': None}]}]}
+report = validate('invalid.csv')
+report['valid'] # false
+report['table-count'] # 1
+report['error-count'] # 3
+report['tables'][0]['valid'] # false
+report['tables'][0]['source'] # 'invalid.csv'
+report['tables'][0]['errors'][0]['code'] # 'blank-header'
 ```
 
-### Inspection
+There is an [examples](https://github.com/frictionlessdata/goodtables-py/tree/master/examples) directory containing other code listings.
 
-Goodtables inspects your tabular data to find general, structure and schema errors. As presented in an example above to inspect data:
-- `Inspector(**options)` class should be instantiated
-- `inspector.inspect(source, preset=<preset>, **options)` should be called
-- a returning value will be a report dictionary
+## Documentation
 
-#### Dataset
+The whole public API of this package is described here and follows semantic versioning rules. Everything outside of this readme are private API and could be changed without any notification on any new version.
 
-Goodtables support different sources for an inspection. But it should be convertable to dataset presented on a figure 1. Details will be explained in the next sections:
+### Validate
 
-![Dataset](data/dataset.png)
+Goodtables validates your tabular dataset to find source, structure and schema errors. Consider you have a file named `invalid.csv`. Let's validate it:
+
+```py
+report = validate('invalid.csv')
+```
+
+We could validate not only a local file but also remote link, file-like object, inline data and even more. And it could be not only CSV but also XLS, XLSX, ODS, JSON and many more. Under the hood `goodtables` use powerful [tabulator](https://github.com/frictionlessdata/goodtables-py) library. All schemes and formats supported by `tabulator` are supported by `goodtables`.
+
 
 #### Report
 
-As a result of inspection goodtables returns a report dictionary. It includes valid flag, count of errors, list of reports per table including errors etc. See example above for an instance.  A report structure and all errors are standartised and described in **data quality spec**:
+As a result of validation goodtables returns a report dictionary. It includes valid flag, count of errors, list of reports per table including errors etc. Resulting report will be looking like this:
 
-> https://github.com/frictionlessdata/goodtables-py/blob/next-initial/goodtables/spec.json
+![Report](http://i.imgur.com/rEJG15g.png)
 
-#### Errors
+Report errors are standardized and described in [Data Quality Spec](https://github.com/frictionlessdata/data-quality-spec/blob/master/spec.json). All errors fails into three base categories:
 
-Report errors are categorized by type:
+- `source` - data can't be loaded or parsed
+- `structure` - general tabular errors like duplicate headers
+- `schema` - error of checks against [Table Schema](http://specs.frictionlessdata.io/table-schema/)
 
-- source - data can't be loaded or parsed
-- structure - general tabular errors like duplicate headers
-- schema - error of checks against JSON Table Schema
+#### Presets
 
-Report errors are categorized by context:
+With `goodtables` different kind of tabular datasets could be validated. Tabular dataset is a something that could be split to list of data tables:
 
-- table - the whole table errors like IO, HTTP or encoding error
-- head - headers errors
-- body - contents errors
+![Dataset](https://raw.githubusercontent.com/frictionlessdata/goodtables-py/master/data/dataset.png)
 
-### Presets
+To work with different kind of datasets we use `preset` argument for `validate` function. By default it will be inferred with `table` as a fallback value. Let's validate a [data package](http://specs.frictionlessdata.io/data-package/). As a result we get report of the same form but it will be having more that 1 table if there are more than 1 resource in data package:
 
-Table is a main inspection object in goodtables. The simplest option is to pass to `Inspector.inspect` path and other options for one table (see example above). But when multitable parallized inspection is needed different presets could be used to process a dataset.
-
-Let's see how to inspect a datapackage:
-
-```python
-from goodtables import Inspector
-
-inspector = Inspector()
-inspector.inspect('datapackage.json', preset='datapackage')
+```py
+report = validate('datapackage.json') # implicit preset
+report = validate('datapackage.json', preset='datapackage') # explicit preset
 ```
 
-A preset function proceses passed source and options and fills tables list for the following inspection. If any issues have happened a preset function should add them to warnings list.
+To validate list of files we use `nested` preset. For nested preset first argument should be a list containing dictionaries with keys named after `validate` argument names. First argument is a `source` and we talk other arguments in next sections. Technically `goodtables` validates list of tables in parallel so it should be effective to do many tables validation in one run:
 
-#### Builtin presets
+```py
+report = validate([{'source': 'data1.csv'}, {'source': 'data2.csv'}]) # implicit preset
+report = validate([{'source': 'data1.csv'}, {'source': 'data2.csv'}], preset='nested') # explicit preset
+```
 
-Goodtables by default supports the following presets:
+#### Checks
 
-- table
-- datapackage
-- nested (a special preset allows to nest `inspect` calls - [example](https://github.com/frictionlessdata/goodtables-py/blob/master/examples/nested.py))
+Check is a main validation actor in goodtables. Every check is associated with a Data Quality Spec error. List of checks could be customized using `checks` argument. Let's explore options on an example:
 
-#### Custom presets
+```python
+report = validate('data.csv', checks='structure') # only structure checks
+report = validate('data.csv', checks='schema') # only schema checks
+report = validate('data.csv', checks={'bad-headers': False}) # exclude 'bad-headers'
+report = validate('data.csv', checks={'bad-headers': True}) # check only 'bad-headers'
+```
 
-> It's a provisional API excluded from SemVer. If you use it as a part of other program please pin concrete `goodtables` version to your requirements file.
+By default a dataset will be validated against all available Data Quality Spec errors. Some checks could be not available for validation e.g. if schema is not provided only `structure` checks will be done.
 
-To register a custom preset user could use a `preset` decorator. This way the builtin preset could be overriden or could be added a custom preset.
+#### `validate(source, **options)`
+
+- **[Arguments - for `table` preset]**
+- `source (path/url/dict/file-like)` - validation source containing data table
+- `preset (str)` - dataset type could be `table` (default), `datapackage`, `nested` or custom. For the most cases preset will be inferred from the source.
+- `schema (path/url/dict/file-like)` - Table Schema to validate data source against
+- `headers (list/int)` - headers list or source row number containing headers. If number is given for plain source headers row and all rows before will be removed and for keyed source no rows will be removed.
+- `scheme (str)` - source scheme with `file` as default. For the most cases scheme will be inferred from source. See [list of the supported schemes](https://github.com/frictionlessdata/tabulator-py#schemes).
+- `format (str)` - source format with `None` (detect) as default. For the most cases format will be inferred from source. See [list of the supported formats](https://github.com/frictionlessdata/tabulator-py#formats).
+- `encoding (str)` - source encoding with  `None` (detect) as default.
+- `skip_rows (int/str[])` - list of rows to skip by row number or row comment. Example: `skip_rows=[1, 2, '#', '//']` - rows 1, 2 and all rows started with `#` and `//` will be skipped.
+- `<name> (<type>)` - additional options supported by different schema and format. See [list of schema options](https://github.com/frictionlessdata/tabulator-py#schemes) and [list of format options](https://github.com/frictionlessdata/tabulator-py#schemes).
+- **[Arguments - for `datapackage` preset]**
+- `source (path/url/dict/file-like)` - validation source containing data package descriptor
+- `preset (str)` - dataset type could be `table` (default), `datapackage`, `nested` or custom. For the most cases preset will be inferred from the source.
+- `<name> (<type>)` - options to pass to Data Package constructor
+- **[Arguments - for `nested` preset]**
+- `source (dict[])` - list of dictionaries with keys named after arguments for corresponding preset
+- `preset (str)` - dataset type could be `table` (default), `datapackage`, `nested` or custom. For the most cases preset will be inferred from the source.
+- **[Arguments]**
+- `checks (str/dict)` - checks configuration
+- `infer_schema (bool)` - infer schema if not passed
+- `infer_fields (bool)` - infer schema for columns not presented in schema
+- `order_fields (bool)` - order source columns based on schema fields order
+- `error_limit (int)` - error limit per table
+- `table_limit (int)` - table limit for dataset
+- `row_limit (int)` - row limit per table
+- `custom_presets (callable[])` - list of custom presets
+- `custom_checks (callable[])` - list of custom checks
+- **[Raises]**
+- `(exceptions.GoodtablesException)` - raise on any non-tabular error
+- **[Returns]**
+- `(dict)` - returns a `goodtables` report
+
+### Validation against schema
+
+If we run a simple table validation there will not be schema checks involved:
+
+```py
+report = validate('invalid.csv') # only structure checks
+```
+
+That's because there is no [Table Schema](http://specs.frictionlessdata.io/table-schema/) to check against. We have two options to fix it:
+- provide `schema` argument containing Table Schema descriptor
+- use `infer_schema` option to infer Table Schema from data source
+
+Sometimes we have schema covering data table only partially e.g. table has headers `name, age, position` but schema has only `name` and `age` fields. In this case we use `infer_fields` option:
+
+```py
+# schema will be complemented by `position` field
+report = validate('data.csv', schema='schema.json', infer_fields=True)
+```
+
+Other possible discrepancy situation when your schema fields have other order that data table columns. Options `order_fieds` is to rescue:
+
+```py
+# sync source/schema fields order
+report = validate('data.csv', schema='schema.json', order_fields=True)
+```
+
+### Validation limits
+
+If we need to save time/resources we could limit validation. By default limits have some reasonable values but it could be set to any values by user. Let's see on the available limits:
+- errors per table limit
+- tables per dataset limit
+- rows per table limit
+
+The most common cast is stopping on the first error found:
+
+```py
+report = validate('data.csv', error_limit=1)
+```
+
+### Custom presets
+
+> It’s a provisional API. If you use it as a part of other program please pin concrete `goodtables` version to your requirements file.
+
+To create a custom preset user could use a `preset` decorator. This way the builtin preset could be overridden or could be added a custom preset.
 
 ```python
 from tabulator import Stream
-from jsontableschema import Schema
-from goodtables import Inspector, preset
+from tableschema import Schema
+from goodtables import validate
 
 @preset('custom-preset')
 def custom_preset(source, **options):
@@ -150,38 +207,19 @@ def custom_preset(source, **options):
             warnings.append('Warning message')
     return warnings, tables
 
-inspector = Inspector(custom_presets=[custom_preset])
-inspector.inspect(source, preset='custom-preset')
+report = validate(source, preset='custom-preset', custom_presets=[custom_preset])
 ```
 
-See builtin presets to learn more about the dataset extration protocol.
+See builtin presets to learn more about the dataset extraction protocol.
 
-### Checks
+### Custom checks
 
-Check is a main inspection actor in goodtables. Every check is associated with a specification error. Checking order is the same as order of errors in the specification.  List of checks could be customized using inspector's `checks` argument. Let's explore options on an example:
+> It’s a provisional API. If you use it as a part of other program please pin concrete `goodtables` version to your requirements file.
 
-```python
-inspector = Inspector(checks='all/structure/schema') # type
-inspector = Inspector(checks={'bad-headers': False}) # exclude
-inspector = Inspector(checks={'bad-headers': True}) # cherry-pick
-```
-
-Check gets input data from framework based on context (e.g. `columns, sample` for `head` context) and update errors and columns lists in-place.
-
-#### Buitin checks
-
-Goodtables by default supports the following checks:
-
- - [check for every error from the specification]
-
-#### Custom checks
-
-> It's a provisional API excluded from SemVer. If you use it as a part of other program please pin concrete `goodtables` version to your requirements file.
-
-To register a custom check user could use a `check` decorator. This way the builtin check could be overriden (use the spec error code like `duplicate-row`) or could be added a check for a custom error (use `type`, `context` and `after/before` arguments):
+To create a custom check user could use a `check` decorator. This way the builtin check could be overridden (use the spec error code like `duplicate-row`) or could be added a check for a custom error (use `type`, `context` and `after/before` arguments):
 
 ```python
-from goodtables import Inspector, check
+from goodtables import validate, check
 
 @check('custom-error', type='structure', context='body', after='blank-row')
 def custom_check(errors, columns, row_number,  state=None):
@@ -194,84 +232,121 @@ def custom_check(errors, columns, row_number,  state=None):
         })
         columns.remove(column)
 
-inspector = Inspector(custom_checks=[custom_check])
+report = validate('data.csv', custom_checks=[custom_check])
 ```
 See builtin checks to learn more about checking protocol.
 
+### Spec
+
+Data Quality Spec is shipped with the library:
+
+```py
+from goodtables import spec
+
+spec['version'] # spec version
+spec['errors'] # list of errors
+```
+
+#### `spec`
+
+- `(dict)` - returns Data Quality Spec
+
+### Exceptions
+
+#### `exceptions.GoodtablesException`
+
+Base class for all `goodtables` exceptions.
+
 ### CLI
 
-> It's a provisional API excluded from SemVer. If you use it as a part of other program please pin concrete `goodtables` version to your requirements file.
+> It’s a provisional API. If you use it as a part of other program please pin concrete `goodtables` version to your requirements file.
 
-All common goodtables tasks could be done using a command-line interface (command per preset excluding `tables`):
+All common goodtables tasks could be done using a command-line interface. For example write a following command to the shell to inspect a data table or a data package:
 
 ```
-$ goodtables
-Usage: cli.py [OPTIONS] COMMAND [ARGS]...
+$ goodtables data.csv
+$ goodtables datapackage.json
+```
+
+And the `goodtables` report will be printed to the standard output in nicely-formatted way.
+
+#### `$ goodtables`
+
+```
+Usage: cli.py [OPTIONS] SOURCE
+
+  https://github.com/frictionlessdata/goodtables-py#cli
 
 Options:
-  --json
-  --error-limit INTEGER
-  --table-limit INTEGER
-  --row-limit INTEGER
+  --preset TEXT
+  --schema TEXT
+  --checks TEXT
   --infer-schema
   --infer-fields
   --order-fields
+  --error-limit INTEGER
+  --table-limit INTEGER
+  --row-limit INTEGER
+  --json
+  --version              Show the version and exit.
   --help                 Show this message and exit.
-
-Commands:
-  datapackage
-  table
 ```
 
-For example write a following command to the shell:
+### Inspector
 
-```
-$ goodtables table data/invalid.csv
-```
+> This API could be deprecated in the future. It's recommended to use `validate` counterpart.
 
-And a report (the same as in the initial example) will be printed to the standard output.
-
-## FAQ
-
-### Is it an inspection or validation?
-
-For now we use the word `inspector` because we create reports as the result of an inspection. One difference to validation - goodtables will not raise an exception if the dataset is invalid.  Final naming is under consideration and based on exposed methods (only `inspect` or like `inspect/validate/stream`).
-
-### Is it possible to stream reporting?
-
-For now - it's not. But it's under consideration. Not for multitable datasets because of parallelizm, but for one table it could be exposed to public via API because internally that's how goodtables works.  The question here is "what should be streamed?" - errors, or valid/invalid per row indication with errors, etc.  We would be happy to see a real world use case for this feature.
-
-## API Reference
-
-### Snapshot
-
-```
-Inspector(checks='all',
-          table_limit=10,
-          row_limit=1000,
-          error_limit=1000,
-          infer_schema=False,
-          infer_fields=False,
-          order_fields=False,
-          custom_presets=[],
-          custom_checks=[])
-    inspect(source, preset='table', **options)
-~@preset(name)
-~@check(error)
-exceptions
-spec
-~cli
-```
-
-### Detailed
-
-- [Docstrings](https://github.com/frictionlessdata/goodtables-py/tree/master/goodtables)
-- [Changelog](https://github.com/frictionlessdata/goodtables/commits/master)
+#### `Inspector(**settings)`
+#### `inspector.inspect(source, **source_options)`
 
 ## Contributing
 
-Please read the contribution guideline:
+The project follows the [Open Knowledge International coding standards](https://github.com/okfn/coding-standards).
 
-[How to Contribute](CONTRIBUTING.md)
+Recommended way to get started is to create and activate a project virtual environment.
+To install package and development dependencies into active environment:
 
-Thanks!
+```
+$ make install
+```
+
+To run tests with linting and coverage:
+
+```bash
+$ make test
+```
+
+For linting `pylama` configured in `pylama.ini` is used. On this stage it's already
+installed into your environment and could be used separately with more fine-grained control
+as described in documentation - https://pylama.readthedocs.io/en/latest/.
+
+For example to sort results by error type:
+
+```bash
+$ pylama --sort <path>
+```
+
+For testing `tox` configured in `tox.ini` is used.
+It's already installed into your environment and could be used separately with more fine-grained control as described in documentation - https://testrun.org/tox/latest/.
+
+For example to check subset of tests against Python 2 environment with increased verbosity.
+All positional arguments and options after `--` will be passed to `py.test`:
+
+```bash
+tox -e py27 -- -v tests/<path>
+```
+
+Under the hood `tox` uses `pytest` configured in `pytest.ini`, `coverage`
+and `mock` packages. This packages are available only in tox environments.
+
+## Changelog
+
+Here described only breaking and the most important changes. The full changelog could be found in nicely formatted [commit history](https://github.com/frictionlessdata/goodtables-py/commits/master).
+
+### v1.0
+
+This version includes various big changes. A migration guide is under development and will be published here.
+
+### [v0.6](https://github.com/frictionlessdata/goodtables-py/releases/tag/0.6.0)
+
+First version of `goodtables`.

@@ -8,7 +8,7 @@ from __future__ import unicode_literals
 # Module API
 
 def preset(name):
-    """Register preset.
+    """https://github.com/frictionlessdata/goodtables-py#custom-presets
     """
     def decorator(func):
         func.preset = {
@@ -19,7 +19,7 @@ def preset(name):
 
 
 def check(code, type=None, context=None, before=None, after=None):
-    """Register check.
+    """https://github.com/frictionlessdata/goodtables-py#custom-checks
     """
     def decorator(func):
         func.check = {

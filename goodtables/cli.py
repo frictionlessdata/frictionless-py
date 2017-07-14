@@ -5,47 +5,33 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 import click
+import goodtables
 import json as json_module
 from pprint import pformat
-from .inspector import Inspector
 click.disable_unicode_literals_warning = True
 
 
 # Module API
 
-@click.group()
+@click.command()
+@click.argument('source')
+@click.option('--preset')
+@click.option('--schema')
 @click.option('--checks')
-@click.option('--error-limit', type=int)
-@click.option('--table-limit', type=int)
-@click.option('--row-limit', type=int)
 @click.option('--infer-schema', is_flag=True)
 @click.option('--infer-fields', is_flag=True)
 @click.option('--order-fields', is_flag=True)
+@click.option('--error-limit', type=int)
+@click.option('--table-limit', type=int)
+@click.option('--row-limit', type=int)
 @click.option('--json', is_flag=True)
-@click.pass_context
-def cli(ctx, json, **options):
+@click.version_option(goodtables.__version__, message='%(version)s')
+def cli(source, json, **options):
+    """https://github.com/frictionlessdata/goodtables-py#cli
+    """
     options = {key: value for key, value in options.items() if value is not None}
-    ctx.obj = {}
-    ctx.obj['inspector'] = Inspector(**options)
-    ctx.obj['json'] = json
-
-
-@cli.command()
-@click.argument('source')
-@click.pass_context
-def datapackage(ctx, source, **options):
-    report = ctx.obj['inspector'].inspect(source, preset='datapackage', **options)
-    _print_report(report, json=ctx.obj['json'])
-    exit(not report['valid'])
-
-
-@cli.command()
-@click.argument('source')
-@click.option('--schema')
-@click.pass_context
-def table(ctx, source, **options):
-    report = ctx.obj['inspector'].inspect(source, preset='table', **options)
-    _print_report(report, json=ctx.obj['json'])
+    report = goodtables.validate(source, **options)
+    _print_report(report, json=json)
     exit(not report['valid'])
 
 
