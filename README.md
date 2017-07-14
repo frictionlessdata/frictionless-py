@@ -109,10 +109,9 @@ By default a dataset will be validated against all available Data Quality Spec e
 
 #### `validate(source, **options)`
 
-- **[Dataset]**
-- `preset (str)` - dataset type could be `table` (default), `datapackage`, `nested` or custom. For the most cases preset will be inferred from the source.
-- **[Dataset:table]**
+- **[Arguments - for `table` preset]**
 - `source (path/url/dict/file-like)` - validation source containing data table
+- `preset (str)` - dataset type could be `table` (default), `datapackage`, `nested` or custom. For the most cases preset will be inferred from the source.
 - `schema (path/url/dict/file-like)` - Table Schema to validate data source against
 - `headers (list/int)` - headers list or source row number containing headers. If number is given for plain source headers row and all rows before will be removed and for keyed source no rows will be removed.
 - `scheme (str)` - source scheme with `file` as default. For the most cases scheme will be inferred from source. See [list of the supported schemes](https://github.com/frictionlessdata/tabulator-py#schemes).
@@ -120,12 +119,14 @@ By default a dataset will be validated against all available Data Quality Spec e
 - `encoding (str)` - source encoding with  `None` (detect) as default.
 - `skip_rows (int/str[])` - list of rows to skip by row number or row comment. Example: `skip_rows=[1, 2, '#', '//']` - rows 1, 2 and all rows started with `#` and `//` will be skipped.
 - `<name> (<type>)` - additional options supported by different schema and format. See [list of schema options](https://github.com/frictionlessdata/tabulator-py#schemes) and [list of format options](https://github.com/frictionlessdata/tabulator-py#schemes).
-- **[Dataset:datapackage]**
+- **[Arguments - for `datapackage` preset]**
 - `source (path/url/dict/file-like)` - validation source containing data package descriptor
+- `preset (str)` - dataset type could be `table` (default), `datapackage`, `nested` or custom. For the most cases preset will be inferred from the source.
 - `<name> (<type>)` - options to pass to Data Package constructor
-- **[Dataset:nested]**
-- `source (dict[])` - list of dictionaries with keys named after source option names
-- **[Settings]**
+- **[Arguments - for `nested` preset]**
+- `source (dict[])` - list of dictionaries with keys named after arguments for corresponding preset
+- `preset (str)` - dataset type could be `table` (default), `datapackage`, `nested` or custom. For the most cases preset will be inferred from the source.
+- **[Arguments]**
 - `checks (str/dict)` - checks configuration
 - `infer_schema (bool)` - infer schema if not passed
 - `infer_fields (bool)` - infer schema for columns not presented in schema
@@ -135,7 +136,9 @@ By default a dataset will be validated against all available Data Quality Spec e
 - `row_limit (int)` - row limit per table
 - `custom_presets (callable[])` - list of custom presets
 - `custom_checks (callable[])` - list of custom checks
-- **[Report]**
+- **[Raises]**
+- `(exceptions.GoodtablesException)` - raise on any non-tabular error
+- **[Returns]**
 - `(dict)` - returns a `goodtables` report
 
 ### Validation against schema
