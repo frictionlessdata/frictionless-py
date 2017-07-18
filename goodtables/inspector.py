@@ -46,9 +46,11 @@ class Inspector(object):
         self.__table_limit = table_limit
         self.__row_limit = row_limit
         self.__infer_schema = infer_schema
-        self.__presets = _prepare_presets(copy(custom_presets))
-        self.__checks = _prepare_checks(checks, copy(custom_checks),
-            order_fields=order_fields, infer_fields=infer_fields)
+        self.__infer_fields = infer_fields
+        self.__order_fields = order_fields
+        self.__checks_setup = checks
+        self.__custom_presets = custom_presets
+        self.__custom_checks = custom_checks
 
     def inspect(self, source, preset='table', **options):
         """https://github.com/frictionlessdata/goodtables-py#inspector
@@ -56,6 +58,12 @@ class Inspector(object):
 
         # Start timer
         start = datetime.datetime.now()
+
+        # Prepare presets and checks
+        # It's not in the constructor for further move to `validate`
+        self.__presets = _prepare_presets(copy(self.__custom_presets))
+        self.__checks = _prepare_checks(self.__checks_setup, copy(self.__custom_checks),
+            order_fields=self.__order_fields, infer_fields=self.__infer_fields)
 
         # Prepare preset
         try:
