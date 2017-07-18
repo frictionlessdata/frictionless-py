@@ -7,7 +7,7 @@ from __future__ import unicode_literals
 from copy import copy
 import jsontableschema
 from ..spec import spec
-from ..decorators import check
+from ..registry import check
 
 
 # Module API

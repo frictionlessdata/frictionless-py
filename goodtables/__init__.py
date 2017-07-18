@@ -7,7 +7,7 @@ from __future__ import unicode_literals
 # Module API
 
 from .inspector import Inspector
-from .decorators import preset, check
+from .registry import preset, check
 from .validate import validate
 from .spec import spec
 from . import exceptions

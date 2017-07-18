@@ -7,7 +7,7 @@ from __future__ import unicode_literals
 import re
 from copy import copy
 from ..spec import spec
-from ..decorators import check
+from ..registry import check
 
 
 # Module API
