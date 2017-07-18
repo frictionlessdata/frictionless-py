@@ -10,7 +10,7 @@ from ..registry import check
 
 # Module API
 
-@check('maximum-constraint')
+@check('maximum-constraint', type='schema', context='body')
 def maximum_constraint(errors, columns, row_number, state=None):
     for column in columns:
         if len(column) == 4:

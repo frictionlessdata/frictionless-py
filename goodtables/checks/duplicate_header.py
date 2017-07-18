@@ -10,7 +10,7 @@ from ..registry import check
 
 # Module API
 
-@check('duplicate-header')
+@check('duplicate-header', type='structure', context='head')
 def duplicate_header(errors, columns, sample=None):
     rindex = {}
     for column in columns:

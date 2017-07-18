@@ -5,7 +5,7 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 from jsontableschema import Field
-from goodtables import checks
+from goodtables.checks.missing_header import missing_header
 
 
 # Test
@@ -20,7 +20,7 @@ def test_check_missing_header(log):
          'header': 'name2',
          'field': Field({'name': 'name2'})},
     ]
-    checks.missing_header(errors, columns)
+    missing_header(errors, columns)
     assert log(errors) == []
     assert len(columns) == 2
 
@@ -34,7 +34,7 @@ def test_check_missing_header_problem(log):
         {'number': 2,
          'field': Field({'name': 'name2'})},
     ]
-    checks.missing_header(errors, columns)
+    missing_header(errors, columns)
     assert log(errors) == [
         (None, 2, 'missing-header'),
     ]

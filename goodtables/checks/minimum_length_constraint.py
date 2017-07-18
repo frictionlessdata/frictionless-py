@@ -10,7 +10,7 @@ from ..registry import check
 
 # Module API
 
-@check('minimum-length-constraint')
+@check('minimum-length-constraint', type='schema', context='body')
 def minimum_length_constraint(errors, columns, row_number, state=None):
     for column in columns:
         if len(column) == 4:

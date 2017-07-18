@@ -12,7 +12,7 @@ from ..registry import check
 
 # Module API
 
-@check('non-matching-header')
+@check('non-matching-header', type='schema', context='head')
 def non_matching_header(errors, columns, sample=None, order_fields=False):
 
     # No field ordering

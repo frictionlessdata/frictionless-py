@@ -11,7 +11,7 @@ from ..registry import check
 
 # Module API
 
-@check('duplicate-row')
+@check('duplicate-row', type='structure', context='body')
 def duplicate_row(errors, columns, row_number, state):
     rindex = state.setdefault('rindex', {})
     try:

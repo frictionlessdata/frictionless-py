@@ -12,7 +12,7 @@ from ..registry import check
 
 # Module API
 
-@check('extra-header')
+@check('extra-header', type='schema', context='head')
 def extra_header(errors, columns, sample, infer_fields=False):
     for column in copy(columns):
         if 'field' not in column:

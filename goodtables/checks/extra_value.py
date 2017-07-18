@@ -11,7 +11,7 @@ from ..registry import check
 
 # Module API
 
-@check('extra-value')
+@check('extra-value', type='structure', context='body')
 def extra_value(errors, columns, row_number, state=None):
     for column in copy(columns):
         if 'header' not in column:

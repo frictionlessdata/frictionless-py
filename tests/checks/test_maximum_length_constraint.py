@@ -4,7 +4,7 @@ from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
-from goodtables import checks
+from goodtables.checks.maximum_length_constraint import maximum_length_constraint
 
 
 # Test
@@ -12,6 +12,6 @@ from goodtables import checks
 def test_check_maximum_length_constraint(log):
     errors = []
     columns = []
-    checks.maximum_length_constraint(errors, columns, 1)
+    maximum_length_constraint(errors, columns, 1)
     assert log(errors) == []
     assert len(columns) == 0

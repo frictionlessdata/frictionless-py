@@ -10,7 +10,7 @@ from ..registry import check
 
 # Module API
 
-@check('unique-constraint')
+@check('unique-constraint', type='schema', context='body')
 def unique_constraint(errors, columns, row_number, state):
     rindexes = state.setdefault('cache', {})
     for column in columns:

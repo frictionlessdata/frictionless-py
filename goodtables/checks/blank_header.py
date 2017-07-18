@@ -10,7 +10,7 @@ from ..registry import check
 
 # Module API
 
-@check('blank-header')
+@check('blank-header', type='structure', context='head')
 def blank_header(errors, columns, sample=None):
     for column in columns:
         if 'header' in column:

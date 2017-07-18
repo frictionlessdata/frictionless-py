@@ -4,22 +4,16 @@ from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
-import six
-import inspect
 import datetime
 import operator
 import tabulator
 from copy import copy
-from itertools import chain
-from functools import partial
 from six.moves import zip_longest
 from jsontableschema import Schema, infer
 from multiprocessing.pool import ThreadPool
-from . import presets as presets_module
-from . import checks as checks_module
+from .registry import registry
 from . import exceptions
 from . import config
-from .spec import spec
 
 
 # Module API
@@ -30,27 +24,23 @@ class Inspector(object):
 
     def __init__(self,
                  checks='spec',
-                 error_limit=1000,
-                 table_limit=10,
-                 row_limit=1000,
                  infer_schema=False,
                  infer_fields=False,
                  order_fields=False,
-                 custom_presets=[],
-                 custom_checks=[]):
+                 error_limit=config.DEFAULT_ERROR_LIMIT,
+                 table_limit=config.DEFAULT_TABLE_LIMIT,
+                 row_limit=config.DEFAULT_ROW_LIMIT):
         """https://github.com/frictionlessdata/goodtables-py#inspector
         """
 
         # Set attributes
-        self.__error_limit = error_limit
-        self.__table_limit = table_limit
-        self.__row_limit = row_limit
+        self.__checks = checks
         self.__infer_schema = infer_schema
         self.__infer_fields = infer_fields
         self.__order_fields = order_fields
-        self.__checks_setup = checks
-        self.__custom_presets = custom_presets
-        self.__custom_checks = custom_checks
+        self.__error_limit = error_limit
+        self.__table_limit = table_limit
+        self.__row_limit = row_limit
 
     def inspect(self, source, preset='table', **options):
         """https://github.com/frictionlessdata/goodtables-py#inspector
@@ -59,17 +49,16 @@ class Inspector(object):
         # Start timer
         start = datetime.datetime.now()
 
-        # Prepare presets and checks
-        # It's not in the constructor for further move to `validate`
-        self.__presets = _prepare_presets(copy(self.__custom_presets))
-        self.__checks = _prepare_checks(self.__checks_setup, copy(self.__custom_checks),
+        # Build presets and checks
+        presets = registry.build_presets()
+        checks = registry.build_checks(self.__checks,
             order_fields=self.__order_fields, infer_fields=self.__infer_fields)
 
         # Prepare preset
         try:
-            preset_func = self.__presets[preset]
+            preset_func = presets[preset]['func']
             if preset == 'nested':
-                options['presets'] = self.__presets
+                options['presets'] = presets
         except KeyError:
             message = 'Preset "%s" is not registered' % preset
             raise exceptions.GoodtablesException(message)
@@ -88,7 +77,7 @@ class Inspector(object):
             tasks = []
             pool = ThreadPool(processes=len(tables))
             for table in tables:
-                tasks.append(pool.apply_async(self.__inspect_table, (table,)))
+                tasks.append(pool.apply_async(self.__inspect_table, (table, checks)))
             for task in tasks:
                 table_warnings, table_report = task.get()
                 warnings.extend(table_warnings)
@@ -111,7 +100,7 @@ class Inspector(object):
 
     # Internal
 
-    def __inspect_table(self, table):
+    def __inspect_table(self, table, checks):
 
         # Start timer
         start = datetime.datetime.now()
@@ -122,7 +111,6 @@ class Inspector(object):
         headers = []
         row_number = 0
         fatal_error = False
-        checks = copy(self.__checks)
         source = table['source']
         stream = table['stream']
         schema = table['schema']
@@ -203,7 +191,7 @@ class Inspector(object):
                     for check in body_checks:
                         if not columns:
                             break
-                        state = states.setdefault(check['code'], {})
+                        state = states.setdefault(check['name'], {})
                         check['func'](errors, columns, row_number, state)
                     for error in reversed(errors):
                         if 'row' in error:
@@ -246,95 +234,15 @@ class Inspector(object):
 _FILLVALUE = '_FILLVALUE'
 
 
-def _prepare_presets(custom):
-
-    # Prepare presets
-    presets = {}
-    for preset in chain(vars(presets_module).values(), custom):
-        descriptor = getattr(preset, 'preset', None)
-        if descriptor:
-            presets[descriptor['name']] = preset
-
-    return presets
-
-
-def _prepare_checks(setup, custom, order_fields, infer_fields):
-
-    # Prepare errors/checkmap
-    errors = []
-    checkmap = {}
-    for code in config.CHECKS:
-        error = copy(spec['errors'][code])
-        error.update({'code': code})
-        errors.append(error)
-    for check in chain(vars(checks_module).values(), custom):
-        desc = getattr(check, 'check', None)
-        if desc:
-            errormap = {error['code']: index for index, error in enumerate(errors)}
-            if desc['before'] in errormap:
-                errors.insert(errormap[desc['before']], desc)
-            if desc['after'] in errormap:
-                errors.insert(errormap[desc['after']] + 1, desc)
-            checkmap[desc['code']] = check
-
-    # Prepare checks
-    checks = []
-    for error in errors:
-        if error['code'] in checkmap:
-            checks.append({
-                'func': checkmap[error['code']],
-                'code': error['code'],
-                'type': error['type'],
-                'context': error['context'],
-            })
-
-    # Filter structure checks
-    if setup == 'structure':
-        checks = _filter_checks(checks, type='structure')
-
-    # Filter schema checks
-    elif setup == 'schema':
-        checks = _filter_checks(checks, type='schema')
-
-    # Filter granular checks
-    elif isinstance(setup, dict):
-        default = True not in setup.values()
-        checks = [check for check in checks
-            if setup.get(check['code'], default)]
-
-    # Unknown filter
-    elif setup != 'spec':
-        message = 'Checks filter "%s" is not supported' % setup
-        raise exceptions.GoodtablesException(message)
-
-    # Bind options
-    for check in checks:
-        if six.PY2:
-            parameters, _, _, _ = inspect.getargspec(check['func'])
-        else:
-            parameters = inspect.signature(check['func']).parameters
-        if 'order_fields' in parameters:
-            check['func'] = partial(check['func'], order_fields=order_fields)
-        if 'infer_fields' in parameters:
-            check['func'] = partial(check['func'], infer_fields=infer_fields)
-
-    return checks
-
-
 def _filter_checks(checks, type=None, context=None, inverse=False):
-
-    # Filted checks
     result = []
-    comparator = operator.ne
-    if inverse:
-        comparator = operator.eq
+    comparator = operator.eq if inverse else operator.ne
     for check in checks:
         if type and comparator(check['type'], type):
             continue
         if context and comparator(check['context'], context):
             continue
         result.append(check)
-
     return result
 
 

@@ -11,7 +11,7 @@ from ..registry import check
 
 # Module API
 
-@check('required-constraint')
+@check('required-constraint', type='schema', context='body')
 def required_constraint(errors, columns, row_number, state=None):
     for column in copy(columns):
         if len(column) == 4:

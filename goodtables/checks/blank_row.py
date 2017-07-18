@@ -10,7 +10,7 @@ from ..registry import check
 
 # Module API
 
-@check('blank-row')
+@check('blank-row', type='structure', context='body')
 def blank_row(errors, columns, row_number, state=None):
     if not list(filter(lambda column: column.get('value'), columns)):
         # Add error

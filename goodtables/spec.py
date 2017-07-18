@@ -17,6 +17,6 @@ def _load_spec():
     return spec
 
 
-# Public API
+# Module API
 
 spec = _load_spec()
