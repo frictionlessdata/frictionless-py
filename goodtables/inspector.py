@@ -29,7 +29,7 @@ class Inspector(object):
     # Public
 
     def __init__(self,
-                 checks='all',
+                 checks='spec',
                  error_limit=1000,
                  table_limit=10,
                  row_limit=1000,
@@ -295,7 +295,7 @@ def _prepare_checks(setup, custom, order_fields, infer_fields):
             if setup.get(check['code'], default)]
 
     # Unknown filter
-    elif setup != 'all':
+    elif setup != 'spec':
         message = 'Checks filter "%s" is not supported' % setup
         raise exceptions.GoodtablesException(message)
 
