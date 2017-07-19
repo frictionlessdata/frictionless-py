@@ -129,19 +129,6 @@ class Registry(object):
                     check['func'] = check['func'](**options)
                 checks.append(check)
 
-        # Bind options
-        for check in checks:
-            try:
-                if six.PY2:
-                    parameters, _, _, _ = inspect.getargspec(check['func'])
-                else:
-                    parameters = inspect.signature(check['func']).parameters
-                for name, value in options.items():
-                    if name in parameters:
-                        check['func'] = partial(check['func'], **{name: value})
-            except Exception:
-                pass
-
         return checks
 
 
