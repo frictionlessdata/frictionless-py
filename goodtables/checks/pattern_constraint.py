@@ -12,7 +12,7 @@ from ..registry import check
 # Module API
 
 @check('pattern-constraint', type='schema', context='body')
-def pattern_constraint(errors, columns, row_number, state=None):
+def pattern_constraint(errors, columns, row_number):
     for column in copy(columns):
         if len(column) == 4:
             valid = column['field'].test_value(column['value'], constraint='pattern')

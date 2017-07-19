@@ -13,53 +13,64 @@ from ..registry import check
 # Module API
 
 @check('non-matching-header', type='schema', context='head')
-def non_matching_header(errors, columns, sample=None, order_fields=False):
+class NonMatchingHeader(object):
 
-    # No field ordering
-    if not order_fields:
-        for column in copy(columns):
-            if len(column) == 3:
-                if column['header'] != column['field'].name:
-                    # Add error
-                    message = spec['errors']['non-matching-header']['message']
-                    message = message.format(
-                        column_number=column['number'],
-                        field_name=column['field'].name)
-                    errors.append({
-                        'code': 'non-matching-header',
-                        'message': message,
-                        'row-number': None,
-                        'column-number': column['number'],
-                    })
-                    if _slugify(column['header']) != _slugify(column['field'].name):
-                        # Remove column
-                        columns.remove(column)
+    # Public
 
-    # Field ordering
-    else:
-        # Update fields order to maximally match headers order
-        headers = [column.get('header') for column in columns]
-        for index, header in enumerate(headers):
-            if header is None:
-                continue
-            field_name = _get_field_name(columns[index])
-            # Column header and field_name are different
-            if _slugify(header) != _slugify(field_name):
-                # If there is the match in next columns - swap fields
-                for column in columns[index+1:]:
-                    # We've found field matching given header
-                    if _slugify(header) == _slugify(_get_field_name(column)):
-                        _swap_fields(columns[index], column)
-                        break
-                    if field_name:
-                        # Given field matches some header also swap
-                        if _slugify(field_name) == _slugify(column.get('header')):
-                            _swap_fields(columns[index], column)
-        # Run check with no field ordering
-        non_matching_header(errors, columns)
+    def __init__(self, order_fields=False, **options):
+        self.__order_fields = order_fields
+
+    def check_headers(self, errors, columns, sample=None):
+        if self.__order_fields:
+            _check_with_ordering(errors, columns)
+        else:
+            _check_without_ordering(errors, columns)
 
 
 # Internal
+
+
+def _check_with_ordering(errors, columns):
+    # Update fields order to maximally match headers order
+    headers = [column.get('header') for column in columns]
+    for index, header in enumerate(headers):
+        if header is None:
+            continue
+        field_name = _get_field_name(columns[index])
+        # Column header and field_name are different
+        if _slugify(header) != _slugify(field_name):
+            # If there is the match in next columns - swap fields
+            for column in columns[index+1:]:
+                # We've found field matching given header
+                if _slugify(header) == _slugify(_get_field_name(column)):
+                    _swap_fields(columns[index], column)
+                    break
+                if field_name:
+                    # Given field matches some header also swap
+                    if _slugify(field_name) == _slugify(column.get('header')):
+                        _swap_fields(columns[index], column)
+    # Run check with no field ordering
+    _check_without_ordering(errors, columns)
+
+
+def _check_without_ordering(errors, columns):
+    for column in copy(columns):
+        if len(column) == 3:
+            if column['header'] != column['field'].name:
+                # Add error
+                message = spec['errors']['non-matching-header']['message']
+                message = message.format(
+                    column_number=column['number'],
+                    field_name=column['field'].name)
+                errors.append({
+                    'code': 'non-matching-header',
+                    'message': message,
+                    'row-number': None,
+                    'column-number': column['number'],
+                })
+                if _slugify(column['header']) != _slugify(column['field'].name):
+                    # Remove column
+                    columns.remove(column)
 
 
 def _get_field_name(column):

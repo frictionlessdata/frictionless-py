@@ -47,7 +47,7 @@ class Registry(object):
             'name': name,
         }
 
-    def build_presets(self):
+    def compile_presets(self):
         return deepcopy(self.__presets)
 
     def register_check(self, func, name, type, context, position=None):
@@ -90,7 +90,7 @@ class Registry(object):
             checks[name] = check
         self.__checks = checks
 
-    def build_checks(self, config, **options):
+    def compile_checks(self, config, **options):
         config = deepcopy(config)
 
         # Normalize string config
@@ -129,18 +129,22 @@ class Registry(object):
         checks = []
         for name, check in deepcopy(self.__checks).items():
             if config.get(name, False):
-                # TODO: support class based checks
+                if isinstance(check['func'], type):
+                    check['func'] = check['func'](**options)
                 checks.append(check)
 
         # Bind options
         for check in checks:
-            if six.PY2:
-                parameters, _, _, _ = inspect.getargspec(check['func'])
-            else:
-                parameters = inspect.signature(check['func']).parameters
-            for name, value in options.items():
-                if name in parameters:
-                    check['func'] = partial(check['func'], **{name: value})
+            try:
+                if six.PY2:
+                    parameters, _, _, _ = inspect.getargspec(check['func'])
+                else:
+                    parameters = inspect.signature(check['func']).parameters
+                for name, value in options.items():
+                    if name in parameters:
+                        check['func'] = partial(check['func'], **{name: value})
+            except Exception:
+                pass
 
         return checks
 

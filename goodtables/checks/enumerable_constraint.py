@@ -11,7 +11,7 @@ from ..registry import check
 # Module API
 
 @check('enumerable-constraint', type='schema', context='body')
-def enumerable_constraint(errors, columns, row_number, state=None):
+def enumerable_constraint(errors, columns, row_number):
     for column in columns:
         if len(column) == 4:
             valid = column['field'].test_value(column['value'], constraint='enum')

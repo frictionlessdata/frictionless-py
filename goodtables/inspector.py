@@ -49,13 +49,9 @@ class Inspector(object):
         # Start timer
         start = datetime.datetime.now()
 
-        # Build presets and checks
-        presets = registry.build_presets()
-        checks = registry.build_checks(self.__checks,
-            order_fields=self.__order_fields, infer_fields=self.__infer_fields)
-
         # Prepare preset
         try:
+            presets = registry.compile_presets()
             preset_func = presets[preset]['func']
             if preset == 'nested':
                 options['presets'] = presets
@@ -77,7 +73,7 @@ class Inspector(object):
             tasks = []
             pool = ThreadPool(processes=len(tables))
             for table in tables:
-                tasks.append(pool.apply_async(self.__inspect_table, (table, checks)))
+                tasks.append(pool.apply_async(self.__inspect_table, (table,)))
             for task in tasks:
                 table_warnings, table_report = task.get()
                 warnings.extend(table_warnings)
@@ -100,7 +96,7 @@ class Inspector(object):
 
     # Internal
 
-    def __inspect_table(self, table, checks):
+    def __inspect_table(self, table):
 
         # Start timer
         start = datetime.datetime.now()
@@ -115,6 +111,10 @@ class Inspector(object):
         stream = table['stream']
         schema = table['schema']
         extra = table['extra']
+
+        # Prepare checks
+        checks = registry.compile_checks(self.__checks,
+            order_fields=self.__order_fields, infer_fields=self.__infer_fields)
 
         # Prepare table
         try:
@@ -155,13 +155,13 @@ class Inspector(object):
                 for check in head_checks:
                     if not columns:
                         break
-                    check['func'](errors, columns, sample)
+                    check_func = getattr(check['func'], 'check_headers', check['func'])
+                    check_func(errors, columns, sample)
                 for error in errors:
                     error['row'] = None
 
         # Body checks
         if not fatal_error:
-            states = {}
             colmap = {column['number']: column for column in columns}
             body_checks = _filter_checks(checks, context='body')
             with stream:
@@ -191,8 +191,8 @@ class Inspector(object):
                     for check in body_checks:
                         if not columns:
                             break
-                        state = states.setdefault(check['name'], {})
-                        check['func'](errors, columns, row_number, state)
+                        check_func = getattr(check['func'], 'check_row', check['func'])
+                        check_func(errors, columns, row_number)
                     for error in reversed(errors):
                         if 'row' in error:
                             break
@@ -207,6 +207,12 @@ class Inspector(object):
                             'Table "%s" inspection has reached %s error(s) limit' %
                             (source, self.__error_limit))
                         break
+
+        # Table checks
+        for check in checks:
+            check_func = getattr(check['func'], 'check_table', None)
+            if check_func:
+                check_func(errors)
 
         # Stop timer
         stop = datetime.datetime.now()

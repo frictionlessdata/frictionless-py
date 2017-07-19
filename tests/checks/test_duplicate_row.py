@@ -4,7 +4,7 @@ from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
-from goodtables.checks.duplicate_row import duplicate_row
+from goodtables.checks.duplicate_row import DuplicateRow
 
 
 # Test
@@ -23,9 +23,9 @@ def test_check_duplicate_row(log):
          'value': 'value2',
          'field': None},
     ]
-    state = {}
-    duplicate_row(errors, columns1, 1, state=state)
-    duplicate_row(errors, columns2, 2, state=state)
+    duplicate_row = DuplicateRow()
+    duplicate_row.check_row(errors, columns1, 1)
+    duplicate_row.check_row(errors, columns2, 2)
     assert log(errors) == []
     assert len(columns1) == 1
     assert len(columns2) == 1
@@ -45,9 +45,9 @@ def test_check_duplicate_row_problem(log):
          'value': 'value',
          'field': None},
     ]
-    state = {}
-    duplicate_row(errors, columns1, 1, state=state)
-    duplicate_row(errors, columns2, 2, state=state)
+    duplicate_row = DuplicateRow()
+    duplicate_row.check_row(errors, columns1, 1)
+    duplicate_row.check_row(errors, columns2, 2)
     assert log(errors) == [
         (2, None, 'duplicate-row'),
     ]

@@ -12,7 +12,7 @@ from ..registry import check
 # Module API
 
 @check('extra-value', type='structure', context='body')
-def extra_value(errors, columns, row_number, state=None):
+def extra_value(errors, columns, row_number):
     for column in copy(columns):
         if 'header' not in column:
             # Add error

@@ -13,7 +13,7 @@ from ..registry import check
 # Module API
 
 @check('non-castable-value', type='schema', context='body')
-def non_castable_value(errors, columns, row_number, state=None):
+def non_castable_value(errors, columns, row_number):
     for column in copy(columns):
         if len(column) == 4:
             try:

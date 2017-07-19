@@ -12,7 +12,7 @@ from ..registry import check
 # Module API
 
 @check('missing-value', type='structure', context='body')
-def missing_value(errors, columns, row_number, state=None):
+def missing_value(errors, columns, row_number):
     for column in copy(columns):
         if 'value' not in column:
             # Add error
