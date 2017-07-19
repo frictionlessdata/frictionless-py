@@ -124,9 +124,13 @@ class Registry(object):
         # Build checks
         checks = []
         for name, check in deepcopy(self.__checks).items():
-            if config.get(name, False):
+            check_config = config.get(name, False)
+            if check_config:
                 if isinstance(check['func'], type):
-                    check['func'] = check['func'](**options)
+                    check_options = deepcopy(options)
+                    if isinstance(check_config, dict):
+                        check_options.update(check_config)
+                    check['func'] = check['func'](**check_options)
                 checks.append(check)
 
         return checks
