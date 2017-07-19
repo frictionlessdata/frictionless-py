@@ -22,6 +22,7 @@ PRESETS = [
 # Checks
 
 CHECKS = [
+    # Spec
     'goodtables.checks.blank_header',
     'goodtables.checks.duplicate_header',
     'goodtables.checks.non_matching_header',
@@ -40,4 +41,6 @@ CHECKS = [
     'goodtables.checks.maximum_constraint',
     'goodtables.checks.minimum_length_constraint',
     'goodtables.checks.maximum_length_constraint',
+    # Contrib
+    'goodtables.checks.contrib.sequential_column',
 ]

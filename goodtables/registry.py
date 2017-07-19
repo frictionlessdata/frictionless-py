@@ -5,9 +5,7 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 import six
-import inspect
 from copy import deepcopy
-from functools import partial
 from collections import OrderedDict
 from .spec import spec
 from . import exceptions
