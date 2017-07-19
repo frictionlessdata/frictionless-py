@@ -42,5 +42,5 @@ CHECKS = [
     'goodtables.checks.minimum_length_constraint',
     'goodtables.checks.maximum_length_constraint',
     # Contrib
-    'goodtables.checks.contrib.sequential_column',
+    'goodtables.contrib.checks.sequential_column',
 ]
