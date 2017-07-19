@@ -99,17 +99,13 @@ class Registry(object):
 
         # Normalize list config
         if isinstance(config, list):
-            result = {'spec': False}
+            result = {}
             for item in config:
                 if isinstance(item, six.string_types):
                     result[item] = True
                 if isinstance(item, dict):
                     result.update(item)
             config = result
-
-        # Normalize dict config
-        if isinstance(config, dict):
-            config.setdefault('spec', True)
 
         # Validate config
         if not isinstance(config, dict):
