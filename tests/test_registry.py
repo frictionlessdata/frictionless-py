@@ -9,5 +9,5 @@ import goodtables
 
 # Tests
 
-def test_decorators():
+def test_registry():
     pass

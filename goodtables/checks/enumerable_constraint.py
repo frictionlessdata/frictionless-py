@@ -5,13 +5,13 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 from ..spec import spec
-from ..decorators import check
+from ..registry import check
 
 
 # Module API
 
-@check('enumerable-constraint')
-def enumerable_constraint(errors, columns, row_number, state=None):
+@check('enumerable-constraint', type='schema', context='body')
+def enumerable_constraint(errors, columns, row_number):
     for column in columns:
         if len(column) == 4:
             valid = column['field'].test_value(column['value'], constraint='enum')

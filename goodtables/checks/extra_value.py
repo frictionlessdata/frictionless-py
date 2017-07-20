@@ -6,13 +6,13 @@ from __future__ import unicode_literals
 
 from copy import copy
 from ..spec import spec
-from ..decorators import check
+from ..registry import check
 
 
 # Module API
 
-@check('extra-value')
-def extra_value(errors, columns, row_number, state=None):
+@check('extra-value', type='structure', context='body')
+def extra_value(errors, columns, row_number):
     for column in copy(columns):
         if 'header' not in column:
             # Add error

@@ -5,13 +5,13 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 from ..spec import spec
-from ..decorators import check
+from ..registry import check
 
 
 # Module API
 
-@check('maximum-length-constraint')
-def maximum_length_constraint(errors, columns, row_number, state=None):
+@check('maximum-length-constraint', type='schema', context='body')
+def maximum_length_constraint(errors, columns, row_number):
     for column in columns:
         if len(column) == 4:
             valid = column['field'].test_value(column['value'], constraint='maxLength')

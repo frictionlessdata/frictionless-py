@@ -99,9 +99,10 @@ report = validate([{'source': 'data1.csv'}, {'source': 'data2.csv'}], preset='ne
 Check is a main validation actor in goodtables. Every check is associated with a Data Quality Spec error. List of checks could be customized using `checks` argument. Let's explore options on an example:
 
 ```python
-report = validate('data.csv', checks='structure') # only structure checks
-report = validate('data.csv', checks='schema') # only schema checks
-report = validate('data.csv', checks={'bad-headers': False}) # exclude 'bad-headers'
+report = validate('data.csv') # by default all spec checks (if a schema is provided)
+report = validate('data.csv', checks='structure') # only spec structure checks
+report = validate('data.csv', checks='schema') # only spec schema checks (if a schema is provided)
+report = validate('data.csv', checks={'spec': True, 'bad-headers': False}) # spec checks excluding 'bad-headers'
 report = validate('data.csv', checks={'bad-headers': True}) # check only 'bad-headers'
 ```
 
@@ -134,8 +135,6 @@ By default a dataset will be validated against all available Data Quality Spec e
 - `error_limit (int)` - error limit per table
 - `table_limit (int)` - table limit for dataset
 - `row_limit (int)` - row limit per table
-- `custom_presets (callable[])` - list of custom presets
-- `custom_checks (callable[])` - list of custom checks
 - **[Raises]**
 - `(exceptions.GoodtablesException)` - raise on any non-tabular error
 - **[Returns]**

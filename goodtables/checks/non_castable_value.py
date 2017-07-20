@@ -7,13 +7,13 @@ from __future__ import unicode_literals
 from copy import copy
 import jsontableschema
 from ..spec import spec
-from ..decorators import check
+from ..registry import check
 
 
 # Module API
 
-@check('non-castable-value')
-def non_castable_value(errors, columns, row_number, state=None):
+@check('non-castable-value', type='schema', context='body')
+def non_castable_value(errors, columns, row_number):
     for column in copy(columns):
         if len(column) == 4:
             try:

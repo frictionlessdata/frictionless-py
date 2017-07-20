@@ -4,7 +4,7 @@ from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
-from goodtables import checks
+from goodtables.checks.duplicate_header import duplicate_header
 
 
 # Test
@@ -19,7 +19,7 @@ def test_check_duplicate_header(log):
          'header': 'name2',
          'field': None},
     ]
-    checks.duplicate_header(errors, columns)
+    duplicate_header(errors, columns)
     assert log(errors) == []
     assert len(columns) == 2
 
@@ -34,7 +34,7 @@ def test_check_duplicate_header_problem(log):
          'header': 'name',
          'field': None},
     ]
-    checks.duplicate_header(errors, columns)
+    duplicate_header(errors, columns)
     assert log(errors) == [
         (None, 2, 'duplicate-header'),
     ]

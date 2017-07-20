@@ -5,7 +5,8 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 from jsontableschema import Field
-from goodtables import checks
+from goodtables.checks.non_castable_value import non_castable_value
+
 
 # Test
 
@@ -17,7 +18,7 @@ def test_check_non_castable_value(log):
          'value': '1',
          'field': Field({'name': 'name', 'type': 'integer'})},
     ]
-    checks.non_castable_value(errors, columns, 1)
+    non_castable_value(errors, columns, 1)
     assert log(errors) == []
     assert len(columns) == 1
     assert columns[0]['value'] == 1
@@ -31,7 +32,7 @@ def test_check_non_castable_value_problem(log):
          'value': 'value1',
          'field': Field({'name': 'name', 'type': 'integer'})},
     ]
-    checks.non_castable_value(errors, columns, 1)
+    non_castable_value(errors, columns, 1)
     assert log(errors) == [
         (1, 1, 'non-castable-value'),
     ]

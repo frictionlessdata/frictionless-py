@@ -4,7 +4,7 @@ from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
-from goodtables import checks
+from goodtables.checks.blank_header import blank_header
 
 
 # Test
@@ -16,7 +16,7 @@ def test_check_blank_header(log):
          'header': 'name',
          'field': None},
     ]
-    checks.blank_header(errors, columns)
+    blank_header(errors, columns)
     assert log(errors) == []
     assert len(columns) == 1
 
@@ -28,7 +28,7 @@ def test_check_blank_header_problem(log):
          'header': '',
          'field': None},
     ]
-    checks.blank_header(errors, columns)
+    blank_header(errors, columns)
     assert log(errors) == [
         (None, 1, 'blank-header'),
     ]

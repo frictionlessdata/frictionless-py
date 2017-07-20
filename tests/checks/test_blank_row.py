@@ -4,7 +4,7 @@ from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
-from goodtables import checks
+from goodtables.checks.blank_row import blank_row
 
 
 # Test
@@ -17,7 +17,7 @@ def test_check_blank_row(log):
          'value': 'value',
          'field': None},
     ]
-    checks.blank_row(errors, columns, 1)
+    blank_row(errors, columns, 1)
     assert log(errors) == []
     assert len(columns) == 1
 
@@ -30,7 +30,7 @@ def test_check_blank_row_problem(log):
          'value': '',
          'field': None},
     ]
-    checks.blank_row(errors, columns, 1)
+    blank_row(errors, columns, 1)
     assert log(errors) == [
         (1, None, 'blank-row'),
     ]

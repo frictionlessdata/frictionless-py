@@ -8,7 +8,7 @@ from tabulator import Stream
 from jsontableschema import Schema
 from jsontableschema.exceptions import SchemaValidationError
 from datapackage import DataPackage
-from ..decorators import preset
+from ..registry import preset
 
 
 # Module API

@@ -5,7 +5,7 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 from copy import deepcopy
-from ..decorators import preset
+from ..registry import preset
 from .. import exceptions
 
 
@@ -24,7 +24,7 @@ def nested(source, presets):
             message = 'Preset "nested" supports only one level depth'
             raise exceptions.GoodtablesException(message)
         try:
-            preset_func = presets[preset]
+            preset_func = presets[preset]['func']
         except KeyError:
             message = 'Preset "%s" is not registered' % preset
             raise exceptions.GoodtablesException(message)

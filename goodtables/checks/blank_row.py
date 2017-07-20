@@ -5,13 +5,13 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 from ..spec import spec
-from ..decorators import check
+from ..registry import check
 
 
 # Module API
 
-@check('blank-row')
-def blank_row(errors, columns, row_number, state=None):
+@check('blank-row', type='structure', context='body')
+def blank_row(errors, columns, row_number):
     if not list(filter(lambda column: column.get('value'), columns)):
         # Add error
         message = spec['errors']['blank-row']['message']

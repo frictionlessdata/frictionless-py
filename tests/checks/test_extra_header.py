@@ -5,7 +5,7 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 from jsontableschema import Field
-from goodtables import checks
+from goodtables.checks.extra_header import ExtraHeader
 
 
 # Test
@@ -21,7 +21,8 @@ def test_check_extra_header(log):
          'field': Field({'name': 'name2'})},
     ]
     sample = []
-    checks.extra_header(errors, columns, sample=sample)
+    extra_header = ExtraHeader()
+    extra_header.check_headers(errors, columns, sample=sample)
     assert log(errors) == []
     assert len(columns) == 2
 
@@ -36,7 +37,8 @@ def test_check_extra_header_infer(log):
          'header': 'name2'},
     ]
     sample = []
-    checks.extra_header(errors, columns, sample=sample, infer_fields=True)
+    extra_header = ExtraHeader(infer_fields=True)
+    extra_header.check_headers(errors, columns, sample=sample)
     assert log(errors) == []
     assert len(columns) == 2
     assert columns[1]['field'].name == 'name2'
@@ -52,7 +54,8 @@ def test_check_extra_header_problem(log):
          'header': 'name2'},
     ]
     sample = []
-    checks.extra_header(errors, columns, sample=sample)
+    extra_header = ExtraHeader()
+    extra_header.check_headers(errors, columns, sample=sample)
     assert log(errors) == [
         (None, 2, 'extra-header'),
     ]

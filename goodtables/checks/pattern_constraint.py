@@ -6,13 +6,13 @@ from __future__ import unicode_literals
 
 from copy import copy
 from ..spec import spec
-from ..decorators import check
+from ..registry import check
 
 
 # Module API
 
-@check('pattern-constraint')
-def pattern_constraint(errors, columns, row_number, state=None):
+@check('pattern-constraint', type='schema', context='body')
+def pattern_constraint(errors, columns, row_number):
     for column in copy(columns):
         if len(column) == 4:
             valid = column['field'].test_value(column['value'], constraint='pattern')

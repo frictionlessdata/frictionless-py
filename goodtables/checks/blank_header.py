@@ -5,12 +5,12 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 from ..spec import spec
-from ..decorators import check
+from ..registry import check
 
 
 # Module API
 
-@check('blank-header')
+@check('blank-header', type='structure', context='head')
 def blank_header(errors, columns, sample=None):
     for column in columns:
         if 'header' in column:

@@ -6,12 +6,12 @@ from __future__ import unicode_literals
 
 from copy import copy
 from ..spec import spec
-from ..decorators import check
+from ..registry import check
 
 
 # Module API
 
-@check('missing-header')
+@check('missing-header', type='schema', context='head')
 def missing_header(errors, columns, sample=None):
     for column in copy(columns):
         if 'header' not in column:

@@ -6,13 +6,13 @@ from __future__ import unicode_literals
 
 from copy import copy
 from ..spec import spec
-from ..decorators import check
+from ..registry import check
 
 
 # Module API
 
-@check('missing-value')
-def missing_value(errors, columns, row_number, state=None):
+@check('missing-value', type='structure', context='body')
+def missing_value(errors, columns, row_number):
     for column in copy(columns):
         if 'value' not in column:
             # Add error
