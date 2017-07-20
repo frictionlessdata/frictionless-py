@@ -1,0 +1,104 @@
+{
+    "fields": [
+        {
+            "name": "Department",
+            "type": "string",
+            "constraints": {
+                "required": true
+            }
+        },
+        {
+            "name": "Entity",
+            "type": "string",
+            "constraints": {
+                "required": true
+            }
+        },
+        {
+            "name": "Date of Payment",
+            "type": "date",
+            "format": "any",
+            "constraints": {
+                "required": true
+            }
+        },
+        {
+            "name": "Expense Type",
+            "type": "string",
+            "constraints": {
+                "required": true
+            }
+        },
+        {
+            "name": "Expense Area",
+            "type": "string",
+            "constraints": {
+                "required": true
+            }
+        },
+        {
+            "name": "Supplier",
+            "type": "string",
+            "constraints": {
+                "required": true
+            }
+        },
+        {
+            "name": "Transaction Number",
+            "type": "string",
+            "constraints": {
+                "required": true
+            }
+        },
+        {
+            "name": "Amount",
+            "type": "number",
+            "format": "currency",
+            "constraints": {
+                "required": true
+            }
+        },
+        {
+            "name": "Description",
+            "type": "string",
+            "constraints": {
+                "required": true
+            }
+        },
+        {
+            "name": "Supplier Post Code",
+            "type": "string",
+            "constraints": {
+                "required": false
+            }
+        },
+        {
+            "name": "Supplier Type",
+            "type": "string",
+            "constraints": {
+                "required": false
+            }
+        },
+        {
+            "name": "Contract Number",
+            "type": "string",
+            "constraints": {
+                "required": false
+            }
+        },
+        {
+            "name": "Project Code",
+            "type": "string",
+            "constraints": {
+                "required": false
+            }
+        },
+        {
+            "name": "Expenditure Type",
+            "type": "string",
+            "constraints": {
+                "required": false
+            }
+        }
+    ]
+}

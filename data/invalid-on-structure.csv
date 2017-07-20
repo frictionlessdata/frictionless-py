@@ -1,0 +1,5 @@
+Department,,Entity,Date of Payment,Expense Type,Expense Area,Supplier,Transaction Number,Amount,Description
+
+Department of Data,01/01/2015,Wrangling,Sector Development,Some Supplier 1,100,300,Some Description 1
+Department of Data,02/01/2015,Visualization,Sector Development,Some Supplier 2,101,400,Some Description 2,Department of Data,02/01/2015,Visualization,Sector Development,Some Supplier 2,101,400,Some Description 2
+Department of Data,03/01/2015,Cleaning,Sector Development,Some Supplier 3,102,500,Some Description 3
