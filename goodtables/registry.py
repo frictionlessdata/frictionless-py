@@ -119,7 +119,7 @@ class Registry(object):
                         if group == 'spec' or error['type'] == group:
                             config.setdefault(code, value)
 
-        # Build checks
+        # Compile checks
         checks = []
         for name, check in deepcopy(self.__checks).items():
             check_config = config.get(name, False)
@@ -128,7 +128,12 @@ class Registry(object):
                     check_options = deepcopy(options)
                     if isinstance(check_config, dict):
                         check_options.update(check_config)
-                    check['func'] = check['func'](**check_options)
+                    try:
+                        check['func'] = check['func'](**check_options)
+                    except Exception:
+                        message = 'Check "%s" options "%s" error'
+                        raise exceptions.GoodtablesException(
+                            message, (check['name'], check_options))
                 checks.append(check)
 
         return checks
