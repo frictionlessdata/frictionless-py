@@ -38,7 +38,8 @@ class DeviatedValue(object):
         # Validate average
         if not self.__average_function:
             message = 'Deviated value check supports only this average functions: %s'
-            raise exceptions.GoodtablesError(message % ', '.join(_AVERAGE_FUNCTIONS.keys()))
+            message = message % ', '.join(_AVERAGE_FUNCTIONS.keys())
+            raise exceptions.GoodtablesError(message)
 
     def check_row(self, errors, cells, row_number):
 

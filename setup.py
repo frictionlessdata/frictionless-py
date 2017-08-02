@@ -25,6 +25,7 @@ INSTALL_REQUIRES = [
     'click>=6.6,<7.0',
     'requests>=2.10,<3.0',
     'simpleeval>=0.9,<2.0',
+    'statistics>=1.0,<2.0',
     'tabulator>=1.0.0a5,<2.0',
     # TODO: update after specs-v1
     'jsontableschema>=0.10.1,<1.0',

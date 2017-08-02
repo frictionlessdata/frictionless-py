@@ -121,7 +121,7 @@ class Registry(object):
 
         # Validate checks
         if not isinstance(include, list):
-            message = 'Checks parameter "%s" is not valid' % config
+            message = 'Checks parameter "%s" is not valid' % include
             raise exceptions.GoodtablesException(message)
 
         # Expand checks

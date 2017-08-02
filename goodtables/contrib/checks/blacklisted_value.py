@@ -39,7 +39,7 @@ class BlacklistedValue(object):
 
         # Check value
         value = cell.get('value')
-        if  value in self.__blacklist:
+        if value in self.__blacklist:
             message = 'Value "%s" in column %s for row %s is blacklisted'
             return errors.append({
                 'code': 'blacklisted-value',
