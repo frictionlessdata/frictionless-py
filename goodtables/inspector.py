@@ -23,7 +23,8 @@ class Inspector(object):
     # Public
 
     def __init__(self,
-                 checks='spec',
+                 checks=['structure', 'schema'],
+                 skip_checks=[],
                  infer_schema=False,
                  infer_fields=False,
                  order_fields=False,
@@ -35,6 +36,7 @@ class Inspector(object):
 
         # Set attributes
         self.__checks = checks
+        self.__skip_checks = skip_checks
         self.__infer_schema = infer_schema
         self.__infer_fields = infer_fields
         self.__order_fields = order_fields
@@ -113,7 +115,7 @@ class Inspector(object):
         extra = table['extra']
 
         # Prepare checks
-        checks = registry.compile_checks(self.__checks,
+        checks = registry.compile_checks(self.__checks, self.__skip_checks,
             order_fields=self.__order_fields, infer_fields=self.__infer_fields)
 
         # Prepare table
@@ -133,36 +135,37 @@ class Inspector(object):
             error = _compose_error_from_exception(exception)
             errors.append(error)
 
-        # Prepare columns
+        # Prepare cells
         if not fatal_error:
-            columns = []
+            cells = []
             fields = [None] * len(headers)
             if schema is not None:
                 fields = schema.fields
             iterator = zip_longest(headers, fields, fillvalue=_FILLVALUE)
             for number, (header, field) in enumerate(iterator, start=1):
-                column = {'number': number}
+                cell = {'number': number}
                 if header is not _FILLVALUE:
-                    column['header'] = header
+                    cell['header'] = header
+                    cell['value'] = header
                 if field is not _FILLVALUE:
-                    column['field'] = field
-                columns.append(column)
+                    cell['field'] = field
+                cells.append(cell)
 
         # Head checks
         if not fatal_error:
             if None not in headers:
                 head_checks = _filter_checks(checks, context='head')
                 for check in head_checks:
-                    if not columns:
+                    if not cells:
                         break
                     check_func = getattr(check['func'], 'check_headers', check['func'])
-                    check_func(errors, columns, sample)
+                    check_func(errors, cells, sample)
                 for error in errors:
                     error['row'] = None
 
         # Body checks
         if not fatal_error:
-            colmap = {column['number']: column for column in columns}
+            cellmap = {cell['number']: cell for cell in cells}
             body_checks = _filter_checks(checks, context='body')
             with stream:
                 extended_rows = stream.iter(extended=True)
@@ -176,23 +179,23 @@ class Inspector(object):
                         error = _compose_error_from_exception(exception)
                         errors.append(error)
                         break
-                    columns = []
+                    cells = []
                     iterator = zip_longest(headers, row, fillvalue=_FILLVALUE)
                     for number, (header, value) in enumerate(iterator, start=1):
-                        colref = colmap.get(number, {})
-                        column = {'number': number}
+                        cellref = cellmap.get(number, {})
+                        cell = {'number': number}
                         if header is not _FILLVALUE:
-                            column['header'] = colref.get('header', header)
-                        if 'field' in colref:
-                            column['field'] = colref['field']
+                            cell['header'] = cellref.get('header', header)
+                        if 'field' in cellref:
+                            cell['field'] = cellref['field']
                         if value is not _FILLVALUE:
-                            column['value'] = value
-                        columns.append(column)
+                            cell['value'] = value
+                        cells.append(cell)
                     for check in body_checks:
-                        if not columns:
+                        if not cells:
                             break
                         check_func = getattr(check['func'], 'check_row', check['func'])
-                        check_func(errors, columns, row_number)
+                        check_func(errors, cells, row_number)
                     for error in reversed(errors):
                         if 'row' in error:
                             break

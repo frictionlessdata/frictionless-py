@@ -9,8 +9,8 @@ from ...registry import check
 
 # Module API
 
-@check('sequential-column', type='custom', context='body')
-class SequentialColumn(object):
+@check('sequential-value', type='custom', context='body')
+class SequentialValue(object):
 
     # Public
 
@@ -18,33 +18,35 @@ class SequentialColumn(object):
         self.__column = column
         self.__cursor = None
 
-    def check_row(self, errors, columns, row_number):
+    def check_row(self, errors, cells, row_number):
 
-        # Get column
-        column = None
-        for item in columns:
+        # Get cell
+        cell = None
+        for item in cells:
             if self.__column in [item['number'], item['header']]:
-                column = item
+                cell = item
                 break
 
-        # Check column
-        if not column:
+        # Check cell
+        if not cell:
+            message = 'Sequential value check requires column "%s" to exist'
             return errors.append({
-                'code': 'sequential-column',
-                'message': 'Sequential column violation',
+                'code': 'sequential-value',
+                'message': message % self.__column,
                 'row-number': row_number,
                 'column-number': None,
             })
 
         # Get value
         try:
-            value = int(column['value'])
+            value = int(cell['value'])
         except ValueError:
+            message = 'Sequential value check requires column "%s" to be an integer'
             return errors.append({
-                'code': 'sequential-column',
-                'message': 'Sequential column violation',
+                'code': 'sequential-value',
+                'message': message % self.__column,
                 'row-number': row_number,
-                'column-number': column['number'],
+                'column-number': cell['number'],
             })
 
         # Initiate cursor
@@ -54,11 +56,12 @@ class SequentialColumn(object):
         # Check value
         if self.__cursor != value:
             self.__cursor = value
+            message = 'Value "%s" is not a sequential in column %s for row %s'
             return errors.append({
-                'code': 'sequential-column',
-                'message': 'Sequential column violation',
+                'code': 'sequential-value',
+                'message': message % (value, cell['number'], row_number),
                 'row-number': row_number,
-                'column-number': column['number'],
+                'column-number': cell['number'],
             })
 
         # Increment cursor

@@ -11,8 +11,9 @@ from ..registry import check
 # Module API
 
 @check('blank-row', type='structure', context='body')
-def blank_row(errors, columns, row_number):
-    if not list(filter(lambda column: column.get('value'), columns)):
+def blank_row(errors, cells, row_number):
+    if not list(filter(lambda cell: cell.get('value'), cells)):
+
         # Add error
         message = spec['errors']['blank-row']['message']
         message = message.format(row_number=row_number)
@@ -22,5 +23,6 @@ def blank_row(errors, columns, row_number):
             'row-number': row_number,
             'column-number': None,
         })
-        # Clear columns
-        del columns[:]
+
+        # Clear cells
+        del cells[:]

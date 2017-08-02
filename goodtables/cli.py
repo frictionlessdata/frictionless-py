@@ -17,7 +17,8 @@ click.disable_unicode_literals_warning = True
 @click.argument('source')
 @click.option('--preset')
 @click.option('--schema')
-@click.option('--checks')
+@click.option('--checks', type=lambda value: value.split(','))
+@click.option('--skip-checks', type=lambda value: value.split(','))
 @click.option('--infer-schema', is_flag=True)
 @click.option('--infer-fields', is_flag=True)
 @click.option('--order-fields', is_flag=True)
@@ -30,6 +31,7 @@ def cli(source, json, **options):
     """https://github.com/frictionlessdata/goodtables-py#cli
     """
     options = {key: value for key, value in options.items() if value is not None}
+    print(options)
     report = goodtables.validate(source, **options)
     _print_report(report, json=json)
     exit(not report['valid'])

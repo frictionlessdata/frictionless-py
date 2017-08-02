@@ -1,6 +1,7 @@
 fail_fast_two_structure_errors:
   source: data/fail_fast_two_structure_errors.csv
-  checks: structure
+  checks:
+    - structure
   error_limit: 3
   report:
     - [1, 4, null, 'blank-row']

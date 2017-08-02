@@ -19,27 +19,32 @@ class ExtraHeader(object):
     def __init__(self, infer_fields=False, **options):
         self.__infer_fields = infer_fields
 
-    def check_headers(self, errors, columns, sample):
-        for column in copy(columns):
-            if 'field' not in column:
-                # Infer field
-                if self.__infer_fields:
-                    column_sample = []
-                    for row in sample:
-                        value = None
-                        if len(row) > column['number']:
-                            value = row[column['number']]
-                        column_sample.append(value)
-                    descriptor = infer([column['header']], column_sample)
-                    column['field'] = Schema(descriptor).fields[0]
-                # Add error/remove column
-                else:
-                    message = spec['errors']['extra-header']['message']
-                    message = message.format(column_number=column['number'])
-                    errors.append({
-                        'code': 'extra-header',
-                        'message': message,
-                        'row-number': None,
-                        'column-number': column['number'],
-                    })
-                    columns.remove(column)
+    def check_headers(self, errors, cells, sample):
+        for cell in copy(cells):
+
+            # Skip if cell has field
+            if 'field' in cell:
+                continue
+
+            # Infer field
+            if self.__infer_fields:
+                column_sample = []
+                for row in sample:
+                    value = None
+                    if len(row) > cell['number']:
+                        value = row[cell['number']]
+                    column_sample.append(value)
+                descriptor = infer([cell['header']], column_sample)
+                cell['field'] = Schema(descriptor).fields[0]
+
+            # Add error/remove column
+            else:
+                message = spec['errors']['extra-header']['message']
+                message = message.format(column_number=cell['number'])
+                errors.append({
+                    'code': 'extra-header',
+                    'message': message,
+                    'row-number': None,
+                    'column-number': cell['number'],
+                })
+                cells.remove(cell)
