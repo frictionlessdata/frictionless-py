@@ -8,32 +8,32 @@ from jsontableschema import Field
 from goodtables.checks.non_castable_value import non_castable_value
 
 
-# Test
+# Check
 
 def test_check_non_castable_value(log):
     errors = []
-    columns = [
+    cells = [
         {'number': 1,
          'header': 'name1',
          'value': '1',
          'field': Field({'name': 'name', 'type': 'integer'})},
     ]
-    non_castable_value(errors, columns, 1)
+    non_castable_value(errors, cells, 1)
     assert log(errors) == []
-    assert len(columns) == 1
-    assert columns[0]['value'] == 1
+    assert len(cells) == 1
+    assert cells[0]['value'] == 1
 
 
 def test_check_non_castable_value_problem(log):
     errors = []
-    columns = [
+    cells = [
         {'number': 1,
          'header': 'name1',
          'value': 'value1',
          'field': Field({'name': 'name', 'type': 'integer'})},
     ]
-    non_castable_value(errors, columns, 1)
+    non_castable_value(errors, cells, 1)
     assert log(errors) == [
         (1, 1, 'non-castable-value'),
     ]
-    assert len(columns) == 0
+    assert len(cells) == 0

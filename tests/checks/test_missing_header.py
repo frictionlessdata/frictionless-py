@@ -8,11 +8,11 @@ from jsontableschema import Field
 from goodtables.checks.missing_header import missing_header
 
 
-# Test
+# Check
 
 def test_check_missing_header(log):
     errors = []
-    columns = [
+    cells = [
         {'number': 1,
          'header': 'name1',
          'field': Field({'name': 'name1'})},
@@ -20,22 +20,22 @@ def test_check_missing_header(log):
          'header': 'name2',
          'field': Field({'name': 'name2'})},
     ]
-    missing_header(errors, columns)
+    missing_header(errors, cells)
     assert log(errors) == []
-    assert len(columns) == 2
+    assert len(cells) == 2
 
 
 def test_check_missing_header_problem(log):
     errors = []
-    columns = [
+    cells = [
         {'number': 1,
          'header': 'name1',
          'field': Field({'name': 'name1'})},
         {'number': 2,
          'field': Field({'name': 'name2'})},
     ]
-    missing_header(errors, columns)
+    missing_header(errors, cells)
     assert log(errors) == [
         (None, 2, 'missing-header'),
     ]
-    assert len(columns) == 1
+    assert len(cells) == 1

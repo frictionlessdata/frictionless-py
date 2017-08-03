@@ -7,7 +7,7 @@ from __future__ import unicode_literals
 from goodtables.presets.datapackage import datapackage
 
 
-# Test
+# Preset
 
 def test_preset_datapackage():
     warnings, tables = datapackage('data/datapackages/valid/datapackage.json')

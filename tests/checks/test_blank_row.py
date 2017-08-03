@@ -7,31 +7,31 @@ from __future__ import unicode_literals
 from goodtables.checks.blank_row import blank_row
 
 
-# Test
+# Check
 
 def test_check_blank_row(log):
     errors = []
-    columns = [
+    cells = [
         {'number': 1,
          'header': 'name1',
          'value': 'value',
          'field': None},
     ]
-    blank_row(errors, columns, 1)
+    blank_row(errors, cells, 1)
     assert log(errors) == []
-    assert len(columns) == 1
+    assert len(cells) == 1
 
 
 def test_check_blank_row_problem(log):
     errors = []
-    columns = [
+    cells = [
         {'number': 1,
          'header': 'name1',
          'value': '',
          'field': None},
     ]
-    blank_row(errors, columns, 1)
+    blank_row(errors, cells, 1)
     assert log(errors) == [
         (1, None, 'blank-row'),
     ]
-    assert len(columns) == 0
+    assert len(cells) == 0

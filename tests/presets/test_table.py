@@ -7,7 +7,7 @@ from __future__ import unicode_literals
 from goodtables.presets.table import table
 
 
-# Test
+# Preset
 
 def test_preset_table():
     warnings, tables = table('data/valid.csv')

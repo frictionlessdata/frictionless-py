@@ -7,11 +7,11 @@ from __future__ import unicode_literals
 from goodtables.checks.maximum_constraint import maximum_constraint
 
 
-# Test
+# Check
 
 def test_check_maximum_constraint(log):
     errors = []
-    columns = []
-    maximum_constraint(errors, columns, 1)
+    cells = []
+    maximum_constraint(errors, cells, 1)
     assert log(errors) == []
-    assert len(columns) == 0
+    assert len(cells) == 0

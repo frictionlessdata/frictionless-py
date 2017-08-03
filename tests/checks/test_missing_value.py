@@ -8,11 +8,11 @@ from jsontableschema import Field
 from goodtables.checks.missing_value import missing_value
 
 
-# Test
+# Check
 
 def test_check_missing_value(log):
     errors = []
-    columns = [
+    cells = [
         {'number': 1,
          'header': 'name1',
          'value': 'value',
@@ -22,14 +22,14 @@ def test_check_missing_value(log):
          'value': 'value',
          'field': None},
     ]
-    missing_value(errors, columns, 1)
+    missing_value(errors, cells, 1)
     assert log(errors) == []
-    assert len(columns) == 2
+    assert len(cells) == 2
 
 
 def test_check_missing_value_problem(log):
     errors = []
-    columns = [
+    cells = [
         {'number': 1,
          'header': 'name1',
          'value': 'value',
@@ -38,8 +38,8 @@ def test_check_missing_value_problem(log):
          'header': 'name2',
          'field': None},
     ]
-    missing_value(errors, columns, 1)
+    missing_value(errors, cells, 1)
     assert log(errors) == [
         (1, 2, 'missing-value'),
     ]
-    assert len(columns) == 1
+    assert len(cells) == 1

@@ -8,11 +8,11 @@ from jsontableschema import Field
 from goodtables.checks.non_matching_header import NonMatchingHeader
 
 
-# Test
+# Check
 
 def test_check_non_matching_header(log):
     errors = []
-    columns = [
+    cells = [
         {'number': 1,
          'header': 'name1',
          'field': Field({'name': 'name1'})},
@@ -23,14 +23,14 @@ def test_check_non_matching_header(log):
          'header': 'name3'},
     ]
     non_matching_header = NonMatchingHeader()
-    non_matching_header.check_headers(errors, columns)
+    non_matching_header.check_headers(errors, cells)
     assert log(errors) == []
-    assert len(columns) == 3
+    assert len(cells) == 3
 
 
 def test_check_non_matching_header_problem(log):
     errors = []
-    columns = [
+    cells = [
         {'number': 1,
          'header': 'name1',
          'field': Field({'name': 'name2'})},
@@ -41,17 +41,17 @@ def test_check_non_matching_header_problem(log):
          'header': 'name3'},
     ]
     non_matching_header = NonMatchingHeader()
-    non_matching_header.check_headers(errors, columns)
+    non_matching_header.check_headers(errors, cells)
     assert log(errors) == [
         (None, 1, 'non-matching-header'),
         (None, 2, 'non-matching-header'),
     ]
-    assert len(columns) == 1
+    assert len(cells) == 1
 
 
 def test_check_non_matching_header_order_fields(log):
     errors = []
-    columns = [
+    cells = [
         {'number': 1,
          'header': 'name1',
          'field': Field({'name': 'name2'})},
@@ -62,14 +62,14 @@ def test_check_non_matching_header_order_fields(log):
          'header': 'name3'},
     ]
     non_matching_header = NonMatchingHeader(order_fields=True)
-    non_matching_header.check_headers(errors, columns)
+    non_matching_header.check_headers(errors, cells)
     assert log(errors) == []
-    assert len(columns) == 3
+    assert len(cells) == 3
 
 
 def test_check_non_matching_header_order_fields_problem(log):
     errors = []
-    columns = [
+    cells = [
         {'number': 1,
          'header': 'name1',
          'field': Field({'name': 'name4'})},
@@ -80,8 +80,8 @@ def test_check_non_matching_header_order_fields_problem(log):
          'header': 'name3'},
     ]
     non_matching_header = NonMatchingHeader(order_fields=True)
-    non_matching_header.check_headers(errors, columns)
+    non_matching_header.check_headers(errors, cells)
     assert log(errors) == [
         (None, 2, 'non-matching-header'),
     ]
-    assert len(columns) == 2
+    assert len(cells) == 2

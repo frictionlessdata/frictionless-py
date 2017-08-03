@@ -7,12 +7,12 @@ from __future__ import unicode_literals
 from goodtables.checks.unique_constraint import UniqueConstraint
 
 
-# Test
+# Check
 
 def test_check_unique_constraint(log):
     errors = []
-    columns = []
+    cells = []
     unique_constraint = UniqueConstraint()
-    unique_constraint.check_row(errors, columns, 1)
+    unique_constraint.check_row(errors, cells, 1)
     assert log(errors) == []
-    assert len(columns) == 0
+    assert len(cells) == 0

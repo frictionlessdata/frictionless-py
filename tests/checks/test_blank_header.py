@@ -7,29 +7,29 @@ from __future__ import unicode_literals
 from goodtables.checks.blank_header import blank_header
 
 
-# Test
+# Check
 
 def test_check_blank_header(log):
     errors = []
-    columns = [
+    cells = [
         {'number': 1,
          'header': 'name',
          'field': None},
     ]
-    blank_header(errors, columns)
+    blank_header(errors, cells)
     assert log(errors) == []
-    assert len(columns) == 1
+    assert len(cells) == 1
 
 
 def test_check_blank_header_problem(log):
     errors = []
-    columns = [
+    cells = [
         {'number': 1,
          'header': '',
          'field': None},
     ]
-    blank_header(errors, columns)
+    blank_header(errors, cells)
     assert log(errors) == [
         (None, 1, 'blank-header'),
     ]
-    assert len(columns) == 1
+    assert len(cells) == 1

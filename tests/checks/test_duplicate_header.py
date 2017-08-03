@@ -7,11 +7,11 @@ from __future__ import unicode_literals
 from goodtables.checks.duplicate_header import duplicate_header
 
 
-# Test
+# Check
 
 def test_check_duplicate_header(log):
     errors = []
-    columns = [
+    cells = [
         {'number': 1,
          'header': 'name1',
          'field': None},
@@ -19,14 +19,14 @@ def test_check_duplicate_header(log):
          'header': 'name2',
          'field': None},
     ]
-    duplicate_header(errors, columns)
+    duplicate_header(errors, cells)
     assert log(errors) == []
-    assert len(columns) == 2
+    assert len(cells) == 2
 
 
 def test_check_duplicate_header_problem(log):
     errors = []
-    columns = [
+    cells = [
         {'number': 1,
          'header': 'name',
          'field': None},
@@ -34,8 +34,8 @@ def test_check_duplicate_header_problem(log):
          'header': 'name',
          'field': None},
     ]
-    duplicate_header(errors, columns)
+    duplicate_header(errors, cells)
     assert log(errors) == [
         (None, 2, 'duplicate-header'),
     ]
-    assert len(columns) == 2
+    assert len(cells) == 2

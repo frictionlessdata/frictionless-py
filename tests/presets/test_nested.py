@@ -9,7 +9,7 @@ from goodtables.presets.datapackage import datapackage
 from goodtables.presets.nested import nested
 
 
-# Test
+# Preset
 
 def test_preset_nested():
     warnings, tables = nested([

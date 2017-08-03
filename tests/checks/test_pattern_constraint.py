@@ -7,11 +7,11 @@ from __future__ import unicode_literals
 from goodtables.checks.pattern_constraint import pattern_constraint
 
 
-# Test
+# Check
 
 def test_check_pattern_constraint(log):
     errors = []
-    columns = []
-    pattern_constraint(errors, columns, 1)
+    cells = []
+    pattern_constraint(errors, cells, 1)
     assert log(errors) == []
-    assert len(columns) == 0
+    assert len(cells) == 0
