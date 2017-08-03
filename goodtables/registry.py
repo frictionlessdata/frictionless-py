@@ -130,6 +130,10 @@ class Registry(object):
                 if item == group:
                     del include[index]
                     for code, error in spec['errors'].items():
+                        # It's temporal skip
+                        # https://github.com/frictionlessdata/goodtables-py/issues/174
+                        if code == 'schema-error':
+                            continue
                         if error['type'] == group:
                             include.append(code)
 
@@ -143,6 +147,9 @@ class Registry(object):
                     if isinstance(item, dict):
                         item_name = list(item.keys())[0]
                         item_config = list(item.values())[0]
+                    if item_name not in self.__checks:
+                        message = 'Check "%s" is not registered'
+                        raise exceptions.GoodtablesException(message % item_name)
                     if item_name == name:
                         compiled_check = deepcopy(check)
                         if isinstance(check['func'], type):
@@ -152,8 +159,8 @@ class Registry(object):
                                 compiled_check['func'] = check['func'](**check_options)
                             except Exception:
                                 message = 'Check "%s" options "%s" error'
-                                raise exceptions.GoodtablesException(
-                                    message, (check['name'], check_options))
+                                message = message % (check['name'], check_options)
+                                raise exceptions.GoodtablesException(message)
                         compiled_checks.append(compiled_check)
 
         return compiled_checks
