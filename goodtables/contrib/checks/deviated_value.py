@@ -17,7 +17,7 @@ class DeviatedValue(object):
 
     # Public
 
-    def __init__(self, column, interval=[-1, 1], average='mean', **options):
+    def __init__(self, column, average='mean', interval=3, **options):
 
         # Set attributes
         self.__column = column
@@ -25,15 +25,6 @@ class DeviatedValue(object):
         self.__column_number = None
         self.__column_values = OrderedDict()
         self.__average_function = _AVERAGE_FUNCTIONS.get(average)
-
-        # Validate interval
-        try:
-            left, right = self.__interval
-            float(left)
-            float(right)
-        except ValueError:
-            message = 'Deviated value check interval should be in form of "%s"'
-            raise exceptions.GoodtablesError(message % '[min, max]')
 
         # Validate average
         if not self.__average_function:
@@ -46,7 +37,7 @@ class DeviatedValue(object):
         # Get cell
         cell = None
         for item in cells:
-            if self.__column in [item['number'], item['header']]:
+            if self.__column in [item['number'], item.get('header')]:
                 cell = item
                 break
 
@@ -63,9 +54,8 @@ class DeviatedValue(object):
         # Get value
         try:
             value = float(cell['value'])
-            assert value >= 0
-        except (ValueError, AssertionError):
-            message = 'Deviated value check requires column "%s" to be a positive number'
+        except ValueError:
+            message = 'Deviated value check requires column "%s" to be a number'
             return errors.append({
                 'code': 'deviated-value',
                 'message': message % self.__column,
@@ -83,10 +73,20 @@ class DeviatedValue(object):
         if not self.__column_values:
             return
 
-        # Prepare absolute interval
-        average = self.__average_function(self.__column_values.values())
-        minimum = average + average * self.__interval[0]
-        maximum = average + average * self.__interval[1]
+        # Prepare interval
+        try:
+            stdev = statistics.stdev(self.__column_values.values())
+            average = self.__average_function(self.__column_values.values())
+            minimum = average - stdev * self.__interval
+            maximum = average + stdev * self.__interval
+        except Exception:
+            message = 'Deviated value check can\'t be done on this dataset'
+            return errors.append({
+                'code': 'deviated-value',
+                'message': message,
+                'row-number': None,
+                'column-number': None,
+            })
 
         # Check values
         for row_number, value in self.__column_values.items():

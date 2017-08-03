@@ -23,7 +23,7 @@ class SequentialValue(object):
         # Get cell
         cell = None
         for item in cells:
-            if self.__column in [item['number'], item['header']]:
+            if self.__column in [item['number'], item.get('header')]:
                 cell = item
                 break
 
@@ -39,8 +39,8 @@ class SequentialValue(object):
 
         # Get value
         try:
-            value = int(cell['value'])
-        except ValueError:
+            value = int(cell.get('value'))
+        except (TypeError, ValueError):
             message = 'Sequential value check requires column "%s" to be an integer'
             return errors.append({
                 'code': 'sequential-value',
@@ -55,7 +55,7 @@ class SequentialValue(object):
 
         # Check value
         if self.__cursor != value:
-            self.__cursor = value
+            self.__cursor = value + 1
             message = 'Value "%s" is not a sequential in column %s for row %s'
             return errors.append({
                 'code': 'sequential-value',

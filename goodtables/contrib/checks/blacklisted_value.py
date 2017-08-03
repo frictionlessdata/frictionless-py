@@ -23,7 +23,7 @@ class BlacklistedValue(object):
         # Get cell
         cell = None
         for item in cells:
-            if self.__column in [item['number'], item['header']]:
+            if self.__column in [item['number'], item.get('header')]:
                 cell = item
                 break
 

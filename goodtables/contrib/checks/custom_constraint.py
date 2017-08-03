@@ -37,7 +37,7 @@ class CustomConstraint(object):
         except Exception:
             message = 'Custom constraint "%s" fails for row %s'
             return errors.append({
-                'code': 'custom_constraint',
+                'code': 'custom-constraint',
                 'message': message % (self.__constraint, row_number),
                 'row-number': row_number,
                 'column-number': None,

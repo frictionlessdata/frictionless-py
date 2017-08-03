@@ -328,20 +328,27 @@ This check helps to find outlines in a column containing positive numbers.
 Consider csv file like this:
 
 ```csv
-id,score
-1,1
-2,2
-3,7
-5,0
+temperature
+1
+-2
+7
+0
+1
+2
+5
+-4
+100
+8
+3
 ```
 
-We use `median` to get an average of the column values and allow `[-1, 1]` interval for values in relative to the average numbers. For our case median is `1.5` so all values should be inside `[0, 3]` interval in absolute numbers.
+We use `median` to get an average of the column values and allow interval of 3 standard deviations. For our case median is `2.0` and standard deviation is '29.73' so all valid values should be inside `[-87,19, 91.19]` interval.
 
 ```python
 report = validate('data.csv', checks=[
-    {'deviated-value': {'column': 'score', 'interval': [-1, 1], 'average': 'median'}},
+    {'deviated-value': {'column': 'temperature', 'average': 'median', 'interval': 3}},
 ])
-# error on row 4 with code "deviated-value"
+# error on row 10 with code "deviated-value"
 ```
 
 #### sequential-value

@@ -14,7 +14,7 @@ pprint('---')
 # deviated-value
 
 report = validate('data/deviated_value.csv', checks=[
-    {'deviated-value': {'column': 'score', 'interval': [-1, 1], 'average': 'median'}},
+    {'deviated-value': {'column': 'temperature', 'average': 'median', 'interval': 3}},
 ])
 pprint(report)
 pprint('---')
