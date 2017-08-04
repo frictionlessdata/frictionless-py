@@ -109,7 +109,7 @@ report = validate([{'source': 'data1.csv'}, {'source': 'data2.csv'}], preset='ne
 
 #### `validate(source, **options)`
 
-- **[Arguments - for `table` preset]**
+- **Arguments (`preset=table`)**
 - `source (path/url/dict/file-like)` - validation source containing data table
 - `preset (str)` - dataset type could be `table` (default), `datapackage`, `nested` or custom. For the most cases preset will be inferred from the source.
 - `schema (path/url/dict/file-like)` - Table Schema to validate data source against
@@ -119,14 +119,14 @@ report = validate([{'source': 'data1.csv'}, {'source': 'data2.csv'}], preset='ne
 - `encoding (str)` - source encoding with  `None` (detect) as default.
 - `skip_rows (int/str[])` - list of rows to skip by row number or row comment. Example: `skip_rows=[1, 2, '#', '//']` - rows 1, 2 and all rows started with `#` and `//` will be skipped.
 - `<name> (<type>)` - additional options supported by different schema and format. See [list of schema options](https://github.com/frictionlessdata/tabulator-py#schemes) and [list of format options](https://github.com/frictionlessdata/tabulator-py#schemes).
-- **[Arguments - for `datapackage` preset]**
+- **Arguments (`preset=datapackage`)**
 - `source (path/url/dict/file-like)` - validation source containing data package descriptor
 - `preset (str)` - dataset type could be `table` (default), `datapackage`, `nested` or custom. For the most cases preset will be inferred from the source.
 - `<name> (<type>)` - options to pass to Data Package constructor
-- **[Arguments - for `nested` preset]**
+- **Arguments (`preset=nested`)**
 - `source (dict[])` - list of dictionaries with keys named after arguments for corresponding preset
 - `preset (str)` - dataset type could be `table` (default), `datapackage`, `nested` or custom. For the most cases preset will be inferred from the source.
-- **[Arguments - common]**
+- **Arguments**
 - `checks (list)` - checks configuration
 - `skip_checks (list)` - skip checks configuration
 - `infer_schema (bool)` - infer schema if not passed
@@ -135,9 +135,9 @@ report = validate([{'source': 'data1.csv'}, {'source': 'data2.csv'}], preset='ne
 - `error_limit (int)` - error limit per table
 - `table_limit (int)` - table limit for dataset
 - `row_limit (int)` - row limit per table
-- **[Raises]**
+- **Raises**
 - `(exceptions.GoodtablesException)` - raise on any non-tabular error
-- **[Returns]**
+- **Returns**
 - `(dict)` - returns a `goodtables` report
 
 
@@ -285,11 +285,11 @@ This field value should be less or equal than constraint value.
 
 #### minimum-length-constraint
 
-A lenght of this field value should be greater or equal than schema constraint value.
+A length of this field value should be greater or equal than schema constraint value.
 
 #### maximum-length-constraint
 
-A lenght of this field value should be less or equal than schema constraint value.
+A length of this field value should be less or equal than schema constraint value.
 
 ### Validation against advanced checks
 
@@ -297,7 +297,10 @@ In addition to Data Quality Spec checks the library has a builtin `contib.checks
 
 #### blacklisted-value
 
-Somtimes we have to check for some values we don't want to have in out dataset.
+Sometimes we have to check for some values we don't want to have in out dataset. It accepts following options:
+
+- `column (int/str)` - column number or name
+- `blacklist (list)` - list of non-valid values
 
 Consider csv file like this:
 
@@ -323,7 +326,11 @@ report = validate('data.csv', checks=[
 
 #### deviated-value
 
-This check helps to find outlines in a column containing positive numbers.
+This check helps to find outlines in a column containing positive numbers. It accepts following options:
+
+- `column (int/str)` - column number or name
+- `average (str:mean/median/mode)` - method to calculate column average
+- `interval (int)` - valid values should be inside `average +/- standard deviation * interval`
 
 Consider csv file like this:
 
@@ -353,7 +360,8 @@ report = validate('data.csv', checks=[
 
 #### sequential-value
 
-This checks is for pretty common case when a column should have integers that sequentially increment.
+This checks is for pretty common case when a column should have integers that sequentially increment.  It accepts following options:
+- `column (int/str)` - column number or name
 
 Consider csv file like this:
 
@@ -378,7 +386,7 @@ report = validate('data.csv', checks=[
 
 #### truncated-value
 
-Some database or spredsheets software (like MySQL or Excel) could cutoff values on saving. There are some well-known euristics to find this bad values. See https://github.com/propublica/guides/blob/master/data-bulletproofing.md for more detailed information.
+Some database or spreadsheet software (like MySQL or Excel) could cutoff values on saving. There are some well-known heuristics to find this bad values. See https://github.com/propublica/guides/blob/master/data-bulletproofing.md for more detailed information.
 
 Consider csv file like this:
 
@@ -403,7 +411,9 @@ report = validate('data.csv', checks=[
 
 #### custom-constraint
 
-With Table Schema we could create constraints for an individual field but sometimes it's not enough. With a custom custom constraint check every row could be checked against limited python expression where variable names are column values. Available operators - https://github.com/danthedeckie/simpleeval#operators
+With Table Schema we could create constraints for an individual field but sometimes it's not enough. With a custom custom constraint check every row could be checked against limited python expression where variable names resolve to column values. See list of [available operators]( https://github.com/danthedeckie/simpleeval#operators). It accepts following options:
+
+- `constraint (str)` - constraint definition e.g. `col1 + col2 == col3`
 
 Consider csv file like this:
 
