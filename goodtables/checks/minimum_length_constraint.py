@@ -18,6 +18,11 @@ def minimum_length_constraint(errors, cells, row_number):
         if not set(cell).issuperset(['number', 'header', 'field', 'value']):
             continue
 
+        # TODO: remove this skip after
+        # https://github.com/frictionlessdata/goodtables-py/issues/174
+        if not cell['field'].constraints.get('minLength'):
+            continue
+
         # Check constraint
         valid = cell['field'].test_value(cell['value'], constraint='minLength')
 
