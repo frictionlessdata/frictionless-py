@@ -349,7 +349,7 @@ temperature
 3
 ```
 
-We use `median` to get an average of the column values and allow interval of 3 standard deviations. For our case median is `2.0` and standard deviation is '29.73' so all valid values should be inside `[-87,19, 91.19]` interval.
+We use `median` to get an average of the column values and allow interval of 3 standard deviations. For our case median is `2.0` and standard deviation is `29.73` so all valid values should be inside `[-87,19, 91.19]` interval.
 
 ```python
 report = validate('data.csv', checks=[
