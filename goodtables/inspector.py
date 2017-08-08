@@ -230,8 +230,11 @@ class Inspector(object):
             'valid': not bool(errors),
             'error-count': len(errors),
             'row-count': row_number,
-            'headers': headers,
             'source': source,
+            'headers': headers,
+            'scheme': stream.scheme,
+            'format': stream.format,
+            'encoding': stream.encoding,
             'errors': errors,
         })
 

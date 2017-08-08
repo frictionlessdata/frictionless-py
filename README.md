@@ -605,12 +605,19 @@ and `mock` packages. This packages are available only in tox environments.
 
 ## Changelog
 
-Here described only breaking and the most important changes. The full changelog could be found in nicely formatted [commit history](https://github.com/frictionlessdata/goodtables-py/commits/master).
+Here described only breaking and the most important changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/goodtables-py/commits/master).
+
+### v1.1
+
+New API added:
+- `report.tables[].scheme`
+- `report.tables[].format`
+- `report.tables[].encoding`
 
 ### v1.0
 
 This version includes various big changes. A migration guide is under development and will be published here.
 
-### [v0.6](https://github.com/frictionlessdata/goodtables-py/releases/tag/0.6.0)
+### v0.6
 
 First version of `goodtables`.
