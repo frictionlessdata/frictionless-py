@@ -61,18 +61,18 @@ report = validate('invalid.csv')
 
 We could validate not only a local file but also remote link, file-like object, inline data and even more. And it could be not only CSV but also XLS, XLSX, ODS, JSON and many more. Under the hood `goodtables` use powerful [tabulator](https://github.com/frictionlessdata/goodtables-py) library. All schemes and formats supported by `tabulator` are supported by `goodtables`.
 
-
 #### Report
 
 As a result of validation goodtables returns a report dictionary. It includes valid flag, count of errors, list of reports per table including errors etc. Resulting report will be looking like this:
 
-![Report](http://i.imgur.com/rEJG15g.png)
+![Report](http://i.imgur.com/fZkc2OI.png)
 
-Report errors are standardized and described in [Data Quality Spec](https://github.com/frictionlessdata/data-quality-spec/blob/master/spec.json). All errors fails into three base categories:
+Base report errors are standardized and described in [Data Quality Spec](https://github.com/frictionlessdata/data-quality-spec/blob/master/spec.json). All errors fails into three base and one additional categories:
 
 - `source` - data can't be loaded or parsed
 - `structure` - general tabular errors like duplicate headers
 - `schema` - error of checks against [Table Schema](http://specs.frictionlessdata.io/table-schema/)
+- `custom` - custom checks errors
 
 #### Presets
 
