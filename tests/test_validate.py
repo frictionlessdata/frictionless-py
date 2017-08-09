@@ -32,6 +32,13 @@ def test_validate_infer_nested(log):
     assert report['error-count'] == 7
 
 
+# Report's preset
+
+def test_validate_report_scheme_format_encoding():
+    report = validate('data/valid.csv')
+    assert report['preset'] == 'table'
+
+
 # Report's scheme/format/encoding
 
 def test_validate_report_scheme_format_encoding():
@@ -39,3 +46,15 @@ def test_validate_report_scheme_format_encoding():
     assert report['tables'][0]['scheme'] == 'file'
     assert report['tables'][0]['format'] == 'csv'
     assert report['tables'][0]['encoding'] == 'utf-8'
+
+
+# Report's schema
+
+def test_validate_report_schema():
+    report = validate('data/valid.csv')
+    assert report['tables'][0]['schema'] == None
+
+
+def test_validate_report_schema_infer_schema():
+    report = validate('data/valid.csv', infer_schema=True)
+    assert report['tables'][0]['schema'] == 'table-schema'

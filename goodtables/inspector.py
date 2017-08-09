@@ -92,6 +92,7 @@ class Inspector(object):
             'table-count': len(tables),
             'tables': table_reports,
             'warnings': warnings,
+            'preset': preset,
         }
 
         return report
@@ -235,6 +236,7 @@ class Inspector(object):
             'scheme': stream.scheme,
             'format': stream.format,
             'encoding': stream.encoding,
+            'schema': 'table-schema' if schema else None,
             'errors': errors,
         })
 
