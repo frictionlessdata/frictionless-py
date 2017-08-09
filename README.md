@@ -608,6 +608,15 @@ and `mock` packages. This packages are available only in tox environments.
 
 Here described only breaking and the most important changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/goodtables-py/commits/master).
 
+### v1.3
+
+New advanced checks added:
+- `blacklisted-value`
+- `custom-constraint`
+- `deviated-value`
+- `sequential-value`
+- `truncated-value`
+
 ### v1.2
 
 New API added:
