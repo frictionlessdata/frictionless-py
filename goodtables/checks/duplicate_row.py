@@ -19,15 +19,20 @@ class DuplicateRow(object):
     def __init__(self, **options):
         self.__row_index = {}
 
-    def check_row(self, errors, columns, row_number):
+    def check_row(self, errors, cells, row_number):
+
+        # Get pointer
         try:
-            pointer = hash(json.dumps(list(column.get('value') for column in columns)))
+            pointer = hash(json.dumps(list(cell.get('value') for cell in cells)))
             references = self.__row_index.setdefault(pointer, [])
         except TypeError:
             pointer = None
+
+        # Found pointer
         if pointer:
+
+            # Add error
             if references:
-                # Add error
                 message = spec['errors']['duplicate-row']['message']
                 message = message.format(
                     row_number=row_number,
@@ -38,6 +43,10 @@ class DuplicateRow(object):
                     'row-number': row_number,
                     'column-number': None,
                 })
-                # Clear columns
-                del columns[:]
+
+            # Clear cells
+            if references:
+                del cells[:]
+
+            # Update references
             references.append(row_number)

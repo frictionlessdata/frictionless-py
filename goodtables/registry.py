@@ -5,6 +5,7 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 import six
+import warnings
 from copy import deepcopy
 from collections import OrderedDict
 from .spec import spec
@@ -88,55 +89,81 @@ class Registry(object):
             checks[name] = check
         self.__checks = checks
 
-    def compile_checks(self, config, **options):
-        config = deepcopy(config)
+    def compile_checks(self, include, exclude, **options):
+        include = deepcopy(include)
+        exclude = deepcopy(exclude)
 
-        # Normalize string config
-        if isinstance(config, six.string_types):
-            config = [config]
+        # Deprecated string checks
+        if isinstance(include, six.string_types):
+            warnings.warn(
+                'Checks parameter as a string is deprecated. '
+                'Please use a list',
+                UserWarning)
+            include = [include]
 
-        # Normalize list config
-        if isinstance(config, list):
-            result = {}
-            for item in config:
-                if isinstance(item, six.string_types):
-                    result[item] = True
-                if isinstance(item, dict):
-                    result.update(item)
-            config = result
+        # Deprecated dict checks
+        if isinstance(include, dict):
+            warnings.warn(
+                'Checks parameter as a dict is deprecated. '
+                'Please use a list',
+                UserWarning)
+            result_include = set()
+            result_exclude = set()
+            for name, enabled in include.items():
+                if enabled:
+                    result_include.add(name)
+                else:
+                    result_include.add('structure')
+                    result_include.add('schema')
+                    result_exclude.add(name)
+            include = list(result_include)
+            exclude = list(result_exclude)
 
-        # Validate config
-        if not isinstance(config, dict):
-            message = 'Checks config "%s" is not valid' % config
+        # Validate checks
+        if not isinstance(include, list):
+            message = 'Checks parameter "%s" is not valid' % include
             raise exceptions.GoodtablesException(message)
 
-        # Expand config
-        for group in ['schema', 'structure', 'spec']:
-            for name, value in list(config.items()):
-                if name == group:
-                    del config[group]
+        # Expand checks
+        for group in ['structure', 'schema']:
+            for index, item in enumerate(list(include)):
+                if item == group:
+                    del include[index]
                     for code, error in spec['errors'].items():
-                        if group == 'spec' or error['type'] == group:
-                            config.setdefault(code, value)
+                        # It's temporal skip
+                        # https://github.com/frictionlessdata/goodtables-py/issues/174
+                        if code == 'schema-error':
+                            continue
+                        if error['type'] == group:
+                            include.append(code)
 
         # Compile checks
-        checks = []
-        for name, check in deepcopy(self.__checks).items():
-            check_config = config.get(name, False)
-            if check_config:
-                if isinstance(check['func'], type):
-                    check_options = deepcopy(options)
-                    if isinstance(check_config, dict):
-                        check_options.update(check_config)
-                    try:
-                        check['func'] = check['func'](**check_options)
-                    except Exception:
-                        message = 'Check "%s" options "%s" error'
-                        raise exceptions.GoodtablesException(
-                            message, (check['name'], check_options))
-                checks.append(check)
+        compiled_checks = []
+        for name, check in self.__checks.items():
+            if name not in exclude:
+                for item in include:
+                    item_name = item
+                    item_config = {}
+                    if isinstance(item, dict):
+                        item_name = list(item.keys())[0]
+                        item_config = list(item.values())[0]
+                    if item_name not in self.__checks:
+                        message = 'Check "%s" is not registered'
+                        raise exceptions.GoodtablesException(message % item_name)
+                    if item_name == name:
+                        compiled_check = deepcopy(check)
+                        if isinstance(check['func'], type):
+                            check_options = deepcopy(options)
+                            check_options.update(item_config)
+                            try:
+                                compiled_check['func'] = check['func'](**check_options)
+                            except Exception:
+                                message = 'Check "%s" options "%s" error'
+                                message = message % (check['name'], check_options)
+                                raise exceptions.GoodtablesException(message)
+                        compiled_checks.append(compiled_check)
 
-        return checks
+        return compiled_checks
 
 
 registry = Registry()

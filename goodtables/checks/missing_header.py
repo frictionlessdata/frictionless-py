@@ -12,17 +12,22 @@ from ..registry import check
 # Module API
 
 @check('missing-header', type='schema', context='head')
-def missing_header(errors, columns, sample=None):
-    for column in copy(columns):
-        if 'header' not in column:
-            # Add error
-            message = spec['errors']['missing-header']['message']
-            message = message.format(column_number=column['number'])
-            errors.append({
-                'code': 'missing-header',
-                'message': message,
-                'row-number': None,
-                'column-number': column['number'],
-            })
-            # Remove column
-            columns.remove(column)
+def missing_header(errors, cells, sample=None):
+    for cell in copy(cells):
+
+        # Skip if header in cell
+        if 'header' in cell:
+            continue
+
+        # Add error
+        message = spec['errors']['missing-header']['message']
+        message = message.format(column_number=cell['number'])
+        errors.append({
+            'code': 'missing-header',
+            'message': message,
+            'row-number': None,
+            'column-number': cell['number'],
+        })
+
+        # Remove cell
+        cells.remove(cell)

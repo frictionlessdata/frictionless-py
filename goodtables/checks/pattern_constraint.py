@@ -12,23 +12,33 @@ from ..registry import check
 # Module API
 
 @check('pattern-constraint', type='schema', context='body')
-def pattern_constraint(errors, columns, row_number):
-    for column in copy(columns):
-        if len(column) == 4:
-            valid = column['field'].test_value(column['value'], constraint='pattern')
-            if not valid:
-                # Add error
-                message = spec['errors']['pattern-constraint']['message']
-                message = message.format(
-                    value=column['value'],
-                    row_number=row_number,
-                    column_number=column['number'],
-                    constraint=column['field'].constraints['pattern'])
-                errors.append({
-                    'code': 'pattern-constraint',
-                    'message': message,
-                    'row-number': row_number,
-                    'column-number': column['number'],
-                })
-                # Remove column
-                columns.remove(column)
+def pattern_constraint(errors, cells, row_number):
+    for cell in copy(cells):
+
+        # Skip if cell is incomplete
+        if not set(cell).issuperset(['number', 'header', 'field', 'value']):
+            continue
+
+        # Check constraint
+        valid = cell['field'].test_value(cell['value'], constraint='pattern')
+
+        # Skip if valid
+        if valid:
+            continue
+
+        # Add error
+        message = spec['errors']['pattern-constraint']['message']
+        message = message.format(
+            value=cell['value'],
+            row_number=row_number,
+            column_number=cell['number'],
+            constraint=cell['field'].constraints['pattern'])
+        errors.append({
+            'code': 'pattern-constraint',
+            'message': message,
+            'row-number': row_number,
+            'column-number': cell['number'],
+        })
+
+        # Remove cell
+        cells.remove(cell)

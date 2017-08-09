@@ -17,6 +17,7 @@ def validate(source, **options):
     # Extract settings
     settings = {}
     settings['checks'] = options.pop('checks', None)
+    settings['skip_checks'] = options.pop('skip_checks', None)
     settings['infer_schema'] = options.pop('infer_schema', None)
     settings['infer_fields'] = options.pop('infer_fields', None)
     settings['order_fields'] = options.pop('order_fields', None)

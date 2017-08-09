@@ -4,14 +4,28 @@ from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
-from goodtables.checks.maximum_constraint import maximum_constraint
+from goodtables import validate
 
 
-# Test
+# Validate
 
 def test_check_maximum_constraint(log):
-    errors = []
-    columns = []
-    maximum_constraint(errors, columns, 1)
-    assert log(errors) == []
-    assert len(columns) == 0
+    source = [
+        ['row', 'score'],
+        [2, 1],
+        [3, 2],
+        [4, 3],
+        [5, 4],
+        [6],
+    ]
+    schema = {'fields': [
+        {'name': 'row', 'type': 'integer'},
+        {'name': 'score', 'type': 'integer', 'constraints': {'maximum': 2}}
+    ]}
+    report = validate(source, schema=schema, checks=[
+        'maximum-constraint',
+    ])
+    assert log(report) == [
+        (1, 4, 2, 'maximum-constraint'),
+        (1, 5, 2, 'maximum-constraint'),
+    ]

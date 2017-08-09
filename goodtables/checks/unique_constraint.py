@@ -18,22 +18,34 @@ class UniqueConstraint(object):
     def __init__(self, **options):
         self.__row_indexes = {}
 
-    def check_row(self, errors, columns, row_number):
-        for column in columns:
-            if len(column) == 4:
-                if column['field'].constraints.get('unique'):
-                    rindex = self.__row_indexes.setdefault(column['number'], {})
-                    references = rindex.setdefault(column['value'], [])
-                    if references:
-                        # Add error
-                        message = spec['errors']['unique-constraint']['message']
-                        message = message.format(
-                            row_numbers=', '.join(map(str, references + [row_number])),
-                            column_number=column['number'])
-                        errors.append({
-                            'code': 'unique-constraint',
-                            'message': message,
-                            'row-number': row_number,
-                            'column-number': column['number'],
-                        })
-                    references.append(row_number)
+    def check_row(self, errors, cells, row_number):
+        for cell in cells:
+
+            # Skip if cell is incomplete
+            if not set(cell).issuperset(['number', 'header', 'field', 'value']):
+                continue
+
+            # Skip if not constraint
+            constraint = cell['field'].constraints.get('unique')
+            if not constraint:
+                continue
+
+            # Get references
+            rindex = self.__row_indexes.setdefault(cell['number'], {})
+            references = rindex.setdefault(cell['value'], [])
+
+            # Add error
+            if references:
+                message = spec['errors']['unique-constraint']['message']
+                message = message.format(
+                    row_numbers=', '.join(map(str, references + [row_number])),
+                    column_number=cell['number'])
+                errors.append({
+                    'code': 'unique-constraint',
+                    'message': message,
+                    'row-number': row_number,
+                    'column-number': cell['number'],
+                })
+
+            # Update references
+            references.append(row_number)

@@ -8,11 +8,11 @@ from jsontableschema import Field
 from goodtables.checks.extra_header import ExtraHeader
 
 
-# Test
+# Check
 
 def test_check_extra_header(log):
     errors = []
-    columns = [
+    cells = [
         {'number': 1,
          'header': 'name1',
          'field': Field({'name': 'name1'})},
@@ -22,14 +22,14 @@ def test_check_extra_header(log):
     ]
     sample = []
     extra_header = ExtraHeader()
-    extra_header.check_headers(errors, columns, sample=sample)
+    extra_header.check_headers(errors, cells, sample=sample)
     assert log(errors) == []
-    assert len(columns) == 2
+    assert len(cells) == 2
 
 
 def test_check_extra_header_infer(log):
     errors = []
-    columns = [
+    cells = [
         {'number': 1,
          'header': 'name1',
          'field': Field({'name': 'name1'})},
@@ -38,15 +38,15 @@ def test_check_extra_header_infer(log):
     ]
     sample = []
     extra_header = ExtraHeader(infer_fields=True)
-    extra_header.check_headers(errors, columns, sample=sample)
+    extra_header.check_headers(errors, cells, sample=sample)
     assert log(errors) == []
-    assert len(columns) == 2
-    assert columns[1]['field'].name == 'name2'
+    assert len(cells) == 2
+    assert cells[1]['field'].name == 'name2'
 
 
 def test_check_extra_header_problem(log):
     errors = []
-    columns = [
+    cells = [
         {'number': 1,
          'header': 'name1',
          'field': Field({'name': 'name1'})},
@@ -55,8 +55,8 @@ def test_check_extra_header_problem(log):
     ]
     sample = []
     extra_header = ExtraHeader()
-    extra_header.check_headers(errors, columns, sample=sample)
+    extra_header.check_headers(errors, cells, sample=sample)
     assert log(errors) == [
         (None, 2, 'extra-header'),
     ]
-    assert len(columns) == 1
+    assert len(cells) == 1
