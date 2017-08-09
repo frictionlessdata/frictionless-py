@@ -42,7 +42,7 @@ def test_check_deviated_value_not_enough_data(log):
         {'deviated-value': {'column': 'temperature'}},
     ])
     assert log(report) == [
-        (1, None, None, 'deviated-value'),
+        (1, None, 1, 'deviated-value'),
     ]
 
 

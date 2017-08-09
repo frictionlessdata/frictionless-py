@@ -79,13 +79,13 @@ class DeviatedValue(object):
             average = self.__average_function(self.__column_values.values())
             minimum = average - stdev * self.__interval
             maximum = average + stdev * self.__interval
-        except Exception:
-            message = 'Deviated value check can\'t be done on this dataset'
+        except Exception as exception:
+            message = 'Deviated value check calculation issue: %s' % exception
             return errors.append({
                 'code': 'deviated-value',
                 'message': message,
                 'row-number': None,
-                'column-number': None,
+                'column-number': self.__column_number,
             })
 
         # Check values

@@ -313,7 +313,7 @@ id,name
 5,Alex
 ```
 
-Let's check `name` column to don't have `bug` and `bad` values:
+Let's check the `name` column doesn't have `bug` and `bad` values:
 
 ```python
 from goodtables import validate
@@ -350,7 +350,7 @@ temperature
 3
 ```
 
-We use `median` to get an average of the column values and allow interval of 3 standard deviations. For our case median is `2.0` and standard deviation is `29.73` so all valid values should be inside `[-87,19, 91.19]` interval.
+We use `median` to get an average of the column values and allow interval of 3 standard deviations. For our case median is `2.0` and standard deviation is `29.73` so all valid values should be inside `[-87.19, 91.19]` interval.
 
 ```python
 report = validate('data.csv', checks=[
@@ -412,7 +412,7 @@ report = validate('data.csv', checks=[
 
 #### custom-constraint
 
-With Table Schema we could create constraints for an individual field but sometimes it's not enough. With a custom custom constraint check every row could be checked against limited python expression where variable names resolve to column values. See list of [available operators]( https://github.com/danthedeckie/simpleeval#operators). It accepts following options:
+With Table Schema we could create constraints for an individual field but sometimes it's not enough. With a custom constraint check every row could be checked against given limited python expression in which variable names resolve to column values. See list of [available operators]( https://github.com/danthedeckie/simpleeval#operators). It accepts following options:
 
 - `constraint (str)` - constraint definition e.g. `col1 + col2 == col3`
 
