@@ -19,7 +19,7 @@ def test_check_minimum_constraint(log):
         [6],
     ]
     schema = {'fields': [
-        {'name': 'row', 'type': 'string'},
+        {'name': 'row', 'type': 'integer'},
         {'name': 'score', 'type': 'integer', 'constraints': {'minimum': 2}}
     ]}
     report = validate(source, schema=schema, checks=[
