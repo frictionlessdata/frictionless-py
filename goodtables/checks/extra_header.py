@@ -5,7 +5,7 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 from copy import copy
-from tableschema import Schema, infer
+from tableschema import Schema
 from ..spec import spec
 from ..registry import check
 

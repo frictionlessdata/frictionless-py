@@ -90,8 +90,34 @@ def test_validate_invalid_table_schema(log):
         {'name': 'age', 'type': 'bad'},
     ]}
     report = validate(source, schema=schema)
-    import pprint
-    pprint.pprint(report)
     assert log(report) == [
         (1, None, None, 'schema-error'),
     ]
+
+
+# Datapackage with css dialect header false
+
+def test_validate_datapackage_dialect_header_false(log):
+    descriptor = {
+        'resources': [
+            {
+                'name': 'name',
+                'data': [
+                    ['John', '22'],
+                    ['Alex', '33'],
+                    ['Paul', '44'],
+                ],
+                'schema': {
+                    'fields': [
+                        {'name': 'name'},
+                        {'name': 'age', 'type': 'integer'},
+                    ]
+                },
+                'dialect': {
+                    'header': False,
+                }
+            }
+        ]
+    }
+    report = validate(descriptor)
+    assert log(report) == []

@@ -5,8 +5,8 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 import six
-import tableschema
 from tabulator import Stream
+from tableschema import Schema, exceptions
 from ..registry import preset
 
 
@@ -26,8 +26,8 @@ def table(source, schema=None, **options):
     if not warnings:
         if schema is not None:
             try:
-                schema = tableschema.Schema(schema)
-            except tableschema.exceptions.TableSchemaException as error:
+                schema = Schema(schema)
+            except exceptions.TableSchemaException as error:
                 warnings.append(
                     'Table Schema "%s" has a loading error "%s"' %
                     (schema, error))

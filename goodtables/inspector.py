@@ -8,8 +8,8 @@ import datetime
 import operator
 import tabulator
 from copy import copy
+from tableschema import Schema
 from six.moves import zip_longest
-from tableschema import Schema, infer
 from multiprocessing.pool import ThreadPool
 from .registry import registry
 from . import exceptions

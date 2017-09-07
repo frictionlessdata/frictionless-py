@@ -5,9 +5,8 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 from tabulator import Stream
-from tableschema import Schema
-from tableschema.exceptions import SchemaValidationError
-from datapackage import DataPackage
+from functools import partial
+from datapackage import Package, exceptions
 from ..registry import preset
 
 
@@ -20,42 +19,39 @@ def datapackage(source, **options):
 
     # Load datapackage
     try:
-        datapackage = DataPackage(source, **options)
-    except Exception as error:
+        package = Package(source, **options)
+    except exceptions.DataPackageException as error:
         warnings.append(
             'Data Package "%s" has a loading error "%s"' %
             (source, error))
 
-    # Validate datapackage
-    if not warnings:
-        for error in datapackage.iter_errors():
-            warnings.append(
-                'Data Package "%s" has a validation error "%s"' %
-                (source, str(error).splitlines()[0]))
-
     # Extract datapackage tables
     if not warnings:
-        for resource in datapackage.resources:
-            # TODO: after datapackage-v1 will be ready
-            # - we should use `resource.tabular` to filter tabular resources
-            # - we don't need to validate schema here because of dereferencing
-            path = resource.remote_data_path or resource.local_data_path
-            try:
-                schema = Schema(resource.descriptor['schema'])
-            except SchemaValidationError as error:
-                warnings.append(
-                    'Data Package "%s" has a validation error "%s"' %
-                    (source, str(error).splitlines()[0]))
-                continue
-            except Exception:
-                continue
-            tables.append({
-                'source': path,
-                'stream': Stream(path, headers=1),
-                'schema': schema,
-                'extra': {
-                    'datapackage': str(source),
-                },
-            })
+        for resource in package.resources:
+            if resource.tabular:
+                tables.append({
+                    'source': resource.source if not resource.inline else 'inline',
+                    'stream': Stream(partial(_iter_resource_rows, resource), headers=1),
+                    'schema': resource.schema,
+                    'extra': {
+                        'datapackage': str(source),
+                    },
+                })
+
+    # Extrace datapackage errors
+    if not warnings:
+        for error in package.errors:
+            warnings.append(
+                'Data Package "%s" has a validation error "%s"' %
+                (source, error.message))
 
     return warnings, tables
+
+
+# Internal
+
+def _iter_resource_rows(resource):
+    for index, row in enumerate(resource.iter(cast=False)):
+        if not index:
+            yield resource.headers
+        yield row

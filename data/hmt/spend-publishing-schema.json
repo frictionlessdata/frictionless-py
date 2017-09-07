@@ -17,7 +17,7 @@
         {
             "name": "Date",
             "type": "date",
-            "format": "fmt:DD/MM/YYYY",
+            "format": "DD/MM/YYYY",
             "constraints": {
                 "required": true
             }
