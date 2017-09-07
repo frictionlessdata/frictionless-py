@@ -169,12 +169,6 @@ class Inspector(object):
                     cell['field'] = field
                 cells.append(cell)
 
-        # Schema checks
-        if not fatal_error:
-            if schema and schema.errors:
-                for error in schema.errors:
-                    errors.append(_compose_error_from_schema_error(error))
-
         # Head checks
         if not fatal_error:
             if None not in headers:
