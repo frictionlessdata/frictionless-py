@@ -125,7 +125,8 @@ class Inspector(object):
                     field.descriptor['constraints']['unique'] = True
 
         # Prepare checks
-        checks = registry.compile_checks(self.__checks, self.__skip_checks,
+        checks = registry.compile_checks(
+            table.get('checks', self.__checks), self.__skip_checks,
             order_fields=self.__order_fields, infer_fields=self.__infer_fields)
 
         # Prepare table

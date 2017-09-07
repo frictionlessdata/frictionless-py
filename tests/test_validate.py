@@ -58,3 +58,21 @@ def test_validate_report_schema():
 def test_validate_report_schema_infer_schema():
     report = validate('data/valid.csv', infer_schema=True)
     assert report['tables'][0]['schema'] == 'table-schema'
+
+
+# Nested source with individual checks
+
+def test_validate_nested_checks(log):
+    source = [
+        ['field'],
+        ['value', 'value'],
+        [''],
+    ]
+    report = validate([
+        {'source': source, 'checks': ['extra-value']},
+        {'source': source, 'checks': ['blank-row']}
+    ])
+    assert log(report) == [
+        (1, 2, 2, 'extra-value'),
+        (2, 3, None, 'blank-row'),
+    ]
