@@ -115,6 +115,15 @@ class Inspector(object):
         schema = table['schema']
         extra = table['extra']
 
+        # TODO: rebase on proper schema.commit() after specs-v1
+        # Treat primary key as required/unique
+        if schema and schema.primary_key:
+            for field in schema.fields:
+                if field.name in schema.primary_key:
+                    field.descriptor.setdefault('constraints', {})
+                    field.descriptor['constraints']['required'] = True
+                    field.descriptor['constraints']['unique'] = True
+
         # Prepare checks
         checks = registry.compile_checks(self.__checks, self.__skip_checks,
             order_fields=self.__order_fields, infer_fields=self.__infer_fields)
