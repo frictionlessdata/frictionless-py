@@ -5,12 +5,12 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 from jsontableschema import Field
-from goodtables.checks.non_castable_value import non_castable_value
+from goodtables.checks.type_or_format_error import type_or_format_error
 
 
 # Check
 
-def test_check_non_castable_value(log):
+def test_check_type_or_format_error(log):
     errors = []
     cells = [
         {'number': 1,
@@ -18,13 +18,13 @@ def test_check_non_castable_value(log):
          'value': '1',
          'field': Field({'name': 'name', 'type': 'integer'})},
     ]
-    non_castable_value(errors, cells, 1)
+    type_or_format_error(errors, cells, 1)
     assert log(errors) == []
     assert len(cells) == 1
     assert cells[0]['value'] == 1
 
 
-def test_check_non_castable_value_problem(log):
+def test_check_type_or_format_error_problem(log):
     errors = []
     cells = [
         {'number': 1,
@@ -32,8 +32,8 @@ def test_check_non_castable_value_problem(log):
          'value': 'value1',
          'field': Field({'name': 'name', 'type': 'integer'})},
     ]
-    non_castable_value(errors, cells, 1)
+    type_or_format_error(errors, cells, 1)
     assert log(errors) == [
-        (1, 1, 'non-castable-value'),
+        (1, 1, 'type-or-format-error'),
     ]
     assert len(cells) == 0

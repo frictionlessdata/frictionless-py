@@ -12,8 +12,8 @@ from ..registry import check
 
 # Module API
 
-@check('non-castable-value', type='schema', context='body')
-def non_castable_value(errors, cells, row_number):
+@check('type-or-format-error', type='schema', context='body')
+def type_or_format_error(errors, cells, row_number):
     for cell in copy(cells):
 
         # Skip if cell is incomplete
@@ -32,7 +32,7 @@ def non_castable_value(errors, cells, row_number):
             continue
 
         # Add error
-        message = spec['errors']['non-castable-value']['message']
+        message = spec['errors']['type-or-format-error']['message']
         message = message.format(
             value='"%s"' % cell['value'],
             row_number=row_number,
@@ -40,7 +40,7 @@ def non_castable_value(errors, cells, row_number):
             field_type=cell['field'].type,
             field_format=cell['field'].format)
         errors.append({
-            'code': 'non-castable-value',
+            'code': 'type-or-format-error',
             'message': message,
             'row-number': row_number,
             'column-number': cell['number'],

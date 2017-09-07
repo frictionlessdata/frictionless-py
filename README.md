@@ -256,7 +256,7 @@ The first row of the data source contains header that doesn't exist in the schem
 
 Based on the schema there should be a header that is missing in the first row of the data source.
 
-#### non-castable-value
+#### type-or-format-error
 
 The value can't be cast based on the schema type and format for this field.
 

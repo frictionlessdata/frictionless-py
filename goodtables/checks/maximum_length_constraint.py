@@ -18,8 +18,7 @@ def maximum_length_constraint(errors, cells, row_number):
         if not set(cell).issuperset(['number', 'header', 'field', 'value']):
             continue
 
-        # TODO: remove this skip after
-        # https://github.com/frictionlessdata/goodtables-py/issues/174
+        # TODO: remove this skip after specs-v1
         if not cell['field'].constraints.get('maxLength'):
             continue
 

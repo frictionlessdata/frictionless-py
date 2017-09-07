@@ -34,7 +34,8 @@ CHECKS = [
     'goodtables.checks.missing_value',
     'goodtables.checks.required_constraint',
     'goodtables.checks.pattern_constraint',
-    'goodtables.checks.non_castable_value',
+    # TODO: move before required/pattern after specs-v1
+    'goodtables.checks.type_or_format_error',
     'goodtables.checks.unique_constraint',
     'goodtables.checks.enumerable_constraint',
     'goodtables.checks.minimum_constraint',

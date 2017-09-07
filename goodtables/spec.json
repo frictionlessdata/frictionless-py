@@ -1,5 +1,5 @@
 {
-    "version": "1.0.0-alpha3",
+    "version": "1.0.0",
     "errors": {
 
 
@@ -135,13 +135,13 @@
           "message": "There is a missing header in column {column_number}",
           "description": "Based on the schema there should be a header that is missing in the first row of the data source.\n\n How it could be resolved:\n - Add the missing column to the data source or remove the extra field from the schema\n - If this error should be ignored disable `missing-header` check in {validator}."
         },
-        "non-castable-value": {
-          "name": "Non-Castable Value",
+        "type-or-format-error": {
+          "name": "Type or Format Error",
           "type": "schema",
           "context": "body",
           "weight": 9,
-          "message": "Row {row_number} has non castable value {value} in column {column_number} (type: {field_type}, format: {field_format})",
-          "description": "The value can't be cast based on the schema type and format for this field.\n\n How it could be resolved:\n - If this value is not correct, update the value.\n - If this error should be ignored disable `non-castable-value` check in {validator}. In this case all schema checks for row values will be ignored."
+          "message": "The value {value} in row {row_number} and column {column_number} is not type {field_type} and format {field_format}",
+          "description": "The value does not match the schema type and format for this field.\n\n How it could be resolved:\n - If this value is not correct, update the value.\n - If this value is correct, adjust the type and/or format.\n - To ignore the error, disable the `type-or-format-error` check in {validator}. In this case all schema checks for row values will be ignored."
         },
         "required-constraint": {
           "name": "Required Constraint",
