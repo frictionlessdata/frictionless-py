@@ -294,7 +294,7 @@ A length of this field value should be less or equal than schema constraint valu
 
 ### Validation against advanced checks
 
-In addition to Data Quality Spec checks the library has a builtin `contib.checks` module to provide advanced data quality checks:
+In addition to Data Quality Spec checks the library has a builtin `contrib.checks` module to provide advanced data quality checks:
 
 #### blacklisted-value
 
