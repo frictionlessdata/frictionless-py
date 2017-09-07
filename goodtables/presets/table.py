@@ -48,7 +48,7 @@ def table(source, schema=None, **options):
     if not warnings:
         options.setdefault('headers', 1)
         tables.append({
-            'source': str(source),
+            'source': str(source) if isinstance(source, six.string_types) else 'inline',
             'stream': Stream(source, **options),
             'schema': schema,
             'extra': {},
