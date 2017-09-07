@@ -5,7 +5,7 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 from copy import copy
-import jsontableschema
+import tableschema
 from ..spec import spec
 from ..registry import check
 
@@ -23,8 +23,8 @@ def type_or_format_error(errors, cells, row_number):
         # Cast value
         try:
             valid = True
-            cell['value'] = cell['field'].cast_value(cell['value'], skip_constraints=True)
-        except jsontableschema.exceptions.JsonTableSchemaException:
+            cell['value'] = cell['field'].cast_value(cell['value'], constraints=False)
+        except tableschema.exceptions.TableSchemaException:
             valid = False
 
         # Skip if valid

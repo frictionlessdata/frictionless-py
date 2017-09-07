@@ -19,7 +19,7 @@ def enumerable_constraint(errors, cells, row_number):
             continue
 
         # Check constraint
-        valid = cell['field'].test_value(cell['value'], constraint='enum')
+        valid = cell['field'].test_value(cell['value'], constraints=['enum'])
 
         # Add error
         if not valid:

@@ -9,7 +9,7 @@ import operator
 import tabulator
 from copy import copy
 from six.moves import zip_longest
-from jsontableschema import Schema, infer
+from tableschema import Schema, infer
 from multiprocessing.pool import ThreadPool
 from .registry import registry
 from . import exceptions
@@ -115,15 +115,6 @@ class Inspector(object):
         schema = table['schema']
         extra = table['extra']
 
-        # TODO: rebase on proper schema.commit() after specs-v1
-        # Treat primary key as required/unique
-        if schema and schema.primary_key:
-            for field in schema.fields:
-                if field.name in schema.primary_key:
-                    field.descriptor.setdefault('constraints', {})
-                    field.descriptor['constraints']['required'] = True
-                    field.descriptor['constraints']['unique'] = True
-
         # Prepare checks
         checks = registry.compile_checks(
             table.get('checks', self.__checks), self.__skip_checks,
@@ -138,13 +129,29 @@ class Inspector(object):
                 headers = [None] * len(sample[0]) if sample else []
             if _filter_checks(checks, type='schema'):
                 if schema is None and self.__infer_schema:
-                    schema = Schema(infer(headers, sample))
+                    schema = Schema()
+                    schema.infer(sample, headers=headers)
             if schema is None:
                 checks = _filter_checks(checks, type='schema', inverse=True)
         except Exception as exception:
             fatal_error = True
             error = _compose_error_from_exception(exception)
             errors.append(error)
+
+        # Prepare schema
+        if not fatal_error:
+            if schema:
+                if schema.primary_key:
+                    for field in schema.descriptor.get('fields', []):
+                        if field.get('name') in schema.primary_key:
+                            field.setdefault('constraints', {})
+                            field['constraints']['required'] = True
+                            field['constraints']['unique'] = True
+                    schema.commit()
+                for error in schema.errors:
+                    fatal_error = True
+                    error = _compose_error_from_schema_error(error)
+                    errors.append(error)
 
         # Prepare cells
         if not fatal_error:
@@ -161,6 +168,12 @@ class Inspector(object):
                 if field is not _FILLVALUE:
                     cell['field'] = field
                 cells.append(cell)
+
+        # Schema checks
+        if not fatal_error:
+            if schema and schema.errors:
+                for error in schema.errors:
+                    errors.append(_compose_error_from_schema_error(error))
 
         # Head checks
         if not fatal_error:
@@ -223,10 +236,11 @@ class Inspector(object):
                         break
 
         # Table checks
-        for check in checks:
-            check_func = getattr(check['func'], 'check_table', None)
-            if check_func:
-                check_func(errors)
+        if not fatal_error:
+            for check in checks:
+                check_func = getattr(check['func'], 'check_table', None)
+                if check_func:
+                    check_func(errors)
 
         # Stop timer
         stop = datetime.datetime.now()
@@ -285,6 +299,18 @@ def _compose_error_from_exception(exception):
         code = 'io-error'
     elif isinstance(exception, tabulator.exceptions.HTTPError):
         code = 'http-error'
+    return {
+        'row': None,
+        'code': code,
+        'message': message,
+        'row-number': None,
+        'column-number': None,
+    }
+
+
+def _compose_error_from_schema_error(error):
+    code = 'schema-error'
+    message = 'Table Schema error: %s' % error.message
     return {
         'row': None,
         'code': code,

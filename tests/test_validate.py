@@ -76,3 +76,22 @@ def test_validate_nested_checks(log):
         (1, 2, 2, 'extra-value'),
         (2, 3, None, 'blank-row'),
     ]
+
+
+# Invalid table schema
+
+def test_validate_invalid_table_schema(log):
+    source = [
+        ['name', 'age'],
+        ['Alex', '33'],
+    ]
+    schema = {'fields': [
+        {'name': 'name'},
+        {'name': 'age', 'type': 'bad'},
+    ]}
+    report = validate(source, schema=schema)
+    import pprint
+    pprint.pprint(report)
+    assert log(report) == [
+        (1, None, None, 'schema-error'),
+    ]

@@ -19,7 +19,7 @@ def test_check_maximum_length_constraint(log):
         [6],
     ]
     schema = {'fields': [
-        {'name': 'row', 'type': 'string'},
+        {'name': 'row', 'type': 'integer'},
         {'name': 'word', 'type': 'string', 'constraints': {'maxLength': 2}}
     ]}
     report = validate(source, schema=schema, checks=[

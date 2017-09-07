@@ -19,7 +19,7 @@ def maximum_constraint(errors, cells, row_number):
             continue
 
         # Check constraint
-        valid = cell['field'].test_value(cell['value'], constraint='maximum')
+        valid = cell['field'].test_value(cell['value'], constraints=['maximum'])
 
         # Add error
         if not valid:

@@ -19,7 +19,7 @@ def minimum_constraint(errors, cells, row_number):
             continue
 
         # Check constraint
-        valid = cell['field'].test_value(cell['value'], constraint='minimum')
+        valid = cell['field'].test_value(cell['value'], constraints=['minimum'])
 
         # Add error
         if not valid:

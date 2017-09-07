@@ -20,7 +20,7 @@ def pattern_constraint(errors, cells, row_number):
             continue
 
         # Check constraint
-        valid = cell['field'].test_value(cell['value'], constraint='pattern')
+        valid = cell['field'].test_value(cell['value'], constraints=['pattern'])
 
         # Skip if valid
         if valid:

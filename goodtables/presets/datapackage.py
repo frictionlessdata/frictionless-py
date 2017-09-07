@@ -5,8 +5,8 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 from tabulator import Stream
-from jsontableschema import Schema
-from jsontableschema.exceptions import SchemaValidationError
+from tableschema import Schema
+from tableschema.exceptions import SchemaValidationError
 from datapackage import DataPackage
 from ..registry import preset
 

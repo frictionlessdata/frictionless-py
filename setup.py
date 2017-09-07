@@ -27,8 +27,8 @@ INSTALL_REQUIRES = [
     'simpleeval>=0.9,<2.0',
     'statistics>=1.0,<2.0',
     'tabulator>=1.3,<2.0',
+    'tableschema>=1.0,<2.0',
     # TODO: update after specs-v1
-    'jsontableschema>=0.10.1,<1.0',
     'datapackage>=0.8.9,<1.0',
 ]
 INSTALL_FORMAT_ODS_REQUIRES = [
