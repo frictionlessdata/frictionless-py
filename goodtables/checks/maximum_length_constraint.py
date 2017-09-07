@@ -30,10 +30,10 @@ def maximum_length_constraint(errors, cells, row_number):
         if not valid:
             message = spec['errors']['maximum-length-constraint']['message']
             message = message.format(
-                value=cell['value'],
+                value='"%s"' % cell['value'],
                 row_number=row_number,
                 column_number=cell['number'],
-                constraint=cell['field'].constraints['maxLength'])
+                constraint='"%s"' % cell['field'].constraints['maxLength'])
             errors.append({
                 'code': 'maximum-length-constraint',
                 'message': message,

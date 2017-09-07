@@ -25,10 +25,10 @@ def enumerable_constraint(errors, cells, row_number):
         if not valid:
             message = spec['errors']['enumerable-constraint']['message']
             message = message.format(
-                value=cell['value'],
+                value='"%s"' % cell['value'],
                 row_number=row_number,
                 column_number=cell['number'],
-                constraint=cell['field'].constraints['enum'])
+                constraint='"%s"' % cell['field'].constraints['enum'])
             errors.append({
                 'code': 'enumerable-constraint',
                 'message': message,

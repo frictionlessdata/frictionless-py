@@ -55,13 +55,13 @@ def _check_with_ordering(errors, cells):
 
 def _check_without_ordering(errors, cells):
     for cell in copy(cells):
-        if set(cell) == set(['number', 'header', 'field']):
+        if set(cell).issuperset(['number', 'header', 'field']):
             if cell['header'] != cell['field'].name:
                 # Add error
                 message = spec['errors']['non-matching-header']['message']
                 message = message.format(
                     column_number=cell['number'],
-                    field_name=cell['field'].name)
+                    field_name='"%s"' % cell['field'].name)
                 errors.append({
                     'code': 'non-matching-header',
                     'message': message,

@@ -34,7 +34,7 @@ def non_castable_value(errors, cells, row_number):
         # Add error
         message = spec['errors']['non-castable-value']['message']
         message = message.format(
-            value=cell['value'],
+            value='"%s"' % cell['value'],
             row_number=row_number,
             column_number=cell['number'],
             field_type=cell['field'].type,
