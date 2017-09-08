@@ -37,8 +37,8 @@ def type_or_format_error(errors, cells, row_number):
             value='"%s"' % cell['value'],
             row_number=row_number,
             column_number=cell['number'],
-            field_type=cell['field'].type,
-            field_format=cell['field'].format)
+            field_type='"%s"' % cell['field'].type,
+            field_format='"%s"' % cell['field'].format)
         errors.append({
             'code': 'type-or-format-error',
             'message': message,
