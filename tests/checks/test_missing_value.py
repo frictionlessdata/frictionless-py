@@ -4,7 +4,7 @@ from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
-from jsontableschema import Field
+from tableschema import Field
 from goodtables.checks.missing_value import missing_value
 
 

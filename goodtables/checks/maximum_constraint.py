@@ -19,16 +19,16 @@ def maximum_constraint(errors, cells, row_number):
             continue
 
         # Check constraint
-        valid = cell['field'].test_value(cell['value'], constraint='maximum')
+        valid = cell['field'].test_value(cell['value'], constraints=['maximum'])
 
         # Add error
         if not valid:
             message = spec['errors']['maximum-constraint']['message']
             message = message.format(
-                value=cell['value'],
+                value='"%s"' % cell['value'],
                 row_number=row_number,
                 column_number=cell['number'],
-                constraint=cell['field'].constraints['maximum'])
+                constraint='"%s"' % cell['field'].constraints['maximum'])
             errors.append({
                 'code': 'maximum-constraint',
                 'message': message,

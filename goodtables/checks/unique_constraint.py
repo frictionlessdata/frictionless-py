@@ -30,6 +30,10 @@ class UniqueConstraint(object):
             if not constraint:
                 continue
 
+            # Skip if value is null
+            if cell['value'] is None:
+                continue
+
             # Get references
             rindex = self.__row_indexes.setdefault(cell['number'], {})
             references = rindex.setdefault(cell['value'], [])

@@ -5,15 +5,15 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 from copy import copy
-import jsontableschema
+import tableschema
 from ..spec import spec
 from ..registry import check
 
 
 # Module API
 
-@check('non-castable-value', type='schema', context='body')
-def non_castable_value(errors, cells, row_number):
+@check('type-or-format-error', type='schema', context='body')
+def type_or_format_error(errors, cells, row_number):
     for cell in copy(cells):
 
         # Skip if cell is incomplete
@@ -23,8 +23,8 @@ def non_castable_value(errors, cells, row_number):
         # Cast value
         try:
             valid = True
-            cell['value'] = cell['field'].cast_value(cell['value'], skip_constraints=True)
-        except jsontableschema.exceptions.JsonTableSchemaException:
+            cell['value'] = cell['field'].cast_value(cell['value'], constraints=False)
+        except tableschema.exceptions.TableSchemaException:
             valid = False
 
         # Skip if valid
@@ -32,15 +32,15 @@ def non_castable_value(errors, cells, row_number):
             continue
 
         # Add error
-        message = spec['errors']['non-castable-value']['message']
+        message = spec['errors']['type-or-format-error']['message']
         message = message.format(
-            value=cell['value'],
+            value='"%s"' % cell['value'],
             row_number=row_number,
             column_number=cell['number'],
             field_type=cell['field'].type,
             field_format=cell['field'].format)
         errors.append({
-            'code': 'non-castable-value',
+            'code': 'type-or-format-error',
             'message': message,
             'row-number': row_number,
             'column-number': cell['number'],

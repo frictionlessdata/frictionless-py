@@ -5,6 +5,6 @@ fail_fast_two_schema_errors:
     - schema
   error_limit: 3
   report:
-    - [1, 4, 1, 'non-castable-value']
+    - [1, 4, 1, 'type-or-format-error']
+    - [1, 4, 2, 'required-constraint']
     - [1, 4, 3, 'required-constraint']
-    - [1, 5, 1, 'required-constraint']

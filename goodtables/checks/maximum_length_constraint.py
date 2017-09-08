@@ -18,22 +18,17 @@ def maximum_length_constraint(errors, cells, row_number):
         if not set(cell).issuperset(['number', 'header', 'field', 'value']):
             continue
 
-        # TODO: remove this skip after
-        # https://github.com/frictionlessdata/goodtables-py/issues/174
-        if not cell['field'].constraints.get('maxLength'):
-            continue
-
         # Check constraint
-        valid = cell['field'].test_value(cell['value'], constraint='maxLength')
+        valid = cell['field'].test_value(cell['value'], constraints=['maxLength'])
 
         # Add error
         if not valid:
             message = spec['errors']['maximum-length-constraint']['message']
             message = message.format(
-                value=cell['value'],
+                value='"%s"' % cell['value'],
                 row_number=row_number,
                 column_number=cell['number'],
-                constraint=cell['field'].constraints['maxLength'])
+                constraint='"%s"' % cell['field'].constraints['maxLength'])
             errors.append({
                 'code': 'maximum-length-constraint',
                 'message': message,

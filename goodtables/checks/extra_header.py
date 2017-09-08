@@ -5,7 +5,7 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 from copy import copy
-from jsontableschema import Schema, infer
+from tableschema import Schema
 from ..spec import spec
 from ..registry import check
 
@@ -34,8 +34,9 @@ class ExtraHeader(object):
                     if len(row) > cell['number']:
                         value = row[cell['number']]
                     column_sample.append(value)
-                descriptor = infer([cell['header']], column_sample)
-                cell['field'] = Schema(descriptor).fields[0]
+                schema = Schema()
+                schema.infer(column_sample, headers=[cell['header']])
+                cell['field'] = schema.fields[0]
 
             # Add error/remove column
             else:

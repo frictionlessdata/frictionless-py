@@ -19,16 +19,16 @@ def minimum_constraint(errors, cells, row_number):
             continue
 
         # Check constraint
-        valid = cell['field'].test_value(cell['value'], constraint='minimum')
+        valid = cell['field'].test_value(cell['value'], constraints=['minimum'])
 
         # Add error
         if not valid:
             message = spec['errors']['minimum-constraint']['message']
             message = message.format(
-                value=cell['value'],
+                value='"%s"' % cell['value'],
                 row_number=row_number,
                 column_number=cell['number'],
-                constraint=cell['field'].constraints['minimum'])
+                constraint='"%s"' % cell['field'].constraints['minimum'])
             errors.append({
                 'code': 'minimum-constraint',
                 'message': message,

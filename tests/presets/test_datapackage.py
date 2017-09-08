@@ -15,16 +15,18 @@ def test_preset_datapackage():
     assert len(tables) == 2
 
 
+# Issues
+
 def test_preset_datapackage_non_tabular_datapackage_issue_170():
     warnings, tables = datapackage('data/non_tabular_datapackage.json')
     assert len(warnings) == 0
-    assert len(tables) == 0
+    assert len(tables) == 2
 
 
 def test_preset_datapackage_mixed_datapackage_issue_170():
     warnings, tables = datapackage('data/mixed_datapackage.json')
     assert len(warnings) == 0
-    assert len(tables) == 1
+    assert len(tables) == 2
 
 
 def test_preset_datapackage_invalid_json_issue_192():

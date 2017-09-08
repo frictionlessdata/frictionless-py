@@ -19,16 +19,16 @@ def enumerable_constraint(errors, cells, row_number):
             continue
 
         # Check constraint
-        valid = cell['field'].test_value(cell['value'], constraint='enum')
+        valid = cell['field'].test_value(cell['value'], constraints=['enum'])
 
         # Add error
         if not valid:
             message = spec['errors']['enumerable-constraint']['message']
             message = message.format(
-                value=cell['value'],
+                value='"%s"' % cell['value'],
                 row_number=row_number,
                 column_number=cell['number'],
-                constraint=cell['field'].constraints['enum'])
+                constraint='"%s"' % cell['field'].constraints['enum'])
             errors.append({
                 'code': 'enumerable-constraint',
                 'message': message,

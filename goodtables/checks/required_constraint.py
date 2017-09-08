@@ -20,7 +20,7 @@ def required_constraint(errors, cells, row_number):
             continue
 
         # Check constraint
-        valid = cell['field'].test_value(cell['value'], constraint='required')
+        valid = cell['field'].test_value(cell['value'], constraints=['required'])
 
         # Skip if valid
         if valid:
