@@ -31,7 +31,6 @@ def cli(source, json, **options):
     """https://github.com/frictionlessdata/goodtables-py#cli
     """
     options = {key: value for key, value in options.items() if value is not None}
-    print(options)
     report = goodtables.validate(source, **options)
     _print_report(report, json=json)
     exit(not report['valid'])
