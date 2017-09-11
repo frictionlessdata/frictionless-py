@@ -614,7 +614,7 @@ Improved behaviour:
 - rebased on Data Quality Spec v1
 - rebased on Data Package Spec v1
 - rebased on Table Schema Spec v1
-- threat primary key as required/unique field
+- treat primary key as required/unique field
 
 ### v1.3
 
