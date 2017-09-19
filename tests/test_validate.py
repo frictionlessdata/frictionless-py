@@ -121,3 +121,55 @@ def test_validate_datapackage_dialect_header_false(log):
     }
     report = validate(descriptor)
     assert log(report) == []
+
+
+# Issues
+
+def test_composite_primary_key_unique_issue_215(log):
+    descriptor = {
+        'resources': [
+            {
+                'name': 'name',
+                'data':  [
+                    ['id1', 'id2'],
+                    ['a', '1'],
+                    ['a', '2'],
+                ],
+                'schema': {
+                    'fields': [
+                        {'name': 'id1'},
+                        {'name': 'id2'},
+                    ],
+                    'primaryKey': ['id1', 'id2']
+                }
+            }
+        ],
+    }
+    report = validate(descriptor)
+    assert log(report) == []
+
+
+def test_composite_primary_key_not_unique_issue_215(log):
+    descriptor = {
+        'resources': [
+            {
+                'name': 'name',
+                'data':  [
+                    ['id1', 'id2'],
+                    ['a', '1'],
+                    ['a', '1'],
+                ],
+                'schema': {
+                    'fields': [
+                        {'name': 'id1'},
+                        {'name': 'id2'},
+                    ],
+                    'primaryKey': ['id1', 'id2']
+                }
+            }
+        ],
+    }
+    report = validate(descriptor, skip_checks=['duplicate-row'])
+    assert log(report) == [
+        (1, 3, 1, 'unique-constraint'),
+    ]

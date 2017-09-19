@@ -16,40 +16,57 @@ class UniqueConstraint(object):
     # Public
 
     def __init__(self, **options):
-        self.__row_indexes = {}
+        self.__unique_fields_cache = None
 
     def check_row(self, errors, cells, row_number):
-        for cell in cells:
 
-            # Skip if cell is incomplete
-            if not set(cell).issuperset(['number', 'header', 'field', 'value']):
-                continue
+        # Prepare unique checks
+        if self.__unique_fields_cache is None:
+            self.__unique_fields_cache = _create_unique_fields_cache(cells)
 
-            # Skip if not constraint
-            constraint = cell['field'].constraints.get('unique')
-            if not constraint:
-                continue
+        # Check unique
+        for column_numbers, cache in self.__unique_fields_cache.items():
+            values = tuple(cell.get('value')
+                for column_number, cell in enumerate(cells, start=1)
+                if column_number in column_numbers)
+            if not all(map(lambda value: value is None, values)):
+                if values in cache['data']:
+                    message = spec['errors']['unique-constraint']['message']
+                    message = message.format(
+                        row_numbers=', '.join(map(str, cache['refs'] + [row_number])),
+                        column_number=', '.join(map(str, column_numbers)))
+                    errors.append({
+                        'code': 'unique-constraint',
+                        'message': message,
+                        'row-number': row_number,
+                        'column-number': column_numbers[0],
+                    })
+                cache['data'].add(values)
+                cache['refs'].append(row_number)
 
-            # Skip if value is null
-            if cell['value'] is None:
-                continue
 
-            # Get references
-            rindex = self.__row_indexes.setdefault(cell['number'], {})
-            references = rindex.setdefault(cell['value'], [])
+# Internal
 
-            # Add error
-            if references:
-                message = spec['errors']['unique-constraint']['message']
-                message = message.format(
-                    row_numbers=', '.join(map(str, references + [row_number])),
-                    column_number=cell['number'])
-                errors.append({
-                    'code': 'unique-constraint',
-                    'message': message,
-                    'row-number': row_number,
-                    'column-number': cell['number'],
-                })
+def _create_unique_fields_cache(cells):
+    primary_key_column_numbers = []
+    cache = {}
 
-            # Update references
-            references.append(row_number)
+    # Unique
+    for column_number, cell in enumerate(cells, start=1):
+        if 'field' in cell:
+            if cell['field'].descriptor.get('primaryKey'):
+                primary_key_column_numbers.append(column_number)
+            if cell['field'].constraints.get('unique'):
+                cache[tuple([column_number])] = {
+                    'data': set(),
+                    'refs': [],
+                }
+
+    # Primary key
+    if primary_key_column_numbers:
+        cache[tuple(primary_key_column_numbers)] = {
+            'data': set(),
+            'refs': [],
+        }
+
+    return cache
