@@ -9,7 +9,7 @@ from goodtables import validate
 
 # Tests
 
-def test_features(log, name, feature):
-    expect = list(map(lambda item: tuple(item), feature.pop('report')))
-    actual = log(validate(**feature))
+def test_scenarios(log, name, scenario):
+    expect = list(map(lambda item: tuple(item), scenario.pop('report')))
+    actual = log(validate(**scenario))
     assert actual == expect

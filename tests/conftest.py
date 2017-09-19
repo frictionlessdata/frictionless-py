@@ -35,13 +35,13 @@ def log():
 
 
 def pytest_generate_tests(metafunc):
-    if 'feature' in metafunc.fixturenames:
-        features = {}
-        for root, dirnames, filenames in os.walk('features'):
+    if 'scenario' in metafunc.fixturenames:
+        scenarios = {}
+        for root, dirnames, filenames in os.walk('tests/scenarios'):
             for filename in fnmatch.filter(filenames, '*.yml'):
                 filepath = os.path.join(root, filename)
-                features.update(yaml.load(io.open(filepath, encoding='utf-8')) or {})
+                scenarios.update(yaml.load(io.open(filepath, encoding='utf-8')) or {})
         params = []
-        for name in sorted(features):
-            params.append([name, features[name]])
-        metafunc.parametrize('name, feature', params)
+        for name in sorted(scenarios):
+            params.append([name, scenarios[name]])
+        metafunc.parametrize('name, scenario', params)
