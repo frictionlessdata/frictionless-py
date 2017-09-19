@@ -1,0 +1,17 @@
+primary_key_field:
+  source:
+    - [id, name]
+    - [1, Alex']
+    - [1, John]
+    - ['', Paul]
+    - [1, John]
+  schema:
+    fields:
+      - {name: id, type: integer}
+      - {name: name}
+    primaryKey: [id, name]
+  checks:
+    - schema
+  report:
+    - [1, 4, 1, 'required-constraint']
+    - [1, 5, 1, 'unique-constraint']

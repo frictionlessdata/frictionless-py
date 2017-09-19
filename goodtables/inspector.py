@@ -144,9 +144,7 @@ class Inspector(object):
                 if schema.primary_key:
                     for field in schema.descriptor.get('fields', []):
                         if field.get('name') in schema.primary_key:
-                            field.setdefault('constraints', {})
-                            field['constraints']['required'] = True
-                            field['constraints']['unique'] = True
+                            field['primaryKey'] = True
                     schema.commit()
                 for error in schema.errors:
                     fatal_error = True
