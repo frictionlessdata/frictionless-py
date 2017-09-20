@@ -43,7 +43,7 @@ def datapackage(source, **options):
         for error in package.errors:
             warnings.append(
                 'Data Package "%s" has a validation error "%s"' %
-                (source, error.message))
+                (source, error))
 
     return warnings, tables
 
