@@ -302,7 +302,7 @@ def _compose_error_from_exception(exception):
 
 def _compose_error_from_schema_error(error):
     code = 'schema-error'
-    message = 'Table Schema error: %s' % error.message
+    message = 'Table Schema error: %s' % error
     return {
         'row': None,
         'code': code,
