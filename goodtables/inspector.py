@@ -314,4 +314,4 @@ def _compose_error_from_schema_error(error):
 
 def _sort_errors(errors):
     return sorted(errors, key=lambda error:
-        (error['row-number'] or 0, error['column-number']))
+        (error['row-number'] or 0, error['column-number'] or 0))
