@@ -44,6 +44,28 @@ def test_check_extra_header_infer(log):
     assert cells[1]['field'].name == 'name2'
 
 
+def test_check_extra_header_infer_with_data(log):
+    errors = []
+    cells = [
+        {'number': 1,
+         'header': 'name1',
+         'field': Field({'name': 'name1'})},
+        {'number': 2,
+         'header': 'name2'},
+    ]
+    sample = [
+        ['123', 'abc'],
+        ['456', 'def'],
+        ['789', 'ghi'],
+    ]
+    extra_header = ExtraHeader(infer_fields=True)
+    extra_header.check_headers(errors, cells, sample=sample)
+    assert log(errors) == []
+    assert len(cells) == 2
+    assert cells[1]['field'].name == 'name2'
+    assert cells[1]['field'].type == 'string'
+
+
 def test_check_extra_header_problem(log):
     errors = []
     cells = [
