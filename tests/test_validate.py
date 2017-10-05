@@ -173,3 +173,17 @@ def test_composite_primary_key_not_unique_issue_215(log):
     assert log(report) == [
         (1, 3, 1, 'unique-constraint'),
     ]
+
+
+def test_validate_infer_fields_issue_223():
+    source = [
+        ['name1', 'name2'],
+        ['123', 'abc'],
+        ['456', 'def'],
+        ['789', 'ghi'],
+    ]
+    schema = {
+        'fields': [{'name': 'name1'}]
+    }
+    report = validate(source, schema=schema, infer_fields=True)
+    assert report['valid']
