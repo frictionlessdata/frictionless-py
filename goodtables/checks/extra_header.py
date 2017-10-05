@@ -31,8 +31,8 @@ class ExtraHeader(object):
                 column_sample = []
                 for row in sample:
                     value = None
-                    if len(row) > cell['number']:
-                        value = row[cell['number']]
+                    if len(row) >= cell['number']:
+                        value = row[cell['number'] - 1]
                     column_sample.append(value)
                 schema = Schema()
                 schema.infer(column_sample, headers=[cell['header']])
