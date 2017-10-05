@@ -608,6 +608,11 @@ and `mock` packages. This packages are available only in tox environments.
 
 Here described only breaking and the most important changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/goodtables-py/commits/master).
 
+### v1.5
+
+New API added:
+- Validation `source` now could be a `pathlib.Path`
+
 ### v1.4
 
 Improved behaviour:
