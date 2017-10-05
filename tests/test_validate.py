@@ -4,8 +4,10 @@ from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
+import sys
 import json
 import pytest
+from importlib import import_module
 from goodtables import validate
 
 
@@ -121,6 +123,24 @@ def test_validate_datapackage_dialect_header_false(log):
     }
     report = validate(descriptor)
     assert log(report) == []
+
+
+# Source as pathlib.Path
+
+@pytest.mark.skipif(sys.version_info < (3, 4), reason='not supported')
+def test_source_pathlib_path_table():
+    pathlib = import_module('pathlib')
+    report = validate(pathlib.Path('data/valid.csv'))
+    assert report['table-count'] == 1
+    assert report['valid']
+
+
+@pytest.mark.skipif(sys.version_info < (3, 4), reason='not supported')
+def test_source_pathlib_path_datapackage():
+    pathlib = import_module('pathlib')
+    report = validate(pathlib.Path('data/datapackages/valid/datapackage.json'))
+    assert report['table-count'] == 2
+    assert report['valid']
 
 
 # Issues
