@@ -28,6 +28,15 @@ def validate(source, **options):
     settings['custom_checks'] = options.pop('custom_checks', None)
     settings = {key: value for key, value in settings.items() if value is not None}
 
+    # Support for pathlib.Path
+    if hasattr(source, 'joinpath'):
+        source = str(source)
+    if isinstance(source, list):
+        if source and isinstance(source[0], dict) and 'source' in source[0]:
+            for index, item in enumerate(source):
+                if hasattr(item['source'], 'joinpath'):
+                    source[index]['source'] = str(item['source'])
+
     # Extract/infer preset
     preset = options.pop('preset', None)
     if preset is None:
