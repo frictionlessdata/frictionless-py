@@ -207,3 +207,18 @@ def test_validate_infer_fields_issue_223():
     }
     report = validate(source, schema=schema, infer_fields=True)
     assert report['valid']
+
+def test_validate_infer_fields_issue_225():
+    source = [
+        ['name1', 'name2'],
+        ['123', ''],
+        ['456', ''],
+        ['789', ''],
+    ]
+    schema = {
+        'fields': [{'name': 'name1'}]
+    }
+    report = validate(source, schema=schema, infer_fields=True)
+    assert report['valid']
+
+
