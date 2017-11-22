@@ -7,8 +7,6 @@
 
 Goodtables is a framework to validate tabular data.
 
-> Version v1.0 includes various important changes. Please read a [migration guide](#v10).
-
 ## Features
 
 - tabular data validation
@@ -605,8 +603,6 @@ Under the hood `tox` uses `pytest` configured in `pytest.ini`, `coverage`
 and `mock` packages. This packages are available only in tox environments.
 
 ## Changelog
-
-Here described only breaking and the most important changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/goodtables-py/commits/master).
 
 ### v1.5
 
