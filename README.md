@@ -57,7 +57,7 @@ Goodtables validates your tabular dataset to find source, structure and schema e
 report = validate('invalid.csv')
 ```
 
-We could validate not only a local file but also remote link, file-like object, inline data and even more. And it could be not only CSV but also XLS, XLSX, ODS, JSON and many more. Under the hood `goodtables` use powerful [tabulator](https://github.com/frictionlessdata/goodtables-py) library. All schemes and formats supported by `tabulator` are supported by `goodtables`.
+We could validate not only a local file but also remote link, file-like object, inline data and even more. And it could be not only CSV but also XLS, XLSX, ODS, JSON and many more. Under the hood `goodtables` use powerful [tabulator](https://github.com/frictionlessdata/tabulator-py) library. All schemes and formats supported by `tabulator` are supported by `goodtables`.
 
 #### Report
 
