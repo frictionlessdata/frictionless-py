@@ -63,7 +63,46 @@ We could validate not only a local file but also remote link, file-like object, 
 
 As a result of validation goodtables returns a report dictionary. It includes valid flag, count of errors, list of reports per table including errors etc. Resulting report will be looking like this:
 
-![Report](http://i.imgur.com/fZkc2OI.png)
+```json
+{
+  "time": 0.009,
+  "error-count": 1,
+  "warnings": [
+    "Table \"data/invalid.csv\" inspection has reached 1 error(s) limit"
+  ],
+  "preset": "table",
+  "valid": false,
+  "tables": [
+    {
+      "errors": [
+        {
+          "row-number": null,
+          "message": "Header in column 3 is blank",
+          "row": null,
+          "column-number": 3,
+          "code": "blank-header"
+        }
+      ],
+      "error-count": 1,
+      "headers": [
+        "id",
+        "name",
+        "",
+        "name"
+      ],
+      "scheme": "file",
+      "row-count": 2,
+      "valid": false,
+      "encoding": "utf-8",
+      "time": 0.007,
+      "schema": null,
+      "format": "csv",
+      "source": "data/invalid.csv"
+    }
+  ],
+  "table-count": 1
+}
+```
 
 Base report errors are standardized and described in [Data Quality Spec](https://github.com/frictionlessdata/data-quality-spec/blob/master/spec.json). All errors fails into three base and one additional categories:
 
