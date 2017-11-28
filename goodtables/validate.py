@@ -15,18 +15,22 @@ def validate(source, **options):
     """
 
     # Extract settings
-    settings = {}
-    settings['checks'] = options.pop('checks', None)
-    settings['skip_checks'] = options.pop('skip_checks', None)
-    settings['infer_schema'] = options.pop('infer_schema', None)
-    settings['infer_fields'] = options.pop('infer_fields', None)
-    settings['order_fields'] = options.pop('order_fields', None)
-    settings['error_limit'] = options.pop('error_limit', None)
-    settings['table_limit'] = options.pop('table_limit', None)
-    settings['row_limit'] = options.pop('row_limit', None)
-    settings['custom_presets'] = options.pop('custom_presets', None)
-    settings['custom_checks'] = options.pop('custom_checks', None)
-    settings = {key: value for key, value in settings.items() if value is not None}
+    validation_options = set((
+        'checks',
+        'skip_checks',
+        'infer_schema',
+        'infer_fields',
+        'order_fields',
+        'error_limit',
+        'table_limit',
+        'row_limit',
+        'custom_presets',
+        'custom_checks',
+    ))
+    settings = dict((
+        (key, options.pop(key)) for key in validation_options
+        if key in options
+    ))
 
     # Support for pathlib.Path
     if hasattr(source, 'joinpath'):
