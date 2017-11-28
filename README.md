@@ -5,31 +5,54 @@
 [![PyPi](https://img.shields.io/pypi/v/goodtables.svg)](https://pypi.python.org/pypi/goodtables)
 [![Gitter](https://img.shields.io/gitter/room/frictionlessdata/chat.svg)](https://gitter.im/frictionlessdata/chat)
 
-Goodtables is a framework to validate tabular data.
+Goodtables is a framework to validate tabular data. It can check the structure
+of your data (e.g. all rows have the same number of columns), and its contents
+(e.g. all dates are valid).
+
+## Table of Contents
+
+- [Features](#features)
+- [Getting Started](#getting-started)
+    - [Installing](#installing)
+    - [Running on CLI](#running-on-cli)
+    - [Running on Python](#running-on-python)
+- [Validation](#validation)
+    - [Basic checks](#basic-checks)
+    - [Structural checks](#structural-checks)
+    - [Content checks](#content-checks)
+    - [Advanced checks](#advanced-checks)
+- [Developer documentation](#developer-documentation)
+    - [Validate](#validate)
+- [FAQ](#faq)
+    - [How can I add a new custom check?](#how-can-i-add-a-new-custom-check)
+    - [How can I add support for a new tabular file type?](#how-can-i-add-support-for-a-new-tabular-file-type)
 
 ## Features
 
-- tabular data validation
-- general, structure and schema checks
-- support for different input data presets
-- support various source schemes and formats
-- parallel computation for multi-table datasets
-- builtin command-line interface
+* Structural checks (no blank headers, empty rows, ...)
+* Content checks (numbers are numbers, dates are valid, ...)
+* Support for multiple tabular formats (CSV, XLS, ODS, etc)
+* Support for data packages
+* Parallelized validations for multi-table datasets
+* Command line interface
 
 ## Getting Started
 
-### Installation
+### Installing
 
-The package use semantic versioning. It means that major versions  could include breaking changes. It's highly recommended to specify `tabulator` version range if you use `setup.py` or `requirements.txt` file e.g. `goodtables<2.0`.
-
-```bash
-$ pip install goodtables
-$ pip install goodtables[ods] # With ods format support
+```
+pip install goodtables
 ```
 
-### Example
+### Running on CLI
 
-Let's start with a simple example. We just run `validate` function against our data table. As a result we get a `goodtables` report.
+```
+goodtables data.csv
+```
+
+Use `goodtables --help` to see the different options.
+
+### Running on Python
 
 ```python
 from goodtables import validate
@@ -43,263 +66,81 @@ report['tables'][0]['source'] # 'invalid.csv'
 report['tables'][0]['errors'][0]['code'] # 'blank-header'
 ```
 
-There is an [examples](https://github.com/frictionlessdata/goodtables-py/tree/master/examples) directory containing other code listings.
-
-## Documentation
-
-The whole public API of this package is described here and follows semantic versioning rules. Everything outside of this readme are private API and could be changed without any notification on any new version.
-
-### Validate
-
-Goodtables validates your tabular dataset to find source, structure and schema errors. Consider you have a file named `invalid.csv`. Let's validate it:
-
-```py
-report = validate('invalid.csv')
-```
-
-We could validate not only a local file but also remote link, file-like object, inline data and even more. And it could be not only CSV but also XLS, XLSX, ODS, JSON and many more. Under the hood `goodtables` use powerful [tabulator](https://github.com/frictionlessdata/tabulator-py) library. All schemes and formats supported by `tabulator` are supported by `goodtables`.
-
-#### Report
-
-As a result of validation goodtables returns a report dictionary. It includes valid flag, count of errors, list of reports per table including errors etc. Resulting report will be looking like this:
-
-![Report](http://i.imgur.com/fZkc2OI.png)
-
-Base report errors are standardized and described in [Data Quality Spec](https://github.com/frictionlessdata/data-quality-spec/blob/master/spec.json). All errors fails into three base and one additional categories:
-
-- `source` - data can't be loaded or parsed
-- `structure` - general tabular errors like duplicate headers
-- `schema` - error of checks against [Table Schema](http://specs.frictionlessdata.io/table-schema/)
-- `custom` - custom checks errors
-
-#### Checks
-
-Check is a main validation actor in goodtables. List of checks could be customized using `checks` and `skip_checks` arguments. Let's explore options on an example:
-
-```python
-report = validate('data.csv') # by default structure and schema (if available) checks
-report = validate('data.csv', checks=['structure']) # only structure checks
-report = validate('data.csv', checks=['schema']) # only schema (if available) checks
-report = validate('data.csv', checks=['bad-headers']) # check only 'bad-headers'
-report = validate('data.csv', skip_checks=['bad-headers']) # exclude 'bad-headers'
-```
-
-By default a dataset will be validated against all available Data Quality Spec errors. Some checks could be not available for validation e.g. if schema is not provided only `structure` checks will be done.
-
-#### Presets
-
-With `goodtables` different kind of tabular datasets could be validated. Tabular dataset is a something that could be split to list of data tables:
-
-![Dataset](https://raw.githubusercontent.com/frictionlessdata/goodtables-py/master/data/dataset.png)
-
-To work with different kind of datasets we use `preset` argument for `validate` function. By default it will be inferred with `table` as a fallback value. Let's validate a [data package](http://specs.frictionlessdata.io/data-package/). As a result we get report of the same form but it will be having more than 1 table if there are more than 1 resource in data package:
-
-```py
-report = validate('datapackage.json') # implicit preset
-report = validate('datapackage.json', preset='datapackage') # explicit preset
-```
-
-To validate list of files we use `nested` preset. For nested preset first argument should be a list containing dictionaries with keys named after `validate` argument names. First argument is a `source` and we talk other arguments in next sections. Technically `goodtables` validates list of tables in parallel so it should be effective to do many tables validation in one run:
-
-```py
-report = validate([{'source': 'data1.csv'}, {'source': 'data2.csv'}]) # implicit preset
-report = validate([{'source': 'data1.csv'}, {'source': 'data2.csv'}], preset='nested') # explicit preset
-```
-
-#### `validate(source, **options)`
-
-- **Arguments (`preset=table`)**
-- `source (path/url/dict/file-like)` - validation source containing data table
-- `preset (str)` - dataset type could be `table` (default), `datapackage`, `nested` or custom. For the most cases preset will be inferred from the source.
-- `schema (path/url/dict/file-like)` - Table Schema to validate data source against
-- `headers (list/int)` - headers list or source row number containing headers. If number is given for plain source headers row and all rows before will be removed and for keyed source no rows will be removed.
-- `scheme (str)` - source scheme with `file` as default. For the most cases scheme will be inferred from source. See [list of the supported schemes](https://github.com/frictionlessdata/tabulator-py#schemes).
-- `format (str)` - source format with `None` (detect) as default. For the most cases format will be inferred from source. See [list of the supported formats](https://github.com/frictionlessdata/tabulator-py#formats).
-- `encoding (str)` - source encoding with  `None` (detect) as default.
-- `skip_rows (int/str[])` - list of rows to skip by row number or row comment. Example: `skip_rows=[1, 2, '#', '//']` - rows 1, 2 and all rows started with `#` and `//` will be skipped.
-- `<name> (<type>)` - additional options supported by different schema and format. See [list of schema options](https://github.com/frictionlessdata/tabulator-py#schemes) and [list of format options](https://github.com/frictionlessdata/tabulator-py#schemes).
-- **Arguments (`preset=datapackage`)**
-- `source (path/url/dict/file-like)` - validation source containing data package descriptor
-- `preset (str)` - dataset type could be `table` (default), `datapackage`, `nested` or custom. For the most cases preset will be inferred from the source.
-- `<name> (<type>)` - options to pass to Data Package constructor
-- **Arguments (`preset=nested`)**
-- `source (dict[])` - list of dictionaries with keys named after arguments for corresponding preset
-- `preset (str)` - dataset type could be `table` (default), `datapackage`, `nested` or custom. For the most cases preset will be inferred from the source.
-- **Arguments**
-- `checks (list)` - checks configuration
-- `skip_checks (list)` - skip checks configuration
-- `infer_schema (bool)` - infer schema if not passed
-- `infer_fields (bool)` - infer schema for columns not presented in schema
-- `order_fields (bool)` - order source columns based on schema fields order
-- `error_limit (int)` - error limit per table
-- `table_limit (int)` - table limit for dataset
-- `row_limit (int)` - row limit per table
-- **Raises**
-- `(exceptions.GoodtablesException)` - raise on any non-tabular error
-- **Returns**
-- `(dict)` - returns a `goodtables` report
-
-
-### Validation against source checks
-
-> This checks are enabled by default and can't be skipped.
-
-Every `validate` call will checks for this errors.
-
-```py
-report = validate('invalid.csv')
-```
-
-Let's take a look on [Data Quality Spec](https://github.com/frictionlessdata/data-quality-spec) `source` checks/errors:
-
-#### io-error
-
-Data reading error because of IO error.
-
-#### http-error
-
-Data reading error because of HTTP error.
-
-#### source-error
-
-Data reading error because of not supported or inconsistent contents.
-
-#### scheme-error
-
-Data reading error because of incorrect scheme.
-
-#### format-error
-
-Data reading error because of incorrect format.
-
-#### encoding-error
-
-Data reading error because of an encoding problem.
-
-### Validation against structure checks
-
-The simplest `validate` call will check for structure checks:
-
-```py
-report = validate('invalid.csv')
-```
-
-Let's take a look on [Data Quality Spec](https://github.com/frictionlessdata/data-quality-spec) `structure` checks/errors:
-
-#### blank-header
-
-A column in the header row is missing a value. Column names should be provided.
-
-#### duplicate-header
-
-Two columns in the header row have the same value. Column names should be unique.
-
-#### blank-row
-
-This row is empty. A row should contain at least one value.
-
-#### duplicate-row
-
-The exact same data has been seen in another row.
-
-#### extra-value
-
-This row has more values compared to the header row (the first row in the data source).
-
-#### missing-value
-
-This row has less values compared to the header row (the first row in the data source).
-
-### Validation against schema checks
-
-If we run a simple table validation there will not be schema checks involved:
-
-```python
-report = validate('invalid.csv') # no schema checks
-```
-
-That's because there is no [Table Schema](http://specs.frictionlessdata.io/table-schema/) to check against. We have two options:
-- provide `schema` argument containing Table Schema descriptor
-- use `infer_schema` option to infer Table Schema from data source
-
-Sometimes we have schema covering data table only partially e.g. table has headers `name, age, position` but schema has only `name` and `age` fields. In this case we use `infer_fields` option:
-
-```py
-# schema will be complemented by `position` field
-report = validate('data.csv', schema='schema.json', infer_fields=True)
-```
-
-Other possible discrepancy situation when your schema fields have other order that data table columns. Options `order_fieds` is to rescue:
-
-```py
-# sync source/schema fields order
-report = validate('data.csv', schema='schema.json', order_fields=True)
-```
-
-Let's take a look on [Data Quality Spec](https://github.com/frictionlessdata/data-quality-spec) `schema` checks/errors:
-
-#### schema-error
-
-Provided schema is not valid.
-
-#### non-matching-header
-
-One of the data source headers doesn't match the field name defined in the schema.
-
-#### extra-header
-
-The first row of the data source contains header that doesn't exist in the schema.
-
-#### missing-header
-
-Based on the schema there should be a header that is missing in the first row of the data source.
-
-#### type-or-format-error
-
-The value can't be cast based on the schema type and format for this field.
-
-#### required-constraint
-
-This field is a required field, but it contains no value.
-
-#### pattern-constraint
-
-This field value should conform to constraint pattern.
-
-#### unique-constraint
-
-This field is a unique field but it contains a value that has been used in another row.
-
-#### enumerable-constraint
-
-This field value should be equal to one of the values in the enumeration constraint.
-
-#### minimum-constraint
-
-This field value should be greater or equal than constraint value.
-
-#### maximum-constraint
-
-This field value should be less or equal than constraint value.
-
-#### minimum-length-constraint
-
-A length of this field value should be greater or equal than schema constraint value.
-
-#### maximum-length-constraint
-
-A length of this field value should be less or equal than schema constraint value.
-
-### Validation against advanced checks
-
-In addition to Data Quality Spec checks the library has a builtin `contrib.checks` module to provide advanced data quality checks:
+Check the [examples](examples) folder for other examples.
+
+## Validation
+
+### Basic checks
+
+The basic checks can't be disabled, as they deal with goodtables being able to read the files.
+
+| check | description |
+| --- | --- |
+| io-error | Data reading error because of IO error. |
+| http-error | Data reading error because of HTTP error. |
+| source-error | Data reading error because of not supported or inconsistent contents. |
+| scheme-error | Data reading error because of incorrect scheme. |
+| format-error | Data reading error because of incorrect format. |
+| encoding-error | Data reading error because of an encoding problem. |
+
+### Structural checks
+
+These checks validate that the structure of the file are valid.
+
+| check | description |
+| --- | --- |
+| blank-header | There is a blank header name. All cells in the header row must have a value. |
+| duplicate-header | There are multiple columns with the same name. All column names must be unique. |
+| blank-row | Rows must have at least one non-blank cell. |
+| duplicate-row | Rows can't be duplicated. |
+| extra-value | A row has more columns than the header. |
+| missing-value | A row has less columns than the header. |
+
+### Content checks
+
+These checks validate the contents of the file. To use them, you need to pass a [Table Schema][tableschema]. If you don't have a schema, goodtables can infer it if you use the `infer_schema` option.
+
+If your schema only covers part of the data, you can use the `infer_fields` to infer the remaining fields.
+
+Lastly, if the order of the fields in the data is different than in your schema, enable the `order_fields` option.
+
+| check | description |
+| --- | --- |
+| schema-error | Schema is not valid. |
+| non-matching-header | The header's name in the schema is different from what's in the data. |
+| extra-header | The data contains a header not defined in the schema. |
+| missing-header | The data doesn't contain a header defined in the schema. |
+| type-or-format-error | The value can’t be cast based on the schema type and format for this field. |
+| required-constraint | This field is a required field, but it contains no value. |
+| pattern-constraint | This field value's should conform to the defined pattern. |
+| unique-constraint | This field is a unique field but it contains a value that has been used in another row. |
+| enumerable-constraint | This field value should be equal to one of the values in the enumeration constraint. |
+| minimum-constraint | This field value should be greater or equal than constraint value. |
+| maximum-constraint | This field value should be less or equal than constraint value. |
+| minimum-length-constraint | A length of this field value should be greater or equal than schema constraint value. |
+| maximum-length-constraint | A length of this field value should be less or equal than schema constraint value. |
+
+### Advanced checks
+
+| check | description |
+| --- | --- |
+| [blacklisted-value](#blacklisted-value) | Ensure there are no cells with the blacklisted values. |
+| [deviated-value](#deviated-value) | Ensure numbers are within a number of standard deviations from the average. |
+| [sequential-value](#sequential-value) | Ensure numbers are be sequential. |
+| [truncated-value](#truncated-value) | Detect values that were potentially truncated. |
+| [custom-constraint](#custom-constraint) | Defines a constraint based on the values of other columns (e.g. `value * quantity == total`). |
 
 #### blacklisted-value
 
 Sometimes we have to check for some values we don't want to have in out dataset. It accepts following options:
 
-- `column (int/str)` - column number or name
-- `blacklist (list)` - list of non-valid values
+<dl>
+  <dt>column (int/str)</dt>
+  <dd>Column number or name</dd>
+  
+  <dt>blacklist (list)</dt>
+  <dd>List of blacklisted values</dd>
+</dl>
 
 Consider csv file like this:
 
@@ -327,9 +168,16 @@ report = validate('data.csv', checks=[
 
 This check helps to find outlines in a column containing positive numbers. It accepts following options:
 
-- `column (int/str)` - column number or name
-- `average (str:mean/median/mode)` - method to calculate column average
-- `interval (int)` - valid values should be inside `average +/- standard deviation * interval`
+<dl>
+  <dt>column (int/str)</dt>
+  <dd>Column number or name</dd>
+  
+  <dt>average (str:mean/median/mode)</dt>
+  <dd>Type of average</dd>
+  
+  <dt>interval (int)</dt>
+  <dd>Values must be inside range <code>average ± standard deviation * interval</code></dd>
+</dl>
 
 Consider csv file like this:
 
@@ -360,7 +208,11 @@ report = validate('data.csv', checks=[
 #### sequential-value
 
 This checks is for pretty common case when a column should have integers that sequentially increment.  It accepts following options:
-- `column (int/str)` - column number or name
+
+<dl>
+  <dt>column (int/str)</dt>
+  <dd>Column number or name</dd>
+</dl>
 
 Consider csv file like this:
 
@@ -412,7 +264,10 @@ report = validate('data.csv', checks=[
 
 With Table Schema we could create constraints for an individual field but sometimes it's not enough. With a custom constraint check every row could be checked against given limited python expression in which variable names resolve to column values. See list of [available operators]( https://github.com/danthedeckie/simpleeval#operators). It accepts following options:
 
-- `constraint (str)` - constraint definition e.g. `col1 + col2 == col3`
+<dl>
+  <dt>constraint (str)</dt>
+  <dd>Constraint definition (e.g. <code>col1 + col2 == col3</code>)</dd>
+</dl>
 
 Consider csv file like this:
 
@@ -433,7 +288,159 @@ report = validate('data.csv', checks=[
 # error on row 4 with code "custom-constraint"
 ```
 
-### Validation against custom checks
+## Developer documentation
+
+
+### Validate
+
+Goodtables validates your tabular dataset to find structural and content
+errors. Consider you have a file named `invalid.csv`. Let's validate it:
+
+```python
+report = validate('invalid.csv')
+```
+
+We could also pass a remote URI instead of a local path. It supports CSV, XLS,
+XLSX, ODS, JSON, and all other formats supported by the [tabulator][tabulator]
+library.
+
+#### Validation report
+
+The output of the `validate()` method is a report dictionary. It includes
+information if the data was valid, count of errors, list of table reports, which
+individual checks failed, etc.
+
+Resulting report will be looking like this:
+
+```json
+{
+    "time": 0.009,
+    "error-count": 1,
+    "warnings": [
+        "Table \"data/invalid.csv\" inspection has reached 1 error(s) limit"
+    ],
+    "preset": "table",
+    "valid": false,
+    "tables": [
+        {
+            "errors": [
+                {
+                    "row-number": null,
+                    "message": "Header in column 3 is blank",
+                    "row": null,
+                    "column-number": 3,
+                    "code": "blank-header"
+                }
+            ],
+            "error-count": 1,
+            "headers": [
+                "id",
+                "name",
+                "",
+                "name"
+            ],
+            "scheme": "file",
+            "row-count": 2,
+            "valid": false,
+            "encoding": "utf-8",
+            "time": 0.007,
+            "schema": null,
+            "format": "csv",
+            "source": "data/invalid"
+        }
+    ],
+    "table-count": 1
+}
+```
+
+Rase report errors are standardized and described
+in
+[Data Quality Spec](https://github.com/frictionlessdata/data-quality-spec/blob/master/spec.json).
+The errors are divided in one of the following categories:
+
+- `source` - data can't be loaded or parsed
+- `structure` - general tabular errors like duplicate headers
+- `schema` - error of checks against [Table Schema](http://specs.frictionlessdata.io/table-schema/)
+- `custom` - custom checks errors
+
+#### Checks
+
+Check is a main validation actor in goodtables. The list of enabled checks can
+be changed using `checks` and `skip_checks` arguments. Let's explore the options
+on an example:
+
+```python
+report = validate('data.csv') # by default structure and schema (if available) checks
+report = validate('data.csv', checks=['structure']) # only structure checks
+report = validate('data.csv', checks=['schema']) # only schema (if available) checks
+report = validate('data.csv', checks=['bad-headers']) # check only 'bad-headers'
+report = validate('data.csv', skip_checks=['bad-headers']) # exclude 'bad-headers'
+```
+
+By default a dataset will be validated against all available Data Quality Spec
+errors. Some checks can be unavailable for validation. For example, if the
+schema isn't provided, only the `structure` checks will be done.
+
+#### Presets
+
+Goodtables support different formats of tabular datasets. They're called
+presets. A tabular dataset is some data that can be split in a list of data
+tables, as:
+
+![Dataset](data/dataset.png)
+
+We can change the preset using the `preset` argument for `validate()`. By
+default, it'll be inferred from the source, falling back to `table`. To validate
+a [data package][datapackage], we can do:
+
+```python
+report = validate('datapackage.json') # implicit preset
+report = validate('datapackage.json', preset='datapackage') # explicit preset
+```
+
+This will validate all tabular resources in the datapackage.
+
+It's also possible to validate a list of files using the "nested" preset. To do
+so, the first argument to `validate()` should be a list of dictionaries, where
+each key in the dictionary is named after a parameter on `validate()`. For example:
+
+```python
+report = validate([{'source': 'data1.csv'}, {'source': 'data2.csv'}]) # implicit preset
+report = validate([{'source': 'data1.csv'}, {'source': 'data2.csv'}], preset='nested') # explicit preset
+```
+
+Is similar to:
+
+```python
+report_data1 = validate('data1.csv')
+report_data2 = validate('data2.csv')
+```
+
+The difference is that goodtables validates multiple tables in parallel, so
+calling using the "nested" preset should run faster.
+
+## Contributing
+
+This project follows the [Open Knowledge International coding standards](https://github.com/okfn/coding-standards).
+
+We recommend you to use `virtualenv` to isolate goodtables from the rest of the
+packages in your machine.
+
+To install goodtables and the development dependencies, run:
+
+```
+$ make install
+```
+
+To run the tests, use:
+
+```bash
+$ make test
+```
+
+## FAQ
+
+### How can I add a new custom check?
 
 To create a custom check user could use a `check` decorator. This way the builtin check could be overridden (use the spec error code like `duplicate-row`) or could be added a check for a custom error (use `type`, `context` and `position` arguments):
 
@@ -455,7 +462,7 @@ report = validate('data.csv', checks=['custom-check'])
 ```
 For now this documentation section is incomplete. Please see builtin checks to learn more about checking protocol.
 
-### Validation of custom data sources
+### How can I add support for a new tabular file type?
 
 To create a custom preset user could use a `preset` decorator. This way the builtin preset could be overridden or could be added a custom preset.
 
@@ -485,164 +492,7 @@ report = validate(source, preset='custom-preset')
 
 For now this documentation section is incomplete. Please see builtin presets to learn more about the dataset extraction protocol.
 
-### Validation limits
 
-If we need to save time/resources we could limit validation. By default limits have some reasonable values but it could be set to any values by user. Let's see on the available limits:
-- errors per table limit
-- tables per dataset limit
-- rows per table limit
-
-The most common cast is stopping on the first error found:
-
-```py
-report = validate('data.csv', error_limit=1)
-```
-
-### Spec
-
-Data Quality Spec is shipped with the library:
-
-```py
-from goodtables import spec
-
-spec['version'] # spec version
-spec['errors'] # list of errors
-```
-
-#### `spec`
-
-- `(dict)` - returns Data Quality Spec
-
-### Exceptions
-
-#### `exceptions.GoodtablesException`
-
-Base class for all `goodtables` exceptions.
-
-### CLI
-
-> It’s a provisional API. If you use it as a part of other program please pin concrete `goodtables` version to your requirements file.
-
-All common goodtables tasks could be done using a command-line interface. For example write a following command to the shell to inspect a data table or a data package:
-
-```
-$ goodtables data.csv
-$ goodtables datapackage.json
-```
-
-And the `goodtables` report will be printed to the standard output in nicely-formatted way.
-
-#### `$ goodtables`
-
-```
-Usage: cli.py [OPTIONS] SOURCE
-
-  https://github.com/frictionlessdata/goodtables-py#cli
-
-Options:
-  --preset TEXT
-  --schema TEXT
-  --checks TEXT
-  --skip-checks TEXT
-  --infer-schema
-  --infer-fields
-  --order-fields
-  --error-limit INTEGER
-  --table-limit INTEGER
-  --row-limit INTEGER
-  --json
-  --version              Show the version and exit.
-  --help                 Show this message and exit.
-```
-
-### Inspector
-
-> This API could be deprecated in the future. It's recommended to use `validate` counterpart.
-
-#### `Inspector(**settings)`
-#### `inspector.inspect(source, **source_options)`
-
-## Contributing
-
-The project follows the [Open Knowledge International coding standards](https://github.com/okfn/coding-standards).
-
-Recommended way to get started is to create and activate a project virtual environment.
-To install package and development dependencies into active environment:
-
-```
-$ make install
-```
-
-To run tests with linting and coverage:
-
-```bash
-$ make test
-```
-
-For linting `pylama` configured in `pylama.ini` is used. On this stage it's already
-installed into your environment and could be used separately with more fine-grained control
-as described in documentation - https://pylama.readthedocs.io/en/latest/.
-
-For example to sort results by error type:
-
-```bash
-$ pylama --sort <path>
-```
-
-For testing `tox` configured in `tox.ini` is used.
-It's already installed into your environment and could be used separately with more fine-grained control as described in documentation - https://testrun.org/tox/latest/.
-
-For example to check subset of tests against Python 2 environment with increased verbosity.
-All positional arguments and options after `--` will be passed to `py.test`:
-
-```bash
-tox -e py27 -- -v tests/<path>
-```
-
-Under the hood `tox` uses `pytest` configured in `pytest.ini`, `coverage`
-and `mock` packages. This packages are available only in tox environments.
-
-## Changelog
-
-### v1.5
-
-New API added:
-- Validation `source` now could be a `pathlib.Path`
-
-### v1.4
-
-Improved behaviour:
-- rebased on Data Quality Spec v1
-- rebased on Data Package Spec v1
-- rebased on Table Schema Spec v1
-- treat primary key as required/unique field
-
-### v1.3
-
-New advanced checks added:
-- `blacklisted-value`
-- `custom-constraint`
-- `deviated-value`
-- `sequential-value`
-- `truncated-value`
-
-### v1.2
-
-New API added:
-- `report.preset`
-- `report.tables[].schema`
-
-### v1.1
-
-New API added:
-- `report.tables[].scheme`
-- `report.tables[].format`
-- `report.tables[].encoding`
-
-### v1.0
-
-This version includes various big changes. A migration guide is under development and will be published here.
-
-### v0.6
-
-First version of `goodtables`.
+[tableschema]: https://specs.frictionlessdata.io/table-schema/
+[tabulator]: https://github.com/frictionlessdata/tabulator-py/
+[datapackage]: https://specs.frictionlessdata.io/data-package/ "Data Package specification"

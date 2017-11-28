@@ -17,7 +17,6 @@ spec:
 	wget -O goodtables/spec.json https://raw.githubusercontent.com/frictionlessdata/data-quality-spec/master/spec.json
 
 test:
-	pylama $(PACKAGE)
 	tox
 
 version:

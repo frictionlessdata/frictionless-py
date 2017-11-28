@@ -220,5 +220,3 @@ def test_validate_infer_fields_issue_225():
     }
     report = validate(source, schema=schema, infer_fields=True)
     assert report['valid']
-
-
