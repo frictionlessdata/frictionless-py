@@ -40,9 +40,11 @@ class Inspector(object):
         self.__infer_schema = infer_schema
         self.__infer_fields = infer_fields
         self.__order_fields = order_fields
-        self.__error_limit = error_limit
-        self.__table_limit = table_limit
-        self.__row_limit = row_limit
+
+        parse_limit = lambda num: float('inf') if (num < 0) else num
+        self.__error_limit = parse_limit(error_limit)
+        self.__table_limit = parse_limit(table_limit)
+        self.__row_limit = parse_limit(row_limit)
 
     def inspect(self, source, preset='table', **options):
         """https://github.com/frictionlessdata/goodtables-py#inspector
@@ -239,7 +241,8 @@ class Inspector(object):
 
         # Compose report
         headers = headers if None not in headers else None
-        errors = errors[:self.__error_limit]
+        if self.__error_limit != float('inf'):
+            errors = errors[:self.__error_limit]
         errors = _sort_errors(errors)
         report = copy(extra)
         report.update({

@@ -14,25 +14,62 @@ click.disable_unicode_literals_warning = True
 # Module API
 
 @click.command()
-@click.argument('source')
+@click.argument('source', type=click.Path())
 @click.option('--preset')
-@click.option('--schema')
-@click.option('--checks', type=lambda value: value.split(','))
-@click.option('--skip-checks', type=lambda value: value.split(','))
-@click.option('--infer-schema', is_flag=True)
-@click.option('--infer-fields', is_flag=True)
-@click.option('--order-fields', is_flag=True)
-@click.option('--error-limit', type=int)
-@click.option('--table-limit', type=int)
-@click.option('--row-limit', type=int)
-@click.option('--json', is_flag=True)
+@click.option('--schema', type=click.Path(), help='Path to a Table Schema.')
+@click.option(
+    '--infer-schema/--no-infer-schema',
+    default=False,
+    help='Infer schema. If an explicit schema is also defined, infer missing columns only.'
+)
+@click.option('--checks', '-c', multiple=True, help='Checks to enable.')
+@click.option(
+    '--skip-checks',
+    '-C',
+    multiple=True,
+    help='Checks to disable.'
+)
+@click.option(
+    '--ignore-order',
+    is_flag=True,
+    help='Don\'t validate the columns order.'
+)
+@click.option(
+    '--row-limit',
+    type=int,
+    default=-1,
+    help='Maximum number of rows to validate (-1 for no limit)'
+)
+@click.option(
+    '--table-limit',
+    type=int,
+    default=-1,
+    help='Maximum number of tables to validate (-1 for no limit)'
+)
+@click.option(
+    '--error-limit',
+    type=int,
+    default=-1,
+    help='Stop validating if there are more than this number of errors (-1 for no limit).'
+)
+@click.option('--json', is_flag=True, help='Output report as JSON.')
+@click.option('--quiet', '-q', is_flag=True, help='Don\'t output anything.')
 @click.version_option(goodtables.__version__, message='%(version)s')
 def cli(source, json, **options):
-    """https://github.com/frictionlessdata/goodtables-py#cli
-    """
+    # Remove blank values
     options = {key: value for key, value in options.items() if value is not None}
+    if not options['checks']:
+        del options['checks']
+    if not options['skip_checks']:
+        del options['skip_checks']
+
+    options['infer_fields'] = options['infer_schema']
+    options['order_fields'] = options.pop('ignore_order')
+    quiet = options.pop('quiet')
+
     report = goodtables.validate(source, **options)
-    _print_report(report, json=json)
+    if not quiet:
+        _print_report(report, json=json)
     exit(not report['valid'])
 
 
