@@ -14,7 +14,7 @@ click.disable_unicode_literals_warning = True
 # Module API
 
 @click.command()
-@click.argument('source', type=click.Path())
+@click.argument('source', type=click.Path(), nargs=-1, required=True)
 @click.option('--preset')
 @click.option('--schema', type=click.Path(), help='Path to a Table Schema.')
 @click.option(
@@ -67,9 +67,13 @@ def cli(source, json, **options):
     options['order_fields'] = options.pop('ignore_order')
     quiet = options.pop('quiet')
 
-    report = goodtables.validate(source, **options)
+    sources = [{'source': source} for source in source]
+
+    report = goodtables.validate(sources, **options)
+
     if not quiet:
         _print_report(report, json=json)
+
     exit(not report['valid'])
 
 

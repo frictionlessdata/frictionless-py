@@ -29,3 +29,15 @@ def test_cli_infer_schema_enables_infer_fields(validate_mock):
     assert last_call_args is not None
     assert last_call_args[-1].get('infer_schema')
     assert last_call_args[-1].get('infer_fields')
+
+
+@mock.patch('goodtables.validate', autospec=True)
+def test_cli_accepts_multiple_sources(validate_mock):
+    sources = ['data1.csv', 'data2.csv']
+    expected_sources = [{'source': source} for source in sources]
+
+    CliRunner().invoke(cli, sources)
+
+    last_call_args = validate_mock.call_args
+    assert last_call_args is not None
+    assert last_call_args[0][0] == expected_sources
