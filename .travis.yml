@@ -23,8 +23,7 @@ env:
     - TOXENV="py${PYTHON_VERSION//./}"
 
 install:
-  - make install
-  - pip install coveralls
+  - pip install tox coveralls
 
 script:
   - make test
