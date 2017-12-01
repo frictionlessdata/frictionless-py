@@ -9,6 +9,14 @@ Goodtables is a framework to validate tabular data. It can check the structure
 of your data (e.g. all rows have the same number of columns), and its contents
 (e.g. all dates are valid).
 
+## Features
+
+* **Structural checks**: Ensure that there are no empty rows, no blank headers, etc.
+* **Content checks**: Ensure that the values have the correct types ("string", "number", "date", etc.), that their format is valid ("string must be an e-mail"), and that they respect the constraints ("age must be a number greater than 18").
+* **Support for multiple tabular formats**: CSV, Excel files, LibreOffice, Data Package, etc.
+* **Parallelized validations for multi-table datasets**
+* **Command line interface**
+
 ## Table of Contents
 
 - [Features](#features)
@@ -22,19 +30,11 @@ of your data (e.g. all rows have the same number of columns), and its contents
     - [Content checks](#content-checks)
     - [Advanced checks](#advanced-checks)
 - [Developer documentation](#developer-documentation)
+    - [Semantic versioning](#semantic-versioning)
     - [Validate](#validate)
 - [FAQ](#faq)
     - [How can I add a new custom check?](#how-can-i-add-a-new-custom-check)
     - [How can I add support for a new tabular file type?](#how-can-i-add-support-for-a-new-tabular-file-type)
-
-## Features
-
-* Structural checks (no blank headers, empty rows, ...)
-* Content checks (numbers are numbers, dates are valid, ...)
-* Support for multiple tabular formats (CSV, XLS, ODS, etc)
-* Support for data packages
-* Parallelized validations for multi-table datasets
-* Command line interface
 
 ## Getting Started
 
@@ -42,6 +42,7 @@ of your data (e.g. all rows have the same number of columns), and its contents
 
 ```
 pip install goodtables
+pip install goodtables[ods]  # If you need LibreOffice's ODS file support
 ```
 
 ### Running on CLI
@@ -66,7 +67,9 @@ report['tables'][0]['source'] # 'invalid.csv'
 report['tables'][0]['errors'][0]['code'] # 'blank-header'
 ```
 
-Check the [examples](examples) folder for other examples.
+You can read a more in depth explanation on using goodtables with Python on
+the [developer documentation](#developer-documentation) section. Check also
+the [examples](examples) folder for other examples.
 
 ## Validation
 
@@ -134,15 +137,12 @@ Lastly, if the order of the fields in the data is different than in your schema,
 
 Sometimes we have to check for some values we don't want to have in out dataset. It accepts following options:
 
-<dl>
-  <dt>column (int/str)</dt>
-  <dd>Column number or name</dd>
-  
-  <dt>blacklist (list)</dt>
-  <dd>List of blacklisted values</dd>
-</dl>
+| option | type | description |
+| --- | --- | --- |
+| column | int/str | Column number or name |
+| blacklist | list of str | List of blacklisted values |
 
-Consider csv file like this:
+Consider the following CSV file:
 
 ```csv
 id,name
@@ -152,7 +152,7 @@ id,name
 5,Alex
 ```
 
-Let's check the `name` column doesn't have `bug` and `bad` values:
+Let's check that the `name` column doesn't contain rows with `bug` or `bad`:
 
 ```python
 from goodtables import validate
@@ -168,18 +168,13 @@ report = validate('data.csv', checks=[
 
 This check helps to find outlines in a column containing positive numbers. It accepts following options:
 
-<dl>
-  <dt>column (int/str)</dt>
-  <dd>Column number or name</dd>
-  
-  <dt>average (str:mean/median/mode)</dt>
-  <dd>Type of average</dd>
-  
-  <dt>interval (int)</dt>
-  <dd>Values must be inside range <code>average ± standard deviation * interval</code></dd>
-</dl>
+| option | type | description |
+| --- | --- | --- |
+| column | int/str | Column number or name |
+| average | str | Average type, either "mean", "median" or "mode" |
+| interval | int | Values must be inside range `average ± standard deviation * interval` |
 
-Consider csv file like this:
+Consider the following CSV file:
 
 ```csv
 temperature
@@ -196,7 +191,7 @@ temperature
 3
 ```
 
-We use `median` to get an average of the column values and allow interval of 3 standard deviations. For our case median is `2.0` and standard deviation is `29.73` so all valid values should be inside `[-87.19, 91.19]` interval.
+We use `median` to get an average of the column values and allow interval of 3 standard deviations. For our case median is `2.0` and standard deviation is `29.73` so all valid values must be inside the `[-87.19, 91.19]` interval.
 
 ```python
 report = validate('data.csv', checks=[
@@ -209,12 +204,11 @@ report = validate('data.csv', checks=[
 
 This checks is for pretty common case when a column should have integers that sequentially increment.  It accepts following options:
 
-<dl>
-  <dt>column (int/str)</dt>
-  <dd>Column number or name</dd>
-</dl>
+| option | type | description |
+| --- | --- | --- |
+| column | int/str | Column number or name |
 
-Consider csv file like this:
+Consider the following CSV file:
 
 ```csv
 id,name
@@ -224,7 +218,7 @@ id,name
 5,five
 ```
 
-Let's check `id` column to contain sequential integers:
+Let's check if the `id` column contains sequential integers:
 
 ```python
 from goodtables import validate
@@ -239,7 +233,7 @@ report = validate('data.csv', checks=[
 
 Some database or spreadsheet software (like MySQL or Excel) could cutoff values on saving. There are some well-known heuristics to find this bad values. See https://github.com/propublica/guides/blob/master/data-bulletproofing.md for more detailed information.
 
-Consider csv file like this:
+Consider the following CSV file:
 
 ```csv
 id,amount,comment
@@ -290,6 +284,13 @@ report = validate('data.csv', checks=[
 
 ## Developer documentation
 
+### Semantic versioning
+
+We follow the [Semantic Versioning][semver] specification to define our version
+numbers. This means that we'll increase the major version number when there's a
+breaking change. Because of this, we recommend you to explicitly specify the
+goodtables version on your dependency list (e.g. `setup.py` or
+`requirements.txt`).
 
 ### Validate
 
@@ -492,7 +493,52 @@ report = validate(source, preset='custom-preset')
 
 For now this documentation section is incomplete. Please see builtin presets to learn more about the dataset extraction protocol.
 
+## Changelog
+
+### v1.5
+
+New API added:
+- Validation `source` now could be a `pathlib.Path`
+
+### v1.4
+
+Improved behaviour:
+- rebased on Data Quality Spec v1
+- rebased on Data Package Spec v1
+- rebased on Table Schema Spec v1
+- treat primary key as required/unique field
+
+### v1.3
+
+New advanced checks added:
+- `blacklisted-value`
+- `custom-constraint`
+- `deviated-value`
+- `sequential-value`
+- `truncated-value`
+
+### v1.2
+
+New API added:
+- `report.preset`
+- `report.tables[].schema`
+
+### v1.1
+
+New API added:
+- `report.tables[].scheme`
+- `report.tables[].format`
+- `report.tables[].encoding`
+
+### v1.0
+
+This version includes various big changes. A migration guide is under development and will be published here.
+
+### v0.6
+
+First version of `goodtables`.
 
 [tableschema]: https://specs.frictionlessdata.io/table-schema/
 [tabulator]: https://github.com/frictionlessdata/tabulator-py/
 [datapackage]: https://specs.frictionlessdata.io/data-package/ "Data Package specification"
+[semver]: https://semver.org/ "Semantic Versioning"
