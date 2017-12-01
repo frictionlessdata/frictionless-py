@@ -14,8 +14,7 @@ language:
 
 python:
   - 2.7
-  - 3.3
-  # - 3.4
+  - 3.4
   - 3.5
   - 3.6
 
@@ -24,8 +23,7 @@ env:
     - TOXENV="py${PYTHON_VERSION//./}"
 
 install:
-  - make install
-  - pip install coveralls
+  - pip install tox coveralls
 
 script:
   - make test

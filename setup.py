@@ -35,7 +35,6 @@ INSTALL_FORMAT_ODS_REQUIRES = [
     'lxml>=3.0,<4.0',
 ]
 TESTS_REQUIRE = [
-    'pylama',
     'tox',
 ]
 README = read('README.md')
@@ -85,9 +84,9 @@ setup(
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
         'Topic :: Software Development :: Libraries :: Python Modules',
     ],
