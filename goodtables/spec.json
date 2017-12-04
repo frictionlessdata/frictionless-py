@@ -109,7 +109,7 @@
           "context": "table",
           "weight": 15,
           "message": "Table Schema error: {error_message}",
-          "description": "Provided schema is not valid.\n\n How it could be resolved:\n - Update schema descriptor to be a valid descriptor\n - If this error should be ignored disable schema cheks in {validator}."
+          "description": "Provided schema is not valid.\n\n How it could be resolved:\n - Update schema descriptor to be a valid descriptor\n - If this error should be ignored disable schema checks in {validator}."
         },
         "non-matching-header": {
           "name": "Non-Matching Header",
