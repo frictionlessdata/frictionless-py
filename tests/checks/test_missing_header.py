@@ -11,7 +11,6 @@ from goodtables.checks.missing_header import missing_header
 # Check
 
 def test_check_missing_header(log):
-    errors = []
     cells = [
         {'number': 1,
          'header': 'name1',
@@ -20,13 +19,12 @@ def test_check_missing_header(log):
          'header': 'name2',
          'field': Field({'name': 'name2'})},
     ]
-    missing_header(errors, cells)
+    errors = missing_header(cells)
     assert log(errors) == []
     assert len(cells) == 2
 
 
 def test_check_missing_header_problem(log):
-    errors = []
     cells = [
         {'number': 1,
          'header': 'name1',
@@ -34,7 +32,7 @@ def test_check_missing_header_problem(log):
         {'number': 2,
          'field': Field({'name': 'name2'})},
     ]
-    missing_header(errors, cells)
+    errors = missing_header(cells)
     assert log(errors) == [
         (None, 2, 'missing-header'),
     ]

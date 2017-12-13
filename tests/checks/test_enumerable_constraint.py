@@ -10,8 +10,7 @@ from goodtables.checks.enumerable_constraint import enumerable_constraint
 # Check
 
 def test_check_enumerable_constraint(log):
-    errors = []
     cells = []
-    enumerable_constraint(errors, cells, 1)
+    errors = enumerable_constraint(cells, 1)
     assert log(errors) == []
     assert len(cells) == 0

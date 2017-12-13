@@ -12,6 +12,7 @@ from tableschema import Schema
 from six.moves import zip_longest
 from multiprocessing.pool import ThreadPool
 from .registry import registry
+from .error import Error
 from . import exceptions
 from . import config
 
@@ -175,9 +176,9 @@ class Inspector(object):
                     if not cells:
                         break
                     check_func = getattr(check['func'], 'check_headers', check['func'])
-                    check_func(errors, cells, sample)
+                    errors += (check_func(cells, sample) or [])
                 for error in errors:
-                    error['row'] = None
+                    error.row = None
 
         # Body checks
         if not fatal_error:
@@ -211,11 +212,11 @@ class Inspector(object):
                         if not cells:
                             break
                         check_func = getattr(check['func'], 'check_row', check['func'])
-                        check_func(errors, cells, row_number)
+                        errors += (check_func(cells, row_number) or [])
                     for error in reversed(errors):
-                        if 'row' in error:
+                        if error.row is not None:
                             break
-                        error['row'] = row
+                        error.row = row
                     if row_number >= self.__row_limit:
                         warnings.append(
                             'Table "%s" inspection has reached %s row(s) limit' %
@@ -232,7 +233,7 @@ class Inspector(object):
             for check in checks:
                 check_func = getattr(check['func'], 'check_table', None)
                 if check_func:
-                    check_func(errors)
+                    errors += (check_func() or [])
 
         # Stop timer
         stop = datetime.datetime.now()
@@ -240,7 +241,7 @@ class Inspector(object):
         # Compose report
         headers = headers if None not in headers else None
         errors = errors[:self.__error_limit]
-        errors = _sort_errors(errors)
+        errors = sorted(errors)
         report = copy(extra)
         report.update({
             'time': round((stop - start).total_seconds(), 3),
@@ -253,7 +254,7 @@ class Inspector(object):
             'format': stream.format,
             'encoding': stream.encoding,
             'schema': 'table-schema' if schema else None,
-            'errors': errors,
+            'errors': [dict(error) for error in errors],
         })
 
         return warnings, report
@@ -279,6 +280,7 @@ def _filter_checks(checks, type=None, context=None, inverse=False):
 def _compose_error_from_exception(exception):
     code = 'source-error'
     message = str(exception)
+
     if isinstance(exception, tabulator.exceptions.SourceError):
         code = 'source-error'
     elif isinstance(exception, tabulator.exceptions.SchemeError):
@@ -291,27 +293,15 @@ def _compose_error_from_exception(exception):
         code = 'io-error'
     elif isinstance(exception, tabulator.exceptions.HTTPError):
         code = 'http-error'
-    return {
-        'row': None,
-        'code': code,
-        'message': message,
-        'row-number': None,
-        'column-number': None,
-    }
+
+    return Error(code, message=message)
 
 
 def _compose_error_from_schema_error(error):
-    code = 'schema-error'
-    message = 'Table Schema error: %s' % error
-    return {
-        'row': None,
-        'code': code,
-        'message': message,
-        'row-number': None,
-        'column-number': None,
+    message_substitutions = {
+        'error_message': error,
     }
-
-
-def _sort_errors(errors):
-    return sorted(errors, key=lambda error:
-        (error['row-number'] or 0, error['column-number'] or 0))
+    return Error(
+        'schema-error',
+        message_substitutions=message_substitutions
+    )

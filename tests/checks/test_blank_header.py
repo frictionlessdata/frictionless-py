@@ -16,7 +16,7 @@ def test_check_blank_header(log):
          'header': 'name',
          'field': None},
     ]
-    blank_header(errors, cells)
+    errors = blank_header(cells)
     assert log(errors) == []
     assert len(cells) == 1
 
@@ -28,7 +28,7 @@ def test_check_blank_header_problem(log):
          'header': '',
          'field': None},
     ]
-    blank_header(errors, cells)
+    errors = blank_header(cells)
     assert log(errors) == [
         (None, 1, 'blank-header'),
     ]

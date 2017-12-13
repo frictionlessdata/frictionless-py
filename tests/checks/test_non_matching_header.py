@@ -11,7 +11,6 @@ from goodtables.checks.non_matching_header import NonMatchingHeader
 # Check
 
 def test_check_non_matching_header(log):
-    errors = []
     cells = [
         {'number': 1,
          'header': 'name1',
@@ -23,13 +22,12 @@ def test_check_non_matching_header(log):
          'header': 'name3'},
     ]
     non_matching_header = NonMatchingHeader()
-    non_matching_header.check_headers(errors, cells)
+    errors = non_matching_header.check_headers(cells)
     assert log(errors) == []
     assert len(cells) == 3
 
 
 def test_check_non_matching_header_problem(log):
-    errors = []
     cells = [
         {'number': 1,
          'header': 'name1',
@@ -41,7 +39,7 @@ def test_check_non_matching_header_problem(log):
          'header': 'name3'},
     ]
     non_matching_header = NonMatchingHeader()
-    non_matching_header.check_headers(errors, cells)
+    errors = non_matching_header.check_headers(cells)
     assert log(errors) == [
         (None, 1, 'non-matching-header'),
         (None, 2, 'non-matching-header'),
@@ -50,7 +48,6 @@ def test_check_non_matching_header_problem(log):
 
 
 def test_check_non_matching_header_order_fields(log):
-    errors = []
     cells = [
         {'number': 1,
          'header': 'name1',
@@ -62,13 +59,12 @@ def test_check_non_matching_header_order_fields(log):
          'header': 'name3'},
     ]
     non_matching_header = NonMatchingHeader(order_fields=True)
-    non_matching_header.check_headers(errors, cells)
+    errors = non_matching_header.check_headers(cells)
     assert log(errors) == []
     assert len(cells) == 3
 
 
 def test_check_non_matching_header_order_fields_problem(log):
-    errors = []
     cells = [
         {'number': 1,
          'header': 'name1',
@@ -80,7 +76,7 @@ def test_check_non_matching_header_order_fields_problem(log):
          'header': 'name3'},
     ]
     non_matching_header = NonMatchingHeader(order_fields=True)
-    non_matching_header.check_headers(errors, cells)
+    errors = non_matching_header.check_headers(cells)
     assert log(errors) == [
         (None, 2, 'non-matching-header'),
     ]

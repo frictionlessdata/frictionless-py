@@ -6,8 +6,8 @@ from __future__ import unicode_literals
 
 from copy import copy
 from tableschema import Schema
-from ..spec import spec
 from ..registry import check
+from ..error import Error
 
 
 # Module API
@@ -19,7 +19,9 @@ class ExtraHeader(object):
     def __init__(self, infer_fields=False, **options):
         self.__infer_fields = infer_fields
 
-    def check_headers(self, errors, cells, sample):
+    def check_headers(self, cells, sample):
+        errors = []
+
         for cell in copy(cells):
 
             # Skip if cell has field
@@ -40,12 +42,8 @@ class ExtraHeader(object):
 
             # Add error/remove column
             else:
-                message = spec['errors']['extra-header']['message']
-                message = message.format(column_number=cell['number'])
-                errors.append({
-                    'code': 'extra-header',
-                    'message': message,
-                    'row-number': None,
-                    'column-number': cell['number'],
-                })
+                error = Error('extra-header', cell)
+                errors.append(error)
                 cells.remove(cell)
+
+        return errors

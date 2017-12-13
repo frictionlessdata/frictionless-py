@@ -4,14 +4,16 @@ from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
-from ..spec import spec
 from ..registry import check
+from ..error import Error
 
 
 # Module API
 
 @check('duplicate-header', type='structure', context='head')
-def duplicate_header(errors, cells, sample=None):
+def duplicate_header(cells, sample=None):
+    errors = []
+
     rindex = {}
     for cell in cells:
 
@@ -19,21 +21,26 @@ def duplicate_header(errors, cells, sample=None):
         if 'header' not in cell:
             continue
 
-        # Get references
-        references = rindex.setdefault(cell['header'], [])
+        header_indexes = rindex.get(cell['header'], set())
+        header_indexes.add(cell['number'])
 
-        # Add error
-        if references:
-            message = spec['errors']['duplicate-header']['message']
-            message = message.format(
-                column_number=cell['number'],
-                column_numbers=', '.join(map(str, references)))
-            errors.append({
-                'code': 'duplicate-header',
-                'message': message,
-                'row-number': None,
-                'column-number': cell['number'],
-            })
+        rindex[cell['header']] = header_indexes
 
-        # Update references
-        references.append(cell['number'])
+    for header_value, header_indexes in rindex.items():
+        if len(header_indexes) == 1:
+            continue
+
+        for header_index in sorted(header_indexes)[1:]:
+            duplicates = header_indexes - {header_index}
+            message_substitutions = {
+                'column_numbers': ', '.join(map(str, duplicates)),
+            }
+            error = Error(
+                'duplicate-header',
+                cell,
+                message_substitutions=message_substitutions
+            )
+            errors.append(error)
+
+    return errors
+

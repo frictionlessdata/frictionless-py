@@ -19,6 +19,7 @@ def log():
         # - format for report: (table-number, row-number, column-number, code)
         result = []
         def pack_error(error, table_number='skip'):
+            error = dict(error)
             error = [error['row-number'], error['column-number'], error['code']]
             if table_number != 'skip':
                 error = [table_number] + error

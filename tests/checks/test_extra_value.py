@@ -11,7 +11,6 @@ from goodtables.checks.extra_value import extra_value
 # Check
 
 def test_check_extra_value(log):
-    errors = []
     cells = [
         {'number': 1,
          'header': 'name1',
@@ -22,13 +21,12 @@ def test_check_extra_value(log):
          'value': 'value',
          'field': None},
     ]
-    extra_value(errors, cells, 1)
+    errors = extra_value(cells, 1)
     assert log(errors) == []
     assert len(cells) == 2
 
 
 def test_check_extra_value_problem(log):
-    errors = []
     cells = [
         {'number': 1,
          'header': 'name1',
@@ -37,7 +35,7 @@ def test_check_extra_value_problem(log):
         {'number': 2,
          'value': 'value'},
     ]
-    extra_value(errors, cells, 1)
+    errors = extra_value(cells, 1)
     assert log(errors) == [
         (1, 2, 'extra-value'),
     ]

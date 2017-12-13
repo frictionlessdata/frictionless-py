@@ -5,14 +5,16 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 from copy import copy
-from ..spec import spec
 from ..registry import check
+from ..error import Error
 
 
 # Module API
 
 @check('required-constraint', type='schema', context='body')
-def required_constraint(errors, cells, row_number):
+def required_constraint(cells, row_number):
+    errors = []
+
     for cell in copy(cells):
 
         # Skip if cell is incomplete
@@ -29,16 +31,15 @@ def required_constraint(errors, cells, row_number):
             continue
 
         # Add error
-        message = spec['errors']['required-constraint']['message']
-        message = message.format(
-            row_number=row_number,
-            column_number=cell['number'])
-        errors.append({
-            'code': 'required-constraint',
-            'message': message,
-            'row-number': row_number,
-            'column-number': cell['number'],
-        })
+
+        error = Error(
+            'required-constraint',
+            cell,
+            row_number
+        )
+        errors.append(error)
 
         # Remove cell
         cells.remove(cell)
+
+    return errors

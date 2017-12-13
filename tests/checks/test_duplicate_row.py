@@ -10,7 +10,6 @@ from goodtables.checks.duplicate_row import DuplicateRow
 # Check
 
 def test_check_duplicate_row(log):
-    errors = []
     cells1 = [
         {'number': 1,
          'header': 'name1',
@@ -24,15 +23,14 @@ def test_check_duplicate_row(log):
          'field': None},
     ]
     duplicate_row = DuplicateRow()
-    duplicate_row.check_row(errors, cells1, 1)
-    duplicate_row.check_row(errors, cells2, 2)
+    errors = duplicate_row.check_row(cells1, 1)
+    errors += duplicate_row.check_row(cells2, 2)
     assert log(errors) == []
     assert len(cells1) == 1
     assert len(cells2) == 1
 
 
 def test_check_duplicate_row_problem(log):
-    errors = []
     cells1 = [
         {'number': 1,
          'header': 'name1',
@@ -46,8 +44,8 @@ def test_check_duplicate_row_problem(log):
          'field': None},
     ]
     duplicate_row = DuplicateRow()
-    duplicate_row.check_row(errors, cells1, 1)
-    duplicate_row.check_row(errors, cells2, 2)
+    errors = duplicate_row.check_row(cells1, 1)
+    errors += duplicate_row.check_row(cells2, 2)
     assert log(errors) == [
         (2, None, 'duplicate-row'),
     ]

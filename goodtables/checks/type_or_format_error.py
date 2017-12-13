@@ -6,14 +6,16 @@ from __future__ import unicode_literals
 
 from copy import copy
 import tableschema
-from ..spec import spec
 from ..registry import check
+from ..error import Error
 
 
 # Module API
 
 @check('type-or-format-error', type='schema', context='body')
-def type_or_format_error(errors, cells, row_number):
+def type_or_format_error(cells, row_number):
+    errors = []
+
     for cell in copy(cells):
 
         # Skip if cell is incomplete
@@ -32,19 +34,20 @@ def type_or_format_error(errors, cells, row_number):
             continue
 
         # Add error
-        message = spec['errors']['type-or-format-error']['message']
-        message = message.format(
-            value='"%s"' % cell['value'],
-            row_number=row_number,
-            column_number=cell['number'],
-            field_type='"%s"' % cell['field'].type,
-            field_format='"%s"' % cell['field'].format)
-        errors.append({
-            'code': 'type-or-format-error',
-            'message': message,
-            'row-number': row_number,
-            'column-number': cell['number'],
-        })
+        message_substitutions = {
+            'value': '"{}"'.format(cell['value']),
+            'field_type': '"{}"'.format(cell['field'].type),
+            'field_format': '"{}"'.format(cell['field'].format),
+        }
+        error = Error(
+            'type-or-format-error',
+            cell,
+            row_number,
+            message_substitutions=message_substitutions
+        )
+        errors.append(error)
 
         # Remove cell
         cells.remove(cell)
+
+    return errors

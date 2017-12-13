@@ -446,18 +446,21 @@ $ make test
 To create a custom check user could use a `check` decorator. This way the builtin check could be overridden (use the spec error code like `duplicate-row`) or could be added a check for a custom error (use `type`, `context` and `position` arguments):
 
 ```python
-from goodtables import validate, check
+from goodtables import validate, check, Error
 
 @check('custom-check', type='custom', context='body')
-def custom_check(errors, cells, row_number):
+def custom_check(cells, row_number):
+    errors = []
     for cell in cells:
-        errors.append({
-            'code': 'custom-error',
-            'message': 'Custom error',
-            'row-number': row_number,
-            'column-number': cell['number'],
-        })
-        cells.remove(cell)
+        message = 'Custom error'
+        error = Error(
+            'custom-error',
+            cell,
+            row_number,
+            message
+        )
+        errors.append(error)
+    return errors
 
 report = validate('data.csv', checks=['custom-check'])
 ```

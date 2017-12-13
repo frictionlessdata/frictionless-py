@@ -4,14 +4,16 @@ from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
-from ..spec import spec
 from ..registry import check
+from ..error import Error
 
 
 # Module API
 
 @check('blank-header', type='structure', context='head')
-def blank_header(errors, cells, sample=None):
+def blank_header(cells, sample=None):
+    errors = []
+
     for cell in cells:
 
         # Skip if cell have non blank header
@@ -19,11 +21,7 @@ def blank_header(errors, cells, sample=None):
             continue
 
         # Add error
-        message = spec['errors']['blank-header']['message']
-        message = message.format(column_number=cell['number'])
-        errors.append({
-            'code': 'blank-header',
-            'message': message,
-            'row-number': None,
-            'column-number': cell['number'],
-        })
+        error = Error('blank-header', cell)
+        errors.append(error)
+
+    return errors
