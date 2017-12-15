@@ -241,7 +241,7 @@ class Inspector(object):
             'errors': [dict(error) for error in errors],
         })
 
-        return warnings, report
+        return warnings, _clean_empty(report)
 
 
 # Internal
@@ -286,3 +286,12 @@ def _compose_error_from_schema_error(error):
         'schema-error',
         message_substitutions=message_substitutions
     )
+
+
+def _clean_empty(d):
+    '''Remove None values from a dict.'''
+    if not isinstance(d, (dict, list)):
+        return d
+    if isinstance(d, list):
+        return [v for v in (_clean_empty(v) for v in d) if v is not None]
+    return {k: v for k, v in ((k, _clean_empty(v)) for k, v in d.items()) if v is not None}
