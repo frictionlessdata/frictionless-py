@@ -8,7 +8,7 @@ import sys
 import json
 import pytest
 from importlib import import_module
-from goodtables import validate
+from goodtables import validate, init_datapackage
 
 
 # Infer preset
@@ -220,3 +220,50 @@ def test_validate_infer_fields_issue_225():
     }
     report = validate(source, schema=schema, infer_fields=True)
     assert report['valid']
+
+
+
+class TestValidateInitDatapackage(object):
+    def test_tabular_preset(self):
+        path = 'data/valid.csv'
+        dp = init_datapackage(path)
+
+        assert dp is not None
+        assert dp.valid, dp.errors
+        assert dp.descriptor['schema'] == 'tabular-data-package'
+        assert len(dp.resources) == 1
+        resource = dp.resources[0]
+        assert resource.descriptor['path'] == path
+        assert resource.descriptor.get('schema') is not None
+
+    def test_nested_preset(self):
+        sources = [
+            {'source': 'data/valid.csv'},
+            {'source': 'data/sequential_value.csv'},
+        ]
+        dp = init_datapackage(sources)
+
+        assert dp is not None
+        assert dp.valid, dp.errors
+        assert len(dp.resources) == 2
+        paths = set([source['source'] for source in sources])
+        for resource in dp.resources:
+            assert resource.descriptor['path'] in paths
+
+    def test_datapackage_preset_is_ignored(self):
+        path = 'data/datapackages/valid/datapackage.json'
+        dp = init_datapackage(path)
+
+        assert dp is None
+
+    def test_it_ignores_datapackage_sources(self):
+        sources = [
+            {'source': 'data/valid.csv'},
+            {'source': 'data/sequential_value.csv'},
+            {'source': 'data/datapackages/valid/datapackage.json'},
+        ]
+        dp = init_datapackage(sources)
+
+        assert dp is not None
+        assert dp.valid, dp.errors
+        assert len(dp.resources) == 2

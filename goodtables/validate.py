@@ -4,7 +4,7 @@ from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
-import six
+import datapackage
 from .inspector import Inspector
 
 
@@ -78,7 +78,60 @@ def validate(source, **options):
     .. _tabulator:
         https://github.com/frictionlessdata/datapackage-py
     """
+    source, options, inspector_settings = _parse_arguments(source, **options)
 
+    # Validate
+    inspector = Inspector(**inspector_settings)
+    report = inspector.inspect(source, **options)
+
+    return report
+
+
+def init_datapackage(source, **options):
+    source = _remove_datapackage_sources(source)
+    if not source:
+        return
+
+    dp = datapackage.Package({
+        'name': 'change-me',
+        'schema': 'tabular-data-package',
+    })
+    source, options, _ = _parse_arguments(source, **options)
+
+    inspector = Inspector()
+    schemas = inspector.infer(source, **options)
+
+    for i, (path, schema) in enumerate(schemas.items()):
+        descriptor = {
+            'name': 'data{}'.format(i),
+            'path': path,
+            'schema': schema.descriptor,
+        }
+
+        dp.add_resource(descriptor)
+
+    return dp
+
+
+def _remove_datapackage_sources(source):
+    is_dp = lambda source: source.endswith('datapackage.json')  # noqa:E731
+    result = None
+    if isinstance(source, list):
+        result = filter(
+            lambda v: v is not None,
+            [_remove_datapackage_sources(s) for s in source]
+        )
+        result = [s for s in result]
+    elif isinstance(source, dict):
+        if not ('resources' in source or is_dp(source.get('source', ''))):
+            result = source
+    elif hasattr(source, 'endswith') and not is_dp(source):
+        result = source
+
+    return result
+
+
+def _parse_arguments(source, **options):
     # Extract settings
     validation_options = set((
         'checks',
@@ -106,22 +159,4 @@ def validate(source, **options):
                 if hasattr(item['source'], 'joinpath'):
                     source[index]['source'] = str(item['source'])
 
-    # Extract/infer preset
-    preset = options.pop('preset', None)
-    if preset is None:
-        preset = 'table'
-        if isinstance(source, six.string_types):
-            if source.endswith('datapackage.json'):
-                preset = 'datapackage'
-        elif isinstance(source, dict):
-            if 'resources' in source:
-                preset = 'datapackage'
-        elif isinstance(source, list):
-            if source and isinstance(source[0], dict) and 'source' in source[0]:
-                preset = 'nested'
-
-    # Validate
-    inspector = Inspector(**settings)
-    report = inspector.inspect(source, preset=preset, **options)
-
-    return report
+    return source, options, settings

@@ -8,6 +8,60 @@ import pytest
 from goodtables import Inspector
 
 
+
+class TestInspectorInferSchemas(object):
+    def test_nested_preset(self):
+        sources = [
+            {'source': 'data/valid.csv'},
+            {'source': 'data/sequential_value.csv'},
+        ]
+
+        schemas = Inspector().infer(sources, preset='nested')
+
+        for source in sources:
+            data_path = source['source']
+            schema = schemas.get(data_path)
+            assert schema is not None
+            assert schema.descriptor.get('fields') == [
+                {'name': 'id', 'type': 'integer', 'format': 'default'},
+                {'name': 'name', 'type': 'string', 'format': 'default'},
+            ]
+
+    def test_table_preset(self):
+        data_path = 'data/valid.csv'
+
+        schemas = Inspector().infer(data_path)
+
+        schema = schemas.get(data_path)
+        assert schema is not None
+        assert schema.descriptor.get('fields') == [
+            {'name': 'id', 'type': 'integer', 'format': 'default'},
+            {'name': 'name', 'type': 'string', 'format': 'default'},
+        ]
+
+    @pytest.mark.xfail(reason='Tabulator does not validate the table schemas yet.')
+    def test_invalid_csv(self):
+        data_path = 'data/invalid.csv'
+
+        schemas = Inspector().infer(data_path)
+
+        schema = schemas.get(data_path)
+        assert schema is None
+
+    @pytest.mark.xfail(reason='We do not handle datapackages yet')
+    def test_datapackage_preset(self):
+        data_path = 'data/datapackages/valid/datapackage.json'
+
+        inspector = Inspector()
+        schemas = inspector.infer(data_path, preset='datapackage')
+
+        schema = schemas.get(data_path)
+        assert schema is not None
+        assert schema.descriptor.get('fields') == [
+            {'name': 'id', 'type': 'integer', 'format': 'default'},
+            {'name': 'name', 'type': 'string', 'format': 'default'},
+        ]
+
 # Preset: table
 
 def test_inspector_table_valid(log):
@@ -97,6 +151,14 @@ def test_inspector_tables_invalid(log):
         (2, 5, 5, 'extra-value'),
     ]
 
+
+def test_nested_presets_set_default_preset():
+    inspector = Inspector(infer_schema=True)
+    report = inspector.inspect([
+        {'source': 'data/datapackages/valid/datapackage.json'},
+    ], preset='nested')
+    assert report['valid']
+    assert report['warnings'] == []
 
 # Catch exceptions
 

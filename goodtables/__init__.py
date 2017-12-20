@@ -9,7 +9,7 @@ from __future__ import unicode_literals
 
 from .inspector import Inspector
 from .registry import preset, check
-from .validate import validate
+from .validate import validate, init_datapackage
 from .spec import spec
 from . import exceptions
 

@@ -15,12 +15,22 @@ click.disable_unicode_literals_warning = True
 
 @click.command()
 @click.argument('source', type=click.Path(), nargs=-1, required=True)
+@click.option(
+    '--init',
+    is_flag=True,
+    help=(
+        'Create data package with the data files received as parameters.'
+        ' It will infer the schemas from the data.'
+    )
+)
+@click.option('--quiet', '-q', is_flag=True, help='Don\'t output anything.')
+@click.option('--json', is_flag=True, help='Output report as JSON.')
 @click.option('--preset')
 @click.option('--schema', type=click.Path(), help='Path to a Table Schema.')
 @click.option(
     '--infer-schema/--no-infer-schema',
     default=False,
-    help='Infer schema. If an explicit schema is also defined, infer missing columns only.'
+    help='Infer schema. If an explicit schema is defined, infer missing columns only.'
 )
 @click.option('--checks', '-c', multiple=True, help='Checks to enable.')
 @click.option(
@@ -52,8 +62,6 @@ click.disable_unicode_literals_warning = True
     default=-1,
     help='Stop validating if there are more than this number of errors (-1 for no limit).'
 )
-@click.option('--json', is_flag=True, help='Output report as JSON.')
-@click.option('--quiet', '-q', is_flag=True, help='Don\'t output anything.')
 @click.version_option(goodtables.__version__, message='%(version)s')
 def cli(source, json, **options):
     # Remove blank values
@@ -69,12 +77,16 @@ def cli(source, json, **options):
 
     sources = [{'source': source} for source in source]
 
-    report = goodtables.validate(sources, **options)
+    if options.pop('init'):
+        dp = goodtables.init_datapackage(sources, **options)
+        print(json_module.dumps(dp.descriptor, indent=4))
+        exit(dp.valid)  # Just to be defensive, as it should always be valid.
+    else:
+        report = goodtables.validate(sources, **options)
+        if not quiet:
+            _print_report(report, json=json)
 
-    if not quiet:
-        _print_report(report, json=json)
-
-    exit(not report['valid'])
+        exit(not report['valid'])
 
 
 # Internal
