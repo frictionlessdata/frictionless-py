@@ -25,6 +25,13 @@ click.disable_unicode_literals_warning = True
 )
 @click.option('--quiet', '-q', is_flag=True, help='Don\'t output anything.')
 @click.option('--json', is_flag=True, help='Output report as JSON.')
+@click.option(
+    '--output',
+    '-o',
+    type=click.File('w'),
+    default='-',
+    help='Redirect output to a file.'
+)
 @click.option('--preset')
 @click.option('--schema', type=click.Path(), help='Path to a Table Schema.')
 @click.option(
@@ -74,6 +81,7 @@ def cli(source, json, **options):
     options['infer_fields'] = options['infer_schema']
     options['order_fields'] = options.pop('ignore_order')
     quiet = options.pop('quiet')
+    output = options.pop('output')
 
     sources = [{'source': source} for source in source]
 
@@ -83,39 +91,44 @@ def cli(source, json, **options):
         exit(dp.valid)  # Just to be defensive, as it should always be valid.
     else:
         report = goodtables.validate(sources, **options)
+
         if not quiet:
-            _print_report(report, json=json)
+            _print_report(report, output=output, json=json)
 
         exit(not report['valid'])
 
 
 # Internal
-def _print_report(report, json=False):
+def _print_report(report, output=None, json=False):
+    def secho(*args, **kwargs):
+        click.secho(file=output, *args, **kwargs)
+
     if json:
-        return print(json_module.dumps(report, indent=4))
+        return secho(json_module.dumps(report, indent=4))
+
     color = 'green' if report['valid'] else 'red'
     tables = report.pop('tables')
     warnings = report.pop('warnings')
-    click.secho('DATASET', bold=True)
-    click.secho('='*7, bold=True)
-    click.secho(pformat(report), fg=color, bold=True)
+    secho('DATASET', bold=True)
+    secho('='*7, bold=True)
+    secho(pformat(report), fg=color, bold=True)
     if warnings:
-        click.secho('-'*9, bold=True)
+        secho('-'*9, bold=True)
     for warning in warnings:
-        click.secho('Warning: %s' % warning, fg='yellow')
+        secho('Warning: %s' % warning, fg='yellow')
     for table_number, table in enumerate(tables, start=1):
-        click.secho('\nTABLE [%s]' % table_number, bold=True)
-        click.secho('='*9, bold=True)
+        secho('\nTABLE [%s]' % table_number, bold=True)
+        secho('='*9, bold=True)
         color = 'green' if table['valid'] else 'red'
         errors = table.pop('errors')
-        click.secho(pformat(table), fg=color, bold=True)
+        secho(pformat(table), fg=color, bold=True)
         if errors:
-            click.secho('-'*9, bold=True)
+            secho('-'*9, bold=True)
         for error in errors:
             error = {key: value or '-' for key, value in error.items()}
             template = '[{row-number},{column-number}] [{code}] {message}'
             message = template.format(**error)
-            click.secho(message)
+            secho(message)
 
 
 # Main program
