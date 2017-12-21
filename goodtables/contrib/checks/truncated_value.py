@@ -19,7 +19,7 @@ class TruncatedValue(object):
     def __init__(self, **options):
         pass
 
-    def check_row(self, cells, row_number):
+    def check_row(self, cells):
         for cell in cells:
             value = cell.get('value')
             truncated = False
@@ -47,7 +47,6 @@ class TruncatedValue(object):
                 error = Error(
                     'truncated-value',
                     cell,
-                    row_number=row_number,
                     message=message
                 )
                 return [error]

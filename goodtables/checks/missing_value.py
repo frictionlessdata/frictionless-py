@@ -11,18 +11,18 @@ from ..error import Error
 
 # Module API
 
-@check('missing-value', type='structure', context='body')
-def missing_value(cells, row_number):
+@check('missing-value')
+def missing_value(cells):
     errors = []
 
     for cell in copy(cells):
 
-        # Skip if value in cell
-        if 'value' in cell:
+        # Skip if cell has value
+        if cell.get('value') is not None:
             continue
 
         # Add error
-        error = Error('missing-value', cell, row_number)
+        error = Error('missing-value', cell)
         errors.append(error)
 
         # Remove cell

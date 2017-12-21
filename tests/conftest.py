@@ -20,7 +20,11 @@ def log():
         result = []
         def pack_error(error, table_number='skip'):
             error = dict(error)
-            error = [error['row-number'], error['column-number'], error['code']]
+            error = [
+                error.get('row-number'),
+                error.get('column-number'),
+                error.get('code'),
+            ]
             if table_number != 'skip':
                 error = [table_number] + error
             return tuple(error)

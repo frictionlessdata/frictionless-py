@@ -10,7 +10,7 @@ from ..error import Error
 
 # Module API
 
-@check('unique-constraint', type='schema', context='body')
+@check('unique-constraint')
 class UniqueConstraint(object):
 
     # Public
@@ -18,7 +18,7 @@ class UniqueConstraint(object):
     def __init__(self, **options):
         self.__unique_fields_cache = None
 
-    def check_row(self, cells, row_number):
+    def check_row(self, cells):
         errors = []
 
         # Prepare unique checks
@@ -33,6 +33,7 @@ class UniqueConstraint(object):
                 if column_number in column_numbers
             )
             column_values = tuple(cell.get('value') for cell in column_cells)
+            row_number = column_cells[0]['row-number']
 
             all_values_are_none = (set(column_values) == {None})
             if not all_values_are_none:
@@ -47,7 +48,6 @@ class UniqueConstraint(object):
                     error = Error(
                         'unique-constraint',
                         column_cells[0],
-                        row_number=row_number,
                         message_substitutions=message_substitutions
                     )
                     errors.append(error)

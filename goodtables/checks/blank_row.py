@@ -10,14 +10,14 @@ from ..error import Error
 
 # Module API
 
-@check('blank-row', type='structure', context='body')
-def blank_row(cells, row_number):
+@check('blank-row')
+def blank_row(cells):
     errors = []
 
     if not list(filter(lambda cell: cell.get('value'), cells)):
 
         # Add error
-        error = Error('blank-row', row_number=row_number)
+        error = Error('blank-row', row_number=cells[0].get('row-number'))
         errors.append(error)
 
         # Clear cells

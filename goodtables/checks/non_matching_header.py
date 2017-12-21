@@ -12,7 +12,7 @@ from ..error import Error
 
 # Module API
 
-@check('non-matching-header', type='schema', context='head')
+@check('non-matching-header')
 class NonMatchingHeader(object):
 
     # Public
@@ -49,6 +49,7 @@ def _check_with_ordering(cells):
                     # Given field matches some header also swap
                     if _slugify(field_name) == _slugify(cell.get('header')):
                         _swap_fields(cells[index], cell)
+
     # Run check with no field ordering
     return _check_without_ordering(cells)
 
@@ -57,7 +58,7 @@ def _check_without_ordering(cells):
     errors = []
 
     for cell in copy(cells):
-        if set(cell).issuperset(['number', 'header', 'field']):
+        if None not in [cell.get('column-number'), cell.get('header'), cell.get('field')]:
             if cell['header'] != cell['field'].name:
                 # Add error
                 message_substitutions = {
@@ -77,10 +78,8 @@ def _check_without_ordering(cells):
 
 
 def _get_field_name(cell):
-    field_name = None
-    if 'field' in cell:
-        field_name = cell['field'].name
-    return field_name
+    if cell.get('field'):
+        return cell['field'].name
 
 
 def _slugify(string):
@@ -92,10 +91,6 @@ def _slugify(string):
 
 
 def _swap_fields(cell1, cell2):
-    field1 = cell1.get('field')
-    cell1['field'] = cell2.get('field')
+    field1 = cell1['field']
+    cell1['field'] = cell2['field']
     cell2['field'] = field1
-    if cell1['field'] is None:
-        del cell1['field']
-    if cell2['field'] is None:
-        del cell2['field']

@@ -10,7 +10,7 @@ from .constraints_checks import create_check_constraint
 
 # Module API
 
-@check('enumerable-constraint', type='schema', context='body')
-def enumerable_constraint(cells, row_number):
+@check('enumerable-constraint')
+def enumerable_constraint(cells):
     check_constraint = create_check_constraint('enumerable-constraint', 'enum')
-    return check_constraint(cells, row_number)
+    return check_constraint(cells)

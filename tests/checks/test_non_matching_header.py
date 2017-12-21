@@ -6,20 +6,16 @@ from __future__ import unicode_literals
 
 from tableschema import Field
 from goodtables.checks.non_matching_header import NonMatchingHeader
+import goodtables.cells
 
 
 # Check
 
 def test_check_non_matching_header(log):
     cells = [
-        {'number': 1,
-         'header': 'name1',
-         'field': Field({'name': 'name1'})},
-        {'number': 2,
-         'header': 'name2',
-         'field': Field({'name': 'name2'})},
-        {'number': 3,
-         'header': 'name3'},
+        goodtables.cells.create_cell('name1', field=Field({'name': 'name1'}), column_number=1),
+        goodtables.cells.create_cell('name2', field=Field({'name': 'name2'}), column_number=2),
+        goodtables.cells.create_cell('name3', column_number=3),
     ]
     non_matching_header = NonMatchingHeader()
     errors = non_matching_header.check_headers(cells)
@@ -29,14 +25,9 @@ def test_check_non_matching_header(log):
 
 def test_check_non_matching_header_problem(log):
     cells = [
-        {'number': 1,
-         'header': 'name1',
-         'field': Field({'name': 'name2'})},
-        {'number': 2,
-         'header': 'name2',
-         'field': Field({'name': 'name1'})},
-        {'number': 3,
-         'header': 'name3'},
+        goodtables.cells.create_cell('name1', field=Field({'name': 'name2'}), column_number=1),
+        goodtables.cells.create_cell('name2', field=Field({'name': 'name1'}), column_number=2),
+        goodtables.cells.create_cell('name3', column_number=3),
     ]
     non_matching_header = NonMatchingHeader()
     errors = non_matching_header.check_headers(cells)
@@ -49,14 +40,9 @@ def test_check_non_matching_header_problem(log):
 
 def test_check_non_matching_header_order_fields(log):
     cells = [
-        {'number': 1,
-         'header': 'name1',
-         'field': Field({'name': 'name2'})},
-        {'number': 2,
-         'header': 'name2',
-         'field': Field({'name': 'name1'})},
-        {'number': 3,
-         'header': 'name3'},
+        goodtables.cells.create_cell('name1', field=Field({'name': 'name2'}), column_number=1),
+        goodtables.cells.create_cell('name2', field=Field({'name': 'name1'}), column_number=2),
+        goodtables.cells.create_cell('name3', column_number=3),
     ]
     non_matching_header = NonMatchingHeader(order_fields=True)
     errors = non_matching_header.check_headers(cells)
@@ -66,14 +52,9 @@ def test_check_non_matching_header_order_fields(log):
 
 def test_check_non_matching_header_order_fields_problem(log):
     cells = [
-        {'number': 1,
-         'header': 'name1',
-         'field': Field({'name': 'name4'})},
-        {'number': 2,
-         'header': 'name2',
-         'field': Field({'name': 'name1'})},
-        {'number': 3,
-         'header': 'name3'},
+        goodtables.cells.create_cell('name1', field=Field({'name': 'name4'}), column_number=1),
+        goodtables.cells.create_cell('name2', field=Field({'name': 'name1'}), column_number=2),
+        goodtables.cells.create_cell('name3', column_number=3),
     ]
     non_matching_header = NonMatchingHeader(order_fields=True)
     errors = non_matching_header.check_headers(cells)

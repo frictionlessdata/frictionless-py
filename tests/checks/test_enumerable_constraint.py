@@ -11,6 +11,6 @@ from goodtables.checks.enumerable_constraint import enumerable_constraint
 
 def test_check_enumerable_constraint(log):
     cells = []
-    errors = enumerable_constraint(cells, 1)
+    errors = enumerable_constraint(cells)
     assert log(errors) == []
     assert len(cells) == 0

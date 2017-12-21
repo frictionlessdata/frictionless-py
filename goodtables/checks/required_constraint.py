@@ -5,20 +5,21 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 from copy import copy
+import goodtables.cells
 from ..registry import check
 from ..error import Error
 
 
 # Module API
 
-@check('required-constraint', type='schema', context='body')
-def required_constraint(cells, row_number):
+@check('required-constraint')
+def required_constraint(cells):
     errors = []
 
     for cell in copy(cells):
 
         # Skip if cell is incomplete
-        if not set(cell).issuperset(['number', 'header', 'field', 'value']):
+        if not goodtables.cells.is_complete(cell):
             continue
 
         # Check constraint
@@ -32,11 +33,7 @@ def required_constraint(cells, row_number):
 
         # Add error
 
-        error = Error(
-            'required-constraint',
-            cell,
-            row_number
-        )
+        error = Error('required-constraint', cell)
         errors.append(error)
 
         # Remove cell

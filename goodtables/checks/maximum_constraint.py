@@ -10,7 +10,7 @@ from .constraints_checks import create_check_constraint
 
 # Module API
 
-@check('maximum-constraint', type='schema', context='body')
-def maximum_constraint(cells, row_number):
+@check('maximum-constraint')
+def maximum_constraint(cells):
     check_constraint = create_check_constraint('maximum-constraint', 'maximum')
-    return check_constraint(cells, row_number)
+    return check_constraint(cells)

@@ -11,7 +11,7 @@ from ..error import Error
 
 # Module API
 
-@check('duplicate-row', type='structure', context='body')
+@check('duplicate-row')
 class DuplicateRow(object):
 
     # Public
@@ -19,7 +19,7 @@ class DuplicateRow(object):
     def __init__(self, **options):
         self.__row_index = {}
 
-    def check_row(self, cells, row_number):
+    def check_row(self, cells):
         errors = []
 
         # Get pointer
@@ -31,6 +31,8 @@ class DuplicateRow(object):
 
         # Found pointer
         if pointer:
+
+            row_number = cells[0].get('row-number')
 
             # Add error
             if references:

@@ -41,9 +41,7 @@ def test_check_deviated_value_not_enough_data(log):
     report = validate(source, checks=[
         {'deviated-value': {'column': 'temperature'}},
     ])
-    assert log(report) == [
-        (1, None, 1, 'deviated-value'),
-    ]
+    assert log(report) == []
 
 
 def test_check_deviated_value_not_a_number(log):

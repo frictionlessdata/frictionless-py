@@ -7,6 +7,7 @@ from __future__ import unicode_literals
 import datetime
 import operator
 import tabulator
+from . import cells
 from copy import copy
 from tableschema import Schema
 from six.moves import zip_longest
@@ -152,37 +153,31 @@ class Inspector(object):
                     error = _compose_error_from_schema_error(error)
                     errors.append(error)
 
-        # Prepare cells
+        # Head checks
         if not fatal_error:
-            cells = []
+            # Prepare cells
             fields = [None] * len(headers)
             if schema is not None:
                 fields = schema.fields
-            iterator = zip_longest(headers, fields, fillvalue=_FILLVALUE)
-            for number, (header, field) in enumerate(iterator, start=1):
-                cell = {'number': number}
-                if header is not _FILLVALUE:
-                    cell['header'] = header
-                    cell['value'] = header
-                if field is not _FILLVALUE:
-                    cell['field'] = field
-                cells.append(cell)
+            header_cells = cells.create_cells(headers, fields)
 
-        # Head checks
-        if not fatal_error:
-            if None not in headers:
+            has_headers = (None not in headers)
+            if has_headers:
                 head_checks = _filter_checks(checks, context='head')
                 for check in head_checks:
-                    if not cells:
+                    if not header_cells:
                         break
                     check_func = getattr(check['func'], 'check_headers', check['func'])
-                    errors += (check_func(cells, sample) or [])
+                    errors += (check_func(header_cells, sample) or [])
                 for error in errors:
                     error.row = None
 
+            # Grab fields from cells, as there might have been new ones
+            # inferred by the "extra-header" check
+            fields = [c.get('field') for c in header_cells]
+
         # Body checks
         if not fatal_error:
-            cellmap = {cell['number']: cell for cell in cells}
             body_checks = _filter_checks(checks, context='body')
             with stream:
                 extended_rows = stream.iter(extended=True)
@@ -196,23 +191,12 @@ class Inspector(object):
                         error = _compose_error_from_exception(exception)
                         errors.append(error)
                         break
-                    cells = []
-                    iterator = zip_longest(headers, row, fillvalue=_FILLVALUE)
-                    for number, (header, value) in enumerate(iterator, start=1):
-                        cellref = cellmap.get(number, {})
-                        cell = {'number': number}
-                        if header is not _FILLVALUE:
-                            cell['header'] = cellref.get('header', header)
-                        if 'field' in cellref:
-                            cell['field'] = cellref['field']
-                        if value is not _FILLVALUE:
-                            cell['value'] = value
-                        cells.append(cell)
+                    row_cells = cells.create_cells(headers, fields, row, row_number)
                     for check in body_checks:
-                        if not cells:
+                        if not row_cells:
                             break
                         check_func = getattr(check['func'], 'check_row', check['func'])
-                        errors += (check_func(cells, row_number) or [])
+                        errors += (check_func(row_cells) or [])
                     for error in reversed(errors):
                         if error.row is not None:
                             break
@@ -261,9 +245,6 @@ class Inspector(object):
 
 
 # Internal
-
-_FILLVALUE = '_FILLVALUE'
-
 
 def _filter_checks(checks, type=None, context=None, inverse=False):
     result = []

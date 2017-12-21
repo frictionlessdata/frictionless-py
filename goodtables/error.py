@@ -42,7 +42,7 @@ class Error(object):
         self._code = code
         self._cell = cell or {}
         self._row = None
-        self._row_number = row_number
+        self._row_number = row_number or self._cell.get('row-number')
         self._message = message or default_message
         self._message_substitutions = message_substitutions or {}
 
@@ -60,7 +60,7 @@ class Error(object):
 
     @property
     def column_number(self):
-        return self._cell.get('number')
+        return self._cell.get('column-number')
 
     @property
     def message(self):

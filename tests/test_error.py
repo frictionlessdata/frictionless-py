@@ -25,7 +25,7 @@ class TestError(object):
         message = '{row_number} {column_number}'
         expected_message = message.format(
             row_number=row_number,
-            column_number=cell['number']
+            column_number=cell['column-number']
         )
 
         error = Error(error_code, cell, row_number, message=message)
@@ -51,20 +51,20 @@ class TestError(object):
         expected_dict = {
             'code': error_code,
             'row-number': row_number,
-            'column-number': cell['number'],
+            'column-number': cell['column-number'],
             'message': error.message,
         }
         assert dict(error) == expected_dict
 
     def test_sort_considers_row_first(self):
-        first_error = Error('first', cell={'number': 10}, row_number=1)
-        second_error = Error('second', cell={'number': 1}, row_number=10)
+        first_error = Error('first', cell={'column-number': 10}, row_number=1)
+        second_error = Error('second', cell={'column-number': 1}, row_number=10)
 
         assert sorted([second_error, first_error]) == [first_error, second_error]
 
     def test_sort_considers_columns_if_rows_are_the_same(self):
-        first_error = Error('first', cell={'number': 1}, row_number=1)
-        second_error = Error('second', cell={'number': 2}, row_number=1)
+        first_error = Error('first', cell={'column-number': 1}, row_number=1)
+        second_error = Error('second', cell={'column-number': 2}, row_number=1)
 
         assert sorted([second_error, first_error]) == [first_error, second_error]
 
@@ -75,14 +75,14 @@ class TestError(object):
         assert sorted([second_error, first_error]) == [first_error, second_error]
 
     def test_sort_with_undefined_rows(self):
-        first_error = Error('first', cell={'number': 1})
-        second_error = Error('second', cell={'number': 2})
+        first_error = Error('first', cell={'column-number': 1})
+        second_error = Error('second', cell={'column-number': 2})
 
         assert sorted([second_error, first_error]) == [first_error, second_error]
 
     def test_sort_errors_with_undefined_rows_and_cols_should_come_first(self):
         first_error = Error('first')
-        second_error = Error('second', cell={'number': 1}, row_number=1)
+        second_error = Error('second', cell={'column-number': 1}, row_number=1)
 
         assert sorted([second_error, first_error]) == [first_error, second_error]
 
@@ -95,5 +95,5 @@ def error_code():
 @pytest.fixture
 def cell():
     return {
-        'number': 1,
+        'column-number': 1,
     }

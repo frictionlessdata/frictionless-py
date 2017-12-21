@@ -11,6 +11,6 @@ from goodtables.checks.pattern_constraint import pattern_constraint
 
 def test_check_pattern_constraint(log):
     cells = []
-    errors = pattern_constraint(cells, 1)
+    errors = pattern_constraint(cells)
     assert log(errors) == []
     assert len(cells) == 0

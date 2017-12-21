@@ -11,6 +11,6 @@ from goodtables.checks.required_constraint import required_constraint
 
 def test_check_required_constraint(log):
     cells = []
-    errors = required_constraint(cells, 1)
+    errors = required_constraint(cells)
     assert log(errors) == []
     assert len(cells) == 0

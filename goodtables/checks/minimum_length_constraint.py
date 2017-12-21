@@ -10,7 +10,7 @@ from .constraints_checks import create_check_constraint
 
 # Module API
 
-@check('minimum-length-constraint', type='schema', context='body')
-def minimum_length_constraint(cells, row_number):
+@check('minimum-length-constraint')
+def minimum_length_constraint(cells):
     check_constraint = create_check_constraint('minimum-length-constraint', 'minLength')
-    return check_constraint(cells, row_number)
+    return check_constraint(cells)

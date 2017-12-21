@@ -10,10 +10,10 @@ from .constraints_checks import create_check_constraint
 
 # Module API
 
-@check('pattern-constraint', type='schema', context='body')
-def pattern_constraint(cells, row_number):
+@check('pattern-constraint')
+def pattern_constraint(cells):
     check_constraint = create_check_constraint('pattern-constraint', 'pattern')
-    errors = check_constraint(cells, row_number)
+    errors = check_constraint(cells)
 
     for error in errors:
         # No reason to run other checks in this cell

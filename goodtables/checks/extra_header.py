@@ -12,7 +12,7 @@ from ..error import Error
 
 # Module API
 
-@check('extra-header', type='schema', context='head')
+@check('extra-header')
 class ExtraHeader(object):
 
     # Public
@@ -25,7 +25,7 @@ class ExtraHeader(object):
         for cell in copy(cells):
 
             # Skip if cell has field
-            if 'field' in cell:
+            if cell.get('field') is not None:
                 continue
 
             # Infer field
@@ -33,11 +33,11 @@ class ExtraHeader(object):
                 column_sample = []
                 for row in sample:
                     value = None
-                    if len(row) >= cell['number']:
-                        value = row[cell['number'] - 1]
+                    if len(row) >= cell['column-number']:
+                        value = row[cell['column-number'] - 1]
                     column_sample.append([value])
                 schema = Schema()
-                schema.infer(column_sample, headers=[cell['header']])
+                schema.infer(column_sample, headers=[cell.get('header')])
                 cell['field'] = schema.fields[0]
 
             # Add error/remove column

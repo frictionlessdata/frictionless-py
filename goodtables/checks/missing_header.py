@@ -11,14 +11,14 @@ from ..error import Error
 
 # Module API
 
-@check('missing-header', type='schema', context='head')
+@check('missing-header')
 def missing_header(cells, sample=None):
     errors = []
 
     for cell in copy(cells):
 
         # Skip if header in cell
-        if 'header' in cell:
+        if cell.get('header') is not None:
             continue
 
         # Add error

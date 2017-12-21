@@ -449,14 +449,13 @@ To create a custom check user could use a `check` decorator. This way the builti
 from goodtables import validate, check, Error
 
 @check('custom-check', type='custom', context='body')
-def custom_check(cells, row_number):
+def custom_check(cells):
     errors = []
     for cell in cells:
-        message = 'Custom error'
+        message = 'Custom error on column {column_number} and row {row_number}'
         error = Error(
             'custom-error',
             cell,
-            row_number,
             message
         )
         errors.append(error)
@@ -464,6 +463,7 @@ def custom_check(cells, row_number):
 
 report = validate('data.csv', checks=['custom-check'])
 ```
+
 For now this documentation section is incomplete. Please see builtin checks to learn more about checking protocol.
 
 ### How can I add support for a new tabular file type?

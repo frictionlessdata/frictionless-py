@@ -10,7 +10,7 @@ from ..error import Error
 
 # Module API
 
-@check('blank-header', type='structure', context='head')
+@check('blank-header')
 def blank_header(cells, sample=None):
     errors = []
 

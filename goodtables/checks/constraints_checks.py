@@ -4,17 +4,18 @@ from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
+import goodtables.cells
 from ..error import Error
 
 
 def create_check_constraint(check, constraint):
-    def _check_constraint(cells, row_number):
+    def _check_constraint(cells):
         errors = []
 
         for cell in cells:
 
             # Skip if cell is incomplete
-            if not set(cell).issuperset(['number', 'header', 'field', 'value']):
+            if not goodtables.cells.is_complete(cell):
                 continue
 
             # Check constraint
@@ -30,7 +31,6 @@ def create_check_constraint(check, constraint):
                 error = Error(
                     check,
                     cell,
-                    row_number=row_number,
                     message_substitutions=message_substitutions
                 )
                 errors.append(error)

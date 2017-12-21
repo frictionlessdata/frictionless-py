@@ -10,7 +10,7 @@ from ..error import Error
 
 # Module API
 
-@check('duplicate-header', type='structure', context='head')
+@check('duplicate-header')
 def duplicate_header(cells, sample=None):
     errors = []
 
@@ -18,11 +18,11 @@ def duplicate_header(cells, sample=None):
     for cell in cells:
 
         # Skip if not header
-        if 'header' not in cell:
+        if cell.get('header') is None:
             continue
 
         header_indexes = rindex.get(cell['header'], set())
-        header_indexes.add(cell['number'])
+        header_indexes.add(cell['column-number'])
 
         rindex[cell['header']] = header_indexes
 
