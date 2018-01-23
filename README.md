@@ -35,6 +35,7 @@ of your data (e.g. all rows have the same number of columns), and its contents
 - [FAQ](#faq)
     - [How can I add a new custom check?](#how-can-i-add-a-new-custom-check)
     - [How can I add support for a new tabular file type?](#how-can-i-add-support-for-a-new-tabular-file-type)
+- [Changelog](#changelog)
 
 ## Getting Started
 
