@@ -58,8 +58,9 @@ def _check_without_ordering(cells):
     errors = []
 
     for cell in copy(cells):
-        if None not in [cell.get('column-number'), cell.get('header'), cell.get('field')]:
-            if cell['header'] != cell['field'].name:
+        if cell.get('field') is not None:
+            header = cell.get('header')
+            if header != cell['field'].name:
                 # Add error
                 message_substitutions = {
                     'field_name': '"{}"'.format(cell['field'].name),
@@ -70,7 +71,7 @@ def _check_without_ordering(cells):
                     message_substitutions=message_substitutions
                 )
                 errors.append(error)
-                if _slugify(cell['header']) != _slugify(cell['field'].name):
+                if _slugify(header) != _slugify(cell['field'].name):
                     # Remove cell
                     cells.remove(cell)
 

@@ -16,7 +16,7 @@ def test_check_missing_header(log):
         goodtables.cells.create_cell('name1', field=Field({'name': 'name1'}), column_number=1),
         goodtables.cells.create_cell('name2', field=Field({'name': 'name2'}), column_number=2),
     ]
-    errors = missing_header(cells)
+    errors = missing_header(cells, None)
     assert log(errors) == []
     assert len(cells) == 2
 
@@ -26,7 +26,7 @@ def test_check_missing_header_problem(log):
         goodtables.cells.create_cell('name1', field=Field({'name': 'name1'}), column_number=1),
         goodtables.cells.create_cell(None, field=Field({'name': 'name2'}), column_number=2),
     ]
-    errors = missing_header(cells)
+    errors = missing_header(cells, None)
     assert log(errors) == [
         (None, 2, 'missing-header'),
     ]

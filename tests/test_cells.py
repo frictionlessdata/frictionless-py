@@ -109,17 +109,6 @@ class TestCells(object):
 
         assert dict(cell) == {'value': cell['value']}
 
-    @pytest.mark.parametrize('cell,is_complete', [
-        ({}, False),
-        ({'header': ''}, False),
-        ({'field': ''}, False),
-        ({'value': ''}, False),
-        ({'column-number': ''}, False),
-        ({'header': '', 'field': '', 'value': '', 'column-number': ''}, True),
-    ])
-    def test_is_complete(self, cell, is_complete):
-        assert goodtables.cells.is_complete(cell) == is_complete
-
 
 @pytest.fixture
 def cell():

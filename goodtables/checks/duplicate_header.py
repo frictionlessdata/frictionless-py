@@ -18,7 +18,7 @@ def duplicate_header(cells, sample=None):
     for cell in cells:
 
         # Skip if not header
-        if cell.get('header') is None:
+        if 'header' not in cell:
             continue
 
         header_indexes = rindex.get(cell['header'], set())

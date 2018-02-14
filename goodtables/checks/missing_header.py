@@ -12,7 +12,7 @@ from ..error import Error
 # Module API
 
 @check('missing-header')
-def missing_header(cells, sample=None):
+def missing_header(cells, sample):
     errors = []
 
     for cell in copy(cells):

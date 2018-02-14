@@ -40,6 +40,5 @@ class ExtraValue(object):
                 error = Error('extra-value', cell)
                 errors.append(error)
                 cells.remove(cell)
-            return errors
 
         return errors

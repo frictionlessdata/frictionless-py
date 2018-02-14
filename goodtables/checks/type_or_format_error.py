@@ -6,7 +6,6 @@ from __future__ import unicode_literals
 
 from copy import copy
 import tableschema
-import goodtables.cells
 from ..registry import check
 from ..error import Error
 
@@ -19,14 +18,17 @@ def type_or_format_error(cells):
 
     for cell in copy(cells):
 
-        # Skip if cell is incomplete
-        if not goodtables.cells.is_complete(cell):
+        field = cell.get('field')
+        value = cell.get('value')
+
+        # Skip if cell has no field
+        if field is None:
             continue
 
         # Cast value
         try:
             valid = True
-            cell['field'].cast_value(cell['value'], constraints=False)
+            field.cast_value(value, constraints=False)
         except tableschema.exceptions.TableSchemaException:
             valid = False
 
@@ -36,9 +38,9 @@ def type_or_format_error(cells):
 
         # Add error
         message_substitutions = {
-            'value': '"{}"'.format(cell['value']),
-            'field_type': '"{}"'.format(cell['field'].type),
-            'field_format': '"{}"'.format(cell['field'].format),
+            'value': '"{}"'.format(value),
+            'field_type': '"{}"'.format(field.type),
+            'field_format': '"{}"'.format(field.format),
         }
         error = Error(
             'type-or-format-error',

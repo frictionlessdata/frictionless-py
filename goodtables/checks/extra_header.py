@@ -25,7 +25,7 @@ class ExtraHeader(object):
         for cell in copy(cells):
 
             # Skip if cell has field
-            if cell.get('field') is not None:
+            if 'field' in cell:
                 continue
 
             # Infer field

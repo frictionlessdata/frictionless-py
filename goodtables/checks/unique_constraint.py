@@ -42,7 +42,7 @@ class UniqueConstraint(object):
                         'row_numbers': ', '.join(map(str, cache['refs'] + [row_number])),
                     }
 
-                    # FIXME: The unique constraint can be related tomultiple
+                    # FIXME: The unique constraint can be related to multiple
                     # columns (e.g. a composite primary key), but here we only
                     # pass the 1st column.
                     error = Error(
@@ -58,16 +58,18 @@ class UniqueConstraint(object):
 
 # Internal
 
+
 def _create_unique_fields_cache(cells):
     primary_key_column_numbers = []
     cache = {}
 
     # Unique
     for column_number, cell in enumerate(cells, start=1):
-        if cell.get('field'):
-            if cell['field'].descriptor.get('primaryKey'):
+        field = cell.get('field')
+        if field is not None:
+            if field.descriptor.get('primaryKey'):
                 primary_key_column_numbers.append(column_number)
-            if cell['field'].constraints.get('unique'):
+            if field.constraints.get('unique'):
                 cache[tuple([column_number])] = {
                     'data': set(),
                     'refs': [],

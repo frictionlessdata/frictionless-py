@@ -5,7 +5,6 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 from copy import copy
-import goodtables.cells
 from ..registry import check
 from ..error import Error
 
@@ -18,14 +17,17 @@ def required_constraint(cells):
 
     for cell in copy(cells):
 
-        # Skip if cell is incomplete
-        if not goodtables.cells.is_complete(cell):
+        field = cell.get('field')
+        value = cell.get('value')
+
+        # Skip if cell has no field
+        if field is None:
             continue
 
         # Check constraint
-        valid = cell['field'].test_value(cell['value'], constraints=['required'])
-        if cell['field'].descriptor.get('primaryKey'):
-            valid = valid and cell['field'].cast_value(cell['value']) is not None
+        valid = field.test_value(value, constraints=['required'])
+        if field.descriptor.get('primaryKey'):
+            valid = valid and field.cast_value(value) is not None
 
         # Skip if valid
         if valid:

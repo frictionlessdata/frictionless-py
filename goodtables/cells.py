@@ -56,15 +56,6 @@ def create_cell(header, value=None, field=None, column_number=None, row_number=N
     return _remove_none_values(cell)
 
 
-def is_complete(cell):
-    return None not in [
-        cell.get('header'),
-        cell.get('field'),
-        cell.get('value'),
-        cell.get('column-number'),
-    ]
-
-
 def _remove_none_values(dictionary):
     result = {}
     for key, value in dictionary.items():

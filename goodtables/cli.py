@@ -59,9 +59,14 @@ def _print_report(report, json=False):
         if errors:
             click.secho('-'*9, bold=True)
         for error in errors:
-            error = {key: value or '-' for key, value in error.items()}
             template = '[{row-number},{column-number}] [{code}] {message}'
-            message = template.format(**error)
+            substitutions = {
+                'row-number': error.get('row-number', '-'),
+                'column-number': error.get('column-number', '-'),
+                'code': error.get('code', '-'),
+                'message': error.get('message', '-'),
+            }
+            message = template.format(**substitutions)
             click.secho(message)
 
 
