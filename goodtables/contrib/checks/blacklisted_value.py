@@ -32,13 +32,20 @@ class BlacklistedValue(object):
         if not cell:
             message = 'Blacklisted value check requires column "{column}" to exist'
             message = message.format(column=self.__column)
-            error = Error('blacklisted-value', row_number=cells[0]['row-number'], message=message)
+            error = Error(
+                'blacklisted-value',
+                row_number=cells[0]['row-number'],
+                message=message
+            )
             return [error]
 
         # Check value
         value = cell.get('value')
         if value in self.__blacklist:
-            message = 'Value "{value}" in column {column_number} on row {row_number} is blacklisted'
+            message = (
+                'Value "{value}" in column {column_number} on row {row_number}'
+                ' is blacklisted'
+            )
             message_substitutions = {
                 'value': value,
             }

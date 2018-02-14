@@ -44,7 +44,10 @@ class SequentialValue(object):
         try:
             value = int(cell.get('value'))
         except (TypeError, ValueError):
-            message = 'Sequential value check requires column "{column_number}" to be an integer'
+            message = (
+                'Sequential value check requires column "{column_number}"'
+                ' to be an integer'
+            )
             error = self._create_error(cell, message)
             return [error]
 
@@ -55,7 +58,10 @@ class SequentialValue(object):
         # Check value
         if self.__cursor != value:
             self.__cursor = value + 1
-            message = 'Value "{value}" is not a sequential in column {column_number} for row {row_number}'
+            message = (
+                'Value "{value}" is not a sequential in column {column_number}'
+                ' for row {row_number}'
+            )
             message_substitutions = {
                 'value': value,
             }
@@ -64,7 +70,6 @@ class SequentialValue(object):
 
         # Increment cursor
         self.__cursor += 1
-
 
     def _create_error(self, cell, message, message_substitutions=None):
         return Error(

@@ -43,7 +43,10 @@ class TruncatedValue(object):
 
             # Add error
             if truncated:
-                message = 'Value in column {column_number} for row {row_number} is probably truncated'
+                message = (
+                    'Value in column {column_number} for row {row_number}'
+                    ' is probably truncated'
+                )
                 error = Error(
                     'truncated-value',
                     cell,

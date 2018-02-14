@@ -5,7 +5,6 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 import statistics
-from collections import OrderedDict
 from ...registry import check
 from ...error import Error
 from ... import exceptions
@@ -55,7 +54,7 @@ class DeviatedValue(object):
 
         # Get value
         try:
-            value = float(cell['value'])
+            float(cell['value'])
         except ValueError:
             message = 'Deviated value check requires column "{column_number}" to exist'
             error = Error(
@@ -94,7 +93,10 @@ class DeviatedValue(object):
         errors = []
         for cell in self.__column_cells:
             if not (minimum <= float(cell['value']) <= maximum):
-                message = 'Deviated value "{value}" in column {column_number} for row {row_number}'
+                message = (
+                    'Deviated value "{value}" in column {column_number}'
+                    ' for row {row_number}'
+                )
                 message_substitutions = {
                     'value': cell['value'],
                 }
@@ -107,6 +109,7 @@ class DeviatedValue(object):
                 errors.append(error)
 
         return errors
+
 
 # Internal
 

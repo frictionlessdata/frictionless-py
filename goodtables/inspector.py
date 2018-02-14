@@ -10,7 +10,6 @@ import tabulator
 from . import cells
 from copy import copy
 from tableschema import Schema
-from six.moves import zip_longest
 from multiprocessing.pool import ThreadPool
 from .registry import registry
 from .error import Error
@@ -294,4 +293,8 @@ def _clean_empty(d):
         return d
     if isinstance(d, list):
         return [v for v in (_clean_empty(v) for v in d) if v is not None]
-    return {k: v for k, v in ((k, _clean_empty(v)) for k, v in d.items()) if v is not None}
+    return {
+        k: v for k, v in
+        ((k, _clean_empty(v)) for k, v in d.items())
+        if v is not None
+    }

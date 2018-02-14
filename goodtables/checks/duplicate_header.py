@@ -43,4 +43,3 @@ def duplicate_header(cells, sample=None):
             errors.append(error)
 
     return errors
-
