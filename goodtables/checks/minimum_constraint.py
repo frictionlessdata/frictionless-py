@@ -12,5 +12,7 @@ from .constraints_checks import create_check_constraint
 
 @check('minimum-constraint')
 def minimum_constraint(cells):
-    check_constraint = create_check_constraint('minimum-constraint', 'minimum')
-    return check_constraint(cells)
+    return _check_constraint(cells)
+
+
+_check_constraint = create_check_constraint('minimum-constraint', 'minimum')

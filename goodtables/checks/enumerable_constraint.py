@@ -12,5 +12,7 @@ from .constraints_checks import create_check_constraint
 
 @check('enumerable-constraint')
 def enumerable_constraint(cells):
-    check_constraint = create_check_constraint('enumerable-constraint', 'enum')
-    return check_constraint(cells)
+    return _check_constraint(cells)
+
+
+_check_constraint = create_check_constraint('enumerable-constraint', 'enum')

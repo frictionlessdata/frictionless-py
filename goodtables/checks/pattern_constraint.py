@@ -12,11 +12,13 @@ from .constraints_checks import create_check_constraint
 
 @check('pattern-constraint')
 def pattern_constraint(cells):
-    check_constraint = create_check_constraint('pattern-constraint', 'pattern')
-    errors = check_constraint(cells)
+    errors = _check_constraint(cells)
 
     for error in errors:
         # No reason to run other checks in this cell
         cells.remove(error.cell)
 
     return errors
+
+
+_check_constraint = create_check_constraint('pattern-constraint', 'pattern')
