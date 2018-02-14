@@ -197,7 +197,7 @@
           "context": "body",
           "weight": 7,
           "message": "The value {value} in row {row_number} and column {column_number} does not conform to the minimum length constraint of {constraint}",
-          "description": "A lenght of this field value should be greater or equal than schema constraint value.\n\n How it could be resolved:\n - If this value is not correct, update the value.\n - If value is correct, then remove or refine the `minimumLength` constraint in the schema.\n - If this error should be ignored disable `minimum-length-constraint` check in {validator}."
+          "description": "A length of this field value should be greater or equal than schema constraint value.\n\n How it could be resolved:\n - If this value is not correct, update the value.\n - If value is correct, then remove or refine the `minimumLength` constraint in the schema.\n - If this error should be ignored disable `minimum-length-constraint` check in {validator}."
         },
         "maximum-length-constraint": {
           "name": "Maximum Length Constraint",
@@ -205,7 +205,7 @@
           "context": "body",
           "weight": 7,
           "message": "The value {value} in row {row_number} and column {column_number} does not conform to the maximum length constraint of {constraint}",
-          "description": "A lenght of this field value should be less or equal than schema constraint value.\n\n How it could be resolved:\n - If this value is not correct, update the value.\n - If value is correct, then remove or refine the `maximumLength` constraint in the schema.\n - If this error should be ignored disable `maximum-length-constraint` check in {validator}."
+          "description": "A length of this field value should be less or equal than schema constraint value.\n\n How it could be resolved:\n - If this value is not correct, update the value.\n - If value is correct, then remove or refine the `maximumLength` constraint in the schema.\n - If this error should be ignored disable `maximum-length-constraint` check in {validator}."
         }
 
 
