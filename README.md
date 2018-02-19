@@ -130,7 +130,7 @@ Lastly, if the order of the fields in the data is different than in your schema,
 | --- | --- |
 | [blacklisted-value](#blacklisted-value) | Ensure there are no cells with the blacklisted values. |
 | [deviated-value](#deviated-value) | Ensure numbers are within a number of standard deviations from the average. |
-| [sequential-value](#sequential-value) | Ensure numbers are be sequential. |
+| [sequential-value](#sequential-value) | Ensure numbers are sequential. |
 | [truncated-value](#truncated-value) | Detect values that were potentially truncated. |
 | [custom-constraint](#custom-constraint) | Defines a constraint based on the values of other columns (e.g. `value * quantity == total`). |
 
