@@ -56,7 +56,10 @@ class DeviatedValue(object):
         try:
             float(cell['value'])
         except ValueError:
-            message = 'Deviated value check requires column "{column_number}" to exist'
+            message = (
+                'Deviated value check requires column "{column_number}"'
+                ' to be a number'
+            )
             error = Error(
                 self.__code,
                 self.__cell,

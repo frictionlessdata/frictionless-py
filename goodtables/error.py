@@ -14,12 +14,12 @@ class Error(object):
 
     Args:
         code (str): The error code. Must be one in the spec.
-        cell (dict): The cell where the error occurred.
-        row_number (int): The row number where the error occurs.
-        message (str): The error message. Defaults to the message from the
-            Data Quality Spec.
-        message_substitutions (dict): Dictionary with substitutions to be
-            used when generating the error message and description.
+        cell (dict, optional): The cell where the error occurred.
+        row_number (int, optional): The row number where the error occurs.
+        message (str, optional The error message. Defaults to the message from
+            the Data Quality Spec.
+        message_substitutions (dict, optional Dictionary with substitutions to
+            be used when generating the error message and description.
 
     Raises:
         KeyError: Raised if the error code isn't known.
