@@ -5,6 +5,7 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 from goodtables.checks.blank_header import blank_header
+import goodtables.cells
 
 
 # Check
@@ -12,11 +13,9 @@ from goodtables.checks.blank_header import blank_header
 def test_check_blank_header(log):
     errors = []
     cells = [
-        {'number': 1,
-         'header': 'name',
-         'field': None},
+        goodtables.cells.create_cell('name'),
     ]
-    blank_header(errors, cells)
+    errors = blank_header(cells)
     assert log(errors) == []
     assert len(cells) == 1
 
@@ -24,11 +23,9 @@ def test_check_blank_header(log):
 def test_check_blank_header_problem(log):
     errors = []
     cells = [
-        {'number': 1,
-         'header': '',
-         'field': None},
+        goodtables.cells.create_cell('', column_number=1),
     ]
-    blank_header(errors, cells)
+    errors = blank_header(cells)
     assert log(errors) == [
         (None, 1, 'blank-header'),
     ]

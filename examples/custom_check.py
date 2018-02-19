@@ -9,12 +9,12 @@ def unicode_found(errors, columns, row_number, state=None):
                 message = 'Row {row_number} has unicode in column {column_number}'
                 message = message.format(
                     row_number=row_number,
-                    column_number=column['number'])
+                    column_number=column['column-number'])
                 errors.append({
                     'code': 'unicode-found',
                     'message': message,
                     'row-number': row_number,
-                    'column-number': column['number'],
+                    'column-number': column['column-number'],
                 })
 
 

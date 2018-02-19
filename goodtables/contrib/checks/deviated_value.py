@@ -5,8 +5,8 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 import statistics
-from collections import OrderedDict
 from ...registry import check
+from ...error import Error
 from ... import exceptions
 
 
@@ -22,9 +22,10 @@ class DeviatedValue(object):
         # Set attributes
         self.__column = column
         self.__interval = interval
-        self.__column_number = None
-        self.__column_values = OrderedDict()
+        self.__column_cells = []
         self.__average_function = _AVERAGE_FUNCTIONS.get(average)
+        self.__code = 'deviated-value'
+        self.__cell = None
 
         # Validate average
         if not self.__average_function:
@@ -32,72 +33,85 @@ class DeviatedValue(object):
             message = message % ', '.join(_AVERAGE_FUNCTIONS.keys())
             raise exceptions.GoodtablesError(message)
 
-    def check_row(self, errors, cells, row_number):
+    def check_row(self, cells):
 
         # Get cell
-        cell = None
-        for item in cells:
-            if self.__column in [item['number'], item.get('header')]:
-                cell = item
+        for cell in cells:
+            if self.__column in [cell['column-number'], cell['header']]:
+                self.__cell = cell
                 break
 
         # Check cell
-        if not cell:
-            message = 'Deviated value check requires column "%s" to exist'
-            return errors.append({
-                'code': 'deviated-value',
-                'message': message % self.__column,
-                'row-number': row_number,
-                'column-number': None,
-            })
+        if not self.__cell:
+            message = 'Deviated value check requires column "{column}" to exist'
+            message = message.format(column=self.__column)
+            error = Error(
+                self.__code,
+                row_number=cells[0]['row-number'],
+                message=message
+            )
+            return [error]
 
         # Get value
         try:
-            value = float(cell['value'])
+            float(cell['value'])
         except ValueError:
-            message = 'Deviated value check requires column "%s" to be a number'
-            return errors.append({
-                'code': 'deviated-value',
-                'message': message % self.__column,
-                'row-number': row_number,
-                'column-number': cell['number'],
-            })
+            message = (
+                'Deviated value check requires column "{column_number}"'
+                ' to be a number'
+            )
+            error = Error(
+                self.__code,
+                self.__cell,
+                message=message
+            )
+            return [error]
 
         # Collect value
-        self.__column_values[row_number] = value
-        self.__column_number = cell['number']
+        self.__column_cells.append(cell)
 
-    def check_table(self, errors):
+    def check_table(self):
 
         # Skip if not values
-        if not self.__column_values:
+        if not self.__column_cells or len(self.__column_cells) < 2:
             return
 
         # Prepare interval
         try:
-            stdev = statistics.stdev(self.__column_values.values())
-            average = self.__average_function(self.__column_values.values())
+            values = [float(cell['value']) for cell in self.__column_cells]
+            stdev = statistics.stdev(values)
+            average = self.__average_function(values)
             minimum = average - stdev * self.__interval
             maximum = average + stdev * self.__interval
         except Exception as exception:
             message = 'Deviated value check calculation issue: %s' % exception
-            return errors.append({
-                'code': 'deviated-value',
-                'message': message,
-                'row-number': None,
-                'column-number': self.__column_number,
-            })
+            error = Error(
+                self.__code,
+                self.__cell,
+                message=message
+            )
+            return [error]
 
         # Check values
-        for row_number, value in self.__column_values.items():
-            if not (minimum <= value <= maximum):
-                message = 'Deviated value "%s" in column %s for row %s'
-                errors.append({
-                    'code': 'deviated-value',
-                    'message': message % (value, self.__column_number, row_number),
-                    'row-number': row_number,
-                    'column-number': self.__column_number,
-                })
+        errors = []
+        for cell in self.__column_cells:
+            if not (minimum <= float(cell['value']) <= maximum):
+                message = (
+                    'Deviated value "{value}" in column {column_number}'
+                    ' for row {row_number}'
+                )
+                message_substitutions = {
+                    'value': cell['value'],
+                }
+                error = Error(
+                    self.__code,
+                    cell,
+                    message=message,
+                    message_substitutions=message_substitutions
+                )
+                errors.append(error)
+
+        return errors
 
 
 # Internal

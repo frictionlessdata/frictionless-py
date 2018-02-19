@@ -5,6 +5,7 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 from ...registry import check
+from ...error import Error
 
 
 # Module API
@@ -17,37 +18,38 @@ class SequentialValue(object):
     def __init__(self, column, **options):
         self.__column = column
         self.__cursor = None
+        self.__code = 'sequential-value'
 
-    def check_row(self, errors, cells, row_number):
+    def check_row(self, cells):
 
         # Get cell
         cell = None
         for item in cells:
-            if self.__column in [item['number'], item.get('header')]:
+            if self.__column in [item['column-number'], item['header']]:
                 cell = item
                 break
 
         # Check cell
         if not cell:
-            message = 'Sequential value check requires column "%s" to exist'
-            return errors.append({
-                'code': 'sequential-value',
-                'message': message % self.__column,
-                'row-number': row_number,
-                'column-number': None,
-            })
+            message = 'Sequential value check requires column "{column}" to exist'
+            message = message.format(column=self.__column)
+            error = Error(
+                self.__code,
+                row_number=cells[0]['row-number'],
+                message=message
+            )
+            return [error]
 
         # Get value
         try:
             value = int(cell.get('value'))
         except (TypeError, ValueError):
-            message = 'Sequential value check requires column "%s" to be an integer'
-            return errors.append({
-                'code': 'sequential-value',
-                'message': message % self.__column,
-                'row-number': row_number,
-                'column-number': cell['number'],
-            })
+            message = (
+                'Sequential value check requires column "{column_number}"'
+                ' to be an integer'
+            )
+            error = self._create_error(cell, message)
+            return [error]
 
         # Initiate cursor
         if self.__cursor is None:
@@ -56,13 +58,23 @@ class SequentialValue(object):
         # Check value
         if self.__cursor != value:
             self.__cursor = value + 1
-            message = 'Value "%s" is not a sequential in column %s for row %s'
-            return errors.append({
-                'code': 'sequential-value',
-                'message': message % (value, cell['number'], row_number),
-                'row-number': row_number,
-                'column-number': cell['number'],
-            })
+            message = (
+                'Value "{value}" is not a sequential in column {column_number}'
+                ' for row {row_number}'
+            )
+            message_substitutions = {
+                'value': value,
+            }
+            error = self._create_error(cell, message, message_substitutions)
+            return [error]
 
         # Increment cursor
         self.__cursor += 1
+
+    def _create_error(self, cell, message, message_substitutions=None):
+        return Error(
+            self.__code,
+            cell,
+            message=message,
+            message_substitutions=message_substitutions
+        )

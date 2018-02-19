@@ -10,8 +10,7 @@ from goodtables.checks.pattern_constraint import pattern_constraint
 # Check
 
 def test_check_pattern_constraint(log):
-    errors = []
     cells = []
-    pattern_constraint(errors, cells, 1)
+    errors = pattern_constraint(cells)
     assert log(errors) == []
     assert len(cells) == 0

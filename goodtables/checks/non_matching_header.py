@@ -6,13 +6,13 @@ from __future__ import unicode_literals
 
 import re
 from copy import copy
-from ..spec import spec
 from ..registry import check
+from ..error import Error
 
 
 # Module API
 
-@check('non-matching-header', type='schema', context='head')
+@check('non-matching-header')
 class NonMatchingHeader(object):
 
     # Public
@@ -20,17 +20,17 @@ class NonMatchingHeader(object):
     def __init__(self, order_fields=False, **options):
         self.__order_fields = order_fields
 
-    def check_headers(self, errors, cells, sample=None):
+    def check_headers(self, cells, sample=None):
         if self.__order_fields:
-            _check_with_ordering(errors, cells)
+            return _check_with_ordering(cells)
         else:
-            _check_without_ordering(errors, cells)
+            return _check_without_ordering(cells)
 
 
 # Internal
 
 
-def _check_with_ordering(errors, cells):
+def _check_with_ordering(cells):
     # Update fields order to maximally match headers order
     headers = [cell.get('header') for cell in cells]
     for index, header in enumerate(headers):
@@ -49,35 +49,38 @@ def _check_with_ordering(errors, cells):
                     # Given field matches some header also swap
                     if _slugify(field_name) == _slugify(cell.get('header')):
                         _swap_fields(cells[index], cell)
+
     # Run check with no field ordering
-    _check_without_ordering(errors, cells)
+    return _check_without_ordering(cells)
 
 
-def _check_without_ordering(errors, cells):
+def _check_without_ordering(cells):
+    errors = []
+
     for cell in copy(cells):
-        if set(cell).issuperset(['number', 'header', 'field']):
-            if cell['header'] != cell['field'].name:
+        if cell.get('field') is not None:
+            header = cell.get('header')
+            if header != cell['field'].name:
                 # Add error
-                message = spec['errors']['non-matching-header']['message']
-                message = message.format(
-                    column_number=cell['number'],
-                    field_name='"%s"' % cell['field'].name)
-                errors.append({
-                    'code': 'non-matching-header',
-                    'message': message,
-                    'row-number': None,
-                    'column-number': cell['number'],
-                })
-                if _slugify(cell['header']) != _slugify(cell['field'].name):
+                message_substitutions = {
+                    'field_name': '"{}"'.format(cell['field'].name),
+                }
+                error = Error(
+                    'non-matching-header',
+                    cell,
+                    message_substitutions=message_substitutions
+                )
+                errors.append(error)
+                if _slugify(header) != _slugify(cell['field'].name):
                     # Remove cell
                     cells.remove(cell)
 
+    return errors
+
 
 def _get_field_name(cell):
-    field_name = None
-    if 'field' in cell:
-        field_name = cell['field'].name
-    return field_name
+    if cell.get('field'):
+        return cell['field'].name
 
 
 def _slugify(string):
@@ -89,10 +92,6 @@ def _slugify(string):
 
 
 def _swap_fields(cell1, cell2):
-    field1 = cell1.get('field')
-    cell1['field'] = cell2.get('field')
+    field1 = cell1['field']
+    cell1['field'] = cell2['field']
     cell2['field'] = field1
-    if cell1['field'] is None:
-        del cell1['field']
-    if cell2['field'] is None:
-        del cell2['field']
