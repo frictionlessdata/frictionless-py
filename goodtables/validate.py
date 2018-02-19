@@ -87,28 +87,14 @@ def validate(source, **options):
     return report
 
 
-def init_datapackage(source, **options):
-    source = _remove_datapackage_sources(source)
-    if not source:
-        return
-
+def init_datapackage(resource_paths):
     dp = datapackage.Package({
         'name': 'change-me',
         'schema': 'tabular-data-package',
     })
-    source, options, _ = _parse_arguments(source, **options)
 
-    inspector = Inspector()
-    schemas = inspector.infer(source, **options)
-
-    for i, (path, schema) in enumerate(schemas.items()):
-        descriptor = {
-            'name': 'data{}'.format(i),
-            'path': path,
-            'schema': schema.descriptor,
-        }
-
-        dp.add_resource(descriptor)
+    for path in resource_paths:
+        dp.infer(path)
 
     return dp
 

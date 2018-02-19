@@ -100,29 +100,6 @@ class Inspector(object):
 
         return report
 
-    def infer(self, source, preset=None, **options):
-        # Prepare preset
-        preset = self.__get_source_preset(source, preset)
-        if preset == 'nested':
-            options['presets'] = self.__presets
-            for s in source:
-                if s.get('preset') is None:
-                    s['preset'] = self.__get_source_preset(s['source'])
-
-        # Prepare tables
-        preset_func = self.__get_preset(preset)['func']
-        warnings, tables = preset_func(source, **options)
-
-        table_schemas = {}
-        for table in tables:
-            with table['stream'].open() as stream:
-                sample = stream.sample
-                headers = stream.headers
-                source = table['source']
-                table_schemas[source] = self.__infer(sample, headers)
-
-        return table_schemas
-
     # Internal
 
     @property

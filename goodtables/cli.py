@@ -5,6 +5,7 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 import click
+from click_default_group import DefaultGroup
 import goodtables
 import json as json_module
 from pprint import pformat
@@ -13,16 +14,29 @@ click.disable_unicode_literals_warning = True
 
 # Module API
 
-@click.command()
-@click.argument('source', type=click.Path(), nargs=-1, required=True)
-@click.option(
-    '--init',
-    is_flag=True,
-    help=(
-        'Create data package with the data files received as parameters.'
-        ' It will infer the schemas from the data.'
-    )
+@click.group(cls=DefaultGroup, default='validate', default_if_no_args=True)
+@click.version_option(goodtables.__version__, message='%(version)s')
+def cli():
+    """Tabular files validator.
+
+    There are two categories of validation checks available:
+
+    * Structural checks: ensure there are no empty rows, no blank headers, etc.
+
+    * Content checks: ensure the values have the correct types (e.g. string),
+      their format is valid (e.g. e-mail), and they respect some constraint
+      (e.g. age is greater than 18).
+
+    \b
+    Full documentation at: <https://github.com/frictionlessdata/goodtables-py/>
+    """
+    pass
+
+
+@cli.command(
+    short_help='Validate tabular files (default).',
 )
+@click.argument('paths', type=click.Path(), nargs=-1, required=True)
 @click.option('--quiet', '-q', is_flag=True, help='Don\'t output anything.')
 @click.option('--json', is_flag=True, help='Output report as JSON.')
 @click.option(
@@ -69,8 +83,7 @@ click.disable_unicode_literals_warning = True
     default=-1,
     help='Stop validating if there are more than this number of errors (-1 for no limit).'
 )
-@click.version_option(goodtables.__version__, message='%(version)s')
-def cli(source, json, **options):
+def validate(paths, json, **options):
     # Remove blank values
     options = {key: value for key, value in options.items() if value is not None}
     if not options['checks']:
@@ -82,19 +95,38 @@ def cli(source, json, **options):
     quiet = options.pop('quiet')
     output = options.pop('output')
 
-    sources = [{'source': source} for source in source]
+    sources = [{'source': path} for path in paths]
 
-    if options.pop('init'):
-        dp = goodtables.init_datapackage(sources, **options)
-        print(json_module.dumps(dp.descriptor, indent=4))
-        exit(dp.valid)  # Just to be defensive, as it should always be valid.
-    else:
-        report = goodtables.validate(sources, **options)
+    report = goodtables.validate(sources, **options)
 
-        if not quiet:
-            _print_report(report, output=output, json=json)
+    if not quiet:
+        _print_report(report, output=output, json=json)
 
-        exit(not report['valid'])
+    exit(not report['valid'])
+
+
+@cli.command()
+@click.argument('paths', type=click.Path(), nargs=-1, required=True)
+@click.option(
+    '--output',
+    '-o',
+    type=click.File('w'),
+    default='-',
+    help='Redirect output to a file.'
+)
+def init(paths, output, **kwargs):
+    """Init data package from list of files.
+
+    It will also infer tabular data's schemas from their contents.
+    """
+    dp = goodtables.init_datapackage(paths)
+
+    click.secho(
+        json_module.dumps(dp.descriptor, indent=4),
+        file=output
+    )
+
+    exit(dp.valid)  # Just to be defensive, as it should always be valid.
 
 
 # Internal
