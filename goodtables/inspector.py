@@ -4,12 +4,13 @@ from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
+import six
 import datetime
 import operator
 import tabulator
+import tableschema
 from . import cells
 from copy import copy
-from tableschema import Schema
 from multiprocessing.pool import ThreadPool
 from .registry import registry
 from .error import Error
@@ -41,11 +42,13 @@ class Inspector(object):
         self.__infer_schema = infer_schema
         self.__infer_fields = infer_fields
         self.__order_fields = order_fields
-        self.__error_limit = error_limit
-        self.__table_limit = table_limit
-        self.__row_limit = row_limit
 
-    def inspect(self, source, preset='table', **options):
+        parse_limit = lambda num: float('inf') if (num < 0) else num  # noqa:E731
+        self.__error_limit = parse_limit(error_limit)
+        self.__table_limit = parse_limit(table_limit)
+        self.__row_limit = parse_limit(row_limit)
+
+    def inspect(self, source, preset=None, **options):
         """https://github.com/frictionlessdata/goodtables-py#inspector
         """
 
@@ -53,16 +56,15 @@ class Inspector(object):
         start = datetime.datetime.now()
 
         # Prepare preset
-        try:
-            presets = registry.compile_presets()
-            preset_func = presets[preset]['func']
-            if preset == 'nested':
-                options['presets'] = presets
-        except KeyError:
-            message = 'Preset "%s" is not registered' % preset
-            raise exceptions.GoodtablesException(message)
+        preset = self.__get_source_preset(source, preset)
+        if preset == 'nested':
+            options['presets'] = self.__presets
+            for s in source:
+                if s.get('preset') is None:
+                    s['preset'] = self.__get_source_preset(s['source'])
 
         # Prepare tables
+        preset_func = self.__get_preset(preset)['func']
         warnings, tables = preset_func(source, **options)
         if len(tables) > self.__table_limit:
             warnings.append(
@@ -100,6 +102,39 @@ class Inspector(object):
 
     # Internal
 
+    @property
+    def __presets(self):
+        return registry.compile_presets()
+
+    def __get_preset(self, preset):
+        try:
+            return self.__presets[preset]
+        except KeyError:
+            message = 'Preset "%s" is not registered' % preset
+            raise exceptions.GoodtablesException(message)
+
+    def __get_source_preset(self, source, preset=None):
+        if preset is None:
+            preset = 'table'
+            if isinstance(source, six.string_types):
+                if source.endswith('datapackage.json'):
+                    preset = 'datapackage'
+            elif isinstance(source, dict):
+                if 'resources' in source:
+                    preset = 'datapackage'
+            elif isinstance(source, list):
+                if source and isinstance(source[0], dict) and 'source' in source[0]:
+                    preset = 'nested'
+
+        return preset
+
+    def __infer(self, sample, headers=None):
+        if headers is None:
+            headers = [None] * len(sample[0]) if sample else []
+        schema = tableschema.Schema()
+        schema.infer(sample, headers=headers)
+        return schema
+
     def __inspect_table(self, table):
 
         # Start timer
@@ -130,8 +165,7 @@ class Inspector(object):
                 headers = [None] * len(sample[0]) if sample else []
             if _filter_checks(checks, type='schema'):
                 if schema is None and self.__infer_schema:
-                    schema = Schema()
-                    schema.infer(sample, headers=headers)
+                    schema = self.__infer(sample, headers)
             if schema is None:
                 checks = _filter_checks(checks, type='schema', inverse=True)
         except Exception as exception:
@@ -223,7 +257,8 @@ class Inspector(object):
 
         # Compose report
         headers = headers if None not in headers else None
-        errors = errors[:self.__error_limit]
+        if self.__error_limit != float('inf'):
+            errors = errors[:self.__error_limit]
         errors = sorted(errors)
         report = copy(extra)
         report.update({

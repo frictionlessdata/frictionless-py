@@ -5,6 +5,7 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 import click
+from click_default_group import DefaultGroup
 import goodtables
 import json as json_module
 from pprint import pformat
@@ -13,51 +14,147 @@ click.disable_unicode_literals_warning = True
 
 # Module API
 
-@click.command()
-@click.argument('source')
-@click.option('--preset')
-@click.option('--schema')
-@click.option('--checks', type=lambda value: value.split(','))
-@click.option('--skip-checks', type=lambda value: value.split(','))
-@click.option('--infer-schema', is_flag=True)
-@click.option('--infer-fields', is_flag=True)
-@click.option('--order-fields', is_flag=True)
-@click.option('--error-limit', type=int)
-@click.option('--table-limit', type=int)
-@click.option('--row-limit', type=int)
-@click.option('--json', is_flag=True)
+@click.group(cls=DefaultGroup, default='validate', default_if_no_args=True)
 @click.version_option(goodtables.__version__, message='%(version)s')
-def cli(source, json, **options):
-    """https://github.com/frictionlessdata/goodtables-py#cli
+def cli():
+    """Tabular files validator.
+
+    There are two categories of validation checks available:
+
+    * Structural checks: ensure there are no empty rows, no blank headers, etc.
+
+    * Content checks: ensure the values have the correct types (e.g. string),
+      their format is valid (e.g. e-mail), and they respect some constraint
+      (e.g. age is greater than 18).
+
+    \b
+    Full documentation at: <https://github.com/frictionlessdata/goodtables-py/>
     """
+    pass
+
+
+@cli.command(
+    short_help='Validate tabular files (default).',
+)
+@click.argument('paths', type=click.Path(), nargs=-1, required=True)
+@click.option('--quiet', '-q', is_flag=True, help='Don\'t output anything.')
+@click.option('--json', is_flag=True, help='Output report as JSON.')
+@click.option(
+    '--output',
+    '-o',
+    type=click.File('w'),
+    default='-',
+    help='Redirect output to a file.'
+)
+@click.option('--preset')
+@click.option('--schema', type=click.Path(), help='Path to a Table Schema.')
+@click.option(
+    '--infer-schema/--no-infer-schema',
+    default=False,
+    help='Infer schema. If an explicit schema is defined, infer missing columns only.'
+)
+@click.option('--checks', '-c', multiple=True, help='Checks to enable.')
+@click.option(
+    '--skip-checks',
+    '-C',
+    multiple=True,
+    help='Checks to disable.'
+)
+@click.option(
+    '--order-fields',
+    is_flag=True,
+    help='Don\'t validate the columns order.'
+)
+@click.option(
+    '--row-limit',
+    type=int,
+    default=-1,
+    help='Maximum number of rows to validate (-1 for no limit)'
+)
+@click.option(
+    '--table-limit',
+    type=int,
+    default=-1,
+    help='Maximum number of tables to validate (-1 for no limit)'
+)
+@click.option(
+    '--error-limit',
+    type=int,
+    default=-1,
+    help='Stop validating if there are more than this number of errors (-1 for no limit).'
+)
+def validate(paths, json, **options):
+    # Remove blank values
     options = {key: value for key, value in options.items() if value is not None}
-    report = goodtables.validate(source, **options)
-    _print_report(report, json=json)
+    if not options['checks']:
+        del options['checks']
+    if not options['skip_checks']:
+        del options['skip_checks']
+
+    options['infer_fields'] = options['infer_schema']
+    quiet = options.pop('quiet')
+    output = options.pop('output')
+
+    sources = [{'source': path} for path in paths]
+
+    report = goodtables.validate(sources, **options)
+
+    if not quiet:
+        _print_report(report, output=output, json=json)
+
     exit(not report['valid'])
 
 
+@cli.command()
+@click.argument('paths', type=click.Path(), nargs=-1, required=True)
+@click.option(
+    '--output',
+    '-o',
+    type=click.File('w'),
+    default='-',
+    help='Redirect output to a file.'
+)
+def init(paths, output, **kwargs):
+    """Init data package from list of files.
+
+    It will also infer tabular data's schemas from their contents.
+    """
+    dp = goodtables.init_datapackage(paths)
+
+    click.secho(
+        json_module.dumps(dp.descriptor, indent=4),
+        file=output
+    )
+
+    exit(dp.valid)  # Just to be defensive, as it should always be valid.
+
+
 # Internal
-def _print_report(report, json=False):
+def _print_report(report, output=None, json=False):
+    def secho(*args, **kwargs):
+        click.secho(file=output, *args, **kwargs)
+
     if json:
-        return print(json_module.dumps(report, indent=4))
+        return secho(json_module.dumps(report, indent=4))
+
     color = 'green' if report['valid'] else 'red'
     tables = report.pop('tables')
     warnings = report.pop('warnings')
-    click.secho('DATASET', bold=True)
-    click.secho('='*7, bold=True)
-    click.secho(pformat(report), fg=color, bold=True)
+    secho('DATASET', bold=True)
+    secho('='*7, bold=True)
+    secho(pformat(report), fg=color, bold=True)
     if warnings:
-        click.secho('-'*9, bold=True)
+        secho('-'*9, bold=True)
     for warning in warnings:
-        click.secho('Warning: %s' % warning, fg='yellow')
+        secho('Warning: %s' % warning, fg='yellow')
     for table_number, table in enumerate(tables, start=1):
-        click.secho('\nTABLE [%s]' % table_number, bold=True)
-        click.secho('='*9, bold=True)
+        secho('\nTABLE [%s]' % table_number, bold=True)
+        secho('='*9, bold=True)
         color = 'green' if table['valid'] else 'red'
         errors = table.pop('errors')
-        click.secho(pformat(table), fg=color, bold=True)
+        secho(pformat(table), fg=color, bold=True)
         if errors:
-            click.secho('-'*9, bold=True)
+            secho('-'*9, bold=True)
         for error in errors:
             template = '[{row-number},{column-number}] [{code}] {message}'
             substitutions = {
@@ -67,7 +164,7 @@ def _print_report(report, json=False):
                 'message': error.get('message', '-'),
             }
             message = template.format(**substitutions)
-            click.secho(message)
+            secho(message)
 
 
 # Main program

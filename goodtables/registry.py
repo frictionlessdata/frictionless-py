@@ -123,7 +123,7 @@ class Registry(object):
             exclude = list(result_exclude)
 
         # Validate checks
-        if not isinstance(include, list):
+        if not isinstance(include, (list, tuple)):
             message = 'Checks parameter "%s" is not valid' % include
             raise exceptions.GoodtablesException(message)
 

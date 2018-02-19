@@ -23,12 +23,13 @@ NAME = PACKAGE.replace('_', '-')
 INSTALL_REQUIRES = [
     'six>=1.9,<2.0',
     'click>=6.6,<7.0',
+    'click-default-group',
     'requests>=2.10,<3.0',
     'simpleeval>=0.9,<2.0',
     'statistics>=1.0,<2.0',
     'tabulator>=1.3,<2.0',
     'tableschema>=1.0.3,<2.0',
-    'datapackage>=1.0.4,<2.0',
+    'datapackage>=1.2,<2.0',
 ]
 INSTALL_FORMAT_ODS_REQUIRES = [
     'ezodf>=0.3,<2.0',

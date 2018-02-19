@@ -4,7 +4,7 @@ from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
-import six
+import datapackage
 from .inspector import Inspector
 
 
@@ -78,7 +78,38 @@ def validate(source, **options):
     .. _tabulator:
         https://github.com/frictionlessdata/datapackage-py
     """
+    source, options, inspector_settings = _parse_arguments(source, **options)
 
+    # Validate
+    inspector = Inspector(**inspector_settings)
+    report = inspector.inspect(source, **options)
+
+    return report
+
+
+def init_datapackage(resource_paths):
+    """Create tabular data package with resources.
+
+    It will also infer the tabular resources' schemas.
+
+    Args:
+        resource_paths (List[str]): Paths to the data package resources.
+
+    Returns:
+        datapackage.Package: The data package.
+    """
+    dp = datapackage.Package({
+        'name': 'change-me',
+        'schema': 'tabular-data-package',
+    })
+
+    for path in resource_paths:
+        dp.infer(path)
+
+    return dp
+
+
+def _parse_arguments(source, **options):
     # Extract settings
     validation_options = set((
         'checks',
@@ -106,22 +137,4 @@ def validate(source, **options):
                 if hasattr(item['source'], 'joinpath'):
                     source[index]['source'] = str(item['source'])
 
-    # Extract/infer preset
-    preset = options.pop('preset', None)
-    if preset is None:
-        preset = 'table'
-        if isinstance(source, six.string_types):
-            if source.endswith('datapackage.json'):
-                preset = 'datapackage'
-        elif isinstance(source, dict):
-            if 'resources' in source:
-                preset = 'datapackage'
-        elif isinstance(source, list):
-            if source and isinstance(source[0], dict) and 'source' in source[0]:
-                preset = 'nested'
-
-    # Validate
-    inspector = Inspector(**settings)
-    report = inspector.inspect(source, preset=preset, **options)
-
-    return report
+    return source, options, settings

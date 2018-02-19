@@ -8,7 +8,7 @@ import sys
 import json
 import pytest
 from importlib import import_module
-from goodtables import validate
+from goodtables import validate, init_datapackage
 
 
 # Infer preset
@@ -220,3 +220,20 @@ def test_validate_infer_fields_issue_225():
     }
     report = validate(source, schema=schema, infer_fields=True)
     assert report['valid']
+
+
+
+class TestValidateInitDatapackage(object):
+    def test_datapackage_is_correct(self):
+        resources_paths = [
+            'data/valid.csv',
+            'data/sequential_value.csv',
+        ]
+        dp = init_datapackage(resources_paths)
+
+        assert dp is not None
+        assert dp.valid, dp.errors
+        assert len(dp.resources) == 2
+
+        actual_resources_paths = [res.descriptor['path'] for res in dp.resources]
+        assert sorted(resources_paths) == sorted(actual_resources_paths)

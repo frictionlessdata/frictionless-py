@@ -98,6 +98,14 @@ def test_inspector_tables_invalid(log):
     ]
 
 
+def test_nested_presets_set_default_preset():
+    inspector = Inspector(infer_schema=True)
+    report = inspector.inspect([
+        {'source': 'data/datapackages/valid/datapackage.json'},
+    ], preset='nested')
+    assert report['valid']
+    assert report['warnings'] == []
+
 # Catch exceptions
 
 def test_inspector_catch_all_open_exceptions(log):
