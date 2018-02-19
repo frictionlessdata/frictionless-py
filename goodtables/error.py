@@ -10,7 +10,7 @@ from .spec import spec
 
 @functools.total_ordering
 class Error(object):
-    '''Describes a validation check error.
+    """Describes a validation check error.
 
     Args:
         code (str): The error code. Must be one in the spec.
@@ -23,7 +23,7 @@ class Error(object):
 
     Raises:
         KeyError: Raised if the error code isn't known.
-    '''
+    """
 
     def __init__(
         self,

@@ -323,7 +323,7 @@ def _compose_error_from_schema_error(error):
 
 
 def _clean_empty(d):
-    '''Remove None values from a dict.'''
+    """Remove None values from a dict."""
     if not isinstance(d, (dict, list)):
         return d
     if isinstance(d, list):

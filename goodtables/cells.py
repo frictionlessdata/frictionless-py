@@ -2,7 +2,7 @@ from six.moves import zip_longest
 
 
 def create_cells(headers, schema_fields, values=None, row_number=None):
-    '''Create list of cells from headers, fields and values.
+    """Create list of cells from headers, fields and values.
 
     Args:
         headers (List[str]): The headers values.
@@ -20,7 +20,7 @@ def create_cells(headers, schema_fields, values=None, row_number=None):
 
     Returns:
         List[dict]: List of cells.
-    '''
+    """
     fillvalue = '_fillvalue'
     is_header_row = (values is None)
     cells = []
