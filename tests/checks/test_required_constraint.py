@@ -10,8 +10,7 @@ from goodtables.checks.required_constraint import required_constraint
 # Check
 
 def test_check_required_constraint(log):
-    errors = []
     cells = []
-    required_constraint(errors, cells, 1)
+    errors = required_constraint(cells)
     assert log(errors) == []
     assert len(cells) == 0

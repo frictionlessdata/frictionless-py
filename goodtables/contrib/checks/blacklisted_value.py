@@ -5,6 +5,7 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 from ...registry import check
+from ...error import Error
 
 
 # Module API
@@ -18,32 +19,40 @@ class BlacklistedValue(object):
         self.__column = column
         self.__blacklist = blacklist
 
-    def check_row(self, errors, cells, row_number):
+    def check_row(self, cells):
 
         # Get cell
         cell = None
         for item in cells:
-            if self.__column in [item['number'], item.get('header')]:
+            if self.__column in [item['column-number'], item['header']]:
                 cell = item
                 break
 
         # Check cell
         if not cell:
-            message = 'Blacklisted value check requires column "%s" to exist'
-            return errors.append({
-                'code': 'blacklisted-value',
-                'message': message % self.__column,
-                'row-number': row_number,
-                'column-number': None,
-            })
+            message = 'Blacklisted value check requires column "{column}" to exist'
+            message = message.format(column=self.__column)
+            error = Error(
+                'blacklisted-value',
+                row_number=cells[0]['row-number'],
+                message=message
+            )
+            return [error]
 
         # Check value
         value = cell.get('value')
         if value in self.__blacklist:
-            message = 'Value "%s" in column %s for row %s is blacklisted'
-            return errors.append({
-                'code': 'blacklisted-value',
-                'message': message % (value, cell['number'], row_number),
-                'row-number': row_number,
-                'column-number': cell['number'],
-            })
+            message = (
+                'Value "{value}" in column {column_number} on row {row_number}'
+                ' is blacklisted'
+            )
+            message_substitutions = {
+                'value': value,
+            }
+            error = Error(
+                'blacklisted-value',
+                cell,
+                message=message,
+                message_substitutions=message_substitutions
+            )
+            return [error]

@@ -11,6 +11,7 @@ from .inspector import Inspector
 from .registry import preset, check
 from .validate import validate, init_datapackage
 from .spec import spec
+from .error import Error
 from . import exceptions
 
 # Version

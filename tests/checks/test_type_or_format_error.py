@@ -6,33 +6,27 @@ from __future__ import unicode_literals
 
 from tableschema import Field
 from goodtables.checks.type_or_format_error import type_or_format_error
+import goodtables.cells
 
 
 # Check
 
 def test_check_type_or_format_error(log):
-    errors = []
+    field = Field({'name': 'name', 'type': 'integer'})
     cells = [
-        {'number': 1,
-         'header': 'name1',
-         'value': '1',
-         'field': Field({'name': 'name', 'type': 'integer'})},
+        goodtables.cells.create_cell('name1', '1', field, column_number=1)
     ]
-    type_or_format_error(errors, cells, 1)
+    errors = type_or_format_error(cells)
     assert log(errors) == []
     assert len(cells) == 1
-    assert cells[0]['value'] == 1
 
 
 def test_check_type_or_format_error_problem(log):
-    errors = []
+    field = Field({'name': 'name', 'type': 'integer'})
     cells = [
-        {'number': 1,
-         'header': 'name1',
-         'value': 'value1',
-         'field': Field({'name': 'name', 'type': 'integer'})},
+        goodtables.cells.create_cell('name1', 'value1', field, column_number=1, row_number=1)
     ]
-    type_or_format_error(errors, cells, 1)
+    errors = type_or_format_error(cells)
     assert log(errors) == [
         (1, 1, 'type-or-format-error'),
     ]

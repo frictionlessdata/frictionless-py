@@ -5,29 +5,27 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 from copy import copy
-from ..spec import spec
 from ..registry import check
+from ..error import Error
 
 
 # Module API
 
-@check('missing-header', type='schema', context='head')
-def missing_header(errors, cells, sample=None):
+@check('missing-header')
+def missing_header(cells, sample):
+    errors = []
+
     for cell in copy(cells):
 
         # Skip if header in cell
-        if 'header' in cell:
+        if cell.get('header') is not None:
             continue
 
         # Add error
-        message = spec['errors']['missing-header']['message']
-        message = message.format(column_number=cell['number'])
-        errors.append({
-            'code': 'missing-header',
-            'message': message,
-            'row-number': None,
-            'column-number': cell['number'],
-        })
+        error = Error('missing-header', cell)
+        errors.append(error)
 
         # Remove cell
         cells.remove(cell)
+
+    return errors

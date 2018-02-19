@@ -54,7 +54,7 @@ def test_validate_report_scheme_format_encoding():
 
 def test_validate_report_schema():
     report = validate('data/valid.csv')
-    assert report['tables'][0]['schema'] == None
+    assert report['tables'][0].get('schema') is None
 
 
 def test_validate_report_schema_infer_schema():

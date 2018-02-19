@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 
 import six
 from ...registry import check
+from ...error import Error
 
 
 # Module API
@@ -18,7 +19,7 @@ class TruncatedValue(object):
     def __init__(self, **options):
         pass
 
-    def check_row(self, errors, cells, row_number):
+    def check_row(self, cells):
         for cell in cells:
             value = cell.get('value')
             truncated = False
@@ -42,13 +43,16 @@ class TruncatedValue(object):
 
             # Add error
             if truncated:
-                message = 'Value in column %s for row %s is probably truncated'
-                errors.append({
-                    'code': 'truncated-value',
-                    'message': message % (cell['number'], row_number),
-                    'row-number': row_number,
-                    'column-number': cell['number'],
-                })
+                message = (
+                    'Value in column {column_number} for row {row_number}'
+                    ' is probably truncated'
+                )
+                error = Error(
+                    'truncated-value',
+                    cell,
+                    message=message
+                )
+                return [error]
 
 
 # Internal

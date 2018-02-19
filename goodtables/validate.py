@@ -62,7 +62,7 @@ def validate(source, **options):
             the `tabulator`_ documentation for the list of supported formats.
         encoding (str): Encoding of the source.
         skip_rows (Union[int, List[Union[int, str]]]): Row numbers or a
-            strings. Rows beginning with the string will be ignored (e.g. '#',
+            string. Rows beginning with the string will be ignored (e.g. '#',
             '//').
 
     Raises:

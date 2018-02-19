@@ -9,10 +9,11 @@ import datetime
 import operator
 import tabulator
 import tableschema
+from . import cells
 from copy import copy
-from six.moves import zip_longest
 from multiprocessing.pool import ThreadPool
 from .registry import registry
+from .error import Error
 from . import exceptions
 from . import config
 
@@ -208,37 +209,31 @@ class Inspector(object):
                     error = _compose_error_from_schema_error(error)
                     errors.append(error)
 
-        # Prepare cells
+        # Head checks
         if not fatal_error:
-            cells = []
+            # Prepare cells
             fields = [None] * len(headers)
             if schema is not None:
                 fields = schema.fields
-            iterator = zip_longest(headers, fields, fillvalue=_FILLVALUE)
-            for number, (header, field) in enumerate(iterator, start=1):
-                cell = {'number': number}
-                if header is not _FILLVALUE:
-                    cell['header'] = header
-                    cell['value'] = header
-                if field is not _FILLVALUE:
-                    cell['field'] = field
-                cells.append(cell)
+            header_cells = cells.create_cells(headers, fields)
 
-        # Head checks
-        if not fatal_error:
-            if None not in headers:
+            has_headers = (None not in headers)
+            if has_headers:
                 head_checks = _filter_checks(checks, context='head')
                 for check in head_checks:
-                    if not cells:
+                    if not header_cells:
                         break
                     check_func = getattr(check['func'], 'check_headers', check['func'])
-                    check_func(errors, cells, sample)
+                    errors += (check_func(header_cells, sample) or [])
                 for error in errors:
-                    error['row'] = None
+                    error.row = None
+
+            # Grab fields from cells, as there might have been new ones
+            # inferred by the "extra-header" check
+            fields = [c.get('field') for c in header_cells]
 
         # Body checks
         if not fatal_error:
-            cellmap = {cell['number']: cell for cell in cells}
             body_checks = _filter_checks(checks, context='body')
             with stream:
                 extended_rows = stream.iter(extended=True)
@@ -252,27 +247,16 @@ class Inspector(object):
                         error = _compose_error_from_exception(exception)
                         errors.append(error)
                         break
-                    cells = []
-                    iterator = zip_longest(headers, row, fillvalue=_FILLVALUE)
-                    for number, (header, value) in enumerate(iterator, start=1):
-                        cellref = cellmap.get(number, {})
-                        cell = {'number': number}
-                        if header is not _FILLVALUE:
-                            cell['header'] = cellref.get('header', header)
-                        if 'field' in cellref:
-                            cell['field'] = cellref['field']
-                        if value is not _FILLVALUE:
-                            cell['value'] = value
-                        cells.append(cell)
+                    row_cells = cells.create_cells(headers, fields, row, row_number)
                     for check in body_checks:
-                        if not cells:
+                        if not row_cells:
                             break
                         check_func = getattr(check['func'], 'check_row', check['func'])
-                        check_func(errors, cells, row_number)
+                        errors += (check_func(row_cells) or [])
                     for error in reversed(errors):
-                        if 'row' in error:
+                        if error.row is not None:
                             break
-                        error['row'] = row
+                        error.row = row
                     if row_number >= self.__row_limit:
                         warnings.append(
                             'Table "%s" inspection has reached %s row(s) limit' %
@@ -289,7 +273,7 @@ class Inspector(object):
             for check in checks:
                 check_func = getattr(check['func'], 'check_table', None)
                 if check_func:
-                    check_func(errors)
+                    errors += (check_func() or [])
 
         # Stop timer
         stop = datetime.datetime.now()
@@ -298,7 +282,7 @@ class Inspector(object):
         headers = headers if None not in headers else None
         if self.__error_limit != float('inf'):
             errors = errors[:self.__error_limit]
-        errors = _sort_errors(errors)
+        errors = sorted(errors)
         report = copy(extra)
         report.update({
             'time': round((stop - start).total_seconds(), 3),
@@ -311,16 +295,13 @@ class Inspector(object):
             'format': stream.format,
             'encoding': stream.encoding,
             'schema': 'table-schema' if schema else None,
-            'errors': errors,
+            'errors': [dict(error) for error in errors],
         })
 
-        return warnings, report
+        return warnings, _clean_empty(report)
 
 
 # Internal
-
-_FILLVALUE = '_FILLVALUE'
-
 
 def _filter_checks(checks, type=None, context=None, inverse=False):
     result = []
@@ -337,6 +318,7 @@ def _filter_checks(checks, type=None, context=None, inverse=False):
 def _compose_error_from_exception(exception):
     code = 'source-error'
     message = str(exception)
+
     if isinstance(exception, tabulator.exceptions.SourceError):
         code = 'source-error'
     elif isinstance(exception, tabulator.exceptions.SchemeError):
@@ -349,27 +331,28 @@ def _compose_error_from_exception(exception):
         code = 'io-error'
     elif isinstance(exception, tabulator.exceptions.HTTPError):
         code = 'http-error'
-    return {
-        'row': None,
-        'code': code,
-        'message': message,
-        'row-number': None,
-        'column-number': None,
-    }
+
+    return Error(code, message=message)
 
 
 def _compose_error_from_schema_error(error):
-    code = 'schema-error'
-    message = 'Table Schema error: %s' % error
-    return {
-        'row': None,
-        'code': code,
-        'message': message,
-        'row-number': None,
-        'column-number': None,
+    message_substitutions = {
+        'error_message': error,
     }
+    return Error(
+        'schema-error',
+        message_substitutions=message_substitutions
+    )
 
 
-def _sort_errors(errors):
-    return sorted(errors, key=lambda error:
-        (error['row-number'] or 0, error['column-number'] or 0))
+def _clean_empty(d):
+    '''Remove None values from a dict.'''
+    if not isinstance(d, (dict, list)):
+        return d
+    if isinstance(d, list):
+        return [v for v in (_clean_empty(v) for v in d) if v is not None]
+    return {
+        k: v for k, v in
+        ((k, _clean_empty(v)) for k, v in d.items())
+        if v is not None
+    }

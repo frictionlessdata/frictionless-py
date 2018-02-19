@@ -23,7 +23,7 @@ def preset(name):
     return decorator
 
 
-def check(name, type, context, position=None):
+def check(name, type=None, context=None, position=None):
     """https://github.com/frictionlessdata/goodtables-py#custom-checks
     """
     def decorator(func):
@@ -49,7 +49,7 @@ class Registry(object):
     def compile_presets(self):
         return deepcopy(self.__presets)
 
-    def register_check(self, func, name, type, context, position=None):
+    def register_check(self, func, name, type=None, context=None, position=None):
         check = {
             'func': func,
             'name': name,
@@ -59,9 +59,12 @@ class Registry(object):
 
         # Validate check
         error = spec['errors'].get(name)
-        if error and (error['type'] != type or error['context'] != context):
-            message = 'Check "%s" is a part of the spec but type/context is incorrect'
-            raise exceptions.GoodtablesException(message % name)
+        if error:
+            if (check['type'] is not None or check['context'] is not None):
+                message = 'Check "%s" is a part of the spec but type/context is incorrect'
+                raise exceptions.GoodtablesException(message % name)
+            check['type'] = error['type']
+            check['context'] = error['context']
         elif not error and type != 'custom':
             message = 'Check "%s" is not a part of the spec should have type "custom"'
             raise exceptions.GoodtablesException(message % name)
@@ -157,10 +160,10 @@ class Registry(object):
                             check_options.update(item_config)
                             try:
                                 compiled_check['func'] = check['func'](**check_options)
-                            except Exception:
+                            except Exception as e:
                                 message = 'Check "%s" options "%s" error'
                                 message = message % (check['name'], check_options)
-                                raise exceptions.GoodtablesException(message)
+                                six.raise_from(exceptions.GoodtablesException(message), e)
                         compiled_checks.append(compiled_check)
 
         return compiled_checks

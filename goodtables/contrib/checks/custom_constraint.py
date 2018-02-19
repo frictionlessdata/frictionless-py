@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 
 from simpleeval import simple_eval
 from ...registry import check
+from ...error import Error
 
 
 # Module API
@@ -18,12 +19,11 @@ class CustomConstraint(object):
     def __init__(self, constraint, **options):
         self.__constraint = constraint
 
-    def check_row(self, errors, cells, row_number):
-
+    def check_row(self, cells):
         # Prepare names
         names = {}
         for cell in cells:
-            if set(cell).issuperset(['header', 'value']):
+            if None not in [cell.get('header'), cell.get('value')]:
                 try:
                     names[cell['header']] = float(cell['value'])
                 except ValueError:
@@ -31,14 +31,19 @@ class CustomConstraint(object):
 
         # Check constraint
         try:
-            # This call sould be considered as a safe expression evaluation
+            # This call should be considered as a safe expression evaluation
             # https://github.com/danthedeckie/simpleeval
             assert simple_eval(self.__constraint, names=names)
         except Exception:
-            message = 'Custom constraint "%s" fails for row %s'
-            return errors.append({
-                'code': 'custom-constraint',
-                'message': message % (self.__constraint, row_number),
-                'row-number': row_number,
-                'column-number': None,
-            })
+            row_number = cells[0]['row-number']
+            message = 'Custom constraint "{constraint}" fails for row {row_number}'
+            message_substitutions = {
+                'constraint': self.__constraint,
+            }
+            error = Error(
+                'custom-constraint',
+                row_number=row_number,
+                message=message,
+                message_substitutions=message_substitutions
+            )
+            return [error]
