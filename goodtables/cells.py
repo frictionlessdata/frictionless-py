@@ -16,7 +16,7 @@ def create_cells(headers, schema_fields, values=None, row_number=None):
             cells, the resulting Cell will have an empty string value. If
             the `values` list has a different length than the `headers`,
             the resulting Cell will have value `None`.
-        row_number (int): The row number.
+        row_number (int, optional): The row number.
 
     Returns:
         List[dict]: List of cells.
