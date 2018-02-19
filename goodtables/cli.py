@@ -47,7 +47,7 @@ click.disable_unicode_literals_warning = True
     help='Checks to disable.'
 )
 @click.option(
-    '--ignore-order',
+    '--order-fields',
     is_flag=True,
     help='Don\'t validate the columns order.'
 )
@@ -79,7 +79,6 @@ def cli(source, json, **options):
         del options['skip_checks']
 
     options['infer_fields'] = options['infer_schema']
-    options['order_fields'] = options.pop('ignore_order')
     quiet = options.pop('quiet')
     output = options.pop('output')
 
