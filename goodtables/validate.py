@@ -88,6 +88,16 @@ def validate(source, **options):
 
 
 def init_datapackage(resource_paths):
+    """Create tabular data package with resources.
+
+    It will also infer the tabular resources' schemas.
+
+    Args:
+        resource_paths (List[str]): Paths to the data package resources.
+
+    Returns:
+        datapackage.Package: The data package.
+    """
     dp = datapackage.Package({
         'name': 'change-me',
         'schema': 'tabular-data-package',
@@ -97,24 +107,6 @@ def init_datapackage(resource_paths):
         dp.infer(path)
 
     return dp
-
-
-def _remove_datapackage_sources(source):
-    is_dp = lambda source: source.endswith('datapackage.json')  # noqa:E731
-    result = None
-    if isinstance(source, list):
-        result = filter(
-            lambda v: v is not None,
-            [_remove_datapackage_sources(s) for s in source]
-        )
-        result = [s for s in result]
-    elif isinstance(source, dict):
-        if not ('resources' in source or is_dp(source.get('source', ''))):
-            result = source
-    elif hasattr(source, 'endswith') and not is_dp(source):
-        result = source
-
-    return result
 
 
 def _parse_arguments(source, **options):
