@@ -117,7 +117,9 @@ class Inspector(object):
         if preset is None:
             preset = 'table'
             if isinstance(source, six.string_types):
-                if source.endswith('datapackage.json'):
+                source_path = source.lower()
+                if source_path.endswith('datapackage.json') \
+                   or source_path.endswith('.zip'):
                     preset = 'datapackage'
             elif isinstance(source, dict):
                 if 'resources' in source:
