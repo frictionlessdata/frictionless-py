@@ -32,7 +32,7 @@ def validate(source, **options):
             (e.g.  `structure`).
         infer_schema (bool): Infer schema if one wasn't passed as an argument.
         infer_fields (bool): Infer schema for columns not present in the received schema.
-        infer_schema (bool): Order source columns based on schema fields order.
+        order_fields (bool): Order source columns based on schema fields order.
             This is useful when you don't want to validate that the data
             columns' order is the same as the schema's.
         error_limit (int): Stop validation if the number of errors per table
