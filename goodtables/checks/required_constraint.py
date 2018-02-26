@@ -26,7 +26,7 @@ def required_constraint(cells):
 
         # Check constraint
         valid = field.test_value(value, constraints=['required'])
-        if field.descriptor.get('primaryKey'):
+        if field.descriptor.get('primaryKey') and field.constraints.get('required', True):
             valid = valid and field.cast_value(value) is not None
 
         # Skip if valid
