@@ -4,24 +4,43 @@ from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
+import datetime
+import pytest
+import goodtables.cells
 from goodtables import validate
+from goodtables.contrib.checks.truncated_value import TruncatedValue
 
 
-# Validate
+@pytest.mark.parametrize('value', [
+    'a' * 255,
+    32767,
+    2147483647,
+])
+def test_truncated_values(value):
+    cell = goodtables.cells.create_cell('value', value)
+    errors = TruncatedValue().check_row([cell])
+    assert len(errors) == 1
+    assert errors[0].code == 'truncated-value'
 
-def test_check_truncated_value(log):
-    source = [
-        ['row', 'name', 'salary'],
-        [2, 'a' * 255, 32766 ],
-        [3, 'John', 32767],
-        [4, 'Sam', 2147483647],
-        [5],
-    ]
-    report = validate(source, checks=[
-        'truncated-value',
-    ])
-    assert log(report) == [
-        (1, 2, 2, 'truncated-value'),
-        (1, 3, 3, 'truncated-value'),
-        (1, 4, 3, 'truncated-value'),
-    ]
+
+@pytest.mark.parametrize('value', [
+    'a' * 254,
+    32766,
+    2147483646,
+])
+def test_not_truncated_values(value):
+    cell = goodtables.cells.create_cell('value', value)
+    errors = TruncatedValue().check_row([cell])
+    assert not errors
+
+
+def test_check_truncated_value_with_dates():
+    # There was a bug where we didn't catch the correct exception when calling
+    # int(date)
+    cell = goodtables.cells.create_cell(
+        'date',
+        datetime.datetime.now()
+    )
+    errors = TruncatedValue().check_row([cell])
+
+    assert not errors

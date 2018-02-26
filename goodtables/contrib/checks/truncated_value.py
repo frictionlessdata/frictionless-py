@@ -38,7 +38,7 @@ class TruncatedValue(object):
                 value = int(value)
                 if value in _TRUNCATED_INTEGER_VALUES:
                     truncated = True
-            except ValueError:
+            except Exception:
                 pass
 
             # Add error
