@@ -11,7 +11,7 @@ import tabulator
 import tableschema
 from . import cells
 from copy import copy
-from multiprocessing.pool import ThreadPool
+from multiprocessing import Process, Manager
 from .registry import registry
 from .error import Error
 from . import exceptions
@@ -75,14 +75,32 @@ class Inspector(object):
         # Collect table reports
         table_reports = []
         if tables:
-            tasks = []
-            pool = ThreadPool(processes=len(tables))
-            for table in tables:
-                tasks.append(pool.apply_async(self.__inspect_table, (table,)))
-            for task in tasks:
-                table_warnings, table_report = task.get()
-                warnings.extend(table_warnings)
-                table_reports.append(table_report)
+            # We'd use a Pool here, but jsonschema's dynamic Validator class
+            # won't pickle nicely into the pool's Queue
+            with Manager() as manager:
+                results = manager.dict()
+                processes = []
+
+                def validate(i, table):
+                    try:
+                        results[i] = self.__inspect_table(table)
+                    except Exception as e:
+                        results[i] = e
+                        exit(1)
+
+                for i, table in enumerate(tables):
+                    process = Process(target=validate, args=(i, table))
+                    processes.append(process)
+                    process.start()
+                for i, process in enumerate(processes):
+                    process.join()
+                    if process.exitcode == 0:
+                        table_warnings, table_report = results[i]
+                        warnings.extend(table_warnings)
+                        table_reports.append(table_report)
+                    else:
+                        if isinstance(results[i], Exception):
+                            raise results[i]
 
         # Stop timer
         stop = datetime.datetime.now()
