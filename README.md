@@ -566,6 +566,20 @@ For now this documentation section is incomplete. Please see builtin presets to 
 
 ## Changelog
 
+### v2.0
+
+Breaking changes:
+
+- Checks method signature now only receives the current row's `cells` list
+- Checks raise errors by returning an array of `Error` objects
+- Cells have the row number in the `row-number` key
+- Files with ZIP extension are presumed to be datapackages, so `goodtables mydatapackage.zip` works
+- Improvements to goodtables CLI ([#233](https://github.com/frictionlessdata/goodtables-py/issues/233))
+- New `goodtables init <data paths>` command to create a new `datapackage.json` with the files passed as parameters and their inferred schemas.
+
+Bug fixes:
+- Fix bug with `truncated-values` check on date fields ([#250](https://github.com/frictionlessdata/goodtables-py/issues/250))
+
 ### v1.5
 
 New API added:
