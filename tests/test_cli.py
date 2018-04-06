@@ -56,3 +56,17 @@ def test_cli_init():
     resource = dp.resources[0]
     assert resource.descriptor['path'] == resource_path
     assert 'schema' in resource.descriptor
+
+
+@mock.patch('goodtables.validate', autospec=True)
+def test_cli_adds_schema_to_nested_sources(validate_mock):
+    sources = ['data1.csv', 'data2.csv']
+    schema = 'schema.json'
+
+    CliRunner().invoke(goodtables.cli.cli, sources + ['--schema', schema])
+
+    last_call_args = validate_mock.call_args
+    sources = last_call_args[0][0]
+    for source in sources:
+        assert source.get('schema') == schema
+    assert 'schema' not in last_call_args[1]

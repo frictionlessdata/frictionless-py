@@ -96,6 +96,10 @@ def validate(paths, json, **options):
     output = options.pop('output')
 
     sources = [{'source': path} for path in paths]
+    schema = options.pop('schema', None)
+    if schema:
+        for source in sources:
+            source['schema'] = schema
 
     report = goodtables.validate(sources, **options)
 
