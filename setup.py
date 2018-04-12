@@ -62,6 +62,7 @@ setup(
     },
     zip_safe=False,
     long_description=README,
+    long_description_content_type='text/markdown',
     description='Goodtables is a framework to inspect tabular data.',
     author='Open Knowledge International',
     author_email='info@okfn.org',
