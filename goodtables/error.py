@@ -107,6 +107,7 @@ class Error(object):
     def _to_dict(self):
         return {
             'code': self.code,
+            'row': self.row,
             'row-number': self.row_number,
             'column-number': self.column_number,
             'message': self.message,
