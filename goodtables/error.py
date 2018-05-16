@@ -50,6 +50,10 @@ class Error(object):
             yield (key, value)
 
     @property
+    def cell(self):
+        return self._cell
+
+    @property
     def code(self):
         return self._code
 
