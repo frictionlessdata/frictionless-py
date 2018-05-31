@@ -50,6 +50,10 @@ class Error(object):
             yield (key, value)
 
     @property
+    def cell(self):
+        return self._cell
+
+    @property
     def code(self):
         return self._code
 
@@ -103,6 +107,7 @@ class Error(object):
     def _to_dict(self):
         return {
             'code': self.code,
+            'row': self.row,
             'row-number': self.row_number,
             'column-number': self.column_number,
             'message': self.message,

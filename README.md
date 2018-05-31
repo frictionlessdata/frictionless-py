@@ -51,6 +51,7 @@ pip install goodtables[ods]  # If you need LibreOffice's ODS file support
 
 ```
 goodtables data.csv
+goodtables data.csv --schema table_schema.json
 ```
 
 Use `goodtables --help` to see the different options.

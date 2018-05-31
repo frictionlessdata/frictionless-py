@@ -4,208 +4,206 @@
 
 
         "io-error": {
-          "name": "IO Error",
+          "name": "Erreur d'entrée/sortie",
           "type": "source",
           "context": "table",
           "weight": 100,
-          "message": "The data source returned an IO Error of type {error_type}",
-          "description": "Data reading error because of IO error.\n\n How it could be resolved:\n - Fix path if it's not correct."
+          "message": "L'accès aux données a rencontré une erreur de type {error_type}",
+          "description": "Erreur de lecture de données due à un problème d'entrée/sortie.\n\n Pour résoudre le problème :\n - Vérifiez que le chemin d'accès est correct."
         },
         "http-error": {
-          "name": "HTTP Error",
+          "name": "Erreur HTTP",
           "type": "source",
           "context": "table",
           "weight": 100,
-          "message": "The data source returned an HTTP error with a status code of {status_code}",
-          "description": "Data reading error because of HTTP error.\n\n How it could be resolved:\n - Fix url link if it's not correct."
+          "message": "Le serveur HTTP qui héberge les données a renvoyé une erreur de type {status_code}",
+          "description": "Erreur de lecture des données due à une erreur HTTP.\n\n Pour résoudre le problème :\n - Vérifiez que l'URL d'accès est correcte."
         },
         "source-error": {
-          "name": "Source Error",
+          "name": "Erreur de source",
           "type": "source",
           "context": "table",
           "weight": 100,
-          "message": "The data source has not supported or has inconsistent contents; no tabular data can be extracted",
-          "description": "Data reading error because of not supported or inconsistent contents.\n\n How it could be resolved:\n - Fix data contents (e.g. change JSON data to array or arrays/objects).\n - Set correct source settings in {validator}."
+          "message": "Le format des données est inconnu, impossible d'extraire des données tabulaires",
+          "description": "Erreur de lecture des données, le contenu n'est pas reconnu.\n\n Pour résoudre le problème :\n - Corrigez les données (modidiez, par exemple, le contenu JSON en tableau ou objets.\n - Corrigez le paramétrage de la source dans {validator}."
         },
         "scheme-error": {
-          "name": "Scheme Error",
+          "name": "Erreur de protocole",
           "type": "source",
           "context": "table",
           "weight": 100,
-          "message": "The data source is in an unknown scheme; no tabular data can be extracted",
-          "description": "Data reading error because of incorrect scheme.\n\n How it could be resolved:\n - Fix data scheme (e.g. change scheme from `ftp` to `http`).\n - Set correct scheme in {validator}."
+          "message": "Le protocole d'accès à la source est inconnu, impossible d'extraire des données tabulaires",
+          "description": "Erreur de lecture des données due à un protocole d'accès inconnu.\n\n Pour résoudre le problème :\n - Corrigez le protocole (modifiez par exemple `ftp` en `http`).\n - Positionnez une valeur de protocole valide dans  {validator}."
         },
         "format-error": {
-          "name": "Format Error",
+          "name": "Erreur de format",
           "type": "source",
           "context": "table",
           "weight": 100,
-          "message": "The data source is in an unknown format; no tabular data can be extracted",
-          "description": "Data reading error because of incorrect format.\n\n How it could be resolved:\n - Fix data format (e.g. change file extension from `txt` to `csv`).\n - Set correct format in {validator}."
+          "message": "Le format des données est inconnu, impossible d'extraire des données tabulaires",
+          "description": "Erreur de lecture des données due à un format inconnu.\n\n Pour résoudre le problème :\n - Corrigez le format (en changeant par exemple l'extension de fichier de `txt` en `csv`).\n - Positionnez une valeur de format correct dans {validator}."
         },
         "encoding-error": {
-          "name": "Encoding Error",
+          "name": "Erreur d'encodage",
           "type": "source",
           "context": "table",
           "weight": 100,
-          "message": "The data source could not be successfully decoded with {encoding} encoding",
-          "description": "Data reading error because of an encoding problem.\n\n How it could be resolved:\n - Fix data source if it's broken.\n - Set correct encoding in {validator}."
+          "message": "Les données ne peuvent être correctement décodées en {encoding}",
+          "description": "Erreur de lecture des données due à un problème d'encodage.\n\n Pour résoudre le problème:\n - Corrigez les problèmes d'encodage des données.\n - Positionnez une valeur d'encodage correcte dans {validator}."
         },
 
 
         "blank-header": {
-          "name": "Blank Header",
+          "name": "En-tête vide",
           "type": "structure",
           "context": "head",
           "weight": 3,
-          "message": "Header in column {column_number} is blank",
-          "description": "A column in the header row is missing a value. Column names should be provided.\n\n How it could be resolved:\n - Add the missing column name to the first row of the data source.\n - If the first row starts with, or ends with a comma, remove it.\n - If this error should be ignored disable `blank-header` check in {validator}."
+          "message": "L'en-tête de la colonne {column_number} est vide",
+          "description": "Une colonne de l'en-tête est vide. Dans l'en-tête, toutes les colonnes doivent avoir un libellé.\n\n Pour résoudre le problème:\n - Ajouter le libellé manquant dans l'en-tête.\n - Si la première ligne de données commence ou termine par une virgule, retirez celle-ci.\n - Si vous ne souhaitez pas être notifié de cette erreur, désactivez la vérification `blank-header` dans {validator}."
         },
         "duplicate-header": {
-          "name": "Duplicate Header",
+          "name": "En-tête dupliqué",
           "type": "structure",
           "context": "head",
           "weight": 3,
-          "message": "Header in column {column_number} is duplicated to header in column(s) {column_numbers}",
-          "description": "Two columns in the header row have the same value. Column names should be unique.\n\n How it could be resolved:\n - Add the missing column name to the first row of the data.\n - If the first row starts with, or ends with a comma, remove it.\n - If this error should be ignored disable `duplicate-header` check in {validator}."
+          "message": "Le libellé de la colonne {column_number} dans l'en-tête est utilisé également pour les colonnes {column_numbers}",
+          "description": "Deux colonnes dans l'en-tête ont le même libellé. Dans l'en-tête, les libellés de colonnes doivent être uniques.\n\n Pour résoudre le problème:\n - Ajouter le libellé manquant dans l'en-tête.\n - Si la première ligne de données commence ou termine par une virgule, retirez celle-ci.\n - Si vous ne souhaitez pas être notifié de cette erreur, désactivez la vérification `duplicate-header` dans {validator}."
         },
         "blank-row": {
-          "name": "Blank Row",
+          "name": "Ligne vide",
           "type": "structure",
           "context": "body",
           "weight": 9,
-          "message": "Row {row_number} is completely blank",
-          "description": "This row is empty. A row should contain at least one value.\n\n How it could be resolved:\n - Delete the row.\n - If this error should be ignored disable `blank-row` check in {validator}."
+          "message": "La ligne {row_number} is vide",
+          "description": "La ligne est vide. Une ligne doit comporter au moins une valeur.\n\n Pour résoudre le problème :\n - Supprimez la ligne vide.\n - Si vous ne souhaitez pas être notifié de cette erreur, désactivez la vérification `blank-row` dans {validator}."
         },
         "duplicate-row": {
-          "name": "Duplicate Row",
+          "name": "Ligne dupliquée",
           "type": "structure",
           "context": "body",
           "weight": 5,
-          "message": "Row {row_number} is duplicated to row(s) {row_numbers}",
-          "description": "The exact same data has been seen in another row.\n\n How it could be resolved:\n - If some of the data is incorrect, correct it.\n - If the whole row is an incorrect duplicate, remove it.\n - If this error should be ignored disable `duplicate-row` check in {validator}."
+          "message": "Le contenu de la ligne {row_number} est identique à celui de(s) ligne(s) {row_numbers}",
+          "description": "Une copie exacte des données a été trouvé sur une autre ligne.\n\n Pour résoudre le problème :\n - Corrigez les données si celles-ci sont incorrectes.\n - Si la ligne est effectivement un doublon, supprimez-la.\n - Si vous ne souhaitez pas être averti de ce type d'erreur, désactivez la vérification `duplicate-row` dans {validator}."
         },
         "extra-value": {
-          "name": "Extra Value",
+          "name": "Valeur surnuméraire",
           "type": "structure",
           "context": "body",
           "weight": 9,
-          "message": "Row {row_number} has an extra value in column {column_number}",
-          "description": "This row has more values compared to the header row (the first row in the data source). A key concept is that all the rows in tabular data must have the same number of columns.\n\n How it could be resolved:\n - Check data has an extra comma between the values in this row.\n - If this error should be ignored disable `extra-value` check in {validator}."
+          "message": "La ligne {row_number} contient une valeur supplémentaire dans {column_number}",
+          "description": "Cette ligne contient plus de valeurs que défini dans la ligne d'en-tête (i.e. la première ligne du fichier). Toutes les lignes d'un fichier tabulaire doivent comporter exactement le même nombre de colonnes.\n\n Pour résoudre le problème:\n - Vérifiez que cette ligne ne contient pas un séparateur (virgule) en trop.\n - Si vous ne souhaitez pas être averti de ce type d'erreur, désactivez la vérification `extra-value` dans {validator}."
         },
         "missing-value": {
-          "name": "Missing Value",
+          "name": "Valeur manquante",
           "type": "structure",
           "context": "body",
           "weight": 9,
-          "message": "Row {row_number} has a missing value in column {column_number}",
-          "description": "This row has less values compared to the header row (the first row in the data source). A key concept is that all the rows in tabular data must have the same number of columns.\n\n How it could be resolved:\n - Check data is not missing a comma between the values in this row.\n - If this error should be ignored disable `missing-value` check in {validator}."
+          "message": "À la ligne {row_number}, il manque une valeur pour la colonne {column_number}",
+          "description": "Cette ligne contient moins de valeurs que défini dans la ligne d'en-tête (i.e. la première ligne du fichier). Toutes les lignes d'un fichier tabulaire doivent comporter exactement le même nombre de colonnes.\n\n Pour résoudre le problème:\n - Vérifiez qu'il ne manque pas un séparateur (virgule) entre deux valeurs sur cette ligne.\n - Si vous ne souhaitez pas être averti de ce type d'erreur, désactivez la vérification `missing-value` dans {validator}."
         },
-
-
         "schema-error": {
-          "name": "Table Schema Error",
+          "name": "Erreur de schéma",
           "type": "schema",
           "context": "table",
           "weight": 15,
-          "message": "Table Schema error: {error_message}",
-          "description": "Provided schema is not valid.\n\n How it could be resolved:\n - Update schema descriptor to be a valid descriptor\n - If this error should be ignored disable schema checks in {validator}."
+          "message": "Erreur de schéma : {error_message}",
+          "description": "Le schéma fourni est invalide.\n\n Pour résoudre le problème:\n - Mettez à jour le schéma pour le rendre valide.\n - Si vous ne souhaitez pas être notifié de cette erreur, désactivez la vérification de schéma dans {validator}."
         },
         "non-matching-header": {
-          "name": "Non-Matching Header",
+          "name": "En-tête non conforme",
           "type": "schema",
           "context": "head",
           "weight": 9,
-          "message": "Header in column {column_number} doesn't match field name {field_name} in the schema",
-          "description": "One of the data source headers doesn't match the field name defined in the schema.\n\n How it could be resolved:\n - Rename header in the data source or field in the schema\n - If this error should be ignored disable `non-matching-header` check in {validator}."
+          "message": "Le libellé de la colonne {column_number} ne correspond pas au libellé {field_name} déclaré dans le schéma",
+          "description": "Un des libellés de colonne du fichier ne correspond pas à ce qui est déclaré dans le schéma.\n\n Pour résoudre le problème:\n - Renommer la colonne dans le fichier ou dans le schéma\n - Si vous ne souhaitez pas être notifié de cette erreur, désactivez la vérification `non-matching-header` dans {validator}."
         },
         "extra-header": {
-          "name": "Extra Header",
+          "name": "En-tête incorrect (libellé en trop)",
           "type": "schema",
           "context": "head",
           "weight": 9,
-          "message": "There is an extra header in column {column_number}",
-          "description": "The first row of the data source contains header that doesn't exist in the schema.\n\n How it could be resolved:\n - Remove the extra column from the data source or add the missing field to the schema\n - If this error should be ignored disable `extra-header` check in {validator}."
+          "message": "Libellé surnuméraire à la colonne {column_number}",
+          "description": "La ligne d'en-tête du fichier contient un libellé non déclaré dans le schéma.\n\n Pour résoudre le problème:\n - Supprimez le libellé incriminé de l'en-tête du fichier ou déclarez-le dans le schéma.\n - Si vous ne souhaitez pas être notifié de cette erreur, désactivez la vérification `extra-header` dans {validator}."
         },
         "missing-header": {
-          "name": "Missing Header",
+          "name": "En-tête incorrect (libellé manquant)",
           "type": "schema",
           "context": "head",
           "weight": 9,
-          "message": "There is a missing header in column {column_number}",
-          "description": "Based on the schema there should be a header that is missing in the first row of the data source.\n\n How it could be resolved:\n - Add the missing column to the data source or remove the extra field from the schema\n - If this error should be ignored disable `missing-header` check in {validator}."
+          "message": "Libellé manquant à la colonne {column_number}",
+          "description": "Le schéma définit un libellé de colonne qui n'est pas trouvé dans l'en-tête.\n\n Pour résoudre le problème :\n - Ajoutez la colonne manquante au fichier ou retirez sa déclaration au sein du schéma.\n - Si vous ne souhaitez pas être notifié de cette erreur, désactivez la vérification `missing-header` dans {validator}"
         },
         "type-or-format-error": {
-          "name": "Type or Format Error",
+          "name": "Erreur de format ou de type",
           "type": "schema",
           "context": "body",
           "weight": 9,
-          "message": "The value {value} in row {row_number} and column {column_number} is not type {field_type} and format {field_format}",
-          "description": "The value does not match the schema type and format for this field.\n\n How it could be resolved:\n - If this value is not correct, update the value.\n - If this value is correct, adjust the type and/or format.\n - To ignore the error, disable the `type-or-format-error` check in {validator}. In this case all schema checks for row values will be ignored."
+          "message": "La valeur {value} à la ligne {row_number} et colonne {column_number} n'est pas de type {field_type} et format {field_format}",
+          "description": "La valeur ne correspond pas au type et format défini dans le schéma pour cette colonne.\n\n Pour résoudre le problème :\n - Si c'est une erreur de valeur, corrigez-la.\n - Si la valeur est correct, modifiez le type et/ou le format dans le schéma.\n - Si vous ne souhaitez pas être notifié de cette erreur, désactivez la vérification `type-or-format-error` dans {validator}. Attention, toutes les erreurs sur les valeurs seront alors ignorées."
         },
         "required-constraint": {
-          "name": "Required Constraint",
+          "name": "Contrainte d'obligation",
           "type": "schema",
           "context": "body",
           "weight": 9,
-          "message": "Column {column_number} is a required field, but row {row_number} has no value",
-          "description": "This field is a required field, but it contains no value.\n\n How it could be resolved:\n - If this value is not correct, update the value.\n - If value is correct, then remove the `required` constraint from the schema.\n - If this error should be ignored disable `required-constraint` check in {validator}."
+          "message": "La colonne {column_number} est obligatoire, mais la ligne {row_number} ne comporte de valeur pour cette colonne",
+          "description": "Cette colonne est obligatoire mais elle contient des valeurs vides.\n\n Pour résoudre le problème :\n - Si c'est une erreur de données, complétez la valeur manquante.\n - Si ce n'est pas une erreur, retirez la contrainte `required` du schéma pour cette colonne.\n - Si vous ne souhaitez pas être notifié de cette erreur, désactivez la vérification `required-constraint` dans {validator}."
         },
         "pattern-constraint": {
-          "name": "Pattern Constraint",
+          "name": "Contrainte d'expression",
           "type": "schema",
           "context": "body",
           "weight": 7,
-          "message": "The value {value} in row {row_number} and column {column_number} does not conform to the pattern constraint of {constraint}",
-          "description": "This field value should conform to constraint pattern.\n\n How it could be resolved:\n - If this value is not correct, update the value.\n - If value is correct, then remove or refine the `pattern` constraint in the schema.\n - If this error should be ignored disable `pattern-constraint` check in {validator}."
+          "message": "La valeur {value} à la ligne {row_number} et la colonne {column_number} n'est pas conforme à l'expression {constraint}",
+          "description": "Les valeurs de cette colonne doivent respecter l'expression définie.\n\n Pour résoudre le problème :\n - Si c'est une erreur de données, corrigez la valeur.\n - Si la valeur est correcte, mettez à jour l'expression ou retirez la contrainte `pattern` du schéma pour cette colonne.\n - Si vous ne souhaitez pas être notifié de cette erreur, désactivez la vérification `pattern-constraint` dans {validator}."
         },
         "unique-constraint": {
-          "name": "Unique Constraint",
+          "name": "Contrainte d'unicité",
           "type": "schema",
           "context": "body",
           "weight": 9,
-          "message": "Rows {row_numbers} has unique constraint violation in column {column_number}",
-          "description": "This field is a unique field but it contains a value that has been used in another row.\n\n How it could be resolved:\n - If this value is not correct, update the value.\n - If value is correct, then the values in this column are not unique. Remove the `unique` constraint from the schema.\n - If this error should be ignored disable `unique-constraint` check in {validator}."
+          "message": "Les valeurs des lignes {row_numbers} ne respectent pas la contrainte d'unicité définie pour la colonne {column_number}",
+          "description": "Les valeurs de cette colonne doivent être uniques, cependant une même valeur a été utilisée plusieurs fois sur des lignes différentes.\n\n Pour résoudre le problème :\n - Si c'est un problème de données, corrigez la valeur.\n - Si la valeur est correcte, cette colonne ne respecte pas la contrainte d'unicité. Retirez la contrainte `unique` du schéma pour cette colonne.\n - Si vous ne souhaitez pas être notifié de cette erreur, désactivez la vérification `unique-constraint` dans {validator}."
         },
         "enumerable-constraint": {
-          "name": "Enumerable Constraint",
+          "name": "Contrainte d'énumération",
           "type": "schema",
           "context": "body",
           "weight": 7,
-          "message": "The value {value} in row {row_number} and column {column_number} does not conform to the given enumeration: {constraint}",
-          "description": "This field value should be equal to one of the values in the enumeration constraint.\n\n How it could be resolved:\n - If this value is not correct, update the value.\n - If value is correct, then remove or refine the `enum` constraint in the schema.\n - If this error should be ignored disable `enumerable-constraint` check in {validator}."
+          "message": "La valeur {value} à la ligne {row_number} et la colonne {column_number} ne fait pas partie de l'énumération : {constraint}",
+          "description": "Les valeurs de cette colonne doivent être choisies dans l'énumération définie.\n\n Pour résoudre le problème :\n - Si c'est une erreur de données, corrigez la valeur.\n - Si la valeur est correcte, mettez à jour la liste des valeurs de l'énumération ou supprimez cette contrainte dans le schéma.\n - Si vous ne souhaitez pas être notifié de cette erreur, désactivez la vérification `enumerable-constraint` dans {validator}."
         },
         "minimum-constraint": {
-          "name": "Minimum Constraint",
+          "name": "Contrainte de valeur minimale",
           "type": "schema",
           "context": "body",
           "weight": 7,
-          "message": "The value {value} in row {row_number} and column {column_number} does not conform to the minimum constraint of {constraint}",
-          "description": "This field value should be greater or equal than constraint value.\n\n How it could be resolved:\n - If this value is not correct, update the value.\n - If value is correct, then remove or refine the `minimum` constraint in the schema.\n - If this error should be ignored disable `minimum-constraint` check in {validator}."
+          "message": "La valeur {value} à la ligne {row_number} et la colonne {column_number} ne respecte pas la contrainte de minimum {constraint}",
+          "description": "Les valeurs de cette colonne doivent être supérieures ou égales au minimum défini dans le schéma.\n\n Pour résoudre le problème :\n - Si c'est une erreur de données, corrigez la valeur.\n - Si la valeur est correcte, changez la valeur minimale définie ou retirez la contrainte dans le schéma.\n - Si vous ne souhaitez pas être notifié de cette erreur, désactivez la vérification  `minimum-constraint` dans {validator}."
         },
         "maximum-constraint": {
-          "name": "Maximum Constraint",
+          "name": "Contrainte de valeur maximale",
           "type": "schema",
           "context": "body",
           "weight": 7,
-          "message": "The value {value} in row {row_number} and column {column_number} does not conform to the maximum constraint of {constraint}",
-          "description": "This field value should be less or equal than constraint value.\n\n How it could be resolved:\n - If this value is not correct, update the value.\n - If value is correct, then remove or refine the `maximum` constraint in the schema.\n - If this error should be ignored disable `maximum-constraint` check in {validator}."
+          "message": "La valeur {value} à la ligne {row_number} et la colonne {column_number} ne respecte pas la contrainte de maximum {constraint}",
+          "description": "Les valeurs de cette colonne doivent être inférieures ou égales au maximum défini dans le schéma.\n\n Pour résoudre le problème :\n - Si c'est une erreur de données, corrigez la valeur.\n - Si la valeur est correcte, changez la valeur maximale définie ou retirez la contrainte dans le schéma.\n - Si vous ne souhaitez pas être notifié de cette erreur, désactivez la vérification  `maximum-constraint` dans {validator}."
         },
         "minimum-length-constraint": {
-          "name": "Minimum Length Constraint",
+          "name": "Contrainte de longueur minimale",
           "type": "schema",
           "context": "body",
           "weight": 7,
-          "message": "The value {value} in row {row_number} and column {column_number} does not conform to the minimum length constraint of {constraint}",
-          "description": "A length of this field value should be greater or equal than schema constraint value.\n\n How it could be resolved:\n - If this value is not correct, update the value.\n - If value is correct, then remove or refine the `minimumLength` constraint in the schema.\n - If this error should be ignored disable `minimum-length-constraint` check in {validator}."
+          "message": "La valeur {value} à la ligne {row_number} et la colonne {column_number} ne respecte pas la contrainte de longueur minimum {constraint}",
+          "description": "La longueur des valeurs de cette colonne doit être supérieure ou égale à celle définie dans le schéma.\n\n Pour résoudre le problème:\n - Si c'est une erreur de données, corrigez la valeur.\n - Si la valeur est correcte, changez la longueur définie pour la contrainte `minimumLength` ou retirez-la du  schéma.\n - Si vous ne souhaitez pas être notifié de cette erreur, désactivez la vérification `minimum-length-constraint` dans {validator}."
         },
         "maximum-length-constraint": {
-          "name": "Maximum Length Constraint",
+          "name": "Contrainte de longueur maximale",
           "type": "schema",
           "context": "body",
           "weight": 7,
-          "message": "The value {value} in row {row_number} and column {column_number} does not conform to the maximum length constraint of {constraint}",
-          "description": "A length of this field value should be less or equal than schema constraint value.\n\n How it could be resolved:\n - If this value is not correct, update the value.\n - If value is correct, then remove or refine the `maximumLength` constraint in the schema.\n - If this error should be ignored disable `maximum-length-constraint` check in {validator}."
+          "message": "La valeur {value} à la ligne {row_number} et la colonne {column_number} ne respecte pas la contrainte de longueur maximum {constraint}",
+          "description": "La longueur des valeurs de cette colonne doit être inférieure ou égale à celle définie dans le schéma.\n\n Pour résoudre le problème:\n - Si c'est une erreur de données, corrigez la valeur.\n - Si la valeur est correcte, changez la longueur définie pour la contrainte `maximumLength` ou retirez-la du  schéma.\n - Si vous ne souhaitez pas être notifié de cette erreur, désactivez la vérification `maximum-length-constraint` dans {validator}."
         }
 
 

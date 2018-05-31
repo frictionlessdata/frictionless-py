@@ -47,4 +47,5 @@ CHECKS = [
     'goodtables.contrib.checks.sequential_value',
     'goodtables.contrib.checks.truncated_value',
     'goodtables.contrib.checks.custom_constraint',
+    'goodtables.contrib.checks.french_siret_value',
 ]

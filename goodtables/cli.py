@@ -4,6 +4,7 @@ from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
+import os
 import click
 from click_default_group import DefaultGroup
 import goodtables
@@ -84,6 +85,7 @@ def cli():
     help='Stop validating if there are more than this number of errors (-1 for no limit).'
 )
 def validate(paths, json, **options):
+    # Check validity of the json-schema provided
     # Remove blank values
     options = {key: value for key, value in options.items() if value is not None}
     if not options['checks']:
@@ -94,10 +96,14 @@ def validate(paths, json, **options):
     options['infer_fields'] = options['infer_schema']
     quiet = options.pop('quiet')
     output = options.pop('output')
-
     sources = [{'source': path} for path in paths]
     schema = options.pop('schema', None)
     if schema:
+        # Check validity of the json-schema provided
+        assert os.path.exists(schema)
+        with open(schema, 'r') as _f:
+            json_module.loads(_f.read())
+
         for source in sources:
             source['schema'] = schema
 
@@ -145,20 +151,20 @@ def _print_report(report, output=None, json=False):
     tables = report.pop('tables')
     warnings = report.pop('warnings')
     secho('DATASET', bold=True)
-    secho('='*7, bold=True)
+    secho('=' * 7, bold=True)
     secho(pformat(report), fg=color, bold=True)
     if warnings:
-        secho('-'*9, bold=True)
+        secho('-' * 9, bold=True)
     for warning in warnings:
         secho('Warning: %s' % warning, fg='yellow')
     for table_number, table in enumerate(tables, start=1):
         secho('\nTABLE [%s]' % table_number, bold=True)
-        secho('='*9, bold=True)
+        secho('=' * 9, bold=True)
         color = 'green' if table['valid'] else 'red'
         errors = table.pop('errors')
         secho(pformat(table), fg=color, bold=True)
         if errors:
-            secho('-'*9, bold=True)
+            secho('-' * 9, bold=True)
         for error in errors:
             template = '[{row-number},{column-number}] [{code}] {message}'
             substitutions = {
