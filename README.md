@@ -160,7 +160,7 @@ Let's check that the `name` column doesn't contain rows with `bug` or `bad`:
 from goodtables import validate
 
 report = validate('data.csv', checks=[
-    {'blacklisted-value': {'column': 'id', 'blacklist': ['bug', 'bad']}},
+    {'blacklisted-value': {'column': 'name', 'blacklist': ['bug', 'bad']}},
 ])
 # error on row 3 with code "blacklisted-value"
 # error on row 4 with code "blacklisted-value"
