@@ -101,6 +101,7 @@ def validate(paths, json, **options):
         for source in sources:
             source['schema'] = schema
 
+    goodtables.init()
     report = goodtables.validate(sources, **options)
 
     if not quiet:

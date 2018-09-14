@@ -4,13 +4,13 @@ from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
-import six
 import warnings
-from copy import deepcopy
 from collections import OrderedDict
-from .spec import spec
-from . import exceptions
+from copy import deepcopy
 
+import six
+
+from . import exceptions
 
 # Module API
 
@@ -18,7 +18,7 @@ def preset(name):
     """https://github.com/frictionlessdata/goodtables-py#custom-presets
     """
     def decorator(func):
-        registry.register_preset(func, name)
+        Registry.register_preset(func, name)
         return func
     return decorator
 
@@ -27,29 +27,47 @@ def check(name, type=None, context=None, position=None):
     """https://github.com/frictionlessdata/goodtables-py#custom-checks
     """
     def decorator(func):
-        registry.register_check(func, name, type, context, position)
+        Registry.register_check(func, name, type, context, position)
         return func
     return decorator
 
 
 class Registry(object):
 
+    presets = OrderedDict()
+    checks = OrderedDict()
+    spec = {}
+    __initialized = False
+
+    @classmethod
+    def init(cls, spec):
+        """ Inits spec instance used by Registry class """
+        cls.spec = spec
+        cls.__initialized = True
+
+    @classmethod
+    def check_init(cls):
+        assert cls.__initialized, 'Registry class is not initialized. Use goodtables.init() first!'
+
     # Public
 
-    def __init__(self):
-        self.__presets = OrderedDict()
-        self.__checks = OrderedDict()
-
-    def register_preset(self, func, name):
-        self.__presets[name] = {
+    @classmethod
+    def register_preset(cls, func, name):
+        cls.check_init()
+        Registry.presets[name] = {
             'func': func,
             'name': name,
         }
 
-    def compile_presets(self):
-        return deepcopy(self.__presets)
+    @classmethod
+    def compile_presets(cls):
+        cls.check_init()
+        return deepcopy(cls.presets)
 
-    def register_check(self, func, name, type=None, context=None, position=None):
+    @classmethod
+    def register_check(cls, func, name, type=None, context=None, position=None):
+        cls.check_init()
+
         check = {
             'func': func,
             'name': name,
@@ -58,7 +76,7 @@ class Registry(object):
         }
 
         # Validate check
-        error = spec['errors'].get(name)
+        error = Registry.spec['errors'].get(name)
         if error:
             if (check['type'] is not None or check['context'] is not None):
                 message = 'Check "%s" is a part of the spec but type/context is incorrect'
@@ -74,15 +92,15 @@ class Registry(object):
             try:
                 position = position.split(':', 1)
                 assert position[0] in ['before', 'after']
-                assert self.__checks.get(position[1])
+                assert Registry.checks.get(position[1])
             except (TypeError, AssertionError):
                 message = 'Check "%s" has been registered at invalid position "%s"'
                 raise exceptions.GoodtablesException(message % (name, position))
 
         # Insert into checks
         checks = OrderedDict()
-        self.__checks.pop(name, None)
-        for item_name, item_check in self.__checks.items():
+        Registry.checks.pop(name, None)
+        for item_name, item_check in Registry.checks.items():
             if position == 'before:%s' % item_name:
                 checks[name] = check
             checks[item_name] = item_check
@@ -90,9 +108,12 @@ class Registry(object):
                 checks[name] = check
         if not position:
             checks[name] = check
-        self.__checks = checks
+        Registry.checks = checks
 
-    def compile_checks(self, include, exclude, **options):
+    @classmethod
+    def compile_checks(cls, include, exclude, **options):
+        cls.check_init()
+
         include = deepcopy(include)
         exclude = deepcopy(exclude)
 
@@ -132,7 +153,7 @@ class Registry(object):
             for index, item in enumerate(list(include)):
                 if item == group:
                     del include[index]
-                    for code, error in spec['errors'].items():
+                    for code, error in Registry.spec['errors'].items():
                         # It's temporal skip
                         # https://github.com/frictionlessdata/goodtables-py/issues/174
                         if code == 'schema-error':
@@ -142,7 +163,7 @@ class Registry(object):
 
         # Compile checks
         compiled_checks = []
-        for name, check in self.__checks.items():
+        for name, check in Registry.checks.items():
             if name not in exclude:
                 for item in include:
                     item_name = item
@@ -150,7 +171,7 @@ class Registry(object):
                     if isinstance(item, dict):
                         item_name = list(item.keys())[0]
                         item_config = list(item.values())[0]
-                    if item_name not in self.__checks:
+                    if item_name not in Registry.checks:
                         message = 'Check "%s" is not registered'
                         raise exceptions.GoodtablesException(message % item_name)
                     if item_name == name:
@@ -167,6 +188,3 @@ class Registry(object):
                         compiled_checks.append(compiled_check)
 
         return compiled_checks
-
-
-registry = Registry()

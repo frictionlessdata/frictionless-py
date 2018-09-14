@@ -12,7 +12,7 @@ import tableschema
 from . import cells
 from copy import copy
 from multiprocessing.pool import ThreadPool
-from .registry import registry
+from .registry import Registry
 from .error import Error
 from . import exceptions
 from . import config
@@ -104,7 +104,7 @@ class Inspector(object):
 
     @property
     def __presets(self):
-        return registry.compile_presets()
+        return Registry.compile_presets()
 
     def __get_preset(self, preset):
         try:
@@ -154,7 +154,7 @@ class Inspector(object):
         extra = table['extra']
 
         # Prepare checks
-        checks = registry.compile_checks(
+        checks = Registry.compile_checks(
             table.get('checks', self.__checks), self.__skip_checks,
             order_fields=self.__order_fields, infer_fields=self.__infer_fields)
 

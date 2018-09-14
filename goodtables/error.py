@@ -5,7 +5,6 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 import functools
-from .spec import spec
 
 
 @functools.total_ordering
@@ -24,6 +23,14 @@ class Error(object):
     Raises:
         KeyError: Raised if the error code isn't known.
     """
+    spec = {}
+    __initialized = False
+
+    @classmethod
+    def init(cls, spec):
+        """ Inits spec instance used by Error class """
+        cls.spec = spec
+        cls.__initialized = True
 
     def __init__(
         self,
@@ -33,7 +40,9 @@ class Error(object):
         message=None,
         message_substitutions=None
     ):
-        self._spec = spec['errors'].get(code)
+        assert Error.__initialized, 'Error class not initialized. Call goodtables.init() first!'
+
+        self._spec = Error.spec['errors'].get(code)
         default_message = None
         if self._spec:
             default_message = self._spec['message']
