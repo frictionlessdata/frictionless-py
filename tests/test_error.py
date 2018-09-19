@@ -42,6 +42,7 @@ class TestError(object):
         error = Error(error_code, message=message, message_substitutions=message_substitutions)
 
         assert error.message == '31 foobar'
+        assert dict(error)['message-data'] == {'foo': 31, 'bar': 'foobar'}
 
     def test_to_dict(self, error_code, cell):
         row_number = 51
@@ -53,6 +54,7 @@ class TestError(object):
             'row-number': row_number,
             'column-number': cell['column-number'],
             'message': error.message,
+            'message-data': {}
         }
         assert dict(error) == expected_dict
 
