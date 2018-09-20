@@ -566,6 +566,11 @@ For now this documentation section is incomplete. Please see builtin presets to 
 
 ## Changelog
 
+### v2.1
+
+New features:
+- A new key added to the `error.to_dict` return: `message-data`
+
 ### v2.0
 
 Breaking changes:
