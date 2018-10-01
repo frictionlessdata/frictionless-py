@@ -15,6 +15,7 @@ def duplicate_header(cells, sample=None):
     errors = []
 
     rindex = {}
+    cell_by_column_number = {}
     for cell in cells:
 
         # Skip if not header
@@ -25,16 +26,21 @@ def duplicate_header(cells, sample=None):
         header_indexes.add(cell['column-number'])
 
         rindex[cell['header']] = header_indexes
+        cell_by_column_number[cell['column-number']] = cell
 
     for header_value, header_indexes in rindex.items():
         if len(header_indexes) == 1:
             continue
 
-        for header_index in sorted(header_indexes)[1:]:
-            duplicates = header_indexes - {header_index}
+        header_indexes_list = sorted(header_indexes)
+        first_header_index, other_header_indexes = header_indexes_list[0], header_indexes_list[1:]
+        for other_header_index in other_header_indexes:
+            duplicates = header_indexes - {other_header_index}
             message_substitutions = {
+                'original': str(first_header_index),
                 'column_numbers': ', '.join(map(str, duplicates)),
             }
+            cell = cell_by_column_number[other_header_index]
             error = Error(
                 'duplicate-header',
                 cell,
