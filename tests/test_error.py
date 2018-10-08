@@ -33,16 +33,19 @@ class TestError(object):
         assert error.message == expected_message
 
     def test_message_substitutes_extra_values(self, error_code):
-        message = '{foo} {bar}'
+        message = '{foo} {bar} {values_str}'
         message_substitutions = {
             'foo': 31,
             'bar': 'foobar',
+            'values': ["foo", 'bar'],
+            'values_str': ", ".join(["foo", 'bar']),
         }
 
         error = Error(error_code, message=message, message_substitutions=message_substitutions)
 
-        assert error.message == '31 foobar'
-        assert dict(error)['message-data'] == {'foo': 31, 'bar': 'foobar'}
+        assert error.message == "31 foobar foo, bar"
+        assert dict(error)['message-data'] == {'foo': 31, 'bar': 'foobar',
+                                               'values': ['foo', 'bar'], 'values_str': 'foo, bar'}
 
     def test_to_dict(self, error_code, cell):
         row_number = 51
