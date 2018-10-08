@@ -26,8 +26,8 @@ def create_check_constraint(check, constraint):
             # Add error
             if not valid:
                 message_substitutions = {
-                    'value': '"{}"'.format(value),
-                    'constraint': '"{}"'.format(field.constraints[constraint]),
+                    'value': value,
+                    'constraint': field.constraints[constraint],
                 }
 
                 error = Error(

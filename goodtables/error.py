@@ -110,6 +110,5 @@ class Error(object):
             'row-number': self.row_number,
             'column-number': self.column_number,
             'message': self.message,
-            'message-data': {k: v.strip('"') if isinstance(v, str) else v for k, v
-                             in self._message_substitutions.items()},
+            'message-data': self._message_substitutions,
         }

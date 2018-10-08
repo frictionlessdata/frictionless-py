@@ -31,9 +31,10 @@ def duplicate_header(cells, sample=None):
             continue
 
         for header_index in sorted(header_indexes)[1:]:
-            duplicates = header_indexes - {header_index}
+            duplicates = sorted(header_indexes - {header_index})
             message_substitutions = {
-                'column_numbers': ', '.join(map(str, duplicates)),
+                'column_numbers': duplicates,
+                'column_numbers_str': ', '.join(map(str, duplicates)),
             }
             error = Error(
                 'duplicate-header',

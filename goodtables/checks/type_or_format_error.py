@@ -38,9 +38,9 @@ def type_or_format_error(cells):
 
         # Add error
         message_substitutions = {
-            'value': '"{}"'.format(value),
-            'field_type': '"{}"'.format(field.type),
-            'field_format': '"{}"'.format(field.format),
+            'value': value,
+            'field_type': field.type,
+            'field_format': field.format,
         }
         error = Error(
             'type-or-format-error',

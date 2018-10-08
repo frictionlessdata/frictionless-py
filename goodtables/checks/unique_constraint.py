@@ -38,8 +38,10 @@ class UniqueConstraint(object):
             all_values_are_none = (set(column_values) == {None})
             if not all_values_are_none:
                 if column_values in cache['data']:
+                    row_numbers = cache['refs'] + [row_number]
                     message_substitutions = {
-                        'row_numbers': ', '.join(map(str, cache['refs'] + [row_number])),
+                        'row_numbers': row_numbers,
+                        'row_numbers_str': ', '.join(map(str, row_numbers)),
                     }
 
                     # FIXME: The unique constraint can be related to multiple

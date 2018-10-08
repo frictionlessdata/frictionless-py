@@ -63,7 +63,7 @@ def _check_without_ordering(cells):
             if header != cell['field'].name:
                 # Add error
                 message_substitutions = {
-                    'field_name': '"{}"'.format(cell['field'].name),
+                    'field_name': cell['field'].name,
                 }
                 error = Error(
                     'non-matching-header',

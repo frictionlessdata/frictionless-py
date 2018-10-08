@@ -37,7 +37,8 @@ class DuplicateRow(object):
             # Add error
             if references:
                 message_substitutions = {
-                    'row_numbers': ', '.join(map(str, references)),
+                    'row_numbers': references,
+                    'row_numbers_str': ', '.join(map(str, references)),
                 }
                 error = Error(
                     'duplicate-row',
