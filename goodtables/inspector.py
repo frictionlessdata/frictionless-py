@@ -83,6 +83,7 @@ class Inspector(object):
                 table_warnings, table_report = task.get()
                 warnings.extend(table_warnings)
                 table_reports.append(table_report)
+        pool.terminate()
 
         # Stop timer
         stop = datetime.datetime.now()
