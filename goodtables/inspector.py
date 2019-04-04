@@ -77,13 +77,15 @@ class Inspector(object):
         if tables:
             tasks = []
             pool = ThreadPool(processes=len(tables))
-            for table in tables:
-                tasks.append(pool.apply_async(self.__inspect_table, (table,)))
-            for task in tasks:
-                table_warnings, table_report = task.get()
-                warnings.extend(table_warnings)
-                table_reports.append(table_report)
-            pool.terminate()
+            try:
+                for table in tables:
+                    tasks.append(pool.apply_async(self.__inspect_table, (table,)))
+                for task in tasks:
+                    table_warnings, table_report = task.get()
+                    warnings.extend(table_warnings)
+                    table_reports.append(table_report)
+            finally:
+                pool.terminate()
 
         # Stop timer
         stop = datetime.datetime.now()
