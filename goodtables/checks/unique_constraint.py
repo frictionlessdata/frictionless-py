@@ -51,7 +51,7 @@ class UniqueConstraint(object):
                     # columns (e.g. a composite primary key), but here we only
                     # pass the 1st column.
                     error = Error(
-                        'unique-constraint',                      
+                        'unique-constraint',
                         message_substitutions=message_substitutions
                     )
                     errors.append(error)
