@@ -35,24 +35,27 @@ class UniqueConstraint(object):
             column_values = tuple(cell.get('value') for cell in column_cells)
             row_number = column_cells[0]['row-number']
 
+            column_headers = tuple(cell.get('header') for cell in column_cells)
+
             all_values_are_none = (set(column_values) == {None})
             if not all_values_are_none:
                 if column_values in cache['data']:
                     message_substitutions = {
-                        'row_numbers': ', '.join(map(str, cache['refs'] + [row_number])),
+                        'row_numbers': row_number,
+                        'value': ', '.join(column_values),
+                        'type': cache['type'],
+                        'header': ', '.join(column_headers)
                     }
 
                     # FIXME: The unique constraint can be related to multiple
                     # columns (e.g. a composite primary key), but here we only
                     # pass the 1st column.
                     error = Error(
-                        'unique-constraint',
-                        column_cells[0],
+                        'unique-constraint',                      
                         message_substitutions=message_substitutions
                     )
                     errors.append(error)
                 cache['data'].add(column_values)
-                cache['refs'].append(row_number)
 
         return errors
 
@@ -72,14 +75,14 @@ def _create_unique_fields_cache(cells):
             if field.constraints.get('unique'):
                 cache[tuple([column_number])] = {
                     'data': set(),
-                    'refs': [],
+                    'type': 'unique'
                 }
 
     # Primary key
     if primary_key_column_numbers:
         cache[tuple(primary_key_column_numbers)] = {
             'data': set(),
-            'refs': [],
+            'type': 'primary key'
         }
 
     return cache

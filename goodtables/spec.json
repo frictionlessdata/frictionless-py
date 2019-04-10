@@ -164,7 +164,7 @@
           "type": "schema",
           "context": "body",
           "weight": 9,
-          "message": "Rows {row_numbers} has unique constraint violation in column {column_number}",
+          "message": "Row {row_numbers} has {type} constraint violation in column(s) '{header}'. Conflicting value(s) '{value}'",
           "description": "This field is a unique field but it contains a value that has been used in another row.\n\n How it could be resolved:\n - If this value is not correct, update the value.\n - If value is correct, then the values in this column are not unique. Remove the `unique` constraint from the schema.\n - If this error should be ignored disable `unique-constraint` check in {validator}."
         },
         "enumerable-constraint": {
