@@ -33,7 +33,7 @@ def duplicate_header(cells, sample=None):
             continue
 
         header_indexes_list = sorted(header_indexes)
-        first_header_index, other_header_indexes = header_indexes_list[0], header_indexes_list[1:]
+        first_header_index, other_header_indexes = header_indexes_list[0], header_indexes_list[1:]  # noqa
         for other_header_index in other_header_indexes:
             duplicates = header_indexes - {other_header_index}
             message_substitutions = {
