@@ -35,16 +35,11 @@ class UniqueConstraint(object):
             column_values = tuple(cell.get('value') for cell in column_cells)
             row_number = column_cells[0]['row-number']
 
-            column_headers = tuple(cell.get('header') for cell in column_cells)
-
             all_values_are_none = (set(column_values) == {None})
             if not all_values_are_none:
                 if column_values in cache['data']:
                     message_substitutions = {
-                        'row_numbers': row_number,
-                        'value': ', '.join(column_values),
-                        'type': cache['type'],
-                        'header': ', '.join(column_headers)
+                        'row_numbers': str(row_number)
                     }
 
                     # FIXME: The unique constraint can be related to multiple
@@ -52,6 +47,7 @@ class UniqueConstraint(object):
                     # pass the 1st column.
                     error = Error(
                         'unique-constraint',
+                        column_cells[0],
                         message_substitutions=message_substitutions
                     )
                     errors.append(error)
@@ -74,15 +70,13 @@ def _create_unique_fields_cache(cells):
                 primary_key_column_numbers.append(column_number)
             if field.constraints.get('unique'):
                 cache[tuple([column_number])] = {
-                    'data': set(),
-                    'type': 'unique'
+                    'data': set()
                 }
 
     # Primary key
     if primary_key_column_numbers:
         cache[tuple(primary_key_column_numbers)] = {
-            'data': set(),
-            'type': 'primary key'
+            'data': set()
         }
 
     return cache
