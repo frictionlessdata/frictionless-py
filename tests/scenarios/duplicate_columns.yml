@@ -1,4 +1,5 @@
 duplicate_columns:
   source: data/duplicate_columns.csv
   report:
-    - [1, null, 4, 'duplicate-header']
+    - [1, null, 3, 'duplicate-header']
+    - [1, null, 5, 'duplicate-header']

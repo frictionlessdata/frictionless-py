@@ -566,6 +566,8 @@ For now this documentation section is incomplete. Please see builtin presets to 
 
 ## Changelog
 
+Here described only breaking and the most important changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/goodtables-py/commits/master).
+
 ### v2.1
 
 New features:
