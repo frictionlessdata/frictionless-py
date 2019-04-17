@@ -21,19 +21,19 @@ def read(*paths):
 PACKAGE = 'goodtables'
 NAME = PACKAGE.replace('_', '-')
 INSTALL_REQUIRES = [
-    'six>=1.9,<2.0',
-    'click>=6.6,<7.0',
+    'six>=1.9',
+    'click>=6.6',
     'click-default-group',
-    'requests>=2.10,<3.0',
-    'simpleeval>=0.9,<2.0',
-    'statistics>=1.0,<2.0',
-    'tabulator>=1.3,<2.0',
-    'tableschema>=1.0.3,<2.0',
-    'datapackage>=1.2,<2.0',
+    'requests>=2.10',
+    'simpleeval>=0.9',
+    'statistics>=1.0',
+    'tabulator>=1.3',
+    'tableschema>=1.0.3',
+    'datapackage>=1.2',
 ]
 INSTALL_FORMAT_ODS_REQUIRES = [
-    'ezodf>=0.3,<2.0',
-    'lxml>=3.0,<4.0',
+    'ezodf>=0.3',
+    'lxml>=3.0',
 ]
 TESTS_REQUIRE = [
     'tox',
