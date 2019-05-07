@@ -8,6 +8,7 @@ import re
 from copy import copy
 from ..registry import check
 from ..error import Error
+from ..cells import create_cell
 
 
 # Module API
@@ -33,6 +34,7 @@ class NonMatchingHeader(object):
 def _check_with_ordering(cells):
     # Update fields order to maximally match headers order
     headers = [cell.get('header') for cell in cells]
+    new_headers = []
     for index, header in enumerate(headers):
         if header is None:
             continue
@@ -49,6 +51,19 @@ def _check_with_ordering(cells):
                     # Given field matches some header also swap
                     if _slugify(field_name) == _slugify(cell.get('header')):
                         _swap_fields(cells[index], cell)
+        field_name = _get_field_name(cells[index])
+        print('field_name ', field_name, ' header ', header)
+        # Cell header and field_name are still different
+        # which means there is no matching field for the header
+        if _slugify(header) != _slugify(field_name):
+            # Add a cell with an empty header
+            new_cell = create_cell(header=None, field=cell.get('field'))
+            new_headers.append(new_cell)
+            # Change the current cell's field to None
+            cell['field'] = None
+
+    # Add the new headers
+    headers.extend(new_headers)
 
     # Run check with no field ordering
     return _check_without_ordering(cells)
@@ -60,7 +75,7 @@ def _check_without_ordering(cells):
     for cell in copy(cells):
         if cell.get('field') is not None:
             header = cell.get('header')
-            if header != cell['field'].name:
+            if header != cell['field'].name and header is not None:
                 # Add error
                 message_substitutions = {
                     'field_name': '"{}"'.format(cell['field'].name),

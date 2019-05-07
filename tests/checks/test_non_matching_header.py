@@ -65,12 +65,11 @@ def test_check_non_matching_header_order_fields_problem(log):
 
 
 def test_check_non_matching_header_with_empty_header_name(log):
+    # When the header is None, it means there's a missing header.
     cells = [
         goodtables.cells.create_cell(None, field=Field({'name': 'name3'}), column_number=1),
     ]
     non_matching_header = NonMatchingHeader(order_fields=True)
     errors = non_matching_header.check_headers(cells)
-    assert log(errors) == [
-        (None, 1, 'non-matching-header'),
-    ]
-    assert len(cells) == 0
+    assert log(errors) == []
+    assert len(cells) == 1

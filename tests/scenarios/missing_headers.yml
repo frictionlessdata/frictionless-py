@@ -1,0 +1,20 @@
+primary_key_field:
+  source:
+    - [id, last_name, first_name, language]
+    - [1, Alex, John, English]
+    - [2, Peters, John, Afrikaans]
+    - [3, Smith, Paul, Zulu]
+  schema:
+    fields:
+      - {name: id, type: number}
+      - {name: first_name}
+      - {name: last_name}
+      - {name: age}
+      - {name: country}
+    primaryKey: id
+  checks:
+    - schema
+    - structure
+  order_fields: true
+  report:
+    - [1, null, 5, 'missing-header']
