@@ -116,7 +116,7 @@
           "type": "schema",
           "context": "head",
           "weight": 9,
-          "message": "Header in column {column_number} {header} doesn't match field name {field_name} in the schema",
+          "message": "Header in column {column_number} doesn't match field name {field_name} in the schema",
           "description": "One of the data source headers doesn't match the field name defined in the schema.\n\n How it could be resolved:\n - Rename header in the data source or field in the schema\n - If this error should be ignored disable `non-matching-header` check in {validator}."
         },
         "extra-header": {
@@ -124,7 +124,7 @@
           "type": "schema",
           "context": "head",
           "weight": 9,
-          "message": "There is an extra header {header} in column {column_number}",
+          "message": "There is an extra header in column {column_number}",
           "description": "The first row of the data source contains header that doesn't exist in the schema.\n\n How it could be resolved:\n - Remove the extra column from the data source or add the missing field to the schema\n - If this error should be ignored disable `extra-header` check in {validator}."
         },
         "missing-header": {
@@ -132,7 +132,7 @@
           "type": "schema",
           "context": "head",
           "weight": 9,
-          "message": "There is a missing header in column {column_number} for field {field_name}",
+          "message": "There is a missing header in column {column_number}",
           "description": "Based on the schema there should be a header that is missing in the first row of the data source.\n\n How it could be resolved:\n - Add the missing column to the data source or remove the extra field from the schema\n - If this error should be ignored disable `missing-header` check in {validator}."
         },
         "type-or-format-error": {
