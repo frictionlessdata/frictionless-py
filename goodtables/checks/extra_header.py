@@ -25,7 +25,7 @@ class ExtraHeader(object):
         for cell in copy(cells):
 
             # Skip if cell has field
-            if 'field' in cell:
+            if 'field' in cell and cell['field'] is not None:
                 continue
 
             # Infer field
@@ -42,7 +42,14 @@ class ExtraHeader(object):
 
             # Add error/remove column
             else:
-                error = Error('extra-header', cell)
+                message_substitutions = {
+                    'header': '"{}"'.format(cell.get('header')),
+                }
+                error = Error(
+                    'extra-header',
+                    cell,
+                    message_substitutions=message_substitutions
+                )
                 errors.append(error)
                 cells.remove(cell)
 

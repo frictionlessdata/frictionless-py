@@ -47,7 +47,9 @@ def test_check_non_matching_header_order_fields(log):
     non_matching_header = NonMatchingHeader(order_fields=True)
     errors = non_matching_header.check_headers(cells)
     assert log(errors) == []
-    assert len(cells) == 3
+    # A new header cell will be added by the non-matching-header check because
+    # there is no field for the "name3" header
+    assert len(cells) == 4
 
 
 def test_check_non_matching_header_order_fields_problem(log):
@@ -61,7 +63,9 @@ def test_check_non_matching_header_order_fields_problem(log):
     assert log(errors) == [
         (None, 2, 'non-matching-header'),
     ]
-    assert len(cells) == 2
+    # New header cells will be added by the non-matching-header check because
+    # there are no fields for the "name2" and "name3" headers
+    assert len(cells) == 4
 
 
 def test_check_non_matching_header_with_empty_header_name(log):

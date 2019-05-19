@@ -22,7 +22,14 @@ def missing_header(cells, sample):
             continue
 
         # Add error
-        error = Error('missing-header', cell)
+        message_substitutions = {
+            'field_name': '"{}"'.format(cell['field'].name),
+        }
+        error = Error(
+            'missing-header',
+            cell,
+            message_substitutions=message_substitutions
+        )
         errors.append(error)
 
         # Remove cell

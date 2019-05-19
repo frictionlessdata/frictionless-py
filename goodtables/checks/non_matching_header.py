@@ -51,19 +51,21 @@ def _check_with_ordering(cells):
                     # Given field matches some header also swap
                     if _slugify(field_name) == _slugify(cell.get('header')):
                         _swap_fields(cells[index], cell)
+                        field_name = _get_field_name(cells[index])
+
         field_name = _get_field_name(cells[index])
-        print('field_name ', field_name, ' header ', header)
-        # Cell header and field_name are still different
-        # which means there is no matching field for the header
         if _slugify(header) != _slugify(field_name):
-            # Add a cell with an empty header
+            # Cell header and field_name are still different
+            # which means there is no matching field for the header.
+            # Add a new cell with an empty header so that the missing-header
+            # error will be thrown later.
             new_cell = create_cell(header=None, field=cell.get('field'))
             new_headers.append(new_cell)
             # Change the current cell's field to None
             cell['field'] = None
 
     # Add the new headers
-    headers.extend(new_headers)
+    cells.extend(new_headers)
 
     # Run check with no field ordering
     return _check_without_ordering(cells)
@@ -79,6 +81,7 @@ def _check_without_ordering(cells):
                 # Add error
                 message_substitutions = {
                     'field_name': '"{}"'.format(cell['field'].name),
+                    'header': '"{}"'.format(cell.get('header')),
                 }
                 error = Error(
                     'non-matching-header',
@@ -107,6 +110,6 @@ def _slugify(string):
 
 
 def _swap_fields(cell1, cell2):
-    field1 = cell1['field']
-    cell1['field'] = cell2['field']
+    field1 = cell1.get('field', None)
+    cell1['field'] = cell2.get('field', None)
     cell2['field'] = field1

@@ -1,0 +1,17 @@
+primary_key_field:
+  source:
+    - [LastName, FirstName, Address]
+    - [Test, Tester, 23 Avenue]
+  schema:
+    fields:
+      - {name: id}
+      - {name: FirstName}
+      - {name: LastName}
+    primaryKey: id
+  checks:
+    - schema
+    - structure
+  order_fields: true
+  report:
+    - [1, null, null, 'missing-header']
+    - [1, null, 3, 'extra-header']
