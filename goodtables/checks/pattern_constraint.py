@@ -16,7 +16,8 @@ def pattern_constraint(cells):
 
     for error in errors:
         # No reason to run other checks in this cell
-        cells.remove(error.cell)
+        if hasattr(error, 'cell'):
+            cells.remove(error.cell)
 
     return errors
 
