@@ -261,7 +261,7 @@ class Inspector(object):
         stop = datetime.datetime.now()
 
         # Compose report
-        headers = headers if None not in headers else None
+        headers = headers if any(elt is not None for elt in headers) else None
         if self.__error_limit != float('inf'):
             errors = errors[:self.__error_limit]
         errors = sorted(errors)
