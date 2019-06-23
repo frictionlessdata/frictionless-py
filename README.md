@@ -42,6 +42,8 @@ of your data (e.g. all rows have the same number of columns), and its contents
 
 ### Installing
 
+> If you have a building error on MacOS please try following this solution - https://github.com/google/jsonnet/issues/573#issuecomment-433201074
+
 ```
 pip install goodtables
 pip install goodtables[ods]  # If you need LibreOffice's ODS file support
