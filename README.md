@@ -570,9 +570,12 @@ For now this documentation section is incomplete. Please see builtin presets to 
 
 Here described only breaking and the most important changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/goodtables-py/commits/master).
 
+### v2.2
+
+- Improved missing/non-matching-headers detection. See https://github.com/frictionlessdata/goodtables-py/pull/298
+
 ### v2.1
 
-New features:
 - A new key added to the `error.to_dict` return: `message-data`
 
 ### v2.0
