@@ -572,7 +572,7 @@ Here described only breaking and the most important changes. The full changelog 
 
 ### v2.2
 
-- Improved missing/non-matching-headers detection. See https://github.com/frictionlessdata/goodtables-py/pull/298
+- Improved missing/non-matching-headers detection ([#298](https://github.com/frictionlessdata/goodtables-py/issues/298))
 
 ### v2.1
 
