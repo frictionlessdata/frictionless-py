@@ -5,6 +5,7 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 from copy import copy
+import tableschema
 from ..registry import check
 from ..error import Error
 
@@ -27,7 +28,12 @@ def required_constraint(cells):
         # Check constraint
         valid = field.test_value(value, constraints=['required'])
         if field.descriptor.get('primaryKey'):
-            valid = valid and field.cast_value(value) is not None
+            try:
+                casted_value = field.cast_value(value)
+            except tableschema.exceptions.TableSchemaException:
+                valid = False
+            else:
+                valid = valid and casted_value is not None
 
         # Skip if valid
         if valid:
