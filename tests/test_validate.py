@@ -82,6 +82,9 @@ def test_validate_nested_checks(log):
 
 # Invalid table schema
 
+# TODO: enable after
+# https://github.com/frictionlessdata/goodtables-py/issues/304
+@pytest.mark.skip
 def test_validate_invalid_table_schema(log):
     source = [
         ['name', 'age'],
