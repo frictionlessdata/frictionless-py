@@ -25,9 +25,12 @@ def required_constraint(cells):
             continue
 
         # Check constraint
-        valid = field.test_value(value, constraints=['required'])
-        if field.descriptor.get('primaryKey'):
-            valid = valid and field.cast_value(value) is not None
+        valid = True
+        if field.required or field.descriptor.get('primaryKey'):
+            # TODO: remove this hack after:
+            # https://github.com/frictionlessdata/tableschema-py/issues/244
+            if value in field._Field__missing_values:
+                valid = False
 
         # Skip if valid
         if valid:
