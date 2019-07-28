@@ -16,7 +16,7 @@ list:
 readme:
 	pip install md-toc
 	md_toc -p README.md github --header-levels 4
-	sed -i '/(#tableschema-py)/,+2d' README.md
+	sed -i '/(#$(PACKAGE)-py)/,+2d' README.md
 
 spec:
 	wget -O goodtables/spec.json https://raw.githubusercontent.com/frictionlessdata/data-quality-spec/master/spec.json

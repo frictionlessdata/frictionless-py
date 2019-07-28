@@ -21,9 +21,6 @@ of your data (e.g. all rows have the same number of columns), and its contents
 
 <!--TOC-->
 
-- [goodtables-py](#goodtables-py)
-  - [Features](#features)
-  - [Contents](#contents)
   - [Getting Started](#getting-started)
     - [Installing](#installing)
     - [Running on CLI](#running-on-cli)
