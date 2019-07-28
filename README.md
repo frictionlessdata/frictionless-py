@@ -17,26 +17,41 @@ of your data (e.g. all rows have the same number of columns), and its contents
 * **Parallelized validations for multi-table datasets**
 * **Command line interface**
 
-## Table of Contents
+## Contents
 
-- [Features](#features)
-- [Getting Started](#getting-started)
+<!--TOC-->
+
+- [goodtables-py](#goodtables-py)
+  - [Features](#features)
+  - [Contents](#contents)
+  - [Getting Started](#getting-started)
     - [Installing](#installing)
     - [Running on CLI](#running-on-cli)
     - [Running on Python](#running-on-python)
-- [Validation](#validation)
+  - [Validation](#validation)
     - [Basic checks](#basic-checks)
     - [Structural checks](#structural-checks)
     - [Content checks](#content-checks)
     - [Advanced checks](#advanced-checks)
+      - [blacklisted-value](#blacklisted-value)
+      - [deviated-value](#deviated-value)
+      - [sequential-value](#sequential-value)
+      - [truncated-value](#truncated-value)
+      - [custom-constraint](#custom-constraint)
     - [Validation report format](#validation-report-format)
-- [Developer documentation](#developer-documentation)
+  - [Developer documentation](#developer-documentation)
     - [Semantic versioning](#semantic-versioning)
     - [Validate](#validate)
-- [FAQ](#faq)
+      - [Validation report](#validation-report)
+      - [Checks](#checks)
+      - [Presets](#presets)
+  - [Contributing](#contributing)
+  - [FAQ](#faq)
     - [How can I add a new custom check?](#how-can-i-add-a-new-custom-check)
     - [How can I add support for a new tabular file type?](#how-can-i-add-support-for-a-new-tabular-file-type)
-- [Changelog](#changelog)
+  - [Changelog](#changelog)
+
+<!--TOC-->
 
 ## Getting Started
 
@@ -570,15 +585,15 @@ For now this documentation section is incomplete. Please see builtin presets to 
 
 Here described only breaking and the most important changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/goodtables-py/commits/master).
 
-### v2.2
+##### v2.2
 
 - Improved missing/non-matching-headers detection ([#298](https://github.com/frictionlessdata/goodtables-py/issues/298))
 
-### v2.1
+##### v2.1
 
 - A new key added to the `error.to_dict` return: `message-data`
 
-### v2.0
+##### v2.0
 
 Breaking changes:
 
@@ -592,12 +607,12 @@ Breaking changes:
 Bug fixes:
 - Fix bug with `truncated-values` check on date fields ([#250](https://github.com/frictionlessdata/goodtables-py/issues/250))
 
-### v1.5
+##### v1.5
 
 New API added:
 - Validation `source` now could be a `pathlib.Path`
 
-### v1.4
+##### v1.4
 
 Improved behaviour:
 - rebased on Data Quality Spec v1
@@ -605,7 +620,7 @@ Improved behaviour:
 - rebased on Table Schema Spec v1
 - treat primary key as required/unique field
 
-### v1.3
+##### v1.3
 
 New advanced checks added:
 - `blacklisted-value`
@@ -614,24 +629,24 @@ New advanced checks added:
 - `sequential-value`
 - `truncated-value`
 
-### v1.2
+##### v1.2
 
 New API added:
 - `report.preset`
 - `report.tables[].schema`
 
-### v1.1
+##### v1.1
 
 New API added:
 - `report.tables[].scheme`
 - `report.tables[].format`
 - `report.tables[].encoding`
 
-### v1.0
+##### v1.0
 
 This version includes various big changes. A migration guide is under development and will be published here.
 
-### v0.6
+##### v0.6
 
 First version of `goodtables`.
 
