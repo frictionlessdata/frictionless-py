@@ -97,7 +97,7 @@
             "minimum": 0
           },
           "source": {
-            "type": "string",
+            "type": ["string", "array"],
             "title": "Source",
             "description": "Path or URI where this table was loaded from."
           },

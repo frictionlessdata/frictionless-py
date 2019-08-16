@@ -36,6 +36,7 @@ INSTALL_FORMAT_ODS_REQUIRES = [
     'lxml>=3.0',
 ]
 TESTS_REQUIRE = [
+    'pyyaml',
     'pylama',
     'pytest',
     'mock',

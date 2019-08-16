@@ -22,7 +22,6 @@ def test_scenarios(log, name, scenario):
 def test_scenarios_return_valid_reports(name, scenario, report_schema):
     del scenario['report']
     report = validate(**scenario)
-
     jsonschema.validate(report, report_schema)
 
 

@@ -1,0 +1,26 @@
+{
+    "name": "datapackage",
+    "resources": [
+        {
+            "name": "data",
+            "path": [
+                "data.part1.csv",
+                "data.part2.csv",
+                "data.part3.csv"
+            ],
+            "profile": "tabular-data-resource",
+            "schema": {
+                "fields": [
+                    {
+                        "name": "id",
+                        "type": "integer"
+                    },
+                    {
+                        "name": "name",
+                        "type": "string"
+                    }
+                ]
+            }
+        }
+    ]
+}

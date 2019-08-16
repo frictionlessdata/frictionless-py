@@ -1,0 +1,5 @@
+datapackages:
+  source: data/datapackages/multipart/datapackage.json
+  preset: datapackage
+  report:
+    - [1, 5, 1, 'type-or-format-error']
