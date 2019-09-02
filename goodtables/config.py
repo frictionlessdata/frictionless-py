@@ -44,6 +44,7 @@ CHECKS = [
     # Contrib
     'goodtables.contrib.checks.blacklisted_value',
     'goodtables.contrib.checks.deviated_value',
+    'goodtables.contrib.checks.foreign_keys',
     'goodtables.contrib.checks.sequential_value',
     'goodtables.contrib.checks.truncated_value',
     'goodtables.contrib.checks.custom_constraint',
