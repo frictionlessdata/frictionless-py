@@ -4,11 +4,9 @@ from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
-import six
 import json
 from datapackage import Package
 from ...registry import check
-from ...error import Error
 
 
 # Module API
@@ -73,7 +71,8 @@ def _get_relations(schema, package):
         # Self-referenced resource
         # TODO: fix usage of undefined self
         if not resource_name:
-            resource = self
+            #  resource = self
+            pass
 
         # Internal resource
         elif not package_name:
@@ -90,7 +89,7 @@ def _get_relations(schema, package):
         if not resource:
             message = 'Foreign key "%s" violation: resource not found'
             message = message % fk['fields']
-            raise exceptions.RelationError(message)
+            #  raise exceptions.RelationError(message)
         resources[resource_name] = resource
 
     # Prepare relations
