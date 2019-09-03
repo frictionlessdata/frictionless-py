@@ -56,7 +56,6 @@ class ForeignKey(object):
         # Resolve relations
         for foreign_key in self.__schema.foreign_keys:
             keyed_row = _resolve_relations(keyed_row, self.__relations, foreign_key)
-            print(keyed_row)
             if keyed_row is None:
                 # TODO: improve error
                 message = 'Foreign Key violation'
