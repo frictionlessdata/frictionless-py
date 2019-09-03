@@ -7,12 +7,13 @@ from __future__ import unicode_literals
 import json
 from datapackage import Package
 from ...registry import check
+from ...error import Error
 
 
 # Module API
 
-@check('foreign-keys', type='custom', context='body')
-class ForeignKeys(object):
+@check('foreign-key', type='custom', context='body')
+class ForeignKey(object):
 
     # Public
 
@@ -26,6 +27,8 @@ class ForeignKeys(object):
         # Prepare schema
         if not schema:
             return False
+        if not schema.foreign_keys:
+            return False
         self.__schema = schema
 
         # Prepare package
@@ -34,7 +37,8 @@ class ForeignKeys(object):
         self.__package = Package(json.loads(extra['datapackage']))
 
         # Prepare relations
-        relations = _get_relations(self.__schema, self.__package)
+        relations = _get_relations(self.__schema, self.__package,
+            table_resource_name=extra.get('resource-name'))
         if not relations:
             return False
         self.__relations = relations
@@ -46,19 +50,27 @@ class ForeignKeys(object):
         # Prepare keyed_row
         keyed_row = {}
         for cell in cells:
-            keyed_row[cell['header']] = cell['value']
+            if cell.get('header'):
+                keyed_row[cell.get('header')] = cell.get('value')
 
         # Resolve relations
         for foreign_key in self.__schema.foreign_keys:
             keyed_row = _resolve_relations(keyed_row, self.__relations, foreign_key)
+            print(keyed_row)
             if keyed_row is None:
-                # TODO: create normal error
-                print('error')
+                # TODO: improve error
+                message = 'Foreign Key violation'
+                error = Error(
+                    'foreign-key',
+                    row_number=cells[0]['row-number'],
+                    message=message
+                )
+                return [error]
 
 
 # Internal
 
-def _get_relations(schema, package):
+def _get_relations(schema, package, table_resource_name=None):
     # It's based on the following code:
     # https://github.com/frictionlessdata/datapackage-py/blob/master/datapackage/resource.py#L393
 
@@ -67,12 +79,13 @@ def _get_relations(schema, package):
     for fk in schema.foreign_keys:
         resource_name = fk['reference'].get('resource')
         package_name = fk['reference'].get('package')
+        resource = None
 
         # Self-referenced resource
-        # TODO: fix usage of undefined self
         if not resource_name:
-            #  resource = self
-            pass
+            for item in package.resources:
+                if item.name == table_resource_name:
+                    resource = item
 
         # Internal resource
         elif not package_name:

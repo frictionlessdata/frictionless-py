@@ -146,6 +146,55 @@ def test_source_pathlib_path_datapackage():
     assert report['valid']
 
 
+# Foreign Keys
+
+FK_DESCRIPTOR = {
+  'resources': [
+    {
+      'name': 'cities',
+      'data': [
+        ['id', 'name', 'prev_id'],
+        [1, 'london', None],
+        [2, 'paris', 1],
+        [3, 'rome', 2],
+        [4, 'rio', 3],
+      ],
+      'schema': {
+        'fields': [
+          {'name': 'id', 'type': 'integer'},
+          {'name': 'name', 'type': 'string'},
+          {'name': 'prev_id', 'type': 'integer'},
+        ],
+        'foreignKeys': [
+          {
+            'fields': 'id',
+            'reference': {'resource': 'people', 'fields': 'label'},
+          },
+          {
+            'fields': 'prev_id',
+            'reference': {'resource': '', 'fields': 'id'},
+          },
+        ],
+      },
+    }, {
+      'name': 'people',
+      'data': [
+        ['label', 'population'],
+        [1, 8],
+        [2, 2],
+        [3, 3],
+        [4, 6],
+      ],
+    },
+  ],
+}
+
+def test_foreign_key(log):
+    report = validate(FK_DESCRIPTOR, checks=['foreign-key'])
+    # TODO: it must be fully valid
+    assert log(report) == [(1, 2, None, 'foreign-key')]
+
+
 # Issues
 
 def test_composite_primary_key_unique_issue_215(log):

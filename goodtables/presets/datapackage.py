@@ -36,6 +36,7 @@ def datapackage(source, **options):
                     'schema': resource.schema,
                     'extra': {
                         'datapackage': json.dumps(source) if isinstance(source, dict) else source,
+                        'resource-name': resource.name,
                     },
                 })
 
