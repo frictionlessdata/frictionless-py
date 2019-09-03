@@ -44,11 +44,18 @@ class ForeignKeys(object):
         return True
 
     def check_row(self, cells):
-        print(self.__schema)
-        print(self.__package)
-        print(self.__relations)
 
-    # Private
+        # Prepare keyed_row
+        keyed_row = {}
+        for cell in cells:
+            keyed_row[cell['header']] = cell['value']
+
+        # Resolve relations
+        for foreign_key in self.__schema.foreign_keys:
+            keyed_row = _resolve_relations(keyed_row, self.__relations, foreign_key)
+            if keyed_row is None:
+                # TODO: create normal error
+                print('error')
 
 
 # Internal
@@ -95,16 +102,15 @@ def _get_relations(schema, package):
     return relations
 
 
-def _resolve_relations(row, headers, relations, foreign_key):
+def _resolve_relations(keyed_row, relations, foreign_key):
     # It's based on the following code:
     # https://github.com/frictionlessdata/tableschema-py/blob/master/tableschema/table.py#L228
 
     # Prepare helpers - needed data structures
-    keyed_row = OrderedDict(zip(headers, row))
     fields = list(zip(foreign_key['fields'], foreign_key['reference']['fields']))
     reference = relations.get(foreign_key['reference']['resource'])
     if not reference:
-        return row
+        return keyed_row
 
     # Collect values - valid if all None
     values = {}
@@ -124,4 +130,4 @@ def _resolve_relations(row, headers, relations, foreign_key):
                 valid = True
                 break
 
-    return list(keyed_row.values()) if valid else None
+    return keyed_row if valid else None
