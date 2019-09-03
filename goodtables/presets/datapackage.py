@@ -4,6 +4,7 @@ from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
+import json
 from tabulator import Stream
 from functools import partial
 from datapackage import Package, exceptions
@@ -34,7 +35,7 @@ def datapackage(source, **options):
                     'stream': Stream(partial(_iter_resource_rows, resource), headers=1),
                     'schema': resource.schema,
                     'extra': {
-                        'datapackage': str(source),
+                        'datapackage': json.dumps(source) if isinstance(source, dict) else source,
                     },
                 })
 
