@@ -243,9 +243,14 @@ def test_foreign_key_internal_resource_violation_non_existent(log):
 def test_foreign_key_external_resource(log):
     descriptor = 'data/datapackages_linked/cities/datapackage.json'
     report = validate(descriptor, checks=['schema', 'foreign-key'])
-    assert log(report) == [
+    assert log(report) == []
 
-    ]
+
+def test_foreign_key_external_resource_errors(log):
+    descriptor = 'data/datapackages_linked_errors/cities/datapackage.json'
+    report = validate(descriptor, checks=['schema', 'foreign-key'])
+    # TODO: it must have errors
+    assert log(report) == []
 
 
 # Issues

@@ -97,9 +97,12 @@ def _get_relations(package, schema, current_resource_name=None):
             resource = package.get_resource(resource_name)
 
         # External resource (experimental)
-        # For now, we rely on uniqueness of resource names and relative paths
+        # For now, we rely on uniqueness of resource names and support relative paths
         else:
-            package = Package('/'.join([package.base_path, package_name]))
+            descriptor = package_name
+            if not descriptor.startswith('http'):
+                descriptor = '/'.join([package.base_path, package_name])
+            package = Package(descriptor)
             resource = package.get_resource(resource_name)
 
         # Add to relations (can be None)

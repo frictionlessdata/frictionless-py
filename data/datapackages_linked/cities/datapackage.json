@@ -25,6 +25,11 @@
             "fields": "next_id",
             "reference": {"resource": "", "fields": "id"}
           }
+          },
+          {
+            "fields": "id",
+            "reference": {"package": "../people/datapackage.json", "resource": "people", "fields": "label"}
+          }
         ],
         "missingValues": [
           ""

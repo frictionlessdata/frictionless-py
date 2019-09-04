@@ -24,6 +24,7 @@
           {
             "fields": "next_id",
             "reference": {"resource": "", "fields": "id"}
+          }
           },
           {
             "fields": "id",
