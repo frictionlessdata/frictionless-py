@@ -242,15 +242,17 @@ def test_foreign_key_internal_resource_violation_non_existent(log):
 
 def test_foreign_key_external_resource(log):
     descriptor = 'data/datapackages_linked/cities/datapackage.json'
-    report = validate(descriptor, checks=['schema', 'foreign-key'])
+    report = validate(descriptor, checks=['structure', 'schema', 'foreign-key'])
     assert log(report) == []
 
 
-#  def test_foreign_key_external_resource_errors(log):
-    #  descriptor = 'data/datapackages_linked_errors/cities/datapackage.json'
-    #  report = validate(descriptor, checks=['schema', 'foreign-key'])
-    #  # TODO: it must have errors
-    #  assert log(report) == []
+def test_foreign_key_external_resource_errors(log):
+    descriptor = 'data/datapackages_linked_errors/cities/datapackage.json'
+    report = validate(descriptor, checks=['structure', 'schema', 'foreign-key'])
+    assert log(report) == [
+        (1, 4, None, 'foreign-key'),  # self-referenced
+        (1, 4, None, 'foreign-key'),  # external
+    ]
 
 
 # Issues
