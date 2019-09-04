@@ -50,8 +50,8 @@ class ForeignKey(object):
         # Prepare keyed_row
         keyed_row = {}
         for cell in cells:
-            if cell.get('header'):
-                keyed_row[cell.get('header')] = cell.get('value')
+            if cell.get('field'):
+                keyed_row[cell.get('field').name] = cell.get('value')
 
         # Resolve relations
         for foreign_key in self.__schema.foreign_keys:
