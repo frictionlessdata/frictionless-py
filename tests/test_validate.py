@@ -191,8 +191,7 @@ FK_DESCRIPTOR = {
 
 def test_foreign_key(log):
     report = validate(FK_DESCRIPTOR, checks=['foreign-key'])
-    # TODO: it must be fully valid
-    assert log(report) == [(1, 2, None, 'foreign-key')]
+    assert log(report) == []
 
 
 # Issues

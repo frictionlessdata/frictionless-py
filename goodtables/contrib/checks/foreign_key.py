@@ -38,7 +38,7 @@ class ForeignKey(object):
 
         # Prepare relations
         relations = _get_relations(self.__schema, self.__package,
-            table_resource_name=extra.get('resource-name'))
+            current_resource_name=extra.get('resource-name'))
         if not relations:
             return False
         self.__relations = relations
@@ -69,7 +69,7 @@ class ForeignKey(object):
 
 # Internal
 
-def _get_relations(schema, package, table_resource_name=None):
+def _get_relations(schema, package, current_resource_name=None):
     # It's based on the following code:
     # https://github.com/frictionlessdata/datapackage-py/blob/master/datapackage/resource.py#L393
 
@@ -83,7 +83,7 @@ def _get_relations(schema, package, table_resource_name=None):
         # Self-referenced resource
         if not resource_name:
             for item in package.resources:
-                if item.name == table_resource_name:
+                if item.name == current_resource_name:
                     resource = item
 
         # Internal resource
