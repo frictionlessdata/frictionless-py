@@ -21,6 +21,7 @@ class ForeignKey(object):
         self.__schema = None
         self.__package = None
         self.__relations = None
+        self.__code = 'foreign-key'
 
     def prepare(self, stream, schema, extra):
 
@@ -46,6 +47,7 @@ class ForeignKey(object):
         return True
 
     def check_row(self, cells):
+        row_number = cells[0]['row-number']
 
         # Prepare keyed_row
         keyed_row = {}
@@ -54,17 +56,20 @@ class ForeignKey(object):
                 keyed_row[cell.get('field').name] = cell.get('value')
 
         # Resolve relations
+        errors = []
         for foreign_key in self.__schema.foreign_keys:
             keyed_row = _resolve_relations(keyed_row, self.__relations, foreign_key)
             if keyed_row is None:
-                # TODO: improve error
-                message = 'Foreign Key violation'
-                error = Error(
-                    'foreign-key',
-                    row_number=cells[0]['row-number'],
-                    message=message
-                )
-                return [error]
+                message = 'Foreign key "{fields}" violation in row {row_number}'
+                message_substitutions = {'fields': foreign_key['fields']}
+                errors.append(Error(
+                    self.__code,
+                    row_number=row_number,
+                    message=message,
+                    message_substitutions=message_substitutions,
+                ))
+
+        return errors
 
 
 # Internal

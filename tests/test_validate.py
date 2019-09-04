@@ -7,6 +7,8 @@ from __future__ import unicode_literals
 import sys
 import json
 import pytest
+from pprint import pprint
+from copy import deepcopy
 from importlib import import_module
 from goodtables import validate, init_datapackage
 
@@ -153,17 +155,17 @@ FK_DESCRIPTOR = {
     {
       'name': 'cities',
       'data': [
-        ['id', 'name', 'prev_id'],
-        [1, 'london', None],
-        [2, 'paris', 1],
-        [3, 'rome', 2],
-        [4, 'rio', 3],
+        ['id', 'name', 'next_id'],
+        [1, 'london', 2],
+        [2, 'paris', 3],
+        [3, 'rome', 4],
+        [4, 'rio', None],
       ],
       'schema': {
         'fields': [
           {'name': 'id', 'type': 'integer'},
           {'name': 'name', 'type': 'string'},
-          {'name': 'prev_id', 'type': 'integer'},
+          {'name': 'next_id', 'type': 'integer'},
         ],
         'foreignKeys': [
           {
@@ -171,7 +173,7 @@ FK_DESCRIPTOR = {
             'reference': {'resource': 'people', 'fields': 'label'},
           },
           {
-            'fields': 'prev_id',
+            'fields': 'next_id',
             'reference': {'resource': '', 'fields': 'id'},
           },
         ],
@@ -189,9 +191,29 @@ FK_DESCRIPTOR = {
   ],
 }
 
+
 def test_foreign_key(log):
-    report = validate(FK_DESCRIPTOR, checks=['foreign-key'])
+    descriptor = deepcopy(FK_DESCRIPTOR)
+    report = validate(descriptor, checks=['foreign-key'])
     assert log(report) == []
+
+
+def test_foreign_key_self_referenced_resource_violation(log):
+    descriptor = deepcopy(FK_DESCRIPTOR)
+    del descriptor['resources'][0]['data'][4]
+    report = validate(descriptor, checks=['foreign-key'])
+    assert log(report) == [
+        (1, 4, None, 'foreign-key'),
+    ]
+
+
+#  def test_foreign_key_internal_resource_violation(log):
+    #  descriptor = deepcopy(FK_DESCRIPTOR)
+    #  del descriptor['resources'][1]['data'][4]
+    #  report = validate(descriptor, checks=['foreign-key'])
+    #  assert log(report) == [
+        #  (1, 4, None, 'foreign-key'),
+    #  ]
 
 
 # Issues
