@@ -58,8 +58,8 @@ class ForeignKey(object):
         # Resolve relations
         errors = []
         for foreign_key in self.__schema.foreign_keys:
-            keyed_row = _resolve_relations(keyed_row, self.__relations, foreign_key)
-            if keyed_row is None:
+            sucess = _resolve_relations(keyed_row, self.__relations, foreign_key)
+            if sucess is None:
                 message = 'Foreign key "{fields}" violation in row {row_number}'
                 message_substitutions = {'fields': foreign_key['fields']}
                 errors.append(Error(

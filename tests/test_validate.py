@@ -207,13 +207,13 @@ def test_foreign_key_self_referenced_resource_violation(log):
     ]
 
 
-#  def test_foreign_key_internal_resource_violation(log):
-    #  descriptor = deepcopy(FK_DESCRIPTOR)
-    #  del descriptor['resources'][1]['data'][4]
-    #  report = validate(descriptor, checks=['foreign-key'])
-    #  assert log(report) == [
-        #  (1, 4, None, 'foreign-key'),
-    #  ]
+def test_foreign_key_internal_resource_violation(log):
+    descriptor = deepcopy(FK_DESCRIPTOR)
+    del descriptor['resources'][1]['data'][4]
+    report = validate(descriptor, checks=['foreign-key'])
+    assert log(report) == [
+        (1, 5, None, 'foreign-key'),
+    ]
 
 
 # Issues
