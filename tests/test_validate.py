@@ -216,6 +216,18 @@ def test_foreign_key_internal_resource_violation(log):
     ]
 
 
+def test_foreign_key_internal_resource_violation_non_existent(log):
+    descriptor = deepcopy(FK_DESCRIPTOR)
+    del descriptor['resources'][1]
+    report = validate(descriptor, checks=['foreign-key'])
+    assert log(report) == [
+        (1, 2, None, 'foreign-key'),
+        (1, 3, None, 'foreign-key'),
+        (1, 4, None, 'foreign-key'),
+        (1, 5, None, 'foreign-key'),
+    ]
+
+
 # Issues
 
 def test_composite_primary_key_unique_issue_215(log):

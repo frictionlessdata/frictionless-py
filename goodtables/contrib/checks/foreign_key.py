@@ -58,8 +58,8 @@ class ForeignKey(object):
         # Resolve relations
         errors = []
         for foreign_key in self.__schema.foreign_keys:
-            sucess = _resolve_relations(keyed_row, self.__relations, foreign_key)
-            if sucess is None:
+            success = _resolve_relations(keyed_row, self.__relations, foreign_key)
+            if success is None:
                 message = 'Foreign key "{fields}" violation in row {row_number}'
                 message_substitutions = {'fields': foreign_key['fields']}
                 errors.append(Error(
@@ -101,18 +101,13 @@ def _get_relations(schema, package, current_resource_name=None):
             package = Package('/'.join([package.base_path, package_name]))
             resource = package.get_resource(resource_name)
 
-        # Check/add resource
-        # TODO: don't raise an exception
-        if not resource:
-            message = 'Foreign key "%s" violation: resource not found'
-            message = message % fk['fields']
-            #  raise exceptions.RelationError(message)
+        # Add to resources (can be None)
         resources[resource_name] = resource
 
     # Prepare relations
     relations = {}
     for resource_name, resource in resources.items():
-        if resource.tabular:
+        if resource and resource.tabular:
             relations[resource_name] = resource.read(keyed=True)
 
     return relations
@@ -126,7 +121,7 @@ def _resolve_relations(keyed_row, relations, foreign_key):
     fields = list(zip(foreign_key['fields'], foreign_key['reference']['fields']))
     reference = relations.get(foreign_key['reference']['resource'])
     if not reference:
-        return keyed_row
+        return None
 
     # Collect values - valid if all None
     values = {}
