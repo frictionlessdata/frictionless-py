@@ -39,6 +39,7 @@ TESTS_REQUIRE = [
     'pyyaml',
     'pylama',
     'pytest',
+    'pytest-cov',
     'mock',
     'tox',
 ]

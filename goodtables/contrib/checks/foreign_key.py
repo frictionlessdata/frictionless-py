@@ -18,12 +18,17 @@ class ForeignKey(object):
     # Public
 
     def __init__(self, **options):
-        self.__schema = None
         self.__package = None
+        self.__schema = None
         self.__relations = None
         self.__code = 'foreign-key'
 
     def prepare(self, stream, schema, extra):
+
+        # Prepare package
+        if 'datapackage' not in extra or 'resource-name' not in extra:
+            return False
+        self.__package = Package(json.loads(extra['datapackage']))
 
         # Prepare schema
         if not schema:
@@ -32,17 +37,10 @@ class ForeignKey(object):
             return False
         self.__schema = schema
 
-        # Prepare package
-        if 'datapackage' not in extra:
-            return False
-        self.__package = Package(json.loads(extra['datapackage']))
-
         # Prepare relations
-        relations = _get_relations(self.__schema, self.__package,
-            current_resource_name=extra.get('resource-name'))
-        if not relations:
-            return False
-        self.__relations = relations
+        self.__relations = _get_relations(
+            self.__package, self.__schema,
+            current_resource_name=extra['resource-name'])
 
         return True
 
@@ -74,12 +72,12 @@ class ForeignKey(object):
 
 # Internal
 
-def _get_relations(schema, package, current_resource_name=None):
+def _get_relations(package, schema, current_resource_name=None):
     # It's based on the following code:
     # https://github.com/frictionlessdata/datapackage-py/blob/master/datapackage/resource.py#L393
 
-    # Prepare resources
-    resources = {}
+    # Prepare relations
+    relations = {}
     for fk in schema.foreign_keys:
         resource_name = fk['reference'].get('resource')
         package_name = fk['reference'].get('package')
@@ -101,12 +99,8 @@ def _get_relations(schema, package, current_resource_name=None):
             package = Package('/'.join([package.base_path, package_name]))
             resource = package.get_resource(resource_name)
 
-        # Add to resources (can be None)
-        resources[resource_name] = resource
-
-    # Prepare relations
-    relations = {}
-    for resource_name, resource in resources.items():
+        # Add to relations (can be None)
+        relations[resource_name] = resource
         if resource and resource.tabular:
             relations[resource_name] = resource.read(keyed=True)
 

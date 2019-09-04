@@ -198,6 +198,18 @@ def test_foreign_key(log):
     assert log(report) == []
 
 
+def test_foreign_key_not_defined_foreign_keys(log):
+    descriptor = deepcopy(FK_DESCRIPTOR)
+    del descriptor['resources'][0]['schema']['foreignKeys']
+    report = validate(descriptor, checks=['foreign-key'])
+    assert log(report) == []
+
+
+def test_foreign_key_source_is_not_datapackage(log):
+    report = validate('data/valid.csv', checks=['foreign-key'])
+    assert log(report) == []
+
+
 def test_foreign_key_self_referenced_resource_violation(log):
     descriptor = deepcopy(FK_DESCRIPTOR)
     del descriptor['resources'][0]['data'][4]
