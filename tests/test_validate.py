@@ -246,11 +246,11 @@ def test_foreign_key_external_resource(log):
     assert log(report) == []
 
 
-def test_foreign_key_external_resource_errors(log):
-    descriptor = 'data/datapackages_linked_errors/cities/datapackage.json'
-    report = validate(descriptor, checks=['schema', 'foreign-key'])
-    # TODO: it must have errors
-    assert log(report) == []
+#  def test_foreign_key_external_resource_errors(log):
+    #  descriptor = 'data/datapackages_linked_errors/cities/datapackage.json'
+    #  report = validate(descriptor, checks=['schema', 'foreign-key'])
+    #  # TODO: it must have errors
+    #  assert log(report) == []
 
 
 # Issues

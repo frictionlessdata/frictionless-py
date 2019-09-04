@@ -5,6 +5,7 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 import json
+from copy import deepcopy
 from datapackage import Package
 from ...registry import check
 from ...error import Error
@@ -59,7 +60,8 @@ class ForeignKey(object):
         # Resolve relations
         errors = []
         for foreign_key in self.__schema.foreign_keys:
-            success = _resolve_relations(keyed_row, foreign_key, relations=self.__relations)
+            success = _resolve_relations(
+                deepcopy(keyed_row), foreign_key, relations=self.__relations)
             if success is None:
                 message = 'Foreign key "{fields}" violation in row {row_number}'
                 message_substitutions = {'fields': foreign_key['fields']}

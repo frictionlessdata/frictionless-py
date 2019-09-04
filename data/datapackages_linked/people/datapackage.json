@@ -3,7 +3,22 @@
   "resources": [
     {
       "path": "people.csv",
-      "name": "people"
+      "name": "people",
+      "schema": {
+        "fields": [
+          {
+            "name": "label",
+            "type": "integer"
+          },
+          {
+            "name": "population",
+            "type": "string"
+          }
+        ],
+        "missingValues": [
+          ""
+        ]
+      }
     }
   ]
 }
