@@ -169,12 +169,12 @@ FK_DESCRIPTOR = {
         ],
         'foreignKeys': [
           {
-            'fields': 'id',
-            'reference': {'resource': 'people', 'fields': 'label'},
-          },
-          {
             'fields': 'next_id',
             'reference': {'resource': '', 'fields': 'id'},
+          },
+          {
+            'fields': 'id',
+            'reference': {'resource': 'people', 'fields': 'label'},
           },
         ],
       },
@@ -237,6 +237,14 @@ def test_foreign_key_internal_resource_violation_non_existent(log):
         (1, 3, None, 'foreign-key'),
         (1, 4, None, 'foreign-key'),
         (1, 5, None, 'foreign-key'),
+    ]
+
+
+def test_foreign_key_external_resource(log):
+    descriptor = 'data/datapackages_linked/cities/datapackage.json'
+    report = validate(descriptor, checks=['schema', 'foreign-key'])
+    assert log(report) == [
+
     ]
 
 

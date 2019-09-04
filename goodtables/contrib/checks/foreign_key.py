@@ -28,7 +28,10 @@ class ForeignKey(object):
         # Prepare package
         if 'datapackage' not in extra or 'resource-name' not in extra:
             return False
-        self.__package = Package(json.loads(extra['datapackage']))
+        descriptor = extra['datapackage']
+        if descriptor.strip().startswith('{'):
+            descriptor = json.loads(descriptor)
+        self.__package = Package(descriptor)
 
         # Prepare schema
         if not schema:
@@ -56,7 +59,7 @@ class ForeignKey(object):
         # Resolve relations
         errors = []
         for foreign_key in self.__schema.foreign_keys:
-            success = _resolve_relations(keyed_row, self.__relations, foreign_key)
+            success = _resolve_relations(keyed_row, foreign_key, relations=self.__relations)
             if success is None:
                 message = 'Foreign key "{fields}" violation in row {row_number}'
                 message_substitutions = {'fields': foreign_key['fields']}
@@ -107,7 +110,7 @@ def _get_relations(package, schema, current_resource_name=None):
     return relations
 
 
-def _resolve_relations(keyed_row, relations, foreign_key):
+def _resolve_relations(keyed_row, foreign_key, relations=None):
     # It's based on the following code:
     # https://github.com/frictionlessdata/tableschema-py/blob/master/tableschema/table.py#L228
 

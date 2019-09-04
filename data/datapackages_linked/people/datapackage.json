@@ -1,0 +1,9 @@
+{
+  "profile": "tabular-data-package",
+  "resources": [
+    {
+      "path": "people.csv",
+      "name": "people"
+    }
+  ]
+}
