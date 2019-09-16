@@ -255,6 +255,35 @@ def test_foreign_key_external_resource_errors(log):
     ]
 
 
+def test_foreign_key_external_resource_remote_datapackage(log):
+    descriptor = {
+        'resources': [{
+          'name': 'countries',
+          'data': [
+            ['Country Code', 'Country Name'],
+            ['PRT', 'Portugal'],
+            ['DRL', 'Dreamland'],
+          ],
+          'schema': {
+            'fields': [
+              {'name': 'Country Code', 'type': 'string'},
+              {'name': 'Country Name', 'type': 'string'},
+            ],
+            'foreignKeys': [
+              {
+                'fields': 'Country Code',
+                'reference': {'package': 'https://raw.githubusercontent.com/datasets/gdp/master/datapackage.json', 'resource': 'gdp', 'fields': 'Country Code'},
+              },
+            ],
+          },
+          }]
+    }
+    report = validate(descriptor, checks=['structure', 'schema', 'foreign-key'])
+    assert log(report) == [
+        (1, 3, None, 'foreign-key'),
+    ]
+
+
 # Issues
 
 def test_composite_primary_key_unique_issue_215(log):
