@@ -36,10 +36,11 @@ INSTALL_FORMAT_ODS_REQUIRES = [
     'lxml>=3.0',
 ]
 TESTS_REQUIRE = [
-    'pyyaml',
+    'mock',
     'pylama',
     'pytest',
-    'mock',
+    'pytest-cov',
+    'pyyaml',
     'tox',
 ]
 README = read('README.md')
