@@ -13,16 +13,13 @@ python:
   - 3.6
   - 3.7
 
-matrix:
-  include:
-    - env: TOXENV=lint
-
 env:
   global:
     - TOXENV="py${PYTHON_VERSION//./}"
 
 install:
-  - pip install tox coveralls
+  - make install
+  - pip install coveralls
 
 script:
   - make test
