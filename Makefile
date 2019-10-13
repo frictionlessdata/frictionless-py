@@ -20,11 +20,10 @@ readme:
 	sed -i '/(#$(PACKAGE)-py)/,+2d' README.md
 
 release:
-	git checkout master
-	git pull origin
-	git fetch -p
-	git commit -a -m 'v$(VERSION)'
-	git tag -a v$(VERSION) -m 'v$(VERSION)'
+	git checkout master && git pull origin && git fetch -p
+	git log --pretty=format:"%C(yellow)%h%Creset %s%Cgreen%d" --reverse -20
+	@echo "Releasing v$(VERSION) in 10 seconds. Press <CTRL+C> to abort" && sleep 10
+	git commit -a -m 'v$(VERSION)' && git tag -a v$(VERSION) -m 'v$(VERSION)'
 	git push --follow-tags
 
 templates:
