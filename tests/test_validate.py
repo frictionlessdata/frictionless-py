@@ -17,7 +17,8 @@ from goodtables import validate, init_datapackage
 
 def test_validate_infer_table(log):
     report = validate('data/invalid.csv')
-    assert report['error-count'] == 7
+    #will not report missing value error for cell that does not have a header
+    assert report['error-count'] == 6
 
 
 def test_validate_infer_datapackage_path(log):
@@ -33,7 +34,8 @@ def test_validate_infer_datapackage_dict(log):
 
 def test_validate_infer_nested(log):
     report = validate([{'source': 'data/invalid.csv'}])
-    assert report['error-count'] == 7
+    # will not report missing value error for cell that does not have a header
+    assert report['error-count'] == 6
 
 
 # Report's preset
@@ -330,7 +332,13 @@ def test_validate_infer_fields_issue_225():
         'fields': [{'name': 'name1'}]
     }
     report = validate(source, schema=schema, infer_fields=True)
-    assert report['valid']
+
+
+    errors = set([error.get("code") for error in report.get("tables")[0].get("errors")])
+    assert report is not None
+    assert len(errors) is 1
+    assert {"missing-value"} == errors
+    assert ~report['valid']
 
 
 def test_validate_missing_local_file_raises_source_error_issue_315(log):

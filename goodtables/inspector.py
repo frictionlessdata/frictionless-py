@@ -215,7 +215,8 @@ class Inspector(object):
                 fields = schema.fields
             header_cells = cells.create_cells(headers, fields)
 
-            has_headers = (None not in headers)
+            #Fix for issue 312
+            has_headers = headers is not None
             if has_headers:
                 head_checks = _filter_checks(checks, context='head')
                 for check in head_checks:
