@@ -3,7 +3,7 @@
 
 PACKAGE := $(shell grep '^PACKAGE =' setup.py | cut -d "'" -f2)
 VERSION := $(shell head -n 1 $(PACKAGE)/VERSION)
-MAINTAINER := $(shell head -n 1 MAINTAINER.md)
+LEAD := $(shell head -n 1 LEAD.md)
 
 
 all: list
@@ -27,8 +27,8 @@ release:
 	git push --follow-tags
 
 templates:
-	sed -i -E "s/@(\w*)/@$(MAINTAINER)/" .github/issue_template.md
-	sed -i -E "s/@(\w*)/@$(MAINTAINER)/" .github/pull_request_template.md
+	sed -i -E "s/@(\w*)/@$(LEAD)/" .github/issue_template.md
+	sed -i -E "s/@(\w*)/@$(LEAD)/" .github/pull_request_template.md
 
 spec:
 	wget -O goodtables/spec.json https://raw.githubusercontent.com/frictionlessdata/data-quality-spec/master/spec.json
