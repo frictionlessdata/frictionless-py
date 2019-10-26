@@ -4,11 +4,14 @@ from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
+import sys
+import pytest
 from goodtables import validate
 
 
 # Validate
 
+@pytest.mark.skipif(sys.version_info >= (3, 8), reason='Problem with Python3.8+')
 def test_check_custom_constraint(log):
     source = [
         ['row', 'salary', 'bonus'],
