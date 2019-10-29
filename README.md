@@ -33,6 +33,7 @@ of your data (e.g. all rows have the same number of columns), and its contents
     - [Advanced checks](#advanced-checks)
       - [blacklisted-value](#blacklisted-value)
       - [deviated-value](#deviated-value)
+      - [foreign-key](#foreign-key)
       - [sequential-value](#sequential-value)
       - [truncated-value](#truncated-value)
       - [custom-constraint](#custom-constraint)
@@ -146,6 +147,7 @@ Lastly, if the order of the fields in the data is different than in your schema,
 | --- | --- |
 | [blacklisted-value](#blacklisted-value) | Ensure there are no cells with the blacklisted values. |
 | [deviated-value](#deviated-value) | Ensure numbers are within a number of standard deviations from the average. |
+| [foreign-key](#foreign-key) | Ensure foreign keys are valid within a data package |
 | [sequential-value](#sequential-value) | Ensure numbers are sequential. |
 | [truncated-value](#truncated-value) | Detect values that were potentially truncated. |
 | [custom-constraint](#custom-constraint) | Defines a constraint based on the values of other columns (e.g. `value * quantity == total`). |
@@ -215,6 +217,107 @@ report = validate('data.csv', checks=[
     {'deviated-value': {'column': 'temperature', 'average': 'median', 'interval': 3}},
 ])
 # error on row 10 with code "deviated-value"
+```
+
+#### foreign-key
+
+> We support here relative paths. It MUST be used only for trusted data sources.
+
+This check validate foreign keys within a data package. Consider we have a data package defined below:
+
+```python
+DESCRIPTOR = {
+  'resources': [
+    {
+      'name': 'cities',
+      'data': [
+        ['id', 'name', 'next_id'],
+        [1, 'london', 2],
+        [2, 'paris', 3],
+        [3, 'rome', 4],
+        # [4, 'rio', None],
+      ],
+      'schema': {
+        'fields': [
+          {'name': 'id', 'type': 'integer'},
+          {'name': 'name', 'type': 'string'},
+          {'name': 'next_id', 'type': 'integer'},
+        ],
+        'foreignKeys': [
+          {
+            'fields': 'next_id',
+            'reference': {'resource': '', 'fields': 'id'},
+          },
+          {
+            'fields': 'id',
+            'reference': {'resource': 'people', 'fields': 'label'},
+          },
+        ],
+      },
+    }, {
+      'name': 'people',
+      'data': [
+        ['label', 'population'],
+        [1, 8],
+        [2, 2],
+        # [3, 3],
+        # [4, 6],
+      ],
+    },
+  ],
+}
+```
+
+Running `goodtables` on it will raise a few `foreign-key` errors because we have commented some rows in the data package's data:
+
+```python
+report = validate(DESCRIPTOR, checks=['structure', 'schema', 'foreign-key'])
+print(report)
+```
+
+```
+{'error-count': 2,
+ 'preset': 'datapackage',
+ 'table-count': 2,
+ 'tables': [{'datapackage': '...',
+             'error-count': 2,
+             'errors': [{'code': 'foreign-key',
+                         'message': 'Foreign key "[\'next_id\']" violation in '
+                                    'row 4',
+                         'message-data': {'fields': ['next_id']},
+                         'row-number': 4},
+                        {'code': 'foreign-key',
+                         'message': 'Foreign key "[\'id\']" violation in row 4',
+                         'message-data': {'fields': ['id']},
+                         'row-number': 4}],
+             'format': 'inline',
+             'headers': ['id', 'name', 'next_id'],
+             'resource-name': 'cities',
+             'row-count': 4,
+             'schema': 'table-schema',
+             'source': 'inline',
+             'time': 0.031,
+             'valid': False},
+            {'datapackage': '...',
+             'error-count': 0,
+             'errors': [],
+             'format': 'inline',
+             'headers': ['label', 'population'],
+             'resource-name': 'people',
+             'row-count': 3,
+             'source': 'inline',
+             'time': 0.038,
+             'valid': True}],
+ 'time': 0.117,
+ 'valid': False,
+ 'warnings': []}
+```
+
+It experimetally supports external resource checks, for example, for a `foreignKey` definition like these:
+
+```json
+{"package": "../people/datapackage.json", "resource": "people", "fields": "label"}
+{"package": "http:/example.com/datapackage.json", "resource": "people", "fields": "label"}
 ```
 
 #### sequential-value

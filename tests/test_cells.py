@@ -83,7 +83,7 @@ class TestCells(object):
 
         cells = goodtables.cells.create_cells(headers, schema_fields, values)
         expected_cells = [
-            goodtables.cells.create_cell('name', '', 'name_schema', 1),
+            goodtables.cells.create_cell('name', None, 'name_schema', 1),
             goodtables.cells.create_cell('value', 51, 'value_schema', 2),
         ]
 

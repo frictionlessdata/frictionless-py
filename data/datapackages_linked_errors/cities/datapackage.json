@@ -1,0 +1,39 @@
+{
+  "profile": "tabular-data-package",
+  "resources": [
+    {
+      "path": "cities.csv",
+      "profile": "tabular-data-resource",
+      "name": "cities",
+      "schema": {
+        "fields": [
+          {
+            "name": "id",
+            "type": "integer"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "next_id",
+            "type": "integer"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "fields": "next_id",
+            "reference": {"resource": "", "fields": "id"}
+          },
+          {
+            "fields": "id",
+            "reference": {"package": "../people/datapackage.json", "resource": "people", "fields": "label"}
+          }
+        ],
+        "missingValues": [
+          ""
+        ]
+      }
+    }
+  ]
+}

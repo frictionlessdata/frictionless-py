@@ -22,4 +22,5 @@ gla-250-report-2014-15-P08:
 multilingual:
   source: data/jungle/multilingual.xlsx
   error_limit: 1
-  report: []
+  report:
+    - [1, 2, 2, 'missing-value']

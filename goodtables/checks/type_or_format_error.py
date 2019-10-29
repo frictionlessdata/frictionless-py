@@ -28,7 +28,7 @@ def type_or_format_error(cells):
         # Cast value
         try:
             valid = True
-            field.cast_value(value, constraints=False)
+            cell['value'] = field.cast_value(value, constraints=False)
         except tableschema.exceptions.TableSchemaException:
             valid = False
 
