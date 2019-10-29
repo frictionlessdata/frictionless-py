@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 
 import json
 from copy import deepcopy
+from collections import defaultdict
 from datapackage import Package
 from ...registry import check
 from ...error import Error
@@ -41,10 +42,12 @@ class ForeignKey(object):
             return False
         self.__schema = schema
 
-        # Prepare relations
-        self.__relations = _get_relations(
+        # Prepare foreign keys values
+        relations = _get_relations(
             self.__package, self.__schema,
             current_resource_name=extra['resource-name'])
+        self.__foreign_keys_values = _get_foreign_keys_values(
+            self.__schema, relations)
 
         return True
 
@@ -61,7 +64,7 @@ class ForeignKey(object):
         errors = []
         for foreign_key in self.__schema.foreign_keys:
             success = _resolve_relations(
-                deepcopy(keyed_row), foreign_key, relations=self.__relations)
+                deepcopy(keyed_row), self.__foreign_keys_values, foreign_key)
             if success is None:
                 message = 'Foreign key "{fields}" violation in row {row_number}'
                 message_substitutions = {'fields': foreign_key['fields']}
@@ -115,32 +118,51 @@ def _get_relations(package, schema, current_resource_name=None):
     return relations
 
 
-def _resolve_relations(keyed_row, foreign_key, relations=None):
+def _get_foreign_keys_values(schema, relations):
+    # It's based on the following code:
+    # https://github.com/frictionlessdata/tableschema-py/blob/master/tableschema/table.py#L218
+
+    # we dont need to load the complete reference table to test relations
+    # we can lower payload AND optimize testing foreign keys
+    # by preparing the right index based on the foreign key definition
+    # foreign_keys are sets of tuples of all possible values in the foreign table
+    # foreign keys =
+    # [reference] [foreign_keys tuple] = { (foreign_keys_values, ) : one_keyedrow, ... }
+    foreign_keys = defaultdict(dict)
+    if schema:
+        for fk in schema.foreign_keys:
+            # load relation data
+            relation = fk['reference']['resource']
+
+            # create a set of foreign keys
+            # to optimize we prepare index of existing values
+            # this index should use reference + foreign_keys as key
+            # cause many foreign keys may use the same reference
+            foreign_keys[relation][tuple(fk['reference']['fields'])] = {}
+            for row in (relations[relation] or []):
+                key = tuple([row[foreign_field] for foreign_field in fk['reference']['fields']])
+                # here we should chose to pick the first or nth row which match
+                # previous implementation picked the first, so be it
+                if key not in foreign_keys[relation][tuple(fk['reference']['fields'])]:
+                    foreign_keys[relation][tuple(fk['reference']['fields'])][key] = row
+    return foreign_keys
+
+
+def _resolve_relations(keyed_row, foreign_keys_values, foreign_key):
     # It's based on the following code:
     # https://github.com/frictionlessdata/tableschema-py/blob/master/tableschema/table.py#L228
 
-    # Prepare helpers - needed data structures
-    fields = list(zip(foreign_key['fields'], foreign_key['reference']['fields']))
-    reference = relations.get(foreign_key['reference']['resource'])
-    if not reference:
-        return None
-
-    # Collect values - valid if all None
-    values = {}
-    valid = True
-    for field, ref_field in fields:
-        if field and ref_field:
-            values[ref_field] = keyed_row[field]
-            if keyed_row[field] is not None:
-                valid = False
-
-    # Resolve values - valid if match found
-    if not valid:
-        for refValues in reference:
-            if set(values.items()).issubset(set(refValues.items())):
-                for field, ref_field in fields:
-                    keyed_row[field] = refValues
-                valid = True
-                break
-
-    return keyed_row if valid else None
+    # local values of the FK
+    local_values = tuple(keyed_row[f] for f in foreign_key['fields'])
+    if len([l for l in local_values if l]) > 0:
+        # test existence into the foreign
+        relation = foreign_key['reference']['resource']
+        keys = tuple(foreign_key['reference']['fields'])
+        foreign_values = foreign_keys_values[relation][keys]
+        if local_values in foreign_values:
+            return foreign_values[local_values]
+        else:
+            return None
+    else:
+        # empty values for all keys, return original values
+        return keyed_row
