@@ -686,6 +686,10 @@ For now this documentation section is incomplete. Please see builtin presets to 
 
 Here described only breaking and the most important changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/goodtables-py/commits/master).
 
+##### v2.3
+
+- Added a [foreign keys check](#foreign-key)
+
 ##### v2.2
 
 - Improved missing/non-matching-headers detection ([#298](https://github.com/frictionlessdata/goodtables-py/issues/298))
