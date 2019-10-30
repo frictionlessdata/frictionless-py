@@ -35,8 +35,6 @@ def create_cells(headers, schema_fields, values=None, row_number=None):
             field = None
         if value == fillvalue:
             value = None
-        elif value is None:
-            value = ''
 
         cell = create_cell(header, value, field, column_number, row_number)
         cells.append(cell)

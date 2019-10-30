@@ -200,6 +200,18 @@ class Inspector(object):
                     error = _compose_error_from_schema_error(error)
                     errors.append(error)
 
+        # Prepare checks
+        # This is an experimental hook
+        for check in checks:
+            prepare_func = getattr(check['func'], 'prepare', None)
+            if not prepare_func:
+                continue
+            success = prepare_func(stream, schema, extra)
+            if not success:
+                checks.remove(check)
+        if not checks:
+            fatal_error = True
+
         # Head checks
         if not fatal_error:
             # Prepare cells

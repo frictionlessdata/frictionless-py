@@ -29,7 +29,7 @@ def required_constraint(cells):
         if field.required or field.descriptor.get('primaryKey'):
             # TODO: remove this hack after:
             # https://github.com/frictionlessdata/tableschema-py/issues/244
-            if value in field._Field__missing_values:
+            if value is None or value in field._Field__missing_values:
                 valid = False
 
         # Skip if valid
