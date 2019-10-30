@@ -5,11 +5,6 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 import os
-try:
-    from urllib.parse import urlparse
-except ImportError:
-    from urlparse import urlparse
-
 import six
 import datetime
 import operator
@@ -18,6 +13,7 @@ import tableschema
 from . import cells
 from copy import copy
 from multiprocessing.pool import ThreadPool
+from six.moves.urllib.parse import urlparse
 from .registry import registry
 from .error import Error
 from . import exceptions
@@ -182,7 +178,7 @@ class Inspector(object):
         except Exception as exception:
             if _local_file_not_found(source):
                 message = "No such file or directory: '%s'" % source
-                exception = tabulator.exceptions.SourceError(message)
+                exception = tabulator.exceptions.IOError(message)
             fatal_error = True
             error = _compose_error_from_exception(exception)
             errors.append(error)

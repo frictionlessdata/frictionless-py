@@ -126,8 +126,9 @@ def test_inspector_missing_local_file_raises_source_error_issue_315(log):
     inspector = Inspector()
     report = inspector.inspect([{'source': 'invalid'}])
     assert log(report) == [
-        (1, None, None, 'source-error'),
+        (1, None, None, 'io-error'),
     ]
+
 
 # Warnings
 
