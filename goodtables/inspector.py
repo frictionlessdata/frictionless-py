@@ -4,6 +4,12 @@ from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
+import os
+try:
+    from urllib.parse import urlparse
+except ImportError:
+    from urlparse import urlparse
+
 import six
 import datetime
 import operator
@@ -174,6 +180,9 @@ class Inspector(object):
             if schema is None:
                 checks = _filter_checks(checks, type='schema', inverse=True)
         except Exception as exception:
+            if _local_file_not_found(source):
+                message = "No such file or directory: '%s'" % source
+                exception = tabulator.exceptions.SourceError(message)
             fatal_error = True
             error = _compose_error_from_exception(exception)
             errors.append(error)
@@ -307,6 +316,11 @@ def _filter_checks(checks, type=None, context=None, inverse=False):
             continue
         result.append(check)
     return result
+
+
+def _local_file_not_found(source):
+    return urlparse(source).scheme == '' \
+           and not os.path.isfile(source)
 
 
 def _compose_error_from_exception(exception):
