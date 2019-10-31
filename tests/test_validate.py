@@ -236,6 +236,23 @@ def test_validate_no_headers():
     assert report['tables'][0]['errors'][0]['code'] == 'extra-value'
 
 
+# Init datapackage
+
+def test_init_datapackage_is_correct():
+    resources_paths = [
+        'data/valid.csv',
+        'data/sequential_value.csv',
+    ]
+    dp = init_datapackage(resources_paths)
+
+    assert dp is not None
+    assert dp.valid, dp.errors
+    assert len(dp.resources) == 2
+
+    actual_resources_paths = [res.descriptor['path'] for res in dp.resources]
+    assert sorted(resources_paths) == sorted(actual_resources_paths)
+
+
 # Issues
 
 def test_composite_primary_key_unique_issue_215(log):
@@ -320,20 +337,3 @@ def test_validate_missing_local_file_raises_source_error_issue_315(log):
     assert log(report) == [
         (1, None, None, 'io-error'),
     ]
-
-
-# Init datapackage
-
-def test_init_datapackage_is_correct(self):
-    resources_paths = [
-        'data/valid.csv',
-        'data/sequential_value.csv',
-    ]
-    dp = init_datapackage(resources_paths)
-
-    assert dp is not None
-    assert dp.valid, dp.errors
-    assert len(dp.resources) == 2
-
-    actual_resources_paths = [res.descriptor['path'] for res in dp.resources]
-    assert sorted(resources_paths) == sorted(actual_resources_paths)
