@@ -30,6 +30,10 @@ def datapackage(source, **options):
     if not warnings:
         for resource in package.resources:
             if resource.tabular:
+                hash = resource.descriptor.get('hash')
+                if hash and not hash.startswith('sha256:'):
+                    message = 'Resource "%s" does not use the SHA256 hash. The check will be skipped'
+                    warnings.append(message % resource.name)
                 tables.append({
                     'source': resource.source if not resource.inline else 'inline',
                     'stream': Stream(partial(_iter_resource_rows, resource), headers=1),
@@ -53,7 +57,7 @@ def datapackage(source, **options):
 # Internal
 
 def _iter_resource_rows(resource):
-    for index, row in enumerate(resource.iter(cast=False)):
+    for index, row in enumerate(resource.iter(integrity=True, cast=False)):
         if not index:
             yield resource.headers
         yield row

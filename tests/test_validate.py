@@ -148,140 +148,109 @@ def test_source_pathlib_path_datapackage():
     assert report['valid']
 
 
-# Foreign Keys
+# Catch exceptions
 
-FK_DESCRIPTOR = {
-  'resources': [
-    {
-      'name': 'cities',
-      'data': [
-        ['id', 'name', 'next_id'],
-        [1, 'london', 2],
-        [2, 'paris', 3],
-        [3, 'rome', 4],
-        [4, 'rio', None],
-      ],
-      'schema': {
-        'fields': [
-          {'name': 'id', 'type': 'integer'},
-          {'name': 'name', 'type': 'string'},
-          {'name': 'next_id', 'type': 'integer'},
-        ],
-        'foreignKeys': [
-          {
-            'fields': 'next_id',
-            'reference': {'resource': '', 'fields': 'id'},
-          },
-          {
-            'fields': 'id',
-            'reference': {'resource': 'people', 'fields': 'label'},
-          },
-        ],
-      },
-    }, {
-      'name': 'people',
-      'data': [
-        ['label', 'population'],
-        [1, 8],
-        [2, 2],
-        [3, 3],
-        [4, 6],
-      ],
-    },
-  ],
-}
-
-
-def test_foreign_key(log):
-    descriptor = deepcopy(FK_DESCRIPTOR)
-    report = validate(descriptor, checks=['foreign-key'])
-    assert log(report) == []
-
-
-def test_foreign_key_not_defined_foreign_keys(log):
-    descriptor = deepcopy(FK_DESCRIPTOR)
-    del descriptor['resources'][0]['schema']['foreignKeys']
-    report = validate(descriptor, checks=['foreign-key'])
-    assert log(report) == []
-
-
-def test_foreign_key_source_is_not_datapackage(log):
-    report = validate('data/valid.csv', checks=['foreign-key'])
-    assert log(report) == []
-
-
-def test_foreign_key_self_referenced_resource_violation(log):
-    descriptor = deepcopy(FK_DESCRIPTOR)
-    del descriptor['resources'][0]['data'][4]
-    report = validate(descriptor, checks=['foreign-key'])
+def test_validate_catch_all_open_exceptions(log):
+    report = validate('data/latin1.csv', encoding='utf-8')
     assert log(report) == [
-        (1, 4, None, 'foreign-key'),
+        (1, None, None, 'source-error'),
     ]
 
 
-def test_foreign_key_internal_resource_violation(log):
-    descriptor = deepcopy(FK_DESCRIPTOR)
-    del descriptor['resources'][1]['data'][4]
-    report = validate(descriptor, checks=['foreign-key'])
+def test_validate_catch_all_iter_exceptions(log):
+    # Reducing sample size to get raise on iter, not on open
+    report = validate([['h'], [1], 'bad'], sample_size=1)
     assert log(report) == [
-        (1, 5, None, 'foreign-key'),
+        (1, None, None, 'source-error'),
     ]
 
 
-def test_foreign_key_internal_resource_violation_non_existent(log):
-    descriptor = deepcopy(FK_DESCRIPTOR)
-    del descriptor['resources'][1]
-    report = validate(descriptor, checks=['foreign-key'])
-    assert log(report) == [
-        (1, 2, None, 'foreign-key'),
-        (1, 3, None, 'foreign-key'),
-        (1, 4, None, 'foreign-key'),
-        (1, 5, None, 'foreign-key'),
+# Warnings
+
+def test_validate_warnings_no():
+    source = 'data/datapackages/invalid/datapackage.json'
+    report = validate(source, preset='datapackage')
+    assert len(report['warnings']) == 0
+
+
+def test_validate_warnings_bad_datapackage_json():
+    source = 'data/invalid_json.json'
+    report = validate(source, preset='datapackage')
+    assert len(report['warnings']) == 1
+    assert 'Unable to parse JSON' in report['warnings'][0]
+
+
+def test_validate_warnings_table_limit():
+    source = 'data/datapackages/invalid/datapackage.json'
+    report = validate(source, preset='datapackage', table_limit=1)
+    assert len(report['warnings']) == 1
+    assert 'table(s) limit' in report['warnings'][0]
+
+
+def test_validate_warnings_row_limit():
+    source = 'data/datapackages/invalid/datapackage.json'
+    report = validate(source, preset='datapackage', row_limit=1)
+    assert len(report['warnings']) == 2
+    assert 'row(s) limit' in report['warnings'][0]
+    assert 'row(s) limit' in report['warnings'][1]
+
+
+def test_validate_warnings_error_limit():
+    source = 'data/datapackages/invalid/datapackage.json'
+    report = validate(source, preset='datapackage', error_limit=1)
+    assert len(report['warnings']) == 2
+    assert 'error(s) limit' in report['warnings'][0]
+    assert 'error(s) limit' in report['warnings'][1]
+
+
+def test_validate_warnings_table_and_row_limit():
+    source = 'data/datapackages/invalid/datapackage.json'
+    report = validate(source, preset='datapackage', table_limit=1, row_limit=1)
+    assert len(report['warnings']) == 2
+    assert 'table(s) limit' in report['warnings'][0]
+    assert 'row(s) limit' in report['warnings'][1]
+
+
+def test_validate_warnings_table_and_error_limit():
+    source = 'data/datapackages/invalid/datapackage.json'
+    report = validate(source, preset='datapackage', table_limit=1, error_limit=1)
+    assert len(report['warnings']) == 2
+    assert 'table(s) limit' in report['warnings'][0]
+    assert 'error(s) limit' in report['warnings'][1]
+
+
+# Empty source
+
+def test_validate_empty_source():
+    report = validate('data/empty.csv')
+    assert report['tables'][0]['row-count'] == 0
+    assert report['tables'][0]['error-count'] == 0
+
+
+# No headers source
+
+def test_validate_no_headers():
+    report = validate('data/invalid_no_headers.csv', headers=None)
+    assert report['tables'][0]['row-count'] == 3
+    assert report['tables'][0]['error-count'] == 1
+    assert report['tables'][0]['errors'][0]['code'] == 'extra-value'
+
+
+# Init datapackage
+
+def test_init_datapackage_is_correct():
+    resources_paths = [
+        'data/valid.csv',
+        'data/sequential_value.csv',
     ]
+    dp = init_datapackage(resources_paths)
 
+    assert dp is not None
+    assert dp.valid, dp.errors
+    assert len(dp.resources) == 2
 
-def test_foreign_key_external_resource(log):
-    descriptor = 'data/datapackages_linked/cities/datapackage.json'
-    report = validate(descriptor, checks=['structure', 'schema', 'foreign-key'])
-    assert log(report) == []
-
-
-def test_foreign_key_external_resource_errors(log):
-    descriptor = 'data/datapackages_linked_errors/cities/datapackage.json'
-    report = validate(descriptor, checks=['structure', 'schema', 'foreign-key'])
-    assert log(report) == [
-        (1, 4, None, 'foreign-key'),  # self-referenced
-        (1, 4, None, 'foreign-key'),  # external
-    ]
-
-
-def test_foreign_key_external_resource_remote_datapackage(log):
-    descriptor = {
-        'resources': [{
-          'name': 'countries',
-          'data': [
-            ['Country Code', 'Country Name'],
-            ['PRT', 'Portugal'],
-            ['DRL', 'Dreamland'],
-          ],
-          'schema': {
-            'fields': [
-              {'name': 'Country Code', 'type': 'string'},
-              {'name': 'Country Name', 'type': 'string'},
-            ],
-            'foreignKeys': [
-              {
-                'fields': 'Country Code',
-                'reference': {'package': 'https://raw.githubusercontent.com/datasets/gdp/master/datapackage.json', 'resource': 'gdp', 'fields': 'Country Code'},
-              },
-            ],
-          },
-          }]
-    }
-    report = validate(descriptor, checks=['structure', 'schema', 'foreign-key'])
-    assert log(report) == [
-        (1, 3, None, 'foreign-key'),
-    ]
+    actual_resources_paths = [res.descriptor['path'] for res in dp.resources]
+    assert sorted(resources_paths) == sorted(actual_resources_paths)
 
 
 # Issues
@@ -349,6 +318,7 @@ def test_validate_infer_fields_issue_223():
     report = validate(source, schema=schema, infer_fields=True)
     assert report['valid']
 
+
 def test_validate_infer_fields_issue_225():
     source = [
         ['name1', 'name2'],
@@ -363,18 +333,8 @@ def test_validate_infer_fields_issue_225():
     assert report['valid']
 
 
-
-class TestValidateInitDatapackage(object):
-    def test_datapackage_is_correct(self):
-        resources_paths = [
-            'data/valid.csv',
-            'data/sequential_value.csv',
-        ]
-        dp = init_datapackage(resources_paths)
-
-        assert dp is not None
-        assert dp.valid, dp.errors
-        assert len(dp.resources) == 2
-
-        actual_resources_paths = [res.descriptor['path'] for res in dp.resources]
-        assert sorted(resources_paths) == sorted(actual_resources_paths)
+def test_validate_missing_local_file_raises_source_error_issue_315(log):
+    report = validate([{'source': 'invalid'}])
+    assert log(report) == [
+        (1, None, None, 'io-error'),
+    ]

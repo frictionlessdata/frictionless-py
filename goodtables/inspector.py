@@ -179,8 +179,7 @@ class Inspector(object):
             if _local_file_not_found(source):
                 message = "No such file or directory: '%s'" % source
                 exception = tabulator.exceptions.IOError(message)
-            fatal_error = True
-            error = _compose_error_from_exception(exception)
+            error, fatal_error = _compose_error_from_exception(exception)
             errors.append(error)
 
         # Prepare schema
@@ -242,8 +241,7 @@ class Inspector(object):
                     except StopIteration:
                         break
                     except Exception as exception:
-                        fatal_error = True
-                        error = _compose_error_from_exception(exception)
+                        error, fatal_error = _compose_error_from_exception(exception)
                         errors.append(error)
                         break
                     row_cells = cells.create_cells(headers, fields, row, row_number)
@@ -322,6 +320,7 @@ def _local_file_not_found(source):
 def _compose_error_from_exception(exception):
     code = 'source-error'
     message = str(exception)
+    fatal_error = True
 
     if isinstance(exception, tabulator.exceptions.SourceError):
         code = 'source-error'
@@ -335,8 +334,11 @@ def _compose_error_from_exception(exception):
         code = 'io-error'
     elif isinstance(exception, tabulator.exceptions.HTTPError):
         code = 'http-error'
+    elif isinstance(exception, tableschema.exceptions.IntegrityError):
+        code = 'source-error'
+        fatal_error = False
 
-    return Error(code, message=message)
+    return (Error(code, message=message), fatal_error)
 
 
 def _compose_error_from_schema_error(error):
