@@ -102,6 +102,15 @@ def test_check_file_integrity_hash_invalid(log):
     }]
 
 
+def test_check_file_integrity_invalid(log):
+    source = deepcopy(DESCRIPTOR)
+    source['resources'][0]['hash'] = 'not-supported-hash'
+    report = validate(source)
+    assert report['warnings'] == [
+        'Resource "resource1" does not use the SHA256 hash. The check will be skipped',
+    ]
+
+
 # Preset
 
 def test_preset_datapackage():
