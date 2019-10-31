@@ -686,6 +686,10 @@ For now this documentation section is incomplete. Please see builtin presets to 
 
 Here described only breaking and the most important changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/goodtables-py/commits/master).
 
+##### v2.4
+
+- Added integrity checks for data packages. If `resource.bytes` or `resource.hash` (sha256) is provided it will be verified against actual values
+
 ##### v2.3
 
 - Added a [foreign keys check](#foreign-key)
