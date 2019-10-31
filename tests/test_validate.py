@@ -13,94 +13,6 @@ from importlib import import_module
 from goodtables import validate, init_datapackage
 
 
-# Preset: table
-
-def test_validate_table_valid(log):
-    report = validate('data/valid.csv')
-    assert log(report) == []
-
-
-def test_validate_table_invalid(log):
-    report = validate('data/invalid.csv', infer_schema=True)
-    assert log(report) == [
-        (1, None, 3, 'blank-header'),
-        (1, None, 4, 'duplicate-header'),
-        (1, 2, 3, 'missing-value'),
-        (1, 2, 4, 'missing-value'),
-        (1, 3, None, 'duplicate-row'),
-        (1, 4, None, 'blank-row'),
-        (1, 5, 5, 'extra-value'),
-    ]
-
-
-def test_validate_table_invalid_error_limit(log):
-    report = validate('data/invalid.csv', error_limit=2, infer_schema=True)
-    assert log(report) == [
-        (1, None, 3, 'blank-header'),
-        (1, None, 4, 'duplicate-header'),
-    ]
-
-
-def test_validate_table_invalid_row_limit(log):
-    report = validate('data/invalid.csv', row_limit=2, infer_schema=True)
-    assert log(report) == [
-        (1, None, 3, 'blank-header'),
-        (1, None, 4, 'duplicate-header'),
-        (1, 2, 3, 'missing-value'),
-        (1, 2, 4, 'missing-value'),
-    ]
-
-
-# Preset: datapackage
-
-@pytest.mark.parametrize('dp_path', [
-    'data/datapackages/valid/datapackage.json',
-    'data/datapackages/valid.zip',
-])
-def test_inspector_datapackage_valid(log, dp_path):
-    report = validate(dp_path)
-    assert log(report) == []
-
-
-@pytest.mark.parametrize('dp_path', [
-    'data/datapackages/invalid/datapackage.json',
-    'data/datapackages/invalid.zip',
-])
-def test_inspector_datapackage_invalid(log, dp_path):
-    report = validate(dp_path)
-    assert log(report) == [
-        (1, 3, None, 'blank-row'),
-        (2, 4, None, 'blank-row'),
-    ]
-
-
-# Preset: nested
-
-def test_inspector_tables_invalid(log):
-    report = validate([
-        {'source': 'data/valid.csv',
-         'schema': {'fields': [{'name': 'id'}, {'name': 'name'}]}},
-        {'source': 'data/invalid.csv'},
-    ], preset='nested', infer_schema=True)
-    assert log(report) == [
-        (2, None, 3, 'blank-header'),
-        (2, None, 4, 'duplicate-header'),
-        (2, 2, 3, 'missing-value'),
-        (2, 2, 4, 'missing-value'),
-        (2, 3, None, 'duplicate-row'),
-        (2, 4, None, 'blank-row'),
-        (2, 5, 5, 'extra-value'),
-    ]
-
-
-def test_nested_presets_set_default_preset():
-    report = validate([
-        {'source': 'data/datapackages/valid/datapackage.json'},
-    ], preset='nested', infer_schema=True)
-    assert report['valid']
-    assert report['warnings'] == []
-
-
 # Infer preset
 
 def test_validate_infer_table(log):
@@ -238,14 +150,14 @@ def test_source_pathlib_path_datapackage():
 
 # Catch exceptions
 
-def test_inspector_catch_all_open_exceptions(log):
+def test_validate_catch_all_open_exceptions(log):
     report = validate('data/latin1.csv', encoding='utf-8')
     assert log(report) == [
         (1, None, None, 'source-error'),
     ]
 
 
-def test_inspector_catch_all_iter_exceptions(log):
+def test_validate_catch_all_iter_exceptions(log):
     # Reducing sample size to get raise on iter, not on open
     report = validate([['h'], [1], 'bad'], sample_size=1)
     assert log(report) == [
@@ -255,27 +167,27 @@ def test_inspector_catch_all_iter_exceptions(log):
 
 # Warnings
 
-def test_inspector_warnings_no():
+def test_validate_warnings_no():
     source = 'data/datapackages/invalid/datapackage.json'
     report = validate(source, preset='datapackage')
     assert len(report['warnings']) == 0
 
 
-def test_inspector_warnings_bad_datapackage_json():
+def test_validate_warnings_bad_datapackage_json():
     source = 'data/invalid_json.json'
     report = validate(source, preset='datapackage')
     assert len(report['warnings']) == 1
     assert 'Unable to parse JSON' in report['warnings'][0]
 
 
-def test_inspector_warnings_table_limit():
+def test_validate_warnings_table_limit():
     source = 'data/datapackages/invalid/datapackage.json'
     report = validate(source, preset='datapackage', table_limit=1)
     assert len(report['warnings']) == 1
     assert 'table(s) limit' in report['warnings'][0]
 
 
-def test_inspector_warnings_row_limit():
+def test_validate_warnings_row_limit():
     source = 'data/datapackages/invalid/datapackage.json'
     report = validate(source, preset='datapackage', row_limit=1)
     assert len(report['warnings']) == 2
@@ -283,7 +195,7 @@ def test_inspector_warnings_row_limit():
     assert 'row(s) limit' in report['warnings'][1]
 
 
-def test_inspector_warnings_error_limit():
+def test_validate_warnings_error_limit():
     source = 'data/datapackages/invalid/datapackage.json'
     report = validate(source, preset='datapackage', error_limit=1)
     assert len(report['warnings']) == 2
@@ -291,7 +203,7 @@ def test_inspector_warnings_error_limit():
     assert 'error(s) limit' in report['warnings'][1]
 
 
-def test_inspector_warnings_table_and_row_limit():
+def test_validate_warnings_table_and_row_limit():
     source = 'data/datapackages/invalid/datapackage.json'
     report = validate(source, preset='datapackage', table_limit=1, row_limit=1)
     assert len(report['warnings']) == 2
@@ -299,7 +211,7 @@ def test_inspector_warnings_table_and_row_limit():
     assert 'row(s) limit' in report['warnings'][1]
 
 
-def test_inspector_warnings_table_and_error_limit():
+def test_validate_warnings_table_and_error_limit():
     source = 'data/datapackages/invalid/datapackage.json'
     report = validate(source, preset='datapackage', table_limit=1, error_limit=1)
     assert len(report['warnings']) == 2
@@ -309,7 +221,7 @@ def test_inspector_warnings_table_and_error_limit():
 
 # Empty source
 
-def test_inspector_empty_source():
+def test_validate_empty_source():
     report = validate('data/empty.csv')
     assert report['tables'][0]['row-count'] == 0
     assert report['tables'][0]['error-count'] == 0
@@ -317,7 +229,7 @@ def test_inspector_empty_source():
 
 # No headers source
 
-def test_inspector_no_headers():
+def test_validate_no_headers():
     report = validate('data/invalid_no_headers.csv', headers=None)
     assert report['tables'][0]['row-count'] == 3
     assert report['tables'][0]['error-count'] == 1

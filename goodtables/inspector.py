@@ -335,6 +335,8 @@ def _compose_error_from_exception(exception):
         code = 'io-error'
     elif isinstance(exception, tabulator.exceptions.HTTPError):
         code = 'http-error'
+    elif isinstance(exception, tableschema.exceptions.IntegrityError):
+        code = 'source-error'
 
     return Error(code, message=message)
 
