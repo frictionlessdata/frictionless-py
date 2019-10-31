@@ -27,9 +27,9 @@ INSTALL_REQUIRES = [
     'requests>=2.10',
     'simpleeval>=0.9',
     'statistics>=1.0',
-    'tabulator>=1.20',
-    'tableschema>=1.7',
-    'datapackage>=1.2',
+    'tabulator>=1.29',
+    'tableschema>=1.10',
+    'datapackage>=1.10',
 ]
 INSTALL_FORMAT_ODS_REQUIRES = [
     'ezodf>=0.3',
