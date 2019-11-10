@@ -22,7 +22,7 @@ def missing_value(cells):
 
         # Skip if cell has value
         # Skip if cell is missing value but belongs to blank header
-        if cell.get('value') or not cell.get('header'):
+        if cell.get('value'):
             continue
 
         # Add error
