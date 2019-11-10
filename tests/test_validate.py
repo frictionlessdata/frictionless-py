@@ -234,8 +234,11 @@ def test_validate_empty_source():
 def test_validate_no_headers():
     report = validate('data/invalid_no_headers.csv', headers=None)
     assert report['tables'][0]['row-count'] == 3
-    assert report['tables'][0]['error-count'] == 1
-    assert report['tables'][0]['errors'][0]['code'] == 'extra-value'
+    # will report missing header since headers are none
+    assert report['tables'][0]['error-count'] == 3
+    assert report['tables'][0]['errors'][0]['code'] == 'blank-header'
+    assert report['tables'][0]['errors'][1]['code'] == 'blank-header'
+    assert report['tables'][0]['errors'][2]['code'] == 'extra-value'
 
 
 # Init datapackage
@@ -339,6 +342,21 @@ def test_validate_infer_fields_issue_225():
     assert len(errors) is 1
     assert {"missing-value"} == errors
     assert ~report['valid']
+
+
+def test_fix_issue_312_inspector_should_report_table_as_invalid(log):
+    report = validate([{'source': 'data/invalid_fix_312.xlsx'}])
+    assert log(report) == [
+        (1, None, 3, 'blank-header'),
+        (1, None, 4, 'duplicate-header'),
+        (1, None, 5, 'blank-header'),
+        (1, 2, 4, 'missing-value'),
+        (1, 3, None, 'duplicate-row'),
+        (1, 4, 4, 'missing-value'),
+        (1, 5, None, 'blank-row'),
+        (1, 6, 3, 'extra-value'),
+        (1, 6, 5, 'extra-value'),
+    ]
 
 
 def test_validate_missing_local_file_raises_source_error_issue_315(log):
