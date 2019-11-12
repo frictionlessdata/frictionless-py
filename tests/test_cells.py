@@ -14,8 +14,9 @@ class TestCells(object):
             'name_schema',
             'value_schema',
         ]
+        optional_fields = []
 
-        cells = goodtables.cells.create_cells(headers, schema_fields)
+        cells = goodtables.cells.create_cells(headers, schema_fields, optional_fields)
         expected_cells = [
             goodtables.cells.create_cell('name', 'name', 'name_schema', 1),
             goodtables.cells.create_cell('value', 'value', 'value_schema', 2),
@@ -36,8 +37,9 @@ class TestCells(object):
             'Jane',
             51,
         ]
+        optional_fields = []
 
-        cells = goodtables.cells.create_cells(headers, schema_fields, values)
+        cells = goodtables.cells.create_cells(headers, schema_fields, optional_fields, values)
         expected_cells = [
             goodtables.cells.create_cell('name', 'Jane', 'name_schema', 1),
             goodtables.cells.create_cell('value', 51, 'value_schema', 2),
@@ -57,8 +59,9 @@ class TestCells(object):
         values = [
             'Jane',
         ]
+        optional_fields = []
 
-        cells = goodtables.cells.create_cells(headers, schema_fields, values)
+        cells = goodtables.cells.create_cells(headers, schema_fields, optional_fields, values)
         expected_cells = [
             goodtables.cells.create_cell('name', 'Jane', 'name_schema', 1),
             goodtables.cells.create_cell('value', None, 'value_schema', 2),
@@ -80,8 +83,9 @@ class TestCells(object):
             None,
             51,
         ]
+        optional_fields = []
 
-        cells = goodtables.cells.create_cells(headers, schema_fields, values)
+        cells = goodtables.cells.create_cells(headers, schema_fields, optional_fields, values)
         expected_cells = [
             goodtables.cells.create_cell('name', None, 'name_schema', 1),
             goodtables.cells.create_cell('value', 51, 'value_schema', 2),
