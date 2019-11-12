@@ -28,10 +28,11 @@ class Inspector(object):
 
     def __init__(self,
                  checks=['structure', 'schema'],
-                 skip_checks=[],
+                 skip_checks=None,
                  infer_schema=False,
                  infer_fields=False,
                  order_fields=False,
+                 optional_fields=None,
                  error_limit=config.DEFAULT_ERROR_LIMIT,
                  table_limit=config.DEFAULT_TABLE_LIMIT,
                  row_limit=config.DEFAULT_ROW_LIMIT):
@@ -40,10 +41,11 @@ class Inspector(object):
 
         # Set attributes
         self.__checks = checks
-        self.__skip_checks = skip_checks
+        self.__skip_checks = skip_checks if skip_checks is not None else []
         self.__infer_schema = infer_schema
         self.__infer_fields = infer_fields
         self.__order_fields = order_fields
+        self.__optional_fields = optional_fields if optional_fields is not None else []
 
         parse_limit = lambda num: float('inf') if (num < 0) else num  # noqa:E731
         self.__error_limit = parse_limit(error_limit)
@@ -213,7 +215,7 @@ class Inspector(object):
             fields = [None] * len(headers)
             if schema is not None:
                 fields = schema.fields
-            header_cells = cells.create_cells(headers, fields)
+            header_cells = cells.create_cells(headers, fields, self.__optional_fields)
 
             has_headers = (None not in headers)
             if has_headers:
@@ -244,7 +246,7 @@ class Inspector(object):
                         error, fatal_error = _compose_error_from_exception(exception)
                         errors.append(error)
                         break
-                    row_cells = cells.create_cells(headers, fields, row, row_number)
+                    row_cells = cells.create_cells(headers, fields, self.__optional_fields, row, row_number)
                     for check in body_checks:
                         if not row_cells:
                             break

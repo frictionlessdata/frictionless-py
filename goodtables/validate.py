@@ -35,6 +35,10 @@ def validate(source, **options):
         order_fields (bool): Order source columns based on schema fields order.
             This is useful when you don't want to validate that the data
             columns' order is the same as the schema's.
+        optional_fields (List[str]): List of fields defined in the schema which
+            are optional. Structural checks are still enforced for optional columns
+            (i.e. missing optional header but values still supplied, breaking
+            extra-value check). Any optional_fields not in the schema will be ignored
         error_limit (int): Stop validation if the number of errors per table
             exceeds this value.
         table_limit (int): Maximum number of tables to validate.
@@ -117,6 +121,7 @@ def _parse_arguments(source, **options):
         'infer_schema',
         'infer_fields',
         'order_fields',
+        'optional_fields',
         'error_limit',
         'table_limit',
         'row_limit',
