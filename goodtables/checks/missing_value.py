@@ -21,8 +21,11 @@ def missing_value(cells):
     for cell in copy(cells):
 
         # Skip if cell has value
-        # Skip if cell is missing value but belongs to blank header
-        if cell.get('value'):
+        # There is a difference between:
+        # - not having value at all - there is no `value` key
+        # - having a value which is falsy (None, False, '', etc)
+        # (so we don't use something like `if cell.get('value')`)
+        if 'value' in cell:
             continue
 
         # Add error

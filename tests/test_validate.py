@@ -327,9 +327,9 @@ def test_validate_infer_fields_issue_223():
 def test_validate_infer_fields_issue_225():
     source = [
         ['name1', 'name2'],
-        ['123', ''],
-        ['456', ''],
-        ['789', ''],
+        ['123', None],
+        ['456', None],
+        ['789', None],
     ]
     schema = {
         'fields': [{'name': 'name1'}]
