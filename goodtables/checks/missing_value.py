@@ -13,12 +13,19 @@ from ..error import Error
 
 @check('missing-value')
 def missing_value(cells):
+    """
+    missing-value: 	A row has less columns than the header.
+    """
     errors = []
 
     for cell in copy(cells):
 
         # Skip if cell has value
-        if cell.get('value') is not None:
+        # There is a difference between:
+        # - not having value at all - there is no `value` key
+        # - having a value which is falsy (None, False, '', etc)
+        # (so we don't use something like `if cell.get('value')`)
+        if 'value' in cell:
             continue
 
         # Add error

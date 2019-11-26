@@ -17,6 +17,7 @@ from goodtables import validate, init_datapackage
 
 def test_validate_infer_table(log):
     report = validate('data/invalid.csv')
+    # will report missing value error for cell that does not have a header
     assert report['error-count'] == 7
 
 
@@ -33,6 +34,7 @@ def test_validate_infer_datapackage_dict(log):
 
 def test_validate_infer_nested(log):
     report = validate([{'source': 'data/invalid.csv'}])
+    # will report missing value error for cell that does not have a header
     assert report['error-count'] == 7
 
 
@@ -232,8 +234,11 @@ def test_validate_empty_source():
 def test_validate_no_headers():
     report = validate('data/invalid_no_headers.csv', headers=None)
     assert report['tables'][0]['row-count'] == 3
-    assert report['tables'][0]['error-count'] == 1
-    assert report['tables'][0]['errors'][0]['code'] == 'extra-value'
+    # will report missing header since headers are none
+    assert report['tables'][0]['error-count'] == 3
+    assert report['tables'][0]['errors'][0]['code'] == 'blank-header'
+    assert report['tables'][0]['errors'][1]['code'] == 'blank-header'
+    assert report['tables'][0]['errors'][2]['code'] == 'extra-value'
 
 
 # Init datapackage
@@ -322,15 +327,40 @@ def test_validate_infer_fields_issue_223():
 def test_validate_infer_fields_issue_225():
     source = [
         ['name1', 'name2'],
-        ['123', ''],
-        ['456', ''],
-        ['789', ''],
+        ['123', None],
+        ['456', None],
+        ['789', None],
     ]
     schema = {
         'fields': [{'name': 'name1'}]
     }
     report = validate(source, schema=schema, infer_fields=True)
-    assert report['valid']
+
+
+    errors = set([error.get("code") for error in report.get("tables")[0].get("errors")])
+    assert report is not None
+    assert len(errors) is 1
+    assert {"missing-value"} == errors
+    assert ~report['valid']
+
+
+def test_fix_issue_312_inspector_should_report_table_as_invalid(log):
+    report = validate([{'source': 'data/invalid_fix_312.xlsx'}])
+    assert log(report) == [
+        (1, None, 3, 'blank-header'),
+        (1, None, 4, 'duplicate-header'),
+        (1, None, 5, 'blank-header'),
+        (1, 2, 3, 'missing-value'),
+        (1, 2, 4, 'missing-value'),
+        (1, 2, 5, 'missing-value'),
+        (1, 3, None, 'duplicate-row'),
+        (1, 4, 3, 'missing-value'),
+        (1, 4, 4, 'missing-value'),
+        (1, 4, 5, 'missing-value'),
+        (1, 5, None, 'blank-row'),
+        (1, 6, 3, 'extra-value'),
+        (1, 6, 5, 'extra-value'),
+    ]
 
 
 def test_validate_missing_local_file_raises_source_error_issue_315(log):

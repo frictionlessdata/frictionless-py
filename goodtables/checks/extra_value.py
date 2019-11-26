@@ -33,7 +33,10 @@ class ExtraValue(object):
         # well. This deals with the case of data files without headers.
         headers = [cell.get('header') for cell in cells]
         has_header = any(headers)
-        cells_without_header = filter(lambda cell: cell.get('header') is None, cells)
+        # should report extra value when cell does not have header
+        # and also has value in the cell
+        cells_without_header = filter(lambda cell: cell.get('header') is None
+                                      and cell.get('value'), cells)
         if has_header and cells_without_header:
             for cell in cells_without_header:
                 error = Error('extra-value', cell)

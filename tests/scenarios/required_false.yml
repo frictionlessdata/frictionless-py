@@ -2,3 +2,9 @@ required_false:
   source: data/required_false.csv
   schema: data/required_false_schema.json
   report: []
+  # report:
+    # - [1, 6, 2, 'missing-value']
+
+  # This is not a missing value because every row has the same dimension
+  # as the headers row has (the same amount of commas)
+  # To make it an error we need to add the `required: true` constraint
