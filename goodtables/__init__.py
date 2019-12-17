@@ -16,6 +16,12 @@ from .error import Error
 from .spec import spec
 from .exceptions import GoodtablesException
 
+# Deprecated
+
+from . import (exceptions,)
+from .cli import (init_datapackage,)
+from .inspector import (Inspector,)
+
 # Register
 
 import importlib
@@ -24,9 +30,3 @@ for module in config.PRESETS:
     importlib.import_module(module)
 for module in config.CHECKS:
     importlib.import_module(module)
-
-# Deprecated
-
-from . import (exceptions,)
-from .cli import (init_datapackage,)
-from .inspector import (Inspector,)

@@ -86,7 +86,6 @@ def validate(source, **options):
     return report
 
 
-
 def _parse_arguments(source, **options):
     # Extract settings
     validation_options = set((
