@@ -4,7 +4,6 @@ from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
-import datapackage
 from .inspector import Inspector
 
 
@@ -86,27 +85,6 @@ def validate(source, **options):
 
     return report
 
-
-def init_datapackage(resource_paths):
-    """Create tabular data package with resources.
-
-    It will also infer the tabular resources' schemas.
-
-    Args:
-        resource_paths (List[str]): Paths to the data package resources.
-
-    Returns:
-        datapackage.Package: The data package.
-    """
-    dp = datapackage.Package({
-        'name': 'change-me',
-        'schema': 'tabular-data-package',
-    })
-
-    for path in resource_paths:
-        dp.infer(path)
-
-    return dp
 
 
 def _parse_arguments(source, **options):

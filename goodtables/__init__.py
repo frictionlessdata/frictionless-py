@@ -3,24 +3,18 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import unicode_literals
+from . import config
+__version__ = config.VERSION
 
 
 # Module API
 
-from .inspector import Inspector
-from .registry import preset, check
-from .validate import validate, init_datapackage
-from .spec import spec
+from .validate import validate
+from .registry import preset
+from .registry import check
 from .error import Error
-from . import exceptions
-
-# Version
-
-import io
-import os
-__version__ = io.open(
-    os.path.join(os.path.dirname(__file__), 'VERSION'),
-    encoding='utf-8').read().strip()
+from .spec import spec
+from .exceptions import GoodtablesException
 
 # Register
 
@@ -30,3 +24,9 @@ for module in config.PRESETS:
     importlib.import_module(module)
 for module in config.CHECKS:
     importlib.import_module(module)
+
+# Deprecated
+
+from . import (exceptions,)
+from .cli import (init_datapackage,)
+from .inspector import (Inspector,)

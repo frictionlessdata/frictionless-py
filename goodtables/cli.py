@@ -5,17 +5,19 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 import click
-from click_default_group import DefaultGroup
 import goodtables
 import json as json_module
 from pprint import pformat
+from datapackage import Package
+from click_default_group import DefaultGroup
+from . import config
 click.disable_unicode_literals_warning = True
 
 
 # Module API
 
 @click.group(cls=DefaultGroup, default='validate', default_if_no_args=True)
-@click.version_option(goodtables.__version__, message='%(version)s')
+@click.version_option(config.VERSION, message='%(version)s')
 def cli():
     """Tabular files validator.
 
@@ -123,7 +125,7 @@ def init(paths, output, **kwargs):
 
     It will also infer tabular data's schemas from their contents.
     """
-    dp = goodtables.init_datapackage(paths)
+    dp = init_datapackage(paths)
 
     click.secho(
         json_module.dumps(dp.descriptor, indent=4),
@@ -169,6 +171,21 @@ def _print_report(report, output=None, json=False):
             }
             message = template.format(**substitutions)
             secho(message)
+
+
+# Internal
+
+def init_datapackage(resource_paths):
+    # "Create tabular data package with resources.
+    dp = Package({
+        'name': 'change-me',
+        'schema': 'tabular-data-package',
+    })
+
+    for path in resource_paths:
+        dp.infer(path)
+
+    return dp
 
 
 # Main program
