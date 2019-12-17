@@ -208,7 +208,7 @@ report_data2 = validate('data2.csv')
 The difference is that goodtables validates multiple tables in parallel, so
 calling using the "nested" preset should run faster.
 
-### Errors
+### Data Quality Errors
 
 Base report errors are standardized and described in
 [Data Quality Spec](https://github.com/frictionlessdata/data-quality-spec/blob/master/spec.json).
