@@ -15,7 +15,19 @@ from . import exceptions
 # Module API
 
 def preset(name):
-    """https://github.com/frictionlessdata/goodtables-py#custom-presets
+    """Register a custom preset (decorator)
+
+    # Example
+
+    ```python
+    @preset('custom-preset')
+    def custom_preset(source, **options):
+        # ...
+    ```
+
+    # Arguments
+        name (str): preset name
+
     """
     def decorator(func):
         registry.register_preset(func, name)
@@ -24,7 +36,22 @@ def preset(name):
 
 
 def check(name, type=None, context=None, position=None):
-    """https://github.com/frictionlessdata/goodtables-py#custom-checks
+    """Register a custom check (decorator)
+
+    # Example
+
+    ```python
+    @check('custom-check', type='custom', context='body')
+    def custom_check(cells):
+        # ...
+    ```
+
+    # Arguments
+        name (str): preset name
+        type (str): has to be `custom`
+        context (str): has to be `head` or `body`
+        position (str): has to be `before:<check-name>` or `after:<check-name>`
+
     """
     def decorator(func):
         registry.register_check(func, name, type, context, position)

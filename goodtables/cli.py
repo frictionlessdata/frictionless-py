@@ -5,30 +5,34 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 import click
-from click_default_group import DefaultGroup
 import goodtables
 import json as json_module
 from pprint import pformat
+from click_default_group import DefaultGroup
+from .helpers import init_datapackage
+from . import config
 click.disable_unicode_literals_warning = True
 
 
 # Module API
 
-@click.group(cls=DefaultGroup, default='validate', default_if_no_args=True)
-@click.version_option(goodtables.__version__, message='%(version)s')
+@click.group(cls=DefaultGroup, default='validate', default_if_no_args=True, help='')
+@click.version_option(config.VERSION, message='%(version)s')
 def cli():
-    """Tabular files validator.
+    """Command-line interface
 
-    There are two categories of validation checks available:
+    ```
+    Usage: cli.py [OPTIONS] COMMAND [ARGS]...
 
-    * Structural checks: ensure there are no empty rows, no blank headers, etc.
+    Options:
+      --version  Show the version and exit.
+      --help     Show this message and exit.
 
-    * Content checks: ensure the values have the correct types (e.g. string),
-      their format is valid (e.g. e-mail), and they respect some constraint
-      (e.g. age is greater than 18).
+    Commands:
+      validate*  Validate tabular files (default).
+      init       Init data package from list of files.
+    ```
 
-    \b
-    Full documentation at: <https://github.com/frictionlessdata/goodtables-py/>
     """
     pass
 
@@ -123,7 +127,7 @@ def init(paths, output, **kwargs):
 
     It will also infer tabular data's schemas from their contents.
     """
-    dp = goodtables.init_datapackage(paths)
+    dp = init_datapackage(paths)
 
     click.secho(
         json_module.dumps(dp.descriptor, indent=4),
@@ -171,7 +175,7 @@ def _print_report(report, output=None, json=False):
             secho(message)
 
 
-# Main program
+# Main
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     cli()

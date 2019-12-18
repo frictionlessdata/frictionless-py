@@ -8,6 +8,6 @@ from __future__ import unicode_literals
 # Base
 
 class GoodtablesException(Exception):
-    """https://github.com/frictionlessdata/goodtables-py#exceptions
+    """Base goodtables exception
     """
     pass

@@ -62,7 +62,7 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'goodtables = goodtables.cli:cli',
+            'goodtables = goodtables.__main__:cli',
         ]
     },
     zip_safe=False,

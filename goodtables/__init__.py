@@ -3,24 +3,29 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import unicode_literals
+from . import config
+__version__ = config.VERSION
 
 
 # Module API
 
-from .inspector import Inspector
-from .registry import preset, check
-from .validate import validate, init_datapackage
-from .spec import spec
+# TODO: somethin wrong goes on with cli here
+# The same pattern with `__main__/cli` works fine for tabulator/tableschema/datapackage
+# There we don't need to have `__name__ == "__main__":` in cli.py
+# And following line doesn't lead to a warning
+# from .cli import cli
+from .validate import validate
+from .registry import preset
+from .registry import check
 from .error import Error
-from . import exceptions
+from .spec import spec
+from .exceptions import GoodtablesException
 
-# Version
+# Deprecated
 
-import io
-import os
-__version__ = io.open(
-    os.path.join(os.path.dirname(__file__), 'VERSION'),
-    encoding='utf-8').read().strip()
+from . import (exceptions,)
+from .helpers import (init_datapackage,)
+from .inspector import (Inspector,)
 
 # Register
 

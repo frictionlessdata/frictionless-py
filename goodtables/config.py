@@ -4,9 +4,13 @@ from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
+import io
+import os
+
 
 # General
 
+VERSION = io.open(os.path.join(os.path.dirname(__file__), 'VERSION')).read().strip()
 DEFAULT_ERROR_LIMIT = 1000
 DEFAULT_TABLE_LIMIT = 10
 DEFAULT_ROW_LIMIT = 1000
