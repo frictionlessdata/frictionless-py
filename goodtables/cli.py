@@ -173,3 +173,8 @@ def _print_report(report, output=None, json=False):
             }
             message = template.format(**substitutions)
             secho(message)
+
+# Main
+
+if __name__ == "__main__":
+    cli()

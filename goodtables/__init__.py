@@ -9,7 +9,11 @@ __version__ = config.VERSION
 
 # Module API
 
-from .cli import cli
+# TODO: somethin wrong goes on with cli here
+# The same pattern with `__main__/cli` works fine for tabulator/tableschema/datapackage
+# There we don't need to have `__name__ == "__main__":` in cli.py
+# And following line doesn't lead to a warning
+# from .cli import cli
 from .validate import validate
 from .registry import preset
 from .registry import check
