@@ -9,6 +9,7 @@ __version__ = config.VERSION
 
 # Module API
 
+from .cli import cli
 from .validate import validate
 from .registry import preset
 from .registry import check
@@ -19,7 +20,7 @@ from .exceptions import GoodtablesException
 # Deprecated
 
 from . import (exceptions,)
-from .cli import (init_datapackage,)
+from .helpers import (init_datapackage,)
 from .inspector import (Inspector,)
 
 # Register

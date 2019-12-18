@@ -11,21 +11,21 @@ except ImportError:
 import json
 import datapackage
 from click.testing import CliRunner
-import goodtables.cli
+from goodtables.cli import cli, init
 
 
 # Tests
 
 def test_cli_version():
     runner = CliRunner()
-    result = runner.invoke(goodtables.cli.cli, ['--version'])
+    result = runner.invoke(cli, ['--version'])
     assert result.exit_code == 0
     assert len(result.output.split('.')) == 3
 
 
 @mock.patch('goodtables.validate', autospec=True)
 def test_cli_infer_schema_enables_infer_fields(validate_mock):
-    CliRunner().invoke(goodtables.cli.cli, ['--infer-schema', 'data.csv'])
+    CliRunner().invoke(cli, ['--infer-schema', 'data.csv'])
 
     last_call_args = validate_mock.call_args
     assert last_call_args is not None
@@ -38,7 +38,7 @@ def test_cli_accepts_multiple_sources(validate_mock):
     sources = ['data1.csv', 'data2.csv']
     expected_sources = [{'source': source} for source in sources]
 
-    CliRunner().invoke(goodtables.cli.cli, sources)
+    CliRunner().invoke(cli, sources)
 
     last_call_args = validate_mock.call_args
     assert last_call_args is not None
@@ -48,7 +48,7 @@ def test_cli_accepts_multiple_sources(validate_mock):
 def test_cli_init():
     resource_path = 'data/valid.csv'
 
-    result = CliRunner().invoke(goodtables.cli.init, [resource_path])
+    result = CliRunner().invoke(init, [resource_path])
 
     assert result.exit_code
 
@@ -63,7 +63,7 @@ def test_cli_adds_schema_to_nested_sources(validate_mock):
     sources = ['data1.csv', 'data2.csv']
     schema = 'schema.json'
 
-    CliRunner().invoke(goodtables.cli.cli, sources + ['--schema', schema])
+    CliRunner().invoke(cli, sources + ['--schema', schema])
 
     last_call_args = validate_mock.call_args
     sources = last_call_args[0][0]

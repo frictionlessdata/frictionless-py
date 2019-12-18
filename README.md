@@ -33,6 +33,7 @@ of your data (e.g. all rows have the same number of columns), and its contents
     - [Data Quality Errors](#data-quality-errors)
     - [Frequently Asked Questions](#frequently-asked-questions)
   - [API Reference](#api-reference)
+    - [`cli`](#cli)
     - [`validate`](#validate)
     - [`preset`](#preset)
     - [`check`](#check)
@@ -580,6 +581,25 @@ report = validate(source, preset='custom-preset')
 For now this documentation section is incomplete. Please see builtin presets to learn more about the dataset extraction protocol.
 
 ## API Reference
+
+### `cli`
+```python
+cli()
+```
+Command-line interface
+
+```
+Usage: cli.py [OPTIONS] COMMAND [ARGS]...
+
+Options:
+  --version  Show the version and exit.
+  --help     Show this message and exit.
+
+Commands:
+  validate*  Validate tabular files (default).
+  init       Init data package from list of files.
+```
+
 
 ### `validate`
 ```python
