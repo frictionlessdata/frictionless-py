@@ -8,7 +8,6 @@ import click
 import goodtables
 import json as json_module
 from pprint import pformat
-from datapackage import Package
 from click_default_group import DefaultGroup
 from .helpers import init_datapackage
 from . import config
