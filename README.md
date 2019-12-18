@@ -100,9 +100,7 @@ library.
 
 The output of the `validate()` method is a report dictionary. It includes
 information if the data was valid, count of errors, list of table reports, which
-individual checks failed, etc.
-
-Resulting report will be looking like this:
+individual checks failed, etc. A report will be looking like this:
 
 ```json
 {
@@ -213,7 +211,7 @@ calling using the "nested" preset should run faster.
 Base report errors are standardized and described in
 [Data Quality Spec](https://github.com/frictionlessdata/data-quality-spec/blob/master/spec.json).
 
-#### Basic errors
+#### Source errors
 
 The basic checks can't be disabled, as they deal with goodtables being able to read the files.
 
@@ -226,7 +224,7 @@ The basic checks can't be disabled, as they deal with goodtables being able to r
 | format-error | Data reading error because of incorrect format. |
 | encoding-error | Data reading error because of an encoding problem. |
 
-#### Structural errors
+#### Structure errors
 
 These checks validate that the structure of the file are valid.
 
@@ -263,7 +261,7 @@ Lastly, if the order of the fields in the data is different than in your schema,
 | minimum-length-constraint | A length of this field value should be greater or equal than schema constraint value. |
 | maximum-length-constraint | A length of this field value should be less or equal than schema constraint value. |
 
-#### Advanced errors
+#### Custom errors
 
 | check | description |
 | --- | --- |
