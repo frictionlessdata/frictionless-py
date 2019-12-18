@@ -632,25 +632,6 @@ __Arguments__
         extra arguments will be passed on to `tabulator`_, if it is
         `datapackage`, they will be passed on to the `datapackage`_
         constructor.
-- __schema (Union[str, Dict, IO])__:
-        The Table Schema for the source.
-- __headers (Union[int, List[str])__:
-        Either the row number that contains
-        the headers, or a list with them. If the row number is given, ?????
-- __scheme (str)__:
-        The scheme used to access the source (e.g. `file`,
-        `http`). This is usually inferred correctly from the source. See
-        the `tabulator`_ documentation for the list of supported schemes.
-- __format (str)__:
-        Format of the source data (`csv`, `datapackage`, ...).
-        This is usually inferred correctly from the source. See the
-        the `tabulator`_ documentation for the list of supported formats.
-- __encoding (str)__:
-        Encoding of the source.
-- __skip_rows (Union[int, List[Union[int, str]]])__:
-        Row numbers or a
-        string. Rows beginning with the string will be ignored (e.g. '#',
-        '//').
 
 __Raises__
 - `GoodtablesException`: Raised on any non-tabular error.
@@ -735,7 +716,7 @@ dict(**kwargs) -> new dictionary initialized with the name=value pairs
 ```python
 GoodtablesException(self, /, *args, **kwargs)
 ```
-https://github.com/frictionlessdata/goodtables-py#exceptions
+Base goodtables exception
 
 ## Contributing
 

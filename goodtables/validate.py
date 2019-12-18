@@ -66,31 +66,6 @@ def validate(source, **options):
             `datapackage`, they will be passed on to the `datapackage`_
             constructor.
 
-        schema (Union[str, Dict, IO]):
-            The Table Schema for the source.
-
-        headers (Union[int, List[str]):
-            Either the row number that contains
-            the headers, or a list with them. If the row number is given, ?????
-
-        scheme (str):
-            The scheme used to access the source (e.g. `file`,
-            `http`). This is usually inferred correctly from the source. See
-            the `tabulator`_ documentation for the list of supported schemes.
-
-        format (str):
-            Format of the source data (`csv`, `datapackage`, ...).
-            This is usually inferred correctly from the source. See the
-            the `tabulator`_ documentation for the list of supported formats.
-
-        encoding (str):
-            Encoding of the source.
-
-        skip_rows (Union[int, List[Union[int, str]]]):
-            Row numbers or a
-            string. Rows beginning with the string will be ignored (e.g. '#',
-            '//').
-
     # Raises
         GoodtablesException: Raised on any non-tabular error.
 
