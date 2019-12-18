@@ -30,7 +30,7 @@ of your data (e.g. all rows have the same number of columns), and its contents
     - [Report](#report)
     - [Checks](#checks)
     - [Presets](#presets)
-    - [Errors](#errors)
+    - [Data Quality Errors](#data-quality-errors)
     - [Frequently Asked Questions](#frequently-asked-questions)
   - [API Reference](#api-reference)
     - [`validate`](#validate)
@@ -589,8 +589,10 @@ validate(source, **options)
 ```
 Validates a source file and returns a report.
 
-Args:
-    source (Union[str, Dict, List[Dict], IO]): The source to be validated.
+__Arguments__
+
+- __source (Union[str, Dict, List[Dict], IO])__:
+        The source to be validated.
         It can be a local file path, URL, dict, list of dicts, or a
         file-like object. If it's a list of dicts and the `preset` is
         "nested", each of the dict key's will be used as if it was passed
@@ -598,91 +600,126 @@ Args:
 
         The file can be a CSV, XLS, JSON, and any other format supported by
         `tabulator`_.
-
-Keyword Args:
-    checks (List[str]): List of checks names to be enabled. They can be
+- __checks (List[str])__:
+        List of checks names to be enabled. They can be
         individual check names (e.g. `blank-headers`), or check types (e.g.
         `structure`).
-    skip_checks (List[str]): List of checks names to be skipped. They can
+- __skip_checks (List[str])__:
+        List of checks names to be skipped. They can
         be individual check names (e.g. `blank-headers`), or check types
         (e.g.  `structure`).
-    infer_schema (bool): Infer schema if one wasn't passed as an argument.
-    infer_fields (bool): Infer schema for columns not present in the received schema.
-    order_fields (bool): Order source columns based on schema fields order.
+- __infer_schema (bool)__:
+        Infer schema if one wasn't passed as an argument.
+- __infer_fields (bool)__:
+        Infer schema for columns not present in the received schema.
+- __order_fields (bool)__:
+        Order source columns based on schema fields order.
         This is useful when you don't want to validate that the data
         columns' order is the same as the schema's.
-    error_limit (int): Stop validation if the number of errors per table
-        exceeds this value.
-    table_limit (int): Maximum number of tables to validate.
-    row_limit (int): Maximum number of rows to validate.
-
-    preset (str): Dataset type could be `table` (default), `datapackage`,
+- __error_limit (int)__:
+        Stop validation if the number of errors per table exceeds this value.
+- __table_limit (int)__:
+        Maximum number of tables to validate.
+- __row_limit (int)__:
+        Maximum number of rows to validate.
+- __preset (str)__:
+        Dataset type could be `table` (default), `datapackage`,
         `nested` or custom. Usually, the preset can be inferred from the
         source, so you don't need to define it.
-    Any (Any): Any additional arguments not defined here will be passed on,
+- __Any (Any)__:
+        Any additional arguments not defined here will be passed on,
         depending on the chosen `preset`. If the `preset` is `table`, the
         extra arguments will be passed on to `tabulator`_, if it is
         `datapackage`, they will be passed on to the `datapackage`_
         constructor.
-
-    # Table preset
-    schema (Union[str, Dict, IO]): The Table Schema for the
-        source.
-    headers (Union[int, List[str]): Either the row number that contains
+- __schema (Union[str, Dict, IO])__:
+        The Table Schema for the source.
+- __headers (Union[int, List[str])__:
+        Either the row number that contains
         the headers, or a list with them. If the row number is given, ?????
-    scheme (str): The scheme used to access the source (e.g. `file`,
+- __scheme (str)__:
+        The scheme used to access the source (e.g. `file`,
         `http`). This is usually inferred correctly from the source. See
         the `tabulator`_ documentation for the list of supported schemes.
-    format (str): Format of the source data (`csv`, `datapackage`, ...).
+- __format (str)__:
+        Format of the source data (`csv`, `datapackage`, ...).
         This is usually inferred correctly from the source. See the
         the `tabulator`_ documentation for the list of supported formats.
-    encoding (str): Encoding of the source.
-    skip_rows (Union[int, List[Union[int, str]]]): Row numbers or a
+- __encoding (str)__:
+        Encoding of the source.
+- __skip_rows (Union[int, List[Union[int, str]]])__:
+        Row numbers or a
         string. Rows beginning with the string will be ignored (e.g. '#',
         '//').
 
-Raises:
-    GoodtablesException: Raised on any non-tabular error.
+__Raises__
+- `GoodtablesException`: Raised on any non-tabular error.
 
-Returns:
-    dict: The validation report.
+__Returns__
 
-.. _tabulator:
-    https://github.com/frictionlessdata/tabulator-py
-.. _tabulator_schemes:
-    https://github.com/frictionlessdata/tabulator-py
-.. _tabulator:
-    https://github.com/frictionlessdata/datapackage-py
+`dict`: The validation report.
+
 
 ### `preset`
 ```python
 preset(name)
 ```
-https://github.com/frictionlessdata/goodtables-py#custom-presets
+Register a custom preset (decorator)
+
+__Example__
+
+
+```python
+@preset('custom-preset')
+def custom_preset(source, **options):
+    # ...
+```
+
+__Arguments__
+- __name (str)__: preset name
+
 
 ### `check`
 ```python
 check(name, type=None, context=None, position=None)
 ```
-https://github.com/frictionlessdata/goodtables-py#custom-checks
+Register a custom check (decorator)
+
+__Example__
+
+
+```python
+@check('custom-check', type='custom', context='body')
+def custom_check(cells):
+    # ...
+```
+
+__Arguments__
+- __name (str)__: preset name
+- __type (str)__: has to be `custom`
+- __context (str)__: has to be `head` or `body`
+- __position (str)__: has to be `before:<check-name>` or `after:<check-name>`
+
 
 ### `Error`
 ```python
 Error(self, code, cell=None, row_number=None, message=None, message_substitutions=None)
 ```
-Describes a validation check error.
+Describes a validation check error
 
-Args:
-    code (str): The error code. Must be one in the spec.
-    cell (dict, optional): The cell where the error occurred.
-    row_number (int, optional): The row number where the error occurs.
-    message (str, optional The error message. Defaults to the message from
-        the Data Quality Spec.
-    message_substitutions (dict, optional Dictionary with substitutions to
-        be used when generating the error message and description.
+__Arguments__
+- __code (str)__: The error code. Must be one in the spec.
+- __cell (dict, optional)__: The cell where the error occurred.
+- __row_number (int, optional)__: The row number where the error occurs.
+- __message (str, optional)__:
+        The error message. Defaults to the message from the Data Quality Spec.
+- __message_substitutions (dict, optional)__:
+        Dictionary with substitutions to be used when
+        generating the error message and description.
 
-Raises:
-    KeyError: Raised if the error code isn't known.
+__Raises__
+- `KeyError`: Raised if the error code isn't known.
+
 
 ### `spec`
 dict() -> new empty dictionary

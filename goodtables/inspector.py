@@ -35,8 +35,6 @@ class Inspector(object):
                  error_limit=config.DEFAULT_ERROR_LIMIT,
                  table_limit=config.DEFAULT_TABLE_LIMIT,
                  row_limit=config.DEFAULT_ROW_LIMIT):
-        """https://github.com/frictionlessdata/goodtables-py#inspector
-        """
 
         # Set attributes
         self.__checks = checks
@@ -51,8 +49,6 @@ class Inspector(object):
         self.__row_limit = parse_limit(row_limit)
 
     def inspect(self, source, preset=None, **options):
-        """https://github.com/frictionlessdata/goodtables-py#inspector
-        """
 
         # Start timer
         start = datetime.datetime.now()

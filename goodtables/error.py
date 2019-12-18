@@ -10,19 +10,21 @@ from .spec import spec
 
 @functools.total_ordering
 class Error(object):
-    """Describes a validation check error.
+    """Describes a validation check error
 
-    Args:
+    # Arguments
         code (str): The error code. Must be one in the spec.
         cell (dict, optional): The cell where the error occurred.
         row_number (int, optional): The row number where the error occurs.
-        message (str, optional The error message. Defaults to the message from
-            the Data Quality Spec.
-        message_substitutions (dict, optional Dictionary with substitutions to
-            be used when generating the error message and description.
+        message (str, optional):
+            The error message. Defaults to the message from the Data Quality Spec.
+        message_substitutions (dict, optional):
+            Dictionary with substitutions to be used when
+            generating the error message and description.
 
-    Raises:
+    # Raises
         KeyError: Raised if the error code isn't known.
+
     """
 
     def __init__(
