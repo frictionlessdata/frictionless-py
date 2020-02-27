@@ -99,11 +99,14 @@ def validate(paths, json, **options):
     quiet = options.pop('quiet')
     output = options.pop('output')
 
-    sources = [{'source': path} for path in paths]
-    schema = options.pop('schema', None)
-    if schema:
-        for source in sources:
-            source['schema'] = schema
+    if options.get('preset') == 'datapackage':
+        sources = paths[0]
+    else:
+        sources = [{'source': path} for path in paths]
+        schema = options.pop('schema', None)
+        if schema:
+            for source in sources:
+                source['schema'] = schema
 
     report = goodtables.validate(sources, **options)
 
