@@ -50,7 +50,7 @@ def test_cli_init():
 
     result = CliRunner().invoke(init, [resource_path])
 
-    assert result.exit_code
+    assert result.exit_code == 0
 
     dp = datapackage.Package(json.loads(result.output), strict=True)
     resource = dp.resources[0]

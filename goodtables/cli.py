@@ -4,6 +4,8 @@ from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
+from sys import exit
+
 import click
 import goodtables
 import json as json_module
@@ -113,7 +115,7 @@ def validate(paths, json, **options):
     if not quiet:
         _print_report(report, output=output, json=json)
 
-    exit(not report['valid'])
+    exit(int(not report['valid']))
 
 
 @cli.command()
@@ -137,7 +139,7 @@ def init(paths, output, **kwargs):
         file=output
     )
 
-    exit(dp.valid)  # Just to be defensive, as it should always be valid.
+    exit(int(not dp.valid))  # Just to be defensive, as it should always be valid.
 
 
 # Internal
