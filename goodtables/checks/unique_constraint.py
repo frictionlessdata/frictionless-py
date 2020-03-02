@@ -64,8 +64,9 @@ def _create_unique_fields_cache(cells):
     cache = {}
 
     # Unique
-    for column_number, cell in enumerate(cells, start=1):
+    for _, cell in enumerate(cells, start=1):
         field = cell.get('field')
+        column_number = cell.get('column-number')
         if field is not None:
             if field.descriptor.get('primaryKey'):
                 primary_key_column_numbers.append(column_number)
