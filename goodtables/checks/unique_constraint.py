@@ -29,8 +29,8 @@ class UniqueConstraint(object):
         for column_numbers, cache in self.__unique_fields_cache.items():
             column_cells = tuple(
                 cell
-                for column_number, cell in enumerate(cells, start=1)
-                if column_number in column_numbers
+                for _, cell in enumerate(cells, start=1)
+                if cell["column-number"] in column_numbers
             )
             column_values = tuple(cell.get('value') for cell in column_cells)
             row_number = column_cells[0]['row-number']
