@@ -4,11 +4,14 @@ from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
+from collections import defaultdict
+
 from ..registry import check
 from ..error import Error
 
 
 # Module API
+
 
 @check('unique-constraint')
 class UniqueConstraint(object):
@@ -37,10 +40,20 @@ class UniqueConstraint(object):
 
             all_values_are_none = (set(column_values) == {None})
             if not all_values_are_none:
-                if column_values in cache['data']:
-                    message_substitutions = {
-                        'row_numbers': ', '.join(map(str, cache['refs'] + [row_number])),
-                    }
+                if len(cache[column_values]) > 0:
+                    if len(cache[column_values]) <= 5:
+                        message_substitutions = {
+                            "row_numbers": ", ".join(
+                                map(str, cache[column_values] + [row_number])
+                            ),
+                        }
+                    else:
+                        message_substitutions = {
+                            "row_numbers": "{rows} and {count} others".format(
+                                rows=", ".join(map(str, cache[column_values][:3] + [row_number])),
+                                count=len(cache[column_values]) - 4
+                            )
+                        }
 
                     # FIXME: The unique constraint can be related to multiple
                     # columns (e.g. a composite primary key), but here we only
@@ -51,8 +64,7 @@ class UniqueConstraint(object):
                         message_substitutions=message_substitutions
                     )
                     errors.append(error)
-                cache['data'].add(column_values)
-                cache['refs'].append(row_number)
+                cache[column_values].append(row_number)
 
         return errors
 
@@ -71,16 +83,10 @@ def _create_unique_fields_cache(cells):
             if field.descriptor.get('primaryKey'):
                 primary_key_column_numbers.append(column_number)
             if field.constraints.get('unique'):
-                cache[tuple([column_number])] = {
-                    'data': set(),
-                    'refs': [],
-                }
+                cache[tuple([column_number])] = defaultdict(list)
 
     # Primary key
     if primary_key_column_numbers:
-        cache[tuple(primary_key_column_numbers)] = {
-            'data': set(),
-            'refs': [],
-        }
+        cache[tuple(primary_key_column_numbers)] = defaultdict(list)
 
     return cache
