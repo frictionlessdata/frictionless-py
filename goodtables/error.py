@@ -109,6 +109,8 @@ class Error(object):
     def _to_dict(self):
         return {
             'code': self.code,
+            # TODO: it's a hack; reimplement using head/body context
+            'row': self.row if self.code != 'source-error' else None,
             'row-number': self.row_number,
             'column-number': self.column_number,
             'message': self.message,

@@ -54,7 +54,8 @@ class TestError(object):
             'row-number': row_number,
             'column-number': cell['column-number'],
             'message': error.message,
-            'message-data': {}
+            'message-data': {},
+            'row': None
         }
         assert dict(error) == expected_dict
 
