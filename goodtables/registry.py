@@ -99,9 +99,9 @@ class Registry(object):
         # Validate position
         if position:
             try:
-                position = position.split(':', 1)
-                assert position[0] in ['before', 'after']
-                assert self.__checks.get(position[1])
+                position_args = position.split(':', 1)
+                assert position_args[0] in ['before', 'after']
+                assert self.__checks.get(position_args[1])
             except (TypeError, AssertionError):
                 message = 'Check "%s" has been registered at invalid position "%s"'
                 raise exceptions.GoodtablesException(message % (name, position))
