@@ -23,7 +23,7 @@ def missing_header(cells, sample):
 
         # Add error
         message_substitutions = {
-            'field_name': '"{}"'.format(cell['field'].name),
+            'field_name': '"{}"'.format(cell['field'].name if cell['field'] else ''),
         }
         error = Error(
             'missing-header',
