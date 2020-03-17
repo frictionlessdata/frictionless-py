@@ -23,7 +23,7 @@ def missing_header(cells, sample):
 
         # Add error
         field_name = cell['field'].name if cell['field'] else ''
-        message_substitutions = {'field_name': '"{}"'.format(field_name) }
+        message_substitutions = {'field_name': '"{}"'.format(field_name)}
         message = 'There is a missing header in column {column_number}'
         # It's a temporary solution for
         # https://github.com/frictionlessdata/goodtables-py/issues/338
