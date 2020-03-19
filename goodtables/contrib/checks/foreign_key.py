@@ -69,8 +69,8 @@ class ForeignKey(object):
                 message = 'Foreign key "{fields}" violation in row {row_number}'
                 message_substitutions = {'fields': foreign_key['fields']}
 
-                # if not a composite foreign-key, add the cell causing the violation to improve the error details with the column-number
-                # one-liner -> error_cell = next((cell for cell in cells if cell['header'] == foreign_key['fields'][0]), None) if len(foreign_key['fields']) == 1 else None
+                # if not a composite foreign-key, add the cell causing the violation to improve the error details
+                # with the column-number
                 error_cell = None
                 if len(foreign_key['fields']) == 1:
                     for cell in cells:
