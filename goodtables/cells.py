@@ -27,6 +27,7 @@ def create_cells(headers, schema_fields, values=None, row_number=None):
 
     iterator = zip_longest(headers, schema_fields, values or [], fillvalue=fillvalue)
     for column_number, (header, field, value) in enumerate(iterator, start=1):
+        is_virtual = header == fillvalue and value == fillvalue or None
         if header == fillvalue:
             header = None
         elif is_header_row:
@@ -35,14 +36,13 @@ def create_cells(headers, schema_fields, values=None, row_number=None):
             field = None
         if value == fillvalue:
             value = None
-
-        cell = create_cell(header, value, field, column_number, row_number)
+        cell = create_cell(header, value, field, column_number, row_number, is_virtual)
         cells.append(cell)
 
     return cells
 
 
-def create_cell(header, value=None, field=None, column_number=None, row_number=None):
+def create_cell(header, value=None, field=None, column_number=None, row_number=None, is_virtual=None):
     cell = {
         'header': header,
         'field': field,
@@ -50,6 +50,7 @@ def create_cell(header, value=None, field=None, column_number=None, row_number=N
         'column-number': column_number,
         'number': column_number,  # FIXME: Remove deprecated "number"
         'row-number': row_number,
+        'is-virtual': is_virtual,
     }
     return _remove_none_values(cell)
 

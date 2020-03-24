@@ -17,7 +17,7 @@ def blank_header(cells, sample=None):
     for cell in cells:
 
         # Skip if cell have non blank header
-        if cell.get('header', False):
+        if cell.get('header', False) or cell.get('is-virtual'):
             continue
 
         # Add error

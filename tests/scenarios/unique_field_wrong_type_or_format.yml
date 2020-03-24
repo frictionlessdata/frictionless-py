@@ -1,0 +1,16 @@
+unique_field_wrong_type_or_format:
+  source:
+    - [id, unique_number]
+    - [a1, 100]
+    - [a2, not-a-number]
+    - [a3, 100]
+  schema:
+    fields:
+      - {name: id}
+      - {name: unique_number, type: number, constraints: {unique: true}}
+  checks:
+    - structure
+    - schema
+  report:
+    - [1, 3, 2, 'type-or-format-error']
+    - [1, 4, 2, 'unique-constraint']

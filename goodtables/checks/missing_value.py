@@ -25,7 +25,7 @@ def missing_value(cells):
         # - not having value at all - there is no `value` key
         # - having a value which is falsy (None, False, '', etc)
         # (so we don't use something like `if cell.get('value')`)
-        if 'value' in cell:
+        if 'value' in cell or cell.get('is-virtual'):
             continue
 
         # Add error
