@@ -370,7 +370,34 @@ def test_validate_missing_local_file_raises_source_error_issue_315(log):
     ]
 
 
-def test_validate_datapackage_with_schema_structure_only(log):
+def test_validate_datapackage_with_schema_issue_348(log):
+    DESCRIPTOR = {
+        'resources': [
+            {
+                'name': 'people',
+                'data': [
+                    ['id', 'name', 'surname'],
+                    ['p1', 'Tom', 'Hanks'],
+                    ['p2', 'Meryl', 'Streep']
+                ],
+                'schema': {
+                    'fields': [
+                        {'name': 'id', 'type': 'string'},
+                        {'name': 'name', 'type': 'string'},
+                        {'name': 'surname', 'type': 'string'},
+                        {'name': 'dob', 'type': 'date'}
+                    ]
+                }
+            }
+        ]
+    }
+    report = validate(DESCRIPTOR, checks=['structure', 'schema'])
+    assert log(report) == [
+        (1, None, 4, 'missing-header'),
+    ]
+
+
+def test_validate_datapackage_with_schema_structure_only_issue_348(log):
     DESCRIPTOR = {
         'resources': [
             {
