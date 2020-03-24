@@ -75,7 +75,7 @@ def test_foreign_key_self_referenced_resource_violation(log):
     del descriptor['resources'][0]['data'][4]
     report = validate(descriptor, checks=['foreign-key'])
     assert log(report) == [
-        (1, 4, None, 'foreign-key'),
+        (1, 4, 3, 'foreign-key'),
     ]
 
 
@@ -84,7 +84,7 @@ def test_foreign_key_internal_resource_violation(log):
     del descriptor['resources'][1]['data'][4]
     report = validate(descriptor, checks=['foreign-key'])
     assert log(report) == [
-        (1, 5, None, 'foreign-key'),
+        (1, 5, 1, 'foreign-key'),
     ]
 
 
@@ -93,10 +93,10 @@ def test_foreign_key_internal_resource_violation_non_existent(log):
     del descriptor['resources'][1]
     report = validate(descriptor, checks=['foreign-key'])
     assert log(report) == [
-        (1, 2, None, 'foreign-key'),
-        (1, 3, None, 'foreign-key'),
-        (1, 4, None, 'foreign-key'),
-        (1, 5, None, 'foreign-key'),
+        (1, 2, 1, 'foreign-key'),
+        (1, 3, 1, 'foreign-key'),
+        (1, 4, 1, 'foreign-key'),
+        (1, 5, 1, 'foreign-key'),
     ]
 
 
@@ -110,8 +110,8 @@ def test_foreign_key_external_resource_errors(log):
     descriptor = 'data/datapackages_linked_errors/cities/datapackage.json'
     report = validate(descriptor, checks=['structure', 'schema', 'foreign-key'])
     assert log(report) == [
-        (1, 4, None, 'foreign-key'),  # self-referenced
-        (1, 4, None, 'foreign-key'),  # external
+        (1, 4, 1, 'foreign-key'),  # self-referenced
+        (1, 4, 3, 'foreign-key'),  # external
     ]
 
 
@@ -140,5 +140,5 @@ def test_foreign_key_external_resource_remote_datapackage(log):
     }
     report = validate(descriptor, checks=['structure', 'schema', 'foreign-key'])
     assert log(report) == [
-        (1, 3, None, 'foreign-key'),
+        (1, 3, 1, 'foreign-key'),
     ]
