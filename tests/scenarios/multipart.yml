@@ -1,4 +1,4 @@
-datapackages:
+multipart:
   source: data/datapackages/multipart/datapackage.json
   preset: datapackage
   report:

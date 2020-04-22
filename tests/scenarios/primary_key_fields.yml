@@ -1,4 +1,4 @@
-primary_key_field:
+primary_key_fields:
   source:
     - [id, name]
     - [1, Alex']
