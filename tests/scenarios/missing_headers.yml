@@ -1,4 +1,4 @@
-primary_key_field:
+missing_headers:
   source:
     - [id, last_name, first_name, language]
     - [1, Alex, John, English]
@@ -17,4 +17,6 @@ primary_key_field:
     - structure
   order_fields: true
   report:
-    - [1, null, 5, 'missing-header']
+    - [1, null, null, 'missing-header']
+    - [1, null, 4, 'non-matching-header']
+    - [1, null, 5, 'extra-header']
