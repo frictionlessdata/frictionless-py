@@ -420,3 +420,8 @@ def test_validate_datapackage_with_schema_structure_only_issue_348(log):
     }
     report = validate(DESCRIPTOR, checks=['structure'])
     assert report['valid']
+
+
+def test_validate_geopoint_required_constraint_issue_231(log):
+    report = validate('data/datapackages/geopoint/datapackage.json')
+    assert report['valid']
