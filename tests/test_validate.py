@@ -425,3 +425,8 @@ def test_validate_datapackage_with_schema_structure_only_issue_348(log):
 def test_validate_geopoint_required_constraint_issue_231(log):
     report = validate('data/datapackages/geopoint/datapackage.json')
     assert report['valid']
+
+
+def test_validate_fails_with_wrong_encoding_issue_274(log):
+    report = validate('data/encoding-274.csv')
+    assert report['valid']
