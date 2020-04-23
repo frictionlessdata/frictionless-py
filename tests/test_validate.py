@@ -428,5 +428,5 @@ def test_validate_geopoint_required_constraint_issue_231(log):
 
 
 def test_validate_fails_with_wrong_encoding_issue_274(log):
-    report = validate('data/encoding-274.csv')
+    report = validate('data/encoding-274.csv', encoding='utf-8')
     assert report['valid']
