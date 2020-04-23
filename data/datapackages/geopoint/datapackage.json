@@ -1,0 +1,54 @@
+{
+  "profile": "tabular-data-package",
+  "resources": [
+    {
+      "profile": "tabular-data-resource",
+      "encoding": "utf-8",
+      "schema": {
+        "fields": [
+          {
+            "name": "Office",
+            "type": "string",
+            "format": "default",
+            "constraints": {
+              "required": true,
+              "unique": true
+            }
+          },
+          {
+            "name": "Location",
+            "type": "geopoint",
+            "format": "object",
+            "constraints": {
+              "required": true
+            }
+          }
+        ],
+        "missingValues": [
+          ""
+        ]
+      },
+      "format": "csv",
+      "mediatype": "text/csv",
+      "sources": [
+        {
+          "title": "",
+          "path": "",
+          "email": ""
+        }
+      ],
+      "name": "office-locations",
+      "title": "Office locations",
+      "description": "Offices locations described using geopoint object",
+      "path": "data/geopoint-object.csv"
+    }
+  ],
+  "sources": [
+    {
+      "title": "",
+      "path": "",
+      "email": ""
+    }
+  ],
+  "name": "office-locations-geopoint-object"
+}

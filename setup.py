@@ -28,7 +28,7 @@ INSTALL_REQUIRES = [
     'simpleeval>=0.9',
     'statistics>=1.0',
     'tabulator>=1.29',
-    'tableschema>=1.10',
+    'tableschema>=1.16',
     'datapackage>=1.10',
 ]
 INSTALL_FORMAT_ODS_REQUIRES = [
