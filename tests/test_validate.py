@@ -431,3 +431,16 @@ def test_validate_fails_with_wrong_encoding_issue_274(log):
     # For now, by default encoding is detected incorectly by chardet
     report = validate('data/encoding-274.csv', encoding='utf-8')
     assert report['valid']
+
+
+def test_validate_invalid_table_schema_issue_304(log):
+    source = [
+        ['name', 'age'],
+        ['Alex', '33'],
+    ]
+    schema = {'fields': [
+        {'name': 'name'},
+        {'name': 'age', 'type': 'bad'},
+    ]}
+    report = validate(source, schema=schema)
+    assert not report['valid']
