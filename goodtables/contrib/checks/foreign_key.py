@@ -5,9 +5,9 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 import json
+import datapackage
 from copy import deepcopy
 from collections import defaultdict
-from datapackage import Package
 from ...registry import check
 from ...error import Error
 
@@ -33,7 +33,7 @@ class ForeignKey(object):
         descriptor = extra['datapackage']
         if descriptor.strip().startswith('{'):
             descriptor = json.loads(descriptor)
-        self.__package = Package(descriptor)
+        self.__package = datapackage.Package(descriptor)
 
         # Prepare schema
         if not schema:
@@ -43,48 +43,67 @@ class ForeignKey(object):
         self.__schema = schema
 
         # Prepare foreign keys values
-        relations = _get_relations(
-            self.__package, self.__schema,
-            current_resource_name=extra['resource-name'])
-        self.__foreign_keys_values = _get_foreign_keys_values(
-            self.__schema, relations)
+        try:
+            self.__relations = _get_relations(
+                self.__package, self.__schema,
+                current_resource_name=extra['resource-name'])
+            self.__foreign_keys_values = _get_foreign_keys_values(
+                self.__schema, self.__relations)
+            self.__relations_exception = None
+        except _ReferenceTableError as exception:
+            self.__relations_exception = exception
 
         return True
 
     def check_row(self, cells):
         row_number = cells[0]['row-number']
-
-        # Prepare keyed_row
-        keyed_row = {}
-        for cell in cells:
-            if cell.get('field'):
-                keyed_row[cell.get('field').name] = cell.get('value')
-
-        # Resolve relations
         errors = []
-        for foreign_key in self.__schema.foreign_keys:
-            success = _resolve_relations(
-                deepcopy(keyed_row), self.__foreign_keys_values, foreign_key)
-            if success is None:
-                message = 'Foreign key "{fields}" violation in row {row_number}'
-                message_substitutions = {'fields': foreign_key['fields']}
 
-                # if not a composite foreign-key, add the cell causing the violation to improve the error details
-                # with the column-number
-                error_cell = None
-                if len(foreign_key['fields']) == 1:
-                    for cell in cells:
-                        if cell['header'] == foreign_key['fields'][0]:
-                            error_cell = cell
-                            break
+        # We DON'T have relations to validate
+        if self.__relations_exception:
 
-                errors.append(Error(
-                    self.__code,
-                    cell=error_cell,
-                    row_number=row_number,
-                    message=message,
-                    message_substitutions=message_substitutions,
-                ))
+            # Add a reference error
+            message = 'Foreign key violation caused by invalid reference table: %s'
+            errors.append(Error(
+                self.__code,
+                row_number=row_number,
+                message=message % self.__relations_exception,
+            ))
+
+        # We have relations to validate
+        else:
+
+            # Prepare keyed_row
+            keyed_row = {}
+            for cell in cells:
+                if cell.get('field'):
+                    keyed_row[cell.get('field').name] = cell.get('value')
+
+            # Resolve relations
+            for foreign_key in self.__schema.foreign_keys:
+                success = _resolve_relations(
+                    deepcopy(keyed_row), self.__foreign_keys_values, foreign_key)
+                if success is None:
+                    message = 'Foreign key "{fields}" violation in row {row_number}'
+                    message_substitutions = {'fields': foreign_key['fields']}
+
+                    # if not a composite foreign-key, add the cell causing the violation to improve the error details
+                    # with the column-number
+                    error_cell = None
+                    if len(foreign_key['fields']) == 1:
+                        for cell in cells:
+                            if cell['header'] == foreign_key['fields'][0]:
+                                error_cell = cell
+                                break
+
+                    # Add an error
+                    errors.append(Error(
+                        self.__code,
+                        cell=error_cell,
+                        row_number=row_number,
+                        message=message,
+                        message_substitutions=message_substitutions,
+                    ))
 
         return errors
 
@@ -118,13 +137,17 @@ def _get_relations(package, schema, current_resource_name=None):
             descriptor = package_name
             if not descriptor.startswith('http'):
                 descriptor = '/'.join([package.base_path, package_name])
-            package = Package(descriptor)
+            package = datapackage.Package(descriptor)
             resource = package.get_resource(resource_name)
 
         # Add to relations (can be None)
         relations[resource_name] = resource
         if resource and resource.tabular:
-            relations[resource_name] = resource.read(keyed=True)
+            try:
+                relations[resource_name] = resource.read(keyed=True)
+            # TODO: datapackage should raise `IntegrityError` here
+            except datapackage.exceptions.CastError as exception:
+                raise _ReferenceTableError('[%s] %s' % (resource_name, str(exception)))
 
     return relations
 
@@ -177,3 +200,7 @@ def _resolve_relations(keyed_row, foreign_keys_values, foreign_key):
     else:
         # empty values for all keys, return original values
         return keyed_row
+
+
+class _ReferenceTableError(Exception):
+    pass
