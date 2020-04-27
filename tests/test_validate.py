@@ -455,5 +455,7 @@ def test_validate_order_fields_issue_313(log):
         { 'name': 'Column_4', 'type': 'string' },
         { 'name': 'Column_5', 'type': 'string' }
     ]}
-    report = validate(source, schema=schema, checks=['required-constraint'], order_fields=True)
+    # For now, the "non-matching-header" check is required to order the fields
+    checks = ['non-matching-header', 'required-constraint']
+    report = validate(source, schema=schema, checks=checks, order_fields=True)
     assert report['valid']
