@@ -4,6 +4,7 @@ from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
+import six
 import json
 from ..registry import check
 from ..error import Error
@@ -24,9 +25,9 @@ class DuplicateRow(object):
 
         # Get pointer
         try:
-            values = list(str(cell.get('value')) for cell in cells)
+            values = list(six.text_type(cell.get('value')) for cell in cells)
             # https://github.com/frictionlessdata/goodtables-py/issues/329
-            pointer = hash(json.dumps(list(str(len(value)) + value for value in values)))
+            pointer = hash(json.dumps(list(six.text_type(len(value)) + value for value in values)))
             references = self.__row_index.setdefault(pointer, [])
         except TypeError:
             pointer = None
