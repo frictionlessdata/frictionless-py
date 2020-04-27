@@ -172,9 +172,9 @@ class Inspector(object):
             if schema is None:
                 checks = _filter_checks(checks, type='schema', inverse=True)
         except Exception as exception:
-            if _local_file_not_found(source):
-                message = "No such file or directory: '%s'" % source
-                exception = tabulator.exceptions.IOError(message)
+            #  if _local_file_not_found(source):
+                #  message = "No such file or directory: '%s'" % source
+                #  exception = tabulator.exceptions.IOError(message)
             error, fatal_error = _compose_error_from_exception(exception)
             errors.append(error)
 
@@ -307,11 +307,6 @@ def _filter_checks(checks, type=None, context=None, inverse=False):
             continue
         result.append(check)
     return result
-
-
-def _local_file_not_found(source):
-    return urlparse(source).scheme == '' \
-           and not os.path.isfile(source)
 
 
 def _compose_error_from_exception(exception):
