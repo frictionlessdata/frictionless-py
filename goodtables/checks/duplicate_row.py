@@ -24,7 +24,7 @@ class DuplicateRow(object):
 
         # Get pointer
         try:
-            values = list(cell.get('value') for cell in cells)
+            values = list(str(cell.get('value')) for cell in cells)
             # https://github.com/frictionlessdata/goodtables-py/issues/329
             pointer = hash(json.dumps(list(str(len(value)) + value for value in values)))
             references = self.__row_index.setdefault(pointer, [])
