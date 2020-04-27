@@ -459,3 +459,10 @@ def test_validate_order_fields_issue_313(log):
     checks = ['non-matching-header', 'required-constraint']
     report = validate(source, schema=schema, checks=checks, order_fields=True)
     assert report['valid']
+
+
+def test_validate_number_test_issue_232(log):
+    # We check here that it doesn't raise exceptions
+    source = 'data/number_test/datapackage.json'
+    report = validate(source)
+    assert not report['valid']
