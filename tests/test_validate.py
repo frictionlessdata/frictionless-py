@@ -537,3 +537,12 @@ def test_validate_fk_invalid_reference_table_issue_347(log):
     assert report['tables'][1]['error-count'] == 6
     assert report['tables'][1]['errors'][0]['code'] == 'foreign-key'
     assert report['tables'][1]['errors'][0]['message'] == 'Foreign key violation caused by invalid reference table: [people] Row length 3 doesn\'t match fields count 4 for row "2"'
+
+
+def test_validate_wide_table_with_order_fields_issue_277(log):
+    report = validate('data/issue277.csv', schema='data/issue277.json', order_fields=True)
+    assert log(report) == [
+        (1, 49, 50, 'required-constraint'),
+        (1, 68, 50, 'required-constraint'),
+        (1, 69, 50, 'required-constraint'),
+    ]
