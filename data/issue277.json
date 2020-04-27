@@ -1,0 +1,455 @@
+{
+"tablename":"filldeposit",
+"csv":"FillDeposit.csv",
+"status":"draft",
+"work to be done":"The geometry fields are not useful as they are now.  Programming is needed to process the csv file before database load - the processing would create new geometry fields that are Well Known Text representations of each unique set of points (opening, closing, other).  Also need to add foreign key for contextmaster.  Also need to fix code to handle fact that Pottery Interpretation and Micromorphology works in 2017 but not 2016 as that field is not in 2016 files.",
+"fields":[
+            {
+                "name":"Source",
+                "title":"Trench",
+                "type":"string",
+                "description":"The name of the trench from which this sample was taken.",
+                "constraints": {
+                    "required":true
+                    }
+            },
+            {
+                "name":"Type",
+                "title":"Type",
+                "type":"string",
+                "description":"The type of context",
+                "constraints": {
+                    "required":true
+                    }
+            },
+            {
+                "name":"Sub-Type",
+                "title":"SubType",
+                "type":"string",
+                "description":"The sub-type of context",
+                "constraints": {
+                    "enum":["Fill","Deposit","Grave fill"]
+                }
+            },
+            {
+                "name":"Identifier",
+                "title":"ContextID",
+                "type":"string",
+                "description":"The short ID for the context.",
+                "constraints": {
+                    "required":true,
+                    "unique":true
+                    }   
+            },
+            {
+                "name":"Title",
+                "title":"Title",
+                "type":"string",
+                "description":"A short title for the context."
+            },
+            {
+                "name":"DateEarliest",
+                "title":"DateEarliest",
+                "type":"datetime",
+                "description":"A datetime stamp set when the context record was opened."
+            },
+            {
+                "name":"DateLatest",
+                "title":"DateLatest",
+                "type":"datetime",
+                "description":"A datetime stamp set when the context record was closed."
+            },
+            {
+                "name":"Creator",
+                "title":"Creator",
+                "type":"string",
+                "description":"Initials of staff person who created this record."
+            },   
+            {
+                "name":"MethodConditions",
+                "title":"MethodConditions",
+                "type":"string",
+                "description":"Method of excavation; conditions during excavation."
+            },
+            {
+                "name":"SoilChemistry",
+                "title":"SoilChemistry",
+                "type": "string",
+                "description":"Was a soil chemistry sample taken?"
+            },
+            {
+                "name":"SlopeDescOpen",
+                "title":"SlopeDescOpen",
+                "type": "string",
+                "description":"Context slope at open."
+            },
+            {
+                "name":"SlopeDescClose",
+                "title":"SlopeDescClose",
+                "type": "string",
+                "description":"Context slope at close."
+            },
+            {
+                "name":"ColourModifier",
+                "title":"ColourModifier",
+                "type": "string",
+                "description":"Term modifying color."
+            }, 
+            {
+                "name":"ColourHue",
+                "title":"ColourHue",
+                "type": "string",
+                "description":"Hue of color."
+            },
+            {
+                "name":"ColourMain",
+                "title":"ColourMain",
+                "type": "string",
+                "description":"Main color."
+            }, 
+            {
+                "name":"ColourMixed",
+                "title":"ColourMixed",
+                "type": "string",
+                "description":"Yes or No, is color mixed"
+            }, 
+            {
+                "name":"SoilComposition",
+                "title":"SoilComposition",
+                "type": "string",
+                "description":"Describing soil composition, e.g. sandy-silt."
+            }, 
+            {
+                "name":"CompositionMixed",
+                "title":"CompositionMixed",
+                "type": "string",
+                "description":"Yes or No, is the soil composition mixed."
+            }, 
+            {
+                "name":"SoilCompaction",
+                "title":"SoilCompaction",
+                "type": "string",
+                "description":"Degree of soil compaction."
+            },
+            {
+                "name":"InclStoneBuilding",
+                "title":"InclStoneBuilding",
+                "type":"string",
+                "description":"An estimate of percent of context that is building stone."
+            },
+            {
+                "name":"InclStoneUnworked",
+                "title":"InclStoneUnworked",
+                "type":"string",
+                "description":"An estimate of percent of context that is unworked stone."
+            },
+            {
+                "name":"InclPlasterMortar",
+                "title":"InclPlasterMortar",
+                "type":"string",
+                "description":"An estimate of percent of context that is plaster or mortar."
+            },
+            {
+                "name":"InclMudbrick",
+                "title":"InclMudbrick",
+                "type":"string",
+                "description":"An estimate of percent of context that is mudbrick."
+            },
+            {
+                "name":"InclTile",
+                "title":"InclTile",
+                "type":"string",
+                "description":"An estimate of percent of context that is tile."
+            },
+            {
+                "name":"InclPotteryCeramic",
+                "title":"InclPotteryCeramic",
+                "type":"string",
+                "description":"An estimate of percent of context that is ceramics."
+            },
+            {
+                "name":"InclObsidian",
+                "title":"InclObsidian",
+                "type":"string",
+                "description":"An estimate of percent of context that is obsidian."
+            },
+            {
+                "name":"InclShell",
+                "title":"InclShell",
+                "type":"string",
+                "description":"An estimate of percent of context that is shell."
+            },
+            {
+                "name":"InclBone",
+                "title":"InclBone",
+                "type":"string",
+                "description":"An estimate of percent of context that is non-human bone."
+            },
+            {
+                "name":"InclCarbonCharcoalAsh",
+                "title":"InclCarbonCharcoalAsh",
+                "type":"string",
+                "description":"An estimate of percent of context that is charcoal and ash."
+            },
+            {
+                "name":"InclOther",
+                "title":"InclOther",
+                "type":"string",
+                "description":"An estimate of percent of context that is something other than defined types."
+            },
+            {
+                "name":"InclOtherDefine",
+                "title":"InclOtherDefine",
+                "type":"string",
+                "description":"A description of what is recorded in field InclOther."
+            },
+            {
+                "name":"InclOverall",
+                "title":"InclOverall",
+                "type":"string",
+                "description":"An estimate of the total volume of inclusion as percentages."
+            },
+            {
+                "name":"InclSorting",
+                "title":"InclSorting",
+                "type":"string",
+                "description":"The degree the inclusions are sorted."
+            },
+            {
+                "name":"InclSizeStoneBuilding",
+                "title":"InclSizeStoneBuilding",
+                "type":"string",
+                "description":"The size of building stones."
+            },
+            {
+                "name":"InclSizeStoneUnworked",
+                "title":"InclSizeStoneUnworked",
+                "type":"string",
+                "description":"The size of wunworked stones."
+            },
+            {
+                "name":"InclSizeCeramics",
+                "title":"InclSizeCeramics",
+                "type":"string",
+                "description":"The size of ceramics."
+            },
+            {
+                "name":"InclSizeShell",
+                "title":"InclSizeShell",
+                "type":"string",
+                "description":"The size of shells."
+            },
+            {
+                "name":"InclSizeBone",
+                "title":"InclSizeBone",
+                "type":"string",
+                "description":"The size of bone."
+            },
+            {
+                "name":"InclSizeCarbonCharcoalAsh",
+                "title":"InclSizeCarbonCharcoalAsh",
+                "type":"string",
+                "description":"The size of carbon pieces."
+            },
+            {
+                "name":"ShapePlan",
+                "title":"ShapePlan",
+                "type":"string",
+                "description":"A description of the approximate shape of the context."
+            },
+            {
+                "name":"ContextualDifferentiation",
+                "title":"ContextualDifferentiation",
+                "type":"string",
+                "description":"How this context differs from the surrounding contexts."
+            },
+            {
+                "name":"ContextBoundaries",
+                "title":"ContextBoundaries",
+                "type":"string",
+                "description":"Defining how sharp is the transition between this context and the surrounding contexts."
+            },
+            {
+                "name":"EqualContexts",
+                "title":"EqualContexts",
+                "type":"string",
+                "description":"Indicating other contexts that appear very similar."
+            },
+            {
+                "name":"Contamination",
+                "title":"Contamination",
+                "type":"string",
+                "description":"Indicating if there is any form of contamination of the context."
+            },
+            {
+                "name":"Description",
+                "title":"ExcavationNote",
+                "type":"string",
+                "description":"The context and any specific conditions as described by the trench supervisor."
+            },
+            {
+                "name":"CoverageAltitude",
+                "title":"ContextAltitude",
+                "type":"string",
+                "description":"A calculated value representing the highest and lowest recorded depths of the context (relative to total station master grid)."
+            },
+            {
+                "name":"CoverageArea",
+                "title":"ConverageArea",
+                "type":"string",
+                "description":"An area calculation derived from all the points taken for the context."
+            },
+            {
+                "name":"CoverageEnvelopeXYZ",
+                "title":"CoverageEnvelopeXYZ",
+                "type":"string",
+                "description":"A 2D bounding box of the unionized polygon in the local XYZ grid (xmin, xmax, ymin, ymax)."
+            },
+            {
+                "name":"CoverageEnvelopeGEO",
+                "title":"CoverageEnbelopeGeo",
+                "type":"string",
+                "description":"A 2D bounding box of the unionized polygon expressed in universal coordinate system (xmin, xmax, ymin, ymax) as specified in Preferences.JSON"
+            },
+            {
+                "name":"CoverageXYZ",
+                "title":"CoverageXYZ",
+                "type":"string",
+                "description":"A Well Known Text formatted description of all the points taken in the local grid system.  Warning: this does not actually differentiate consistently between opening and closing perimeters or levels.  Needs work.",
+                "constraints": {
+                    "required":true
+                    }
+            },
+            {
+                "name":"CoverageGEO",
+                "title":"CoverageGeo",
+                "type":"string",
+                "description":"A Well Known Text formatted description of all points take re-expressed from local grid to universal grid.  Warning:  this does not differentiate consistently between opening and closing levels and perimeters.  Needs work."
+            },
+            {
+                "name":"CoveragePosition",
+                "title":"CoverageCentroid",
+                "type":"string",
+                "description":"The centroid of the unionized polygon using all points (not just open or close points) expressed in the local grid.  Warning: This should be converted to a WKT field prior to database load."
+            },            
+            {
+                "name":"DateModified",
+                "title":"DateModified",
+                "type":"datetime",
+                "description":"A datetime stamp for when record was last modified."
+            },
+            {
+                "name":"DateTimeZone",
+                "title":"DateTimeZone",
+                "type":"string",
+                "description":"Names the time zone in which the record was created (and/or nodified??)."
+            },
+            {
+                "name":"IdentifierUUID",
+                "title":"IdentifierUUID",
+                "type":"string",
+                "description":"A globally unique identifier.",
+                "constraints": {
+                    "required": true,
+                    "unique": true
+                    }
+            },
+            {
+                "name":"RelationIncludes",
+                "title":"RelationIncludes",
+                "type":"string",
+                "description":"In iDig a context can include another or multiple other things (e.g. photographs)"
+            },
+            {
+                "name":"RelationIncludesUUID",
+                "title":"RelationIncludesUUID",
+                "type":"string",
+                "description":"The globablly unique identifier(s) of the item(s) included in this context record."
+            },
+            {
+                "name":"RelationIsAbove",
+                "title":"RelationIsAbove",
+                "type":"string",
+                "description":"Indicates that this context is above the contexts listed here."
+            },
+            {
+                "name":"RelationIsAboveUUID",
+                "title":"RelationIsAboveUUID",
+                "type":"string",
+                "description":"The globablly unique identifier(s) of the contexts below this context."
+            },
+            {
+                "name":"RelationIsAfter",
+                "title":"RelationIsAfter",
+                "type":"string",
+                "description":"Indicates this context comes later in time then the listed contexts."
+            },
+            {
+                "name":"RelationIsAfterUUID",
+                "title":"RelationIsAfterUUID",
+                "type":"string",
+                "description":"The globablly unique identifier(s) of the item(s) after which this context comes."
+            },
+            {
+                "name":"RelationIsBefore",
+                "title":"RelationIsBefore",
+                "type":"string",
+                "description":"Indicates this context comes earlier in time then the listed contexts."
+            },
+            {
+                "name":"RelationIsBeforeUUID",
+                "title":"RelationIsBeforeUUID",
+                "type":"string",
+                "description":"The globablly unique identifier(s) of the item(s) before which this context comes."
+            },
+            {
+                "name":"RelationIsBelow",
+                "title":"RelationIsBelow",
+                "type":"string",
+                "description":"Indicates that this context is below the contexts listed here."
+            },
+            {
+                "name":"RelationIsBelowUUID",
+                "title":"RelationIsBelowUUID",
+                "type":"string",
+                "description":"The globablly unique identifier(s) of the contexts above this context."
+            },
+            {
+                "name":"RelationIsCoevalWith",
+                "title":"RelationIsCoevalWith",
+                "type":"string",
+                "description":"Indicates that this context is the contemporaneous to the contexts listed here.  Keros used this field to mean *the same as*."
+            },
+            {
+                "name":"RelationIsCoevalWithUUID",
+                "title":"RelationIsCoevalWithUUID",
+                "type":"string",
+                "description":"The globablly unique identifier(s) of the contexts that are contemporaneous to this context."
+            },
+            {
+                "name":"RelationIsCutBy",
+                "title":"RelationIsCutBy",
+                "type":"string",
+                "description":"Indicates that this context is cut by another context."
+            },
+            {
+                "name":"RelationIsCutByUUID",
+                "title":"RelationIsCutByUUID",
+                "type":"string",
+                "description":"The globablly unique identifier(s) of the contexts that cut this context."
+            },
+            {
+                "name":"RelationIsNextTo",
+                "title":"RelationIsNextTo",
+                "type":"string",
+                "description":"Indicates this context is directly abutting then the listed contexts."
+            },
+            {
+                "name":"RelationIsNextToUUID",
+                "title":"RelationIsNextToUUID",
+                "type":"string",
+                "description":"The globablly unique identifier(s) of the item(s) directly abutting this context."
+            }
+        ],
+"missingValues":[""]
+}
