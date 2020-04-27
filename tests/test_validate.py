@@ -5,6 +5,7 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 import sys
+import six
 import json
 import pytest
 from pprint import pprint
@@ -476,6 +477,7 @@ def test_validate_inline_not_a_binary_issue_349(log):
         assert error['message'] == 'Only byte streams are supported.'
 
 
+@pytest.mark.skipif(six.PY2, reason='only python3')
 def test_validate_inline_no_format_issue_349(log):
     with open('data/valid.csv', 'rb') as source:
         report = validate(source)
