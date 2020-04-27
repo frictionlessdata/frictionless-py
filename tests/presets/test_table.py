@@ -20,6 +20,7 @@ def test_validate_table_invalid(log):
     report = validate('data/invalid.csv', infer_schema=True)
     assert log(report) == [
         (1, None, 3, 'blank-header'),
+        (1, None, 3, 'non-matching-header'),
         (1, None, 4, 'duplicate-header'),
         (1, 2, 3, 'missing-value'),
         (1, 2, 4, 'missing-value'),
@@ -41,6 +42,7 @@ def test_validate_table_invalid_row_limit(log):
     report = validate('data/invalid.csv', row_limit=2, infer_schema=True)
     assert log(report) == [
         (1, None, 3, 'blank-header'),
+        (1, None, 3, 'non-matching-header'),
         (1, None, 4, 'duplicate-header'),
         (1, 2, 3, 'missing-value'),
         (1, 2, 4, 'missing-value'),

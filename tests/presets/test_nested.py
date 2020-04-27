@@ -21,6 +21,7 @@ def test_validate_tables_invalid(log):
     ], preset='nested', infer_schema=True)
     assert log(report) == [
         (2, None, 3, 'blank-header'),
+        (2, None, 3, 'non-matching-header'),
         (2, None, 4, 'duplicate-header'),
         (2, 2, 3, 'missing-value'),
         (2, 2, 4, 'missing-value'),
