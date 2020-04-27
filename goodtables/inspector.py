@@ -4,7 +4,6 @@ from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
-import os
 import six
 import datetime
 import operator
@@ -13,7 +12,6 @@ import tableschema
 from . import cells
 from copy import copy
 from multiprocessing.pool import ThreadPool
-from six.moves.urllib.parse import urlparse
 from .registry import registry
 from .error import Error
 from . import exceptions
@@ -172,9 +170,6 @@ class Inspector(object):
             if schema is None:
                 checks = _filter_checks(checks, type='schema', inverse=True)
         except Exception as exception:
-            #  if _local_file_not_found(source):
-                #  message = "No such file or directory: '%s'" % source
-                #  exception = tabulator.exceptions.IOError(message)
             error, fatal_error = _compose_error_from_exception(exception)
             errors.append(error)
 
