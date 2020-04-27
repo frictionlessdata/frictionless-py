@@ -5,6 +5,7 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 import sys
+import six
 import json
 import pytest
 from pprint import pprint
@@ -466,3 +467,20 @@ def test_validate_number_test_issue_232(log):
     source = 'data/number_test/datapackage.json'
     report = validate(source)
     assert not report['valid']
+
+
+def test_validate_inline_not_a_binary_issue_349(log):
+    with open('data/valid.csv') as source:
+        report = validate(source)
+        error = report['tables'][0]['errors'][0]
+        assert error['code'] == 'source-error'
+        assert error['message'] == 'Only byte streams are supported.'
+
+
+@pytest.mark.skipif(six.PY2, reason='only python3')
+def test_validate_inline_no_format_issue_349(log):
+    with open('data/valid.csv', 'rb') as source:
+        report = validate(source)
+        error = report['tables'][0]['errors'][0]
+        assert error['code'] == 'format-error'
+        assert error['message'] == 'Format "None" is not supported'
