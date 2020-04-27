@@ -444,3 +444,16 @@ def test_validate_invalid_table_schema_issue_304(log):
     ]}
     report = validate(source, schema=schema)
     assert not report['valid']
+
+
+def test_validate_order_fields_issue_313(log):
+    source = 'data/order_fields_313.xlsx'
+    schema = {'fields': [
+        { 'name': 'Column_1', 'type': 'string', },
+        { 'name': 'Column_2', 'type': 'string', 'constraints': { 'required': True } },
+        { 'name': 'Column_3', 'type': 'string' },
+        { 'name': 'Column_4', 'type': 'string' },
+        { 'name': 'Column_5', 'type': 'string' }
+    ]}
+    report = validate(source, schema=schema, checks=['required-constraint'], order_fields=True)
+    assert report['valid']
