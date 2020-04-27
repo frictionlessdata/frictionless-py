@@ -484,3 +484,56 @@ def test_validate_inline_no_format_issue_349(log):
         error = report['tables'][0]['errors'][0]
         assert error['code'] == 'format-error'
         assert error['message'] == 'Format "None" is not supported'
+
+
+def test_validate_fk_invalid_reference_table_issue_347(log):
+    descriptor = {
+        'resources': [
+            {
+                'name': 'people',
+                'data': [
+                    ['id', 'name', 'surname'],
+                    ['p1', 'Tom', 'Hanks'],
+                    ['p2', 'Meryl', 'Streep']
+                ],
+                'schema': {
+                    'fields': [
+                        {'name': 'id', 'type': 'string'},
+                        {'name': 'name', 'type': 'string'},
+                        {'name': 'surname', 'type': 'string'},
+                        {'name': 'dob', 'type': 'date'}
+                    ]
+                }
+            },
+            {
+                'name': 'oscars',
+                'data': [
+                    ['person_id', 'category', 'year', 'work'],
+                    ['p1', 'Best Actor', 1994, 'Philadelphia'],
+                    ['p1', 'Best Actor', 1995, 'Forrest Gump'],
+                    ['p2', 'Best Supporting Actress', 1980, 'Kramer vs. Kramer'],
+                    ['p2', 'Best Actress', 1982, 'Sophie"s Choice'],
+                    ['p2', 'Best Actress', 2012, 'The Iron Lady'],
+                    ['p3', 'Best Actor', 2019, 'Joker']
+                ],
+                'schema': {
+                    'fields': [
+                        {'name': 'person_id', 'type': 'string'},
+                        {'name': 'category', 'type': 'string'},
+                        {'name': 'year', 'type': 'year'},
+                        {'name': 'work', 'type': 'string'},
+                    ],
+                    'foreignKeys': [
+                        {
+                            'fields': 'person_id',
+                            'reference': {'resource': 'people', 'fields': 'id'}
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+    report = validate(descriptor, checks=['structure', 'schema', 'foreign-key'])
+    assert report['tables'][1]['error-count'] == 6
+    assert report['tables'][1]['errors'][0]['code'] == 'foreign-key'
+    assert report['tables'][1]['errors'][0]['message'] == 'Foreign key violation caused by invalid reference table: [people] Row length 3 doesn\'t match fields count 4 for row "2"'
