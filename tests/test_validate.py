@@ -156,7 +156,7 @@ def test_source_pathlib_path_datapackage():
 def test_validate_catch_all_open_exceptions(log):
     report = validate('data/latin1.csv', encoding='utf-8')
     assert log(report) == [
-        (1, None, None, 'source-error'),
+        (1, None, None, 'encoding-error'),
     ]
 
 
