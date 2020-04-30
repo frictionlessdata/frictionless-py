@@ -548,7 +548,13 @@ def custom_check(cells):
 report = validate('data.csv', checks=['custom-check'])
 ```
 
-For now this documentation section is incomplete. Please see builtin checks to learn more about checking protocol.
+Recommended steps:
+- let's discuss in comment proposed checks first
+- select name for a new check like `possible-noise-text`
+- copy https://github.com/frictionlessdata/goodtables-py/blob/master/goodtables/contrib/checks/blacklisted_value.py to new check module
+- add new check module to configuration - https://github.com/frictionlessdata/goodtables-py/blob/master/goodtables/config.py
+- write actual code for the new check
+- write tests and readme for the new check
 
 #### How can I add support for a new tabular file type?
 
