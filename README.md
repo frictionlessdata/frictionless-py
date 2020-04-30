@@ -47,9 +47,9 @@ of your data (e.g. all rows have the same number of columns), and its contents
 
 ## Getting Started
 
-### Installing
+> For faster goodtables-combatible Pandas dataframes validation take a look at https://github.com/ezwelty/goodtables-pandas-py
 
-> If you have a building error on MacOS please try following this solution - https://github.com/google/jsonnet/issues/573#issuecomment-433201074
+### Installing
 
 ```
 pip install goodtables
