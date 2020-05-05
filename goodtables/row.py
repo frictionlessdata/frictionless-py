@@ -3,7 +3,7 @@ from collections import OrderedDict
 
 
 class Row(OrderedDict):
-    def __init__(self, cells, *, column_names, line_number, row_number):
+    def __init__(self, cells, *, field_names, line_number, row_number):
 
         # Set params
         self.__line_number = line_number
@@ -14,34 +14,34 @@ class Row(OrderedDict):
 
         # Set contents
         fillvalue = '__fillvalue__'
-        iterator = zip_longest(column_names, cells, fillvalue=fillvalue)
-        for columnNumber, [columnName, cell] in enumerate(iterator, start=1):
-            if columnName == fillvalue:
-                columnName = 'column%s' % columnNumber
+        iterator = zip_longest(field_names, cells, fillvalue=fillvalue)
+        for fieldNumber, [fieldName, cell] in enumerate(iterator, start=1):
+            if fieldName == fillvalue:
+                fieldName = 'field%s' % fieldNumber
             if cell == fillvalue:
                 break
-            self[columnName] = cell
+            self[fieldName] = cell
         self.__ready = True
 
-    def __setitem__(self, column_name, cell):
+    def __setitem__(self, field_name, cell):
         if self.__ready:
-            if column_name not in self:
-                message = 'Shape of row is immutable; cannot create cell for column "%s"'
-                raise KeyError(message % column_name)
-            if cell is None and self[column_name] is not None:
-                self.__deletions[column_name] = self[column_name]
-        super().__setitem__(column_name, cell)
+            if field_name not in self:
+                message = 'Shape of row is immutable; cannot create cell for field "%s"'
+                raise KeyError(message % field_name)
+            if cell is None and self[field_name] is not None:
+                self.__deletions[field_name] = self[field_name]
+        super().__setitem__(field_name, cell)
 
-    def __delitem__(self, column_name):
-        message = 'Shape of row is immutable; cannot remove cell for column "%s"'
-        raise KeyError(message % column_name)
+    def __delitem__(self, field_name):
+        message = 'Shape of row is immutable; cannot remove cell for field "%s"'
+        raise KeyError(message % field_name)
 
     @property
     def cells(self):
         return list(self.values())
 
     @property
-    def column_names(self):
+    def field_names(self):
         return list(self.keys())
 
     @property
