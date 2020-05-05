@@ -1,4 +1,4 @@
-.PHONY: all install list readme release templates test version
+.PHONY: all list install format lint readme release templates test version
 
 
 PACKAGE := $(shell grep '^PACKAGE =' setup.py | cut -d "'" -f2)
@@ -12,15 +12,15 @@ list:
 	@grep '^\.PHONY' Makefile | cut -d' ' -f2- | tr ' ' '\n'
 
 install:
-	# pip install --upgrade -e .[develop,ods]
-	test -f '.git/hooks/pre-commit' || cp .pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
+	pip install --upgrade -e .[develop,ods]
+	test -f '.git/hooks/pre-commit' || cp .gitverify .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
+
+format:
+	black $(PACKAGE) tests --skip-string-normalization --line-length 90
 
 lint:
 	black $(PACKAGE) tests --skip-string-normalization --line-length 90 --check
 	pylama $(PACKAGE)
-
-format:
-	black $(PACKAGE) tests --skip-string-normalization --line-length 90
 
 readme:
 	pip install md-toc
