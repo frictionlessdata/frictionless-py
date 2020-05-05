@@ -6,7 +6,7 @@ from goodtables import Row
 
 def create_row(cells, *, column_names=[], line_number=1, row_number=1):
     return Row(
-        cells, line_number=line_number, row_number=row_number, column_names=column_names,
+        cells, column_names=column_names, line_number=line_number, row_number=row_number,
     )
 
 
@@ -19,4 +19,6 @@ def test_basic():
     assert row.line_number == 1
     assert row.row_number == 1
     assert row.column_names == ['column1', 'column2', 'column3']
+    assert row.deletions == {}
+    assert row.errors == []
     assert row == {'column1': 1, 'column2': 2, 'column3': 3}

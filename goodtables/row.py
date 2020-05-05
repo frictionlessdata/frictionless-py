@@ -8,10 +8,11 @@ class Row(OrderedDict):
         # Set params
         self.__line_number = line_number
         self.__row_number = row_number
+        self.__deletions = {}
         self.__errors = []
+        self.__ready = False
 
-        # Fill the dict
-        super().__init__()
+        # Set contents
         fillvalue = '__fillvalue__'
         iterator = zip_longest(column_names, cells, fillvalue=fillvalue)
         for columnNumber, [columnName, cell] in enumerate(iterator, start=1):
@@ -20,6 +21,15 @@ class Row(OrderedDict):
             if cell == fillvalue:
                 break
             self[columnName] = cell
+        self.__ready = True
+
+    def __setitem__(self, column_name, cell):
+        if self.__ready:
+            if column_name not in self:
+                raise KeyError(column_name)
+            if cell is None and self[column_name] is not None:
+                self.__deletions[column_name] = self[column_name]
+        super().__setitem__(column_name, cell)
 
     @property
     def cells(self):
@@ -36,6 +46,10 @@ class Row(OrderedDict):
     @property
     def row_number(self):
         return self.__row_number
+
+    @property
+    def deletions(self):
+        return self.__deletions
 
     @property
     def errors(self):
