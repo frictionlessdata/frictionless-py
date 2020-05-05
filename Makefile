@@ -21,6 +21,7 @@ format:
 lint:
 	black $(PACKAGE) tests --skip-string-normalization --line-length 90 --check
 	pylama $(PACKAGE)
+	mypy $(PACKAGE)
 
 readme:
 	pip install md-toc

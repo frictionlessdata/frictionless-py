@@ -31,11 +31,8 @@ INSTALL_REQUIRES = [
     'tableschema>=1.16.4',
     'datapackage>=1.10',
 ]
-INSTALL_FORMAT_ODS_REQUIRES = [
-    'ezodf>=0.3',
-    'lxml>=3.0',
-]
 TESTS_REQUIRE = [
+    'mypy',
     'black',
     'pylama',
     'pytest',
@@ -57,7 +54,6 @@ setup(
     tests_require=TESTS_REQUIRE,
     extras_require={
         'develop': TESTS_REQUIRE,
-        'ods': INSTALL_FORMAT_ODS_REQUIRES,
     },
     entry_points={
         'console_scripts': [
