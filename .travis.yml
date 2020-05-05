@@ -1,25 +1,19 @@
+os:
+  linux
+
 dist:
   xenial
-
-sudo:
-  false
 
 language:
   python
 
 python:
-  - 2.7
   - 3.6
   - 3.7
   - 3.8
 
-env:
-  global:
-    - TOXENV="py${PYTHON_VERSION//./}"
-
 install:
   - make install
-  - pip install coveralls
 
 script:
   - make test
@@ -33,10 +27,10 @@ jobs:
       if: tag IS present
       python: 3.8
       deploy:
+        edge: true
         provider: pypi
         user: roll
         distributions: sdist bdist_wheel
-        skip_cleanup: true
         on:
           tags: true
         password:

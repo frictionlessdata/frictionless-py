@@ -41,6 +41,7 @@ TESTS_REQUIRE = [
     'pytest',
     'pytest-cov',
     'pyyaml',
+    'coveralls'
 ]
 README = read('README.md')
 VERSION = read(PACKAGE, 'VERSION')
@@ -67,8 +68,8 @@ setup(
     zip_safe=False,
     long_description=README,
     long_description_content_type='text/markdown',
-    description='Goodtables is a framework to inspect tabular data.',
-    author='Open Knowledge International',
+    description='Goodtables is a framework to validate tabular data',
+    author='Open Knowledge Foundation',
     author_email='info@okfn.org',
     url='https://github.com/frictionlessdata/goodtables',
     license='MIT',
@@ -87,12 +88,10 @@ setup(
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
         'Topic :: Software Development :: Libraries :: Python Modules',
     ],
