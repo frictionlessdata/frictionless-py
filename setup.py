@@ -40,7 +40,7 @@ TESTS_REQUIRE = [
     'pylama',
     'pytest',
     'pytest-cov',
-    'coveralls'
+    'coveralls',
 ]
 README = read('README.md')
 VERSION = read(PACKAGE, 'VERSION')
