@@ -6,7 +6,7 @@ from goodtables import Row
 
 def create_row(cells, *, field_names=[], line_number=1, row_number=1):
     return Row(
-        cells, field_names=field_names, line_number=line_number, row_number=row_number,
+        cells, field_names=field_names, line_number=line_number, row_number=row_number
     )
 
 

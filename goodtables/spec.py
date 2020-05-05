@@ -1,0 +1,2 @@
+class Spec:
+    pass
