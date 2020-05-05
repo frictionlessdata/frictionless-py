@@ -26,10 +26,15 @@ class Row(OrderedDict):
     def __setitem__(self, column_name, cell):
         if self.__ready:
             if column_name not in self:
-                raise KeyError(column_name)
+                message = 'Shape of row is immutable; cannot create cell for column "%s"'
+                raise KeyError(message % column_name)
             if cell is None and self[column_name] is not None:
                 self.__deletions[column_name] = self[column_name]
         super().__setitem__(column_name, cell)
+
+    def __delitem__(self, column_name):
+        message = 'Shape of row is immutable; cannot remove cell for column "%s"'
+        raise KeyError(message % column_name)
 
     @property
     def cells(self):
