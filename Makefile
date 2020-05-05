@@ -38,7 +38,7 @@ spec:
 
 test:
 	pylama $(PACKAGE)
-	tox
+	pytest
 
 version:
 	@echo $(VERSION)

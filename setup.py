@@ -41,7 +41,6 @@ TESTS_REQUIRE = [
     'pytest',
     'pytest-cov',
     'pyyaml',
-    'tox',
 ]
 README = read('README.md')
 VERSION = read(PACKAGE, 'VERSION')
