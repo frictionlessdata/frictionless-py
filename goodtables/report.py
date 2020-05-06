@@ -2,6 +2,7 @@ import datetime
 from .config import REPORT_PROFILE
 
 
+# TODO: move this logic to validate/here json schema validation/exploration only
 class Report(dict):
 
     # Validation
