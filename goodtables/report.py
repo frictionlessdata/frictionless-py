@@ -1,5 +1,9 @@
+from .config import REPORT_PROFILE
+
+
 class Report:
-    pass
+    def __init__(self):
+        self.__profile = REPORT_PROFILE
 
 
 class ReportTable:
