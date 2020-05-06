@@ -1,0 +1,189 @@
+{
+  "title": "Goodtables Report v3",
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "$id": "https://github.com/frictionlessdata/goodtables-py/tree/master/goodtables/assets/profiles/report.json",
+  "type": "object",
+  "required": [
+    "time",
+    "valid",
+    "warnings",
+    "errorCount",
+    "tableCount",
+    "tables"
+  ],
+  "properties": {
+    "time": {
+      "type": "number",
+      "title": "Time",
+      "description": "The overall time it took to run validation",
+      "minimum": 0
+    },
+    "valid": {
+      "type": "boolean",
+      "title": "Valid",
+      "description": "Whether all the inspected tables valid or not"
+    },
+    "warnings": {
+      "type": "array",
+      "title": "Warnings",
+      "items": {
+        "type": "string",
+        "title": "Warning"
+      }
+    },
+    "errorCount": {
+      "type": "integer",
+      "title": "Error count",
+      "description": "Number of errors found across all the tables.",
+      "minimum": 0
+    },
+    "tableCount": {
+      "type": "integer",
+      "title": "Table count",
+      "description": "Number of tables validated.",
+      "minimum": 0
+    },
+    "tables": {
+      "type": "array",
+      "title": "Tables",
+      "description": "The validation results for each of the tables.",
+      "minItems": 0,
+      "items": {
+        "type": "object",
+        "required": [
+          "time",
+          "valid",
+          "source",
+          "schema",
+          "headers",
+          "scheme",
+          "format",
+          "encoding",
+          "dialect",
+          "rowCount",
+          "errorCount",
+          "errors"
+        ],
+        "properties": {
+          "time": {
+            "type": "number",
+            "title": "Time",
+            "description": "The time it took to validate this table.",
+            "minimum": 0
+          },
+          "valid": {
+            "type": "boolean",
+            "title": "Valid",
+            "description": "The validation result."
+          },
+          "source": {
+            "type": "string",
+            "title": "Source",
+            "description": "Path or URI where this table was loaded from."
+          },
+          "schema": {
+            "type": "object",
+            "title": "Schema",
+            "description": "A Table Schema Object."
+          },
+          "headers": {
+            "type": "array",
+            "title": "Headers",
+            "description": "List of table's headers.",
+            "items": {
+              "type": "string"
+            }
+          },
+          "scheme": {
+            "type": "string",
+            "title": "Scheme",
+            "description": "The scheme used to load the data."
+          },
+          "format": {
+            "type": "string",
+            "title": "Format",
+            "description": "The data format."
+          },
+          "encoding": {
+            "type": "string",
+            "title": "Encoding",
+            "description": "The encoding of the table."
+          },
+          "dialect": {
+            "type": "string",
+            "title": "Dialect",
+            "description": "The tabular dialect of the table."
+          },
+          "rowCount": {
+            "type": "integer",
+            "title": "Row count",
+            "description": "Number of rows validated.",
+            "minimum": 0
+          },
+          "errorCount": {
+            "type": "integer",
+            "title": "Error count",
+            "description": "Number of errors found.",
+            "minimum": 0
+          },
+          "errors": {
+            "type": "array",
+            "title": "Errors",
+            "items": {
+              "type": "object",
+              "required": [
+                "code",
+                "message",
+                "description",
+                "tags"
+              ],
+              "properties": {
+                "code": {
+                  "type": "string",
+                  "title": "Code",
+                  "description": "The error code."
+                },
+                "message": {
+                  "type": "string",
+                  "title": "Message",
+                  "description": "The error message."
+                },
+                "description": {
+                  "type": "string",
+                  "title": "Description",
+                  "description": "The error description."
+                },
+                "tags": {
+                  "type": "array",
+                  "title": "Tags",
+                  "description": "The error tags.",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "context": {
+                  "type": "object",
+                  "title": "Context",
+                  "description": "The error context.",
+                  "patternProperties": {
+                    "^[a-zA-Z0-9]*$":{
+                      "type": "string",
+                      "enum": [
+                        "string",
+                        "integer",
+                        "number",
+                        "boolean",
+                        "array",
+                        "object"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,169 +1,333 @@
 {
+  "version": "3",
   "errors": {
 
     "io-error": {
       "name": "IO Error",
       "message": "The data source returned an IO Error: {details}",
       "description": "Data reading error because of IO error.",
-      "tags": ["table"]
+      "tags": ["table"],
+      "context": {
+        "details": "string"
+      }
     },
     "http-error": {
       "name": "HTTP Error",
       "message": "The data source returned an HTTP error: {details}",
       "description": "Data reading error because of HTTP error.",
-      "tags": ["table"]
+      "tags": ["table"],
+      "context": {
+        "details": "string"
+      }
     },
     "source-error": {
       "name": "Source Error",
       "message": "The data source has not supported or has inconsistent contents: {details}",
       "description": "Data reading error because of not supported or inconsistent contents.",
-      "tags": ["table"]
+      "tags": ["table"],
+      "context": {
+        "details": "string"
+      }
     },
     "scheme-error": {
       "name": "Scheme Error",
       "message": "The data source is in an unknown scheme: {details}",
       "description": "Data reading error because of incorrect scheme.",
-      "tags": ["table"]
+      "tags": ["table"],
+      "context": {
+        "details": "string"
+      }
     },
     "format-error": {
       "name": "Format Error",
       "message": "The data source is in an unknown format: {details}",
       "description": "Data reading error because of incorrect format.",
-      "tags": ["table"]
+      "tags": ["table"],
+      "context": {
+        "details": "string"
+      }
     },
     "encoding-error": {
       "name": "Encoding Error",
       "message": "The data source could not be successfully decoded: {details}",
       "description": "Data reading error because of an encoding problem.",
-      "tags": ["table"]
+      "tags": ["table"],
+      "context": {
+        "details": "string"
+      }
     },
     "schema-error": {
       "name": "Schema Error",
       "message": "Table Schema could not be used as it is invalid: {details}",
       "description": "Provided schema is not valid.",
-      "tags": ["table"]
+      "tags": ["table"],
+      "context": {
+        "details": "string"
+      }
     },
 
     "blank-header": {
       "name": "Blank Header",
       "message": "Header in field number {fieldNumber} is blank",
       "description": "A column in the header row is missing a value. Column names should be provided.",
-      "tags": ["head", "structure"]
+      "tags": ["head", "structure"],
+      "context": {
+        "headers": "array",
+        "fieldNumber": "integer"
+      }
     },
     "duplicate-header": {
       "name": "Duplicate Header",
-      "message": "Header in field number {fieldNumber} is duplicated to header in fields: {details}",
+      "message": "Header {header} in field number {fieldNumber} is duplicated to header in fields: {details}",
       "description": "Two columns in the header row have the same value. Column names should be unique.",
-      "tags": ["head", "structure"]
+      "tags": ["head", "structure"],
+      "context": {
+        "header": "string",
+        "headers": "array",
+        "fieldNumber": "integer",
+        "details": "string"
+      }
     },
     "non-matching-header": {
       "name": "Non-Matching Header",
       "message": "Header {header} in field {fieldName}[{fieldNumber}] doesn't match the field name in the schema",
       "description": "One of the data source headers doesn't match the field name defined in the schema.",
-      "tags": ["head", "schema"]
+      "tags": ["head", "schema"],
+      "context": {
+        "header": "string",
+        "headers": "array",
+        "fieldName": "string",
+        "fieldNumber": "integer"
+      }
     },
     "extra-header": {
       "name": "Extra Header",
       "message": "There is an extra header in field {fieldName}[{fieldNumber}]",
       "description": "The first row of the data source contains header that doesn't exist in the schema.",
-      "tags": ["head", "schema"]
+      "tags": ["head", "schema"],
+      "context": {
+        "headers": "array",
+        "fieldName": "string",
+        "fieldNumber": "integer"
+      }
     },
     "missing-header": {
       "name": "Missing Header",
       "message": "There is a missing header in field {fieldName}[{fieldNumber}]",
       "description": "Based on the schema there should be a header that is missing in the first row of the data source.",
-      "tags": ["head", "schema"]
+      "tags": ["head", "schema"],
+      "context": {
+        "headers": "array",
+        "fieldName": "string",
+        "fieldNumber": "integer"
+      }
     },
 
     "blank-row": {
       "name": "Blank Row",
       "message": "Row {rowNumber} is completely blank",
       "description": "This row is empty. A row should contain at least one value.",
-      "tags": ["body", "structure"]
+      "tags": ["body", "structure"],
+      "context": {
+        "lineNumber": "integer",
+        "rowNumber": "integer"
+      }
     },
     "duplicate-row": {
       "name": "Duplicate Row",
       "message": "Row {rowNumber} is duplicated to rows: {details}",
       "description": "The exact same data has been seen in another row.",
-      "tags": ["body", "structure"]
+      "tags": ["body", "structure"],
+      "context": {
+        "row": "object",
+        "lineNumber": "integer",
+        "rowNumber": "integer",
+        "details": "string"
+      }
     },
     "extra-value": {
       "name": "Extra Value",
       "message": "Row {rowNumber} has an extra value in field number {fieldNumber}",
       "description": "This row has more values compared to the header row (the first row in the data source). A key concept is that all the rows in tabular data must have the same number of columns.",
-      "tags": ["body", "structure"]
+      "tags": ["body", "structure"],
+      "context": {
+        "cell": "string",
+        "row": "object",
+        "lineNumber": "integer",
+        "rowNumber": "integer",
+        "fieldNumber": "integer"
+      }
     },
     "missing-value": {
       "name": "Missing Value",
       "message": "Row {rowNumber} has a missing value in field {fieldName}[{fieldNumber}]",
       "description": "This row has less values compared to the header row (the first row in the data source). A key concept is that all the rows in tabular data must have the same number of columns.",
-      "tags": ["body", "structure"]
+      "tags": ["body", "structure"],
+      "context": {
+        "row": "object",
+        "lineNumber": "integer",
+        "rowNumber": "integer",
+        "fieldName": "string",
+        "fieldNumber": "integer"
+      }
     },
     "type-error": {
       "name": "Type Error",
       "message": "The value {cell} in row {rowNumber} and field {fieldName}[{fieldNumber}] is not type {fieldType} and format {fieldFormat}",
       "description": "The value does not match the schema type and format for this field.",
-      "tags": ["body", "schema"]
+      "tags": ["body", "schema"],
+      "context": {
+        "cell": "string",
+        "row": "object",
+        "lineNumber": "integer",
+        "rowNumber": "integer",
+        "fieldName": "string",
+        "fieldNumber": "integer",
+        "fieldType": "string",
+        "fieldFormat": "string"
+      }
     },
     "required-constraint": {
       "name": "Required Constraint",
       "message": "Field {fieldName}[{fieldNumber}] is a required field, but row {rowNumber} has no value",
       "description": "This field is a required field, but it contains no value.",
-      "tags": ["body", "schema", "constraint"]
-    },
-    "pattern-constraint": {
-      "name": "Pattern Constraint",
-      "message": "The value {cell} in row {rowNumber} and field {fieldName}[{fieldNumber}] does not conform to the pattern constraint of {constraint}",
-      "description": "This field value should conform to constraint pattern.",
-      "tags": ["body", "schema", "constraint"]
+      "tags": ["body", "schema", "constraint"],
+      "context": {
+        "cell": "string",
+        "row": "object",
+        "lineNumber": "integer",
+        "rowNumber": "integer",
+        "fieldName": "string",
+        "fieldNumber": "integer"
+      }
     },
     "unique-constraint": {
       "name": "Unique Constraint",
       "message": "Rows {rowNumber} has unique constraint violation in field {fieldName}[{fieldNumber}]",
       "description": "This field is a unique field but it contains a value that has been used in another row.",
-      "tags": ["body", "schema", "constraint"]
+      "tags": ["body", "schema", "constraint"],
+      "context": {
+        "cell": "string",
+        "row": "object",
+        "lineNumber": "integer",
+        "rowNumber": "integer",
+        "fieldName": "string",
+        "fieldNumber": "integer"
+      }
+    },
+    "pattern-constraint": {
+      "name": "Pattern Constraint",
+      "message": "The value {cell} in row {rowNumber} and field {fieldName}[{fieldNumber}] does not conform to the pattern constraint of {constraint}",
+      "description": "This field value should conform to constraint pattern.",
+      "tags": ["body", "schema", "constraint"],
+      "context": {
+        "cell": "string",
+        "row": "object",
+        "lineNumber": "integer",
+        "rowNumber": "integer",
+        "fieldName": "string",
+        "fieldNumber": "integer",
+        "constraint": "string"
+      }
     },
     "enumerable-constraint": {
       "name": "Enumerable Constraint",
       "message": "The value {cell} in row {rowNumber} and field {fieldName}[{fieldNumber}] does not conform to the given enumeration: {constraint}",
       "description": "This field value should be equal to one of the values in the enumeration constraint.",
-      "tags": ["body", "schema", "constraint"]
+      "tags": ["body", "schema", "constraint"],
+      "context": {
+        "cell": "string",
+        "row": "object",
+        "lineNumber": "integer",
+        "rowNumber": "integer",
+        "fieldName": "string",
+        "fieldNumber": "integer",
+        "constraint": "string"
+      }
     },
     "minimum-constraint": {
       "name": "Minimum Constraint",
       "message": "The value {cell} in row {rowNumber} and field {fieldName}[{fieldNumber}] does not conform to the minimum constraint of {constraint}",
       "description": "This field value should be greater or equal than constraint value.",
-      "tags": ["body", "schema", "constraint"]
+      "tags": ["body", "schema", "constraint"],
+      "context": {
+        "cell": "string",
+        "row": "object",
+        "lineNumber": "integer",
+        "rowNumber": "integer",
+        "fieldName": "string",
+        "fieldNumber": "integer",
+        "constraint": "string"
+      }
     },
     "maximum-constraint": {
       "name": "Maximum Constraint",
       "message": "The value {cell} in row {rowNumber} and field {fieldName}[{fieldNumber}] does not conform to the maximum constraint of {constraint}",
       "description": "This field value should be less or equal than constraint value.",
-      "tags": ["body", "schema", "constraint"]
+      "tags": ["body", "schema", "constraint"],
+      "context": {
+        "cell": "string",
+        "row": "object",
+        "lineNumber": "integer",
+        "rowNumber": "integer",
+        "fieldName": "string",
+        "fieldNumber": "integer",
+        "constraint": "string"
+      }
     },
     "minimum-length-constraint": {
       "name": "Minimum Length Constraint",
       "message": "The value {cell} in row {rowNumber} and field {fieldName}[{fieldNumber}] does not conform to the minimum length constraint of {constraint}",
       "description": "A length of this field value should be greater or equal than schema constraint value.",
-      "tags": ["body", "schema", "constraint"]
+      "tags": ["body", "schema", "constraint"],
+      "context": {
+        "cell": "string",
+        "row": "object",
+        "lineNumber": "integer",
+        "rowNumber": "integer",
+        "fieldName": "string",
+        "fieldNumber": "integer",
+        "constraint": "string"
+      }
     },
     "maximum-length-constraint": {
       "name": "Maximum Length Constraint",
       "message": "The value {cell} in row {rowNumber} and field {fieldName}[{fieldNumber}] does not conform to the maximum length constraint of {constraint}",
       "description": "A length of this field value should be less or equal than schema constraint value.",
-      "tags": ["body", "schema", "constraint"]
+      "tags": ["body", "schema", "constraint"],
+      "context": {
+        "cell": "string",
+        "row": "object",
+        "lineNumber": "integer",
+        "rowNumber": "integer",
+        "fieldName": "string",
+        "fieldNumber": "integer",
+        "constraint": "string"
+      }
     },
     "primary-key": {
       "name": "Primary Key Error",
-      "message": "",
-      "description": "",
-      "tags": ["body", "schema", "integrity"]
+      "message": "Primary key {primaryKey} violation in row {rowNumber}",
+      "description": "This row breakes the integrity of the table",
+      "tags": ["body", "schema", "integrity"],
+      "context": {
+        "row": "object",
+        "lineNumber": "integer",
+        "rowNumber": "integer",
+        "primaryKey": "string"
+      }
     },
     "foreign-key": {
       "name": "Foreigh Key Error",
-      "message": "",
-      "description": "",
-      "tags": ["body", "schema", "integrity"]
+      "message": "Foreign key {foreignKey} violation in row {rowNumber}",
+      "description": "This row breakes the integrity of the table",
+      "tags": ["body", "schema", "integrity"],
+      "context": {
+        "row": "object",
+        "lineNumber": "integer",
+        "rowNumber": "integer",
+        "foreignKey": "string"
+      }
     }
   }
 }
