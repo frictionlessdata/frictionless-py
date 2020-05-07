@@ -124,18 +124,6 @@
         "rowNumber": "integer"
       }
     },
-    "duplicate-row": {
-      "name": "Duplicate Row",
-      "message": "Row {rowNumber} is duplicated to rows: {details}",
-      "description": "The exact same data has been seen in another row.",
-      "tags": ["body", "structure"],
-      "context": {
-        "row": "object",
-        "lineNumber": "integer",
-        "rowNumber": "integer",
-        "details": "string"
-      }
-    },
     "extra-value": {
       "name": "Extra Value",
       "message": "Row {rowNumber} has an extra value in field number {fieldNumber}",
