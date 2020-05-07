@@ -8,48 +8,64 @@ def validate_table(
     source,
     *,
     # Source
-    schema=None,
     headers=None,
     scheme=None,
     format=None,
     encoding=None,
+    compression=None,
+    pick_rows=None,
+    skip_rows=None,
+    pick_fields=None,
+    skip_fields=None,
     dialect=None,
+    schema=None,
     # Validation
-    spec=None,
     order_fields=None,
-    skip_errors=None,
     pick_errors=None,
+    skip_errors=None,
     row_limit=None,
     error_limit=None,
+    extra_checks=None,
+    spec=None,
     **task_rest
 ):
 
-    # Initialize
+    # Prepare state
     time_start = datetime.datetime.now()
-    is_fatal_error = False
     spec = spec or Spec()
     row_count = 0
     errors = []
 
-    # Prepare table
+    # Prepare stream
     try:
         stream = tabulator.Stream(
             source,
-            headers=headers,
+            headers=headers or 1,
             scheme=scheme,
             format=format,
             encoding=encoding,
+            compression=compression,
+            pick_rows=pick_rows,
+            skip_rows=skip_rows,
+            pick_columns=pick_fields,
+            skip_columns=skip_fields,
+            **dialect,
             **task_rest
         )
         stream.open()
-        sample = stream.sample
-        headers = stream.headers
-        if headers is None:
-            headers = [None] * len(sample[0]) if sample else []
     except Exception as exception:
         error = _compose_error_from_exception(exception)
         errors.append(error)
-        is_fatal_error = True
+        stream = None
+
+    # Prepare schema
+    if stream:
+        if not schema:
+            schema = tableschema.Schema()
+            schema.infer(stream.sample, headers=stream.headers, confidence=1)
+        if order_fields:
+            # TODO: implement order_fields
+            pass
 
 
 # Internal

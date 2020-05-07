@@ -54,12 +54,13 @@
           "time",
           "valid",
           "source",
-          "schema",
           "headers",
           "scheme",
           "format",
           "encoding",
+          "compression",
           "dialect",
+          "schema",
           "rowCount",
           "errorCount",
           "errors"
@@ -80,11 +81,6 @@
             "type": "string",
             "title": "Source",
             "description": "Path or URI where this table was loaded from."
-          },
-          "schema": {
-            "type": "object",
-            "title": "Schema",
-            "description": "A Table Schema Object."
           },
           "headers": {
             "type": "array",
@@ -109,10 +105,20 @@
             "title": "Encoding",
             "description": "The encoding of the table."
           },
+          "compression": {
+            "type": "string",
+            "title": "Compression",
+            "description": "The compression of the table."
+          },
           "dialect": {
             "type": "string",
             "title": "Dialect",
             "description": "The tabular dialect of the table."
+          },
+          "schema": {
+            "type": "object",
+            "title": "Schema",
+            "description": "A Table Schema Object."
           },
           "rowCount": {
             "type": "integer",
