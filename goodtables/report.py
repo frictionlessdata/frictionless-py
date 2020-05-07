@@ -2,7 +2,7 @@ from .config import REPORT_PROFILE
 
 
 class Report(dict):
-    def __init__(self):
+    def validate(self):
         # TODO: validate
         REPORT_PROFILE
 
@@ -10,8 +10,8 @@ class Report(dict):
         pass
 
 
-class ReportTable(dict):
-    def __init__(self):
+class TableReport(dict):
+    def validate(self):
         # TODO: validate
         REPORT_PROFILE
 

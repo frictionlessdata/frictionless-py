@@ -2,19 +2,10 @@
   "version": "3",
   "errors": {
 
-    "io-error": {
-      "name": "IO Error",
-      "message": "The data source returned an IO Error: {details}",
+    "loading-error": {
+      "name": "Loading Error",
+      "message": "The data source could not be successfully loaded: {details}",
       "description": "Data reading error because of IO error.",
-      "tags": ["table"],
-      "context": {
-        "details": "string"
-      }
-    },
-    "http-error": {
-      "name": "HTTP Error",
-      "message": "The data source returned an HTTP error: {details}",
-      "description": "Data reading error because of HTTP error.",
       "tags": ["table"],
       "context": {
         "details": "string"
@@ -88,26 +79,14 @@
         "details": "string"
       }
     },
-    "non-matching-header": {
-      "name": "Non-Matching Header",
-      "message": "Header {header} in field {fieldName}[{fieldNumber}] doesn't match the field name in the schema",
-      "description": "One of the data source headers doesn't match the field name defined in the schema.",
-      "tags": ["head", "schema"],
-      "context": {
-        "header": "string",
-        "headers": "array",
-        "fieldName": "string",
-        "fieldNumber": "integer"
-      }
-    },
     "extra-header": {
       "name": "Extra Header",
       "message": "There is an extra header in field {fieldName}[{fieldNumber}]",
       "description": "The first row of the data source contains header that doesn't exist in the schema.",
       "tags": ["head", "schema"],
       "context": {
+        "header": "string",
         "headers": "array",
-        "fieldName": "string",
         "fieldNumber": "integer"
       }
     },
@@ -117,6 +96,18 @@
       "description": "Based on the schema there should be a header that is missing in the first row of the data source.",
       "tags": ["head", "schema"],
       "context": {
+        "headers": "array",
+        "fieldName": "string",
+        "fieldNumber": "integer"
+      }
+    },
+    "non-matching-header": {
+      "name": "Non-Matching Header",
+      "message": "Header {header} in field {fieldName}[{fieldNumber}] doesn't match the field name in the schema",
+      "description": "One of the data source headers doesn't match the field name defined in the schema.",
+      "tags": ["head", "schema"],
+      "context": {
+        "header": "string",
         "headers": "array",
         "fieldName": "string",
         "fieldNumber": "integer"

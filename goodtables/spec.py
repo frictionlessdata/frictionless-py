@@ -1,11 +1,14 @@
+import tabulator
 from copy import deepcopy
 from .config import SPEC, SPEC_PROFILE
 from .error import Error
 
 
 class Spec(dict):
-    def __init__(self, spec=SPEC):
-        super().__init__(spec)
+    def __init__(self):
+        super().__init__(deepcopy(SPEC))
+
+    def validate(self):
         # TODO: validate
         SPEC_PROFILE
 
@@ -17,3 +20,18 @@ class Spec(dict):
         # TODO: validate the context according to the spec
         error['context'] = context
         return Error(**error)
+
+    def create_error_from_exception(self, exception):
+        code = 'source-error'
+        details = str(exception)
+        if isinstance(exception, tabulator.exceptions.IOError):
+            code = 'loading-error'
+        if isinstance(exception, tabulator.exceptions.SourceError):
+            code = 'source-error'
+        if isinstance(exception, tabulator.exceptions.SchemeError):
+            code = 'scheme-error'
+        if isinstance(exception, tabulator.exceptions.FormatError):
+            code = 'format-error'
+        if isinstance(exception, tabulator.exceptions.EncodingError):
+            code = 'encoding-error'
+        return Error(code, context={'details': details})

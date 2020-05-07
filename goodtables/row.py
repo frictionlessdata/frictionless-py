@@ -1,5 +1,6 @@
 from itertools import zip_longest
 from collections import OrderedDict
+from . import helpers
 
 
 class Row(OrderedDict):
@@ -13,14 +14,13 @@ class Row(OrderedDict):
         self.__ready = False
 
         # Set contents
-        fillvalue = '__fillvalue__'
-        iterator = zip_longest(field_names, cells, fillvalue=fillvalue)
-        for fieldNumber, [fieldName, cell] in enumerate(iterator, start=1):
-            if fieldName == fillvalue:
-                fieldName = 'field%s' % fieldNumber
-            if cell == fillvalue:
+        iterator = helpers.combine(field_names, cells)
+        for field_number, [field_name, cell] in enumerate(iterator, start=1):
+            if field_name == helpers.combine.missing:
+                field_name = 'field%s' % field_number
+            if cell == helpers.combine.missing:
                 break
-            self[fieldName] = cell
+            self[field_name] = cell
         self.__ready = True
 
     def __setitem__(self, field_name, cell):
