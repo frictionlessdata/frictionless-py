@@ -6,6 +6,8 @@ from . import helpers
 class Row(OrderedDict):
     def __init__(self, cells, *, field_names, line_number, row_number):
 
+        # TODO: how to handle column_number?
+
         # Set params
         self.__line_number = line_number
         self.__row_number = row_number
