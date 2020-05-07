@@ -16,6 +16,7 @@ class Report(dict):
         pass
 
 
+# TODO: add warnings?
 class TableReport(dict):
     def __init__(self, *, time, stream, schema, dialect, row_count, errors):
         self['time'] = time

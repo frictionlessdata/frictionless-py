@@ -1,8 +1,8 @@
-import datetime
 import tabulator
 import tableschema
 from ..row import Row
 from ..spec import Spec
+from ..timer import Timer
 from ..report import TableReport
 from ..checks import BaselineCheck
 
@@ -34,8 +34,9 @@ def validate_table(
 ):
 
     # Prepare state
+    # TODO: rebase on better timer
     spec = spec or Spec()
-    timer = datetime.datetime.now()
+    timer = Timer()
     checks = []
     errors = []
 
@@ -106,7 +107,12 @@ def validate_table(
             errors.extend(check.validate_table_row(row))
         # TODO: handle row/error limits
 
-    # Compose table report
-    table_report = TableReport()
-
-    return table_report
+    # Return report
+    return TableReport(
+        time=timer.get_time(),
+        stream=stream,
+        schema=schema,
+        dialect={},
+        row_count=row_number,
+        errors=errors,
+    )
