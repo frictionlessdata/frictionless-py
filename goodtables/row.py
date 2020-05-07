@@ -1,15 +1,12 @@
-from itertools import zip_longest
 from collections import OrderedDict
 from . import helpers
 
 
 class Row(OrderedDict):
-    def __init__(self, cells, *, field_names, line_number, row_number):
-
-        # TODO: how to handle column_number?
+    def __init__(self, cells, *, field_names, row_position, row_number):
 
         # Set params
-        self.__line_number = line_number
+        self.__row_position = row_position
         self.__row_number = row_number
         self.__deletions = {}
         self.__errors = []
@@ -45,8 +42,8 @@ class Row(OrderedDict):
         return list(self.keys())
 
     @property
-    def line_number(self):
-        return self.__line_number
+    def row_position(self):
+        return self.__row_position
 
     @property
     def row_number(self):

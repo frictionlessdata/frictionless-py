@@ -16,10 +16,10 @@ def validate_table(
     format=None,
     encoding=None,
     compression=None,
-    pick_lines=None,
-    skip_lines=None,
-    pick_columns=None,
-    skip_columns=None,
+    pick_rows=None,
+    skip_rows=None,
+    pick_fields=None,
+    skip_fields=None,
     dialect=None,
     schema=None,
     order_schema=None,
@@ -49,10 +49,10 @@ def validate_table(
             format=format,
             encoding=encoding,
             compression=compression,
-            pick_rows=pick_lines,
-            skip_rows=skip_lines,
-            pick_columns=pick_columns,
-            skip_columns=skip_columns,
+            pick_rows=pick_rows,
+            skip_rows=skip_rows,
+            pick_columns=pick_fields,
+            skip_columns=skip_fields,
             **dialect,
             **task_rest
         )
@@ -89,12 +89,12 @@ def validate_table(
     iterator = stream.iter(extended=True)
     while True:
         try:
-            line_number, headers, cells = next(iterator)
+            row_position, headers, cells = next(iterator)
             row_number += 1
             row = Row(
                 cells,
                 field_names=schema.field_names,
-                line_number=line_number,
+                row_position=row_position,
                 row_number=row_number,
             )
         except Exception as exception:

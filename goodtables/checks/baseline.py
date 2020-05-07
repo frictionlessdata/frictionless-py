@@ -2,6 +2,8 @@ from . import helpers
 from ..check import Check
 
 
+# TODO: how to handle field_position?
+# TODO: stream.get_column_position(field_number) -> field_position?
 class BaselineCheck(Check):
     def validate_table_headers(self, headers):
         errors = []
