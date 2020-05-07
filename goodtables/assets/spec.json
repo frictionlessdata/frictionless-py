@@ -116,7 +116,7 @@
 
     "blank-row": {
       "name": "Blank Row",
-      "message": "Row {rowNumber} is completely blank",
+      "message": "Row {rowNumber} at line {lineNumber} is completely blank",
       "description": "This row is empty. A row should contain at least one value.",
       "tags": ["body", "structure"],
       "context": {
@@ -126,7 +126,7 @@
     },
     "extra-value": {
       "name": "Extra Value",
-      "message": "Row {rowNumber} has an extra value in field number {fieldNumber}",
+      "message": "Row {rowNumber} at line {lineNumber} has an extra value in field number {fieldNumber}",
       "description": "This row has more values compared to the header row (the first row in the data source). A key concept is that all the rows in tabular data must have the same number of columns.",
       "tags": ["body", "structure"],
       "context": {
@@ -139,7 +139,7 @@
     },
     "missing-value": {
       "name": "Missing Value",
-      "message": "Row {rowNumber} has a missing value in field {fieldName}[{fieldNumber}]",
+      "message": "Row {rowNumber} at line {lineNumber} has a missing value in field {fieldName}[{fieldNumber}]",
       "description": "This row has less values compared to the header row (the first row in the data source). A key concept is that all the rows in tabular data must have the same number of columns.",
       "tags": ["body", "structure"],
       "context": {
@@ -152,7 +152,7 @@
     },
     "type-error": {
       "name": "Type Error",
-      "message": "The value {cell} in row {rowNumber} and field {fieldName}[{fieldNumber}] is not type {fieldType} and format {fieldFormat}",
+      "message": "The value {cell} in row at line {lineNumber} and field {fieldName}[{fieldNumber}] is not type {fieldType} and format {fieldFormat}",
       "description": "The value does not match the schema type and format for this field.",
       "tags": ["body", "schema"],
       "context": {
@@ -168,7 +168,7 @@
     },
     "required-constraint": {
       "name": "Required Constraint",
-      "message": "Field {fieldName}[{fieldNumber}] is a required field, but row {rowNumber} has no value",
+      "message": "Field {fieldName}[{fieldNumber}] is a required field, but row {rowNumber} at line {lineNumber} has no value",
       "description": "This field is a required field, but it contains no value.",
       "tags": ["body", "schema", "constraint"],
       "context": {
@@ -182,7 +182,7 @@
     },
     "unique-constraint": {
       "name": "Unique Constraint",
-      "message": "Rows {rowNumber} has unique constraint violation in field {fieldName}[{fieldNumber}]",
+      "message": "Row {rowNumber} at line {lineNumber} has unique constraint violation in field {fieldName}[{fieldNumber}]",
       "description": "This field is a unique field but it contains a value that has been used in another row.",
       "tags": ["body", "schema", "constraint"],
       "context": {
@@ -196,7 +196,7 @@
     },
     "pattern-constraint": {
       "name": "Pattern Constraint",
-      "message": "The value {cell} in row {rowNumber} and field {fieldName}[{fieldNumber}] does not conform to the pattern constraint of {constraint}",
+      "message": "The value {cell} in row at line {lineNumber} and field {fieldName}[{fieldNumber}] does not conform to the pattern constraint of {constraint}",
       "description": "This field value should conform to constraint pattern.",
       "tags": ["body", "schema", "constraint"],
       "context": {
@@ -211,7 +211,7 @@
     },
     "enumerable-constraint": {
       "name": "Enumerable Constraint",
-      "message": "The value {cell} in row {rowNumber} and field {fieldName}[{fieldNumber}] does not conform to the given enumeration: {constraint}",
+      "message": "The value {cell} in row at line {lineNumber} and field {fieldName}[{fieldNumber}] does not conform to the given enumeration: {constraint}",
       "description": "This field value should be equal to one of the values in the enumeration constraint.",
       "tags": ["body", "schema", "constraint"],
       "context": {
@@ -226,7 +226,7 @@
     },
     "minimum-constraint": {
       "name": "Minimum Constraint",
-      "message": "The value {cell} in row {rowNumber} and field {fieldName}[{fieldNumber}] does not conform to the minimum constraint of {constraint}",
+      "message": "The value {cell} in row at line {lineNumber} and field {fieldName}[{fieldNumber}] does not conform to the minimum constraint of {constraint}",
       "description": "This field value should be greater or equal than constraint value.",
       "tags": ["body", "schema", "constraint"],
       "context": {
@@ -241,7 +241,7 @@
     },
     "maximum-constraint": {
       "name": "Maximum Constraint",
-      "message": "The value {cell} in row {rowNumber} and field {fieldName}[{fieldNumber}] does not conform to the maximum constraint of {constraint}",
+      "message": "The value {cell} in row at line {lineNumber} and field {fieldName}[{fieldNumber}] does not conform to the maximum constraint of {constraint}",
       "description": "This field value should be less or equal than constraint value.",
       "tags": ["body", "schema", "constraint"],
       "context": {
@@ -256,7 +256,7 @@
     },
     "minimum-length-constraint": {
       "name": "Minimum Length Constraint",
-      "message": "The value {cell} in row {rowNumber} and field {fieldName}[{fieldNumber}] does not conform to the minimum length constraint of {constraint}",
+      "message": "The value {cell} in row at line {lineNumber} and field {fieldName}[{fieldNumber}] does not conform to the minimum length constraint of {constraint}",
       "description": "A length of this field value should be greater or equal than schema constraint value.",
       "tags": ["body", "schema", "constraint"],
       "context": {
@@ -271,7 +271,7 @@
     },
     "maximum-length-constraint": {
       "name": "Maximum Length Constraint",
-      "message": "The value {cell} in row {rowNumber} and field {fieldName}[{fieldNumber}] does not conform to the maximum length constraint of {constraint}",
+      "message": "The value {cell} in row at line {lineNumber} and field {fieldName}[{fieldNumber}] does not conform to the maximum length constraint of {constraint}",
       "description": "A length of this field value should be less or equal than schema constraint value.",
       "tags": ["body", "schema", "constraint"],
       "context": {
@@ -286,7 +286,7 @@
     },
     "primary-key": {
       "name": "Primary Key Error",
-      "message": "Primary key {primaryKey} violation in row {rowNumber}",
+      "message": "Primary key {primaryKey} violation in row at line {lineNumber}",
       "description": "This row breakes the integrity of the table",
       "tags": ["body", "schema", "integrity"],
       "context": {
@@ -298,7 +298,7 @@
     },
     "foreign-key": {
       "name": "Foreigh Key Error",
-      "message": "Foreign key {foreignKey} violation in row {rowNumber}",
+      "message": "Foreign key {foreignKey} violation in row at line {lineNumber}",
       "description": "This row breakes the integrity of the table",
       "tags": ["body", "schema", "integrity"],
       "context": {
