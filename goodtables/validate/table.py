@@ -1,7 +1,6 @@
 import datetime
 import tabulator
 import tableschema
-from . import helpers
 from ..row import Row
 from ..spec import Spec
 from ..report import TableReport

@@ -6,8 +6,6 @@ class BaselineCheck(Check):
     def validate_table_headers(self, headers):
         errors = []
 
-        # TODO: rebase from fieldNumber to columnNumber (source)?
-
         # Iterate headers
         missing = helpers.combine.missing
         iterator = helpers.combine(self.schema.field_names, headers)

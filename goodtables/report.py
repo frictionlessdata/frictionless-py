@@ -3,7 +3,12 @@ from .config import REPORT_PROFILE
 
 class Report(dict):
     def __init__(self, *, time, warnings, table_reports):
-        pass
+        self['time'] = time
+        self['valid'] = all(report['valid'] for report in table_reports)
+        self['warnings'] = warnings
+        self['errorCount'] = sum(report['errorCount'] for report in table_reports)
+        self['tableCount'] = len(table_reports)
+        self['tables'] = table_reports
         # TODO: validate
         REPORT_PROFILE
 
