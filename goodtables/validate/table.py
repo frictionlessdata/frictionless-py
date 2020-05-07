@@ -4,6 +4,7 @@ import tableschema
 from . import helpers
 from ..spec import Spec
 from ..report import TableReport
+from ..checks import BaselineCheck
 
 
 def validate_table(
@@ -35,6 +36,7 @@ def validate_table(
     # Prepare state
     spec = spec or Spec()
     timer = datetime.datetime.now()
+    checks = []
     errors = []
 
     # Prepare stream
@@ -68,90 +70,19 @@ def validate_table(
             # TODO: implement order_schema
             pass
 
+    # Prepare checks
+    if stream and schema:
+        checks = [BaselineCheck(spec, stream=stream, schema=schema)]
+        # for plugin in plugins:
+        #   check = plugin.create_check(spec, stream=stream, schema=schema)
+        #   checks.append(check)
+        pass
+
     # Validate headers
     if stream and schema:
-        errors.extend(validate_table_headers(spec, stream=stream, schema=schema))
-        # TODO: include plugins
+        for check in checks:
+            errors.extend(check.validate_table_headers(stream.headers))
 
     # Validate rows
 
     # Compose report
-
-
-# Internal
-
-
-def validate_table_headers(spec, *, stream, schema):
-    errors = []
-
-    # Iterate headers
-    missing = helpers.combine.missing
-    iterator = helpers.combine(schema.field_names, stream.headers)
-    for field_number, [field_name, header] in enumerate(iterator, start=1):
-
-        # blank-header
-        if header in (None, ''):
-            errors.append(
-                spec.create_error(
-                    'blank-header',
-                    context={'headers': stream.headers, 'fieldNumber': field_number},
-                )
-            )
-
-        # duplicated-header
-        prev_headers = stream.headers[0 : field_number - 1]
-        duplicate_field_numbers = helpers.find_positions(prev_headers, header)
-        if duplicate_field_numbers:
-            errors.append(
-                spec.create_error(
-                    'duplicate-header',
-                    context={
-                        'header': header,
-                        'headers': stream.headers,
-                        'fieldNumber': field_number,
-                        'details': ', '.join(duplicate_field_numbers),
-                    },
-                )
-            )
-
-        # extra-header
-        if field_name == missing:
-            errors.append(
-                spec.create_error(
-                    'extra-header',
-                    context={
-                        'header': header,
-                        'headers': stream.headers,
-                        'fieldNumber': field_number,
-                    },
-                )
-            )
-
-        # missing-header
-        if header == missing:
-            errors.append(
-                spec.create_error(
-                    'missing-header',
-                    context={
-                        'headers': stream.headers,
-                        'fieldName': field_name,
-                        'fieldNumber': field_number,
-                    },
-                )
-            )
-
-        # non-matching-header
-        if missing not in [field_name, header] and field_name != header:
-            errors.append(
-                spec.create_error(
-                    'non-matching-header',
-                    context={
-                        'header': header,
-                        'headers': stream.headers,
-                        'fieldName': field_name,
-                        'fieldNumber': field_number,
-                    },
-                )
-            )
-
-    return errors
