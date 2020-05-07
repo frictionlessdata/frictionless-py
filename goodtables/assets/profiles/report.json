@@ -59,8 +59,8 @@
           "format",
           "encoding",
           "compression",
-          "dialect",
           "schema",
+          "dialect",
           "rowCount",
           "errorCount",
           "errors"
@@ -110,15 +110,15 @@
             "title": "Compression",
             "description": "The compression of the table."
           },
-          "dialect": {
-            "type": "string",
-            "title": "Dialect",
-            "description": "The tabular dialect of the table."
-          },
           "schema": {
             "type": "object",
             "title": "Schema",
             "description": "A Table Schema Object."
+          },
+          "dialect": {
+            "type": "string",
+            "title": "Dialect",
+            "description": "The tabular dialect of the table."
           },
           "rowCount": {
             "type": "integer",

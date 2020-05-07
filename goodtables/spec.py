@@ -7,9 +7,10 @@ from .error import Error
 class Spec(dict):
     def __init__(self):
         super().__init__(deepcopy(SPEC))
-
-    def validate(self):
         # TODO: validate
+        SPEC_PROFILE
+
+    def patch(self, callback):
         SPEC_PROFILE
 
     def create_error(self, code, *, context):
