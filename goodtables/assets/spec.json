@@ -139,13 +139,12 @@
         "row": "object",
         "rowNumber": "integer",
         "rowPosition": "integer",
-        "fieldNumber": "integer",
         "fieldPosition": "integer"
       }
     },
     "missing-cell": {
       "name": "Missing Cell",
-      "message": "Row at position {rowPosition} has a missing value in field {fieldName} at position {fieldPosition}",
+      "message": "Row at position {rowPosition} has a missing cell in field {fieldName} at position {fieldPosition}",
       "description": "This row has less values compared to the header row (the first row in the data source). A key concept is that all the rows in tabular data must have the same number of columns.",
       "tags": ["body", "structure"],
       "context": {

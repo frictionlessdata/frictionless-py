@@ -2,8 +2,6 @@ from . import helpers
 from ..check import Check
 
 
-# TODO: how to handle field_position?
-# TODO: stream.get_column_position(field_number) -> field_position?
 class BaselineCheck(Check):
     def validate_table_headers(self, headers):
         errors = []
@@ -81,4 +79,56 @@ class BaselineCheck(Check):
         return errors
 
     def validate_table_row(self, row):
-        pass
+        errors = []
+
+        # blank-row
+        if row.is_blank:
+            errors.append(
+                self.spec.create_error(
+                    'blank-row',
+                    context={
+                        'rowNumber': row.row_number,
+                        'rowPosition': row.row_position,
+                    },
+                )
+            )
+
+        # extra-cell
+        if row.extra_cells:
+            for extra_field_number, extra_cell in enumerate(row.extra_cells, start=1):
+                fieldPosition = max(row.field_positions) + extra_field_number
+                errors.append(
+                    self.spec.create_error(
+                        'extra-cell',
+                        context={
+                            'cell': extra_cell,
+                            'row': row,
+                            'rowNumber': row.row_number,
+                            'rowPosition': row.row_position,
+                            'fieldPosition': field_position,
+                        },
+                    )
+                )
+
+        # Iterate cells
+        iterator = enumerate(row.items_with_position(), start=1)
+        for field_number, [field_position, field_name, cell] in iterator:
+
+            # missing-cell
+            if field_name in row.missing_cells:
+                errors.append(
+                    self.spec.create_error(
+                        'missing-cell',
+                        context={
+                            'row': row,
+                            'rowNumber': row.row_number,
+                            'rowPosition': row.row_position,
+                            'fieldName': field_name,
+                            'fieldNumber': field_number,
+                            'fieldPosition': field_position,
+                        },
+                    )
+                )
+
+        return errors
+

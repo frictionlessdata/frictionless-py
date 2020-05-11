@@ -1,5 +1,6 @@
 import tabulator
 import tableschema
+from .. import config
 from ..row import Row
 from ..spec import Spec
 from ..timer import Timer
@@ -34,7 +35,6 @@ def validate_table(
 ):
 
     # Prepare state
-    # TODO: rebase on better timer
     spec = spec or Spec()
     timer = Timer()
     checks = []
@@ -94,6 +94,8 @@ def validate_table(
             row = Row(
                 cells,
                 field_names=schema.field_names,
+                field_positions=stream.field_positions,
+                missing_values=config.MISSING_VALUES,
                 row_position=row_position,
                 row_number=row_number,
             )
