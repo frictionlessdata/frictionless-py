@@ -40,7 +40,7 @@ TESTS_REQUIRE = [
     'coveralls',
 ]
 README = read('README.md')
-VERSION = read(PACKAGE, 'VERSION')
+VERSION = read(PACKAGE, 'assets', 'VERSION')
 PACKAGES = find_packages(exclude=['examples', 'tests'])
 
 
@@ -52,14 +52,8 @@ setup(
     include_package_data=True,
     install_requires=INSTALL_REQUIRES,
     tests_require=TESTS_REQUIRE,
-    extras_require={
-        'develop': TESTS_REQUIRE,
-    },
-    entry_points={
-        'console_scripts': [
-            'goodtables = goodtables.__main__:cli',
-        ]
-    },
+    extras_require={'develop': TESTS_REQUIRE,},
+    entry_points={'console_scripts': ['goodtables = goodtables.__main__:cli',]},
     zip_safe=False,
     long_description=README,
     long_description_content_type='text/markdown',

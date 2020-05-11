@@ -1,7 +1,6 @@
 import io
 import os
 import itertools
-import datetime
 
 
 # General
@@ -22,12 +21,3 @@ def find_positions(haystack, needle):
         if value == needle:
             positions.append(position)
     return positions
-
-
-def create_timer():
-    def finish(self):
-        self.__finish = datetime.datetime.now()
-        time = (round((self.__finish - self.__start).total_seconds(), 3),)
-
-    return finish
-
