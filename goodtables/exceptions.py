@@ -1,0 +1,2 @@
+class GoodtablesException(Exception):
+    pass

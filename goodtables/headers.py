@@ -17,7 +17,7 @@ class Headers(list):
             del headers[len(fields) :]
             for field_position, header in enumerate(iterator, start=start):
                 self.__errors.append(
-                    errors.ExtraHeader(
+                    errors.ExtraHeaderError(
                         header=header, headers=headers, field_position=field_position,
                     )
                 )
@@ -28,7 +28,7 @@ class Headers(list):
             iterator = zip(fields[len(headers) :], field_positions[len(headers) :])
             for field_number, (field_position, field) in enumerate(iterator, start=start):
                 self.__errors.append(
-                    errors.MissingHeader(
+                    errors.MissingHeaderError(
                         headers=self,
                         field_name=field.name,
                         field_number=field_number,
@@ -44,7 +44,7 @@ class Headers(list):
             # Blank Header
             if header in (None, ''):
                 self.__errors.append(
-                    errors.BlankHeader(
+                    errors.BlankHeaderError(
                         headers=self,
                         field_name=field.name,
                         field_number=field_number,
@@ -61,7 +61,7 @@ class Headers(list):
                     duplicate_field_positions.append(seen_position)
             if duplicate_field_positions:
                 self.__errors.append(
-                    errors.MissingHeader(
+                    errors.DuplicateHeaderError(
                         header=header,
                         headers=self,
                         field_name=field.name,
@@ -74,7 +74,7 @@ class Headers(list):
             # Non-matching Header
             if field.name != header:
                 self.__errors.append(
-                    errors.MissingHeader(
+                    errors.NonMatchingHeaderError(
                         header=header,
                         headers=self,
                         field_name=field.name,

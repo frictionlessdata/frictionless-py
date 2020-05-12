@@ -98,7 +98,7 @@ class Row(OrderedDict):
 
     @cached_property
     def error_cells(self):
-        return self.__field_positions
+        return self.__error_cells
 
     @cached_property
     def errors(self):
