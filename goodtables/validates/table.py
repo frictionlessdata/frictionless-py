@@ -1,8 +1,8 @@
 import tabulator
 import tableschema
 from ..row import Row
-from ..error import Error
 from ..timer import Timer
+from ..errors import Error
 from ..headers import Headers
 from ..report import TableReport
 from ..checks import BaselineCheck
@@ -12,7 +12,7 @@ def validate_table(
     source,
     *,
     # Source
-    headers=None,
+    headers=1,
     scheme=None,
     format=None,
     encoding=None,
@@ -21,7 +21,7 @@ def validate_table(
     skip_rows=None,
     pick_fields=None,
     skip_fields=None,
-    dialect=None,
+    dialect={},
     schema=None,
     order_schema=None,
     # Validation
@@ -35,6 +35,7 @@ def validate_table(
 
     # Prepare state
     timer = Timer()
+    row_number = 0
     checks = []
     errors = []
 
@@ -42,7 +43,7 @@ def validate_table(
     try:
         stream = tabulator.Stream(
             source,
-            headers=headers or 1,
+            headers=headers,
             scheme=scheme,
             format=format,
             encoding=encoding,
@@ -82,7 +83,7 @@ def validate_table(
 
         # Get headers
         headers = Headers(
-            stream.headers, fields=schema.fields, field_positions=schema.field_positions
+            stream.headers, fields=schema.fields, field_positions=stream.field_positions
         )
 
         # Validate headers
@@ -91,38 +92,38 @@ def validate_table(
             errors.extend(check.validate_table_headers(headers))
 
     # Validate rows
-    row_number = 0
-    fields = schema.fields
-    field_positions = stream.field_positions
-    iterator = stream.iter(extended=True)
-    while True:
+    if stream and schema:
+        fields = schema.fields
+        field_positions = stream.field_positions
+        iterator = stream.iter(extended=True)
+        while True:
 
-        # Read cells
-        try:
-            row_position, _, cells = next(iterator)
-        except Exception as exception:
-            error = Error.from_exception(exception)
-            errors.append(error)
-            stream = None
-        except StopIteration:
-            break
+            # Read cells
+            try:
+                row_position, _, cells = next(iterator)
+            except Exception as exception:
+                error = Error.from_exception(exception)
+                errors.append(error)
+                stream = None
+            except StopIteration:
+                break
 
-        # Create row
-        row_number += 1
-        row = Row(
-            cells,
-            fields=fields,
-            field_positions=field_positions,
-            row_position=row_position,
-            row_number=row_number,
-        )
+            # Create row
+            row_number += 1
+            row = Row(
+                cells,
+                fields=fields,
+                field_positions=field_positions,
+                row_position=row_position,
+                row_number=row_number,
+            )
 
-        # Validate row
-        for check in checks:
-            # TODO: filter pick/skip errors
-            errors.extend(check.validate_table_row(row))
+            # Validate row
+            for check in checks:
+                # TODO: filter pick/skip errors
+                errors.extend(check.validate_table_row(row))
 
-        # TODO: handle row/error limits
+            # TODO: handle row/error limits
 
     # Return report
     return TableReport(
