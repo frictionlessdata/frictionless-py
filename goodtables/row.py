@@ -1,100 +1,113 @@
+import tableschema
 from collections import OrderedDict
-from . import helpers
+from cached_property import cached_property
 
 
-# TODO: fixed the performance
 class Row(OrderedDict):
-    def __init__(
-        self,
-        cells,
-        *,
-        field_names,
-        field_positions,
-        missing_values,
-        row_position,
-        row_number,
-    ):
-        assert len(field_names) == len(field_positions)
+    def __init__(self, fields, cells, *, field_positions, row_position, row_number):
+        assert len(fields) == len(field_positions)
 
         # Set params
         self.__field_positions = field_positions
         self.__row_position = row_position
         self.__row_number = row_number
-        self.__deleted_cells = {}
-        self.__missing_cells = []
-        self.__extra_cells = []
         self.__blank_cells = {}
-        self.__is_blank = True
+        self.__error_cells = {}
         self.__errors = []
 
-        # Set contents
-        iterator = helpers.combine(field_names, cells)
-        for field_number, [field_name, cell] in enumerate(iterator, start=1):
-            if field_name == helpers.combine.missing:
-                self.__extra_cells.append(cell)
-                continue
-            if cell == helpers.combine.missing:
-                self.__missing_cells.append(field_name)
-                cell = None
-            if cell in missing_values:
-                self.__blank_cells[field_name] = cell
-                cell = None
+        # Extra cells
+        if len(fields) < len(cells):
+            iterator = cells[len(fields) :]
+            start = max(field_positions) + 1
+            del cells[len(fields) :]
+            for field_position, cell in enumerate(iterator, start=start):
+                self.__errors.append(
+                    self.spec.create_error(
+                        'extra-cell',
+                        context={
+                            'cell': cell,
+                            'row': self,
+                            'rowNumber': row_number,
+                            'rowPosition': row_position,
+                            'fieldPosition': field_position,
+                        },
+                    )
+                )
+
+        # Missing cells
+        if len(fields) > len(cells):
+            start = len(cells) + 1
+            iterator = zip(fields[len(cells) :], field_positions[len(cells) :])
+            for field_number, (field_position, field) in enumerate(iterator, start=start):
+                self.__errors.append(
+                    self.spec.create_error(
+                        'missing-cell',
+                        context={
+                            'row': self,
+                            'rowNumber': row_number,
+                            'rowPosition': row_position,
+                            'fieldName': field.name,
+                            'fieldNumber': field_number,
+                            'fieldPosition': field_position,
+                        },
+                    )
+                )
+
+        # Iterate fields
+        is_blank = True
+        field_number = 0
+        for field_position, field, cell in zip(field_positions, fields, cells):
+            field_number += 1
+
+            # Blank cell
             if cell is not None:
-                self.__is_blank = False
-            super().__setitem__(field_name, cell)
+                if cell in field.missing_values:
+                    self.__blank_cells[field.name] = cell
+                    cell = None
+                else:
+                    is_blank = False
 
-    def __setitem__(self, field_name, cell):
-        if field_name not in self:
-            raise KeyError(field_name)
-        if cell is None and self[field_name] is not None:
-            self.__deleted_cells[field_name] = self[field_name]
-        super().__setitem__(field_name, cell)
+            # Error cell
+            #  if cell is not None:
+            #  try:
+            #  cell = field.cast(cell)
+            #  except tableschema.exceptions.CastError:
+            #  self.__error_cells[field.name] = cell
+            #  cell = None
+            #  # TODO: add errors
 
-    def __delitem__(self, field_name):
-        self[field_name] = None
+            # Save cell
+            self[field.name] = cell
 
-    def items_with_position(self):
-        iterator = zip(self.__field_positions, self.items())
-        return (
-            (field_position, field_name, cell)
-            for field_position, [field_name, cell] in iterator
-        )
+        # Blank row
+        if is_blank:
+            self.__errors.append(
+                self.spec.create_error(
+                    'blank-row',
+                    context={'rowNumber': row_number, 'rowPosition': row_position,},
+                )
+            )
 
-    @property
-    def deleted_cells(self):
-        return self.__deleted_cells
-
-    @property
-    def missing_cells(self):
-        return self.__missing_cells
-
-    @property
-    def extra_cells(self):
-        return self.__extra_cells
-
-    @property
-    def blank_cells(self):
-        return self.__blank_cells
-
-    @property
+    @cached_property
     def field_positions(self):
         return self.__field_positions
 
-    @property
+    @cached_property
     def row_position(self):
         return self.__row_position
 
-    @property
+    @cached_property
     def row_number(self):
         return self.__row_number
 
-    @property
-    def is_blank(self):
-        return self.__is_blank
+    @cached_property
+    def blank_cells(self):
+        return self.__blank_cells
 
-    @property
+    @cached_property
+    def error_cells(self):
+        return self.__field_positions
+
+    @cached_property
     def errors(self):
         return self.__errors
-
-    def add_error(self, error):
-        self.__errors.append(error)

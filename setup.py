@@ -24,6 +24,7 @@ INSTALL_REQUIRES = [
     'six>=1.9',
     'click>=6.6',
     'click-default-group',
+    'cached-property>=1.5',
     'requests>=2.10',
     'simpleeval>=0.9',
     'statistics>=1.0',
@@ -41,7 +42,7 @@ TESTS_REQUIRE = [
 ]
 README = read('README.md')
 VERSION = read(PACKAGE, 'assets', 'VERSION')
-PACKAGES = find_packages(exclude=['examples', 'tests'])
+PACKAGES = find_packages(exclude=['tests'])
 
 
 # Run
