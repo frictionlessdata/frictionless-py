@@ -26,9 +26,9 @@ class Row(OrderedDict):
                     errors.ExtraCellError(
                         cell=cell,
                         row=self,
-                        row_number=row_number,
-                        row_position=row_position,
-                        field_position=field_position,
+                        rowNumber=row_number,
+                        rowPosition=row_position,
+                        fieldPosition=field_position,
                     )
                 )
 
@@ -40,11 +40,11 @@ class Row(OrderedDict):
                 self.__errors.append(
                     errors.ExtraCellError(
                         row=self,
-                        row_number=row_number,
-                        row_position=row_position,
-                        field_name=field.name,
-                        field_number=field_number,
-                        field_position=field_position,
+                        rowNumber=row_number,
+                        rowPosition=row_position,
+                        fieldName=field.name,
+                        fieldNumber=field_number,
+                        fieldPosition=field_position,
                     )
                 )
 
@@ -77,7 +77,7 @@ class Row(OrderedDict):
         # Blank row
         if is_blank:
             self.__errors.append(
-                errors.BlankRowError(row_number=row_number, row_position=row_position,)
+                errors.BlankRowError(rowNumber=row_number, rowPosition=row_position,)
             )
 
     @cached_property

@@ -2,38 +2,58 @@ from .config import REPORT_PROFILE
 
 
 class Report(dict):
-    def __init__(self, *, time, warnings, table_reports):
-        self['time'] = time
-        self['valid'] = all(report['valid'] for report in table_reports)
-        self['warnings'] = warnings
-        self['errorCount'] = sum(report['errorCount'] for report in table_reports)
-        self['tableCount'] = len(table_reports)
-        self['tables'] = table_reports
+    """
+    # Arguments
+        time (str)
+        warnings (str[])
+        tables (TableReport[])
+    """
+
+    def __init__(self, **context):
+        self.update(context)
+        self['valid'] = all(table['valid'] for table in context['tables'])
+        self['errorCount'] = sum(table['errorCount'] for table in context['tables'])
+        self['tableCount'] = len(context['tables'])
         # TODO: validate
         REPORT_PROFILE
 
-    def flatten(self):
-        pass
+    def flatten(self, spec):
+        result = []
+        for table_number, table in enumerate(self['tables'], start=1):
+            for error in table['errors']:
+                context = {'tableNumber': table_number}
+                context.update(error)
+                result.append([context.get(prop) for prop in spec])
+        return result
 
 
-# TODO: add warnings?
 class TableReport(dict):
-    def __init__(self, *, time, stream, schema, dialect, row_count, errors):
-        self['time'] = time
-        self['valid'] = not len(errors)
-        self['source'] = stream.source
-        self['headers'] = stream.headers
-        self['scheme'] = stream.scheme
-        self['format'] = stream.format
-        self['encoding'] = stream.encoding
-        self['compression'] = stream.compression
-        self['schema'] = schema.descriptor
-        self['dialect'] = dialect
-        self['rowCount'] = row_count
-        self['errorCount'] = len(errors)
-        self['errors'] = errors
+    """
+    # Arguments
+        time (str)
+        warnings (str[])
+        source (str)
+        headers (str[])
+        scheme (str)
+        format (str)
+        encoding (str)
+        schema (dict)
+        dialect (dict)
+        row_count (int)
+        errors (Error[])
+    """
+
+    def __init__(self, **context):
+        self.update(context)
+        self['valid'] = not context['errors']
+        self['errorCount'] = len(context['errors'])
         # TODO: validate
         REPORT_PROFILE
 
-    def flatten(self):
-        pass
+    def flatten(self, spec):
+        result = []
+        for error in self['errors']:
+            context = {}
+            context.update(error)
+            result.append([context.get(prop) for prop in spec])
+        return result

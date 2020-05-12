@@ -115,9 +115,9 @@ class BlankHeaderError(Error):
     """
     # Arguments
         headers (str[])
-        field_name (str)
-        field_number (int)
-        field_position (int)
+        fieldName (str)
+        fieldNumber (int)
+        fieldPosition (int)
     """
 
     code = 'blank-header'
@@ -132,9 +132,9 @@ class DuplicateHeaderError(Error):
     # Arguments
         header (str)
         headers (str[])
-        field_name (str)
-        field_number (int)
-        field_position (int)
+        fieldName (str)
+        fieldNumber (int)
+        fieldPosition (int)
         details (str)
     """
 
@@ -150,7 +150,7 @@ class ExtraHeaderError(Error):
     # Arguments
         header (str)
         headers (str[])
-        field_position (int)
+        fieldPosition (int)
     """
 
     code = 'extra-header'
@@ -165,9 +165,9 @@ class MissingHeaderError(Error):
     # Arguments
         header (str)
         headers (str[])
-        field_name (str)
-        field_number (int)
-        field_position (int)
+        fieldName (str)
+        fieldNumber (int)
+        fieldPosition (int)
     """
 
     code = 'missing-header'
@@ -182,9 +182,9 @@ class NonMatchingHeaderError(Error):
     # Arguments
         header (str)
         headers (str[])
-        field_name (str)
-        field_number (int)
-        field_position (int)
+        fieldName (str)
+        fieldNumber (int)
+        fieldPosition (int)
     """
 
     code = 'non-matching-header'
@@ -200,8 +200,8 @@ class NonMatchingHeaderError(Error):
 class BlankRowError(Error):
     """
     # Arguments
-        row_number (int)
-        row_position (int)
+        rowNumber (int)
+        rowPosition (int)
     """
 
     code = 'blank-row'
@@ -216,9 +216,9 @@ class ExtraCellError(Error):
     # Arguments
         cell (str)
         row (dict)
-        row_number (int)
-        row_position (int)
-        field_position (int)
+        rowNumber (int)
+        rowPosition (int)
+        fieldPosition (int)
     """
 
     code = 'extra-cell'
@@ -232,11 +232,11 @@ class MissingCellError(Error):
     """
     # Arguments
         row (dict)
-        row_number (int)
-        row_position (int)
-        field_name (str)
-        field_number (int)
-        field_position (int)
+        rowNumber (int)
+        rowPosition (int)
+        fieldName (str)
+        fieldNumber (int)
+        fieldPosition (int)
     """
 
     code = 'missing-cell'

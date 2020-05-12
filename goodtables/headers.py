@@ -18,7 +18,7 @@ class Headers(list):
             for field_position, header in enumerate(iterator, start=start):
                 self.__errors.append(
                     errors.ExtraHeaderError(
-                        header=header, headers=headers, field_position=field_position,
+                        header=header, headers=headers, fieldPosition=field_position,
                     )
                 )
 
@@ -30,9 +30,9 @@ class Headers(list):
                 self.__errors.append(
                     errors.MissingHeaderError(
                         headers=self,
-                        field_name=field.name,
-                        field_number=field_number,
-                        field_position=field_position,
+                        fieldName=field.name,
+                        fieldNumber=field_number,
+                        fieldPosition=field_position,
                     )
                 )
 
@@ -46,9 +46,9 @@ class Headers(list):
                 self.__errors.append(
                     errors.BlankHeaderError(
                         headers=self,
-                        field_name=field.name,
-                        field_number=field_number,
-                        field_position=field_position,
+                        fieldName=field.name,
+                        fieldNumber=field_number,
+                        fieldPosition=field_position,
                     )
                 )
 
@@ -64,9 +64,9 @@ class Headers(list):
                     errors.DuplicateHeaderError(
                         header=header,
                         headers=self,
-                        field_name=field.name,
-                        field_number=field_number,
-                        field_position=field_position,
+                        fieldName=field.name,
+                        fieldNumber=field_number,
+                        fieldPosition=field_position,
                         details=', '.join(duplicate_field_positions),
                     )
                 )
@@ -77,9 +77,9 @@ class Headers(list):
                     errors.NonMatchingHeaderError(
                         header=header,
                         headers=self,
-                        field_name=field.name,
-                        field_number=field_number,
-                        field_position=field_position,
+                        fieldName=field.name,
+                        fieldNumber=field_number,
+                        fieldPosition=field_position,
                     )
                 )
 
