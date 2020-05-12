@@ -1,9 +1,9 @@
 import tabulator
 import tableschema
-from .. import config
 from ..row import Row
 from ..spec import Spec
 from ..timer import Timer
+from ..headers import Headers
 from ..report import TableReport
 from ..checks import BaselineCheck
 
@@ -81,32 +81,47 @@ def validate_table(
 
     # Validate headers
     if stream and schema:
+
+        # Get headers
+        headers = Headers(
+            stream.headers, fields=schema.fields, field_positions=schema.field_positions
+        )
+
+        # Validate headers
         for check in checks:
-            errors.extend(check.validate_table_headers(stream.headers))
+            errors.extend(check.validate_table_headers(headers))
 
     # Validate rows
     row_number = 0
+    fields = schema.fields
+    field_positions = stream.field_positions
     iterator = stream.iter(extended=True)
     while True:
+
+        # Read cells
         try:
-            row_position, headers, cells = next(iterator)
-            row_number += 1
-            row = Row(
-                cells,
-                field_names=schema.field_names,
-                field_positions=stream.field_positions,
-                missing_values=config.MISSING_VALUES,
-                row_position=row_position,
-                row_number=row_number,
-            )
+            row_position, _, cells = next(iterator)
         except Exception as exception:
             error = spec.create_error_from_exception(exception)
             errors.append(error)
             stream = None
         except StopIteration:
             break
+
+        # Create row
+        row_number += 1
+        row = Row(
+            cells,
+            fields=fields,
+            field_positions=field_positions,
+            row_position=row_position,
+            row_number=row_number,
+        )
+
+        # Validate row
         for check in checks:
             errors.extend(check.validate_table_row(row))
+
         # TODO: handle row/error limits
 
     # Return report

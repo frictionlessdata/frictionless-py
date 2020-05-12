@@ -4,7 +4,7 @@ from cached_property import cached_property
 
 
 class Row(OrderedDict):
-    def __init__(self, fields, cells, *, field_positions, row_position, row_number):
+    def __init__(self, cells, *, fields, field_positions, row_position, row_number):
         assert len(fields) == len(field_positions)
 
         # Set params
@@ -53,7 +53,7 @@ class Row(OrderedDict):
                     )
                 )
 
-        # Iterate fields
+        # Iterate items
         is_blank = True
         field_number = 0
         for field_position, field, cell in zip(field_positions, fields, cells):
@@ -84,7 +84,7 @@ class Row(OrderedDict):
             self.__errors.append(
                 self.spec.create_error(
                     'blank-row',
-                    context={'rowNumber': row_number, 'rowPosition': row_position,},
+                    context={'rowNumber': row_number, 'rowPosition': row_position},
                 )
             )
 
