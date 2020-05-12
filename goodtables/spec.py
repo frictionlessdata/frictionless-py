@@ -10,9 +10,6 @@ class Spec(dict):
         # TODO: validate
         SPEC_PROFILE
 
-    def patch(self, callback):
-        SPEC_PROFILE
-
     def create_error(self, code, *, context):
         # TODO: handle key errors
         error = deepcopy(self[code])

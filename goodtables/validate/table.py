@@ -1,7 +1,7 @@
 import tabulator
 import tableschema
 from ..row import Row
-from ..spec import Spec
+from ..error import Error
 from ..timer import Timer
 from ..headers import Headers
 from ..report import TableReport
@@ -30,12 +30,10 @@ def validate_table(
     row_limit=None,
     error_limit=None,
     extra_checks=None,
-    spec=None,
     **task_rest
 ):
 
     # Prepare state
-    spec = spec or Spec()
     timer = Timer()
     checks = []
     errors = []
@@ -58,7 +56,7 @@ def validate_table(
         )
         stream.open()
     except Exception as exception:
-        error = spec.create_error_from_exception(exception)
+        error = Error.from_exception(exception)
         errors.append(error)
         stream = None
 
@@ -73,9 +71,9 @@ def validate_table(
 
     # Prepare checks
     if stream and schema:
-        checks = [BaselineCheck(spec, stream=stream, schema=schema)]
+        checks = [BaselineCheck(stream=stream, schema=schema)]
         # for plugin in plugins:
-        #   check = plugin.create_check(spec, stream=stream, schema=schema)
+        #   check = plugin.create_check(stream=stream, schema=schema)
         #   checks.append(check)
         pass
 
@@ -89,6 +87,7 @@ def validate_table(
 
         # Validate headers
         for check in checks:
+            # TODO: filter pick/skip errors
             errors.extend(check.validate_table_headers(headers))
 
     # Validate rows
@@ -102,7 +101,7 @@ def validate_table(
         try:
             row_position, _, cells = next(iterator)
         except Exception as exception:
-            error = spec.create_error_from_exception(exception)
+            error = Error.from_exception(exception)
             errors.append(error)
             stream = None
         except StopIteration:
@@ -120,6 +119,7 @@ def validate_table(
 
         # Validate row
         for check in checks:
+            # TODO: filter pick/skip errors
             errors.extend(check.validate_table_row(row))
 
         # TODO: handle row/error limits

@@ -1,13 +1,7 @@
 class Check:
-    def __init__(self, spec, *, stream, schema, **options):
-        self.__spec = spec
-        self.__stream = stream
+    def __init__(self, *, stream, schema, **options):
         self.__schema = schema
         self.__options = options
-
-    @property
-    def spec(self):
-        return self.__spec
 
     @property
     def stream(self):

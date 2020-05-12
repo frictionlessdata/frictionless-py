@@ -1,4 +1,5 @@
 from cached_property import cached_property
+from . import errors
 
 
 class Headers(list):
@@ -16,13 +17,8 @@ class Headers(list):
             del headers[len(fields) :]
             for field_position, header in enumerate(iterator, start=start):
                 self.__errors.append(
-                    self.spec.create_error(
-                        'extra-header',
-                        context={
-                            'header': header,
-                            'headers': self,
-                            'fieldPosition': field_position,
-                        },
+                    errors.ExtraHeader(
+                        header=header, headers=headers, field_position=field_position,
                     )
                 )
 
@@ -32,14 +28,11 @@ class Headers(list):
             iterator = zip(fields[len(headers) :], field_positions[len(headers) :])
             for field_number, (field_position, field) in enumerate(iterator, start=start):
                 self.__errors.append(
-                    self.spec.create_error(
-                        'missing-header',
-                        context={
-                            'headers': self,
-                            'fieldName': field.name,
-                            'fieldNumber': field_number,
-                            'fieldPosition': field_position,
-                        },
+                    errors.MissingHeader(
+                        headers=self,
+                        field_name=field.name,
+                        field_number=field_number,
+                        field_position=field_position,
                     )
                 )
 
@@ -51,13 +44,11 @@ class Headers(list):
             # Blank Header
             if header in (None, ''):
                 self.__errors.append(
-                    self.spec.create_error(
-                        'blank-header',
-                        context={
-                            'headers': self,
-                            'fieldNumber': field_number,
-                            'fieldPosition': field_position,
-                        },
+                    errors.BlankHeader(
+                        headers=self,
+                        field_name=field.name,
+                        field_number=field_number,
+                        field_position=field_position,
                     )
                 )
 
@@ -65,38 +56,30 @@ class Headers(list):
             duplicate_field_positions = []
             seen_headers = headers[0 : field_number - 1]
             seen_field_positions = field_positions[0 : field_number - 1]
-            for seen_field_position, seen_header in zip(
-                seen_field_positions, seen_headers
-            ):
+            for seen_position, seen_header in zip(seen_field_positions, seen_headers):
                 if header == seen_header:
-                    duplicate_field_positions.append(seen_field_position)
+                    duplicate_field_positions.append(seen_position)
             if duplicate_field_positions:
                 self.__errors.append(
-                    self.spec.create_error(
-                        'duplicate-header',
-                        context={
-                            'header': header,
-                            'headers': self,
-                            'fieldName': field.name,
-                            'fieldNumber': field_number,
-                            'fieldPosition': field_position,
-                            'details': ', '.join(duplicate_field_positions),
-                        },
+                    errors.MissingHeader(
+                        header=header,
+                        headers=self,
+                        field_name=field.name,
+                        field_number=field_number,
+                        field_position=field_position,
+                        details=', '.join(duplicate_field_positions),
                     )
                 )
 
             # Non-matching Header
             if field.name != header:
                 self.__errors.append(
-                    self.spec.create_error(
-                        'non-matching-header',
-                        context={
-                            'header': header,
-                            'headers': self,
-                            'fieldName': field.name,
-                            'fieldNumber': field_number,
-                            'fieldPosition': field_position,
-                        },
+                    errors.MissingHeader(
+                        header=header,
+                        headers=self,
+                        field_name=field.name,
+                        field_number=field_number,
+                        field_position=field_position,
                     )
                 )
 

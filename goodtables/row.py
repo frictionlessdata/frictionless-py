@@ -1,6 +1,7 @@
 import tableschema
 from collections import OrderedDict
 from cached_property import cached_property
+from . import errors
 
 
 class Row(OrderedDict):
@@ -22,15 +23,12 @@ class Row(OrderedDict):
             del cells[len(fields) :]
             for field_position, cell in enumerate(iterator, start=start):
                 self.__errors.append(
-                    self.spec.create_error(
-                        'extra-cell',
-                        context={
-                            'cell': cell,
-                            'row': self,
-                            'rowNumber': row_number,
-                            'rowPosition': row_position,
-                            'fieldPosition': field_position,
-                        },
+                    errors.ExtraCellError(
+                        cell=cell,
+                        row=self,
+                        row_number=row_number,
+                        row_position=row_position,
+                        field_position=field_position,
                     )
                 )
 
@@ -40,16 +38,13 @@ class Row(OrderedDict):
             iterator = zip(fields[len(cells) :], field_positions[len(cells) :])
             for field_number, (field_position, field) in enumerate(iterator, start=start):
                 self.__errors.append(
-                    self.spec.create_error(
-                        'missing-cell',
-                        context={
-                            'row': self,
-                            'rowNumber': row_number,
-                            'rowPosition': row_position,
-                            'fieldName': field.name,
-                            'fieldNumber': field_number,
-                            'fieldPosition': field_position,
-                        },
+                    errors.ExtraCellError(
+                        row=self,
+                        row_number=row_number,
+                        row_position=row_position,
+                        field_name=field.name,
+                        field_number=field_number,
+                        field_position=field_position,
                     )
                 )
 
@@ -82,10 +77,7 @@ class Row(OrderedDict):
         # Blank row
         if is_blank:
             self.__errors.append(
-                self.spec.create_error(
-                    'blank-row',
-                    context={'rowNumber': row_number, 'rowPosition': row_position},
-                )
+                errors.BlankRowError(row_number=row_number, row_position=row_position,)
             )
 
     @cached_property
