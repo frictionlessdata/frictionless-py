@@ -1,3 +1,5 @@
+import pytest
+import pathlib
 from goodtables import validate
 
 
@@ -32,10 +34,10 @@ def test_validate_invalid_schema():
     ]
 
 
-# Report
+# Report props
 
 
-def test_validate_report():
+def test_validate_report_props():
     report = validate('data/valid.csv')
     assert report['valid'] is True
     assert report['warnings'] == []
@@ -55,3 +57,18 @@ def test_validate_report():
         ],
         'missingValues': [''],
     }
+
+
+# Source as pathlib.Path
+
+
+def test_source_pathlib_path_table():
+    report = validate(pathlib.Path('data/valid.csv'))
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == []
+
+
+@pytest.mark.skip
+def test_source_pathlib_path_datapackage():
+    report = validate(pathlib.Path('data/datapackages/valid/datapackage.json'))
+    assert report['table-count'] == 2
+    assert report['valid']
