@@ -8,7 +8,7 @@ from goodtables import validate
 
 def test_validate_valid():
     report = validate('data/valid.csv')
-    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == []
+    assert report['valid']
 
 
 def test_validate_invalid():
@@ -64,11 +64,38 @@ def test_validate_report_props():
 
 def test_source_pathlib_path_table():
     report = validate(pathlib.Path('data/valid.csv'))
-    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == []
+    assert report['valid']
 
 
 @pytest.mark.skip
 def test_source_pathlib_path_datapackage():
     report = validate(pathlib.Path('data/datapackages/valid/datapackage.json'))
-    assert report['table-count'] == 2
     assert report['valid']
+
+
+# Catch exceptions
+
+
+def test_validate_catch_all_open_exceptions():
+    report = validate('data/latin1.csv', encoding='utf-8')
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [None, None, 'encoding-error'],
+    ]
+
+
+def test_validate_catch_all_iter_exceptions():
+    # Reducing sample size to get raise on iter, not on open
+    report = validate([['h'], [1], 'bad'], sample_size=1)
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [None, None, 'source-error'],
+    ]
+
+
+# Empty source
+
+
+def test_validate_empty_source():
+    report = validate('data/empty.csv')
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code', 'details']) == [
+        [None, None, 'source-error', 'There are no rows available'],
+    ]

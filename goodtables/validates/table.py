@@ -36,11 +36,14 @@ def validate_table(
     # Prepare state
     timer = Timer()
     row_number = 0
+    warnings = []
     checks = []
     errors = []
 
     # Prepare stream
     try:
+
+        # Create/open stream
         stream = tabulator.Stream(
             source,
             headers=headers,
@@ -56,6 +59,12 @@ def validate_table(
             **task_rest
         )
         stream.open()
+
+        # Handle empty source
+        if not stream.sample:
+            message = 'There are no rows available'
+            raise tabulator.exceptions.SourceError(message)
+
     except Exception as exception:
         error = Error.from_exception(exception)
         errors.append(error)
@@ -63,13 +72,19 @@ def validate_table(
 
     # Prepare schema
     if stream:
+
+        # Create/infer schema
         schema = tableschema.Schema(schema)
         if not schema.fields:
             schema.infer(stream.sample, headers=stream.headers, confidence=1)
+
+        # Handle schema errors
         if schema.errors:
             for error in schema.errors:
                 errors.append(Error.from_exception(error))
             schema = None
+
+        # Support schema ordering
         if schema and order_schema:
             # TODO: implement order_schema
             pass
@@ -131,24 +146,30 @@ def validate_table(
 
     # Prepare report
     time = timer.get_time()
-    schema = schema.descriptor if schema else {}
-    row_count = row_number
+    if schema:
+        schema = schema.descriptor
+    if stream:
+        source = stream.source
+        headers = stream.headers
+        scheme = stream.scheme
+        format = stream.format
+        encoding = stream.encoding
 
     # Return report
     return Report(
         time=time,
-        warnings=[],
+        warnings=warnings,
         tables=[
             ReportTable(
                 time=time,
-                source=stream.source,
-                headers=stream.headers,
-                scheme=stream.scheme,
-                format=stream.format,
-                encoding=stream.encoding,
+                source=source,
+                headers=headers,
+                scheme=scheme,
+                format=format,
+                encoding=encoding,
                 schema=schema,
                 dialect={},
-                rowCount=row_count,
+                rowCount=row_number,
                 errors=errors,
             )
         ],

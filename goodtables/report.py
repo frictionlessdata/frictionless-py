@@ -2,6 +2,7 @@ from . import config
 from . import exceptions
 
 
+# TODO: filter none values?
 class Report(dict):
     """
     # Arguments
@@ -36,6 +37,7 @@ class Report(dict):
         return result
 
 
+# TODO: filter none values?
 class ReportTable(dict):
     """
     # Arguments
