@@ -91,7 +91,7 @@ def test_validate_catch_all_iter_exceptions():
     ]
 
 
-# Not data source
+# Not data/headers/rows source
 
 
 def test_validate_no_data():
@@ -101,17 +101,11 @@ def test_validate_no_data():
     ]
 
 
-# No headers source
-
-
 def test_validate_no_headers():
     report = validate('data/invalid_no_headers.csv', headers=None)
     assert report.flatten(['rowPosition', 'fieldPosition', 'code', 'details']) == [
         [None, None, 'source-error', 'There are no headers available'],
     ]
-
-
-# No rows source
 
 
 def test_validate_no_headers():
