@@ -91,11 +91,31 @@ def test_validate_catch_all_iter_exceptions():
     ]
 
 
-# Empty source
+# Not data source
 
 
-def test_validate_empty_source():
+def test_validate_no_data():
     report = validate('data/empty.csv')
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code', 'details']) == [
+        [None, None, 'source-error', 'There are no data available'],
+    ]
+
+
+# No headers source
+
+
+def test_validate_no_headers():
+    report = validate('data/invalid_no_headers.csv', headers=None)
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code', 'details']) == [
+        [None, None, 'source-error', 'There are no headers available'],
+    ]
+
+
+# No rows source
+
+
+def test_validate_no_headers():
+    report = validate('data/invalid_no_rows.csv')
     assert report.flatten(['rowPosition', 'fieldPosition', 'code', 'details']) == [
         [None, None, 'source-error', 'There are no rows available'],
     ]

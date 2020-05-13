@@ -60,7 +60,17 @@ def validate_table(
         )
         stream.open()
 
-        # Handle empty source
+        # Handle no data
+        if not stream.headers and not stream.sample:
+            message = 'There are no data available'
+            raise tabulator.exceptions.SourceError(message)
+
+        # Handle no headers
+        if not stream.headers:
+            message = 'There are no headers available'
+            raise tabulator.exceptions.SourceError(message)
+
+        # Handle no rows
         if not stream.sample:
             message = 'There are no rows available'
             raise tabulator.exceptions.SourceError(message)
