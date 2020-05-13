@@ -108,7 +108,7 @@ def test_validate_no_headers():
     ]
 
 
-def test_validate_no_headers():
+def test_validate_no_rows():
     report = validate('data/invalid_no_rows.csv')
     assert report.flatten(['rowPosition', 'fieldPosition', 'code', 'details']) == [
         [None, None, 'source-error', 'There are no rows available'],
