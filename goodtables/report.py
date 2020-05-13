@@ -1,22 +1,23 @@
-from .config import REPORT_PROFILE
+from . import config
 from . import exceptions
 
 
 class Report(dict):
     """
     # Arguments
-        time (str)
+        time (float)
         warnings (str[])
         tables (TableReport[])
     """
 
     def __init__(self, **context):
         self.update(context)
+        self['version'] = config.VERSION
         self['valid'] = all(table['valid'] for table in context['tables'])
         self['errorCount'] = sum(table['errorCount'] for table in context['tables'])
         self['tableCount'] = len(context['tables'])
         # TODO: validate
-        REPORT_PROFILE
+        config.REPORT_PROFILE
 
     @property
     def table(self):
@@ -38,7 +39,7 @@ class Report(dict):
 class ReportTable(dict):
     """
     # Arguments
-        time (str)
+        time (float)
         warnings (str[])
         source (str)
         headers (str[])

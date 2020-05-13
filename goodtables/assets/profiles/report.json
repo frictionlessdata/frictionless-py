@@ -4,6 +4,7 @@
   "$id": "https://github.com/frictionlessdata/goodtables-py/tree/master/goodtables/assets/profiles/report.json",
   "type": "object",
   "required": [
+    "version",
     "time",
     "valid",
     "warnings",
@@ -22,6 +23,11 @@
       "type": "boolean",
       "title": "Valid",
       "description": "Whether all the inspected tables valid or not"
+    },
+    "version": {
+      "type": "string",
+      "title": "Version",
+      "description": "Goodtables version"
     },
     "warnings": {
       "type": "array",
