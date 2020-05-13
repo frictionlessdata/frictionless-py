@@ -1,4 +1,3 @@
-import tableschema
 from collections import OrderedDict
 from cached_property import cached_property
 from . import errors

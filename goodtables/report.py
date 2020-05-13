@@ -20,7 +20,7 @@ class Report(dict):
 
     @property
     def table(self):
-        if len(self['tables'] != 1):
+        if len(self['tables']) != 1:
             message = 'The "report.table" is only available for a single table reports'
             raise exceptions.GoodtablesException(message)
         return self['tables'][0]
@@ -47,7 +47,7 @@ class ReportTable(dict):
         encoding (str)
         schema (dict)
         dialect (dict)
-        row_count (int)
+        rowCount (int)
         errors (Error[])
     """
 
@@ -58,8 +58,8 @@ class ReportTable(dict):
 
     @property
     def error(self):
-        if len(self['errors'] != 1):
-            message = 'The "report_table.error" is only available if one error'
+        if len(self['errors']) != 1:
+            message = 'The "table.error" is only available for a single error tables'
             raise exceptions.GoodtablesException(message)
         return self['errors'][0]
 

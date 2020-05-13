@@ -1,5 +1,4 @@
 from . import validates
-from .report import Report
 
 
 def validate(source, **task):

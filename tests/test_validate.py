@@ -21,3 +21,29 @@ def test_validate_invalid():
         [4, None, 'blank-row'],
         [5, 5, 'extra-cell'],
     ]
+
+
+# Report
+
+
+def test_validate_report():
+    report = validate('data/valid.csv')
+    assert report['valid'] is True
+    assert report['warnings'] == []
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == []
+    assert report.table['valid'] is True
+    assert report.table['source'] == 'data/valid.csv'
+    assert report.table['headers'] == ['id', 'name']
+    assert report.table['scheme'] == 'file'
+    assert report.table['format'] == 'csv'
+    assert report.table['encoding'] == 'utf-8'
+    assert report.table['dialect'] == {}
+    assert report.table['rowCount'] == 2
+    assert report.table['errors'] == []
+    assert report.table['schema'] == {
+        'fields': [
+            {'format': 'default', 'name': 'id', 'type': 'integer'},
+            {'format': 'default', 'name': 'name', 'type': 'string'},
+        ],
+        'missingValues': [''],
+    }

@@ -21,7 +21,7 @@ format:
 lint:
 	black $(PACKAGE) tests --skip-string-normalization --line-length 90 --check
 	pylama $(PACKAGE)
-	mypy $(PACKAGE)
+	mypy $(PACKAGE) --ignore-missing-imports
 
 readme:
 	pip install md-toc
@@ -43,7 +43,8 @@ templates:
 
 test:
 	make lint
-	pytest
+	py.test --cov ${PACKAGE} --cov-report term-missing
+
 
 version:
 	@echo $(VERSION)

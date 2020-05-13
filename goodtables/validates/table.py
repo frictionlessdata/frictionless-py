@@ -140,7 +140,7 @@ def validate_table(
                 encoding=stream.encoding,
                 schema=schema.descriptor,
                 dialect={},
-                row_count=row_number,
+                rowCount=row_number,
                 errors=errors,
             )
         ],
