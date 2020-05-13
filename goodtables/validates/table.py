@@ -4,8 +4,8 @@ from ..row import Row
 from ..timer import Timer
 from ..errors import Error
 from ..headers import Headers
-from ..report import TableReport
 from ..checks import BaselineCheck
+from ..report import Report, ReportTable
 
 
 def validate_table(
@@ -126,16 +126,22 @@ def validate_table(
             # TODO: handle row/error limits
 
     # Return report
-    return TableReport(
-        time=timer.get_time(),
+    time = timer.get_time()
+    return Report(
+        time=time,
         warnings=[],
-        source=stream.source,
-        headers=stream.headers,
-        scheme=stream.scheme,
-        format=stream.format,
-        encoding=stream.encoding,
-        schema=schema.descriptor,
-        dialect={},
-        row_count=row_number,
-        errors=errors,
+        tables=[
+            ReportTable(
+                time=time,
+                source=stream.source,
+                headers=stream.headers,
+                scheme=stream.scheme,
+                format=stream.format,
+                encoding=stream.encoding,
+                schema=schema.descriptor,
+                dialect={},
+                row_count=row_number,
+                errors=errors,
+            )
+        ],
     )

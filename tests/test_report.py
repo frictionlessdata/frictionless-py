@@ -1,18 +1,18 @@
-from goodtables import TableReport, errors
+from goodtables import ReportTable, errors
 
 
-# TableReport
+# ReportTable
 
 
 def test_table_report_valid():
-    report = TableReport(errors=[])
-    assert report['valid'] == True
-    assert report['errorCount'] == 0
-    assert report.flatten(['code']) == []
+    table = ReportTable(errors=[])
+    assert table['valid'] == True
+    assert table['errorCount'] == 0
+    assert table.flatten(['code']) == []
 
 
 def test_table_report_invalid():
-    report = TableReport(errors=[errors.LoadingError(details='details')])
-    assert report['valid'] == False
-    assert report['errorCount'] == 1
-    assert report.flatten(['code']) == [['loading-error']]
+    table = ReportTable(errors=[errors.LoadingError(details='details')])
+    assert table['valid'] == False
+    assert table['errorCount'] == 1
+    assert table.flatten(['code']) == [['loading-error']]

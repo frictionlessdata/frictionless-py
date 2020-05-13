@@ -1,4 +1,5 @@
 from .config import REPORT_PROFILE
+from . import exceptions
 
 
 class Report(dict):
@@ -17,6 +18,13 @@ class Report(dict):
         # TODO: validate
         REPORT_PROFILE
 
+    @property
+    def table(self):
+        if len(self['tables'] != 1):
+            message = 'The "report.table" is only available for a single table reports'
+            raise exceptions.GoodtablesException(message)
+        return self['tables'][0]
+
     def flatten(self, spec):
         result = []
         for table_number, table in enumerate(self['tables'], start=1):
@@ -27,7 +35,7 @@ class Report(dict):
         return result
 
 
-class TableReport(dict):
+class ReportTable(dict):
     """
     # Arguments
         time (str)
@@ -47,8 +55,13 @@ class TableReport(dict):
         self.update(context)
         self['valid'] = not context['errors']
         self['errorCount'] = len(context['errors'])
-        # TODO: validate
-        REPORT_PROFILE
+
+    @property
+    def error(self):
+        if len(self['errors'] != 1):
+            message = 'The "report_table.error" is only available if one error'
+            raise exceptions.GoodtablesException(message)
+        return self['errors'][0]
 
     def flatten(self, spec):
         result = []

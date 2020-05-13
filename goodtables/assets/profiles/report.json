@@ -53,7 +53,6 @@
         "required": [
           "time",
           "valid",
-          "warnings",
           "source",
           "headers",
           "scheme",
@@ -77,14 +76,6 @@
             "type": "boolean",
             "title": "Valid",
             "description": "The validation result."
-          },
-          "warnings": {
-            "type": "array",
-            "title": "Warnings",
-            "items": {
-              "type": "string",
-              "title": "Warning"
-            }
           },
           "source": {
             "type": "string",
