@@ -114,7 +114,7 @@ class SchemaError(Error):
 class BlankHeaderError(Error):
     """
     # Arguments
-        headers (str[])
+        cells (str[])
         fieldName (str)
         fieldNumber (int)
         fieldPosition (int)
@@ -130,8 +130,8 @@ class BlankHeaderError(Error):
 class DuplicateHeaderError(Error):
     """
     # Arguments
-        header (str)
-        headers (str[])
+        cell (str)
+        cells (str[])
         fieldName (str)
         fieldNumber (int)
         fieldPosition (int)
@@ -141,15 +141,15 @@ class DuplicateHeaderError(Error):
     code = 'duplicate-header'
     name = 'Duplicate Header'
     tags = ['head', 'structure']
-    message = 'Header {header} in field at position {fieldPosition} is duplicated to header in fields: {details}'
+    message = 'Header {cell} in field at position {fieldPosition} is duplicated to header in field(s): {details}'
     description = 'Two columns in the header row have the same value. Column names should be unique.'
 
 
 class ExtraHeaderError(Error):
     """
     # Arguments
-        header (str)
-        headers (str[])
+        cell (str)
+        cells (str[])
         fieldPosition (int)
     """
 
@@ -163,8 +163,8 @@ class ExtraHeaderError(Error):
 class MissingHeaderError(Error):
     """
     # Arguments
-        header (str)
-        headers (str[])
+        cell (str)
+        cells (str[])
         fieldName (str)
         fieldNumber (int)
         fieldPosition (int)
@@ -180,8 +180,8 @@ class MissingHeaderError(Error):
 class NonMatchingHeaderError(Error):
     """
     # Arguments
-        header (str)
-        headers (str[])
+        cell (str)
+        cells (str[])
         fieldName (str)
         fieldNumber (int)
         fieldPosition (int)
@@ -190,7 +190,7 @@ class NonMatchingHeaderError(Error):
     code = 'non-matching-header'
     name = 'Non-matching Header'
     tags = ['head', 'schema']
-    message = 'Header {header} in field {fieldName} at position {fieldPosition} does not match the field name in the schema'
+    message = 'Header {cell} in field {fieldName} at position {fieldPosition} does not match the field name in the schema'
     description = 'One of the data source headers does not match the field name defined in the schema.'
 
 
@@ -215,10 +215,10 @@ class ExtraCellError(Error):
     """
     # Arguments
         cell (str)
-        row (dict)
+        cells (str[])
+        fieldPosition (int)
         rowNumber (int)
         rowPosition (int)
-        fieldPosition (int)
     """
 
     code = 'extra-cell'
@@ -231,12 +231,12 @@ class ExtraCellError(Error):
 class MissingCellError(Error):
     """
     # Arguments
-        row (dict)
-        rowNumber (int)
-        rowPosition (int)
+        cells (str[])
         fieldName (str)
         fieldNumber (int)
         fieldPosition (int)
+        rowNumber (int)
+        rowPosition (int)
     """
 
     code = 'missing-cell'

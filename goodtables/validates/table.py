@@ -101,12 +101,12 @@ def validate_table(
             # Read cells
             try:
                 row_position, _, cells = next(iterator)
+            except StopIteration:
+                break
             except Exception as exception:
                 error = Error.from_exception(exception)
                 errors.append(error)
                 stream = None
-            except StopIteration:
-                break
 
             # Create row
             row_number += 1
@@ -128,8 +128,13 @@ def validate_table(
     # Return report
     return TableReport(
         time=timer.get_time(),
-        stream=stream,
-        schema=schema,
+        warnings=[],
+        source=stream.source,
+        headers=stream.headers,
+        scheme=stream.scheme,
+        format=stream.format,
+        encoding=stream.encoding,
+        schema=schema.descriptor,
         dialect={},
         row_count=row_number,
         errors=errors,

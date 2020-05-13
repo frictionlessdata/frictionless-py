@@ -21,3 +21,15 @@ def find_positions(haystack, needle):
         if value == needle:
             positions.append(position)
     return positions
+
+
+def create_stringify_cells():
+    cache = None
+
+    def stringify_cells(cells):
+        nonlocal cache
+        if cache is None:
+            cache = map(str, cells)
+        return cache
+
+    return stringify_cells

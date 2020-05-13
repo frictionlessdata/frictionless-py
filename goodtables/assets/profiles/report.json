@@ -53,6 +53,7 @@
         "required": [
           "time",
           "valid",
+          "warnings",
           "source",
           "headers",
           "scheme",
@@ -76,6 +77,14 @@
             "type": "boolean",
             "title": "Valid",
             "description": "The validation result."
+          },
+          "warnings": {
+            "type": "array",
+            "title": "Warnings",
+            "items": {
+              "type": "string",
+              "title": "Warning"
+            }
           },
           "source": {
             "type": "string",
@@ -139,15 +148,29 @@
               "type": "object",
               "required": [
                 "code",
+                "name",
+                "tags",
                 "message",
-                "description",
-                "tags"
+                "description"
               ],
               "properties": {
                 "code": {
                   "type": "string",
                   "title": "Code",
                   "description": "The error code."
+                },
+                "name": {
+                  "type": "string",
+                  "title": "None",
+                  "description": "The error name."
+                },
+                "tags": {
+                  "type": "array",
+                  "title": "Tags",
+                  "description": "The error tags.",
+                  "items": {
+                    "type": "string"
+                  }
                 },
                 "message": {
                   "type": "string",
@@ -159,31 +182,48 @@
                   "title": "Description",
                   "description": "The error description."
                 },
-                "tags": {
+                "cell": {
+                  "type": "string",
+                  "title": "Cell",
+                  "description": "The error cell."
+                },
+                "cells": {
                   "type": "array",
-                  "title": "Tags",
-                  "description": "The error tags.",
+                  "title": "Cells",
+                  "description": "The error cells.",
                   "items": {
                     "type": "string"
                   }
                 },
-                "context": {
-                  "type": "object",
-                  "title": "Context",
-                  "description": "The error context.",
-                  "patternProperties": {
-                    "^[a-zA-Z0-9]*$":{
-                      "type": "string",
-                      "enum": [
-                        "string",
-                        "integer",
-                        "number",
-                        "boolean",
-                        "array",
-                        "object"
-                      ]
-                    }
-                  }
+                "fieldName": {
+                  "type": "string",
+                  "title": "Field Name",
+                  "description": "The error field name."
+                },
+                "fieldNumber": {
+                  "type": "number",
+                  "title": "Field Number",
+                  "description": "The error field number."
+                },
+                "fieldPosition": {
+                  "type": "number",
+                  "title": "Field Position",
+                  "description": "The error field position."
+                },
+                "rowNumber": {
+                  "type": "number",
+                  "title": "Row Number",
+                  "description": "The error row number."
+                },
+                "rowPosition": {
+                  "type": "number",
+                  "title": "Row Position",
+                  "description": "The error row position."
+                },
+                "details": {
+                  "type": "string",
+                  "title": "Details",
+                  "description": "The error details."
                 }
               }
             }

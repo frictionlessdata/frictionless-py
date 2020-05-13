@@ -24,27 +24,27 @@ class Row(OrderedDict):
             for field_position, cell in enumerate(iterator, start=start):
                 self.__errors.append(
                     errors.ExtraCellError(
-                        cell=cell,
-                        row=self,
+                        cell=str(cell),
+                        cells=map(str, cells),
+                        fieldPosition=field_position,
                         rowNumber=row_number,
                         rowPosition=row_position,
-                        fieldPosition=field_position,
                     )
                 )
 
         # Missing cells
         if len(fields) > len(cells):
             start = len(cells) + 1
-            iterator = zip(fields[len(cells) :], field_positions[len(cells) :])
+            iterator = zip(field_positions[len(cells) :], fields[len(cells) :])
             for field_number, (field_position, field) in enumerate(iterator, start=start):
                 self.__errors.append(
-                    errors.ExtraCellError(
-                        row=self,
-                        rowNumber=row_number,
-                        rowPosition=row_position,
+                    errors.MissingCellError(
+                        cells=map(str, cells),
                         fieldName=field.name,
                         fieldNumber=field_number,
                         fieldPosition=field_position,
+                        rowNumber=row_number,
+                        rowPosition=row_position,
                     )
                 )
 
@@ -76,9 +76,11 @@ class Row(OrderedDict):
 
         # Blank row
         if is_blank:
-            self.__errors.append(
-                errors.BlankRowError(rowNumber=row_number, rowPosition=row_position,)
-            )
+            self.__errors = [
+                errors.BlankRowError(
+                    cells=map(str, cells), rowNumber=row_number, rowPosition=row_position,
+                )
+            ]
 
     @cached_property
     def field_positions(self):
