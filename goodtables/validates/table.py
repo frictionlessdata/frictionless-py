@@ -22,7 +22,7 @@ def validate_table(
     pick_fields=None,
     skip_fields=None,
     dialect={},
-    schema=None,
+    schema={},
     order_schema=None,
     # Validation
     pick_errors=None,
@@ -63,10 +63,14 @@ def validate_table(
 
     # Prepare schema
     if stream:
-        if not schema:
-            schema = tableschema.Schema()
+        schema = tableschema.Schema(schema)
+        if not schema.fields:
             schema.infer(stream.sample, headers=stream.headers, confidence=1)
-        if order_schema:
+        if schema.errors:
+            for error in schema.errors:
+                errors.append(Error.from_exception(error))
+            schema = None
+        if schema and order_schema:
             # TODO: implement order_schema
             pass
 
@@ -125,8 +129,12 @@ def validate_table(
 
             # TODO: handle row/error limits
 
-    # Return report
+    # Prepare report
     time = timer.get_time()
+    schema = schema.descriptor if schema else {}
+    row_count = row_number
+
+    # Return report
     return Report(
         time=time,
         warnings=[],
@@ -138,9 +146,9 @@ def validate_table(
                 scheme=stream.scheme,
                 format=stream.format,
                 encoding=stream.encoding,
-                schema=schema.descriptor,
+                schema=schema,
                 dialect={},
-                rowCount=row_number,
+                rowCount=row_count,
                 errors=errors,
             )
         ],

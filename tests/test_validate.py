@@ -23,6 +23,15 @@ def test_validate_invalid():
     ]
 
 
+def test_validate_invalid_schema():
+    source = [['name', 'age'], ['Alex', '33']]
+    schema = {'fields': [{'name': 'name'}, {'name': 'age', 'type': 'bad'}]}
+    report = validate(source, schema=schema)
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [None, None, 'schema-error'],
+    ]
+
+
 # Report
 
 
@@ -30,7 +39,6 @@ def test_validate_report():
     report = validate('data/valid.csv')
     assert report['valid'] is True
     assert report['warnings'] == []
-    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == []
     assert report.table['valid'] is True
     assert report.table['source'] == 'data/valid.csv'
     assert report.table['headers'] == ['id', 'name']

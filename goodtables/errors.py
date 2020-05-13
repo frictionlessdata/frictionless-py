@@ -1,4 +1,5 @@
 import tabulator
+import tableschema
 
 
 class Error(dict):
@@ -24,6 +25,8 @@ class Error(dict):
             Error = FormatError
         if isinstance(exception, tabulator.exceptions.EncodingError):
             Error = EncodingError
+        if isinstance(exception, tableschema.exceptions.ValidationError):
+            Error = SchemaError
         return Error(details=details)
 
 
