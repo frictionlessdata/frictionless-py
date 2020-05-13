@@ -1,2 +1,0 @@
-def validate(source):
-    pass

@@ -1,16 +1,16 @@
-from goodtables import validate_table
+from goodtables import validate
 
 
 # General
 
 
-def test_validate_table_valid():
-    report = validate_table('data/valid.csv')
+def test_validate_valid():
+    report = validate('data/valid.csv')
     assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == []
 
 
-def test_validate_table_invalid():
-    report = validate_table('data/invalid.csv')
+def test_validate_invalid():
+    report = validate('data/invalid.csv')
     assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
         [None, 3, 'blank-header'],
         [None, 4, 'duplicate-header'],
