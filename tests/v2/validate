@@ -1,0 +1,664 @@
+# -*- coding: utf-8 -*-
+from __future__ import division
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
+import sys
+import six
+import json
+import pytest
+from pprint import pprint
+from copy import deepcopy
+from importlib import import_module
+from goodtables import validate, init_datapackage
+
+
+# Checks
+
+
+#  unique_field_wrong_type_or_format:
+#  source:
+#  - [id, unique_number]
+#  - [a1, 100]
+#  - [a2, not-a-number]
+#  - [a3, 100]
+#  schema:
+#  fields:
+#  - {name: id}
+#  - {name: unique_number, type: number, constraints: {unique: true}}
+#  checks:
+#  - structure
+#  - schema
+#  report:
+#  - [1, 3, 2, 'type-or-format-error']
+#  - [1, 4, 2, 'unique-constraint']
+
+
+#  primary_key_fields:
+#  source:
+#  - [id, name]
+#  - [1, Alex']
+#  - [1, John]
+#  - ['', Paul]
+#  - [1, John]
+#  schema:
+#  fields:
+#  - {name: id, type: integer}
+#  - {name: name}
+#  primaryKey: [id, name]
+#  checks:
+#  - schema
+#  report:
+#  - [1, 4, 1, 'required-constraint']
+#  - [1, 5, 1, 'unique-constraint']
+
+
+#  reordered_headers_with_missing_header_and_extra_header:
+#  source:
+#  - [LastName, FirstName, Address]
+#  - [Test, Tester, 23 Avenue]
+#  schema:
+#  fields:
+#  - {name: id}
+#  - {name: FirstName}
+#  - {name: LastName}
+#  primaryKey: id
+#  checks:
+#  - schema
+#  - structure
+#  order_fields: true
+#  report:
+#  - [1, null, null, 'missing-header']
+#  - [1, null, 3, 'extra-header']
+
+
+#  unique_field:
+#  source: data/unique_field.csv
+#  schema: data/unique_field.json
+#  checks:
+#  - schema
+#  report:
+#  - [1, 10, 1, 'unique-constraint']
+
+
+#  unique_field_wrong_type_or_format:
+#  source:
+#  - [id, unique_number]
+#  - [a1, 100]
+#  - [a2, not-a-number]
+#  - [a3, 100]
+#  schema:
+#  fields:
+#  - {name: id}
+#  - {name: unique_number, type: number, constraints: {unique: true}}
+#  checks:
+#  - structure
+#  - schema
+#  report:
+#  - [1, 3, 2, 'type-or-format-error']
+#  - [1, 4, 2, 'unique-constraint']
+
+
+#  missing_headers:
+#  source:
+#  - [id, last_name, first_name, language]
+#  - [1, Alex, John, English]
+#  - [2, Peters, John, Afrikaans]
+#  - [3, Smith, Paul, Zulu]
+#  schema:
+#  fields:
+#  - {name: id, type: number}
+#  - {name: first_name}
+#  - {name: last_name}
+#  - {name: age}
+#  - {name: country}
+#  primaryKey: id
+#  checks:
+#  - schema
+#  - structure
+#  order_fields: true
+#  report:
+#  - [1, null, null, 'missing-header']
+#  - [1, null, 4, 'non-matching-header']
+#  - [1, null, 5, 'extra-header']
+
+
+#  duplicate_rows:
+#  source: data/duplicate_rows.csv
+#  report:
+#  - [1, 4, null, 'duplicate-row']
+
+
+#  fail_fast_two_schema_errors:
+#  source: data/fail_fast_two_schema_errors.csv
+#  schema: data/test_schema.json
+#  checks:
+#  - schema
+#  error_limit: 3
+#  report:
+#  - [1, 4, 1, 'type-or-format-error']
+#  - [1, 4, 2, 'required-constraint']
+#  - [1, 4, 3, 'required-constraint']
+
+
+def test_validate_tables_invalid(log):
+    report = validate(
+        [
+            {
+                'source': 'data/valid.csv',
+                'schema': {'fields': [{'name': 'id'}, {'name': 'name'}]},
+            },
+            {'source': 'data/invalid.csv'},
+        ],
+        preset='nested',
+        infer_schema=True,
+    )
+    assert log(report) == [
+        (2, None, 3, 'blank-header'),
+        (2, None, 3, 'non-matching-header'),
+        (2, None, 4, 'duplicate-header'),
+        (2, 2, 3, 'missing-value'),
+        (2, 2, 4, 'missing-value'),
+        (2, 3, None, 'duplicate-row'),
+        (2, 4, None, 'blank-row'),
+        (2, 5, 5, 'extra-value'),
+    ]
+
+
+def test_validate_nested_presets_set_default_preset():
+    report = validate(
+        [{'source': 'data/datapackages/valid/datapackage.json'},],
+        preset='nested',
+        infer_schema=True,
+    )
+    assert report['valid']
+    assert report['warnings'] == []
+
+
+def test_check_maximum_length_constraint(log):
+    source = [
+        ['row', 'word'],
+        [2, 'a'],
+        [3, 'ab'],
+        [4, 'abc'],
+        [5, 'abcd'],
+        [6],
+    ]
+    schema = {
+        'fields': [
+            {'name': 'row', 'type': 'integer'},
+            {'name': 'word', 'type': 'string', 'constraints': {'maxLength': 2}},
+        ]
+    }
+    report = validate(source, schema=schema, checks=['maximum-length-constraint',])
+    assert log(report) == [
+        (1, 4, 2, 'maximum-length-constraint'),
+        (1, 5, 2, 'maximum-length-constraint'),
+    ]
+
+
+def test_check_minimum_constraint(log):
+    source = [
+        ['row', 'score'],
+        [2, 1],
+        [3, 2],
+        [4, 3],
+        [5, 4],
+        [6],
+    ]
+    schema = {
+        'fields': [
+            {'name': 'row', 'type': 'integer'},
+            {'name': 'score', 'type': 'integer', 'constraints': {'minimum': 2}},
+        ]
+    }
+    report = validate(source, schema=schema, checks=['minimum-constraint',])
+    assert log(report) == [
+        (1, 2, 2, 'minimum-constraint'),
+    ]
+
+
+def test_check_maximum_constraint(log):
+    source = [
+        ['row', 'score'],
+        [2, 1],
+        [3, 2],
+        [4, 3],
+        [5, 4],
+        [6],
+    ]
+    schema = {
+        'fields': [
+            {'name': 'row', 'type': 'integer'},
+            {'name': 'score', 'type': 'integer', 'constraints': {'maximum': 2}},
+        ]
+    }
+    report = validate(source, schema=schema, checks=['maximum-constraint',])
+    assert log(report) == [
+        (1, 4, 2, 'maximum-constraint'),
+        (1, 5, 2, 'maximum-constraint'),
+    ]
+
+
+def test_check_minimum_length_constraint(log):
+    source = [
+        ['row', 'word'],
+        [2, 'a'],
+        [3, 'ab'],
+        [4, 'abc'],
+        [5, 'abcd'],
+        [6],
+    ]
+    schema = {
+        'fields': [
+            {'name': 'row', 'type': 'integer'},
+            {'name': 'word', 'type': 'string', 'constraints': {'minLength': 2}},
+        ]
+    }
+    report = validate(source, schema=schema, checks=['minimum-length-constraint',])
+    assert log(report) == [
+        (1, 2, 2, 'minimum-length-constraint'),
+    ]
+
+
+# Advanced checks
+
+
+def test_check_blacklisted_value(log):
+    source = [
+        ['row', 'name'],
+        [2, 'Alex'],
+        [3, 'John'],
+        [4, 'mistake'],
+        [5, 'error'],
+        [6],
+    ]
+    report = validate(
+        source,
+        checks=[
+            {'blacklisted-value': {'column': 1, 'blacklist': [10]}},
+            {'blacklisted-value': {'column': 2, 'blacklist': ['mistake']}},
+            {'blacklisted-value': {'column': 'row', 'blacklist': [10]}},
+            {'blacklisted-value': {'column': 'name', 'blacklist': ['error']}},
+        ],
+    )
+    assert log(report) == [
+        (1, 4, 2, 'blacklisted-value'),
+        (1, 5, 2, 'blacklisted-value'),
+    ]
+
+
+def test_check_blacklisted_value_non_existent_column(log):
+    source = [
+        ['row', 'name'],
+        [2, 'Alex'],
+    ]
+    report = validate(
+        source,
+        checks=[
+            {'blacklisted-value': {'column': 3, 'blacklist': [10]}},
+            {'blacklisted-value': {'column': 'non-existent', 'blacklist': ['mistake']}},
+        ],
+    )
+    assert log(report) == [
+        (1, 2, None, 'blacklisted-value'),
+        (1, 2, None, 'blacklisted-value'),
+    ]
+
+
+@pytest.mark.skipif(sys.version_info >= (3, 8), reason='Problem with Python3.8+')
+def test_check_custom_constraint(log):
+    source = [
+        ['row', 'salary', 'bonus'],
+        [2, 1000, 200],
+        [3, 2500, 500],
+        [4, 1300, 500],
+        [5, 5000, 1000],
+        [6],
+    ]
+    report = validate(
+        source, checks=[{'custom-constraint': {'constraint': 'salary > bonus * 4'}},]
+    )
+    assert log(report) == [
+        (1, 4, None, 'custom-constraint'),
+        (1, 6, None, 'custom-constraint'),
+    ]
+
+
+def test_check_custom_constraint_incorrect_constraint(log):
+    source = [
+        ['row', 'name'],
+        [2, 'Alex'],
+    ]
+    report = validate(
+        source,
+        checks=[
+            {'custom-constraint': {'constraint': 'vars()'}},
+            {'custom-constraint': {'constraint': 'import(os)'}},
+            {'custom-constraint': {'constraint': 'non_existent > 0'}},
+        ],
+    )
+    assert log(report) == [
+        (1, 2, None, 'custom-constraint'),
+        (1, 2, None, 'custom-constraint'),
+        (1, 2, None, 'custom-constraint'),
+    ]
+
+
+def test_check_deviated_value(log):
+    source = [
+        ['temperature'],
+        [1],
+        [-2],
+        [7],
+        [0],
+        [1],
+        [2],
+        [5],
+        [-4],
+        [100],
+        [8],
+        [3],
+    ]
+    report = validate(
+        source,
+        checks=[
+            {
+                'deviated-value': {
+                    'column': 'temperature',
+                    'average': 'median',
+                    'interval': 3,
+                }
+            },
+        ],
+    )
+    assert log(report) == [
+        (1, 10, 1, 'deviated-value'),
+    ]
+
+
+def test_check_deviated_value_not_enough_data(log):
+    source = [
+        ['temperature'],
+        [1],
+    ]
+    report = validate(source, checks=[{'deviated-value': {'column': 'temperature'}},])
+    assert log(report) == []
+
+
+def test_check_deviated_value_not_a_number(log):
+    source = [
+        ['row', 'name'],
+        [2, 'Alex'],
+    ]
+    report = validate(source, checks=[{'deviated-value': {'column': 'name'}},])
+    assert log(report) == [
+        (1, 2, 2, 'deviated-value'),
+    ]
+
+
+def test_check_deviated_value_non_existent_column(log):
+    source = [
+        ['row', 'name'],
+        [2, 'Alex'],
+    ]
+    report = validate(
+        source,
+        checks=[
+            {'deviated-value': {'column': 3}},
+            {'deviated-value': {'column': 'non-existent'}},
+        ],
+    )
+    assert log(report) == [
+        (1, 2, None, 'deviated-value'),
+        (1, 2, None, 'deviated-value'),
+    ]
+
+
+def test_check_deviated_value_incorrect_average(log):
+    source = [
+        ['row', 'name'],
+        [2, 'Alex'],
+    ]
+    with pytest.raises(exceptions.GoodtablesException):
+        report = validate(
+            source,
+            checks=[{'deviated-value': {'column': 3, 'average': 'incorrect-average'}},],
+        )
+
+
+def test_check_sequential_value(log):
+    source = [
+        ['row', 'index2', 'index3'],
+        [2, 1, 1],
+        [3, 2, 3],
+        [4, 3, 5],
+        [5, 5, 6],
+        [6],
+    ]
+    report = validate(
+        source,
+        checks=[
+            {'sequential-value': {'column': 2}},
+            {'sequential-value': {'column': 'index3'}},
+        ],
+    )
+    assert log(report) == [
+        (1, 3, 3, 'sequential-value'),
+        (1, 4, 3, 'sequential-value'),
+        (1, 5, 2, 'sequential-value'),
+        (1, 6, 2, 'sequential-value'),
+        (1, 6, 3, 'sequential-value'),
+    ]
+
+
+def test_check_sequential_value_non_existent_column(log):
+    source = [
+        ['row', 'name'],
+        [2, 'Alex'],
+    ]
+    report = validate(
+        source,
+        checks=[
+            {'sequential-value': {'column': 3}},
+            {'sequential-value': {'column': 'non-existent'}},
+        ],
+    )
+    assert log(report) == [
+        (1, 2, None, 'sequential-value'),
+        (1, 2, None, 'sequential-value'),
+    ]
+
+
+@pytest.mark.parametrize('value', ['a' * 255, 32767, 2147483647,])
+def test_truncated_values(value):
+    cell = goodtables.cells.create_cell('value', value)
+    errors = TruncatedValue().check_row([cell])
+    assert len(errors) == 1
+    assert errors[0].code == 'truncated-value'
+
+
+@pytest.mark.parametrize('value', ['a' * 254, 32766, 2147483646,])
+def test_not_truncated_values(value):
+    cell = goodtables.cells.create_cell('value', value)
+    errors = TruncatedValue().check_row([cell])
+    assert not errors
+
+
+def test_check_truncated_value_with_dates():
+    # There was a bug where we didn't catch the correct exception when calling
+    # int(date)
+    cell = goodtables.cells.create_cell('date', datetime.datetime.now())
+    errors = TruncatedValue().check_row([cell])
+
+    assert not errors
+
+
+# Issues
+
+
+def test_composite_primary_key_unique_issue_215(log):
+    descriptor = {
+        'resources': [
+            {
+                'name': 'name',
+                'data': [['id1', 'id2'], ['a', '1'], ['a', '2'],],
+                'schema': {
+                    'fields': [{'name': 'id1'}, {'name': 'id2'},],
+                    'primaryKey': ['id1', 'id2'],
+                },
+            }
+        ],
+    }
+    report = validate(descriptor)
+    assert log(report) == []
+
+
+def test_composite_primary_key_not_unique_issue_215(log):
+    descriptor = {
+        'resources': [
+            {
+                'name': 'name',
+                'data': [['id1', 'id2'], ['a', '1'], ['a', '1'],],
+                'schema': {
+                    'fields': [{'name': 'id1'}, {'name': 'id2'},],
+                    'primaryKey': ['id1', 'id2'],
+                },
+            }
+        ],
+    }
+    report = validate(descriptor, skip_checks=['duplicate-row'])
+    assert log(report) == [
+        (1, 3, 1, 'unique-constraint'),
+    ]
+
+
+def test_validate_infer_fields_issue_223():
+    source = [
+        ['name1', 'name2'],
+        ['123', 'abc'],
+        ['456', 'def'],
+        ['789', 'ghi'],
+    ]
+    schema = {'fields': [{'name': 'name1'}]}
+    report = validate(source, schema=schema, infer_fields=True)
+    assert report['valid']
+
+
+def test_validate_infer_fields_issue_225():
+    source = [
+        ['name1', 'name2'],
+        ['123', None],
+        ['456', None],
+        ['789', None],
+    ]
+    schema = {'fields': [{'name': 'name1'}]}
+    report = validate(source, schema=schema, infer_fields=True)
+
+    errors = set([error.get("code") for error in report.get("tables")[0].get("errors")])
+    assert report is not None
+    assert len(errors) is 1
+    assert {"missing-value"} == errors
+    assert ~report['valid']
+
+
+def test_fix_issue_312_inspector_should_report_table_as_invalid(log):
+    report = validate([{'source': 'data/invalid_fix_312.xlsx'}])
+    assert log(report) == [
+        (1, None, 3, 'blank-header'),
+        (1, None, 4, 'duplicate-header'),
+        (1, None, 5, 'blank-header'),
+        (1, 2, 3, 'missing-value'),
+        (1, 2, 4, 'missing-value'),
+        (1, 2, 5, 'missing-value'),
+        (1, 3, None, 'duplicate-row'),
+        (1, 4, 3, 'missing-value'),
+        (1, 4, 4, 'missing-value'),
+        (1, 4, 5, 'missing-value'),
+        (1, 5, None, 'blank-row'),
+        (1, 6, 3, 'extra-value'),
+        (1, 6, 5, 'extra-value'),
+    ]
+
+
+def test_validate_order_fields_issue_313(log):
+    source = 'data/order_fields_313.xlsx'
+    schema = {
+        'fields': [
+            {'name': 'Column_1', 'type': 'string',},
+            {'name': 'Column_2', 'type': 'string', 'constraints': {'required': True}},
+            {'name': 'Column_3', 'type': 'string'},
+            {'name': 'Column_4', 'type': 'string'},
+            {'name': 'Column_5', 'type': 'string'},
+        ]
+    }
+    # For now, the "non-matching-header" check is required to order the fields
+    checks = ['non-matching-header', 'required-constraint']
+    report = validate(source, schema=schema, checks=checks, order_fields=True)
+    assert report['valid']
+
+
+def test_validate_fk_invalid_reference_table_issue_347(log):
+    descriptor = {
+        'resources': [
+            {
+                'name': 'people',
+                'data': [
+                    ['id', 'name', 'surname'],
+                    ['p1', 'Tom', 'Hanks'],
+                    ['p2', 'Meryl', 'Streep'],
+                ],
+                'schema': {
+                    'fields': [
+                        {'name': 'id', 'type': 'string'},
+                        {'name': 'name', 'type': 'string'},
+                        {'name': 'surname', 'type': 'string'},
+                        {'name': 'dob', 'type': 'date'},
+                    ]
+                },
+            },
+            {
+                'name': 'oscars',
+                'data': [
+                    ['person_id', 'category', 'year', 'work'],
+                    ['p1', 'Best Actor', 1994, 'Philadelphia'],
+                    ['p1', 'Best Actor', 1995, 'Forrest Gump'],
+                    ['p2', 'Best Supporting Actress', 1980, 'Kramer vs. Kramer'],
+                    ['p2', 'Best Actress', 1982, 'Sophie"s Choice'],
+                    ['p2', 'Best Actress', 2012, 'The Iron Lady'],
+                    ['p3', 'Best Actor', 2019, 'Joker'],
+                ],
+                'schema': {
+                    'fields': [
+                        {'name': 'person_id', 'type': 'string'},
+                        {'name': 'category', 'type': 'string'},
+                        {'name': 'year', 'type': 'year'},
+                        {'name': 'work', 'type': 'string'},
+                    ],
+                    'foreignKeys': [
+                        {
+                            'fields': 'person_id',
+                            'reference': {'resource': 'people', 'fields': 'id'},
+                        }
+                    ],
+                },
+            },
+        ]
+    }
+    report = validate(descriptor, checks=['structure', 'schema', 'foreign-key'])
+    assert report['tables'][1]['error-count'] == 6
+    assert report['tables'][1]['errors'][0]['code'] == 'foreign-key'
+    assert (
+        report['tables'][1]['errors'][0]['message']
+        == 'Foreign key violation caused by invalid reference table: [people] Row length 3 doesn\'t match fields count 4 for row "2"'
+    )
+
+
+def test_validate_wide_table_with_order_fields_issue_277(log):
+    report = validate('data/issue277.csv', schema='data/issue277.json', order_fields=True)
+    assert log(report) == [
+        (1, 49, 50, 'required-constraint'),
+        (1, 68, 50, 'required-constraint'),
+        (1, 69, 50, 'required-constraint'),
+    ]

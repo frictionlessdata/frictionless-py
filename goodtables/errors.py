@@ -25,7 +25,7 @@ class Error(dict):
             Error = FormatError
         if isinstance(exception, tabulator.exceptions.EncodingError):
             Error = EncodingError
-        if isinstance(exception, tableschema.exceptions.ValidationError):
+        if isinstance(exception, tableschema.exceptions.TableSchemaException):
             Error = SchemaError
         return Error(details=details)
 

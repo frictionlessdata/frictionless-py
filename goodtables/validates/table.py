@@ -83,13 +83,19 @@ def validate_table(
     # Prepare schema
     if stream:
 
-        # Create/infer schema
-        schema = tableschema.Schema(schema)
-        if not schema.fields:
+        # Create schema
+        try:
+            schema = tableschema.Schema(schema)
+        except tableschema.exceptions.TableSchemaException as exception:
+            errors.append(Error.from_exception(exception))
+            schema = None
+
+        # Infer schema
+        if schema and not schema.fields:
             schema.infer(stream.sample, headers=stream.headers, confidence=1)
 
         # Handle schema errors
-        if schema.errors:
+        if schema and schema.errors:
             for error in schema.errors:
                 errors.append(Error.from_exception(error))
             schema = None
@@ -152,7 +158,11 @@ def validate_table(
                 # TODO: filter pick/skip errors
                 errors.extend(check.validate_table_row(row))
 
-            # TODO: handle row/error limits
+            # Row/error limits
+            if row_limit and row_number >= row_limit:
+                break
+            if error_limit and len(errors) >= error_limit:
+                break
 
     # Prepare report
     time = timer.get_time()
@@ -164,6 +174,8 @@ def validate_table(
         scheme = stream.scheme
         format = stream.format
         encoding = stream.encoding
+    if error_limit:
+        del errors[error_limit:]
 
     # Return report
     return Report(
