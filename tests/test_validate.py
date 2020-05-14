@@ -166,6 +166,26 @@ def test_validate_encoding_invalid():
     ]
 
 
+# Compression
+
+
+def test_validate_compression():
+    report = validate('data/table.csv.zip')
+    assert report['valid']
+
+
+def test_validate_compression_explicit():
+    report = validate('data/table.csv.zip', compression='zip')
+    assert report['valid']
+
+
+def test_validate_compression_invalid():
+    report = validate('data/table.csv.zip', compression='bad')
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [None, None, 'compression-error'],
+    ]
+
+
 # Schema
 
 
@@ -268,10 +288,10 @@ def test_validate_invalid_table_schema_issue_304():
     ]
 
 
-def test_validate_missing_local_file_raises_loading_error_issue_315():
+def test_validate_missing_local_file_raises_scheme_error_issue_315():
     report = validate('bad-path.csv')
     assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
-        [None, None, 'loading-error'],
+        [None, None, 'scheme-error'],
     ]
 
 

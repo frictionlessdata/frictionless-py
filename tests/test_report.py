@@ -12,7 +12,7 @@ def test_table_report_valid():
 
 
 def test_table_report_invalid():
-    table = ReportTable(errors=[errors.LoadingError(details='details')])
+    table = ReportTable(errors=[errors.SourceError(details='details')])
     assert table['valid'] is False
     assert table['errorCount'] == 1
-    assert table.flatten(['code']) == [['loading-error']]
+    assert table.flatten(['code']) == [['source-error']]

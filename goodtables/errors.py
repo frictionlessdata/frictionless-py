@@ -15,8 +15,6 @@ class Error(dict):
     def from_exception(exception):
         Error = SourceError
         details = str(exception)
-        if isinstance(exception, tabulator.exceptions.IOError):
-            Error = LoadingError
         if isinstance(exception, tabulator.exceptions.SourceError):
             Error = SourceError
         if isinstance(exception, tabulator.exceptions.SchemeError):
@@ -25,25 +23,14 @@ class Error(dict):
             Error = FormatError
         if isinstance(exception, tabulator.exceptions.EncodingError):
             Error = EncodingError
+        if isinstance(exception, tabulator.exceptions.CompressionError):
+            Error = CompressionError
         if isinstance(exception, tableschema.exceptions.TableSchemaException):
             Error = SchemaError
         return Error(details=details)
 
 
 # Table
-
-
-class LoadingError(Error):
-    """
-    # Arguments
-        details (str)
-    """
-
-    code = 'loading-error'
-    name = 'Loading Error'
-    tags = ['table']
-    message = 'The data source could not be successfully loaded: {details}'
-    description = 'Data reading error because of IO error.'
 
 
 class SourceError(Error):
@@ -68,7 +55,7 @@ class SchemeError(Error):
     code = 'scheme-error'
     name = 'Scheme Error'
     tags = ['table']
-    message = 'The data source is in an unknown scheme: {details}'
+    message = 'The data source could not be successfully loaded: {details}'
     description = 'Data reading error because of incorrect scheme.'
 
 
@@ -81,7 +68,7 @@ class FormatError(Error):
     code = 'format-error'
     name = 'Format Error'
     tags = ['table']
-    message = 'The data source is in an unknown format: {details}'
+    message = 'The data source could not be successfully parsed: {details}'
     description = 'Data reading error because of incorrect format.'
 
 
@@ -98,6 +85,19 @@ class EncodingError(Error):
     description = 'Data reading error because of an encoding problem.'
 
 
+class CompressionError(Error):
+    """
+    # Arguments
+        details (str)
+    """
+
+    code = 'compression-error'
+    name = 'Compression Error'
+    tags = ['table']
+    message = 'The data source could not be successfully decompressed: {details}'
+    description = 'Data reading error because of a decompression problem.'
+
+
 class SchemaError(Error):
     """
     # Arguments
@@ -107,7 +107,7 @@ class SchemaError(Error):
     code = 'schema-error'
     name = 'Schema Error'
     tags = ['table']
-    message = 'Table Schema could not be used as it is invalid: {details}'
+    message = 'The data source could not be successfully described by the invalid Table Schema: {details}'
     description = 'Provided schema is not valid.'
 
 
