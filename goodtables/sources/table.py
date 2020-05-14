@@ -17,10 +17,10 @@ def validate_table(
     format=None,
     encoding=None,
     compression=None,
-    pick_rows=None,
-    skip_rows=None,
     pick_fields=None,
     skip_fields=None,
+    pick_rows=None,
+    skip_rows=None,
     # Schema
     schema={},
     sync_schema=None,
@@ -61,10 +61,10 @@ def validate_table(
             format=format,
             encoding=encoding,
             compression=compression,
-            pick_rows=pick_rows,
-            skip_rows=skip_rows,
             pick_columns=pick_fields,
             skip_columns=skip_fields,
+            pick_rows=pick_rows,
+            skip_rows=skip_rows,
             sample_size=infer_sample_size,
             **dialect
         )

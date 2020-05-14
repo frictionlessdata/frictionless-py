@@ -186,6 +186,51 @@ def test_validate_compression_invalid():
     ]
 
 
+# Pick|skip fields|rows
+
+
+def test_validate_pick_fields():
+    report = validate('data/matrix.csv', pick_fields=[2, 'f3'])
+    assert report.table['headers'] == ['f2', 'f3']
+    assert report.table['rowCount'] == 4
+    assert report.table['valid']
+
+
+def test_validate_skip_fields():
+    report = validate('data/matrix.csv', skip_fields=[1, 'f4'])
+    assert report.table['headers'] == ['f2', 'f3']
+    assert report.table['rowCount'] == 4
+    assert report.table['valid']
+
+
+def test_validate_pick_rows():
+    report = validate('data/matrix.csv', pick_rows=[1, 3, '31'])
+    assert report.table['headers'] == ['f1', 'f2', 'f3', 'f4']
+    assert report.table['rowCount'] == 2
+    assert report.table['valid']
+
+
+def test_validate_skip_rows():
+    report = validate('data/matrix.csv', skip_rows=[2, '41'])
+    assert report.table['headers'] == ['f1', 'f2', 'f3', 'f4']
+    assert report.table['rowCount'] == 2
+    assert report.table['valid']
+
+
+def test_validate_pick_rows_and_fields():
+    report = validate('data/matrix.csv', pick_rows=[1, 3, '31'], pick_fields=[2, 'f3'])
+    assert report.table['headers'] == ['f2', 'f3']
+    assert report.table['rowCount'] == 2
+    assert report.table['valid']
+
+
+def test_validate_skip_rows_and_fields():
+    report = validate('data/matrix.csv', skip_rows=[2, '41'], skip_fields=[1, 'f4'])
+    assert report.table['headers'] == ['f2', 'f3']
+    assert report.table['rowCount'] == 2
+    assert report.table['valid']
+
+
 # Schema
 
 
@@ -205,7 +250,7 @@ def test_validate_schema_invalid_json():
     ]
 
 
-# Limits
+# Row|error limit
 
 
 def test_validate_invalid_row_limit():
