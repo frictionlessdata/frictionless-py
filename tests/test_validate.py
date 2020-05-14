@@ -24,47 +24,10 @@ def test_validate_invalid():
     ]
 
 
-def test_validate_invalid_error_limit():
-    report = validate('data/invalid.csv', error_limit=3)
+def test_validate_blank_headers():
+    report = validate('data/blank-headers.csv')
     assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
-        [None, 3, 'blank-header'],
-        [None, 4, 'duplicate-header'],
-        [2, 3, 'missing-cell'],
-    ]
-
-
-def test_validate_invalid_row_limit():
-    report = validate('data/invalid.csv', row_limit=2)
-    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
-        [None, 3, 'blank-header'],
-        [None, 4, 'duplicate-header'],
-        [2, 3, 'missing-cell'],
-        [2, 4, 'missing-cell'],
-        [3, 3, 'missing-cell'],
-        [3, 4, 'missing-cell'],
-    ]
-
-
-def test_validate_invalid_scheme():
-    report = validate('bad://data/table.csv')
-    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
-        [None, None, 'scheme-error'],
-    ]
-
-
-def test_validate_invalid_format():
-    report = validate('data/table.bad')
-    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
-        [None, None, 'format-error'],
-    ]
-
-
-def test_validate_invalid_schema():
-    source = [['name', 'age'], ['Alex', '33']]
-    schema = {'fields': [{'name': 'name'}, {'name': 'age', 'type': 'bad'}]}
-    report = validate(source, schema=schema)
-    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
-        [None, None, 'schema-error'],
+        [None, 2, 'blank-header'],
     ]
 
 
@@ -108,39 +71,42 @@ def test_validate_blank_rows_multiple():
     ]
 
 
-def test_validate_structure_errors_with_error_limit():
-    report = validate('data/structure-errors.csv', error_limit=3)
-    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
-        [4, None, 'blank-row'],
-        [5, 4, 'extra-cell'],
-        [5, 5, 'extra-cell'],
-    ]
-
-
-def test_validate_structure_errors_with_row_limit():
-    report = validate('data/structure-errors.csv', row_limit=3)
-    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
-        [4, None, 'blank-row'],
-    ]
-
-
-def test_validate_blank_headers():
-    report = validate('data/blank-headers.csv', row_limit=3)
-    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
-        [None, 2, 'blank-header'],
-    ]
-
-
 def test_validate_blank_cell_not_required():
     report = validate('data/blank-cells.csv')
     assert report['valid']
 
 
-def test_validate_schema_invalid_json():
-    report = validate('data/table.csv', schema='data/invalid.json')
-    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
-        [None, None, 'schema-error'],
+def test_validate_no_data():
+    report = validate('data/empty.csv')
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code', 'details']) == [
+        [None, None, 'source-error', 'There are no rows available'],
     ]
+
+
+def test_validate_no_rows():
+    report = validate('data/without-rows.csv')
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code', 'details']) == [
+        [None, None, 'source-error', 'There are no rows available'],
+    ]
+
+
+# Source
+
+
+def test_validate_source_invalid():
+    # Reducing sample size to get raise on iter, not on open
+    report = validate([['h'], [1], 'bad'], sample_size=1)
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [None, None, 'source-error'],
+    ]
+
+
+def test_validate_source_pathlib_path_table():
+    report = validate(pathlib.Path('data/table.csv'))
+    assert report['valid']
+
+
+# Headers
 
 
 def test_validate_no_headers():
@@ -155,7 +121,111 @@ def test_validate_no_headers_extra_cell():
     ]
 
 
-# Report props
+# Scheme
+
+
+def test_validate_scheme():
+    report = validate('data/table.csv', scheme='file')
+    assert report['valid']
+
+
+def test_validate_scheme_invalid():
+    report = validate('bad://data/table.csv')
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [None, None, 'scheme-error'],
+    ]
+
+
+# Format
+
+
+def test_validate_format():
+    report = validate('data/table.csv', format='csv')
+    assert report['valid']
+
+
+def test_validate_format_invalid():
+    report = validate('data/table.bad')
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [None, None, 'format-error'],
+    ]
+
+
+# Encoding
+
+
+def test_validate_encoding():
+    report = validate('data/table.csv', encoding='utf-8')
+    assert report['valid']
+
+
+def test_validate_encoding_invalid():
+    report = validate('data/latin1.csv', encoding='utf-8')
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [None, None, 'encoding-error'],
+    ]
+
+
+# Schema
+
+
+def test_validate_schema_invalid():
+    source = [['name', 'age'], ['Alex', '33']]
+    schema = {'fields': [{'name': 'name'}, {'name': 'age', 'type': 'bad'}]}
+    report = validate(source, schema=schema)
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [None, None, 'schema-error'],
+    ]
+
+
+def test_validate_schema_invalid_json():
+    report = validate('data/table.csv', schema='data/invalid.json')
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [None, None, 'schema-error'],
+    ]
+
+
+# Limits
+
+
+def test_validate_invalid_row_limit():
+    report = validate('data/invalid.csv', row_limit=2)
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [None, 3, 'blank-header'],
+        [None, 4, 'duplicate-header'],
+        [2, 3, 'missing-cell'],
+        [2, 4, 'missing-cell'],
+        [3, 3, 'missing-cell'],
+        [3, 4, 'missing-cell'],
+    ]
+
+
+def test_validate_structure_errors_with_row_limit():
+    report = validate('data/structure-errors.csv', row_limit=3)
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [4, None, 'blank-row'],
+    ]
+
+
+def test_validate_invalid_error_limit():
+    report = validate('data/invalid.csv', error_limit=3)
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [None, 3, 'blank-header'],
+        [None, 4, 'duplicate-header'],
+        [2, 3, 'missing-cell'],
+    ]
+
+
+def test_validate_structure_errors_with_error_limit():
+    report = validate('data/structure-errors.csv', error_limit=3)
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [4, None, 'blank-row'],
+        [5, 4, 'extra-cell'],
+        [5, 5, 'extra-cell'],
+    ]
+
+
+# Report
 
 
 def test_validate_report_props():
@@ -178,49 +248,6 @@ def test_validate_report_props():
         ],
         'missingValues': [''],
     }
-
-
-# Source as pathlib.Path
-
-
-def test_source_pathlib_path_table():
-    report = validate(pathlib.Path('data/table.csv'))
-    assert report['valid']
-
-
-# Catch exceptions
-
-
-def test_validate_catch_all_open_exceptions():
-    report = validate('data/latin1.csv', encoding='utf-8')
-    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
-        [None, None, 'encoding-error'],
-    ]
-
-
-def test_validate_catch_all_iter_exceptions():
-    # Reducing sample size to get raise on iter, not on open
-    report = validate([['h'], [1], 'bad'], sample_size=1)
-    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
-        [None, None, 'source-error'],
-    ]
-
-
-# No rows source
-
-
-def test_validate_no_data():
-    report = validate('data/empty.csv')
-    assert report.flatten(['rowPosition', 'fieldPosition', 'code', 'details']) == [
-        [None, None, 'source-error', 'There are no rows available'],
-    ]
-
-
-def test_validate_no_rows():
-    report = validate('data/without-rows.csv')
-    assert report.flatten(['rowPosition', 'fieldPosition', 'code', 'details']) == [
-        [None, None, 'source-error', 'There are no rows available'],
-    ]
 
 
 # Issues
