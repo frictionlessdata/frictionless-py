@@ -37,6 +37,12 @@ def validate_table(
     **dialect
 ):
 
+    # Assert input
+    assert infer_sample_size >= 1
+    assert infer_confidence >= 0 and infer_confidence <= 1
+    assert not row_limit or row_limit >= 1
+    assert not error_limit or error_limit >= 1
+
     # Prepare state
     timer = Timer()
     row_number = 0
@@ -64,16 +70,6 @@ def validate_table(
         )
         stream.open()
 
-        # Handle no data
-        if not stream.headers and not stream.sample:
-            message = 'There are no data available'
-            raise tabulator.exceptions.SourceError(message)
-
-        # Handle no headers
-        if not stream.headers:
-            message = 'There are no headers available'
-            raise tabulator.exceptions.SourceError(message)
-
         # Handle no rows
         if not stream.sample:
             message = 'There are no rows available'
@@ -96,8 +92,12 @@ def validate_table(
 
         # Infer schema
         if schema and not schema.fields:
+            infer_headers = stream.headers
+            if not infer_headers:
+                field_numbers = list(range(1, len(stream.sample[0]) + 1))
+                infer_headers = ['field%s' % number for number in field_numbers]
             schema.infer(
-                stream.sample, headers=stream.headers, confidence=infer_confidence
+                stream.sample, headers=infer_headers, confidence=infer_confidence
             )
 
         # Handle schema errors
@@ -121,22 +121,27 @@ def validate_table(
 
     # Validate headers
     if stream and schema:
+        if stream.headers:
 
-        # Get headers
-        headers = Headers(
-            stream.headers, fields=schema.fields, field_positions=stream.field_positions
-        )
+            # Get headers
+            headers = Headers(
+                stream.headers,
+                fields=schema.fields,
+                field_positions=stream.field_positions,
+            )
 
-        # Validate headers
-        for check in checks:
-            # TODO: filter pick/skip errors
-            errors.extend(check.validate_table_headers(headers))
+            # Validate headers
+            for check in checks:
+                # TODO: filter pick/skip errors
+                errors.extend(check.validate_table_headers(headers))
 
     # Validate rows
     if stream and schema:
         fields = schema.fields
-        field_positions = stream.field_positions
         iterator = stream.iter(extended=True)
+        field_positions = stream.field_positions
+        if not field_positions:
+            field_positions = list(range(1, len(schema.fields) + 1))
         while True:
 
             # Read cells

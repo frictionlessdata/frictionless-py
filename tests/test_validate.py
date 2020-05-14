@@ -143,6 +143,18 @@ def test_validate_schema_invalid_json():
     ]
 
 
+def test_validate_no_headers():
+    report = validate('data/without-headers.csv', headers=None)
+    assert report['valid']
+
+
+def test_validate_no_headers_extra_cell():
+    report = validate('data/without-headers-extra.csv', headers=None)
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [3, 3, 'extra-cell'],
+    ]
+
+
 # Report props
 
 
@@ -194,25 +206,18 @@ def test_validate_catch_all_iter_exceptions():
     ]
 
 
-# Not data/headers/rows source
+# No rows source
 
 
 def test_validate_no_data():
     report = validate('data/empty.csv')
     assert report.flatten(['rowPosition', 'fieldPosition', 'code', 'details']) == [
-        [None, None, 'source-error', 'There are no data available'],
-    ]
-
-
-def test_validate_no_headers():
-    report = validate('data/empty-headers.csv', headers=None)
-    assert report.flatten(['rowPosition', 'fieldPosition', 'code', 'details']) == [
-        [None, None, 'source-error', 'There are no headers available'],
+        [None, None, 'source-error', 'There are no rows available'],
     ]
 
 
 def test_validate_no_rows():
-    report = validate('data/empty-rows.csv')
+    report = validate('data/without-rows.csv')
     assert report.flatten(['rowPosition', 'fieldPosition', 'code', 'details']) == [
         [None, None, 'source-error', 'There are no rows available'],
     ]
@@ -223,7 +228,7 @@ def test_validate_no_rows():
 
 def test_validate_fails_with_wrong_encoding_issue_274():
     # For now, by default encoding is detected incorectly by chardet
-    report = validate('data/encoding-274.csv', encoding='utf-8')
+    report = validate('data/encoding-issue-274.csv', encoding='utf-8')
     assert report['valid']
 
 
