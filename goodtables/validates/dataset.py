@@ -1,2 +1,2 @@
-def validate_dataset(task):
+def validate_dataset(tasks):
     pass

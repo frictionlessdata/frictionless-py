@@ -21,16 +21,18 @@ def validate_table(
     skip_rows=None,
     pick_fields=None,
     skip_fields=None,
-    dialect={},
+    # Schema
     schema={},
-    order_schema=None,
+    schema_order=None,
+    schema_patch=None,
     # Validation
-    pick_errors=None,
-    skip_errors=None,
     row_limit=None,
     error_limit=None,
+    pick_errors=None,
+    skip_errors=None,
     extra_checks=None,
-    **task_rest
+    # Dialect
+    **dialect
 ):
 
     # Prepare state
@@ -55,8 +57,7 @@ def validate_table(
             skip_rows=skip_rows,
             pick_columns=pick_fields,
             skip_columns=skip_fields,
-            **dialect,
-            **task_rest
+            **dialect
         )
         stream.open()
 
@@ -101,7 +102,7 @@ def validate_table(
             schema = None
 
         # Support schema ordering
-        if schema and order_schema:
+        if schema and schema_order:
             # TODO: implement order_schema
             pass
 

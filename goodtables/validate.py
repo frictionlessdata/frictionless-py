@@ -1,20 +1,5 @@
 from . import validates
 
 
-def validate(source, **task):
-    return validates.validate_table(source, **task)
-
-
-# API Helpers
-
-
-def validate_csv():
-    pass
-
-
-def validate_excel():
-    pass
-
-
-def validate_json():
-    pass
+def validate(source, **options):
+    return validates.validate_table(source, **options)
