@@ -23,8 +23,10 @@ def validate_table(
     skip_fields=None,
     # Schema
     schema={},
-    schema_order=None,
-    schema_patch=None,
+    sync_schema=None,
+    patch_schema=None,
+    infer_confidence=0.75,
+    infer_sample_size=100,
     # Validation
     row_limit=None,
     error_limit=None,
@@ -57,6 +59,7 @@ def validate_table(
             skip_rows=skip_rows,
             pick_columns=pick_fields,
             skip_columns=skip_fields,
+            sample_size=infer_sample_size,
             **dialect
         )
         stream.open()
@@ -93,7 +96,9 @@ def validate_table(
 
         # Infer schema
         if schema and not schema.fields:
-            schema.infer(stream.sample, headers=stream.headers, confidence=1)
+            schema.infer(
+                stream.sample, headers=stream.headers, confidence=infer_confidence
+            )
 
         # Handle schema errors
         if schema and schema.errors:
@@ -102,8 +107,8 @@ def validate_table(
             schema = None
 
         # Support schema ordering
-        if schema and schema_order:
-            # TODO: implement order_schema
+        if schema and sync_schema:
+            # TODO: implement sync_schema
             pass
 
     # Prepare checks

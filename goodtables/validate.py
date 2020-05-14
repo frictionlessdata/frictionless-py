@@ -1,5 +1,5 @@
-from . import validates
+from . import sources
 
 
 def validate(source, **options):
-    return validates.validate_table(source, **options)
+    return sources.validate_table(source, **options)
