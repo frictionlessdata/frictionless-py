@@ -106,7 +106,7 @@ class SchemaError(Error):
 
     code = 'schema-error'
     name = 'Schema Error'
-    tags = ['table']
+    tags = ['table', 'schema']
     message = 'The data source could not be successfully described by the invalid Table Schema: {details}'
     description = 'Provided schema is not valid.'
 
