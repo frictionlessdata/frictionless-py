@@ -52,6 +52,13 @@ def validate_table(
     checks = []
     errors = []
 
+    # Prepare errors
+
+    # TODO: rewrite; for now it's a naive algorithm
+    def add_error(error):
+        if error.match(pick_errors=pick_errors, skip_errors=skip_errors):
+            errors.append(error)
+
     # Prepare stream
     try:
 
@@ -79,7 +86,7 @@ def validate_table(
 
     except Exception as exception:
         error = Error.from_exception(exception)
-        errors.append(error)
+        add_error(error)
         stream = None
 
     # Prepare schema
@@ -89,7 +96,7 @@ def validate_table(
         try:
             schema = tableschema.Schema(schema)
         except tableschema.exceptions.TableSchemaException as exception:
-            errors.append(Error.from_exception(exception))
+            add_error(Error.from_exception(exception))
             schema = None
 
         # Infer schema
@@ -133,7 +140,7 @@ def validate_table(
         # Validate schema
         if schema and schema.errors:
             for error in schema.errors:
-                errors.append(Error.from_exception(error))
+                add_error(Error.from_exception(error))
             schema = None
 
     # Prepare checks
@@ -157,8 +164,8 @@ def validate_table(
 
             # Validate headers
             for check in checks:
-                # TODO: filter pick/skip errors
-                errors.extend(check.validate_table_headers(headers))
+                for error in check.validate_table_headers(headers):
+                    add_error(error)
 
     # Validate rows
     if stream and schema:
@@ -176,7 +183,7 @@ def validate_table(
                 break
             except Exception as exception:
                 error = Error.from_exception(exception)
-                errors.append(error)
+                add_error(error)
                 stream = None
 
             # Create row
@@ -191,8 +198,8 @@ def validate_table(
 
             # Validate row
             for check in checks:
-                # TODO: filter pick/skip errors
-                errors.extend(check.validate_table_row(row))
+                for error in check.validate_table_row(row):
+                    add_error(error)
 
             # Row/error limits
             if row_limit and row_number >= row_limit:

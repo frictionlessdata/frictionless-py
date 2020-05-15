@@ -373,6 +373,49 @@ def test_validate_structure_errors_with_error_limit():
     ]
 
 
+# Pick|skip errors
+
+
+def test_validate_pick_errors():
+    report = validate('data/invalid.csv', pick_errors=['blank-header', 'blank-row'])
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [None, 3, 'blank-header'],
+        [4, None, 'blank-row'],
+    ]
+
+
+def test_validate_pick_errors_tags():
+    report = validate('data/invalid.csv', pick_errors=['#head'])
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [None, 3, 'blank-header'],
+        [None, 4, 'duplicate-header'],
+    ]
+
+
+def test_validate_skip_errors():
+    report = validate('data/invalid.csv', skip_errors=['blank-header', 'blank-row'])
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [None, 4, 'duplicate-header'],
+        [2, 3, 'missing-cell'],
+        [2, 4, 'missing-cell'],
+        [3, 3, 'missing-cell'],
+        [3, 4, 'missing-cell'],
+        [5, 5, 'extra-cell'],
+    ]
+
+
+def test_validate_skip_errors_tags():
+    report = validate('data/invalid.csv', skip_errors=['#head'])
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [2, 3, 'missing-cell'],
+        [2, 4, 'missing-cell'],
+        [3, 3, 'missing-cell'],
+        [3, 4, 'missing-cell'],
+        [4, None, 'blank-row'],
+        [5, 5, 'extra-cell'],
+    ]
+
+
 # Report
 
 

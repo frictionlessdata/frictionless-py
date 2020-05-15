@@ -11,6 +11,22 @@ class Error(dict):
         self['message'] = self.message.format(**context)
         self['description'] = self.description
 
+    def match(self, *, pick_errors, skip_errors):
+        match = True
+        if pick_errors:
+            match = False
+            if self['code'] in pick_errors:
+                match = True
+            if set(self['tags']).intersection(pick_errors):
+                match = True
+        if skip_errors:
+            match = True
+            if self['code'] in skip_errors:
+                match = False
+            if set(self['tags']).intersection(skip_errors):
+                match = False
+        return match
+
     @staticmethod
     def from_exception(exception):
         Error = SourceError
@@ -41,7 +57,7 @@ class SourceError(Error):
 
     code = 'source-error'
     name = 'Source Error'
-    tags = ['table']
+    tags = ['#table']
     message = 'The data source has not supported or has inconsistent contents: {details}'
     description = 'Data reading error because of not supported or inconsistent contents.'
 
@@ -54,7 +70,7 @@ class SchemeError(Error):
 
     code = 'scheme-error'
     name = 'Scheme Error'
-    tags = ['table']
+    tags = ['#table']
     message = 'The data source could not be successfully loaded: {details}'
     description = 'Data reading error because of incorrect scheme.'
 
@@ -67,7 +83,7 @@ class FormatError(Error):
 
     code = 'format-error'
     name = 'Format Error'
-    tags = ['table']
+    tags = ['#table']
     message = 'The data source could not be successfully parsed: {details}'
     description = 'Data reading error because of incorrect format.'
 
@@ -80,7 +96,7 @@ class EncodingError(Error):
 
     code = 'encoding-error'
     name = 'Encoding Error'
-    tags = ['table']
+    tags = ['#table']
     message = 'The data source could not be successfully decoded: {details}'
     description = 'Data reading error because of an encoding problem.'
 
@@ -93,7 +109,7 @@ class CompressionError(Error):
 
     code = 'compression-error'
     name = 'Compression Error'
-    tags = ['table']
+    tags = ['#table']
     message = 'The data source could not be successfully decompressed: {details}'
     description = 'Data reading error because of a decompression problem.'
 
@@ -106,7 +122,7 @@ class SchemaError(Error):
 
     code = 'schema-error'
     name = 'Schema Error'
-    tags = ['table', 'schema']
+    tags = ['#table', '#schema']
     message = 'The data source could not be successfully described by the invalid Table Schema: {details}'
     description = 'Provided schema is not valid.'
 
@@ -125,7 +141,7 @@ class BlankHeaderError(Error):
 
     code = 'blank-header'
     name = 'Blank Header'
-    tags = ['head', 'structure']
+    tags = ['#head', '#structure']
     message = 'Header in field at position {fieldPosition} is blank'
     description = 'A column in the header row is missing a value. Headers should be provided and not be blank.'
 
@@ -143,7 +159,7 @@ class DuplicateHeaderError(Error):
 
     code = 'duplicate-header'
     name = 'Duplicate Header'
-    tags = ['head', 'structure']
+    tags = ['#head', '#structure']
     message = 'Header {cell} in field at position {fieldPosition} is duplicated to header in field(s): {details}'
     description = 'Two columns in the header row have the same value. Column names should be unique.'
 
@@ -158,7 +174,7 @@ class ExtraHeaderError(Error):
 
     code = 'extra-header'
     name = 'Extra Header'
-    tags = ['head', 'schema']
+    tags = ['#head', '#schema']
     message = 'There is an extra header {cell} in field at position {fieldPosition}'
     description = 'The first row of the data source contains header that does not exist in the schema.'
 
@@ -175,7 +191,7 @@ class MissingHeaderError(Error):
 
     code = 'missing-header'
     name = 'Missing Header'
-    tags = ['head', 'schema']
+    tags = ['#head', '#schema']
     message = 'There is a missing header in field {fieldName} at position {fieldPosition}'
     description = 'Based on the schema there should be a header that is missing in the first row of the data source.'
 
@@ -192,7 +208,7 @@ class NonMatchingHeaderError(Error):
 
     code = 'non-matching-header'
     name = 'Non-matching Header'
-    tags = ['head', 'schema']
+    tags = ['#head', '#schema']
     message = 'Header {cell} in field {fieldName} at position {fieldPosition} does not match the field name in the schema'
     description = 'One of the data source headers does not match the field name defined in the schema.'
 
@@ -209,7 +225,7 @@ class BlankRowError(Error):
 
     code = 'blank-row'
     name = 'Blank Row'
-    tags = ['body', 'structure']
+    tags = ['#body', '#structure']
     message = 'Row at position {rowPosition} is completely blank'
     description = 'This row is empty. A row should contain at least one value.'
 
@@ -226,7 +242,7 @@ class ExtraCellError(Error):
 
     code = 'extra-cell'
     name = 'Extra Cell'
-    tags = ['body', 'structure']
+    tags = ['#body', '#structure']
     message = 'Row at position {rowPosition} has an extra value in field at position {fieldPosition}'
     description = 'This row has more values compared to the header row (the first row in the data source). A key concept is that all the rows in tabular data must have the same number of columns.'
 
@@ -244,6 +260,6 @@ class MissingCellError(Error):
 
     code = 'missing-cell'
     name = 'Missing Cell'
-    tags = ['body', 'structure']
+    tags = ['#body', '#structure']
     message = 'Row at position {rowPosition} has a missing cell in field {fieldName} at position {fieldPosition}'
     description = 'This row has less values compared to the header row (the first row in the data source). A key concept is that all the rows in tabular data must have the same number of columns.'
