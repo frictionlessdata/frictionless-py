@@ -1,3 +1,4 @@
+from .check import Check
 from .dialects import validate_csv, validate_excel, validate_json
 from .headers import Headers
 from .report import Report, ReportTable

@@ -1,6 +1,6 @@
 import pathlib
 from tableschema import infer
-from goodtables import validate
+from goodtables import validate, Check, errors
 
 
 # General
@@ -413,6 +413,52 @@ def test_validate_skip_errors_tags():
         [3, 4, 'missing-cell'],
         [4, None, 'blank-row'],
         [5, 5, 'extra-cell'],
+    ]
+
+
+# Extra checks
+
+
+def test_validate_extra_checks():
+
+    # Create check
+    class ExtraCheck(Check):
+        def validate_row(self, row):
+            return [
+                errors.BlankRowError(
+                    rowNumber=row.row_number, rowPosition=row.row_position
+                )
+            ]
+
+    # Validate table
+    report = validate('data/table.csv', extra_checks=[ExtraCheck])
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [2, None, 'blank-row'],
+        [3, None, 'blank-row'],
+    ]
+
+
+def test_validate_extra_checks_with_arguments():
+
+    # Create check
+    class ExtraCheck(Check):
+        def __init__(self, rowPosition=None):
+            self.__row_position = rowPosition
+
+        def validate_row(self, row):
+            return [
+                errors.BlankRowError(
+                    rowNumber=row.row_number,
+                    rowPosition=self.__row_position or row.row_position,
+                )
+            ]
+
+    # Validate table
+    extra_checks = [(ExtraCheck, {'rowPosition': 1})]
+    report = validate('data/table.csv', extra_checks=extra_checks)
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [1, None, 'blank-row'],
+        [1, None, 'blank-row'],
     ]
 
 

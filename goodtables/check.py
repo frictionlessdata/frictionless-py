@@ -1,7 +1,8 @@
 class Check:
-    def __init__(self, *, stream, schema, **options):
-        self.__schema = schema
+    def __init__(self, **options):
         self.__options = options
+        self.__stream = None
+        self.__schema = None
 
     @property
     def stream(self):
@@ -17,13 +18,15 @@ class Check:
 
     # Validation
 
-    def validate_start(self):
+    def validate_start(self, *, stream, schema):
+        self.__stream = stream
+        self.__schema = schema
         return []
 
-    def validate_table_headers(self, headers):
+    def validate_headers(self, headers):
         return []
 
-    def validate_table_row(self, row):
+    def validate_row(self, row):
         return []
 
     def validate_finish(self):

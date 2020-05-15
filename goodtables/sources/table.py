@@ -34,7 +34,7 @@ def validate_table(
     error_limit=None,
     pick_errors=None,
     skip_errors=None,
-    extra_checks=None,
+    extra_checks=[],
     # Dialect
     **dialect
 ):
@@ -144,12 +144,14 @@ def validate_table(
             schema = None
 
     # Prepare checks
+    # TODO: add support for checks from plugins
+    # TODO: add support for checks' arguments
     if stream and schema:
-        checks = [BaselineCheck(stream=stream, schema=schema)]
-        # for plugin in plugins:
-        #   check = plugin.create_check(stream=stream, schema=schema)
-        #   checks.append(check)
-        pass
+        Checks = [BaselineCheck] + extra_checks
+        for Check in Checks:
+            check = Check() if isinstance(Check, type) else Check[0](**Check[1])
+            check.validate_start(stream=stream, schema=schema)
+            checks.append(check)
 
     # Validate headers
     if stream and schema:
@@ -164,7 +166,7 @@ def validate_table(
 
             # Validate headers
             for check in checks:
-                for error in check.validate_table_headers(headers):
+                for error in check.validate_headers(headers):
                     add_error(error)
 
     # Validate rows
@@ -198,7 +200,7 @@ def validate_table(
 
             # Validate row
             for check in checks:
-                for error in check.validate_table_row(row):
+                for error in check.validate_row(row):
                     add_error(error)
 
             # Row/error limits
