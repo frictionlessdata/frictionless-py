@@ -145,7 +145,6 @@ def validate_table(
 
     # Prepare checks
     # TODO: add support for checks from plugins
-    # TODO: add support for checks' arguments
     if stream and schema:
         Checks = [BaselineCheck] + extra_checks
         for Check in Checks:
