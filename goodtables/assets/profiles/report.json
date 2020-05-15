@@ -1,5 +1,5 @@
 {
-  "title": "Goodtables Report v3",
+  "title": "Goodtables Report",
   "$schema": "http://json-schema.org/draft-06/schema#",
   "$id": "https://github.com/frictionlessdata/goodtables-py/tree/master/goodtables/assets/profiles/report.json",
   "type": "object",

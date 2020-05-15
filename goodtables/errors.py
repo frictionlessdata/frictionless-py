@@ -159,7 +159,7 @@ class ExtraHeaderError(Error):
     code = 'extra-header'
     name = 'Extra Header'
     tags = ['head', 'schema']
-    message = 'There is an extra header in field {fieldName} at position {fieldPosition}'
+    message = 'There is an extra header {cell} in field at position {fieldPosition}'
     description = 'The first row of the data source contains header that does not exist in the schema.'
 
 

@@ -4,7 +4,7 @@ from . import errors
 
 class Headers(list):
     def __init__(self, cells, *, fields, field_positions):
-        assert len(fields) == len(field_positions)
+        assert len(field_positions) in (len(cells), len(fields))
 
         # Set params
         self.__field_positions = field_positions
@@ -13,7 +13,7 @@ class Headers(list):
         # Extra headers
         if len(fields) < len(cells):
             iterator = cells[len(fields) :]
-            start = max(field_positions) + 1
+            start = max(field_positions[: len(fields)]) + 1
             del cells[len(fields) :]
             for field_position, cell in enumerate(iterator, start=start):
                 self.__errors.append(

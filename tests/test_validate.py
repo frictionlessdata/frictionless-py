@@ -250,6 +250,16 @@ def test_validate_schema_invalid_json():
     ]
 
 
+def test_validate_schema_extra_headers_and_cells():
+    schema = {'fields': [{'name': 'id', 'type': 'integer'}]}
+    report = validate('data/table.csv', schema=schema)
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [None, 2, 'extra-header'],
+        [2, 2, 'extra-cell'],
+        [3, 2, 'extra-cell'],
+    ]
+
+
 # Patch schema
 
 
