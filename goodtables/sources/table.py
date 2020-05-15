@@ -110,16 +110,24 @@ def validate_table(
                     stream.sample, headers=infer_headers, confidence=infer_confidence
                 )
 
-        # Handle schema errors
+        # Patch schema
+        if schema and patch_schema:
+            fields = patch_schema.pop('fields', {})
+            schema.descriptor.update(patch_schema)
+            for field in schema.descriptor['fields']:
+                field.update((fields.get(field.get('name'), {})))
+            schema.commit()
+
+        # Sync schema
+        if schema and sync_schema:
+            # TODO: implement sync_schema
+            pass
+
+        # Validate schema
         if schema and schema.errors:
             for error in schema.errors:
                 errors.append(Error.from_exception(error))
             schema = None
-
-        # Support schema ordering
-        if schema and sync_schema:
-            # TODO: implement sync_schema
-            pass
 
     # Prepare checks
     if stream and schema:

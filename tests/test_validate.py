@@ -250,7 +250,36 @@ def test_validate_schema_invalid_json():
     ]
 
 
-# Infer
+# Patch schema
+
+
+def test_validate_patch_schema():
+    patch_schema = {'missingValues': ['-']}
+    report = validate('data/table.csv', patch_schema=patch_schema)
+    assert report['valid']
+    assert report.table['schema'] == {
+        'fields': [
+            {'format': 'default', 'name': 'id', 'type': 'integer'},
+            {'format': 'default', 'name': 'name', 'type': 'string'},
+        ],
+        'missingValues': ['-'],
+    }
+
+
+def test_validate_patch_schema_fields():
+    patch_schema = {'fields': {'id': {'type': 'string'}}, 'missingValues': ['-']}
+    report = validate('data/table.csv', patch_schema=patch_schema)
+    assert report['valid']
+    assert report.table['schema'] == {
+        'fields': [
+            {'format': 'default', 'name': 'id', 'type': 'string'},
+            {'format': 'default', 'name': 'name', 'type': 'string'},
+        ],
+        'missingValues': ['-'],
+    }
+
+
+# Infer type|sample|compression
 
 
 def test_validate_infer_type_string():
