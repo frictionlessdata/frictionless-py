@@ -1,5 +1,6 @@
 import tabulator
 import tableschema
+from .. import config
 from ..row import Row
 from ..timer import Timer
 from ..errors import Error
@@ -25,8 +26,9 @@ def validate_table(
     schema={},
     sync_schema=None,
     patch_schema=None,
+    infer_type=None,
+    infer_sample=100,
     infer_confidence=0.75,
-    infer_sample_size=100,
     # Validation
     row_limit=None,
     error_limit=None,
@@ -38,7 +40,7 @@ def validate_table(
 ):
 
     # Assert input
-    assert infer_sample_size >= 1
+    assert infer_sample >= 1
     assert infer_confidence >= 0 and infer_confidence <= 1
     assert not row_limit or row_limit >= 1
     assert not error_limit or error_limit >= 1
@@ -65,7 +67,7 @@ def validate_table(
             skip_columns=skip_fields,
             pick_rows=pick_rows,
             skip_rows=skip_rows,
-            sample_size=infer_sample_size,
+            sample_size=infer_sample,
             **dialect
         )
         stream.open()
@@ -96,9 +98,17 @@ def validate_table(
             if not infer_headers:
                 field_numbers = list(range(1, len(stream.sample[0]) + 1))
                 infer_headers = ['field%s' % number for number in field_numbers]
-            schema.infer(
-                stream.sample, headers=infer_headers, confidence=infer_confidence
-            )
+            if infer_type:
+                schema.descriptor['fields'] = []
+                schema.descriptor['missingValues'] = config.MISSING_VALUES
+                for header in infer_headers:
+                    field = {'name': header, 'type': infer_type, 'format': 'default'}
+                    schema.descriptor['fields'].append(field)
+                schema.commit()
+            else:
+                schema.infer(
+                    stream.sample, headers=infer_headers, confidence=infer_confidence
+                )
 
         # Handle schema errors
         if schema and schema.errors:

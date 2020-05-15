@@ -250,6 +250,33 @@ def test_validate_schema_invalid_json():
     ]
 
 
+# Infer
+
+
+def test_validate_infer_type_string():
+    report = validate('data/table.csv', infer_type='string')
+    assert report['valid']
+    assert report.table['schema'] == {
+        'fields': [
+            {'format': 'default', 'name': 'id', 'type': 'string'},
+            {'format': 'default', 'name': 'name', 'type': 'string'},
+        ],
+        'missingValues': [''],
+    }
+
+
+def test_validate_infer_type_any():
+    report = validate('data/table.csv', infer_type='any')
+    assert report['valid']
+    assert report.table['schema'] == {
+        'fields': [
+            {'format': 'default', 'name': 'id', 'type': 'any'},
+            {'format': 'default', 'name': 'name', 'type': 'any'},
+        ],
+        'missingValues': [''],
+    }
+
+
 # Row|error limit
 
 

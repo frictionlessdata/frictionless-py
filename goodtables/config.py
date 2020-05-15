@@ -5,3 +5,4 @@ from .helpers import read_asset
 
 VERSION = read_asset('VERSION')
 REPORT_PROFILE = read_asset('profiles', 'report.json')
+MISSING_VALUES = ['']
