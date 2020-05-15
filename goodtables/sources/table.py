@@ -110,6 +110,18 @@ def validate_table(
                     stream.sample, headers=infer_headers, confidence=infer_confidence
                 )
 
+        # Sync schema
+        if schema and sync_schema:
+            new_fields = []
+            old_fields = schema.descriptor.get('fields', [])
+            map_fields = {field.get('name'): field for field in old_fields}
+            for header in stream.headers:
+                field = map_fields.get(header)
+                if field:
+                    new_fields.append(field)
+            schema.descriptor['fields'] = new_fields
+            schema.commit()
+
         # Patch schema
         if schema and patch_schema:
             fields = patch_schema.pop('fields', {})
@@ -117,11 +129,6 @@ def validate_table(
             for field in schema.descriptor['fields']:
                 field.update((fields.get(field.get('name'), {})))
             schema.commit()
-
-        # Sync schema
-        if schema and sync_schema:
-            # TODO: implement sync_schema
-            pass
 
         # Validate schema
         if schema and schema.errors:

@@ -1,4 +1,5 @@
 import pathlib
+from tableschema import infer
 from goodtables import validate
 
 
@@ -260,6 +261,22 @@ def test_validate_schema_extra_headers_and_cells():
     ]
 
 
+# Sync schema
+
+
+def test_validate_sync_schema():
+    schema = infer('data/table.csv')
+    report = validate('data/sync-schema.csv', schema=schema, sync_schema=True)
+    assert report['valid']
+    assert report.table['schema'] == {
+        'fields': [
+            {'format': 'default', 'name': 'name', 'type': 'string'},
+            {'format': 'default', 'name': 'id', 'type': 'integer'},
+        ],
+        'missingValues': [''],
+    }
+
+
 # Patch schema
 
 
@@ -289,7 +306,7 @@ def test_validate_patch_schema_fields():
     }
 
 
-# Infer type|sample|compression
+# Infer type|sample|confidence
 
 
 def test_validate_infer_type_string():
