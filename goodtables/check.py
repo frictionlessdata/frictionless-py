@@ -1,6 +1,6 @@
-class Check:
-    def __init__(self, **options):
-        self.__options = options
+class Check(dict):
+    def __init__(self, **context):
+        self.update(context)
         self.__stream = None
         self.__schema = None
 

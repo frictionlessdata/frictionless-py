@@ -442,14 +442,11 @@ def test_validate_extra_checks_with_arguments():
 
     # Create check
     class ExtraCheck(Check):
-        def __init__(self, rowPosition=None):
-            self.__row_position = rowPosition
-
         def validate_row(self, row):
             return [
                 errors.BlankRowError(
                     rowNumber=row.row_number,
-                    rowPosition=self.__row_position or row.row_position,
+                    rowPosition=self.get('rowPosition') or row.row_position,
                 )
             ]
 
