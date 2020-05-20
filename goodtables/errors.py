@@ -33,17 +33,43 @@ class Error(dict):
         details = str(exception)
         if isinstance(exception, tabulator.exceptions.SourceError):
             Error = SourceError
-        if isinstance(exception, tabulator.exceptions.SchemeError):
+        elif isinstance(exception, tabulator.exceptions.SchemeError):
             Error = SchemeError
-        if isinstance(exception, tabulator.exceptions.FormatError):
+        elif isinstance(exception, tabulator.exceptions.FormatError):
             Error = FormatError
-        if isinstance(exception, tabulator.exceptions.EncodingError):
+        elif isinstance(exception, tabulator.exceptions.EncodingError):
             Error = EncodingError
-        if isinstance(exception, tabulator.exceptions.CompressionError):
+        elif isinstance(exception, tabulator.exceptions.CompressionError):
             Error = CompressionError
-        if isinstance(exception, tableschema.exceptions.TableSchemaException):
+        elif isinstance(exception, tableschema.exceptions.TableSchemaException):
             Error = SchemaError
         return Error(details=details)
+
+    @staticmethod
+    def from_constraint(name, **context):
+        Error = None
+        if name == 'pattern':
+            Error = PatternConstraintError
+        elif name == 'enum':
+            Error = EnumConstraintError
+        elif name == 'minimum':
+            Error = MinimumConstraintError
+        elif name == 'maximum':
+            Error = MaximumConstraintError
+        elif name == 'minLength':
+            Error = MinLengthConstraintError
+        elif name == 'maxLength':
+            Error = MaxLengthConstraintError
+        else:
+            assert name in [
+                'pattern',
+                'enum',
+                'minimum',
+                'maximum',
+                'minLength',
+                'maxLength',
+            ]
+        return Error(**context)
 
 
 # Table
@@ -349,7 +375,7 @@ class PatternConstraintError(Error):
     description = 'This field value should conform to constraint pattern.'
 
 
-class EnumerableConstraintError(Error):
+class EnumConstraintError(Error):
     """
     # Arguments
         cell (str)
@@ -362,7 +388,7 @@ class EnumerableConstraintError(Error):
         details (str)
     """
 
-    code = 'enumerable-constraint'
+    code = 'enum-constraint'
     name = 'Enumerable Constraint'
     tags = ['#body', '#schema', '#constraint']
     message = 'The cell {cell} in row at positin {rowPosition} and field {fieldName} at position {fieldPosition} does not conform to the given enumeration: {details}'
@@ -409,7 +435,7 @@ class MaximumConstraintError(Error):
     description = 'This field value should be less or equal than constraint value.'
 
 
-class MinimumLengthConstraintError(Error):
+class MinLengthConstraintError(Error):
     """
     # Arguments
         cell (str)
@@ -422,14 +448,14 @@ class MinimumLengthConstraintError(Error):
         details (str)
     """
 
-    code = 'minimum-length-constraint'
+    code = 'min-length-constraint'
     name = 'Minimum Length Constraint'
     tags = ['#body', '#schema', '#constraint']
     message = 'The cell {cell} in row at positin {rowPosition} and field {fieldName} at position {fieldPosition} does not conform to the minumum length constraint: {details}'
     description = 'A length of this field value should be greater or equal than schema constraint value.'
 
 
-class MaximumLengthConstraintError(Error):
+class MaxLengthConstraintError(Error):
     """
     # Arguments
         cell (str)
@@ -442,7 +468,7 @@ class MaximumLengthConstraintError(Error):
         details (str)
     """
 
-    code = 'maximum-length-constraint'
+    code = 'max-length-constraint'
     name = 'Maximum Length Constraint'
     tags = ['#body', '#schema', '#constraint']
     message = 'The cell {cell} in row at positin {rowPosition} and field {fieldName} at position {fieldPosition} does not conform to the maximum length constraint: {details}'
@@ -480,7 +506,7 @@ class PrimaryKeyError(Error):
 
     code = 'primary-key-error'
     name = 'Primary Key Error'
-    tags = ['#body', '#schema', '#constraint', '#integrity']
+    tags = ['#body', '#schema', '#integrity']
     message = 'The row at position {rowPosition} does not conform to the primary key constraint: {details}'
     description = 'Values in the primary key fields should be unique for every row'
 
@@ -496,6 +522,6 @@ class ForeignKeyError(Error):
 
     code = 'foreign-key-error'
     name = 'Foreign Key Error'
-    tags = ['#body', '#schema', '#constraint', '#integrity']
+    tags = ['#body', '#schema', '#integrity']
     message = 'The row at position {rowPosition} does not conform to the foreign key constraint: {details}'
     description = 'Values in the foreign key fields should exist in the reference table'

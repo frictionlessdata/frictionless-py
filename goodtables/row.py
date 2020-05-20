@@ -61,14 +61,42 @@ class Row(OrderedDict):
                 else:
                     is_blank = False
 
-            # Error cell
-            #  if cell is not None:
-            #  try:
-            #  cell = field.cast(cell)
-            #  except tableschema.exceptions.CastError:
-            #  self.__error_cells[field.name] = cell
-            #  cell = None
-            #  # TODO: add errors
+            # Type error
+            if cell is not None:
+                cell = field.cast_function(cell)
+                if cell == field.ERROR:
+                    self.__error_cells[field.name] = cell
+                    self.__errors.append(
+                        errors.TypeError(
+                            cell=str(cell),
+                            cells=map(str, cells),
+                            fieldName=field.name,
+                            fieldNumber=field_number,
+                            fieldPosition=field_position,
+                            rowNumber=row_number,
+                            rowPosition=row_position,
+                        )
+                    )
+                    cell = None
+
+            # Constraint errors
+            if cell is not None:
+                for name, check in field.check_functions.items():
+                    if name not in ['required', 'unique']:
+                        if not check(cell):
+                            self.__errors.append(
+                                errors.Error.from_constraint(
+                                    name,
+                                    cell=str(cell),
+                                    cells=map(str, cells),
+                                    fieldName=field.name,
+                                    fieldNumber=field_number,
+                                    fieldPosition=field_position,
+                                    rowNumber=row_number,
+                                    rowPosition=row_position,
+                                    details=field.constraints[name],
+                                )
+                            )
 
             # Save cell
             self[field.name] = cell
