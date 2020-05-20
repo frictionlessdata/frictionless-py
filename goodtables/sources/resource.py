@@ -6,6 +6,7 @@ def validate_resource(resource, base_path=None, **options):
     resource = datapackage.Resource(resource, base_path=base_path)
 
     # TODO: support multipart paths
+    # TODO: test inline data in reports
 
     # Prepare dialect/headers
     headers = 1
