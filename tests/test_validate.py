@@ -349,6 +349,75 @@ def test_validate_schema_extra_headers_and_cells():
     ]
 
 
+def test_validate_schema_multiple_errors():
+    source = 'data/schema-errors.csv'
+    schema = 'data/schema.json'
+    report = validate(source, schema=schema, pick_errors=['#schema'], error_limit=3)
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [4, 1, 'type-error'],
+        [4, 2, 'required-constraint'],
+        [4, 3, 'required-constraint'],
+    ]
+
+
+def test_validate_schema_min_length_constraint():
+    source = [['row', 'word'], [2, 'a'], [3, 'ab'], [4, 'abc'], [5, 'abcd'], [6]]
+    schema = {
+        'fields': [
+            {'name': 'row', 'type': 'integer'},
+            {'name': 'word', 'type': 'string', 'constraints': {'minLength': 2}},
+        ]
+    }
+    report = validate(source, schema=schema, pick_errors=['min-length-constraint'])
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [2, 2, 'min-length-constraint'],
+    ]
+
+
+def test_validate_schema_max_length_constraint():
+    source = [['row', 'word'], [2, 'a'], [3, 'ab'], [4, 'abc'], [5, 'abcd'], [6]]
+    schema = {
+        'fields': [
+            {'name': 'row', 'type': 'integer'},
+            {'name': 'word', 'type': 'string', 'constraints': {'maxLength': 2}},
+        ]
+    }
+    report = validate(source, schema=schema, pick_errors=['max-length-constraint'])
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [4, 2, 'max-length-constraint'],
+        [5, 2, 'max-length-constraint'],
+    ]
+
+
+def test_validate_schema_minimum_constraint():
+    source = [['row', 'score'], [2, 1], [3, 2], [4, 3], [5, 4], [6]]
+    schema = {
+        'fields': [
+            {'name': 'row', 'type': 'integer'},
+            {'name': 'score', 'type': 'integer', 'constraints': {'minimum': 2}},
+        ]
+    }
+    report = validate(source, schema=schema, pick_errors=['minimum-constraint'])
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [2, 2, 'minimum-constraint'],
+    ]
+
+
+def test_validate_schema_maximum_constraint():
+    source = [['row', 'score'], [2, 1], [3, 2], [4, 3], [5, 4], [6]]
+    schema = {
+        'fields': [
+            {'name': 'row', 'type': 'integer'},
+            {'name': 'score', 'type': 'integer', 'constraints': {'maximum': 2}},
+        ]
+    }
+    report = validate(source, schema=schema, pick_errors=['maximum-constraint'])
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [4, 2, 'maximum-constraint'],
+        [5, 2, 'maximum-constraint'],
+    ]
+
+
 # Sync schema
 
 
@@ -363,6 +432,50 @@ def test_validate_sync_schema():
         ],
         'missingValues': [''],
     }
+
+
+# TODO: sync schema should cover all headers (it cherry-picks here)
+# Original errors:
+#  - [1, null, null, 'missing-header']
+#  - [1, null, 3, 'extra-header']
+def test_validate_sync_schema_invalid():
+    source = [['LastName', 'FirstName', 'Address'], ['Test', 'Tester', '23 Avenue']]
+    schema = {'fields': [{'name': 'id'}, {'name': 'FirstName'}, {'name': 'LastName'}]}
+    report = validate(source, schema=schema, sync_schema=True)
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [None, 3, 'extra-header'],
+        [2, 3, 'extra-cell'],
+    ]
+
+
+# TODO: sync schema should cover all headers (it cherry-picks here)
+# Original errors:
+#  - [1, null, null, 'missing-header']
+#  - [1, null, 4, 'non-matching-header']
+#  - [1, null, 5, 'extra-header']
+def test_validate_schema_headers_errors():
+    source = [
+        ['id', 'last_name', 'first_name', 'language'],
+        [1, 'Alex', 'John', 'English'],
+        [2, 'Peters', 'John', 'Afrikaans'],
+        [3, 'Smith', 'Paul', 'Zulu'],
+    ]
+    schema = {
+        'fields': [
+            {'name': 'id', 'type': 'number'},
+            {'name': 'first_name'},
+            {'name': 'last_name'},
+            {'name': 'age'},
+            {'name': 'country'},
+        ]
+    }
+    report = validate(source, schema=schema, sync_schema=True)
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [None, 4, 'extra-header'],
+        [2, 4, 'extra-cell'],
+        [3, 4, 'extra-cell'],
+        [4, 4, 'extra-cell'],
+    ]
 
 
 # Patch schema
@@ -575,10 +688,37 @@ def test_validate_report_props():
 # Issues
 
 
+def test_validate_infer_fields_issue_223():
+    source = [['name1', 'name2'], ['123', 'abc'], ['456', 'def'], ['789', 'ghi']]
+    patch_schema = {'fields': {'name': {'type': 'string'}}}
+    report = validate(source, patch_schema=patch_schema)
+    assert report['valid']
+
+
+def test_validate_infer_fields_issue_225():
+    source = [['name1', 'name2'], ['123', None], ['456', None], ['789']]
+    patch_schema = {'fields': {'name': {'type': 'string'}}}
+    report = validate(source, patch_schema=patch_schema)
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [4, 2, 'missing-cell'],
+    ]
+
+
 def test_validate_fails_with_wrong_encoding_issue_274():
     # For now, by default encoding is detected incorectly by chardet
     report = validate('data/encoding-issue-274.csv', encoding='utf-8')
     assert report['valid']
+
+
+def test_validate_wide_table_with_order_fields_issue_277():
+    source = 'data/issue-277.csv'
+    schema = 'data/issue-277.json'
+    report = validate(source, schema=schema, sync_schema=True)
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [49, 50, 'required-constraint'],
+        [68, 50, 'required-constraint'],
+        [69, 50, 'required-constraint'],
+    ]
 
 
 def test_validate_invalid_table_schema_issue_304():
@@ -588,6 +728,32 @@ def test_validate_invalid_table_schema_issue_304():
     assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
         [None, None, 'schema-error'],
     ]
+
+
+def test_validate_table_is_invalid_issue_312():
+    report = validate('data/issue-312.xlsx')
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [None, 3, 'blank-header'],
+        [None, 4, 'duplicate-header'],
+        [None, 5, 'blank-header'],
+        [5, None, 'blank-row'],
+    ]
+
+
+def test_validate_order_fields_issue_313():
+    source = 'data/issue-313.xlsx'
+    pick_fields = [1, 2, 3, 4, 5]
+    schema = {
+        'fields': [
+            {'name': 'Column_1', 'type': 'string'},
+            {'name': 'Column_2', 'type': 'string', 'constraints': {'required': True}},
+            {'name': 'Column_3', 'type': 'string'},
+            {'name': 'Column_4', 'type': 'string'},
+            {'name': 'Column_5', 'type': 'string'},
+        ]
+    }
+    report = validate(source, pick_fields=pick_fields, schema=schema, sync_schema=True)
+    assert report['valid']
 
 
 def test_validate_missing_local_file_raises_scheme_error_issue_315():

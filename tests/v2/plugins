@@ -1,0 +1,237 @@
+# Advanced checks
+
+
+#  duplicate_rows:
+#  source: data/duplicate_rows.csv
+#  report:
+#  - [1, 4, null, 'duplicate-row']
+
+
+def test_check_blacklisted_value(log):
+    source = [
+        ['row', 'name'],
+        [2, 'Alex'],
+        [3, 'John'],
+        [4, 'mistake'],
+        [5, 'error'],
+        [6],
+    ]
+    report = validate(
+        source,
+        checks=[
+            {'blacklisted-value': {'column': 1, 'blacklist': [10]}},
+            {'blacklisted-value': {'column': 2, 'blacklist': ['mistake']}},
+            {'blacklisted-value': {'column': 'row', 'blacklist': [10]}},
+            {'blacklisted-value': {'column': 'name', 'blacklist': ['error']}},
+        ],
+    )
+    assert log(report) == [
+        (1, 4, 2, 'blacklisted-value'),
+        (1, 5, 2, 'blacklisted-value'),
+    ]
+
+
+def test_check_blacklisted_value_non_existent_column(log):
+    source = [
+        ['row', 'name'],
+        [2, 'Alex'],
+    ]
+    report = validate(
+        source,
+        checks=[
+            {'blacklisted-value': {'column': 3, 'blacklist': [10]}},
+            {'blacklisted-value': {'column': 'non-existent', 'blacklist': ['mistake']}},
+        ],
+    )
+    assert log(report) == [
+        (1, 2, None, 'blacklisted-value'),
+        (1, 2, None, 'blacklisted-value'),
+    ]
+
+
+@pytest.mark.skipif(sys.version_info >= (3, 8), reason='Problem with Python3.8+')
+def test_check_custom_constraint(log):
+    source = [
+        ['row', 'salary', 'bonus'],
+        [2, 1000, 200],
+        [3, 2500, 500],
+        [4, 1300, 500],
+        [5, 5000, 1000],
+        [6],
+    ]
+    report = validate(
+        source, checks=[{'custom-constraint': {'constraint': 'salary > bonus * 4'}},]
+    )
+    assert log(report) == [
+        (1, 4, None, 'custom-constraint'),
+        (1, 6, None, 'custom-constraint'),
+    ]
+
+
+def test_check_custom_constraint_incorrect_constraint(log):
+    source = [
+        ['row', 'name'],
+        [2, 'Alex'],
+    ]
+    report = validate(
+        source,
+        checks=[
+            {'custom-constraint': {'constraint': 'vars()'}},
+            {'custom-constraint': {'constraint': 'import(os)'}},
+            {'custom-constraint': {'constraint': 'non_existent > 0'}},
+        ],
+    )
+    assert log(report) == [
+        (1, 2, None, 'custom-constraint'),
+        (1, 2, None, 'custom-constraint'),
+        (1, 2, None, 'custom-constraint'),
+    ]
+
+
+def test_check_deviated_value(log):
+    source = [
+        ['temperature'],
+        [1],
+        [-2],
+        [7],
+        [0],
+        [1],
+        [2],
+        [5],
+        [-4],
+        [100],
+        [8],
+        [3],
+    ]
+    report = validate(
+        source,
+        checks=[
+            {
+                'deviated-value': {
+                    'column': 'temperature',
+                    'average': 'median',
+                    'interval': 3,
+                }
+            },
+        ],
+    )
+    assert log(report) == [
+        (1, 10, 1, 'deviated-value'),
+    ]
+
+
+def test_check_deviated_value_not_enough_data(log):
+    source = [
+        ['temperature'],
+        [1],
+    ]
+    report = validate(source, checks=[{'deviated-value': {'column': 'temperature'}},])
+    assert log(report) == []
+
+
+def test_check_deviated_value_not_a_number(log):
+    source = [
+        ['row', 'name'],
+        [2, 'Alex'],
+    ]
+    report = validate(source, checks=[{'deviated-value': {'column': 'name'}},])
+    assert log(report) == [
+        (1, 2, 2, 'deviated-value'),
+    ]
+
+
+def test_check_deviated_value_non_existent_column(log):
+    source = [
+        ['row', 'name'],
+        [2, 'Alex'],
+    ]
+    report = validate(
+        source,
+        checks=[
+            {'deviated-value': {'column': 3}},
+            {'deviated-value': {'column': 'non-existent'}},
+        ],
+    )
+    assert log(report) == [
+        (1, 2, None, 'deviated-value'),
+        (1, 2, None, 'deviated-value'),
+    ]
+
+
+def test_check_deviated_value_incorrect_average(log):
+    source = [
+        ['row', 'name'],
+        [2, 'Alex'],
+    ]
+    with pytest.raises(exceptions.GoodtablesException):
+        report = validate(
+            source,
+            checks=[{'deviated-value': {'column': 3, 'average': 'incorrect-average'}},],
+        )
+
+
+def test_check_sequential_value(log):
+    source = [
+        ['row', 'index2', 'index3'],
+        [2, 1, 1],
+        [3, 2, 3],
+        [4, 3, 5],
+        [5, 5, 6],
+        [6],
+    ]
+    report = validate(
+        source,
+        checks=[
+            {'sequential-value': {'column': 2}},
+            {'sequential-value': {'column': 'index3'}},
+        ],
+    )
+    assert log(report) == [
+        (1, 3, 3, 'sequential-value'),
+        (1, 4, 3, 'sequential-value'),
+        (1, 5, 2, 'sequential-value'),
+        (1, 6, 2, 'sequential-value'),
+        (1, 6, 3, 'sequential-value'),
+    ]
+
+
+def test_check_sequential_value_non_existent_column(log):
+    source = [
+        ['row', 'name'],
+        [2, 'Alex'],
+    ]
+    report = validate(
+        source,
+        checks=[
+            {'sequential-value': {'column': 3}},
+            {'sequential-value': {'column': 'non-existent'}},
+        ],
+    )
+    assert log(report) == [
+        (1, 2, None, 'sequential-value'),
+        (1, 2, None, 'sequential-value'),
+    ]
+
+
+@pytest.mark.parametrize('value', ['a' * 255, 32767, 2147483647,])
+def test_truncated_values(value):
+    cell = goodtables.cells.create_cell('value', value)
+    errors = TruncatedValue().check_row([cell])
+    assert len(errors) == 1
+    assert errors[0].code == 'truncated-value'
+
+
+@pytest.mark.parametrize('value', ['a' * 254, 32766, 2147483646,])
+def test_not_truncated_values(value):
+    cell = goodtables.cells.create_cell('value', value)
+    errors = TruncatedValue().check_row([cell])
+    assert not errors
+
+
+def test_check_truncated_value_with_dates():
+    # There was a bug where we didn't catch the correct exception when calling
+    # int(date)
+    cell = goodtables.cells.create_cell('date', datetime.datetime.now())
+    errors = TruncatedValue().check_row([cell])
+
+    assert not errors

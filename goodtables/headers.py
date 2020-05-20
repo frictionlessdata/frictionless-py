@@ -29,7 +29,7 @@ class Headers(list):
             for field_number, (field_position, field) in enumerate(iterator, start=start):
                 self.__errors.append(
                     errors.MissingHeaderError(
-                        cells=map(str, cells),
+                        cells=list(map(str, cells)),
                         fieldName=field.name,
                         fieldNumber=field_number,
                         fieldPosition=field_position,
@@ -45,7 +45,7 @@ class Headers(list):
             if not cell:
                 self.__errors.append(
                     errors.BlankHeaderError(
-                        cells=map(str, cells),
+                        cells=list(map(str, cells)),
                         fieldName=field.name,
                         fieldNumber=field_number,
                         fieldPosition=field_position,
@@ -64,7 +64,7 @@ class Headers(list):
                     self.__errors.append(
                         errors.DuplicateHeaderError(
                             cell=str(cell),
-                            cells=map(str, cells),
+                            cells=list(map(str, cells)),
                             fieldName=field.name,
                             fieldNumber=field_number,
                             fieldPosition=field_position,
@@ -78,7 +78,7 @@ class Headers(list):
                     self.__errors.append(
                         errors.NonMatchingHeaderError(
                             cell=str(cell),
-                            cells=map(str, cells),
+                            cells=list(map(str, cells)),
                             fieldName=field.name,
                             fieldNumber=field_number,
                             fieldPosition=field_position,

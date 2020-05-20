@@ -48,26 +48,26 @@ class Error(dict):
     @staticmethod
     def from_constraint(name, **context):
         Error = None
-        if name == 'pattern':
-            Error = PatternConstraintError
-        elif name == 'enum':
-            Error = EnumConstraintError
+        if name == 'minLength':
+            Error = MinLengthConstraintError
+        elif name == 'maxLength':
+            Error = MaxLengthConstraintError
         elif name == 'minimum':
             Error = MinimumConstraintError
         elif name == 'maximum':
             Error = MaximumConstraintError
-        elif name == 'minLength':
-            Error = MinLengthConstraintError
-        elif name == 'maxLength':
-            Error = MaxLengthConstraintError
+        elif name == 'pattern':
+            Error = PatternConstraintError
+        elif name == 'enum':
+            Error = EnumConstraintError
         else:
             assert name in [
-                'pattern',
-                'enum',
-                'minimum',
-                'maximum',
                 'minLength',
                 'maxLength',
+                'minimum',
+                'maximum',
+                'pattern',
+                'enum',
             ]
         return Error(**context)
 
@@ -355,7 +355,7 @@ class RequiredConstraintError(Error):
     description = 'This field is a required field, but it contains no value.'
 
 
-class PatternConstraintError(Error):
+class MinLengthConstraintError(Error):
     """
     # Arguments
         cell (str)
@@ -368,14 +368,14 @@ class PatternConstraintError(Error):
         details (str)
     """
 
-    code = 'pattern-constraint'
-    name = 'Pattern Constraint'
+    code = 'min-length-constraint'
+    name = 'Minimum Length Constraint'
     tags = ['#body', '#schema', '#constraint']
-    message = 'The cell {cell} in row at positin {rowPosition} and field {fieldName} at position {fieldPosition} does not conform to the pattern constraint: {details}'
-    description = 'This field value should conform to constraint pattern.'
+    message = 'The cell {cell} in row at positin {rowPosition} and field {fieldName} at position {fieldPosition} does not conform to the minumum length constraint: {details}'
+    description = 'A length of this field value should be greater or equal than schema constraint value.'
 
 
-class EnumConstraintError(Error):
+class MaxLengthConstraintError(Error):
     """
     # Arguments
         cell (str)
@@ -388,11 +388,11 @@ class EnumConstraintError(Error):
         details (str)
     """
 
-    code = 'enum-constraint'
-    name = 'Enumerable Constraint'
+    code = 'max-length-constraint'
+    name = 'Maximum Length Constraint'
     tags = ['#body', '#schema', '#constraint']
-    message = 'The cell {cell} in row at positin {rowPosition} and field {fieldName} at position {fieldPosition} does not conform to the given enumeration: {details}'
-    description = 'This field value should be equal to one of the values in the enumeration constraint.'
+    message = 'The cell {cell} in row at positin {rowPosition} and field {fieldName} at position {fieldPosition} does not conform to the maximum length constraint: {details}'
+    description = 'A length of this field value should be less or equal than schema constraint value.'
 
 
 class MinimumConstraintError(Error):
@@ -435,7 +435,7 @@ class MaximumConstraintError(Error):
     description = 'This field value should be less or equal than constraint value.'
 
 
-class MinLengthConstraintError(Error):
+class PatternConstraintError(Error):
     """
     # Arguments
         cell (str)
@@ -448,14 +448,14 @@ class MinLengthConstraintError(Error):
         details (str)
     """
 
-    code = 'min-length-constraint'
-    name = 'Minimum Length Constraint'
+    code = 'pattern-constraint'
+    name = 'Pattern Constraint'
     tags = ['#body', '#schema', '#constraint']
-    message = 'The cell {cell} in row at positin {rowPosition} and field {fieldName} at position {fieldPosition} does not conform to the minumum length constraint: {details}'
-    description = 'A length of this field value should be greater or equal than schema constraint value.'
+    message = 'The cell {cell} in row at positin {rowPosition} and field {fieldName} at position {fieldPosition} does not conform to the pattern constraint: {details}'
+    description = 'This field value should conform to constraint pattern.'
 
 
-class MaxLengthConstraintError(Error):
+class EnumConstraintError(Error):
     """
     # Arguments
         cell (str)
@@ -468,11 +468,11 @@ class MaxLengthConstraintError(Error):
         details (str)
     """
 
-    code = 'max-length-constraint'
-    name = 'Maximum Length Constraint'
+    code = 'enum-constraint'
+    name = 'Enumerable Constraint'
     tags = ['#body', '#schema', '#constraint']
-    message = 'The cell {cell} in row at positin {rowPosition} and field {fieldName} at position {fieldPosition} does not conform to the maximum length constraint: {details}'
-    description = 'A length of this field value should be less or equal than schema constraint value.'
+    message = 'The cell {cell} in row at positin {rowPosition} and field {fieldName} at position {fieldPosition} does not conform to the given enumeration: {details}'
+    description = 'This field value should be equal to one of the values in the enumeration constraint.'
 
 
 class UniqueConstraintError(Error):

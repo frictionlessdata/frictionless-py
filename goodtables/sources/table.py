@@ -91,6 +91,7 @@ def validate_table(
         error = Error.from_exception(exception)
         add_error(error)
         stream = None
+        schema = None
 
     # Prepare schema
     if stream:

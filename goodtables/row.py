@@ -24,7 +24,7 @@ class Row(OrderedDict):
                 self.__errors.append(
                     errors.ExtraCellError(
                         cell=str(cell),
-                        cells=map(str, cells),
+                        cells=list(map(str, cells)),
                         fieldPosition=field_position,
                         rowNumber=row_number,
                         rowPosition=row_position,
@@ -38,7 +38,7 @@ class Row(OrderedDict):
             for field_number, (field_position, field) in enumerate(iterator, start=start):
                 self.__errors.append(
                     errors.MissingCellError(
-                        cells=map(str, cells),
+                        cells=list(map(str, cells)),
                         fieldName=field.name,
                         fieldNumber=field_number,
                         fieldPosition=field_position,
@@ -58,23 +58,39 @@ class Row(OrderedDict):
                 if cell in field.missing_values:
                     self.__blank_cells[field.name] = cell
                     cell = None
-                else:
-                    is_blank = False
 
-            # Type error
-            if cell is not None:
-                cell = field.cast_function(cell)
-                if cell == field.ERROR:
-                    self.__error_cells[field.name] = cell
+            # Required constraint
+            if cell is None:
+                if field.required:
                     self.__errors.append(
-                        errors.TypeError(
-                            cell=str(cell),
-                            cells=map(str, cells),
+                        errors.RequiredConstraintError(
+                            cells=list(map(str, cells)),
                             fieldName=field.name,
                             fieldNumber=field_number,
                             fieldPosition=field_position,
                             rowNumber=row_number,
                             rowPosition=row_position,
+                        )
+                    )
+
+            # Type error
+            if cell is not None:
+                is_blank = False
+                cell = field.cast_function(cell)
+                if cell == field.ERROR:
+                    details = 'expected type is "%s" and format is "%s"'
+                    details = details % (field.type, field.format)
+                    self.__error_cells[field.name] = cell
+                    self.__errors.append(
+                        errors.TypeError(
+                            cell=str(cell),
+                            cells=list(map(str, cells)),
+                            fieldName=field.name,
+                            fieldNumber=field_number,
+                            fieldPosition=field_position,
+                            rowNumber=row_number,
+                            rowPosition=row_position,
+                            details=details,
                         )
                     )
                     cell = None
@@ -88,7 +104,7 @@ class Row(OrderedDict):
                                 errors.Error.from_constraint(
                                     name,
                                     cell=str(cell),
-                                    cells=map(str, cells),
+                                    cells=list(map(str, cells)),
                                     fieldName=field.name,
                                     fieldNumber=field_number,
                                     fieldPosition=field_position,
@@ -105,7 +121,9 @@ class Row(OrderedDict):
         if is_blank:
             self.__errors = [
                 errors.BlankRowError(
-                    cells=map(str, cells), rowNumber=row_number, rowPosition=row_position,
+                    cells=list(map(str, cells)),
+                    rowNumber=row_number,
+                    rowPosition=row_position,
                 )
             ]
 
