@@ -7,6 +7,8 @@ def validate_resource(resource, base_path=None, **options):
 
     # TODO: support multipart paths
     # TODO: test inline data in reports
+    # TODO: validate data types of the table options from resource
+    # TODO: add warnings from data types validation
 
     # Prepare dialect/headers
     headers = 1
@@ -15,7 +17,7 @@ def validate_resource(resource, base_path=None, **options):
         headers = None
 
     # Validate table
-    report = validate_table(
+    return validate_table(
         resource.source,
         headers=headers,
         scheme=resource.descriptor.get('scheme'),
@@ -32,9 +34,3 @@ def validate_resource(resource, base_path=None, **options):
         **options,
         **dialect,
     )
-
-    # Extend warnings
-    for error in resource.errors:
-        report['warnings'].append(str(error))
-
-    return report
