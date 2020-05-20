@@ -3,7 +3,6 @@ import tableschema
 from .. import config
 from .. import helpers
 from ..row import Row
-from ..timer import Timer
 from ..errors import Error
 from ..headers import Headers
 from ..report import Report, ReportTable
@@ -49,7 +48,7 @@ def validate_table(
     assert not error_limit or error_limit >= 1
 
     # Prepare state
-    timer = Timer()
+    timer = helpers.Timer()
     row_number = 0
     warnings = []
     checks = []

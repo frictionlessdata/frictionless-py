@@ -1,5 +1,6 @@
 import io
 import os
+import datetime
 import itertools
 
 
@@ -35,3 +36,15 @@ def parse_hashing_digest(hash):
         return ''
     parts = hash.split(':', maxsplit=1)
     return parts[1] if len(parts) > 1 else hash
+
+
+# Measurements
+
+
+class Timer:
+    def __init__(self):
+        self.__initial = datetime.datetime.now()
+
+    def get_time(self):
+        current = datetime.datetime.now()
+        return round((current - self.__initial).total_seconds(), 3)
