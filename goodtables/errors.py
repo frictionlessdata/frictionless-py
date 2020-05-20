@@ -114,6 +114,32 @@ class CompressionError(Error):
     description = 'Data reading error because of a decompression problem.'
 
 
+class SizeError(Error):
+    """
+    # Arguments
+        details (str)
+    """
+
+    code = 'size-error'
+    name = 'Size Error'
+    tags = ['#table', '#integrity']
+    message = 'The data source does not match the expected size in bytes: {details}'
+    description = 'This error can happen if the data is corrupted.'
+
+
+class HashError(Error):
+    """
+    # Arguments
+        details (str)
+    """
+
+    code = 'hash-error'
+    name = 'Hash Error'
+    tags = ['#table', '#integrity']
+    message = 'The data source does not match the expected hash: {details}'
+    description = 'This error can happen if the data is corrupted.'
+
+
 class SchemaError(Error):
     """
     # Arguments
@@ -298,7 +324,7 @@ class RequiredConstraintError(Error):
 
     code = 'required-constraint'
     name = 'Required Constraint'
-    tags = ['#body', '#schema']
+    tags = ['#body', '#schema', '#constraint']
     message = 'Field {fieldName} at position {fieldPosition} is a required field, but row at position {rowPosition} has no value'
     description = 'This field is a required field, but it contains no value.'
 
@@ -318,29 +344,9 @@ class PatternConstraintError(Error):
 
     code = 'pattern-constraint'
     name = 'Pattern Constraint'
-    tags = ['#body', '#schema']
+    tags = ['#body', '#schema', '#constraint']
     message = 'The cell {cell} in row at positin {rowPosition} and field {fieldName} at position {fieldPosition} does not conform to the pattern constraint: {details}'
     description = 'This field value should conform to constraint pattern.'
-
-
-class UniqueConstraintError(Error):
-    """
-    # Arguments
-        cell (str)
-        cells (str[])
-        fieldName (str)
-        fieldNumber (int)
-        fieldPosition (int)
-        rowNumber (int)
-        rowPosition (int)
-        details (str)
-    """
-
-    code = 'unique-constraint'
-    name = 'Unique Constraint'
-    tags = ['#body', '#schema']
-    message = 'Row at positi {rowPosition} has unique constraint violation in field {fieldName} at position {fieldPosition}: {details}'
-    description = 'This field is a unique field but it contains a value that has been used in another row.'
 
 
 class EnumerableConstraintError(Error):
@@ -358,7 +364,7 @@ class EnumerableConstraintError(Error):
 
     code = 'enumerable-constraint'
     name = 'Enumerable Constraint'
-    tags = ['#body', '#schema']
+    tags = ['#body', '#schema', '#constraint']
     message = 'The cell {cell} in row at positin {rowPosition} and field {fieldName} at position {fieldPosition} does not conform to the given enumeration: {details}'
     description = 'This field value should be equal to one of the values in the enumeration constraint.'
 
@@ -378,7 +384,7 @@ class MinimumConstraintError(Error):
 
     code = 'minimum-constraint'
     name = 'Minimum Constraint'
-    tags = ['#body', '#schema']
+    tags = ['#body', '#schema', '#constraint']
     message = 'The cell {cell} in row at positin {rowPosition} and field {fieldName} at position {fieldPosition} does not conform to the minimum constraint: {details}'
     description = 'This field value should be greater or equal than constraint value.'
 
@@ -398,7 +404,7 @@ class MaximumConstraintError(Error):
 
     code = 'maximum-constraint'
     name = 'Maximum Constraint'
-    tags = ['#body', '#schema']
+    tags = ['#body', '#schema', '#constraint']
     message = 'The cell {cell} in row at positin {rowPosition} and field {fieldName} at position {fieldPosition} does not conform to the maximum constraint: {details}'
     description = 'This field value should be less or equal than constraint value.'
 
@@ -418,7 +424,7 @@ class MinimumLengthConstraintError(Error):
 
     code = 'minimum-length-constraint'
     name = 'Minimum Length Constraint'
-    tags = ['#body', '#schema']
+    tags = ['#body', '#schema', '#constraint']
     message = 'The cell {cell} in row at positin {rowPosition} and field {fieldName} at position {fieldPosition} does not conform to the minumum length constraint: {details}'
     description = 'A length of this field value should be greater or equal than schema constraint value.'
 
@@ -438,9 +444,29 @@ class MaximumLengthConstraintError(Error):
 
     code = 'maximum-length-constraint'
     name = 'Maximum Length Constraint'
-    tags = ['#body', '#schema']
+    tags = ['#body', '#schema', '#constraint']
     message = 'The cell {cell} in row at positin {rowPosition} and field {fieldName} at position {fieldPosition} does not conform to the maximum length constraint: {details}'
     description = 'A length of this field value should be less or equal than schema constraint value.'
+
+
+class UniqueConstraintError(Error):
+    """
+    # Arguments
+        cell (str)
+        cells (str[])
+        fieldName (str)
+        fieldNumber (int)
+        fieldPosition (int)
+        rowNumber (int)
+        rowPosition (int)
+        details (str)
+    """
+
+    code = 'unique-constraint'
+    name = 'Unique Constraint'
+    tags = ['#body', '#schema', '#constraint', '#integrity']
+    message = 'Row at positi {rowPosition} has unique constraint violation in field {fieldName} at position {fieldPosition}: {details}'
+    description = 'This field is a unique field but it contains a value that has been used in another row.'
 
 
 class PrimaryKeyError(Error):
@@ -454,7 +480,7 @@ class PrimaryKeyError(Error):
 
     code = 'primary-key-error'
     name = 'Primary Key Error'
-    tags = ['#body', '#schema']
+    tags = ['#body', '#schema', '#constraint', '#integrity']
     message = 'The row at position {rowPosition} does not conform to the primary key constraint: {details}'
     description = 'Values in the primary key fields should be unique for every row'
 
@@ -470,6 +496,6 @@ class ForeignKeyError(Error):
 
     code = 'foreign-key-error'
     name = 'Foreign Key Error'
-    tags = ['#body', '#schema']
+    tags = ['#body', '#schema', '#constraint', '#integrity']
     message = 'The row at position {rowPosition} does not conform to the foreign key constraint: {details}'
     description = 'Values in the foreign key fields should exist in the reference table'

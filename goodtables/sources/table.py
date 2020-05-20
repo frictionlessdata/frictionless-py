@@ -22,6 +22,8 @@ def validate_table(
     skip_fields=None,
     pick_rows=None,
     skip_rows=None,
+    size=None,
+    hash=None,
     # Schema
     schema={},
     sync_schema=None,
