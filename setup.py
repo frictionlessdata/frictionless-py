@@ -30,7 +30,7 @@ INSTALL_REQUIRES = [
     'statistics>=1.0',
     'tabulator>=1.48',
     'tableschema>=1.18',
-    'datapackage>=1.10',
+    'datapackage>=1.14',
 ]
 TESTS_REQUIRE = [
     'mypy',

@@ -25,7 +25,7 @@ def validate_table(
     size=None,
     hash=None,
     # Schema
-    schema={},
+    schema=None,
     sync_schema=None,
     patch_schema=None,
     infer_type=None,
@@ -36,7 +36,7 @@ def validate_table(
     error_limit=None,
     pick_errors=None,
     skip_errors=None,
-    extra_checks=[],
+    extra_checks=None,
     # Dialect
     **dialect
 ):
@@ -97,7 +97,7 @@ def validate_table(
 
         # Create schema
         try:
-            schema = tableschema.Schema(schema)
+            schema = tableschema.Schema(schema or {})
         except tableschema.exceptions.TableSchemaException as exception:
             add_error(Error.from_exception(exception))
             schema = None
@@ -152,7 +152,7 @@ def validate_table(
         Checks = []
         Checks.append(BaselineCheck)
         Checks.append((IntegrityCheck, {'size': size, 'hash': hash}))
-        Checks.extend(extra_checks)
+        Checks.extend(extra_checks or [])
         for Check in Checks:
             check = Check() if isinstance(Check, type) else Check[0](**Check[1])
             checks.append(check)
@@ -241,13 +241,13 @@ def validate_table(
         tables=[
             ReportTable(
                 time=time,
-                source=source,
+                source=str(source),
                 headers=headers,
                 scheme=scheme,
                 format=format,
                 encoding=encoding,
                 schema=schema,
-                dialect={},
+                dialect=dialect,
                 rowCount=row_number,
                 errors=errors,
             )
