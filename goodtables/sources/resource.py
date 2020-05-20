@@ -7,8 +7,7 @@ def validate_resource(resource, base_path=None, **options):
 
     # TODO: support multipart paths
     # TODO: test inline data in reports
-    # TODO: validate data types of the table options from resource
-    # TODO: add warnings from data types validation
+    # TODO: validate with fake valid schema/terminate on invalid with warnings
 
     # Prepare dialect/headers
     headers = 1
