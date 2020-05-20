@@ -263,3 +263,213 @@ class MissingCellError(Error):
     tags = ['#body', '#structure']
     message = 'Row at position {rowPosition} has a missing cell in field {fieldName} at position {fieldPosition}'
     description = 'This row has less values compared to the header row (the first row in the data source). A key concept is that all the rows in tabular data must have the same number of columns.'
+
+
+class TypeError(Error):
+    """
+    # Arguments
+        cell (str)
+        cells (str[])
+        fieldName (str)
+        fieldNumber (int)
+        fieldPosition (int)
+        rowNumber (int)
+        rowPosition (int)
+        details (str)
+    """
+
+    code = 'type-error'
+    name = 'Missing Cell'
+    tags = ['#body', '#schema']
+    message = 'The cell {cell} in row at position {rowPosition} and field {fieldName} at position {fieldPosition} has incompatible type: {details}'
+    description = 'The value does not match the schema type and format for this field.'
+
+
+class RequiredConstraintError(Error):
+    """
+    # Arguments
+        cells (str[])
+        fieldName (str)
+        fieldNumber (int)
+        fieldPosition (int)
+        rowNumber (int)
+        rowPosition (int)
+    """
+
+    code = 'required-constraint'
+    name = 'Required Constraint'
+    tags = ['#body', '#schema']
+    message = 'Field {fieldName} at position {fieldPosition} is a required field, but row at position {rowPosition} has no value'
+    description = 'This field is a required field, but it contains no value.'
+
+
+class PatternConstraintError(Error):
+    """
+    # Arguments
+        cell (str)
+        cells (str[])
+        fieldName (str)
+        fieldNumber (int)
+        fieldPosition (int)
+        rowNumber (int)
+        rowPosition (int)
+        details (str)
+    """
+
+    code = 'pattern-constraint'
+    name = 'Pattern Constraint'
+    tags = ['#body', '#schema']
+    message = 'The cell {cell} in row at positin {rowPosition} and field {fieldName} at position {fieldPosition} does not conform to the pattern constraint: {details}'
+    description = 'This field value should conform to constraint pattern.'
+
+
+class UniqueConstraintError(Error):
+    """
+    # Arguments
+        cell (str)
+        cells (str[])
+        fieldName (str)
+        fieldNumber (int)
+        fieldPosition (int)
+        rowNumber (int)
+        rowPosition (int)
+        details (str)
+    """
+
+    code = 'unique-constraint'
+    name = 'Unique Constraint'
+    tags = ['#body', '#schema']
+    message = 'Row at positi {rowPosition} has unique constraint violation in field {fieldName} at position {fieldPosition}: {details}'
+    description = 'This field is a unique field but it contains a value that has been used in another row.'
+
+
+class EnumerableConstraintError(Error):
+    """
+    # Arguments
+        cell (str)
+        cells (str[])
+        fieldName (str)
+        fieldNumber (int)
+        fieldPosition (int)
+        rowNumber (int)
+        rowPosition (int)
+        details (str)
+    """
+
+    code = 'enumerable-constraint'
+    name = 'Enumerable Constraint'
+    tags = ['#body', '#schema']
+    message = 'The cell {cell} in row at positin {rowPosition} and field {fieldName} at position {fieldPosition} does not conform to the given enumeration: {details}'
+    description = 'This field value should be equal to one of the values in the enumeration constraint.'
+
+
+class MinimumConstraintError(Error):
+    """
+    # Arguments
+        cell (str)
+        cells (str[])
+        fieldName (str)
+        fieldNumber (int)
+        fieldPosition (int)
+        rowNumber (int)
+        rowPosition (int)
+        details (str)
+    """
+
+    code = 'minimum-constraint'
+    name = 'Minimum Constraint'
+    tags = ['#body', '#schema']
+    message = 'The cell {cell} in row at positin {rowPosition} and field {fieldName} at position {fieldPosition} does not conform to the minimum constraint: {details}'
+    description = 'This field value should be greater or equal than constraint value.'
+
+
+class MaximumConstraintError(Error):
+    """
+    # Arguments
+        cell (str)
+        cells (str[])
+        fieldName (str)
+        fieldNumber (int)
+        fieldPosition (int)
+        rowNumber (int)
+        rowPosition (int)
+        details (str)
+    """
+
+    code = 'maximum-constraint'
+    name = 'Maximum Constraint'
+    tags = ['#body', '#schema']
+    message = 'The cell {cell} in row at positin {rowPosition} and field {fieldName} at position {fieldPosition} does not conform to the maximum constraint: {details}'
+    description = 'This field value should be less or equal than constraint value.'
+
+
+class MinimumLengthConstraintError(Error):
+    """
+    # Arguments
+        cell (str)
+        cells (str[])
+        fieldName (str)
+        fieldNumber (int)
+        fieldPosition (int)
+        rowNumber (int)
+        rowPosition (int)
+        details (str)
+    """
+
+    code = 'minimum-length-constraint'
+    name = 'Minimum Length Constraint'
+    tags = ['#body', '#schema']
+    message = 'The cell {cell} in row at positin {rowPosition} and field {fieldName} at position {fieldPosition} does not conform to the minumum length constraint: {details}'
+    description = 'A length of this field value should be greater or equal than schema constraint value.'
+
+
+class MaximumLengthConstraintError(Error):
+    """
+    # Arguments
+        cell (str)
+        cells (str[])
+        fieldName (str)
+        fieldNumber (int)
+        fieldPosition (int)
+        rowNumber (int)
+        rowPosition (int)
+        details (str)
+    """
+
+    code = 'maximum-length-constraint'
+    name = 'Maximum Length Constraint'
+    tags = ['#body', '#schema']
+    message = 'The cell {cell} in row at positin {rowPosition} and field {fieldName} at position {fieldPosition} does not conform to the maximum length constraint: {details}'
+    description = 'A length of this field value should be less or equal than schema constraint value.'
+
+
+class PrimaryKeyError(Error):
+    """
+    # Arguments
+        cells (str[])
+        rowNumber (int)
+        rowPosition (int)
+        details (str)
+    """
+
+    code = 'primary-key-error'
+    name = 'Primary Key Error'
+    tags = ['#body', '#schema']
+    message = 'The row at position {rowPosition} does not conform to the primary key constraint: {details}'
+    description = 'Values in the primary key fields should be unique for every row'
+
+
+class ForeignKeyError(Error):
+    """
+    # Arguments
+        cells (str[])
+        rowNumber (int)
+        rowPosition (int)
+        details (str)
+    """
+
+    code = 'foreign-key-error'
+    name = 'Foreign Key Error'
+    tags = ['#body', '#schema']
+    message = 'The row at position {rowPosition} does not conform to the foreign key constraint: {details}'
+    description = 'Values in the foreign key fields should exist in the reference table'
