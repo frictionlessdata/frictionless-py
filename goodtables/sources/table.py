@@ -1,12 +1,13 @@
 import tabulator
 import tableschema
 from .. import config
+from .. import helpers
 from ..row import Row
 from ..timer import Timer
 from ..errors import Error
 from ..headers import Headers
-from ..checks import BaselineCheck
 from ..report import Report, ReportTable
+from ..checks import BaselineCheck, IntegrityCheck
 
 
 def validate_table(
@@ -55,7 +56,6 @@ def validate_table(
     errors = []
 
     # Prepare errors
-
     # TODO: rewrite; for now it's a naive algorithm
     def add_error(error):
         if error.match(pick_errors=pick_errors, skip_errors=skip_errors):
@@ -77,6 +77,7 @@ def validate_table(
             pick_rows=pick_rows,
             skip_rows=skip_rows,
             sample_size=infer_sample,
+            hashing_algorithm=helpers.parse_hashing_algorithm(hash),
             **dialect
         )
         stream.open()
@@ -145,14 +146,18 @@ def validate_table(
                 add_error(Error.from_exception(error))
             schema = None
 
-    # Prepare checks
+    # Start checks
     # TODO: add support for checks from plugins
     if stream and schema:
-        Checks = [BaselineCheck] + extra_checks
+        Checks = []
+        Checks.append(BaselineCheck)
+        Checks.append((IntegrityCheck, {'size': size, 'hash': hash}))
+        Checks.extend(extra_checks)
         for Check in Checks:
             check = Check() if isinstance(Check, type) else Check[0](**Check[1])
-            check.validate_start(stream=stream, schema=schema)
             checks.append(check)
+            for error in check.validate_start(stream=stream, schema=schema):
+                add_error(error)
 
     # Validate headers
     if stream and schema:
@@ -209,6 +214,12 @@ def validate_table(
                 break
             if error_limit and len(errors) >= error_limit:
                 break
+
+    # Finish checks
+    if stream and schema:
+        for check in checks:
+            for error in check.validate_finish():
+                add_error(error)
 
     # Prepare report
     time = timer.get_time()

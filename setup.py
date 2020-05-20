@@ -28,8 +28,8 @@ INSTALL_REQUIRES = [
     'requests>=2.10',
     'simpleeval>=0.9',
     'statistics>=1.0',
-    'tabulator>=1.47.0',
-    'tableschema>=1.16.4',
+    'tabulator>=1.48',
+    'tableschema>=1.18',
     'datapackage>=1.10',
 ]
 TESTS_REQUIRE = [

@@ -12,10 +12,6 @@ class Check(dict):
     def schema(self):
         return self.__schema
 
-    @property
-    def options(self):
-        return self.__options
-
     # Validation
 
     def validate_start(self, *, stream, schema):

@@ -21,3 +21,17 @@ def find_positions(haystack, needle):
         if value == needle:
             positions.append(position)
     return positions
+
+
+def parse_hashing_algorithm(hash):
+    if not hash:
+        return 'md5'
+    parts = hash.split(':', maxsplit=1)
+    return parts[0] if len(parts) > 1 else 'md5'
+
+
+def parse_hashing_digest(hash):
+    if not hash:
+        return ''
+    parts = hash.split(':', maxsplit=1)
+    return parts[1] if len(parts) > 1 else hash
