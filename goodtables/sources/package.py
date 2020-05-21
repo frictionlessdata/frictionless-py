@@ -7,14 +7,14 @@ from .resource import validate_resource
 
 # TODO: support multipart paths
 # https://github.com/frictionlessdata/datapackage-py/pull/257
-def validate_package(package, strict=False, base_path=None, **options):
+def validate_package(source, strict=False, base_path=None, **options):
     timer = helpers.Timer()
 
     try:
 
         # Create package
         try:
-            package = datapackage.Package(package, base_path=base_path)
+            package = datapackage.Package(source, base_path=base_path)
         except datapackage.exceptions.DataPackageException as exception:
             time = timer.get_time()
             error = PackageError(details=str(exception))

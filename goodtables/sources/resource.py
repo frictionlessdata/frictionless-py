@@ -7,14 +7,14 @@ from .table import validate_table
 
 # TODO: support multipart paths
 # https://github.com/frictionlessdata/datapackage-py/pull/257
-def validate_resource(resource, strict=False, base_path=None, **options):
+def validate_resource(source, strict=False, base_path=None, **options):
     timer = helpers.Timer()
 
     try:
 
         # Create resource
         try:
-            resource = datapackage.Resource(resource, base_path=base_path)
+            resource = datapackage.Resource(source, base_path=base_path)
         except datapackage.exceptions.DataPackageException as exception:
             time = timer.get_time()
             error = ResourceError(details=str(exception))
