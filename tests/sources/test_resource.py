@@ -10,11 +10,11 @@ def test_validate():
 
 
 def test_validate_invalid_resource():
-    report = validate({'path': 'data/table.csv'})
+    report = validate({'name': True, 'path': 'data/table.csv'})
     assert report.flatten(['code', 'details']) == [
         [
             'resource-error',
-            'Descriptor validation error: {\'path\': \'data/table.csv\', \'profile\': \'data-resource\'} is not valid under any of the given schemas at "" in descriptor and at "oneOf" in profile',
+            'Descriptor validation error: True is not of type \'string\' at "name" in descriptor and at "properties/name/type" in profile',
         ]
     ]
 

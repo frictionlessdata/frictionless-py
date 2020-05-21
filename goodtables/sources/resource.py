@@ -14,6 +14,7 @@ def validate_resource(resource, base_path=None, **options):
 
         # Create resource
         resource = datapackage.Resource(resource, base_path=base_path)
+        resource.infer()
 
         # Resource errors
         errors = []
