@@ -8,7 +8,8 @@ import itertools
 
 
 def read_asset(*paths):
-    io.open(os.path.join(os.path.dirname(__file__), 'assets', *paths)).read().strip()
+    dirname = os.path.dirname(__file__)
+    return io.open(os.path.join(dirname, 'assets', *paths)).read().strip()
 
 
 def combine(*iterators):

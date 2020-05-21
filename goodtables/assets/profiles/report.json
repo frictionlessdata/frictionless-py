@@ -9,6 +9,7 @@
     "valid",
     "errorCount",
     "tableCount",
+    "errors",
     "tables"
   ],
   "properties": {
@@ -40,11 +41,60 @@
       "description": "Number of tables validated.",
       "minimum": 0
     },
+    "errors": {
+      "type": "array",
+      "title": "Errors",
+      "description": "The global validation errors.",
+      "items": {
+        "type": "object",
+        "required": [
+          "code",
+          "name",
+          "tags",
+          "message",
+          "description"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code",
+            "description": "The error code."
+          },
+          "name": {
+            "type": "string",
+            "title": "None",
+            "description": "The error name."
+          },
+          "tags": {
+            "type": "array",
+            "title": "Tags",
+            "description": "The error tags.",
+            "items": {
+              "type": "string"
+            }
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "description": "The error message."
+          },
+          "description": {
+            "type": "string",
+            "title": "Description",
+            "description": "The error description."
+          },
+          "details": {
+            "type": "string",
+            "title": "Details",
+            "description": "The error details."
+          }
+        }
+      }
+    },
     "tables": {
       "type": "array",
       "title": "Tables",
       "description": "The validation results for each of the tables.",
-      "minItems": 0,
       "items": {
         "type": "object",
         "required": [
@@ -170,6 +220,11 @@
                   "title": "Description",
                   "description": "The error description."
                 },
+                "details": {
+                  "type": "string",
+                  "title": "Details",
+                  "description": "The error details."
+                },
                 "cell": {
                   "type": "string",
                   "title": "Cell",
@@ -207,11 +262,6 @@
                   "type": "number",
                   "title": "Row Position",
                   "description": "The error row position."
-                },
-                "details": {
-                  "type": "string",
-                  "title": "Details",
-                  "description": "The error details."
                 }
               }
             }

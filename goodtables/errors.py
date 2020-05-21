@@ -72,6 +72,54 @@ class Error(dict):
         return Error(**context)
 
 
+# Task
+
+
+class TaskError(Error):
+    """
+    # Arguments
+        details (str)
+    """
+
+    code = 'task-error'
+    name = 'Task Error'
+    tags = ['#task']
+    message = 'The validation task has an error: {details}'
+    description = 'A validation cannot be processed.'
+
+
+# Package
+
+
+class PackageError(Error):
+    """
+    # Arguments
+        details (str)
+    """
+
+    code = 'package-error'
+    name = 'Package Error'
+    tags = ['#package']
+    message = 'The data package has an error: {details}'
+    description = 'A validation cannot be processed.'
+
+
+# Resource
+
+
+class ResourceError(Error):
+    """
+    # Arguments
+        details (str)
+    """
+
+    code = 'resource-error'
+    name = 'Resource Error'
+    tags = ['#resource']
+    message = 'The data resource has an error: {details}'
+    description = 'A validation cannot be processed.'
+
+
 # Table
 
 
