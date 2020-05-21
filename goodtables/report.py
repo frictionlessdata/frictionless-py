@@ -6,14 +6,19 @@ class Report(dict):
     """
     # Arguments
         time (float)
+        errors (Error[])
         tables (TableReport[])
     """
 
     def __init__(self, **context):
         self.update(context)
         self['version'] = config.VERSION
-        self['valid'] = all(table['valid'] for table in context['tables'])
-        self['errorCount'] = sum(table['errorCount'] for table in context['tables'])
+        self['valid'] = not context['errors'] and all(
+            table['valid'] for table in context['tables']
+        )
+        self['errorCount'] = len(context['errors']) + sum(
+            table['errorCount'] for table in context['tables']
+        )
         self['tableCount'] = len(context['tables'])
         # TODO: validate
         config.REPORT_PROFILE
@@ -27,6 +32,10 @@ class Report(dict):
 
     def flatten(self, spec):
         result = []
+        for error in self['errors']:
+            context = {}
+            context.update(error)
+            result.append([context.get(prop) for prop in spec])
         for table_number, table in enumerate(self['tables'], start=1):
             for error in table['errors']:
                 context = {'tableNumber': table_number}

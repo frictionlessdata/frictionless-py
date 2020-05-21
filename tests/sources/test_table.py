@@ -91,6 +91,13 @@ def test_validate_no_rows():
     ]
 
 
+def test_validate_task_error():
+    report = validate('data/table.csv', row_limit='bad')
+    assert report.flatten(['code', 'details']) == [
+        ['task-error', "'>=' not supported between instances of 'int' and 'str'"],
+    ]
+
+
 # Source
 
 
