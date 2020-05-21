@@ -9,6 +9,7 @@ from ..report import Report, ReportTable
 from ..checks import BaselineCheck, IntegrityCheck
 
 
+# TODO: implement field_limit
 # TODO: split on functions?
 # TODO: rebase to callable class?
 # TODO: use a validation class inside?
@@ -23,8 +24,10 @@ def validate_table(
     compression=None,
     pick_fields=None,
     skip_fields=None,
+    field_limit=None,
     pick_rows=None,
     skip_rows=None,
+    row_limit=None,
     size=None,
     hash=None,
     # Schema
@@ -35,10 +38,9 @@ def validate_table(
     infer_sample=100,
     infer_confidence=0.75,
     # Validation
-    row_limit=None,
-    error_limit=None,
     pick_errors=None,
     skip_errors=None,
+    error_limit=None,
     extra_checks=None,
     # Dialect
     **dialect

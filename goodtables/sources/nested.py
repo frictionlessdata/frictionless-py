@@ -4,7 +4,7 @@ from ..errors import TaskError
 from ..validate import validate
 
 
-def validate_dataset(source):
+def validate_nested(source):
     timer = helpers.Timer()
 
     try:
