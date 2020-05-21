@@ -50,7 +50,6 @@ def validate_table(
     # Prepare state
     timer = helpers.Timer()
     row_number = 0
-    warnings = []
     checks = []
     errors = []
 
@@ -237,7 +236,6 @@ def validate_table(
     # Return report
     return Report(
         time=time,
-        warnings=warnings,
         tables=[
             ReportTable(
                 time=time,

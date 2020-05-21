@@ -7,7 +7,6 @@
     "version",
     "time",
     "valid",
-    "warnings",
     "errorCount",
     "tableCount",
     "tables"
@@ -28,14 +27,6 @@
       "type": "string",
       "title": "Version",
       "description": "Goodtables version"
-    },
-    "warnings": {
-      "type": "array",
-      "title": "Warnings",
-      "items": {
-        "type": "string",
-        "title": "Warning"
-      }
     },
     "errorCount": {
       "type": "integer",

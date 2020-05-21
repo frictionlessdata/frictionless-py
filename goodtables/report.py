@@ -6,7 +6,6 @@ class Report(dict):
     """
     # Arguments
         time (float)
-        warnings (str[])
         tables (TableReport[])
     """
 
@@ -40,7 +39,6 @@ class ReportTable(dict):
     """
     # Arguments
         time (float)
-        warnings (str[])
         source (str)
         headers (str[])
         scheme (str)

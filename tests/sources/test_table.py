@@ -666,7 +666,6 @@ def test_validate_extra_checks_with_arguments():
 def test_validate_report_props():
     report = validate('data/table.csv')
     assert report['valid'] is True
-    assert report['warnings'] == []
     assert report.table['valid'] is True
     assert report.table['source'] == 'data/table.csv'
     assert report.table['headers'] == ['id', 'name']
