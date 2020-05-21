@@ -1,0 +1,60 @@
+{
+  "name": "number-test",
+  "profile": "tabular-data-package",
+  "resources": [{
+    "name": "number-test",
+    "profile": "tabular-data-resource",
+    "path": "number-test.csv",
+    "encoding": "utf-8",
+    "format": "csv",
+    "mediatype": "text/csv",
+    "licenses": [{
+      "name": "CC-BY-4.0",
+      "title": "Creative Commons Attribution 4.0",
+      "path": "https://creativecommons.org/licenses/by/4.0/"
+    }],
+    "schema": {
+      "fields": [{
+        "name": "number",
+        "type": "number",
+        "format": "default"
+      }, {
+        "name": "required",
+        "type": "number",
+        "format": "default",
+        "constraints": {
+          "required": true
+        }
+      }, {
+        "name": "unique",
+        "type": "number",
+        "format": "default",
+        "constraints": {
+          "unique": true
+        }
+      }, {
+        "name": "minimum",
+        "type": "number",
+        "format": "default",
+        "constraints": {
+          "minimum": "-99.99"
+        }
+      }, {
+        "name": "maximum",
+        "type": "number",
+        "format": "default",
+        "constraints": {
+          "maximum": "1000"
+        }
+      }, {
+        "name": "enum",
+        "type": "number",
+        "format": "default",
+        "constraints": {
+          "enum": ["0.95","1","0","4","4E4"]
+        }
+      }],
+      "missingValues": [""]
+    }
+  }]
+}

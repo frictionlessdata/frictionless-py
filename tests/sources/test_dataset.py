@@ -51,6 +51,19 @@ def test_validate_multiple_invalid_with_schema():
     ]
 
 
-def test_validate_with_datapackage():
-    report = validate([{'source': 'data/valid/datapackage.json'}])
+def test_validate_with_one_package():
+    report = validate([{'source': 'data/package/datapackage.json'}])
     assert report['valid']
+
+
+def test_validate_with_multiple_packages():
+    report = validate(
+        [
+            {'source': 'data/package/datapackage.json'},
+            {'source': 'data/invalid/datapackage.json'},
+        ]
+    )
+    assert report.flatten(['tableNumber', 'rowPosition', 'fieldPosition', 'code']) == [
+        [3, 3, None, 'blank-row'],
+        [4, 4, None, 'blank-row'],
+    ]

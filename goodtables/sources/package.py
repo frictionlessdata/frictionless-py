@@ -5,7 +5,7 @@ from ..errors import PackageError, TaskError
 from .resource import validate_resource
 
 
-# TODO: support multipart paths
+# TODO: support zipped packages (check)
 # https://github.com/frictionlessdata/datapackage-py/pull/257
 def validate_package(source, strict=False, base_path=None, **options):
     timer = helpers.Timer()
@@ -29,7 +29,6 @@ def validate_package(source, strict=False, base_path=None, **options):
             if stage == 2:
                 try:
                     package.infer()
-                    print(package.descriptor)
                 except Exception as exception:
                     errors.append(PackageError(details=str(exception)))
                 for resource in list(package.resources):
