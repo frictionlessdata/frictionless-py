@@ -29,6 +29,13 @@ def test_validate_invalid_resource_strict():
     ]
 
 
+def test_validate_invalid_descriptor_path():
+    report = validate('bad.json')
+    assert report.flatten(['code', 'details']) == [
+        ['resource-error', 'Unable to load JSON at "bad.json"']
+    ]
+
+
 def test_validate_invalid_table():
     report = validate({'name': 'name', 'path': 'data/invalid.csv'})
     assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [

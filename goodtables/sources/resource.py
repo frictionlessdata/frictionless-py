@@ -13,7 +13,12 @@ def validate_resource(resource, strict=False, base_path=None, **options):
     try:
 
         # Create resource
-        resource = datapackage.Resource(resource, base_path=base_path)
+        try:
+            resource = datapackage.Resource(resource, base_path=base_path)
+        except datapackage.exceptions.DataPackageException as exception:
+            time = timer.get_time()
+            error = ResourceError(details=str(exception))
+            return Report(time=time, errors=[error], tables=[])
 
         # Resource errors
         for stage in [1, 2]:
