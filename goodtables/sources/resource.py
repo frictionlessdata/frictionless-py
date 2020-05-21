@@ -22,12 +22,15 @@ def validate_resource(resource, strict=False, base_path=None, **options):
 
         # Resource errors
         for stage in [1, 2]:
+            errors = []
             if stage == 1:
                 if not strict:
                     continue
             if stage == 2:
-                resource.infer()
-            errors = []
+                try:
+                    resource.infer()
+                except Exception as exception:
+                    errors.append(ResourceError(details=str(exception)))
             if not resource.tabular:
                 errors.append(ResourceError(details='resource is not tabular'))
             for error in resource.errors:
@@ -61,9 +64,9 @@ def validate_resource(resource, strict=False, base_path=None, **options):
             **dialect,
         )
 
-        # Update/return report
-        report['time'] = timer.get_time()
-        return report
+        # Return report
+        time = timer.get_time()
+        return Report(time=time, errors=report['errors'], tables=report['tables'])
 
     except Exception as exception:
 

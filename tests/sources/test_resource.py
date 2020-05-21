@@ -5,17 +5,21 @@ from goodtables import validate
 
 
 def test_validate():
-    report = validate({'name': 'name', 'path': 'data/table.csv'})
+    report = validate({'path': 'data/table.csv'})
     assert report['valid']
 
 
-def test_validate_invalid_resource():
-    report = validate({'name': True, 'path': 'data/table.csv'})
+def test_validate_invalid_source():
+    report = validate('bad.json')
     assert report.flatten(['code', 'details']) == [
-        [
-            'resource-error',
-            'Descriptor validation error: True is not of type \'string\' at "name" in descriptor and at "properties/name/type" in profile',
-        ]
+        ['resource-error', 'Unable to load JSON at "bad.json"']
+    ]
+
+
+def test_validate_invalid_resource():
+    report = validate({'path': 'data/table.csv', 'schema': 'bad'})
+    assert report.flatten(['code', 'details']) == [
+        ['resource-error', 'Not resolved Local URI "bad" for resource.schema']
     ]
 
 
@@ -29,15 +33,8 @@ def test_validate_invalid_resource_strict():
     ]
 
 
-def test_validate_invalid_descriptor_path():
-    report = validate('bad.json')
-    assert report.flatten(['code', 'details']) == [
-        ['resource-error', 'Unable to load JSON at "bad.json"']
-    ]
-
-
 def test_validate_invalid_table():
-    report = validate({'name': 'name', 'path': 'data/invalid.csv'})
+    report = validate({'path': 'data/invalid.csv'})
     assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
         [None, 3, 'blank-header'],
         [None, 4, 'duplicate-header'],

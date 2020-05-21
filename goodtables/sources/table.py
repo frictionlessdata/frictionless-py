@@ -219,7 +219,7 @@ def validate_table(
                 for error in check.validate_finish():
                     add_error(error)
 
-        # Prepare report
+        # Return report
         time = timer.get_time()
         if schema:
             schema = schema.descriptor
@@ -231,8 +231,6 @@ def validate_table(
             encoding = stream.encoding
         if error_limit:
             del errors[error_limit:]
-
-        # Return report
         return Report(
             time=time,
             errors=[],
