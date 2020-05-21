@@ -26,3 +26,8 @@ def test_validate_multiple_invalid():
         [2, 4, None, 'blank-row'],
         [2, 5, 5, 'extra-cell'],
     ]
+
+
+def test_validate_with_datapackage():
+    report = validate([{'source': 'data/valid/datapackage.json'}])
+    assert report['valid']
