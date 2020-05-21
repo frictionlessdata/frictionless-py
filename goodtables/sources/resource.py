@@ -7,22 +7,29 @@ from .table import validate_table
 
 # TODO: support multipart paths
 # https://github.com/frictionlessdata/datapackage-py/pull/257
-def validate_resource(resource, base_path=None, **options):
+def validate_resource(resource, strict=False, base_path=None, **options):
     timer = helpers.Timer()
 
     try:
 
         # Create resource
         resource = datapackage.Resource(resource, base_path=base_path)
-        resource.infer()
 
         # Resource errors
-        errors = []
-        for error in resource.errors:
-            errors.append(ResourceError(details=str(error)))
-        if errors:
-            time = timer.get_time()
-            return Report(time=time, errors=errors, tables=[])
+        for stage in [1, 2]:
+            if stage == 1:
+                if not strict:
+                    continue
+            if stage == 2:
+                resource.infer()
+            errors = []
+            if not resource.tabular:
+                errors.append(ResourceError(details='resource is not tabular'))
+            for error in resource.errors:
+                errors.append(ResourceError(details=str(error)))
+            if errors:
+                time = timer.get_time()
+                return Report(time=time, errors=errors, tables=[])
 
         # Prepare dialect/headers
         headers = 1
