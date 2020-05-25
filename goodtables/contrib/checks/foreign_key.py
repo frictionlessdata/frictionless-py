@@ -188,7 +188,7 @@ def _resolve_relations(keyed_row, foreign_keys_values, foreign_key):
 
     # local values of the FK
     local_values = tuple(keyed_row[f] for f in foreign_key['fields'])
-    if len([l for l in local_values if l]) > 0:
+    if len([value for value in local_values if value]) > 0:
         # test existence into the foreign
         relation = foreign_key['reference']['resource']
         keys = tuple(foreign_key['reference']['fields'])
