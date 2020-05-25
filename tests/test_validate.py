@@ -367,7 +367,7 @@ def test_fix_issue_312_inspector_should_report_table_as_invalid(log):
 def test_validate_missing_local_file_raises_source_error_issue_315(log):
     report = validate([{'source': 'invalid'}])
     assert log(report) == [
-        (1, None, None, 'io-error'),
+        (1, None, None, 'scheme-error'),
     ]
 
 
