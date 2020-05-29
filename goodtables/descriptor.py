@@ -16,7 +16,7 @@ class Descriptor(dict):
         self.__root = root or self
         self.__strict = strict
         self.__errors = []
-        if not root:
+        if self and not root:
             self.normalize_descriptor()
             self.validate_descriptor()
 
@@ -42,8 +42,7 @@ class Descriptor(dict):
 
     # Retrieve
 
-    @staticmethod
-    def retrieve_descriptor(descriptor):
+    def retrieve_descriptor(self, descriptor):
         try:
             if descriptor is None:
                 return {}
@@ -56,7 +55,11 @@ class Descriptor(dict):
                     return json.load(file)
             return json.load(descriptor)
         except Exception:
-            raise exceptions.GoodtablesException('Cannot load descriptor')
+            details = 'canot retrieve descriptor "%s"' % descriptor
+            if not self.Error or self.strict:
+                raise exceptions.GoodtablesException(details)
+            error = self.Error(details=details)
+            self.__errors.append(error)
 
     # Normalize
 
@@ -76,14 +79,14 @@ class Descriptor(dict):
     # Validate
 
     def validate_descriptor(self):
-        self.__errors = []
+        self.__errors.clear()
         if self.profile:
             validator = jsonschema.validators.validator_for(self.profile)(self.profile)
             for error in validator.iter_errors(self):
                 message = str(error.message)
                 descriptor_path = '/'.join(map(str, error.path))
                 profile_path = '/'.join(map(str, error.schema_path))
-                details = '%s at "%s" in descriptor and at "%s" in profile'
+                details = '"%s" at "%s" in descriptor and at "%s" in profile'
                 details = details % (message, descriptor_path, profile_path)
                 if not self.Error or self.strict:
                     raise exceptions.GoodtablesException(details)
