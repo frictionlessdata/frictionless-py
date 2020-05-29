@@ -61,7 +61,6 @@ class Descriptor(dict):
     # Normalize
 
     def normalize_descriptor(self):
-        print('normalize')
         for key, value in self.items():
             if isinstance(value, dict):
                 if not isinstance(value, Descriptor):
@@ -77,7 +76,6 @@ class Descriptor(dict):
     # Validate
 
     def validate_descriptor(self):
-        print('validate')
         self.__errors = []
         if self.profile:
             validator = jsonschema.validators.validator_for(self.profile)(self.profile)
