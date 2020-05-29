@@ -8,16 +8,17 @@ from . import exceptions
 from . import config
 
 
-# TODO: fix create/listen logic
 class Descriptor(dict):
     def __init__(self, descriptor=None, *, root=None, strict=False, **props):
+        descriptor = self.retrieve_descriptor(descriptor)
+        dict.update(self, descriptor)
+        dict.update(self, props)
         self.__root = root or self
         self.__strict = strict
         self.__errors = []
-        self.__listen = True
-        descriptor = self.retrieve_descriptor(descriptor)
-        descriptor.update(props)
-        self.update(descriptor)
+        if not root:
+            self.normalize_descriptor()
+            self.validate_descriptor()
 
     @property
     def root(self):
@@ -60,19 +61,23 @@ class Descriptor(dict):
     # Normalize
 
     def normalize_descriptor(self):
+        print('normalize')
         for key, value in self.items():
             if isinstance(value, dict):
                 if not isinstance(value, Descriptor):
-                    self[key] = Descriptor(value, root=self.root, strict=self.strict)
-                self[key].normalize_descriptor()
+                    value = Descriptor(value, root=self.root, strict=self.strict)
+                    dict.__setitem__(self, key, value)
+                value.normalize_descriptor()
             if isinstance(value, list):
                 if not isinstance(value, DescriptorList):
-                    self[key] = DescriptorList(value, root=self.root, strict=self.strict)
-                self[key].normalize_descriptor()
+                    value = DescriptorList(value, root=self.root, strict=self.strict)
+                    dict.__setitem__(self, key, value)
+                value.normalize_descriptor()
 
     # Validate
 
     def validate_descriptor(self):
+        print('validate')
         self.__errors = []
         if self.profile:
             validator = jsonschema.validators.validator_for(self.profile)(self.profile)
@@ -88,6 +93,7 @@ class Descriptor(dict):
                 self.__errors.append(error)
         for key, value in self.items():
             if isinstance(value, (Descriptor, DescriptorList)):
+                value.validate_descriptor()
                 self.__errors.extend(value.errors)
 
     # Listeners
@@ -95,11 +101,8 @@ class Descriptor(dict):
     def on_descriptor_change(self):
         if self.root is not self:
             return self.root.on_descriptor_change()
-        if self.__listen:
-            self.__listen = False
-            self.normalize_descriptor()
-            self.validate_descriptor()
-            self.__listen = True
+        self.normalize_descriptor()
+        self.validate_descriptor()
 
     def __setitem__(self, *args, **kwargs):
         result = super().__setitem__(*args, **kwargs)
@@ -139,10 +142,10 @@ class Descriptor(dict):
 
 class DescriptorList(list):
     def __init__(self, descriptors, *, root, strict=False):
+        list.extend(self, descriptors)
         self.__root = root
         self.__strict = strict
         self.__errors = []
-        self.extend(descriptors)
 
     @property
     def root(self):
@@ -159,9 +162,10 @@ class DescriptorList(list):
     # Normalize
 
     def normalize_descriptor(self):
-        for descriptor in self:
+        for index, descriptor in list(enumerate(self)):
             if not isinstance(descriptor, Descriptor):
                 descriptor = Descriptor(descriptor, root=self.root, strict=self.strict)
+                list.__setitem__(self, index, descriptor)
             descriptor.normalize_descriptor()
 
     # Validate
