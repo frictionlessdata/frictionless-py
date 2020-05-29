@@ -8,24 +8,20 @@ from . import exceptions
 from . import config
 
 
+# TODO: fix create/listen logic
 class Descriptor(dict):
-    def __init__(self, descriptor=None, **props):
-        descriptor = self.retrieve(descriptor)
+    def __init__(self, descriptor=None, *, root=None, strict=False, **props):
+        self.__root = root or self
+        self.__strict = strict
+        self.__errors = []
+        self.__listen = True
+        descriptor = self.retrieve_descriptor(descriptor)
         descriptor.update(props)
-        descriptor = self.normalize(descriptor)
-        self.__strict = props.pop('strict', False)
-        self.__errors = self.validate(
-            descriptor, profile=self.profile, Error=self.Error, strict=self.strict,
-        )
         self.update(descriptor)
 
     @property
-    def profile(self):
-        return None
-
-    @property
-    def Error(self):
-        return None
+    def root(self):
+        return self.__root
 
     @property
     def strict(self):
@@ -35,50 +31,187 @@ class Descriptor(dict):
     def errors(self):
         return self.__errors
 
-    # Prepare
+    @property
+    def profile(self):
+        return None
+
+    @property
+    def Error(self):
+        return None
+
+    # Retrieve
 
     @staticmethod
-    def retrieve(descriptor):
-
+    def retrieve_descriptor(descriptor):
         try:
-            # None
             if descriptor is None:
                 return {}
-
-            # Inline
             if isinstance(descriptor, dict):
                 return deepcopy(descriptor)
-
-            # String
             if isinstance(descriptor, str):
                 if urlparse(descriptor).scheme in config.REMOTE_SCHEMES:
                     return requests.get(descriptor).json()
                 with io.open(descriptor, encoding='utf-8') as file:
                     return json.load(file)
-
-            # Stream
             return json.load(descriptor)
-
         except Exception:
             raise exceptions.GoodtablesException('Cannot load descriptor')
 
-    @staticmethod
-    def normalize(descriptor):
-        return descriptor
+    # Normalize
 
-    @staticmethod
-    def validate(descriptor, *, profile=None, Error=None, strict=False):
-        errors = []
-        if profile:
-            validator = jsonschema.validators.validator_for(profile)(profile)
-            for error in validator.iter_errors(descriptor):
+    def normalize_descriptor(self):
+        for key, value in self.items():
+            if isinstance(value, dict):
+                if not isinstance(value, Descriptor):
+                    self[key] = Descriptor(value, root=self.root, strict=self.strict)
+                self[key].normalize_descriptor()
+            if isinstance(value, list):
+                if not isinstance(value, DescriptorList):
+                    self[key] = DescriptorList(value, root=self.root, strict=self.strict)
+                self[key].normalize_descriptor()
+
+    # Validate
+
+    def validate_descriptor(self):
+        self.__errors = []
+        if self.profile:
+            validator = jsonschema.validators.validator_for(self.profile)(self.profile)
+            for error in validator.iter_errors(self):
                 message = str(error.message)
                 descriptor_path = '/'.join(map(str, error.path))
                 profile_path = '/'.join(map(str, error.schema_path))
                 details = '%s at "%s" in descriptor and at "%s" in profile'
                 details = details % (message, descriptor_path, profile_path)
-                if not Error or strict:
+                if not self.Error or self.strict:
                     raise exceptions.GoodtablesException(details)
-                error = Error(details=details)
-                errors.append(error)
-        return errors
+                error = self.Error(details=details)
+                self.__errors.append(error)
+        for key, value in self.items():
+            if isinstance(value, (Descriptor, DescriptorList)):
+                self.__errors.extend(value.errors)
+
+    # Listeners
+
+    def on_descriptor_change(self):
+        if self.root is not self:
+            return self.root.on_descriptor_change()
+        if self.__listen:
+            self.__listen = False
+            self.normalize_descriptor()
+            self.validate_descriptor()
+            self.__listen = True
+
+    def __setitem__(self, *args, **kwargs):
+        result = super().__setitem__(*args, **kwargs)
+        self.on_descriptor_change()
+        return result
+
+    def __delitem__(self, *args, **kwargs):
+        result = super().__delitem__(*args, **kwargs)
+        self.on_descriptor_change()
+        return result
+
+    def clear(self, *args, **kwargs):
+        result = super().clear(*args, **kwargs)
+        self.on_descriptor_change()
+        return result
+
+    def pop(self, *args, **kwargs):
+        result = super().pop(*args, **kwargs)
+        self.on_descriptor_change()
+        return result
+
+    def popitem(self, *args, **kwargs):
+        result = super().popitem(*args, **kwargs)
+        self.on_descriptor_change()
+        return result
+
+    def setdefault(self, *args, **kwargs):
+        result = super().setdefault(*args, **kwargs)
+        self.on_descriptor_change()
+        return result
+
+    def update(self, *args, **kwargs):
+        result = super().update(*args, **kwargs)
+        self.on_descriptor_change()
+        return result
+
+
+class DescriptorList(list):
+    def __init__(self, descriptors, *, root, strict=False):
+        self.__root = root
+        self.__strict = strict
+        self.__errors = []
+        self.extend(descriptors)
+
+    @property
+    def root(self):
+        return self.__root
+
+    @property
+    def strict(self):
+        return self.__strict
+
+    @property
+    def errors(self):
+        return self.__errors
+
+    # Normalize
+
+    def normalize_descriptor(self):
+        for descriptor in self:
+            if not isinstance(descriptor, Descriptor):
+                descriptor = Descriptor(descriptor, root=self.root, strict=self.strict)
+            descriptor.normalize_descriptor()
+
+    # Validate
+
+    def validate_descriptor(self):
+        for descriptor in self:
+            descriptor.validate_descriptor()
+            self.__errors.extend(descriptor.errors)
+
+    # Listeners
+
+    def on_descriptor_change(self):
+        self.root.on_descriptor_change()
+
+    def __setitem__(self, *args, **kwargs):
+        result = super().__setitem__(*args, **kwargs)
+        self.on_descriptor_change()
+        return result
+
+    def __delitem__(self, *args, **kwargs):
+        result = super().__delitem__(*args, **kwargs)
+        self.on_descriptor_change()
+        return result
+
+    def append(self, *args, **kwargs):
+        result = super().append(*args, **kwargs)
+        self.on_descriptor_change()
+        return result
+
+    def clear(self, *args, **kwargs):
+        result = super().clear(*args, **kwargs)
+        self.on_descriptor_change()
+        return result
+
+    def extend(self, *args, **kwargs):
+        result = super().extend(*args, **kwargs)
+        self.on_descriptor_change()
+        return result
+
+    def insert(self, *args, **kwargs):
+        result = super().insert(*args, **kwargs)
+        self.on_descriptor_change()
+        return result
+
+    def pop(self, *args, **kwargs):
+        result = super().pop(*args, **kwargs)
+        self.on_descriptor_change()
+        return result
+
+    def remove(self, *args, **kwargs):
+        result = super().remove(*args, **kwargs)
+        self.on_descriptor_change()
+        return result

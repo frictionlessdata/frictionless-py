@@ -40,6 +40,7 @@ TESTS_REQUIRE = [
     'pytest',
     'pytest-cov',
     'coveralls',
+    'ipython',
 ]
 README = read('README.md')
 VERSION = read(PACKAGE, 'assets', 'VERSION')
