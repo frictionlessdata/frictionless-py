@@ -1,5 +1,5 @@
 from .check import Check
-from .descriptor import Descriptor
+from .metadata import Metadata
 from .dialects import validate_csv, validate_excel, validate_json
 from .headers import Headers
 from .report import Report, ReportTable

@@ -12,7 +12,7 @@ from ..checks import BaselineCheck, IntegrityCheck
 # TODO: implement field_limit
 # TODO: split on functions?
 # TODO: rebase to callable class?
-# TODO: use a validation class inside?
+# TODO: use a Task/Validation class inside?
 def validate_table(
     source,
     *,
@@ -40,7 +40,7 @@ def validate_table(
     # Validation
     pick_errors=None,
     skip_errors=None,
-    error_limit=None,
+    error_limit=100,
     extra_checks=None,
     # Dialect
     **dialect
@@ -154,7 +154,7 @@ def validate_table(
             Checks.append((IntegrityCheck, {'size': size, 'hash': hash}))
             Checks.extend(extra_checks or [])
             for Check in Checks:
-                check = Check() if isinstance(Check, type) else Check[0](**Check[1])
+                check = Check() if isinstance(Check, type) else Check[0](Check[1])
                 checks.append(check)
                 for error in check.validate_start(stream=stream, schema=schema):
                     add_error(error)
@@ -223,6 +223,7 @@ def validate_table(
 
         # Return report
         time = timer.get_time()
+        headers = None
         if schema:
             schema = schema.descriptor
         if stream:
@@ -231,6 +232,7 @@ def validate_table(
             scheme = stream.scheme
             format = stream.format
             encoding = stream.encoding
+            compression = stream.compression
         if error_limit:
             del errors[error_limit:]
         return Report(
@@ -244,9 +246,10 @@ def validate_table(
                     scheme=scheme,
                     format=format,
                     encoding=encoding,
+                    compression=compression,
                     schema=schema,
                     dialect=dialect,
-                    rowCount=row_number,
+                    row_count=row_number,
                     errors=errors,
                 )
             ],

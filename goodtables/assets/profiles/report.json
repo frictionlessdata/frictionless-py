@@ -13,6 +13,11 @@
     "tables"
   ],
   "properties": {
+    "version": {
+      "type": "string",
+      "title": "Version",
+      "description": "Goodtables version"
+    },
     "time": {
       "type": "number",
       "title": "Time",
@@ -23,11 +28,6 @@
       "type": "boolean",
       "title": "Valid",
       "description": "Whether all the inspected tables valid or not"
-    },
-    "version": {
-      "type": "string",
-      "title": "Version",
-      "description": "Goodtables version"
     },
     "errorCount": {
       "type": "integer",
@@ -163,7 +163,7 @@
             "description": "A Table Schema Object."
           },
           "dialect": {
-            "type": "string",
+            "type": "object",
             "title": "Dialect",
             "description": "The tabular dialect of the table."
           },

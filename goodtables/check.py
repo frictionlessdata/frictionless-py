@@ -1,9 +1,9 @@
-from .descriptor import Descriptor
+from .metadata import Metadata
 
 
-class Check(Descriptor):
-    def __init__(self, descriptor=None, **props):
-        super().__init__(descriptor, **props)
+class Check(Metadata):
+    def __init__(self, descriptor=None):
+        super().__init__(descriptor)
         self.__stream = None
         self.__schema = None
 
