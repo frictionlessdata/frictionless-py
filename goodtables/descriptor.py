@@ -9,7 +9,7 @@ from . import config
 
 
 class Descriptor(dict):
-    def __init__(self, descriptor={}, **props):
+    def __init__(self, descriptor=None, **props):
         descriptor = self.retrieve(descriptor)
         descriptor.update(props)
         descriptor = self.normalize(descriptor)
@@ -41,6 +41,10 @@ class Descriptor(dict):
     def retrieve(descriptor):
 
         try:
+            # None
+            if descriptor is None:
+                return {}
+
             # Inline
             if isinstance(descriptor, dict):
                 return deepcopy(descriptor)

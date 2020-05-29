@@ -1,6 +1,9 @@
-class Check(dict):
-    def __init__(self, **context):
-        self.update(context)
+from .descriptor import Descriptor
+
+
+class Check(Descriptor):
+    def __init__(self, descriptor=None, **props):
+        super().__init__(descriptor, **props)
         self.__stream = None
         self.__schema = None
 
