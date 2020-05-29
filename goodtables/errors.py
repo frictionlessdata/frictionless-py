@@ -72,6 +72,19 @@ class Error(dict):
         return Error(**context)
 
 
+class ReportError(Error):
+    """
+    # Arguments
+        details (str)
+    """
+
+    code = 'report-error'
+    name = 'Report Error'
+    tags = ['#report']
+    message = 'The validation report has an error: {details}'
+    description = 'A validation cannot be finished.'
+
+
 # Task
 
 
