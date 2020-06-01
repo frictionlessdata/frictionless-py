@@ -18,7 +18,7 @@ class Headers(list):
             for field_position, cell in enumerate(iterator, start=start):
                 self.__errors.append(
                     errors.ExtraHeaderError(
-                        cell=cell, cells=cells, fieldPosition=field_position,
+                        cell=cell, cells=cells, field_position=field_position,
                     )
                 )
 
@@ -30,9 +30,9 @@ class Headers(list):
                 self.__errors.append(
                     errors.MissingHeaderError(
                         cells=list(map(str, cells)),
-                        fieldName=field.name,
-                        fieldNumber=field_number,
-                        fieldPosition=field_position,
+                        field_name=field.name,
+                        field_number=field_number,
+                        field_position=field_position,
                     )
                 )
 
@@ -46,9 +46,9 @@ class Headers(list):
                 self.__errors.append(
                     errors.BlankHeaderError(
                         cells=list(map(str, cells)),
-                        fieldName=field.name,
-                        fieldNumber=field_number,
-                        fieldPosition=field_position,
+                        field_name=field.name,
+                        field_number=field_number,
+                        field_position=field_position,
                     )
                 )
 
@@ -65,9 +65,9 @@ class Headers(list):
                         errors.DuplicateHeaderError(
                             cell=str(cell),
                             cells=list(map(str, cells)),
-                            fieldName=field.name,
-                            fieldNumber=field_number,
-                            fieldPosition=field_position,
+                            field_name=field.name,
+                            field_number=field_number,
+                            field_position=field_position,
                             details=', '.join(map(str, duplicate_field_positions)),
                         )
                     )
@@ -79,9 +79,9 @@ class Headers(list):
                         errors.NonMatchingHeaderError(
                             cell=str(cell),
                             cells=list(map(str, cells)),
-                            fieldName=field.name,
-                            fieldNumber=field_number,
-                            fieldPosition=field_position,
+                            field_name=field.name,
+                            field_number=field_number,
+                            field_position=field_position,
                         )
                     )
 

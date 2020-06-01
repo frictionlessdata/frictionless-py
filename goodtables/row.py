@@ -25,9 +25,9 @@ class Row(OrderedDict):
                     errors.ExtraCellError(
                         cell=str(cell),
                         cells=list(map(str, cells)),
-                        fieldPosition=field_position,
-                        rowNumber=row_number,
-                        rowPosition=row_position,
+                        field_position=field_position,
+                        row_number=row_number,
+                        row_position=row_position,
                     )
                 )
 
@@ -39,11 +39,11 @@ class Row(OrderedDict):
                 self.__errors.append(
                     errors.MissingCellError(
                         cells=list(map(str, cells)),
-                        fieldName=field.name,
-                        fieldNumber=field_number,
-                        fieldPosition=field_position,
-                        rowNumber=row_number,
-                        rowPosition=row_position,
+                        field_name=field.name,
+                        field_number=field_number,
+                        field_position=field_position,
+                        row_number=row_number,
+                        row_position=row_position,
                     )
                 )
 
@@ -65,11 +65,11 @@ class Row(OrderedDict):
                     self.__errors.append(
                         errors.RequiredConstraintError(
                             cells=list(map(str, cells)),
-                            fieldName=field.name,
-                            fieldNumber=field_number,
-                            fieldPosition=field_position,
-                            rowNumber=row_number,
-                            rowPosition=row_position,
+                            field_name=field.name,
+                            field_number=field_number,
+                            field_position=field_position,
+                            row_number=row_number,
+                            row_position=row_position,
                         )
                     )
 
@@ -85,11 +85,11 @@ class Row(OrderedDict):
                         errors.TypeError(
                             cell=str(cell),
                             cells=list(map(str, cells)),
-                            fieldName=field.name,
-                            fieldNumber=field_number,
-                            fieldPosition=field_position,
-                            rowNumber=row_number,
-                            rowPosition=row_position,
+                            field_name=field.name,
+                            field_number=field_number,
+                            field_position=field_position,
+                            row_number=row_number,
+                            row_position=row_position,
                             details=details,
                         )
                     )
@@ -105,11 +105,11 @@ class Row(OrderedDict):
                                     name,
                                     cell=str(cell),
                                     cells=list(map(str, cells)),
-                                    fieldName=field.name,
-                                    fieldNumber=field_number,
-                                    fieldPosition=field_position,
-                                    rowNumber=row_number,
-                                    rowPosition=row_position,
+                                    field_name=field.name,
+                                    field_number=field_number,
+                                    field_position=field_position,
+                                    row_number=row_number,
+                                    row_position=row_position,
                                     details=str(field.constraints[name]),
                                 )
                             )
@@ -120,11 +120,7 @@ class Row(OrderedDict):
         # Blank row
         if is_blank:
             self.__errors = [
-                errors.BlankRowError(
-                    cells=list(map(str, cells)),
-                    rowNumber=row_number,
-                    rowPosition=row_position,
-                )
+                errors.BlankRowError(row_number=row_number, row_position=row_position,)
             ]
 
     @cached_property
