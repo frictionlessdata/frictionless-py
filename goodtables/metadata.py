@@ -2,12 +2,13 @@ import io
 import json
 import requests
 import jsonschema
+from copy import deepcopy
 from urllib.parse import urlparse
+from cached_property import cached_property
 from . import exceptions
 from . import config
 
 
-# TODO: fix metadata deepcopy behaviour
 class Metadata(dict):
     def __init__(
         self, descriptor=None, *, root=None, strict=False, profile=None, Error=None
@@ -17,24 +18,54 @@ class Metadata(dict):
         self.__profile = profile
         self.__Error = Error
         self.__errors = []
-        metadata = self.retrieve_metadata(descriptor)
+        metadata = self.normalize_metadata(descriptor)
         dict.update(self, metadata)
         if self and not root:
-            self.normalize_metadata()
+            self.process_metadata()
             self.validate_metadata()
 
-    @property
+    @cached_property
+    def metadata_root(self):
+        return self.__root
+
+    @cached_property
+    def metadata_profile(self):
+        return self.__profile
+
+    @cached_property
+    def metadata_Error(self):
+        return self.__Error
+
+    @cached_property
     def metadata_errors(self):
         return self.__errors
 
-    # Retrieve
+    # Duplicate
 
-    def retrieve_metadata(self, descriptor):
+    def duplicate_metadata(self):
+        result = {}
+        for key, value in self.items():
+            if hasattr(value, 'duplicate_metadata'):
+                value = value.copy()
+            result[key] = value
+        return result
+
+    def copy(self):
+        return self.duplicate_metadata()
+
+    def __copy__(self):
+        return self.copy()
+
+    def __deepcopy__(self):
+        return self.copy()
+
+    # Normalize
+
+    def normalize_metadata(self, descriptor):
         try:
             if descriptor is None:
                 return {}
             if isinstance(descriptor, dict):
-                # TODO: deepcopy
                 return descriptor
             if isinstance(descriptor, str):
                 if urlparse(descriptor).scheme in config.REMOTE_SCHEMES:
@@ -44,167 +75,222 @@ class Metadata(dict):
             return json.load(descriptor)
         except Exception:
             details = 'canot retrieve metadata "%s"' % descriptor
-            if not self.__Error or self.__strict:
+            if not self.metadata_Error or self.metadata_strict:
                 raise exceptions.GoodtablesException(details)
-            error = self.__Error(details=details)
-            self.__errors.append(error)
+            error = self.metadata_Error(details=details)
+            self.metadata_errors.append(error)
 
-    # Normalize
+    # Process
 
-    def normalize_metadata(self):
-        for key, value in self.items():
-            if isinstance(value, dict):
-                if not isinstance(value, Metadata):
-                    value = Metadata(value, root=self.__root, strict=self.__strict)
-                    dict.__setitem__(self, key, value)
-                value.normalize_metadata()
-            if isinstance(value, list):
-                if not isinstance(value, MetadataList):
-                    value = MetadataList(value, root=self.__root, strict=self.__strict)
-                    dict.__setitem__(self, key, value)
-                value.normalize_metadata()
+    def process_metadata(self):
+        pass
 
     # Validate
 
     def validate_metadata(self):
-        self.__errors.clear()
-        if self.__profile:
-            validator_class = jsonschema.validators.validator_for(self.__profile)
-            validator = validator_class(self.__profile)
+        self.metadata_errors.clear()
+        if self.metadata_profile:
+            validator_class = jsonschema.validators.validator_for(self.metadata_profile)
+            validator = validator_class(self.metadata_profile)
             for error in validator.iter_errors(self):
                 message = str(error.message)
                 metadata_path = '/'.join(map(str, error.path))
                 profile_path = '/'.join(map(str, error.schema_path))
                 details = '"%s" at "%s" in metadata and at "%s" in profile'
                 details = details % (message, metadata_path, profile_path)
-                if not self.__Error or self.__strict:
+                if not self.metadata_Error or self.metadata_strict:
                     raise exceptions.GoodtablesException(details)
-                error = self.__Error(details=details)
-                self.__errors.append(error)
+                error = self.metadata_Error(details=details)
+                self.metadata_errors.append(error)
+
+
+class ControlledMetadata(Metadata):
+
+    # Normalize
+
+    def normalize_metadata(self, descriptor):
+        if isinstance(descriptor, dict):
+            return deepcopy(descriptor)
+        super().normalize_metadata(descriptor)
+
+    # Process
+
+    def process_metadata(self):
         for key, value in self.items():
-            if isinstance(value, (Metadata, MetadataList)):
-                value.validate_metadata()
-                self.__errors.extend(value.metadata_errors)
+            if isinstance(value, dict):
+                if not hasattr(value, 'on_metadata_transform'):
+                    value = ControlledMetadata(
+                        value, root=self.metadata_root, strict=self.metadata_strict
+                    )
+                    dict.__setitem__(self, key, value)
+                value.process_metadata()
+            if isinstance(value, list):
+                if not hasattr(value, 'on_metadata_transform'):
+                    value = ControlledMetadataList(
+                        value, root=self.metadata_root, strict=self.metadata_strict
+                    )
+                    dict.__setitem__(self, key, value)
+                value.process_metadata()
 
-    # Listeners
+    # Transform
 
-    def on_metadata_change(self):
-        if self.__root is not self:
-            return self.__root.on_metadata_change()
-        self.normalize_metadata()
+    def on_metadata_transform(self):
+        if self.metadata_root is not self:
+            return self.metadata_root.on_metadata_transform()
+        self.process_metadata()
         self.validate_metadata()
 
     def __setitem__(self, *args, **kwargs):
         result = super().__setitem__(*args, **kwargs)
-        self.on_metadata_change()
+        self.on_metadata_transform()
         return result
 
     def __delitem__(self, *args, **kwargs):
         result = super().__delitem__(*args, **kwargs)
-        self.on_metadata_change()
+        self.on_metadata_transform()
         return result
 
     def clear(self, *args, **kwargs):
         result = super().clear(*args, **kwargs)
-        self.on_metadata_change()
+        self.on_metadata_transform()
         return result
 
     def pop(self, *args, **kwargs):
         result = super().pop(*args, **kwargs)
-        self.on_metadata_change()
+        self.on_metadata_transform()
         return result
 
     def popitem(self, *args, **kwargs):
         result = super().popitem(*args, **kwargs)
-        self.on_metadata_change()
+        self.on_metadata_transform()
         return result
 
     def setdefault(self, *args, **kwargs):
         result = super().setdefault(*args, **kwargs)
-        self.on_metadata_change()
+        self.on_metadata_transform()
         return result
 
     def update(self, *args, **kwargs):
         result = super().update(*args, **kwargs)
-        self.on_metadata_change()
+        self.on_metadata_transform()
         return result
 
+    # Validate
 
-class MetadataList(list):
+    def validate_metadata(self):
+        super().validate_metadata()
+        for key, value in self.items():
+            if hasattr(value, 'validate_metadata'):
+                value.validate_metadata()
+                self.metadata_errors.extend(value.metadata_errors)
+
+
+class ControlledMetadataList(list):
     def __init__(self, values, *, root, strict=False):
         list.extend(self, values)
         self.__root = root
         self.__strict = strict
         self.__errors = []
 
-    @property
+    @cached_property
+    def metadata_root(self):
+        return self.__root
+
+    @cached_property
+    def metadata_strict(self):
+        return self.__strict
+
+    @cached_property
     def metadata_errors(self):
         return self.__errors
 
-    # Normalize
+    # Duplicate
 
-    def normalize_metadata(self):
+    def duplicate_metadata(self):
+        result = []
+        for value in self:
+            if hasattr(value, 'duplicate_metadata'):
+                value = value.copy()
+            result.append(value)
+        return result
+
+    def copy(self):
+        return self.duplicate_metadata()
+
+    def __copy__(self):
+        return self.copy()
+
+    def __deepcopy__(self):
+        return self.copy()
+
+    # Process
+
+    def process_metadata(self):
         for index, value in list(enumerate(self)):
             if isinstance(value, dict):
-                if not isinstance(value, Metadata):
-                    value = Metadata(value, root=self.__root, strict=self.__strict)
+                if not hasattr(value, 'on_metadata_transform'):
+                    value = ControlledMetadata(
+                        value, root=self.metadata_root, strict=self.metadata_strict
+                    )
                     list.__setitem__(self, index, value)
-                value.normalize_metadata()
+                value.process_metadata()
             if isinstance(value, list):
-                if not isinstance(value, MetadataList):
-                    value = MetadataList(value, root=self.__root, strict=self.__strict)
+                if not hasattr(value, 'on_metadata_transform'):
+                    value = ControlledMetadataList(
+                        value, root=self.metadata_root, strict=self.metadata_strict
+                    )
                     list.__setitem__(self, index, value)
-                value.normalize_metadata()
+                value.process_metadata()
+
+    # Transform
+
+    def on_metadata_transform(self):
+        self.metadata_root.on_metadata_transform()
+
+    def __setitem__(self, *args, **kwargs):
+        result = super().__setitem__(*args, **kwargs)
+        self.on_metadata_transform()
+        return result
+
+    def __delitem__(self, *args, **kwargs):
+        result = super().__delitem__(*args, **kwargs)
+        self.on_metadata_transform()
+        return result
+
+    def append(self, *args, **kwargs):
+        result = super().append(*args, **kwargs)
+        self.on_metadata_transform()
+        return result
+
+    def clear(self, *args, **kwargs):
+        result = super().clear(*args, **kwargs)
+        self.on_metadata_transform()
+        return result
+
+    def extend(self, *args, **kwargs):
+        result = super().extend(*args, **kwargs)
+        self.on_metadata_transform()
+        return result
+
+    def insert(self, *args, **kwargs):
+        result = super().insert(*args, **kwargs)
+        self.on_metadata_transform()
+        return result
+
+    def pop(self, *args, **kwargs):
+        result = super().pop(*args, **kwargs)
+        self.on_metadata_transform()
+        return result
+
+    def remove(self, *args, **kwargs):
+        result = super().remove(*args, **kwargs)
+        self.on_metadata_transform()
+        return result
 
     # Validate
 
     def validate_metadata(self):
         for value in self:
-            if isinstance(value, (Metadata, MetadataList)):
+            if hasattr(value, 'validate_metadata'):
                 value.validate_metadata()
-                self.__errors.extend(value.metadata_errors)
-
-    # Listeners
-
-    def on_metadata_change(self):
-        self.__root.on_metadata_change()
-
-    def __setitem__(self, *args, **kwargs):
-        result = super().__setitem__(*args, **kwargs)
-        self.on_metadata_change()
-        return result
-
-    def __delitem__(self, *args, **kwargs):
-        result = super().__delitem__(*args, **kwargs)
-        self.on_metadata_change()
-        return result
-
-    def append(self, *args, **kwargs):
-        result = super().append(*args, **kwargs)
-        self.on_metadata_change()
-        return result
-
-    def clear(self, *args, **kwargs):
-        result = super().clear(*args, **kwargs)
-        self.on_metadata_change()
-        return result
-
-    def extend(self, *args, **kwargs):
-        result = super().extend(*args, **kwargs)
-        self.on_metadata_change()
-        return result
-
-    def insert(self, *args, **kwargs):
-        result = super().insert(*args, **kwargs)
-        self.on_metadata_change()
-        return result
-
-    def pop(self, *args, **kwargs):
-        result = super().pop(*args, **kwargs)
-        self.on_metadata_change()
-        return result
-
-    def remove(self, *args, **kwargs):
-        result = super().remove(*args, **kwargs)
-        self.on_metadata_change()
-        return result
+                self.metadata_errors.extend(value.metadata_errors)
