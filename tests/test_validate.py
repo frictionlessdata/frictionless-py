@@ -351,6 +351,7 @@ def test_fix_issue_312_inspector_should_report_table_as_invalid(log):
         (1, None, 3, 'blank-header'),
         (1, None, 4, 'duplicate-header'),
         (1, None, 5, 'blank-header'),
+        (1, None, 5, 'duplicate-header'),
         (1, 2, 3, 'missing-value'),
         (1, 2, 4, 'missing-value'),
         (1, 2, 5, 'missing-value'),
@@ -359,8 +360,6 @@ def test_fix_issue_312_inspector_should_report_table_as_invalid(log):
         (1, 4, 4, 'missing-value'),
         (1, 4, 5, 'missing-value'),
         (1, 5, None, 'blank-row'),
-        (1, 6, 3, 'extra-value'),
-        (1, 6, 5, 'extra-value'),
     ]
 
 
