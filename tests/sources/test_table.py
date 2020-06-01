@@ -362,8 +362,8 @@ def test_validate_schema_multiple_errors():
     report = validate(source, schema=schema, pick_errors=['#schema'], error_limit=3)
     assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
         [4, 1, 'type-error'],
-        [4, 2, 'required-constraint'],
-        [4, 3, 'required-constraint'],
+        [4, 2, 'required-error'],
+        [4, 3, 'required-error'],
     ]
 
 
@@ -375,9 +375,9 @@ def test_validate_schema_min_length_constraint():
             {'name': 'word', 'type': 'string', 'constraints': {'minLength': 2}},
         ]
     }
-    report = validate(source, schema=schema, pick_errors=['min-length-constraint'])
+    report = validate(source, schema=schema, pick_errors=['constraint-error'])
     assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
-        [2, 2, 'min-length-constraint'],
+        [2, 2, 'constraint-error'],
     ]
 
 
@@ -389,10 +389,10 @@ def test_validate_schema_max_length_constraint():
             {'name': 'word', 'type': 'string', 'constraints': {'maxLength': 2}},
         ]
     }
-    report = validate(source, schema=schema, pick_errors=['max-length-constraint'])
+    report = validate(source, schema=schema, pick_errors=['constraint-error'])
     assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
-        [4, 2, 'max-length-constraint'],
-        [5, 2, 'max-length-constraint'],
+        [4, 2, 'constraint-error'],
+        [5, 2, 'constraint-error'],
     ]
 
 
@@ -404,9 +404,9 @@ def test_validate_schema_minimum_constraint():
             {'name': 'score', 'type': 'integer', 'constraints': {'minimum': 2}},
         ]
     }
-    report = validate(source, schema=schema, pick_errors=['minimum-constraint'])
+    report = validate(source, schema=schema, pick_errors=['constraint-error'])
     assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
-        [2, 2, 'minimum-constraint'],
+        [2, 2, 'constraint-error'],
     ]
 
 
@@ -418,10 +418,10 @@ def test_validate_schema_maximum_constraint():
             {'name': 'score', 'type': 'integer', 'constraints': {'maximum': 2}},
         ]
     }
-    report = validate(source, schema=schema, pick_errors=['maximum-constraint'])
+    report = validate(source, schema=schema, pick_errors=['constraint-error'])
     assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
-        [4, 2, 'maximum-constraint'],
-        [5, 2, 'maximum-constraint'],
+        [4, 2, 'constraint-error'],
+        [5, 2, 'constraint-error'],
     ]
 
 
@@ -722,9 +722,9 @@ def test_validate_wide_table_with_order_fields_issue_277():
     schema = 'data/issue-277.json'
     report = validate(source, schema=schema, sync_schema=True)
     assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
-        [49, 50, 'required-constraint'],
-        [68, 50, 'required-constraint'],
-        [69, 50, 'required-constraint'],
+        [49, 50, 'required-error'],
+        [68, 50, 'required-error'],
+        [69, 50, 'required-error'],
     ]
 
 

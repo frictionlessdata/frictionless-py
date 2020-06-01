@@ -63,7 +63,7 @@ class Row(OrderedDict):
             if cell is None:
                 if field.required:
                     self.__errors.append(
-                        errors.RequiredConstraintError(
+                        errors.RequiredError(
                             cells=list(map(str, cells)),
                             field_name=field.name,
                             field_number=field_number,
@@ -100,9 +100,10 @@ class Row(OrderedDict):
                 for name, check in field.check_functions.items():
                     if name not in ['required', 'unique']:
                         if not check(cell):
+                            details = '"%s" is "%s"'
+                            details = details % (field.constraints[name], name)
                             self.__errors.append(
-                                errors.Error.from_constraint(
-                                    name,
+                                errors.ConstraintError(
                                     cell=str(cell),
                                     cells=list(map(str, cells)),
                                     field_name=field.name,
@@ -110,7 +111,7 @@ class Row(OrderedDict):
                                     field_position=field_position,
                                     row_number=row_number,
                                     row_position=row_position,
-                                    details=str(field.constraints[name]),
+                                    details=details,
                                 )
                             )
 

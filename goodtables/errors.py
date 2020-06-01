@@ -51,32 +51,6 @@ class Error(Metadata):
             Error = SchemaError
         return Error(details=details)
 
-    @staticmethod
-    def from_constraint(name, **context):
-        Error = None
-        if name == 'minLength':
-            Error = MinLengthConstraintError
-        elif name == 'maxLength':
-            Error = MaxLengthConstraintError
-        elif name == 'minimum':
-            Error = MinimumConstraintError
-        elif name == 'maximum':
-            Error = MaximumConstraintError
-        elif name == 'pattern':
-            Error = PatternConstraintError
-        elif name == 'enum':
-            Error = EnumConstraintError
-        else:
-            assert name in [
-                'minLength',
-                'maxLength',
-                'minimum',
-                'maximum',
-                'pattern',
-                'enum',
-            ]
-        return Error(**context)
-
 
 class ReportError(Error):
     code = 'report-error'
@@ -396,10 +370,10 @@ class TypeError(Error):
         super().__init__()
 
 
-class RequiredConstraintError(Error):
-    code = 'required-constraint'
-    name = 'Required Constraint'
-    tags = ['#body', '#schema', '#constraint']
+class RequiredError(Error):
+    code = 'required-error'
+    name = 'Required Error'
+    tags = ['#body', '#schema', '#integrity']
     message = 'Field {fieldName} at position {fieldPosition} is a required field, but row at position {rowPosition} has no value'
     description = 'This field is a required field, but it contains no value.'
 
@@ -422,12 +396,12 @@ class RequiredConstraintError(Error):
         super().__init__()
 
 
-class MinLengthConstraintError(Error):
-    code = 'min-length-constraint'
-    name = 'Minimum Length Constraint'
-    tags = ['#body', '#schema', '#constraint']
-    message = 'The cell {cell} in row at position {rowPosition} and field {fieldName} at position {fieldPosition} does not conform to the minumum length constraint: {details}'
-    description = 'A length of this field value should be greater or equal than schema constraint value.'
+class ConstraintError(Error):
+    code = 'constraint-error'
+    name = 'Constraint Error'
+    tags = ['#body', '#schema', '#integrity']
+    message = 'The cell {cell} in row at position {rowPosition} and field {fieldName} at position {fieldPosition} does not conform to a constraint: {details}'
+    description = 'A field value does not conform to a constraint.'
 
     def __init__(
         self,
@@ -452,160 +426,10 @@ class MinLengthConstraintError(Error):
         super().__init__()
 
 
-class MaxLengthConstraintError(Error):
-    code = 'max-length-constraint'
-    name = 'Maximum Length Constraint'
-    tags = ['#body', '#schema', '#constraint']
-    message = 'The cell {cell} in row at position {rowPosition} and field {fieldName} at position {fieldPosition} does not conform to the maximum length constraint: {details}'
-    description = 'A length of this field value should be less or equal than schema constraint value.'
-
-    def __init__(
-        self,
-        *,
-        cell,
-        cells,
-        field_name,
-        field_number,
-        field_position,
-        row_number,
-        row_position,
-        details,
-    ):
-        self['cell'] = cell
-        self['cells'] = cells
-        self['fieldName'] = field_name
-        self['fieldNumber'] = field_number
-        self['fieldPosition'] = field_position
-        self['rowNumber'] = row_number
-        self['rowPosition'] = row_position
-        self['details'] = details
-        super().__init__()
-
-
-class MinimumConstraintError(Error):
-    code = 'minimum-constraint'
-    name = 'Minimum Constraint'
-    tags = ['#body', '#schema', '#constraint']
-    message = 'The cell {cell} in row at position {rowPosition} and field {fieldName} at position {fieldPosition} does not conform to the minimum constraint: {details}'
-    description = 'This field value should be greater or equal than constraint value.'
-
-    def __init__(
-        self,
-        *,
-        cell,
-        cells,
-        field_name,
-        field_number,
-        field_position,
-        row_number,
-        row_position,
-        details,
-    ):
-        self['cell'] = cell
-        self['cells'] = cells
-        self['fieldName'] = field_name
-        self['fieldNumber'] = field_number
-        self['fieldPosition'] = field_position
-        self['rowNumber'] = row_number
-        self['rowPosition'] = row_position
-        self['details'] = details
-        super().__init__()
-
-
-class MaximumConstraintError(Error):
-    code = 'maximum-constraint'
-    name = 'Maximum Constraint'
-    tags = ['#body', '#schema', '#constraint']
-    message = 'The cell {cell} in row at position {rowPosition} and field {fieldName} at position {fieldPosition} does not conform to the maximum constraint: {details}'
-    description = 'This field value should be less or equal than constraint value.'
-
-    def __init__(
-        self,
-        *,
-        cell,
-        cells,
-        field_name,
-        field_number,
-        field_position,
-        row_number,
-        row_position,
-        details,
-    ):
-        self['cell'] = cell
-        self['cells'] = cells
-        self['fieldName'] = field_name
-        self['fieldNumber'] = field_number
-        self['fieldPosition'] = field_position
-        self['rowNumber'] = row_number
-        self['rowPosition'] = row_position
-        self['details'] = details
-        super().__init__()
-
-
-class PatternConstraintError(Error):
-    code = 'pattern-constraint'
-    name = 'Pattern Constraint'
-    tags = ['#body', '#schema', '#constraint']
-    message = 'The cell {cell} in row at positin {rowPosition} and field {fieldName} at position {fieldPosition} does not conform to the pattern constraint: {details}'
-    description = 'This field value should conform to constraint pattern.'
-
-    def __init__(
-        self,
-        *,
-        cell,
-        cells,
-        field_name,
-        field_number,
-        field_position,
-        row_number,
-        row_position,
-        details,
-    ):
-        self['cell'] = cell
-        self['cells'] = cells
-        self['fieldName'] = field_name
-        self['fieldNumber'] = field_number
-        self['fieldPosition'] = field_position
-        self['rowNumber'] = row_number
-        self['rowPosition'] = row_position
-        self['details'] = details
-        super().__init__()
-
-
-class EnumConstraintError(Error):
-    code = 'enum-constraint'
-    name = 'Enumerable Constraint'
-    tags = ['#body', '#schema', '#constraint']
-    message = 'The cell {cell} in row at positin {rowPosition} and field {fieldName} at position {fieldPosition} does not conform to the given enumeration: {details}'
-    description = 'This field value should be equal to one of the values in the enumeration constraint.'
-
-    def __init__(
-        self,
-        *,
-        cell,
-        cells,
-        field_name,
-        field_number,
-        field_position,
-        row_number,
-        row_position,
-        details,
-    ):
-        self['cell'] = cell
-        self['cells'] = cells
-        self['fieldName'] = field_name
-        self['fieldNumber'] = field_number
-        self['fieldPosition'] = field_position
-        self['rowNumber'] = row_number
-        self['rowPosition'] = row_position
-        self['details'] = details
-        super().__init__()
-
-
-class UniqueConstraintError(Error):
-    code = 'unique-constraint'
-    name = 'Unique Constraint'
-    tags = ['#body', '#schema', '#constraint', '#integrity']
+class UniqueError(Error):
+    code = 'unique-error'
+    name = 'Unique Error'
+    tags = ['#body', '#schema', '#integrity']
     message = 'Row at position {rowPosition} has unique constraint violation in field {fieldName} at position {fieldPosition}: {details}'
     description = 'This field is a unique field but it contains a value that has been used in another row.'
 
