@@ -3,13 +3,8 @@ from ..check import Check
 from ..errors import SizeError, HashError
 
 
+# TODO: add metadata profile to validate descriptor
 class IntegrityCheck(Check):
-    """
-    # Arguments
-        size (int)
-        hash (str)
-    """
-
     def validate_finish(self):
         errors = []
 
