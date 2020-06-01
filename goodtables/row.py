@@ -110,7 +110,7 @@ class Row(OrderedDict):
                                     fieldPosition=field_position,
                                     rowNumber=row_number,
                                     rowPosition=row_position,
-                                    details=field.constraints[name],
+                                    details=str(field.constraints[name]),
                                 )
                             )
 

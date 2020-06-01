@@ -1,7 +1,12 @@
 from . import sources
+from pathlib import Path
 
 
 def validate(source, source_type=None, **options):
+
+    # Normalize source
+    if isinstance(source, Path):
+        source = str(source)
 
     # Detect source type
     if not source_type:

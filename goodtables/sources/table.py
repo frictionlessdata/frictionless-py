@@ -40,13 +40,14 @@ def validate_table(
     # Validation
     pick_errors=None,
     skip_errors=None,
-    error_limit=100,
+    error_limit=1000,
     extra_checks=None,
     # Dialect
     **dialect
 ):
 
     # Prepare state
+    fatal = False
     timer = helpers.Timer()
     row_number = 0
     checks = []
@@ -60,47 +61,44 @@ def validate_table(
             if error.match(pick_errors=pick_errors, skip_errors=skip_errors):
                 errors.append(error)
 
-        # Prepare stream
+        # Create stream
+        stream = tabulator.Stream(
+            source,
+            headers=headers,
+            scheme=scheme,
+            format=format,
+            encoding=encoding,
+            compression=compression,
+            pick_columns=pick_fields,
+            skip_columns=skip_fields,
+            pick_rows=pick_rows,
+            skip_rows=skip_rows,
+            sample_size=infer_sample,
+            hashing_algorithm=helpers.parse_hashing_algorithm(hash),
+            **dialect
+        )
+
+        # Open stream
         try:
-
-            # Create/open stream
-            stream = tabulator.Stream(
-                source,
-                headers=headers,
-                scheme=scheme,
-                format=format,
-                encoding=encoding,
-                compression=compression,
-                pick_columns=pick_fields,
-                skip_columns=skip_fields,
-                pick_rows=pick_rows,
-                skip_rows=skip_rows,
-                sample_size=infer_sample,
-                hashing_algorithm=helpers.parse_hashing_algorithm(hash),
-                **dialect
-            )
             stream.open()
-
-            # Handle no rows
             if not stream.sample:
                 message = 'There are no rows available'
                 raise tabulator.exceptions.SourceError(message)
-
         except Exception as exception:
             error = Error.from_exception(exception)
             add_error(error)
-            stream = None
+            fatal = True
+
+        # Create schema
+        try:
+            schema = tableschema.Schema(schema or {})
+        except tableschema.exceptions.TableSchemaException as exception:
+            add_error(Error.from_exception(exception))
             schema = None
+            fatal = True
 
         # Prepare schema
-        if stream:
-
-            # Create schema
-            try:
-                schema = tableschema.Schema(schema or {})
-            except tableschema.exceptions.TableSchemaException as exception:
-                add_error(Error.from_exception(exception))
-                schema = None
+        if not fatal:
 
             # Infer schema
             if schema and not schema.fields:
@@ -145,10 +143,11 @@ def validate_table(
                 for error in schema.errors:
                     add_error(Error.from_exception(error))
                 schema = None
+                fatal = True
 
         # Start checks
         # TODO: add support for checks from plugins
-        if stream and schema:
+        if not fatal:
             Checks = []
             Checks.append(BaselineCheck)
             Checks.append((IntegrityCheck, {'size': size, 'hash': hash}))
@@ -160,7 +159,7 @@ def validate_table(
                     add_error(error)
 
         # Validate headers
-        if stream and schema:
+        if not fatal:
             if stream.headers:
 
                 # Get headers
@@ -176,7 +175,7 @@ def validate_table(
                         add_error(error)
 
         # Validate rows
-        if stream and schema:
+        if not fatal:
             fields = schema.fields
             iterator = stream.iter(extended=True)
             field_positions = stream.field_positions
@@ -216,7 +215,7 @@ def validate_table(
                     break
 
         # Finish checks
-        if stream and schema:
+        if not fatal:
             for check in checks:
                 for error in check.validate_finish():
                     add_error(error)
@@ -224,8 +223,6 @@ def validate_table(
         # Return report
         time = timer.get_time()
         headers = None
-        if schema:
-            schema = schema.descriptor
         if stream:
             source = stream.source
             headers = stream.headers
@@ -233,6 +230,8 @@ def validate_table(
             format = stream.format
             encoding = stream.encoding
             compression = stream.compression
+        if schema:
+            schema = schema.descriptor
         if error_limit:
             del errors[error_limit:]
         return Report(

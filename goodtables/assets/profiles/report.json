@@ -130,7 +130,7 @@
             "description": "Path or URI where this table was loaded from."
           },
           "headers": {
-            "type": "array",
+            "type": ["array", "null"],
             "title": "Headers",
             "description": "List of table's headers.",
             "items": {
@@ -158,12 +158,12 @@
             "description": "The compression of the table."
           },
           "schema": {
-            "type": "object",
+            "type": ["object", "null"],
             "title": "Schema",
             "description": "A Table Schema Object."
           },
           "dialect": {
-            "type": "object",
+            "type": ["object", "null"],
             "title": "Dialect",
             "description": "The tabular dialect of the table."
           },

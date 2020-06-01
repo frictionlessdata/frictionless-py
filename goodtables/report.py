@@ -13,9 +13,7 @@ class Report(Metadata):
         descriptor['tableCount'] = len(tables)
         descriptor['errors'] = errors
         descriptor['tables'] = tables
-        # TODO: enable validation
-        #  super().__init__(descriptor, strict=True, profile=config.REPORT_PROFILE)
-        super().__init__(descriptor, strict=True)
+        super().__init__(descriptor, strict=True, profile=config.REPORT_PROFILE)
 
     @property
     def errors(self):
