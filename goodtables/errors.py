@@ -340,6 +340,32 @@ class MissingCellError(Error):
         super().__init__()
 
 
+class RequiredError(Error):
+    code = 'required-error'
+    name = 'Required Error'
+    tags = ['#body', '#schema']
+    message = 'Field {fieldName} at position {fieldPosition} is a required field, but row at position {rowPosition} has no value'
+    description = 'This field is a required field, but it contains no value.'
+
+    def __init__(
+        self,
+        *,
+        cells,
+        field_name,
+        field_number,
+        field_position,
+        row_number,
+        row_position,
+    ):
+        self['cells'] = cells
+        self['fieldName'] = field_name
+        self['fieldNumber'] = field_number
+        self['fieldPosition'] = field_position
+        self['rowNumber'] = row_number
+        self['rowPosition'] = row_position
+        super().__init__()
+
+
 class TypeError(Error):
     code = 'type-error'
     name = 'Missing Cell'
@@ -370,36 +396,10 @@ class TypeError(Error):
         super().__init__()
 
 
-class RequiredError(Error):
-    code = 'required-error'
-    name = 'Required Error'
-    tags = ['#body', '#schema', '#integrity']
-    message = 'Field {fieldName} at position {fieldPosition} is a required field, but row at position {rowPosition} has no value'
-    description = 'This field is a required field, but it contains no value.'
-
-    def __init__(
-        self,
-        *,
-        cells,
-        field_name,
-        field_number,
-        field_position,
-        row_number,
-        row_position,
-    ):
-        self['cells'] = cells
-        self['fieldName'] = field_name
-        self['fieldNumber'] = field_number
-        self['fieldPosition'] = field_position
-        self['rowNumber'] = row_number
-        self['rowPosition'] = row_position
-        super().__init__()
-
-
 class ConstraintError(Error):
     code = 'constraint-error'
     name = 'Constraint Error'
-    tags = ['#body', '#schema', '#integrity']
+    tags = ['#body', '#schema']
     message = 'The cell {cell} in row at position {rowPosition} and field {fieldName} at position {fieldPosition} does not conform to a constraint: {details}'
     description = 'A field value does not conform to a constraint.'
 
