@@ -552,7 +552,7 @@ class UniqueConstraintError(Error):
     code = 'unique-constraint'
     name = 'Unique Constraint'
     tags = ['#body', '#schema', '#constraint', '#integrity']
-    message = 'Row at positi {rowPosition} has unique constraint violation in field {fieldName} at position {fieldPosition}: {details}'
+    message = 'Row at position {rowPosition} has unique constraint violation in field {fieldName} at position {fieldPosition}: {details}'
     description = 'This field is a unique field but it contains a value that has been used in another row.'
 
 

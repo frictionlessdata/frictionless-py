@@ -10,13 +10,12 @@ from . import config
 
 
 class Metadata(dict):
-    def __init__(
-        self, descriptor=None, *, root=None, strict=False, profile=None, Error=None
-    ):
+    metadata_Error = None
+    metadata_profile = None
+
+    def __init__(self, descriptor=None, *, root=None, strict=False):
         self.__root = root or self
-        self.__strict = strict
-        self.__profile = profile
-        self.__Error = Error
+        self.__strict = strict or not self.metadata_Error
         self.__errors = []
         metadata = self.normalize_metadata(descriptor)
         dict.update(self, metadata)
@@ -29,12 +28,8 @@ class Metadata(dict):
         return self.__root
 
     @cached_property
-    def metadata_profile(self):
-        return self.__profile
-
-    @cached_property
-    def metadata_Error(self):
-        return self.__Error
+    def metadata_strict(self):
+        return self.__strict
 
     @cached_property
     def metadata_errors(self):
@@ -75,7 +70,7 @@ class Metadata(dict):
             return json.load(descriptor)
         except Exception:
             details = 'canot retrieve metadata "%s"' % descriptor
-            if not self.metadata_Error or self.metadata_strict:
+            if self.metadata_strict:
                 raise exceptions.GoodtablesException(details)
             error = self.metadata_Error(details=details)
             self.metadata_errors.append(error)
@@ -98,7 +93,7 @@ class Metadata(dict):
                 profile_path = '/'.join(map(str, error.schema_path))
                 details = '"%s" at "%s" in metadata and at "%s" in profile'
                 details = details % (message, metadata_path, profile_path)
-                if not self.metadata_Error or self.metadata_strict:
+                if self.metadata_strict:
                     raise exceptions.GoodtablesException(details)
                 error = self.metadata_Error(details=details)
                 self.metadata_errors.append(error)

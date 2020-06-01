@@ -4,6 +4,8 @@ from .metadata import Metadata
 
 
 class Report(Metadata):
+    metadata_profile = config.REPORT_PROFILE
+
     def __init__(self, *, time, errors, tables):
         descriptor = {}
         descriptor['version'] = config.VERSION
@@ -13,7 +15,7 @@ class Report(Metadata):
         descriptor['tableCount'] = len(tables)
         descriptor['errors'] = errors
         descriptor['tables'] = tables
-        super().__init__(descriptor, strict=True, profile=config.REPORT_PROFILE)
+        super().__init__(descriptor)
 
     @property
     def errors(self):
@@ -74,7 +76,7 @@ class ReportTable(Metadata):
         descriptor['rowCount'] = row_count
         descriptor['errorCount'] = len(errors)
         descriptor['errors'] = errors
-        super().__init__(descriptor, strict=True)
+        super().__init__(descriptor)
 
     @property
     def errors(self):
