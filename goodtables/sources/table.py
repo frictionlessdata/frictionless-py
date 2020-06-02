@@ -26,8 +26,6 @@ def validate_table(
     pick_rows=None,
     skip_rows=None,
     row_limit=None,
-    size=None,
-    hash=None,
     # Schema
     schema=None,
     sync_schema=None,
@@ -40,6 +38,9 @@ def validate_table(
     skip_errors=None,
     error_limit=1000,
     extra_checks=None,
+    # Integrity
+    size=None,
+    hash=None,
     # Dialect
     **dialect
 ):
@@ -230,6 +231,12 @@ def validate_table(
                 format=stream.format,
                 encoding=stream.encoding,
                 compression=stream.compression,
+                pick_fields=pick_fields,
+                skip_fields=skip_fields,
+                field_limit=field_limit,
+                pick_rows=pick_rows,
+                skip_rows=skip_rows,
+                row_limit=row_limit,
                 schema=schema.descriptor if schema else None,
                 dialect=dialect,
                 row_count=row_number,

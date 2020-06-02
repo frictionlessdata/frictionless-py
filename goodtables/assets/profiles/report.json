@@ -106,6 +106,12 @@
           "format",
           "encoding",
           "compression",
+          "pickFields",
+          "skipFields",
+          "fieldLimit",
+          "pickRows",
+          "skipRows",
+          "rowLimit",
           "schema",
           "dialect",
           "rowCount",
@@ -156,6 +162,36 @@
             "type": "string",
             "title": "Compression",
             "description": "The compression of the table."
+          },
+          "pickFields": {
+            "type": ["array", "null"],
+            "title": "Pick Fields",
+            "description": "The list of picked fields."
+          },
+          "skipFields": {
+            "type": ["array", "null"],
+            "title": "Skip Fields",
+            "description": "The list of skiped fields."
+          },
+          "fieldLimit": {
+            "type": ["number", "null"],
+            "title": "Field Limit",
+            "description": "Maxumum amount of fields."
+          },
+          "pickRows": {
+            "type": ["array", "null"],
+            "title": "Pick Rows",
+            "description": "The list of picked rows."
+          },
+          "skipRows": {
+            "type": ["array", "null"],
+            "title": "Skip Rows",
+            "description": "The list of skiped rows."
+          },
+          "rowLimit": {
+            "type": ["number", "null"],
+            "title": "Row Limit",
+            "description": "Maxumum amount of rows."
           },
           "schema": {
             "type": ["object", "null"],
