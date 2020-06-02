@@ -222,16 +222,6 @@ def validate_table(
 
         # Return report
         time = timer.get_time()
-        headers = None
-        if stream:
-            source = stream.source
-            headers = stream.headers
-            scheme = stream.scheme
-            format = stream.format
-            encoding = stream.encoding
-            compression = stream.compression
-        if schema:
-            schema = schema.descriptor
         if error_limit:
             del errors[error_limit:]
         return Report(
@@ -240,13 +230,13 @@ def validate_table(
             tables=[
                 ReportTable(
                     time=time,
-                    source=str(source),
-                    headers=headers,
-                    scheme=scheme,
-                    format=format,
-                    encoding=encoding,
-                    compression=compression,
-                    schema=schema,
+                    source=str(stream.source),
+                    headers=stream.headers,
+                    scheme=stream.scheme,
+                    format=stream.format,
+                    encoding=stream.encoding,
+                    compression=stream.compression,
+                    schema=schema.descriptor if schema else None,
                     dialect=dialect,
                     row_count=row_number,
                     errors=errors,
