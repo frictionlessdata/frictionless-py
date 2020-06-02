@@ -203,9 +203,11 @@ def validate_table(
                 for error in check.validate_row(row):
                     add_error(error)
 
-            # Row/error limits
+            # Limit rows
             if row_limit and row_number >= row_limit:
                 break
+
+            # Limit errors
             if error_limit and len(errors) >= error_limit:
                 break
 
@@ -215,10 +217,14 @@ def validate_table(
             for error in check.validate_finish():
                 add_error(error)
 
-    # Return report
-    time = timer.get_time()
+    # Limit errors
     if error_limit:
         del errors[error_limit:]
+
+    # Return report
+    time = timer.get_time()
+    if schema:
+        schema = schema.descriptor
     return Report(
         time=time,
         errors=[],
@@ -237,7 +243,7 @@ def validate_table(
                 pick_rows=pick_rows,
                 skip_rows=skip_rows,
                 row_limit=row_limit,
-                schema=schema.descriptor if schema else None,
+                schema=schema,
                 dialect=dialect,
                 row_count=row_number,
                 errors=errors,
