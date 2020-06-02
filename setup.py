@@ -25,6 +25,7 @@ INSTALL_REQUIRES = [
     'click>=6.6',
     'click-default-group',
     'cached-property>=1.5',
+    'stringcase>=1.2',
     'jsonschema>=2.5',
     'requests>=2.10',
     'simpleeval>=0.9',

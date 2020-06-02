@@ -32,6 +32,20 @@ def test_validate_multiple_invalid():
     ]
 
 
+def test_validate_multiple_invalid_error_limit():
+    report = validate(
+        {
+            'tasks': [
+                {'source': 'data/table.csv'},
+                {'source': 'data/invalid.csv', 'errorLimit': 1},
+            ]
+        }
+    )
+    assert report.flatten(['tableNumber', 'rowPosition', 'fieldPosition', 'code']) == [
+        [2, None, 3, 'blank-header'],
+    ]
+
+
 def test_validate_multiple_invalid_with_schema():
     report = validate(
         {
