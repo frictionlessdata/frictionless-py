@@ -38,7 +38,6 @@ def validate_resource(source, strict=False, base_path=None, **options):
             return Report(time=time, errors=errors, tables=[])
 
     # Prepare dialect/headers
-    # TODO: translate dialect to tabulator form
     headers = 1
     dialect = resource.descriptor.get('dialect', {})
     if dialect.get('header') is False:

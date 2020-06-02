@@ -39,7 +39,6 @@ def validate_package(source, strict=False, base_path=None, **options):
             return Report(time=time, errors=errors, tables=[])
 
     # Validate resources
-    # TODO: make parallel
     reports = []
     for resource in package.resources:
         reports.append(

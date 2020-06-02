@@ -1,5 +1,6 @@
 from .. import helpers
 from ..task import task
+from ..query import Query
 from ..report import Report
 from ..validate import validate
 
@@ -7,12 +8,12 @@ from ..validate import validate
 @task
 def validate_query(source):
     timer = helpers.Timer()
+    query = Query(source)
 
     # Validate tasks
-    # TODO: rebase on parallel
     reports = []
-    for options in source.get('tasks', []):
-        reports.append(validate(**options))
+    for query_task in query.tasks:
+        reports.append(validate(**query_task))
 
     # Return report
     time = timer.get_time()

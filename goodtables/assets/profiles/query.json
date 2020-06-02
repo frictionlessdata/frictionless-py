@@ -2,5 +2,25 @@
   "title": "Goodtables Query",
   "$schema": "http://json-schema.org/draft-06/schema#",
   "$id": "https://github.com/frictionlessdata/goodtables-py/tree/master/goodtables/assets/profiles/task.json",
-  "type": "object"
+  "type": "object",
+  "required": [
+    "tasks"
+  ],
+  "properties": {
+    "version": {
+      "type": "string",
+      "title": "Version",
+      "description": "Goodtables version"
+    },
+    "tasks": {
+      "type": "array",
+      "title": "Tasks",
+      "description": "Query tasks",
+      "items": {
+        "title": "Task",
+        "type": "object",
+        "required": ["source"]
+      }
+    }
+  }
 }
