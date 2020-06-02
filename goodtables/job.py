@@ -2,8 +2,8 @@ from .metadata import Metadata
 from . import config
 
 
-class Inquiry(Metadata):
-    metadata_profile = config.INQUIRY_PROFILE
+class Job(Metadata):
+    metadata_profile = config.JOB_PROFILE
 
     @property
     def tasks(self):

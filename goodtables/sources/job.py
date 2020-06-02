@@ -1,19 +1,19 @@
 from .. import helpers
+from ..job import Job
 from ..task import task
 from ..report import Report
-from ..inquiry import Inquiry
 from ..validate import validate
 
 
 @task
-def validate_inquiry(source):
+def validate_job(source):
     timer = helpers.Timer()
-    inquiry = Inquiry(source)
+    job = Job(source)
 
     # Validate tasks
     reports = []
-    for inquiry_task in inquiry.tasks:
-        reports.append(validate(**inquiry_task))
+    for job_task in job.tasks:
+        reports.append(validate(**job_task))
 
     # Return report
     time = timer.get_time()

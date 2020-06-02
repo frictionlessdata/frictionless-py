@@ -1,4 +1,4 @@
-from .inquiry import validate_inquiry
+from .job import validate_job
 from .package import validate_package
 from .resource import validate_resource
 from .table import validate_table
