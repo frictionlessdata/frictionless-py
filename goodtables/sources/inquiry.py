@@ -1,19 +1,19 @@
 from .. import helpers
 from ..task import task
-from ..query import Query
 from ..report import Report
+from ..inquiry import Inquiry
 from ..validate import validate
 
 
 @task
-def validate_query(source):
+def validate_inquiry(source):
     timer = helpers.Timer()
-    query = Query(source)
+    inquiry = Inquiry(source)
 
     # Validate tasks
     reports = []
-    for query_task in query.tasks:
-        reports.append(validate(**query_task))
+    for inquiry_task in inquiry.tasks:
+        reports.append(validate(**inquiry_task))
 
     # Return report
     time = timer.get_time()

@@ -1,7 +1,7 @@
 {
-  "title": "Goodtables Query",
+  "title": "Goodtables Inquiry",
   "$schema": "http://json-schema.org/draft-06/schema#",
-  "$id": "https://github.com/frictionlessdata/goodtables-py/tree/master/goodtables/assets/profiles/task.json",
+  "$id": "https://github.com/frictionlessdata/goodtables-py/tree/master/goodtables/assets/profiles/inquiry.json",
   "type": "object",
   "required": [
     "tasks"
