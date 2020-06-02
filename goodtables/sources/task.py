@@ -5,14 +5,14 @@ from ..validate import validate
 
 
 @Task.catch
-def validate_nested(source):
+def validate_task(source):
     timer = helpers.Timer()
 
     # Validate tasks
     # TODO: rebase on parallel
     reports = []
-    for task in source:
-        reports.append(validate(**task))
+    for options in source:
+        reports.append(validate(**options))
 
     # Return report
     time = timer.get_time()

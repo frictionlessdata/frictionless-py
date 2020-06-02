@@ -13,7 +13,7 @@ def validate(source, source_type=None, **options):
         source_type = 'table'
         if isinstance(source, list):
             if source and isinstance(source[0], dict):
-                source_type = 'nested'
+                source_type = 'task'
         if isinstance(source, dict):
             if source.get('path') is not None:
                 source_type = 'resource'
