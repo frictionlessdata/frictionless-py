@@ -1,6 +1,6 @@
 from .. import helpers
 from ..check import Check
-from ..errors import SizeError, HashError
+from ..errors import SizeError, HashError, UniqueError, PrimaryKeyError, ForeignKeyError
 
 
 class IntegrityCheck(Check):
@@ -11,6 +11,15 @@ class IntegrityCheck(Check):
             'hash': {'type': ['string', 'null']},
         },
     }
+    possible_Errors = [  # type: ignore
+        # table
+        SizeError,
+        HashError,
+        # body
+        UniqueError,
+        PrimaryKeyError,
+        ForeignKeyError,
+    ]
 
     def validate_finish(self):
         errors = []

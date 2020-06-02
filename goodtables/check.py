@@ -2,6 +2,8 @@ from .metadata import Metadata
 
 
 class Check(Metadata):
+    possible_Errors = []  # type: ignore
+
     def __init__(self, descriptor=None):
         super().__init__(descriptor)
         self.__stream = None
