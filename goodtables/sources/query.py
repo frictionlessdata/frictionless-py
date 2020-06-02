@@ -1,17 +1,17 @@
 from .. import helpers
-from ..task import Task
+from ..task import task
 from ..report import Report
 from ..validate import validate
 
 
-@Task.catch
-def validate_task(source):
+@task
+def validate_query(source):
     timer = helpers.Timer()
 
     # Validate tasks
     # TODO: rebase on parallel
     reports = []
-    for options in source:
+    for options in source.get('tasks', []):
         reports.append(validate(**options))
 
     # Return report

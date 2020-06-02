@@ -1,12 +1,12 @@
 import datapackage
 from .. import helpers
-from ..task import Task
+from ..task import task
 from ..report import Report
 from ..errors import ResourceError
 from .table import validate_table
 
 
-@Task.catch
+@task
 def validate_resource(source, strict=False, base_path=None, **options):
     timer = helpers.Timer()
 

@@ -3,14 +3,14 @@ import tableschema
 from .. import config
 from .. import helpers
 from ..row import Row
-from ..task import Task
+from ..task import task
 from ..errors import Error
 from ..headers import Headers
 from ..report import Report, ReportTable
 from ..checks import BaselineCheck, IntegrityCheck
 
 
-@Task.catch
+@task
 def validate_table(
     source,
     *,

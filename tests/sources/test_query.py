@@ -5,17 +5,21 @@ from goodtables import validate
 
 
 def test_validate():
-    report = validate([{'source': 'data/table.csv'}])
+    report = validate({'tasks': [{'source': 'data/table.csv'}]})
     assert report['valid']
 
 
 def test_validate_multiple():
-    report = validate([{'source': 'data/table.csv'}, {'source': 'data/matrix.csv'}])
+    report = validate(
+        {'tasks': [{'source': 'data/table.csv'}, {'source': 'data/matrix.csv'}]}
+    )
     assert report['valid']
 
 
 def test_validate_multiple_invalid():
-    report = validate([{'source': 'data/table.csv'}, {'source': 'data/invalid.csv'}])
+    report = validate(
+        {'tasks': [{'source': 'data/table.csv'}, {'source': 'data/invalid.csv'}]}
+    )
     assert report.flatten(['tableNumber', 'rowPosition', 'fieldPosition', 'code']) == [
         [2, None, 3, 'blank-header'],
         [2, None, 4, 'duplicate-header'],
@@ -30,13 +34,15 @@ def test_validate_multiple_invalid():
 
 def test_validate_multiple_invalid_with_schema():
     report = validate(
-        [
-            {
-                'source': 'data/table.csv',
-                'schema': {'fields': [{'name': 'bad'}, {'name': 'name'}]},
-            },
-            {'source': 'data/invalid.csv'},
-        ],
+        {
+            'tasks': [
+                {
+                    'source': 'data/table.csv',
+                    'schema': {'fields': [{'name': 'bad'}, {'name': 'name'}]},
+                },
+                {'source': 'data/invalid.csv'},
+            ],
+        }
     )
     assert report.flatten(['tableNumber', 'rowPosition', 'fieldPosition', 'code']) == [
         [1, None, 1, 'non-matching-header'],
@@ -52,16 +58,18 @@ def test_validate_multiple_invalid_with_schema():
 
 
 def test_validate_with_one_package():
-    report = validate([{'source': 'data/package/datapackage.json'}])
+    report = validate({'tasks': [{'source': 'data/package/datapackage.json'}]})
     assert report['valid']
 
 
 def test_validate_with_multiple_packages():
     report = validate(
-        [
-            {'source': 'data/package/datapackage.json'},
-            {'source': 'data/invalid/datapackage.json'},
-        ]
+        {
+            'tasks': [
+                {'source': 'data/package/datapackage.json'},
+                {'source': 'data/invalid/datapackage.json'},
+            ]
+        }
     )
     assert report.flatten(['tableNumber', 'rowPosition', 'fieldPosition', 'code']) == [
         [3, 3, None, 'blank-row'],

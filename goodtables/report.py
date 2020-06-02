@@ -60,7 +60,7 @@ class ReportTable(Metadata):
         schema,
         dialect,
         row_count,
-        errors
+        errors,
     ):
         descriptor = {}
         descriptor['time'] = time
