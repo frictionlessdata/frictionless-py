@@ -17,7 +17,7 @@ class Metadata(dict):
         self.__root = root or self
         self.__strict = strict or not self.metadata_Error
         self.__errors = []
-        metadata = self.normalize_metadata(descriptor)
+        metadata = self.extract_metadata(descriptor)
         dict.update(self, metadata)
         if self and not root:
             self.process_metadata()
@@ -54,9 +54,9 @@ class Metadata(dict):
     def __deepcopy__(self):
         return self.copy()
 
-    # Normalize
+    # Extract
 
-    def normalize_metadata(self, descriptor):
+    def extract_metadata(self, descriptor):
         try:
             if descriptor is None:
                 return {}
@@ -101,12 +101,12 @@ class Metadata(dict):
 
 class ControlledMetadata(Metadata):
 
-    # Normalize
+    # Extract
 
-    def normalize_metadata(self, descriptor):
+    def extract_metadata(self, descriptor):
         if isinstance(descriptor, dict):
             return deepcopy(descriptor)
-        super().normalize_metadata(descriptor)
+        super().extract_metadata(descriptor)
 
     # Process
 
