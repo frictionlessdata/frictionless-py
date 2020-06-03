@@ -1,3 +1,4 @@
+import stringcase
 import datapackage
 from .. import helpers
 from ..task import task
@@ -40,6 +41,7 @@ def validate_resource(source, strict=False, base_path=None, **options):
     # Prepare dialect/headers
     headers_row = 1
     dialect = resource.descriptor.get('dialect', {})
+    dialect = {stringcase.snakecase(key): value for key, value in dialect.items()}
     if dialect.get('header') is False:
         headers_row = None
 

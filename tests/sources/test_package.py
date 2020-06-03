@@ -119,13 +119,13 @@ def test_validate_package_invalid_json_issue_192():
 
 def test_validate_geopoint_required_constraint_issue_231():
     # We check here that it doesn't raise exceptions
-    report = validate('data/geopoints/datapackage.json')
+    report = validate('data/geopoint/datapackage.json')
     assert not report['valid']
 
 
 def test_validate_package_number_test_issue_232():
     # We check here that it doesn't raise exceptions
-    report = validate('data/numbers/datapackage.json')
+    report = validate('data/number/datapackage.json')
     assert not report['valid']
 
 
