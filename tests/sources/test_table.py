@@ -195,16 +195,34 @@ def test_validate_compression_invalid():
 # Headers
 
 
-def test_validate_no_headers():
+def test_validate_headers_no():
     report = validate('data/without-headers.csv', headers=None)
     assert report['valid']
 
 
-def test_validate_no_headers_extra_cell():
+def test_validate_headers_no_extra_cell():
     report = validate('data/without-headers-extra.csv', headers=None)
     assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
         [3, 3, 'extra-cell'],
     ]
+
+
+def test_validate_headers_number():
+    report = validate('data/matrix.csv', headers=2)
+    assert report.table['headers'] == ['11', '12', '13', '14']
+    assert report['valid']
+
+
+def test_validate_headers_list_of_numbers():
+    report = validate('data/matrix.csv', headers=[2, 3, 4])
+    assert report.table['headers'] == ['11 21 31', '12 22 32', '13 23 33', '14 24 34']
+    assert report['valid']
+
+
+def test_validate_headers_list_of_strings():
+    report = validate('data/without-headers.csv', headers=['id', 'name'])
+    assert report.table['headers'] == ['id', 'name']
+    assert report['valid']
 
 
 # Fields
@@ -217,8 +235,22 @@ def test_validate_pick_fields():
     assert report.table['valid']
 
 
+def test_validate_pick_fields_regex():
+    report = validate('data/matrix.csv', pick_fields=['<regex>f[23]'])
+    assert report.table['headers'] == ['f2', 'f3']
+    assert report.table['rowCount'] == 4
+    assert report.table['valid']
+
+
 def test_validate_skip_fields():
     report = validate('data/matrix.csv', skip_fields=[1, 'f4'])
+    assert report.table['headers'] == ['f2', 'f3']
+    assert report.table['rowCount'] == 4
+    assert report.table['valid']
+
+
+def test_validate_skip_fields_regex():
+    report = validate('data/matrix.csv', skip_fields=['<regex>f[14]'])
     assert report.table['headers'] == ['f2', 'f3']
     assert report.table['rowCount'] == 4
     assert report.table['valid']
@@ -255,9 +287,30 @@ def test_validate_pick_rows():
     assert report.table['valid']
 
 
+def test_validate_pick_rows_regex():
+    report = validate('data/matrix.csv', pick_rows=['<regex>[f23]1'])
+    assert report.table['headers'] == ['f1', 'f2', 'f3', 'f4']
+    assert report.table['rowCount'] == 2
+    assert report.table['valid']
+
+
 def test_validate_skip_rows():
     report = validate('data/matrix.csv', skip_rows=[2, '41'])
     assert report.table['headers'] == ['f1', 'f2', 'f3', 'f4']
+    assert report.table['rowCount'] == 2
+    assert report.table['valid']
+
+
+def test_validate_skip_rows_regex():
+    report = validate('data/matrix.csv', skip_rows=['<regex>[14]1'])
+    assert report.table['headers'] == ['f1', 'f2', 'f3', 'f4']
+    assert report.table['rowCount'] == 2
+    assert report.table['valid']
+
+
+def test_validate_skip_rows_blank():
+    report = validate('data/blank-rows.csv', skip_rows=['<blank>'])
+    assert report.table['headers'] == ['id', 'name', 'age']
     assert report.table['rowCount'] == 2
     assert report.table['valid']
 

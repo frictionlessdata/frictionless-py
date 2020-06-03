@@ -39,6 +39,48 @@ def parse_hashing_digest(hash):
     return parts[1] if len(parts) > 1 else hash
 
 
+# Compatability
+
+
+def translate_headers(headers):
+    # goodtables: [2, 3, 4] (pandas-like)
+    # tabulator: [2, 4] (range-like)
+    if headers and isinstance(headers, list):
+        if len(headers) > 1 and isinstance(headers[0], int):
+            headers = [headers[0], headers[-1]]
+    return headers
+
+
+def translate_pick_fields(pick_fields):
+    for index, item in enumerate(pick_fields or []):
+        if isinstance(item, str) and item.startswith('<regex>'):
+            pick_fields[index] = {'type': 'regex', 'value': item.replace('<regex>', '')}
+    return pick_fields
+
+
+def translate_skip_fields(skip_fields):
+    for index, item in enumerate(skip_fields or []):
+        if isinstance(item, str) and item.startswith('<regex>'):
+            skip_fields[index] = {'type': 'regex', 'value': item.replace('<regex>', '')}
+    return skip_fields
+
+
+def translate_pick_rows(pick_rows):
+    for index, item in enumerate(pick_rows or []):
+        if isinstance(item, str) and item.startswith('<regex>'):
+            pick_rows[index] = {'type': 'regex', 'value': item.replace('<regex>', '')}
+    return pick_rows
+
+
+def translate_skip_rows(skip_rows):
+    for index, item in enumerate(skip_rows or []):
+        if isinstance(item, str) and item.startswith('<regex>'):
+            skip_rows[index] = {'type': 'regex', 'value': item.replace('<regex>', '')}
+        if isinstance(item, str) and item.startswith('<blank>'):
+            skip_rows[index] = {'type': 'preset', 'value': 'blank'}
+    return skip_rows
+
+
 # Measurements
 
 

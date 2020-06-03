@@ -33,8 +33,8 @@ def validate_table(
     offset_rows=None,
     # Schema
     schema=None,
-    sync_schema=None,
-    patch_schema=None,
+    sync_schema=False,
+    patch_schema=False,
     infer_type=None,
     infer_sample=100,
     infer_confidence=0.75,
@@ -60,7 +60,7 @@ def validate_table(
         encoding? (str)
         compression? (str)
 
-        headers? (int | int[] | str[])
+        headers? (int | int[])
 
         pick_fields? ((int | str)[])
         skip_fields? ((int | str)[])
@@ -86,7 +86,7 @@ def validate_table(
         pick_errors? (str[])
         skip_errors? (str[])
         limit_errors? (int)
-        extra_checks (list)
+        extra_checks? (list)
 
         **dialect (dict)
 
@@ -110,17 +110,17 @@ def validate_table(
     # Create stream
     stream = tabulator.Stream(
         source,
-        headers=headers,
         scheme=scheme,
         format=format,
         encoding=encoding,
         compression=compression,
-        pick_fields=pick_fields,
-        skip_fields=skip_fields,
+        headers=helpers.translate_headers(headers),
+        pick_fields=helpers.translate_pick_fields(pick_fields),
+        skip_fields=helpers.translate_skip_fields(skip_fields),
         limit_fields=limit_fields,
         offset_fields=offset_fields,
-        pick_rows=pick_rows,
-        skip_rows=skip_rows,
+        pick_rows=helpers.translate_pick_rows(pick_rows),
+        skip_rows=helpers.translate_skip_rows(skip_rows),
         limit_rows=limit_rows,
         offset_rows=offset_rows,
         sample_size=infer_sample,
