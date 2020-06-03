@@ -31,7 +31,7 @@ INSTALL_REQUIRES = [
     'simpleeval>=0.9',
     'statistics>=1.0',
     'tabulator>=1.51',
-    'tableschema>=1.18',
+    'tableschema>=1.19',
     'datapackage>=1.14',
 ]
 TESTS_REQUIRE = [

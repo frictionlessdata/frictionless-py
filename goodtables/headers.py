@@ -61,9 +61,10 @@ class Headers(list):
                     if cell == seen_cell:
                         duplicate_field_positions.append(seen_position)
                 if duplicate_field_positions:
+                    cell = None
                     self.__errors.append(
                         errors.DuplicateHeaderError(
-                            cell=str(cell),
+                            cell=str(cells[field_number - 1]),
                             cells=list(map(str, cells)),
                             field_name=field.name,
                             field_number=field_number,

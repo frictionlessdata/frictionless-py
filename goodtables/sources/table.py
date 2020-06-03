@@ -202,6 +202,14 @@ def validate_table(
             schema = None
             fatal = True
 
+        # Confirm schema
+        if schema and len(schema.field_names) != len(set(schema.field_names)):
+            message = 'Schemas with duplicate field names are not supported'
+            error = tableschema.exceptions.TableSchemaException(message)
+            add_error(Error.from_exception(error))
+            schema = None
+            fatal = True
+
     # Start checks
     if not fatal:
         Checks = []
