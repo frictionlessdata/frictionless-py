@@ -59,10 +59,12 @@ class ReportTable(Metadata):
         compression,
         pick_fields,
         skip_fields,
-        field_limit,
+        limit_fields,
+        offset_fields,
         pick_rows,
         skip_rows,
-        row_limit,
+        limit_rows,
+        offset_rows,
         schema,
         dialect,
         row_count,
@@ -79,10 +81,12 @@ class ReportTable(Metadata):
         descriptor['compression'] = compression
         descriptor['pickFields'] = pick_fields
         descriptor['skipFields'] = skip_fields
-        descriptor['fieldLimit'] = field_limit
+        descriptor['limitFields'] = limit_fields
+        descriptor['offsetFields'] = offset_fields
         descriptor['pickRows'] = pick_rows
         descriptor['skipRows'] = skip_rows
-        descriptor['rowLimit'] = row_limit
+        descriptor['limitRows'] = limit_rows
+        descriptor['offsetRows'] = offset_rows
         descriptor['schema'] = schema
         descriptor['dialect'] = dialect
         descriptor['rowCount'] = row_count

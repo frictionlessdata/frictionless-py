@@ -30,7 +30,7 @@ INSTALL_REQUIRES = [
     'requests>=2.10',
     'simpleeval>=0.9',
     'statistics>=1.0',
-    'tabulator>=1.50',
+    'tabulator>=1.51',
     'tableschema>=1.18',
     'datapackage>=1.14',
 ]

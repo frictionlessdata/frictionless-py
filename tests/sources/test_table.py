@@ -92,10 +92,35 @@ def test_validate_no_rows():
 
 
 def test_validate_task_error():
-    report = validate('data/table.csv', row_limit='bad')
+    report = validate('data/table.csv', limit_rows='bad')
     assert report.flatten(['code', 'details']) == [
-        ['task-error', "'>=' not supported between instances of 'int' and 'str'"],
+        [
+            'task-error',
+            '"\'bad\' is not of type \'number\', \'null\'" at "tables/0/limitRows" in metadata and at "properties/tables/items/properties/limitRows/type" in profile',
+        ],
     ]
+
+
+def test_validate_report_props():
+    report = validate('data/table.csv')
+    assert report['version'].startswith('3')
+    assert report['valid'] is True
+    assert report.table['valid'] is True
+    assert report.table['source'] == 'data/table.csv'
+    assert report.table['headers'] == ['id', 'name']
+    assert report.table['scheme'] == 'file'
+    assert report.table['format'] == 'csv'
+    assert report.table['encoding'] == 'utf-8'
+    assert report.table['dialect'] == {}
+    assert report.table['rowCount'] == 2
+    assert report.table['errors'] == []
+    assert report.table['schema'] == {
+        'fields': [
+            {'format': 'default', 'name': 'id', 'type': 'integer'},
+            {'format': 'default', 'name': 'name', 'type': 'string'},
+        ],
+        'missingValues': [''],
+    }
 
 
 # Source
@@ -114,24 +139,6 @@ def test_validate_source_pathlib_path_table():
     assert report['valid']
 
 
-# Headers
-
-
-def test_validate_no_headers():
-    report = validate('data/without-headers.csv', headers=None)
-    assert report['valid']
-
-
-def test_validate_no_headers_extra_cell():
-    report = validate('data/without-headers-extra.csv', headers=None)
-    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
-        [3, 3, 'extra-cell'],
-    ]
-
-
-# Scheme
-
-
 def test_validate_scheme():
     report = validate('data/table.csv', scheme='file')
     assert report['valid']
@@ -142,9 +149,6 @@ def test_validate_scheme_invalid():
     assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
         [None, None, 'scheme-error'],
     ]
-
-
-# Format
 
 
 def test_validate_format():
@@ -159,9 +163,6 @@ def test_validate_format_invalid():
     ]
 
 
-# Encoding
-
-
 def test_validate_encoding():
     report = validate('data/table.csv', encoding='utf-8')
     assert report['valid']
@@ -172,9 +173,6 @@ def test_validate_encoding_invalid():
     assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
         [None, None, 'encoding-error'],
     ]
-
-
-# Compression
 
 
 def test_validate_compression():
@@ -194,7 +192,22 @@ def test_validate_compression_invalid():
     ]
 
 
-# Pick|skip fields|rows
+# Headers
+
+
+def test_validate_no_headers():
+    report = validate('data/without-headers.csv', headers=None)
+    assert report['valid']
+
+
+def test_validate_no_headers_extra_cell():
+    report = validate('data/without-headers-extra.csv', headers=None)
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [3, 3, 'extra-cell'],
+    ]
+
+
+# Fields
 
 
 def test_validate_pick_fields():
@@ -209,6 +222,30 @@ def test_validate_skip_fields():
     assert report.table['headers'] == ['f2', 'f3']
     assert report.table['rowCount'] == 4
     assert report.table['valid']
+
+
+def test_validate_limit_fields():
+    report = validate('data/matrix.csv', limit_fields=1)
+    assert report.table['headers'] == ['f1']
+    assert report.table['rowCount'] == 4
+    assert report.table['valid']
+
+
+def test_validate_offset_fields():
+    report = validate('data/matrix.csv', offset_fields=3)
+    assert report.table['headers'] == ['f4']
+    assert report.table['rowCount'] == 4
+    assert report.table['valid']
+
+
+def test_validate_limit_and_offset_fields():
+    report = validate('data/matrix.csv', limit_fields=2, offset_fields=1)
+    assert report.table['headers'] == ['f2', 'f3']
+    assert report.table['rowCount'] == 4
+    assert report.table['valid']
+
+
+# Rows
 
 
 def test_validate_pick_rows():
@@ -239,7 +276,252 @@ def test_validate_skip_rows_and_fields():
     assert report.table['valid']
 
 
-# Size
+def test_validate_limit_rows():
+    report = validate('data/matrix.csv', limit_rows=1)
+    assert report.table['headers'] == ['f1', 'f2', 'f3', 'f4']
+    assert report.table['rowCount'] == 1
+    assert report.table['valid']
+
+
+def test_validate_offset_rows():
+    report = validate('data/matrix.csv', offset_rows=3)
+    assert report.table['headers'] == ['f1', 'f2', 'f3', 'f4']
+    assert report.table['rowCount'] == 1
+    assert report.table['valid']
+
+
+def test_validate_limit_and_offset_rows():
+    report = validate('data/matrix.csv', limit_rows=2, offset_rows=1)
+    assert report.table['headers'] == ['f1', 'f2', 'f3', 'f4']
+    assert report.table['rowCount'] == 2
+    assert report.table['valid']
+
+
+def test_validate_invalid_limit_rows():
+    report = validate('data/invalid.csv', limit_rows=2)
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [None, 3, 'blank-header'],
+        [None, 4, 'duplicate-header'],
+        [2, 3, 'missing-cell'],
+        [2, 4, 'missing-cell'],
+        [3, 3, 'missing-cell'],
+        [3, 4, 'missing-cell'],
+    ]
+
+
+def test_validate_structure_errors_with_limit_rows():
+    report = validate('data/structure-errors.csv', limit_rows=3)
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [4, None, 'blank-row'],
+    ]
+
+
+# Schema
+
+
+def test_validate_schema_invalid():
+    source = [['name', 'age'], ['Alex', '33']]
+    schema = {'fields': [{'name': 'name'}, {'name': 'age', 'type': 'bad'}]}
+    report = validate(source, schema=schema)
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [None, None, 'schema-error'],
+    ]
+
+
+def test_validate_schema_invalid_json():
+    report = validate('data/table.csv', schema='data/invalid.json')
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [None, None, 'schema-error'],
+    ]
+
+
+def test_validate_schema_extra_headers_and_cells():
+    schema = {'fields': [{'name': 'id', 'type': 'integer'}]}
+    report = validate('data/table.csv', schema=schema)
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [None, 2, 'extra-header'],
+        [2, 2, 'extra-cell'],
+        [3, 2, 'extra-cell'],
+    ]
+
+
+def test_validate_schema_multiple_errors():
+    source = 'data/schema-errors.csv'
+    schema = 'data/schema.json'
+    report = validate(source, schema=schema, pick_errors=['#schema'], limit_errors=3)
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [4, 1, 'type-error'],
+        [4, 2, 'required-error'],
+        [4, 3, 'required-error'],
+    ]
+
+
+def test_validate_schema_min_length_constraint():
+    source = [['row', 'word'], [2, 'a'], [3, 'ab'], [4, 'abc'], [5, 'abcd'], [6]]
+    schema = {
+        'fields': [
+            {'name': 'row', 'type': 'integer'},
+            {'name': 'word', 'type': 'string', 'constraints': {'minLength': 2}},
+        ]
+    }
+    report = validate(source, schema=schema, pick_errors=['constraint-error'])
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [2, 2, 'constraint-error'],
+    ]
+
+
+def test_validate_schema_max_length_constraint():
+    source = [['row', 'word'], [2, 'a'], [3, 'ab'], [4, 'abc'], [5, 'abcd'], [6]]
+    schema = {
+        'fields': [
+            {'name': 'row', 'type': 'integer'},
+            {'name': 'word', 'type': 'string', 'constraints': {'maxLength': 2}},
+        ]
+    }
+    report = validate(source, schema=schema, pick_errors=['constraint-error'])
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [4, 2, 'constraint-error'],
+        [5, 2, 'constraint-error'],
+    ]
+
+
+def test_validate_schema_minimum_constraint():
+    source = [['row', 'score'], [2, 1], [3, 2], [4, 3], [5, 4], [6]]
+    schema = {
+        'fields': [
+            {'name': 'row', 'type': 'integer'},
+            {'name': 'score', 'type': 'integer', 'constraints': {'minimum': 2}},
+        ]
+    }
+    report = validate(source, schema=schema, pick_errors=['constraint-error'])
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [2, 2, 'constraint-error'],
+    ]
+
+
+def test_validate_schema_maximum_constraint():
+    source = [['row', 'score'], [2, 1], [3, 2], [4, 3], [5, 4], [6]]
+    schema = {
+        'fields': [
+            {'name': 'row', 'type': 'integer'},
+            {'name': 'score', 'type': 'integer', 'constraints': {'maximum': 2}},
+        ]
+    }
+    report = validate(source, schema=schema, pick_errors=['constraint-error'])
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [4, 2, 'constraint-error'],
+        [5, 2, 'constraint-error'],
+    ]
+
+
+def test_validate_sync_schema():
+    schema = infer('data/table.csv')
+    report = validate('data/sync-schema.csv', schema=schema, sync_schema=True)
+    assert report['valid']
+    assert report.table['schema'] == {
+        'fields': [
+            {'format': 'default', 'name': 'name', 'type': 'string'},
+            {'format': 'default', 'name': 'id', 'type': 'integer'},
+        ],
+        'missingValues': [''],
+    }
+
+
+# TODO: sync schema should cover all headers (it cherry-picks here)
+# Original errors:
+#  - [1, null, null, 'missing-header']
+#  - [1, null, 3, 'extra-header']
+def test_validate_sync_schema_invalid():
+    source = [['LastName', 'FirstName', 'Address'], ['Test', 'Tester', '23 Avenue']]
+    schema = {'fields': [{'name': 'id'}, {'name': 'FirstName'}, {'name': 'LastName'}]}
+    report = validate(source, schema=schema, sync_schema=True)
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [None, 3, 'extra-header'],
+        [2, 3, 'extra-cell'],
+    ]
+
+
+# TODO: sync schema should cover all headers (it cherry-picks here)
+# Original errors:
+#  - [1, null, null, 'missing-header']
+#  - [1, null, 4, 'non-matching-header']
+#  - [1, null, 5, 'extra-header']
+def test_validate_schema_headers_errors():
+    source = [
+        ['id', 'last_name', 'first_name', 'language'],
+        [1, 'Alex', 'John', 'English'],
+        [2, 'Peters', 'John', 'Afrikaans'],
+        [3, 'Smith', 'Paul', 'Zulu'],
+    ]
+    schema = {
+        'fields': [
+            {'name': 'id', 'type': 'number'},
+            {'name': 'first_name'},
+            {'name': 'last_name'},
+            {'name': 'age'},
+            {'name': 'country'},
+        ]
+    }
+    report = validate(source, schema=schema, sync_schema=True)
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [None, 4, 'extra-header'],
+        [2, 4, 'extra-cell'],
+        [3, 4, 'extra-cell'],
+        [4, 4, 'extra-cell'],
+    ]
+
+
+def test_validate_patch_schema():
+    patch_schema = {'missingValues': ['-']}
+    report = validate('data/table.csv', patch_schema=patch_schema)
+    assert report['valid']
+    assert report.table['schema'] == {
+        'fields': [
+            {'format': 'default', 'name': 'id', 'type': 'integer'},
+            {'format': 'default', 'name': 'name', 'type': 'string'},
+        ],
+        'missingValues': ['-'],
+    }
+
+
+def test_validate_patch_schema_fields():
+    patch_schema = {'fields': {'id': {'type': 'string'}}, 'missingValues': ['-']}
+    report = validate('data/table.csv', patch_schema=patch_schema)
+    assert report['valid']
+    assert report.table['schema'] == {
+        'fields': [
+            {'format': 'default', 'name': 'id', 'type': 'string'},
+            {'format': 'default', 'name': 'name', 'type': 'string'},
+        ],
+        'missingValues': ['-'],
+    }
+
+
+def test_validate_infer_type_string():
+    report = validate('data/table.csv', infer_type='string')
+    assert report['valid']
+    assert report.table['schema'] == {
+        'fields': [
+            {'format': 'default', 'name': 'id', 'type': 'string'},
+            {'format': 'default', 'name': 'name', 'type': 'string'},
+        ],
+        'missingValues': [''],
+    }
+
+
+def test_validate_infer_type_any():
+    report = validate('data/table.csv', infer_type='any')
+    assert report['valid']
+    assert report.table['schema'] == {
+        'fields': [
+            {'format': 'default', 'name': 'id', 'type': 'any'},
+            {'format': 'default', 'name': 'name', 'type': 'any'},
+        ],
+        'missingValues': [''],
+    }
+
+
+# Integrity
 
 
 def test_validate_size():
@@ -252,9 +534,6 @@ def test_validate_size_invalid():
     assert report.flatten(['rowPosition', 'fieldPosition', 'code', 'details']) == [
         [None, None, 'size-error', 'expected is "40" and actual is "30"'],
     ]
-
-
-# Hash
 
 
 def test_validate_hash():
@@ -327,261 +606,7 @@ def test_validate_hash_sha512_invalid():
     ]
 
 
-# Schema
-
-
-def test_validate_schema_invalid():
-    source = [['name', 'age'], ['Alex', '33']]
-    schema = {'fields': [{'name': 'name'}, {'name': 'age', 'type': 'bad'}]}
-    report = validate(source, schema=schema)
-    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
-        [None, None, 'schema-error'],
-    ]
-
-
-def test_validate_schema_invalid_json():
-    report = validate('data/table.csv', schema='data/invalid.json')
-    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
-        [None, None, 'schema-error'],
-    ]
-
-
-def test_validate_schema_extra_headers_and_cells():
-    schema = {'fields': [{'name': 'id', 'type': 'integer'}]}
-    report = validate('data/table.csv', schema=schema)
-    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
-        [None, 2, 'extra-header'],
-        [2, 2, 'extra-cell'],
-        [3, 2, 'extra-cell'],
-    ]
-
-
-def test_validate_schema_multiple_errors():
-    source = 'data/schema-errors.csv'
-    schema = 'data/schema.json'
-    report = validate(source, schema=schema, pick_errors=['#schema'], error_limit=3)
-    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
-        [4, 1, 'type-error'],
-        [4, 2, 'required-error'],
-        [4, 3, 'required-error'],
-    ]
-
-
-def test_validate_schema_min_length_constraint():
-    source = [['row', 'word'], [2, 'a'], [3, 'ab'], [4, 'abc'], [5, 'abcd'], [6]]
-    schema = {
-        'fields': [
-            {'name': 'row', 'type': 'integer'},
-            {'name': 'word', 'type': 'string', 'constraints': {'minLength': 2}},
-        ]
-    }
-    report = validate(source, schema=schema, pick_errors=['constraint-error'])
-    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
-        [2, 2, 'constraint-error'],
-    ]
-
-
-def test_validate_schema_max_length_constraint():
-    source = [['row', 'word'], [2, 'a'], [3, 'ab'], [4, 'abc'], [5, 'abcd'], [6]]
-    schema = {
-        'fields': [
-            {'name': 'row', 'type': 'integer'},
-            {'name': 'word', 'type': 'string', 'constraints': {'maxLength': 2}},
-        ]
-    }
-    report = validate(source, schema=schema, pick_errors=['constraint-error'])
-    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
-        [4, 2, 'constraint-error'],
-        [5, 2, 'constraint-error'],
-    ]
-
-
-def test_validate_schema_minimum_constraint():
-    source = [['row', 'score'], [2, 1], [3, 2], [4, 3], [5, 4], [6]]
-    schema = {
-        'fields': [
-            {'name': 'row', 'type': 'integer'},
-            {'name': 'score', 'type': 'integer', 'constraints': {'minimum': 2}},
-        ]
-    }
-    report = validate(source, schema=schema, pick_errors=['constraint-error'])
-    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
-        [2, 2, 'constraint-error'],
-    ]
-
-
-def test_validate_schema_maximum_constraint():
-    source = [['row', 'score'], [2, 1], [3, 2], [4, 3], [5, 4], [6]]
-    schema = {
-        'fields': [
-            {'name': 'row', 'type': 'integer'},
-            {'name': 'score', 'type': 'integer', 'constraints': {'maximum': 2}},
-        ]
-    }
-    report = validate(source, schema=schema, pick_errors=['constraint-error'])
-    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
-        [4, 2, 'constraint-error'],
-        [5, 2, 'constraint-error'],
-    ]
-
-
-# Sync schema
-
-
-def test_validate_sync_schema():
-    schema = infer('data/table.csv')
-    report = validate('data/sync-schema.csv', schema=schema, sync_schema=True)
-    assert report['valid']
-    assert report.table['schema'] == {
-        'fields': [
-            {'format': 'default', 'name': 'name', 'type': 'string'},
-            {'format': 'default', 'name': 'id', 'type': 'integer'},
-        ],
-        'missingValues': [''],
-    }
-
-
-# TODO: sync schema should cover all headers (it cherry-picks here)
-# Original errors:
-#  - [1, null, null, 'missing-header']
-#  - [1, null, 3, 'extra-header']
-def test_validate_sync_schema_invalid():
-    source = [['LastName', 'FirstName', 'Address'], ['Test', 'Tester', '23 Avenue']]
-    schema = {'fields': [{'name': 'id'}, {'name': 'FirstName'}, {'name': 'LastName'}]}
-    report = validate(source, schema=schema, sync_schema=True)
-    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
-        [None, 3, 'extra-header'],
-        [2, 3, 'extra-cell'],
-    ]
-
-
-# TODO: sync schema should cover all headers (it cherry-picks here)
-# Original errors:
-#  - [1, null, null, 'missing-header']
-#  - [1, null, 4, 'non-matching-header']
-#  - [1, null, 5, 'extra-header']
-def test_validate_schema_headers_errors():
-    source = [
-        ['id', 'last_name', 'first_name', 'language'],
-        [1, 'Alex', 'John', 'English'],
-        [2, 'Peters', 'John', 'Afrikaans'],
-        [3, 'Smith', 'Paul', 'Zulu'],
-    ]
-    schema = {
-        'fields': [
-            {'name': 'id', 'type': 'number'},
-            {'name': 'first_name'},
-            {'name': 'last_name'},
-            {'name': 'age'},
-            {'name': 'country'},
-        ]
-    }
-    report = validate(source, schema=schema, sync_schema=True)
-    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
-        [None, 4, 'extra-header'],
-        [2, 4, 'extra-cell'],
-        [3, 4, 'extra-cell'],
-        [4, 4, 'extra-cell'],
-    ]
-
-
-# Patch schema
-
-
-def test_validate_patch_schema():
-    patch_schema = {'missingValues': ['-']}
-    report = validate('data/table.csv', patch_schema=patch_schema)
-    assert report['valid']
-    assert report.table['schema'] == {
-        'fields': [
-            {'format': 'default', 'name': 'id', 'type': 'integer'},
-            {'format': 'default', 'name': 'name', 'type': 'string'},
-        ],
-        'missingValues': ['-'],
-    }
-
-
-def test_validate_patch_schema_fields():
-    patch_schema = {'fields': {'id': {'type': 'string'}}, 'missingValues': ['-']}
-    report = validate('data/table.csv', patch_schema=patch_schema)
-    assert report['valid']
-    assert report.table['schema'] == {
-        'fields': [
-            {'format': 'default', 'name': 'id', 'type': 'string'},
-            {'format': 'default', 'name': 'name', 'type': 'string'},
-        ],
-        'missingValues': ['-'],
-    }
-
-
-# Infer type|sample|confidence
-
-
-def test_validate_infer_type_string():
-    report = validate('data/table.csv', infer_type='string')
-    assert report['valid']
-    assert report.table['schema'] == {
-        'fields': [
-            {'format': 'default', 'name': 'id', 'type': 'string'},
-            {'format': 'default', 'name': 'name', 'type': 'string'},
-        ],
-        'missingValues': [''],
-    }
-
-
-def test_validate_infer_type_any():
-    report = validate('data/table.csv', infer_type='any')
-    assert report['valid']
-    assert report.table['schema'] == {
-        'fields': [
-            {'format': 'default', 'name': 'id', 'type': 'any'},
-            {'format': 'default', 'name': 'name', 'type': 'any'},
-        ],
-        'missingValues': [''],
-    }
-
-
-# Row|error limit
-
-
-def test_validate_invalid_row_limit():
-    report = validate('data/invalid.csv', row_limit=2)
-    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
-        [None, 3, 'blank-header'],
-        [None, 4, 'duplicate-header'],
-        [2, 3, 'missing-cell'],
-        [2, 4, 'missing-cell'],
-        [3, 3, 'missing-cell'],
-        [3, 4, 'missing-cell'],
-    ]
-
-
-def test_validate_structure_errors_with_row_limit():
-    report = validate('data/structure-errors.csv', row_limit=3)
-    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
-        [4, None, 'blank-row'],
-    ]
-
-
-def test_validate_invalid_error_limit():
-    report = validate('data/invalid.csv', error_limit=3)
-    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
-        [None, 3, 'blank-header'],
-        [None, 4, 'duplicate-header'],
-        [2, 3, 'missing-cell'],
-    ]
-
-
-def test_validate_structure_errors_with_error_limit():
-    report = validate('data/structure-errors.csv', error_limit=3)
-    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
-        [4, None, 'blank-row'],
-        [5, 4, 'extra-cell'],
-        [5, 5, 'extra-cell'],
-    ]
-
-
-# Pick|skip errors
+# Validation
 
 
 def test_validate_pick_errors():
@@ -624,7 +649,22 @@ def test_validate_skip_errors_tags():
     ]
 
 
-# Extra checks
+def test_validate_invalid_limit_errors():
+    report = validate('data/invalid.csv', limit_errors=3)
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [None, 3, 'blank-header'],
+        [None, 4, 'duplicate-header'],
+        [2, 3, 'missing-cell'],
+    ]
+
+
+def test_validate_structure_errors_with_limit_errors():
+    report = validate('data/structure-errors.csv', limit_errors=3)
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [4, None, 'blank-row'],
+        [5, 4, 'extra-cell'],
+        [5, 5, 'extra-cell'],
+    ]
 
 
 def test_validate_extra_checks():
@@ -665,31 +705,6 @@ def test_validate_extra_checks_with_arguments():
         [1, None, 'blank-row'],
         [1, None, 'blank-row'],
     ]
-
-
-# Report
-
-
-def test_validate_report_props():
-    report = validate('data/table.csv')
-    assert report['version'].startswith('3')
-    assert report['valid'] is True
-    assert report.table['valid'] is True
-    assert report.table['source'] == 'data/table.csv'
-    assert report.table['headers'] == ['id', 'name']
-    assert report.table['scheme'] == 'file'
-    assert report.table['format'] == 'csv'
-    assert report.table['encoding'] == 'utf-8'
-    assert report.table['dialect'] == {}
-    assert report.table['rowCount'] == 2
-    assert report.table['errors'] == []
-    assert report.table['schema'] == {
-        'fields': [
-            {'format': 'default', 'name': 'id', 'type': 'integer'},
-            {'format': 'default', 'name': 'name', 'type': 'string'},
-        ],
-        'missingValues': [''],
-    }
 
 
 # Issues

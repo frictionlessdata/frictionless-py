@@ -32,12 +32,12 @@ def test_validate_multiple_invalid():
     ]
 
 
-def test_validate_multiple_invalid_error_limit():
+def test_validate_multiple_invalid_limit_errors():
     report = validate(
         {
             'tasks': [
                 {'source': 'data/table.csv'},
-                {'source': 'data/invalid.csv', 'errorLimit': 1},
+                {'source': 'data/invalid.csv', 'limitErrors': 1},
             ]
         }
     )

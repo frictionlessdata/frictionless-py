@@ -15,17 +15,22 @@ def validate_table(
     source,
     *,
     # Source
-    headers=1,
     scheme=None,
     format=None,
     encoding=None,
     compression=None,
+    # Headers
+    headers=1,
+    # Fields
     pick_fields=None,
     skip_fields=None,
-    field_limit=None,
+    limit_fields=None,
+    offset_fields=None,
+    # Rows
     pick_rows=None,
     skip_rows=None,
-    row_limit=None,
+    limit_rows=None,
+    offset_rows=None,
     # Schema
     schema=None,
     sync_schema=None,
@@ -33,14 +38,15 @@ def validate_table(
     infer_type=None,
     infer_sample=100,
     infer_confidence=0.75,
+    # Integrity
+    lookup=None,
+    size=None,
+    hash=None,
     # Validation
     pick_errors=None,
     skip_errors=None,
-    error_limit=1000,
+    limit_errors=1000,
     extra_checks=None,
-    # Integrity
-    size=None,
-    hash=None,
     # Dialect
     **dialect
 ):
@@ -65,10 +71,14 @@ def validate_table(
         format=format,
         encoding=encoding,
         compression=compression,
-        pick_columns=pick_fields,
-        skip_columns=skip_fields,
+        pick_fields=pick_fields,
+        skip_fields=skip_fields,
+        limit_fields=limit_fields,
+        offset_fields=offset_fields,
         pick_rows=pick_rows,
         skip_rows=skip_rows,
+        limit_rows=limit_rows,
+        offset_rows=offset_rows,
         sample_size=infer_sample,
         hashing_algorithm=helpers.parse_hashing_algorithm(hash),
         **dialect
@@ -186,7 +196,8 @@ def validate_table(
             except Exception as exception:
                 error = Error.from_exception(exception)
                 add_error(error)
-                stream = None
+                fatal = True
+                break
 
             # Create row
             row_number += 1
@@ -203,12 +214,8 @@ def validate_table(
                 for error in check.validate_row(row):
                     add_error(error)
 
-            # Limit rows
-            if row_limit and row_number >= row_limit:
-                break
-
             # Limit errors
-            if error_limit and len(errors) >= error_limit:
+            if limit_errors and len(errors) >= limit_errors:
                 break
 
     # Finish checks
@@ -218,8 +225,8 @@ def validate_table(
                 add_error(error)
 
     # Limit errors
-    if error_limit:
-        del errors[error_limit:]
+    if limit_errors:
+        del errors[limit_errors:]
 
     # Return report
     time = timer.get_time()
@@ -239,10 +246,12 @@ def validate_table(
                 compression=stream.compression,
                 pick_fields=pick_fields,
                 skip_fields=skip_fields,
-                field_limit=field_limit,
+                limit_fields=limit_fields,
+                offset_fields=offset_fields,
                 pick_rows=pick_rows,
                 skip_rows=skip_rows,
-                row_limit=row_limit,
+                limit_rows=limit_rows,
+                offset_rows=offset_rows,
                 schema=schema,
                 dialect=dialect,
                 row_count=row_number,

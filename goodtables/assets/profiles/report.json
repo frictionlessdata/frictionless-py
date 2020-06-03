@@ -101,17 +101,19 @@
           "time",
           "valid",
           "source",
-          "headers",
           "scheme",
           "format",
           "encoding",
+          "headers",
           "compression",
           "pickFields",
           "skipFields",
-          "fieldLimit",
+          "limitFields",
+          "offsetFields",
           "pickRows",
           "skipRows",
-          "rowLimit",
+          "limitRows",
+          "offsetRows",
           "schema",
           "dialect",
           "rowCount",
@@ -135,14 +137,6 @@
             "title": "Source",
             "description": "Path or URI where this table was loaded from."
           },
-          "headers": {
-            "type": ["array", "null"],
-            "title": "Headers",
-            "description": "List of table's headers.",
-            "items": {
-              "type": "string"
-            }
-          },
           "scheme": {
             "type": "string",
             "title": "Scheme",
@@ -163,6 +157,14 @@
             "title": "Compression",
             "description": "The compression of the table."
           },
+          "headers": {
+            "type": ["array", "null"],
+            "title": "Headers",
+            "description": "List of table's headers.",
+            "items": {
+              "type": "string"
+            }
+          },
           "pickFields": {
             "type": ["array", "null"],
             "title": "Pick Fields",
@@ -173,10 +175,15 @@
             "title": "Skip Fields",
             "description": "The list of skiped fields."
           },
-          "fieldLimit": {
+          "limitFields": {
             "type": ["number", "null"],
             "title": "Field Limit",
             "description": "Maxumum amount of fields."
+          },
+          "offsetFields": {
+            "type": ["number", "null"],
+            "title": "Field Offset",
+            "description": "Offset of fields."
           },
           "pickRows": {
             "type": ["array", "null"],
@@ -188,10 +195,15 @@
             "title": "Skip Rows",
             "description": "The list of skiped rows."
           },
-          "rowLimit": {
+          "limitRows": {
             "type": ["number", "null"],
             "title": "Row Limit",
             "description": "Maxumum amount of rows."
+          },
+          "offsetRows": {
+            "type": ["number", "null"],
+            "title": "Row Offset",
+            "description": "Offset of rows."
           },
           "schema": {
             "type": ["object", "null"],
