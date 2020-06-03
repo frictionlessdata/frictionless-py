@@ -195,33 +195,37 @@ def test_validate_compression_invalid():
 # Headers
 
 
-def test_validate_headers_no():
-    report = validate('data/without-headers.csv', headers=None)
+def test_validate_headers_row_none():
+    report = validate('data/without-headers.csv', headers_row=None)
+    assert report.table['headers'] is None
+    assert report.table['rowCount'] == 3
     assert report['valid']
 
 
-def test_validate_headers_no_extra_cell():
-    report = validate('data/without-headers-extra.csv', headers=None)
+def test_validate_headers_row_none_extra_cell():
+    report = validate('data/without-headers-extra.csv', headers_row=None)
+    assert report.table['headers'] is None
+    assert report.table['rowCount'] == 3
     assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
         [3, 3, 'extra-cell'],
     ]
 
 
-def test_validate_headers_number():
-    report = validate('data/matrix.csv', headers=2)
+def test_validate_headers_row_number():
+    report = validate('data/matrix.csv', headers_row=2)
     assert report.table['headers'] == ['11', '12', '13', '14']
     assert report['valid']
 
 
-def test_validate_headers_list_of_numbers():
-    report = validate('data/matrix.csv', headers=[2, 3, 4])
+def test_validate_headers_row_list_of_numbers():
+    report = validate('data/matrix.csv', headers_row=[2, 3, 4])
     assert report.table['headers'] == ['11 21 31', '12 22 32', '13 23 33', '14 24 34']
     assert report['valid']
 
 
-def test_validate_headers_list_of_strings():
-    report = validate('data/without-headers.csv', headers=['id', 'name'])
-    assert report.table['headers'] == ['id', 'name']
+def test_validate_headers_row_list_of_numbers_and_headers_joiner():
+    report = validate('data/matrix.csv', headers_row=[2, 3, 4], headers_joiner='.')
+    assert report.table['headers'] == ['11.21.31', '12.22.32', '13.23.33', '14.24.34']
     assert report['valid']
 
 
@@ -572,6 +576,17 @@ def test_validate_infer_type_any():
         ],
         'missingValues': [''],
     }
+
+
+def test_validate_infer_names():
+    report = validate(
+        'data/without-headers.csv', headers_row=None, infer_names=['id', 'name']
+    )
+    assert report.table['headers'] is None
+    assert report.table['rowCount'] == 3
+    assert report.table['schema']['fields'][0]['name'] == 'id'
+    assert report.table['schema']['fields'][1]['name'] == 'name'
+    assert report['valid']
 
 
 # Integrity

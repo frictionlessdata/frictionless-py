@@ -105,6 +105,8 @@
           "format",
           "encoding",
           "headers",
+          "headersRow",
+          "headersJoiner",
           "compression",
           "pickFields",
           "skipFields",
@@ -164,6 +166,19 @@
             "items": {
               "type": "string"
             }
+          },
+          "headersRow": {
+            "type": ["array", "integer", "null"],
+            "title": "Headers Row Number",
+            "description": "Header row number.",
+            "items": {
+              "type": "integer"
+            }
+          },
+          "headersJoiner": {
+            "type": ["string", "null"],
+            "title": "Headers Joiner",
+            "description": "Header joiner."
           },
           "pickFields": {
             "type": ["array", "null"],

@@ -38,19 +38,19 @@ def validate_resource(source, strict=False, base_path=None, **options):
             return Report(time=time, errors=errors, tables=[])
 
     # Prepare dialect/headers
-    headers = 1
+    headers_row = 1
     dialect = resource.descriptor.get('dialect', {})
     if dialect.get('header') is False:
-        headers = None
+        headers_row = None
 
     # Validate table
     report = validate_table(
         resource.source,
-        headers=headers,
         scheme=resource.descriptor.get('scheme'),
         format=resource.descriptor.get('format'),
         encoding=resource.descriptor.get('encoding'),
         compression=resource.descriptor.get('compression'),
+        headers_row=headers_row,
         pick_fields=resource.descriptor.get('pickFields'),
         skip_fields=resource.descriptor.get('skipFields'),
         limit_fields=resource.descriptor.get('limitFields'),

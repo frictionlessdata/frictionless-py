@@ -52,11 +52,13 @@ class ReportTable(Metadata):
         *,
         time,
         source,
-        headers,
         scheme,
         format,
         encoding,
         compression,
+        headers,
+        headers_row,
+        headers_joiner,
         pick_fields,
         skip_fields,
         limit_fields,
@@ -74,11 +76,13 @@ class ReportTable(Metadata):
         descriptor['time'] = time
         descriptor['valid'] = not errors
         descriptor['source'] = source
-        descriptor['headers'] = headers
         descriptor['scheme'] = scheme
         descriptor['format'] = format
         descriptor['encoding'] = encoding
         descriptor['compression'] = compression
+        descriptor['headers'] = headers
+        descriptor['headersRow'] = headers_row
+        descriptor['headersJoiner'] = headers_joiner
         descriptor['pickFields'] = pick_fields
         descriptor['skipFields'] = skip_fields
         descriptor['limitFields'] = limit_fields

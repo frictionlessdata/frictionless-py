@@ -20,7 +20,8 @@ def validate_table(
     encoding=None,
     compression=None,
     # Headers
-    headers=1,
+    headers_row=1,
+    headers_joiner=' ',
     # Fields
     pick_fields=None,
     skip_fields=None,
@@ -36,6 +37,7 @@ def validate_table(
     sync_schema=False,
     patch_schema=False,
     infer_type=None,
+    infer_names=None,
     infer_sample=100,
     infer_confidence=0.75,
     # Integrity
@@ -60,7 +62,8 @@ def validate_table(
         encoding? (str)
         compression? (str)
 
-        headers? (int | int[])
+        headers_row? (int | int[])
+        headers_joiner? (str)
 
         pick_fields? ((int | str)[])
         skip_fields? ((int | str)[])
@@ -76,6 +79,7 @@ def validate_table(
         sync_schema? (bool)
         patch_schema? (dict)
         infer_type? (str)
+        infer_names? (str[])
         infer_sample? (int)
         infer_confidence? (float)
 
@@ -114,7 +118,8 @@ def validate_table(
         format=format,
         encoding=encoding,
         compression=compression,
-        headers=helpers.translate_headers(headers),
+        headers=helpers.translate_headers(headers_row),
+        multiline_headers_joiner=headers_joiner,
         pick_fields=helpers.translate_pick_fields(pick_fields),
         skip_fields=helpers.translate_skip_fields(skip_fields),
         limit_fields=limit_fields,
@@ -153,6 +158,8 @@ def validate_table(
         # Infer schema
         if schema and not schema.fields:
             infer_headers = stream.headers
+            if not infer_headers:
+                infer_headers = infer_names
             if not infer_headers:
                 field_numbers = list(range(1, len(stream.sample[0]) + 1))
                 infer_headers = ['field%s' % number for number in field_numbers]
@@ -283,11 +290,13 @@ def validate_table(
             ReportTable(
                 time=time,
                 source=str(stream.source),
-                headers=stream.headers,
                 scheme=stream.scheme,
                 format=stream.format,
                 encoding=stream.encoding,
                 compression=stream.compression,
+                headers=stream.headers,
+                headers_row=headers_row,
+                headers_joiner=headers_joiner,
                 pick_fields=pick_fields,
                 skip_fields=skip_fields,
                 limit_fields=limit_fields,
