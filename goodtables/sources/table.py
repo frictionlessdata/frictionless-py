@@ -50,6 +50,50 @@ def validate_table(
     # Dialect
     **dialect
 ):
+    """Validate table
+
+    # Arguments
+        source (any)
+
+        scheme? (str)
+        format? (str)
+        encoding? (str)
+        compression? (str)
+
+        headers? (int | int[] | str[])
+
+        pick_fields? ((int | str)[])
+        skip_fields? ((int | str)[])
+        limit_fields? (int)
+        offset_fields? (int)
+
+        pick_rows? ((int | str)[])
+        skip_rows? ((int | str)[])
+        limit_rows? (int)
+        offset_rows? (int)
+
+        schema? (str | dict)
+        sync_schema? (bool)
+        patch_schema? (dict)
+        infer_type? (str)
+        infer_sample? (int)
+        infer_confidence? (float)
+
+        lookup? (dict)
+        size? (int)
+        hash? (str)
+
+        pick_errors? (str[])
+        skip_errors? (str[])
+        limit_errors? (int)
+        extra_checks (list)
+
+        **dialect (dict)
+
+    # Returns
+        Report
+
+    """
 
     # Prepare state
     fatal = False
