@@ -24,6 +24,8 @@ def test_table_report_invalid():
 def create_report_table(
     *,
     time='time',
+    scope=[],
+    row_count=0,
     source='source',
     scheme='scheme',
     format='format',
@@ -42,11 +44,12 @@ def create_report_table(
     offset_rows=None,
     schema=None,
     dialect=None,
-    row_count=0,
     errors=[]
 ):
     return ReportTable(
         time=time,
+        scope=scope,
+        row_count=row_count,
         source=source,
         scheme=scheme,
         format=format,
@@ -65,6 +68,5 @@ def create_report_table(
         offset_rows=offset_rows,
         schema=schema,
         dialect=dialect,
-        row_count=row_count,
         errors=errors,
     )

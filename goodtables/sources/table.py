@@ -216,6 +216,7 @@ def validate_table(
         for Check in Checks:
             check = Check() if isinstance(Check, type) else Check[0](Check[1])
             checks.append(check)
+            errors.register(check)
             for error in check.validate_start(stream=stream, schema=schema):
                 errors.add(error)
 
@@ -292,6 +293,8 @@ def validate_table(
         tables=[
             ReportTable(
                 time=time,
+                scope=errors.scope,
+                row_count=row_number,
                 source=str(stream.source),
                 scheme=stream.scheme,
                 format=stream.format,
@@ -310,7 +313,6 @@ def validate_table(
                 offset_rows=offset_rows,
                 schema=schema,
                 dialect=dialect,
-                row_count=row_number,
                 errors=errors,
             )
         ],
@@ -325,6 +327,11 @@ class Errors(list):
         self.__pick_errors = set(pick_errors or [])
         self.__skip_errors = set(skip_errors or [])
         self.__limit_errors = limit_errors
+        self.__scope = []
+
+    @property
+    def scope(self):
+        return self.__scope
 
     def add(self, error):
         if self.__limit_errors:
@@ -349,3 +356,11 @@ class Errors(list):
             if self.__skip_errors.intersection(error.tags):
                 match = False
         return match
+
+    def register(self, check):
+        for error in check.possible_Errors:
+            if not self.match(error):
+                continue
+            if error.code in self.__scope:
+                continue
+            self.__scope.append(error.code)

@@ -8,11 +8,11 @@ class Report(Metadata):
 
     def __init__(self, *, time, errors, tables):
         descriptor = {}
-        descriptor['version'] = config.VERSION
         descriptor['time'] = time
         descriptor['valid'] = not errors and all(tab['valid'] for tab in tables)
-        descriptor['errorCount'] = len(errors) + sum(tab['errorCount'] for tab in tables)
+        descriptor['version'] = config.VERSION
         descriptor['tableCount'] = len(tables)
+        descriptor['errorCount'] = len(errors) + sum(tab['errorCount'] for tab in tables)
         descriptor['errors'] = errors
         descriptor['tables'] = tables
         super().__init__(descriptor)
@@ -51,6 +51,8 @@ class ReportTable(Metadata):
         self,
         *,
         time,
+        scope,
+        row_count,
         source,
         scheme,
         format,
@@ -69,12 +71,14 @@ class ReportTable(Metadata):
         offset_rows,
         schema,
         dialect,
-        row_count,
         errors,
     ):
         descriptor = {}
         descriptor['time'] = time
         descriptor['valid'] = not errors
+        descriptor['scope'] = scope
+        descriptor['rowCount'] = row_count
+        descriptor['errorCount'] = len(errors)
         descriptor['source'] = source
         descriptor['scheme'] = scheme
         descriptor['format'] = format
@@ -93,8 +97,6 @@ class ReportTable(Metadata):
         descriptor['offsetRows'] = offset_rows
         descriptor['schema'] = schema
         descriptor['dialect'] = dialect
-        descriptor['rowCount'] = row_count
-        descriptor['errorCount'] = len(errors)
         descriptor['errors'] = errors
         super().__init__(descriptor)
 

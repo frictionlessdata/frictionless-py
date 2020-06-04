@@ -103,16 +103,39 @@ def test_validate_task_error():
 
 def test_validate_report_props():
     report = validate('data/table.csv')
-    assert report['version'].startswith('3')
+    assert report['time']
     assert report['valid'] is True
+    assert report['version'].startswith('3')
+    assert report['tableCount'] == 1
+    assert report['errorCount'] == 0
+    assert report.table['time']
     assert report.table['valid'] is True
+    assert report.table['scope'] == [
+        'blank-header',
+        'duplicate-header',
+        'extra-header',
+        'missing-header',
+        'non-matching-header',
+        'blank-row',
+        'extra-cell',
+        'missing-cell',
+        'required-error',
+        'type-error',
+        'constraint-error',
+        'size-error',
+        'hash-error',
+        'unique-error',
+        'primary-key-error',
+        'foreign-key-error',
+    ]
+    assert report.table['rowCount'] == 2
+    assert report.table['errorCount'] == 0
     assert report.table['source'] == 'data/table.csv'
     assert report.table['headers'] == ['id', 'name']
     assert report.table['scheme'] == 'file'
     assert report.table['format'] == 'csv'
     assert report.table['encoding'] == 'utf-8'
     assert report.table['dialect'] == {}
-    assert report.table['rowCount'] == 2
     assert report.table['errors'] == []
     assert report.table['schema'] == {
         'fields': [
@@ -679,6 +702,7 @@ def test_validate_hash_sha512_invalid():
 
 def test_validate_pick_errors():
     report = validate('data/invalid.csv', pick_errors=['blank-header', 'blank-row'])
+    assert report.table['scope'] == ['blank-header', 'blank-row']
     assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
         [None, 3, 'blank-header'],
         [4, None, 'blank-row'],
@@ -687,6 +711,13 @@ def test_validate_pick_errors():
 
 def test_validate_pick_errors_tags():
     report = validate('data/invalid.csv', pick_errors=['#head'])
+    assert report.table['scope'] == [
+        'blank-header',
+        'duplicate-header',
+        'extra-header',
+        'missing-header',
+        'non-matching-header',
+    ]
     assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
         [None, 3, 'blank-header'],
         [None, 4, 'duplicate-header'],

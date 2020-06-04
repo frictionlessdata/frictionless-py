@@ -4,20 +4,15 @@
   "$id": "https://github.com/frictionlessdata/goodtables-py/tree/master/goodtables/assets/profiles/report.json",
   "type": "object",
   "required": [
-    "version",
     "time",
     "valid",
-    "errorCount",
+    "version",
     "tableCount",
+    "errorCount",
     "errors",
     "tables"
   ],
   "properties": {
-    "version": {
-      "type": "string",
-      "title": "Version",
-      "description": "Goodtables version"
-    },
     "time": {
       "type": "number",
       "title": "Time",
@@ -29,16 +24,21 @@
       "title": "Valid",
       "description": "Whether all the inspected tables valid or not"
     },
-    "errorCount": {
-      "type": "integer",
-      "title": "Error count",
-      "description": "Number of errors found across all the tables.",
-      "minimum": 0
+    "version": {
+      "type": "string",
+      "title": "Version",
+      "description": "Goodtables version"
     },
     "tableCount": {
       "type": "integer",
       "title": "Table count",
       "description": "Number of tables validated.",
+      "minimum": 0
+    },
+    "errorCount": {
+      "type": "integer",
+      "title": "Error count",
+      "description": "Number of errors found across all the tables.",
       "minimum": 0
     },
     "errors": {
@@ -100,14 +100,17 @@
         "required": [
           "time",
           "valid",
+          "scope",
+          "rowCount",
+          "errorCount",
           "source",
           "scheme",
           "format",
           "encoding",
+          "compression",
           "headers",
           "headersRow",
           "headersJoiner",
-          "compression",
           "pickFields",
           "skipFields",
           "limitFields",
@@ -118,8 +121,6 @@
           "offsetRows",
           "schema",
           "dialect",
-          "rowCount",
-          "errorCount",
           "errors"
         ],
         "properties": {
@@ -133,6 +134,26 @@
             "type": "boolean",
             "title": "Valid",
             "description": "The validation result."
+          },
+          "scope": {
+            "type": "array",
+            "title": "Scope",
+            "description": "List of errors codes the table has been checked for.",
+            "items": {
+              "type": "string"
+            }
+          },
+          "rowCount": {
+            "type": "integer",
+            "title": "Row count",
+            "description": "Number of rows validated.",
+            "minimum": 0
+          },
+          "errorCount": {
+            "type": "integer",
+            "title": "Error count",
+            "description": "Number of errors found.",
+            "minimum": 0
           },
           "source": {
             "type": "string",
@@ -229,18 +250,6 @@
             "type": ["object", "null"],
             "title": "Dialect",
             "description": "The tabular dialect of the table."
-          },
-          "rowCount": {
-            "type": "integer",
-            "title": "Row count",
-            "description": "Number of rows validated.",
-            "minimum": 0
-          },
-          "errorCount": {
-            "type": "integer",
-            "title": "Error count",
-            "description": "Number of errors found.",
-            "minimum": 0
           },
           "errors": {
             "type": "array",
