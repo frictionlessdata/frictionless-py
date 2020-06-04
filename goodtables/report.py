@@ -38,9 +38,9 @@ class Report(Metadata):
             context = {}
             context.update(error)
             result.append([context.get(prop) for prop in spec])
-        for table_number, table in enumerate(self.tables, start=1):
+        for count, table in enumerate(self.tables, start=1):
             for error in table.errors:
-                context = {'tableNumber': table_number}
+                context = {'tableNumber': count, 'tablePosition': count}
                 context.update(error)
                 result.append([context.get(prop) for prop in spec])
         return result

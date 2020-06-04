@@ -72,7 +72,7 @@ class TaskError(Error):
     name = 'Task Error'
     tags = ['#task']
     message = 'The validation task has an error: {details}'
-    description = 'A validation cannot be processed.'
+    description = 'General task-level error.'
 
     def __init__(self, *, details):
         self['details'] = details

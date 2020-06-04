@@ -4,8 +4,8 @@ from .. import config
 from .. import helpers
 from ..row import Row
 from ..task import task
-from ..errors import Error
 from ..headers import Headers
+from ..errors import Error, TaskError
 from ..report import Report, ReportTable
 from ..checks import BaselineCheck, IntegrityCheck
 
@@ -100,16 +100,14 @@ def validate_table(
     """
 
     # Prepare state
-    fatal = False
-    timer = helpers.Timer()
-    row_number = 0
     checks = []
-    errors = []
-
-    # Prepare errors
-    def add_error(error):
-        if error.match(pick_errors=pick_errors, skip_errors=skip_errors):
-            errors.append(error)
+    fatal = False
+    row_number = 0
+    task_errors = []
+    timer = helpers.Timer()
+    errors = Errors(
+        pick_errors=pick_errors, skip_errors=skip_errors, limit_errors=limit_errors
+    )
 
     # Create stream
     stream = tabulator.Stream(
@@ -140,15 +138,14 @@ def validate_table(
             message = 'There are no rows available'
             raise tabulator.exceptions.SourceError(message)
     except Exception as exception:
-        error = Error.from_exception(exception)
-        add_error(error)
+        errors.add(Error.from_exception(exception))
         fatal = True
 
     # Create schema
     try:
         schema = tableschema.Schema(schema or {})
     except tableschema.exceptions.TableSchemaException as exception:
-        add_error(Error.from_exception(exception))
+        errors.add(Error.from_exception(exception))
         schema = None
         fatal = True
 
@@ -198,7 +195,7 @@ def validate_table(
         # Validate schema
         if schema and schema.errors:
             for error in schema.errors:
-                add_error(Error.from_exception(error))
+                errors.add(Error.from_exception(error))
             schema = None
             fatal = True
 
@@ -206,7 +203,7 @@ def validate_table(
         if schema and len(schema.field_names) != len(set(schema.field_names)):
             message = 'Schemas with duplicate field names are not supported'
             error = tableschema.exceptions.TableSchemaException(message)
-            add_error(Error.from_exception(error))
+            errors.add(Error.from_exception(error))
             schema = None
             fatal = True
 
@@ -220,7 +217,7 @@ def validate_table(
             check = Check() if isinstance(Check, type) else Check[0](Check[1])
             checks.append(check)
             for error in check.validate_start(stream=stream, schema=schema):
-                add_error(error)
+                errors.add(error)
 
     # Validate headers
     if not fatal:
@@ -236,7 +233,7 @@ def validate_table(
             # Validate headers
             for check in checks:
                 for error in check.validate_headers(headers):
-                    add_error(error)
+                    errors.add(error)
 
     # Validate rows
     if not fatal:
@@ -253,8 +250,7 @@ def validate_table(
             except StopIteration:
                 break
             except Exception as exception:
-                error = Error.from_exception(exception)
-                add_error(error)
+                errors.add(Error.from_exception(exception))
                 fatal = True
                 break
 
@@ -271,21 +267,20 @@ def validate_table(
             # Validate row
             for check in checks:
                 for error in check.validate_row(row):
-                    add_error(error)
+                    errors.add(error)
 
             # Limit errors
             if limit_errors and len(errors) >= limit_errors:
+                details = 'source "%s" reached the error limit "%s"'
+                details = details % (source, limit_errors)
+                task_errors.append(TaskError(details=details))
                 break
 
     # Finish checks
     if not fatal:
         for check in checks:
             for error in check.validate_finish():
-                add_error(error)
-
-    # Limit errors
-    if limit_errors:
-        del errors[limit_errors:]
+                errors.add(error)
 
     # Return report
     time = timer.get_time()
@@ -293,7 +288,7 @@ def validate_table(
         schema = schema.descriptor
     return Report(
         time=time,
-        errors=[],
+        errors=task_errors,
         tables=[
             ReportTable(
                 time=time,
@@ -320,3 +315,37 @@ def validate_table(
             )
         ],
     )
+
+
+# Internal
+
+
+class Errors(list):
+    def __init__(self, *, pick_errors=None, skip_errors=None, limit_errors=None):
+        self.__pick_errors = set(pick_errors or [])
+        self.__skip_errors = set(skip_errors or [])
+        self.__limit_errors = limit_errors
+
+    def add(self, error):
+        if self.__limit_errors:
+            if len(self) >= self.__limit_errors:
+                return
+        if not self.match(error):
+            return
+        self.append(error)
+
+    def match(self, error):
+        match = True
+        if self.__pick_errors:
+            match = False
+            if error.code in self.__pick_errors:
+                match = True
+            if self.__pick_errors.intersection(error.tags):
+                match = True
+        if self.__skip_errors:
+            match = True
+            if error.code in self.__skip_errors:
+                match = False
+            if self.__skip_errors.intersection(error.tags):
+                match = False
+        return match

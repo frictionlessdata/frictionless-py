@@ -20,7 +20,7 @@ def test_validate_multiple_invalid():
     report = validate(
         {'tasks': [{'source': 'data/table.csv'}, {'source': 'data/invalid.csv'}]}
     )
-    assert report.flatten(['tableNumber', 'rowPosition', 'fieldPosition', 'code']) == [
+    assert report.flatten(['tablePosition', 'rowPosition', 'fieldPosition', 'code']) == [
         [2, None, 3, 'blank-header'],
         [2, None, 4, 'duplicate-header'],
         [2, 2, 3, 'missing-cell'],
@@ -41,8 +41,13 @@ def test_validate_multiple_invalid_limit_errors():
             ]
         }
     )
-    assert report.flatten(['tableNumber', 'rowPosition', 'fieldPosition', 'code']) == [
-        [2, None, 3, 'blank-header'],
+    assert report.flatten(['tablePosition', 'code', 'details']) == [
+        [None, 'task-error', 'source "data/invalid.csv" reached the error limit "1"'],
+        [2, 'blank-header', None],
+    ]
+    assert report.tables[0].flatten(['rowPosition', 'fieldPosition', 'code']) == []
+    assert report.tables[1].flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [None, 3, 'blank-header'],
     ]
 
 
@@ -58,7 +63,7 @@ def test_validate_multiple_invalid_with_schema():
             ],
         }
     )
-    assert report.flatten(['tableNumber', 'rowPosition', 'fieldPosition', 'code']) == [
+    assert report.flatten(['tablePosition', 'rowPosition', 'fieldPosition', 'code']) == [
         [1, None, 1, 'non-matching-header'],
         [2, None, 3, 'blank-header'],
         [2, None, 4, 'duplicate-header'],
@@ -85,7 +90,7 @@ def test_validate_with_multiple_packages():
             ]
         }
     )
-    assert report.flatten(['tableNumber', 'rowPosition', 'fieldPosition', 'code']) == [
+    assert report.flatten(['tablePosition', 'rowPosition', 'fieldPosition', 'code']) == [
         [3, 3, None, 'blank-row'],
         [4, 4, None, 'blank-row'],
     ]
