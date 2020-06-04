@@ -111,14 +111,14 @@ def test_validate_report_props():
     assert report.table['time']
     assert report.table['valid'] is True
     assert report.table['scope'] == [
-        'blank-header',
-        'duplicate-header',
         'extra-header',
         'missing-header',
+        'blank-header',
+        'duplicate-header',
         'non-matching-header',
-        'blank-row',
         'extra-cell',
         'missing-cell',
+        'blank-row',
         'required-error',
         'type-error',
         'constraint-error',
@@ -712,10 +712,10 @@ def test_validate_pick_errors():
 def test_validate_pick_errors_tags():
     report = validate('data/invalid.csv', pick_errors=['#head'])
     assert report.table['scope'] == [
-        'blank-header',
-        'duplicate-header',
         'extra-header',
         'missing-header',
+        'blank-header',
+        'duplicate-header',
         'non-matching-header',
     ]
     assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [

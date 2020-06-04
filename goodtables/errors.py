@@ -211,6 +211,36 @@ class SchemaError(Error):
 # Head
 
 
+class ExtraHeaderError(Error):
+    code = 'extra-header'
+    name = 'Extra Header'
+    tags = ['#head', '#structure']
+    message = 'There is an extra header {cell} in field at position {fieldPosition}'
+    description = 'The first row of the data source contains header that does not exist in the schema.'
+
+    def __init__(self, *, cell, cells, field_position):
+        self['cell'] = cell
+        self['cells'] = cells
+        self['fieldPosition'] = field_position
+        super().__init__()
+
+
+class MissingHeaderError(Error):
+    code = 'missing-header'
+    name = 'Missing Header'
+    tags = ['#head', '#structure']
+    message = 'There is a missing header in field {fieldName} at position {fieldPosition}'
+    description = 'Based on the schema there should be a header that is missing in the first row of the data source.'
+
+    def __init__(self, *, cell, cells, field_name, field_number, field_position):
+        self['cell'] = cell
+        self['cells'] = cells
+        self['fieldName'] = field_name
+        self['fieldNumber'] = field_number
+        self['fieldPosition'] = field_position
+        super().__init__()
+
+
 class BlankHeaderError(Error):
     code = 'blank-header'
     name = 'Blank Header'
@@ -243,36 +273,6 @@ class DuplicateHeaderError(Error):
         super().__init__()
 
 
-class ExtraHeaderError(Error):
-    code = 'extra-header'
-    name = 'Extra Header'
-    tags = ['#head', '#schema']
-    message = 'There is an extra header {cell} in field at position {fieldPosition}'
-    description = 'The first row of the data source contains header that does not exist in the schema.'
-
-    def __init__(self, *, cell, cells, field_position):
-        self['cell'] = cell
-        self['cells'] = cells
-        self['fieldPosition'] = field_position
-        super().__init__()
-
-
-class MissingHeaderError(Error):
-    code = 'missing-header'
-    name = 'Missing Header'
-    tags = ['#head', '#schema']
-    message = 'There is a missing header in field {fieldName} at position {fieldPosition}'
-    description = 'Based on the schema there should be a header that is missing in the first row of the data source.'
-
-    def __init__(self, *, cell, cells, field_name, field_number, field_position):
-        self['cell'] = cell
-        self['cells'] = cells
-        self['fieldName'] = field_name
-        self['fieldNumber'] = field_number
-        self['fieldPosition'] = field_position
-        super().__init__()
-
-
 class NonMatchingHeaderError(Error):
     code = 'non-matching-header'
     name = 'Non-matching Header'
@@ -290,19 +290,6 @@ class NonMatchingHeaderError(Error):
 
 
 # Body
-
-
-class BlankRowError(Error):
-    code = 'blank-row'
-    name = 'Blank Row'
-    tags = ['#body', '#structure']
-    message = 'Row at position {rowPosition} is completely blank'
-    description = 'This row is empty. A row should contain at least one value.'
-
-    def __init__(self, *, row_number, row_position):
-        self['rowNumber'] = row_number
-        self['rowPosition'] = row_position
-        super().__init__()
 
 
 class ExtraCellError(Error):
@@ -335,6 +322,19 @@ class MissingCellError(Error):
         self['fieldName'] = field_name
         self['fieldNumber'] = field_number
         self['fieldPosition'] = field_position
+        self['rowNumber'] = row_number
+        self['rowPosition'] = row_position
+        super().__init__()
+
+
+class BlankRowError(Error):
+    code = 'blank-row'
+    name = 'Blank Row'
+    tags = ['#body', '#structure']
+    message = 'Row at position {rowPosition} is completely blank'
+    description = 'This row is empty. A row should contain at least one value.'
+
+    def __init__(self, *, row_number, row_position):
         self['rowNumber'] = row_number
         self['rowPosition'] = row_position
         super().__init__()

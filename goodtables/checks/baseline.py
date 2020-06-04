@@ -10,15 +10,15 @@ class BaselineCheck(Check):
     }
     possible_Errors = [  # type: ignore
         # head
-        errors.BlankHeaderError,
-        errors.DuplicateHeaderError,
         errors.ExtraHeaderError,
         errors.MissingHeaderError,
+        errors.BlankHeaderError,
+        errors.DuplicateHeaderError,
         errors.NonMatchingHeaderError,
         # body
-        errors.BlankRowError,
         errors.ExtraCellError,
         errors.MissingCellError,
+        errors.BlankRowError,
         errors.RequiredError,
         errors.TypeError,
         errors.ConstraintError,
