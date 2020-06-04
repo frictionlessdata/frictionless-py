@@ -20,21 +20,28 @@ def read(*paths):
 # Prepare
 PACKAGE = 'goodtables'
 NAME = PACKAGE.replace('_', '-')
-INSTALL_REQUIRES = [
+CORE_REQUIRES = [
     'six>=1.9',
     'click>=6.6',
     'click-default-group',
     'cached-property>=1.5',
     'stringcase>=1.2',
-    'jsonschema>=2.5',
     'requests>=2.10',
-    'simpleeval>=0.9',
-    'statistics>=1.0',
+    'jsonschema>=2.5',
     'tabulator>=1.51',
     'tableschema>=1.19',
     'datapackage>=1.14',
 ]
-TESTS_REQUIRE = [
+GUESS_REQUIRES = [
+    'statistics>=1.0',
+]
+RULES_REQUIRES = [
+    'simpleeval>=0.9',
+]
+SERVER_REQUIRES = [
+    'gunicorn>=20',
+]
+TESTING_REQUIRES = [
     'mypy',
     'black',
     'pylama',
@@ -46,6 +53,7 @@ TESTS_REQUIRE = [
 README = read('README.md')
 VERSION = read(PACKAGE, 'assets', 'VERSION')
 PACKAGES = find_packages(exclude=['tests'])
+ENTRY_POINTS = {'console_scripts': ['goodtables = goodtables.__main__:cli']}
 
 
 # Run
@@ -54,10 +62,15 @@ setup(
     version=VERSION,
     packages=PACKAGES,
     include_package_data=True,
-    install_requires=INSTALL_REQUIRES,
-    tests_require=TESTS_REQUIRE,
-    extras_require={'develop': TESTS_REQUIRE},
-    entry_points={'console_scripts': ['goodtables = goodtables.__main__:cli']},
+    install_requires=CORE_REQUIRES,
+    tests_require=TESTING_REQUIRES,
+    extras_require={
+        'guess': GUESS_REQUIRES,
+        'rules': RULES_REQUIRES,
+        'server': SERVER_REQUIRES,
+        'testing': TESTING_REQUIRES,
+    },
+    entry_points=ENTRY_POINTS,
     zip_safe=False,
     long_description=README,
     long_description_content_type='text/markdown',
