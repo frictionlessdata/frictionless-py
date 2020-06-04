@@ -9,24 +9,28 @@ class System:
     # Checks
 
     def create_check(self, name, *, descriptor=None):
-        plugin_name, rest_name = name.split('/', 1)
-        plugin = self.acquire_plugin(plugin_name)
+        plugin_name, *rest = name.split('/', 1)
+        plugin = self.load_plugin(plugin_name)
         check = plugin.create_check(name, descriptor=descriptor)
         if not check:
-            message = f'Plugin "{plugin_name} does not have check "{name}"'
+            message = f'Plugin "{plugin_name}" does not support check "{name}"'
             raise exceptions.GoodtablesException(message)
         return check
 
     # Servers
 
-    def create_server(self):
-        plugin = self.acquire_plugin('server')
-        server = plugin.create_server()
+    def create_server(self, name):
+        plugin_name, *rest = name.split('/', 1)
+        plugin = self.load_plugin(plugin_name)
+        server = plugin.create_server(name)
+        if not server:
+            message = f'Plugin "server" does not support server "{name}"'
+            raise exceptions.GoodtablesException(message)
         return server
 
     # Plugins
 
-    def acquire_plugin(self, name):
+    def load_plugin(self, name):
         if name not in self.__plugins:
             module = None
             internal = f'goodtables.plugins.{name}'

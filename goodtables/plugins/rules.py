@@ -9,7 +9,12 @@ from ..errors import Error
 
 class RulesPlugin(Plugin):
     def create_check(self, name, *, descriptor=None):
-        pass
+        if name == 'rules/blacklisted-value':
+            return BlacklistedValueCheck(descriptor)
+        if name == 'rules/sequential-value':
+            return SequentialValueCheck(descriptor)
+        if name == 'rules/custom-constraint':
+            return CustomConstraintCheck(descriptor)
 
 
 # Checks

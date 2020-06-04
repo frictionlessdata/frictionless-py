@@ -1,6 +1,6 @@
 class Plugin:
     def create_check(self, name, *, descriptor=None):
-        raise NotImplementedError()
+        pass
 
-    def create_server(self):
-        raise NotImplementedError()
+    def create_server(self, name):
+        pass
