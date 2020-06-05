@@ -68,7 +68,7 @@ setup(
         'guess': GUESS_REQUIRES,
         'rules': RULES_REQUIRES,
         'server': SERVER_REQUIRES,
-        'testing': DEVOPS_REQUIRES,
+        'devops': DEVOPS_REQUIRES,
     },
     entry_points=ENTRY_POINTS,
     zip_safe=False,
