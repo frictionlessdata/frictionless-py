@@ -19,9 +19,14 @@ class Check(Metadata):
 
     # Validation
 
-    def validate_start(self, *, stream, schema):
+    def connect(self, *, stream, schema):
         self.__stream = stream
         self.__schema = schema
+
+    def prepare(self):
+        pass
+
+    def validate_task(self):
         return []
 
     def validate_headers(self, headers):
@@ -30,5 +35,5 @@ class Check(Metadata):
     def validate_row(self, row):
         return []
 
-    def validate_finish(self):
+    def validate_table(self):
         return []

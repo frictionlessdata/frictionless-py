@@ -1,5 +1,6 @@
 from collections import OrderedDict
 from cached_property import cached_property
+from . import exceptions
 from . import errors
 
 
@@ -36,6 +37,7 @@ class Row(OrderedDict):
             start = len(cells) + 1
             iterator = zip(field_positions[len(cells) :], fields[len(cells) :])
             for field_number, (field_position, field) in enumerate(iterator, start=start):
+                cells.append(None)
                 self.__errors.append(
                     errors.MissingCellError(
                         cells=list(map(str, cells)),
@@ -147,3 +149,24 @@ class Row(OrderedDict):
     @cached_property
     def errors(self):
         return self.__errors
+
+    # Helpers
+
+    def create_error(self, Error, *, field_name, **options):
+        # This algorithm can be optimized by storing more information in a row
+        # At the same time, this function should not be called very often
+        for field_number, [name, cell] in enumerate(self.items(), start=1):
+            if field_name == name:
+                field_position = self.field_positions[field_number - 1]
+                return Error(
+                    cell=str(cell),
+                    cells=list(map(str, self.values())),
+                    field_name=field_name,
+                    field_number=field_number,
+                    field_position=field_position,
+                    row_number=self.row_number,
+                    row_position=self.row_position,
+                    **options,
+                )
+        message = f'Field {field_name} is not in the row'
+        raise exceptions.GoodtablesException(message)

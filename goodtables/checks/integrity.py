@@ -21,7 +21,7 @@ class IntegrityCheck(Check):
         ForeignKeyError,
     ]
 
-    def validate_finish(self):
+    def validate_table(self):
         errors = []
 
         # Size error

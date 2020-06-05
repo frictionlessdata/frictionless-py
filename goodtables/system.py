@@ -9,6 +9,8 @@ class System:
     # Checks
 
     def create_check(self, name, *, descriptor=None):
+        if isinstance(name, type):
+            return name(descriptor)
         plugin_name, *rest = name.split('/', 1)
         plugin = self.load_plugin(plugin_name)
         check = plugin.create_check(name, descriptor=descriptor)
@@ -20,6 +22,8 @@ class System:
     # Servers
 
     def create_server(self, name):
+        if isinstance(name, type):
+            return name()
         plugin_name, *rest = name.split('/', 1)
         plugin = self.load_plugin(plugin_name)
         server = plugin.create_server(name)
@@ -37,7 +41,8 @@ class System:
             external = f'goodtables-{name}'
             for module_name in [internal, external]:
                 try:
-                    module = importlib(module_name)
+                    module = importlib.import_module(module_name)
+                    break
                 except ImportError as exception:
                     # Plugin is available but its dependencies are not
                     if module_name == getattr(exception, 'name', None):

@@ -17,21 +17,7 @@ class Error(Metadata):
         self['message'] = self.message.format(**self)
         self['description'] = self.description
 
-    def match(self, *, pick_errors, skip_errors):
-        match = True
-        if pick_errors:
-            match = False
-            if self['code'] in pick_errors:
-                match = True
-            if set(self['tags']).intersection(pick_errors):
-                match = True
-        if skip_errors:
-            match = True
-            if self['code'] in skip_errors:
-                match = False
-            if set(self['tags']).intersection(skip_errors):
-                match = False
-        return match
+    # Helpers
 
     @staticmethod
     def from_exception(exception):

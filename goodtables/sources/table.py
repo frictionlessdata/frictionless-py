@@ -3,6 +3,7 @@ import tableschema
 from .. import config
 from .. import helpers
 from ..row import Row
+from ..system import system
 from ..headers import Headers
 from ..errors import Error, TaskError
 from ..report import Report, ReportTable
@@ -206,18 +207,28 @@ def validate_table(
             schema = None
             fatal = True
 
-    # Start checks
+    # Create checks
     if not fatal:
         Checks = []
         Checks.append(BaselineCheck)
         Checks.append((IntegrityCheck, {'size': size, 'hash': hash}))
         Checks.extend(extra_checks or [])
         for Check in Checks:
-            check = Check() if isinstance(Check, type) else Check[0](Check[1])
+            Check = Check if isinstance(Check, (tuple, list)) else (Check, None)
+            check = system.create_check(Check[0], descriptor=Check[1])
+            check.connect(stream=stream, schema=schema)
+            check.prepare()
             checks.append(check)
             errors.register(check)
-            for error in check.validate_start(stream=stream, schema=schema):
-                errors.add(error)
+
+    # Validate task
+    if not fatal:
+        for check in checks.copy():
+            for error in check.validate_task():
+                assert isinstance(error, TaskError)
+                task_errors.append(error)
+                if check in checks:
+                    checks.remove(check)
 
     # Validate headers
     if not fatal:
@@ -276,10 +287,10 @@ def validate_table(
                 task_errors.append(TaskError(details=details))
                 break
 
-    # Finish checks
+    # Validate table
     if not fatal:
         for check in checks:
-            for error in check.validate_finish():
+            for error in check.validate_table():
                 errors.add(error)
 
     # Return report
