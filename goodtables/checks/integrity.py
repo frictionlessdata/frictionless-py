@@ -21,19 +21,25 @@ class IntegrityCheck(Check):
         ForeignKeyError,
     ]
 
+    def prepare(self):
+        self.size = self.get('size')
+        self.hash = self.get('hash')
+
+    # Validate
+
     def validate_table(self):
         errors = []
 
         # Size error
-        if self.get('size'):
-            if self['size'] != self.stream.size:
+        if self.size:
+            if self.size != self.stream.size:
                 details = 'expected is "%s" and actual is "%s"'
-                details = details % (self['size'], self.stream.size)
+                details = details % (self.size, self.stream.size)
                 errors.append(SizeError(details=details))
 
         # Hash error
-        if self.get('hash'):
-            hashing_digest = helpers.parse_hashing_digest(self['hash'])
+        if self.hash:
+            hashing_digest = helpers.parse_hashing_digest(self.hash)
             if hashing_digest != self.stream.hash:
                 details = 'expected is "%s" and actual is "%s"'
                 details = details % (hashing_digest, self.stream.hash)

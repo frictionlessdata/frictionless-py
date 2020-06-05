@@ -57,19 +57,25 @@ class BlacklistedValueCheck(Check):
         BlacklistedValueError
     ]
 
+    def prepare(self):
+        self.field_name = self['fieldName']
+        self.blacklist = self['blacklist']
+
+    # Validate
+
     def validate_task(self):
-        if self['fieldName'] not in self.schema.field_names:
-            details = 'blacklisted value check requires field "%s"' % self['fieldName']
+        if self.field_name not in self.schema.field_names:
+            details = 'blacklisted value check requires field "%s"' % self.field_name
             return [TaskError(details=details)]
         return []
 
     def validate_row(self, row):
-        cell = row[self['fieldName']]
-        if cell in self['blacklist']:
+        cell = row[self.field_name]
+        if cell in self.blacklist:
             error = row.create_error_from_cell(
                 BlacklistedValueError,
-                field_name=self['fieldName'],
-                details='blacklisted values are "%s"' % self['blacklist'],
+                field_name=self.field_name,
+                details='blacklisted values are "%s"' % self.blacklist,
             )
             return [error]
         return []
@@ -88,16 +94,19 @@ class SequentialValueCheck(Check):
     def prepare(self):
         self.cursor = None
         self.exited = False
+        self.field_name = self['fieldName']
+
+    # Validate
 
     def validate_task(self):
-        if self['fieldName'] not in self.schema.field_names:
-            details = 'sequential value check requires field "%s"' % self['fieldName']
+        if self.field_name not in self.schema.field_names:
+            details = 'sequential value check requires field "%s"' % self.field_name
             return [TaskError(details=details)]
         return []
 
     def validate_row(self, row):
         if not self.exited:
-            cell = row[self['fieldName']]
+            cell = row[self.field_name]
             try:
                 self.cursor = self.cursor or cell
                 assert self.cursor == cell
@@ -106,7 +115,7 @@ class SequentialValueCheck(Check):
                 self.exited = True
                 error = row.create_error_from_cell(
                     SequentialValueError,
-                    field_name=self['fieldName'],
+                    field_name=self.field_name,
                     details='the value is not sequential',
                 )
                 return [error]
@@ -123,15 +132,20 @@ class CustomConstraintCheck(Check):
         CustomConstraintError
     ]
 
+    def prepare(self):
+        self.constraint = self['constraint']
+
+    # Validate
+
     def validate_row(self, row):
         try:
             # This call should be considered as a safe expression evaluation
             # https://github.com/danthedeckie/simpleeval
-            assert simpleeval.simple_eval(self['constraint'], names=row)
+            assert simpleeval.simple_eval(self.constraint, names=row)
         except Exception:
             error = row.create_error(
                 CustomConstraintError,
-                details='the custom constraint to conform is "%s"' % self['constraint'],
+                details='the custom constraint to conform is "%s"' % self.constraint,
             )
             return [error]
         return []
