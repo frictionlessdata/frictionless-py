@@ -66,9 +66,11 @@ class BlacklistedValueCheck(Check):
     def validate_row(self, row):
         cell = row[self['fieldName']]
         if cell in self['blacklist']:
-            Error = BlacklistedValueError
-            details = 'blacklisted values are "%s"' % self['blacklist']
-            error = row.create_error(Error, field_name=self['fieldName'], details=details)
+            error = row.create_cell_error(
+                BlacklistedValueError,
+                field_name=self['fieldName'],
+                details='blacklisted values are "%s"' % self['blacklist'],
+            )
             return [error]
         return []
 
@@ -102,10 +104,10 @@ class SequentialValueCheck(Check):
                 self.cursor += 1
             except Exception:
                 self.exited = True
-                Error = SequentialValueError
-                details = 'the value is not sequential'
-                error = row.create_error(
-                    Error, field_name=self['fieldName'], details=details
+                error = row.create_cell_error(
+                    SequentialValueError,
+                    field_name=self['fieldName'],
+                    details='the value is not sequential',
                 )
                 return [error]
         return []

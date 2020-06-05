@@ -152,7 +152,7 @@ class Row(OrderedDict):
 
     # Helpers
 
-    def create_error(self, Error, *, field_name, **options):
+    def create_cell_error(self, Error, *, field_name, **options):
         # This algorithm can be optimized by storing more information in a row
         # At the same time, this function should not be called very often
         for field_number, [name, cell] in enumerate(self.items(), start=1):
