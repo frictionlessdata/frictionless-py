@@ -49,7 +49,7 @@ class System:
                 command = f'pip install goodtables-{name}'
                 message = f'Plugin "{name}" is not installed. Run: "{command}"'
                 raise exceptions.GoodtablesException()
-            self.__plugins[name] = getattr(module, 'Plugin')()
+            self.__plugins[name] = getattr(module, f'{name.capitalize()}Plugin')()
         return self.__plugins[name]
 
 

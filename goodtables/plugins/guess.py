@@ -7,7 +7,7 @@ from ..errors import Error
 # Plugin
 
 
-class StatsPlugin(Plugin):
+class GuessPlugin(Plugin):
     def create_check(self, name, *, descriptor=None):
         if name == 'stats/duplicate-row':
             return DuplicateRowCheck(descriptor)
