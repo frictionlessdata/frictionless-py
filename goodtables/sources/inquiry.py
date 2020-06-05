@@ -1,21 +1,21 @@
 import stringcase
 from .. import helpers
-from ..job import Job
 from ..task import task
 from ..report import Report
+from ..inquiry import Inquiry
 from ..validate import validate
 
 
 @task
-def validate_job(source):
+def validate_inquiry(source):
     timer = helpers.Timer()
-    job = Job(source)
+    inquiry = Inquiry(source)
 
     # Validate tasks
     reports = []
-    for job_task in job.tasks:
-        options = {stringcase.snakecase(key): value for key, value in job_task.items()}
-        reports.append(validate(**options))
+    for inquiry_source in inquiry.sources:
+        opts = {stringcase.snakecase(key): value for key, value in inquiry_source.items()}
+        reports.append(validate(**opts))
 
     # Return report
     time = timer.get_time()

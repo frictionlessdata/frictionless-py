@@ -14,19 +14,19 @@ def validate(source, source_type=None, **options):
     if not source_type:
         source_type = 'table'
         if isinstance(source, dict):
+            if source.get('sources') is not None:
+                source_type = 'inquiry'
             if source.get('path') is not None:
                 source_type = 'resource'
             if source.get('resources') is not None:
                 source_type = 'package'
-            if source.get('tasks') is not None:
-                source_type = 'job'
         if isinstance(source, str):
+            if source.endswith('inquiry.json'):
+                source_type = 'inquiry'
             if source.endswith('.json'):
                 source_type = 'resource'
             if source.endswith('datapackage.json'):
                 source_type = 'package'
-            if source.endswith('job.json'):
-                source_type = 'job'
 
     # Validate source
     validate = getattr(sources, 'validate_%s' % source_type)

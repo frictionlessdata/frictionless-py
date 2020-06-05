@@ -1,10 +1,10 @@
 {
-  "title": "Goodtables Job",
+  "title": "Goodtables Inquiry",
   "$schema": "http://json-schema.org/draft-06/schema#",
-  "$id": "https://github.com/frictionlessdata/goodtables-py/tree/master/goodtables/assets/profiles/job.json",
+  "$id": "https://github.com/frictionlessdata/goodtables-py/tree/master/goodtables/assets/profiles/inquiry.json",
   "type": "object",
   "required": [
-    "tasks"
+    "sources"
   ],
   "properties": {
     "version": {
@@ -12,12 +12,12 @@
       "title": "Version",
       "description": "Goodtables version"
     },
-    "tasks": {
+    "sources": {
       "type": "array",
-      "title": "Tasks",
-      "description": "Query tasks",
+      "title": "Sources",
+      "description": "Inquiry sources",
       "items": {
-        "title": "Task",
+        "title": "Source",
         "type": "object",
         "required": ["source"]
       }
