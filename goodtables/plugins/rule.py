@@ -7,13 +7,13 @@ from ..errors import TaskError, BlankRowError, ConstraintError
 # Plugin
 
 
-class RulesPlugin(Plugin):
+class RulePlugin(Plugin):
     def create_check(self, name, *, descriptor=None):
-        if name == 'rules/blacklisted-value':
+        if name == 'rule/blacklisted-value':
             return BlacklistedValueCheck(descriptor)
-        if name == 'rules/sequential-value':
+        if name == 'rule/sequential-value':
             return SequentialValueCheck(descriptor)
-        if name == 'rules/custom-constraint':
+        if name == 'rule/custom-constraint':
             return CustomConstraintCheck(descriptor)
 
 
@@ -21,25 +21,25 @@ class RulesPlugin(Plugin):
 
 
 class BlacklistedValueError(ConstraintError):
-    code = 'rules/blacklisted-value'
+    code = 'rule/blacklisted-value'
     name = 'Blacklisted Value'
-    tags = ['#body', '#rules']
+    tags = ['#body', '#rule']
     message = 'The cell {cell} in row at position {rowPosition} and field {fieldName} at position {fieldPosition} has an error: {details}'
     description = 'The value is blacklisted.'
 
 
 class SequentialValueError(ConstraintError):
-    code = 'rules/sequential-value'
+    code = 'rule/sequential-value'
     name = 'Sequential Value'
-    tags = ['#body', '#rules']
+    tags = ['#body', '#rule']
     message = 'The cell {cell} in row at position {rowPosition} and field {fieldName} at position {fieldPosition} has an error: {details}'
     description = 'The value is not sequential.'
 
 
 class CustomConstraintError(BlankRowError):
-    code = 'rules/custom-constraint'
+    code = 'rule/custom-constraint'
     name = 'Custom Constaint'
-    tags = ['#body', '#rules']
+    tags = ['#body', '#rule']
     message = 'The row at position {rowPosition} has an error: {details}'
     description = 'The value does not conform to the custom constaint.'
 

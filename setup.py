@@ -35,7 +35,7 @@ CORE_REQUIRES = [
 GUESS_REQUIRES = [
     'statistics>=1.0',
 ]
-RULES_REQUIRES = [
+RULE_REQUIRES = [
     'simpleeval>=0.9',
 ]
 SERVER_REQUIRES = [
@@ -66,7 +66,7 @@ setup(
     tests_require=DEVOPS_REQUIRES,
     extras_require={
         'guess': GUESS_REQUIRES,
-        'rules': RULES_REQUIRES,
+        'rule': RULE_REQUIRES,
         'server': SERVER_REQUIRES,
         'devops': DEVOPS_REQUIRES,
     },
@@ -74,7 +74,7 @@ setup(
     zip_safe=False,
     long_description=README,
     long_description_content_type='text/markdown',
-    description='Goodtables is a framework to validate tabular data',
+    description='Goodtables is a framework for tabular data validation',
     author='Open Knowledge Foundation',
     author_email='info@okfn.org',
     url='https://github.com/frictionlessdata/goodtables',
