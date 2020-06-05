@@ -1,9 +1,9 @@
 from pathlib import Path
-from .task import task
+from .report import Report
 from . import sources
 
 
-@task
+@Report.catch
 def validate(source, source_type=None, **options):
 
     # Normalize source

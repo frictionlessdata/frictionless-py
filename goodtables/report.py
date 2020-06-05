@@ -1,5 +1,8 @@
+import functools
 from . import config
 from . import exceptions
+from .helpers import Timer
+from .errors import TaskError
 from .metadata import Metadata
 
 
@@ -44,6 +47,22 @@ class Report(Metadata):
                 context.update(error)
                 result.append([context.get(prop) for prop in spec])
         return result
+
+    # Helpers
+
+    @staticmethod
+    def catch(validate):
+        @functools.wraps(validate)
+        def wrapper(*args, **kwargs):
+            timer = Timer()
+            try:
+                return validate(*args, **kwargs)
+            except Exception as exception:
+                time = timer.get_time()
+                error = TaskError(details=str(exception))
+                return Report(time=time, errors=[error], tables=[])
+
+        return wrapper
 
 
 class ReportTable(Metadata):

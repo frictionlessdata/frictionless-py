@@ -1,12 +1,11 @@
 import stringcase
 from .. import helpers
-from ..task import task
 from ..report import Report
 from ..inquiry import Inquiry
 from ..validate import validate
 
 
-@task
+@Report.catch
 def validate_inquiry(source):
     timer = helpers.Timer()
     inquiry = Inquiry(source)

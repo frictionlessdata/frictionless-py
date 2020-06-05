@@ -1,3 +1,6 @@
 class Server:
-    def listen(self, port):
+    def start(self, port):
+        pass
+
+    def stop(self):
         pass
