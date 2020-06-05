@@ -66,3 +66,48 @@ def test_validate_blacklisted_value_many_rules_with_non_existent_field():
     assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
         [None, None, 'task-error'],
     ]
+
+
+# Sequential Value
+
+
+def test_validate_sequential_value():
+    source = [
+        ['row', 'index2', 'index3'],
+        [2, 1, 1],
+        [3, 2, 3],
+        [4, 3, 5],
+        [5, 5, 6],
+        [6],
+    ]
+    report = validate(
+        source,
+        extra_checks=[
+            ('rules/sequential-value', {'fieldName': 'index2'}),
+            ('rules/sequential-value', {'fieldName': 'index3'}),
+        ],
+    )
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [3, 3, 'rules/sequential-value'],
+        [5, 2, 'rules/sequential-value'],
+        [6, 2, 'missing-cell'],
+        [6, 3, 'missing-cell'],
+    ]
+
+
+def test_validate_sequential_value_non_existent_field():
+    source = [
+        ['row', 'name'],
+        [2, 'Alex'],
+        [3, 'Brad'],
+    ]
+    report = validate(
+        source,
+        extra_checks=[
+            ('rules/sequential-value', {'column': 'row'}),
+            ('rules/sequential-value', {'column': 'bad'}),
+        ],
+    )
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [None, None, 'task-error'],
+    ]

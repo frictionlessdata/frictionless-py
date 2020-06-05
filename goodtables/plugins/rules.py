@@ -64,7 +64,8 @@ class BlacklistedValueCheck(Check):
         return []
 
     def validate_row(self, row):
-        if row[self['fieldName']] in self['blacklist']:
+        cell = row[self['fieldName']]
+        if cell in self['blacklist']:
             Error = BlacklistedValueError
             details = 'blacklisted values are "%s"' % self['blacklist']
             error = row.create_error(Error, field_name=self['fieldName'], details=details)
@@ -73,7 +74,41 @@ class BlacklistedValueCheck(Check):
 
 
 class SequentialValueCheck(Check):
-    pass
+    metadata_profile = {  # type: ignore
+        'type': 'object',
+        'requred': ['fieldName'],
+        'properties': {'fieldName': {'type': 'string'}},
+    }
+    possible_Errors = [  # type: ignore
+        SequentialValueError
+    ]
+
+    def prepare(self):
+        self.cursor = None
+        self.exited = False
+
+    def validate_task(self):
+        if self['fieldName'] not in self.schema.field_names:
+            details = 'sequential value check requires field "%s"' % self['fieldName']
+            return [TaskError(details=details)]
+        return []
+
+    def validate_row(self, row):
+        if not self.exited:
+            cell = row[self['fieldName']]
+            try:
+                self.cursor = self.cursor or cell
+                assert self.cursor == cell
+                self.cursor += 1
+            except Exception:
+                self.exited = True
+                Error = SequentialValueError
+                details = 'the value is not sequential'
+                error = row.create_error(
+                    Error, field_name=self['fieldName'], details=details
+                )
+                return [error]
+        return []
 
 
 class CustomConstraintCheck(Check):

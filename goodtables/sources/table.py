@@ -101,7 +101,7 @@ def validate_table(
 
     # Prepare state
     checks = []
-    fatal = False
+    exited = False
     row_number = 0
     task_errors = []
     timer = helpers.Timer()
@@ -139,7 +139,7 @@ def validate_table(
             raise tabulator.exceptions.SourceError(message)
     except Exception as exception:
         errors.add(Error.from_exception(exception))
-        fatal = True
+        exited = True
 
     # Create schema
     try:
@@ -147,10 +147,10 @@ def validate_table(
     except tableschema.exceptions.TableSchemaException as exception:
         errors.add(Error.from_exception(exception))
         schema = None
-        fatal = True
+        exited = True
 
     # Prepare schema
-    if not fatal:
+    if not exited:
 
         # Infer schema
         if schema and not schema.fields:
@@ -197,7 +197,7 @@ def validate_table(
             for error in schema.errors:
                 errors.add(Error.from_exception(error))
             schema = None
-            fatal = True
+            exited = True
 
         # Confirm schema
         if schema and len(schema.field_names) != len(set(schema.field_names)):
@@ -205,10 +205,10 @@ def validate_table(
             error = tableschema.exceptions.TableSchemaException(message)
             errors.add(Error.from_exception(error))
             schema = None
-            fatal = True
+            exited = True
 
     # Create checks
-    if not fatal:
+    if not exited:
         Checks = []
         Checks.append(BaselineCheck)
         Checks.append((IntegrityCheck, {'size': size, 'hash': hash}))
@@ -222,7 +222,7 @@ def validate_table(
             errors.register(check)
 
     # Validate task
-    if not fatal:
+    if not exited:
         for check in checks.copy():
             for error in check.validate_task():
                 assert isinstance(error, TaskError)
@@ -231,7 +231,7 @@ def validate_table(
                     checks.remove(check)
 
     # Validate headers
-    if not fatal:
+    if not exited:
         if stream.headers:
 
             # Get headers
@@ -247,7 +247,7 @@ def validate_table(
                     errors.add(error)
 
     # Validate rows
-    if not fatal:
+    if not exited:
         fields = schema.fields
         iterator = stream.iter(extended=True)
         field_positions = stream.field_positions
@@ -262,7 +262,7 @@ def validate_table(
                 break
             except Exception as exception:
                 errors.add(Error.from_exception(exception))
-                fatal = True
+                exited = True
                 break
 
             # Create row
@@ -288,7 +288,7 @@ def validate_table(
                 break
 
     # Validate table
-    if not fatal:
+    if not exited:
         for check in checks:
             for error in check.validate_table():
                 errors.add(error)
