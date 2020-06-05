@@ -320,9 +320,11 @@ class BlankRowError(Error):
     message = 'Row at position {rowPosition} is completely blank'
     description = 'This row is empty. A row should contain at least one value.'
 
-    def __init__(self, *, row_number, row_position):
+    def __init__(self, *, cells, row_number, row_position, details):
+        self['cells'] = cells
         self['rowNumber'] = row_number
         self['rowPosition'] = row_position
+        self['details'] = details
         super().__init__()
 
 

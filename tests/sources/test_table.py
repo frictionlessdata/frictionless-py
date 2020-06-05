@@ -775,7 +775,10 @@ def test_validate_extra_checks():
         def validate_row(self, row):
             return [
                 errors.BlankRowError(
-                    row_number=row.row_number, row_position=row.row_position
+                    cells=list(map(str, row.values())),
+                    row_number=row.row_number,
+                    row_position=row.row_position,
+                    details='',
                 )
             ]
 
@@ -794,8 +797,10 @@ def test_validate_extra_checks_with_arguments():
         def validate_row(self, row):
             return [
                 errors.BlankRowError(
+                    cells=list(map(str, row.values())),
                     row_number=row.row_number,
                     row_position=self.get('rowPosition') or row.row_position,
+                    details='',
                 )
             ]
 

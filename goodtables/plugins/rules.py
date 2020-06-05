@@ -1,7 +1,7 @@
-#  import simpleeval
+import simpleeval
 from ..check import Check
 from ..plugin import Plugin
-from ..errors import TaskError, ConstraintError
+from ..errors import TaskError, BlankRowError, ConstraintError
 
 
 # Plugin
@@ -36,11 +36,11 @@ class SequentialValueError(ConstraintError):
     description = 'The value is not sequential.'
 
 
-class CustomConstraintError(ConstraintError):
+class CustomConstraintError(BlankRowError):
     code = 'rules/custom-constraint'
     name = 'Custom Constaint'
     tags = ['#body', '#rules']
-    message = 'The cell {cell} in row at position {rowPosition} and field {fieldName} at position {fieldPosition} has an error: {details}'
+    message = 'The row at position {rowPosition} has an error: {details}'
     description = 'The value does not conform to the custom constaint.'
 
 
@@ -66,7 +66,7 @@ class BlacklistedValueCheck(Check):
     def validate_row(self, row):
         cell = row[self['fieldName']]
         if cell in self['blacklist']:
-            error = row.create_cell_error(
+            error = row.create_error_from_cell(
                 BlacklistedValueError,
                 field_name=self['fieldName'],
                 details='blacklisted values are "%s"' % self['blacklist'],
@@ -104,7 +104,7 @@ class SequentialValueCheck(Check):
                 self.cursor += 1
             except Exception:
                 self.exited = True
-                error = row.create_cell_error(
+                error = row.create_error_from_cell(
                     SequentialValueError,
                     field_name=self['fieldName'],
                     details='the value is not sequential',
@@ -114,4 +114,24 @@ class SequentialValueCheck(Check):
 
 
 class CustomConstraintCheck(Check):
-    pass
+    metadata_profile = {  # type: ignore
+        'type': 'object',
+        'requred': ['constraint'],
+        'properties': {'constraint': {'type': 'string'}},
+    }
+    possible_Errors = [  # type: ignore
+        CustomConstraintError
+    ]
+
+    def validate_row(self, row):
+        try:
+            # This call should be considered as a safe expression evaluation
+            # https://github.com/danthedeckie/simpleeval
+            assert simpleeval.simple_eval(self['constraint'], names=row)
+        except Exception:
+            error = row.create_error(
+                CustomConstraintError,
+                details='the custom constraint to conform is "%s"' % self['constraint'],
+            )
+            return [error]
+        return []

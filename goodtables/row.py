@@ -123,7 +123,12 @@ class Row(OrderedDict):
         # Blank row
         if is_blank:
             self.__errors = [
-                errors.BlankRowError(row_number=row_number, row_position=row_position,)
+                errors.BlankRowError(
+                    cells=list(map(str, cells)),
+                    row_number=row_number,
+                    row_position=row_position,
+                    details='',
+                )
             ]
 
     @cached_property
@@ -152,7 +157,15 @@ class Row(OrderedDict):
 
     # Helpers
 
-    def create_cell_error(self, Error, *, field_name, **options):
+    def create_error(self, Error, **options):
+        return Error(
+            cells=list(map(str, self.values())),
+            row_number=self.row_number,
+            row_position=self.row_position,
+            **options,
+        )
+
+    def create_error_from_cell(self, Error, *, field_name, **options):
         # This algorithm can be optimized by storing more information in a row
         # At the same time, this function should not be called very often
         for field_number, [name, cell] in enumerate(self.items(), start=1):

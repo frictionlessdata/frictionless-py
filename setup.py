@@ -41,7 +41,7 @@ RULES_REQUIRES = [
 SERVER_REQUIRES = [
     'gunicorn>=20',
 ]
-TESTING_REQUIRES = [
+DEVOPS_REQUIRES = [
     'mypy',
     'black',
     'pylama',
@@ -63,12 +63,12 @@ setup(
     packages=PACKAGES,
     include_package_data=True,
     install_requires=CORE_REQUIRES,
-    tests_require=TESTING_REQUIRES,
+    tests_require=DEVOPS_REQUIRES,
     extras_require={
         'guess': GUESS_REQUIRES,
         'rules': RULES_REQUIRES,
         'server': SERVER_REQUIRES,
-        'testing': TESTING_REQUIRES,
+        'testing': DEVOPS_REQUIRES,
     },
     entry_points=ENTRY_POINTS,
     zip_safe=False,

@@ -12,7 +12,7 @@ list:
 	@grep '^\.PHONY' Makefile | cut -d' ' -f2- | tr ' ' '\n'
 
 install:
-	pip install --upgrade -e .[guess,rules,server,testing]
+	pip install --upgrade -e .[guess,rules,server,devops]
 	test -f '.git/hooks/pre-commit' || cp .gitverify .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
 
 format:
