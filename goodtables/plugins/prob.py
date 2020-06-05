@@ -40,7 +40,11 @@ class DeviatedValueError(Error):
 
 
 class TruncatedValueError(ConstraintError):
-    pass
+    code = 'prob/truncated-value'
+    name = 'Truncated Value'
+    tags = ['#body', '#prob']
+    message = 'The cell {cell} in row at position {rowPosition} and field {fieldName} at position {fieldPosition} has an error: {details}'
+    description = 'The value is possible truncated.'
 
 
 # Checks
@@ -126,7 +130,43 @@ class DeviatedValueCheck(Check):
 
 
 class TruncatedValueCheck(Check):
-    pass
+    metadata_profile = {  # type: ignore
+        'type': 'object',
+        'properties': {},
+    }
+    possible_Errors = [  # type: ignore
+        TruncatedValueError
+    ]
+
+    def validate_row(self, row):
+        errors = []
+        for field_name, cell in row.items():
+            truncated = False
+
+            # Skip no value
+            if not cell:
+                continue
+
+            # Check string cutoff
+            if isinstance(cell, str):
+                if len(cell) in TRUNCATED_STRING_LENGTHS:
+                    truncated = True
+
+            # Check integer cutoff
+            if isinstance(cell, int):
+                if cell in TRUNCATED_INTEGER_VALUES:
+                    truncated = True
+
+            # Add error
+            if truncated:
+                details = 'value  is probably truncated'
+                errors.append(
+                    row.create_error_from_cell(
+                        TruncatedValueError, field_name=field_name, details=details
+                    )
+                )
+
+        return errors
 
 
 # Internal
@@ -137,3 +177,19 @@ AVERAGE_FUNCTIONS = {
     'median': statistics.median,
     'mode': statistics.mode,
 }
+TRUNCATED_STRING_LENGTHS = [
+    255,
+]
+TRUNCATED_INTEGER_VALUES = [
+    # BigInt
+    18446744073709551616,
+    9223372036854775807,
+    # Int
+    4294967295,
+    2147483647,
+    # SummedInt
+    2097152,
+    # SmallInt
+    65535,
+    32767,
+]

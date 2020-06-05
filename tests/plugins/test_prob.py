@@ -82,3 +82,30 @@ def test_validate_deviated_value_incorrect_average():
     assert report.flatten(['rowNumber', 'fieldName', 'code']) == [
         [None, None, 'task-error'],
     ]
+
+
+# Truncated value
+
+
+def test_validate_truncated_values():
+    source = [
+        ['int', 'str'],
+        ['a' * 255, 32767],
+        ['good', 2147483647],
+    ]
+    report = validate(source, extra_checks=['prob/truncated-value'],)
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [2, 1, 'prob/truncated-value'],
+        [2, 2, 'prob/truncated-value'],
+        [3, 2, 'prob/truncated-value'],
+    ]
+
+
+def test_validate_truncated_values_close_to_errors():
+    source = [
+        ['int', 'str'],
+        ['a' * 254, 32766],
+        ['good', 2147483646],
+    ]
+    report = validate(source, extra_checks=['prob/truncated-value'],)
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == []

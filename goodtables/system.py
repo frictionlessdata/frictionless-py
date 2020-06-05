@@ -14,7 +14,7 @@ class System:
         plugin_name, *rest = name.split('/', 1)
         plugin = self.load_plugin(plugin_name)
         check = plugin.create_check(name, descriptor=descriptor)
-        if not check:
+        if check is None:
             message = f'Plugin "{plugin_name}" does not support check "{name}"'
             raise exceptions.GoodtablesException(message)
         return check
@@ -27,7 +27,7 @@ class System:
         plugin_name, *rest = name.split('/', 1)
         plugin = self.load_plugin(plugin_name)
         server = plugin.create_server(name)
-        if not server:
+        if server is None:
             message = f'Plugin "server" does not support server "{name}"'
             raise exceptions.GoodtablesException(message)
         return server
