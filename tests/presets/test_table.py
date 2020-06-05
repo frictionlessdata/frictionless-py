@@ -11,6 +11,7 @@ from goodtables.presets.table import table
 
 # Validate
 
+
 def test_validate_table_valid(log):
     report = validate('data/valid.csv')
     assert log(report) == []
@@ -22,6 +23,7 @@ def test_validate_table_invalid(log):
         (1, None, 3, 'blank-header'),
         (1, None, 3, 'non-matching-header'),
         (1, None, 4, 'duplicate-header'),
+        (1, None, 4, 'non-matching-header'),
         (1, 2, 3, 'missing-value'),
         (1, 2, 4, 'missing-value'),
         (1, 3, None, 'duplicate-row'),
@@ -44,11 +46,14 @@ def test_validate_table_invalid_row_limit(log):
         (1, None, 3, 'blank-header'),
         (1, None, 3, 'non-matching-header'),
         (1, None, 4, 'duplicate-header'),
+        (1, None, 4, 'non-matching-header'),
         (1, 2, 3, 'missing-value'),
         (1, 2, 4, 'missing-value'),
     ]
 
+
 # Preset
+
 
 def test_preset_table():
     warnings, tables = table('data/valid.csv')
