@@ -59,7 +59,7 @@ class BlacklistedValueCheck(Check):
 
     def validate_task(self):
         if self['fieldName'] not in self.schema.field_names:
-            details = 'Blacklisted value check requires field "%s"' % self['fieldName']
+            details = 'blacklisted value check requires field "%s"' % self['fieldName']
             return [TaskError(details=details)]
         return []
 
