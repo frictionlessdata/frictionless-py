@@ -43,7 +43,7 @@ class ReportError(Error):
     name = 'Report Error'
     tags = ['#report']
     message = 'The validation report has an error: {details}'
-    description = 'A validation cannot be finished.'
+    description = 'A validation cannot be presented.'
 
     def __init__(self, *, details):
         self['details'] = details
