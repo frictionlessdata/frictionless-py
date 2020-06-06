@@ -1,3 +1,4 @@
+import hashlib
 import statistics
 from .. import errors
 from ..check import Check
@@ -21,7 +22,11 @@ class ProbPlugin(Plugin):
 
 
 class DuplicateRowError(errors.RowError):
-    pass
+    code = 'prob/duplicate-row'
+    name = 'Duplicate Row'
+    tags = ['#body', '#prob']
+    message = 'Row at position {rowPosition} is duplicated: {details}'
+    description = 'The row is duplicated.'
 
 
 class DeviatedValueError(errors.Error):
@@ -44,7 +49,25 @@ class TruncatedValueError(errors.CellError):
 
 
 class DuplicateRowCheck(Check):
-    pass
+    metadata_profile = {  # type: ignore
+        'type': 'object',
+        'properties': {},
+    }
+    possible_Errors = [  # type: ignore
+        DuplicateRowError
+    ]
+
+    def prepare(self):
+        self.memory = {}
+
+    def validate_row(self, row):
+        text = ','.join(map(str, row.values()))
+        hash = hashlib.sha256(text.encode('utf-8')).hexdigest()
+        match = self.memory.get(hash)
+        if match:
+            details = 'the same as row at position "%s"' % match
+            yield DuplicateRowError.from_row(row, details=details)
+        self.memory[hash] = row.row_position
 
 
 class DeviatedValueCheck(Check):
@@ -74,22 +97,22 @@ class DeviatedValueCheck(Check):
 
     def validate_task(self):
         if self.field_name not in self.schema.field_names:
-            details = 'deviated value check requires field "%s"' % self.field_name
-            yield errors.TaskError(details=details)
+            details = 'deviated value check requires field "%s" to exist'
+            yield errors.TaskError(details=details % self.field_name)
+        elif self.schema.get_field(self.field_name).type not in ['integer', 'number']:
+            details = 'deviated value check requires field "%s" to be numiric'
+            yield errors.TaskError(details=details % self.field_name)
         if not self.average_function:
             details = 'deviated value check supports only average functions "%s"'
             details = details % ', '.join(AVERAGE_FUNCTIONS.keys())
             yield errors.TaskError(details=details)
 
     def validate_row(self, row):
-        try:
-            cell = float(row[self.field_name])
+        cell = row[self.field_name]
+        if cell is not None:
             self.cells.append(cell)
             self.row_positions.append(row.row_position)
-        except ValueError:
-            details = 'cell in row at position "%s" and in field "%s" must be a number'
-            details = details % (row.row_position, self.field_name)
-            yield DeviatedValueError(details=details)
+        yield from []
 
     def validate_table(self):
         if len(self.cells) < 2:

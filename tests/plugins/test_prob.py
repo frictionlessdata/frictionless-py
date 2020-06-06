@@ -1,6 +1,21 @@
 from goodtables import validate
 
 
+# Duplicate Row
+
+
+def test_validate_duplicate_row():
+    report = validate('data/duplicate-rows.csv', extra_checks=['prob/duplicate-row'])
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [4, None, 'prob/duplicate-row'],
+    ]
+
+
+def test_validate_duplicate_row_valid():
+    report = validate('data/table.csv', extra_checks=['prob/duplicate-row'])
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == []
+
+
 # Deviated Value
 
 
@@ -31,7 +46,7 @@ def test_validate_deviated_value():
     assert report.flatten(['code', 'details']) == [
         [
             'prob/deviated-value',
-            'value "100.0" in row at position "10" and field "temperature" is deviated "[-87.21, 91.21]"',
+            'value "100" in row at position "10" and field "temperature" is deviated "[-87.21, 91.21]"',
         ],
     ]
 
@@ -56,10 +71,7 @@ def test_validate_deviated_value_not_a_number():
         source, extra_checks=[('prob/deviated-value', {'fieldName': 'name'})]
     )
     assert report.flatten(['code', 'details']) == [
-        [
-            'prob/deviated-value',
-            'cell in row at position "2" and in field "name" must be a number',
-        ],
+        ['task-error', 'deviated value check requires field "name" to be numiric'],
     ]
 
 
@@ -72,7 +84,7 @@ def test_validate_deviated_value_non_existent_field():
         source, extra_checks=[('prob/deviated-value', {'fieldName': 'bad'})],
     )
     assert report.flatten(['code', 'details']) == [
-        ['task-error', 'deviated value check requires field "bad"'],
+        ['task-error', 'deviated value check requires field "bad" to exist'],
     ]
 
 
@@ -83,7 +95,7 @@ def test_validate_deviated_value_incorrect_average():
     ]
     report = validate(
         source,
-        extra_checks=[('prob/deviated-value', {'fieldName': 'name', 'average': 'bad'})],
+        extra_checks=[('prob/deviated-value', {'fieldName': 'row', 'average': 'bad'})],
     )
     assert report.flatten(['code', 'details']) == [
         [
