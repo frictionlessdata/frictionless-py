@@ -209,13 +209,14 @@ def validate_table(
 
     # Create checks
     if not exited:
-        Checks = []
-        Checks.append(BaselineCheck)
-        Checks.append((IntegrityCheck, {'size': size, 'hash': hash}))
-        Checks.extend(extra_checks or [])
-        for Check in Checks:
-            Check = Check if isinstance(Check, (tuple, list)) else (Check, None)
-            check = system.create_check(Check[0], descriptor=Check[1])
+        items = []
+        items.append(BaselineCheck)
+        items.append((IntegrityCheck, {'size': size, 'hash': hash}))
+        items.extend(extra_checks or [])
+        create = system.create_check
+        for item in items:
+            p1, p2 = item if isinstance(item, (tuple, list)) else (item, None)
+            check = p1(p2) if isinstance(p1, type) else create(p1, descriptor=p2)
             check.connect(stream=stream, schema=schema)
             check.prepare()
             checks.append(check)

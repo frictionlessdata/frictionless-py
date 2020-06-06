@@ -9,8 +9,9 @@ class System:
     # Checks
 
     def create_check(self, name, *, descriptor=None):
-        if isinstance(name, type):
-            return name(descriptor)
+        if name.count('/') != 1:
+            message = f'Check name "{name}" should be in "plugin/element" form'
+            raise exceptions.GoodtablesException(message)
         plugin_name, *rest = name.split('/', 1)
         plugin = self.load_plugin(plugin_name)
         check = plugin.create_check(name, descriptor=descriptor)
@@ -22,8 +23,9 @@ class System:
     # Servers
 
     def create_server(self, name):
-        if isinstance(name, type):
-            return name()
+        if name.count('/') != 1:
+            message = f'Server name "{name}" should be in "plugin/element" form'
+            raise exceptions.GoodtablesException(message)
         plugin_name, *rest = name.split('/', 1)
         plugin = self.load_plugin(plugin_name)
         server = plugin.create_server(name)
