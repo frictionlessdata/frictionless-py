@@ -27,13 +27,13 @@ class Check(Metadata):
         pass
 
     def validate_task(self):
-        return []
+        yield from []
 
     def validate_headers(self, headers):
-        return []
+        yield from []
 
     def validate_row(self, row):
-        return []
+        yield from []
 
     def validate_table(self):
-        return []
+        yield from []

@@ -225,7 +225,6 @@ def validate_table(
     if not exited:
         for check in checks.copy():
             for error in check.validate_task():
-                assert isinstance(error, TaskError)
                 task_errors.append(error)
                 if check in checks:
                     checks.remove(check)

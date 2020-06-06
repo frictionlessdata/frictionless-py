@@ -1,6 +1,6 @@
+from .. import errors
 from .. import helpers
 from ..check import Check
-from ..errors import SizeError, HashError, UniqueError, PrimaryKeyError, ForeignKeyError
 
 
 class IntegrityCheck(Check):
@@ -13,12 +13,12 @@ class IntegrityCheck(Check):
     }
     possible_Errors = [  # type: ignore
         # table
-        SizeError,
-        HashError,
+        errors.SizeError,
+        errors.HashError,
         # body
-        UniqueError,
-        PrimaryKeyError,
-        ForeignKeyError,
+        errors.UniqueError,
+        errors.PrimaryKeyError,
+        errors.ForeignKeyError,
     ]
 
     def prepare(self):
@@ -28,14 +28,13 @@ class IntegrityCheck(Check):
     # Validate
 
     def validate_table(self):
-        errors = []
 
         # Size error
         if self.size:
             if self.size != self.stream.size:
                 details = 'expected is "%s" and actual is "%s"'
                 details = details % (self.size, self.stream.size)
-                errors.append(SizeError(details=details))
+                yield errors.SizeError(details=details)
 
         # Hash error
         if self.hash:
@@ -43,6 +42,4 @@ class IntegrityCheck(Check):
             if hashing_digest != self.stream.hash:
                 details = 'expected is "%s" and actual is "%s"'
                 details = details % (hashing_digest, self.stream.hash)
-                errors.append(HashError(details=details))
-
-        return errors
+                yield errors.HashError(details=details)

@@ -1,7 +1,7 @@
 import simpleeval
+from .. import errors
 from ..check import Check
 from ..plugin import Plugin
-from ..errors import TaskError, RowError, CellError
 
 
 # Plugin
@@ -20,7 +20,7 @@ class RulePlugin(Plugin):
 # Errors
 
 
-class BlacklistedValueError(CellError):
+class BlacklistedValueError(errors.CellError):
     code = 'rule/blacklisted-value'
     name = 'Blacklisted Value'
     tags = ['#body', '#rule']
@@ -28,7 +28,7 @@ class BlacklistedValueError(CellError):
     description = 'The value is blacklisted.'
 
 
-class SequentialValueError(CellError):
+class SequentialValueError(errors.CellError):
     code = 'rule/sequential-value'
     name = 'Sequential Value'
     tags = ['#body', '#rule']
@@ -36,7 +36,7 @@ class SequentialValueError(CellError):
     description = 'The value is not sequential.'
 
 
-class RowConstraintError(RowError):
+class RowConstraintError(errors.RowError):
     code = 'rule/row-constraint'
     name = 'Row Constraint'
     tags = ['#body', '#rule']
@@ -66,19 +66,16 @@ class BlacklistedValueCheck(Check):
     def validate_task(self):
         if self.field_name not in self.schema.field_names:
             details = 'blacklisted value check requires field "%s"' % self.field_name
-            return [TaskError(details=details)]
-        return []
+            yield errors.TaskError(details=details)
 
     def validate_row(self, row):
         cell = row[self.field_name]
         if cell in self.blacklist:
-            error = BlacklistedValueError.from_row(
+            yield BlacklistedValueError.from_row(
                 row,
                 details='blacklisted values are "%s"' % self.blacklist,
                 field_name=self.field_name,
             )
-            return [error]
-        return []
 
 
 class SequentialValueCheck(Check):
@@ -101,8 +98,7 @@ class SequentialValueCheck(Check):
     def validate_task(self):
         if self.field_name not in self.schema.field_names:
             details = 'sequential value check requires field "%s"' % self.field_name
-            return [TaskError(details=details)]
-        return []
+            yield errors.TaskError(details=details)
 
     def validate_row(self, row):
         if not self.exited:
@@ -113,13 +109,11 @@ class SequentialValueCheck(Check):
                 self.cursor += 1
             except Exception:
                 self.exited = True
-                error = SequentialValueError.from_row(
+                yield SequentialValueError.from_row(
                     row,
                     details='the value is not sequential',
                     field_name=self.field_name,
                 )
-                return [error]
-        return []
 
 
 class RowConstraintCheck(Check):
@@ -143,8 +137,6 @@ class RowConstraintCheck(Check):
             # https://github.com/danthedeckie/simpleeval
             assert simpleeval.simple_eval(self.constraint, names=row)
         except Exception:
-            error = RowConstraintError.from_row(
+            yield RowConstraintError.from_row(
                 row, details='the row constraint to conform is "%s"' % self.constraint,
             )
-            return [error]
-        return []

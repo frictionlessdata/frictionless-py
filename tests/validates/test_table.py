@@ -773,14 +773,12 @@ def test_validate_extra_checks():
     # Create check
     class ExtraCheck(Check):
         def validate_row(self, row):
-            return [
-                errors.BlankRowError(
-                    cells=list(map(str, row.values())),
-                    row_number=row.row_number,
-                    row_position=row.row_position,
-                    details='',
-                )
-            ]
+            yield errors.BlankRowError(
+                details='',
+                cells=list(map(str, row.values())),
+                row_number=row.row_number,
+                row_position=row.row_position,
+            )
 
     # Validate table
     report = validate('data/table.csv', extra_checks=[ExtraCheck])
@@ -795,14 +793,12 @@ def test_validate_extra_checks_with_arguments():
     # Create check
     class ExtraCheck(Check):
         def validate_row(self, row):
-            return [
-                errors.BlankRowError(
-                    cells=list(map(str, row.values())),
-                    row_number=row.row_number,
-                    row_position=self.get('rowPosition') or row.row_position,
-                    details='',
-                )
-            ]
+            yield errors.BlankRowError(
+                details='',
+                cells=list(map(str, row.values())),
+                row_number=row.row_number,
+                row_position=self.get('rowPosition') or row.row_position,
+            )
 
     # Validate table
     extra_checks = [(ExtraCheck, {'rowPosition': 1})]

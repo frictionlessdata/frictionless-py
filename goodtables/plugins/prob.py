@@ -1,7 +1,7 @@
 import statistics
+from .. import errors
 from ..check import Check
 from ..plugin import Plugin
-from ..errors import Error, TaskError, RowError, CellError
 
 
 # Plugin
@@ -20,11 +20,11 @@ class ProbPlugin(Plugin):
 # Errors
 
 
-class DuplicateRowError(RowError):
+class DuplicateRowError(errors.RowError):
     pass
 
 
-class DeviatedValueError(Error):
+class DeviatedValueError(errors.Error):
     code = 'prob/deviated-value'
     name = 'Deviated Value'
     tags = ['#body', '#prob']
@@ -32,7 +32,7 @@ class DeviatedValueError(Error):
     description = 'The value is deviated.'
 
 
-class TruncatedValueError(CellError):
+class TruncatedValueError(errors.CellError):
     code = 'prob/truncated-value'
     name = 'Truncated Value'
     tags = ['#body', '#prob']
@@ -75,27 +75,25 @@ class DeviatedValueCheck(Check):
     def validate_task(self):
         if self.field_name not in self.schema.field_names:
             details = 'deviated value check requires field "%s"' % self.field_name
-            return [TaskError(details=details)]
+            yield errors.TaskError(details=details)
         if not self.average_function:
             details = 'deviated value check supports only average functions "%s"'
             details = details % ', '.join(AVERAGE_FUNCTIONS.keys())
-            return [TaskError(details=details)]
-        return []
+            yield errors.TaskError(details=details)
 
     def validate_row(self, row):
         try:
             cell = float(row[self.field_name])
+            self.cells.append(cell)
+            self.row_positions.append(row.row_position)
         except ValueError:
             details = 'cell in row at position "%s" and in field "%s" must be a number'
             details = details % (row.row_position, self.field_name)
-            return [DeviatedValueError(details=details)]
-        self.cells.append(cell)
-        self.row_positions.append(row.row_position)
-        return []
+            yield DeviatedValueError(details=details)
 
     def validate_table(self):
         if len(self.cells) < 2:
-            return []
+            return
 
         # Prepare interval
         try:
@@ -105,17 +103,14 @@ class DeviatedValueCheck(Check):
             maximum = average + stdev * self.interval
         except Exception as exception:
             details = 'calculation issue "%s"' % exception
-            return [DeviatedValueError(details=details)]
+            yield DeviatedValueError(details=details)
 
         # Check values
-        errors = []
         for row_position, cell in zip(self.row_positions, self.cells):
             if not (minimum <= cell <= maximum):
                 dtl = 'value "%s" in row at position "%s" and field "%s" is deviated "[%.2f, %.2f]"'
                 dtl = dtl % (cell, row_position, self.field_name, minimum, maximum)
-                error = DeviatedValueError(details=dtl)
-                errors.append(error)
-        return errors
+                yield DeviatedValueError(details=dtl)
 
 
 class TruncatedValueCheck(Check):
@@ -128,12 +123,9 @@ class TruncatedValueCheck(Check):
     ]
 
     def validate_row(self, row):
-        errors = []
         for field_name, cell in row.items():
             truncated = False
-
-            # Skip no value
-            if not cell:
+            if cell is None:
                 continue
 
             # Check string cutoff
@@ -149,13 +141,9 @@ class TruncatedValueCheck(Check):
             # Add error
             if truncated:
                 details = 'value  is probably truncated'
-                errors.append(
-                    TruncatedValueError.from_row(
-                        row, details=details, field_name=field_name
-                    )
+                yield TruncatedValueError.from_row(
+                    row, details=details, field_name=field_name
                 )
-
-        return errors
 
 
 # Internal
