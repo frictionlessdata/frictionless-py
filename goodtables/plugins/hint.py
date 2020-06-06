@@ -8,13 +8,13 @@ from ..plugin import Plugin
 # Plugin
 
 
-class ProbPlugin(Plugin):
+class HintPlugin(Plugin):
     def create_check(self, name, *, descriptor=None):
-        if name == 'prob/duplicate-row':
+        if name == 'hint/duplicate-row':
             return DuplicateRowCheck(descriptor)
-        if name == 'prob/deviated-value':
+        if name == 'hint/deviated-value':
             return DeviatedValueCheck(descriptor)
-        if name == 'prob/truncated-value':
+        if name == 'hint/truncated-value':
             return TruncatedValueCheck(descriptor)
 
 
@@ -22,25 +22,25 @@ class ProbPlugin(Plugin):
 
 
 class DuplicateRowError(errors.RowError):
-    code = 'prob/duplicate-row'
+    code = 'hint/duplicate-row'
     name = 'Duplicate Row'
-    tags = ['#body', '#prob']
+    tags = ['#body', '#hint']
     message = 'Row at position {rowPosition} is duplicated: {details}'
     description = 'The row is duplicated.'
 
 
 class DeviatedValueError(errors.Error):
-    code = 'prob/deviated-value'
+    code = 'hint/deviated-value'
     name = 'Deviated Value'
-    tags = ['#body', '#prob']
+    tags = ['#body', '#hint']
     message = 'There is a possible error because the value is deviated: {details}'
     description = 'The value is deviated.'
 
 
 class TruncatedValueError(errors.CellError):
-    code = 'prob/truncated-value'
+    code = 'hint/truncated-value'
     name = 'Truncated Value'
-    tags = ['#body', '#prob']
+    tags = ['#body', '#hint']
     message = 'The cell {cell} in row at position {rowPosition} and field {fieldName} at position {fieldPosition} has an error: {details}'
     description = 'The value is possible truncated.'
 
