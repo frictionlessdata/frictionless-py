@@ -260,6 +260,7 @@
                 "code",
                 "name",
                 "tags",
+                "details",
                 "message",
                 "description"
               ],
@@ -282,6 +283,11 @@
                     "type": "string"
                   }
                 },
+                "details": {
+                  "type": "string",
+                  "title": "Details",
+                  "description": "The error details."
+                },
                 "message": {
                   "type": "string",
                   "title": "Message",
@@ -292,16 +298,6 @@
                   "title": "Description",
                   "description": "The error description."
                 },
-                "details": {
-                  "type": "string",
-                  "title": "Details",
-                  "description": "The error details."
-                },
-                "cell": {
-                  "type": "string",
-                  "title": "Cell",
-                  "description": "The error cell."
-                },
                 "cells": {
                   "type": "array",
                   "title": "Cells",
@@ -309,6 +305,21 @@
                   "items": {
                     "type": "string"
                   }
+                },
+                "rowNumber": {
+                  "type": "number",
+                  "title": "Row Number",
+                  "description": "The error row number."
+                },
+                "rowPosition": {
+                  "type": "number",
+                  "title": "Row Position",
+                  "description": "The error row position."
+                },
+                "cell": {
+                  "type": "string",
+                  "title": "Cell",
+                  "description": "The error cell."
                 },
                 "fieldName": {
                   "type": "string",
@@ -324,16 +335,6 @@
                   "type": "number",
                   "title": "Field Position",
                   "description": "The error field position."
-                },
-                "rowNumber": {
-                  "type": "number",
-                  "title": "Row Number",
-                  "description": "The error row number."
-                },
-                "rowPosition": {
-                  "type": "number",
-                  "title": "Row Position",
-                  "description": "The error row position."
                 }
               }
             }

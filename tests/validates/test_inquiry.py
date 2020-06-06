@@ -43,7 +43,7 @@ def test_validate_multiple_invalid_limit_errors():
     )
     assert report.flatten(['tablePosition', 'code', 'details']) == [
         [None, 'task-error', 'source "data/invalid.csv" reached the error limit "1"'],
-        [2, 'blank-header', None],
+        [2, 'blank-header', ''],
     ]
     assert report.tables[0].flatten(['rowPosition', 'fieldPosition', 'code']) == []
     assert report.tables[1].flatten(['rowPosition', 'fieldPosition', 'code']) == [

@@ -102,8 +102,8 @@ def test_validate_sequential_value_non_existent_field():
     report = validate(
         source,
         extra_checks=[
-            ('rule/sequential-value', {'column': 'row'}),
-            ('rule/sequential-value', {'column': 'bad'}),
+            ('rule/sequential-value', {'fieldName': 'row'}),
+            ('rule/sequential-value', {'fieldName': 'bad'}),
         ],
     )
     assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
@@ -111,10 +111,10 @@ def test_validate_sequential_value_non_existent_field():
     ]
 
 
-# Custom constraint
+# Row constraint
 
 
-def test_validate_custom_constraint():
+def test_validate_row_constraint():
     source = [
         ['row', 'salary', 'bonus'],
         [2, 1000, 200],
@@ -125,17 +125,17 @@ def test_validate_custom_constraint():
     ]
     report = validate(
         source,
-        extra_checks=[('rule/custom-constraint', {'constraint': 'salary == bonus * 5'})],
+        extra_checks=[('rule/row-constraint', {'constraint': 'salary == bonus * 5'})],
     )
     assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
-        [4, None, 'rule/custom-constraint'],
+        [4, None, 'rule/row-constraint'],
         [6, 2, 'missing-cell'],
         [6, 3, 'missing-cell'],
-        [6, None, 'rule/custom-constraint'],
+        [6, None, 'rule/row-constraint'],
     ]
 
 
-def test_validate_custom_constraint_incorrect_constraint():
+def test_validate_row_constraint_incorrect_constraint():
     source = [
         ['row', 'name'],
         [2, 'Alex'],
@@ -143,13 +143,13 @@ def test_validate_custom_constraint_incorrect_constraint():
     report = validate(
         source,
         extra_checks=[
-            ('rule/custom-constraint', {'constraint': 'vars()'}),
-            ('rule/custom-constraint', {'constraint': 'import(os)'}),
-            ('rule/custom-constraint', {'constraint': 'non_existent > 0'}),
+            ('rule/row-constraint', {'constraint': 'vars()'}),
+            ('rule/row-constraint', {'constraint': 'import(os)'}),
+            ('rule/row-constraint', {'constraint': 'non_existent > 0'}),
         ],
     )
     assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
-        [2, None, 'rule/custom-constraint'],
-        [2, None, 'rule/custom-constraint'],
-        [2, None, 'rule/custom-constraint'],
+        [2, None, 'rule/row-constraint'],
+        [2, None, 'rule/row-constraint'],
+        [2, None, 'rule/row-constraint'],
     ]

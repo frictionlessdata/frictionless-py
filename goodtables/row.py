@@ -1,6 +1,5 @@
 from collections import OrderedDict
 from cached_property import cached_property
-from . import exceptions
 from . import errors
 
 
@@ -24,11 +23,14 @@ class Row(OrderedDict):
             for field_position, cell in enumerate(iterator, start=start):
                 self.__errors.append(
                     errors.ExtraCellError(
-                        cell=str(cell),
+                        details='',
                         cells=list(map(str, cells)),
-                        field_position=field_position,
                         row_number=row_number,
                         row_position=row_position,
+                        cell=str(cell),
+                        field_name='',
+                        field_number=len(fields) + field_position - start,
+                        field_position=field_position,
                     )
                 )
 
@@ -40,12 +42,14 @@ class Row(OrderedDict):
                 cells.append(None)
                 self.__errors.append(
                     errors.MissingCellError(
+                        details='',
                         cells=list(map(str, cells)),
+                        row_number=row_number,
+                        row_position=row_position,
+                        cell='',
                         field_name=field.name,
                         field_number=field_number,
                         field_position=field_position,
-                        row_number=row_number,
-                        row_position=row_position,
                     )
                 )
 
@@ -66,12 +70,14 @@ class Row(OrderedDict):
                 if field.required:
                     self.__errors.append(
                         errors.RequiredError(
+                            details='',
                             cells=list(map(str, cells)),
+                            row_number=row_number,
+                            row_position=row_position,
+                            cell='',
                             field_name=field.name,
                             field_number=field_number,
                             field_position=field_position,
-                            row_number=row_number,
-                            row_position=row_position,
                         )
                     )
 
@@ -85,14 +91,14 @@ class Row(OrderedDict):
                     self.__error_cells[field.name] = cell
                     self.__errors.append(
                         errors.TypeError(
-                            cell=str(cell),
+                            details=details,
                             cells=list(map(str, cells)),
+                            row_number=row_number,
+                            row_position=row_position,
+                            cell=str(cell),
                             field_name=field.name,
                             field_number=field_number,
                             field_position=field_position,
-                            row_number=row_number,
-                            row_position=row_position,
-                            details=details,
                         )
                     )
                     cell = None
@@ -106,14 +112,14 @@ class Row(OrderedDict):
                             details = details % (field.constraints[name], name)
                             self.__errors.append(
                                 errors.ConstraintError(
-                                    cell=str(cell),
+                                    details=details,
                                     cells=list(map(str, cells)),
+                                    row_number=row_number,
+                                    row_position=row_position,
+                                    cell=str(cell),
                                     field_name=field.name,
                                     field_number=field_number,
                                     field_position=field_position,
-                                    row_number=row_number,
-                                    row_position=row_position,
-                                    details=details,
                                 )
                             )
 
@@ -124,10 +130,10 @@ class Row(OrderedDict):
         if is_blank:
             self.__errors = [
                 errors.BlankRowError(
+                    details='',
                     cells=list(map(str, cells)),
                     row_number=row_number,
                     row_position=row_position,
-                    details='',
                 )
             ]
 
@@ -154,32 +160,3 @@ class Row(OrderedDict):
     @cached_property
     def errors(self):
         return self.__errors
-
-    # Helpers
-
-    def create_error(self, Error, **options):
-        return Error(
-            cells=list(map(str, self.values())),
-            row_number=self.row_number,
-            row_position=self.row_position,
-            **options,
-        )
-
-    def create_error_from_cell(self, Error, *, field_name, **options):
-        # This algorithm can be optimized by storing more information in a row
-        # At the same time, this function should not be called very often
-        for field_number, [name, cell] in enumerate(self.items(), start=1):
-            if field_name == name:
-                field_position = self.field_positions[field_number - 1]
-                return Error(
-                    cell=str(cell),
-                    cells=list(map(str, self.values())),
-                    field_name=field_name,
-                    field_number=field_number,
-                    field_position=field_position,
-                    row_number=self.row_number,
-                    row_position=self.row_position,
-                    **options,
-                )
-        message = f'Field {field_name} is not in the row'
-        raise exceptions.GoodtablesException(message)

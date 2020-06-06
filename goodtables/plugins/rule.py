@@ -1,7 +1,7 @@
 import simpleeval
 from ..check import Check
 from ..plugin import Plugin
-from ..errors import TaskError, BlankRowError, ConstraintError
+from ..errors import TaskError, RowError, CellError
 
 
 # Plugin
@@ -13,14 +13,14 @@ class RulePlugin(Plugin):
             return BlacklistedValueCheck(descriptor)
         if name == 'rule/sequential-value':
             return SequentialValueCheck(descriptor)
-        if name == 'rule/custom-constraint':
-            return CustomConstraintCheck(descriptor)
+        if name == 'rule/row-constraint':
+            return RowConstraintCheck(descriptor)
 
 
 # Errors
 
 
-class BlacklistedValueError(ConstraintError):
+class BlacklistedValueError(CellError):
     code = 'rule/blacklisted-value'
     name = 'Blacklisted Value'
     tags = ['#body', '#rule']
@@ -28,7 +28,7 @@ class BlacklistedValueError(ConstraintError):
     description = 'The value is blacklisted.'
 
 
-class SequentialValueError(ConstraintError):
+class SequentialValueError(CellError):
     code = 'rule/sequential-value'
     name = 'Sequential Value'
     tags = ['#body', '#rule']
@@ -36,12 +36,12 @@ class SequentialValueError(ConstraintError):
     description = 'The value is not sequential.'
 
 
-class CustomConstraintError(BlankRowError):
-    code = 'rule/custom-constraint'
-    name = 'Custom Constaint'
+class RowConstraintError(RowError):
+    code = 'rule/row-constraint'
+    name = 'Row Constraint'
     tags = ['#body', '#rule']
     message = 'The row at position {rowPosition} has an error: {details}'
-    description = 'The value does not conform to the custom constaint.'
+    description = 'The value does not conform to the row constraint.'
 
 
 # Checks
@@ -72,10 +72,10 @@ class BlacklistedValueCheck(Check):
     def validate_row(self, row):
         cell = row[self.field_name]
         if cell in self.blacklist:
-            error = row.create_error_from_cell(
-                BlacklistedValueError,
-                field_name=self.field_name,
+            error = BlacklistedValueError.from_row(
+                row,
                 details='blacklisted values are "%s"' % self.blacklist,
+                field_name=self.field_name,
             )
             return [error]
         return []
@@ -94,7 +94,7 @@ class SequentialValueCheck(Check):
     def prepare(self):
         self.cursor = None
         self.exited = False
-        self.field_name = self['fieldName']
+        self.field_name = self.get('fieldName')
 
     # Validate
 
@@ -113,23 +113,23 @@ class SequentialValueCheck(Check):
                 self.cursor += 1
             except Exception:
                 self.exited = True
-                error = row.create_error_from_cell(
-                    SequentialValueError,
-                    field_name=self.field_name,
+                error = SequentialValueError.from_row(
+                    row,
                     details='the value is not sequential',
+                    field_name=self.field_name,
                 )
                 return [error]
         return []
 
 
-class CustomConstraintCheck(Check):
+class RowConstraintCheck(Check):
     metadata_profile = {  # type: ignore
         'type': 'object',
         'requred': ['constraint'],
         'properties': {'constraint': {'type': 'string'}},
     }
     possible_Errors = [  # type: ignore
-        CustomConstraintError
+        RowConstraintError
     ]
 
     def prepare(self):
@@ -143,9 +143,8 @@ class CustomConstraintCheck(Check):
             # https://github.com/danthedeckie/simpleeval
             assert simpleeval.simple_eval(self.constraint, names=row)
         except Exception:
-            error = row.create_error(
-                CustomConstraintError,
-                details='the custom constraint to conform is "%s"' % self.constraint,
+            error = RowConstraintError.from_row(
+                row, details='the row constraint to conform is "%s"' % self.constraint,
             )
             return [error]
         return []

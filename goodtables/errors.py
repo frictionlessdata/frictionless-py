@@ -1,19 +1,21 @@
 import tabulator
 import tableschema
 from .metadata import Metadata
+from . import exceptions
 
 
 class Error(Metadata):
     code = 'error'
     name = 'Error'
     tags = []  # type: ignore
-    message = 'Not specified error'
-    description = 'Not specified error.'
+    message = 'Error'
+    description = 'Error.'
 
-    def __init__(self):
+    def __init__(self, *, details):
         self['code'] = self.code
         self['name'] = self.name
         self['tags'] = self.tags
+        self['details'] = details
         self['message'] = self.message.format(**self)
         self['description'] = self.description
 
@@ -38,61 +40,130 @@ class Error(Metadata):
         return Error(details=details)
 
 
-class ReportError(Error):
-    code = 'report-error'
-    name = 'Report Error'
-    tags = ['#report']
-    message = 'The validation report has an error: {details}'
-    description = 'A validation cannot be presented.'
+class HeaderError(Error):
+    code = 'header-error'
+    name = 'Header Error'
+    tags = ['#head']
+    message = 'Cell Error'
+    description = 'Cell Error'
 
-    def __init__(self, *, details):
-        self['details'] = details
-        super().__init__()
+    def __init__(self, *, details, cells, cell, field_name, field_number, field_position):
+        self['cells'] = cells
+        self['cell'] = cell
+        self['fieldName'] = field_name
+        self['fieldNumber'] = field_number
+        self['fieldPosition'] = field_position
+        super().__init__(details=details)
 
 
-# Task
+class RowError(Error):
+    code = 'row-error'
+    name = 'Row Error'
+    tags = ['#body']
+    message = 'Row Error'
+    description = 'Row Error'
+
+    def __init__(self, *, details, cells, row_number, row_position):
+        self['cells'] = cells
+        self['rowNumber'] = row_number
+        self['rowPosition'] = row_position
+        super().__init__(details=details)
+
+    # Helpers
+
+    @classmethod
+    def from_row(cls, row, *, details):
+        return cls(
+            details=details,
+            cells=list(map(str, row.values())),
+            row_number=row.row_number,
+            row_position=row.row_position,
+        )
+
+
+class CellError(RowError):
+    code = 'cell-error'
+    name = 'Cell Error'
+    tags = ['#body']
+    message = 'Cell Error'
+    description = 'Cell Error'
+
+    def __init__(
+        self,
+        *,
+        details,
+        cells,
+        row_number,
+        row_position,
+        cell,
+        field_name,
+        field_number,
+        field_position,
+    ):
+        self['cell'] = cell
+        self['fieldName'] = field_name
+        self['fieldNumber'] = field_number
+        self['fieldPosition'] = field_position
+        super().__init__(
+            details=details, cells=cells, row_number=row_number, row_position=row_position
+        )
+
+    # Helpers
+
+    @classmethod
+    def from_row(cls, row, *, details, field_name):
+        # This algorithm can be optimized by storing more information in a row
+        # At the same time, this function should not be called very often
+        for field_number, [name, cell] in enumerate(row.items(), start=1):
+            if field_name == name:
+                field_position = row.field_positions[field_number - 1]
+                return cls(
+                    details=details,
+                    cells=list(map(str, row.values())),
+                    row_number=row.row_number,
+                    row_position=row.row_position,
+                    cell=str(cell),
+                    field_name=field_name,
+                    field_number=field_number,
+                    field_position=field_position,
+                )
+        message = f'Field {field_name} is not in the row'
+        raise exceptions.GoodtablesException(message)
+
+
+# Genreal
 
 
 class TaskError(Error):
     code = 'task-error'
     name = 'Task Error'
-    tags = ['#task']
+    tags = ['#general']
     message = 'The validation task has an error: {details}'
     description = 'General task-level error.'
 
-    def __init__(self, *, details):
-        self['details'] = details
-        super().__init__()
 
-
-# Package
+class ReportError(Error):
+    code = 'report-error'
+    name = 'Report Error'
+    tags = ['#general']
+    message = 'The validation report has an error: {details}'
+    description = 'A validation cannot be presented.'
 
 
 class PackageError(Error):
     code = 'package-error'
     name = 'Package Error'
-    tags = ['#package']
+    tags = ['#general']
     message = 'The data package has an error: {details}'
     description = 'A validation cannot be processed.'
-
-    def __init__(self, *, details):
-        self['details'] = details
-        super().__init__()
-
-
-# Resource
 
 
 class ResourceError(Error):
     code = 'resource-error'
     name = 'Resource Error'
-    tags = ['#resource']
+    tags = ['#general']
     message = 'The data resource has an error: {details}'
     description = 'A validation cannot be processed.'
-
-    def __init__(self, *, details):
-        self['details'] = details
-        super().__init__()
 
 
 # Table
@@ -105,10 +176,6 @@ class SourceError(Error):
     message = 'The data source has not supported or has inconsistent contents: {details}'
     description = 'Data reading error because of not supported or inconsistent contents.'
 
-    def __init__(self, *, details):
-        self['details'] = details
-        super().__init__()
-
 
 class SchemeError(Error):
     code = 'scheme-error'
@@ -116,10 +183,6 @@ class SchemeError(Error):
     tags = ['#table']
     message = 'The data source could not be successfully loaded: {details}'
     description = 'Data reading error because of incorrect scheme.'
-
-    def __init__(self, *, details):
-        self['details'] = details
-        super().__init__()
 
 
 class FormatError(Error):
@@ -129,10 +192,6 @@ class FormatError(Error):
     message = 'The data source could not be successfully parsed: {details}'
     description = 'Data reading error because of incorrect format.'
 
-    def __init__(self, *, details):
-        self['details'] = details
-        super().__init__()
-
 
 class EncodingError(Error):
     code = 'encoding-error'
@@ -140,10 +199,6 @@ class EncodingError(Error):
     tags = ['#table']
     message = 'The data source could not be successfully decoded: {details}'
     description = 'Data reading error because of an encoding problem.'
-
-    def __init__(self, *, details):
-        self['details'] = details
-        super().__init__()
 
 
 class CompressionError(Error):
@@ -153,10 +208,6 @@ class CompressionError(Error):
     message = 'The data source could not be successfully decompressed: {details}'
     description = 'Data reading error because of a decompression problem.'
 
-    def __init__(self, *, details):
-        self['details'] = details
-        super().__init__()
-
 
 class SizeError(Error):
     code = 'size-error'
@@ -164,10 +215,6 @@ class SizeError(Error):
     tags = ['#table', '#integrity']
     message = 'The data source does not match the expected size in bytes: {details}'
     description = 'This error can happen if the data is corrupted.'
-
-    def __init__(self, *, details):
-        self['details'] = details
-        super().__init__()
 
 
 class HashError(Error):
@@ -177,10 +224,6 @@ class HashError(Error):
     message = 'The data source does not match the expected hash: {details}'
     description = 'This error can happen if the data is corrupted.'
 
-    def __init__(self, *, details):
-        self['details'] = details
-        super().__init__()
-
 
 class SchemaError(Error):
     code = 'schema-error'
@@ -189,289 +232,120 @@ class SchemaError(Error):
     message = 'The data source could not be successfully described by the invalid Table Schema: {details}'
     description = 'Provided schema is not valid.'
 
-    def __init__(self, *, details):
-        self['details'] = details
-        super().__init__()
-
 
 # Head
 
 
-class ExtraHeaderError(Error):
+class ExtraHeaderError(HeaderError):
     code = 'extra-header'
     name = 'Extra Header'
     tags = ['#head', '#structure']
     message = 'There is an extra header {cell} in field at position {fieldPosition}'
     description = 'The first row of the data source contains header that does not exist in the schema.'
 
-    def __init__(self, *, cell, cells, field_position):
-        self['cell'] = cell
-        self['cells'] = cells
-        self['fieldPosition'] = field_position
-        super().__init__()
 
-
-class MissingHeaderError(Error):
+class MissingHeaderError(HeaderError):
     code = 'missing-header'
     name = 'Missing Header'
     tags = ['#head', '#structure']
     message = 'There is a missing header in field {fieldName} at position {fieldPosition}'
     description = 'Based on the schema there should be a header that is missing in the first row of the data source.'
 
-    def __init__(self, *, cell, cells, field_name, field_number, field_position):
-        self['cell'] = cell
-        self['cells'] = cells
-        self['fieldName'] = field_name
-        self['fieldNumber'] = field_number
-        self['fieldPosition'] = field_position
-        super().__init__()
 
-
-class BlankHeaderError(Error):
+class BlankHeaderError(HeaderError):
     code = 'blank-header'
     name = 'Blank Header'
     tags = ['#head', '#structure']
     message = 'Header in field at position {fieldPosition} is blank'
     description = 'A column in the header row is missing a value. Headers should be provided and not be blank.'
 
-    def __init__(self, *, cells, field_name, field_number, field_position):
-        self['cells'] = cells
-        self['fieldName'] = field_name
-        self['fieldNumber'] = field_number
-        self['fieldPosition'] = field_position
-        super().__init__()
 
-
-class DuplicateHeaderError(Error):
+class DuplicateHeaderError(HeaderError):
     code = 'duplicate-header'
     name = 'Duplicate Header'
     tags = ['#head', '#structure']
     message = 'Header {cell} in field at position {fieldPosition} is duplicated to header in field(s): {details}'
     description = 'Two columns in the header row have the same value. Column names should be unique.'
 
-    def __init__(self, *, cell, cells, field_name, field_number, field_position, details):
-        self['cell'] = cell
-        self['cells'] = cells
-        self['fieldName'] = field_name
-        self['fieldNumber'] = field_number
-        self['fieldPosition'] = field_position
-        self['details'] = details
-        super().__init__()
 
-
-class NonMatchingHeaderError(Error):
+class NonMatchingHeaderError(HeaderError):
     code = 'non-matching-header'
     name = 'Non-matching Header'
     tags = ['#head', '#schema']
     message = 'Header {cell} in field {fieldName} at position {fieldPosition} does not match the field name in the schema'
     description = 'One of the data source headers does not match the field name defined in the schema.'
 
-    def __init__(self, *, cell, cells, field_name, field_number, field_position):
-        self['cell'] = cell
-        self['cells'] = cells
-        self['fieldName'] = field_name
-        self['fieldNumber'] = field_number
-        self['fieldPosition'] = field_position
-        super().__init__()
-
 
 # Body
 
 
-class ExtraCellError(Error):
+class ExtraCellError(CellError):
     code = 'extra-cell'
     name = 'Extra Cell'
     tags = ['#body', '#structure']
     message = 'Row at position {rowPosition} has an extra value in field at position {fieldPosition}'
     description = 'This row has more values compared to the header row (the first row in the data source). A key concept is that all the rows in tabular data must have the same number of columns.'
 
-    def __init__(self, *, cell, cells, field_position, row_number, row_position):
-        self['cell'] = cell
-        self['cells'] = cells
-        self['fieldPosition'] = field_position
-        self['rowNumber'] = row_number
-        self['rowPosition'] = row_position
-        super().__init__()
 
-
-class MissingCellError(Error):
+class MissingCellError(CellError):
     code = 'missing-cell'
     name = 'Missing Cell'
     tags = ['#body', '#structure']
     message = 'Row at position {rowPosition} has a missing cell in field {fieldName} at position {fieldPosition}'
     description = 'This row has less values compared to the header row (the first row in the data source). A key concept is that all the rows in tabular data must have the same number of columns.'
 
-    def __init__(
-        self, *, cells, field_name, field_number, field_position, row_number, row_position
-    ):
-        self['cells'] = cells
-        self['fieldName'] = field_name
-        self['fieldNumber'] = field_number
-        self['fieldPosition'] = field_position
-        self['rowNumber'] = row_number
-        self['rowPosition'] = row_position
-        super().__init__()
 
-
-class BlankRowError(Error):
+class BlankRowError(RowError):
     code = 'blank-row'
     name = 'Blank Row'
     tags = ['#body', '#structure']
     message = 'Row at position {rowPosition} is completely blank'
     description = 'This row is empty. A row should contain at least one value.'
 
-    def __init__(self, *, cells, row_number, row_position, details):
-        self['cells'] = cells
-        self['rowNumber'] = row_number
-        self['rowPosition'] = row_position
-        self['details'] = details
-        super().__init__()
 
-
-class RequiredError(Error):
+class RequiredError(CellError):
     code = 'required-error'
     name = 'Required Error'
     tags = ['#body', '#schema']
     message = 'Field {fieldName} at position {fieldPosition} is a required field, but row at position {rowPosition} has no value'
     description = 'This field is a required field, but it contains no value.'
 
-    def __init__(
-        self,
-        *,
-        cells,
-        field_name,
-        field_number,
-        field_position,
-        row_number,
-        row_position,
-    ):
-        self['cells'] = cells
-        self['fieldName'] = field_name
-        self['fieldNumber'] = field_number
-        self['fieldPosition'] = field_position
-        self['rowNumber'] = row_number
-        self['rowPosition'] = row_position
-        super().__init__()
 
-
-class TypeError(Error):
+class TypeError(CellError):
     code = 'type-error'
     name = 'Missing Cell'
     tags = ['#body', '#schema']
     message = 'The cell {cell} in row at position {rowPosition} and field {fieldName} at position {fieldPosition} has incompatible type: {details}'
     description = 'The value does not match the schema type and format for this field.'
 
-    def __init__(
-        self,
-        *,
-        cell,
-        cells,
-        field_name,
-        field_number,
-        field_position,
-        row_number,
-        row_position,
-        details,
-    ):
-        self['cell'] = cell
-        self['cells'] = cells
-        self['fieldName'] = field_name
-        self['fieldNumber'] = field_number
-        self['fieldPosition'] = field_position
-        self['rowNumber'] = row_number
-        self['rowPosition'] = row_position
-        self['details'] = details
-        super().__init__()
 
-
-class ConstraintError(Error):
+class ConstraintError(CellError):
     code = 'constraint-error'
     name = 'Constraint Error'
     tags = ['#body', '#schema']
     message = 'The cell {cell} in row at position {rowPosition} and field {fieldName} at position {fieldPosition} does not conform to a constraint: {details}'
     description = 'A field value does not conform to a constraint.'
 
-    def __init__(
-        self,
-        *,
-        cell,
-        cells,
-        field_name,
-        field_number,
-        field_position,
-        row_number,
-        row_position,
-        details,
-    ):
-        self['cell'] = cell
-        self['cells'] = cells
-        self['fieldName'] = field_name
-        self['fieldNumber'] = field_number
-        self['fieldPosition'] = field_position
-        self['rowNumber'] = row_number
-        self['rowPosition'] = row_position
-        self['details'] = details
-        super().__init__()
 
-
-class UniqueError(Error):
+class UniqueError(CellError):
     code = 'unique-error'
     name = 'Unique Error'
     tags = ['#body', '#schema', '#integrity']
     message = 'Row at position {rowPosition} has unique constraint violation in field {fieldName} at position {fieldPosition}: {details}'
     description = 'This field is a unique field but it contains a value that has been used in another row.'
 
-    def __init__(
-        self,
-        *,
-        cell,
-        cells,
-        field_name,
-        field_number,
-        field_position,
-        row_number,
-        row_position,
-        details,
-    ):
-        self['cell'] = cell
-        self['cells'] = cells
-        self['fieldName'] = field_name
-        self['fieldNumber'] = field_number
-        self['fieldPosition'] = field_position
-        self['rowNumber'] = row_number
-        self['rowPosition'] = row_position
-        self['details'] = details
-        super().__init__()
 
-
-class PrimaryKeyError(Error):
+class PrimaryKeyError(RowError):
     code = 'primary-key-error'
     name = 'Primary Key Error'
     tags = ['#body', '#schema', '#integrity']
     message = 'The row at position {rowPosition} does not conform to the primary key constraint: {details}'
     description = 'Values in the primary key fields should be unique for every row'
 
-    def __init__(
-        self, *, cells, row_number, row_position, details,
-    ):
-        self['cells'] = cells
-        self['rowNumber'] = row_number
-        self['rowPosition'] = row_position
-        self['details'] = details
-        super().__init__()
 
-
-class ForeignKeyError(Error):
+class ForeignKeyError(RowError):
     code = 'foreign-key-error'
     name = 'Foreign Key Error'
     tags = ['#body', '#schema', '#integrity']
     message = 'The row at position {rowPosition} does not conform to the foreign key constraint: {details}'
     description = 'Values in the foreign key fields should exist in the reference table'
-
-    def __init__(
-        self, *, cells, row_number, row_position, details,
-    ):
-        self['cells'] = cells
-        self['rowNumber'] = row_number
-        self['rowPosition'] = row_position
-        self['details'] = details
