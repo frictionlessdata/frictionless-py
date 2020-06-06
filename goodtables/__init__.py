@@ -1,4 +1,9 @@
-from .sources import validate_inquiry, validate_package, validate_resource, validate_table
+from .validates import (
+    validate_inquiry,
+    validate_package,
+    validate_resource,
+    validate_table,
+)
 from .check import Check
 from .headers import Headers
 from .inquiry import Inquiry

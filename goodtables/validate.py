@@ -1,6 +1,6 @@
 from pathlib import Path
 from .report import Report
-from . import sources
+from . import validates
 
 
 @Report.catch
@@ -29,5 +29,5 @@ def validate(source, source_type=None, **options):
                 source_type = 'package'
 
     # Validate source
-    validate = getattr(sources, 'validate_%s' % source_type)
+    validate = getattr(validates, 'validate_%s' % source_type)
     return validate(source, **options)
