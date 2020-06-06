@@ -2,6 +2,7 @@ import io
 import os
 import datetime
 import itertools
+import stringcase
 
 
 # General
@@ -37,6 +38,11 @@ def parse_hashing_digest(hash):
         return ''
     parts = hash.split(':', maxsplit=1)
     return parts[1] if len(parts) > 1 else hash
+
+
+def apply_function(function, descriptor):
+    options = {stringcase.snakecase(key): value for key, value in descriptor.items()}
+    return function(**options)
 
 
 # Compatability

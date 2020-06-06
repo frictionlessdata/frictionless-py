@@ -1,4 +1,6 @@
 import datapackage
+from functools import partial
+from multiprocessing import Pool
 from .. import helpers
 from ..report import Report
 from ..errors import PackageError
@@ -38,12 +40,11 @@ def validate_package(source, strict=False, base_path=None, **options):
             return Report(time=time, errors=errors, tables=[])
 
     # Validate resources
-    reports = []
-    for resource in package.resources:
-        reports.append(
-            validate_resource(
-                resource.descriptor, strict=strict, base_path=package.base_path, **options
-            )
+    with Pool() as pool:
+        validate = validate_resource
+        reports = pool.map(
+            partial(validate, strict=strict, base_path=package.base_path, **options),
+            (resource.descriptor for resource in package.resources),
         )
 
     # Return report
