@@ -45,6 +45,25 @@ def apply_function(function, descriptor):
     return function(**options)
 
 
+def detect_source_type(source):
+    source_type = 'table'
+    if isinstance(source, dict):
+        if source.get('sources') is not None:
+            source_type = 'inquiry'
+        if source.get('path') is not None:
+            source_type = 'resource'
+        if source.get('resources') is not None:
+            source_type = 'package'
+    if isinstance(source, str):
+        if source.endswith('inquiry.json'):
+            source_type = 'inquiry'
+        if source.endswith('.json'):
+            source_type = 'resource'
+        if source.endswith('datapackage.json'):
+            source_type = 'package'
+    return source_type
+
+
 # Compatability
 
 
