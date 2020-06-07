@@ -1,4 +1,3 @@
-import pytest
 from goodtables import validate
 
 

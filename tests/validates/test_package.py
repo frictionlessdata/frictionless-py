@@ -1,4 +1,5 @@
 import json
+import pytest
 import pathlib
 from goodtables import validate
 
@@ -129,6 +130,7 @@ def test_validate_package_number_test_issue_232():
     assert not report['valid']
 
 
+@pytest.mark.skip
 def test_validate_package_with_schema_issue_348():
     descriptor = {
         'resources': [
@@ -152,8 +154,7 @@ def test_validate_package_with_schema_issue_348():
     }
     report1 = validate(descriptor, pick_errors=['#structure'])
     assert report1['valid']
-    # TODO: enable
-    #  report2 = validate(descriptor)
-    #  assert report2.flatten(['rowPosition', 'fieldPosition', 'code']) == [
-    #  [None, 4, 'missing-header'],
-    #  ]
+    report2 = validate(descriptor)
+    assert report2.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [None, 4, 'missing-header'],
+    ]
