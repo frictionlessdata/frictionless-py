@@ -4,7 +4,7 @@
   "$id": "https://github.com/frictionlessdata/goodtables-py/tree/master/goodtables/assets/profiles/inquiry.json",
   "type": "object",
   "required": [
-    "sources"
+    "tasks"
   ],
   "properties": {
     "version": {
@@ -12,12 +12,12 @@
       "title": "Version",
       "description": "Goodtables version"
     },
-    "sources": {
+    "tasks": {
       "type": "array",
-      "title": "Sources",
-      "description": "Inquiry sources",
+      "title": "Tasks",
+      "description": "Inquiry tasks",
       "items": {
-        "title": "Source",
+        "title": "Task",
         "type": "object",
         "required": ["source"]
       }

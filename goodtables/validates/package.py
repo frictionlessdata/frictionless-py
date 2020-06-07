@@ -38,16 +38,21 @@ def validate_package(source, strict=False, base_path=None, **options):
             time = timer.get_time()
             return Report(time=time, errors=errors, tables=[])
 
-    # Validate inquiry
-    descriptor = {'sources': []}
+    # Prepare inquiry
+    descriptor = {'tasks': []}
     for resource in package.resources:
-        source = {}
-        source['source'] = resource.source
-        source['strict'] = strict
-        source['basePath'] = base_path
-        source.update(helpers.create_descriptor_from_options(options))
-        descriptor['sources'].append(source)
-    report = validate_inquiry(Inquiry(descriptor))
+        descriptor['tasks'].append(
+            helpers.create_descriptor_from_options(
+                **options,
+                source=resource.descriptor,
+                strict=strict,
+                base_path=package.base_path
+            )
+        )
+
+    # Validate inquiry
+    inquiry = Inquiry(descriptor)
+    report = validate_inquiry(inquiry)
 
     # Return report
     time = timer.get_time()

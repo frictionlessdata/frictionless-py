@@ -49,26 +49,26 @@ def create_options_from_descriptor(descriptor):
     return {stringcase.snakecase(key): value for key, value in descriptor.items()}
 
 
-def create_descriptor_from_options(options):
+def create_descriptor_from_options(**options):
     return {stringcase.camelcase(key): value for key, value in options.items()}
 
 
 def detect_source_type(source):
     source_type = 'table'
     if isinstance(source, dict):
-        if source.get('sources') is not None:
-            source_type = 'inquiry'
-        if source.get('path') is not None:
+        if source.get('path') is not None or source.get('data') is not None:
             source_type = 'resource'
         if source.get('resources') is not None:
             source_type = 'package'
-    if isinstance(source, str):
-        if source.endswith('inquiry.json'):
+        if source.get('tasks') is not None:
             source_type = 'inquiry'
+    if isinstance(source, str):
         if source.endswith('.json'):
             source_type = 'resource'
         if source.endswith('datapackage.json'):
             source_type = 'package'
+        if source.endswith('inquiry.json'):
+            source_type = 'inquiry'
     return source_type
 
 

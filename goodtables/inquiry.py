@@ -6,5 +6,5 @@ class Inquiry(Metadata):
     metadata_profile = config.INQUIRY_PROFILE
 
     @property
-    def sources(self):
-        return self['sources']
+    def tasks(self):
+        return self['tasks']

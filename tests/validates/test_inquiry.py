@@ -6,20 +6,20 @@ from goodtables import validate
 
 
 def test_validate():
-    report = validate({'sources': [{'source': 'data/table.csv'}]})
+    report = validate({'tasks': [{'source': 'data/table.csv'}]})
     assert report['valid']
 
 
 def test_validate_multiple():
     report = validate(
-        {'sources': [{'source': 'data/table.csv'}, {'source': 'data/matrix.csv'}]}
+        {'tasks': [{'source': 'data/table.csv'}, {'source': 'data/matrix.csv'}]}
     )
     assert report['valid']
 
 
 def test_validate_multiple_invalid():
     report = validate(
-        {'sources': [{'source': 'data/table.csv'}, {'source': 'data/invalid.csv'}]}
+        {'tasks': [{'source': 'data/table.csv'}, {'source': 'data/invalid.csv'}]}
     )
     assert report.flatten(['tablePosition', 'rowPosition', 'fieldPosition', 'code']) == [
         [2, None, 3, 'blank-header'],
@@ -36,7 +36,7 @@ def test_validate_multiple_invalid():
 def test_validate_multiple_invalid_limit_errors():
     report = validate(
         {
-            'sources': [
+            'tasks': [
                 {'source': 'data/table.csv'},
                 {'source': 'data/invalid.csv', 'limitErrors': 1},
             ]
@@ -55,7 +55,7 @@ def test_validate_multiple_invalid_limit_errors():
 def test_validate_multiple_invalid_with_schema():
     report = validate(
         {
-            'sources': [
+            'tasks': [
                 {
                     'source': 'data/table.csv',
                     'schema': {'fields': [{'name': 'bad'}, {'name': 'name'}]},
@@ -79,7 +79,7 @@ def test_validate_multiple_invalid_with_schema():
 
 @pytest.mark.skip
 def test_validate_with_one_package():
-    report = validate({'sources': [{'source': 'data/package/datapackage.json'}]})
+    report = validate({'tasks': [{'source': 'data/package/datapackage.json'}]})
     assert report['valid']
 
 
@@ -87,7 +87,7 @@ def test_validate_with_one_package():
 def test_validate_with_multiple_packages():
     report = validate(
         {
-            'sources': [
+            'tasks': [
                 {'source': 'data/package/datapackage.json'},
                 {'source': 'data/invalid/datapackage.json'},
             ]

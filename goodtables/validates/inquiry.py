@@ -11,11 +11,11 @@ def validate_inquiry(source):
     timer = helpers.Timer()
     inquiry = Inquiry(source)
 
-    # Validate sources
+    # Validate tasks
     with Pool() as pool:
         reports = pool.map(
             partial(helpers.apply_function, validate),
-            (descriptor for descriptor in inquiry.sources),
+            (descriptor for descriptor in inquiry.tasks),
         )
 
     # Return report
