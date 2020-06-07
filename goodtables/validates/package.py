@@ -1,10 +1,9 @@
 import datapackage
-from functools import partial
-from multiprocessing import Pool
 from .. import helpers
 from ..report import Report
+from ..inquiry import Inquiry
 from ..errors import PackageError
-from .resource import validate_resource
+from .inquiry import validate_inquiry
 
 
 @Report.catch
@@ -39,19 +38,17 @@ def validate_package(source, strict=False, base_path=None, **options):
             time = timer.get_time()
             return Report(time=time, errors=errors, tables=[])
 
-    # Validate resources
-    with Pool() as pool:
-        validate = validate_resource
-        reports = pool.map(
-            partial(validate, strict=strict, base_path=package.base_path, **options),
-            (resource.descriptor for resource in package.resources),
-        )
+    # Validate inquiry
+    descriptor = {'sources': []}
+    for resource in package.resources:
+        source = {}
+        source['source'] = resource.source
+        source['strict'] = strict
+        source['basePath'] = base_path
+        source.update(helpers.create_descriptor_from_options(options))
+        descriptor['sources'].append(source)
+    report = validate_inquiry(Inquiry(descriptor))
 
     # Return report
     time = timer.get_time()
-    errors = []
-    tables = []
-    for report in reports:
-        errors.extend(report['errors'])
-        tables.extend(report['tables'])
-    return Report(time=time, errors=errors, tables=tables)
+    return Report(time=time, errors=report['errors'], tables=report['tables'])

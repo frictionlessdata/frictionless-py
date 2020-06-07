@@ -41,8 +41,16 @@ def parse_hashing_digest(hash):
 
 
 def apply_function(function, descriptor):
-    options = {stringcase.snakecase(key): value for key, value in descriptor.items()}
+    options = create_options_from_descriptor(descriptor)
     return function(**options)
+
+
+def create_options_from_descriptor(descriptor):
+    return {stringcase.snakecase(key): value for key, value in descriptor.items()}
+
+
+def create_descriptor_from_options(options):
+    return {stringcase.camelcase(key): value for key, value in options.items()}
 
 
 def detect_source_type(source):
