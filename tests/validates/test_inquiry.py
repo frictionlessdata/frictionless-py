@@ -6,14 +6,14 @@ from goodtables import validate
 
 def test_validate():
     report = validate({'tasks': [{'source': 'data/table.csv'}]})
-    assert report['valid']
+    assert report.valid
 
 
 def test_validate_multiple():
     report = validate(
         {'tasks': [{'source': 'data/table.csv'}, {'source': 'data/matrix.csv'}]}
     )
-    assert report['valid']
+    assert report.valid
 
 
 def test_validate_multiple_invalid():
@@ -78,7 +78,7 @@ def test_validate_multiple_invalid_with_schema():
 
 def test_validate_with_one_package():
     report = validate({'tasks': [{'source': 'data/package/datapackage.json'}]})
-    assert report['valid']
+    assert report.valid
 
 
 def test_validate_with_multiple_packages():

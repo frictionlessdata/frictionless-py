@@ -10,17 +10,17 @@ from goodtables import validate
 
 def test_validate():
     report = validate({'resources': [{'path': 'data/table.csv'}]})
-    assert report['valid']
+    assert report.valid
 
 
 def test_validate_from_path():
     report = validate('data/package/datapackage.json')
-    assert report['valid']
+    assert report.valid
 
 
 def test_validate_from_zip():
     report = validate('data/package.zip', source_type='package')
-    assert report['valid']
+    assert report.valid
 
 
 def test_validate_from_dict():
@@ -33,7 +33,7 @@ def test_validate_with_non_tabular():
     report = validate(
         {'resources': [{'path': 'data/table.csv'}, {'path': 'data/file.txt'}]}
     )
-    assert report['valid']
+    assert report.valid
 
 
 def test_validate_invalid_descriptor_path():
@@ -76,12 +76,12 @@ def test_validate_invalid_table():
 
 def test_validate_pathlib_source():
     report = validate(pathlib.Path('data/package/datapackage.json'))
-    assert report['valid']
+    assert report.valid
 
 
 def test_validate_package_infer():
     report = validate('data/infer/datapackage.json')
-    assert report['valid']
+    assert report.valid
 
 
 def test_validate_package_dialect_header_false():
@@ -98,7 +98,7 @@ def test_validate_package_dialect_header_false():
         ]
     }
     report = validate(descriptor)
-    assert report['valid']
+    assert report.valid
 
 
 # Integrity
@@ -118,7 +118,7 @@ INTEGRITY_DESCRIPTOR = {
 def test_validate_integrity():
     source = deepcopy(INTEGRITY_DESCRIPTOR)
     report = validate(source)
-    assert report['valid']
+    assert report.valid
 
 
 def test_validate_integrity_invalid():
@@ -136,7 +136,7 @@ def test_validate_integrity_size():
     source = deepcopy(INTEGRITY_DESCRIPTOR)
     source['resources'][0].pop('hash')
     report = validate(source)
-    assert report['valid']
+    assert report.valid
 
 
 def test_validate_integrity_size_invalid():
@@ -153,7 +153,7 @@ def test_validate_integrity_hash():
     source = deepcopy(INTEGRITY_DESCRIPTOR)
     source['resources'][0].pop('bytes')
     report = validate(source)
-    assert report['valid']
+    assert report.valid
 
 
 def test_check_file_integrity_hash_invalid():
@@ -181,7 +181,7 @@ def test_check_file_integrity_hash_not_supported_algorithm():
 
 def test_validate_package_mixed_issue_170():
     report = validate('data/infer/datapackage.json')
-    assert report['valid']
+    assert report.valid
 
 
 def test_validate_package_invalid_json_issue_192():
@@ -197,13 +197,13 @@ def test_validate_package_invalid_json_issue_192():
 def test_validate_geopoint_required_constraint_issue_231():
     # We check here that it doesn't raise exceptions
     report = validate('data/geopoint/datapackage.json')
-    assert not report['valid']
+    assert not report.valid
 
 
 def test_validate_package_number_test_issue_232():
     # We check here that it doesn't raise exceptions
     report = validate('data/number/datapackage.json')
-    assert not report['valid']
+    assert not report.valid
 
 
 @pytest.mark.skip

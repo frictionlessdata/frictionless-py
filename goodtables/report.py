@@ -21,6 +21,26 @@ class Report(Metadata):
         super().__init__(descriptor)
 
     @property
+    def time(self):
+        return self['time']
+
+    @property
+    def valid(self):
+        return self['valid']
+
+    @property
+    def version(self):
+        return self['version']
+
+    @property
+    def table_count(self):
+        return self['tableCount']
+
+    @property
+    def error_count(self):
+        return self['errorCount']
+
+    @property
     def errors(self):
         return self['errors']
 
@@ -118,6 +138,26 @@ class ReportTable(Metadata):
         descriptor['dialect'] = dialect
         descriptor['errors'] = errors
         super().__init__(descriptor)
+
+    @property
+    def time(self):
+        return self['time']
+
+    @property
+    def valid(self):
+        return self['valid']
+
+    @property
+    def scope(self):
+        return self['scope']
+
+    @property
+    def row_count(self):
+        return self['rowCount']
+
+    @property
+    def error_count(self):
+        return self['errorCount']
 
     @property
     def errors(self):

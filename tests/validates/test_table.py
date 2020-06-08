@@ -9,7 +9,7 @@ from goodtables import validate, Check, errors
 
 def test_validate():
     report = validate('data/table.csv')
-    assert report['valid']
+    assert report.valid
 
 
 def test_validate_invalid():
@@ -75,7 +75,7 @@ def test_validate_blank_rows_multiple():
 
 def test_validate_blank_cell_not_required():
     report = validate('data/blank-cells.csv')
-    assert report['valid']
+    assert report.valid
 
 
 def test_validate_no_data():
@@ -104,14 +104,14 @@ def test_validate_task_error():
 
 def test_validate_report_props():
     report = validate('data/table.csv')
-    assert report['time']
-    assert report['valid'] is True
-    assert report['version'].startswith('3')
-    assert report['tableCount'] == 1
-    assert report['errorCount'] == 0
-    assert report.table['time']
-    assert report.table['valid'] is True
-    assert report.table['scope'] == [
+    assert report.time
+    assert report.valid is True
+    assert report.version.startswith('3')
+    assert report.table_count == 1
+    assert report.error_count == 0
+    assert report.table.time
+    assert report.table.valid is True
+    assert report.table.scope == [
         'extra-header',
         'missing-header',
         'blank-header',
@@ -129,8 +129,8 @@ def test_validate_report_props():
         'primary-key-error',
         'foreign-key-error',
     ]
-    assert report.table['rowCount'] == 2
-    assert report.table['errorCount'] == 0
+    assert report.table.row_count == 2
+    assert report.table.error_count == 0
     assert report.table['source'] == 'data/table.csv'
     assert report.table['headers'] == ['id', 'name']
     assert report.table['scheme'] == 'file'
@@ -160,12 +160,12 @@ def test_validate_source_invalid():
 
 def test_validate_source_pathlib_path_table():
     report = validate(pathlib.Path('data/table.csv'))
-    assert report['valid']
+    assert report.valid
 
 
 def test_validate_scheme():
     report = validate('data/table.csv', scheme='file')
-    assert report['valid']
+    assert report.valid
 
 
 def test_validate_scheme_invalid():
@@ -177,7 +177,7 @@ def test_validate_scheme_invalid():
 
 def test_validate_format():
     report = validate('data/table.csv', format='csv')
-    assert report['valid']
+    assert report.valid
 
 
 def test_validate_format_invalid():
@@ -189,7 +189,7 @@ def test_validate_format_invalid():
 
 def test_validate_encoding():
     report = validate('data/table.csv', encoding='utf-8')
-    assert report['valid']
+    assert report.valid
 
 
 def test_validate_encoding_invalid():
@@ -201,12 +201,12 @@ def test_validate_encoding_invalid():
 
 def test_validate_compression():
     report = validate('data/table.csv.zip')
-    assert report['valid']
+    assert report.valid
 
 
 def test_validate_compression_explicit():
     report = validate('data/table.csv.zip', compression='zip')
-    assert report['valid']
+    assert report.valid
 
 
 def test_validate_compression_invalid():
@@ -223,7 +223,7 @@ def test_validate_headers_row_none():
     report = validate('data/without-headers.csv', headers_row=None)
     assert report.table['headers'] is None
     assert report.table['rowCount'] == 3
-    assert report['valid']
+    assert report.valid
 
 
 def test_validate_headers_row_none_extra_cell():
@@ -238,19 +238,19 @@ def test_validate_headers_row_none_extra_cell():
 def test_validate_headers_row_number():
     report = validate('data/matrix.csv', headers_row=2)
     assert report.table['headers'] == ['11', '12', '13', '14']
-    assert report['valid']
+    assert report.valid
 
 
 def test_validate_headers_row_list_of_numbers():
     report = validate('data/matrix.csv', headers_row=[2, 3, 4])
     assert report.table['headers'] == ['11 21 31', '12 22 32', '13 23 33', '14 24 34']
-    assert report['valid']
+    assert report.valid
 
 
 def test_validate_headers_row_list_of_numbers_and_headers_joiner():
     report = validate('data/matrix.csv', headers_row=[2, 3, 4], headers_joiner='.')
     assert report.table['headers'] == ['11.21.31', '12.22.32', '13.23.33', '14.24.34']
-    assert report['valid']
+    assert report.valid
 
 
 # Fields
@@ -498,7 +498,7 @@ def test_validate_schema_maximum_constraint():
 def test_validate_sync_schema():
     schema = infer('data/table.csv')
     report = validate('data/sync-schema.csv', schema=schema, sync_schema=True)
-    assert report['valid']
+    assert report.valid
     assert report.table['schema'] == {
         'fields': [
             {'format': 'default', 'name': 'name', 'type': 'string'},
@@ -557,7 +557,7 @@ def test_validate_schema_headers_errors():
 def test_validate_patch_schema():
     patch_schema = {'missingValues': ['-']}
     report = validate('data/table.csv', patch_schema=patch_schema)
-    assert report['valid']
+    assert report.valid
     assert report.table['schema'] == {
         'fields': [
             {'format': 'default', 'name': 'id', 'type': 'integer'},
@@ -570,7 +570,7 @@ def test_validate_patch_schema():
 def test_validate_patch_schema_fields():
     patch_schema = {'fields': {'id': {'type': 'string'}}, 'missingValues': ['-']}
     report = validate('data/table.csv', patch_schema=patch_schema)
-    assert report['valid']
+    assert report.valid
     assert report.table['schema'] == {
         'fields': [
             {'format': 'default', 'name': 'id', 'type': 'string'},
@@ -582,7 +582,7 @@ def test_validate_patch_schema_fields():
 
 def test_validate_infer_type_string():
     report = validate('data/table.csv', infer_type='string')
-    assert report['valid']
+    assert report.valid
     assert report.table['schema'] == {
         'fields': [
             {'format': 'default', 'name': 'id', 'type': 'string'},
@@ -594,7 +594,7 @@ def test_validate_infer_type_string():
 
 def test_validate_infer_type_any():
     report = validate('data/table.csv', infer_type='any')
-    assert report['valid']
+    assert report.valid
     assert report.table['schema'] == {
         'fields': [
             {'format': 'default', 'name': 'id', 'type': 'any'},
@@ -612,7 +612,7 @@ def test_validate_infer_names():
     assert report.table['rowCount'] == 3
     assert report.table['schema']['fields'][0]['name'] == 'id'
     assert report.table['schema']['fields'][1]['name'] == 'name'
-    assert report['valid']
+    assert report.valid
 
 
 # Integrity
@@ -917,7 +917,7 @@ def test_composite_primary_key_unique_issue_215():
         ],
     }
     report = validate(source)
-    assert report['valid']
+    assert report.valid
 
 
 def test_composite_primary_key_not_unique_issue_215():
@@ -943,7 +943,7 @@ def test_validate_infer_fields_issue_223():
     source = [['name1', 'name2'], ['123', 'abc'], ['456', 'def'], ['789', 'ghi']]
     patch_schema = {'fields': {'name': {'type': 'string'}}}
     report = validate(source, patch_schema=patch_schema)
-    assert report['valid']
+    assert report.valid
 
 
 def test_validate_infer_fields_issue_225():
@@ -958,7 +958,7 @@ def test_validate_infer_fields_issue_225():
 def test_validate_fails_with_wrong_encoding_issue_274():
     # For now, by default encoding is detected incorectly by chardet
     report = validate('data/encoding-issue-274.csv', encoding='utf-8')
-    assert report['valid']
+    assert report.valid
 
 
 def test_validate_wide_table_with_order_fields_issue_277():
@@ -1004,7 +1004,7 @@ def test_validate_order_fields_issue_313():
         ]
     }
     report = validate(source, pick_fields=pick_fields, schema=schema, sync_schema=True)
-    assert report['valid']
+    assert report.valid
 
 
 def test_validate_missing_local_file_raises_scheme_error_issue_315():

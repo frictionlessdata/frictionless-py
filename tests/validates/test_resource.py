@@ -6,7 +6,7 @@ from goodtables import validate
 
 def test_validate():
     report = validate({'path': 'data/table.csv'})
-    assert report['valid']
+    assert report.valid
 
 
 def test_validate_invalid_source():
