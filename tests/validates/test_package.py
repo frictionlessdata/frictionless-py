@@ -1,6 +1,7 @@
 import json
 import pytest
 import pathlib
+from copy import deepcopy
 from goodtables import validate
 
 
@@ -98,6 +99,81 @@ def test_validate_package_dialect_header_false():
     }
     report = validate(descriptor)
     assert report['valid']
+
+
+# Integrity
+
+INTEGRITY_DESCRIPTOR = {
+    'resources': [
+        {
+            'name': 'resource1',
+            'path': 'data/table.csv',
+            'bytes': 30,
+            'hash': 'sha256:a1fd6c5ff3494f697874deeb07f69f8667e903dd94a7bc062dd57550cea26da8',
+        }
+    ]
+}
+
+
+def test_validate_integrity():
+    source = deepcopy(INTEGRITY_DESCRIPTOR)
+    report = validate(source)
+    assert report['valid']
+
+
+def test_validate_integrity_invalid():
+    source = deepcopy(INTEGRITY_DESCRIPTOR)
+    source['resources'][0]['bytes'] += 1
+    source['resources'][0]['hash'] += 'a'
+    report = validate(source)
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [None, None, 'size-error'],
+        [None, None, 'hash-error'],
+    ]
+
+
+def test_validate_integrity_size():
+    source = deepcopy(INTEGRITY_DESCRIPTOR)
+    source['resources'][0].pop('hash')
+    report = validate(source)
+    assert report['valid']
+
+
+def test_validate_integrity_size_invalid():
+    source = deepcopy(INTEGRITY_DESCRIPTOR)
+    source['resources'][0]['bytes'] += 1
+    source['resources'][0].pop('hash')
+    report = validate(source)
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [None, None, 'size-error'],
+    ]
+
+
+def test_validate_integrity_hash():
+    source = deepcopy(INTEGRITY_DESCRIPTOR)
+    source['resources'][0].pop('bytes')
+    report = validate(source)
+    assert report['valid']
+
+
+def test_check_file_integrity_hash_invalid():
+    source = deepcopy(INTEGRITY_DESCRIPTOR)
+    source['resources'][0].pop('bytes')
+    source['resources'][0]['hash'] += 'a'
+    report = validate(source)
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [None, None, 'hash-error'],
+    ]
+
+
+def test_check_file_integrity_hash_not_supported_algorithm():
+    source = deepcopy(INTEGRITY_DESCRIPTOR)
+    source['resources'][0].pop('bytes')
+    source['resources'][0]['hash'] = source['resources'][0]['hash'].replace('sha', 'bad')
+    report = validate(source)
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [None, None, 'source-error'],
+    ]
 
 
 # Issues
