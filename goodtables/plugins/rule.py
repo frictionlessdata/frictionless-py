@@ -24,7 +24,7 @@ class BlacklistedValueError(errors.CellError):
     code = 'rule/blacklisted-value'
     name = 'Blacklisted Value'
     tags = ['#body', '#rule']
-    message = 'The cell {cell} in row at position {rowPosition} and field {fieldName} at position {fieldPosition} has an error: {details}'
+    template = 'The cell {cell} in row at position {rowPosition} and field {fieldName} at position {fieldPosition} has an error: {details}'
     description = 'The value is blacklisted.'
 
 
@@ -32,7 +32,7 @@ class SequentialValueError(errors.CellError):
     code = 'rule/sequential-value'
     name = 'Sequential Value'
     tags = ['#body', '#rule']
-    message = 'The cell {cell} in row at position {rowPosition} and field {fieldName} at position {fieldPosition} has an error: {details}'
+    template = 'The cell {cell} in row at position {rowPosition} and field {fieldName} at position {fieldPosition} has an error: {details}'
     description = 'The value is not sequential.'
 
 
@@ -40,7 +40,7 @@ class RowConstraintError(errors.RowError):
     code = 'rule/row-constraint'
     name = 'Row Constraint'
     tags = ['#body', '#rule']
-    message = 'The row at position {rowPosition} has an error: {details}'
+    template = 'The row at position {rowPosition} has an error: {details}'
     description = 'The value does not conform to the row constraint.'
 
 

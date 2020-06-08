@@ -25,7 +25,7 @@ class DuplicateRowError(errors.RowError):
     code = 'hint/duplicate-row'
     name = 'Duplicate Row'
     tags = ['#body', '#hint']
-    message = 'Row at position {rowPosition} is duplicated: {details}'
+    template = 'Row at position {rowPosition} is duplicated: {details}'
     description = 'The row is duplicated.'
 
 
@@ -33,7 +33,7 @@ class DeviatedValueError(errors.Error):
     code = 'hint/deviated-value'
     name = 'Deviated Value'
     tags = ['#body', '#hint']
-    message = 'There is a possible error because the value is deviated: {details}'
+    template = 'There is a possible error because the value is deviated: {details}'
     description = 'The value is deviated.'
 
 
@@ -41,7 +41,7 @@ class TruncatedValueError(errors.CellError):
     code = 'hint/truncated-value'
     name = 'Truncated Value'
     tags = ['#body', '#hint']
-    message = 'The cell {cell} in row at position {rowPosition} and field {fieldName} at position {fieldPosition} has an error: {details}'
+    template = 'The cell {cell} in row at position {rowPosition} and field {fieldName} at position {fieldPosition} has an error: {details}'
     description = 'The value is possible truncated.'
 
 
