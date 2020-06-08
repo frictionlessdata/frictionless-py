@@ -102,51 +102,6 @@ def test_validate_task_error():
     ]
 
 
-def test_validate_report_props():
-    report = validate('data/table.csv')
-    assert report.time
-    assert report.valid is True
-    assert report.version.startswith('3')
-    assert report.table_count == 1
-    assert report.error_count == 0
-    assert report.table.time
-    assert report.table.valid is True
-    assert report.table.scope == [
-        'extra-header',
-        'missing-header',
-        'blank-header',
-        'duplicate-header',
-        'non-matching-header',
-        'extra-cell',
-        'missing-cell',
-        'blank-row',
-        'required-error',
-        'type-error',
-        'constraint-error',
-        'size-error',
-        'hash-error',
-        'unique-error',
-        'primary-key-error',
-        'foreign-key-error',
-    ]
-    assert report.table.row_count == 2
-    assert report.table.error_count == 0
-    assert report.table['source'] == 'data/table.csv'
-    assert report.table['headers'] == ['id', 'name']
-    assert report.table['scheme'] == 'file'
-    assert report.table['format'] == 'csv'
-    assert report.table['encoding'] == 'utf-8'
-    assert report.table['dialect'] == {}
-    assert report.table['errors'] == []
-    assert report.table['schema'] == {
-        'fields': [
-            {'format': 'default', 'name': 'id', 'type': 'integer'},
-            {'format': 'default', 'name': 'name', 'type': 'string'},
-        ],
-        'missingValues': [''],
-    }
-
-
 # Source
 
 
@@ -760,7 +715,10 @@ def test_validate_primary_key_error_composite():
         ['', None],
     ]
     schema = {
-        'fields': [{'name': 'id', 'type': 'integer'}, {'name': 'name'}],
+        'fields': [
+            {'name': 'id', 'type': 'integer'},
+            {'name': 'name', 'type': 'string'},
+        ],
         'primaryKey': ['id', 'name'],
     }
     report = validate(source, schema=schema)
@@ -768,6 +726,38 @@ def test_validate_primary_key_error_composite():
         [5, None, 'primary-key-error'],
         [6, None, 'blank-row'],
         [6, None, 'primary-key-error'],
+    ]
+
+
+def test_validate_foreign_keys_error():
+    schema = {
+        'fields': [
+            {'name': 'id', 'type': 'integer'},
+            {'name': 'name', 'type': 'string'},
+        ],
+        'foreignKeys': [
+            {'fields': 'id', 'reference': {'resource': 'ids', 'fields': 'id'}}
+        ],
+    }
+    lookup = {'ids': {('id',): set([(1,), (2,)])}}
+    report = validate('data/table.csv', schema=schema, lookup=lookup)
+    assert report.valid
+
+
+def test_validate_foreign_keys_error_invalid():
+    schema = {
+        'fields': [
+            {'name': 'id', 'type': 'integer'},
+            {'name': 'name', 'type': 'string'},
+        ],
+        'foreignKeys': [
+            {'fields': 'id', 'reference': {'resource': 'ids', 'fields': 'id'}}
+        ],
+    }
+    lookup = {'ids': {('id',): set([(1,)])}}
+    report = validate('data/table.csv', schema=schema, lookup=lookup)
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [3, None, 'foreign-key-error'],
     ]
 
 
