@@ -25,7 +25,7 @@ def test_validate_from_zip():
 def test_validate_from_dict():
     with open('data/invalid/datapackage.json') as file:
         report = validate(json.load(file), base_path='data/invalid')
-        assert report['errorCount'] == 2
+        assert report['errorCount'] == 3
 
 
 def test_validate_with_non_tabular():

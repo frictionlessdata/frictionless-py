@@ -700,6 +700,77 @@ def test_validate_hash_sha512_invalid():
     ]
 
 
+def test_validate_unique_error():
+    report = validate(
+        'data/unique-field.csv',
+        schema='data/unique-field.json',
+        pick_errors=['unique-error'],
+    )
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [10, 1, 'unique-error'],
+    ]
+
+
+def test_validate_unique_error_and_type_error():
+    source = [
+        ['id', 'unique_number'],
+        ['a1', 100],
+        ['a2', 'bad'],
+        ['a3', 100],
+    ]
+    schema = {
+        'fields': [
+            {'name': 'id'},
+            {'name': 'unique_number', 'type': 'number', 'constraints': {'unique': True}},
+        ]
+    }
+    report = validate(source, schema=schema)
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [3, 2, 'type-error'],
+        [4, 2, 'unique-error'],
+    ]
+
+
+def test_validate_primary_key_error():
+    report = validate(
+        'data/unique-field.csv',
+        schema='data/unique-field.json',
+        pick_errors=['primary-key-error'],
+    )
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [10, None, 'primary-key-error'],
+    ]
+
+
+def test_validate_primary_key_and_unique_error():
+    report = validate('data/unique-field.csv', schema='data/unique-field.json',)
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [10, 1, 'unique-error'],
+        [10, None, 'primary-key-error'],
+    ]
+
+
+def test_validate_primary_key_error_composite():
+    source = [
+        ['id', 'name'],
+        [1, 'Alex'],
+        [1, 'John'],
+        ['', 'Paul'],
+        [1, 'John'],
+        ['', None],
+    ]
+    schema = {
+        'fields': [{'name': 'id', 'type': 'integer'}, {'name': 'name'}],
+        'primaryKey': ['id', 'name'],
+    }
+    report = validate(source, schema=schema)
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [5, None, 'primary-key-error'],
+        [6, None, 'blank-row'],
+        [6, None, 'primary-key-error'],
+    ]
+
+
 # Validation
 
 
@@ -830,6 +901,42 @@ def test_validate_extra_checks_bad_plugin_name():
 
 
 # Issues
+
+
+def test_composite_primary_key_unique_issue_215():
+    source = {
+        'resources': [
+            {
+                'name': 'name',
+                'data': [['id1', 'id2'], ['a', '1'], ['a', '2']],
+                'schema': {
+                    'fields': [{'name': 'id1'}, {'name': 'id2'}],
+                    'primaryKey': ['id1', 'id2'],
+                },
+            }
+        ],
+    }
+    report = validate(source)
+    assert report['valid']
+
+
+def test_composite_primary_key_not_unique_issue_215():
+    descriptor = {
+        'resources': [
+            {
+                'name': 'name',
+                'data': [['id1', 'id2'], ['a', '1'], ['a', '1']],
+                'schema': {
+                    'fields': [{'name': 'id1'}, {'name': 'id2'}],
+                    'primaryKey': ['id1', 'id2'],
+                },
+            }
+        ],
+    }
+    report = validate(descriptor, skip_errors=['duplicate-row'])
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [3, None, 'primary-key-error'],
+    ]
 
 
 def test_validate_infer_fields_issue_223():

@@ -337,7 +337,7 @@ class UniqueError(CellError):
 
 class PrimaryKeyError(RowError):
     code = 'primary-key-error'
-    name = 'Primary Key Error'
+    name = 'PrimaryKey Error'
     tags = ['#body', '#schema', '#integrity']
     message = 'The row at position {rowPosition} does not conform to the primary key constraint: {details}'
     description = 'Values in the primary key fields should be unique for every row'
@@ -345,7 +345,7 @@ class PrimaryKeyError(RowError):
 
 class ForeignKeyError(RowError):
     code = 'foreign-key-error'
-    name = 'Foreign Key Error'
+    name = 'ForeignKey Error'
     tags = ['#body', '#schema', '#integrity']
     message = 'The row at position {rowPosition} does not conform to the foreign key constraint: {details}'
     description = 'Values in the foreign key fields should exist in the reference table'

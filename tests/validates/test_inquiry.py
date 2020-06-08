@@ -92,5 +92,6 @@ def test_validate_with_multiple_packages():
     )
     assert report.flatten(['tablePosition', 'rowPosition', 'fieldPosition', 'code']) == [
         [3, 3, None, 'blank-row'],
+        [3, 3, None, 'primary-key-error'],
         [4, 4, None, 'blank-row'],
     ]
