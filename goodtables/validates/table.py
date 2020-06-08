@@ -41,9 +41,9 @@ def validate_table(
     infer_sample=100,
     infer_confidence=0.75,
     # Integrity
-    lookup=None,
     size=None,
     hash=None,
+    lookup=None,
     # Validation
     pick_errors=None,
     skip_errors=None,
@@ -83,9 +83,9 @@ def validate_table(
         infer_sample? (int)
         infer_confidence? (float)
 
-        lookup? (dict)
         size? (int)
         hash? (str)
+        lookup? (dict)
 
         pick_errors? (str[])
         skip_errors? (str[])
@@ -211,7 +211,7 @@ def validate_table(
     if not exited:
         items = []
         items.append(BaselineCheck)
-        items.append((IntegrityCheck, {'size': size, 'hash': hash}))
+        items.append((IntegrityCheck, {'size': size, 'hash': hash, 'lookup': lookup}))
         items.extend(extra_checks or [])
         create = system.create_check
         for item in items:

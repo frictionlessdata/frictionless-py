@@ -9,6 +9,7 @@ class IntegrityCheck(Check):
         'properties': {
             'size': {'type': ['number', 'null']},
             'hash': {'type': ['string', 'null']},
+            'lookup': {'type': ['object', 'null']},
         },
     }
     possible_Errors = [  # type: ignore
@@ -24,8 +25,12 @@ class IntegrityCheck(Check):
     def prepare(self):
         self.size = self.get('size')
         self.hash = self.get('hash')
+        self.lookup = self.get('lookup')
 
     # Validate
+
+    def validate_row(self, row):
+        yield from []
 
     def validate_table(self):
 
