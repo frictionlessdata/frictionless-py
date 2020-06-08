@@ -7,7 +7,7 @@ from .table import validate_table
 
 
 @Report.catch
-def validate_resource(source, strict=False, base_path=None, **options):
+def validate_resource(source, base_path=None, strict=False, lookup=None, **options):
     timer = helpers.Timer()
 
     # Create resource
@@ -60,9 +60,10 @@ def validate_resource(source, strict=False, base_path=None, **options):
         skip_rows=resource.descriptor.get('skipRows'),
         limit_rows=resource.descriptor.get('limitRows'),
         offset_rows=resource.descriptor.get('offsetRows'),
+        schema=resource.descriptor.get('schema'),
         size=resource.descriptor.get('bytes'),
         hash=resource.descriptor.get('hash'),
-        schema=resource.descriptor.get('schema'),
+        lookup=lookup,
         **options,
         **dialect,
     )

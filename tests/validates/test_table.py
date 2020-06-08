@@ -729,7 +729,7 @@ def test_validate_primary_key_error_composite():
     ]
 
 
-def test_validate_foreign_keys_error():
+def test_validate_foreign_key_error():
     schema = {
         'fields': [
             {'name': 'id', 'type': 'integer'},
@@ -744,7 +744,7 @@ def test_validate_foreign_keys_error():
     assert report.valid
 
 
-def test_validate_foreign_keys_error_invalid():
+def test_validate_foreign_key_error_invalid():
     schema = {
         'fields': [
             {'name': 'id', 'type': 'integer'},

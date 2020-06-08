@@ -45,3 +45,44 @@ def test_validate_invalid_table():
         [4, None, 'blank-row'],
         [5, 5, 'extra-cell'],
     ]
+
+
+# Integrity
+
+
+def test_validate_foreign_key_error():
+    source = {
+        'path': 'data/table.csv',
+        'schema': {
+            'fields': [
+                {'name': 'id', 'type': 'integer'},
+                {'name': 'name', 'type': 'string'},
+            ],
+            'foreignKeys': [
+                {'fields': 'id', 'reference': {'resource': 'ids', 'fields': 'id'}}
+            ],
+        },
+    }
+    lookup = {'ids': {('id',): set([(1,), (2,)])}}
+    report = validate(source, lookup=lookup)
+    assert report.valid
+
+
+def test_validate_foreign_key_error_invalid():
+    source = {
+        'path': 'data/table.csv',
+        'schema': {
+            'fields': [
+                {'name': 'id', 'type': 'integer'},
+                {'name': 'name', 'type': 'string'},
+            ],
+            'foreignKeys': [
+                {'fields': 'id', 'reference': {'resource': 'ids', 'fields': 'id'}}
+            ],
+        },
+    }
+    lookup = {'ids': {('id',): set([(1,)])}}
+    report = validate(source, lookup=lookup)
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [3, None, 'foreign-key-error'],
+    ]
