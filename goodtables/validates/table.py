@@ -139,14 +139,14 @@ def validate_table(
             message = 'There are no rows available'
             raise tabulator.exceptions.SourceError(message)
     except Exception as exception:
-        errors.add(Error.from_exception(exception))
+        errors.add(Error.from_exception(exception), force=True)
         exited = True
 
     # Create schema
     try:
         schema = tableschema.Schema(schema or {})
     except tableschema.exceptions.TableSchemaException as exception:
-        errors.add(Error.from_exception(exception))
+        errors.add(Error.from_exception(exception), force=True)
         schema = None
         exited = True
 
@@ -194,7 +194,7 @@ def validate_table(
         # Validate schema
         if schema and schema.errors:
             for error in schema.errors:
-                errors.add(Error.from_exception(error))
+                errors.add(Error.from_exception(error), force=True)
             schema = None
             exited = True
 
@@ -202,7 +202,7 @@ def validate_table(
         if schema and len(schema.field_names) != len(set(schema.field_names)):
             message = 'Schemas with duplicate field names are not supported'
             error = tableschema.exceptions.TableSchemaException(message)
-            errors.add(Error.from_exception(error))
+            errors.add(Error.from_exception(error), force=True)
             schema = None
             exited = True
 
@@ -260,7 +260,7 @@ def validate_table(
             except StopIteration:
                 break
             except Exception as exception:
-                errors.add(Error.from_exception(exception))
+                errors.add(Error.from_exception(exception), force=True)
                 exited = True
                 break
 
@@ -341,12 +341,13 @@ class Errors(list):
     def scope(self):
         return self.__scope
 
-    def add(self, error):
-        if self.__limit_errors:
-            if len(self) >= self.__limit_errors:
+    def add(self, error, *, force=False):
+        if not force:
+            if self.__limit_errors:
+                if len(self) >= self.__limit_errors:
+                    return
+            if not self.match(error):
                 return
-        if not self.match(error):
-            return
         self.append(error)
 
     def match(self, error):

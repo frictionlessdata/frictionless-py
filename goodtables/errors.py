@@ -139,7 +139,7 @@ class CellError(RowError):
         raise exceptions.GoodtablesException(message)
 
 
-# Genreal
+# General
 
 
 class TaskError(Error):
