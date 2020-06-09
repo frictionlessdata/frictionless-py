@@ -463,49 +463,30 @@ def test_validate_sync_schema():
     }
 
 
-# Sync schema should cover all headers (it cherry-picks here)
-# Original errors:
-#  - [1, null, null, 'missing-header']
-#  - [1, null, 3, 'extra-header']
-@pytest.mark.skip
 def test_validate_sync_schema_invalid():
     source = [['LastName', 'FirstName', 'Address'], ['Test', 'Tester', '23 Avenue']]
     schema = {'fields': [{'name': 'id'}, {'name': 'FirstName'}, {'name': 'LastName'}]}
     report = validate(source, schema=schema, sync_schema=True)
-    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
-        [None, 3, 'extra-header'],
-        [2, 3, 'extra-cell'],
-    ]
+    assert report.valid
 
 
-# Sync schema should cover all headers (it cherry-picks here)
-# Original errors:
-#  - [1, null, null, 'missing-header']
-#  - [1, null, 4, 'non-matching-header']
-#  - [1, null, 5, 'extra-header']
-@pytest.mark.skip
 def test_validate_schema_headers_errors():
     source = [
         ['id', 'last_name', 'first_name', 'language'],
         [1, 'Alex', 'John', 'English'],
         [2, 'Peters', 'John', 'Afrikaans'],
-        [3, 'Smith', 'Paul', 'Zulu'],
+        [3, 'Smith', 'Paul', None],
     ]
     schema = {
         'fields': [
             {'name': 'id', 'type': 'number'},
-            {'name': 'first_name'},
-            {'name': 'last_name'},
-            {'name': 'age'},
+            {'name': 'language', 'constraints': {'required': True}},
             {'name': 'country'},
         ]
     }
     report = validate(source, schema=schema, sync_schema=True)
     assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
-        [None, 4, 'extra-header'],
-        [2, 4, 'extra-cell'],
-        [3, 4, 'extra-cell'],
-        [4, 4, 'extra-cell'],
+        [4, 4, 'required-error'],
     ]
 
 

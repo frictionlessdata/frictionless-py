@@ -178,9 +178,7 @@ def validate_table(
             old_fields = schema.descriptor.get('fields', [])
             map_fields = {field.get('name'): field for field in old_fields}
             for header in stream.headers:
-                field = map_fields.get(header)
-                if field:
-                    new_fields.append(field)
+                new_fields.append(map_fields.get(header, {'name': header, 'type': 'any'}))
             schema.descriptor['fields'] = new_fields
             schema.commit()
 
