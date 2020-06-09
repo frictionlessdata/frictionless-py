@@ -35,9 +35,9 @@ class IntegrityCheck(Check):
         if self.lookup:
             for fk in self.schema.foreign_keys:
                 group = {}
-                group['resource'] = fk['reference']['resource']
-                group['fromKey'] = tuple(fk['fields'])
-                group['toKey'] = tuple(fk['reference']['fields'])
+                group['sourceName'] = fk['reference']['resource']
+                group['sourceKey'] = tuple(fk['reference']['fields'])
+                group['targetKey'] = tuple(fk['fields'])
                 self.foreign_groups.append(group)
 
     # Validate
@@ -74,12 +74,12 @@ class IntegrityCheck(Check):
         # Foreign Key Error
         if self.foreign_groups:
             for group in self.foreign_groups:
-                group_lookup = self.lookup.get(group['resource'])
+                group_lookup = self.lookup.get(group['sourceName'])
                 if group_lookup:
-                    cells = tuple(row[field_name] for field_name in group['fromKey'])
+                    cells = tuple(row[field_name] for field_name in group['targetKey'])
                     if set(cells) == {None}:
                         continue
-                    match = cells in group_lookup.get(group['toKey'], set())
+                    match = cells in group_lookup.get(group['sourceKey'], set())
                     if not match:
                         details = 'not found in the lookup table'
                         yield errors.ForeignKeyError.from_row(row, details=details)

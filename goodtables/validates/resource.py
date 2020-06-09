@@ -18,7 +18,7 @@ def validate_resource(source, base_path=None, strict=False, lookup=None, **optio
         error = ResourceError(details=str(exception))
         return Report(time=time, errors=[error], tables=[])
 
-    # Resource errors
+    # Prepare resource
     for stage in [1, 2]:
         errors = []
         if stage == 1:
@@ -40,20 +40,7 @@ def validate_resource(source, base_path=None, strict=False, lookup=None, **optio
     # Prepare lookup
     if lookup is None:
         try:
-            to_name = ''
-            lookup = {to_name: {}}
-            for fk in resource.schema.foreign_keys:
-                if fk['reference']['resource'] != to_name:
-                    continue
-                to_key = tuple(fk['reference']['fields'])
-                if to_key in lookup[to_name]:
-                    continue
-                lookup[to_name][to_key] = set()
-                for keyed_row in resource.iter(keyed=True):
-                    cells = tuple(keyed_row[field_name] for field_name in to_key)
-                    if set(cells) == {None}:
-                        continue
-                    lookup[to_name][to_key].add(cells)
+            lookup = helpers.create_lookup(resource)
         except Exception as exception:
             time = timer.get_time()
             error = ResourceError(details=f'error in the lookup table "{exception}"')

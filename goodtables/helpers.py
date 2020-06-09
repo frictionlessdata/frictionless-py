@@ -72,6 +72,29 @@ def detect_source_type(source):
     return source_type
 
 
+# Integrity
+
+
+def create_lookup(resource, *, package=None):
+    lookup = {}
+    for fk in resource.schema.foreign_keys:
+        source_name = fk['reference']['resource']
+        if source_name != '' and not package:
+            continue
+        source_key = tuple(fk['reference']['fields'])
+        source_res = package.get_resource(source_name) if source_name else resource
+        lookup.setdefault(source_name, {})
+        if source_key in lookup[source_name]:
+            continue
+        lookup[source_name][source_key] = set()
+        for keyed_row in source_res.iter(keyed=True):
+            cells = tuple(keyed_row[field_name] for field_name in source_key)
+            if set(cells) == {None}:
+                continue
+            lookup[source_name][source_key].add(cells)
+    return lookup
+
+
 # Compatability
 
 

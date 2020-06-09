@@ -18,7 +18,7 @@ def validate_package(source, base_path=None, strict=False, **options):
         error = PackageError(details=str(exception))
         return Report(time=time, errors=[error], tables=[])
 
-    # Package errors
+    # Prepare package
     for stage in [1, 2]:
         errors = []
         if stage == 1:
