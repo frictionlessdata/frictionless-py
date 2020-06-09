@@ -13,17 +13,13 @@ def test_validate():
     assert report.valid
 
 
-def test_validate_from_path():
-    report = validate('data/package/datapackage.json')
-    assert report.valid
-
-
-def test_validate_from_zip():
-    report = validate('data/package.zip', source_type='package')
-    assert report.valid
-
-
 def test_validate_from_dict():
+    with open('data/package/datapackage.json') as file:
+        report = validate(json.load(file), base_path='data/package')
+        assert report.valid
+
+
+def test_validate_from_dict_invalid():
     with open('data/invalid/datapackage.json') as file:
         report = validate(json.load(file), base_path='data/invalid')
         assert report.flatten(
@@ -35,6 +31,38 @@ def test_validate_from_dict():
             # This error should be removed with better lookup table extraction
             [2, 5, None, 'foreign-key-error'],
         ]
+
+
+def test_validate_from_path():
+    report = validate('data/package/datapackage.json')
+    assert report.valid
+
+
+def test_validate_from_path_invalid():
+    report = validate('data/invalid/datapackage.json')
+    assert report.flatten(['tablePosition', 'rowPosition', 'fieldPosition', 'code']) == [
+        [1, 3, None, 'blank-row'],
+        [1, 3, None, 'primary-key-error'],
+        [2, 4, None, 'blank-row'],
+        # This error should be removed with better lookup table extraction
+        [2, 5, None, 'foreign-key-error'],
+    ]
+
+
+def test_validate_from_zip():
+    report = validate('data/package.zip', source_type='package')
+    assert report.valid
+
+
+def test_validate_from_zip_invalid():
+    report = validate('data/invalid.zip', source_type='package')
+    assert report.flatten(['tablePosition', 'rowPosition', 'fieldPosition', 'code']) == [
+        [1, 3, None, 'blank-row'],
+        [1, 3, None, 'primary-key-error'],
+        [2, 4, None, 'blank-row'],
+        # This error should be removed with better lookup table extraction
+        [2, 5, None, 'foreign-key-error'],
+    ]
 
 
 def test_validate_with_non_tabular():
