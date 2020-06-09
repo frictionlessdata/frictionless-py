@@ -38,6 +38,9 @@ def validate_resource(source, base_path=None, strict=False, lookup=None, **optio
             return Report(time=time, errors=errors, tables=[])
 
     # Prepare table
+    source = resource.source
+    if resource.multipart:
+        source = resource.raw_iter(stream=True)
     headers_row = 1
     dialect = resource.descriptor.get('dialect', {})
     dialect = {stringcase.snakecase(key): value for key, value in dialect.items()}
@@ -48,7 +51,7 @@ def validate_resource(source, base_path=None, strict=False, lookup=None, **optio
 
     # Validate table
     report = validate_table(
-        resource.source,
+        source,
         scheme=resource.descriptor.get('scheme'),
         format=resource.descriptor.get('format'),
         encoding=resource.descriptor.get('encoding'),
