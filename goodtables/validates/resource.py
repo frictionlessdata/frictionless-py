@@ -37,21 +37,14 @@ def validate_resource(source, base_path=None, strict=False, lookup=None, **optio
             time = timer.get_time()
             return Report(time=time, errors=errors, tables=[])
 
-    # Prepare lookup
-    if lookup is None:
-        try:
-            lookup = helpers.create_lookup(resource)
-        except Exception as exception:
-            time = timer.get_time()
-            error = ResourceError(details=f'error in the lookup table "{exception}"')
-            return Report(time=time, errors=[error], tables=[])
-
-    # Prepare headers/dialect
+    # Prepare table
     headers_row = 1
     dialect = resource.descriptor.get('dialect', {})
     dialect = {stringcase.snakecase(key): value for key, value in dialect.items()}
     if dialect.get('header') is False:
         headers_row = None
+    if lookup is None:
+        lookup = helpers.create_lookup(resource)
 
     # Validate table
     report = validate_table(

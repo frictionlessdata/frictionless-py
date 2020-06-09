@@ -54,15 +54,15 @@ def test_validate_report_props():
 
 def test_table_report_valid():
     table = create_report_table(errors=[])
-    assert table['valid'] is True
-    assert table['errorCount'] == 0
+    assert table.valid is True
+    assert table.error_count == 0
     assert table.flatten(['code']) == []
 
 
 def test_table_report_invalid():
     table = create_report_table(errors=[errors.SourceError(details='details')])
-    assert table['valid'] is False
-    assert table['errorCount'] == 1
+    assert table.valid is False
+    assert table.error_count == 1
     assert table.flatten(['code']) == [['source-error']]
 
 

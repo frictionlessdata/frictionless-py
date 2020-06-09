@@ -26,7 +26,15 @@ def test_validate_from_zip():
 def test_validate_from_dict():
     with open('data/invalid/datapackage.json') as file:
         report = validate(json.load(file), base_path='data/invalid')
-        assert report['errorCount'] == 3
+        assert report.flatten(
+            ['tablePosition', 'rowPosition', 'fieldPosition', 'code']
+        ) == [
+            [1, 3, None, 'blank-row'],
+            [1, 3, None, 'primary-key-error'],
+            [2, 4, None, 'blank-row'],
+            # This error should be removed with better lookup table extraction
+            [2, 5, None, 'foreign-key-error'],
+        ]
 
 
 def test_validate_with_non_tabular():
@@ -103,7 +111,7 @@ def test_validate_package_dialect_header_false():
 
 # Integrity
 
-INTEGRITY_DESCRIPTOR = {
+DESCRIPTOR_SH = {
     'resources': [
         {
             'name': 'resource1',
@@ -116,13 +124,13 @@ INTEGRITY_DESCRIPTOR = {
 
 
 def test_validate_integrity():
-    source = deepcopy(INTEGRITY_DESCRIPTOR)
+    source = deepcopy(DESCRIPTOR_SH)
     report = validate(source)
     assert report.valid
 
 
 def test_validate_integrity_invalid():
-    source = deepcopy(INTEGRITY_DESCRIPTOR)
+    source = deepcopy(DESCRIPTOR_SH)
     source['resources'][0]['bytes'] += 1
     source['resources'][0]['hash'] += 'a'
     report = validate(source)
@@ -133,14 +141,14 @@ def test_validate_integrity_invalid():
 
 
 def test_validate_integrity_size():
-    source = deepcopy(INTEGRITY_DESCRIPTOR)
+    source = deepcopy(DESCRIPTOR_SH)
     source['resources'][0].pop('hash')
     report = validate(source)
     assert report.valid
 
 
 def test_validate_integrity_size_invalid():
-    source = deepcopy(INTEGRITY_DESCRIPTOR)
+    source = deepcopy(DESCRIPTOR_SH)
     source['resources'][0]['bytes'] += 1
     source['resources'][0].pop('hash')
     report = validate(source)
@@ -150,14 +158,14 @@ def test_validate_integrity_size_invalid():
 
 
 def test_validate_integrity_hash():
-    source = deepcopy(INTEGRITY_DESCRIPTOR)
+    source = deepcopy(DESCRIPTOR_SH)
     source['resources'][0].pop('bytes')
     report = validate(source)
     assert report.valid
 
 
 def test_check_file_integrity_hash_invalid():
-    source = deepcopy(INTEGRITY_DESCRIPTOR)
+    source = deepcopy(DESCRIPTOR_SH)
     source['resources'][0].pop('bytes')
     source['resources'][0]['hash'] += 'a'
     report = validate(source)
@@ -167,12 +175,89 @@ def test_check_file_integrity_hash_invalid():
 
 
 def test_check_file_integrity_hash_not_supported_algorithm():
-    source = deepcopy(INTEGRITY_DESCRIPTOR)
+    source = deepcopy(DESCRIPTOR_SH)
     source['resources'][0].pop('bytes')
     source['resources'][0]['hash'] = source['resources'][0]['hash'].replace('sha', 'bad')
     report = validate(source)
     assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
         [None, None, 'source-error'],
+    ]
+
+
+DESCRIPTOR_FK = {
+    'resources': [
+        {
+            'name': 'cities',
+            'data': [
+                ['id', 'name', 'next_id'],
+                [1, 'london', 2],
+                [2, 'paris', 3],
+                [3, 'rome', 4],
+                [4, 'rio', None],
+            ],
+            'schema': {
+                'fields': [
+                    {'name': 'id', 'type': 'integer'},
+                    {'name': 'name', 'type': 'string'},
+                    {'name': 'next_id', 'type': 'integer'},
+                ],
+                'foreignKeys': [
+                    {'fields': 'next_id', 'reference': {'resource': '', 'fields': 'id'}},
+                    {
+                        'fields': 'id',
+                        'reference': {'resource': 'people', 'fields': 'label'},
+                    },
+                ],
+            },
+        },
+        {
+            'name': 'people',
+            'data': [['label', 'population'], [1, 8], [2, 2], [3, 3], [4, 6]],
+        },
+    ],
+}
+
+
+def test_validate_foreign_key_error():
+    descriptor = deepcopy(DESCRIPTOR_FK)
+    report = validate(descriptor)
+    assert report.valid
+
+
+def test_validate_foreign_key_not_defined():
+    descriptor = deepcopy(DESCRIPTOR_FK)
+    del descriptor['resources'][0]['schema']['foreignKeys']
+    report = validate(descriptor)
+    assert report.valid
+
+
+def test_validate_foreign_key_self_referenced_resource_violation():
+    descriptor = deepcopy(DESCRIPTOR_FK)
+    del descriptor['resources'][0]['data'][4]
+    report = validate(descriptor)
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [4, None, 'foreign-key-error'],
+    ]
+
+
+def test_validate_foreign_key_internal_resource_violation():
+    descriptor = deepcopy(DESCRIPTOR_FK)
+    del descriptor['resources'][1]['data'][4]
+    report = validate(descriptor)
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [5, None, 'foreign-key-error'],
+    ]
+
+
+def test_validate_foreign_key_internal_resource_violation_non_existent():
+    descriptor = deepcopy(DESCRIPTOR_FK)
+    del descriptor['resources'][1]
+    report = validate(descriptor)
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [2, None, 'foreign-key-error'],
+        [3, None, 'foreign-key-error'],
+        [4, None, 'foreign-key-error'],
+        [5, None, 'foreign-key-error'],
     ]
 
 

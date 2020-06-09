@@ -94,4 +94,5 @@ def test_validate_with_multiple_packages():
         [3, 3, None, 'blank-row'],
         [3, 3, None, 'primary-key-error'],
         [4, 4, None, 'blank-row'],
+        [4, 5, None, 'foreign-key-error'],
     ]

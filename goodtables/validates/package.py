@@ -41,12 +41,14 @@ def validate_package(source, base_path=None, strict=False, **options):
     # Prepare inquiry
     descriptor = {'tasks': []}
     for resource in package.resources:
+        lookup = helpers.create_lookup(resource, package=package)
         descriptor['tasks'].append(
             helpers.create_descriptor_from_options(
                 **options,
                 source=resource.descriptor,
+                base_path=package.base_path,
                 strict=strict,
-                base_path=package.base_path
+                lookup=lookup,
             )
         )
 
