@@ -814,6 +814,15 @@ def test_validate_structure_errors_with_limit_errors():
     ]
 
 
+def test_validate_limit_memory():
+    source = lambda: ([integer] for integer in range(1, 100000000))
+    schema = {'fields': [{'name': 'integer', 'type': 'integer'}], 'primaryKey': 'integer'}
+    report = validate(source, headers_row=None, schema=schema, limit_memory=50)
+    assert report.flatten(['code', 'details']) == [
+        ['task-error', 'exceeded memory limit "50MB"']
+    ]
+
+
 def test_validate_extra_checks():
 
     # Create check

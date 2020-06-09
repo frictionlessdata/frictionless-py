@@ -156,3 +156,18 @@ class Timer:
     def get_time(self):
         current = datetime.datetime.now()
         return round((current - self.__initial).total_seconds(), 3)
+
+
+def get_current_memory_usage():
+    # Current memory usage of the current process in MB
+    # This will only work on systems with a /proc file system (like Linux)
+    # https://stackoverflow.com/questions/897941/python-equivalent-of-phps-memory-get-usage
+    try:
+        with open('/proc/self/status') as status:
+            for line in status:
+                parts = line.split()
+                key = parts[0][2:-1].lower()
+                if key == 'rss':
+                    return int(parts[1]) / 1000
+    except Exception:
+        pass

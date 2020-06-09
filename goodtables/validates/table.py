@@ -2,6 +2,7 @@ import tabulator
 import tableschema
 from .. import config
 from .. import helpers
+from .. import exceptions
 from ..row import Row
 from ..errors import Error
 from ..system import system
@@ -48,9 +49,10 @@ def validate_table(
     pick_errors=None,
     skip_errors=None,
     limit_errors=None,
+    limit_memory=1000,
     extra_checks=None,
     # Dialect
-    **dialect
+    **dialect,
 ):
     """Validate table
 
@@ -129,7 +131,7 @@ def validate_table(
         offset_rows=offset_rows,
         sample_size=infer_sample,
         hashing_algorithm=helpers.parse_hashing_algorithm(hash),
-        **dialect
+        **dialect,
     )
 
     # Open stream
@@ -283,6 +285,13 @@ def validate_table(
             if limit_errors and len(errors) >= limit_errors:
                 partial = True
                 break
+
+            # Limit memory
+            if limit_memory and not row_number % 100000:
+                memory = helpers.get_current_memory_usage()
+                if memory and memory > limit_memory:
+                    message = f'exceeded memory limit "{limit_memory}MB"'
+                    raise exceptions.GoodtablesException(message)
 
     # Validate table
     if not exited:
