@@ -291,7 +291,6 @@ def test_validate_package_number_test_issue_232():
     assert not report.valid
 
 
-@pytest.mark.skip
 def test_validate_package_with_schema_issue_348():
     descriptor = {
         'resources': [
@@ -313,9 +312,9 @@ def test_validate_package_with_schema_issue_348():
             }
         ]
     }
-    report1 = validate(descriptor, pick_errors=['#structure'])
-    assert report1['valid']
-    report2 = validate(descriptor)
-    assert report2.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+    report = validate(descriptor)
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
         [None, 4, 'missing-header'],
+        [2, 4, 'missing-cell'],
+        [3, 4, 'missing-cell'],
     ]

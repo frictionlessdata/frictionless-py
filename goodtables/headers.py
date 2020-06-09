@@ -1,3 +1,4 @@
+from itertools import zip_longest
 from cached_property import cached_property
 from . import errors
 
@@ -30,18 +31,20 @@ class Headers(list):
         # Missing headers
         if len(fields) > len(cells):
             start = len(cells) + 1
-            iterator = zip(field_positions[len(cells) :], fields[len(cells) :])
+            iterator = zip_longest(field_positions[len(cells) :], fields[len(cells) :])
             for field_number, (field_position, field) in enumerate(iterator, start=start):
-                self.__errors.append(
-                    errors.MissingHeaderError(
-                        details='',
-                        cells=list(map(str, cells)),
-                        cell='',
-                        field_name=field.name,
-                        field_number=field_number,
-                        field_position=field_position,
+                if field is not None:
+                    self.__errors.append(
+                        errors.MissingHeaderError(
+                            details='',
+                            cells=list(map(str, cells)),
+                            cell='',
+                            field_name=field.name,
+                            field_number=field_number,
+                            field_position=field_position
+                            or max(field_positions) + field_number - start + 1,
+                        )
                     )
-                )
 
         # Iterate items
         field_number = 0
