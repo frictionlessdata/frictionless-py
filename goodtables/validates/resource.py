@@ -37,7 +37,29 @@ def validate_resource(source, base_path=None, strict=False, lookup=None, **optio
             time = timer.get_time()
             return Report(time=time, errors=errors, tables=[])
 
-    # Prepare dialect/headers
+    # Prepare lookup
+    if lookup is None:
+        try:
+            to_name = ''
+            lookup = {to_name: {}}
+            for fk in resource.schema.foreign_keys:
+                if fk['reference']['resource'] != to_name:
+                    continue
+                to_key = tuple(fk['reference']['fields'])
+                if to_key in lookup[to_name]:
+                    continue
+                lookup[to_name][to_key] = set()
+                for keyed_row in resource.iter(keyed=True):
+                    cells = tuple(keyed_row[field_name] for field_name in to_key)
+                    if set(cells) == {None}:
+                        continue
+                    lookup[to_name][to_key].add(cells)
+        except Exception as exception:
+            time = timer.get_time()
+            error = ResourceError(details=f'error in the lookup table "{exception}"')
+            return Report(time=time, errors=[error], tables=[])
+
+    # Prepare headers/dialect
     headers_row = 1
     dialect = resource.descriptor.get('dialect', {})
     dialect = {stringcase.snakecase(key): value for key, value in dialect.items()}

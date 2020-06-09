@@ -86,3 +86,41 @@ def test_validate_foreign_key_error_invalid():
     assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
         [3, None, 'foreign-key-error'],
     ]
+
+
+def test_validate_foreign_key_error_self_referencing():
+    source = {
+        'path': 'data/nested.csv',
+        'schema': {
+            'fields': [
+                {'name': 'id', 'type': 'integer'},
+                {'name': 'cat', 'type': 'integer'},
+                {'name': 'name', 'type': 'string'},
+            ],
+            'foreignKeys': [
+                {'fields': 'cat', 'reference': {'resource': '', 'fields': 'id'}}
+            ],
+        },
+    }
+    report = validate(source)
+    assert report.valid
+
+
+def test_validate_foreign_key_error_self_referencing_invalid():
+    source = {
+        'path': 'data/nested-invalid.csv',
+        'schema': {
+            'fields': [
+                {'name': 'id', 'type': 'integer'},
+                {'name': 'cat', 'type': 'integer'},
+                {'name': 'name', 'type': 'string'},
+            ],
+            'foreignKeys': [
+                {'fields': 'cat', 'reference': {'resource': '', 'fields': 'id'}}
+            ],
+        },
+    }
+    report = validate(source)
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
+        [6, None, 'foreign-key-error'],
+    ]

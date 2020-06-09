@@ -7,7 +7,7 @@ from .inquiry import validate_inquiry
 
 
 @Report.catch
-def validate_package(source, strict=False, base_path=None, **options):
+def validate_package(source, base_path=None, strict=False, **options):
     timer = helpers.Timer()
 
     # Create package

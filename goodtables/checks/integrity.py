@@ -77,6 +77,8 @@ class IntegrityCheck(Check):
                 group_lookup = self.lookup.get(group['resource'])
                 if group_lookup:
                     cells = tuple(row[field_name] for field_name in group['fromKey'])
+                    if set(cells) == {None}:
+                        continue
                     match = cells in group_lookup.get(group['toKey'], set())
                     if not match:
                         details = 'not found in the lookup table'
