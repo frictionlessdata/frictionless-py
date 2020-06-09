@@ -176,15 +176,15 @@ def test_validate_compression_invalid():
 
 def test_validate_headers_row_none():
     report = validate('data/without-headers.csv', headers_row=None)
-    assert report.table['headers'] is None
-    assert report.table['rowCount'] == 3
     assert report.valid
+    assert report.table.row_count == 3
+    assert report.table['headers'] is None
 
 
 def test_validate_headers_row_none_extra_cell():
     report = validate('data/without-headers-extra.csv', headers_row=None)
+    assert report.table.row_count == 3
     assert report.table['headers'] is None
-    assert report.table['rowCount'] == 3
     assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
         [3, 3, 'extra-cell'],
     ]
@@ -385,6 +385,7 @@ def test_validate_schema_multiple_errors():
     source = 'data/schema-errors.csv'
     schema = 'data/schema.json'
     report = validate(source, schema=schema, pick_errors=['#schema'], limit_errors=3)
+    assert report.table.partial
     assert report.table.flatten(['rowPosition', 'fieldPosition', 'code']) == [
         [4, 1, 'type-error'],
         [4, 2, 'required-error'],
@@ -747,7 +748,7 @@ def test_validate_foreign_key_error_invalid():
 
 def test_validate_pick_errors():
     report = validate('data/invalid.csv', pick_errors=['blank-header', 'blank-row'])
-    assert report.table['scope'] == ['blank-header', 'blank-row']
+    assert report.table.scope == ['blank-header', 'blank-row']
     assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
         [None, 3, 'blank-header'],
         [4, None, 'blank-row'],
@@ -756,7 +757,7 @@ def test_validate_pick_errors():
 
 def test_validate_pick_errors_tags():
     report = validate('data/invalid.csv', pick_errors=['#head'])
-    assert report.table['scope'] == [
+    assert report.table.scope == [
         'extra-header',
         'missing-header',
         'blank-header',
@@ -795,8 +796,8 @@ def test_validate_skip_errors_tags():
 
 def test_validate_invalid_limit_errors():
     report = validate('data/invalid.csv', limit_errors=3)
+    assert report.table.partial
     assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
-        [None, None, 'task-error'],
         [None, 3, 'blank-header'],
         [None, 4, 'duplicate-header'],
         [2, 3, 'missing-cell'],
@@ -805,8 +806,8 @@ def test_validate_invalid_limit_errors():
 
 def test_validate_structure_errors_with_limit_errors():
     report = validate('data/structure-errors.csv', limit_errors=3)
+    assert report.table.partial
     assert report.flatten(['rowPosition', 'fieldPosition', 'code']) == [
-        [None, None, 'task-error'],
         [4, None, 'blank-row'],
         [5, 4, 'extra-cell'],
         [5, 5, 'extra-cell'],

@@ -73,6 +73,7 @@ def create_report_table(
     *,
     time='time',
     scope=[],
+    partial=False,
     row_count=0,
     source='source',
     scheme='scheme',
@@ -97,6 +98,7 @@ def create_report_table(
     return ReportTable(
         time=time,
         scope=scope,
+        partial=partial,
         row_count=row_count,
         source=source,
         scheme=scheme,

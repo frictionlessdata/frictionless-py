@@ -101,6 +101,7 @@
           "time",
           "valid",
           "scope",
+          "partial",
           "rowCount",
           "errorCount",
           "source",
@@ -142,6 +143,11 @@
             "items": {
               "type": "string"
             }
+          },
+          "partial": {
+            "type": "boolean",
+            "title": "Partial",
+            "description": "Whether the validation was stopped because of an error limit."
           },
           "rowCount": {
             "type": "integer",

@@ -3,9 +3,9 @@ import tableschema
 from .. import config
 from .. import helpers
 from ..row import Row
+from ..errors import Error
 from ..system import system
 from ..headers import Headers
-from ..errors import Error, TaskError
 from ..report import Report, ReportTable
 from ..checks import BaselineCheck, IntegrityCheck
 
@@ -47,7 +47,7 @@ def validate_table(
     # Validation
     pick_errors=None,
     skip_errors=None,
-    limit_errors=1000,
+    limit_errors=None,
     extra_checks=None,
     # Dialect
     **dialect
@@ -102,6 +102,7 @@ def validate_table(
     # Prepare state
     checks = []
     exited = False
+    partial = False
     row_number = 0
     task_errors = []
     timer = helpers.Timer()
@@ -280,9 +281,7 @@ def validate_table(
 
             # Limit errors
             if limit_errors and len(errors) >= limit_errors:
-                details = 'source "%s" reached the error limit "%s"'
-                details = details % (source, limit_errors)
-                task_errors.append(TaskError(details=details))
+                partial = True
                 break
 
     # Validate table
@@ -302,6 +301,7 @@ def validate_table(
             ReportTable(
                 time=time,
                 scope=errors.scope,
+                partial=partial,
                 row_count=row_number,
                 source=str(stream.source),
                 scheme=stream.scheme,

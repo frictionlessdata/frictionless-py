@@ -91,6 +91,7 @@ class ReportTable(Metadata):
         *,
         time,
         scope,
+        partial,
         row_count,
         source,
         scheme,
@@ -116,6 +117,7 @@ class ReportTable(Metadata):
         descriptor['time'] = time
         descriptor['valid'] = not errors
         descriptor['scope'] = scope
+        descriptor['partial'] = partial
         descriptor['rowCount'] = row_count
         descriptor['errorCount'] = len(errors)
         descriptor['source'] = source
@@ -150,6 +152,10 @@ class ReportTable(Metadata):
     @property
     def scope(self):
         return self['scope']
+
+    @property
+    def partial(self):
+        return self['partial']
 
     @property
     def row_count(self):
