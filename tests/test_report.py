@@ -38,7 +38,6 @@ def test_validate_report_props():
     assert report.table['scheme'] == 'file'
     assert report.table['format'] == 'csv'
     assert report.table['encoding'] == 'utf-8'
-    assert report.table['dialect'] == {}
     assert report.table['errors'] == []
     assert report.table['schema'] == {
         'fields': [
@@ -46,6 +45,13 @@ def test_validate_report_props():
             {'format': 'default', 'name': 'name', 'type': 'string'},
         ],
         'missingValues': [''],
+    }
+    assert report.table['dialect'] == {
+        'delimiter': ',',
+        'doubleQuote': True,
+        'lineTerminator': '\r\n',
+        'quoteChar': '"',
+        'skipInitialSpace': False,
     }
 
 

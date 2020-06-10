@@ -308,7 +308,6 @@ def validate_table(
     time = timer.get_time()
     if schema:
         schema = schema.descriptor
-        dialect = dialect or {}
     return Report(
         time=time,
         errors=task_errors,
@@ -335,7 +334,7 @@ def validate_table(
                 limit_rows=limit_rows,
                 offset_rows=offset_rows,
                 schema=schema,
-                dialect=dialect,
+                dialect=stream.dialect,
                 errors=errors,
             )
         ],

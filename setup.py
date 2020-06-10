@@ -23,7 +23,7 @@ CORE_REQUIRES = [
     'stringcase>=1.2',
     'requests>=2.10',
     'jsonschema>=2.5',
-    'tabulator>=1.51',
+    'tabulator>=1.52',
     'tableschema>=1.19',
     'datapackage>=1.14',
 ]
