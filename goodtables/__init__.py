@@ -2,6 +2,7 @@ from .validates import (
     validate_inquiry,
     validate_package,
     validate_resource,
+    validate_schema,
     validate_table,
 )
 from .check import Check

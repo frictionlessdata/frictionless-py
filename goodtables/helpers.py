@@ -56,6 +56,8 @@ def create_descriptor_from_options(**options):
 def detect_source_type(source):
     source_type = 'table'
     if isinstance(source, dict):
+        if source.get('fields') is not None:
+            source_type = 'schema'
         if source.get('path') is not None or source.get('data') is not None:
             source_type = 'resource'
         if source.get('resources') is not None:
@@ -63,7 +65,9 @@ def detect_source_type(source):
         if source.get('tasks') is not None:
             source_type = 'inquiry'
     if isinstance(source, str):
-        if source.endswith('.json'):
+        if source.endswith('schema.json'):
+            source_type = 'schema'
+        if source.endswith('resource.json'):
             source_type = 'resource'
         if source.endswith('datapackage.json'):
             source_type = 'package'

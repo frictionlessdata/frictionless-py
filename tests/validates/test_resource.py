@@ -10,7 +10,7 @@ def test_validate():
 
 
 def test_validate_invalid_source():
-    report = validate('bad.json')
+    report = validate('bad.json', source_type='resource')
     assert report.flatten(['code', 'details']) == [
         ['resource-error', 'Unable to load JSON at "bad.json"']
     ]

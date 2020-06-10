@@ -139,13 +139,13 @@ class CellError(RowError):
         raise exceptions.GoodtablesException(message)
 
 
-# General
+# Metadata
 
 
 class TaskError(Error):
     code = 'task-error'
     name = 'Task Error'
-    tags = ['#general']
+    tags = ['#metadata']
     template = 'The validation task has an error: {details}'
     description = 'General task-level error.'
 
@@ -153,7 +153,7 @@ class TaskError(Error):
 class ReportError(Error):
     code = 'report-error'
     name = 'Report Error'
-    tags = ['#general']
+    tags = ['#metadata']
     template = 'The validation report has an error: {details}'
     description = 'A validation cannot be presented.'
 
@@ -161,7 +161,7 @@ class ReportError(Error):
 class PackageError(Error):
     code = 'package-error'
     name = 'Package Error'
-    tags = ['#general']
+    tags = ['#metadata']
     template = 'The data package has an error: {details}'
     description = 'A validation cannot be processed.'
 
@@ -169,9 +169,17 @@ class PackageError(Error):
 class ResourceError(Error):
     code = 'resource-error'
     name = 'Resource Error'
-    tags = ['#general']
+    tags = ['#metadata']
     template = 'The data resource has an error: {details}'
     description = 'A validation cannot be processed.'
+
+
+class SchemaError(Error):
+    code = 'schema-error'
+    name = 'Schema Error'
+    tags = ['#metadata']
+    template = 'The data source could not be successfully described by the invalid Table Schema: {details}'
+    description = 'Provided schema is not valid.'
 
 
 # Table
@@ -231,14 +239,6 @@ class HashError(Error):
     tags = ['#table', '#integrity']
     template = 'The data source does not match the expected hash: {details}'
     description = 'This error can happen if the data is corrupted.'
-
-
-class SchemaError(Error):
-    code = 'schema-error'
-    name = 'Schema Error'
-    tags = ['#table', '#schema']
-    template = 'The data source could not be successfully described by the invalid Table Schema: {details}'
-    description = 'Provided schema is not valid.'
 
 
 # Head
