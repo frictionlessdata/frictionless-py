@@ -1,4 +1,3 @@
-import pytest
 import pathlib
 from tableschema import infer
 from goodtables import validate, Check, errors
@@ -550,6 +549,15 @@ def test_validate_infer_names():
     assert report.table['schema']['fields'][0]['name'] == 'id'
     assert report.table['schema']['fields'][1]['name'] == 'name'
     assert report.valid
+
+
+# Dialect
+
+
+def test_validate_dialect_delimiter():
+    report = validate('data/delimiter.csv', dialect={'delimiter': ';'})
+    assert report.valid
+    assert report.table.row_count == 2
 
 
 # Integrity

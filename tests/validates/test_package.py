@@ -1,5 +1,4 @@
 import json
-import pytest
 import pathlib
 from copy import deepcopy
 from goodtables import validate
