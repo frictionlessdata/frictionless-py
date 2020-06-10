@@ -89,6 +89,7 @@ class Row(OrderedDict):
                 is_blank = False
                 cell = field.cast_function(cell)
                 if cell == field.ERROR:
+                    cell = None
                     details = 'expected type is "%s" and format is "%s"'
                     details = details % (field.type, field.format)
                     self.__error_cells[field.name] = cell
@@ -98,13 +99,12 @@ class Row(OrderedDict):
                             cells=list(map(str, cells)),
                             row_number=row_number,
                             row_position=row_position,
-                            cell=str(cell),
+                            cell=str(cells[field_number - 1]),
                             field_name=field.name,
                             field_number=field_number,
                             field_position=field_position,
                         )
                     )
-                    cell = None
 
             # Constraint errors
             if cell is not None:

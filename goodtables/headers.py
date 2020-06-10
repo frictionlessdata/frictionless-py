@@ -74,9 +74,11 @@ class Headers(list):
                         duplicate_field_positions.append(seen_position)
                 if duplicate_field_positions:
                     cell = None
+                    details = 'at position "%s"'
+                    details = details % ', '.join(map(str, duplicate_field_positions))
                     self.__errors.append(
                         errors.DuplicateHeaderError(
-                            details=', '.join(map(str, duplicate_field_positions)),
+                            details=details,
                             cells=list(map(str, cells)),
                             cell=str(cells[field_number - 1]),
                             field_name=field.name,

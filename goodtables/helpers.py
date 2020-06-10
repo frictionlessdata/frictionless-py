@@ -113,6 +113,8 @@ def translate_headers(headers):
     # goodtables: [2, 3, 4] (pandas-like)
     # tabulator: [2, 4] (range-like)
     if headers and isinstance(headers, list):
+        if len(headers) == 1:
+            return headers[0]
         if len(headers) > 1:
             headers = [headers[0], headers[-1]]
             for header in headers:

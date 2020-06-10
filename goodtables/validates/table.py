@@ -43,6 +43,8 @@ def validate_table(
     infer_confidence=0.75,
     # Dialect
     dialect=None,
+    # Control
+    control=None,
     # Integrity
     size=None,
     hash=None,
@@ -53,8 +55,6 @@ def validate_table(
     limit_errors=None,
     limit_memory=1000,
     extra_checks=None,
-    # Control
-    control=None,
 ):
     """Validate table
 
@@ -89,6 +89,8 @@ def validate_table(
 
         dialect? (dict)
 
+        control? (dict)
+
         size? (int)
         hash? (str)
         lookup? (dict)
@@ -97,8 +99,6 @@ def validate_table(
         skip_errors? (str[])
         limit_errors? (int)
         extra_checks? (list)
-
-        control? (dict)
 
     # Returns
         Report
