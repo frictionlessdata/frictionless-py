@@ -10,7 +10,11 @@ class Control(Metadata):
 
 
 class LocalControl(Metadata):
-    pass
+    metadata_profile = {  # type: ignore
+        'type': 'object',
+        'additionalProperties': False,
+        'properties': {},
+    }
 
 
 class RemoteControl(Metadata):
@@ -30,8 +34,16 @@ class RemoteControl(Metadata):
 
 
 class StreamControl(Metadata):
-    pass
+    metadata_profile = {  # type: ignore
+        'type': 'object',
+        'additionalProperties': False,
+        'properties': {},
+    }
 
 
 class TextControl(Metadata):
-    pass
+    metadata_profile = {  # type: ignore
+        'type': 'object',
+        'additionalProperties': False,
+        'properties': {},
+    }

@@ -41,6 +41,8 @@ def validate_table(
     infer_names=None,
     infer_sample=100,
     infer_confidence=0.75,
+    # Dialect
+    dialect=None,
     # Integrity
     size=None,
     hash=None,
@@ -51,8 +53,8 @@ def validate_table(
     limit_errors=None,
     limit_memory=1000,
     extra_checks=None,
-    # Dialect
-    **dialect,
+    # Control
+    control=None,
 ):
     """Validate table
 
@@ -85,6 +87,8 @@ def validate_table(
         infer_sample? (int)
         infer_confidence? (float)
 
+        dialect? (dict)
+
         size? (int)
         hash? (str)
         lookup? (dict)
@@ -94,7 +98,7 @@ def validate_table(
         limit_errors? (int)
         extra_checks? (list)
 
-        **dialect (dict)
+        control? (dict)
 
     # Returns
         Report
@@ -131,7 +135,8 @@ def validate_table(
         offset_rows=offset_rows,
         sample_size=infer_sample,
         hashing_algorithm=helpers.parse_hashing_algorithm(hash),
-        **dialect,
+        **helpers.translate_dialect(dialect or {}),
+        **helpers.translate_control(control or {}),
     )
 
     # Open stream
@@ -303,6 +308,7 @@ def validate_table(
     time = timer.get_time()
     if schema:
         schema = schema.descriptor
+        dialect = dialect or {}
     return Report(
         time=time,
         errors=task_errors,

@@ -12,6 +12,7 @@ class Dialect(Metadata):
 class CsvDialect(Dialect):
     metadata_profile = {  # type: ignore
         'type': 'object',
+        'additionalProperties': False,
         'properties': {
             'delimiter': {'type': 'string'},
             'lineTerminator': {'type': 'string'},
@@ -41,6 +42,7 @@ class CsvDialect(Dialect):
 class ExcelDialect(Dialect):
     metadata_profile = {  # type: ignore
         'type': 'object',
+        'additionalProperties': False,
         'properties': {
             'sheet': {'type': ['number', 'string']},
             'fillMergedCells': {'type': 'boolean'},
@@ -61,6 +63,7 @@ class ExcelDialect(Dialect):
 class JsonDialect(Dialect):
     metadata_profile = {  # type: ignore
         'type': 'object',
+        'additionalProperties': False,
         'properties': {
             'keyed': {'type': 'boolean'},
             'lined': {'type': 'boolean'},

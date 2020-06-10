@@ -1,4 +1,3 @@
-import stringcase
 import datapackage
 from .. import helpers
 from ..report import Report
@@ -43,7 +42,6 @@ def validate_resource(source, base_path=None, strict=False, lookup=None, **optio
         source = resource.raw_iter(stream=True)
     headers_row = 1
     dialect = resource.descriptor.get('dialect', {})
-    dialect = {stringcase.snakecase(key): value for key, value in dialect.items()}
     if dialect.get('header') is False:
         headers_row = None
     if lookup is None:
@@ -66,11 +64,11 @@ def validate_resource(source, base_path=None, strict=False, lookup=None, **optio
         limit_rows=resource.descriptor.get('limitRows'),
         offset_rows=resource.descriptor.get('offsetRows'),
         schema=resource.descriptor.get('schema'),
+        dialect=dialect,
         size=resource.descriptor.get('bytes'),
         hash=resource.descriptor.get('hash'),
         lookup=lookup,
         **options,
-        **dialect,
     )
 
     # Return report

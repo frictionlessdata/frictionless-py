@@ -146,6 +146,28 @@ def translate_skip_rows(skip_rows):
     return skip_rows
 
 
+def translate_dialect(dialect):
+    options = {
+        stringcase.lowercase(key): dialect.pop(key)
+        for key in [
+            'doubleQuote',
+            'escapeChar',
+            'lineTerminator',
+            'quoteChar',
+            'skipInitialSpace',
+        ]
+        if key in dialect
+    }
+    options.pop('header', None)
+    options.pop('caseSensitiveHeader', None)
+    options.update(create_options_from_descriptor(dialect))
+    return options
+
+
+def translate_control(control):
+    return create_options_from_descriptor(control)
+
+
 # Measurements
 
 
