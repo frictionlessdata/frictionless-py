@@ -6,6 +6,8 @@
 [![Github](https://img.shields.io/badge/github-master-brightgreen)](https://github.com/frictionlessdata/goodtables-py)
 [![Discord](https://img.shields.io/gitter/room/frictionlessdata/chat.svg)](https://discord.com/channels/695635777199145130/695635777199145133)
 
+> It's an alpha version of `goodtables@3` and it's under active development
+
 Goodtables is a framework to validate tabular data. It can check the structure
 of your data (e.g. all rows have the same number of columns), and its contents
 (e.g. all dates are valid).
