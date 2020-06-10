@@ -37,6 +37,13 @@ release:
 	git commit -a -m 'v$(VERSION)' && git tag -a v$(VERSION) -m 'v$(VERSION)'
 	git push --follow-tags
 
+release-v3:
+	git checkout v3 && git pull origin && git fetch -p
+	@git log --pretty=format:"%C(yellow)%h%Creset %s%Cgreen%d" --reverse -20
+	@echo "\nReleasing v$(VERSION) in 10 seconds. Press <CTRL+C> to abort\n" && sleep 10
+	git commit -a -m 'v$(VERSION)' && git tag -a v$(VERSION) -m 'v$(VERSION)'
+	git push --follow-tags
+
 templates:
 	sed -i -E "s/@(\w*)/@$(LEAD)/" .github/issue_template.md
 	sed -i -E "s/@(\w*)/@$(LEAD)/" .github/pull_request_template.md
