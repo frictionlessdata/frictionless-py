@@ -16,13 +16,11 @@ def read(*paths):
 PACKAGE = 'goodtables'
 NAME = PACKAGE.replace('_', '-')
 CORE_REQUIRES = [
-    'six>=1.9',
     'click>=6.6',
-    'click-default-group',
-    'cached-property>=1.5',
-    'stringcase>=1.2',
     'requests>=2.10',
     'jsonschema>=2.5',
+    'stringcase>=1.2',
+    'cached-property>=1.5',
     'tabulator>=1.52',
     'tableschema>=1.19',
     'datapackage>=1.14',
