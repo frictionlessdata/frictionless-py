@@ -31,6 +31,10 @@ class Metadata(dict):
     def metadata_strict(self):
         return self.__strict
 
+    @property
+    def metadata_valid(self):
+        return not len(self.__errors)
+
     @cached_property
     def metadata_errors(self):
         return self.__errors
