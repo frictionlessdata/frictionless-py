@@ -2,7 +2,11 @@ from .metadata import Metadata
 
 
 class Dialect(Metadata):
-    pass
+
+    # Expand
+
+    def expand(self):
+        pass
 
 
 class CsvDialect(Dialect):

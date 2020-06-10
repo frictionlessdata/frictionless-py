@@ -13,6 +13,7 @@ from .report import Report, ReportTable
 from .row import Row
 from .server import Server
 from .validate import validate
-from . import errors
+from . import controls
 from . import dialects
+from . import errors
 from . import exceptions
