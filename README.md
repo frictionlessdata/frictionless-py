@@ -763,6 +763,10 @@ $ make test
 
 Here described only breaking and the most important changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/goodtables-py/commits/master).
 
+##### v2.5
+
+- Added `check.check_headers_hook` to support headers check for body-contexted checks (see https://github.com/frictionlessdata/goodtables-py/tree/v3 for native support)
+
 ##### v2.4
 
 - Added integrity checks for data packages. If `resource.bytes` or `resource.hash` (sha256) is provided it will be verified against actual values
