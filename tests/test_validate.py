@@ -11,10 +11,11 @@ import pytest
 from pprint import pprint
 from copy import deepcopy
 from importlib import import_module
-from goodtables import validate, init_datapackage
+from goodtables import validate, init_datapackage, check, Error
 
 
 # Infer preset
+
 
 def test_validate_infer_table(log):
     report = validate('data/invalid.csv')
@@ -41,12 +42,14 @@ def test_validate_infer_nested(log):
 
 # Report's preset
 
+
 def test_validate_report_scheme_format_encoding():
     report = validate('data/valid.csv')
     assert report['preset'] == 'table'
 
 
 # Report's scheme/format/encoding
+
 
 def test_validate_report_scheme_format_encoding():
     report = validate('data/valid.csv')
@@ -56,6 +59,7 @@ def test_validate_report_scheme_format_encoding():
 
 
 # Report's schema
+
 
 def test_validate_report_schema():
     report = validate('data/valid.csv')
@@ -69,16 +73,19 @@ def test_validate_report_schema_infer_schema():
 
 # Nested source with individual checks
 
+
 def test_validate_nested_checks(log):
     source = [
         ['field'],
         ['value', 'value'],
         [''],
     ]
-    report = validate([
-        {'source': source, 'checks': ['extra-value']},
-        {'source': source, 'checks': ['blank-row']}
-    ])
+    report = validate(
+        [
+            {'source': source, 'checks': ['extra-value']},
+            {'source': source, 'checks': ['blank-row']},
+        ]
+    )
     assert log(report) == [
         (1, 2, 2, 'extra-value'),
         (2, 3, None, 'blank-row'),
@@ -95,10 +102,7 @@ def test_validate_invalid_table_schema(log):
         ['name', 'age'],
         ['Alex', '33'],
     ]
-    schema = {'fields': [
-        {'name': 'name'},
-        {'name': 'age', 'type': 'bad'},
-    ]}
+    schema = {'fields': [{'name': 'name'}, {'name': 'age', 'type': 'bad'},]}
     report = validate(source, schema=schema)
     assert log(report) == [
         (1, None, None, 'schema-error'),
@@ -107,25 +111,17 @@ def test_validate_invalid_table_schema(log):
 
 # Datapackage with css dialect header false
 
+
 def test_validate_datapackage_dialect_header_false(log):
     descriptor = {
         'resources': [
             {
                 'name': 'name',
-                'data': [
-                    ['John', '22'],
-                    ['Alex', '33'],
-                    ['Paul', '44'],
-                ],
+                'data': [['John', '22'], ['Alex', '33'], ['Paul', '44'],],
                 'schema': {
-                    'fields': [
-                        {'name': 'name'},
-                        {'name': 'age', 'type': 'integer'},
-                    ]
+                    'fields': [{'name': 'name'}, {'name': 'age', 'type': 'integer'},]
                 },
-                'dialect': {
-                    'header': False,
-                }
+                'dialect': {'header': False,},
             }
         ]
     }
@@ -134,6 +130,7 @@ def test_validate_datapackage_dialect_header_false(log):
 
 
 # Source as pathlib.Path
+
 
 @pytest.mark.skipif(sys.version_info < (3, 4), reason='not supported')
 def test_source_pathlib_path_table():
@@ -153,6 +150,7 @@ def test_source_pathlib_path_datapackage():
 
 # Catch exceptions
 
+
 def test_validate_catch_all_open_exceptions(log):
     report = validate('data/latin1.csv', encoding='utf-8')
     assert log(report) == [
@@ -169,6 +167,7 @@ def test_validate_catch_all_iter_exceptions(log):
 
 
 # Warnings
+
 
 def test_validate_warnings_no():
     source = 'data/datapackages/invalid/datapackage.json'
@@ -224,6 +223,7 @@ def test_validate_warnings_table_and_error_limit():
 
 # Empty source
 
+
 def test_validate_empty_source():
     report = validate('data/empty.csv')
     assert report['tables'][0]['row-count'] == 0
@@ -231,6 +231,7 @@ def test_validate_empty_source():
 
 
 # No headers source
+
 
 def test_validate_no_headers():
     report = validate('data/invalid_no_headers.csv', headers=None)
@@ -243,6 +244,7 @@ def test_validate_no_headers():
 
 
 # Init datapackage
+
 
 def test_init_datapackage_is_correct():
     resources_paths = [
@@ -261,23 +263,17 @@ def test_init_datapackage_is_correct():
 
 # Issues
 
+
 def test_composite_primary_key_unique_issue_215(log):
     descriptor = {
         'resources': [
             {
                 'name': 'name',
-                'data':  [
-                    ['id1', 'id2'],
-                    ['a', '1'],
-                    ['a', '2'],
-                ],
+                'data': [['id1', 'id2'], ['a', '1'], ['a', '2'],],
                 'schema': {
-                    'fields': [
-                        {'name': 'id1'},
-                        {'name': 'id2'},
-                    ],
-                    'primaryKey': ['id1', 'id2']
-                }
+                    'fields': [{'name': 'id1'}, {'name': 'id2'},],
+                    'primaryKey': ['id1', 'id2'],
+                },
             }
         ],
     }
@@ -290,18 +286,11 @@ def test_composite_primary_key_not_unique_issue_215(log):
         'resources': [
             {
                 'name': 'name',
-                'data':  [
-                    ['id1', 'id2'],
-                    ['a', '1'],
-                    ['a', '1'],
-                ],
+                'data': [['id1', 'id2'], ['a', '1'], ['a', '1'],],
                 'schema': {
-                    'fields': [
-                        {'name': 'id1'},
-                        {'name': 'id2'},
-                    ],
-                    'primaryKey': ['id1', 'id2']
-                }
+                    'fields': [{'name': 'id1'}, {'name': 'id2'},],
+                    'primaryKey': ['id1', 'id2'],
+                },
             }
         ],
     }
@@ -318,9 +307,7 @@ def test_validate_infer_fields_issue_223():
         ['456', 'def'],
         ['789', 'ghi'],
     ]
-    schema = {
-        'fields': [{'name': 'name1'}]
-    }
+    schema = {'fields': [{'name': 'name1'}]}
     report = validate(source, schema=schema, infer_fields=True)
     assert report['valid']
 
@@ -332,11 +319,8 @@ def test_validate_infer_fields_issue_225():
         ['456', None],
         ['789', None],
     ]
-    schema = {
-        'fields': [{'name': 'name1'}]
-    }
+    schema = {'fields': [{'name': 'name1'}]}
     report = validate(source, schema=schema, infer_fields=True)
-
 
     errors = set([error.get("code") for error in report.get("tables")[0].get("errors")])
     assert report is not None
@@ -378,16 +362,16 @@ def test_validate_datapackage_with_schema_issue_348(log):
                 'data': [
                     ['id', 'name', 'surname'],
                     ['p1', 'Tom', 'Hanks'],
-                    ['p2', 'Meryl', 'Streep']
+                    ['p2', 'Meryl', 'Streep'],
                 ],
                 'schema': {
                     'fields': [
                         {'name': 'id', 'type': 'string'},
                         {'name': 'name', 'type': 'string'},
                         {'name': 'surname', 'type': 'string'},
-                        {'name': 'dob', 'type': 'date'}
+                        {'name': 'dob', 'type': 'date'},
                     ]
-                }
+                },
             }
         ]
     }
@@ -405,16 +389,16 @@ def test_validate_datapackage_with_schema_structure_only_issue_348(log):
                 'data': [
                     ['id', 'name', 'surname'],
                     ['p1', 'Tom', 'Hanks'],
-                    ['p2', 'Meryl', 'Streep']
+                    ['p2', 'Meryl', 'Streep'],
                 ],
                 'schema': {
                     'fields': [
                         {'name': 'id', 'type': 'string'},
                         {'name': 'name', 'type': 'string'},
                         {'name': 'surname', 'type': 'string'},
-                        {'name': 'dob', 'type': 'date'}
+                        {'name': 'dob', 'type': 'date'},
                     ]
-                }
+                },
             }
         ]
     }
@@ -438,23 +422,22 @@ def test_validate_invalid_table_schema_issue_304(log):
         ['name', 'age'],
         ['Alex', '33'],
     ]
-    schema = {'fields': [
-        {'name': 'name'},
-        {'name': 'age', 'type': 'bad'},
-    ]}
+    schema = {'fields': [{'name': 'name'}, {'name': 'age', 'type': 'bad'},]}
     report = validate(source, schema=schema)
     assert not report['valid']
 
 
 def test_validate_order_fields_issue_313(log):
     source = 'data/order_fields_313.xlsx'
-    schema = {'fields': [
-        { 'name': 'Column_1', 'type': 'string', },
-        { 'name': 'Column_2', 'type': 'string', 'constraints': { 'required': True } },
-        { 'name': 'Column_3', 'type': 'string' },
-        { 'name': 'Column_4', 'type': 'string' },
-        { 'name': 'Column_5', 'type': 'string' }
-    ]}
+    schema = {
+        'fields': [
+            {'name': 'Column_1', 'type': 'string',},
+            {'name': 'Column_2', 'type': 'string', 'constraints': {'required': True}},
+            {'name': 'Column_3', 'type': 'string'},
+            {'name': 'Column_4', 'type': 'string'},
+            {'name': 'Column_5', 'type': 'string'},
+        ]
+    }
     # For now, the "non-matching-header" check is required to order the fields
     checks = ['non-matching-header', 'required-constraint']
     report = validate(source, schema=schema, checks=checks, order_fields=True)
@@ -493,16 +476,16 @@ def test_validate_fk_invalid_reference_table_issue_347(log):
                 'data': [
                     ['id', 'name', 'surname'],
                     ['p1', 'Tom', 'Hanks'],
-                    ['p2', 'Meryl', 'Streep']
+                    ['p2', 'Meryl', 'Streep'],
                 ],
                 'schema': {
                     'fields': [
                         {'name': 'id', 'type': 'string'},
                         {'name': 'name', 'type': 'string'},
                         {'name': 'surname', 'type': 'string'},
-                        {'name': 'dob', 'type': 'date'}
+                        {'name': 'dob', 'type': 'date'},
                     ]
-                }
+                },
             },
             {
                 'name': 'oscars',
@@ -513,7 +496,7 @@ def test_validate_fk_invalid_reference_table_issue_347(log):
                     ['p2', 'Best Supporting Actress', 1980, 'Kramer vs. Kramer'],
                     ['p2', 'Best Actress', 1982, 'Sophie"s Choice'],
                     ['p2', 'Best Actress', 2012, 'The Iron Lady'],
-                    ['p3', 'Best Actor', 2019, 'Joker']
+                    ['p3', 'Best Actor', 2019, 'Joker'],
                 ],
                 'schema': {
                     'fields': [
@@ -525,17 +508,20 @@ def test_validate_fk_invalid_reference_table_issue_347(log):
                     'foreignKeys': [
                         {
                             'fields': 'person_id',
-                            'reference': {'resource': 'people', 'fields': 'id'}
+                            'reference': {'resource': 'people', 'fields': 'id'},
                         }
-                    ]
-                }
-            }
+                    ],
+                },
+            },
         ]
     }
     report = validate(descriptor, checks=['structure', 'schema', 'foreign-key'])
     assert report['tables'][1]['error-count'] == 6
     assert report['tables'][1]['errors'][0]['code'] == 'foreign-key'
-    assert report['tables'][1]['errors'][0]['message'] == 'Foreign key violation caused by invalid reference table: [people] Row length 3 doesn\'t match fields count 4 for row "2"'
+    assert (
+        report['tables'][1]['errors'][0]['message']
+        == 'Foreign key violation caused by invalid reference table: [people] Row length 3 doesn\'t match fields count 4 for row "2"'
+    )
 
 
 def test_validate_wide_table_with_order_fields_issue_277(log):
@@ -544,4 +530,27 @@ def test_validate_wide_table_with_order_fields_issue_277(log):
         (1, 49, 50, 'required-constraint'),
         (1, 68, 50, 'required-constraint'),
         (1, 69, 50, 'required-constraint'),
+    ]
+
+
+def test_validate_wide_table_with_order_fields_issue_368(log):
+    @check('custom-check', type='custom', context='body')
+    class CustomCheck(object):
+        def __init__(self, *args, **kwargs):
+            pass
+
+        def check_headers_hook(self, cells, sample):
+            errors = []
+            errors.append(Error('custom-check-head'))
+            return errors
+
+        def check_row(self, cells):
+            errors = []
+            errors.append(Error('custom-check-body'))
+            return errors
+
+    report = validate([['header'], ['value']], checks=['custom-check'])
+    assert log(report) == [
+        (1, None, None, 'custom-check-head'),
+        (1, None, None, 'custom-check-body'),
     ]

@@ -20,19 +20,22 @@ from . import config
 
 # Module API
 
+
 class Inspector(object):
 
     # Public
 
-    def __init__(self,
-                 checks=['structure', 'schema'],
-                 skip_checks=[],
-                 infer_schema=False,
-                 infer_fields=False,
-                 order_fields=False,
-                 error_limit=config.DEFAULT_ERROR_LIMIT,
-                 table_limit=config.DEFAULT_TABLE_LIMIT,
-                 row_limit=config.DEFAULT_ROW_LIMIT):
+    def __init__(
+        self,
+        checks=['structure', 'schema'],
+        skip_checks=[],
+        infer_schema=False,
+        infer_fields=False,
+        order_fields=False,
+        error_limit=config.DEFAULT_ERROR_LIMIT,
+        table_limit=config.DEFAULT_TABLE_LIMIT,
+        row_limit=config.DEFAULT_ROW_LIMIT,
+    ):
 
         # Set attributes
         self.__checks = checks
@@ -64,9 +67,9 @@ class Inspector(object):
         warnings, tables = preset_func(source, **options)
         if len(tables) > self.__table_limit:
             warnings.append(
-                'Dataset inspection has reached %s table(s) limit' %
-                (self.__table_limit))
-            tables = tables[:self.__table_limit]
+                'Dataset inspection has reached %s table(s) limit' % (self.__table_limit)
+            )
+            tables = tables[: self.__table_limit]
 
         # Collect table reports
         table_reports = []
@@ -117,8 +120,9 @@ class Inspector(object):
             preset = 'table'
             if isinstance(source, six.string_types):
                 source_path = source.lower()
-                if source_path.endswith('datapackage.json') \
-                   or source_path.endswith('.zip'):
+                if source_path.endswith('datapackage.json') or source_path.endswith(
+                    '.zip'
+                ):
                     preset = 'datapackage'
             elif isinstance(source, dict):
                 if 'resources' in source:
@@ -154,8 +158,11 @@ class Inspector(object):
 
         # Prepare checks
         checks = registry.compile_checks(
-            table.get('checks', self.__checks), self.__skip_checks,
-            order_fields=self.__order_fields, infer_fields=self.__infer_fields)
+            table.get('checks', self.__checks),
+            self.__skip_checks,
+            order_fields=self.__order_fields,
+            infer_fields=self.__infer_fields,
+        )
 
         # Prepare table
         try:
@@ -214,7 +221,14 @@ class Inspector(object):
                     if not header_cells:
                         break
                     check_func = getattr(check['func'], 'check_headers', check['func'])
-                    errors += (check_func(header_cells, sample) or [])
+                    errors += check_func(header_cells, sample) or []
+                # That's a hack to make head/body checks happen
+                for check in checks:
+                    if not header_cells:
+                        break
+                    check_func = getattr(check['func'], 'check_headers_hook', None)
+                    if check_func:
+                        errors += check_func(header_cells, sample) or []
                 for error in errors:
                     error.row = None
 
@@ -241,20 +255,22 @@ class Inspector(object):
                         if not row_cells:
                             break
                         check_func = getattr(check['func'], 'check_row', check['func'])
-                        errors += (check_func(row_cells) or [])
+                        errors += check_func(row_cells) or []
                     for error in reversed(errors):
                         if error.row is not None:
                             break
                         error.row = row
                     if row_number >= self.__row_limit:
                         warnings.append(
-                            'Table "%s" inspection has reached %s row(s) limit' %
-                            (source, self.__row_limit))
+                            'Table "%s" inspection has reached %s row(s) limit'
+                            % (source, self.__row_limit)
+                        )
                         break
                     if len(errors) >= self.__error_limit:
                         warnings.append(
-                            'Table "%s" inspection has reached %s error(s) limit' %
-                            (source, self.__error_limit))
+                            'Table "%s" inspection has reached %s error(s) limit'
+                            % (source, self.__error_limit)
+                        )
                         break
 
         # Table checks
@@ -262,7 +278,7 @@ class Inspector(object):
             for check in checks:
                 check_func = getattr(check['func'], 'check_table', None)
                 if check_func:
-                    errors += (check_func() or [])
+                    errors += check_func() or []
 
         # Stop timer
         stop = datetime.datetime.now()
@@ -270,27 +286,30 @@ class Inspector(object):
         # Compose report
         headers = headers if any(elt is not None for elt in headers) else None
         if self.__error_limit != float('inf'):
-            errors = errors[:self.__error_limit]
+            errors = errors[: self.__error_limit]
         errors = sorted(errors)
         report = copy(extra)
-        report.update({
-            'time': round((stop - start).total_seconds(), 3),
-            'valid': not bool(errors),
-            'error-count': len(errors),
-            'row-count': row_number,
-            'source': source,
-            'headers': headers,
-            'scheme': stream.scheme,
-            'format': stream.format,
-            'encoding': stream.encoding,
-            'schema': 'table-schema' if schema else None,
-            'errors': [dict(error) for error in errors],
-        })
+        report.update(
+            {
+                'time': round((stop - start).total_seconds(), 3),
+                'valid': not bool(errors),
+                'error-count': len(errors),
+                'row-count': row_number,
+                'source': source,
+                'headers': headers,
+                'scheme': stream.scheme,
+                'format': stream.format,
+                'encoding': stream.encoding,
+                'schema': 'table-schema' if schema else None,
+                'errors': [dict(error) for error in errors],
+            }
+        )
 
         return warnings, _clean_empty(report)
 
 
 # Internal
+
 
 def _filter_checks(checks, type=None, context=None, inverse=False):
     result = []
@@ -332,10 +351,7 @@ def _compose_error_from_schema_error(error):
     message_substitutions = {
         'error_message': error,
     }
-    return Error(
-        'schema-error',
-        message_substitutions=message_substitutions
-    )
+    return Error('schema-error', message_substitutions=message_substitutions)
 
 
 def _clean_empty(d):
@@ -345,7 +361,5 @@ def _clean_empty(d):
     if isinstance(d, list):
         return [v for v in (_clean_empty(v) for v in d) if v is not None]
     return {
-        k: v for k, v in
-        ((k, _clean_empty(v)) for k, v in d.items())
-        if v is not None
+        k: v for k, v in ((k, _clean_empty(v)) for k, v in d.items()) if v is not None
     }
