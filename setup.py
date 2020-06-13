@@ -25,7 +25,7 @@ CORE_REQUIRES = [
     'tableschema>=1.19',
     'datapackage>=1.14',
 ]
-PROB_REQUIRES = [
+HINT_REQUIRES = [
     'statistics>=1.0',
 ]
 RULE_REQUIRES = [
@@ -58,7 +58,7 @@ setup(
     install_requires=CORE_REQUIRES,
     tests_require=DEVOPS_REQUIRES,
     extras_require={
-        'prob': PROB_REQUIRES,
+        'hint': HINT_REQUIRES,
         'rule': RULE_REQUIRES,
         'server': SERVER_REQUIRES,
         'devops': DEVOPS_REQUIRES,
