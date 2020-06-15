@@ -11,21 +11,21 @@ def test_validate():
 
 def test_validate_invalid_source():
     report = validate('bad.json', source_type='resource')
-    assert report.flatten(['code', 'details']) == [
+    assert report.flatten(['code', 'note']) == [
         ['resource-error', 'Unable to load JSON at "bad.json"']
     ]
 
 
 def test_validate_invalid_resource():
     report = validate({'path': 'data/table.csv', 'schema': 'bad'})
-    assert report.flatten(['code', 'details']) == [
+    assert report.flatten(['code', 'note']) == [
         ['resource-error', 'Not resolved Local URI "bad" for resource.schema']
     ]
 
 
 def test_validate_invalid_resource_strict():
     report = validate({'path': 'data/table.csv'}, strict=True)
-    assert report.flatten(['code', 'details']) == [
+    assert report.flatten(['code', 'note']) == [
         [
             'resource-error',
             'Descriptor validation error: {\'path\': \'data/table.csv\', \'profile\': \'data-resource\'} is not valid under any of the given schemas at "" in descriptor and at "oneOf" in profile',

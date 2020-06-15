@@ -73,21 +73,21 @@ def test_validate_with_non_tabular():
 
 def test_validate_invalid_descriptor_path():
     report = validate('bad/datapackage.json')
-    assert report.flatten(['code', 'details']) == [
+    assert report.flatten(['code', 'note']) == [
         ['package-error', 'Unable to load JSON at "bad/datapackage.json"']
     ]
 
 
 def test_validate_invalid_package():
     report = validate({'resources': [{'path': 'data/table.csv', 'schema': 'bad'}]})
-    assert report.flatten(['code', 'details']) == [
+    assert report.flatten(['code', 'note']) == [
         ['package-error', 'Not resolved Local URI "bad" for resource.schema']
     ]
 
 
 def test_validate_invalid_package_strict():
     report = validate({'resources': [{'path': 'data/table.csv'}]}, strict=True)
-    assert report.flatten(['code', 'details']) == [
+    assert report.flatten(['code', 'note']) == [
         [
             'package-error',
             'Descriptor validation error: {\'path\': \'data/table.csv\', \'profile\': \'data-resource\'} is not valid under any of the given schemas at "resources/0" in descriptor and at "properties/resources/items/oneOf" in profile',
@@ -298,7 +298,7 @@ def test_validate_package_mixed_issue_170():
 
 def test_validate_package_invalid_json_issue_192():
     report = validate('data/invalid.json', source_type='package')
-    assert report.flatten(['code', 'details']) == [
+    assert report.flatten(['code', 'note']) == [
         [
             'package-error',
             'Unable to parse JSON at "data/invalid.json". Expecting property name enclosed in double quotes: line 2 column 5 (char 6)',

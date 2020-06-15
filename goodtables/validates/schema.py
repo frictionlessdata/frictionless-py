@@ -13,13 +13,13 @@ def validate_schema(source):
         schema = tableschema.Schema(source)
     except tableschema.exceptions.TableSchemaException as exception:
         time = timer.get_time()
-        error = SchemaError(details=str(exception))
+        error = SchemaError(note=str(exception))
         return Report(time=time, errors=[error], tables=[])
 
     # Validate schema
     errors = []
     for error in schema.errors:
-        errors.append(SchemaError(details=str(error)))
+        errors.append(SchemaError(note=str(error)))
 
     # Return report
     time = timer.get_time()

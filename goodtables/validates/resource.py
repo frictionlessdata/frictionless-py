@@ -14,7 +14,7 @@ def validate_resource(source, base_path=None, strict=False, lookup=None, **optio
         resource = datapackage.Resource(source, base_path=base_path)
     except datapackage.exceptions.DataPackageException as exception:
         time = timer.get_time()
-        error = ResourceError(details=str(exception))
+        error = ResourceError(note=str(exception))
         return Report(time=time, errors=[error], tables=[])
 
     # Prepare resource
@@ -27,11 +27,11 @@ def validate_resource(source, base_path=None, strict=False, lookup=None, **optio
             try:
                 resource.infer()
             except Exception as exception:
-                errors.append(ResourceError(details=str(exception)))
+                errors.append(ResourceError(note=str(exception)))
         if not resource.tabular:
-            errors.append(ResourceError(details='resource is not tabular'))
+            errors.append(ResourceError(note='resource is not tabular'))
         for error in resource.errors:
-            errors.append(ResourceError(details=str(error)))
+            errors.append(ResourceError(note=str(error)))
         if errors:
             time = timer.get_time()
             return Report(time=time, errors=errors, tables=[])

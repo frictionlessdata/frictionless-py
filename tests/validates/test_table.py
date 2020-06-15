@@ -79,21 +79,21 @@ def test_validate_blank_cell_not_required():
 
 def test_validate_no_data():
     report = validate('data/empty.csv')
-    assert report.flatten(['rowPosition', 'fieldPosition', 'code', 'details']) == [
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code', 'note']) == [
         [None, None, 'source-error', 'There are no rows available'],
     ]
 
 
 def test_validate_no_rows():
     report = validate('data/without-rows.csv')
-    assert report.flatten(['rowPosition', 'fieldPosition', 'code', 'details']) == [
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code', 'note']) == [
         [None, None, 'source-error', 'There are no rows available'],
     ]
 
 
 def test_validate_task_error():
     report = validate('data/table.csv', limit_rows='bad')
-    assert report.flatten(['code', 'details']) == [
+    assert report.flatten(['code', 'note']) == [
         [
             'task-error',
             '"\'bad\' is not of type \'number\', \'null\'" at "tables/0/limitRows" in metadata and at "properties/tables/items/properties/limitRows/type" in profile',
@@ -570,7 +570,7 @@ def test_validate_size():
 
 def test_validate_size_invalid():
     report = validate('data/table.csv', size=40)
-    assert report.flatten(['rowPosition', 'fieldPosition', 'code', 'details']) == [
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code', 'note']) == [
         [None, None, 'size-error', 'expected is "40" and actual is "30"'],
     ]
 
@@ -584,7 +584,7 @@ def test_validate_hash():
 def test_validate_hash_invalid():
     hash = '6c2c61dd9b0e9c6876139a449ed87933'
     report = validate('data/table.csv', hash='bad')
-    assert report.flatten(['rowPosition', 'fieldPosition', 'code', 'details']) == [
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code', 'note']) == [
         [None, None, 'hash-error', 'expected is "bad" and actual is "%s"' % hash],
     ]
 
@@ -598,7 +598,7 @@ def test_validate_hash_md5():
 def test_validate_hash_md5_invalid():
     hash = '6c2c61dd9b0e9c6876139a449ed87933'
     report = validate('data/table.csv', hash='md5:bad')
-    assert report.flatten(['rowPosition', 'fieldPosition', 'code', 'details']) == [
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code', 'note']) == [
         [None, None, 'hash-error', 'expected is "bad" and actual is "%s"' % hash],
     ]
 
@@ -612,7 +612,7 @@ def test_validate_hash_sha1():
 def test_validate_hash_sha1_invalid():
     hash = 'db6ea2f8ff72a9e13e1d70c28ed1c6b42af3bb0e'
     report = validate('data/table.csv', hash='sha1:bad')
-    assert report.flatten(['rowPosition', 'fieldPosition', 'code', 'details']) == [
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code', 'note']) == [
         [None, None, 'hash-error', 'expected is "bad" and actual is "%s"' % hash],
     ]
 
@@ -626,7 +626,7 @@ def test_validate_hash_sha256():
 def test_validate_hash_sha256_invalid():
     hash = 'a1fd6c5ff3494f697874deeb07f69f8667e903dd94a7bc062dd57550cea26da8'
     report = validate('data/table.csv', hash='sha256:bad')
-    assert report.flatten(['rowPosition', 'fieldPosition', 'code', 'details']) == [
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code', 'note']) == [
         [None, None, 'hash-error', 'expected is "bad" and actual is "%s"' % hash],
     ]
 
@@ -640,7 +640,7 @@ def test_validate_hash_sha512():
 def test_validate_hash_sha512_invalid():
     hash = 'd52e3f5f5693894282f023b9985967007d7984292e9abd29dca64454500f27fa45b980132d7b496bc84d336af33aeba6caf7730ec1075d6418d74fb8260de4fd'
     report = validate('data/table.csv', hash='sha512:bad')
-    assert report.flatten(['rowPosition', 'fieldPosition', 'code', 'details']) == [
+    assert report.flatten(['rowPosition', 'fieldPosition', 'code', 'note']) == [
         [None, None, 'hash-error', 'expected is "bad" and actual is "%s"' % hash],
     ]
 
@@ -826,7 +826,7 @@ def test_validate_limit_memory():
     source = lambda: ([integer] for integer in range(1, 100000000))
     schema = {'fields': [{'name': 'integer', 'type': 'integer'}], 'primaryKey': 'integer'}
     report = validate(source, headers_row=None, schema=schema, limit_memory=50)
-    assert report.flatten(['code', 'details']) == [
+    assert report.flatten(['code', 'note']) == [
         ['task-error', 'exceeded memory limit "50MB"']
     ]
 
@@ -837,7 +837,7 @@ def test_validate_extra_checks():
     class ExtraCheck(Check):
         def validate_row(self, row):
             yield errors.BlankRowError(
-                details='',
+                note='',
                 cells=list(map(str, row.values())),
                 row_number=row.row_number,
                 row_position=row.row_position,
@@ -857,7 +857,7 @@ def test_validate_extra_checks_with_arguments():
     class ExtraCheck(Check):
         def validate_row(self, row):
             yield errors.BlankRowError(
-                details='',
+                note='',
                 cells=list(map(str, row.values())),
                 row_number=row.row_number,
                 row_position=self.get('rowPosition') or row.row_position,
@@ -874,14 +874,14 @@ def test_validate_extra_checks_with_arguments():
 
 def test_validate_extra_checks_bad_name():
     report = validate('data/table.csv', extra_checks=['bad'])
-    assert report.flatten(['code', 'details']) == [
+    assert report.flatten(['code', 'note']) == [
         ['task-error', 'Check name "bad" should be in "plugin/element" form'],
     ]
 
 
 def test_validate_extra_checks_bad_plugin_name():
     report = validate('data/table.csv', extra_checks=['bad/some-check'])
-    assert report.flatten(['code', 'details']) == [
+    assert report.flatten(['code', 'note']) == [
         [
             'task-error',
             'Plugin "bad" is not installed. Run: "pip install goodtables[bad]"',
@@ -1006,7 +1006,7 @@ def test_validate_missing_local_file_raises_scheme_error_issue_315():
 def test_validate_inline_no_format_issue_349():
     with open('data/table.csv', 'rb') as source:
         report = validate(source)
-        assert report.flatten(['rowPosition', 'fieldPosition', 'code', 'details']) == [
+        assert report.flatten(['rowPosition', 'fieldPosition', 'code', 'note']) == [
             [None, None, 'format-error', 'Format "None" is not supported'],
         ]
 
@@ -1014,6 +1014,6 @@ def test_validate_inline_no_format_issue_349():
 def test_validate_inline_not_a_binary_issue_349():
     with open('data/table.csv') as source:
         report = validate(source)
-        assert report.flatten(['rowPosition', 'fieldPosition', 'code', 'details']) == [
+        assert report.flatten(['rowPosition', 'fieldPosition', 'code', 'note']) == [
             [None, None, 'source-error', 'Only byte streams are supported.'],
         ]

@@ -24,7 +24,7 @@ class BlacklistedValueError(errors.CellError):
     code = 'rule/blacklisted-value'
     name = 'Blacklisted Value'
     tags = ['#body', '#rule']
-    template = 'The cell {cell} in row at position {rowPosition} and field {fieldName} at position {fieldPosition} has an error: {details}'
+    template = 'The cell {cell} in row at position {rowPosition} and field {fieldName} at position {fieldPosition} has an error: {note}'
     description = 'The value is blacklisted.'
 
 
@@ -32,7 +32,7 @@ class SequentialValueError(errors.CellError):
     code = 'rule/sequential-value'
     name = 'Sequential Value'
     tags = ['#body', '#rule']
-    template = 'The cell {cell} in row at position {rowPosition} and field {fieldName} at position {fieldPosition} has an error: {details}'
+    template = 'The cell {cell} in row at position {rowPosition} and field {fieldName} at position {fieldPosition} has an error: {note}'
     description = 'The value is not sequential.'
 
 
@@ -40,7 +40,7 @@ class RowConstraintError(errors.RowError):
     code = 'rule/row-constraint'
     name = 'Row Constraint'
     tags = ['#body', '#rule']
-    template = 'The row at position {rowPosition} has an error: {details}'
+    template = 'The row at position {rowPosition} has an error: {note}'
     description = 'The value does not conform to the row constraint.'
 
 
@@ -65,15 +65,15 @@ class BlacklistedValueCheck(Check):
 
     def validate_task(self):
         if self.field_name not in self.schema.field_names:
-            details = 'blacklisted value check requires field "%s"' % self.field_name
-            yield errors.TaskError(details=details)
+            note = 'blacklisted value check requires field "%s"' % self.field_name
+            yield errors.TaskError(note=note)
 
     def validate_row(self, row):
         cell = row[self.field_name]
         if cell in self.blacklist:
             yield BlacklistedValueError.from_row(
                 row,
-                details='blacklisted values are "%s"' % self.blacklist,
+                note='blacklisted values are "%s"' % self.blacklist,
                 field_name=self.field_name,
             )
 
@@ -97,8 +97,8 @@ class SequentialValueCheck(Check):
 
     def validate_task(self):
         if self.field_name not in self.schema.field_names:
-            details = 'sequential value check requires field "%s"' % self.field_name
-            yield errors.TaskError(details=details)
+            note = 'sequential value check requires field "%s"' % self.field_name
+            yield errors.TaskError(note=note)
 
     def validate_row(self, row):
         if not self.exited:
@@ -110,9 +110,7 @@ class SequentialValueCheck(Check):
             except Exception:
                 self.exited = True
                 yield SequentialValueError.from_row(
-                    row,
-                    details='the value is not sequential',
-                    field_name=self.field_name,
+                    row, note='the value is not sequential', field_name=self.field_name,
                 )
 
 
@@ -138,5 +136,5 @@ class RowConstraintCheck(Check):
             assert simpleeval.simple_eval(self.constraint, names=row)
         except Exception:
             yield RowConstraintError.from_row(
-                row, details='the row constraint to conform is "%s"' % self.constraint,
+                row, note='the row constraint to conform is "%s"' % self.constraint,
             )

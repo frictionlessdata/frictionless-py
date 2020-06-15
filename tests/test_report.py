@@ -66,7 +66,7 @@ def test_table_report_valid():
 
 
 def test_table_report_invalid():
-    table = create_report_table(errors=[errors.SourceError(details='details')])
+    table = create_report_table(errors=[errors.SourceError(note='note')])
     assert table.valid is False
     assert table.error_count == 1
     assert table.flatten(['code']) == [['source-error']]

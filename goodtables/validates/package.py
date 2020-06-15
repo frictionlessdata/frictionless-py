@@ -15,7 +15,7 @@ def validate_package(source, base_path=None, strict=False, **options):
         package = datapackage.Package(source, base_path=base_path)
     except datapackage.exceptions.DataPackageException as exception:
         time = timer.get_time()
-        error = PackageError(details=str(exception))
+        error = PackageError(note=str(exception))
         return Report(time=time, errors=[error], tables=[])
 
     # Prepare package
@@ -28,12 +28,12 @@ def validate_package(source, base_path=None, strict=False, **options):
             try:
                 package.infer()
             except Exception as exception:
-                errors.append(PackageError(details=str(exception)))
+                errors.append(PackageError(note=str(exception)))
             for resource in list(package.resources):
                 if not resource.tabular:
                     package.remove_resource(resource.name)
         for error in package.errors:
-            errors.append(PackageError(details=str(error)))
+            errors.append(PackageError(note=str(error)))
         if errors:
             time = timer.get_time()
             return Report(time=time, errors=errors, tables=[])

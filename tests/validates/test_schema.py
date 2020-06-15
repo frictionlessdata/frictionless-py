@@ -11,7 +11,7 @@ def test_validate():
 
 def test_validate_invalid():
     report = validate({'fields': {}})
-    assert report.flatten(['code', 'details']) == [
+    assert report.flatten(['code', 'note']) == [
         [
             'schema-error',
             'Descriptor validation error: {} is not of type \'array\' at "fields" in descriptor and at "properties/fields/type" in profile',

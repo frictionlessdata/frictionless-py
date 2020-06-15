@@ -73,10 +73,10 @@ class Metadata(dict):
                     return json.load(file)
             return json.load(descriptor)
         except Exception:
-            details = 'canot retrieve metadata "%s"' % descriptor
+            note = 'canot retrieve metadata "%s"' % descriptor
             if self.metadata_strict:
-                raise exceptions.GoodtablesException(details)
-            error = self.metadata_Error(details=details)
+                raise exceptions.GoodtablesException(note)
+            error = self.metadata_Error(note=note)
             self.metadata_errors.append(error)
 
     # Process
@@ -95,11 +95,11 @@ class Metadata(dict):
                 message = str(error.message)
                 metadata_path = '/'.join(map(str, error.path))
                 profile_path = '/'.join(map(str, error.schema_path))
-                details = '"%s" at "%s" in metadata and at "%s" in profile'
-                details = details % (message, metadata_path, profile_path)
+                note = '"%s" at "%s" in metadata and at "%s" in profile'
+                note = note % (message, metadata_path, profile_path)
                 if self.metadata_strict:
-                    raise exceptions.GoodtablesException(details)
-                error = self.metadata_Error(details=details)
+                    raise exceptions.GoodtablesException(note)
+                error = self.metadata_Error(note=note)
                 self.metadata_errors.append(error)
 
 

@@ -52,24 +52,24 @@ class IntegrityCheck(Check):
                     match = self.memory_unique[field_name].get(cell)
                     self.memory_unique[field_name][cell] = row.row_position
                     if match:
-                        details = 'the same as in the row at position %s' % match
+                        note = 'the same as in the row at position %s' % match
                         yield errors.UniqueError.from_row(
-                            row, details=details, field_name=field_name
+                            row, note=note, field_name=field_name
                         )
 
         # Primary Key Error
         if self.schema.primary_key:
             cells = tuple(row[field_name] for field_name in self.schema.primary_key)
             if set(cells) == {None}:
-                details = 'cells composing the primary keys are all "None"'
-                yield errors.PrimaryKeyError.from_row(row, details=details)
+                note = 'cells composing the primary keys are all "None"'
+                yield errors.PrimaryKeyError.from_row(row, note=note)
             else:
                 match = self.memory_primary.get(cells)
                 self.memory_primary[cells] = row.row_position
                 if match:
                     if match:
-                        details = 'the same as in the row at position %s' % match
-                        yield errors.PrimaryKeyError.from_row(row, details=details)
+                        note = 'the same as in the row at position %s' % match
+                        yield errors.PrimaryKeyError.from_row(row, note=note)
 
         # Foreign Key Error
         if self.foreign_groups:
@@ -81,22 +81,22 @@ class IntegrityCheck(Check):
                         continue
                     match = cells in group_lookup.get(group['sourceKey'], set())
                     if not match:
-                        details = 'not found in the lookup table'
-                        yield errors.ForeignKeyError.from_row(row, details=details)
+                        note = 'not found in the lookup table'
+                        yield errors.ForeignKeyError.from_row(row, note=note)
 
     def validate_table(self):
 
         # Size error
         if self.size:
             if self.size != self.stream.size:
-                details = 'expected is "%s" and actual is "%s"'
-                details = details % (self.size, self.stream.size)
-                yield errors.SizeError(details=details)
+                note = 'expected is "%s" and actual is "%s"'
+                note = note % (self.size, self.stream.size)
+                yield errors.SizeError(note=note)
 
         # Hash error
         if self.hash:
             hashing_digest = helpers.parse_hashing_digest(self.hash)
             if hashing_digest != self.stream.hash:
-                details = 'expected is "%s" and actual is "%s"'
-                details = details % (hashing_digest, self.stream.hash)
-                yield errors.HashError(details=details)
+                note = 'expected is "%s" and actual is "%s"'
+                note = note % (hashing_digest, self.stream.hash)
+                yield errors.HashError(note=note)

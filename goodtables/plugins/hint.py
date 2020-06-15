@@ -25,7 +25,7 @@ class DuplicateRowError(errors.RowError):
     code = 'hint/duplicate-row'
     name = 'Duplicate Row'
     tags = ['#body', '#hint']
-    template = 'Row at position {rowPosition} is duplicated: {details}'
+    template = 'Row at position {rowPosition} is duplicated: {note}'
     description = 'The row is duplicated.'
 
 
@@ -33,7 +33,7 @@ class DeviatedValueError(errors.Error):
     code = 'hint/deviated-value'
     name = 'Deviated Value'
     tags = ['#body', '#hint']
-    template = 'There is a possible error because the value is deviated: {details}'
+    template = 'There is a possible error because the value is deviated: {note}'
     description = 'The value is deviated.'
 
 
@@ -41,7 +41,7 @@ class TruncatedValueError(errors.CellError):
     code = 'hint/truncated-value'
     name = 'Truncated Value'
     tags = ['#body', '#hint']
-    template = 'The cell {cell} in row at position {rowPosition} and field {fieldName} at position {fieldPosition} has an error: {details}'
+    template = 'The cell {cell} in row at position {rowPosition} and field {fieldName} at position {fieldPosition} has an error: {note}'
     description = 'The value is possible truncated.'
 
 
@@ -65,8 +65,8 @@ class DuplicateRowCheck(Check):
         hash = hashlib.sha256(text.encode('utf-8')).hexdigest()
         match = self.memory.get(hash)
         if match:
-            details = 'the same as row at position "%s"' % match
-            yield DuplicateRowError.from_row(row, details=details)
+            note = 'the same as row at position "%s"' % match
+            yield DuplicateRowError.from_row(row, note=note)
         self.memory[hash] = row.row_position
 
 
@@ -97,15 +97,15 @@ class DeviatedValueCheck(Check):
 
     def validate_task(self):
         if self.field_name not in self.schema.field_names:
-            details = 'deviated value check requires field "%s" to exist'
-            yield errors.TaskError(details=details % self.field_name)
+            note = 'deviated value check requires field "%s" to exist'
+            yield errors.TaskError(note=note % self.field_name)
         elif self.schema.get_field(self.field_name).type not in ['integer', 'number']:
-            details = 'deviated value check requires field "%s" to be numiric'
-            yield errors.TaskError(details=details % self.field_name)
+            note = 'deviated value check requires field "%s" to be numiric'
+            yield errors.TaskError(note=note % self.field_name)
         if not self.average_function:
-            details = 'deviated value check supports only average functions "%s"'
-            details = details % ', '.join(AVERAGE_FUNCTIONS.keys())
-            yield errors.TaskError(details=details)
+            note = 'deviated value check supports only average functions "%s"'
+            note = note % ', '.join(AVERAGE_FUNCTIONS.keys())
+            yield errors.TaskError(note=note)
 
     def validate_row(self, row):
         cell = row[self.field_name]
@@ -125,15 +125,15 @@ class DeviatedValueCheck(Check):
             minimum = average - stdev * self.interval
             maximum = average + stdev * self.interval
         except Exception as exception:
-            details = 'calculation issue "%s"' % exception
-            yield DeviatedValueError(details=details)
+            note = 'calculation issue "%s"' % exception
+            yield DeviatedValueError(note=note)
 
         # Check values
         for row_position, cell in zip(self.row_positions, self.cells):
             if not (minimum <= cell <= maximum):
                 dtl = 'value "%s" in row at position "%s" and field "%s" is deviated "[%.2f, %.2f]"'
                 dtl = dtl % (cell, row_position, self.field_name, minimum, maximum)
-                yield DeviatedValueError(details=dtl)
+                yield DeviatedValueError(note=dtl)
 
 
 class TruncatedValueCheck(Check):
@@ -163,10 +163,8 @@ class TruncatedValueCheck(Check):
 
             # Add error
             if truncated:
-                details = 'value  is probably truncated'
-                yield TruncatedValueError.from_row(
-                    row, details=details, field_name=field_name
-                )
+                note = 'value  is probably truncated'
+                yield TruncatedValueError.from_row(row, note=note, field_name=field_name)
 
 
 # Internal

@@ -43,7 +43,7 @@ def test_validate_deviated_value():
             ),
         ],
     )
-    assert report.flatten(['code', 'details']) == [
+    assert report.flatten(['code', 'note']) == [
         [
             'hint/deviated-value',
             'value "100" in row at position "10" and field "temperature" is deviated "[-87.21, 91.21]"',
@@ -59,7 +59,7 @@ def test_value_deviated_value_not_enough_data():
     report = validate(
         source, extra_checks=[('hint/deviated-value', {'fieldName': 'temperature'})]
     )
-    assert report.flatten(['code', 'details']) == []
+    assert report.flatten(['code', 'note']) == []
 
 
 def test_validate_deviated_value_not_a_number():
@@ -70,7 +70,7 @@ def test_validate_deviated_value_not_a_number():
     report = validate(
         source, extra_checks=[('hint/deviated-value', {'fieldName': 'name'})]
     )
-    assert report.flatten(['code', 'details']) == [
+    assert report.flatten(['code', 'note']) == [
         ['task-error', 'deviated value check requires field "name" to be numiric'],
     ]
 
@@ -83,7 +83,7 @@ def test_validate_deviated_value_non_existent_field():
     report = validate(
         source, extra_checks=[('hint/deviated-value', {'fieldName': 'bad'})],
     )
-    assert report.flatten(['code', 'details']) == [
+    assert report.flatten(['code', 'note']) == [
         ['task-error', 'deviated value check requires field "bad" to exist'],
     ]
 
@@ -97,7 +97,7 @@ def test_validate_deviated_value_incorrect_average():
         source,
         extra_checks=[('hint/deviated-value', {'fieldName': 'row', 'average': 'bad'})],
     )
-    assert report.flatten(['code', 'details']) == [
+    assert report.flatten(['code', 'note']) == [
         [
             'task-error',
             'deviated value check supports only average functions "mean, median, mode"',

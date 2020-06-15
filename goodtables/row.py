@@ -24,7 +24,7 @@ class Row(OrderedDict):
             for field_position, cell in enumerate(iterator, start=start):
                 self.__errors.append(
                     errors.ExtraCellError(
-                        details='',
+                        note='',
                         cells=list(map(str, cells)),
                         row_number=row_number,
                         row_position=row_position,
@@ -44,7 +44,7 @@ class Row(OrderedDict):
                     cells.append(None)
                     self.__errors.append(
                         errors.MissingCellError(
-                            details='',
+                            note='',
                             cells=list(map(str, cells)),
                             row_number=row_number,
                             row_position=row_position,
@@ -73,7 +73,7 @@ class Row(OrderedDict):
                 if field.required:
                     self.__errors.append(
                         errors.RequiredError(
-                            details='',
+                            note='',
                             cells=list(map(str, cells)),
                             row_number=row_number,
                             row_position=row_position,
@@ -90,12 +90,12 @@ class Row(OrderedDict):
                 cell = field.cast_function(cell)
                 if cell == field.ERROR:
                     cell = None
-                    details = 'expected type is "%s" and format is "%s"'
-                    details = details % (field.type, field.format)
+                    note = 'expected type is "%s" and format is "%s"'
+                    note = note % (field.type, field.format)
                     self.__error_cells[field.name] = cell
                     self.__errors.append(
                         errors.TypeError(
-                            details=details,
+                            note=note,
                             cells=list(map(str, cells)),
                             row_number=row_number,
                             row_position=row_position,
@@ -111,11 +111,11 @@ class Row(OrderedDict):
                 for name, check in field.check_functions.items():
                     if name not in ['required', 'unique']:
                         if not check(cell):
-                            details = '"%s" is "%s"'
-                            details = details % (field.constraints[name], name)
+                            note = '"%s" is "%s"'
+                            note = note % (field.constraints[name], name)
                             self.__errors.append(
                                 errors.ConstraintError(
-                                    details=details,
+                                    note=note,
                                     cells=list(map(str, cells)),
                                     row_number=row_number,
                                     row_position=row_position,
@@ -133,7 +133,7 @@ class Row(OrderedDict):
         if is_blank:
             self.__errors = [
                 errors.BlankRowError(
-                    details='',
+                    note='',
                     cells=list(map(str, cells)),
                     row_number=row_number,
                     row_position=row_position,

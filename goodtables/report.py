@@ -79,7 +79,7 @@ class Report(Metadata):
                 return validate(*args, **kwargs)
             except Exception as exception:
                 time = timer.get_time()
-                error = TaskError(details=str(exception))
+                error = TaskError(note=str(exception))
                 return Report(time=time, errors=[error], tables=[])
 
         return wrapper

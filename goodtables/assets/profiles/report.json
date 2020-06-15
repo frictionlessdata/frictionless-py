@@ -83,10 +83,10 @@
             "title": "Description",
             "description": "The error description."
           },
-          "details": {
+          "note": {
             "type": "string",
-            "title": "Details",
-            "description": "The error details."
+            "title": "Note",
+            "description": "The error note."
           }
         }
       }
@@ -266,7 +266,7 @@
                 "code",
                 "name",
                 "tags",
-                "details",
+                "note",
                 "message",
                 "description"
               ],
@@ -289,10 +289,10 @@
                     "type": "string"
                   }
                 },
-                "details": {
+                "note": {
                   "type": "string",
-                  "title": "Details",
-                  "description": "The error details."
+                  "title": "Note",
+                  "description": "The error note."
                 },
                 "message": {
                   "type": "string",

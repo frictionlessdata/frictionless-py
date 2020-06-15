@@ -41,7 +41,7 @@ def test_validate_multiple_invalid_limit_errors():
             ]
         }
     )
-    assert report.flatten(['tablePosition', 'code', 'details']) == [
+    assert report.flatten(['tablePosition', 'code', 'note']) == [
         [2, 'blank-header', ''],
     ]
     assert report.tables[0].flatten(['rowPosition', 'fieldPosition', 'code']) == []
