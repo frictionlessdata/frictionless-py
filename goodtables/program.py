@@ -47,7 +47,7 @@ from . import config
 @click.option('--limit-memory', type=int, help='Limit memory')
 # Package/Resource
 @click.option('--strict', type=int, help='Strict metadata')
-def cli(source, *, source_type, json, **options):
+def program(source, *, source_type, json, **options):
     for key, value in list(options.items()):
         if not value:
             del options[key]

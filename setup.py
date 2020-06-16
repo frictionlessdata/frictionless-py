@@ -46,7 +46,7 @@ DEVOPS_REQUIRES = [
 README = read('README.md')
 VERSION = read(PACKAGE, 'assets', 'VERSION')
 PACKAGES = find_packages(exclude=['tests'])
-ENTRY_POINTS = {'console_scripts': ['goodtables = goodtables.__main__:cli']}
+ENTRY_POINTS = {'console_scripts': ['goodtables = goodtables.__main__:program']}
 
 
 # Run
