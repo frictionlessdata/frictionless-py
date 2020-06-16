@@ -20,7 +20,7 @@ class Metadata(dict):
         self.__errors = []
         metadata = self.metadata_extract(descriptor)
         dict.update(self, metadata)
-        if self and not root:
+        if not root:
             self.metadata_process()
             self.metadata_validate()
 
@@ -217,10 +217,10 @@ class ControlledMetadataList(list):
     def copy(self):
         return self.metadata_duplicate()
 
-    def __copy__(self):
+    def __copy__(self, *args, **kwargs):
         return self.copy()
 
-    def __deepcopy__(self):
+    def __deepcopy__(self, *args, **kwargs):
         return self.copy()
 
     # Process
