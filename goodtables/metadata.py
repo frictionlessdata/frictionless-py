@@ -6,6 +6,7 @@ from copy import deepcopy
 from urllib.parse import urlparse
 from cached_property import cached_property
 from . import exceptions
+from . import helpers
 from . import config
 
 
@@ -114,6 +115,7 @@ class ControlledMetadata(Metadata):
     # Process
 
     def metadata_process(self):
+        helpers.reset_cached_properties(self)
         for key, value in self.items():
             if isinstance(value, dict):
                 if not hasattr(value, 'metadata_transform'):

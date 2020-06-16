@@ -3,6 +3,7 @@ import os
 import datetime
 import itertools
 import stringcase
+from cached_property import cached_property
 
 
 # General
@@ -74,6 +75,12 @@ def detect_source_type(source):
         if source.endswith('inquiry.json'):
             source_type = 'inquiry'
     return source_type
+
+
+def reset_cached_properties(obj):
+    for name, attr in type(obj).__dict__.items():
+        if isinstance(attr, cached_property):
+            obj.__dict__.pop(name, None)
 
 
 # Integrity
