@@ -11,16 +11,28 @@ from . import config
 
 
 class Metadata(dict):
+    """Metadata representation
+
+    # Arguments
+        descriptor? (str|dict): schema descriptor
+        metadata_root? (Metadata): root metadata object
+        metadata_raise? (bool): if True it will fail on the first metadata error
+
+    # Raises
+        GoodtablesException: raise any error that occurs during the process
+
+    """
+
     metadata_Error = None
     metadata_profile = None
 
-    def __init__(self, descriptor=None, *, root=None, strict=False):
-        self.__root = root or self
-        self.__strict = strict or not self.metadata_Error
+    def __init__(self, descriptor=None, *, metadata_root=None, metadata_raise=False):
         self.__errors = []
+        self.__root = metadata_root or self
+        self.__raise = metadata_raise or not self.metadata_Error
         metadata = self.metadata_extract(descriptor)
         dict.update(self, metadata)
-        if not root:
+        if not metadata_root:
             self.metadata_process()
             self.metadata_validate()
 
@@ -29,8 +41,8 @@ class Metadata(dict):
         return self.__root
 
     @cached_property
-    def metadata_strict(self):
-        return self.__strict
+    def metadata_raise(self):
+        return self.__raise
 
     @property
     def metadata_valid(self):
@@ -61,24 +73,21 @@ class Metadata(dict):
 
     # Extract
 
-    def metadata_extract(self, descriptor):
+    def metadata_extract(self, descriptor, *, duplicate=False):
         try:
             if descriptor is None:
                 return {}
             if isinstance(descriptor, dict):
-                return descriptor
+                return deepcopy(descriptor) if duplicate else descriptor
             if isinstance(descriptor, str):
                 if urlparse(descriptor).scheme in config.REMOTE_SCHEMES:
                     return requests.get(descriptor).json()
                 with io.open(descriptor, encoding='utf-8') as file:
                     return json.load(file)
             return json.load(descriptor)
-        except Exception:
-            note = 'canot retrieve metadata "%s"' % descriptor
-            if self.metadata_strict:
-                raise exceptions.GoodtablesException(note)
-            error = self.metadata_Error(note=note)
-            self.metadata_errors.append(error)
+        except Exception as exception:
+            message = 'canot extract metadata "%s" because "%s"' % (descriptor, exception)
+            raise exceptions.GoodtablesException(message) from exception
 
     # Process
 
@@ -97,7 +106,7 @@ class Metadata(dict):
                 profile_path = '/'.join(map(str, error.schema_path))
                 note = '"%s" at "%s" in metadata and at "%s" in profile'
                 note = note % (error.message, metadata_path, profile_path)
-                if self.metadata_strict:
+                if self.metadata_raise:
                     raise exceptions.GoodtablesException(note)
                 error = self.metadata_Error(note=note)
                 self.metadata_errors.append(error)
@@ -107,10 +116,8 @@ class ControlledMetadata(Metadata):
 
     # Extract
 
-    def metadata_extract(self, descriptor):
-        if isinstance(descriptor, dict):
-            return deepcopy(descriptor)
-        super().metadata_extract(descriptor)
+    def metadata_extract(self, descriptor, *, duplicate=False):
+        return super().metadata_extract(descriptor, duplicate=True)
 
     # Process
 
@@ -120,14 +127,18 @@ class ControlledMetadata(Metadata):
             if isinstance(value, dict):
                 if not hasattr(value, 'metadata_transform'):
                     value = ControlledMetadata(
-                        value, root=self.metadata_root, strict=self.metadata_strict
+                        value,
+                        metadata_root=self.metadata_root,
+                        metadata_raise=self.metadata_raise,
                     )
                     dict.__setitem__(self, key, value)
                 value.metadata_process()
             if isinstance(value, list):
                 if not hasattr(value, 'metadata_transform'):
                     value = ControlledMetadataList(
-                        value, root=self.metadata_root, strict=self.metadata_strict
+                        value,
+                        metadata_root=self.metadata_root,
+                        metadata_raise=self.metadata_raise,
                     )
                     dict.__setitem__(self, key, value)
                 value.metadata_process()
@@ -186,19 +197,19 @@ class ControlledMetadata(Metadata):
 
 
 class ControlledMetadataList(list):
-    def __init__(self, values, *, root, strict=False):
+    def __init__(self, values, *, metadata_root, metadata_raise=False):
         list.extend(self, values)
-        self.__root = root
-        self.__strict = strict
         self.__errors = []
+        self.__root = metadata_root
+        self.__raise = metadata_raise
 
     @cached_property
     def metadata_root(self):
         return self.__root
 
     @cached_property
-    def metadata_strict(self):
-        return self.__strict
+    def metadata_raise(self):
+        return self.__raise
 
     @cached_property
     def metadata_errors(self):
@@ -230,14 +241,18 @@ class ControlledMetadataList(list):
             if isinstance(value, dict):
                 if not hasattr(value, 'metadata_transform'):
                     value = ControlledMetadata(
-                        value, root=self.metadata_root, strict=self.metadata_strict
+                        value,
+                        metadata_root=self.metadata_root,
+                        metadata_raise=self.metadata_raise,
                     )
                     list.__setitem__(self, index, value)
                 value.metadata_process()
             if isinstance(value, list):
                 if not hasattr(value, 'metadata_transform'):
                     value = ControlledMetadataList(
-                        value, root=self.metadata_root, strict=self.metadata_strict
+                        value,
+                        metadata_root=self.metadata_root,
+                        metadata_raise=self.metadata_raise,
                     )
                     list.__setitem__(self, index, value)
                 value.metadata_process()
