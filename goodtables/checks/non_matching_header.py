@@ -59,6 +59,7 @@ def _check_with_ordering(cells):
             # which means there is no matching field for the header.
             # Add a new cell with an empty header so that the missing-header
             # error will be thrown later.
+            cell = cells[index]
             new_cell = create_cell(header=None, field=cell.get('field'))
             new_headers.append(new_cell)
             # Change the current cell's field to None
