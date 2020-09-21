@@ -21,9 +21,6 @@ def read(*paths):
 PACKAGE = 'goodtables'
 NAME = PACKAGE.replace('_', '-')
 INSTALL_REQUIRES = [
-    # NOTE: Can be removed after a fix:
-    # https://github.com/tobgu/pyrsistent/issues/208
-    'pyrsistent<0.17',
     'six>=1.9',
     'click>=6.6',
     'click-default-group',
