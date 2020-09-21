@@ -8,6 +8,8 @@
 
 Frictionless is a framework to describe, extract, validate, and transform tabular data. It supports a great deal of data sources and formats, as well as provides popular platforms integrations. The framework is powered by the lightweight yet comprehensive [Frictionless Data Specifications](https://specs.frictionlessdata.io/).
 
+> Since version 3 `goodtables` was renamed to `frictionless`. The framework got various improvements and was extended to be a complete data solution. The change in not breaking for the existing software so no actions are required. We continue to maintain the `goodtables` branch in this repo in bug-fixing mode as well as it's available on PyPi as `goodtables`. Please read the [Migration Guide](https://github.com/frictionlessdata/frictionless-py/blob/master/docs/target/migration-guide/README.md) to start working with the newer Frictionless for Python.
+
 ## Purpose
 
 - **Describe your data**: You can infer, edit and save metadata of your data tables. It's a first step for ensuring data quality and usability. Frictionless metadata includes general information about your data like textual description, as well as, field types and other tabular data details.
