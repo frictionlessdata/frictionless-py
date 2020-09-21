@@ -7,7 +7,7 @@ from frictionless import validate
 def test_report():
     report = validate("data/table.csv")
     # Report
-    assert report.version.startswith("0")
+    assert report.version.startswith("3")
     assert report.time
     assert report.valid is True
     assert report.stats == {"errors": 0, "tables": 1}
