@@ -1,0 +1,24 @@
+{
+    "fields": [
+        {
+            "name": "id",
+            "title": "Identifier",
+            "type": "magical_unicorn"
+        },
+        {
+            "name": "title",
+            "title": "Title",
+            "type": "string"
+        }
+    ],
+    "primaryKey": "identifier",
+    "foreignKeys": [
+        {
+            "fields": ["id", "notafield"],
+            "reference": {
+                "datapackage": "http://data.okfn.org/data/mydatapackage/",
+                "fields": "no" 
+            }
+        }
+    ]
+}

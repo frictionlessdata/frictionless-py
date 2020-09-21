@@ -1,0 +1,12 @@
+{
+    "fields": [
+    {
+        "name": "state"
+    }
+    ],
+    "foreignKeys": [
+    {
+        "fields": "state"
+    }
+    ]
+}

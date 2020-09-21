@@ -1,0 +1,3 @@
+n_amenageur;n_operateur;n_enseigne;id_station;n_station;ad_station;code_insee;Xlongitude;Ylatitude;nbre_pdc;id_pdc;puiss_max;type_prise;acces_recharge;accessibilité;observations;date_maj
+XXX;YYY;ZZZ;FR*A17*P*ZZZ*3*_*_*_;Parking 1;D109A;06090;6.92641;43.59413;2;FR*A17*E*ZZZ*3*1*1*_;22.0;T2 - E/F;Payant (badge, appli et QR code);24h/24;RAS;2018/03/31
+XXX;YYY;ZZZ;FR*A17*P*ZZZ*3*_*_*_;Parking 1;D109A;06090;6.92641;43.59413;2;FR*A17*E*ZZZ*3*1*2*_;22.0;T2 - E/F;Payant (badge, appli et QR code);24h/24;RAS;2018/3/31

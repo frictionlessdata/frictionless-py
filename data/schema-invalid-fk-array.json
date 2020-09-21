@@ -1,0 +1,19 @@
+{
+    "fields": [
+        {
+            "name": "id",
+            "title": "Identifier",
+            "type": "integer"
+        }
+    ],
+    "foreignKeys": [
+        {
+            "fields": ["id", "title"],
+            "reference": {
+                "datapackage": "http://data.okfn.org/data/mydatapackage/",
+                "resource": "the-resource",
+                "fields": "no" 
+            }
+        }
+    ]
+}

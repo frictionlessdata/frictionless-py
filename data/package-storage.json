@@ -1,0 +1,92 @@
+{
+  "resources": [
+    {
+      "name": "article",
+      "schema": {
+          "fields": [
+              {"name": "id", "type": "integer", "constraints": {"required": true}},
+              {"name": "parent", "type": "integer"},
+              {"name": "name", "type": "string"},
+              {"name": "current", "type": "boolean"},
+              {"name": "rating", "type": "number"}
+          ],
+          "primaryKey": ["id"],
+          "foreignKeys": [
+              {"fields": "parent", "reference": {"resource": "", "fields": "id"}}
+          ]
+      },
+      "data": [
+          ["id", "parent", "name", "current", "rating"],
+          ["1", "", "Taxes", "True", "9.5"],
+          ["2", "1", "中国人", "False", "7"]
+      ]
+    },
+    {
+      "name": "comment",
+      "schema": {
+          "fields": [
+              {"name": "entry_id", "type": "integer", "constraints": {"required": true}},
+              {"name": "user_id", "type": "integer", "constraints": {"required": true}},
+              {"name": "comment", "type": "string"},
+              {"name": "note", "type": "any"}
+          ],
+          "primaryKey": ["entry_id", "user_id"],
+          "foreignKeys": [
+              {"fields": "entry_id", "reference": {"resource": "article", "fields": "id"}}
+          ]
+      },
+      "data": [
+          ["entiry_id", "user_id", "comment", "note"],
+          ["1", "1", "good", "note1"],
+          ["2", "2", "bad", "note2"]
+      ]
+    },
+    {
+      "name": "location",
+      "schema": {
+          "fields": [
+              {"name": "geojson", "type": "geojson"},
+              {"name": "geopoint", "type": "geopoint"}
+          ]
+      },
+      "data": [
+          ["geojson", "geopoint"],
+          ["{\"type\": \"Point\", \"coordinates\": [33, 33.33]}", "30,70"],
+          ["{\"type\": \"Point\", \"coordinates\": [55, 55.55]}", "90,40"]
+      ]
+    },
+    {
+      "name": "structure",
+      "schema": {
+          "fields": [
+              {"name": "object", "type": "object"},
+              {"name": "array", "type": "array"}
+          ]
+      },
+      "data": [
+          ["object", "array"],
+          ["{\"chars\": 560}", "[\"Mike\", \"John\"]"],
+          ["{\"chars\": 970}", "[\"Paul\", \"Alex\"]"]
+      ]
+    },
+    {
+      "name": "temporal",
+      "schema": {
+          "fields": [
+              {"name": "date", "type": "date"},
+              {"name": "date_year", "type": "date", "format": "%Y"},
+              {"name": "datetime", "type": "datetime"},
+              {"name": "duration", "type": "duration"},
+              {"name": "time", "type": "time"},
+              {"name": "year", "type": "year"},
+              {"name": "yearmonth", "type": "yearmonth"}
+          ]
+      },
+      "data": [
+          ["date", "date_year", "datetime", "duration", "time", "year", "yearmonth"],
+          ["2015-01-01", "2015", "2015-01-01T03:00:00Z", "P1Y1M", "03:00:00", "2015", "2015-01"],
+          ["2015-12-31", "2015", "2015-12-31T15:45:33Z", "P2Y2M", "15:45:33", "2015", "2015-01"]
+      ]
+    }
+  ]
+}

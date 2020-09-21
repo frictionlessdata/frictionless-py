@@ -1,0 +1,46 @@
+{
+   "resources" : [
+      {
+         "hash" : "5295033f2348ac33dec57d46d2510505",
+         "path" : "package-dialect-no-header.csv",
+         "bytes" : 839871,
+         "encoding" : "utf-8",
+         "schema" : {
+            "primaryKey" : [
+               "key"
+            ],
+            "fields" : [
+               {
+                  "name" : "details",
+                  "type" : "array"
+               },
+               {
+                  "name" : "key",
+                  "type" : "string"
+               },
+               {
+                  "name" : "score",
+                  "type" : "number",
+                  "decimalChar" : ".",
+                  "groupChar" : ""
+               }
+            ]
+         },
+         "format" : "csv",
+         "count_of_rows" : 504,
+         "dialect" : {
+            "skipInitialSpace" : false,
+            "delimiter" : ",",
+            "lineTerminator" : "\r\n",
+            "doubleQuote" : true,
+            "quoteChar" : "\""
+         },
+         "name" : "people"
+      }
+   ],
+   "name" : "aggregated-people-information",
+   "bytes" : 839871,
+   "count_of_rows" : 504,
+   "title" : "Aggregated Information regarding People",
+   "hash" : "0ccce65d178741d70f06ac298f1f7d2d"
+}

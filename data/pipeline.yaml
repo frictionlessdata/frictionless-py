@@ -1,0 +1,14 @@
+name: pipeline
+type: package
+steps:
+  - type: load
+    spec:
+      loadSource: 'data/table.csv'
+  - type: set_type
+    spec:
+      name: id
+      type: string
+  - type: dump_to_path
+    spec:
+      outPath: 'tmp/pipeline'
+      prettyDescriptor: true

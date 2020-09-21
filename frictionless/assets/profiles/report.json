@@ -1,0 +1,289 @@
+{
+  "title": "Frictionless Report",
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "$id": "https://github.com/frictionlessdata/frictionless-py/tree/master/frictionless/assets/profiles/report.json",
+  "type": "object",
+  "required": [
+    "version",
+    "time",
+    "valid",
+    "stats",
+    "errors",
+    "tables"
+  ],
+  "properties": {
+    "version": {
+      "type": "string",
+      "title": "Version",
+      "description": "Frictionless version"
+    },
+    "time": {
+      "type": "number",
+      "title": "Time",
+      "description": "The overall time it took to run validation"
+    },
+    "valid": {
+      "type": "boolean",
+      "title": "Valid",
+      "description": "Whether all the inspected tables valid or not"
+    },
+    "stats": {
+      "type": "object",
+      "title": "Stats",
+      "description": "Validation stats",
+      "properties": {
+        "errors": {"type": "number"},
+        "tables": {"type": "number"}
+      }
+    },
+    "errors": {
+      "type": "array",
+      "title": "Errors",
+      "description": "The global validation errors.",
+      "items": {
+        "type": "object",
+        "required": [
+          "code",
+          "name",
+          "tags",
+          "note",
+          "message",
+          "description"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code",
+            "description": "The error code."
+          },
+          "name": {
+            "type": "string",
+            "title": "None",
+            "description": "The error name."
+          },
+          "tags": {
+            "type": "array",
+            "title": "Tags",
+            "description": "The error tags.",
+            "items": {"type": "string"}
+          },
+          "note": {
+            "type": "string",
+            "title": "Note",
+            "description": "The error note."
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "description": "The error message."
+          },
+          "description": {
+            "type": "string",
+            "title": "Description",
+            "description": "The error description."
+          }
+        }
+      }
+    },
+    "tables": {
+      "type": "array",
+      "title": "Tables",
+      "description": "The validation results for each of the tables.",
+      "items": {
+        "type": "object",
+        "required": [
+          "path",
+          "scheme",
+          "format",
+          "hashing",
+          "encoding",
+          "compression",
+          "compressionPath",
+          "dialect",
+          "query",
+          "time",
+          "valid",
+          "scope",
+          "stats",
+          "partial",
+          "errors"
+        ],
+        "properties": {
+          "path": {
+            "type": "string",
+            "title": "Path",
+            "description": "Path or URI where this table was loaded from."
+          },
+          "scheme": {
+            "type": "string",
+            "title": "Scheme",
+            "description": "The scheme used to load the data."
+          },
+          "format": {
+            "type": "string",
+            "title": "Format",
+            "description": "The data format."
+          },
+          "hashing": {
+            "type": "string",
+            "title": "Hashing",
+            "description": "The hashing algorithm."
+          },
+          "encoding": {
+            "type": "string",
+            "title": "Encoding",
+            "description": "The encoding of the table."
+          },
+          "compression": {
+            "type": "string",
+            "title": "Compression",
+            "description": "The compression of the table."
+          },
+          "compressionPath": {
+            "type": "string",
+            "title": "Compression path",
+            "description": "The path inside the compressed source."
+          },
+          "dialect": {
+            "type": "object",
+            "title": "Dialect",
+            "description": "The tabular dialect of the table."
+          },
+          "query": {
+            "type": "object",
+            "title": "Query",
+            "description": "The tabular query of the table."
+          },
+          "header": {
+            "type": "array",
+            "title": "Header",
+            "description": "Table's header.",
+            "items": {"type": "string"}
+          },
+          "schema": {
+            "type": "object",
+            "title": "Schema",
+            "description": "A Table Schema Object."
+          },
+          "time": {
+            "type": "number",
+            "title": "Time",
+            "description": "The time it took to validate this table.",
+            "minimum": 0
+          },
+          "valid": {
+            "type": "boolean",
+            "title": "Valid",
+            "description": "The validation result."
+          },
+          "scope": {
+            "type": "array",
+            "title": "Scope",
+            "description": "List of errors codes the table has been checked for.",
+            "items": {"type": "string"}
+          },
+          "stats": {
+            "type": "object",
+            "title": "Stats",
+            "description": "Validation stats",
+            "properties": {
+              "hash": {"type": "string"},
+              "bytes": {"type": "number"},
+              "rows": {"type": "number"},
+              "errors": {"type": "number"}
+            }
+          },
+          "partial": {
+            "type": "boolean",
+            "title": "Partial",
+            "description": "Whether the validation was stopped because of an error limit."
+          },
+          "errors": {
+            "type": "array",
+            "title": "Errors",
+            "items": {
+              "type": "object",
+              "required": [
+                "code",
+                "name",
+                "tags",
+                "note",
+                "message",
+                "description"
+              ],
+              "properties": {
+                "code": {
+                  "type": "string",
+                  "title": "Code",
+                  "description": "The error code."
+                },
+                "name": {
+                  "type": "string",
+                  "title": "None",
+                  "description": "The error name."
+                },
+                "tags": {
+                  "type": "array",
+                  "title": "Tags",
+                  "description": "The error tags.",
+                  "items": {"type": "string"}
+                },
+                "note": {
+                  "type": "string",
+                  "title": "Note",
+                  "description": "The error note."
+                },
+                "message": {
+                  "type": "string",
+                  "title": "Message",
+                  "description": "The error message."
+                },
+                "description": {
+                  "type": "string",
+                  "title": "Description",
+                  "description": "The error description."
+                },
+                "cells": {
+                  "type": "array",
+                  "title": "Cells",
+                  "description": "The error cells.",
+                  "items": {"type": "string"}
+                },
+                "rowNumber": {
+                  "type": "number",
+                  "title": "Row Number",
+                  "description": "The error row number."
+                },
+                "rowPosition": {
+                  "type": "number",
+                  "title": "Row Position",
+                  "description": "The error row position."
+                },
+                "cell": {
+                  "type": "string",
+                  "title": "Cell",
+                  "description": "The error cell."
+                },
+                "fieldName": {
+                  "type": "string",
+                  "title": "Field Name",
+                  "description": "The error field name."
+                },
+                "fieldNumber": {
+                  "type": "number",
+                  "title": "Field Number",
+                  "description": "The error field number."
+                },
+                "fieldPosition": {
+                  "type": "number",
+                  "title": "Field Position",
+                  "description": "The error field position."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
