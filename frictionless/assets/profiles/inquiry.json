@@ -1,0 +1,26 @@
+{
+  "title": "Frictionless Inquiry",
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "$id": "https://github.com/frictionlessdata/frictionless-py/tree/master/frictionless/assets/profiles/inquiry.json",
+  "type": "object",
+  "required": [
+    "tasks"
+  ],
+  "properties": {
+    "version": {
+      "type": "string",
+      "title": "Version",
+      "description": "Frictionless version"
+    },
+    "tasks": {
+      "type": "array",
+      "title": "Tasks",
+      "description": "Inquiry tasks",
+      "items": {
+        "title": "Task",
+        "type": "object",
+        "required": ["source"]
+      }
+    }
+  }
+}

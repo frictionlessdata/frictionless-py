@@ -1,0 +1,37 @@
+{
+    "name": "testing",
+    "resources": [
+        {
+            "name": "data",
+            "path": "data.csv",
+            "schema": {
+                "fields": [
+                    {
+                        "name": "id",
+                        "type": "string",
+                        "constraints": {
+                            "required": true
+                        }
+                    },
+                    {
+                        "name": "name",
+                        "type": "string"
+                    },
+                    {
+                        "name": "description",
+                        "type": "string"
+                    },
+                    {
+                        "name": "amount",
+                        "type": "number"
+                    }
+                ],
+                "primaryKey": "id"
+            }
+        },
+        {
+            "name": "data2",
+            "path": "data2.csv"
+        }
+    ]
+}

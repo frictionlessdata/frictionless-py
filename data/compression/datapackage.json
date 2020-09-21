@@ -1,0 +1,75 @@
+{
+    "name": "datapackage",
+    "resources": [
+        {
+            "name": "explicit-gz",
+            "path": "explicit.csv.gz",
+            "profile": "tabular-data-resource",
+            "schema": {
+                "fields": [
+                    {
+                        "name": "id",
+                        "type": "integer"
+                    },
+                    {
+                        "name": "name",
+                        "type": "string"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "explicit-zip",
+            "path": "explicit.csv.zip",
+            "profile": "tabular-data-resource",
+            "schema": {
+                "fields": [
+                    {
+                        "name": "id",
+                        "type": "integer"
+                    },
+                    {
+                        "name": "name",
+                        "type": "string"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "implicit-gz",
+            "path": "implicit-gz.csv",
+            "profile": "tabular-data-resource",
+            "compression": "gz",
+            "schema": {
+                "fields": [
+                    {
+                        "name": "id",
+                        "type": "integer"
+                    },
+                    {
+                        "name": "name",
+                        "type": "string"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "implicit-zip",
+            "path": "implicit-zip.csv",
+            "profile": "tabular-data-resource",
+            "compression": "zip",
+            "schema": {
+                "fields": [
+                    {
+                        "name": "id",
+                        "type": "integer"
+                    },
+                    {
+                        "name": "name",
+                        "type": "string"
+                    }
+                ]
+            }
+        }
+    ]
+}

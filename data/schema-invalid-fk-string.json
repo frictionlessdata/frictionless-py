@@ -1,0 +1,17 @@
+{
+    "fields": [
+    {
+        "name": "state"
+    }
+    ],
+    "foreignKeys": [
+    {
+        "fields": "doesnotexist",
+        "reference": {
+            "datapackage": "http://data.okfn.org/data/mydatapackage/",
+            "resource": "the-resource",
+            "fields": "state_id"
+        }
+    }
+    ]
+}

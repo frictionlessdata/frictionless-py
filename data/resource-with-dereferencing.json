@@ -1,0 +1,6 @@
+{
+    "name": "name",
+    "path": "table.csv",
+    "schema": "schema.json",
+    "dialect": "dialect.json"
+}

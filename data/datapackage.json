@@ -1,0 +1,33 @@
+{
+  "name": "test-tabulator",
+  "resources": [
+    { "name": "first-resource",
+      "path": "table.xls",
+      "schema": {
+        "fields": [
+          {
+            "name": "id",
+            "type": "number"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {"name": "number-two", "path": "table-reverse.csv",
+      "schema": {
+        "fields": [
+          {
+            "name": "id",
+            "type": "integer"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          }
+        ]
+      }}
+  ]
+}

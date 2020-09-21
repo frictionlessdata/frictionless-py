@@ -1,6 +1,0 @@
-row_limit_structure:
-  source: data/row_limit_structure.csv
-  checks:
-    - structure
-  row_limit: 3
-  report: []
