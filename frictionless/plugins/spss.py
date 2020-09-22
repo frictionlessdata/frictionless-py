@@ -2,6 +2,7 @@ import re
 import os
 import datetime
 from ..resource import Resource
+from ..package import Package
 from ..storage import Storage
 from ..plugin import Plugin
 from ..schema import Schema
@@ -38,11 +39,13 @@ class SpssStorage(Storage):
     Public   | `from frictionless.plugins.spss import SpssStorage`
 
     Parameters:
-        basepath (str): A path to a folder for reading/writing SAV files
+        basepath? (str): A path to a dir for reading/writing SAV files.
+            Defaults to current dir.
 
     """
 
-    def __init__(self, *, basepath):
+    def __init__(self, *, basepath=None):
+        basepath = basepath or os.curdir()
         if not os.path.isdir(basepath):
             note = f'Path "{basepath}" is not a directory, or doesn\'t exist'
             raise exceptions.FrictionlessException(errors.StorageError(note=note))
@@ -55,63 +58,77 @@ class SpssStorage(Storage):
 
     # Read
 
-    @property
-    def read_table_names(self):
-        names = []
-        for name in os.listdir(self.__basepath):
-            if name.endswith(".sav", ".zsav"):
-                name = self.read_table_convert_name(name)
-                names.append(name)
-        return name
-
-    def reat_table_list(self):
-        tables = []
-        for name in self.read_table_names():
-            table = self.read_table(name)
-            tables.append(table)
-        return tables
-
-    def read_table(self, name):
+    def read_resource(self, name):
         sav = helpers.import_from_plugin("savReaderWriter", plugin="spss")
-        table = self.__tables.get(name)
-        if table is None:
-            path = self.read_table_convert_name(name)
-            with sav.SavHeaderReader(path, ioUtf8=True) as header:
-                table = self.read_table_convert_table(header.all())
-        return table
+        path = self.__write_convert_name(name)
+        with sav.SavHeaderReader(path, ioUtf8=True) as header:
+            spss_schema = header.all()
+            schema = self.__read_convert_schema(spss_schema)
+            data = self.__read_data_stream(name)
+            resource = Resource(name=name, schema=schema, data=data)
+            return resource
 
-    def read_table_convert_name(self, name):
-        if not name.endswith((".sav", ".zsav")):
-            name = "{}.sav".format(name)
-        path = os.path.join(self.__basepath, name)
-        path = os.path.normpath(path)
-        if not path.startswith(os.path.normpath(self.__basepath)):
-            note = f'Bucket name "{name}" is not valid.'
-            raise exceptions.FrictionlessException(errors.StorageError(note=note))
-        return path
+    def read_package(self):
+        package = Package()
+        for name in self.__read_resource_names():
+            resource = self.read_resource(name)
+            package.resources.append(resource)
+        return package
 
-    def read_table_convert_table(self, name, header):
+    def __read_resource_names(self):
+        names = []
+        for path in os.listdir(self.__basepath):
+            name = self.__read_convert_name(path)
+            if name is not None:
+                names.append(name)
+        return names
+
+    def __read_data_stream(self, name, schema):
+        sav = helpers.import_from_plugin("savReaderWriter", plugin="spss")
+        path = self.write_convert_name(name)
+        with sav.SavReader(path, ioUtf8=False, rawMode=False) as reader:
+            for item in reader:
+                cells = []
+                for index, field in enumerate(schema.fields):
+                    value = item[index]
+                    # Fix decimals that should be integers
+                    if field.type == "integer" and value is not None:
+                        value = int(float(value))
+                    # We need to decode bytes to strings
+                    if isinstance(value, bytes):
+                        value = value.decode(reader.fileEncoding)
+                    # Time values need a decimal, add one if missing.
+                    if field.type == "time" and not re.search(r"\.\d*", value):
+                        value = "{}.0".format(value)
+                    cells.append(value)
+                yield cells
+
+    def __read_convert_name(self, path):
+        if path.endswith(".sav", ".zsav"):
+            return os.path.splitext(path)[0]
+
+    def __read_convert_schema(self, spss_schema):
         schema = Schema()
+
+        # Formats
         date_formats = {
-            "time": self.TIME_FORMAT,
-            "date": self.DATE_FORMAT,
-            "datetime": self.DATETIME_FORMAT,
+            "time": TIME_FORMAT,
+            "date": DATE_FORMAT,
+            "datetime": DATETIME_FORMAT,
         }
 
         # Fields
-        for var in header.varNames:
-            type = self.read_table_convert_field_type(header.formats[var])
-            field = Field(name=var, type=type, title=header.varLabels[var])
-            field["spss:format"] = header.formats[var]
+        for var in spss_schema.varNames:
+            type = self.read_table_convert_field_type(spss_schema.formats[var])
+            field = Field(name=var, type=type, title=spss_schema.varLabels[var])
+            field["spss:format"] = spss_schema.formats[var]
             if type in date_formats.keys():
                 field.format = date_formats[type]
             schema.fields.append(field)
 
-        # Table
-        table = Resource(name=name, schema=schema)
-        return table
+        return schema
 
-    def read_table_convert_field_type(self, type):
+    def __read_convert_type(self, spss_type):
 
         # Mapping
         mapping = [
@@ -130,33 +147,12 @@ class SpssStorage(Storage):
         ]
 
         # Return type
-        for ts_type, pattern in mapping:
-            if pattern.match(format):
-                return ts_type
+        for type, pattern in mapping:
+            if pattern.match(spss_type):
+                return type
 
         # Default
         return "string"
-
-    def read_table_stream_data(self, name):
-        sav = helpers.import_from_plugin("savReaderWriter", plugin="spss")
-        table = self.read_table(name)
-        path = self.read_table_convert_name(name)
-        with sav.SavReader(path, ioUtf8=False, rawMode=False) as reader:
-            for r in reader:
-                cells = []
-                for i, field in enumerate(table.schema.fields):
-                    value = r[i]
-                    # Fix decimals that should be integers
-                    if field.type == "integer" and value is not None:
-                        value = int(float(value))
-                    # We need to decode bytes to strings
-                    if isinstance(value, bytes):
-                        value = value.decode(reader.fileEncoding)
-                    # Time values need a decimal, add one if missing.
-                    if field.type == "time" and not re.search(r"\.\d*", value):
-                        value = "{}.0".format(value)
-                    cells.append(value)
-                yield cells
 
     # Write
 
@@ -202,6 +198,15 @@ class SpssStorage(Storage):
         path = os.path.normpath(path)
         if not path.startswith(os.path.normpath(self.__basepath)):
             note = f'Bucket name "{name}" is not valid.'
+            raise exceptions.FrictionlessException(errors.StorageError(note=note))
+        return path
+
+    def __write_convert_name(self, name):
+        path = "{}.sav".format(name)
+        path = os.path.join(self.__basepath, path)
+        path = os.path.normpath(path)
+        if not path.startswith(os.path.normpath(self.__basepath)):
+            note = f'Resource name "{name}" is not valid.'
             raise exceptions.FrictionlessException(errors.StorageError(note=note))
         return path
 
@@ -277,3 +282,10 @@ class SpssStorage(Storage):
                         )
                     row.append(value)
                 writer.writerow(row)
+
+
+# Internal
+
+DATE_FORMAT = "%Y-%m-%d"
+DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
+TIME_FORMAT = "%H:%M:%S.%f"
