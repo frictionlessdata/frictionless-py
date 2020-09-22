@@ -291,6 +291,26 @@ class Package(Metadata):
         """Export package to Pandas dataframes"""
         return self.to_storage(system.create_storage("pandas"))
 
+    @staticmethod
+    def from_spss(*, basepath):
+        """Import package from SPSS directory
+
+        Parameters:
+            basepath (str): SPSS dir path
+        """
+        return Package.from_storage(system.create_storage("spss", basepath=basepath))
+
+    def to_spss(self, *, basepath, force=False):
+        """Export package to SPSS directory
+
+        Parameters:
+            basepath (str): SPSS dir path
+            force (bool): overwrite existent
+        """
+        return self.to_storage(
+            system.create_storage("spss", basepath=basepath), force=force
+        )
+
     def to_dict(self, expand=False):
         """Convert package to a dict
 

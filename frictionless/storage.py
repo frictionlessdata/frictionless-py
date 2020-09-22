@@ -1,27 +1,30 @@
 class Storage:
     def __init__(self, **options):
-        pass
+        raise NotImplementedError()
+
+    def __iter__(self):
+        raise NotImplementedError()
 
     # Read
 
     def read_resource(self, name, **options):
-        pass
+        raise NotImplementedError()
 
     def read_package(self, **options):
-        pass
+        raise NotImplementedError()
 
     # Write
 
     def write_resource(self, resource, *, force=False, **options):
-        pass
+        raise NotImplementedError()
 
     def write_package(self, package, *, force=False, **options):
-        pass
+        raise NotImplementedError()
 
     # Delete
 
     def delete_resource(self, name, *, ignore=False, **options):
-        pass
+        raise NotImplementedError()
 
     def delete_package(self, names, *, ignore=False, **options):
-        pass
+        raise NotImplementedError()

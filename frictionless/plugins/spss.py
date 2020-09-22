@@ -1,7 +1,9 @@
 import re
 import os
-import datetime
+import warnings
+from functools import partial
 from ..resource import Resource
+from ..package import Package
 from ..storage import Storage
 from ..plugin import Plugin
 from ..schema import Schema
@@ -24,86 +26,112 @@ class SpssPlugin(Plugin):
     """
 
     def create_storage(self, name, **options):
-        pass
+        if name == "spss":
+            warnings.warn("SPSS support is in a draft state", UserWarning)
+            return SpssStorage(**options)
 
 
 # Storage
 
 
 class SpssStorage(Storage):
-    """SPSS storage implementation"""
+    """SPSS storage implementation
 
-    def __init__(self, *, basepath):
-        self.__tables = {}
-        self.__basepath = basepath
+    API      | Usage
+    -------- | --------
+    Draft    | `from frictionless.plugins.spss import SpssStorage`
+
+    Parameters:
+        basepath? (str): A path to a dir for reading/writing SAV files.
+            Defaults to current dir.
+
+    """
+
+    def __init__(self, *, basepath=None):
+        basepath = basepath or os.getcwd()
         if not os.path.isdir(basepath):
-            note = f'"{basepath}" is not a directory, or doesn\'t exist'
+            note = f'Path "{basepath}" is not a directory, or doesn\'t exist'
             raise exceptions.FrictionlessException(errors.StorageError(note=note))
+        self.__basepath = basepath
 
-    def __repr__(self):
-        template = "Storage <{basepath}>"
-        text = template.format(basepath=self.__basepath)
-        return text
+    def __iter__(self):
+        names = []
+        for path in os.listdir(self.__basepath):
+            name = self.__read_convert_name(path)
+            if name is not None:
+                names.append(name)
+        return iter(names)
 
     # Read
 
-    @property
-    def read_table_names(self):
-        names = []
-        for name in os.listdir(self.__basepath):
-            if name.endswith(".sav", ".zsav"):
-                name = self.read_table_convert_name(name)
-                names.append(name)
-        return name
-
-    def reat_table_list(self):
-        tables = []
-        for name in self.read_table_names():
-            table = self.read_table(name)
-            tables.append(table)
-        return tables
-
-    def read_table(self, name):
+    def read_resource(self, name):
         sav = helpers.import_from_plugin("savReaderWriter", plugin="spss")
-        table = self.__tables.get(name)
-        if table is None:
-            path = self.read_table_convert_name(name)
-            with sav.SavHeaderReader(path, ioUtf8=True) as header:
-                table = self.read_table_convert_table(header.all())
-        return table
-
-    def read_table_convert_name(self, name):
-        if not name.endswith((".sav", ".zsav")):
-            name = "{}.sav".format(name)
-        path = os.path.join(self.__basepath, name)
-        path = os.path.normpath(path)
-        if not path.startswith(os.path.normpath(self.__basepath)):
-            note = f'Bucket name "{name}" is not valid.'
+        path = self.__write_convert_name(name)
+        if not os.path.isfile(path):
+            note = f'Resource "{name}" does not exist'
             raise exceptions.FrictionlessException(errors.StorageError(note=note))
-        return path
+        with sav.SavHeaderReader(path, ioUtf8=True) as header:
+            spss_schema = header.all()
+            schema = self.__read_convert_schema(spss_schema)
+            data = partial(self.__read_data_stream, name, schema)
+            resource = Resource(name=name, schema=schema, data=data)
+            return resource
 
-    def read_table_convert_table(self, name, header):
+    def read_package(self):
+        package = Package()
+        for name in self:
+            resource = self.read_resource(name)
+            package.resources.append(resource)
+        return package
+
+    def __read_data_stream(self, name, schema):
+        sav = helpers.import_from_plugin("savReaderWriter", plugin="spss")
+        path = self.__write_convert_name(name)
+        with sav.SavReader(path, ioUtf8=True, rawMode=False) as reader:
+            for item in reader:
+                cells = []
+                for index, field in enumerate(schema.fields):
+                    value = item[index]
+                    # Fix decimals that should be integers
+                    if field.type == "integer" and value is not None:
+                        value = int(float(value))
+                    # We need to decode bytes to strings
+                    if isinstance(value, bytes):
+                        value = value.decode(reader.fileEncoding)
+                    # Time values need a decimal, add one if missing.
+                    if field.type == "time" and not re.search(r"\.\d*", value):
+                        value = "{}.0".format(value)
+                    cells.append(value)
+                yield cells
+
+    def __read_convert_name(self, path):
+        if path.endswith((".sav", ".zsav")):
+            return os.path.splitext(path)[0]
+
+    def __read_convert_schema(self, spss_schema):
         schema = Schema()
+
+        # Formats
         date_formats = {
-            "time": self.TIME_FORMAT,
-            "date": self.DATE_FORMAT,
-            "datetime": self.DATETIME_FORMAT,
+            "time": TIME_FORMAT,
+            "date": DATE_FORMAT,
+            "datetime": DATETIME_FORMAT,
         }
 
         # Fields
-        for var in header.varNames:
-            type = self.read_table_convert_field_type(header.formats[var])
-            field = Field(name=var, type=type, title=header.varLabels[var])
-            field["spss:format"] = header.formats[var]
+        for name in spss_schema.varNames:
+            type = self.__read_convert_type(spss_schema.formats[name])
+            field = Field(name=name, type=type)
+            title = spss_schema.varLabels[name]
+            if title:
+                field.title = title
             if type in date_formats.keys():
                 field.format = date_formats[type]
             schema.fields.append(field)
 
-        # Table
-        table = Resource(name=name, schema=schema)
-        return table
+        return schema
 
-    def read_table_convert_field_type(self, type):
+    def __read_convert_type(self, spss_type):
 
         # Mapping
         mapping = [
@@ -122,150 +150,114 @@ class SpssStorage(Storage):
         ]
 
         # Return type
-        for ts_type, pattern in mapping:
-            if pattern.match(format):
-                return ts_type
+        for type, pattern in mapping:
+            if pattern.match(spss_type):
+                return type
 
         # Default
         return "string"
 
-    def read_table_stream_data(self, name):
-        sav = helpers.import_from_plugin("savReaderWriter", plugin="spss")
-        table = self.read_table(name)
-        path = self.read_table_convert_name(name)
-        with sav.SavReader(path, ioUtf8=False, rawMode=False) as reader:
-            for r in reader:
-                cells = []
-                for i, field in enumerate(table.schema.fields):
-                    value = r[i]
-                    # Fix decimals that should be integers
-                    if field.type == "integer" and value is not None:
-                        value = int(float(value))
-                    # We need to decode bytes to strings
-                    if isinstance(value, bytes):
-                        value = value.decode(reader.fileEncoding)
-                    # Time values need a decimal, add one if missing.
-                    if field.type == "time" and not re.search(r"\.\d*", value):
-                        value = "{}.0".format(value)
-                    cells.append(value)
-                yield cells
-
     # Write
 
-    def write_table(self, *tables, force=False):
-        sav = helpers.import_from_plugin("savReaderWriter", plugin="spss")
+    def write_resource(self, resource, *, force=False):
+        package = Package(resources=[resource])
+        return self.write_package(package, force=force)
+
+    def write_package(self, package, *, force=False):
+
+        # Copy/infer package
+        package = Package(package)
+        package.infer()
 
         # Check existence
-        for table in tables:
-            if table.name in self.read_table_names():
+        for resource in package.resources:
+            if resource.name in self:
                 if not force:
-                    note = f'Table "{table.name}" already exists'
+                    note = f'Resource "{resource.name}" already exists'
                     raise exceptions.FrictionlessException(errors.StorageError(note=note))
-                self.write_table_remove(table.name)
+                self.delete_resource(resource.name)
 
-        # Define buckets
-        for table in tables:
-            self.__tables[table.name] = table
-            path = self.read_table_convert_name(table.name)
-            # map descriptor to sav header format so we can use the method below.
-            kwargs = self.write_table_convert_table(table)
-            writer = sav.SavWriter(path, ioUtf8=True, **kwargs)
-            writer.close()
+        # Save resources
+        for resource in package.resources:
+            self.__write_row_stream(resource)
 
-    def write_table_remove(self, *tables, ignore=False):
-        for table in tables:
+    def __write_row_stream(self, resource):
+        sav = helpers.import_from_plugin("savReaderWriter", plugin="spss")
 
-            # Check existent
-            if table.name not in self.read_table_names():
-                if not ignore:
-                    note = f'Table "{table.name}" does not exist'
-                    raise exceptions.FrictionlessException(errors.StorageError(note=note))
-                continue
+        # Prepare SPSS meta
+        path = self.__write_convert_name(resource.name)
+        spss_schema = self.__write_convert_schema(resource.schema)
+        fallback_types = [
+            "boolean",
+            "object",
+            "geojson",
+            "geopoint",
+            "array",
+            "duration",
+            "yearmonth",
+        ]
 
-            # Remove from tables
-            self.__tables.pop(table.name, None)
-            path = self.write_table_convert_name(table.name)
-            os.remove(path)
+        # Write row stream
+        with sav.SavWriter(path, ioUtf8=True, **spss_schema) as writer:
+            for row in resource.read_rows():
+                result = []
+                for field in resource.schema.fields:
+                    cell = row[field.name]
+                    if field.type == "date":
+                        cell = cell.strftime(DATE_FORMAT).encode()
+                        cell = writer.spssDateTime(cell, DATE_FORMAT)
+                    elif field.type == "datetime":
+                        cell = cell.strftime(DATETIME_FORMAT).encode()
+                        cell = writer.spssDateTime(cell, DATETIME_FORMAT)
+                    elif field.type == "time":
+                        cell = cell.strftime(TIME_FORMAT).encode()
+                        cell = writer.spssDateTime(cell, TIME_FORMAT)
+                    elif field.type in fallback_types:
+                        cell, notes = field.write_cell(cell)
+                    result.append(cell)
+                writer.writerow(result)
 
-    def write_table_convert_name(self, name):
-        if not name.endswith((".sav", ".zsav")):
-            name = "{}.sav".format(name)
-        path = os.path.join(self.__basepath, name)
-        path = os.path.normpath(path)
+    def __write_convert_name(self, name):
+        path = os.path.normpath(os.path.join(self.__basepath, f"{name}.sav"))
         if not path.startswith(os.path.normpath(self.__basepath)):
-            note = f'Bucket name "{name}" is not valid.'
+            note = f'Resource name "{name}" is not valid.'
             raise exceptions.FrictionlessException(errors.StorageError(note=note))
         return path
 
-    def write_table_convert_table(self, table):
-        schema = table.schema
+    def __write_convert_schema(self, schema):
+        spss_schema = {"varNames": [], "varTypes": {}}
+        for field in schema.fields:
+            spss_schema["varNames"].append(field.name)
+            spss_schema["varTypes"][field.name] = self.__write_convert_type(field.type)
+        return spss_schema
 
-        def get_format_for_name(name):
-            return schema.get_field(name).descriptor.get("spss:format")
+    def __write_convert_type(self, type):
+        if type in ["integer", "number", "date", "datetime", "time", "year"]:
+            return 0
+        return 5
 
-        def get_spss_type_for_name(name):
-            """Return spss number type for `name`.
+    # Delete
 
-            First we try to get the spss format (A10, F8.2, etc), and derive the spss type
-            from that.
+    def delete_resource(self, name, *, ignore=False):
+        return self.delete_package([name], ignore=ignore)
 
-            If there's not spss format defined, we see if the type is a number and return the
-            appropriate type.
+    def delete_package(self, names, *, ignore=False):
+        for name in names:
 
-            All else fails, we return a string type of width 1 (the default string format is
-            A1).
-            """
-            spss_format = get_format_for_name(name)
-            if spss_format:
-                string_pattern = re.compile(
-                    r"(?P<printFormat>A(HEX)?)(?P<printWid>\d+)", re.IGNORECASE
-                )
-                is_string = string_pattern.match(spss_format)
-                if is_string:
-                    # Return the 'width' discovered from the passed `format`.
-                    return int(is_string.group("printWid"))
-                else:
-                    return 0
-            else:
-                descriptor_type = schema.get_field(name).type
-                if descriptor_type == "integer" or descriptor_type == "number":
-                    return 0
+            # Check existent
+            if name not in self:
+                if not ignore:
+                    note = f'Resource "{name}" does not exist'
+                    raise exceptions.FrictionlessException(errors.StorageError(note=note))
+                continue
 
-            note = f'Field "{name}" requires a "spss:format" property.'
-            raise exceptions.FrictionlessException(errors.StorageError(note=note))
+            # Delete file
+            path = self.__write_convert_name(name)
+            os.remove(path)
 
-        var_names = [field.name for field in schema.fields]
-        var_types = {n: get_spss_type_for_name(n) for n in var_names}
-        formats = {n: get_format_for_name(n) for n in var_names if get_format_for_name(n)}
-        return {"varNames": var_names, "varTypes": var_types, "formats": formats}
 
-    def write_table_row_stream(self, name, row_stream):
-        sav = helpers.import_from_plugin("savReaderWriter", plugin="spss")
-        path = self.read_table_convert_name(name)
-        table = self.read_table(name)
-        kwargs = self.write_table_convert_table(table)
-        schema = table.schema
-        with sav.SavWriter(path, mode=b"ab", ioUtf8=True, **kwargs) as writer:
-            for r in row_stream:
-                row = []
-                for i, field in enumerate(schema.fields):
-                    value = r[i]
-                    if field.type == "date" and isinstance(value, datetime.date):
-                        value = writer.spssDateTime(
-                            value.strftime(self.__mapper.DATE_FORMAT).encode(),
-                            self.__mapper.DATE_FORMAT,
-                        )
-                    elif field.type == "datetime" and isinstance(
-                        value, datetime.datetime
-                    ):
-                        value = writer.spssDateTime(
-                            value.strftime(self.__mapper.DATETIME_FORMAT).encode(),
-                            self.__mapper.DATETIME_FORMAT,
-                        )
-                    elif field.type == "time" and isinstance(value, datetime.time):
-                        value = writer.spssDateTime(
-                            value.strftime(self.__mapper.TIME_FORMAT).encode(),
-                            self.__mapper.TIME_FORMAT,
-                        )
-                    row.append(value)
-                writer.writerow(row)
+# Internal
+
+DATE_FORMAT = "%Y-%m-%d"
+DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
+TIME_FORMAT = "%H:%M:%S.%f"

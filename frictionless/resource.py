@@ -625,6 +625,30 @@ class Resource(Metadata):
         """
         return self.to_storage(system.create_storage("pandas"))
 
+    @staticmethod
+    def from_spss(*, name, basepath):
+        """Import resource from SPSS file
+
+        Parameters:
+            name (str): resource name
+            basepath (str): SPSS dir path
+        """
+        return Resource.from_storage(
+            system.create_storage("spss", basepath=basepath),
+            name=name,
+        )
+
+    def to_spss(self, *, basepath, force=False):
+        """Export resource to SPSS file
+
+        Parameters:
+            basepath (str): SPSS dir path
+            force (bool): overwrite existent
+        """
+        return self.to_storage(
+            system.create_storage("spss", basepath=basepath), force=force
+        )
+
     def to_dict(self, expand=False):
         """Convert resource to dict
 

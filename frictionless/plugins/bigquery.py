@@ -45,12 +45,6 @@ class BigqueryStorage(Storage):
         self.__tables = {}
         self.__fallbacks = {}
 
-    def __repr__(self):
-        template = "Storage <{service}/{project}-{dataset}>"
-        return template.format(
-            service=self.__service, project=self.__project, dataset=self.__dataset
-        )
-
     # Read
 
     def read_table_names(self):

@@ -32,7 +32,7 @@ def test_storage():
             {"name": "entry_id", "type": "integer", "constraints": {"required": True}},
             {"name": "user_id", "type": "integer", "constraints": {"required": True}},
             {"name": "comment", "type": "string"},
-            {"name": "note", "type": "string"},  # type downgrade
+            {"name": "note", "type": "string"},  # type fallback
         ],
         "primaryKey": ["entry_id", "user_id"],
         # foreign keys removal
