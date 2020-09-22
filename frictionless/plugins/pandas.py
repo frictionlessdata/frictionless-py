@@ -48,8 +48,8 @@ class PandasStorage(Storage):
     def __init__(self, *, dataframes=None):
         self.__dataframes = dataframes or collections.OrderedDict()
 
-    def __repr__(self):
-        return "Storage <pandas>"
+    def __iter__(self):
+        return iter(sorted(self.__dataframes.keys()))
 
     @property
     def dataframes(self):
@@ -76,13 +76,10 @@ class PandasStorage(Storage):
 
     def read_package(self):
         package = Package()
-        for name in self.__read_resource_names():
+        for name in self:
             resource = self.read_resource(name)
             package.resources.append(resource)
         return package
-
-    def __read_resource_names(self):
-        return list(sorted(self.__dataframes.keys()))
 
     def __read_data_stream(self, name, schema):
         np = helpers.import_from_plugin("numpy", plugin="pandas")
@@ -166,7 +163,7 @@ class PandasStorage(Storage):
         return self.write_package(package, force=force)
 
     def write_package(self, package, *, force=False):
-        existent_names = self.__read_resource_names()
+        existent_names = list(self)
 
         # Copy/infer package
         package = Package(package)
@@ -279,7 +276,7 @@ class PandasStorage(Storage):
         return self.delete_package([name], ignore=ignore)
 
     def delete_package(self, names, *, ignore=False):
-        existent_names = self.__read_resource_names()
+        existent_names = list(self)
 
         # Remove dataframes
         for name in names:

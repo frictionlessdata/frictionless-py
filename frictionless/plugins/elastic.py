@@ -43,12 +43,6 @@ class Storage(object):
         self.__es = es if es is not None else es_core.Elasticsearch()
         self.__no_mapping_types = self.__es.info()["version"]["number"] >= "7"
 
-    def __repr__(self):
-        # Template and format
-        template = "Storage {engine}"
-        text = template.format(engine=self.__es)
-        return text
-
     # Read
 
     def read_table_names(self):

@@ -45,11 +45,6 @@ class CkanStorage(Storage):
         self.__bucket_cache = None
         self.__tables = {}
 
-    def __repr__(self):
-        template = "Storage <{base_url}>"
-        text = template.format(base_url=self.__base_url)
-        return text
-
     # Read
 
     @property

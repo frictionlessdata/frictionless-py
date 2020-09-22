@@ -51,10 +51,13 @@ class SpssStorage(Storage):
             raise exceptions.FrictionlessException(errors.StorageError(note=note))
         self.__basepath = basepath
 
-    def __repr__(self):
-        template = "Storage <{basepath}>"
-        text = template.format(basepath=self.__basepath)
-        return text
+    def __iter__(self):
+        names = []
+        for path in os.listdir(self.__basepath):
+            name = self.__read_convert_name(path)
+            if name is not None:
+                names.append(name)
+        return iter(names)
 
     # Read
 
@@ -70,18 +73,10 @@ class SpssStorage(Storage):
 
     def read_package(self):
         package = Package()
-        for name in self.__read_resource_names():
+        for name in self:
             resource = self.read_resource(name)
             package.resources.append(resource)
         return package
-
-    def __read_resource_names(self):
-        names = []
-        for path in os.listdir(self.__basepath):
-            name = self.__read_convert_name(path)
-            if name is not None:
-                names.append(name)
-        return names
 
     def __read_data_stream(self, name, schema):
         sav = helpers.import_from_plugin("savReaderWriter", plugin="spss")

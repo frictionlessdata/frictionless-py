@@ -2,6 +2,9 @@ class Storage:
     def __init__(self, **options):
         raise NotImplementedError()
 
+    def __iter__(self):
+        raise NotImplementedError()
+
     # Read
 
     def read_resource(self, name, **options):

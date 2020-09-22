@@ -200,10 +200,13 @@ class SqlStorage(Storage):
         self.__metadata = sa.MetaData(bind=self.__connection)
         self.__metadata.reflect()
 
-    def __repr__(self):
-        template = "Storage <{engine}>"
-        text = template.format(engine=self.__connection.engine)
-        return text
+    def __iter__(self):
+        names = []
+        for sql_table in self.__metadata.sorted_tables:
+            name = self.__read_convert_name(sql_table.name)
+            if name is not None:
+                names.append(name)
+        return iter(names)
 
     @property
     def connection(self):
@@ -223,18 +226,10 @@ class SqlStorage(Storage):
 
     def read_package(self):
         package = Package()
-        for name in self.__read_resource_names():
+        for name in self:
             resource = self.read_resource(name)
             package.resources.append(resource)
         return package
-
-    def __read_resource_names(self):
-        names = []
-        for sql_table in self.__metadata.sorted_tables:
-            name = self.__read_convert_name(sql_table.name)
-            if name is not None:
-                names.append(name)
-        return names
 
     def __read_data_stream(self, name):
         sql_table = self.__read_sql_table(name)
@@ -338,7 +333,7 @@ class SqlStorage(Storage):
         return self.write_package(package, force=force)
 
     def write_package(self, package, force=False):
-        existent_names = self.__read_resource_names()
+        existent_names = list(self)
 
         # Copy/infer package
         package = Package(package)
@@ -510,7 +505,7 @@ class SqlStorage(Storage):
         return self.delete_package([name], ignore=ignore)
 
     def delete_package(self, names, *, ignore=False):
-        existent_names = self.__read_resource_names()
+        existent_names = list(self)
 
         # Prepare tables
         sql_tables = []
