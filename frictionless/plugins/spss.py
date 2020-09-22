@@ -1,5 +1,6 @@
 import re
 import os
+import warnings
 from functools import partial
 from ..resource import Resource
 from ..package import Package
@@ -26,6 +27,7 @@ class SpssPlugin(Plugin):
 
     def create_storage(self, name, **options):
         if name == "spss":
+            warnings.warn("SPSS support is in a draft state", UserWarning)
             return SpssStorage(**options)
 
 
