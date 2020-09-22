@@ -31,14 +31,22 @@ class SpssPlugin(Plugin):
 
 
 class SpssStorage(Storage):
-    """SPSS storage implementation"""
+    """SPSS storage implementation
+
+    API      | Usage
+    -------- | --------
+    Public   | `from frictionless.plugins.spss import SpssStorage`
+
+    Parameters:
+        basepath (str): A path to a folder for reading/writing SAV files
+
+    """
 
     def __init__(self, *, basepath):
-        self.__tables = {}
-        self.__basepath = basepath
         if not os.path.isdir(basepath):
-            note = f'"{basepath}" is not a directory, or doesn\'t exist'
+            note = f'Path "{basepath}" is not a directory, or doesn\'t exist'
             raise exceptions.FrictionlessException(errors.StorageError(note=note))
+        self.__basepath = basepath
 
     def __repr__(self):
         template = "Storage <{basepath}>"

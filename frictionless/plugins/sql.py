@@ -170,7 +170,7 @@ class SqlParser(Parser):
 
 
 class SqlStorage(Storage):
-    """SQL storage representation
+    """SQL storage implementation
 
     API      | Usage
     -------- | --------

@@ -34,7 +34,16 @@ class PandasPlugin(Plugin):
 
 
 class PandasStorage(Storage):
-    """Pandas storage implementation"""
+    """Pandas storage implementation
+
+    API      | Usage
+    -------- | --------
+    Public   | `from frictionless.plugins.pandas import PandasStorage`
+
+    Parameters:
+        dataframes? (dict): dictionary of Pandas dataframes
+
+    """
 
     def __init__(self, *, dataframes=None):
         self.__dataframes = dataframes or collections.OrderedDict()
