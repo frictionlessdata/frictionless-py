@@ -60,7 +60,7 @@ class PandasStorage(Storage):
         if len(self.__dataframes) != 1:
             note = 'The "storage.dataframe" is available for single dataframe storages'
             raise exceptions.FrictionlessException(errors.StorageError(note=note))
-        return self.__dataframes
+        return list(self.__dataframes.values())[0]
 
     # Read
 
