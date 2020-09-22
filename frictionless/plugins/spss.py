@@ -151,63 +151,61 @@ class SpssStorage(Storage):
 
     # Write
 
-    def write_table(self, *tables, force=False):
-        sav = helpers.import_from_plugin("savReaderWriter", plugin="spss")
+    def write_resource(self, resource, *, force=False):
+        package = Package(resources=[resource])
+        return self.write_package(package, force=force)
+
+    def write_package(self, package, *, force=False):
+
+        # Copy/infer package
+        package = Package(package)
+        package.infer()
 
         # Check existence
-        for table in tables:
-            if table.name in self.read_table_names():
+        for resource in package.resources:
+            if resource.name in self:
                 if not force:
-                    note = f'Table "{table.name}" already exists'
+                    note = f'Resource "{resource.name}" already exists'
                     raise exceptions.FrictionlessException(errors.StorageError(note=note))
-                self.write_table_remove(table.name)
+                self.delete_resource(resource.name)
 
-        # Define buckets
-        for table in tables:
-            self.__tables[table.name] = table
-            path = self.read_table_convert_name(table.name)
-            # map descriptor to sav header format so we can use the method below.
-            kwargs = self.write_table_convert_table(table)
-            writer = sav.SavWriter(path, ioUtf8=True, **kwargs)
-            writer.close()
+        # Save resources
+        for resource in package.resources:
+            self.__write_row_stream(resource)
 
-    def write_table_remove(self, *tables, ignore=False):
-        for table in tables:
+    def __write_row_stream(self, resource):
+        sav = helpers.import_from_plugin("savReaderWriter", plugin="spss")
 
-            # Check existent
-            if table.name not in self.read_table_names():
-                if not ignore:
-                    note = f'Table "{table.name}" does not exist'
-                    raise exceptions.FrictionlessException(errors.StorageError(note=note))
-                continue
+        # Prepare SPSS meta
+        path = self.write_convert_name(resource.name)
+        spss_schema = self.write_convert_schema(resource.schema)
 
-            # Remove from tables
-            self.__tables.pop(table.name, None)
-            path = self.write_table_convert_name(table.name)
-            os.remove(path)
-
-    def write_table_convert_name(self, name):
-        if not name.endswith((".sav", ".zsav")):
-            name = "{}.sav".format(name)
-        path = os.path.join(self.__basepath, name)
-        path = os.path.normpath(path)
-        if not path.startswith(os.path.normpath(self.__basepath)):
-            note = f'Bucket name "{name}" is not valid.'
-            raise exceptions.FrictionlessException(errors.StorageError(note=note))
-        return path
+        # Write row stream
+        with sav.SavWriter(path, mode=b"ab", ioUtf8=True, **spss_schema) as writer:
+            for row in resource.read_rows():
+                result = []
+                for field in resource.schema.fields:
+                    cell = row[field.name]
+                    if field.type == "date" and isinstance(cell, datetime.date):
+                        cell = cell.strftime(DATE_FORMAT).encode()
+                        cell = writer.spssDateTime(cell, DATE_FORMAT)
+                    elif field.type == "datetime" and isinstance(cell, datetime.datetime):
+                        cell = cell.strftime(DATETIME_FORMAT).encode()
+                        cell = writer.spssDateTime(cell, DATETIME_FORMAT)
+                    elif field.type == "time" and isinstance(cell, datetime.time):
+                        cell = cell.strftime(TIME_FORMAT).encode()
+                        cell = writer.spssDateTime(cell, TIME_FORMAT)
+                    result.append(cell)
+                writer.writerow(result)
 
     def __write_convert_name(self, name):
-        path = "{}.sav".format(name)
-        path = os.path.join(self.__basepath, path)
-        path = os.path.normpath(path)
+        path = os.path.normpath(os.path.join(self.__basepath, f"{name}.sav"))
         if not path.startswith(os.path.normpath(self.__basepath)):
             note = f'Resource name "{name}" is not valid.'
             raise exceptions.FrictionlessException(errors.StorageError(note=note))
         return path
 
-    def write_table_convert_table(self, table):
-        schema = table.schema
-
+    def __write_convert_schema(self, schema):
         def get_format_for_name(name):
             return schema.get_field(name).descriptor.get("spss:format")
 
@@ -247,36 +245,24 @@ class SpssStorage(Storage):
         formats = {n: get_format_for_name(n) for n in var_names if get_format_for_name(n)}
         return {"varNames": var_names, "varTypes": var_types, "formats": formats}
 
-    def write_table_row_stream(self, name, row_stream):
-        sav = helpers.import_from_plugin("savReaderWriter", plugin="spss")
-        path = self.read_table_convert_name(name)
-        table = self.read_table(name)
-        kwargs = self.write_table_convert_table(table)
-        schema = table.schema
-        with sav.SavWriter(path, mode=b"ab", ioUtf8=True, **kwargs) as writer:
-            for r in row_stream:
-                row = []
-                for i, field in enumerate(schema.fields):
-                    value = r[i]
-                    if field.type == "date" and isinstance(value, datetime.date):
-                        value = writer.spssDateTime(
-                            value.strftime(self.__mapper.DATE_FORMAT).encode(),
-                            self.__mapper.DATE_FORMAT,
-                        )
-                    elif field.type == "datetime" and isinstance(
-                        value, datetime.datetime
-                    ):
-                        value = writer.spssDateTime(
-                            value.strftime(self.__mapper.DATETIME_FORMAT).encode(),
-                            self.__mapper.DATETIME_FORMAT,
-                        )
-                    elif field.type == "time" and isinstance(value, datetime.time):
-                        value = writer.spssDateTime(
-                            value.strftime(self.__mapper.TIME_FORMAT).encode(),
-                            self.__mapper.TIME_FORMAT,
-                        )
-                    row.append(value)
-                writer.writerow(row)
+    # Delete
+
+    def delete_resource(self, name, *, ignore=False):
+        return self.delete_package([name], ignore=ignore)
+
+    def delete_package(self, names, *, ignore=False):
+        for name in names:
+
+            # Check existent
+            if name not in self:
+                if not ignore:
+                    note = f'Table "{name}" does not exist'
+                    raise exceptions.FrictionlessException(errors.StorageError(note=note))
+                continue
+
+            # Delete file
+            path = self.__write_convert_name(name)
+            os.remove(path)
 
 
 # Internal
