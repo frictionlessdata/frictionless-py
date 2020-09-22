@@ -91,7 +91,7 @@ def test_storage_sqlite(database_url):
             {"name": "entry_id", "type": "integer", "constraints": {"required": True}},
             {"name": "user_id", "type": "integer", "constraints": {"required": True}},
             {"name": "comment", "type": "string"},
-            {"name": "note", "type": "string"},  # type downgrade
+            {"name": "note", "type": "string"},  # type fallback
         ],
         "primaryKey": ["entry_id", "user_id"],
         "foreignKeys": [
@@ -195,7 +195,7 @@ def test_storage_postgresql():
             {"name": "entry_id", "type": "integer", "constraints": {"required": True}},
             {"name": "user_id", "type": "integer", "constraints": {"required": True}},
             {"name": "comment", "type": "string"},
-            {"name": "note", "type": "string"},  # type downgrade
+            {"name": "note", "type": "string"},  # type fallback
         ],
         "primaryKey": ["entry_id", "user_id"],
         "foreignKeys": [
@@ -300,7 +300,7 @@ def test_storage_mysql():
             {"name": "entry_id", "type": "integer", "constraints": {"required": True}},
             {"name": "user_id", "type": "integer", "constraints": {"required": True}},
             {"name": "comment", "type": "string"},
-            {"name": "note", "type": "string"},  # type downgrade
+            {"name": "note", "type": "string"},  # type fallback
         ],
         "primaryKey": ["entry_id", "user_id"],
         "foreignKeys": [

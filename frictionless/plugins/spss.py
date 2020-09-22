@@ -1,6 +1,6 @@
 import re
 import os
-import datetime
+from functools import partial
 from ..resource import Resource
 from ..package import Package
 from ..storage import Storage
@@ -25,7 +25,8 @@ class SpssPlugin(Plugin):
     """
 
     def create_storage(self, name, **options):
-        pass
+        if name == "spss":
+            return SpssStorage(**options)
 
 
 # Storage
@@ -36,7 +37,7 @@ class SpssStorage(Storage):
 
     API      | Usage
     -------- | --------
-    Public   | `from frictionless.plugins.spss import SpssStorage`
+    Draft    | `from frictionless.plugins.spss import SpssStorage`
 
     Parameters:
         basepath? (str): A path to a dir for reading/writing SAV files.
@@ -45,7 +46,7 @@ class SpssStorage(Storage):
     """
 
     def __init__(self, *, basepath=None):
-        basepath = basepath or os.curdir()
+        basepath = basepath or os.getcwd()
         if not os.path.isdir(basepath):
             note = f'Path "{basepath}" is not a directory, or doesn\'t exist'
             raise exceptions.FrictionlessException(errors.StorageError(note=note))
@@ -64,10 +65,13 @@ class SpssStorage(Storage):
     def read_resource(self, name):
         sav = helpers.import_from_plugin("savReaderWriter", plugin="spss")
         path = self.__write_convert_name(name)
+        if not os.path.isfile(path):
+            note = f'Resource "{name}" does not exist'
+            raise exceptions.FrictionlessException(errors.StorageError(note=note))
         with sav.SavHeaderReader(path, ioUtf8=True) as header:
             spss_schema = header.all()
             schema = self.__read_convert_schema(spss_schema)
-            data = self.__read_data_stream(name)
+            data = partial(self.__read_data_stream, name, schema)
             resource = Resource(name=name, schema=schema, data=data)
             return resource
 
@@ -80,8 +84,8 @@ class SpssStorage(Storage):
 
     def __read_data_stream(self, name, schema):
         sav = helpers.import_from_plugin("savReaderWriter", plugin="spss")
-        path = self.write_convert_name(name)
-        with sav.SavReader(path, ioUtf8=False, rawMode=False) as reader:
+        path = self.__write_convert_name(name)
+        with sav.SavReader(path, ioUtf8=True, rawMode=False) as reader:
             for item in reader:
                 cells = []
                 for index, field in enumerate(schema.fields):
@@ -99,7 +103,7 @@ class SpssStorage(Storage):
                 yield cells
 
     def __read_convert_name(self, path):
-        if path.endswith(".sav", ".zsav"):
+        if path.endswith((".sav", ".zsav")):
             return os.path.splitext(path)[0]
 
     def __read_convert_schema(self, spss_schema):
@@ -113,10 +117,12 @@ class SpssStorage(Storage):
         }
 
         # Fields
-        for var in spss_schema.varNames:
-            type = self.read_table_convert_field_type(spss_schema.formats[var])
-            field = Field(name=var, type=type, title=spss_schema.varLabels[var])
-            field["spss:format"] = spss_schema.formats[var]
+        for name in spss_schema.varNames:
+            type = self.__read_convert_type(spss_schema.formats[name])
+            field = Field(name=name, type=type)
+            title = spss_schema.varLabels[name]
+            if title:
+                field.title = title
             if type in date_formats.keys():
                 field.format = date_formats[type]
             schema.fields.append(field)
@@ -177,24 +183,35 @@ class SpssStorage(Storage):
         sav = helpers.import_from_plugin("savReaderWriter", plugin="spss")
 
         # Prepare SPSS meta
-        path = self.write_convert_name(resource.name)
-        spss_schema = self.write_convert_schema(resource.schema)
+        path = self.__write_convert_name(resource.name)
+        spss_schema = self.__write_convert_schema(resource.schema)
+        fallback_types = [
+            "boolean",
+            "object",
+            "geojson",
+            "geopoint",
+            "array",
+            "duration",
+            "yearmonth",
+        ]
 
         # Write row stream
-        with sav.SavWriter(path, mode=b"ab", ioUtf8=True, **spss_schema) as writer:
+        with sav.SavWriter(path, ioUtf8=True, **spss_schema) as writer:
             for row in resource.read_rows():
                 result = []
                 for field in resource.schema.fields:
                     cell = row[field.name]
-                    if field.type == "date" and isinstance(cell, datetime.date):
+                    if field.type == "date":
                         cell = cell.strftime(DATE_FORMAT).encode()
                         cell = writer.spssDateTime(cell, DATE_FORMAT)
-                    elif field.type == "datetime" and isinstance(cell, datetime.datetime):
+                    elif field.type == "datetime":
                         cell = cell.strftime(DATETIME_FORMAT).encode()
                         cell = writer.spssDateTime(cell, DATETIME_FORMAT)
-                    elif field.type == "time" and isinstance(cell, datetime.time):
+                    elif field.type == "time":
                         cell = cell.strftime(TIME_FORMAT).encode()
                         cell = writer.spssDateTime(cell, TIME_FORMAT)
+                    elif field.type in fallback_types:
+                        cell, notes = field.write_cell(cell)
                     result.append(cell)
                 writer.writerow(result)
 
@@ -206,44 +223,16 @@ class SpssStorage(Storage):
         return path
 
     def __write_convert_schema(self, schema):
-        def get_format_for_name(name):
-            return schema.get_field(name).descriptor.get("spss:format")
+        spss_schema = {"varNames": [], "varTypes": {}}
+        for field in schema.fields:
+            spss_schema["varNames"].append(field.name)
+            spss_schema["varTypes"][field.name] = self.__write_convert_type(field.type)
+        return spss_schema
 
-        def get_spss_type_for_name(name):
-            """Return spss number type for `name`.
-
-            First we try to get the spss format (A10, F8.2, etc), and derive the spss type
-            from that.
-
-            If there's not spss format defined, we see if the type is a number and return the
-            appropriate type.
-
-            All else fails, we return a string type of width 1 (the default string format is
-            A1).
-            """
-            spss_format = get_format_for_name(name)
-            if spss_format:
-                string_pattern = re.compile(
-                    r"(?P<printFormat>A(HEX)?)(?P<printWid>\d+)", re.IGNORECASE
-                )
-                is_string = string_pattern.match(spss_format)
-                if is_string:
-                    # Return the 'width' discovered from the passed `format`.
-                    return int(is_string.group("printWid"))
-                else:
-                    return 0
-            else:
-                descriptor_type = schema.get_field(name).type
-                if descriptor_type == "integer" or descriptor_type == "number":
-                    return 0
-
-            note = f'Field "{name}" requires a "spss:format" property.'
-            raise exceptions.FrictionlessException(errors.StorageError(note=note))
-
-        var_names = [field.name for field in schema.fields]
-        var_types = {n: get_spss_type_for_name(n) for n in var_names}
-        formats = {n: get_format_for_name(n) for n in var_names if get_format_for_name(n)}
-        return {"varNames": var_names, "varTypes": var_types, "formats": formats}
+    def __write_convert_type(self, type):
+        if type in ["integer", "number", "date", "datetime", "time", "year"]:
+            return 0
+        return 5
 
     # Delete
 
@@ -256,7 +245,7 @@ class SpssStorage(Storage):
             # Check existent
             if name not in self:
                 if not ignore:
-                    note = f'Table "{name}" does not exist'
+                    note = f'Resource "{name}" does not exist'
                     raise exceptions.FrictionlessException(errors.StorageError(note=note))
                 continue
 
