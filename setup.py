@@ -41,7 +41,7 @@ TESTS_REQUIRE = [
 ]
 EXTRAS_REQUIRE = {
     "aws": ["boto3>=1.9"],
-    "bigquery": ["google-api-python-client>=1.5"],
+    "bigquery": ["google-api-python-client>=1.12.1"],
     "ckan": ["ckanapi>=4.3"],
     "dataflows": ["dataflows>=0.1"],
     "elastic": ["elasticsearch>=7.0,<8.0"],
