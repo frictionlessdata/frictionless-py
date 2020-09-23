@@ -231,18 +231,6 @@ class SqlStorage(Storage):
             package.resources.append(resource)
         return package
 
-    def __read_data_stream(self, name):
-        sql_table = self.__read_sql_table(name)
-        with self.__connection.begin():
-            # Streaming could be not working for some backends:
-            # http://docs.sqlalchemy.org/en/latest/core/connections.html
-            select = sql_table.select().execution_options(stream_results=True)
-            result = select.execute()
-            yield result.keys()
-            for item in result:
-                cells = tuple(item)
-                yield cells
-
     def __read_convert_name(self, sql_name):
         if sql_name.startswith(self.__prefix):
             return sql_name.replace(self.__prefix, "", 1)
@@ -320,6 +308,18 @@ class SqlStorage(Storage):
             sapg.UUID: "string",
         }
 
+    def __read_data_stream(self, name):
+        sql_table = self.__read_sql_table(name)
+        with self.__connection.begin():
+            # Streaming could be not working for some backends:
+            # http://docs.sqlalchemy.org/en/latest/core/connections.html
+            select = sql_table.select().execution_options(stream_results=True)
+            result = select.execute()
+            yield result.keys()
+            for item in result:
+                cells = tuple(item)
+                yield cells
+
     def __read_sql_table(self, name):
         sql_name = self.__write_convert_name(name)
         if self.__namespace:
@@ -362,29 +362,6 @@ class SqlStorage(Storage):
             # Write data
             for resource in package.resources:
                 self.__write_row_stream(resource)
-
-    def __write_row_stream(self, resource):
-
-        # Fallback fields
-        fallback_fields = []
-        mapping = self.__write_convert_types()
-        for field in resource.schema.fields:
-            if mapping[field.type] is None:
-                fallback_fields.append(field)
-
-        # Write data
-        buffer = []
-        buffer_size = 1000
-        sql_table = self.__read_sql_table(resource.name)
-        for row in resource.read_row_stream():
-            for field in fallback_fields:
-                row[field.name], notes = field.write_cell(row[field.name])
-            buffer.append(row)
-            if len(buffer) > buffer_size:
-                self.__connection.execute(sql_table.insert().values(buffer))
-                buffer = []
-        if len(buffer):
-            self.__connection.execute(sql_table.insert().values(buffer))
 
     def __write_convert_name(self, name):
         return self.__prefix + name
@@ -498,6 +475,29 @@ class SqlStorage(Storage):
             )
 
         return mapping
+
+    def __write_row_stream(self, resource):
+
+        # Fallback fields
+        fallback_fields = []
+        mapping = self.__write_convert_types()
+        for field in resource.schema.fields:
+            if mapping[field.type] is None:
+                fallback_fields.append(field)
+
+        # Write data
+        buffer = []
+        buffer_size = 1000
+        sql_table = self.__read_sql_table(resource.name)
+        for row in resource.read_row_stream():
+            for field in fallback_fields:
+                row[field.name], notes = field.write_cell(row[field.name])
+            buffer.append(row)
+            if len(buffer) > buffer_size:
+                self.__connection.execute(sql_table.insert().values(buffer))
+                buffer = []
+        if len(buffer):
+            self.__connection.execute(sql_table.insert().values(buffer))
 
     # Delete
 

@@ -3,8 +3,10 @@ import re
 import json
 import time
 import unicodecsv
+from functools import partial
 from slugify import slugify
 from ..resource import Resource
+from ..package import Package
 from ..storage import Storage
 from ..plugin import Plugin
 from ..schema import Schema
@@ -27,86 +29,107 @@ class BigqueryPlugin(Plugin):
     """
 
     def create_storage(self, name, **options):
-        pass
+        if name == "bigquery":
+            return BigqueryStorage(**options)
 
 
 # Storage
 
 
 class BigqueryStorage(Storage):
-    """BigQuery storage implementation"""
+    """BigQuery storage implementation
+
+    API      | Usage
+    -------- | --------
+    Public   | `from frictionless.plugins.bigquery import BigqueryStorage`
+
+    Parameters:
+        service (object): BigQuery `Service` object
+        project (str): BigQuery project name
+        dataset (str): BigQuery dataset name
+        prefix? (str): prefix for all names
+
+    """
 
     def __init__(self, service, project, dataset, prefix=""):
         self.__service = service
         self.__project = project
         self.__dataset = dataset
         self.__prefix = prefix
-        self.__names = None
-        self.__tables = {}
-        self.__fallbacks = {}
+
+    def __iter__(self):
+        names = []
+
+        # Get response
+        response = (
+            self.__service.tables()
+            .list(projectId=self.__project, datasetId=self.__dataset)
+            .execute()
+        )
+
+        # Extract names
+        for table in response.get("tables", []):
+            table_id = table["tableReference"]["tableId"]
+            name = self.__read_convert_name(table_id)
+            if name is not None:
+                names.append(name)
+
+        return names
 
     # Read
 
-    def read_table_names(self):
+    def read_resource(self, name):
+        bq_name = self.__write_convert_name(name)
 
-        # No cached value
-        if self.__names is None:
+        # Check existence
+        if not bq_name:
+            note = f'Resource "{name}" does not exist'
+            raise exceptions.FrictionlessException(errors.StorageError(note=note))
 
-            # Get response
-            response = (
-                self.__service.tables()
-                .list(projectId=self.__project, datasetId=self.__dataset)
-                .execute()
+        # Get response
+        response = (
+            self.__service.tables()
+            .get(
+                projectId=self.__project,
+                datasetId=self.__dataset,
+                tableId=bq_name,
             )
+            .execute()
+        )
 
-            # Extract buckets
-            self.__names = []
-            for table in response.get("tables", []):
-                table_name = table["tableReference"]["tableId"]
-                bucket = self.__mapper.restore_bucket(table_name)
-                if bucket is not None:
-                    self.__names.append(bucket)
+        # Create resource
+        schema = self.__read_convert_schema(name, response["schema"])
+        data = partial(self.__read_data_stream, name)
+        resource = Resource(name=name, schema=schema, data=data)
 
-        return self.__names
+        return resource
 
-    def read_table(self, name):
-        table = self.__tables.get(name)
-        if table is None:
-            table_id = self.write_table_convert_name(name)
-            response = (
-                self.__service.tables()
-                .get(
-                    projectId=self.__project,
-                    datasetId=self.__dataset,
-                    tableId=table_id,
-                )
-                .execute()
-            )
-            meta = response["schema"]
-            table = self.read_convert_table(name, meta)
-        return table
+    def read_package(self, name):
+        package = Package()
+        for name in self:
+            resource = self.read_resource(name)
+            package.resources.append(resource)
+        return package
 
-    def read_table_convert_name(self, name):
-        if name.startswith(self.__prefix):
-            return name.replace(self.__prefix, "", 1)
+    def __read_convert_name(self, bq_name):
+        if bq_name.startswith(self.__prefix):
+            return bq_name.replace(self.__prefix, "", 1)
         return None
 
-    def read_table_convert_table(self, meta):
+    def __read_convert_schema(self, bq_schema):
         schema = Schema()
 
         # Fields
-        for bq_field in meta["fields"]:
-            field_type = self.read_table_convert_field_type(bq_field["type"])
+        for bq_field in bq_schema["fields"]:
+            field_type = self.__read_convert_type(bq_field["type"])
             field = Field(name=bq_field["name"], type=field_type)
             if bq_field.get("mode", "NULLABLE") != "NULLABLE":
                 field.required = True
             schema.fields.append(field)
 
-        # Table
-        table = Resource(name="table", schema=schema)
-        return table
+        return schema
 
-    def read_table_convert_field_type(self, type):
+    def __read_convert_type(self, bq_type):
 
         # Mapping
         mapping = {
@@ -120,61 +143,66 @@ class BigqueryStorage(Storage):
         }
 
         # Return type
-        if type in mapping:
-            return mapping[type]
+        if bq_type in mapping:
+            return mapping[bq_type]
 
         # Not supported
         note = "Type %s is not supported" % type
         raise exceptions.FrictionlessException(errors.StorageError(note=note))
 
-    def read_table_row_stream(self, name):
+    # NOTE: can it be streaming?
+    # NOTE: provide a proper sorting solution?
+    def __read_data_stream(self, name):
+        bq_name = self.__write_convert_name(name)
 
-        # Get schema/data
-        table = self.read_table(name)
-        table_id = self.write_table_convert_name(table.name)
+        # Get response
         response = (
             self.__service.tabledata()
-            .list(projectId=self.__project, datasetId=self.__dataset, tableId=table_id)
+            .list(projectId=self.__project, datasetId=self.__dataset, tableId=bq_name)
             .execute()
         )
 
         # Collect rows
-        rows = []
+        data = []
         for fields in response["rows"]:
-            row = [field["v"] for field in fields["f"]]
-            rows.append(row)
+            cells = [field["v"] for field in fields["f"]]
+            data.append(cells)
 
-        # Sort rows
-        # NOTE: provide proper sorting solution
-        rows = sorted(rows, key=lambda row: row[0] if row[0] is not None else "null")
+        # Sort data
+        data = sorted(
+            data, key=lambda cells: cells[0] if cells[0] is not None else "null"
+        )
 
-        # Emit rows
-        for row in rows:
-            #  row = self.__mapper.restore_row(row, schema=schema)
-            yield row
+        # Emit data
+        yield from data
 
     # Write
 
-    def write_table(self, *tables, force=False):
+    def write_package(self, package, *, force=False):
+        existent_names = list(self)
 
-        # Iterate over tables
-        for table in tables:
+        # Copy/infer package
+        package = Package(package)
+        package.infer()
 
-            # Existent bucket
-            if table.name in self.read_table_names():
+        # Iterate resources
+        for resource in package.resources:
+
+            # Check existence
+            if resource.name in existent_names:
                 if not force:
-                    note = f'Table "{table.name}" already exists'
+                    note = f'Resource "{resource.name}" already exists'
                     raise exceptions.FrictionlessException(errors.StorageError(note=note))
-                self.write_table_remove(table.name)
+                self.delete_resource(resource.name)
 
             # Prepare job body
-            table_id = self.write_table_convert_name(table.name)
-            meta, fallbacks = self.write_table_convert_table(table)
+            bq_name = self.__write_convert_name(resource.name)
+            meta, fallbacks = self.write_convert_schema(resource.schema)
             body = {
                 "tableReference": {
                     "projectId": self.__project,
                     "datasetId": self.__dataset,
-                    "tableId": table_id,
+                    "tableId": bq_name,
                 },
                 "schema": meta,
             }
@@ -184,17 +212,10 @@ class BigqueryStorage(Storage):
                 projectId=self.__project, datasetId=self.__dataset, body=body
             ).execute()
 
-            # Add to descriptors/fallbacks
-            self.__tables[table.name] = table
-            self.__fallbacks[table.name] = fallbacks
-
-        # Remove buckets cache
-        self.__names = None
-
-    def write_table_convert_name(self, name):
+    def __write_convert_name(self, name):
         return self.__prefix + name
 
-    def write_table_convert_table(self, table):
+    def __write_convert_schema(self, table):
 
         # Fields
         fields = []
@@ -223,8 +244,7 @@ class BigqueryStorage(Storage):
 
         return (converted_descriptor, fallbacks)
 
-    def write_table_convert_field_type(self, type):
-        """Convert type to BigQuery"""
+    def __write_convert_type(self, type):
 
         # Mapping
         mapping = {
@@ -253,32 +273,7 @@ class BigqueryStorage(Storage):
         note = "Type %s is not supported" % type
         raise exceptions.FrictionlessException(errors.StorageError(note=note))
 
-    def write_table_remove(self, *names, ignore=False):
-
-        # Iterater over buckets
-        for name in names:
-
-            # Check existent
-            if name not in self.read_table_names():
-                if not ignore:
-                    note = f'Table "{name}" does not exist'
-                    raise exceptions.FrictionlessException(errors.StorageError(note=note))
-                continue
-
-            # Remove from descriptors
-            if name in self.__tables:
-                del self.__tables[name]
-
-            # Make delete request
-            table_id = self.write_table_convert_name(name)
-            self.__service.tables().delete(
-                projectId=self.__project, datasetId=self.__dataset, tableId=table_id
-            ).execute()
-
-        # Remove tables cache
-        self.__names = None
-
-    def write_table_row_stream(self, name, row_stream):
+    def __write_row_stream(self, name, row_stream):
 
         # Write buffer
         BUFFER_SIZE = 10000
@@ -298,6 +293,30 @@ class BigqueryStorage(Storage):
                 rows_buffer = []
         if len(rows_buffer) > 0:
             self.__write_rows_buffer(name, rows_buffer)
+
+    # Delete
+
+    def delete_resource(self, name, *, ignore=False):
+        return self.delete_package([name], ignore=ignore)
+
+    def delete_package(self, names, *, ignore=False):
+        existent_names = list(self)
+
+        # Iterater over buckets
+        for name in names:
+
+            # Check existent
+            if name not in existent_names:
+                if not ignore:
+                    note = f'Table "{name}" does not exist'
+                    raise exceptions.FrictionlessException(errors.StorageError(note=note))
+                continue
+
+            # Make delete request
+            bq_name = self.__write_convert_name(name)
+            self.__service.tables().delete(
+                projectId=self.__project, datasetId=self.__dataset, tableId=bq_name
+            ).execute()
 
     # Private
 

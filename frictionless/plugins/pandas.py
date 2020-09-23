@@ -81,24 +81,6 @@ class PandasStorage(Storage):
             package.resources.append(resource)
         return package
 
-    def __read_data_stream(self, name, schema):
-        np = helpers.import_from_plugin("numpy", plugin="pandas")
-        dataframe = self.__read_pandas_dataframe(name)
-        yield schema.field_names
-        for pk, item in dataframe.iterrows():
-            cells = []
-            if schema.primary_key:
-                cells = list(pk) if len(schema.primary_key) > 1 else [pk]
-            for field in schema.fields:
-                if field.name not in schema.primary_key:
-                    value = item[field.name]
-                    if field.type == "number" and np.isnan(value):
-                        value = None
-                    elif field.type == "datetime":
-                        value = value.to_pydatetime()
-                    cells.append(value)
-            yield cells
-
     def __read_convert_schema(self, dataframe):
         schema = Schema()
 
@@ -152,6 +134,24 @@ class PandasStorage(Storage):
 
         # Default
         return "string"
+
+    def __read_data_stream(self, name, schema):
+        np = helpers.import_from_plugin("numpy", plugin="pandas")
+        dataframe = self.__read_pandas_dataframe(name)
+        yield schema.field_names
+        for pk, item in dataframe.iterrows():
+            cells = []
+            if schema.primary_key:
+                cells = list(pk) if len(schema.primary_key) > 1 else [pk]
+            for field in schema.fields:
+                if field.name not in schema.primary_key:
+                    value = item[field.name]
+                    if field.type == "number" and np.isnan(value):
+                        value = None
+                    elif field.type == "datetime":
+                        value = value.to_pydatetime()
+                    cells.append(value)
+            yield cells
 
     def __read_pandas_dataframe(self, name):
         return self.__dataframes.get(name)
