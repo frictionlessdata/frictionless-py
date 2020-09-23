@@ -649,6 +649,49 @@ class Resource(Metadata):
             system.create_storage("spss", basepath=basepath), force=force
         )
 
+    @staticmethod
+    def from_bigquery(*, name, service, project, dataset, prefix=""):
+        """Import resource from BigQuery table
+
+        Parameters:
+            name (str): resource name
+            service (object): BigQuery `Service` object
+            project (str): BigQuery project name
+            dataset (str): BigQuery dataset name
+            prefix? (str): prefix for all names
+        """
+        return Resource.from_storage(
+            system.create_storage(
+                "bigquery",
+                service=service,
+                project=project,
+                dataset=dataset,
+                prefix=prefix,
+            ),
+            name=name,
+        )
+
+    def to_biquery(self, *, service, project, dataset, prefix="", force=False):
+        """Export resource to Bigquery table
+
+        Parameters:
+            service (object): BigQuery `Service` object
+            project (str): BigQuery project name
+            dataset (str): BigQuery dataset name
+            prefix? (str): prefix for all names
+            force (bool): overwrite existent
+        """
+        return self.to_storage(
+            system.create_storage(
+                "bigquery",
+                service=service,
+                project=project,
+                dataset=dataset,
+                prefix=prefix,
+            ),
+            force=force,
+        )
+
     def to_dict(self, expand=False):
         """Convert resource to dict
 
