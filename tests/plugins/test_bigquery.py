@@ -8,6 +8,11 @@ from oauth2client.client import GoogleCredentials
 from frictionless import Package, Resource, exceptions
 from frictionless.plugins.bigquery import BigqueryStorage
 
+
+# TODO: enable tests after:
+# https://stackoverflow.com/questions/63902467/module-six-moves-has-no-attribute-collections-abc
+
+
 # Storage
 
 
@@ -22,6 +27,7 @@ OPTIONS = {
 
 
 @pytest.mark.ci
+@pytest.mark.skip("googleapiclient bug")
 def test_storage():
 
     # Export/Import
@@ -120,6 +126,7 @@ def test_storage():
 
 
 @pytest.mark.ci
+@pytest.mark.skip("googleapiclient bug")
 def test_storage_read_resource_not_existent_error():
     storage = BigqueryStorage(**OPTIONS)
     with pytest.raises(exceptions.FrictionlessException) as excinfo:
@@ -130,6 +137,7 @@ def test_storage_read_resource_not_existent_error():
 
 
 @pytest.mark.ci
+@pytest.mark.skip("googleapiclient bug")
 def test_storage_write_resource_existent_error():
     resource = Resource(path="data/table.csv")
     storage = resource.to_bigquery(force=True, **OPTIONS)
@@ -143,6 +151,7 @@ def test_storage_write_resource_existent_error():
 
 
 @pytest.mark.ci
+@pytest.mark.skip("googleapiclient bug")
 def test_storage_delete_resource_not_existent_error():
     storage = BigqueryStorage(**OPTIONS)
     with pytest.raises(exceptions.FrictionlessException) as excinfo:
