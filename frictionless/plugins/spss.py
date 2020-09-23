@@ -140,6 +140,7 @@ class SpssStorage(Storage):
     def __read_data_stream(self, name, schema):
         sav = helpers.import_from_plugin("savReaderWriter", plugin="spss")
         path = self.__write_convert_name(name)
+        yield schema.field_names
         with sav.SavReader(path, ioUtf8=True, rawMode=False) as reader:
             for item in reader:
                 cells = []

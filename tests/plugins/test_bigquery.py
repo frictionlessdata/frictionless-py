@@ -1,30 +1,45 @@
+import io
+import os
+import json
 import pytest
-import isodate
 import datetime
+from apiclient.discovery import build
+from oauth2client.client import GoogleCredentials
 from frictionless import Package, Resource, exceptions
-from frictionless.plugins.pandas import PandasStorage
+from frictionless.plugins.bigquery import BigqueryStorage
 
 # Storage
 
 
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = ".google.json"
+credentials = GoogleCredentials.get_application_default()
+OPTIONS = {
+    "service": build("bigquery", "v2", credentials=credentials),
+    "project": json.load(io.open(".google.json"))["project_id"],
+    "dataset": "resource",
+    "prefix": "prefix_",
+}
+
+
+@pytest.mark.ci
 def test_storage():
 
     # Export/Import
     source = Package("data/package-storage.json")
-    storage = source.to_pandas()
-    target = Package.from_pandas(dataframes=storage.dataframes)
+    storage = source.to_bigquery(force=True, **OPTIONS)
+    target = Package.from_bigquery(**OPTIONS)
 
     # Assert metadata
 
     assert target.get_resource("article").schema == {
         "fields": [
             {"name": "id", "type": "integer", "constraints": {"required": True}},
-            {"name": "parent", "type": "number"},  # type downgrade
+            {"name": "parent", "type": "integer"},
             {"name": "name", "type": "string"},
             {"name": "current", "type": "boolean"},
             {"name": "rating", "type": "number"},
         ],
-        "primaryKey": ["id"],
+        # primary key removal
         # foreign keys removal
     }
     assert target.get_resource("comment").schema == {
@@ -34,19 +49,19 @@ def test_storage():
             {"name": "comment", "type": "string"},
             {"name": "note", "type": "string"},  # type fallback
         ],
-        "primaryKey": ["entry_id", "user_id"],
+        # primary key removal
         # foreign keys removal
     }
     assert target.get_resource("location").schema == {
         "fields": [
-            {"name": "geojson", "type": "object"},
-            {"name": "geopoint", "type": "array"},
+            {"name": "geojson", "type": "string"},  # type fallback
+            {"name": "geopoint", "type": "string"},  # type fallback
         ]
     }
     assert target.get_resource("structure").schema == {
         "fields": [
-            {"name": "object", "type": "object"},
-            {"name": "array", "type": "array"},
+            {"name": "object", "type": "string"},  # type fallback
+            {"name": "array", "type": "string"},  # type fallback
         ]
     }
     assert target.get_resource("temporal").schema == {
@@ -54,10 +69,10 @@ def test_storage():
             {"name": "date", "type": "date"},
             {"name": "date_year", "type": "date"},  # format removal
             {"name": "datetime", "type": "datetime"},
-            {"name": "duration", "type": "duration"},
+            {"name": "duration", "type": "string"},  # type fallback
             {"name": "time", "type": "time"},
             {"name": "year", "type": "integer"},  # type downgrade
-            {"name": "yearmonth", "type": "array"},  # type downgrade
+            {"name": "yearmonth", "type": "string"},  # type fallback
         ]
     }
 
@@ -72,31 +87,31 @@ def test_storage():
         {"entry_id": 2, "user_id": 2, "comment": "bad", "note": "note2"},
     ]
     assert target.get_resource("location").read_rows() == [
-        {"geojson": {"type": "Point", "coordinates": [33, 33.33]}, "geopoint": [30, 70]},
-        {"geojson": {"type": "Point", "coordinates": [55, 55.55]}, "geopoint": [90, 40]},
+        {"geojson": '{"type": "Point", "coordinates": [33, 33.33]}', "geopoint": "30,70"},
+        {"geojson": '{"type": "Point", "coordinates": [55, 55.55]}', "geopoint": "90,40"},
     ]
     assert target.get_resource("structure").read_rows() == [
-        {"object": {"chars": 560}, "array": ["Mike", "John"]},
-        {"object": {"chars": 970}, "array": ["Paul", "Alex"]},
+        {"object": '{"chars": 560}', "array": '["Mike", "John"]'},
+        {"object": '{"chars": 970}', "array": '["Paul", "Alex"]'},
     ]
     assert target.get_resource("temporal").read_rows() == [
         {
             "date": datetime.date(2015, 1, 1),
             "date_year": datetime.date(2015, 1, 1),
             "datetime": datetime.datetime(2015, 1, 1, 3, 0),
-            "duration": isodate.parse_duration("P1Y1M"),
+            "duration": "P1Y1M",
             "time": datetime.time(3, 0),
             "year": 2015,
-            "yearmonth": [2015, 1],
+            "yearmonth": "2015-01",
         },
         {
             "date": datetime.date(2015, 12, 31),
             "date_year": datetime.date(2015, 1, 1),
             "datetime": datetime.datetime(2015, 12, 31, 15, 45, 33),
-            "duration": isodate.parse_duration("P2Y2M"),
+            "duration": "P2Y2M",
             "time": datetime.time(15, 45, 33),
             "year": 2015,
-            "yearmonth": [2015, 1],
+            "yearmonth": "2015-01",
         },
     ]
 
@@ -105,7 +120,7 @@ def test_storage():
 
 
 def test_storage_read_resource_not_existent_error():
-    storage = PandasStorage()
+    storage = BigqueryStorage(**OPTIONS)
     with pytest.raises(exceptions.FrictionlessException) as excinfo:
         storage.read_resource("bad")
     error = excinfo.value.error
@@ -115,7 +130,7 @@ def test_storage_read_resource_not_existent_error():
 
 def test_storage_write_resource_existent_error():
     resource = Resource(path="data/table.csv")
-    storage = resource.to_pandas()
+    storage = resource.to_bigquery(force=True, **OPTIONS)
     with pytest.raises(exceptions.FrictionlessException) as excinfo:
         storage.write_resource(resource)
     error = excinfo.value.error
@@ -126,19 +141,9 @@ def test_storage_write_resource_existent_error():
 
 
 def test_storage_delete_resource_not_existent_error():
-    storage = PandasStorage()
+    storage = BigqueryStorage(**OPTIONS)
     with pytest.raises(exceptions.FrictionlessException) as excinfo:
         storage.delete_resource("bad")
     error = excinfo.value.error
     assert error.code == "storage-error"
     assert error.note.count("does not exist")
-
-
-def test_storage_dataframe_property_not_single_error():
-    package = Package("data/package-storage.json")
-    storage = package.to_pandas()
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
-        storage.dataframe
-    error = excinfo.value.error
-    assert error.code == "storage-error"
-    assert error.note.count("single dataframe storages")

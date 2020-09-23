@@ -9,7 +9,7 @@ def test_storage(tmpdir):
 
     # Export/Import
     source = Package("data/package-storage.json")
-    storage = source.to_spss(basepath=tmpdir)
+    storage = source.to_spss(basepath=tmpdir, force=True)
     target = Package.from_spss(basepath=tmpdir)
 
     # Assert metadata
@@ -120,6 +120,8 @@ def test_storage_write_resource_existent_error(tmpdir):
     error = excinfo.value.error
     assert error.code == "storage-error"
     assert error.note.count("already exists")
+    # Cleanup storage
+    storage.delete_package(list(storage))
 
 
 def test_storage_delete_resource_not_existent_error():

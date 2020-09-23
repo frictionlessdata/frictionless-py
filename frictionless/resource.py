@@ -671,7 +671,7 @@ class Resource(Metadata):
             name=name,
         )
 
-    def to_biquery(self, *, service, project, dataset, prefix="", force=False):
+    def to_bigquery(self, *, service, project, dataset, prefix="", force=False):
         """Export resource to Bigquery table
 
         Parameters:

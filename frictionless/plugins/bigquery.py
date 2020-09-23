@@ -3,8 +3,8 @@ import re
 import json
 import time
 import unicodecsv
-from functools import partial
 from slugify import slugify
+from functools import partial
 from ..resource import Resource
 from ..package import Package
 from ..storage import Storage
@@ -74,37 +74,40 @@ class BigqueryStorage(Storage):
             if name is not None:
                 names.append(name)
 
-        return names
+        return iter(names)
 
     # Read
 
     def read_resource(self, name):
         bq_name = self.__write_convert_name(name)
+        google_errors = helpers.import_from_plugin(
+            "googleapiclient.errors", plugin="bigquery"
+        )
 
-        # Check existence
-        if not bq_name:
+        # Get response
+        # NOTE: improve error handling
+        try:
+            response = (
+                self.__service.tables()
+                .get(
+                    projectId=self.__project,
+                    datasetId=self.__dataset,
+                    tableId=bq_name,
+                )
+                .execute()
+            )
+        except google_errors.HttpError:
             note = f'Resource "{name}" does not exist'
             raise exceptions.FrictionlessException(errors.StorageError(note=note))
 
-        # Get response
-        response = (
-            self.__service.tables()
-            .get(
-                projectId=self.__project,
-                datasetId=self.__dataset,
-                tableId=bq_name,
-            )
-            .execute()
-        )
-
         # Create resource
-        schema = self.__read_convert_schema(name, response["schema"])
-        data = partial(self.__read_data_stream, name)
+        schema = self.__read_convert_schema(response["schema"])
+        data = partial(self.__read_data_stream, name, schema)
         resource = Resource(name=name, schema=schema, data=data)
 
         return resource
 
-    def read_package(self, name):
+    def read_package(self):
         package = Package()
         for name in self:
             resource = self.read_resource(name)
@@ -152,7 +155,7 @@ class BigqueryStorage(Storage):
 
     # NOTE: can it be streaming?
     # NOTE: provide a proper sorting solution?
-    def __read_data_stream(self, name):
+    def __read_data_stream(self, name, schema):
         bq_name = self.__write_convert_name(name)
 
         # Get response
@@ -166,6 +169,9 @@ class BigqueryStorage(Storage):
         data = []
         for fields in response["rows"]:
             cells = [field["v"] for field in fields["f"]]
+            for index, field in enumerate(schema.fields):
+                if field.type == "datetime":
+                    cells[index] = f"{cells[index]}Z"
             data.append(cells)
 
         # Sort data
@@ -174,6 +180,7 @@ class BigqueryStorage(Storage):
         )
 
         # Emit data
+        yield schema.field_names
         yield from data
 
     # Write
@@ -225,7 +232,7 @@ class BigqueryStorage(Storage):
         # Fields
         bq_fields = []
         for field in schema.fields:
-            bq_type = self.convert_type(field.type)
+            bq_type = self.__write_convert_type(field.type)
             if not bq_type:
                 bq_type = "STRING"
             mode = "NULLABLE"
@@ -291,16 +298,16 @@ class BigqueryStorage(Storage):
         for row in resource.read_rows():
             for field in fallback_fields:
                 row[field.name], notes = field.write_cell(row[field.name])
-            buffer.append(row)
+            buffer.append(row.to_list())
             if len(buffer) > BUFFER_SIZE:
                 self.__write_data_(resource.name, buffer)
                 buffer = []
         if len(buffer) > 0:
-            self.__write_data(resource.name, buffer)
+            self.__write_row_stream_buffer(resource.name, buffer)
 
     def __write_row_stream_buffer(self, name, buffer):
         http = helpers.import_from_plugin("apiclient.http", plugin="bigquery")
-        bq_name = self.__write_convert_name()
+        bq_name = self.__write_convert_name(name)
 
         # Process buffer to byte stream csv
         bytes = io.BufferedRandom(io.BytesIO())
@@ -348,8 +355,7 @@ class BigqueryStorage(Storage):
             result = job.execute(num_retries=1)
             if result["status"]["state"] == "DONE":
                 if result["status"].get("errors"):
-                    errors = result["status"]["errors"]
-                    note = "\n".join(error["message"] for error in errors)
+                    note = "\n".join(er["message"] for er in result["status"]["errors"])
                     raise exceptions.FrictionlessException(errors.StorageError(note=note))
                 break
             time.sleep(1)
@@ -368,7 +374,7 @@ class BigqueryStorage(Storage):
             # Check existent
             if name not in existent_names:
                 if not ignore:
-                    note = f'Table "{name}" does not exist'
+                    note = f'Resource "{name}" does not exist'
                     raise exceptions.FrictionlessException(errors.StorageError(note=note))
                 continue
 
