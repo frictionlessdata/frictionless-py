@@ -119,6 +119,7 @@ def test_storage():
     storage.delete_package(target.resource_names)
 
 
+@pytest.mark.ci
 def test_storage_read_resource_not_existent_error():
     storage = BigqueryStorage(**OPTIONS)
     with pytest.raises(exceptions.FrictionlessException) as excinfo:
@@ -128,6 +129,7 @@ def test_storage_read_resource_not_existent_error():
     assert error.note.count("does not exist")
 
 
+@pytest.mark.ci
 def test_storage_write_resource_existent_error():
     resource = Resource(path="data/table.csv")
     storage = resource.to_bigquery(force=True, **OPTIONS)
@@ -140,6 +142,7 @@ def test_storage_write_resource_existent_error():
     storage.delete_package(list(storage))
 
 
+@pytest.mark.ci
 def test_storage_delete_resource_not_existent_error():
     storage = BigqueryStorage(**OPTIONS)
     with pytest.raises(exceptions.FrictionlessException) as excinfo:
