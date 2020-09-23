@@ -1,5 +1,6 @@
 import io
 import os
+import sys
 import json
 import pytest
 import datetime
@@ -18,7 +19,7 @@ OPTIONS = {
     "service": build("bigquery", "v2", credentials=credentials),
     "project": json.load(io.open(".google.json"))["project_id"],
     "dataset": "resource",
-    "prefix": "prefix_",
+    "prefix": f"prefix_py3{sys.version_info[1]}_",
 }
 
 
