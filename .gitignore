@@ -84,3 +84,4 @@ jsontableschema
 datapackage
 .mypy_cache
 !docs/target
+.google.json

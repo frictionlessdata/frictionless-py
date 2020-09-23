@@ -30,6 +30,7 @@ TESTS_REQUIRE = [
     "pydoc-markdown",
     "docstring-parser",
     "python-dotenv",
+    "oauth2client",
     "responses",
     "coveralls",
     "nbconvert",
@@ -40,7 +41,7 @@ TESTS_REQUIRE = [
 ]
 EXTRAS_REQUIRE = {
     "aws": ["boto3>=1.9"],
-    "bigquery": ["google-api-python-client>=1.5"],
+    "bigquery": ["google-api-python-client>=1.12.1"],
     "ckan": ["ckanapi>=4.3"],
     "dataflows": ["dataflows>=0.1"],
     "elastic": ["elasticsearch>=7.0,<8.0"],
@@ -64,6 +65,7 @@ INSTALL_REQUIRES = [
     "simpleeval>=0.9",
     "stringcase>=1.2",
     "python-dateutil>=2.8",
+    "python-slugify>=1.2",
     "unicodecsv>=0.14",
     "jsonlines>=1.2",
     "simplejson>=3.10",

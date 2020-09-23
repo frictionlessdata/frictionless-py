@@ -311,6 +311,47 @@ class Package(Metadata):
             system.create_storage("spss", basepath=basepath), force=force
         )
 
+    @staticmethod
+    def from_bigquery(*, service, project, dataset, prefix=""):
+        """Import package from SPSS directory
+
+        Parameters:
+            service (object): BigQuery `Service` object
+            project (str): BigQuery project name
+            dataset (str): BigQuery dataset name
+            prefix? (str): prefix for all names
+        """
+        return Package.from_storage(
+            system.create_storage(
+                "bigquery",
+                service=service,
+                project=project,
+                dataset=dataset,
+                prefix=prefix,
+            ),
+        )
+
+    def to_bigquery(self, *, service, project, dataset, prefix="", force=False):
+        """Export package to SPSS directory
+
+        Parameters:
+            service (object): BigQuery `Service` object
+            project (str): BigQuery project name
+            dataset (str): BigQuery dataset name
+            prefix? (str): prefix for all names
+            force (bool): overwrite existent
+        """
+        return self.to_storage(
+            system.create_storage(
+                "bigquery",
+                service=service,
+                project=project,
+                dataset=dataset,
+                prefix=prefix,
+            ),
+            force=force,
+        )
+
     def to_dict(self, expand=False):
         """Convert package to a dict
 

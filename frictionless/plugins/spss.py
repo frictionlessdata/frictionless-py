@@ -84,26 +84,6 @@ class SpssStorage(Storage):
             package.resources.append(resource)
         return package
 
-    def __read_data_stream(self, name, schema):
-        sav = helpers.import_from_plugin("savReaderWriter", plugin="spss")
-        path = self.__write_convert_name(name)
-        with sav.SavReader(path, ioUtf8=True, rawMode=False) as reader:
-            for item in reader:
-                cells = []
-                for index, field in enumerate(schema.fields):
-                    value = item[index]
-                    # Fix decimals that should be integers
-                    if field.type == "integer" and value is not None:
-                        value = int(float(value))
-                    # We need to decode bytes to strings
-                    if isinstance(value, bytes):
-                        value = value.decode(reader.fileEncoding)
-                    # Time values need a decimal, add one if missing.
-                    if field.type == "time" and not re.search(r"\.\d*", value):
-                        value = "{}.0".format(value)
-                    cells.append(value)
-                yield cells
-
     def __read_convert_name(self, path):
         if path.endswith((".sav", ".zsav")):
             return os.path.splitext(path)[0]
@@ -157,6 +137,27 @@ class SpssStorage(Storage):
         # Default
         return "string"
 
+    def __read_data_stream(self, name, schema):
+        sav = helpers.import_from_plugin("savReaderWriter", plugin="spss")
+        path = self.__write_convert_name(name)
+        yield schema.field_names
+        with sav.SavReader(path, ioUtf8=True, rawMode=False) as reader:
+            for item in reader:
+                cells = []
+                for index, field in enumerate(schema.fields):
+                    value = item[index]
+                    # Fix decimals that should be integers
+                    if field.type == "integer" and value is not None:
+                        value = int(float(value))
+                    # We need to decode bytes to strings
+                    if isinstance(value, bytes):
+                        value = value.decode(reader.fileEncoding)
+                    # Time values need a decimal, add one if missing.
+                    if field.type == "time" and not re.search(r"\.\d*", value):
+                        value = "{}.0".format(value)
+                    cells.append(value)
+                yield cells
+
     # Write
 
     def write_resource(self, resource, *, force=False):
@@ -181,6 +182,26 @@ class SpssStorage(Storage):
         for resource in package.resources:
             self.__write_row_stream(resource)
 
+    def __write_convert_name(self, name):
+        path = os.path.normpath(os.path.join(self.__basepath, f"{name}.sav"))
+        if not path.startswith(os.path.normpath(self.__basepath)):
+            note = f'Resource name "{name}" is not valid.'
+            raise exceptions.FrictionlessException(errors.StorageError(note=note))
+        return path
+
+    def __write_convert_schema(self, schema):
+        spss_schema = {"varNames": [], "varTypes": {}}
+        for field in schema.fields:
+            spss_schema["varNames"].append(field.name)
+            spss_schema["varTypes"][field.name] = self.__write_convert_type(field.type)
+        return spss_schema
+
+    def __write_convert_type(self, type):
+        if type in ["integer", "number", "date", "datetime", "time", "year"]:
+            return 0
+        return 5
+
+    # NOTE: move partially to write_package
     def __write_row_stream(self, resource):
         sav = helpers.import_from_plugin("savReaderWriter", plugin="spss")
 
@@ -216,25 +237,6 @@ class SpssStorage(Storage):
                         cell, notes = field.write_cell(cell)
                     result.append(cell)
                 writer.writerow(result)
-
-    def __write_convert_name(self, name):
-        path = os.path.normpath(os.path.join(self.__basepath, f"{name}.sav"))
-        if not path.startswith(os.path.normpath(self.__basepath)):
-            note = f'Resource name "{name}" is not valid.'
-            raise exceptions.FrictionlessException(errors.StorageError(note=note))
-        return path
-
-    def __write_convert_schema(self, schema):
-        spss_schema = {"varNames": [], "varTypes": {}}
-        for field in schema.fields:
-            spss_schema["varNames"].append(field.name)
-            spss_schema["varTypes"][field.name] = self.__write_convert_type(field.type)
-        return spss_schema
-
-    def __write_convert_type(self, type):
-        if type in ["integer", "number", "date", "datetime", "time", "year"]:
-            return 0
-        return 5
 
     # Delete
 
