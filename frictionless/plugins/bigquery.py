@@ -178,6 +178,10 @@ class BigqueryStorage(Storage):
 
     # Write
 
+    def write_resource(self, resource, *, force=False):
+        package = Package(resources=[resource])
+        return self.write_package(package, force=force)
+
     def write_package(self, package, *, force=False):
         existent_names = list(self)
 
@@ -195,59 +199,66 @@ class BigqueryStorage(Storage):
                     raise exceptions.FrictionlessException(errors.StorageError(note=note))
                 self.delete_resource(resource.name)
 
-            # Prepare job body
+            # Write metadata
             bq_name = self.__write_convert_name(resource.name)
-            meta, fallbacks = self.write_convert_schema(resource.schema)
+            bq_schema = self.__write_convert_schema(resource.schema)
             body = {
                 "tableReference": {
                     "projectId": self.__project,
                     "datasetId": self.__dataset,
                     "tableId": bq_name,
                 },
-                "schema": meta,
+                "schema": bq_schema,
             }
-
-            # Make request
             self.__service.tables().insert(
                 projectId=self.__project, datasetId=self.__dataset, body=body
             ).execute()
 
+            # Write data
+            self.__write_row_stream(resource)
+
     def __write_convert_name(self, name):
         return self.__prefix + name
 
-    def __write_convert_schema(self, table):
+    def __write_convert_schema(self, schema):
 
         # Fields
-        fields = []
-        fallbacks = []
-        schema = table.schema
-        for index, field in enumerate(schema.fields):
-            converted_type = self.convert_type(field.type)
-            if not converted_type:
-                converted_type = "STRING"
-                fallbacks.append(index)
+        bq_fields = []
+        for field in schema.fields:
+            bq_type = self.convert_type(field.type)
+            if not bq_type:
+                bq_type = "STRING"
             mode = "NULLABLE"
             if field.required:
                 mode = "REQUIRED"
-            fields.append(
+            bq_fields.append(
                 {
                     "name": _slugify_field_name(field.name),
-                    "type": converted_type,
+                    "type": bq_type,
                     "mode": mode,
                 }
             )
 
-        # Descriptor
-        converted_descriptor = {
-            "fields": fields,
+        # Schema
+        bq_schema = {
+            "fields": bq_fields,
         }
 
-        return (converted_descriptor, fallbacks)
+        return bq_schema
 
     def __write_convert_type(self, type):
+        mapping = self.__write_convert_types()
 
-        # Mapping
-        mapping = {
+        # Supported type
+        if type in mapping:
+            return mapping[type]
+
+        # Not supported
+        note = "Type %s is not supported" % type
+        raise exceptions.FrictionlessException(errors.StorageError(note=note))
+
+    def __write_convert_types(self):
+        return {
             "any": "STRING",
             "array": None,
             "boolean": "BOOLEAN",
@@ -265,34 +276,83 @@ class BigqueryStorage(Storage):
             "yearmonth": None,
         }
 
-        # Return type
-        if type in mapping:
-            return mapping[type]
+    def __write_row_stream(self, resource):
+        mapping = self.__write_convert_types()
 
-        # Not supported
-        note = "Type %s is not supported" % type
-        raise exceptions.FrictionlessException(errors.StorageError(note=note))
-
-    def __write_row_stream(self, name, row_stream):
-
-        # Write buffer
-        BUFFER_SIZE = 10000
-
-        # Prepare schema, fallbacks
-        table = self.read_table(name)
-        schema = table.schema
-        fallbacks = self.__fallbacks.get(name, [])
+        # Fallback fields
+        fallback_fields = []
+        mapping = self.__write_convert_types()
+        for field in resource.schema.fields:
+            if mapping[field.type] is None:
+                fallback_fields.append(field)
 
         # Write data
-        rows_buffer = []
-        for row in row_stream:
-            row = self.__mapper.convert_row(row, schema=schema, fallbacks=fallbacks)
-            rows_buffer.append(row)
-            if len(rows_buffer) > BUFFER_SIZE:
-                self.__write_rows_buffer(name, rows_buffer)
-                rows_buffer = []
-        if len(rows_buffer) > 0:
-            self.__write_rows_buffer(name, rows_buffer)
+        buffer = []
+        for row in resource.read_rows():
+            for field in fallback_fields:
+                row[field.name], notes = field.write_cell(row[field.name])
+            buffer.append(row)
+            if len(buffer) > BUFFER_SIZE:
+                self.__write_data_(resource.name, buffer)
+                buffer = []
+        if len(buffer) > 0:
+            self.__write_data(resource.name, buffer)
+
+    def __write_row_stream_buffer(self, name, buffer):
+        http = helpers.import_from_plugin("apiclient.http", plugin="bigquery")
+        bq_name = self.__write_convert_name()
+
+        # Process buffer to byte stream csv
+        bytes = io.BufferedRandom(io.BytesIO())
+        writer = unicodecsv.writer(bytes, encoding="utf-8")
+        for cells in buffer:
+            writer.writerow(cells)
+        bytes.seek(0)
+
+        # Prepare job body
+        body = {
+            "configuration": {
+                "load": {
+                    "destinationTable": {
+                        "projectId": self.__project,
+                        "datasetId": self.__dataset,
+                        "tableId": bq_name,
+                    },
+                    "sourceFormat": "CSV",
+                }
+            }
+        }
+
+        # Prepare job media body
+        mimetype = "application/octet-stream"
+        media_body = http.MediaIoBaseUpload(bytes, mimetype=mimetype)
+
+        # Make request to Big Query
+        response = (
+            self.__service.jobs()
+            .insert(projectId=self.__project, body=body, media_body=media_body)
+            .execute()
+        )
+        self.__write_wait_job_id_done(response)
+
+    def __write_wait_job_id_done(self, response):
+
+        # Get job instance
+        job = self.__service.jobs().get(
+            projectId=response["jobReference"]["projectId"],
+            jobId=response["jobReference"]["jobId"],
+        )
+
+        # Wait done
+        while True:
+            result = job.execute(num_retries=1)
+            if result["status"]["state"] == "DONE":
+                if result["status"].get("errors"):
+                    errors = result["status"]["errors"]
+                    note = "\n".join(error["message"] for error in errors)
+                    raise exceptions.FrictionlessException(errors.StorageError(note=note))
+                break
+            time.sleep(1)
 
     # Delete
 
@@ -318,68 +378,10 @@ class BigqueryStorage(Storage):
                 projectId=self.__project, datasetId=self.__dataset, tableId=bq_name
             ).execute()
 
-    # Private
-
-    def __write_rows_buffer(self, bucket, rows_buffer):
-        http = helpers.import_from_plugin("apiclient.http", plugin="bigquery")
-
-        # Attributes
-
-        # Process data to byte stream csv
-        bytes = io.BufferedRandom(io.BytesIO())
-        writer = unicodecsv.writer(bytes, encoding="utf-8")
-        for row in rows_buffer:
-            writer.writerow(row)
-        bytes.seek(0)
-
-        # Prepare job body
-        table_name = self.__mapper.convert_bucket(bucket)
-        body = {
-            "configuration": {
-                "load": {
-                    "destinationTable": {
-                        "projectId": self.__project,
-                        "datasetId": self.__dataset,
-                        "tableId": table_name,
-                    },
-                    "sourceFormat": "CSV",
-                }
-            }
-        }
-
-        # Prepare job media body
-        mimetype = "application/octet-stream"
-        media_body = http.MediaIoBaseUpload(bytes, mimetype=mimetype)
-
-        # Make request to Big Query
-        response = (
-            self.__service.jobs()
-            .insert(projectId=self.__project, body=body, media_body=media_body)
-            .execute()
-        )
-        self.__wait_response(response)
-
-    def __wait_response(self, response):
-
-        # Get job instance
-        job = self.__service.jobs().get(
-            projectId=response["jobReference"]["projectId"],
-            jobId=response["jobReference"]["jobId"],
-        )
-
-        # Wait done
-        while True:
-            result = job.execute(num_retries=1)
-            if result["status"]["state"] == "DONE":
-                if result["status"].get("errors"):
-                    errors = result["status"]["errors"]
-                    note = "\n".join(error["message"] for error in errors)
-                    raise exceptions.FrictionlessException(errors.StorageError(note=note))
-                break
-            time.sleep(1)
-
 
 # Internal
+
+BUFFER_SIZE = 10000
 
 
 def _slugify_field_name(name):
