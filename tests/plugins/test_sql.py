@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 load_dotenv(".env")
 
 
-# Parser
+# Parser (read)
 
 
 def test_table_format_sql(database_url):
@@ -49,6 +49,9 @@ def test_table_format_sql_headers_false(database_url):
         assert table.read_data() == [["id", "name"], [1, "english"], [2, "中国人"]]
 
 
+# Parser (write)
+
+
 def test_table_write_sqlite(database_url):
     source = "data/table.csv"
     dialect = SqlDialect(table="name", order_by="id")
@@ -62,100 +65,54 @@ def test_table_write_sqlite(database_url):
 # Storage
 
 
-def test_storage_sqlite(database_url):
+def test_storage_types(database_url):
     engine = sa.create_engine(database_url)
     prefix = "prefix_"
 
     # Export/Import
-    source = Package("data/package-storage.json")
+    source = Package("data/storage/types.json")
     storage = source.to_sql(engine=engine, prefix=prefix, force=True)
     target = Package.from_sql(engine=engine, prefix=prefix)
 
     # Assert metadata
-
-    assert target.get_resource("article").schema == {
+    assert target.get_resource("main").schema == {
         "fields": [
-            {"name": "id", "type": "integer", "constraints": {"required": True}},
-            {"name": "parent", "type": "integer"},
-            {"name": "name", "type": "string"},
-            {"name": "current", "type": "boolean"},
-            {"name": "rating", "type": "number"},
-        ],
-        "primaryKey": ["id"],
-        "foreignKeys": [
-            {"fields": "parent", "reference": {"resource": "", "fields": "id"}}
-        ],
-    }
-    assert target.get_resource("comment").schema == {
-        "fields": [
-            {"name": "entry_id", "type": "integer", "constraints": {"required": True}},
-            {"name": "user_id", "type": "integer", "constraints": {"required": True}},
-            {"name": "comment", "type": "string"},
-            {"name": "note", "type": "string"},  # type fallback
-        ],
-        "primaryKey": ["entry_id", "user_id"],
-        "foreignKeys": [
-            {"fields": "entry_id", "reference": {"resource": "article", "fields": "id"}}
-        ],
-    }
-    assert target.get_resource("location").schema == {
-        "fields": [
-            {"name": "geojson", "type": "string"},  # type fallback
-            {"name": "geopoint", "type": "string"},  # type fallback
-        ]
-    }
-    assert target.get_resource("structure").schema == {
-        "fields": [
-            {"name": "object", "type": "string"},  # type fallback
+            {"name": "any", "type": "string"},  # type fallback
             {"name": "array", "type": "string"},  # type fallback
-        ]
-    }
-    assert target.get_resource("temporal").schema == {
-        "fields": [
+            {"name": "boolean", "type": "boolean"},
             {"name": "date", "type": "date"},
             {"name": "date_year", "type": "date"},  # format removal
             {"name": "datetime", "type": "datetime"},
             {"name": "duration", "type": "string"},  # type fallback
+            {"name": "geojson", "type": "string"},  # type fallback
+            {"name": "geopoint", "type": "string"},  # type fallback
+            {"name": "integer", "type": "integer"},
+            {"name": "number", "type": "number"},
+            {"name": "object", "type": "string"},  # type fallback
+            {"name": "string", "type": "string"},
             {"name": "time", "type": "time"},
             {"name": "year", "type": "integer"},  # type downgrade
             {"name": "yearmonth", "type": "string"},  # type fallback
-        ]
+        ],
     }
 
     # Assert data
-
-    assert target.get_resource("article").read_rows() == [
-        {"id": 1, "parent": None, "name": "Taxes", "current": True, "rating": 9.5},
-        {"id": 2, "parent": 1, "name": "中国人", "current": False, "rating": 7},
-    ]
-    assert target.get_resource("comment").read_rows() == [
-        {"entry_id": 1, "user_id": 1, "comment": "good", "note": "note1"},
-        {"entry_id": 2, "user_id": 2, "comment": "bad", "note": "note2"},
-    ]
-    assert target.get_resource("location").read_rows() == [
-        {"geojson": '{"type": "Point", "coordinates": [33, 33.33]}', "geopoint": "30,70"},
-        {"geojson": '{"type": "Point", "coordinates": [55, 55.55]}', "geopoint": "90,40"},
-    ]
-    assert target.get_resource("structure").read_rows() == [
-        {"object": '{"chars": 560}', "array": '["Mike", "John"]'},
-        {"object": '{"chars": 970}', "array": '["Paul", "Alex"]'},
-    ]
-    assert target.get_resource("temporal").read_rows() == [
+    assert target.get_resource("main").read_rows() == [
         {
+            "any": "note1",
+            "array": '["Mike", "John"]',
+            "boolean": True,
             "date": datetime.date(2015, 1, 1),
             "date_year": datetime.date(2015, 1, 1),
             "datetime": datetime.datetime(2015, 1, 1, 3, 0),
             "duration": "P1Y1M",
+            "geojson": '{"type": "Point", "coordinates": [33, 33.33]}',
+            "geopoint": "30,70",
+            "integer": 1,
+            "number": 7,
+            "object": '{"chars": 560}',
+            "string": "good",
             "time": datetime.time(3, 0),
-            "year": 2015,
-            "yearmonth": "2015-01",
-        },
-        {
-            "date": datetime.date(2015, 12, 31),
-            "date_year": datetime.date(2015, 1, 1),
-            "datetime": datetime.datetime(2015, 12, 31, 15, 45, 33),
-            "duration": "P2Y2M",
-            "time": datetime.time(15, 45, 33),
             "year": 2015,
             "yearmonth": "2015-01",
         },
@@ -165,213 +122,123 @@ def test_storage_sqlite(database_url):
     storage.delete_package(target.resource_names)
 
 
-@pytest.mark.ci
-def test_storage_postgresql():
-    engine = sa.create_engine(os.environ["POSTGRESQL_URL"])
+def test_storage_integrity(database_url):
+    engine = sa.create_engine(database_url)
     prefix = "prefix_"
 
     # Export/Import
-    source = Package("data/package-storage.json")
+    source = Package("data/storage/integrity.json")
     storage = source.to_sql(engine=engine, prefix=prefix, force=True)
     target = Package.from_sql(engine=engine, prefix=prefix)
 
-    # Assert metadata
-
-    assert target.get_resource("article").schema == {
+    # Assert metadata (main)
+    assert target.get_resource("main").schema == {
         "fields": [
+            # added required
             {"name": "id", "type": "integer", "constraints": {"required": True}},
             {"name": "parent", "type": "integer"},
-            {"name": "name", "type": "string"},
-            {"name": "current", "type": "boolean"},
-            {"name": "rating", "type": "number"},
+            {"name": "description", "type": "string"},
         ],
         "primaryKey": ["id"],
         "foreignKeys": [
-            {"fields": "parent", "reference": {"resource": "", "fields": "id"}}
+            {"fields": ["parent"], "reference": {"resource": "", "fields": ["id"]}}
         ],
     }
-    assert target.get_resource("comment").schema == {
+
+    # Assert metadata (link)
+    assert target.get_resource("link").schema == {
         "fields": [
-            {"name": "entry_id", "type": "integer", "constraints": {"required": True}},
-            {"name": "user_id", "type": "integer", "constraints": {"required": True}},
-            {"name": "comment", "type": "string"},
-            {"name": "note", "type": "string"},  # type fallback
+            # added required
+            {"name": "main_id", "type": "integer", "constraints": {"required": True}},
+            # added required; removed unique
+            {"name": "some_id", "type": "integer", "constraints": {"required": True}},
+            # removed unique
+            {"name": "description", "type": "string"},
         ],
-        "primaryKey": ["entry_id", "user_id"],
+        "primaryKey": ["main_id", "some_id"],
         "foreignKeys": [
-            {"fields": "entry_id", "reference": {"resource": "article", "fields": "id"}}
+            {"fields": ["main_id"], "reference": {"resource": "main", "fields": ["id"]}}
         ],
     }
-    assert target.get_resource("location").schema == {
-        "fields": [
-            {"name": "geojson", "type": "object"},  # type downgrade
-            {"name": "geopoint", "type": "string"},  # type fallback
-        ]
-    }
-    assert target.get_resource("structure").schema == {
-        "fields": [
-            {"name": "object", "type": "object"},
-            {"name": "array", "type": "object"},  # type downgrade
-        ]
-    }
-    assert target.get_resource("temporal").schema == {
-        "fields": [
-            {"name": "date", "type": "date"},
-            {"name": "date_year", "type": "date"},  # format removal
-            {"name": "datetime", "type": "datetime"},
-            {"name": "duration", "type": "string"},  # type fallback
-            {"name": "time", "type": "time"},
-            {"name": "year", "type": "integer"},  # type downgrade
-            {"name": "yearmonth", "type": "string"},  # type fallback
-        ]
-    }
 
-    # Assert data
+    # Assert data (main)
+    assert target.get_resource("main").read_rows() == [
+        {"id": 1, "parent": None, "description": "english"},
+        {"id": 2, "parent": 1, "description": "中国人"},
+    ]
 
-    assert target.get_resource("article").read_rows() == [
-        {"id": 1, "parent": None, "name": "Taxes", "current": True, "rating": 9.5},
-        {"id": 2, "parent": 1, "name": "中国人", "current": False, "rating": 7},
-    ]
-    assert target.get_resource("comment").read_rows() == [
-        {"entry_id": 1, "user_id": 1, "comment": "good", "note": "note1"},
-        {"entry_id": 2, "user_id": 2, "comment": "bad", "note": "note2"},
-    ]
-    assert target.get_resource("location").read_rows() == [
-        {"geojson": {"type": "Point", "coordinates": [33, 33.33]}, "geopoint": "30,70"},
-        {"geojson": {"type": "Point", "coordinates": [55, 55.55]}, "geopoint": "90,40"},
-    ]
-    # TOOD: fix array
-    assert target.get_resource("structure").read_rows() == [
-        {"object": {"chars": 560}, "array": None},
-        {"object": {"chars": 970}, "array": None},
-    ]
-    assert target.get_resource("temporal").read_rows() == [
-        {
-            "date": datetime.date(2015, 1, 1),
-            "date_year": datetime.date(2015, 1, 1),
-            "datetime": datetime.datetime(2015, 1, 1, 3, 0),
-            "duration": "P1Y1M",
-            "time": datetime.time(3, 0),
-            "year": 2015,
-            "yearmonth": "2015-01",
-        },
-        {
-            "date": datetime.date(2015, 12, 31),
-            "date_year": datetime.date(2015, 1, 1),
-            "datetime": datetime.datetime(2015, 12, 31, 15, 45, 33),
-            "duration": "P2Y2M",
-            "time": datetime.time(15, 45, 33),
-            "year": 2015,
-            "yearmonth": "2015-01",
-        },
+    # Assert data (link)
+    assert target.get_resource("link").read_rows() == [
+        {"main_id": 1, "some_id": 1, "description": "note1"},
+        {"main_id": 2, "some_id": 2, "description": "note2"},
     ]
 
     # Cleanup storage
     storage.delete_package(target.resource_names)
 
 
-@pytest.mark.ci
-def test_storage_mysql():
-    engine = sa.create_engine(os.environ["MYSQL_URL"])
+def test_storage_constraints(database_url):
+    engine = sa.create_engine(database_url)
     prefix = "prefix_"
 
     # Export/Import
-    source = Package("data/package-storage.json")
+    source = Package("data/storage/constraints.json")
     storage = source.to_sql(engine=engine, prefix=prefix, force=True)
     target = Package.from_sql(engine=engine, prefix=prefix)
 
     # Assert metadata
-
-    assert target.get_resource("article").schema == {
+    assert target.get_resource("main").schema == {
         "fields": [
-            {"name": "id", "type": "integer", "constraints": {"required": True}},
-            {"name": "parent", "type": "integer"},
-            {"name": "name", "type": "string"},
-            {"name": "current", "type": "integer"},  # type downgrade
-            {"name": "rating", "type": "number"},
+            {"name": "required", "type": "string", "constraints": {"required": True}},
+            {"name": "minLength", "type": "string"},  # constraint removal
+            {"name": "maxLength", "type": "string"},  # constraint removal
+            {"name": "pattern", "type": "string"},  # constraint removal
+            {"name": "enum", "type": "string"},  # constraint removal
+            {"name": "minimum", "type": "integer"},  # constraint removal
+            {"name": "maximum", "type": "integer"},  # constraint removal
         ],
-        "primaryKey": ["id"],
-        "foreignKeys": [
-            {"fields": "parent", "reference": {"resource": "", "fields": "id"}}
-        ],
-    }
-    assert target.get_resource("comment").schema == {
-        "fields": [
-            {"name": "entry_id", "type": "integer", "constraints": {"required": True}},
-            {"name": "user_id", "type": "integer", "constraints": {"required": True}},
-            {"name": "comment", "type": "string"},
-            {"name": "note", "type": "string"},  # type fallback
-        ],
-        "primaryKey": ["entry_id", "user_id"],
-        "foreignKeys": [
-            {"fields": "entry_id", "reference": {"resource": "article", "fields": "id"}}
-        ],
-    }
-    assert target.get_resource("location").schema == {
-        "fields": [
-            {"name": "geojson", "type": "string"},  # type fallback
-            {"name": "geopoint", "type": "string"},  # type fallback
-        ]
-    }
-    assert target.get_resource("structure").schema == {
-        "fields": [
-            {"name": "object", "type": "string"},  # type fallback
-            {"name": "array", "type": "string"},  # type fallback
-        ]
-    }
-    assert target.get_resource("temporal").schema == {
-        "fields": [
-            {"name": "date", "type": "date"},
-            {"name": "date_year", "type": "date"},  # format removal
-            {"name": "datetime", "type": "datetime"},
-            {"name": "duration", "type": "string"},  # type fallback
-            {"name": "time", "type": "time"},
-            {"name": "year", "type": "integer"},  # type downgrade
-            {"name": "yearmonth", "type": "string"},  # type fallback
-        ]
     }
 
     # Assert data
-
-    assert target.get_resource("article").read_rows() == [
-        {"id": 1, "parent": None, "name": "Taxes", "current": True, "rating": 9.5},
-        {"id": 2, "parent": 1, "name": "中国人", "current": False, "rating": 7},
-    ]
-    assert target.get_resource("comment").read_rows() == [
-        {"entry_id": 1, "user_id": 1, "comment": "good", "note": "note1"},
-        {"entry_id": 2, "user_id": 2, "comment": "bad", "note": "note2"},
-    ]
-    assert target.get_resource("location").read_rows() == [
-        {"geojson": '{"type": "Point", "coordinates": [33, 33.33]}', "geopoint": "30,70"},
-        {"geojson": '{"type": "Point", "coordinates": [55, 55.55]}', "geopoint": "90,40"},
-    ]
-    assert target.get_resource("structure").read_rows() == [
-        {"object": '{"chars": 560}', "array": '["Mike", "John"]'},
-        {"object": '{"chars": 970}', "array": '["Paul", "Alex"]'},
-    ]
-    assert target.get_resource("temporal").read_rows() == [
+    assert target.get_resource("main").read_rows() == [
         {
-            "date": datetime.date(2015, 1, 1),
-            "date_year": datetime.date(2015, 1, 1),
-            "datetime": datetime.datetime(2015, 1, 1, 3, 0),
-            "duration": "P1Y1M",
-            "time": datetime.time(3, 0),
-            "year": 2015,
-            "yearmonth": "2015-01",
-        },
-        {
-            "date": datetime.date(2015, 12, 31),
-            "date_year": datetime.date(2015, 1, 1),
-            "datetime": datetime.datetime(2015, 12, 31, 15, 45, 33),
-            "duration": "P2Y2M",
-            "time": datetime.time(15, 45, 33),
-            "year": 2015,
-            "yearmonth": "2015-01",
+            "required": "passing",
+            "minLength": "passing",
+            "maxLength": "passing",
+            "pattern": "passing",
+            "enum": "passing",
+            "minimum": 5,
+            "maximum": 5,
         },
     ]
 
     # Cleanup storage
     storage.delete_package(target.resource_names)
+
+
+@pytest.mark.parametrize(
+    "field_name, cell",
+    [
+        ("required", ""),
+        ("minLength", "bad"),
+        ("maxLength", "badbadbad"),
+        ("pattern", "bad"),
+        ("enum", "bad"),
+        ("minimum", 3),
+        ("maximum", 9),
+    ],
+)
+def test_storage_constraints_not_valid_error(database_url, field_name, cell):
+    engine = sa.create_engine(database_url)
+    package = Package("data/storage/constraints.json")
+    resource = package.get_resource("main")
+    # We set an invalid cell to the data property
+    for index, field in enumerate(resource.schema.fields):
+        if field.name == field_name:
+            resource.data[1][index] = cell
+    # NOTE: should we wrap these exceptions?
+    with pytest.raises(sa.exc.IntegrityError):
+        resource.to_sql(engine=engine, force=True)
 
 
 def test_storage_read_resource_not_existent_error(database_url):
@@ -407,21 +274,374 @@ def test_storage_delete_resource_not_existent_error(database_url):
     assert error.note.count("does not exist")
 
 
+# Storage (PostgreSQL)
+
+
+@pytest.mark.ci
+def test_postgresql_storage_types():
+    engine = sa.create_engine(os.environ["POSTGRESQL_URL"])
+    prefix = "prefix_"
+
+    # Export/Import
+    source = Package("data/storage/types.json")
+    storage = source.to_sql(engine=engine, prefix=prefix, force=True)
+    target = Package.from_sql(engine=engine, prefix=prefix)
+
+    # Assert metadata
+    assert target.get_resource("main").schema == {
+        "fields": [
+            {"name": "any", "type": "string"},  # type fallback
+            {"name": "array", "type": "object"},  # type downgrade
+            {"name": "boolean", "type": "boolean"},
+            {"name": "date", "type": "date"},
+            {"name": "date_year", "type": "date"},  # format removal
+            {"name": "datetime", "type": "datetime"},
+            {"name": "duration", "type": "string"},  # type fallback
+            {"name": "geojson", "type": "object"},  # type downgrade
+            {"name": "geopoint", "type": "string"},  # type fallback
+            {"name": "integer", "type": "integer"},
+            {"name": "number", "type": "number"},
+            {"name": "object", "type": "object"},
+            {"name": "string", "type": "string"},
+            {"name": "time", "type": "time"},
+            {"name": "year", "type": "integer"},  # type downgrade
+            {"name": "yearmonth", "type": "string"},  # type fallback
+        ],
+    }
+
+    # Assert data
+    assert target.get_resource("main").read_rows() == [
+        {
+            "any": "note1",
+            "array": None,  # TODO: fix array
+            "boolean": True,
+            "date": datetime.date(2015, 1, 1),
+            "date_year": datetime.date(2015, 1, 1),
+            "datetime": datetime.datetime(2015, 1, 1, 3, 0),
+            "duration": "P1Y1M",
+            "geojson": {"type": "Point", "coordinates": [33, 33.33]},
+            "geopoint": "30,70",
+            "integer": 1,
+            "number": 7,
+            "object": {"chars": 560},
+            "string": "good",
+            "time": datetime.time(3, 0),
+            "year": 2015,
+            "yearmonth": "2015-01",
+        },
+    ]
+
+    # Cleanup storage
+    storage.delete_package(target.resource_names)
+
+
+@pytest.mark.ci
+def test_postgresql_storage_integrity():
+    engine = sa.create_engine(os.environ["POSTGRESQL_URL"])
+    prefix = "prefix_"
+
+    # Export/Import
+    source = Package("data/storage/integrity.json")
+    storage = source.to_sql(engine=engine, prefix=prefix, force=True)
+    target = Package.from_sql(engine=engine, prefix=prefix)
+
+    # Assert metadata (main)
+    assert target.get_resource("main").schema == {
+        "fields": [
+            # added required
+            {"name": "id", "type": "integer", "constraints": {"required": True}},
+            {"name": "parent", "type": "integer"},
+            {"name": "description", "type": "string"},
+        ],
+        "primaryKey": ["id"],
+        "foreignKeys": [
+            {"fields": ["parent"], "reference": {"resource": "", "fields": ["id"]}}
+        ],
+    }
+
+    # Assert metadata (link)
+    assert target.get_resource("link").schema == {
+        "fields": [
+            # added required
+            {"name": "main_id", "type": "integer", "constraints": {"required": True}},
+            # added required; removed unique
+            {"name": "some_id", "type": "integer", "constraints": {"required": True}},
+            # removed unique
+            {"name": "description", "type": "string"},
+        ],
+        "primaryKey": ["main_id", "some_id"],
+        "foreignKeys": [
+            {"fields": ["main_id"], "reference": {"resource": "main", "fields": ["id"]}}
+        ],
+    }
+
+    # Assert data (main)
+    assert target.get_resource("main").read_rows() == [
+        {"id": 1, "parent": None, "description": "english"},
+        {"id": 2, "parent": 1, "description": "中国人"},
+    ]
+
+    # Assert data (link)
+    assert target.get_resource("link").read_rows() == [
+        {"main_id": 1, "some_id": 1, "description": "note1"},
+        {"main_id": 2, "some_id": 2, "description": "note2"},
+    ]
+
+    # Cleanup storage
+    storage.delete_package(target.resource_names)
+
+
+# TODO: recover enum support
+@pytest.mark.ci
+@pytest.mark.skip
+def test_postgresql_storage_constraints(database_url):
+    engine = sa.create_engine(os.environ["POSTGRESQL_URL"])
+    prefix = "prefix_"
+
+    # Export/Import
+    source = Package("data/storage/constraints.json")
+    storage = source.to_sql(engine=engine, prefix=prefix, force=True)
+    target = Package.from_sql(engine=engine, prefix=prefix)
+
+    # Assert metadata
+    assert target.get_resource("main").schema == {
+        "fields": [
+            {"name": "required", "type": "string", "constraints": {"required": True}},
+            {"name": "minLength", "type": "string"},  # constraint removal
+            {"name": "maxLength", "type": "string"},  # constraint removal
+            {"name": "pattern", "type": "string"},  # constraint removal
+            {"name": "enum", "type": "string"},  # constraint removal
+            {"name": "minimum", "type": "integer"},  # constraint removal
+            {"name": "maximum", "type": "integer"},  # constraint removal
+        ],
+    }
+
+    # Assert data
+    assert target.get_resource("main").read_rows() == [
+        {
+            "required": "passing",
+            "minLength": "passing",
+            "maxLength": "passing",
+            "pattern": "passing",
+            "enum": "passing",
+            "minimum": 5,
+            "maximum": 5,
+        },
+    ]
+
+    # Cleanup storage
+    storage.delete_package(target.resource_names)
+
+
+@pytest.mark.ci
 @pytest.mark.parametrize(
-    "field, constraint",
+    "field_name, cell",
     [
-        ("id", {"minimum": 2}),
-        ("id", {"maximum": 1}),
-        ("name", {"minLength": 10}),
-        ("name", {"maxLength": 1}),
-        ("name", {"pattern": "bad"}),
-        ("name", {"enum": ["bad"]}),
+        ("required", ""),
+        ("minLength", "bad"),
+        ("maxLength", "badbadbad"),
+        ("pattern", "bad"),
+        ("enum", "bad"),
+        ("minimum", 3),
+        ("maximum", 9),
     ],
 )
-def test_storage_field_constraint_not_valid_error(database_url, field, constraint):
-    engine = sa.create_engine(database_url)
-    resource = Resource(path="data/table.csv")
-    resource.infer()
-    resource.schema.get_field(field).constraints = constraint
+def test_postgresql_storage_constraints_not_valid_error(database_url, field_name, cell):
+    engine = sa.create_engine(os.environ["POSTGRESQL_URL"])
+    package = Package("data/storage/constraints.json")
+    resource = package.get_resource("main")
+    # We set an invalid cell to the data property
+    for index, field in enumerate(resource.schema.fields):
+        if field.name == field_name:
+            resource.data[1][index] = cell
+    with pytest.raises((sa.exc.IntegrityError, sa.exc.DataError)):
+        resource.to_sql(engine=engine, force=True)
+
+
+# Storage (MySQL)
+
+
+@pytest.mark.ci
+def test_mysql_storage_types():
+    engine = sa.create_engine(os.environ["MYSQL_URL"])
+    prefix = "prefix_"
+
+    # Export/Import
+    source = Package("data/storage/types.json")
+    storage = source.to_sql(engine=engine, prefix=prefix, force=True)
+    target = Package.from_sql(engine=engine, prefix=prefix)
+
+    # Assert metadata
+    assert target.get_resource("main").schema == {
+        "fields": [
+            {"name": "any", "type": "string"},  # type fallback
+            {"name": "array", "type": "string"},  # type fallback
+            {"name": "boolean", "type": "integer"},  # type downgrade
+            {"name": "date", "type": "date"},
+            {"name": "date_year", "type": "date"},  # format removal
+            {"name": "datetime", "type": "datetime"},
+            {"name": "duration", "type": "string"},  # type fallback
+            {"name": "geojson", "type": "string"},  # type fallback
+            {"name": "geopoint", "type": "string"},  # type fallback
+            {"name": "integer", "type": "integer"},
+            {"name": "number", "type": "number"},
+            {"name": "object", "type": "string"},  # type fallback
+            {"name": "string", "type": "string"},
+            {"name": "time", "type": "time"},
+            {"name": "year", "type": "integer"},  # type downgrade
+            {"name": "yearmonth", "type": "string"},  # type fallback
+        ],
+    }
+
+    # Assert data
+    assert target.get_resource("main").read_rows() == [
+        {
+            "any": "note1",
+            "array": '["Mike", "John"]',
+            "boolean": True,
+            "date": datetime.date(2015, 1, 1),
+            "date_year": datetime.date(2015, 1, 1),
+            "datetime": datetime.datetime(2015, 1, 1, 3, 0),
+            "duration": "P1Y1M",
+            "geojson": '{"type": "Point", "coordinates": [33, 33.33]}',
+            "geopoint": "30,70",
+            "integer": 1,
+            "number": 7,
+            "object": '{"chars": 560}',
+            "string": "good",
+            "time": datetime.time(3, 0),
+            "year": 2015,
+            "yearmonth": "2015-01",
+        },
+    ]
+
+    # Cleanup storage
+    storage.delete_package(target.resource_names)
+
+
+# TODO: fix unique for MySQL
+@pytest.mark.ci
+@pytest.mark.skip
+def test_mysql_storage_integrity():
+    engine = sa.create_engine(os.environ["MYSQL_URL"])
+    prefix = "prefix_"
+
+    # Export/Import
+    source = Package("data/storage/integrity.json")
+    storage = source.to_sql(engine=engine, prefix=prefix, force=True)
+    target = Package.from_sql(engine=engine, prefix=prefix)
+
+    # Assert metadata (main)
+    assert target.get_resource("main").schema == {
+        "fields": [
+            # added required
+            {"name": "id", "type": "integer", "constraints": {"required": True}},
+            {"name": "parent", "type": "integer"},
+            {"name": "description", "type": "string"},
+        ],
+        "primaryKey": ["id"],
+        "foreignKeys": [
+            {"fields": ["parent"], "reference": {"resource": "", "fields": ["id"]}}
+        ],
+    }
+
+    # Assert metadata (link)
+    assert target.get_resource("link").schema == {
+        "fields": [
+            # added required
+            {"name": "main_id", "type": "integer", "constraints": {"required": True}},
+            # added required; removed unique
+            {"name": "some_id", "type": "integer", "constraints": {"required": True}},
+            # removed unique
+            {"name": "description", "type": "string"},
+        ],
+        "primaryKey": ["main_id", "some_id"],
+        "foreignKeys": [
+            {"fields": ["main_id"], "reference": {"resource": "main", "fields": ["id"]}}
+        ],
+    }
+
+    # Assert data (main)
+    assert target.get_resource("main").read_rows() == [
+        {"id": 1, "parent": None, "description": "english"},
+        {"id": 2, "parent": 1, "description": "中国人"},
+    ]
+
+    # Assert data (link)
+    assert target.get_resource("link").read_rows() == [
+        {"main_id": 1, "some_id": 1, "description": "note1"},
+        {"main_id": 2, "some_id": 2, "description": "note2"},
+    ]
+
+    # Cleanup storage
+    storage.delete_package(target.resource_names)
+
+
+# TODO: fix enum for MySQL
+@pytest.mark.ci
+@pytest.mark.skip
+def test_mysql_storage_constraints():
+    engine = sa.create_engine(os.environ["MYSQL_URL"])
+    prefix = "prefix_"
+
+    # Export/Import
+    source = Package("data/storage/constraints.json")
+    storage = source.to_sql(engine=engine, prefix=prefix, force=True)
+    target = Package.from_sql(engine=engine, prefix=prefix)
+
+    # Assert metadata
+    assert target.get_resource("main").schema == {
+        "fields": [
+            {"name": "required", "type": "string", "constraints": {"required": True}},
+            {"name": "minLength", "type": "string"},  # constraint removal
+            {"name": "maxLength", "type": "string"},  # constraint removal
+            {"name": "pattern", "type": "string"},  # constraint removal
+            {"name": "enum", "type": "string"},  # constraint removal
+            {"name": "minimum", "type": "integer"},  # constraint removal
+            {"name": "maximum", "type": "integer"},  # constraint removal
+        ],
+    }
+
+    # Assert data
+    assert target.get_resource("main").read_rows() == [
+        {
+            "required": "passing",
+            "minLength": "passing",
+            "maxLength": "passing",
+            "pattern": "passing",
+            "enum": "passing",
+            "minimum": 5,
+            "maximum": 5,
+        },
+    ]
+
+    # Cleanup storage
+    storage.delete_package(target.resource_names)
+
+
+# TODO: fix consratins for MySQL
+@pytest.mark.ci
+@pytest.mark.skip
+@pytest.mark.parametrize(
+    "field_name, cell",
+    [
+        ("required", ""),
+        ("minLength", "bad"),
+        ("maxLength", "badbadbad"),
+        ("pattern", "bad"),
+        ("enum", "bad"),
+        ("minimum", 3),
+        ("maximum", 9),
+    ],
+)
+def test_mysql_storage_constraints_not_valid_error(field_name, cell):
+    engine = sa.create_engine(os.environ["MYSQL_URL"])
+    package = Package("data/storage/constraints.json")
+    resource = package.get_resource("main")
+    # We set an invalid cell to the data property
+    for index, field in enumerate(resource.schema.fields):
+        if field.name == field_name:
+            resource.data[1][index] = cell
+    # NOTE: should we wrap these exceptions?
     with pytest.raises(sa.exc.IntegrityError):
-        resource.to_sql(engine=engine)
+        resource.to_sql(engine=engine, force=True)

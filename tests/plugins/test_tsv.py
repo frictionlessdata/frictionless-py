@@ -1,7 +1,7 @@
 from frictionless import Table
 
 
-# Parser
+# Parser (read)
 
 
 def test_table_format_tsv():
@@ -12,6 +12,9 @@ def test_table_format_tsv():
             ["2", "中国人"],
             ["3", None],
         ]
+
+
+# Parser (write)
 
 
 def test_table_tsv_write(tmpdir):

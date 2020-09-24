@@ -1,0 +1,65 @@
+{
+  "resources": [
+    {
+      "name": "main",
+      "schema": {
+        "fields": [
+          {"name": "any", "type": "any"},
+          {"name": "array", "type": "array"},
+          {"name": "boolean", "type": "boolean"},
+          {"name": "date", "type": "date"},
+          {"name": "date_year", "type": "date", "format": "%Y"},
+          {"name": "datetime", "type": "datetime"},
+          {"name": "duration", "type": "duration"},
+          {"name": "geojson", "type": "geojson"},
+          {"name": "geopoint", "type": "geopoint"},
+          {"name": "integer", "type": "integer"},
+          {"name": "number", "type": "number"},
+          {"name": "object", "type": "object"},
+          {"name": "string", "type": "string"},
+          {"name": "time", "type": "time"},
+          {"name": "year", "type": "year"},
+          {"name": "yearmonth", "type": "yearmonth"}
+        ]
+      },
+      "data": [
+        [
+          "any",
+          "array",
+          "boolean",
+          "date",
+          "date_year",
+          "datetime",
+          "duration",
+          "geojson",
+          "geopoint",
+          "integer",
+          "number",
+          "object",
+          "string",
+          "time",
+          "year",
+          "yearmonth"
+        ],
+        [
+          "note1",
+          "[\"Mike\", \"John\"]",
+          "True",
+          "2015-01-01",
+          "2015",
+          "2015-01-01T03:00:00Z",
+          "P1Y1M",
+          "{\"type\": \"Point\", \"coordinates\": [33, 33.33]}",
+          "30,70",
+          "1",
+          "7",
+          "{\"chars\": 560}",
+          "good",
+          "03:00:00",
+          "2015",
+          "2015-01"
+        ]
+      ]
+    }
+  ]
+}
