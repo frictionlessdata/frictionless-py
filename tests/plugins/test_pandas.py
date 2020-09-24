@@ -148,7 +148,7 @@ def test_storage_constraints():
     storage.delete_package(target.resource_names)
 
 
-# NOTE: can we add consratins support to Pandas?
+# NOTE: can we add constraints support to Pandas?
 @pytest.mark.skip
 @pytest.mark.parametrize(
     "field_name, cell",
