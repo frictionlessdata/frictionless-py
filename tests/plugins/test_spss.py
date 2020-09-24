@@ -2,6 +2,7 @@ import pytest
 from frictionless import Package, Resource
 from frictionless.plugins.spss import SpssStorage, exceptions
 
+
 # Storage
 
 

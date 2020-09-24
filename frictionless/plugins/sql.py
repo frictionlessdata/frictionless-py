@@ -266,9 +266,6 @@ class SqlStorage(Storage):
                         res_name = element.column.table.name
                         resource = self.__read_convert_name(res_name)
                     foreign_fields.append(element.column.name)
-                if len(own_fields) == len(foreign_fields) == 1:
-                    own_fields = own_fields.pop()
-                    foreign_fields = foreign_fields.pop()
                 ref = {"resource": resource, "fields": foreign_fields}
                 schema.foreign_keys.append({"fields": own_fields, "reference": ref})
 

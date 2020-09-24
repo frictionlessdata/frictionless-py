@@ -20,7 +20,7 @@
       ]
     },
     {
-      "name": "extra",
+      "name": "link",
       "schema": {
         "fields": [
           {"name": "main_id", "type": "integer"},

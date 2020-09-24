@@ -1,16 +1,16 @@
 {
   "resources": [
     {
-      "name": "constraints",
+      "name": "main",
       "schema": {
         "fields": [
           {"name": "required", "type": "string", "constraints": {"required": true}},
-          {"name": "minLength", "type": "string", "constraints": {"minLength": 1}},
-          {"name": "maxLength", "type": "string", "constraints": {"minLength": 10}},
+          {"name": "minLength", "type": "string", "constraints": {"minLength": 4}},
+          {"name": "maxLength", "type": "string", "constraints": {"maxLength": 8}},
           {"name": "pattern", "type": "string", "constraints": {"pattern": "passing"}},
           {"name": "enum", "type": "string", "constraints": {"enum": ["passing"]}},
-          {"name": "minimum", "type": "integer", "constraints": {"minimum": 1}},
-          {"name": "maximum", "type": "integer", "constraints": {"maximum": 10}}
+          {"name": "minimum", "type": "integer", "constraints": {"minimum": 4}},
+          {"name": "maximum", "type": "integer", "constraints": {"maximum": 8}}
         ]
       },
       "data": [
@@ -24,6 +24,7 @@
           "maximum"
         ],
         [
+          "passing",
           "passing",
           "passing",
           "passing",
