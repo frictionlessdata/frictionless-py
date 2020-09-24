@@ -1,0 +1,42 @@
+{
+  "resources": [
+    {
+      "name": "main",
+      "schema": {
+        "fields": [
+          {"name": "id", "type": "integer"},
+          {"name": "parent", "type": "integer"},
+          {"name": "description", "type": "string"}
+        ],
+        "primaryKey": ["id"],
+        "foreignKeys": [
+          {"fields": ["parent"], "reference": {"resource": "", "fields": ["id"]}}
+        ]
+      },
+      "data": [
+        ["id", "parent", "description"],
+        ["1", "", "english"],
+        ["2", "1", "中国人"]
+      ]
+    },
+    {
+      "name": "extra",
+      "schema": {
+        "fields": [
+          {"name": "main_id", "type": "integer"},
+          {"name": "some_id", "type": "integer", "constraints": {"unique": true}},
+          {"name": "description", "type": "string", "constraints": {"unique": true}}
+        ],
+        "primaryKey": ["main_id", "some_id"],
+        "foreignKeys": [
+          {"fields": ["main_id"], "reference": {"resource": "main", "fields": ["id"]}}
+        ]
+      },
+      "data": [
+        ["main_id", "some_id", "description"],
+        ["1", "1", "note1"],
+        ["2", "2", "note2"]
+      ]
+    }
+  ]
+}

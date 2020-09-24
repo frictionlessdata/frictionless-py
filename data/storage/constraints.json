@@ -1,0 +1,37 @@
+{
+  "resources": [
+    {
+      "name": "constraints",
+      "schema": {
+        "fields": [
+          {"name": "required", "type": "string", "constraints": {"required": true}},
+          {"name": "minLength", "type": "string", "constraints": {"minLength": 1}},
+          {"name": "maxLength", "type": "string", "constraints": {"minLength": 10}},
+          {"name": "pattern", "type": "string", "constraints": {"pattern": "passing"}},
+          {"name": "enum", "type": "string", "constraints": {"enum": ["passing"]}},
+          {"name": "minimum", "type": "integer", "constraints": {"minimum": 1}},
+          {"name": "maximum", "type": "integer", "constraints": {"maximum": 10}}
+        ]
+      },
+      "data": [
+        [
+          "requried",
+          "minLength",
+          "maxLength",
+          "pattern",
+          "enum",
+          "minimum",
+          "maximum"
+        ],
+        [
+          "passing",
+          "passing",
+          "passing",
+          "passing",
+          5,
+          5
+        ]
+      ]
+    }
+  ]
+}
