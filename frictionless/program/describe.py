@@ -4,7 +4,6 @@ from ..describe import describe
 from .main import program
 
 
-# NOTE: rebase on tabulate?
 # NOTE: rewrite this function
 @program.command(name="describe")
 @click.argument("source", type=click.Path(), nargs=-1, required=True)

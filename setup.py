@@ -61,7 +61,6 @@ INSTALL_REQUIRES = [
     "chardet>=3.0",
     "requests>=2.10",
     "jsonschema>=2.5",
-    "statistics>=1.0",
     "simpleeval>=0.9",
     "stringcase>=1.2",
     "python-dateutil>=2.8",
