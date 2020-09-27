@@ -118,6 +118,7 @@ Firt of all, let's infer the metadata. We can save and edit it to provide useful
           type: integer
     scheme: file
 
+This output is in [YAML](https://yaml.org/), that it's the default Frictionless output format.
 
 Secondly, we can extract a normalized data. It conforms to the inferred schema from above e.g., the dimension is fixed, and bad cells are omitted:
 
