@@ -6,9 +6,8 @@ from ..package import Package
 from .. import helpers
 
 
-# NOTE: ability to extract stream?
-def extract(source, *, source_type=None, process=None, **options):
-    """Extract resource rows into memory
+def extract(source, *, source_type=None, process=None, stream=False, **options):
+    """Extract resource rows
 
     API      | Usage
     -------- | --------
@@ -18,6 +17,7 @@ def extract(source, *, source_type=None, process=None, **options):
         source (dict|str): data source
         source_type (str): source type - package, resource or table
         process? (func): a row processor function
+        stream? (bool): return a row stream(s) instead of loading into memory
         **options (dict): options for the underlaying function
 
     Returns:
@@ -46,4 +46,4 @@ def extract(source, *, source_type=None, process=None, **options):
 
     # Extract source
     extract = getattr(module, "extract_%s" % source_type)
-    return extract(source, process=process, **options)
+    return extract(source, process=process, stream=stream, **options)

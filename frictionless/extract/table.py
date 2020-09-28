@@ -28,8 +28,9 @@ def extract_table(
     lookup=None,
     # Extraction
     process=None,
+    stream=False,
 ):
-    """Extract table rows into memory
+    """Extract table rows
 
     API      | Usage
     -------- | --------
@@ -112,9 +113,10 @@ def extract_table(
             For more information, please check "Extracting  Data" guide.
 
         process? (func): a row processor function
+        stream? (bool): return a row streams instead of loading into memory
 
     Returns:
-        Row[]: an array for rows
+        Row[]: an array/stream of rows
 
     """
 
@@ -144,10 +146,15 @@ def extract_table(
     )
 
     # Extract table
+    data = read_row_stream(table)
+    data = (process(row) for row in data) if process else data
+    return data if stream else list(data)
+
+
+# Internal
+
+
+def read_row_stream(table):
     with table as table:
-        if process:
-            result = []
-            for row in table.row_stream:
-                result.append(process(row))
-            return result
-        return table.read_rows()
+        for row in table.row_stream:
+            yield row

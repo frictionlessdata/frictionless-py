@@ -1,8 +1,8 @@
 from ..resource import Resource
 
 
-def extract_resource(source, *, process=None):
-    """Extract resource rows into memory
+def extract_resource(source, *, process=None, stream=False):
+    """Extract resource rows
 
     API      | Usage
     -------- | --------
@@ -13,7 +13,7 @@ def extract_resource(source, *, process=None):
         process? (func): a row processor function
 
     Returns:
-        Row[]: an array of rows
+        Row[]: an array/stream of rows
 
     """
 
@@ -21,9 +21,6 @@ def extract_resource(source, *, process=None):
     resource = Resource(source)
 
     # Extract resource
-    if process:
-        result = []
-        for row in resource.read_row_stream():
-            result.append(process(row))
-        return result
-    return resource.read_rows()
+    data = resource.read_row_stream()
+    data = (process(row) for row in data) if process else data
+    return data if stream else list(data)
