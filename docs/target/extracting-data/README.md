@@ -627,7 +627,7 @@ with Table('country-3.csv', encoding='utf-8') as table:
 
 **Compression**
 
-It's possible to adjust compression detection by providing the algorithm explicetely. For the example below it's not required as it would be detected anyway:
+It's possible to adjust compression detection by providing the algorithm explicitly. For the example below it's not required as it would be detected anyway:
 
 
 ```bash
@@ -698,7 +698,7 @@ Exact parameters depend on schemes and can be found in the "Schemes Reference". 
 
 **Detect Encoding**
 
-It's a function that can be provided to adjust the encoding detection. This function accept a data sample and return a detected encoding:
+It's a function that can be provided to adjust the encoding detection. This function accepts a data sample and returns a detected encoding:
 
 
 ```python
@@ -719,7 +719,7 @@ Further reading:
 
 ## Table Dialect
 
-The Dialect adjust the way tabular parsers work. The concept is similiar to the Control above. Let's use the CSV Dialect to adjust the delimiter configuration:
+The Dialect adjusts the way tabular parsers work. The concept is similiar to the Control above. Let's use the CSV Dialect to adjust the delimiter configuration:
 
 
 ```python
@@ -736,7 +736,7 @@ with Table(source, scheme='text', format='csv', dialect=dialect) as table:
     [Row([('header1', 'value1'), ('header2', 'value2')])]
 
 
-There is a great deal of options available for different dialect that can be found in "Formats Reference". We will list the properties that can be used with every dialect:
+There are a great deal of options available for different dialects that can be found in "Formats Reference". We will list the properties that can be used with every dialect:
 
 **Header**
 
@@ -889,7 +889,7 @@ print(extract('matrix.csv', query=Query(pick_rows=['<blank>'])))
 
 **Limit/Offset Rows**
 
-It's a quite popular option used to limit amount of rows to read:
+This is a quite popular option used to limit amount of rows to read:
 
 
 ```python
@@ -1062,7 +1062,7 @@ Exctraction function and classes accepts only one integrity option:
 
 **Lookup**
 
-The lookup is a special object providing relational information in cases when it's not impossible to extract. For example, the Package is capable to get a lookup object from its resource while a table object needs it to be provided. Let's see on an example:
+The lookup is a special object providing relational information in cases when it's not possible to extract. For example, the Package is capable of getting a lookup object from its resource while a table object needs it to be provided. Let's see an example:
 
 
 ```python
@@ -1083,7 +1083,7 @@ with Table(source, lookup=lookup, patch_schema={"foreignKeys": [fk]}) as table:
 
 ## Header Object
 
-After opening a table or calling `resource.read_header` you get an access to a `header` object. It's a list but providing some additional functionality. Let's take a look:
+After opening a table or calling `resource.read_header` you get access to a `header` object. It's a list but providing some additional functionality. Let's take a look:
 
 
 
@@ -1114,7 +1114,7 @@ The example above covers the case when a header is valid. For a header with tabu
 
 ## Row Object
 
-The `extract`, `resource.read_rows()`, `table.read_rows()`, and many other functions retunrs or yeilds row objects. It's a `OrderedDict` providing additional API shown below:
+The `extract`, `resource.read_rows()`, `table.read_rows()`, and many other functions return or yeild row objects. It's an `OrderedDict` providing additional API shown below:
 
 
 

@@ -92,6 +92,14 @@ Template: `The validation check has an error: {note}` <br>
 Description: `A validation check cannot be created` <br>
 
 
+## Storage Error
+
+Code: `storage-error` <br>
+Tags: `#general` <br>
+Template: `The storage has an error: {note}` <br>
+Description: `A storage's operation cannot be performed` <br>
+
+
 ## Source Error
 
 Code: `source-error` <br>

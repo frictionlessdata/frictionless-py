@@ -4,7 +4,7 @@
 
 
 
-Frictionless is a logical continuation of many currently existent package:
+Frictionless is a logical continuation of many currently existing packages:
 - goodtables
 - datapackage
 - tableschema
@@ -15,7 +15,7 @@ Although, most of these packages will be supported going forward, you can migrat
 
 ## From goodtables
 
-Frictionless provides the `frictionless validate` function which is in high-level exactly the same as `goodtables validate`. Also `frictionless describe` is an improved version of `goodtables init`. You just need to use the `frictionless` command instead of the `goodtables` command:
+Frictionless provides the `frictionless validate` function which is in high-level exactly the same as `goodtables validate`. Also `frictionless describe` is an improved version of `goodtables init`. You instead need to use the `frictionless` command instead of the `goodtables` command:
 
 ```bash
 # Before
@@ -39,7 +39,7 @@ Please read the following sections and use `frictionless validate --help` to lea
 ### Validate
 
 - a schema is inferred by default (use "Infer Options" and "Schema Options" to manage)
-- `order_fiels` was replaced by `sync_schema` (see "Schema Options")
+- `order_fields` was replaced by `sync_schema` (see "Schema Options")
 - `checks` was replaced by `pick/skip_errors` and `extra_checks`
 - `error_limit` was replaced by `limit_errors` (see "Errors Options")
 - `row_limit` was replaced by `query` (see "Table Query)
@@ -91,7 +91,7 @@ package = frictionless.Package('package.json')
 
 ## From tableschema
 
-Frictionless has `Schema` and `Fiels` classes which is almost the same as `tableschema` has. There are a lot of improvements for working with metadata described in the "Describing Data" guide.
+Frictionless has `Schema` and `Fields` classes which is almost the same as `tableschema` has. There are a lot of improvements for working with metadata described in the "Describing Data" guide.
 
 ```python
 # Before

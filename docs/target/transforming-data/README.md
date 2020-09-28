@@ -17,7 +17,7 @@ a novel and intuitive way of building data processing flows in Python. Frictionl
 
 The resource pipelines are under active development and they are not ready to be used yet. We will update this guide when it's ready adding a resource-level documentation and examples.
 
-Of course, it's not only possible to use pipelines to transform data in Frictionless; we can also use lower-level primitives like `Table` class to modify the data using plain Python programming.
+Of course, it's not only possible to transform data in Frictionless by using pipelines; we can also use lower-level primitives like `Table` class to modify the data using plain Python programming.
 
 
 
