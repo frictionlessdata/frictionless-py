@@ -42,6 +42,7 @@ class Resource(Metadata):
         profile? (str): resource profile
         basepath? (str): resource basepath
         trusted? (bool): don't raise on unsage paths
+        on_error? (ignore|warn|raise): behaviour if there is an error
         package? (Package): resource package
 
     Raises:
@@ -69,6 +70,7 @@ class Resource(Metadata):
         profile=None,
         basepath=None,
         trusted=False,
+        on_error="ignore",
         package=None,
     ):
 
@@ -93,6 +95,7 @@ class Resource(Metadata):
         self.setinitial("profile", profile)
         self.__basepath = basepath or helpers.detect_basepath(descriptor)
         self.__trusted = trusted
+        self.__on_error = on_error
         self.__package = package
         super().__init__(descriptor)
 
@@ -100,6 +103,12 @@ class Resource(Metadata):
         hashing, hash = helpers.parse_resource_hash(self.get("hash"))
         if hashing != config.DEFAULT_HASHING:
             self["hashing"] = hashing
+
+    def __setattr__(self, name, value):
+        if name == "on_error":
+            self.__on_error = value
+            return
+        super().__setattr__(name, value)
 
     @Metadata.property
     def name(self):
@@ -287,21 +296,6 @@ class Resource(Metadata):
         return self.get("compressionPath")
 
     @Metadata.property
-    def stats(self):
-        """
-        Returns
-            dict?: resource stats
-        """
-        stats = {}
-        for name in ["hash", "bytes", "rows"]:
-            value = self.get(name)
-            if value is not None:
-                if name == "hash":
-                    value = helpers.parse_resource_hash(value)[1]
-                stats[name] = value
-        return stats
-
-    @Metadata.property
     def dialect(self):
         """
         Returns
@@ -340,6 +334,30 @@ class Resource(Metadata):
             str?: resource profile
         """
         return self.get("profile", config.DEFAULT_RESOURCE_PROFILE)
+
+    @property
+    def on_error(self):
+        """
+        Returns:
+            ignore|warn|raise: on error bahaviour
+        """
+        assert self.__on_error in ["ignore", "warn", "raise"]
+        return self.__on_error
+
+    @Metadata.property
+    def stats(self):
+        """
+        Returns
+            dict?: resource stats
+        """
+        stats = {}
+        for name in ["hash", "bytes", "rows"]:
+            value = self.get(name)
+            if value is not None:
+                if name == "hash":
+                    value = helpers.parse_resource_hash(value)[1]
+                stats[name] = value
+        return stats
 
     # Expand
 
@@ -724,6 +742,7 @@ class Resource(Metadata):
         options.setdefault("compression_path", self.compression_path)
         options.setdefault("dialect", self.dialect)
         options.setdefault("schema", self.schema)
+        options.setdefault("on_error", self.__on_error)
         if "lookup" not in options:
             options["lookup"] = self.read_lookup()
         return Table(**options)

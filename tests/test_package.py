@@ -2,7 +2,7 @@ import os
 import json
 import zipfile
 import pytest
-from frictionless import Package, exceptions
+from frictionless import Package, Resource, exceptions
 
 
 # General
@@ -500,7 +500,60 @@ def test_package_compression_explicit_zip():
 
 # Integrity
 
-INTEGRITY_DESCRIPTOR = {
+
+def test_resource_integrity_on_error():
+    package = Package(resources=[Resource(path="data/invalid.csv")])
+    resource = package.resources[0]
+    assert package.on_error == "ignore"
+    assert resource.on_error == "ignore"
+    assert resource.read_rows()
+
+
+def test_resource_integrity_on_error_header_warn():
+    data = [["name"], [1], [2], [3]]
+    schema = {"fields": [{"name": "bad"}]}
+    package = Package(resources=[Resource(data=data, schema=schema)], on_error="warn")
+    resource = package.resources[0]
+    assert package.on_error == "warn"
+    assert resource.on_error == "warn"
+    with pytest.warns(UserWarning):
+        resource.read_rows()
+
+
+def test_resource_integrity_on_error_header_raise():
+    data = [["name"], [1], [2], [3]]
+    schema = {"fields": [{"name": "bad"}]}
+    package = Package({"resources": [{"data": data, "schema": schema}]}, on_error="raise")
+    resource = package.resources[0]
+    assert package.on_error == "raise"
+    assert resource.on_error == "raise"
+    with pytest.raises(exceptions.FrictionlessException):
+        resource.read_rows()
+
+
+def test_resource_integrity_on_error_row_warn():
+    data = [["name"], [1], [2], [3]]
+    schema = {"fields": [{"type": "string"}]}
+    package = Package(resources=[Resource(data=data, schema=schema)], on_error="warn")
+    resource = package.resources[0]
+    assert package.on_error == "warn"
+    assert resource.on_error == "warn"
+    with pytest.warns(UserWarning):
+        resource.read_rows()
+
+
+def test_resource_integrity_on_error_row_raise():
+    data = [["name"], [1], [2], [3]]
+    schema = {"fields": [{"type": "string"}]}
+    package = Package({"resources": [{"data": data, "schema": schema}]}, on_error="raise")
+    resource = package.resources[0]
+    assert package.on_error == "raise"
+    assert resource.on_error == "raise"
+    with pytest.raises(exceptions.FrictionlessException):
+        resource.read_rows()
+
+
+DESCRIPTOR_FK = {
     "resources": [
         {
             "name": "main",
@@ -538,8 +591,8 @@ INTEGRITY_DESCRIPTOR = {
 }
 
 
-def test_package_integrity():
-    package = Package(INTEGRITY_DESCRIPTOR)
+def test_package_integrity_foreign_key():
+    package = Package(DESCRIPTOR_FK)
     resource = package.get_resource("main")
     rows = resource.read_rows()
     assert rows[0].valid
@@ -553,7 +606,7 @@ def test_package_integrity():
 
 
 def test_package_integrity_foreign_key_invalid():
-    package = Package(INTEGRITY_DESCRIPTOR)
+    package = Package(DESCRIPTOR_FK)
     package.resources[1].data[3][0] = "bad"
     resource = package.get_resource("main")
     rows = resource.read_rows()
@@ -568,7 +621,7 @@ def test_package_integrity_foreign_key_invalid():
 
 
 def test_package_integrity_foreign_key_self_reference():
-    package = Package(INTEGRITY_DESCRIPTOR)
+    package = Package(DESCRIPTOR_FK)
     package.resources[0].schema.foreign_keys = [
         {"fields": "parent_id", "reference": {"resource": "", "fields": "id"}}
     ]
@@ -580,7 +633,7 @@ def test_package_integrity_foreign_key_self_reference():
 
 
 def test_package_integrity_foreign_key_self_reference_invalid():
-    package = Package(INTEGRITY_DESCRIPTOR)
+    package = Package(DESCRIPTOR_FK)
     package.resources[0].data[2][0] = "0"
     package.resources[0].schema.foreign_keys = [
         {"fields": "parent_id", "reference": {"resource": "", "fields": "id"}}
@@ -593,7 +646,7 @@ def test_package_integrity_foreign_key_self_reference_invalid():
 
 
 def test_package_integrity_foreign_key_multifield():
-    package = Package(INTEGRITY_DESCRIPTOR)
+    package = Package(DESCRIPTOR_FK)
     package.resources[0].schema.foreign_keys = [
         {
             "fields": ["name", "surname"],
@@ -608,7 +661,7 @@ def test_package_integrity_foreign_key_multifield():
 
 
 def test_package_integrity_foreign_key_multifield_invalid():
-    package = Package(INTEGRITY_DESCRIPTOR)
+    package = Package(DESCRIPTOR_FK)
     package.resources[0].schema.foreign_keys = [
         {
             "fields": ["name", "surname"],
@@ -624,7 +677,7 @@ def test_package_integrity_foreign_key_multifield_invalid():
 
 
 def test_package_integrity_read_lookup():
-    package = Package(INTEGRITY_DESCRIPTOR)
+    package = Package(DESCRIPTOR_FK)
     resource = package.get_resource("main")
     lookup = resource.read_lookup()
     assert lookup == {"people": {("firstname",): {("Walter",), ("Alex",), ("John",)}}}
