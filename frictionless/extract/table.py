@@ -12,11 +12,12 @@ def extract_table(
     encoding=None,
     compression=None,
     compression_path=None,
+    # Control/Dialect/Query/Header
     control=None,
-    # Table
     dialect=None,
     query=None,
     headers=None,
+    # Schema
     schema=None,
     sync_schema=False,
     patch_schema=False,
@@ -25,6 +26,8 @@ def extract_table(
     infer_volume=config.DEFAULT_INFER_VOLUME,
     infer_confidence=config.DEFAULT_INFER_CONFIDENCE,
     infer_missing_values=config.DEFAULT_MISSING_VALUES,
+    # Integrity
+    on_error="ignore",
     lookup=None,
     # Extraction
     process=None,
@@ -112,8 +115,11 @@ def extract_table(
         lookup? (dict): The lookup is a special object providing relational information.
             For more information, please check "Extracting  Data" guide.
 
-        process? (func): a row processor function
-        stream? (bool): return a row streams instead of loading into memory
+        process? (func): A row processor function.
+            It should be in a form of `row -> result`
+
+        stream? (bool): Return a row streams instead of loading into memory.
+            It can be useful for a big data files.
 
     Returns:
         Row[]: an array/stream of rows
@@ -123,7 +129,6 @@ def extract_table(
     # Create table
     table = Table(
         source,
-        headers=headers,
         # File
         scheme=scheme,
         format=format,
@@ -131,9 +136,11 @@ def extract_table(
         encoding=encoding,
         compression=compression,
         compression_path=compression_path,
+        # Control/Dialect/Query/Header
         control=control,
         dialect=dialect,
         query=query,
+        headers=headers,
         # Schema
         schema=schema,
         sync_schema=sync_schema,
@@ -142,6 +149,8 @@ def extract_table(
         infer_names=infer_names,
         infer_volume=infer_volume,
         infer_confidence=infer_confidence,
+        # Integrity
+        on_error=on_error,
         lookup=lookup,
     )
 

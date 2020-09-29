@@ -1,4 +1,5 @@
 import typing
+import warnings
 from pathlib import Path
 from copy import deepcopy
 from itertools import chain
@@ -105,6 +106,10 @@ class Table:
             For more information, please check "Describing  Data" guide.
             It defaults to `['']`
 
+        on_error? (ignore|warn|raise): Define behaviour if there is an error in the
+            header or rows during a `table.read_rows` call.
+            It defaults to `ignore`.
+
         lookup? (dict): The lookup is a special object providing relational information.
             For more information, please check "Extracting  Data" guide.
 
@@ -123,11 +128,12 @@ class Table:
         encoding=None,
         compression=None,
         compression_path=None,
+        # Control/Dialect/Query/Header
         control=None,
-        # Table
         dialect=None,
         query=None,
         headers=None,
+        # Schema
         schema=None,
         sync_schema=False,
         patch_schema=False,
@@ -136,8 +142,13 @@ class Table:
         infer_volume=config.DEFAULT_INFER_VOLUME,
         infer_confidence=config.DEFAULT_INFER_CONFIDENCE,
         infer_missing_values=config.DEFAULT_MISSING_VALUES,
+        # Integrity
+        on_error="ignore",
         lookup=None,
     ):
+
+        # Validate arguments
+        assert on_error in ["ignore", "warn", "raise"]
 
         # Update source
         if isinstance(source, Path):
@@ -177,6 +188,7 @@ class Table:
         self.__infer_volume = infer_volume
         self.__infer_confidence = infer_confidence
         self.__infer_missing_values = infer_missing_values
+        self.__on_error = on_error
         self.__lookup = lookup
 
         # Create file
@@ -662,6 +674,14 @@ class Table:
     def __read_row_stream_create(self):
         schema = self.schema
 
+        # Handle header errors
+        if not self.header.valid:
+            error = self.header.errors[0]
+            if self.__on_error == "warn":
+                warnings.warn(error.message, UserWarning)
+            elif self.__on_error == "raise":
+                raise exceptions.FrictionlessException(error)
+
         # Create state
         memory_unique = {}
         memory_primary = {}
@@ -731,6 +751,14 @@ class Table:
                             note = "not found in the lookup table"
                             error = errors.ForeignKeyError.from_row(row, note=note)
                             row.errors.append(error)
+
+            # Handle row errors
+            if not row.valid:
+                error = row.errors[0]
+                if self.__on_error == "warn":
+                    warnings.warn(error.message, UserWarning)
+                elif self.__on_error == "raise":
+                    raise exceptions.FrictionlessException(error)
 
             # Stream row
             yield row
