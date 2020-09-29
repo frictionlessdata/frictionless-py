@@ -1254,7 +1254,7 @@ def test_table_integrity_on_error():
 
 def test_table_integrity_on_error_header_warn():
     data = [["name"], [1], [2], [3]]
-    schema = {"fields": [{"name": "bad"}]}
+    schema = {"fields": [{"name": "bad", "type": "integer"}]}
     with Table(data, schema=schema, on_error="warn") as table:
         assert table.on_error == "warn"
         with pytest.warns(UserWarning):
@@ -1263,7 +1263,7 @@ def test_table_integrity_on_error_header_warn():
 
 def test_table_integrity_on_error_header_raise():
     data = [["name"], [1], [2], [3]]
-    schema = {"fields": [{"name": "bad"}]}
+    schema = {"fields": [{"name": "bad", "type": "integer"}]}
     with Table(data, schema=schema, on_error="raise") as table:
         assert table.on_error == "raise"
         with pytest.raises(exceptions.FrictionlessException):
@@ -1272,7 +1272,7 @@ def test_table_integrity_on_error_header_raise():
 
 def test_table_integrity_on_error_row_warn():
     data = [["name"], [1], [2], [3]]
-    schema = {"fields": [{"type": "string"}]}
+    schema = {"fields": [{"name": "name", "type": "string"}]}
     with Table(data, schema=schema, on_error="warn") as table:
         assert table.on_error == "warn"
         with pytest.warns(UserWarning):
@@ -1281,7 +1281,7 @@ def test_table_integrity_on_error_row_warn():
 
 def test_table_integrity_on_error_row_raise():
     data = [["name"], [1], [2], [3]]
-    schema = {"fields": [{"type": "string"}]}
+    schema = {"fields": [{"name": "name", "type": "string"}]}
     with Table(data, schema=schema, on_error="raise") as table:
         assert table.on_error == "raise"
         with pytest.raises(exceptions.FrictionlessException):

@@ -511,6 +511,10 @@ with Table("data/table.csv") as table:
   For more information, please check "Describing  Data" guide.
   It defaults to `['']`
   
+- `on_error?` _ignore|warn|raise_ - Define behaviour if there is an error in the
+  header or rows during the reading rows process.
+  It defaults to `ignore`.
+  
 - `lookup?` _dict_ - The lookup is a special object providing relational information.
   For more information, please check "Extracting  Data" guide.
 
@@ -657,6 +661,30 @@ with Table("data/table.csv") as table:
 **Returns**:
 
 - `Schema?` - table schema
+
+<a name="frictionless.table.Table.on_error"></a>
+#### <big>on\_error</big>
+
+```python
+ | @property
+ | on_error()
+```
+
+**Returns**:
+
+- `ignore|warn|raise` - on error bahaviour
+
+<a name="frictionless.table.Table.on_error"></a>
+#### <big>on\_error</big>
+
+```python
+ | @on_error.setter
+ | on_error(value)
+```
+
+**Arguments**:
+
+- `value` _ignore|warn|raise_ - on error bahaviour
 
 <a name="frictionless.table.Table.header"></a>
 #### <big>header</big>
@@ -1191,6 +1219,7 @@ package.get_resoure('table').read_rows() == [
 - `profile?` _str_ - profile name like 'data-package'
 - `basepath?` _str_ - a basepath of the package
 - `trusted?` _bool_ - don't raise on unsafe paths
+- `on_error?` _ignore|warn|raise_ - behaviour if there is an error
   
 
 **Raises**:
@@ -1256,6 +1285,18 @@ package.get_resoure('table').read_rows() == [
 **Returns**:
 
 - `str` - package profile
+
+<a name="frictionless.package.Package.on_error"></a>
+#### <big>on\_error</big>
+
+```python
+ | @property
+ | on_error()
+```
+
+**Returns**:
+
+- `ignore|warn|raise` - on error bahaviour
 
 <a name="frictionless.package.Package.resources"></a>
 #### <big>resources</big>
@@ -3673,7 +3714,7 @@ Public   | `from frictionless import extract`
 #### <big>extract\_table</big>
 
 ```python
-extract_table(source, *, scheme=None, format=None, hashing=None, encoding=None, compression=None, compression_path=None, control=None, dialect=None, query=None, headers=None, schema=None, sync_schema=False, patch_schema=False, infer_type=None, infer_names=None, infer_volume=config.DEFAULT_INFER_VOLUME, infer_confidence=config.DEFAULT_INFER_CONFIDENCE, infer_missing_values=config.DEFAULT_MISSING_VALUES, lookup=None, process=None, stream=False)
+extract_table(source, *, scheme=None, format=None, hashing=None, encoding=None, compression=None, compression_path=None, control=None, dialect=None, query=None, headers=None, schema=None, sync_schema=False, patch_schema=False, infer_type=None, infer_names=None, infer_volume=config.DEFAULT_INFER_VOLUME, infer_confidence=config.DEFAULT_INFER_CONFIDENCE, infer_missing_values=config.DEFAULT_MISSING_VALUES, on_error="ignore", lookup=None, process=None, stream=False)
 ```
 
 Extract table rows
@@ -3759,8 +3800,11 @@ Public   | `from frictionless import extract_table`
 - `lookup?` _dict_ - The lookup is a special object providing relational information.
   For more information, please check "Extracting  Data" guide.
   
-- `process?` _func_ - a row processor function
-- `stream?` _bool_ - return a row streams instead of loading into memory
+- `process?` _func_ - A row processor function.
+  It should be in a form of `row -> result`
+  
+- `stream?` _bool_ - Return a row streams instead of loading into memory.
+  It can be useful for a big data files.
   
 
 **Returns**:
@@ -4585,6 +4629,7 @@ Public   | `from frictionless import Resource`
 - `profile?` _str_ - resource profile
 - `basepath?` _str_ - resource basepath
 - `trusted?` _bool_ - don't raise on unsage paths
+- `on_error?` _ignore|warn|raise_ - behaviour if there is an error
 - `package?` _Package_ - resource package
   
 
@@ -4790,17 +4835,6 @@ Returns
 Returns
     str?: resource compression path
 
-<a name="frictionless.resource.Resource.stats"></a>
-#### <big>stats</big>
-
-```python
- | @Metadata.property
- | stats()
-```
-
-Returns
-    dict?: resource stats
-
 <a name="frictionless.resource.Resource.dialect"></a>
 #### <big>dialect</big>
 
@@ -4833,6 +4867,29 @@ Returns
 
 Returns
     str?: resource profile
+
+<a name="frictionless.resource.Resource.on_error"></a>
+#### <big>on\_error</big>
+
+```python
+ | @property
+ | on_error()
+```
+
+**Returns**:
+
+- `ignore|warn|raise` - on error bahaviour
+
+<a name="frictionless.resource.Resource.stats"></a>
+#### <big>stats</big>
+
+```python
+ | @Metadata.property
+ | stats()
+```
+
+Returns
+    dict?: resource stats
 
 <a name="frictionless.resource.Resource.expand"></a>
 #### <big>expand</big>

@@ -1057,7 +1057,53 @@ with Table('capital-3.csv', patch_schema={'fields': {'id': {'type': 'string'}}})
 
 ## Integrity Options
 
-Exctraction function and classes accepts only one integrity option:
+Exctraction function and classes accepts a few options that are needed to manage integrity behaviour:
+
+
+**On Error**
+
+This option accept one of the three possible values configuring an `extract`, `Table`, `Resource` or `Package` behaviour if there is an error during the row reading process:
+- ignore (default)
+- warn
+- raise
+
+Let's investigate how we can add warnings on all header/row errors:
+
+
+```python
+from frictionless import Table
+
+data = [["name"], [1], [2], [3]]
+schema = {"fields": [{"name": "name", "type": "string"}]}
+with  Table(data, schema=schema, on_error="warn") as table:
+  table.read_rows()
+```
+
+    /usr/local/lib/python3.6/dist-packages/frictionless/table.py:784: UserWarning: The cell "1" in row at position "2" and field "name" at position "1" has incompatible type: type is "string/default"
+      warnings.warn(error.message, UserWarning)
+    /usr/local/lib/python3.6/dist-packages/frictionless/table.py:784: UserWarning: The cell "2" in row at position "3" and field "name" at position "1" has incompatible type: type is "string/default"
+      warnings.warn(error.message, UserWarning)
+    /usr/local/lib/python3.6/dist-packages/frictionless/table.py:784: UserWarning: The cell "3" in row at position "4" and field "name" at position "1" has incompatible type: type is "string/default"
+      warnings.warn(error.message, UserWarning)
+
+
+In some cases, we need to fail on the first error. We will use `raise` for it:
+
+
+```python
+from frictionless import Table
+
+data = [["name"], [1], [2], [3]]
+schema = {"fields": [{"name": "name", "type": "string"}]}
+with  Table(data, schema=schema) as table:
+  table.on_error = 'raise' # it's possible to set this property after initialization
+  try:
+    table.read_rows()
+  except Exception as exception:
+    print(exception)
+```
+
+    [type-error] The cell "1" in row at position "2" and field "name" at position "1" has incompatible type: type is "string/default"
 
 
 **Lookup**

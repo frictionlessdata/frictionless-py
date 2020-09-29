@@ -511,7 +511,7 @@ def test_resource_integrity_on_error():
 
 def test_resource_integrity_on_error_header_warn():
     data = [["name"], [1], [2], [3]]
-    schema = {"fields": [{"name": "bad"}]}
+    schema = {"fields": [{"name": "bad", "type": "integer"}]}
     package = Package(resources=[Resource(data=data, schema=schema)], on_error="warn")
     resource = package.resources[0]
     assert package.on_error == "warn"
@@ -522,7 +522,7 @@ def test_resource_integrity_on_error_header_warn():
 
 def test_resource_integrity_on_error_header_raise():
     data = [["name"], [1], [2], [3]]
-    schema = {"fields": [{"name": "bad"}]}
+    schema = {"fields": [{"name": "bad", "type": "integer"}]}
     package = Package({"resources": [{"data": data, "schema": schema}]}, on_error="raise")
     resource = package.resources[0]
     assert package.on_error == "raise"
@@ -533,7 +533,7 @@ def test_resource_integrity_on_error_header_raise():
 
 def test_resource_integrity_on_error_row_warn():
     data = [["name"], [1], [2], [3]]
-    schema = {"fields": [{"type": "string"}]}
+    schema = {"fields": [{"name": "name", "type": "string"}]}
     package = Package(resources=[Resource(data=data, schema=schema)], on_error="warn")
     resource = package.resources[0]
     assert package.on_error == "warn"
@@ -544,7 +544,7 @@ def test_resource_integrity_on_error_row_warn():
 
 def test_resource_integrity_on_error_row_raise():
     data = [["name"], [1], [2], [3]]
-    schema = {"fields": [{"type": "string"}]}
+    schema = {"fields": [{"name": "name", "type": "string"}]}
     package = Package({"resources": [{"data": data, "schema": schema}]}, on_error="raise")
     resource = package.resources[0]
     assert package.on_error == "raise"
