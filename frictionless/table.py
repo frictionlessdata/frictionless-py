@@ -107,7 +107,7 @@ class Table:
             It defaults to `['']`
 
         on_error? (ignore|warn|raise): Define behaviour if there is an error in the
-            header or rows during a `table.read_rows` call.
+            header or rows during the reading rows process.
             It defaults to `ignore`.
 
         lookup? (dict): The lookup is a special object providing relational information.
@@ -146,9 +146,6 @@ class Table:
         on_error="ignore",
         lookup=None,
     ):
-
-        # Validate arguments
-        assert on_error in ["ignore", "warn", "raise"]
 
         # Update source
         if isinstance(source, Path):
@@ -191,6 +188,9 @@ class Table:
         self.__on_error = on_error
         self.__lookup = lookup
 
+        # Set error handler
+        self.on_error = on_error
+
         # Create file
         self.__file = File(
             source=source,
@@ -204,6 +204,12 @@ class Table:
             dialect=dialect,
             query=query,
         )
+
+    def __setattr__(self, name, value):
+        if name == "on_error":
+            self.__on_error = value
+            return
+        super().__setattr__(name, value)
 
     def __enter__(self):
         if self.closed:
@@ -314,6 +320,24 @@ class Table:
         return self.__schema
 
     @property
+    def on_error(self):
+        """
+        Returns:
+            ignore|warn|raise: on error bahaviour
+        """
+        assert self.__on_error in ["ignore", "warn", "raise"]
+        return self.__on_error
+
+    # TODO: use property wrapper to make it shorter
+    @on_error.setter
+    def on_error(self, value):
+        """
+        Parameters:
+            value (ignore|warn|raise): on error bahaviour
+        """
+        self.__on_error = value
+
+    @property
     def header(self):
         """
         Returns:
@@ -415,7 +439,8 @@ class Table:
         """
         return self.__parser is None
 
-    # Read
+        # Read
+        return self.__on_error
 
     def read_data(self):
         """Read data stream into memory

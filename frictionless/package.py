@@ -36,6 +36,7 @@ class Package(Metadata):
         profile? (str): profile name like 'data-package'
         basepath? (str): a basepath of the package
         trusted? (bool): don't raise on unsafe paths
+        on_error? (ignore|warn|raise): behaviour if there is an error
 
     Raises:
         FrictionlessException: raise any error that occurs during the process
@@ -53,6 +54,7 @@ class Package(Metadata):
         profile=None,
         basepath=None,
         trusted=None,
+        on_error="ignore",
     ):
 
         # Handle zip
@@ -67,7 +69,14 @@ class Package(Metadata):
         self.setinitial("profile", profile)
         self.__basepath = basepath or helpers.detect_basepath(descriptor)
         self.__trusted = trusted
+        self.__on_error = on_error
         super().__init__(descriptor)
+
+    def __setattr__(self, name, value):
+        if name == "on_error":
+            self.__on_error = value
+            return
+        super().__setattr__(name, value)
 
     @Metadata.property
     def name(self):
@@ -108,6 +117,15 @@ class Package(Metadata):
             str: package profile
         """
         return self.get("profile", config.DEFAULT_PACKAGE_PROFILE)
+
+    @property
+    def on_error(self):
+        """
+        Returns:
+            ignore|warn|raise: on error bahaviour
+        """
+        assert self.__on_error in ["ignore", "warn", "raise"]
+        return self.__on_error
 
     # Resources
 
@@ -422,9 +440,12 @@ class Package(Metadata):
                         resource,
                         basepath=self.__basepath,
                         trusted=self.__trusted,
+                        on_error=self.__on_error,
                         package=self,
                     )
                     list.__setitem__(resources, index, resource)
+                # NOTE: should we sync basepath/trusted also here?
+                resource.on_error = self.__on_error
             if not isinstance(resources, helpers.ControlledList):
                 resources = helpers.ControlledList(resources)
                 resources.__onchange__(self.metadata_process)

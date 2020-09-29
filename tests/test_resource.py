@@ -794,7 +794,49 @@ def test_resource_source_multipart_infer():
 # Integrity
 
 
-INTEGRITY_DESCRIPTOR = {
+def test_resource_integrity_on_error():
+    resource = Resource(path="data/invalid.csv")
+    assert resource.on_error == "ignore"
+    assert resource.read_rows()
+
+
+def test_resource_integrity_on_error_header_warn():
+    data = [["name"], [1], [2], [3]]
+    schema = {"fields": [{"name": "bad"}]}
+    resource = Resource(data=data, schema=schema, on_error="warn")
+    assert resource.on_error == "warn"
+    with pytest.warns(UserWarning):
+        resource.read_rows()
+
+
+def test_resource_integrity_on_error_header_raise():
+    data = [["name"], [1], [2], [3]]
+    schema = {"fields": [{"name": "bad"}]}
+    resource = Resource(data=data, schema=schema, on_error="raise")
+    assert resource.on_error == "raise"
+    with pytest.raises(exceptions.FrictionlessException):
+        resource.read_rows()
+
+
+def test_resource_integrity_on_error_row_warn():
+    data = [["name"], [1], [2], [3]]
+    schema = {"fields": [{"type": "string"}]}
+    resource = Resource(data=data, schema=schema, on_error="warn")
+    assert resource.on_error == "warn"
+    with pytest.warns(UserWarning):
+        resource.read_rows()
+
+
+def test_resource_integrity_on_error_row_raise():
+    data = [["name"], [1], [2], [3]]
+    schema = {"fields": [{"type": "string"}]}
+    resource = Resource(data=data, schema=schema, on_error="raise")
+    assert resource.on_error == "raise"
+    with pytest.raises(exceptions.FrictionlessException):
+        resource.read_rows()
+
+
+DESCRIPTOR_FK = {
     "path": "data/nested.csv",
     "schema": {
         "fields": [
@@ -807,8 +849,8 @@ INTEGRITY_DESCRIPTOR = {
 }
 
 
-def test_resource_integrity():
-    resource = Resource(INTEGRITY_DESCRIPTOR)
+def test_resource_integrity_foreign_keys():
+    resource = Resource(DESCRIPTOR_FK)
     rows = resource.read_rows()
     assert rows[0].valid
     assert rows[1].valid
@@ -822,8 +864,8 @@ def test_resource_integrity():
     ]
 
 
-def test_resource_integrity_invalid():
-    resource = Resource(INTEGRITY_DESCRIPTOR, path="data/nested-invalid.csv")
+def test_resource_integrity_foreign_keys_invalid():
+    resource = Resource(DESCRIPTOR_FK, path="data/nested-invalid.csv")
     rows = resource.read_rows()
     assert rows[0].valid
     assert rows[1].valid
@@ -840,7 +882,7 @@ def test_resource_integrity_invalid():
 
 
 def test_resource_integrity_read_lookup():
-    resource = Resource(INTEGRITY_DESCRIPTOR)
+    resource = Resource(DESCRIPTOR_FK)
     lookup = resource.read_lookup()
     assert lookup == {"": {("id",): {(1,), (2,), (3,), (4,)}}}
 

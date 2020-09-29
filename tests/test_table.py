@@ -1246,34 +1246,44 @@ def test_table_write_format_error_bad_format(tmpdir):
 # Integrity
 
 
+def test_table_integrity_on_error():
+    with Table("data/invalid.csv") as table:
+        assert table.on_error == "ignore"
+        assert table.read_rows()
+
+
 def test_table_integrity_on_error_header_warn():
-    source = [["name"], [1], [2], [3]]
-    patch_schema = {"fields": {"name": {"name": "bad"}}}
-    with Table(source, patch_schema=patch_schema, on_error="warn") as table:
+    data = [["name"], [1], [2], [3]]
+    schema = {"fields": [{"name": "bad"}]}
+    with Table(data, schema=schema, on_error="warn") as table:
+        assert table.on_error == "warn"
         with pytest.warns(UserWarning):
             table.read_rows()
 
 
 def test_table_integrity_on_error_header_raise():
-    source = [["name"], [1], [2], [3]]
-    patch_schema = {"fields": {"name": {"name": "bad"}}}
-    with Table(source, patch_schema=patch_schema, on_error="raise") as table:
+    data = [["name"], [1], [2], [3]]
+    schema = {"fields": [{"name": "bad"}]}
+    with Table(data, schema=schema, on_error="raise") as table:
+        assert table.on_error == "raise"
         with pytest.raises(exceptions.FrictionlessException):
             table.read_rows()
 
 
 def test_table_integrity_on_error_row_warn():
-    source = [["name"], [1], [2], [3]]
-    patch_schema = {"fields": {"name": {"type": "string"}}}
-    with Table(source, patch_schema=patch_schema, on_error="warn") as table:
+    data = [["name"], [1], [2], [3]]
+    schema = {"fields": [{"type": "string"}]}
+    with Table(data, schema=schema, on_error="warn") as table:
+        assert table.on_error == "warn"
         with pytest.warns(UserWarning):
             table.read_rows()
 
 
 def test_table_integrity_on_error_row_raise():
-    source = [["name"], [1], [2], [3]]
-    patch_schema = {"fields": {"name": {"type": "string"}}}
-    with Table(source, patch_schema=patch_schema, on_error="raise") as table:
+    data = [["name"], [1], [2], [3]]
+    schema = {"fields": [{"type": "string"}]}
+    with Table(data, schema=schema, on_error="raise") as table:
+        assert table.on_error == "raise"
         with pytest.raises(exceptions.FrictionlessException):
             table.read_rows()
 
