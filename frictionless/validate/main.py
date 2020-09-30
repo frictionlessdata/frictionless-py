@@ -35,8 +35,8 @@ def validate(source, source_type=None, **options):
     if not source_type:
         if source and isinstance(source, list) and isinstance(source[0], str):
             basepath = options.pop("basepath", None)
-            trusted = options.pop("trusted", False)
-            package = Package(basepath=basepath, trusted=trusted)
+            on_unsafe = options.pop("on_unsafe", "raise")
+            package = Package(basepath=basepath, on_unsafe=on_unsafe)
             package.infer(source)
             source = package
             source_type = "package"

@@ -18,19 +18,24 @@ def validate_table(
     encoding=None,
     compression=None,
     compression_path=None,
+    # Control/Dialect/Query/Header
     control=None,
-    # Table
     dialect=None,
     query=None,
     headers=None,
+    # Schema
     schema=None,
     sync_schema=False,
     patch_schema=False,
+    # Infer
     infer_type=None,
     infer_names=None,
     infer_volume=config.DEFAULT_INFER_VOLUME,
     infer_confidence=config.DEFAULT_INFER_CONFIDENCE,
     infer_missing_values=config.DEFAULT_MISSING_VALUES,
+    # Integrity
+    on_unsafe="raise",
+    on_error="ignore",
     lookup=None,
     # Validation
     checksum=None,
@@ -119,6 +124,13 @@ def validate_table(
             For more information, please check "Describing  Data" guide.
             It defaults to `['']`
 
+        on_unsafe? (ignore|warn|raise): Define behaviour if there is a unsafe path
+            It defaults to `raise`.
+
+        on_error? (ignore|warn|raise): Define behaviour if there is an error in the
+            header or rows during the reading rows process.
+            It defaults to `ignore`.
+
         lookup? (dict): The lookup is a special object providing relational information.
             For more information, please check "Extracting  Data" guide.
 
@@ -162,19 +174,24 @@ def validate_table(
         encoding=encoding,
         compression=compression,
         compression_path=compression_path,
+        # Control/Dialect/Query/Header
         control=control,
-        # Table
         dialect=dialect,
         query=query,
         headers=headers,
+        # Schema
         schema=schema,
         sync_schema=sync_schema,
         patch_schema=patch_schema,
+        # Infer
         infer_type=infer_type,
         infer_names=infer_names,
         infer_volume=infer_volume,
         infer_confidence=infer_confidence,
         infer_missing_values=infer_missing_values,
+        # Lookup
+        on_unsafe=on_unsafe,
+        on_error=on_error,
         lookup=lookup,
     )
 

@@ -35,7 +35,7 @@ class Package(Metadata):
         resources? (dict|Resource[]): list of resource descriptors
         profile? (str): profile name like 'data-package'
         basepath? (str): a basepath of the package
-        trusted? (bool): don't raise on unsafe paths
+        on_unsafe? (ignore|warn|raise): behaviour on unsafe paths
         on_error? (ignore|warn|raise): behaviour if there is an error
 
     Raises:
@@ -53,7 +53,7 @@ class Package(Metadata):
         resources=None,
         profile=None,
         basepath=None,
-        trusted=None,
+        on_unsafe="raise",
         on_error="ignore",
     ):
 
@@ -68,7 +68,7 @@ class Package(Metadata):
         self.setinitial("resources", resources)
         self.setinitial("profile", profile)
         self.__basepath = basepath or helpers.detect_basepath(descriptor)
-        self.__trusted = trusted
+        self.__on_unsafe = on_unsafe
         self.__on_error = on_error
         super().__init__(descriptor)
 
@@ -439,12 +439,12 @@ class Package(Metadata):
                     resource = Resource(
                         resource,
                         basepath=self.__basepath,
-                        trusted=self.__trusted,
+                        on_unsafe=self.__on_unsafe,
                         on_error=self.__on_error,
                         package=self,
                     )
                     list.__setitem__(resources, index, resource)
-                # NOTE: should we sync basepath/trusted also here?
+                resource.on_unsafe = self.__on_unsafe
                 resource.on_error = self.__on_error
             if not isinstance(resources, helpers.ControlledList):
                 resources = helpers.ControlledList(resources)

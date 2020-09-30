@@ -1,8 +1,7 @@
 import os
 from urllib.request import urlopen
-from . import exceptions
+from .system import system
 from . import helpers
-from . import errors
 from . import config
 
 
@@ -36,7 +35,8 @@ class Location:
         self.__scheme = detect[0] or config.DEFAULT_SCHEME
         self.__format = detect[1] or config.DEFAULT_FORMAT
 
-        # Save source
+        # Save attributes
+        self.__resource = resource
         self.__source = source
 
     @property
@@ -78,12 +78,12 @@ class Location:
         return helpers.is_remote_path(self.source)
 
     @property
-    def suspect(self):
-        if self.inline:
+    def tabular(self):
+        try:
+            system.create_parser(self)
+            return True
+        except Exception:
             return False
-        if self.multipart:
-            return any(not helpers.is_safe_path(path) for path in self.source)
-        return not helpers.is_safe_path(self.source)
 
 
 # Internal

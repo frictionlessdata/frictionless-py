@@ -141,7 +141,6 @@ def is_remote_path(path):
     return urlparse(path).scheme in config.REMOTE_SCHEMES
 
 
-# NOTE: consider making thrusted a global env var used everywhere (including security)
 def is_safe_path(path):
     contains_windows_var = lambda val: re.match(r"%.+%", val)
     contains_posix_var = lambda val: re.match(r"\$.+", val)

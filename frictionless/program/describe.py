@@ -25,7 +25,7 @@ from .main import program
 @click.option("--infer-missing-values", type=str, multiple=True, help="Infer missing")
 # Package/Resource
 @click.option("--basepath", type=str, help="Package basepath")
-@click.option("--trusted", is_flag=True, help="Allow unsafe paths")
+@click.option("--on-unsafe", type=str, help="Behaviour on unsafe paths")
 def program_describe(source, *, source_type, json, **options):
     """Describe data
 

@@ -2,6 +2,7 @@ import io
 import os
 import json
 import zipfile
+import warnings
 from copy import deepcopy
 from importlib import import_module
 from .metadata import Metadata
@@ -44,7 +45,7 @@ class Resource(Metadata):
         stats? (dict): table stats
         profile? (str): resource profile
         basepath? (str): resource basepath
-        trusted? (bool): don't raise on unsage paths
+        on_unsafe? (ignore|warn|raise): behaviour if there is a unsafe path
         on_error? (ignore|warn|raise): behaviour if there is an error
         package? (Package): resource package
 
@@ -75,7 +76,7 @@ class Resource(Metadata):
         stats=None,
         profile=None,
         basepath=None,
-        trusted=False,
+        on_unsafe="raise",
         on_error="ignore",
         # Composition
         package=None,
@@ -106,13 +107,20 @@ class Resource(Metadata):
         self.setinitial("stats", stats)
         self.setinitial("profile", profile)
         self.__basepath = basepath or helpers.detect_basepath(descriptor)
-        self.__trusted = trusted
         self.__package = package
-        self.__on_error = on_error
         super().__init__(descriptor)
 
+        # Set error handling
+        self.on_unsafe = on_unsafe
+        self.on_error = on_error
+
     def __setattr__(self, name, value):
-        if name == "on_error":
+        if name == "on_unsafe":
+            assert value in ["ignore", "warn", "raise"]
+            self.__on_unsafe = value
+            return
+        elif name == "on_error":
+            assert value in ["ignore", "warn", "raise"]
             self.__on_error = value
             return
         super().__setattr__(name, value)
@@ -224,9 +232,6 @@ class Resource(Metadata):
             control = system.create_control(self, descriptor=control)
             control = self.metadata_attach("control", Control())
         elif isinstance(control, str):
-            if not self.__trusted and not helpers.is_safe_path(control):
-                note = f'control path "{control}" is not safe'
-                raise exceptions.FrictionlessException(errors.ResourceError(note=note))
             control = os.path.join(self.basepath, control)
             control = system.create_control(self, descriptor=control)
         return control
@@ -242,9 +247,6 @@ class Resource(Metadata):
             dialect = system.create_dialect(self, descriptor=dialect)
             dialect = self.metadata_attach("dialect", dialect)
         elif isinstance(dialect, str):
-            if not self.__trusted and not helpers.is_safe_path(dialect):
-                note = f'dialect path "{dialect}" is not safe'
-                raise exceptions.FrictionlessException(errors.ResourceError(note=note))
             dialect = os.path.join(self.basepath, dialect)
             dialect = system.create_control(self, descriptor=dialect)
         return dialect
@@ -257,8 +259,9 @@ class Resource(Metadata):
         """
         query = self.get("query")
         if query is None:
-            query = Query()
-            query = self.metadata_attach("query", query)
+            query = self.metadata_attach("query", Query())
+        elif isinstance(query, str):
+            query = Query(os.path.join(self.basepath, query))
         return query
 
     @Metadata.property
@@ -271,9 +274,6 @@ class Resource(Metadata):
         if schema is None:
             schema = self.metadata_attach("schema", Schema())
         elif isinstance(schema, str):
-            if not self.__trusted and not helpers.is_safe_path(schema):
-                note = f'schema path "{schema}" is not safe'
-                raise exceptions.FrictionlessException(errors.ResourceError(note=note))
             schema = Schema(os.path.join(self.basepath, schema))
         return schema
 
@@ -339,24 +339,20 @@ class Resource(Metadata):
         return self.__location.remote
 
     @Metadata.property(write=False)
-    def suspect(self):
-        """
-        Returns
-            bool: if resource is suspect
-        """
-        return self.__location.suspect
-
-    @Metadata.property(write=False)
     def tabular(self):
         """
         Returns
             bool: if resource is tabular
         """
-        try:
-            system.create_parser(self)
-            return True
-        except Exception:
-            return False
+        return self.__location.tabular
+
+    @property
+    def on_unsafe(self):
+        """
+        Returns:
+            ignore|warn|raise: on unsafe path bahaviour
+        """
+        return self.__on_unsafe
 
     @property
     def on_error(self):
@@ -828,9 +824,6 @@ class Resource(Metadata):
 
         # Location
         self.__location = Location(self)
-        if not self.__trusted and self.__location.suspect:
-            note = f'path "{self.__location.path}" is not safe'
-            raise exceptions.FrictionlessException(errors.ResourceError(note=note))
 
         # Control
         control = self.get("control")
@@ -855,6 +848,20 @@ class Resource(Metadata):
         if not isinstance(schema, (str, type(None), Schema)):
             schema = Schema(schema)
             dict.__setitem__(self, "schema", schema)
+
+        # Security
+        for name in ["path", "control", "dialect", "schema"]:
+            path = self.get(name)
+            if not isinstance(path, (str, list)):
+                continue
+            path = path if isinstance(path, list) else [path]
+            if not all(helpers.is_safe_path(chunk) for chunk in path):
+                note = f'path "{path}" is not safe'
+                error = errors.ResourceError(note=note)
+                if self.on_unsafe == "warn":
+                    warnings.warn(error.message, UserWarning)
+                elif self.on_unsafe == "raise":
+                    raise exceptions.FrictionlessException(error)
 
     def metadata_validate(self):
         yield from super().metadata_validate()

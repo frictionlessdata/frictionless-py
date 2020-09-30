@@ -21,12 +21,14 @@ def extract_table(
     schema=None,
     sync_schema=False,
     patch_schema=False,
+    # Infer
     infer_type=None,
     infer_names=None,
     infer_volume=config.DEFAULT_INFER_VOLUME,
     infer_confidence=config.DEFAULT_INFER_CONFIDENCE,
     infer_missing_values=config.DEFAULT_MISSING_VALUES,
     # Integrity
+    on_unsafe="raise",
     on_error="ignore",
     lookup=None,
     # Extraction
@@ -112,6 +114,13 @@ def extract_table(
             For more information, please check "Describing  Data" guide.
             It defaults to `['']`
 
+        on_unsafe? (ignore|warn|raise): Define behaviour if there is a unsafe path
+            It defaults to `raise`.
+
+        on_error? (ignore|warn|raise): Define behaviour if there is an error in the
+            header or rows during the reading rows process.
+            It defaults to `ignore`.
+
         lookup? (dict): The lookup is a special object providing relational information.
             For more information, please check "Extracting  Data" guide.
 
@@ -145,11 +154,13 @@ def extract_table(
         schema=schema,
         sync_schema=sync_schema,
         patch_schema=patch_schema,
+        # Infer
         infer_type=infer_type,
         infer_names=infer_names,
         infer_volume=infer_volume,
         infer_confidence=infer_confidence,
         # Integrity
+        on_unsafe=on_unsafe,
         on_error=on_error,
         lookup=lookup,
     )

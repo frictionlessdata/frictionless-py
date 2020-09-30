@@ -14,16 +14,19 @@ def describe_resource(
     encoding=None,
     compression=None,
     compression_path=None,
+    # Control/Dialect/Query/Header
     control=None,
-    # Table
     dialect=None,
     query=None,
     headers=None,
+    # Infer
     infer_type=None,
     infer_names=None,
     infer_volume=config.DEFAULT_INFER_VOLUME,
     infer_confidence=config.DEFAULT_INFER_CONFIDENCE,
     infer_missing_values=config.DEFAULT_MISSING_VALUES,
+    # Integrity
+    on_unsafe="raise",
     # Description
     expand=False,
 ):
@@ -91,7 +94,11 @@ def describe_resource(
             For more information, please check "Describing  Data" guide.
             It defaults to `['']`
 
+        on_unsafe? (ignore|warn|raise): Define behaviour if there is a unsafe path
+            It defaults to `raise`.
+
         expand? (bool): if `True` it will expand the metadata
+            It defaults to `False`
 
     Returns:
         Resource: data resource
@@ -108,16 +115,19 @@ def describe_resource(
         encoding=encoding,
         compression=compression,
         compression_path=compression_path,
+        # Control/Dilect/Query/Header
         control=control,
-        # Table
         dialect=dialect,
         query=query,
         headers=headers,
+        # Infer
         infer_type=infer_type,
         infer_names=infer_names,
         infer_volume=infer_volume,
         infer_confidence=infer_confidence,
         infer_missing_values=infer_missing_values,
+        # Integrity
+        on_unsafe=on_unsafe,
     )
 
     # Create resource

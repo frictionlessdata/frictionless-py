@@ -105,6 +105,9 @@ class Table:
             For more information, please check "Describing  Data" guide.
             It defaults to `['']`
 
+        on_unsafe? (ignore|warn|raise): Define behaviour if there is a unsafe path
+            It defaults to `raise`.
+
         on_error? (ignore|warn|raise): Define behaviour if there is an error in the
             header or rows during the reading rows process.
             It defaults to `ignore`.
@@ -136,12 +139,14 @@ class Table:
         schema=None,
         sync_schema=False,
         patch_schema=False,
+        # Infer
         infer_type=None,
         infer_names=None,
         infer_volume=config.DEFAULT_INFER_VOLUME,
         infer_confidence=config.DEFAULT_INFER_CONFIDENCE,
         infer_missing_values=config.DEFAULT_MISSING_VALUES,
         # Integrity
+        on_unsafe="raise",
         on_error="ignore",
         lookup=None,
     ):
@@ -182,11 +187,7 @@ class Table:
         self.__infer_volume = infer_volume
         self.__infer_confidence = infer_confidence
         self.__infer_missing_values = infer_missing_values
-        self.__on_error = on_error
         self.__lookup = lookup
-
-        # Set error handler
-        self.on_error = on_error
 
         # Create resource
         self.__resource = Resource.from_source(
@@ -201,11 +202,16 @@ class Table:
             dialect=dialect,
             query=query,
             schema=schema,
+            on_unsafe=on_unsafe,
+            on_error=on_error,
         )
 
     def __setattr__(self, name, value):
-        if name == "on_error":
-            self.__on_error = value
+        if name == "on_unsafe":
+            self.__resource.on_unsafe = value
+            return
+        elif name == "on_error":
+            self.__resource.on_error = value
             return
         super().__setattr__(name, value)
 
@@ -342,13 +348,20 @@ class Table:
         return self.__resource.stats
 
     @property
+    def on_unsafe(self):
+        """
+        Returns:
+            ignore|warn|raise: on unsafe path bahaviour
+        """
+        return self.__resource.on_unsafe
+
+    @property
     def on_error(self):
         """
         Returns:
             ignore|warn|raise: on error bahaviour
         """
-        assert self.__on_error in ["ignore", "warn", "raise"]
-        return self.__on_error
+        return self.__resource.on_error
 
     @property
     def header(self):
@@ -696,9 +709,9 @@ class Table:
         # Handle header errors
         if not self.header.valid:
             error = self.header.errors[0]
-            if self.__on_error == "warn":
+            if self.on_error == "warn":
                 warnings.warn(error.message, UserWarning)
-            elif self.__on_error == "raise":
+            elif self.on_error == "raise":
                 raise exceptions.FrictionlessException(error)
 
         # Create state
@@ -774,9 +787,9 @@ class Table:
             # Handle row errors
             if not row.valid:
                 error = row.errors[0]
-                if self.__on_error == "warn":
+                if self.on_error == "warn":
                     warnings.warn(error.message, UserWarning)
-                elif self.__on_error == "raise":
+                elif self.on_error == "raise":
                     raise exceptions.FrictionlessException(error)
 
             # Stream row
