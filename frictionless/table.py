@@ -189,9 +189,8 @@ class Table:
         self.on_error = on_error
 
         # Create resource
-        self.__resource = Resource(
-            path=helpers.detect_path(source),
-            data=helpers.detect_data(source),
+        self.__resource = Resource.from_source(
+            source,
             scheme=scheme,
             format=format,
             hashing=hashing,
@@ -437,9 +436,6 @@ class Table:
             bool: if closed
         """
         return self.__parser is None
-
-        # Read
-        return self.__on_error
 
     def read_data(self):
         """Read data stream into memory
@@ -816,9 +812,8 @@ class Table:
         """
 
         # Create file
-        resource = Resource(
-            path=helpers.detect_path(target),
-            data=helpers.detect_data(target),
+        resource = Resource.from_source(
+            target,
             scheme=scheme,
             format=format,
             hashing=hashing,
