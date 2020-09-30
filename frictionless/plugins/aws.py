@@ -48,9 +48,11 @@ class S3Control(Control):
 
     """
 
-    def __init__(self, descriptor=None, endpoint_url=None, detect_encoding=None):
+    def __init__(
+        self, descriptor=None, endpoint_url=None, newline=None, detect_encoding=None
+    ):
         self.setinitial("endpointUrl", endpoint_url)
-        super().__init__(descriptor, detect_encoding=detect_encoding)
+        super().__init__(descriptor, newline=newline, detect_encoding=detect_encoding)
 
     @property
     def endpoint_url(self):
@@ -71,7 +73,11 @@ class S3Control(Control):
 
     metadata_profile = {  # type: ignore
         "type": "object",
-        "properties": {"endpointUrl": {"type": "string"}, "detectEncoding": {}},
+        "properties": {
+            "endpointUrl": {"type": "string"},
+            "newline": {"type": "string"},
+            "detectEncoding": {},
+        },
     }
 
 
