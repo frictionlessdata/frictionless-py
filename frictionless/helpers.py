@@ -99,7 +99,7 @@ def detect_basepath(descriptor):
     return basepath
 
 
-def detect_path_and_data_from_source(source):
+def detect_path_and_data(source):
     if not source:
         return [None, None]
     elif isinstance(source, str):
@@ -107,6 +107,14 @@ def detect_path_and_data_from_source(source):
     elif isinstance(source, list) and isinstance(source[0], str):
         return [source, None]
     return [None, source]
+
+
+def detect_path(source):
+    return detect_path_and_data(source)[0]
+
+
+def detect_data(source):
+    return detect_path_and_data(source)[1]
 
 
 def ensure_dir(path):

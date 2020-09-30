@@ -4,6 +4,7 @@ from pathlib import Path
 from copy import deepcopy
 from itertools import chain
 from importlib import import_module
+from .resource import Resource
 from .system import system
 from .header import Header
 from .row import Row
@@ -189,11 +190,9 @@ class Table:
         self.on_error = on_error
 
         # Create resource
-        path, data = helpers.detect_path_and_data_from_source(source)
-        module = import_module("frictionless.resource")
-        self.__resource = module.Resource(
-            path=path,
-            data=data,
+        self.__resource = Resource(
+            path=helpers.detect_path(source),
+            data=helpers.detect_data(source),
             scheme=scheme,
             format=format,
             hashing=hashing,
@@ -819,11 +818,9 @@ class Table:
         """
 
         # Create file
-        path, data = helpers.detect_path_and_data_from_source(target)
-        module = import_module("frictionless.resource")
-        resource = module.Resource(
-            path=path,
-            data=data,
+        resource = Resource(
+            path=helpers.detect_path(target),
+            data=helpers.detect_data(target),
             scheme=scheme,
             format=format,
             hashing=hashing,

@@ -3,15 +3,14 @@ import os
 import json
 import zipfile
 from copy import deepcopy
+from importlib import import_module
 from urllib.request import urlopen
 from .metadata import Metadata
 from .controls import Control
 from .dialects import Dialect
 from .schema import Schema
 from .system import system
-from .table import Table
 from .query import Query
-from .file import File
 from . import exceptions
 from . import dialects
 from . import helpers
@@ -105,6 +104,22 @@ class Resource(Metadata):
         self.__on_error = on_error
         self.__package = package
         super().__init__(descriptor)
+
+        # Detect attributes
+        # TODO: review source
+        # TODO: detect name also?
+        source = data or path
+        detect = helpers.detect_source_scheme_and_format(source)
+        self.__detected_compression = config.DEFAULT_COMPRESSION
+        self.__detected_compression_path = config.DEFAULT_COMPRESSION_PATH
+        if detect[1] in config.COMPRESSION_FORMATS:
+            self.__detected_compression = detect[1]
+            source = source[: -len(detect[1]) - 1]
+            if compression_path:
+                source = os.path.join(source, compression_path)
+            detect = helpers.detect_source_scheme_and_format(source)
+        self.__detected_scheme = detect[0] or config.DEFAULT_SCHEME
+        self.__detected_format = detect[1] or config.DEFAULT_FORMAT
 
         # Set hashing
         hashing, hash = helpers.parse_resource_hash(self.get("hash"))
@@ -217,6 +232,7 @@ class Resource(Metadata):
         """
         return "data" in self
 
+    # TODO: can it be without actual source reading?
     # NOTE: optimize tabular/infer
     @Metadata.property(write=False)
     def tabular(self):
@@ -260,7 +276,7 @@ class Resource(Metadata):
         Returns
             str?: resource scheme
         """
-        return self.get("scheme")
+        return self.get("scheme", self.__detected_scheme)
 
     @Metadata.property
     def format(self):
@@ -268,7 +284,7 @@ class Resource(Metadata):
         Returns
             str?: resource format
         """
-        return self.get("format")
+        return self.get("format", self.__detected_format)
 
     @Metadata.property
     def hashing(self):
@@ -276,7 +292,7 @@ class Resource(Metadata):
         Returns
             str?: resource hashing
         """
-        return self.get("hashing")
+        return self.get("hashing", config.DEFAULT_HASHING)
 
     @Metadata.property
     def encoding(self):
@@ -284,7 +300,7 @@ class Resource(Metadata):
         Returns
             str?: resource encoding
         """
-        return self.get("encoding")
+        return self.get("encoding", config.DEFAULT_ENCODING)
 
     @Metadata.property
     def compression(self):
@@ -292,7 +308,7 @@ class Resource(Metadata):
         Returns
             str?: resource compression
         """
-        return self.get("compression")
+        return self.get("compression", self.__detected_compression)
 
     @Metadata.property
     def compression_path(self):
@@ -300,7 +316,7 @@ class Resource(Metadata):
         Returns
             str?: resource compression path
         """
-        return self.get("compressionPath")
+        return self.get("compressionPath", self.__detected_compression_path)
 
     @Metadata.property
     def control(self):
@@ -772,6 +788,7 @@ class Resource(Metadata):
         Returns:
             Table: data table
         """
+        module = import_module("frictionless.table")
         options.setdefault("source", self.source)
         options.setdefault("scheme", self.scheme)
         options.setdefault("format", self.format)
@@ -784,7 +801,7 @@ class Resource(Metadata):
         options.setdefault("on_error", self.__on_error)
         if "lookup" not in options:
             options["lookup"] = self.read_lookup()
-        return Table(**options)
+        return module.Table(**options)
 
     def to_file(self, **options):
         """Convert resource to File
@@ -795,6 +812,7 @@ class Resource(Metadata):
         Returns:
             File: data file
         """
+        module = import_module("frictionless.file")
         options.setdefault("source", self.source)
         options.setdefault("scheme", self.scheme)
         options.setdefault("format", self.format)
@@ -802,7 +820,7 @@ class Resource(Metadata):
         options.setdefault("encoding", self.encoding)
         options.setdefault("compression", self.compression)
         options.setdefault("compression_path", self.compression_path)
-        return File(**options)
+        return module.File(**options)
 
     # NOTE: support multipart
     def to_zip(self, target, encoder_class=None):
