@@ -3,7 +3,6 @@ import warnings
 from pathlib import Path
 from copy import deepcopy
 from itertools import chain
-from importlib import import_module
 from .resource import Resource
 from .system import system
 from .header import Header

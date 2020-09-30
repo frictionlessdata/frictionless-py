@@ -23,7 +23,7 @@ class Location:
                 headless=resource.get("dialect", {}).get("header") is False,
             )
 
-        # Detect scheme/format/compression/compression_path
+        # Detect source/scheme/format/compression/compression_path
         detect = helpers.detect_source_scheme_and_format(source)
         self.__compression = config.DEFAULT_COMPRESSION
         self.__compression_path = config.DEFAULT_COMPRESSION_PATH
@@ -36,11 +36,7 @@ class Location:
         self.__scheme = detect[0] or config.DEFAULT_SCHEME
         self.__format = detect[1] or config.DEFAULT_FORMAT
 
-        # Validate/save source
-        for path in resource.path if isinstance(resource.path, list) else [resource.path]:
-            if path and not resource.trusted and not helpers.is_safe_path(path):
-                note = f'path "{path}" is not safe'
-                raise exceptions.FrictionlessException(errors.ResourceError(note=note))
+        # Save source
         self.__source = source
 
     @property

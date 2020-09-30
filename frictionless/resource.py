@@ -358,14 +358,6 @@ class Resource(Metadata):
         except Exception:
             return False
 
-    @Metadata.property(write=False)
-    def trusted(self):
-        """
-        Returns
-            bool: if it's in the "trusted" mode
-        """
-        return self.__trusted
-
     @property
     def on_error(self):
         """
@@ -836,6 +828,9 @@ class Resource(Metadata):
 
         # Location
         self.__location = Location(self)
+        if not self.__trusted and self.__location.suspect:
+            note = f'path "{self.__location.path}" is not safe'
+            raise exceptions.FrictionlessException(errors.ResourceError(note=note))
 
         # Control
         control = self.get("control")
