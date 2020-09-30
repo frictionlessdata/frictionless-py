@@ -8,7 +8,7 @@ from . import config
 class Location:
     def __init__(self, resource):
 
-        # Detect source
+        # Prepare source
         if resource.data:
             source = resource.data
         elif isinstance(resource.path, str):
@@ -34,9 +34,6 @@ class Location:
             detect = helpers.detect_source_scheme_and_format(source)
         self.__scheme = detect[0] or config.DEFAULT_SCHEME
         self.__format = detect[1] or config.DEFAULT_FORMAT
-
-        # Save attributes
-        self.__resource = resource
         self.__source = source
 
     @property
@@ -76,14 +73,6 @@ class Location:
         if self.multipart:
             return self.source.remote
         return helpers.is_remote_path(self.source)
-
-    @property
-    def tabular(self):
-        try:
-            system.create_parser(self)
-            return True
-        except Exception:
-            return False
 
 
 # Internal

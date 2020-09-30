@@ -335,7 +335,11 @@ class Resource(Metadata):
         Returns
             bool: if resource is tabular
         """
-        return self.__location.tabular
+        try:
+            system.create_parser(self)
+            return True
+        except Exception:
+            return False
 
     @property
     def onerror(self):
