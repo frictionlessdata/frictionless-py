@@ -40,7 +40,9 @@ class Resource(Metadata):
         compression_path? (str): file compression path
         control? (dict): file control
         dialect? (dict): table dialect
-        schema? (dict): file schema
+        query? (dict): table query
+        schema? (dict): table schema
+        stats? (dict): table stats
         profile? (str): resource profile
         basepath? (str): resource basepath
         trusted? (bool): don't raise on unsage paths
@@ -71,11 +73,12 @@ class Resource(Metadata):
         dialect=None,
         query=None,
         schema=None,
+        stats=None,
         profile=None,
         basepath=None,
         trusted=False,
-        on_error="ignore",
         package=None,
+        on_error="ignore",
     ):
 
         # Handle zip
@@ -98,11 +101,12 @@ class Resource(Metadata):
         self.setinitial("dialect", dialect)
         self.setinitial("query", query)
         self.setinitial("schema", schema)
+        self.setinitial("stats", stats)
         self.setinitial("profile", profile)
         self.__basepath = basepath or helpers.detect_basepath(descriptor)
         self.__trusted = trusted
-        self.__on_error = on_error
         self.__package = package
+        self.__on_error = on_error
         super().__init__(descriptor)
 
         # Detect attributes
@@ -121,10 +125,7 @@ class Resource(Metadata):
         self.__detected_scheme = detect[0] or config.DEFAULT_SCHEME
         self.__detected_format = detect[1] or config.DEFAULT_FORMAT
 
-        # Set hashing
-        hashing, hash = helpers.parse_resource_hash(self.get("hash"))
-        if hashing != config.DEFAULT_HASHING:
-            self["hashing"] = hashing
+        # TODO: convert the specs stats: hash/bytes/rows
 
     def __setattr__(self, name, value):
         if name == "on_error":
@@ -388,15 +389,8 @@ class Resource(Metadata):
         Returns
             dict?: resource stats
         """
-        stats = {}
-        # TODO: add fields
-        for name in ["hash", "bytes", "rows"]:
-            value = self.get(name)
-            if value is not None:
-                if name == "hash":
-                    value = helpers.parse_resource_hash(value)[1]
-                stats[name] = value
-        return stats
+        stats = {"hash": "", "bytes": 0, "fields": 0, "rows": 0}
+        return self.metadata_attach("stats", self.get("stats", stats))
 
     @Metadata.property
     def profile(self):
@@ -866,13 +860,13 @@ class Resource(Metadata):
 
         # Control
         control = self.get("control")
-        if not isinstance(control, (str, type(None), Control)):
+        if not isinstance(control, (str, type(None))):
             control = system.create_control(self, descriptor=control)
             dict.__setitem__(self, "control", control)
 
         # Dialect
         dialect = self.get("dialect")
-        if not isinstance(dialect, (str, type(None), Dialect)):
+        if not isinstance(dialect, (str, type(None))):
             dialect = system.create_dialect(self, descriptor=dialect)
             dict.__setitem__(self, "dialect", dialect)
 

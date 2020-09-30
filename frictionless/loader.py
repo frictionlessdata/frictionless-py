@@ -249,8 +249,9 @@ class ByteStreamWithStatsHandling:
         except Exception as exception:
             error = errors.HashingError(note=str(exception))
             raise exceptions.FrictionlessException(error)
+        # TODO: document why we ignore stats if there is hash
+        self.__stats = resource.stats if not resource.stats["hash"] else {}
         self.__byte_stream = byte_stream
-        self.__resource = resource
 
     def __getattr__(self, name):
         return getattr(self.__byte_stream, name)
@@ -261,8 +262,8 @@ class ByteStreamWithStatsHandling:
 
     def read1(self, size=None):
         chunk = self.__byte_stream.read1(size)
-        self.__resource["bytes"] += len(chunk)
+        self.__stats["bytes"] += len(chunk)
         if self.__hasher:
             self.__hasher.update(chunk)
-            self.__resource["hash"] = self.__hasher.hexdigest()
+            self.__stats["hash"] = self.__hasher.hexdigest()
         return chunk

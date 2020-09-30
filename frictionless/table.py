@@ -334,6 +334,7 @@ class Table:
         The stats object has:
             - hash: str - hashing sum
             - bytes: int - number of bytes
+            - fields: int - number of fields
             - rows: int - number of rows
 
         Returns:
@@ -403,10 +404,7 @@ class Table:
             error = self.__resource.query.metadata_errors[0]
             raise exceptions.FrictionlessException(error)
         try:
-            # TODO: add fields
-            self.__resource["hash"] = ""
-            self.__resource["bytes"] = 0
-            self.__resource["rows"] = 0
+            self.__resource.stats = {"hash": "", "bytes": 0, "fields": 0, "rows": 0}
             self.__parser = system.create_parser(self.__resource)
             self.__parser.open()
             self.__data_stream = self.__read_data_stream()
@@ -468,9 +466,9 @@ class Table:
                 offset -= 1
                 continue
             self.__row_number += 1
-            self.__resource["rows"] = self.__row_number
+            self.__resource.stats["rows"] = self.__row_number
             yield cells
-            if limit and limit <= self.__resource["rows"]:
+            if limit and limit <= self.__resource.stats["rows"]:
                 break
 
     def __read_data_stream_create_sample_iterator(self):
@@ -581,11 +579,12 @@ class Table:
             note = "Schemas with duplicate field names are not supported"
             raise exceptions.FrictionlessException(errors.SchemaError(note=note))
 
-        # Store state
+        # Store state/stats
         self.__sample = sample
         self.__field_positions = field_positions
         self.__sample_positions = sample_positions
         self.__header = Header(header, schema=schema, field_positions=field_positions)
+        self.__resource.stats["fields"] = len(schema.fields)
 
     def __read_data_stream_infer_header(self, header_data):
         dialect = self.__resource.dialect
@@ -731,7 +730,7 @@ class Table:
                 schema=self.__resource.schema,
                 field_positions=self.__field_positions,
                 row_position=self.__row_position,
-                row_number=self.__resource["rows"],
+                row_number=self.__resource.stats["rows"],
             )
 
             # Unique Error
