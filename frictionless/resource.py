@@ -4,15 +4,14 @@ import json
 import zipfile
 from copy import deepcopy
 from importlib import import_module
-from urllib.request import urlopen
 from .metadata import Metadata
+from .location import Location
 from .controls import Control
 from .dialects import Dialect
 from .schema import Schema
 from .system import system
 from .query import Query
 from . import exceptions
-from . import dialects
 from . import helpers
 from . import errors
 from . import config
@@ -77,13 +76,16 @@ class Resource(Metadata):
         profile=None,
         basepath=None,
         trusted=False,
-        package=None,
         on_error="ignore",
+        # Composition
+        package=None,
     ):
 
         # Handle zip
         if helpers.is_zip_descriptor(descriptor):
             descriptor = helpers.unzip_descriptor(descriptor, "dataresource.json")
+
+        # TODO: Handle stats: hash/bytes/rows
 
         # Set attributes
         self.setinitial("name", name)
@@ -108,24 +110,6 @@ class Resource(Metadata):
         self.__package = package
         self.__on_error = on_error
         super().__init__(descriptor)
-
-        # Detect attributes
-        # TODO: review source
-        # TODO: detect name also?
-        source = data or path
-        detect = helpers.detect_source_scheme_and_format(source)
-        self.__detected_compression = config.DEFAULT_COMPRESSION
-        self.__detected_compression_path = config.DEFAULT_COMPRESSION_PATH
-        if detect[1] in config.COMPRESSION_FORMATS:
-            self.__detected_compression = detect[1]
-            source = source[: -len(detect[1]) - 1]
-            if compression_path:
-                source = os.path.join(source, compression_path)
-            detect = helpers.detect_source_scheme_and_format(source)
-        self.__detected_scheme = detect[0] or config.DEFAULT_SCHEME
-        self.__detected_format = detect[1] or config.DEFAULT_FORMAT
-
-        # TODO: convert the specs stats: hash/bytes/rows
 
     def __setattr__(self, name, value):
         if name == "on_error":
@@ -157,7 +141,6 @@ class Resource(Metadata):
         """
         return self.get("description")
 
-    # NOTE: should it be memory for inline?
     @Metadata.property
     def path(self):
         """
@@ -174,102 +157,13 @@ class Resource(Metadata):
         """
         return self.get("data")
 
-    # NOTE: rewrite this method
     @Metadata.property(write=False)
     def source(self):
         """
         Returns
             any: data source
         """
-        path = self.path
-        if self.inline:
-            return self.data
-        if not path:
-            return []
-        for path_item in path if isinstance(path, list) else [path]:
-            if not self.__trusted and not helpers.is_safe_path(path_item):
-                note = f'path "{path_item}" is not safe'
-                raise exceptions.FrictionlessException(errors.ResourceError(note=note))
-        if self.multipart:
-            drop_header = False
-            if path[0].endswith(".csv"):
-                dialect = dialects.CsvDialect(self.get("dialect"))
-                if dialect.header:
-                    drop_header = True
-            for index, path_item in enumerate(path):
-                if not helpers.is_remote_path(path_item):
-                    path[index] = os.path.join(self.basepath, path_item)
-            return MultipartSource(path, drop_header=drop_header)
-        if not helpers.is_remote_path(path):
-            return os.path.join(self.basepath, path)
-        return path
-
-    @Metadata.property(write=False)
-    def basepath(self):
-        """
-        Returns
-            str: resource basepath
-        """
-        return self.__basepath
-
-    # NOTE: move this logic to path?
-    @Metadata.property(write=False)
-    def fullpath(self):
-        """
-        Returns
-            str: resource fullpath
-        """
-        if self.inline:
-            return "memory"
-        if helpers.is_remote_path(self.path):
-            return self.path
-        return os.path.join(self.basepath, self.path)
-
-    @Metadata.property(write=False)
-    def inline(self):
-        """
-        Returns
-            bool: if resource is inline
-        """
-        return "data" in self
-
-    # TODO: can it be without actual source reading?
-    # NOTE: optimize tabular/infer
-    @Metadata.property(write=False)
-    def tabular(self):
-        """
-        Returns
-            bool: if resource is tabular
-        """
-        table = self.to_table()
-        try:
-            table.open()
-        except Exception as exception:
-            if exception.error.code == "format-error":
-                return False
-        except Exception:
-            pass
-        finally:
-            table.close()
-        return True
-
-    @Metadata.property(write=False)
-    def remote(self):
-        """
-        Returns
-            bool: if resource is remote
-        """
-        if self.inline:
-            return False
-        return helpers.is_remote_path(self.path[0] if self.multipart else self.path)
-
-    @Metadata.property(write=False)
-    def multipart(self):
-        """
-        Returns
-            bool: if resource is multipart
-        """
-        return bool(self.path and isinstance(self.path, list) and len(self.path) >= 2)
+        return self.__location.source
 
     @Metadata.property
     def scheme(self):
@@ -277,7 +171,7 @@ class Resource(Metadata):
         Returns
             str?: resource scheme
         """
-        return self.get("scheme", self.__detected_scheme)
+        return self.get("scheme", self.__location.scheme)
 
     @Metadata.property
     def format(self):
@@ -285,7 +179,7 @@ class Resource(Metadata):
         Returns
             str?: resource format
         """
-        return self.get("format", self.__detected_format)
+        return self.get("format", self.__location.format)
 
     @Metadata.property
     def hashing(self):
@@ -309,7 +203,7 @@ class Resource(Metadata):
         Returns
             str?: resource compression
         """
-        return self.get("compression", self.__detected_compression)
+        return self.get("compression", self.__location.compression)
 
     @Metadata.property
     def compression_path(self):
@@ -317,7 +211,7 @@ class Resource(Metadata):
         Returns
             str?: resource compression path
         """
-        return self.get("compressionPath", self.__detected_compression_path)
+        return self.get("compressionPath", self.__location.compression_path)
 
     @Metadata.property
     def control(self):
@@ -399,6 +293,78 @@ class Resource(Metadata):
             str?: resource profile
         """
         return self.get("profile", config.DEFAULT_RESOURCE_PROFILE)
+
+    @Metadata.property(write=False)
+    def basepath(self):
+        """
+        Returns
+            str: resource basepath
+        """
+        return self.__basepath
+
+    @Metadata.property(write=False)
+    def fullpath(self):
+        """
+        Returns
+            str: resource fullpath
+        """
+        if self.inline:
+            return "memory"
+        if self.multipart:
+            return "multipart"
+        return self.source
+
+    @Metadata.property(write=False)
+    def inline(self):
+        """
+        Returns
+            bool: if resource is inline
+        """
+        return self.__location.inline
+
+    @Metadata.property(write=False)
+    def multipart(self):
+        """
+        Returns
+            bool: if resource is multipart
+        """
+        return self.__location.multipart
+
+    @Metadata.property(write=False)
+    def remote(self):
+        """
+        Returns
+            bool: if resource is remote
+        """
+        return self.__location.remote
+
+    @Metadata.property(write=False)
+    def suspect(self):
+        """
+        Returns
+            bool: if resource is suspect
+        """
+        return self.__location.suspect
+
+    @Metadata.property(write=False)
+    def tabular(self):
+        """
+        Returns
+            bool: if resource is tabular
+        """
+        try:
+            system.create_parser(self)
+            return True
+        except Exception:
+            return False
+
+    @Metadata.property(write=False)
+    def trusted(self):
+        """
+        Returns
+            bool: if it's in the "trusted" mode
+        """
+        return self.__trusted
 
     @property
     def on_error(self):
@@ -620,6 +586,16 @@ class Resource(Metadata):
     # Import/Export
 
     @staticmethod
+    def from_source(source, **options):
+        if not source:
+            return Resource(data=[], **options)
+        elif isinstance(source, str):
+            return Resource(path=source, **options)
+        elif isinstance(source, list) and isinstance(source[0], str):
+            return Resource(path=source, **options)
+        return Resource(data=source, **options)
+
+    @staticmethod
     def from_storage(storage, *, name):
         """Import resource from storage
 
@@ -628,16 +604,6 @@ class Resource(Metadata):
             name (str): resource name
         """
         return storage.read_resource(name)
-
-    def to_storage(self, storage, *, force=False):
-        """Export resource to storage
-
-        Parameters:
-            storage (Storage): storage instance
-            force (bool): overwrite existent
-        """
-        storage.write_resource(self, force=force)
-        return storage
 
     @staticmethod
     def from_sql(*, name, engine, prefix="", namespace=None):
@@ -656,22 +622,6 @@ class Resource(Metadata):
             name=name,
         )
 
-    def to_sql(self, *, engine, prefix="", namespace=None, force=False):
-        """Export resource to SQL table
-
-        Parameters:
-            engine (object): `sqlalchemy` engine
-            prefix (str): prefix for all tables
-            namespace (str): SQL scheme
-            force (bool): overwrite existent
-        """
-        return self.to_storage(
-            system.create_storage(
-                "sql", engine=engine, prefix=prefix, namespace=namespace
-            ),
-            force=force,
-        )
-
     @staticmethod
     def from_pandas(dataframe):
         """Import resource from Pandas dataframe
@@ -684,15 +634,6 @@ class Resource(Metadata):
             name="name",
         )
 
-    def to_pandas(self):
-        """Export resource to Pandas dataframe
-
-        Parameters:
-            dataframes (dict): pandas dataframes
-            force (bool): overwrite existent
-        """
-        return self.to_storage(system.create_storage("pandas"))
-
     @staticmethod
     def from_spss(*, name, basepath):
         """Import resource from SPSS file
@@ -704,17 +645,6 @@ class Resource(Metadata):
         return Resource.from_storage(
             system.create_storage("spss", basepath=basepath),
             name=name,
-        )
-
-    def to_spss(self, *, basepath, force=False):
-        """Export resource to SPSS file
-
-        Parameters:
-            basepath (str): SPSS dir path
-            force (bool): overwrite existent
-        """
-        return self.to_storage(
-            system.create_storage("spss", basepath=basepath), force=force
         )
 
     @staticmethod
@@ -737,6 +667,52 @@ class Resource(Metadata):
                 prefix=prefix,
             ),
             name=name,
+        )
+
+    def to_storage(self, storage, *, force=False):
+        """Export resource to storage
+
+        Parameters:
+            storage (Storage): storage instance
+            force (bool): overwrite existent
+        """
+        storage.write_resource(self, force=force)
+        return storage
+
+    def to_sql(self, *, engine, prefix="", namespace=None, force=False):
+        """Export resource to SQL table
+
+        Parameters:
+            engine (object): `sqlalchemy` engine
+            prefix (str): prefix for all tables
+            namespace (str): SQL scheme
+            force (bool): overwrite existent
+        """
+        return self.to_storage(
+            system.create_storage(
+                "sql", engine=engine, prefix=prefix, namespace=namespace
+            ),
+            force=force,
+        )
+
+    def to_pandas(self):
+        """Export resource to Pandas dataframe
+
+        Parameters:
+            dataframes (dict): pandas dataframes
+            force (bool): overwrite existent
+        """
+        return self.to_storage(system.create_storage("pandas"))
+
+    def to_spss(self, *, basepath, force=False):
+        """Export resource to SPSS file
+
+        Parameters:
+            basepath (str): SPSS dir path
+            force (bool): overwrite existent
+        """
+        return self.to_storage(
+            system.create_storage("spss", basepath=basepath), force=force
         )
 
     def to_bigquery(self, *, service, project, dataset, prefix="", force=False):
@@ -858,6 +834,9 @@ class Resource(Metadata):
 
     def metadata_process(self):
 
+        # Location
+        self.__location = Location(self)
+
         # Control
         control = self.get("control")
         if not isinstance(control, (str, type(None))):
@@ -892,73 +871,3 @@ class Resource(Metadata):
         # Schema
         if self.schema:
             yield from self.schema.metadata_errors
-
-
-# Internal
-
-
-class MultipartSource:
-    def __init__(self, source, *, drop_header):
-        self.__source = source
-        self.__drop_header = drop_header
-        self.__line_stream = self.read_line_stream()
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, *args, **kwargs):
-        pass
-
-    def __iter__(self):
-        return self.__rows
-
-    @property
-    def closed(self):
-        return False
-
-    def readable(self):
-        return True
-
-    def seekable(self):
-        return True
-
-    def writable(self):
-        return False
-
-    def close(self):
-        pass
-
-    def flush(self):
-        pass
-
-    def read1(self, size):
-        return self.read(size)
-
-    def seek(self, offset):
-        assert offset == 0
-        self.__line_stream = self.read_line_stream()
-
-    def read(self, size):
-        res = b""
-        while True:
-            try:
-                res += next(self.__line_stream)
-            except StopIteration:
-                break
-            if len(res) > size:
-                break
-        return res
-
-    def read_line_stream(self):
-        streams = []
-        if helpers.is_remote_path(self.__source[0]):
-            streams = (urlopen(chunk) for chunk in self.__source)
-        else:
-            streams = (io.open(chunk, "rb") for chunk in self.__source)
-        for stream_number, stream in enumerate(streams, start=1):
-            for line_number, line in enumerate(stream, start=1):
-                if not line.endswith(b"\n"):
-                    line += b"\n"
-                if self.__drop_header and stream_number > 1 and line_number == 1:
-                    continue
-                yield line

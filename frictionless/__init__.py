@@ -5,10 +5,13 @@ from .field import Field
 from .file import File
 from .header import Header
 from .inquiry import Inquiry
+from .loader import Loader
+from .location import Location
 from .metadata import Metadata
 from .package import Package
 from .plugin import Plugin
 from .query import Query
+from .parser import Parser
 from .pipeline import Pipeline
 from .report import Report, ReportTable
 from .resource import Resource

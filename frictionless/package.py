@@ -253,16 +253,6 @@ class Package(Metadata):
         """
         return storage.read_package()
 
-    def to_storage(self, storage, *, force=False):
-        """Export package to storage
-
-        Parameters:
-            storage (Storage): storage instance
-            force (bool): overwrite existent
-        """
-        storage.write_package(self, force=force)
-        return storage
-
     @staticmethod
     def from_sql(*, engine, prefix="", namespace=None):
         """Import package from SQL
@@ -278,22 +268,6 @@ class Package(Metadata):
             )
         )
 
-    def to_sql(self, *, engine, prefix="", namespace=None, force=False):
-        """Export package to SQL
-
-        Parameters:
-            engine (object): `sqlalchemy` engine
-            prefix (str): prefix for all tables
-            namespace (str): SQL scheme
-            force (bool): overwrite existent
-        """
-        return self.to_storage(
-            system.create_storage(
-                "sql", engine=engine, prefix=prefix, namespace=namespace
-            ),
-            force=force,
-        )
-
     @staticmethod
     def from_pandas(*, dataframes):
         """Import package from Pandas dataframes
@@ -305,10 +279,6 @@ class Package(Metadata):
             system.create_storage("pandas", dataframes=dataframes)
         )
 
-    def to_pandas(self):
-        """Export package to Pandas dataframes"""
-        return self.to_storage(system.create_storage("pandas"))
-
     @staticmethod
     def from_spss(*, basepath):
         """Import package from SPSS directory
@@ -317,17 +287,6 @@ class Package(Metadata):
             basepath (str): SPSS dir path
         """
         return Package.from_storage(system.create_storage("spss", basepath=basepath))
-
-    def to_spss(self, *, basepath, force=False):
-        """Export package to SPSS directory
-
-        Parameters:
-            basepath (str): SPSS dir path
-            force (bool): overwrite existent
-        """
-        return self.to_storage(
-            system.create_storage("spss", basepath=basepath), force=force
-        )
 
     @staticmethod
     def from_bigquery(*, service, project, dataset, prefix=""):
@@ -347,6 +306,47 @@ class Package(Metadata):
                 dataset=dataset,
                 prefix=prefix,
             ),
+        )
+
+    def to_storage(self, storage, *, force=False):
+        """Export package to storage
+
+        Parameters:
+            storage (Storage): storage instance
+            force (bool): overwrite existent
+        """
+        storage.write_package(self, force=force)
+        return storage
+
+    def to_sql(self, *, engine, prefix="", namespace=None, force=False):
+        """Export package to SQL
+
+        Parameters:
+            engine (object): `sqlalchemy` engine
+            prefix (str): prefix for all tables
+            namespace (str): SQL scheme
+            force (bool): overwrite existent
+        """
+        return self.to_storage(
+            system.create_storage(
+                "sql", engine=engine, prefix=prefix, namespace=namespace
+            ),
+            force=force,
+        )
+
+    def to_pandas(self):
+        """Export package to Pandas dataframes"""
+        return self.to_storage(system.create_storage("pandas"))
+
+    def to_spss(self, *, basepath, force=False):
+        """Export package to SPSS directory
+
+        Parameters:
+            basepath (str): SPSS dir path
+            force (bool): overwrite existent
+        """
+        return self.to_storage(
+            system.create_storage("spss", basepath=basepath), force=force
         )
 
     def to_bigquery(self, *, service, project, dataset, prefix="", force=False):

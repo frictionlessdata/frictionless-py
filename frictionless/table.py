@@ -45,7 +45,7 @@ class Table:
         format? (str): File source's format (csv, xls, ...).
             If not set, it'll be inferred from `source`.
 
-        encoding? (str): An algorithm to hash data.
+        hashing? (str): An algorithm to hash data.
             It defaults to 'md5'.
 
         encoding? (str): Source encoding.
