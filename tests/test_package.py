@@ -502,54 +502,54 @@ def test_package_compression_explicit_zip():
 # Integrity
 
 
-def test_resource_integrity_on_error():
+def test_resource_integrity_onerror():
     package = Package(resources=[Resource(path="data/invalid.csv")])
     resource = package.resources[0]
-    assert package.on_error == "ignore"
-    assert resource.on_error == "ignore"
+    assert package.onerror == "ignore"
+    assert resource.onerror == "ignore"
     assert resource.read_rows()
 
 
-def test_resource_integrity_on_error_header_warn():
+def test_resource_integrity_onerror_header_warn():
     data = [["name"], [1], [2], [3]]
     schema = {"fields": [{"name": "bad", "type": "integer"}]}
-    package = Package(resources=[Resource(data=data, schema=schema)], on_error="warn")
+    package = Package(resources=[Resource(data=data, schema=schema)], onerror="warn")
     resource = package.resources[0]
-    assert package.on_error == "warn"
-    assert resource.on_error == "warn"
+    assert package.onerror == "warn"
+    assert resource.onerror == "warn"
     with pytest.warns(UserWarning):
         resource.read_rows()
 
 
-def test_resource_integrity_on_error_header_raise():
+def test_resource_integrity_onerror_header_raise():
     data = [["name"], [1], [2], [3]]
     schema = {"fields": [{"name": "bad", "type": "integer"}]}
-    package = Package({"resources": [{"data": data, "schema": schema}]}, on_error="raise")
+    package = Package({"resources": [{"data": data, "schema": schema}]}, onerror="raise")
     resource = package.resources[0]
-    assert package.on_error == "raise"
-    assert resource.on_error == "raise"
+    assert package.onerror == "raise"
+    assert resource.onerror == "raise"
     with pytest.raises(exceptions.FrictionlessException):
         resource.read_rows()
 
 
-def test_resource_integrity_on_error_row_warn():
+def test_resource_integrity_onerror_row_warn():
     data = [["name"], [1], [2], [3]]
     schema = {"fields": [{"name": "name", "type": "string"}]}
-    package = Package(resources=[Resource(data=data, schema=schema)], on_error="warn")
+    package = Package(resources=[Resource(data=data, schema=schema)], onerror="warn")
     resource = package.resources[0]
-    assert package.on_error == "warn"
-    assert resource.on_error == "warn"
+    assert package.onerror == "warn"
+    assert resource.onerror == "warn"
     with pytest.warns(UserWarning):
         resource.read_rows()
 
 
-def test_resource_integrity_on_error_row_raise():
+def test_resource_integrity_onerror_row_raise():
     data = [["name"], [1], [2], [3]]
     schema = {"fields": [{"name": "name", "type": "string"}]}
-    package = Package({"resources": [{"data": data, "schema": schema}]}, on_error="raise")
+    package = Package({"resources": [{"data": data, "schema": schema}]}, onerror="raise")
     resource = package.resources[0]
-    assert package.on_error == "raise"
-    assert resource.on_error == "raise"
+    assert package.onerror == "raise"
+    assert resource.onerror == "raise"
     with pytest.raises(exceptions.FrictionlessException):
         resource.read_rows()
 

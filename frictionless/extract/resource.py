@@ -2,7 +2,7 @@ from ..resource import Resource
 
 
 def extract_resource(
-    source, *, basepath=None, trusted=False, on_error="ignore", process=None, stream=False
+    source, *, basepath=None, onerror="ignore", trusted=False, process=None, stream=False
 ):
     """Extract resource rows
 
@@ -13,8 +13,8 @@ def extract_resource(
     Parameters:
         source (dict|str): data resource descriptor
         basepath? (str): package basepath
+        onerror? (ignore|warn|raise): behaviour on errors
         trusted? (bool): don't raise an exception on unsafe paths
-        on_error? (ignore|warn|raise): behaviour on errors
         process? (func): a row processor function
 
     Returns:
@@ -23,7 +23,7 @@ def extract_resource(
     """
 
     # Create resource
-    resource = Resource(source, basepath=basepath, trusted=trusted, on_error=on_error)
+    resource = Resource(source, basepath=basepath, onerror=onerror, trusted=trusted)
 
     # Extract resource
     data = resource.read_row_stream()

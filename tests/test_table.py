@@ -1246,13 +1246,13 @@ def test_table_write_format_error_bad_format(tmpdir):
 # Integrity
 
 
-def test_table_integrity_on_error():
+def test_table_integrity_onerror():
     with Table("data/invalid.csv") as table:
         assert table.on_error == "ignore"
         assert table.read_rows()
 
 
-def test_table_integrity_on_error_header_warn():
+def test_table_integrity_onerror_header_warn():
     data = [["name"], [1], [2], [3]]
     schema = {"fields": [{"name": "bad", "type": "integer"}]}
     with Table(data, schema=schema, on_error="warn") as table:
@@ -1261,7 +1261,7 @@ def test_table_integrity_on_error_header_warn():
             table.read_rows()
 
 
-def test_table_integrity_on_error_header_raise():
+def test_table_integrity_onerror_header_raise():
     data = [["name"], [1], [2], [3]]
     schema = {"fields": [{"name": "bad", "type": "integer"}]}
     with Table(data, schema=schema, on_error="raise") as table:
@@ -1270,7 +1270,7 @@ def test_table_integrity_on_error_header_raise():
             table.read_rows()
 
 
-def test_table_integrity_on_error_row_warn():
+def test_table_integrity_onerror_row_warn():
     data = [["name"], [1], [2], [3]]
     schema = {"fields": [{"name": "name", "type": "string"}]}
     with Table(data, schema=schema, on_error="warn") as table:
@@ -1279,7 +1279,7 @@ def test_table_integrity_on_error_row_warn():
             table.read_rows()
 
 
-def test_table_integrity_on_error_row_raise():
+def test_table_integrity_onerror_row_raise():
     data = [["name"], [1], [2], [3]]
     schema = {"fields": [{"name": "name", "type": "string"}]}
     with Table(data, schema=schema, on_error="raise") as table:

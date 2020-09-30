@@ -27,8 +27,10 @@ from .main import program
 @click.option("--infer-confidence", type=float, help="Infer confidence")
 @click.option("--infer-missing-values", type=str, multiple=True, help="Infer missing")
 # Integrity
-@click.option("--on-unsafe", type=str, help="Behaviour on unsafe paths")
-@click.option("--on-error", type=str, help="Behaviour on errors")
+@click.option("--onerror", type=str, help="Behaviour on errors")
+# Package/Resource
+@click.option("--basepath", type=str, help="Package basepath")
+@click.option("--trusted", type=str, help="Don't fail on unsafe paths")
 def program_extract(source, *, source_type, json, **options):
     """Extract data
 

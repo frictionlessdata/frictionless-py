@@ -34,7 +34,7 @@ def validate_table(
     infer_confidence=config.DEFAULT_INFER_CONFIDENCE,
     infer_missing_values=config.DEFAULT_MISSING_VALUES,
     # Integrity
-    on_error="ignore",
+    onerror="ignore",
     lookup=None,
     # Validation
     checksum=None,
@@ -123,7 +123,7 @@ def validate_table(
             For more information, please check "Describing  Data" guide.
             It defaults to `['']`
 
-        on_error? (ignore|warn|raise): Define behaviour if there is an error in the
+        onerror? (ignore|warn|raise): Define behaviour if there is an error in the
             header or rows during the reading rows process.
             It defaults to `ignore`.
 
@@ -186,7 +186,7 @@ def validate_table(
         infer_confidence=infer_confidence,
         infer_missing_values=infer_missing_values,
         # Lookup
-        on_error=on_error,
+        onerror=onerror,
         lookup=lookup,
     )
 

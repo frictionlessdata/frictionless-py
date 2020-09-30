@@ -37,7 +37,7 @@ from .main import program
 @click.option("--limit-memory", type=int, help="Limit memory")
 # Package/Resource
 @click.option("--basepath", type=str, help="Package basepath")
-@click.option("--on-unsafe", type=str, help="Behaviour on unsafe paths")
+@click.option("--trusted", type=str, help="Don't fail on unsafe paths")
 @click.option("--noinfer", is_flag=True, help="Validate metadata as it is")
 def program_validate(source, *, source_type, json, **options):
     """Validate data

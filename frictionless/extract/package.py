@@ -6,8 +6,8 @@ def extract_package(
     source,
     *,
     basepath=None,
+    onerror="ignore",
     trusted=False,
-    on_error="ignore",
     process=None,
     stream=False,
 ):
@@ -20,8 +20,8 @@ def extract_package(
     Parameters:
         source (dict|str): data resource descriptor
         basepath? (str): package basepath
+        onerror? (ignore|warn|raise): behaviour on errors
         trusted? (bool): don't raise an exception on unsafe paths
-        on_error? (ignore|warn|raise): behaviour on errors
         process? (func): a row processor function
         stream? (bool): return a row streams instead of loading into memory
 
@@ -31,7 +31,7 @@ def extract_package(
     """
 
     # Create package
-    package = Package(source, basepath=basepath, trusted=trusted, on_error=on_error)
+    package = Package(source, basepath=basepath, onerror=onerror, trusted=trusted)
 
     # Extract package
     result = OrderedDict()

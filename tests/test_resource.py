@@ -794,44 +794,44 @@ def test_resource_source_multipart_infer():
 # Integrity
 
 
-def test_resource_integrity_on_error():
+def test_resource_integrity_onerror():
     resource = Resource(path="data/invalid.csv")
-    assert resource.on_error == "ignore"
+    assert resource.onerror == "ignore"
     assert resource.read_rows()
 
 
-def test_resource_integrity_on_error_header_warn():
+def test_resource_integrity_onerror_header_warn():
     data = [["name"], [1], [2], [3]]
     schema = {"fields": [{"name": "bad", "type": "integer"}]}
-    resource = Resource(data=data, schema=schema, on_error="warn")
-    assert resource.on_error == "warn"
+    resource = Resource(data=data, schema=schema, onerror="warn")
+    assert resource.onerror == "warn"
     with pytest.warns(UserWarning):
         resource.read_rows()
 
 
-def test_resource_integrity_on_error_header_raise():
+def test_resource_integrity_onerror_header_raise():
     data = [["name"], [1], [2], [3]]
     schema = {"fields": [{"name": "bad", "type": "integer"}]}
-    resource = Resource(data=data, schema=schema, on_error="raise")
-    assert resource.on_error == "raise"
+    resource = Resource(data=data, schema=schema, onerror="raise")
+    assert resource.onerror == "raise"
     with pytest.raises(exceptions.FrictionlessException):
         resource.read_rows()
 
 
-def test_resource_integrity_on_error_row_warn():
+def test_resource_integrity_onerror_row_warn():
     data = [["name"], [1], [2], [3]]
     schema = {"fields": [{"name": "name", "type": "string"}]}
-    resource = Resource(data=data, schema=schema, on_error="warn")
-    assert resource.on_error == "warn"
+    resource = Resource(data=data, schema=schema, onerror="warn")
+    assert resource.onerror == "warn"
     with pytest.warns(UserWarning):
         resource.read_rows()
 
 
-def test_resource_integrity_on_error_row_raise():
+def test_resource_integrity_onerror_row_raise():
     data = [["name"], [1], [2], [3]]
     schema = {"fields": [{"name": "name", "type": "string"}]}
-    resource = Resource(data=data, schema=schema, on_error="raise")
-    assert resource.on_error == "raise"
+    resource = Resource(data=data, schema=schema, onerror="raise")
+    assert resource.onerror == "raise"
     with pytest.raises(exceptions.FrictionlessException):
         resource.read_rows()
 

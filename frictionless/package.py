@@ -35,8 +35,8 @@ class Package(Metadata):
         resources? (dict|Resource[]): list of resource descriptors
         profile? (str): profile name like 'data-package'
         basepath? (str): a basepath of the package
+        onerror? (ignore|warn|raise): behaviour if there is an error
         trusted? (bool): don't raise an exception on unsafe paths
-        on_error? (ignore|warn|raise): behaviour if there is an error
 
     Raises:
         FrictionlessException: raise any error that occurs during the process
@@ -53,8 +53,8 @@ class Package(Metadata):
         resources=None,
         profile=None,
         basepath=None,
+        onerror="ignore",
         trusted=False,
-        on_error="ignore",
     ):
 
         # Handle zip
@@ -68,13 +68,13 @@ class Package(Metadata):
         self.setinitial("resources", resources)
         self.setinitial("profile", profile)
         self.__basepath = basepath or helpers.detect_basepath(descriptor)
+        self.__onerror = onerror
         self.__trusted = trusted
-        self.__on_error = on_error
         super().__init__(descriptor)
 
     def __setattr__(self, name, value):
-        if name == "on_error":
-            self.__on_error = value
+        if name == "onerror":
+            self.__onerror = value
             return
         super().__setattr__(name, value)
 
@@ -118,6 +118,15 @@ class Package(Metadata):
         """
         return self.__basepath
 
+    @property
+    def onerror(self):
+        """
+        Returns:
+            ignore|warn|raise: on error bahaviour
+        """
+        assert self.__onerror in ["ignore", "warn", "raise"]
+        return self.__onerror
+
     @Metadata.property(write=False)
     def trusted(self):
         """
@@ -125,15 +134,6 @@ class Package(Metadata):
             str: package trusted
         """
         return self.__trusted
-
-    @property
-    def on_error(self):
-        """
-        Returns:
-            ignore|warn|raise: on error bahaviour
-        """
-        assert self.__on_error in ["ignore", "warn", "raise"]
-        return self.__on_error
 
     # Resources
 
@@ -448,11 +448,11 @@ class Package(Metadata):
                         resource,
                         basepath=self.__basepath,
                         trusted=self.__trusted,
-                        on_error=self.__on_error,
+                        onerror=self.__onerror,
                         package=self,
                     )
                     list.__setitem__(resources, index, resource)
-                resource.on_error = self.__on_error
+                resource.onerror = self.__onerror
             if not isinstance(resources, helpers.ControlledList):
                 resources = helpers.ControlledList(resources)
                 resources.__onchange__(self.metadata_process)

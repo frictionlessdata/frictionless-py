@@ -45,7 +45,6 @@ class Field(Metadata):
         format=None,
         missing_values=None,
         constraints=None,
-        # Composition
         schema=None,
     ):
         self.setinitial("name", name)

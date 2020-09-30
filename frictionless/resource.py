@@ -2,7 +2,6 @@ import io
 import os
 import json
 import zipfile
-import warnings
 from copy import deepcopy
 from importlib import import_module
 from .metadata import Metadata
@@ -45,8 +44,8 @@ class Resource(Metadata):
         stats? (dict): table stats
         profile? (str): resource profile
         basepath? (str): resource basepath
+        onerror? (ignore|warn|raise): behaviour if there is an error
         trusted? (bool): don't raise an exception on unsafe paths
-        on_error? (ignore|warn|raise): behaviour if there is an error
         package? (Package): resource package
 
     Raises:
@@ -76,9 +75,8 @@ class Resource(Metadata):
         stats=None,
         profile=None,
         basepath=None,
+        onerror="ignore",
         trusted=False,
-        on_error="ignore",
-        # Composition
         package=None,
     ):
 
@@ -107,13 +105,14 @@ class Resource(Metadata):
         self.setinitial("stats", stats)
         self.setinitial("profile", profile)
         self.__basepath = basepath or helpers.detect_basepath(descriptor)
-        self.__on_error = on_error
+        self.__onerror = onerror
+        self.__trusted = trusted
         self.__package = package
         super().__init__(descriptor)
 
     def __setattr__(self, name, value):
-        if name == "on_error":
-            self.__on_error = value
+        if name == "onerror":
+            self.__onerror = value
             return
         super().__setattr__(name, value)
 
@@ -339,21 +338,21 @@ class Resource(Metadata):
         return self.__location.tabular
 
     @property
+    def onerror(self):
+        """
+        Returns:
+            ignore|warn|raise: on error bahaviour
+        """
+        assert self.__onerror in ["ignore", "warn", "raise"]
+        return self.__onerror
+
+    @property
     def trusted(self):
         """
         Returns:
             bool: don't raise an exception on unsafe paths
         """
         return self.__trusted
-
-    @property
-    def on_error(self):
-        """
-        Returns:
-            ignore|warn|raise: on error bahaviour
-        """
-        assert self.__on_error in ["ignore", "warn", "raise"]
-        return self.__on_error
 
     # Expand
 
@@ -749,7 +748,7 @@ class Resource(Metadata):
         options.setdefault("compression_path", self.compression_path)
         options.setdefault("dialect", self.dialect)
         options.setdefault("schema", self.schema)
-        options.setdefault("on_error", self.__on_error)
+        options.setdefault("onerror", self.__onerror)
         if "lookup" not in options:
             options["lookup"] = self.read_lookup()
         return module.Table(**options)
@@ -842,13 +841,13 @@ class Resource(Metadata):
             dict.__setitem__(self, "schema", schema)
 
         # Security
-        for name in ["path", "control", "dialect", "schema"]:
-            path = self.get(name)
-            if not isinstance(path, (str, list)):
-                continue
-            path = path if isinstance(path, list) else [path]
-            if not all(helpers.is_safe_path(chunk) for chunk in path):
-                if not self.trusted:
+        if not self.trusted:
+            for name in ["path", "control", "dialect", "schema"]:
+                path = self.get(name)
+                if not isinstance(path, (str, list)):
+                    continue
+                path = path if isinstance(path, list) else [path]
+                if not all(helpers.is_safe_path(chunk) for chunk in path):
                     note = f'path "{path}" is not safe'
                     error = errors.ResourceError(note=note)
                     raise exceptions.FrictionlessException(error)

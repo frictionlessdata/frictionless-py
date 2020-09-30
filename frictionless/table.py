@@ -105,7 +105,7 @@ class Table:
             For more information, please check "Describing  Data" guide.
             It defaults to `['']`
 
-        on_error? (ignore|warn|raise): Define behaviour if there is an error in the
+        onerror? (ignore|warn|raise): Define behaviour if there is an error in the
             header or rows during the reading rows process.
             It defaults to `ignore`.
 
@@ -143,7 +143,7 @@ class Table:
         infer_confidence=config.DEFAULT_INFER_CONFIDENCE,
         infer_missing_values=config.DEFAULT_MISSING_VALUES,
         # Integrity
-        on_error="ignore",
+        onerror="ignore",
         lookup=None,
     ):
 
@@ -183,7 +183,7 @@ class Table:
         self.__infer_volume = infer_volume
         self.__infer_confidence = infer_confidence
         self.__infer_missing_values = infer_missing_values
-        self.__on_error = on_error
+        self.__onerror = onerror
         self.__lookup = lookup
 
         # Create resource
@@ -199,13 +199,13 @@ class Table:
             dialect=dialect,
             query=query,
             schema=schema,
-            on_error=on_error,
+            onerror=onerror,
             trusted=True,
         )
 
     def __setattr__(self, name, value):
-        if name == "on_error":
-            self.__on_error = value
+        if name == "onerror":
+            self.__onerror = value
             return
         super().__setattr__(name, value)
 
@@ -342,13 +342,13 @@ class Table:
         return self.__resource.stats
 
     @property
-    def on_error(self):
+    def onerror(self):
         """
         Returns:
             ignore|warn|raise: on error bahaviour
         """
-        assert self.__on_error in ["ignore", "warn", "raise"]
-        return self.__on_error
+        assert self.__onerror in ["ignore", "warn", "raise"]
+        return self.__onerror
 
     @property
     def header(self):
@@ -696,9 +696,9 @@ class Table:
         # Handle header errors
         if not self.header.valid:
             error = self.header.errors[0]
-            if self.on_error == "warn":
+            if self.onerror == "warn":
                 warnings.warn(error.message, UserWarning)
-            elif self.on_error == "raise":
+            elif self.onerror == "raise":
                 raise exceptions.FrictionlessException(error)
 
         # Create state
@@ -774,9 +774,9 @@ class Table:
             # Handle row errors
             if not row.valid:
                 error = row.errors[0]
-                if self.on_error == "warn":
+                if self.onerror == "warn":
                     warnings.warn(error.message, UserWarning)
-                elif self.on_error == "raise":
+                elif self.onerror == "raise":
                     raise exceptions.FrictionlessException(error)
 
             # Stream row
@@ -822,6 +822,7 @@ class Table:
             compression_path=compression_path,
             control=control,
             dialect=dialect,
+            trusted=True,
         )
 
         # Write file
