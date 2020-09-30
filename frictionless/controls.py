@@ -33,7 +33,7 @@ class Control(Metadata):
         Returns:
             str: a string to be used for `io.open(..., newline=newline)`
         """
-        return self.get("newline", helpers.newline)
+        return self.get("newline")
 
     @Metadata.property
     def detect_encoding(self):

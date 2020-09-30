@@ -86,7 +86,7 @@ class System:
             control = func(resource, descriptor=descriptor)
             if control is not None:
                 return control
-        if name == "resource":
+        if name == "file":
             return controls.LocalControl(descriptor)
         elif name in config.REMOTE_SCHEMES:
             return controls.RemoteControl(descriptor)
@@ -139,7 +139,7 @@ class System:
             loader = func(resource)
             if loader is not None:
                 return loader
-        if name == "resource":
+        if name == "file":
             return loaders.LocalLoader(resource)
         elif name in config.REMOTE_SCHEMES:
             return loaders.RemoteLoader(resource)

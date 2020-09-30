@@ -334,6 +334,7 @@ class Resource(Metadata):
                 raise exceptions.FrictionlessException(errors.ResourceError(note=note))
             control = os.path.join(self.basepath, control)
             control = system.create_control(self, descriptor=control)
+        return control
 
     @Metadata.property
     def dialect(self):
@@ -863,11 +864,23 @@ class Resource(Metadata):
 
     def metadata_process(self):
 
+        # Control
+        control = self.get("control")
+        if not isinstance(control, (str, type(None), Control)):
+            control = system.create_control(self, descriptor=control)
+            dict.__setitem__(self, "control", control)
+
         # Dialect
         dialect = self.get("dialect")
         if not isinstance(dialect, (str, type(None), Dialect)):
-            dialect = system.create_dialect(self.to_file(), descriptor=dialect)
+            dialect = system.create_dialect(self, descriptor=dialect)
             dict.__setitem__(self, "dialect", dialect)
+
+        # Query
+        query = self.get("query")
+        if query is not None:
+            query = Query(query)
+            dict.__setitem__(self, "query", query)
 
         # Schema
         schema = self.get("schema")
