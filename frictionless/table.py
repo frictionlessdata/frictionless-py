@@ -183,10 +183,8 @@ class Table:
         self.__infer_volume = infer_volume
         self.__infer_confidence = infer_confidence
         self.__infer_missing_values = infer_missing_values
+        self.__on_error = on_error
         self.__lookup = lookup
-
-        # Set error handling
-        self.on_error = on_error
 
         # Create resource
         self.__resource = Resource.from_source(
@@ -207,7 +205,6 @@ class Table:
 
     def __setattr__(self, name, value):
         if name == "on_error":
-            assert value in ["ignore", "warn", "raise"]
             self.__on_error = value
             return
         super().__setattr__(name, value)
@@ -350,7 +347,8 @@ class Table:
         Returns:
             ignore|warn|raise: on error bahaviour
         """
-        return self.__resource.on_error
+        assert self.__on_error in ["ignore", "warn", "raise"]
+        return self.__on_error
 
     @property
     def header(self):

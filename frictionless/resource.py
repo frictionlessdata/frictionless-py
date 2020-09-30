@@ -107,15 +107,12 @@ class Resource(Metadata):
         self.setinitial("stats", stats)
         self.setinitial("profile", profile)
         self.__basepath = basepath or helpers.detect_basepath(descriptor)
+        self.__on_error = on_error
         self.__package = package
         super().__init__(descriptor)
 
-        # Set error handling
-        self.on_error = on_error
-
     def __setattr__(self, name, value):
         if name == "on_error":
-            assert value in ["ignore", "warn", "raise"]
             self.__on_error = value
             return
         super().__setattr__(name, value)
