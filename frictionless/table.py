@@ -3,10 +3,9 @@ import warnings
 from pathlib import Path
 from copy import deepcopy
 from itertools import chain
-from .header import Header
-from .schema import Schema
+from importlib import import_module
 from .system import system
-from .file import File
+from .header import Header
 from .row import Row
 from . import exceptions
 from . import errors
@@ -167,7 +166,6 @@ class Table:
         # Store state
         self.__parser = None
         self.__sample = None
-        self.__schema = None
         self.__header = None
         self.__data_stream = None
         self.__row_stream = None
@@ -177,7 +175,6 @@ class Table:
         self.__sample_positions = None
 
         # Store params
-        self.__init_schema = schema
         self.__sync_schema = sync_schema
         self.__patch_schema = patch_schema
         self.__infer_type = infer_type
@@ -191,9 +188,12 @@ class Table:
         # Set error handler
         self.on_error = on_error
 
-        # Create file
-        self.__file = File(
-            source=source,
+        # Create resource
+        path, data = helpers.detect_path_and_data_from_source(source)
+        module = import_module("frictionless.resource")
+        self.__resource = module.Resource(
+            path=path,
+            data=data,
             scheme=scheme,
             format=format,
             hashing=hashing,
@@ -203,6 +203,7 @@ class Table:
             control=control,
             dialect=dialect,
             query=query,
+            schema=schema,
         )
 
     def __setattr__(self, name, value):
@@ -229,7 +230,15 @@ class Table:
         Returns:
             str: file path
         """
-        return self.__file.path
+        return self.__resource.path
+
+    @property
+    def data(self):
+        """
+        Returns:
+            str: file data
+        """
+        return self.__resource.data
 
     @property
     def source(self):
@@ -237,7 +246,7 @@ class Table:
         Returns:
             any: file source
         """
-        return self.__file.source
+        return self.__resource.source
 
     @property
     def scheme(self):
@@ -245,7 +254,7 @@ class Table:
         Returns:
             str?: file scheme
         """
-        return self.__file.scheme
+        return self.__resource.scheme
 
     @property
     def format(self):
@@ -253,7 +262,7 @@ class Table:
         Returns:
             str?: file format
         """
-        return self.__file.format
+        return self.__resource.format
 
     @property
     def hashing(self):
@@ -261,7 +270,7 @@ class Table:
         Returns:
             str?: file hashing
         """
-        return self.__file.hashing
+        return self.__resource.hashing
 
     @property
     def encoding(self):
@@ -269,7 +278,7 @@ class Table:
         Returns:
             str?: file encoding
         """
-        return self.__file.encoding
+        return self.__resource.encoding
 
     @property
     def compression(self):
@@ -277,7 +286,7 @@ class Table:
         Returns:
             str?: file compression
         """
-        return self.__file.compression
+        return self.__resource.compression
 
     @property
     def compression_path(self):
@@ -285,7 +294,7 @@ class Table:
         Returns:
             str?: file compression path
         """
-        return self.__file.compression_path
+        return self.__resource.compression_path
 
     @property
     def control(self):
@@ -293,7 +302,7 @@ class Table:
         Returns:
             Control?: file control
         """
-        return self.__file.control
+        return self.__resource.control
 
     @property
     def query(self):
@@ -301,7 +310,7 @@ class Table:
         Returns:
             Query?: table query
         """
-        return self.__file.query
+        return self.__resource.query
 
     @property
     def dialect(self):
@@ -309,7 +318,7 @@ class Table:
         Returns:
             Dialect?: table dialect
         """
-        return self.__file.dialect
+        return self.__resource.dialect
 
     @property
     def schema(self):
@@ -317,7 +326,7 @@ class Table:
         Returns:
             Schema?: table schema
         """
-        return self.__schema
+        return self.__resource.schema
 
     @property
     def stats(self):
@@ -332,7 +341,7 @@ class Table:
             dict?: table stats
 
         """
-        return self.__file.stats
+        return self.__resource.stats
 
     @property
     def on_error(self):
@@ -391,12 +400,15 @@ class Table:
             FrictionlessException: any exception that occurs
         """
         self.close()
-        if self.__file.query.metadata_errors:
-            error = self.__file.query.metadata_errors[0]
+        if self.__resource.query.metadata_errors:
+            error = self.__resource.query.metadata_errors[0]
             raise exceptions.FrictionlessException(error)
         try:
-            self.__file.stats = {"hash": "", "bytes": 0, "rows": 0}
-            self.__parser = system.create_parser(self.__file)
+            # TODO: add fields
+            self.__resource["hash"] = ""
+            self.__resource["bytes"] = 0
+            self.__resource["rows"] = 0
+            self.__parser = system.create_parser(self.__resource)
             self.__parser.open()
             self.__data_stream = self.__read_data_stream()
             self.__row_stream = self.__read_row_stream()
@@ -407,7 +419,7 @@ class Table:
             self.close()
             # Ensure not found file is a scheme error
             if exception.error.code == "format-error":
-                loader = system.create_loader(self.__file)
+                loader = system.create_loader(self.__resource)
                 loader.open()
                 loader.close()
             raise
@@ -447,9 +459,8 @@ class Table:
         return self.__read_data_stream_create()
 
     def __read_data_stream_create(self):
-        stats = self.__file.stats
-        limit = self.__file.query.limit_rows
-        offset = self.__file.query.offset_rows or 0
+        limit = self.__resource.query.limit_rows
+        offset = self.__resource.query.offset_rows or 0
         sample_iterator = self.__read_data_stream_create_sample_iterator()
         parser_iterator = self.__read_data_stream_create_parser_iterator()
         for row_position, cells in chain(sample_iterator, parser_iterator):
@@ -458,9 +469,9 @@ class Table:
                 offset -= 1
                 continue
             self.__row_number += 1
-            stats["rows"] = self.__row_number
+            self.__resource["rows"] = self.__row_number
             yield cells
-            if limit and limit <= stats["rows"]:
+            if limit and limit <= self.__resource["rows"]:
                 break
 
     def __read_data_stream_create_sample_iterator(self):
@@ -481,7 +492,6 @@ class Table:
         header = []
         field_positions = []
         sample_positions = []
-        schema = Schema(self.__init_schema)
 
         # Prepare header
         buffer = []
@@ -495,7 +505,7 @@ class Table:
 
         # Infer header
         row_number = 0
-        dialect = self.__file.dialect
+        dialect = self.__resource.dialect
         if dialect.get("header") is None and dialect.get("headerRows") is None and widths:
             dialect["header"] = False
             width = round(sum(widths) / len(widths))
@@ -541,6 +551,7 @@ class Table:
                     break
 
         # Infer schema
+        schema = self.__resource.schema
         if not schema.fields:
             schema.infer(
                 sample,
@@ -573,13 +584,12 @@ class Table:
 
         # Store state
         self.__sample = sample
-        self.__schema = schema
         self.__field_positions = field_positions
         self.__sample_positions = sample_positions
         self.__header = Header(header, schema=schema, field_positions=field_positions)
 
     def __read_data_stream_infer_header(self, header_data):
-        dialect = self.__file.dialect
+        dialect = self.__resource.dialect
 
         # No header
         if not dialect.header:
@@ -601,8 +611,8 @@ class Table:
         # Filter header
         filter_header = []
         field_positions = []
-        limit = self.__file.query.limit_fields
-        offset = self.__file.query.offset_fields or 0
+        limit = self.__resource.query.limit_fields
+        offset = self.__resource.query.offset_fields or 0
         for field_position, header in enumerate(header, start=1):
             if self.__read_data_stream_pick_skip_field(field_position, header):
                 if offset:
@@ -619,9 +629,9 @@ class Table:
         match = True
         for name in ["pick", "skip"]:
             if name == "pick":
-                items = self.__file.query.pick_fields_compiled
+                items = self.__resource.query.pick_fields_compiled
             else:
-                items = self.__file.query.skip_fields_compiled
+                items = self.__resource.query.skip_fields_compiled
             if not items:
                 continue
             match = match and name == "skip"
@@ -642,9 +652,9 @@ class Table:
         cell = "" if cell is None else str(cell)
         for name in ["pick", "skip"]:
             if name == "pick":
-                items = self.__file.query.pick_rows_compiled
+                items = self.__resource.query.pick_rows_compiled
             else:
-                items = self.__file.query.skip_rows_compiled
+                items = self.__resource.query.skip_rows_compiled
             if not items:
                 continue
             match = match and name == "skip"
@@ -662,7 +672,7 @@ class Table:
         return match
 
     def __read_data_stream_filter_data(self, cells, field_positions):
-        if self.__file.query.is_field_filtering:
+        if self.__resource.query.is_field_filtering:
             result = []
             for field_position, cell in enumerate(cells, start=1):
                 if field_position in field_positions:
@@ -719,10 +729,10 @@ class Table:
             # Create row
             row = Row(
                 cells,
-                schema=self.__schema,
+                schema=self.__resource.schema,
                 field_positions=self.__field_positions,
                 row_position=self.__row_position,
-                row_number=self.__file.stats["rows"],
+                row_number=self.__resource["rows"],
             )
 
             # Unique Error
@@ -809,8 +819,11 @@ class Table:
         """
 
         # Create file
-        file = File(
-            source=target,
+        path, data = helpers.detect_path_and_data_from_source(target)
+        module = import_module("frictionless.resource")
+        resource = module.Resource(
+            path=path,
+            data=data,
             scheme=scheme,
             format=format,
             hashing=hashing,
@@ -823,7 +836,7 @@ class Table:
 
         # Write file
         row_stream = self.__write_row_stream_create()
-        parser = system.create_parser(file)
+        parser = system.create_parser(resource)
         parser.write(row_stream)
 
     def __write_row_stream_create(self):

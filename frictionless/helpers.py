@@ -99,6 +99,16 @@ def detect_basepath(descriptor):
     return basepath
 
 
+def detect_path_and_data_from_source(source):
+    if not source:
+        return [None, None]
+    elif isinstance(source, str):
+        return [source, None]
+    elif isinstance(source, list) and isinstance(source[0], str):
+        return [source, None]
+    return [None, source]
+
+
 def ensure_dir(path):
     dirpath = os.path.dirname(path)
     if dirpath and not os.path.exists(dirpath):
