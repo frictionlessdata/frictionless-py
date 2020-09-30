@@ -96,6 +96,7 @@ def test_package_from_path_remote_error_bad_json():
     assert error.note.count("invalid.json")
 
 
+@pytest.mark.ci
 def test_package_from_path_remote_error_bad_json_not_dict():
     with pytest.raises(exceptions.FrictionlessException) as excinfo:
         Package(BASE_URL % "data/table-lists.json")
