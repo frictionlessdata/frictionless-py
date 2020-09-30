@@ -1,7 +1,7 @@
 from ..package import Package
 
 
-def describe_package(source, *, basepath=None, on_unsafe="raise", expand=False):
+def describe_package(source, *, basepath=None, expand=False):
     """Describe the given source as a package
 
     API      | Usage
@@ -11,7 +11,6 @@ def describe_package(source, *, basepath=None, on_unsafe="raise", expand=False):
     Parameters:
         source (any): data source
         basepath? (str): package basepath
-        on_unsafe? (ignore|warn|raise): behaviour on unsafe paths
         expand? (bool): if `True` it will expand the metadata
 
     Returns:
@@ -20,7 +19,7 @@ def describe_package(source, *, basepath=None, on_unsafe="raise", expand=False):
     """
 
     # Infer package
-    package = Package(basepath=basepath, on_unsafe=on_unsafe)
+    package = Package(basepath=basepath)
     package.infer(source)
 
     # Expand package

@@ -7,7 +7,7 @@ from .. import exceptions
 
 @Report.from_validate
 def validate_resource(
-    source, basepath=None, on_unsafe="raise", noinfer=False, lookup=None, **options
+    source, basepath=None, trusted=False, noinfer=False, lookup=None, **options
 ):
     """Validate resource
 
@@ -18,7 +18,7 @@ def validate_resource(
     Parameters:
         source (dict|str): a resource descriptor
         basepath? (str): resource basepath
-        on_unsafe? (ignore|warn|raise): behavour on unsafe paths
+        trusted? (bool): don't raise an exception on unsafe paths
         noinfer? (bool): don't call `resource.infer`
         lookup? (dict): a lookup object
         **options (dict): resource options
@@ -33,7 +33,7 @@ def validate_resource(
 
     # Create resource
     try:
-        resource = Resource(source, basepath=basepath, on_unsafe=on_unsafe)
+        resource = Resource(source, basepath=basepath, trusted=trusted)
     except exceptions.FrictionlessException as exception:
         return Report(time=timer.time, errors=[exception.error], tables=[])
 

@@ -7,7 +7,7 @@ from .. import exceptions
 
 
 @Report.from_validate
-def validate_package(source, basepath=None, on_unsafe="raise", noinfer=False, **options):
+def validate_package(source, basepath=None, trusted=False, noinfer=False, **options):
     """Validate package
 
     API      | Usage
@@ -17,7 +17,7 @@ def validate_package(source, basepath=None, on_unsafe="raise", noinfer=False, **
     Parameters:
         source (dict|str): a package descriptor
         basepath? (str): package basepath
-        on_unsafe? (ignore|warn|raise): behavious on unsafe paths
+        trusted? (bool): don't raise an exception on unsafe paths
         noinfer? (bool): don't call `package.infer`
         **options (dict): options for every extracted table
 
@@ -31,7 +31,7 @@ def validate_package(source, basepath=None, on_unsafe="raise", noinfer=False, **
 
     # Create package
     try:
-        package = Package(source, basepath=basepath, on_unsafe=on_unsafe)
+        package = Package(source, basepath=basepath, trusted=trusted)
     except exceptions.FrictionlessException as exception:
         return Report(time=timer.time, errors=[exception.error], tables=[])
 

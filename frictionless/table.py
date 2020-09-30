@@ -105,9 +105,6 @@ class Table:
             For more information, please check "Describing  Data" guide.
             It defaults to `['']`
 
-        on_unsafe? (ignore|warn|raise): Define behaviour if there is a unsafe path
-            It defaults to `raise`.
-
         on_error? (ignore|warn|raise): Define behaviour if there is an error in the
             header or rows during the reading rows process.
             It defaults to `ignore`.
@@ -146,7 +143,6 @@ class Table:
         infer_confidence=config.DEFAULT_INFER_CONFIDENCE,
         infer_missing_values=config.DEFAULT_MISSING_VALUES,
         # Integrity
-        on_unsafe="raise",
         on_error="ignore",
         lookup=None,
     ):
@@ -189,6 +185,9 @@ class Table:
         self.__infer_missing_values = infer_missing_values
         self.__lookup = lookup
 
+        # Set error handling
+        self.on_error = on_error
+
         # Create resource
         self.__resource = Resource.from_source(
             source,
@@ -202,16 +201,14 @@ class Table:
             dialect=dialect,
             query=query,
             schema=schema,
-            on_unsafe=on_unsafe,
             on_error=on_error,
+            trusted=True,
         )
 
     def __setattr__(self, name, value):
-        if name == "on_unsafe":
-            self.__resource.on_unsafe = value
-            return
-        elif name == "on_error":
-            self.__resource.on_error = value
+        if name == "on_error":
+            assert value in ["ignore", "warn", "raise"]
+            self.__on_error = value
             return
         super().__setattr__(name, value)
 
@@ -346,14 +343,6 @@ class Table:
 
         """
         return self.__resource.stats
-
-    @property
-    def on_unsafe(self):
-        """
-        Returns:
-            ignore|warn|raise: on unsafe path bahaviour
-        """
-        return self.__resource.on_unsafe
 
     @property
     def on_error(self):

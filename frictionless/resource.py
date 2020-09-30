@@ -45,7 +45,7 @@ class Resource(Metadata):
         stats? (dict): table stats
         profile? (str): resource profile
         basepath? (str): resource basepath
-        on_unsafe? (ignore|warn|raise): behaviour if there is a unsafe path
+        trusted? (bool): don't raise an exception on unsafe paths
         on_error? (ignore|warn|raise): behaviour if there is an error
         package? (Package): resource package
 
@@ -76,7 +76,7 @@ class Resource(Metadata):
         stats=None,
         profile=None,
         basepath=None,
-        on_unsafe="raise",
+        trusted=False,
         on_error="ignore",
         # Composition
         package=None,
@@ -111,15 +111,10 @@ class Resource(Metadata):
         super().__init__(descriptor)
 
         # Set error handling
-        self.on_unsafe = on_unsafe
         self.on_error = on_error
 
     def __setattr__(self, name, value):
-        if name == "on_unsafe":
-            assert value in ["ignore", "warn", "raise"]
-            self.__on_unsafe = value
-            return
-        elif name == "on_error":
+        if name == "on_error":
             assert value in ["ignore", "warn", "raise"]
             self.__on_error = value
             return
@@ -347,12 +342,12 @@ class Resource(Metadata):
         return self.__location.tabular
 
     @property
-    def on_unsafe(self):
+    def trusted(self):
         """
         Returns:
-            ignore|warn|raise: on unsafe path bahaviour
+            bool: don't raise an exception on unsafe paths
         """
-        return self.__on_unsafe
+        return self.__trusted
 
     @property
     def on_error(self):
@@ -856,11 +851,9 @@ class Resource(Metadata):
                 continue
             path = path if isinstance(path, list) else [path]
             if not all(helpers.is_safe_path(chunk) for chunk in path):
-                note = f'path "{path}" is not safe'
-                error = errors.ResourceError(note=note)
-                if self.on_unsafe == "warn":
-                    warnings.warn(error.message, UserWarning)
-                elif self.on_unsafe == "raise":
+                if not self.trusted:
+                    note = f'path "{path}" is not safe'
+                    error = errors.ResourceError(note=note)
                     raise exceptions.FrictionlessException(error)
 
     def metadata_validate(self):

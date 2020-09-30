@@ -35,7 +35,7 @@ class Package(Metadata):
         resources? (dict|Resource[]): list of resource descriptors
         profile? (str): profile name like 'data-package'
         basepath? (str): a basepath of the package
-        on_unsafe? (ignore|warn|raise): behaviour on unsafe paths
+        trusted? (bool): don't raise an exception on unsafe paths
         on_error? (ignore|warn|raise): behaviour if there is an error
 
     Raises:
@@ -53,7 +53,7 @@ class Package(Metadata):
         resources=None,
         profile=None,
         basepath=None,
-        on_unsafe="raise",
+        trusted=False,
         on_error="ignore",
     ):
 
@@ -68,7 +68,7 @@ class Package(Metadata):
         self.setinitial("resources", resources)
         self.setinitial("profile", profile)
         self.__basepath = basepath or helpers.detect_basepath(descriptor)
-        self.__on_unsafe = on_unsafe
+        self.__trusted = trusted
         self.__on_error = on_error
         super().__init__(descriptor)
 
@@ -102,6 +102,14 @@ class Package(Metadata):
         """
         return self.get("description")
 
+    @Metadata.property
+    def profile(self):
+        """
+        Returns:
+            str: package profile
+        """
+        return self.get("profile", config.DEFAULT_PACKAGE_PROFILE)
+
     @Metadata.property(write=False)
     def basepath(self):
         """
@@ -110,13 +118,13 @@ class Package(Metadata):
         """
         return self.__basepath
 
-    @Metadata.property
-    def profile(self):
+    @Metadata.property(write=False)
+    def trusted(self):
         """
         Returns:
-            str: package profile
+            str: package trusted
         """
-        return self.get("profile", config.DEFAULT_PACKAGE_PROFILE)
+        return self.__trusted
 
     @property
     def on_error(self):
@@ -439,12 +447,11 @@ class Package(Metadata):
                     resource = Resource(
                         resource,
                         basepath=self.__basepath,
-                        on_unsafe=self.__on_unsafe,
+                        trusted=self.__trusted,
                         on_error=self.__on_error,
                         package=self,
                     )
                     list.__setitem__(resources, index, resource)
-                resource.on_unsafe = self.__on_unsafe
                 resource.on_error = self.__on_error
             if not isinstance(resources, helpers.ControlledList):
                 resources = helpers.ControlledList(resources)
