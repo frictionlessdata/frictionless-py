@@ -5,10 +5,12 @@ import zipfile
 from copy import deepcopy
 from urllib.request import urlopen
 from .metadata import Metadata
+from .controls import Control
 from .dialects import Dialect
 from .schema import Schema
 from .system import system
 from .table import Table
+from .query import Query
 from .file import File
 from . import exceptions
 from . import dialects
@@ -37,6 +39,7 @@ class Resource(Metadata):
         encoding? (str): file encoding
         compression? (str): file compression
         compression_path? (str): file compression path
+        control? (dict): file control
         dialect? (dict): table dialect
         schema? (dict): file schema
         profile? (str): resource profile
@@ -65,7 +68,9 @@ class Resource(Metadata):
         encoding=None,
         compression=None,
         compression_path=None,
+        control=None,
         dialect=None,
+        query=None,
         schema=None,
         profile=None,
         basepath=None,
@@ -90,7 +95,9 @@ class Resource(Metadata):
         self.setinitial("encoding", encoding)
         self.setinitial("compression", compression)
         self.setinitial("compressionPath", compression_path)
+        self.setinitial("constrol", control)
         self.setinitial("dialect", dialect)
+        self.setinitial("query", query)
         self.setinitial("schema", schema)
         self.setinitial("profile", profile)
         self.__basepath = basepath or helpers.detect_basepath(descriptor)
@@ -296,6 +303,23 @@ class Resource(Metadata):
         return self.get("compressionPath")
 
     @Metadata.property
+    def control(self):
+        """
+        Returns
+            Control?: resource control
+        """
+        control = self.get("control")
+        if control is None:
+            control = system.create_control(self, descriptor=control)
+            control = self.metadata_attach("control", Control())
+        elif isinstance(control, str):
+            if not self.__trusted and not helpers.is_safe_path(control):
+                note = f'control path "{control}" is not safe'
+                raise exceptions.FrictionlessException(errors.ResourceError(note=note))
+            control = os.path.join(self.basepath, control)
+            control = system.create_control(self, descriptor=control)
+
+    @Metadata.property
     def dialect(self):
         """
         Returns
@@ -303,13 +327,27 @@ class Resource(Metadata):
         """
         dialect = self.get("dialect")
         if dialect is None:
-            dialect = self.metadata_attach("dialect", Dialect())
+            dialect = system.create_dialect(self, descriptor=dialect)
+            dialect = self.metadata_attach("dialect", dialect)
         elif isinstance(dialect, str):
             if not self.__trusted and not helpers.is_safe_path(dialect):
                 note = f'dialect path "{dialect}" is not safe'
                 raise exceptions.FrictionlessException(errors.ResourceError(note=note))
-            dialect = Dialect(os.path.join(self.basepath, dialect))
+            dialect = os.path.join(self.basepath, dialect)
+            dialect = system.create_control(self, descriptor=dialect)
         return dialect
+
+    @Metadata.property
+    def query(self):
+        """
+        Returns:
+            Query?: table query
+        """
+        query = self.get("query")
+        if query is None:
+            query = Query()
+            query = self.metadata_attach("query", query)
+        return query
 
     @Metadata.property
     def schema(self):
@@ -328,6 +366,22 @@ class Resource(Metadata):
         return schema
 
     @Metadata.property
+    def stats(self):
+        """
+        Returns
+            dict?: resource stats
+        """
+        stats = {}
+        # TODO: add fields
+        for name in ["hash", "bytes", "rows"]:
+            value = self.get(name)
+            if value is not None:
+                if name == "hash":
+                    value = helpers.parse_resource_hash(value)[1]
+                stats[name] = value
+        return stats
+
+    @Metadata.property
     def profile(self):
         """
         Returns
@@ -343,21 +397,6 @@ class Resource(Metadata):
         """
         assert self.__on_error in ["ignore", "warn", "raise"]
         return self.__on_error
-
-    @Metadata.property
-    def stats(self):
-        """
-        Returns
-            dict?: resource stats
-        """
-        stats = {}
-        for name in ["hash", "bytes", "rows"]:
-            value = self.get(name)
-            if value is not None:
-                if name == "hash":
-                    value = helpers.parse_resource_hash(value)[1]
-                stats[name] = value
-        return stats
 
     # Expand
 

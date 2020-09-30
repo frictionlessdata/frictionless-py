@@ -320,6 +320,21 @@ class Table:
         return self.__schema
 
     @property
+    def stats(self):
+        """Table stats
+
+        The stats object has:
+            - hash: str - hashing sum
+            - bytes: int - number of bytes
+            - rows: int - number of rows
+
+        Returns:
+            dict?: table stats
+
+        """
+        return self.__file.stats
+
+    @property
     def on_error(self):
         """
         Returns:
@@ -327,15 +342,6 @@ class Table:
         """
         assert self.__on_error in ["ignore", "warn", "raise"]
         return self.__on_error
-
-    # TODO: use property wrapper to make it shorter
-    @on_error.setter
-    def on_error(self, value):
-        """
-        Parameters:
-            value (ignore|warn|raise): on error bahaviour
-        """
-        self.__on_error = value
 
     @property
     def header(self):
@@ -357,21 +363,6 @@ class Table:
 
         """
         return self.__sample
-
-    @property
-    def stats(self):
-        """Table stats
-
-        The stats object has:
-            - hash: str - hashing sum
-            - bytes: int - number of bytes
-            - rows: int - number of rows
-
-        Returns:
-            dict?: table stats
-
-        """
-        return self.__file.stats
 
     @property
     def data_stream(self):
