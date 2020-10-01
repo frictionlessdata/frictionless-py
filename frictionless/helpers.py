@@ -85,6 +85,8 @@ def tabulate_metadata(metadata):
 
 
 def detect_name(path):
+    if not path:
+        return "memory"
     file = os.path.basename(path)
     name = os.path.splitext(file)[0]
     return name

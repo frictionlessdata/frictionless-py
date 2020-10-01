@@ -1,6 +1,5 @@
 import os
 from urllib.request import urlopen
-from .system import system
 from . import helpers
 from . import config
 
@@ -8,33 +7,38 @@ from . import config
 class Location:
     def __init__(self, resource):
 
-        # Prepare source
+        # Detect source
+        source = []
         if resource.data:
             source = resource.data
         elif isinstance(resource.path, str):
             source = resource.path
-            if helpers.is_remote_path(source):
+            if not helpers.is_remote_path(source):
                 source = os.path.join(resource.basepath, resource.path)
         elif isinstance(resource.path, list):
-            source = MultipartSource(
-                source,
-                basepath=resource.basepath,
-                headless=resource.get("dialect", {}).get("header") is False,
-            )
+            basepath = resource.basepath
+            headless = resource.get("dialect", {}).get("header") is False
+            source = MultipartSource(resource.path, basepath=basepath, headless=headless)
 
-        # Detect source/scheme/format/compression/compression_path
+        # Detect scheme/format/compression/compression_path
         detect = helpers.detect_source_scheme_and_format(source)
-        self.__compression = config.DEFAULT_COMPRESSION
-        self.__compression_path = config.DEFAULT_COMPRESSION_PATH
+        compression = config.DEFAULT_COMPRESSION
+        compression_path = config.DEFAULT_COMPRESSION_PATH
         if detect[1] in config.COMPRESSION_FORMATS:
-            self.__compression = detect[1]
-            source = source[: -len(detect[1]) - 1]
+            compression = detect[1]
+            new_source = source[: -len(detect[1]) - 1]
             if resource.get("compression_path"):
-                source = os.path.join(source, resource.get("compression_path"))
-            detect = helpers.detect_source_scheme_and_format(source)
-        self.__scheme = detect[0] or config.DEFAULT_SCHEME
-        self.__format = detect[1] or config.DEFAULT_FORMAT
+                new_source = os.path.join(new_source, resource.get("compression_path"))
+            detect = helpers.detect_source_scheme_and_format(new_source)
+        scheme = detect[0] or config.DEFAULT_SCHEME
+        format = detect[1] or config.DEFAULT_FORMAT
+
+        # Set attributes
         self.__source = source
+        self.__scheme = scheme
+        self.__format = format
+        self.__compression = compression
+        self.__compression_path = compression_path
 
     @property
     def source(self):
@@ -60,7 +64,7 @@ class Location:
     def inline(self):
         if self.multipart:
             return False
-        return isinstance(self.source, str)
+        return not isinstance(self.source, str)
 
     @property
     def multipart(self):

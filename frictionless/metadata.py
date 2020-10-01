@@ -70,22 +70,6 @@ class Metadata(helpers.ControlledDict):
                 for error in self.metadata_errors:
                     raise exceptions.FrictionlessException(error)
 
-    @property
-    def metadata_valid(self):
-        """
-        Returns:
-            bool: whether the metadata is valid
-        """
-        return not len(self.metadata_errors)
-
-    @property
-    def metadata_errors(self):
-        """
-        Returns:
-            Errors[]: a list of the metadata errors
-        """
-        return list(self.metadata_validate())
-
     def setinitial(self, key, value):
         """Set an initial item in a subclass' constructor
 
@@ -150,6 +134,22 @@ class Metadata(helpers.ControlledDict):
 
     # Metadata
 
+    @property
+    def metadata_valid(self):
+        """
+        Returns:
+            bool: whether the metadata is valid
+        """
+        return not len(self.metadata_errors)
+
+    @property
+    def metadata_errors(self):
+        """
+        Returns:
+            Errors[]: a list of the metadata errors
+        """
+        return list(self.metadata_validate())
+
     def metadata_attach(self, name, value):
         """Helper method for attaching a value to  the metadata
 
@@ -158,7 +158,12 @@ class Metadata(helpers.ControlledDict):
             value (any): value
         """
         if self.get(name) is not value:
-            onchange = partial(metadata_attach, self, name)
+            # NOTE: review the new implementation
+            # Previously we copied the "value" object:
+            # def func_to_partial(self, name, value):
+            #   copy = dict if isinstance(value, dict) else list
+            #   setitem(self, name, copy(value))
+            onchange = partial(setitem, self, name)
             if isinstance(value, dict):
                 if not isinstance(value, Metadata):
                     value = helpers.ControlledDict(value)
@@ -249,11 +254,6 @@ class Metadata(helpers.ControlledDict):
 
 
 # Internal
-
-
-def metadata_attach(self, name, value):
-    copy = dict if isinstance(value, dict) else list
-    setitem(self, name, copy(value))
 
 
 class IndentDumper(yaml.SafeDumper):

@@ -2,7 +2,7 @@ import ijson
 import tempfile
 import jsonlines
 import simplejson
-from ..file import File
+from ..resource import Resource
 from ..parser import Parser
 from ..system import system
 from .. import dialects
@@ -33,14 +33,15 @@ class JsonParser(Parser):
 
     def read_data_stream_create(self, dialect=None):
         path = "item"
-        dialect = self.file.dialect
+        dialect = self.resource.dialect
         if dialect.property is not None:
-            path = "%s.item" % self.file.dialect.property
+            path = "%s.item" % self.resource.dialect.property
         source = ijson.items(self.loader.byte_stream, path)
-        file = File(source, dialect=dialects.InlineDialect(keys=dialect.keys))
-        with system.create_parser(file) as parser:
+        dialect = dialects.InlineDialect(keys=dialect.keys)
+        resource = Resource.from_source(source, dialect=dialect)
+        with system.create_parser(resource) as parser:
             yield next(parser.data_stream)
-            if parser.file.dialect.keyed:
+            if parser.resource.dialect.keyed:
                 dialect["keyed"] = True
             yield from parser.data_stream
 
@@ -48,7 +49,7 @@ class JsonParser(Parser):
 
     def write(self, row_stream):
         data = []
-        dialect = self.file.dialect
+        dialect = self.resource.dialect
         for row in row_stream:
             cells = list(row.values())
             cells, notes = row.schema.write_data(cells, native_types=self.native_types)
@@ -84,19 +85,20 @@ class JsonlParser(Parser):
     # Read
 
     def read_data_stream_create(self, dialect=None):
-        dialect = self.file.dialect
+        dialect = self.resource.dialect
         source = iter(jsonlines.Reader(self.loader.text_stream))
-        file = File(source, dialect=dialects.InlineDialect(keys=dialect.keys))
-        with system.create_parser(file) as parser:
+        dialect = dialects.InlineDialect(keys=dialect.keys)
+        resource = Resource.from_source(source, dialect=dialect)
+        with system.create_parser(resource) as parser:
             yield next(parser.data_stream)
-            if parser.file.dialect.keyed:
+            if parser.resource.dialect.keyed:
                 dialect["keyed"] = True
             yield from parser.data_stream
 
     # Write
 
     def write(self, row_stream):
-        dialect = self.file.dialect
+        dialect = self.resource.dialect
         with tempfile.NamedTemporaryFile(delete=False) as file:
             writer = jsonlines.Writer(file)
             for row in row_stream:
@@ -107,4 +109,4 @@ class JsonlParser(Parser):
                 if not dialect.keyed and row.row_number == 1:
                     writer.write(schema.field_names)
                 writer.write(item)
-        helpers.move_file(file.name, self.file.source)
+        helpers.move_file(file.name, self.resource.source)

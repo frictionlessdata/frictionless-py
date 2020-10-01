@@ -264,7 +264,7 @@ class File(Metadata):
         """Open the file as "io.open" does"""
         self.close()
         try:
-            self.stats = {"hash": "", "bytes": 0, "rows": 0}
+            self.stats = {"hash": "", "bytes": 0, "fields": 0, "rows": 0}
             # NOTE: handle cases like Inline/SQL/etc
             self.__loader = system.create_loader(self)
             self.__loader.open()

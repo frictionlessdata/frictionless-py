@@ -16,7 +16,7 @@ class TextLoader(Loader):
 
     def read_byte_stream_create(self):
         scheme = "text://"
-        source = self.file.source
+        source = self.resource.source
         if source.startswith(scheme):
             source = source.replace(scheme, "", 1)
         byte_stream = io.BufferedRandom(io.BytesIO())

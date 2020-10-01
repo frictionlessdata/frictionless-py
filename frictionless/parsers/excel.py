@@ -8,9 +8,9 @@ import tempfile
 import openpyxl
 import datetime
 from itertools import chain
+from ..resource import Resource
 from ..parser import Parser
 from ..system import system
-from ..file import File
 from .. import exceptions
 from .. import helpers
 from .. import errors
@@ -39,9 +39,9 @@ class XlsxParser(Parser):
     # Read
 
     def read_loader(self):
-        source = self.file.source
-        dialect = self.file.dialect
-        loader = system.create_loader(self.file)
+        source = self.resource.source
+        dialect = self.resource.dialect
+        loader = system.create_loader(self.resource)
         if not loader.remote:
             return loader.open()
 
@@ -53,8 +53,8 @@ class XlsxParser(Parser):
 
             # Cached
             if dialect.workbook_cache is not None and source in dialect.workbook_cache:
-                file = File(source, stats=self.file.stats)
-                loader = system.create_loader(file)
+                resource = Resource.from_source(source, stats=self.resource.stats)
+                loader = system.create_loader(resource)
                 return loader.open()
 
             with loader as loader:
@@ -65,12 +65,12 @@ class XlsxParser(Parser):
             if not target.delete:
                 dialect.workbook_cache[source] = target.name
                 atexit.register(os.remove, target.name)
-            file = File(target)
-            loader = system.create_loader(file)
+            resource = Resource.from_source(target)
+            loader = system.create_loader(resource)
             return loader.open()
 
     def read_data_stream_create(self):
-        dialect = self.file.dialect
+        dialect = self.resource.dialect
 
         # Get book
         # To fill merged cells we can't use read-only because
@@ -82,7 +82,7 @@ class XlsxParser(Parser):
                 data_only=True,
             )
         except Exception as exception:
-            error = errors.FormatError(note=f'invalid excel file "{self.file.path}"')
+            error = errors.FormatError(note=f'invalid excel file "{self.resource.path}"')
             raise exceptions.FrictionlessException(error) from exception
 
         # Get sheet
@@ -93,7 +93,7 @@ class XlsxParser(Parser):
                 sheet = book.worksheets[dialect.sheet - 1]
         except (KeyError, IndexError):
             note = 'Excel document "%s" does not have a sheet "%s"'
-            error = errors.FormatError(note=note % (self.file.source, dialect.sheet))
+            error = errors.FormatError(note=note % (self.resource.source, dialect.sheet))
             raise exceptions.FrictionlessException(error)
 
         # Fill merged cells
@@ -118,8 +118,8 @@ class XlsxParser(Parser):
     # Write
 
     def write(self, row_stream):
-        dialect = self.file.dialect
-        helpers.ensure_dir(self.file.source)
+        dialect = self.resource.dialect
+        helpers.ensure_dir(self.resource.source)
         book = openpyxl.Workbook(write_only=True)
         title = dialect.sheet
         if isinstance(title, int):
@@ -132,7 +132,7 @@ class XlsxParser(Parser):
             cells = list(row.values())
             cells, notes = row.schema.write_data(cells, native_types=self.native_types)
             sheet.append(cells)
-        book.save(self.file.source)
+        book.save(self.resource.source)
 
 
 class XlsParser(Parser):
@@ -158,21 +158,21 @@ class XlsParser(Parser):
     # Read
 
     def read_data_stream_create(self):
-        dialect = self.file.dialect
+        dialect = self.resource.dialect
 
         # Get book
         bytes = self.loader.byte_stream.read()
         try:
             book = xlrd.open_workbook(
                 file_contents=bytes,
-                encoding_override=self.file.encoding,
+                encoding_override=self.resource.encoding,
                 formatting_info=True,
                 logfile=sys.stderr,
             )
         except NotImplementedError:
             book = xlrd.open_workbook(
                 file_contents=bytes,
-                encoding_override=self.file.encoding,
+                encoding_override=self.resource.encoding,
                 formatting_info=False,
                 logfile=sys.stderr,
             )
@@ -185,7 +185,7 @@ class XlsParser(Parser):
                 sheet = book.sheet_by_index(dialect.sheet - 1)
         except (xlrd.XLRDError, IndexError):
             note = 'Excel document "%s" does not have a sheet "%s"'
-            error = errors.FormatError(note=note % (self.file.source, dialect.sheet))
+            error = errors.FormatError(note=note % (self.resource.source, dialect.sheet))
             raise exceptions.FrictionlessException(error)
 
         def type_value(ctype, value):
@@ -224,8 +224,8 @@ class XlsParser(Parser):
     # Write
 
     def write(self, row_stream):
-        dialect = self.file.dialect
-        helpers.ensure_dir(self.file.source)
+        dialect = self.resource.dialect
+        helpers.ensure_dir(self.resource.source)
         book = xlwt.Workbook()
         title = dialect.sheet
         if isinstance(title, int):
@@ -239,7 +239,7 @@ class XlsParser(Parser):
             cells, notes = row.schema.write_data(cells, native_types=self.native_types)
             for field_index, cell in enumerate(cells):
                 sheet.write(row_index + 1, field_index, cell)
-        book.save(self.file.source)
+        book.save(self.resource.source)
 
 
 # Internal

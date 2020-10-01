@@ -96,6 +96,7 @@ def test_resource_source_non_tabular():
     assert resource.read_stats() == {
         "hash": "e1cbb0c3879af8347246f12c559a86b5",
         "bytes": 5,
+        "fields": 0,
         "rows": 0,
     }
 
@@ -152,6 +153,7 @@ def test_resource_source_path():
     assert resource.read_stats() == {
         "hash": "6c2c61dd9b0e9c6876139a449ed87933",
         "bytes": 30,
+        "fields": 2,
         "rows": 2,
     }
 
@@ -197,18 +199,16 @@ def test_resource_source_path_error_bad_path():
 
 
 def test_resource_source_path_error_bad_path_not_safe_absolute():
-    resource = Resource(path=os.path.abspath("data/table.csv"))
     with pytest.raises(exceptions.FrictionlessException) as excinfo:
-        resource.read_rows()
+        Resource(path=os.path.abspath("data/table.csv"))
     error = excinfo.value.error
     assert error.code == "resource-error"
     assert error.note.count("data/table.csv")
 
 
 def test_resource_source_path_error_bad_path_not_safe_traversing():
-    resource = Resource(path="data/../data/table.csv")
     with pytest.raises(exceptions.FrictionlessException) as excinfo:
-        resource.read_rows()
+        Resource(path="data/../data/table.csv")
     error = excinfo.value.error
     assert error.code == "resource-error"
     assert error.note.count("data/table.csv")
@@ -235,6 +235,7 @@ def test_resource_source_data():
     assert resource.read_stats() == {
         "hash": "",
         "bytes": 0,
+        "fields": 2,
         "rows": 2,
     }
 
@@ -332,9 +333,8 @@ def test_resource_dialect_from_path_remote():
 
 def test_resource_dialect_from_path_error_path_not_safe():
     dialect = os.path.abspath("data/dialect.json")
-    resource = Resource({"name": "name", "path": "path", "dialect": dialect})
     with pytest.raises(exceptions.FrictionlessException) as excinfo:
-        resource.read_rows()
+        Resource({"name": "name", "path": "path", "dialect": dialect})
     error = excinfo.value.error
     assert error.code == "resource-error"
     assert error.note.count("dialect.json")
@@ -442,9 +442,8 @@ def test_resource_schema_from_path_error_bad_path():
 
 def test_resource_schema_from_path_error_path_not_safe():
     schema = os.path.abspath("data/schema.json")
-    resource = Resource({"name": "name", "path": "path", "schema": schema})
     with pytest.raises(exceptions.FrictionlessException) as excinfo:
-        resource.read_rows()
+        Resource({"name": "name", "path": "path", "schema": schema})
     error = excinfo.value.error
     assert error.code == "resource-error"
     assert error.note.count("schema.json")
@@ -522,9 +521,6 @@ def test_resource_infer():
     assert resource.metadata_valid
     assert resource == {
         "path": "data/table.csv",
-        "hash": "6c2c61dd9b0e9c6876139a449ed87933",
-        "bytes": 30,
-        "rows": 2,
         "profile": "tabular-data-resource",
         "name": "table",
         "scheme": "file",
@@ -533,12 +529,20 @@ def test_resource_infer():
         "encoding": "utf-8",
         "compression": "no",
         "compressionPath": "",
+        "control": {"newline": ""},
         "dialect": {},
+        "query": {},
         "schema": {
             "fields": [
                 {"name": "id", "type": "integer"},
                 {"name": "name", "type": "string"},
             ]
+        },
+        "stats": {
+            "hash": "6c2c61dd9b0e9c6876139a449ed87933",
+            "bytes": 30,
+            "fields": 2,
+            "rows": 2,
         },
     }
 
@@ -546,14 +550,10 @@ def test_resource_infer():
 def test_resource_infer_source_non_tabular():
     resource = Resource(path="data/text.txt")
     resource.infer()
-    print(resource.metadata_errors)
     assert resource.metadata_valid
     assert resource == {
         "name": "text",
         "path": "data/text.txt",
-        "hash": "e1cbb0c3879af8347246f12c559a86b5",
-        "bytes": 5,
-        "rows": 0,
         "profile": "data-resource",
         "scheme": "file",
         "format": "txt",
@@ -561,6 +561,13 @@ def test_resource_infer_source_non_tabular():
         "encoding": "utf-8",
         "compression": "no",
         "compressionPath": "",
+        "control": {},
+        "stats": {
+            "hash": "e1cbb0c3879af8347246f12c559a86b5",
+            "bytes": 5,
+            "fields": 0,
+            "rows": 0,
+        },
     }
 
 
@@ -746,9 +753,8 @@ def test_resource_source_multipart_error_bad_path():
 
 def test_resource_source_multipart_error_bad_path_not_safe_absolute():
     bad_path = os.path.abspath("data/chunk1.csv")
-    resource = Resource({"name": "name", "path": [bad_path, "data/chunk2.csv"]})
     with pytest.raises(exceptions.FrictionlessException) as excinfo:
-        resource.read_rows()
+        Resource({"name": "name", "path": [bad_path, "data/chunk2.csv"]})
     error = excinfo.value.error
     assert error.code == "resource-error"
     assert error.note.count("not safe")
@@ -756,9 +762,8 @@ def test_resource_source_multipart_error_bad_path_not_safe_absolute():
 
 def test_resource_source_multipart_error_bad_path_not_safe_traversing():
     bad_path = os.path.abspath("data/../chunk2.csv")
-    resource = Resource({"name": "name", "path": ["data/chunk1.csv", bad_path]})
     with pytest.raises(exceptions.FrictionlessException) as excinfo:
-        resource.read_rows()
+        Resource({"name": "name", "path": ["data/chunk1.csv", bad_path]})
     error = excinfo.value.error
     assert error.code == "resource-error"
     assert error.note.count("not safe")
@@ -778,16 +783,21 @@ def test_resource_source_multipart_infer():
         "encoding": "utf-8",
         "compression": "no",
         "compressionPath": "",
+        "control": {"newline": ""},
         "dialect": {},
+        "query": {},
         "schema": {
             "fields": [
                 {"name": "id", "type": "integer"},
                 {"name": "name", "type": "string"},
             ]
         },
-        "hash": "6c2c61dd9b0e9c6876139a449ed87933",
-        "bytes": 30,
-        "rows": 2,
+        "stats": {
+            "hash": "6c2c61dd9b0e9c6876139a449ed87933",
+            "bytes": 30,
+            "fields": 2,
+            "rows": 2,
+        },
     }
 
 
@@ -892,9 +902,8 @@ def test_resource_integrity_read_lookup():
 
 def test_resource_relative_parent_path_with_trusted_option_issue_171():
     # trusted=false (default)
-    resource = Resource(path="data/../data/table.csv")
     with pytest.raises(exceptions.FrictionlessException) as excinfo:
-        resource.read_rows()
+        Resource(path="data/../data/table.csv")
     error = excinfo.value.error
     assert error.code == "resource-error"
     assert error.note.count("data/table.csv")
@@ -919,14 +928,19 @@ def test_resource_preserve_format_from_descriptor_on_infer_issue_188():
         "encoding": "utf-8",
         "compression": "no",
         "compressionPath": "",
+        "control": {"newline": ""},
         "dialect": {},
+        "query": {},
         "schema": {
             "fields": [
                 {"name": "city", "type": "string"},
                 {"name": "population", "type": "integer"},
             ]
         },
-        "hash": "f71969080b27963b937ca28cdd5f63b9",
-        "bytes": 58,
-        "rows": 3,
+        "stats": {
+            "hash": "f71969080b27963b937ca28cdd5f63b9",
+            "bytes": 58,
+            "fields": 2,
+            "rows": 3,
+        },
     }

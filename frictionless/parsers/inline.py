@@ -35,10 +35,10 @@ class InlineParser(Parser):
     # Read
 
     def read_data_stream_create(self):
-        dialect = self.file.dialect
+        dialect = self.resource.dialect
 
         # Iter
-        data = self.file.source
+        data = self.resource.source
         if not hasattr(data, "__iter__"):
             data = data()
         data = iter(data)
@@ -74,9 +74,9 @@ class InlineParser(Parser):
     # Write
 
     def write(self, row_stream):
-        dialect = self.file.dialect
+        dialect = self.resource.dialect
         for row in row_stream:
             item = row.to_dict() if dialect.keyed else list(row.values())
             if not dialect.keyed and row.row_number == 1:
-                self.file.source.append(row.schema.field_names)
-            self.file.source.append(item)
+                self.resource.source.append(row.schema.field_names)
+            self.resource.source.append(item)

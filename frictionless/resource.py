@@ -98,7 +98,7 @@ class Resource(Metadata):
         self.setinitial("encoding", encoding)
         self.setinitial("compression", compression)
         self.setinitial("compressionPath", compression_path)
-        self.setinitial("constrol", control)
+        self.setinitial("control", control)
         self.setinitial("dialect", dialect)
         self.setinitial("query", query)
         self.setinitial("schema", schema)
@@ -221,10 +221,11 @@ class Resource(Metadata):
         control = self.get("control")
         if control is None:
             control = system.create_control(self, descriptor=control)
-            control = self.metadata_attach("control", Control())
+            control = self.metadata_attach("control", control)
         elif isinstance(control, str):
             control = os.path.join(self.basepath, control)
             control = system.create_control(self, descriptor=control)
+            control = self.metadata_attach("control", control)
         return control
 
     @Metadata.property
@@ -240,6 +241,7 @@ class Resource(Metadata):
         elif isinstance(dialect, str):
             dialect = os.path.join(self.basepath, dialect)
             dialect = system.create_control(self, descriptor=dialect)
+            dialect = self.metadata_attach("dialect", dialect)
         return dialect
 
     @Metadata.property
@@ -250,9 +252,11 @@ class Resource(Metadata):
         """
         query = self.get("query")
         if query is None:
-            query = self.metadata_attach("query", Query())
+            query = Query()
+            query = self.metadata_attach("query", query)
         elif isinstance(query, str):
             query = Query(os.path.join(self.basepath, query))
+            query = self.metadata_attach("query", query)
         return query
 
     @Metadata.property
@@ -263,9 +267,11 @@ class Resource(Metadata):
         """
         schema = self.get("schema")
         if schema is None:
-            schema = self.metadata_attach("schema", Schema())
+            schema = Schema()
+            schema = self.metadata_attach("schema", schema)
         elif isinstance(schema, str):
             schema = Schema(os.path.join(self.basepath, schema))
+            schema = self.metadata_attach("schema", schema)
         return schema
 
     @Metadata.property
@@ -398,7 +404,10 @@ class Resource(Metadata):
                 patch["encoding"] = table.encoding
                 patch["compression"] = table.compression
                 patch["compressionPath"] = table.compression_path
+                patch["compressionPath"] = table.compression_path
+                patch["control"] = table.control
                 patch["dialect"] = table.dialect
+                patch["query"] = table.query
                 patch["schema"] = table.schema
 
         # General
@@ -412,13 +421,11 @@ class Resource(Metadata):
                 patch["encoding"] = file.encoding
                 patch["compression"] = file.compression
                 patch["compressionPath"] = file.compression_path
+                patch["control"] = file.control
 
         # Stats
         if not only_sample:
-            stats = self.read_stats()
-            patch.update(stats)
-            if patch["hashing"] != config.DEFAULT_HASHING:
-                patch["hash"] = ":".join([patch["hashing"], patch["hash"]])
+            patch["stats"] = self.read_stats()
 
         # Apply/expand
         self.update(patch)
@@ -570,7 +577,7 @@ class Resource(Metadata):
 
     @staticmethod
     def from_source(source, **options):
-        if not source:
+        if source in [None, (), []]:
             return Resource(data=[], **options)
         elif isinstance(source, str):
             return Resource(path=source, **options)
@@ -834,7 +841,7 @@ class Resource(Metadata):
 
         # Query
         query = self.get("query")
-        if query is not None:
+        if not isinstance(query, (str, type(None), Query)):
             query = Query(query)
             dict.__setitem__(self, "query", query)
 

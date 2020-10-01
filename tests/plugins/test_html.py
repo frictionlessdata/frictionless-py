@@ -18,6 +18,7 @@ from frictionless.plugins.html import HtmlDialect
 def test_table_html(source, selector):
     dialect = HtmlDialect(selector=selector)
     with Table(source, dialect=dialect) as table:
+        assert table.format == "html"
         assert table.header == ["id", "name"]
         assert table.read_data() == [["1", "english"], ["2", "中国人"]]
 
