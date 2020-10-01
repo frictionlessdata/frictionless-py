@@ -158,12 +158,7 @@ class Metadata(helpers.ControlledDict):
             value (any): value
         """
         if self.get(name) is not value:
-            # NOTE: review the new implementation
-            # Previously we copied the "value" object:
-            # def func_to_partial(self, name, value):
-            #   copy = dict if isinstance(value, dict) else list
-            #   setitem(self, name, copy(value))
-            onchange = partial(setitem, self, name)
+            onchange = partial(metadata_attach, self, name)
             if isinstance(value, dict):
                 if not isinstance(value, Metadata):
                     value = helpers.ControlledDict(value)
@@ -254,6 +249,15 @@ class Metadata(helpers.ControlledDict):
 
 
 # Internal
+
+
+def metadata_attach(self, name, value):
+    # NOTE: setitem without a wrapper doesn't work for Python3.6
+    # NOTE: review the new implementation
+    # Previously we copied the "value" object:
+    # copy = dict if isinstance(value, dict) else list
+    # setitem(self, name, copy(value))
+    return setitem(self, name, value)
 
 
 class IndentDumper(yaml.SafeDumper):
