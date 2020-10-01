@@ -785,6 +785,7 @@ class Resource(Metadata):
         options.setdefault("encoding", self.encoding)
         options.setdefault("compression", self.compression)
         options.setdefault("compression_path", self.compression_path)
+        options.setdefault("control", self.control)
         return module.File(**options)
 
     # NOTE: support multipart
