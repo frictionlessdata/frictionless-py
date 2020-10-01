@@ -77,7 +77,8 @@ class GsheetParser(Parser):
         source = source % (key, key)
         if gid:
             source = "%s&gid=%s" % (source, gid)
-        with system.create_parser(Resource(source, stats=self.resource.stats)) as parser:
+        resource = Resource.from_source(source, stats=self.resource.stats)
+        with system.create_parser(resource) as parser:
             yield from parser.data_stream
 
     # Write

@@ -577,7 +577,7 @@ def test_table_control_http_preload():
     with Table(BASE_URL % "data/table.csv", control=control) as table:
         assert table.header == ["id", "name"]
         assert table.sample == [["1", "english"], ["2", "中国人"]]
-        assert table.control == {"httpPreload": True}
+        assert table.control == {"newline": "", "httpPreload": True}
 
 
 def test_table_control_bad_property():
@@ -1140,7 +1140,7 @@ def test_table_stats_fields():
 def test_table_stats_fields_remote():
     with Table(BASE_URL % "data/special/doublequote.csv") as table:
         table.read_data()
-        assert table.stats["rows"] == 17
+        assert table.stats["fields"] == 17
 
 
 def test_table_stats_rows():

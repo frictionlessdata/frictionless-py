@@ -116,6 +116,7 @@ def test_resource_source_non_tabular_remote():
     assert resource.read_stats() == {
         "hash": "d3b07384d113edec49eaa6238ad5ff00",
         "bytes": 4,
+        "fields": 0,
         "rows": 0,
     }
 

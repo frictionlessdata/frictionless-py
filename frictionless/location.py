@@ -82,6 +82,7 @@ class Location:
 # Internal
 
 
+# TODO: move it to Table/LocalLoader?
 class MultipartSource:
     def __init__(self, path, *, basepath, headless):
         self.__path = path
@@ -102,6 +103,8 @@ class MultipartSource:
     def remote(self):
         if not self.__path:
             return False
+        if self.__basepath:
+            return helpers.is_remote_path(self.__basepath)
         return helpers.is_remote_path(self.__path[0])
 
     @property
@@ -144,7 +147,13 @@ class MultipartSource:
     def read_line_stream(self):
         streams = []
         if self.remote:
-            streams = (urlopen(path) for path in self.__path)
+            paths = []
+            for path in self.__path:
+                path = path
+                if not helpers.is_remote_path(path):
+                    path = os.path.join(self.__basepath, path)
+                paths.append(path)
+            streams = (urlopen(path) for path in paths)
         else:
             process = lambda path: open(os.path.join(self.__basepath, path), "rb")
             streams = (process(path) for path in self.__path)
