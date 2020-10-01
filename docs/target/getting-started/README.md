@@ -96,18 +96,18 @@ Firt of all, let's infer the metadata. We can save and edit it to provide useful
 
     [metadata] invalid.csv
 
-    bytes: 50
     compression: 'no'
     compressionPath: ''
+    control:
+      newline: ''
     dialect: {}
     encoding: utf-8
     format: csv
-    hash: 8c73c3d9d59088dcb2508e0b348bf8a8
     hashing: md5
     name: invalid
     path: invalid.csv
     profile: tabular-data-resource
-    rows: 4
+    query: {}
     schema:
       fields:
         - name: id
@@ -119,6 +119,11 @@ Firt of all, let's infer the metadata. We can save and edit it to provide useful
         - name: name2
           type: integer
     scheme: file
+    stats:
+      bytes: 50
+      fields: 4
+      hash: 8c73c3d9d59088dcb2508e0b348bf8a8
+      rows: 4
 
 
 Secondly, we can extract a normalized data. It conforms to the inferred schema from above e.g., the dimension is fixed, and bad cells are omitted:

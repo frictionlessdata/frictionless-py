@@ -48,20 +48,20 @@ Let's describe the `countries` table:
 
     [metadata] countries.csv
 
-    bytes: 136
     compression: 'no'
     compressionPath: ''
+    control:
+      newline: ''
     dialect:
       headerRows:
         - 2
     encoding: utf-8
     format: csv
-    hash: b0481536cb4ab3e5db64f0feede627fa
     hashing: md5
     name: countries
     path: countries.csv
     profile: tabular-data-resource
-    rows: 5
+    query: {}
     schema:
       fields:
         - name: id
@@ -73,6 +73,11 @@ Let's describe the `countries` table:
         - name: population
           type: string
     scheme: file
+    stats:
+      bytes: 136
+      fields: 4
+      hash: b0481536cb4ab3e5db64f0feede627fa
+      rows: 5
 
 
 
@@ -105,20 +110,20 @@ Let's see what we have created:
 ! cat countries.resource.yaml
 ```
 
-    bytes: 136
     compression: 'no'
     compressionPath: ''
+    control:
+      newline: ''
     dialect:
       headerRows:
         - 2
     encoding: utf-8
     format: csv
-    hash: b0481536cb4ab3e5db64f0feede627fa
     hashing: md5
     name: countries
     path: countries.csv
     profile: tabular-data-resource
-    rows: 5
+    query: {}
     schema:
       fields:
         - name: id
@@ -140,6 +145,11 @@ Let's see what we have created:
         - ''
         - n/a
     scheme: file
+    stats:
+      bytes: 136
+      fields: 4
+      hash: b0481536cb4ab3e5db64f0feede627fa
+      rows: 5
 
 
 It has the same metadata as we saw above but also includes our editing related to missing values and data types. We didn't change all the wrong data types manually because providing proper missing values had fixed it automatically. Now we have a resource descriptor. In the next section, we will show why metadata matters and how to use it.
@@ -303,18 +313,18 @@ After running this script our metadata will be:
 ! cat countries-cleaned.resource.yaml
 ```
 
-    bytes: 76
     compression: 'no'
     compressionPath: ''
+    control:
+      newline: ''
     dialect: {}
     encoding: utf-8
     format: csv
-    hash: 723f79170d50a3a22227858de329aed1
     hashing: md5
     name: countries-cleaned
     path: countries-cleaned.csv
     profile: tabular-data-resource
-    rows: 3
+    query: {}
     schema:
       fields:
         - name: id
@@ -333,6 +343,11 @@ After running this script our metadata will be:
               - id
             resource: ''
     scheme: file
+    stats:
+      bytes: 91
+      fields: 4
+      hash: d32b9e60ed03baae266b9ad5d3342252
+      rows: 4
 
 
 

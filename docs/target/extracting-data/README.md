@@ -1075,15 +1075,15 @@ from frictionless import Table
 
 data = [["name"], [1], [2], [3]]
 schema = {"fields": [{"name": "name", "type": "string"}]}
-with  Table(data, schema=schema, on_error="warn") as table:
+with  Table(data, schema=schema, onerror="warn") as table:
   table.read_rows()
 ```
 
-    /usr/local/lib/python3.6/dist-packages/frictionless/table.py:784: UserWarning: The cell "1" in row at position "2" and field "name" at position "1" has incompatible type: type is "string/default"
+    /usr/local/lib/python3.6/dist-packages/frictionless/table.py:777: UserWarning: The cell "1" in row at position "2" and field "name" at position "1" has incompatible type: type is "string/default"
       warnings.warn(error.message, UserWarning)
-    /usr/local/lib/python3.6/dist-packages/frictionless/table.py:784: UserWarning: The cell "2" in row at position "3" and field "name" at position "1" has incompatible type: type is "string/default"
+    /usr/local/lib/python3.6/dist-packages/frictionless/table.py:777: UserWarning: The cell "2" in row at position "3" and field "name" at position "1" has incompatible type: type is "string/default"
       warnings.warn(error.message, UserWarning)
-    /usr/local/lib/python3.6/dist-packages/frictionless/table.py:784: UserWarning: The cell "3" in row at position "4" and field "name" at position "1" has incompatible type: type is "string/default"
+    /usr/local/lib/python3.6/dist-packages/frictionless/table.py:777: UserWarning: The cell "3" in row at position "4" and field "name" at position "1" has incompatible type: type is "string/default"
       warnings.warn(error.message, UserWarning)
 
 
@@ -1096,7 +1096,7 @@ from frictionless import Table
 data = [["name"], [1], [2], [3]]
 schema = {"fields": [{"name": "name", "type": "string"}]}
 with  Table(data, schema=schema) as table:
-  table.on_error = 'raise' # it's possible to set this property after initialization
+  table.onerror = 'raise' # it's possible to set this property after initialization
   try:
     table.read_rows()
   except Exception as exception:

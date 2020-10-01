@@ -73,18 +73,18 @@ For example, if we want a Data Package descriptor for a single file:
 
     profile: data-package
     resources:
-      - bytes: 30
-        compression: 'no'
+      - compression: 'no'
         compressionPath: ''
+        control:
+          newline: ''
         dialect: {}
         encoding: utf-8
         format: csv
-        hash: 6c2c61dd9b0e9c6876139a449ed87933
         hashing: md5
         name: table
         path: table.csv
         profile: tabular-data-resource
-        rows: 2
+        query: {}
         schema:
           fields:
             - name: id
@@ -92,6 +92,11 @@ For example, if we want a Data Package descriptor for a single file:
             - name: name
               type: string
         scheme: file
+        stats:
+          bytes: 30
+          fields: 2
+          hash: 6c2c61dd9b0e9c6876139a449ed87933
+          rows: 2
 
 
 ### Describing Schema
@@ -244,23 +249,28 @@ Let's describe it this time using the command-line interface:
 
     [metadata] country-2.csv
 
-    bytes: 124
     compression: 'no'
     compressionPath: ''
+    control:
+      newline: ''
     dialect: {}
     encoding: utf-8
     format: csv
-    hash: 88e1901235a8cf35da4d28a1cdf415e5
     hashing: md5
     name: country-2
     path: country-2.csv
     profile: tabular-data-resource
-    rows: 6
+    query: {}
     schema:
       fields:
         - name: '# Author: the scientist'
           type: string
     scheme: file
+    stats:
+      bytes: 124
+      fields: 1
+      hash: 88e1901235a8cf35da4d28a1cdf415e5
+      rows: 6
 
 
 OK, that's clearly wrong. As we have seen in the "Introductory Guide" Frictionless is capable of inferring some complicated cases' metadata but our table is too weird for it. We need to program it:
@@ -288,21 +298,21 @@ So what we are doing here:
 ! cat country.resource.yaml
 ```
 
-    bytes: 124
     compression: 'no'
     compressionPath: ''
+    control:
+      newline: ''
     dialect:
       delimiter: ;
       headerRows:
         - 2
     encoding: utf-8
     format: csv
-    hash: 88e1901235a8cf35da4d28a1cdf415e5
     hashing: md5
     name: country-2
     path: country-2.csv
     profile: tabular-data-resource
-    rows: 6
+    query: {}
     schema:
       fields:
         - name: id
@@ -328,6 +338,11 @@ So what we are doing here:
               - id
             resource: ''
     scheme: file
+    stats:
+      bytes: 124
+      fields: 1
+      hash: 88e1901235a8cf35da4d28a1cdf415e5
+      rows: 6
 
 
 Our resource metadata includes the schema metadata we created earlier but also it has:
@@ -405,18 +420,18 @@ First of all, let's describe our package using the command-line interface. We di
 
     profile: data-package
     resources:
-      - bytes: 50
-        compression: 'no'
+      - compression: 'no'
         compressionPath: ''
+        control:
+          newline: ''
         dialect: {}
         encoding: utf-8
         format: csv
-        hash: e7b6592a0a4356ba834e4bf1c8e8c7f8
         hashing: md5
         name: capital-3
         path: capital-3.csv
         profile: tabular-data-resource
-        rows: 5
+        query: {}
         schema:
           fields:
             - name: id
@@ -424,18 +439,23 @@ First of all, let's describe our package using the command-line interface. We di
             - name: name
               type: string
         scheme: file
-      - bytes: 100
-        compression: 'no'
+        stats:
+          bytes: 50
+          fields: 2
+          hash: e7b6592a0a4356ba834e4bf1c8e8c7f8
+          rows: 5
+      - compression: 'no'
         compressionPath: ''
+        control:
+          newline: ''
         dialect: {}
         encoding: utf-8
         format: csv
-        hash: c0558b91523683483f86f63346d06d81
         hashing: md5
         name: country-3
         path: country-3.csv
         profile: tabular-data-resource
-        rows: 5
+        query: {}
         schema:
           fields:
             - name: id
@@ -447,6 +467,11 @@ First of all, let's describe our package using the command-line interface. We di
             - name: population
               type: integer
         scheme: file
+        stats:
+          bytes: 100
+          fields: 4
+          hash: c0558b91523683483f86f63346d06d81
+          rows: 5
 
 
 We have already learned about many concepts that are reflected in this metadata. We can see resources, schemas, fields, and other familiar entities. The difference is that this descriptor has information about multiple files which is the most popular way of sharing data - in datasets. Very often you have not only one data file but also additional data files, some textual documents e.g. PDF, and others. To package all of these files with the corresponding metadata we use data packages.
@@ -480,18 +505,18 @@ In this case, we add a relation between different files connecting `id` and `cap
     description: The data was collected as a research project
     profile: data-package
     resources:
-      - bytes: 50
-        compression: 'no'
+      - compression: 'no'
         compressionPath: ''
+        control:
+          newline: ''
         dialect: {}
         encoding: utf-8
         format: csv
-        hash: e7b6592a0a4356ba834e4bf1c8e8c7f8
         hashing: md5
         name: capital
         path: capital-3.csv
         profile: tabular-data-resource
-        rows: 5
+        query: {}
         schema:
           fields:
             - name: id
@@ -499,18 +524,23 @@ In this case, we add a relation between different files connecting `id` and `cap
             - name: name
               type: string
         scheme: file
-      - bytes: 100
-        compression: 'no'
+        stats:
+          bytes: 50
+          fields: 2
+          hash: e7b6592a0a4356ba834e4bf1c8e8c7f8
+          rows: 5
+      - compression: 'no'
         compressionPath: ''
+        control:
+          newline: ''
         dialect: {}
         encoding: utf-8
         format: csv
-        hash: c0558b91523683483f86f63346d06d81
         hashing: md5
         name: country
         path: country-3.csv
         profile: tabular-data-resource
-        rows: 5
+        query: {}
         schema:
           fields:
             - name: id
@@ -529,6 +559,11 @@ In this case, we add a relation between different files connecting `id` and `cap
                   - id
                 resource: capital
         scheme: file
+        stats:
+          bytes: 100
+          fields: 4
+          hash: c0558b91523683483f86f63346d06d81
+          rows: 5
     title: Countries and their capitals
 
 
@@ -590,23 +625,28 @@ As we tried before, by default Frictionless can't properly describe this file so
 
     [metadata] country-2.csv
 
-    bytes: 124
     compression: 'no'
     compressionPath: ''
+    control:
+      newline: ''
     dialect: {}
     encoding: utf-8
     format: csv
-    hash: 88e1901235a8cf35da4d28a1cdf415e5
     hashing: md5
     name: country-2
     path: country-2.csv
     profile: tabular-data-resource
-    rows: 6
+    query: {}
     schema:
       fields:
         - name: '# Author: the scientist'
           type: string
     scheme: file
+    stats:
+      bytes: 124
+      fields: 1
+      hash: 88e1901235a8cf35da4d28a1cdf415e5
+      rows: 6
 
 
 Trying to extract the data will fail the same way:
@@ -694,23 +734,26 @@ resource.infer()
 pprint(resource)
 ```
 
-    {'bytes': 100,
-     'compression': 'no',
+    {'compression': 'no',
      'compressionPath': '',
+     'control': {'newline': ''},
      'dialect': {},
      'encoding': 'utf-8',
      'format': 'csv',
-     'hash': '4204f087f328b70c854c03403ab448c4',
      'hashing': 'md5',
      'name': 'country-1',
      'path': 'country-1.csv',
      'profile': 'tabular-data-resource',
-     'rows': 5,
+     'query': {},
      'schema': {'fields': [{'name': 'id', 'type': 'integer'},
                            {'name': 'neighbor_id', 'type': 'integer'},
                            {'name': 'name', 'type': 'string'},
                            {'name': 'population', 'type': 'integer'}]},
-     'scheme': 'file'}
+     'scheme': 'file',
+     'stats': {'bytes': 100,
+               'fields': 4,
+               'hash': '4204f087f328b70c854c03403ab448c4',
+               'rows': 5}}
 
 
 The result is really familiar to us already. We have seen it a lot as an output of the `describe` function or command. Basically, that's what this high-level function does under the hood: create a resource and then infer additional metadata.
@@ -803,9 +846,10 @@ Let's check it out:
 ! cat country.resource.yaml
 ```
 
-    bytes: 124
     compression: 'no'
     compressionPath: ''
+    control:
+      newline: ''
     customKey1: Value1
     customKey2: Value2
     description: It's a research project
@@ -815,12 +859,11 @@ Let's check it out:
         - 2
     encoding: utf-8
     format: csv
-    hash: 88e1901235a8cf35da4d28a1cdf415e5
     hashing: md5
     name: country-2
     path: country-2.csv
     profile: tabular-data-resource
-    rows: 6
+    query: {}
     schema:
       fields:
         - name: id
@@ -846,6 +889,11 @@ Let's check it out:
               - id
             resource: ''
     scheme: file
+    stats:
+      bytes: 124
+      fields: 1
+      hash: 88e1901235a8cf35da4d28a1cdf415e5
+      rows: 6
     title: Countries
 
 
@@ -931,18 +979,18 @@ This option allows manually setting all the field types to a given type. It's us
 
     [metadata] country-1.csv
 
-    bytes: 100
     compression: 'no'
     compressionPath: ''
+    control:
+      newline: ''
     dialect: {}
     encoding: utf-8
     format: csv
-    hash: 4204f087f328b70c854c03403ab448c4
     hashing: md5
     name: country-1
     path: country-1.csv
     profile: tabular-data-resource
-    rows: 5
+    query: {}
     schema:
       fields:
         - name: id
@@ -954,6 +1002,11 @@ This option allows manually setting all the field types to a given type. It's us
         - name: population
           type: string
     scheme: file
+    stats:
+      bytes: 100
+      fields: 4
+      hash: 4204f087f328b70c854c03403ab448c4
+      rows: 5
 
 
 **Infer Names**
