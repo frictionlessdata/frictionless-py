@@ -21,13 +21,13 @@ class OdsPlugin(Plugin):
 
     """
 
-    def create_dialect(self, file, *, descriptor):
-        if file.format == "ods":
+    def create_dialect(self, resource, *, descriptor):
+        if resource.format == "ods":
             return OdsDialect(descriptor)
 
-    def create_parser(self, file):
-        if file.format == "ods":
-            return OdsParser(file)
+    def create_parser(self, resource):
+        if resource.format == "ods":
+            return OdsParser(resource)
 
 
 # Dialect
@@ -122,7 +122,7 @@ class OdsParser(Parser):
 
     def read_data_stream_create(self):
         ezodf = helpers.import_from_plugin("ezodf", plugin="ods")
-        dialect = self.file.dialect
+        dialect = self.resource.dialect
 
         # Get book
         book = ezodf.opendoc(io.BytesIO(self.loader.byte_stream.read()))
@@ -135,7 +135,7 @@ class OdsParser(Parser):
                 sheet = book.sheets[dialect.sheet - 1]
         except (KeyError, IndexError):
             note = 'OpenOffice document "%s" does not have a sheet "%s"'
-            note = note % (self.file.source, dialect.sheet)
+            note = note % (self.resource.source, dialect.sheet)
             raise exceptions.FrictionlessException(errors.FormatError(note=note))
 
         # Type cells
@@ -166,10 +166,10 @@ class OdsParser(Parser):
     # Write
 
     def write(self, row_stream):
-        dialect = self.file.dialect
-        helpers.ensure_dir(self.file.source)
+        dialect = self.resource.dialect
+        helpers.ensure_dir(self.resource.source)
         ezodf = helpers.import_from_plugin("ezodf", plugin="ods")
-        book = ezodf.newdoc(doctype="ods", filename=self.file.source)
+        book = ezodf.newdoc(doctype="ods", filename=self.resource.source)
         title = f"Sheet {dialect.sheet}"
         book.sheets += ezodf.Sheet(title)
         sheet = book.sheets[title]

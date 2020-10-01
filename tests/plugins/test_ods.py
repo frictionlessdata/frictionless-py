@@ -11,6 +11,7 @@ BASE_URL = "https://raw.githubusercontent.com/okfn/tabulator-py/master/%s"
 
 def test_table_ods():
     with Table("data/table.ods") as table:
+        assert table.format == "ods"
         assert table.header == ["id", "name"]
         assert table.read_data() == [[1, "english"], [2, "中国人"]]
 

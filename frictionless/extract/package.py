@@ -2,7 +2,15 @@ from collections import OrderedDict
 from ..package import Package
 
 
-def extract_package(source, *, process=None, stream=False):
+def extract_package(
+    source,
+    *,
+    basepath=None,
+    onerror="ignore",
+    trusted=False,
+    process=None,
+    stream=False,
+):
     """Extract package rows
 
     API      | Usage
@@ -11,6 +19,9 @@ def extract_package(source, *, process=None, stream=False):
 
     Parameters:
         source (dict|str): data resource descriptor
+        basepath? (str): package basepath
+        onerror? (ignore|warn|raise): behaviour on errors
+        trusted? (bool): don't raise an exception on unsafe paths
         process? (func): a row processor function
         stream? (bool): return a row streams instead of loading into memory
 
@@ -20,7 +31,7 @@ def extract_package(source, *, process=None, stream=False):
     """
 
     # Create package
-    package = Package(source)
+    package = Package(source, basepath=basepath, onerror=onerror, trusted=trusted)
 
     # Extract package
     result = OrderedDict()

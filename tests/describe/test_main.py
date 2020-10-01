@@ -8,6 +8,7 @@ def test_describe():
     resource = describe("data/table.csv")
     assert resource.metadata_valid
     assert resource == {
+        "profile": "tabular-data-resource",
         "name": "table",
         "path": "data/table.csv",
         "scheme": "file",
@@ -16,17 +17,21 @@ def test_describe():
         "encoding": "utf-8",
         "compression": "no",
         "compressionPath": "",
+        "control": {"newline": ""},
         "dialect": {},
+        "query": {},
         "schema": {
             "fields": [
                 {"name": "id", "type": "integer"},
                 {"name": "name", "type": "string"},
             ]
         },
-        "profile": "tabular-data-resource",
-        "hash": "6c2c61dd9b0e9c6876139a449ed87933",
-        "bytes": 30,
-        "rows": 2,
+        "stats": {
+            "hash": "6c2c61dd9b0e9c6876139a449ed87933",
+            "bytes": 30,
+            "fields": 2,
+            "rows": 2,
+        },
     }
 
 

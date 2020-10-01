@@ -3,15 +3,15 @@ import os
 import json
 import zipfile
 from copy import deepcopy
-from urllib.request import urlopen
+from importlib import import_module
 from .metadata import Metadata
+from .location import Location
+from .controls import Control
 from .dialects import Dialect
 from .schema import Schema
 from .system import system
-from .table import Table
-from .file import File
+from .query import Query
 from . import exceptions
-from . import dialects
 from . import helpers
 from . import errors
 from . import config
@@ -37,12 +37,15 @@ class Resource(Metadata):
         encoding? (str): file encoding
         compression? (str): file compression
         compression_path? (str): file compression path
+        control? (dict): file control
         dialect? (dict): table dialect
-        schema? (dict): file schema
+        query? (dict): table query
+        schema? (dict): table schema
+        stats? (dict): table stats
         profile? (str): resource profile
         basepath? (str): resource basepath
-        trusted? (bool): don't raise on unsage paths
-        on_error? (ignore|warn|raise): behaviour if there is an error
+        onerror? (ignore|warn|raise): behaviour if there is an error
+        trusted? (bool): don't raise an exception on unsafe paths
         package? (Package): resource package
 
     Raises:
@@ -65,18 +68,23 @@ class Resource(Metadata):
         encoding=None,
         compression=None,
         compression_path=None,
+        control=None,
         dialect=None,
+        query=None,
         schema=None,
+        stats=None,
         profile=None,
         basepath=None,
+        onerror="ignore",
         trusted=False,
-        on_error="ignore",
         package=None,
     ):
 
         # Handle zip
         if helpers.is_zip_descriptor(descriptor):
             descriptor = helpers.unzip_descriptor(descriptor, "dataresource.json")
+
+        # TODO: Handle stats: hash/bytes/rows
 
         # Set attributes
         self.setinitial("name", name)
@@ -90,23 +98,21 @@ class Resource(Metadata):
         self.setinitial("encoding", encoding)
         self.setinitial("compression", compression)
         self.setinitial("compressionPath", compression_path)
+        self.setinitial("control", control)
         self.setinitial("dialect", dialect)
+        self.setinitial("query", query)
         self.setinitial("schema", schema)
+        self.setinitial("stats", stats)
         self.setinitial("profile", profile)
         self.__basepath = basepath or helpers.detect_basepath(descriptor)
+        self.__onerror = onerror
         self.__trusted = trusted
-        self.__on_error = on_error
         self.__package = package
         super().__init__(descriptor)
 
-        # Set hashing
-        hashing, hash = helpers.parse_resource_hash(self.get("hash"))
-        if hashing != config.DEFAULT_HASHING:
-            self["hashing"] = hashing
-
     def __setattr__(self, name, value):
-        if name == "on_error":
-            self.__on_error = value
+        if name == "onerror":
+            self.__onerror = value
             return
         super().__setattr__(name, value)
 
@@ -134,7 +140,6 @@ class Resource(Metadata):
         """
         return self.get("description")
 
-    # NOTE: should it be memory for inline?
     @Metadata.property
     def path(self):
         """
@@ -151,101 +156,13 @@ class Resource(Metadata):
         """
         return self.get("data")
 
-    # NOTE: rewrite this method
     @Metadata.property(write=False)
     def source(self):
         """
         Returns
             any: data source
         """
-        path = self.path
-        if self.inline:
-            return self.data
-        if not path:
-            return []
-        for path_item in path if isinstance(path, list) else [path]:
-            if not self.__trusted and not helpers.is_safe_path(path_item):
-                note = f'path "{path_item}" is not safe'
-                raise exceptions.FrictionlessException(errors.ResourceError(note=note))
-        if self.multipart:
-            drop_header = False
-            if path[0].endswith(".csv"):
-                dialect = dialects.CsvDialect(self.get("dialect"))
-                if dialect.header:
-                    drop_header = True
-            for index, path_item in enumerate(path):
-                if not helpers.is_remote_path(path_item):
-                    path[index] = os.path.join(self.basepath, path_item)
-            return MultipartSource(path, drop_header=drop_header)
-        if not helpers.is_remote_path(path):
-            return os.path.join(self.basepath, path)
-        return path
-
-    @Metadata.property(write=False)
-    def basepath(self):
-        """
-        Returns
-            str: resource basepath
-        """
-        return self.__basepath
-
-    # NOTE: move this logic to path?
-    @Metadata.property(write=False)
-    def fullpath(self):
-        """
-        Returns
-            str: resource fullpath
-        """
-        if self.inline:
-            return "memory"
-        if helpers.is_remote_path(self.path):
-            return self.path
-        return os.path.join(self.basepath, self.path)
-
-    @Metadata.property(write=False)
-    def inline(self):
-        """
-        Returns
-            bool: if resource is inline
-        """
-        return "data" in self
-
-    # NOTE: optimize tabular/infer
-    @Metadata.property(write=False)
-    def tabular(self):
-        """
-        Returns
-            bool: if resource is tabular
-        """
-        table = self.to_table()
-        try:
-            table.open()
-        except Exception as exception:
-            if exception.error.code == "format-error":
-                return False
-        except Exception:
-            pass
-        finally:
-            table.close()
-        return True
-
-    @Metadata.property(write=False)
-    def remote(self):
-        """
-        Returns
-            bool: if resource is remote
-        """
-        if self.inline:
-            return False
-        return helpers.is_remote_path(self.path[0] if self.multipart else self.path)
-
-    @Metadata.property(write=False)
-    def multipart(self):
-        """
-        Returns
-            bool: if resource is multipart
-        """
-        return bool(self.path and isinstance(self.path, list) and len(self.path) >= 2)
+        return self.__location.source
 
     @Metadata.property
     def scheme(self):
@@ -253,7 +170,7 @@ class Resource(Metadata):
         Returns
             str?: resource scheme
         """
-        return self.get("scheme")
+        return self.get("scheme", self.__location.scheme)
 
     @Metadata.property
     def format(self):
@@ -261,7 +178,7 @@ class Resource(Metadata):
         Returns
             str?: resource format
         """
-        return self.get("format")
+        return self.get("format", self.__location.format)
 
     @Metadata.property
     def hashing(self):
@@ -269,7 +186,7 @@ class Resource(Metadata):
         Returns
             str?: resource hashing
         """
-        return self.get("hashing")
+        return self.get("hashing", config.DEFAULT_HASHING)
 
     @Metadata.property
     def encoding(self):
@@ -277,7 +194,7 @@ class Resource(Metadata):
         Returns
             str?: resource encoding
         """
-        return self.get("encoding")
+        return self.get("encoding", config.DEFAULT_ENCODING)
 
     @Metadata.property
     def compression(self):
@@ -285,7 +202,7 @@ class Resource(Metadata):
         Returns
             str?: resource compression
         """
-        return self.get("compression")
+        return self.get("compression", self.__location.compression)
 
     @Metadata.property
     def compression_path(self):
@@ -293,7 +210,23 @@ class Resource(Metadata):
         Returns
             str?: resource compression path
         """
-        return self.get("compressionPath")
+        return self.get("compressionPath", self.__location.compression_path)
+
+    @Metadata.property
+    def control(self):
+        """
+        Returns
+            Control?: resource control
+        """
+        control = self.get("control")
+        if control is None:
+            control = system.create_control(self, descriptor=control)
+            control = self.metadata_attach("control", control)
+        elif isinstance(control, str):
+            control = os.path.join(self.basepath, control)
+            control = system.create_control(self, descriptor=control)
+            control = self.metadata_attach("control", control)
+        return control
 
     @Metadata.property
     def dialect(self):
@@ -303,13 +236,28 @@ class Resource(Metadata):
         """
         dialect = self.get("dialect")
         if dialect is None:
-            dialect = self.metadata_attach("dialect", Dialect())
+            dialect = system.create_dialect(self, descriptor=dialect)
+            dialect = self.metadata_attach("dialect", dialect)
         elif isinstance(dialect, str):
-            if not self.__trusted and not helpers.is_safe_path(dialect):
-                note = f'dialect path "{dialect}" is not safe'
-                raise exceptions.FrictionlessException(errors.ResourceError(note=note))
-            dialect = Dialect(os.path.join(self.basepath, dialect))
+            dialect = os.path.join(self.basepath, dialect)
+            dialect = system.create_control(self, descriptor=dialect)
+            dialect = self.metadata_attach("dialect", dialect)
         return dialect
+
+    @Metadata.property
+    def query(self):
+        """
+        Returns:
+            Query?: table query
+        """
+        query = self.get("query")
+        if query is None:
+            query = Query()
+            query = self.metadata_attach("query", query)
+        elif isinstance(query, str):
+            query = Query(os.path.join(self.basepath, query))
+            query = self.metadata_attach("query", query)
+        return query
 
     @Metadata.property
     def schema(self):
@@ -319,13 +267,21 @@ class Resource(Metadata):
         """
         schema = self.get("schema")
         if schema is None:
-            schema = self.metadata_attach("schema", Schema())
+            schema = Schema()
+            schema = self.metadata_attach("schema", schema)
         elif isinstance(schema, str):
-            if not self.__trusted and not helpers.is_safe_path(schema):
-                note = f'schema path "{schema}" is not safe'
-                raise exceptions.FrictionlessException(errors.ResourceError(note=note))
             schema = Schema(os.path.join(self.basepath, schema))
+            schema = self.metadata_attach("schema", schema)
         return schema
+
+    @Metadata.property
+    def stats(self):
+        """
+        Returns
+            dict?: resource stats
+        """
+        stats = {"hash": "", "bytes": 0, "fields": 0, "rows": 0}
+        return self.metadata_attach("stats", self.get("stats", stats))
 
     @Metadata.property
     def profile(self):
@@ -335,37 +291,90 @@ class Resource(Metadata):
         """
         return self.get("profile", config.DEFAULT_RESOURCE_PROFILE)
 
+    @Metadata.property(write=False)
+    def basepath(self):
+        """
+        Returns
+            str: resource basepath
+        """
+        return self.__basepath
+
+    @Metadata.property(write=False)
+    def fullpath(self):
+        """
+        Returns
+            str: resource fullpath
+        """
+        if self.inline:
+            return "memory"
+        if self.multipart:
+            return "multipart"
+        return self.source
+
+    @Metadata.property(write=False)
+    def inline(self):
+        """
+        Returns
+            bool: if resource is inline
+        """
+        return self.__location.inline
+
+    @Metadata.property(write=False)
+    def multipart(self):
+        """
+        Returns
+            bool: if resource is multipart
+        """
+        return self.__location.multipart
+
+    @Metadata.property(write=False)
+    def remote(self):
+        """
+        Returns
+            bool: if resource is remote
+        """
+        return self.__location.remote
+
+    @Metadata.property(write=False)
+    def tabular(self):
+        """
+        Returns
+            bool: if resource is tabular
+        """
+        try:
+            system.create_parser(self)
+            return True
+        except Exception:
+            return False
+
     @property
-    def on_error(self):
+    def onerror(self):
         """
         Returns:
             ignore|warn|raise: on error bahaviour
         """
-        assert self.__on_error in ["ignore", "warn", "raise"]
-        return self.__on_error
+        assert self.__onerror in ["ignore", "warn", "raise"]
+        return self.__onerror
 
-    @Metadata.property
-    def stats(self):
+    @property
+    def trusted(self):
         """
-        Returns
-            dict?: resource stats
+        Returns:
+            bool: don't raise an exception on unsafe paths
         """
-        stats = {}
-        for name in ["hash", "bytes", "rows"]:
-            value = self.get(name)
-            if value is not None:
-                if name == "hash":
-                    value = helpers.parse_resource_hash(value)[1]
-                stats[name] = value
-        return stats
+        return self.__trusted
 
     # Expand
 
     def expand(self):
         """Expand metadata"""
         self.setdefault("profile", config.DEFAULT_RESOURCE_PROFILE)
+        if isinstance(self.get("control"), Control):
+            self.control.expand()
         if isinstance(self.get("dialect"), Dialect):
             self.dialect.expand()
+        if isinstance(self.get("query"), Query):
+            self.query.expand()
         if isinstance(self.get("schema"), Schema):
             self.schema.expand()
 
@@ -399,7 +408,10 @@ class Resource(Metadata):
                 patch["encoding"] = table.encoding
                 patch["compression"] = table.compression
                 patch["compressionPath"] = table.compression_path
+                patch["compressionPath"] = table.compression_path
+                patch["control"] = table.control
                 patch["dialect"] = table.dialect
+                patch["query"] = table.query
                 patch["schema"] = table.schema
 
         # General
@@ -413,13 +425,11 @@ class Resource(Metadata):
                 patch["encoding"] = file.encoding
                 patch["compression"] = file.compression
                 patch["compressionPath"] = file.compression_path
+                patch["control"] = file.control
 
         # Stats
         if not only_sample:
-            stats = self.read_stats()
-            patch.update(stats)
-            if patch["hashing"] != config.DEFAULT_HASHING:
-                patch["hash"] = ":".join([patch["hashing"], patch["hash"]])
+            patch["stats"] = self.read_stats()
 
         # Apply/expand
         self.update(patch)
@@ -570,6 +580,16 @@ class Resource(Metadata):
     # Import/Export
 
     @staticmethod
+    def from_source(source, **options):
+        if source in [None, (), []]:
+            return Resource(data=[], **options)
+        elif isinstance(source, str):
+            return Resource(path=source, **options)
+        elif isinstance(source, list) and isinstance(source[0], str):
+            return Resource(path=source, **options)
+        return Resource(data=source, **options)
+
+    @staticmethod
     def from_storage(storage, *, name):
         """Import resource from storage
 
@@ -578,16 +598,6 @@ class Resource(Metadata):
             name (str): resource name
         """
         return storage.read_resource(name)
-
-    def to_storage(self, storage, *, force=False):
-        """Export resource to storage
-
-        Parameters:
-            storage (Storage): storage instance
-            force (bool): overwrite existent
-        """
-        storage.write_resource(self, force=force)
-        return storage
 
     @staticmethod
     def from_sql(*, name, engine, prefix="", namespace=None):
@@ -606,22 +616,6 @@ class Resource(Metadata):
             name=name,
         )
 
-    def to_sql(self, *, engine, prefix="", namespace=None, force=False):
-        """Export resource to SQL table
-
-        Parameters:
-            engine (object): `sqlalchemy` engine
-            prefix (str): prefix for all tables
-            namespace (str): SQL scheme
-            force (bool): overwrite existent
-        """
-        return self.to_storage(
-            system.create_storage(
-                "sql", engine=engine, prefix=prefix, namespace=namespace
-            ),
-            force=force,
-        )
-
     @staticmethod
     def from_pandas(dataframe):
         """Import resource from Pandas dataframe
@@ -634,15 +628,6 @@ class Resource(Metadata):
             name="name",
         )
 
-    def to_pandas(self):
-        """Export resource to Pandas dataframe
-
-        Parameters:
-            dataframes (dict): pandas dataframes
-            force (bool): overwrite existent
-        """
-        return self.to_storage(system.create_storage("pandas"))
-
     @staticmethod
     def from_spss(*, name, basepath):
         """Import resource from SPSS file
@@ -654,17 +639,6 @@ class Resource(Metadata):
         return Resource.from_storage(
             system.create_storage("spss", basepath=basepath),
             name=name,
-        )
-
-    def to_spss(self, *, basepath, force=False):
-        """Export resource to SPSS file
-
-        Parameters:
-            basepath (str): SPSS dir path
-            force (bool): overwrite existent
-        """
-        return self.to_storage(
-            system.create_storage("spss", basepath=basepath), force=force
         )
 
     @staticmethod
@@ -687,6 +661,52 @@ class Resource(Metadata):
                 prefix=prefix,
             ),
             name=name,
+        )
+
+    def to_storage(self, storage, *, force=False):
+        """Export resource to storage
+
+        Parameters:
+            storage (Storage): storage instance
+            force (bool): overwrite existent
+        """
+        storage.write_resource(self, force=force)
+        return storage
+
+    def to_sql(self, *, engine, prefix="", namespace=None, force=False):
+        """Export resource to SQL table
+
+        Parameters:
+            engine (object): `sqlalchemy` engine
+            prefix (str): prefix for all tables
+            namespace (str): SQL scheme
+            force (bool): overwrite existent
+        """
+        return self.to_storage(
+            system.create_storage(
+                "sql", engine=engine, prefix=prefix, namespace=namespace
+            ),
+            force=force,
+        )
+
+    def to_pandas(self):
+        """Export resource to Pandas dataframe
+
+        Parameters:
+            dataframes (dict): pandas dataframes
+            force (bool): overwrite existent
+        """
+        return self.to_storage(system.create_storage("pandas"))
+
+    def to_spss(self, *, basepath, force=False):
+        """Export resource to SPSS file
+
+        Parameters:
+            basepath (str): SPSS dir path
+            force (bool): overwrite existent
+        """
+        return self.to_storage(
+            system.create_storage("spss", basepath=basepath), force=force
         )
 
     def to_bigquery(self, *, service, project, dataset, prefix="", force=False):
@@ -733,6 +753,7 @@ class Resource(Metadata):
         Returns:
             Table: data table
         """
+        module = import_module("frictionless.table")
         options.setdefault("source", self.source)
         options.setdefault("scheme", self.scheme)
         options.setdefault("format", self.format)
@@ -742,10 +763,10 @@ class Resource(Metadata):
         options.setdefault("compression_path", self.compression_path)
         options.setdefault("dialect", self.dialect)
         options.setdefault("schema", self.schema)
-        options.setdefault("on_error", self.__on_error)
+        options.setdefault("onerror", self.__onerror)
         if "lookup" not in options:
             options["lookup"] = self.read_lookup()
-        return Table(**options)
+        return module.Table(**options)
 
     def to_file(self, **options):
         """Convert resource to File
@@ -756,6 +777,7 @@ class Resource(Metadata):
         Returns:
             File: data file
         """
+        module = import_module("frictionless.file")
         options.setdefault("source", self.source)
         options.setdefault("scheme", self.scheme)
         options.setdefault("format", self.format)
@@ -763,7 +785,8 @@ class Resource(Metadata):
         options.setdefault("encoding", self.encoding)
         options.setdefault("compression", self.compression)
         options.setdefault("compression_path", self.compression_path)
-        return File(**options)
+        options.setdefault("control", self.control)
+        return module.File(**options)
 
     # NOTE: support multipart
     def to_zip(self, target, encoder_class=None):
@@ -806,17 +829,44 @@ class Resource(Metadata):
 
     def metadata_process(self):
 
+        # Location
+        self.__location = Location(self)
+
+        # Control
+        control = self.get("control")
+        if not isinstance(control, (str, type(None))):
+            control = system.create_control(self, descriptor=control)
+            dict.__setitem__(self, "control", control)
+
         # Dialect
         dialect = self.get("dialect")
-        if not isinstance(dialect, (str, type(None), Dialect)):
-            dialect = system.create_dialect(self.to_file(), descriptor=dialect)
+        if not isinstance(dialect, (str, type(None))):
+            dialect = system.create_dialect(self, descriptor=dialect)
             dict.__setitem__(self, "dialect", dialect)
+
+        # Query
+        query = self.get("query")
+        if not isinstance(query, (str, type(None), Query)):
+            query = Query(query)
+            dict.__setitem__(self, "query", query)
 
         # Schema
         schema = self.get("schema")
         if not isinstance(schema, (str, type(None), Schema)):
             schema = Schema(schema)
             dict.__setitem__(self, "schema", schema)
+
+        # Security
+        if not self.trusted:
+            for name in ["path", "control", "dialect", "schema"]:
+                path = self.get(name)
+                if not isinstance(path, (str, list)):
+                    continue
+                path = path if isinstance(path, list) else [path]
+                if not all(helpers.is_safe_path(chunk) for chunk in path):
+                    note = f'path "{path}" is not safe'
+                    error = errors.ResourceError(note=note)
+                    raise exceptions.FrictionlessException(error)
 
     def metadata_validate(self):
         yield from super().metadata_validate()
@@ -828,73 +878,3 @@ class Resource(Metadata):
         # Schema
         if self.schema:
             yield from self.schema.metadata_errors
-
-
-# Internal
-
-
-class MultipartSource:
-    def __init__(self, source, *, drop_header):
-        self.__source = source
-        self.__drop_header = drop_header
-        self.__line_stream = self.read_line_stream()
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, *args, **kwargs):
-        pass
-
-    def __iter__(self):
-        return self.__rows
-
-    @property
-    def closed(self):
-        return False
-
-    def readable(self):
-        return True
-
-    def seekable(self):
-        return True
-
-    def writable(self):
-        return False
-
-    def close(self):
-        pass
-
-    def flush(self):
-        pass
-
-    def read1(self, size):
-        return self.read(size)
-
-    def seek(self, offset):
-        assert offset == 0
-        self.__line_stream = self.read_line_stream()
-
-    def read(self, size):
-        res = b""
-        while True:
-            try:
-                res += next(self.__line_stream)
-            except StopIteration:
-                break
-            if len(res) > size:
-                break
-        return res
-
-    def read_line_stream(self):
-        streams = []
-        if helpers.is_remote_path(self.__source[0]):
-            streams = (urlopen(chunk) for chunk in self.__source)
-        else:
-            streams = (io.open(chunk, "rb") for chunk in self.__source)
-        for stream_number, stream in enumerate(streams, start=1):
-            for line_number, line in enumerate(stream, start=1):
-                if not line.endswith(b"\n"):
-                    line += b"\n"
-                if self.__drop_header and stream_number > 1 and line_number == 1:
-                    continue
-                yield line

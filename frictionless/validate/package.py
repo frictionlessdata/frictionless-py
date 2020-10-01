@@ -17,7 +17,7 @@ def validate_package(source, basepath=None, trusted=False, noinfer=False, **opti
     Parameters:
         source (dict|str): a package descriptor
         basepath? (str): package basepath
-        trusted? (bool): if `True` it will allow unsafe paths
+        trusted? (bool): don't raise an exception on unsafe paths
         noinfer? (bool): don't call `package.infer`
         **options (dict): options for every extracted table
 

@@ -35,8 +35,8 @@ class Package(Metadata):
         resources? (dict|Resource[]): list of resource descriptors
         profile? (str): profile name like 'data-package'
         basepath? (str): a basepath of the package
-        trusted? (bool): don't raise on unsafe paths
-        on_error? (ignore|warn|raise): behaviour if there is an error
+        onerror? (ignore|warn|raise): behaviour if there is an error
+        trusted? (bool): don't raise an exception on unsafe paths
 
     Raises:
         FrictionlessException: raise any error that occurs during the process
@@ -53,8 +53,8 @@ class Package(Metadata):
         resources=None,
         profile=None,
         basepath=None,
-        trusted=None,
-        on_error="ignore",
+        onerror="ignore",
+        trusted=False,
     ):
 
         # Handle zip
@@ -68,13 +68,13 @@ class Package(Metadata):
         self.setinitial("resources", resources)
         self.setinitial("profile", profile)
         self.__basepath = basepath or helpers.detect_basepath(descriptor)
+        self.__onerror = onerror
         self.__trusted = trusted
-        self.__on_error = on_error
         super().__init__(descriptor)
 
     def __setattr__(self, name, value):
-        if name == "on_error":
-            self.__on_error = value
+        if name == "onerror":
+            self.__onerror = value
             return
         super().__setattr__(name, value)
 
@@ -102,14 +102,6 @@ class Package(Metadata):
         """
         return self.get("description")
 
-    @Metadata.property(write=False)
-    def basepath(self):
-        """
-        Returns:
-            str: package basepath
-        """
-        return self.__basepath
-
     @Metadata.property
     def profile(self):
         """
@@ -118,14 +110,30 @@ class Package(Metadata):
         """
         return self.get("profile", config.DEFAULT_PACKAGE_PROFILE)
 
+    @Metadata.property(write=False)
+    def basepath(self):
+        """
+        Returns:
+            str: package basepath
+        """
+        return self.__basepath
+
     @property
-    def on_error(self):
+    def onerror(self):
         """
         Returns:
             ignore|warn|raise: on error bahaviour
         """
-        assert self.__on_error in ["ignore", "warn", "raise"]
-        return self.__on_error
+        assert self.__onerror in ["ignore", "warn", "raise"]
+        return self.__onerror
+
+    @Metadata.property(write=False)
+    def trusted(self):
+        """
+        Returns:
+            str: package trusted
+        """
+        return self.__trusted
 
     # Resources
 
@@ -253,16 +261,6 @@ class Package(Metadata):
         """
         return storage.read_package()
 
-    def to_storage(self, storage, *, force=False):
-        """Export package to storage
-
-        Parameters:
-            storage (Storage): storage instance
-            force (bool): overwrite existent
-        """
-        storage.write_package(self, force=force)
-        return storage
-
     @staticmethod
     def from_sql(*, engine, prefix="", namespace=None):
         """Import package from SQL
@@ -278,22 +276,6 @@ class Package(Metadata):
             )
         )
 
-    def to_sql(self, *, engine, prefix="", namespace=None, force=False):
-        """Export package to SQL
-
-        Parameters:
-            engine (object): `sqlalchemy` engine
-            prefix (str): prefix for all tables
-            namespace (str): SQL scheme
-            force (bool): overwrite existent
-        """
-        return self.to_storage(
-            system.create_storage(
-                "sql", engine=engine, prefix=prefix, namespace=namespace
-            ),
-            force=force,
-        )
-
     @staticmethod
     def from_pandas(*, dataframes):
         """Import package from Pandas dataframes
@@ -305,10 +287,6 @@ class Package(Metadata):
             system.create_storage("pandas", dataframes=dataframes)
         )
 
-    def to_pandas(self):
-        """Export package to Pandas dataframes"""
-        return self.to_storage(system.create_storage("pandas"))
-
     @staticmethod
     def from_spss(*, basepath):
         """Import package from SPSS directory
@@ -317,17 +295,6 @@ class Package(Metadata):
             basepath (str): SPSS dir path
         """
         return Package.from_storage(system.create_storage("spss", basepath=basepath))
-
-    def to_spss(self, *, basepath, force=False):
-        """Export package to SPSS directory
-
-        Parameters:
-            basepath (str): SPSS dir path
-            force (bool): overwrite existent
-        """
-        return self.to_storage(
-            system.create_storage("spss", basepath=basepath), force=force
-        )
 
     @staticmethod
     def from_bigquery(*, service, project, dataset, prefix=""):
@@ -347,6 +314,47 @@ class Package(Metadata):
                 dataset=dataset,
                 prefix=prefix,
             ),
+        )
+
+    def to_storage(self, storage, *, force=False):
+        """Export package to storage
+
+        Parameters:
+            storage (Storage): storage instance
+            force (bool): overwrite existent
+        """
+        storage.write_package(self, force=force)
+        return storage
+
+    def to_sql(self, *, engine, prefix="", namespace=None, force=False):
+        """Export package to SQL
+
+        Parameters:
+            engine (object): `sqlalchemy` engine
+            prefix (str): prefix for all tables
+            namespace (str): SQL scheme
+            force (bool): overwrite existent
+        """
+        return self.to_storage(
+            system.create_storage(
+                "sql", engine=engine, prefix=prefix, namespace=namespace
+            ),
+            force=force,
+        )
+
+    def to_pandas(self):
+        """Export package to Pandas dataframes"""
+        return self.to_storage(system.create_storage("pandas"))
+
+    def to_spss(self, *, basepath, force=False):
+        """Export package to SPSS directory
+
+        Parameters:
+            basepath (str): SPSS dir path
+            force (bool): overwrite existent
+        """
+        return self.to_storage(
+            system.create_storage("spss", basepath=basepath), force=force
         )
 
     def to_bigquery(self, *, service, project, dataset, prefix="", force=False):
@@ -440,12 +448,11 @@ class Package(Metadata):
                         resource,
                         basepath=self.__basepath,
                         trusted=self.__trusted,
-                        on_error=self.__on_error,
+                        onerror=self.__onerror,
                         package=self,
                     )
                     list.__setitem__(resources, index, resource)
-                # NOTE: should we sync basepath/trusted also here?
-                resource.on_error = self.__on_error
+                resource.onerror = self.__onerror
             if not isinstance(resources, helpers.ControlledList):
                 resources = helpers.ControlledList(resources)
                 resources.__onchange__(self.metadata_process)

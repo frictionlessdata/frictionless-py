@@ -14,6 +14,7 @@ class Control(Metadata):
 
     Parameters:
         descriptor? (str|dict): descriptor
+        newline? (str): a string to be used for `io.open(..., newline=newline)`
         detectEncoding? (func):  a function to detect encoding `(sample) -> encoding`
 
     Raises:
@@ -21,9 +22,18 @@ class Control(Metadata):
 
     """
 
-    def __init__(self, descriptor=None, *, detect_encoding=None):
+    def __init__(self, descriptor=None, *, newline=None, detect_encoding=None):
+        self.setinitial("newline", newline)
         self.setinitial("detectEncoding", detect_encoding)
         super().__init__(descriptor)
+
+    @Metadata.property
+    def newline(self):
+        """
+        Returns:
+            str: a string to be used for `io.open(..., newline=newline)`
+        """
+        return self.get("newline")
 
     @Metadata.property
     def detect_encoding(self):
@@ -54,7 +64,10 @@ class Control(Metadata):
     metadata_profile = {  # type: ignore
         "type": "object",
         "additionalProperties": False,
-        "properties": {"detectEncoding": {}},
+        "properties": {
+            "newline": {"type": "string"},
+            "detectEncoding": {},
+        },
     }
 
 
@@ -74,7 +87,10 @@ class LocalControl(Control):
     metadata_profile = {  # type: ignore
         "type": "object",
         "additionalProperties": False,
-        "properties": {"detectEncoding": {}},
+        "properties": {
+            "newline": {"type": "string"},
+            "detectEncoding": {},
+        },
     }
 
 
@@ -99,12 +115,13 @@ class RemoteControl(Control):
         http_session=None,
         http_preload=None,
         http_timeout=None,
+        newline=None,
         detect_encoding=None,
     ):
         self.setinitial("httpSession", http_session)
         self.setinitial("httpPreload", http_preload)
         self.setinitial("httpTimeout", http_timeout)
-        super().__init__(descriptor, detect_encoding=detect_encoding)
+        super().__init__(descriptor, newline=newline, detect_encoding=detect_encoding)
 
     @Metadata.property
     def http_session(self):
@@ -151,6 +168,7 @@ class RemoteControl(Control):
             "httpSession": {},
             "httpPreload": {"type": "boolean"},
             "httpTimeout": {"type": "number"},
+            "newline": {"type": "string"},
             "detectEncoding": {},
         },
     }
@@ -172,7 +190,10 @@ class StreamControl(Control):
     metadata_profile = {  # type: ignore
         "type": "object",
         "additionalProperties": False,
-        "properties": {"detectEncoding": {}},
+        "properties": {
+            "newline": {"type": "string"},
+            "detectEncoding": {},
+        },
     }
 
 
@@ -192,5 +213,8 @@ class TextControl(Control):
     metadata_profile = {  # type: ignore
         "type": "object",
         "additionalProperties": False,
-        "properties": {"detectEncoding": {}},
+        "properties": {
+            "newline": {"type": "string"},
+            "detectEncoding": {},
+        },
     }

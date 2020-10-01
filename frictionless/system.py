@@ -69,21 +69,21 @@ class System:
         note = f'cannot create check "{name}". Try installing "frictionless-{name}"'
         raise exceptions.FrictionlessException(errors.CheckError(note=note))
 
-    def create_control(self, file, *, descriptor):
+    def create_control(self, resource, *, descriptor):
         """Create control
 
         Parameters:
-            file (File): control file
+            resource (Resource): control resource
             descriptor (dict): control descriptor
 
         Returns:
             Control: control
         """
         control = None
-        name = file.scheme
+        name = resource.scheme
         controls = import_module("frictionless.controls")
         for func in self.methods["create_control"].values():
-            control = func(file, descriptor=descriptor)
+            control = func(resource, descriptor=descriptor)
             if control is not None:
                 return control
         if name == "file":
@@ -96,21 +96,21 @@ class System:
             return controls.TextControl(descriptor)
         return controls.Control(descriptor)
 
-    def create_dialect(self, file, *, descriptor):
+    def create_dialect(self, resource, *, descriptor):
         """Create dialect
 
         Parameters:
-            file (File): dialect file
+            resource (Resource): dialect resource
             descriptor (dict): dialect descriptor
 
         Returns:
             Dialect: dialect
         """
         dialect = None
-        name = file.format
+        name = resource.format
         dialects = import_module("frictionless.dialects")
         for func in self.methods["create_dialect"].values():
-            dialect = func(file, descriptor=descriptor)
+            dialect = func(resource, descriptor=descriptor)
             if dialect is not None:
                 return dialect
         if name == "csv":
@@ -123,61 +123,61 @@ class System:
             return dialects.JsonDialect(descriptor)
         return dialects.Dialect(descriptor)
 
-    def create_loader(self, file):
+    def create_loader(self, resource):
         """Create loader
 
         Parameters:
-            file (File): loader file
+            resource (Resource): loader resource
 
         Returns:
             Loader: loader
         """
         loader = None
-        name = file.scheme
+        name = resource.scheme
         loaders = import_module("frictionless.loaders")
         for func in self.methods["create_loader"].values():
-            loader = func(file)
+            loader = func(resource)
             if loader is not None:
                 return loader
         if name == "file":
-            return loaders.LocalLoader(file)
+            return loaders.LocalLoader(resource)
         elif name in config.REMOTE_SCHEMES:
-            return loaders.RemoteLoader(file)
+            return loaders.RemoteLoader(resource)
         elif name == "stream":
-            return loaders.StreamLoader(file)
+            return loaders.StreamLoader(resource)
         elif name == "text":
-            return loaders.TextLoader(file)
+            return loaders.TextLoader(resource)
         note = f'cannot create loader "{name}". Try installing "frictionless-{name}"'
         raise exceptions.FrictionlessException(errors.SchemeError(note=note))
 
-    def create_parser(self, file):
+    def create_parser(self, resource):
         """Create parser
 
         Parameters:
-            file (File): parser file
+            resource (Resource): parser resource
 
         Returns:
             Parser: parser
         """
         parser = None
-        name = file.format
+        name = resource.format
         parsers = import_module("frictionless.parsers")
         for func in self.methods["create_parser"].values():
-            parser = func(file)
+            parser = func(resource)
             if parser is not None:
                 return parser
         if name == "csv":
-            return parsers.CsvParser(file)
+            return parsers.CsvParser(resource)
         elif name == "inline":
-            return parsers.InlineParser(file)
+            return parsers.InlineParser(resource)
         elif name == "xlsx":
-            return parsers.XlsxParser(file)
+            return parsers.XlsxParser(resource)
         elif name == "xls":
-            return parsers.XlsParser(file)
+            return parsers.XlsParser(resource)
         elif name == "json":
-            return parsers.JsonParser(file)
+            return parsers.JsonParser(resource)
         elif name in ["jsonl", "ndjson"]:
-            return parsers.JsonlParser(file)
+            return parsers.JsonlParser(resource)
         note = f'cannot create parser "{name}". Try installing "frictionless-{name}"'
         raise exceptions.FrictionlessException(errors.FormatError(note=note))
 

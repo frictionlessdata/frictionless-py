@@ -12,7 +12,7 @@ class Parser:
     Public   | `from frictionless import Parser`
 
     Parameters:
-        file (File): file
+        resource (Resource): resource
 
     """
 
@@ -20,12 +20,12 @@ class Parser:
     loading = True
     native_types = []
 
-    def __init__(self, file):
-        self.__file = file
+    def __init__(self, resource):
+        self.__resource = resource
         self.__loader = None
         self.__data_stream = None
         if self.newline is not None:
-            self.__file["newline"] = self.newline
+            self.__resource.control.newline = self.newline
 
     def __enter__(self):
         if self.closed:
@@ -36,12 +36,12 @@ class Parser:
         self.close()
 
     @property
-    def file(self):
+    def resource(self):
         """
         Returns:
-            File: file
+            Resource: resource
         """
-        return self.__file
+        return self.__resource
 
     @property
     def loader(self):
@@ -64,8 +64,8 @@ class Parser:
     def open(self):
         """Open the parser as "io.open" does"""
         self.close()
-        if self.__file.dialect.metadata_errors:
-            error = self.__file.dialect.metadata_errors[0]
+        if self.__resource.dialect.metadata_errors:
+            error = self.__resource.dialect.metadata_errors[0]
             raise exceptions.FrictionlessException(error)
         try:
             self.__loader = self.read_loader()
@@ -98,7 +98,7 @@ class Parser:
             Loader: loader
         """
         if self.loading:
-            loader = system.create_loader(self.file)
+            loader = system.create_loader(self.resource)
             return loader.open()
 
     def read_data_stream(self):
@@ -136,7 +136,7 @@ class Parser:
     # Write
 
     def write(self, row_stream):
-        """Write row stream into the file
+        """Write row stream into the resource
 
         Parameters:
             gen<Row[]>: row stream

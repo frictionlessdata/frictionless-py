@@ -26,12 +26,12 @@ class CsvParser(Parser):
     def read_data_stream_create(self):
         sample = self.read_data_stream_infer_dialect()
         source = chain(sample, self.loader.text_stream)
-        data = csv.reader(source, dialect=self.file.dialect.to_python())
+        data = csv.reader(source, dialect=self.resource.dialect.to_python())
         yield from data
 
     def read_data_stream_infer_dialect(self):
         sample = extract_samle(self.loader.text_stream)
-        delimiter = self.file.dialect.get("delimiter", ",\t;|")
+        delimiter = self.resource.dialect.get("delimiter", ",\t;|")
         try:
             dialect = csv.Sniffer().sniff("".join(sample), delimiter)
         except csv.Error:
@@ -40,23 +40,23 @@ class CsvParser(Parser):
             value = getattr(dialect, name.lower())
             if value is None:
                 continue
-            if value == getattr(self.file.dialect, stringcase.snakecase(name)):
+            if value == getattr(self.resource.dialect, stringcase.snakecase(name)):
                 continue
-            if name in self.file.dialect:
+            if name in self.resource.dialect:
                 continue
-            self.file.dialect[name] = value
+            self.resource.dialect[name] = value
         return sample
 
     # Write
 
     def write(self, row_stream):
         options = {}
-        for name in vars(self.file.dialect.to_python()):
-            value = getattr(self.file.dialect, name, None)
+        for name in vars(self.resource.dialect.to_python()):
+            value = getattr(self.resource.dialect, name, None)
             if value is not None:
                 options[name] = value
         with tempfile.NamedTemporaryFile(delete=False) as file:
-            writer = unicodecsv.writer(file, encoding=self.file.encoding, **options)
+            writer = unicodecsv.writer(file, encoding=self.resource.encoding, **options)
             for row in row_stream:
                 schema = row.schema
                 if row.row_number == 1:
@@ -65,7 +65,7 @@ class CsvParser(Parser):
                 cells = list(row.values())
                 cells, notes = schema.write_data(cells, native_types=self.native_types)
                 writer.writerow(cells)
-        helpers.move_file(file.name, self.file.source)
+        helpers.move_file(file.name, self.resource.source)
 
 
 # Internal

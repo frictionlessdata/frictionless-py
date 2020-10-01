@@ -146,30 +146,33 @@ def test_validate_package_dialect_header_false():
     assert report.valid
 
 
-# Integrity
+# Checksum
 
 DESCRIPTOR_SH = {
     "resources": [
         {
             "name": "resource1",
             "path": "data/table.csv",
-            "bytes": 30,
-            "hash": "sha256:a1fd6c5ff3494f697874deeb07f69f8667e903dd94a7bc062dd57550cea26da8",
+            "hashing": "sha256",
+            "stats": {
+                "hash": "a1fd6c5ff3494f697874deeb07f69f8667e903dd94a7bc062dd57550cea26da8",
+                "bytes": 30,
+            },
         }
     ]
 }
 
 
-def test_validate_integrity():
+def test_validate_checksum():
     source = deepcopy(DESCRIPTOR_SH)
     report = validate(source)
     assert report.valid
 
 
-def test_validate_integrity_invalid():
+def test_validate_checksum_invalid():
     source = deepcopy(DESCRIPTOR_SH)
-    source["resources"][0]["bytes"] += 1
-    source["resources"][0]["hash"] += "a"
+    source["resources"][0]["stats"]["bytes"] += 1
+    source["resources"][0]["stats"]["hash"] += "a"
     report = validate(source)
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [None, None, "checksum-error"],
@@ -177,48 +180,51 @@ def test_validate_integrity_invalid():
     ]
 
 
-def test_validate_integrity_size():
+def test_validate_checksum_size():
     source = deepcopy(DESCRIPTOR_SH)
-    source["resources"][0].pop("hash")
+    source["resources"][0]["stats"].pop("hash")
     report = validate(source)
     assert report.valid
 
 
-def test_validate_integrity_size_invalid():
+def test_validate_checksum_size_invalid():
     source = deepcopy(DESCRIPTOR_SH)
-    source["resources"][0]["bytes"] += 1
-    source["resources"][0].pop("hash")
+    source["resources"][0]["stats"]["bytes"] += 1
+    source["resources"][0]["stats"].pop("hash")
     report = validate(source)
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [None, None, "checksum-error"],
     ]
 
 
-def test_validate_integrity_hash():
+def test_validate_checksum_hash():
     source = deepcopy(DESCRIPTOR_SH)
-    source["resources"][0].pop("bytes")
+    source["resources"][0]["stats"].pop("bytes")
     report = validate(source)
     assert report.valid
 
 
-def test_check_file_integrity_hash_invalid():
+def test_check_file_checksum_hash_invalid():
     source = deepcopy(DESCRIPTOR_SH)
-    source["resources"][0].pop("bytes")
-    source["resources"][0]["hash"] += "a"
+    source["resources"][0]["stats"].pop("bytes")
+    source["resources"][0]["stats"]["hash"] += "a"
     report = validate(source)
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [None, None, "checksum-error"],
     ]
 
 
-def test_check_file_integrity_hash_not_supported_algorithm():
+def test_check_file_checksum_hash_not_supported_algorithm():
     source = deepcopy(DESCRIPTOR_SH)
-    source["resources"][0].pop("bytes")
-    source["resources"][0]["hash"] = source["resources"][0]["hash"].replace("sha", "bad")
+    source["resources"][0]["hashing"] = "bad"
+    source["resources"][0]["stats"].pop("bytes")
     report = validate(source)
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [None, None, "hashing-error"],
     ]
+
+
+# Integrity
 
 
 DESCRIPTOR_FK = {
@@ -256,14 +262,14 @@ DESCRIPTOR_FK = {
 
 
 @pytest.mark.ci
-def test_validate_foreign_key_error():
+def test_validate_integrity_foreign_key_error():
     descriptor = deepcopy(DESCRIPTOR_FK)
     report = validate(descriptor)
     assert report.valid
 
 
 @pytest.mark.ci
-def test_validate_foreign_key_not_defined():
+def test_validate_integrity_foreign_key_not_defined():
     descriptor = deepcopy(DESCRIPTOR_FK)
     del descriptor["resources"][0]["schema"]["foreignKeys"]
     report = validate(descriptor)
@@ -271,7 +277,7 @@ def test_validate_foreign_key_not_defined():
 
 
 @pytest.mark.ci
-def test_validate_foreign_key_self_referenced_resource_violation():
+def test_validate_integrity_foreign_key_self_referenced_resource_violation():
     descriptor = deepcopy(DESCRIPTOR_FK)
     del descriptor["resources"][0]["data"][4]
     report = validate(descriptor)
@@ -281,7 +287,7 @@ def test_validate_foreign_key_self_referenced_resource_violation():
 
 
 @pytest.mark.ci
-def test_validate_foreign_key_internal_resource_violation():
+def test_validate_integrity_foreign_key_internal_resource_violation():
     descriptor = deepcopy(DESCRIPTOR_FK)
     del descriptor["resources"][1]["data"][4]
     report = validate(descriptor)
@@ -291,7 +297,7 @@ def test_validate_foreign_key_internal_resource_violation():
 
 
 @pytest.mark.ci
-def test_validate_foreign_key_internal_resource_violation_non_existent():
+def test_validate_integrity_foreign_key_internal_resource_violation_non_existent():
     descriptor = deepcopy(DESCRIPTOR_FK)
     del descriptor["resources"][1]
     report = validate(descriptor)

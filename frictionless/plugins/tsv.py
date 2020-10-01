@@ -17,13 +17,13 @@ class TsvPlugin(Plugin):
 
     """
 
-    def create_dialect(self, file, *, descriptor):
-        if file.format == "tsv":
+    def create_dialect(self, resource, *, descriptor):
+        if resource.format == "tsv":
             return TsvDialect(descriptor)
 
-    def create_parser(self, file):
-        if file.format == "tsv":
-            return TsvParser(file)
+    def create_parser(self, resource):
+        if resource.format == "tsv":
+            return TsvParser(resource)
 
 
 # Dialect
@@ -83,4 +83,4 @@ class TsvParser(Parser):
                 cells = list(row.values())
                 cells, notes = schema.write_data(cells, native_types=self.native_types)
                 writer.writerow(cells)
-        helpers.move_file(file.name, self.file.source)
+        helpers.move_file(file.name, self.resource.source)

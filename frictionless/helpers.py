@@ -85,6 +85,8 @@ def tabulate_metadata(metadata):
 
 
 def detect_name(path):
+    if not path:
+        return "memory"
     file = os.path.basename(path)
     name = os.path.splitext(file)[0]
     return name
@@ -97,6 +99,24 @@ def detect_basepath(descriptor):
         if basepath and not is_remote_path(basepath):
             basepath = os.path.relpath(basepath, start=os.getcwd())
     return basepath
+
+
+def detect_path_and_data(source):
+    if not source:
+        return [None, None]
+    elif isinstance(source, str):
+        return [source, None]
+    elif isinstance(source, list) and isinstance(source[0], str):
+        return [source, None]
+    return [None, source]
+
+
+def detect_path(source):
+    return detect_path_and_data(source)[0]
+
+
+def detect_data(source):
+    return detect_path_and_data(source)[1]
 
 
 def ensure_dir(path):
@@ -123,7 +143,6 @@ def is_remote_path(path):
     return urlparse(path).scheme in config.REMOTE_SCHEMES
 
 
-# NOTE: consider making thrusted a global env var used everywhere (including security)
 def is_safe_path(path):
     contains_windows_var = lambda val: re.match(r"%.+%", val)
     contains_posix_var = lambda val: re.match(r"\$.+", val)

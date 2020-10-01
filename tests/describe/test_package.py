@@ -20,16 +20,21 @@ def test_describe_package():
                 "encoding": "utf-8",
                 "compression": "no",
                 "compressionPath": "",
+                "control": {"newline": ""},
                 "dialect": {},
+                "query": {},
                 "schema": {
                     "fields": [
                         {"name": "id", "type": "integer"},
                         {"name": "name", "type": "string"},
                     ]
                 },
-                "hash": "8fff9d97e5c0cb77b7c469ec37c8e766",
-                "bytes": 18,
-                "rows": 1,
+                "stats": {
+                    "hash": "8fff9d97e5c0cb77b7c469ec37c8e766",
+                    "bytes": 18,
+                    "fields": 2,
+                    "rows": 1,
+                },
             },
             {
                 "path": "data/chunk2.csv",
@@ -41,16 +46,21 @@ def test_describe_package():
                 "encoding": "utf-8",
                 "compression": "no",
                 "compressionPath": "",
+                "control": {"newline": ""},
                 "dialect": {},
+                "query": {},
                 "schema": {
                     "fields": [
                         {"name": "id", "type": "integer"},
                         {"name": "name", "type": "string"},
                     ]
                 },
-                "hash": "ebfa07d04a148a92a18078f78468694d",
-                "bytes": 20,
-                "rows": 1,
+                "stats": {
+                    "hash": "ebfa07d04a148a92a18078f78468694d",
+                    "bytes": 20,
+                    "fields": 2,
+                    "rows": 1,
+                },
             },
         ],
     }

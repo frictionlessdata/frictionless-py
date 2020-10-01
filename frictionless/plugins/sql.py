@@ -26,13 +26,13 @@ class SqlPlugin(Plugin):
 
     """
 
-    def create_dialect(self, file, *, descriptor):
-        if file.scheme in SQL_SCHEMES:
+    def create_dialect(self, resource, *, descriptor):
+        if resource.scheme in SQL_SCHEMES:
             return SqlDialect(descriptor)
 
-    def create_parser(self, file):
-        if file.scheme in SQL_SCHEMES:
-            return SqlParser(file)
+    def create_parser(self, resource):
+        if resource.scheme in SQL_SCHEMES:
+            return SqlParser(resource)
 
     def create_storage(self, name, **options):
         if name == "sql":
@@ -125,8 +125,8 @@ class SqlParser(Parser):
 
     def read_data_stream_create(self):
         sa = helpers.import_from_plugin("sqlalchemy", plugin="sql")
-        dialect = self.file.dialect
-        engine = sa.create_engine(self.file.source)
+        dialect = self.resource.dialect
+        engine = sa.create_engine(self.resource.source)
         engine.update_execution_options(stream_results=True)
         table = sa.sql.table(dialect.table)
         order = sa.sql.text(dialect.order_by) if dialect.order_by else None
@@ -144,8 +144,8 @@ class SqlParser(Parser):
     # NOTE: create columns using extended native types
     def write(self, row_stream):
         sa = helpers.import_from_plugin("sqlalchemy", plugin="sql")
-        engine = sa.create_engine(self.file.source)
-        dialect = self.file.dialect
+        engine = sa.create_engine(self.resource.source)
+        dialect = self.resource.dialect
         buffer = []
         buffer_size = 1000
         with engine.begin() as conn:

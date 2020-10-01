@@ -343,11 +343,6 @@ def test_table_format_ndjson():
         assert table.format == "ndjson"
 
 
-def test_table_format_ods():
-    with Table("data/table.ods") as table:
-        assert table.format == "ods"
-
-
 def test_table_format_tsv():
     with Table("data/table.tsv") as table:
         assert table.format == "tsv"
@@ -361,11 +356,6 @@ def test_table_format_xls():
 def test_table_format_xlsx():
     with Table("data/table.xlsx") as table:
         assert table.format == "xlsx"
-
-
-def test_table_format_html():
-    with Table("data/table1.html") as table:
-        assert table.format == "html"
 
 
 def test_table_format_error_bad_format():
@@ -587,7 +577,7 @@ def test_table_control_http_preload():
     with Table(BASE_URL % "data/table.csv", control=control) as table:
         assert table.header == ["id", "name"]
         assert table.sample == [["1", "english"], ["2", "中国人"]]
-        assert table.control == {"httpPreload": True}
+        assert table.control == {"newline": "", "httpPreload": True}
 
 
 def test_table_control_bad_property():
@@ -1137,6 +1127,22 @@ def test_table_stats_bytes_remote():
         assert table.stats["bytes"] == 7346
 
 
+def test_table_stats_fields():
+    with Table("data/doublequote.csv") as table:
+        table.read_data()
+        assert table.stats["fields"] == 17
+        table.open()
+        table.read_rows()
+        assert table.stats["fields"] == 17
+
+
+@pytest.mark.ci
+def test_table_stats_fields_remote():
+    with Table(BASE_URL % "data/special/doublequote.csv") as table:
+        table.read_data()
+        assert table.stats["fields"] == 17
+
+
 def test_table_stats_rows():
     with Table("data/doublequote.csv") as table:
         table.read_data()
@@ -1246,44 +1252,44 @@ def test_table_write_format_error_bad_format(tmpdir):
 # Integrity
 
 
-def test_table_integrity_on_error():
+def test_table_integrity_onerror():
     with Table("data/invalid.csv") as table:
-        assert table.on_error == "ignore"
+        assert table.onerror == "ignore"
         assert table.read_rows()
 
 
-def test_table_integrity_on_error_header_warn():
+def test_table_integrity_onerror_header_warn():
     data = [["name"], [1], [2], [3]]
     schema = {"fields": [{"name": "bad", "type": "integer"}]}
-    with Table(data, schema=schema, on_error="warn") as table:
-        assert table.on_error == "warn"
+    with Table(data, schema=schema, onerror="warn") as table:
+        assert table.onerror == "warn"
         with pytest.warns(UserWarning):
             table.read_rows()
 
 
-def test_table_integrity_on_error_header_raise():
+def test_table_integrity_onerror_header_raise():
     data = [["name"], [1], [2], [3]]
     schema = {"fields": [{"name": "bad", "type": "integer"}]}
-    with Table(data, schema=schema, on_error="raise") as table:
-        assert table.on_error == "raise"
+    with Table(data, schema=schema, onerror="raise") as table:
+        assert table.onerror == "raise"
         with pytest.raises(exceptions.FrictionlessException):
             table.read_rows()
 
 
-def test_table_integrity_on_error_row_warn():
+def test_table_integrity_onerror_row_warn():
     data = [["name"], [1], [2], [3]]
     schema = {"fields": [{"name": "name", "type": "string"}]}
-    with Table(data, schema=schema, on_error="warn") as table:
-        assert table.on_error == "warn"
+    with Table(data, schema=schema, onerror="warn") as table:
+        assert table.onerror == "warn"
         with pytest.warns(UserWarning):
             table.read_rows()
 
 
-def test_table_integrity_on_error_row_raise():
+def test_table_integrity_onerror_row_raise():
     data = [["name"], [1], [2], [3]]
     schema = {"fields": [{"name": "name", "type": "string"}]}
-    with Table(data, schema=schema, on_error="raise") as table:
-        assert table.on_error == "raise"
+    with Table(data, schema=schema, onerror="raise") as table:
+        assert table.onerror == "raise"
         with pytest.raises(exceptions.FrictionlessException):
             table.read_rows()
 

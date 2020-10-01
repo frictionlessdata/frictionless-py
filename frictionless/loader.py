@@ -18,14 +18,14 @@ class Loader:
     Public   | `from frictionless import Loader`
 
     Parameters:
-        file (File): file
+        resource (Resource): resource
 
     """
 
     remote = False
 
-    def __init__(self, file):
-        self.__file = file
+    def __init__(self, resource):
+        self.__resource = resource
         self.__byte_stream = None
         self.__text_stream = None
 
@@ -38,32 +38,32 @@ class Loader:
         self.close()
 
     @property
-    def file(self):
+    def resource(self):
         """
         Returns:
-            file (File): file
+            resource (Resource): resource
         """
-        return self.__file
+        return self.__resource
 
     @property
     def byte_stream(self):
-        """File byte stream
+        """Resource byte stream
 
         The stream is available after opening the loader
 
         Returns:
-            io.ByteStream: file byte stream
+            io.ByteStream: resource byte stream
         """
         return self.__byte_stream
 
     @property
     def text_stream(self):
-        """File text stream
+        """Resource text stream
 
         The stream is available after opening the loader
 
         Returns:
-            io.TextStream: file text stream
+            io.TextStream: resource text stream
         """
         if not self.__text_stream:
             self.__text_stream = self.read_text_stream()
@@ -74,8 +74,8 @@ class Loader:
     def open(self):
         """Open the loader as "io.open" does"""
         self.close()
-        if self.__file.control.metadata_errors:
-            error = self.__file.control.metadata_errors[0]
+        if self.__resource.control.metadata_errors:
+            error = self.__resource.control.metadata_errors[0]
             raise exceptions.FrictionlessException(error)
         try:
             self.__byte_stream = self.read_byte_stream()
@@ -105,7 +105,7 @@ class Loader:
         """Read bytes stream
 
         Returns:
-            io.ByteStream: file byte stream
+            io.ByteStream: resource byte stream
         """
         try:
             byte_stream = self.read_byte_stream_create()
@@ -123,7 +123,7 @@ class Loader:
         """Create bytes stream
 
         Returns:
-            io.ByteStream: file byte stream
+            io.ByteStream: resource byte stream
         """
         raise NotImplementedError
 
@@ -131,29 +131,25 @@ class Loader:
         """Infer byte stream stats
 
         Parameters:
-            byte_stream (io.ByteStream): file byte stream
+            byte_stream (io.ByteStream): resource byte stream
 
         Returns:
-            io.ByteStream: file byte stream
+            io.ByteStream: resource byte stream
         """
-        if not self.file.stats:
+        if not self.resource.stats:
             return byte_stream
-        return ByteStreamWithStatsHandling(
-            byte_stream,
-            hashing=self.file.hashing,
-            stats=self.file.stats if not self.file.stats["hash"] else {},
-        )
+        return ByteStreamWithStatsHandling(byte_stream, resource=self.resource)
 
     def read_byte_stream_decompress(self, byte_stream):
         """Decompress byte stream
 
         Parameters:
-            byte_stream (io.ByteStream): file byte stream
+            byte_stream (io.ByteStream): resource byte stream
 
         Returns:
-            io.ByteStream: file byte stream
+            io.ByteStream: resource byte stream
         """
-        if self.file.compression == "zip":
+        if self.resource.compression == "zip":
             # Remote
             if self.remote:
                 self.remote = False
@@ -169,27 +165,27 @@ class Loader:
                 byte_stream.seek(0)
             # Unzip
             with zipfile.ZipFile(byte_stream) as archive:
-                name = self.file.compression_path or archive.namelist()[0]
+                name = self.resource.compression_path or archive.namelist()[0]
                 with archive.open(name) as file:
                     target = tempfile.NamedTemporaryFile()
                     shutil.copyfileobj(file, target)
                     target.seek(0)
                 byte_stream = target
-                self.file["compressionPath"] = name
+                self.resource.compression_path = name
             return byte_stream
-        if self.file.compression == "gz":
+        if self.resource.compression == "gz":
             byte_stream = gzip.open(byte_stream)
             return byte_stream
-        if self.file.compression == "no":
+        if self.resource.compression == "no":
             return byte_stream
-        note = f'compression "{self.file.compression}" is not supported'
+        note = f'compression "{self.resource.compression}" is not supported'
         raise exceptions.FrictionlessException(errors.CompressionError(note=note))
 
     def read_text_stream(self):
         """Read text stream
 
         Returns:
-            io.TextStream: file text stream
+            io.TextStream: resource text stream
         """
         try:
             self.read_text_stream_infer_encoding(self.byte_stream)
@@ -202,10 +198,11 @@ class Loader:
         """Infer text stream encoding
 
         Parameters:
-            byte_stream (io.ByteStream): file byte stream
+            byte_stream (io.ByteStream): resource byte stream
         """
-        control = self.file.control
-        encoding = self.file.get("encoding")
+        control = self.resource.control
+        # We don't need a detected encoding
+        encoding = self.resource.get("encoding")
         sample = byte_stream.read(config.DEFAULT_INFER_ENCODING_VOLUME)
         sample = sample[: config.DEFAULT_INFER_ENCODING_VOLUME]
         byte_stream.seek(0)
@@ -223,19 +220,19 @@ class Loader:
         elif encoding == "utf-16-le":
             if sample.startswith(codecs.BOM_UTF16_LE):
                 encoding = "utf-16"
-        self.file["encoding"] = encoding
+        self.resource.encoding = encoding
 
     def read_text_stream_decode(self, byte_stream):
         """Decode text stream
 
         Parameters:
-            byte_stream (io.ByteStream): file byte stream
+            byte_stream (io.ByteStream): resource byte stream
 
         Returns:
-            text_stream (io.TextStream): file text stream
+            text_stream (io.TextStream): resource text stream
         """
         return io.TextIOWrapper(
-            byte_stream, self.file.encoding, newline=self.file.newline
+            byte_stream, self.resource.encoding, newline=self.resource.control.newline
         )
 
 
@@ -246,14 +243,15 @@ class Loader:
 # NOTE: review read/read1 usage
 # NOTE: Try buffering byte sample especially for remote
 class ByteStreamWithStatsHandling:
-    def __init__(self, byte_stream, *, hashing, stats):
+    def __init__(self, byte_stream, *, resource):
         try:
-            self.__hasher = hashlib.new(hashing) if hashing else None
+            self.__hasher = hashlib.new(resource.hashing) if resource.hashing else None
         except Exception as exception:
             error = errors.HashingError(note=str(exception))
             raise exceptions.FrictionlessException(error)
+        # TODO: document why we ignore stats if there is hash
+        self.__stats = resource.stats if not resource.stats["hash"] else {}
         self.__byte_stream = byte_stream
-        self.__stats = stats or {}
 
     def __getattr__(self, name):
         return getattr(self.__byte_stream, name)

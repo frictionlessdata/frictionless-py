@@ -1,9 +1,9 @@
 import re
-from ..file import File
 from ..plugin import Plugin
 from ..parser import Parser
 from ..system import system
 from ..dialects import Dialect
+from ..resource import Resource
 from .. import exceptions
 from .. import errors
 
@@ -20,13 +20,13 @@ class GsheetPlugin(Plugin):
 
     """
 
-    def create_dialect(self, file, *, descriptor):
-        if file.format == "gsheet":
+    def create_dialect(self, resource, *, descriptor):
+        if resource.format == "gsheet":
             return GsheetDialect(descriptor)
 
-    def create_parser(self, file):
-        if file.format == "gsheet":
-            return GsheetParser(file)
+    def create_parser(self, resource):
+        if resource.format == "gsheet":
+            return GsheetParser(resource)
 
 
 # Dialect
@@ -67,7 +67,7 @@ class GsheetParser(Parser):
     # Read
 
     def read_data_stream_create(self):
-        source = self.file.source
+        source = self.resource.source
         match = re.search(r".*/d/(?P<key>[^/]+)/.*?(?:gid=(?P<gid>\d+))?$", source)
         source = "https://docs.google.com/spreadsheets/d/%s/export?format=csv&id=%s"
         key, gid = "", ""
@@ -77,7 +77,8 @@ class GsheetParser(Parser):
         source = source % (key, key)
         if gid:
             source = "%s&gid=%s" % (source, gid)
-        with system.create_parser(File(source, stats=self.file.stats)) as parser:
+        resource = Resource.from_source(source, stats=self.resource.stats)
+        with system.create_parser(resource) as parser:
             yield from parser.data_stream
 
     # Write

@@ -14,11 +14,12 @@ def describe_resource(
     encoding=None,
     compression=None,
     compression_path=None,
+    # Control/Dialect/Query/Header
     control=None,
-    # Table
     dialect=None,
     query=None,
     headers=None,
+    # Infer
     infer_type=None,
     infer_names=None,
     infer_volume=config.DEFAULT_INFER_VOLUME,
@@ -92,6 +93,7 @@ def describe_resource(
             It defaults to `['']`
 
         expand? (bool): if `True` it will expand the metadata
+            It defaults to `False`
 
     Returns:
         Resource: data resource
@@ -108,11 +110,12 @@ def describe_resource(
         encoding=encoding,
         compression=compression,
         compression_path=compression_path,
+        # Control/Dilect/Query/Header
         control=control,
-        # Table
         dialect=dialect,
         query=query,
         headers=headers,
+        # Infer
         infer_type=infer_type,
         infer_names=infer_names,
         infer_volume=infer_volume,
@@ -132,19 +135,17 @@ def describe_resource(
             encoding=table.encoding,
             compression=table.compression,
             compression_path=table.compression_path,
+            control=table.control,
             dialect=table.dialect,
+            query=table.query,
             schema=table.schema,
+            stats=table.stats,
             profile="tabular-data-resource",
         )
 
     # Inline resource
     if not isinstance(table.source, str):
         resource.data = table.source
-
-    # Stats resource
-    resource.update(table.stats)
-    if resource["hashing"] != config.DEFAULT_HASHING:
-        resource["hash"] = ":".join([resource["hashing"], resource["hash"]])
 
     # Expand resource
     if expand:
