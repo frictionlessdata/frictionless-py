@@ -37,8 +37,8 @@ class JsonParser(Parser):
         if dialect.property is not None:
             path = "%s.item" % self.resource.dialect.property
         source = ijson.items(self.loader.byte_stream, path)
-        dialect = dialects.InlineDialect(keys=dialect.keys)
-        resource = Resource.from_source(source, dialect=dialect)
+        inline_dialect = dialects.InlineDialect(keys=dialect.keys)
+        resource = Resource.from_source(source, dialect=inline_dialect)
         with system.create_parser(resource) as parser:
             yield next(parser.data_stream)
             if parser.resource.dialect.keyed:
@@ -59,7 +59,7 @@ class JsonParser(Parser):
             data.append(item)
         with tempfile.NamedTemporaryFile("wt", delete=False) as file:
             simplejson.dump(data, file, indent=2)
-        helpers.move_file(file.name, self.file.source)
+        helpers.move_file(file.name, self.resource.source)
 
 
 class JsonlParser(Parser):

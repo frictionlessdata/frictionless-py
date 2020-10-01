@@ -20,5 +20,6 @@ def test_file():
         assert file.stats == {
             "hash": "6c2c61dd9b0e9c6876139a449ed87933",
             "bytes": 30,
+            "fields": 0,
             "rows": 0,
         }

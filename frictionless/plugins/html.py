@@ -18,13 +18,13 @@ class HtmlPlugin(Plugin):
 
     """
 
-    def create_dialect(self, file, *, descriptor):
-        if file.format == "html":
+    def create_dialect(self, resource, *, descriptor):
+        if resource.format == "html":
             return HtmlDialect(descriptor)
 
-    def create_parser(self, file):
-        if file.format == "html":
-            return HtmlParser(file)
+    def create_parser(self, resource):
+        if resource.format == "html":
+            return HtmlParser(resource)
 
 
 # Dialect
@@ -108,7 +108,7 @@ class HtmlParser(Parser):
 
     def read_data_stream_create(self):
         pq = helpers.import_from_plugin("pyquery", plugin="html").PyQuery
-        dialect = self.file.dialect
+        dialect = self.resource.dialect
 
         # Get Page content
         page = pq(self.loader.text_stream.read(), parser="html")
@@ -158,4 +158,4 @@ class HtmlParser(Parser):
         html += "</table></body></html>"
         with tempfile.NamedTemporaryFile("wt", delete=False) as file:
             file.write(html)
-        helpers.move_file(file.name, self.file.source)
+        helpers.move_file(file.name, self.resource.source)

@@ -135,19 +135,17 @@ def describe_resource(
             encoding=table.encoding,
             compression=table.compression,
             compression_path=table.compression_path,
+            control=table.control,
             dialect=table.dialect,
+            query=table.query,
             schema=table.schema,
+            stats=table.stats,
             profile="tabular-data-resource",
         )
 
     # Inline resource
     if not isinstance(table.source, str):
         resource.data = table.source
-
-    # Stats resource
-    resource.update(table.stats)
-    if resource["hashing"] != config.DEFAULT_HASHING:
-        resource["hash"] = ":".join([resource["hashing"], resource["hash"]])
 
     # Expand resource
     if expand:

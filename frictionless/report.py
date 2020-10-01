@@ -208,7 +208,8 @@ class ReportTable(Metadata):
 
     def __init__(self, descriptor=None, *, time, scope, partial, errors, table):
         # File
-        self["path"] = table.path
+        # TODO: review path/data/source logic
+        self["path"] = table.path or "memory"
         self["scheme"] = table.scheme
         self["format"] = table.format
         self["hashing"] = table.hashing

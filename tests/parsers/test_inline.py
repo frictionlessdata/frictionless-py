@@ -1,3 +1,4 @@
+import pytest
 from collections import OrderedDict
 from frictionless import Table, dialects
 
@@ -72,6 +73,7 @@ def test_table_inline_from_ordered_dict():
 # Write
 
 
+@pytest.mark.skip
 def test_table_inline_write(tmpdir):
     source = "data/table.csv"
     target = []
@@ -84,6 +86,7 @@ def test_table_inline_write(tmpdir):
     ]
 
 
+@pytest.mark.skip
 def test_table_inline_write_keyed(tmpdir):
     source = "data/table.csv"
     target = []

@@ -20,13 +20,13 @@ class AwsPlugin(Plugin):
 
     """
 
-    def create_control(self, file, *, descriptor):
-        if file.scheme == "s3":
+    def create_control(self, resource, *, descriptor):
+        if resource.scheme == "s3":
             return S3Control(descriptor)
 
-    def create_loader(self, file):
-        if file.scheme == "s3":
-            return S3Loader(file)
+    def create_loader(self, resource):
+        if resource.scheme == "s3":
+            return S3Loader(resource)
 
 
 # Control
@@ -99,9 +99,9 @@ class S3Loader(Loader):
 
     def read_byte_stream_create(self):
         boto3 = helpers.import_from_plugin("boto3", plugin="aws")
-        control = self.file.control
+        control = self.resource.control
         client = boto3.client("s3", endpoint_url=control.endpoint_url)
-        source = requests.utils.requote_uri(self.file.source)
+        source = requests.utils.requote_uri(self.resource.source)
         parts = urlparse(source, allow_fragments=False)
         response = client.get_object(Bucket=parts.netloc, Key=parts.path[1:])
         # https://github.com/frictionlessdata/tabulator-py/issues/271

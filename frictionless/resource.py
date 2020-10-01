@@ -369,8 +369,12 @@ class Resource(Metadata):
     def expand(self):
         """Expand metadata"""
         self.setdefault("profile", config.DEFAULT_RESOURCE_PROFILE)
+        if isinstance(self.get("control"), Control):
+            self.control.expand()
         if isinstance(self.get("dialect"), Dialect):
             self.dialect.expand()
+        if isinstance(self.get("query"), Query):
+            self.query.expand()
         if isinstance(self.get("schema"), Schema):
             self.schema.expand()
 
