@@ -127,16 +127,11 @@ class SqlParser(Parser):
         sa = helpers.import_from_plugin("sqlalchemy", plugin="sql")
         dialect = self.resource.dialect
         engine = sa.create_engine(self.resource.source)
-        engine.update_execution_options(stream_results=True)
-        table = sa.sql.table(dialect.table)
-        order = sa.sql.text(dialect.order_by) if dialect.order_by else None
-        query = sa.sql.select(["*"]).select_from(table).order_by(order)
-        data = iter(engine.execute(query))
-        item = next(data)
-        yield list(item.keys())
-        yield list(item)
-        for item in iter(data):
-            yield list(item)
+        storage = SqlStorage(engine=engine)
+        resource = storage.read_resource(dialect.table, order_by=dialect.order_by)
+        self.resource.schema = resource.schema
+        yield resource.schema.field_names
+        yield from resource.read_data_stream()
 
     # Write
 
@@ -214,13 +209,13 @@ class SqlStorage(Storage):
 
     # Read
 
-    def read_resource(self, name):
+    def read_resource(self, name, *, order_by=None):
         sql_table = self.__read_sql_table(name)
         if sql_table is None:
             note = f'Resource "{name}" does not exist'
             raise exceptions.FrictionlessException(errors.StorageError(note=note))
         schema = self.__read_convert_schema(sql_table)
-        data = partial(self.__read_data_stream, name)
+        data = partial(self.__read_data_stream, name, order_by=order_by)
         resource = Resource(name=name, schema=schema, data=data)
         return resource
 
@@ -305,16 +300,19 @@ class SqlStorage(Storage):
             sapg.UUID: "string",
         }
 
-    def __read_data_stream(self, name):
+    def __read_data_stream(self, name, *, order_by=None):
+        sa = helpers.import_from_plugin("sqlalchemy", plugin="sql")
         sql_table = self.__read_sql_table(name)
         with self.__connection.begin():
             # Streaming could be not working for some backends:
             # http://docs.sqlalchemy.org/en/latest/core/connections.html
             select = sql_table.select().execution_options(stream_results=True)
+            if order_by:
+                select = select.order_by(sa.sql.text(order_by))
             result = select.execute()
             yield result.keys()
             for item in result:
-                cells = tuple(item)
+                cells = list(item)
                 yield cells
 
     def __read_sql_table(self, name):
