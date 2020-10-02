@@ -2,6 +2,8 @@
 
 [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1eWGtfAgD4mkvyT2BcqU3Y68Yg25ZrlU-)
 
+
+
 Frictionless is a logical continuation of many currently existing packages:
 - goodtables
 - datapackage
@@ -28,8 +30,9 @@ The Python interface is also mostly identical:
 # Before
 report = goodtables.validate('table.csv')
 # After
-report = frictonless.validate('table.csv')
+report = frictionless.validate('table.csv')
 ```
+
 
 Please read the following sections and use `frictionless validate --help` to learn what is the difference in the options and in report's properties.
 
@@ -41,6 +44,7 @@ Please read the following sections and use `frictionless validate --help` to lea
 - `error_limit` was replaced by `limit_errors` (see "Errors Options")
 - `row_limit` was replaced by `query` (see "Table Query)
 - `preset` was replaced by `source_type`
+
 
 ### Report
 
@@ -120,6 +124,7 @@ field = frictionless.Field('field.json')
 
 ## From tabulator
 
+
 Frictionless has `Table` class which is an equivalent of the tabulator's `Stream` class.
 
 ```python
@@ -130,6 +135,7 @@ with tabulator.Stream('table.csv') as stream:
 with frictionless.Table('table.csv') as table:
   print(table.read_rows())
 ```
+
 
 ### Table
 
