@@ -61,8 +61,7 @@ class CsvParser(Parser):
                 schema = row.schema
                 if row.row_number == 1:
                     writer.writerow(schema.field_names)
-                # NOTE: move this logic to Row?
-                cells = list(row.values())
+                cells = row.to_list()
                 cells, notes = schema.write_data(cells, native_types=self.native_types)
                 writer.writerow(cells)
         helpers.move_file(file.name, self.resource.source)
