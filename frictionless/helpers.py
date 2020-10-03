@@ -42,12 +42,6 @@ def pass_through(iterator):
         pass
 
 
-def safe_max(value):
-    if not value:
-        return 0
-    return max(value)
-
-
 def import_from_plugin(name, *, plugin):
     try:
         return import_module(name)
