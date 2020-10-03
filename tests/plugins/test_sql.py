@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 load_dotenv(".env")
 
 
-# Parser (read)
+# Parser
 
 
 def test_table_sql(database_url):
@@ -54,9 +54,6 @@ def test_table_sql_headers_false(database_url):
     with Table(database_url, dialect=dialect, headers=False) as table:
         assert table.header == []
         assert table.read_data() == [["id", "name"], [1, "english"], [2, "中国人"]]
-
-
-# Parser (write)
 
 
 def test_table_sql_write(database_url):

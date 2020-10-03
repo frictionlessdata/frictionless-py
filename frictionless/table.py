@@ -793,7 +793,7 @@ class Table:
     # TODO: allow None target and return result for inline/pandas/etc?
     def write(
         self,
-        target,
+        target=None,
         *,
         scheme=None,
         format=None,
@@ -829,7 +829,7 @@ class Table:
         # Write file
         row_stream = self.__write_row_stream_create()
         parser = system.create_parser(resource)
-        parser.write(row_stream)
+        return parser.write(row_stream)
 
     def __write_row_stream_create(self):
         self.__read_data_stream_raise_closed()

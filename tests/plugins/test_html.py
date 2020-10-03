@@ -3,7 +3,7 @@ from frictionless import Table
 from frictionless.plugins.html import HtmlDialect
 
 
-# Parser (read)
+# Parser
 
 
 @pytest.mark.parametrize(
@@ -21,9 +21,6 @@ def test_table_html(source, selector):
         assert table.format == "html"
         assert table.header == ["id", "name"]
         assert table.read_data() == [["1", "english"], ["2", "中国人"]]
-
-
-# Parser (write)
 
 
 def test_table_html_write(tmpdir):

@@ -29,12 +29,12 @@ class PandasPlugin(Plugin):
 
     def create_dialect(self, resource, *, descriptor):
         pd = helpers.import_from_plugin("pandas", plugin="pandas")
-        if isinstance(resource.source, pd.DataFrame):
+        if resource.format == "pandas" or isinstance(resource.source, pd.DataFrame):
             return PandasDialect(descriptor)
 
     def create_parser(self, resource):
         pd = helpers.import_from_plugin("pandas", plugin="pandas")
-        if isinstance(resource.source, pd.DataFrame):
+        if resource.format == "pandas" or isinstance(resource.source, pd.DataFrame):
             return PandasParser(resource)
 
     def create_storage(self, name, **options):
@@ -93,6 +93,7 @@ class PandasParser(Parser):
         storage = PandasStorage()
         resource = Resource(name=self.resource.name, data=row_stream, schema=schema)
         storage.write_resource(resource)
+        return storage.dataframe
 
 
 # Storage
