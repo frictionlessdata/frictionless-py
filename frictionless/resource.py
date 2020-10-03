@@ -680,7 +680,7 @@ class Resource(Metadata):
             storage (Storage): storage instance
             force (bool): overwrite existent
         """
-        storage.write_resource(self, force=force)
+        storage.write_resource(self.to_copy(), force=force)
         return storage
 
     def to_sql(self, *, engine, prefix="", namespace=None, force=False):
@@ -739,6 +739,14 @@ class Resource(Metadata):
             ),
             force=force,
         )
+
+    def to_copy(self):
+        """Create a copy of the resource"""
+        if self.data and not isinstance(self.data, list):
+            # If data is not a static list e.g. a generator we can't deepcopy it
+            descriptor = {key: value for key, value in self.items() if key != "data"}
+            return Resource(descriptor, data=self.data)
+        return Resource(self)
 
     def to_dict(self, expand=False):
         """Convert resource to dict

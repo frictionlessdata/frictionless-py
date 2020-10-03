@@ -7,7 +7,6 @@ import chardet
 import tempfile
 import datetime
 import stringcase
-from copy import deepcopy
 from pprint import pformat
 from tabulate import tabulate
 from inspect import signature
@@ -285,12 +284,6 @@ class ControlledDict(dict):
         if onchange:
             onchange(self) if signature(onchange).parameters else onchange()
 
-    def __copy__(self, *args, **kwargs):
-        return self.__deepcopy__()
-
-    def __deepcopy__(self, *args, **kwargs):
-        return {key: deepcopy(value, *args, **kwargs) for key, value in self.items()}
-
     def __setitem__(self, *args, **kwargs):
         result = super().__setitem__(*args, **kwargs)
         self.__onchange__()
@@ -305,9 +298,6 @@ class ControlledDict(dict):
         result = super().clear(*args, **kwargs)
         self.__onchange__()
         return result
-
-    def copy(self, *args, **kwargs):
-        return self.__copy__(*args, **kwargs)
 
     def pop(self, *args, **kwargs):
         result = super().pop(*args, **kwargs)
@@ -339,12 +329,6 @@ class ControlledList(list):
         if onchange:
             onchange(self) if signature(onchange).parameters else onchange()
 
-    def __copy__(self, *args, **kwargs):
-        return self.__deepcopy__()
-
-    def __deepcopy__(self, *args, **kwargs):
-        return [deepcopy(value, *args, **kwargs) for value in self]
-
     def __setitem__(self, *args, **kwargs):
         result = super().__setitem__(*args, **kwargs)
         self.__onchange__()
@@ -364,9 +348,6 @@ class ControlledList(list):
         result = super().clear(*args, **kwargs)
         self.__onchange__()
         return result
-
-    def copy(self, *args, **kwargs):
-        return self.__copy__(*args, **kwargs)
 
     def extend(self, *args, **kwargs):
         result = super().extend(*args, **kwargs)
