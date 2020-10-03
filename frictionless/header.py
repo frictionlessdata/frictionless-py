@@ -1,5 +1,6 @@
 from itertools import zip_longest
 from .helpers import cached_property
+from . import helpers
 from . import errors
 
 
@@ -57,7 +58,10 @@ class Header(list):
                             field_name=field.name,
                             field_number=field_number,
                             field_position=field_position
-                            or max(field_positions) + field_number - start + 1,
+                            or helpers.safe_max(field_positions)
+                            + field_number
+                            - start
+                            + 1,
                         )
                     )
 

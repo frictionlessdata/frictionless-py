@@ -42,6 +42,12 @@ def pass_through(iterator):
         pass
 
 
+def safe_max(value):
+    if not value:
+        return 0
+    return max(value)
+
+
 def import_from_plugin(name, *, plugin):
     try:
         return import_module(name)
@@ -84,12 +90,12 @@ def tabulate_metadata(metadata):
     return tabulate(content, headers=headers)
 
 
-def detect_name(path):
-    if not path:
-        return "memory"
-    file = os.path.basename(path)
-    name = os.path.splitext(file)[0]
-    return name
+def detect_name(source):
+    if isinstance(source, str):
+        return os.path.splitext(os.path.basename(source))[0]
+    if isinstance(source, list) and source and isinstance(source[0], str):
+        return os.path.splitext(os.path.basename(source[0]))[0]
+    return "memory"
 
 
 def detect_basepath(descriptor):
@@ -99,24 +105,6 @@ def detect_basepath(descriptor):
         if basepath and not is_remote_path(basepath):
             basepath = os.path.relpath(basepath, start=os.getcwd())
     return basepath
-
-
-def detect_path_and_data(source):
-    if not source:
-        return [None, None]
-    elif isinstance(source, str):
-        return [source, None]
-    elif isinstance(source, list) and isinstance(source[0], str):
-        return [source, None]
-    return [None, source]
-
-
-def detect_path(source):
-    return detect_path_and_data(source)[0]
-
-
-def detect_data(source):
-    return detect_path_and_data(source)[1]
 
 
 def ensure_dir(path):

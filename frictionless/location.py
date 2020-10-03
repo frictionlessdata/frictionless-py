@@ -4,6 +4,8 @@ from . import helpers
 from . import config
 
 
+# TODO: Normalize detection functions
+# TODO: Merge into Resource when MultipartSource is moved?
 class Location:
     def __init__(self, resource):
 
@@ -21,6 +23,7 @@ class Location:
             source = MultipartSource(resource.path, basepath=basepath, headless=headless)
 
         # Detect scheme/format/compression/compression_path
+        name = helpers.detect_name(source)
         detect = helpers.detect_source_scheme_and_format(source)
         compression = config.DEFAULT_COMPRESSION
         compression_path = config.DEFAULT_COMPRESSION_PATH
@@ -34,11 +37,16 @@ class Location:
         format = detect[1] or config.DEFAULT_FORMAT
 
         # Set attributes
+        self.__name = name
         self.__source = source
         self.__scheme = scheme
         self.__format = format
         self.__compression = compression
         self.__compression_path = compression_path
+
+    @property
+    def name(self):
+        return self.__name
 
     @property
     def source(self):

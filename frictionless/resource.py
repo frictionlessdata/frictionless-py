@@ -116,13 +116,23 @@ class Resource(Metadata):
             return
         super().__setattr__(name, value)
 
+    def __deepcopy__(self, memo=None):
+        # We need to exclude the `data` key from copying
+        # as it can contain unpickeble values like generators
+        data = self.get("data")
+        rest = {key: value for key, value in self.items() if key != "data"}
+        copy = deepcopy(rest, memo)
+        if data is not None:
+            copy["data"] = data
+        return copy
+
     @Metadata.property
     def name(self):
         """
         Returns
             str: resource name
         """
-        return self.get("name", "resource")
+        return self.get("name", self.__location.name)
 
     @Metadata.property
     def title(self):
@@ -401,7 +411,7 @@ class Resource(Metadata):
         if self.tabular:
             with self.to_table() as table:
                 patch["profile"] = "tabular-data-resource"
-                patch["name"] = self.get("name", helpers.detect_name(table.path))
+                patch["name"] = self.name
                 patch["scheme"] = table.scheme
                 patch["format"] = table.format
                 patch["hashing"] = table.hashing
@@ -418,7 +428,7 @@ class Resource(Metadata):
         else:
             with self.to_file() as file:
                 patch["profile"] = "data-resource"
-                patch["name"] = self.get("name", helpers.detect_name(file.path))
+                patch["name"] = self.name
                 patch["scheme"] = file.scheme
                 patch["format"] = file.format
                 patch["hashing"] = file.hashing

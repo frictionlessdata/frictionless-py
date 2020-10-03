@@ -18,6 +18,7 @@ class Parser:
 
     newline = None
     loading = True
+    # TODO: do we need it globally or it's enough to have for every plugin internally?
     native_types = []
 
     def __init__(self, resource):

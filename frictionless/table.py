@@ -569,6 +569,7 @@ class Table:
             for field in schema.fields:
                 field.update((fields.get(field.get("name"), {})))
 
+        # Validate schema
         if len(schema.field_names) != len(set(schema.field_names)):
             note = "Schemas with duplicate field names are not supported"
             raise exceptions.FrictionlessException(errors.SchemaError(note=note))
@@ -821,6 +822,7 @@ class Table:
             compression_path=compression_path,
             control=control,
             dialect=dialect,
+            schema=self.schema,
             trusted=True,
         )
 

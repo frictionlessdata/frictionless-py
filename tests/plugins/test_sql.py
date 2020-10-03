@@ -66,7 +66,7 @@ def test_table_sql_write(database_url):
         table.write(database_url, dialect=dialect)
     with Table(database_url, dialect=dialect) as table:
         assert table.header == ["id", "name"]
-        assert table.read_data() == [["1", "english"], ["2", "中国人"]]
+        assert table.read_data() == [[1, "english"], [2, "中国人"]]
 
 
 # Storage

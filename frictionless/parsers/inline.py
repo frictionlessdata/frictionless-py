@@ -5,6 +5,7 @@ from .. import exceptions
 from .. import errors
 
 
+# TODO: add support for a stream front matter? (resource)
 class InlineParser(Parser):
     """Inline parser implementation.
 

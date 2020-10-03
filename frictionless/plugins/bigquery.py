@@ -192,19 +192,18 @@ class BigqueryStorage(Storage):
     def write_package(self, package, *, force=False):
         existent_names = list(self)
 
-        # Copy/infer package
-        package = Package(package)
-        package.infer()
-
-        # Iterate resources
+        # Check existence
         for resource in package.resources:
-
-            # Check existence
             if resource.name in existent_names:
                 if not force:
                     note = f'Resource "{resource.name}" already exists'
                     raise exceptions.FrictionlessException(errors.StorageError(note=note))
                 self.delete_resource(resource.name)
+
+        # Write resource
+        for resource in package.resources:
+            if not resource.schema:
+                resource.infer(only_sample=True)
 
             # Write metadata
             bq_name = self.__write_convert_name(resource.name)
