@@ -829,7 +829,8 @@ class Table:
         # Write file
         row_stream = self.__write_row_stream_create()
         parser = system.create_parser(resource)
-        return parser.write(row_stream)
+        parser.write(row_stream)
+        return resource.source
 
     def __write_row_stream_create(self):
         self.__read_data_stream_raise_closed()

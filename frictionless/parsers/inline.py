@@ -76,8 +76,9 @@ class InlineParser(Parser):
 
     def write(self, row_stream):
         dialect = self.resource.dialect
+        self.resource.data = []
         for row in row_stream:
             item = row.to_dict() if dialect.keyed else list(row.values())
             if not dialect.keyed and row.row_number == 1:
-                self.resource.source.append(row.schema.field_names)
-            self.resource.source.append(item)
+                self.resource.data.append(row.schema.field_names)
+            self.resource.data.append(item)

@@ -93,7 +93,7 @@ class PandasParser(Parser):
         storage = PandasStorage()
         resource = Resource(name=self.resource.name, data=row_stream, schema=schema)
         storage.write_resource(resource)
-        return storage.dataframe
+        self.resource.data = storage.dataframe
 
 
 # Storage
