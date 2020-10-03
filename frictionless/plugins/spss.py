@@ -167,9 +167,6 @@ class SpssStorage(Storage):
     def write_package(self, package, *, force=False):
         existent_names = list(self)
 
-        # Infer package
-        package.infer(only_sample=True)
-
         # Check existence
         for resource in package.resources:
             if resource.name in existent_names:
@@ -180,6 +177,8 @@ class SpssStorage(Storage):
 
         # Save resources
         for resource in package.resources:
+            if not resource.schema:
+                resource.infer(only_sample=True)
             self.__write_row_stream(resource)
 
     def __write_convert_name(self, name):

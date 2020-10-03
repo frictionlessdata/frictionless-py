@@ -165,9 +165,6 @@ class PandasStorage(Storage):
     def write_package(self, package, *, force=False):
         existent_names = list(self)
 
-        # Infer package
-        package.infer(only_sample=True)
-
         # Check existent
         for resource in package.resources:
             if resource.name in existent_names:
@@ -178,6 +175,8 @@ class PandasStorage(Storage):
 
         # Write resources
         for resource in package.resources:
+            if not resource.schema:
+                resource.infer(only_sample=True)
             self.__dataframes[resource.name] = self.__write_convert_resource(resource)
 
     def __write_convert_resource(self, resource):

@@ -192,9 +192,6 @@ class BigqueryStorage(Storage):
     def write_package(self, package, *, force=False):
         existent_names = list(self)
 
-        # Infer package
-        package.infer(only_sample=True)
-
         # Check existence
         for resource in package.resources:
             if resource.name in existent_names:
@@ -205,6 +202,8 @@ class BigqueryStorage(Storage):
 
         # Write resource
         for resource in package.resources:
+            if not resource.schema:
+                resource.infer(only_sample=True)
 
             # Write metadata
             bq_name = self.__write_convert_name(resource.name)
