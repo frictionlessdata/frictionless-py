@@ -33,6 +33,10 @@ class BigqueryPlugin(Plugin):
             return BigqueryStorage(**options)
 
 
+# TODO: implement Dialect
+# TODO: implement Parser
+
+
 # Storage
 
 

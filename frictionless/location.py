@@ -11,7 +11,7 @@ class Location:
 
         # Detect source
         source = []
-        if resource.data:
+        if resource.data is not None:
             source = resource.data
         elif isinstance(resource.path, str):
             source = resource.path

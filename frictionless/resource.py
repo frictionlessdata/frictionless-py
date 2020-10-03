@@ -591,11 +591,11 @@ class Resource(Metadata):
 
     @staticmethod
     def from_source(source, **options):
-        if source in [None, (), []]:
+        if source is None:
             return Resource(data=[], **options)
         elif isinstance(source, str):
             return Resource(path=source, **options)
-        elif isinstance(source, list) and isinstance(source[0], str):
+        elif isinstance(source, list) and source and isinstance(source[0], str):
             return Resource(path=source, **options)
         return Resource(data=source, **options)
 

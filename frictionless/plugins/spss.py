@@ -31,6 +31,10 @@ class SpssPlugin(Plugin):
             return SpssStorage(**options)
 
 
+# TODO: implement Dialect
+# TODO: implement Parser
+
+
 # Storage
 
 
