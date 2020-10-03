@@ -31,6 +31,10 @@ class SpssPlugin(Plugin):
             return SpssStorage(**options)
 
 
+# TODO: implement Dialect
+# TODO: implement Parser
+
+
 # Storage
 
 
@@ -165,14 +169,11 @@ class SpssStorage(Storage):
         return self.write_package(package, force=force)
 
     def write_package(self, package, *, force=False):
-
-        # Copy/infer package
-        package = Package(package)
-        package.infer()
+        existent_names = list(self)
 
         # Check existence
         for resource in package.resources:
-            if resource.name in self:
+            if resource.name in existent_names:
                 if not force:
                     note = f'Resource "{resource.name}" already exists'
                     raise exceptions.FrictionlessException(errors.StorageError(note=note))
@@ -180,6 +181,8 @@ class SpssStorage(Storage):
 
         # Save resources
         for resource in package.resources:
+            if not resource.schema:
+                resource.infer(only_sample=True)
             self.__write_row_stream(resource)
 
     def __write_convert_name(self, name):

@@ -2,7 +2,7 @@ import pytest
 from frictionless import Table, exceptions
 
 
-# Loader
+# Parser
 
 
 @pytest.mark.ci

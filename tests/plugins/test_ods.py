@@ -6,7 +6,7 @@ from frictionless.plugins.ods import OdsDialect
 BASE_URL = "https://raw.githubusercontent.com/okfn/tabulator-py/master/%s"
 
 
-# Parser (read)
+# Parser
 
 
 def test_table_ods():
@@ -75,9 +75,6 @@ def test_table_ods_with_ints_floats_dates():
             [1997, 5.6, datetime(2009, 9, 20).date(), datetime(2009, 9, 20, 15, 30, 0)],
             [1969, 11.7, datetime(2012, 8, 23).date(), datetime(2012, 8, 23, 20, 40, 59)],
         ]
-
-
-# Parser (write)
 
 
 def test_table_write_ods(tmpdir):

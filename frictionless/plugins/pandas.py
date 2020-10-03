@@ -2,10 +2,12 @@ import isodate
 import datetime
 import collections
 from functools import partial
+from ..dialects import Dialect
 from ..resource import Resource
 from ..package import Package
-from ..plugin import Plugin
 from ..storage import Storage
+from ..plugin import Plugin
+from ..parser import Parser
 from ..schema import Schema
 from ..field import Field
 from .. import exceptions
@@ -25,9 +27,73 @@ class PandasPlugin(Plugin):
 
     """
 
+    def create_dialect(self, resource, *, descriptor):
+        pd = helpers.import_from_plugin("pandas", plugin="pandas")
+        if resource.format == "pandas" or isinstance(resource.source, pd.DataFrame):
+            return PandasDialect(descriptor)
+
+    def create_parser(self, resource):
+        pd = helpers.import_from_plugin("pandas", plugin="pandas")
+        if resource.format == "pandas" or isinstance(resource.source, pd.DataFrame):
+            return PandasParser(resource)
+
     def create_storage(self, name, **options):
         if name == "pandas":
             return PandasStorage(**options)
+
+
+# Dialect
+
+
+class PandasDialect(Dialect):
+    """Tsv dialect representation
+
+    API      | Usage
+    -------- | --------
+    Public   | `from frictionless.plugins.pandas import PandasDialect`
+
+    Parameters:
+        descriptor? (str|dict): descriptor
+
+    Raises:
+        FrictionlessException: raise any error that occurs during the process
+
+    """
+
+    pass
+
+
+# Parser
+
+
+class PandasParser(Parser):
+    """Pandas parser implementation.
+
+    API      | Usage
+    -------- | --------
+    Public   | `from frictionless.plugins.pandas import PandasParser`
+
+    """
+
+    loading = False
+
+    # Read
+
+    def read_data_stream_create(self):
+        storage = PandasStorage(dataframes={self.resource.name: self.resource.data})
+        resource = storage.read_resource(self.resource.name)
+        self.resource.schema = resource.schema
+        yield resource.schema.field_names
+        yield from resource.read_data_stream()
+
+    # Write
+
+    def write(self, row_stream):
+        schema = self.resource.schema
+        storage = PandasStorage()
+        resource = Resource(name=self.resource.name, data=row_stream, schema=schema)
+        storage.write_resource(resource)
+        self.resource.data = storage.dataframe
 
 
 # Storage
@@ -165,10 +231,6 @@ class PandasStorage(Storage):
     def write_package(self, package, *, force=False):
         existent_names = list(self)
 
-        # Copy/infer package
-        package = Package(package)
-        package.infer()
-
         # Check existent
         for resource in package.resources:
             if resource.name in existent_names:
@@ -179,6 +241,8 @@ class PandasStorage(Storage):
 
         # Write resources
         for resource in package.resources:
+            if not resource.schema:
+                resource.infer(only_sample=True)
             self.__dataframes[resource.name] = self.__write_convert_resource(resource)
 
     def __write_convert_resource(self, resource):

@@ -29,6 +29,10 @@ class CkanPlugin(Plugin):
         pass
 
 
+# TODO: implement Dialect
+# TODO: implement Parser
+
+
 # Storage
 
 

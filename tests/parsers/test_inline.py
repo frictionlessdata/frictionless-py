@@ -1,4 +1,3 @@
-import pytest
 from collections import OrderedDict
 from frictionless import Table, dialects
 
@@ -73,27 +72,21 @@ def test_table_inline_from_ordered_dict():
 # Write
 
 
-@pytest.mark.skip
 def test_table_inline_write(tmpdir):
     source = "data/table.csv"
-    target = []
     with Table(source) as table:
-        table.write(target)
-    assert target == [
-        ["id", "name"],
-        [1, "english"],
-        [2, "中国人"],
-    ]
+        table.write(format="inline") == [
+            ["id", "name"],
+            [1, "english"],
+            [2, "中国人"],
+        ]
 
 
-@pytest.mark.skip
 def test_table_inline_write_keyed(tmpdir):
     source = "data/table.csv"
-    target = []
     dialect = dialects.InlineDialect(keyed=True)
     with Table(source) as table:
-        table.write(target, dialect=dialect)
-    assert target == [
-        {"id": 1, "name": "english"},
-        {"id": 2, "name": "中国人"},
-    ]
+        table.write(format="inline", dialect=dialect) == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]

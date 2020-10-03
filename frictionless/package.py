@@ -316,6 +316,14 @@ class Package(Metadata):
             ),
         )
 
+    def to_copy(self):
+        """Create a copy of the package"""
+        resources = []
+        for resource in self.resources:
+            resources.append(resource.to_copy())
+        descriptor = {key: value for key, value in self.items() if key != "resources"}
+        return Package(descriptor, resources=resources)
+
     def to_storage(self, storage, *, force=False):
         """Export package to storage
 
@@ -323,7 +331,7 @@ class Package(Metadata):
             storage (Storage): storage instance
             force (bool): overwrite existent
         """
-        storage.write_package(self, force=force)
+        storage.write_package(self.to_copy(), force=force)
         return storage
 
     def to_sql(self, *, engine, prefix="", namespace=None, force=False):

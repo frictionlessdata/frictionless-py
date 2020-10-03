@@ -105,8 +105,6 @@ class SqlDialect(Dialect):
 # Parser
 
 
-# NOTE: probably we can reuse Storage for read/write here
-# NOTE: extend native types (make property as it depends on the database engine)
 class SqlParser(Parser):
     """SQL parser implementation.
 
@@ -117,53 +115,29 @@ class SqlParser(Parser):
     """
 
     loading = False
-    native_types = [
-        "string",
-    ]
 
     # Read
 
     def read_data_stream_create(self):
         sa = helpers.import_from_plugin("sqlalchemy", plugin="sql")
-        dialect = self.resource.dialect
         engine = sa.create_engine(self.resource.source)
-        engine.update_execution_options(stream_results=True)
-        table = sa.sql.table(dialect.table)
-        order = sa.sql.text(dialect.order_by) if dialect.order_by else None
-        query = sa.sql.select(["*"]).select_from(table).order_by(order)
-        data = iter(engine.execute(query))
-        item = next(data)
-        yield list(item.keys())
-        yield list(item)
-        for item in iter(data):
-            yield list(item)
+        dialect = self.resource.dialect
+        storage = SqlStorage(engine=engine)
+        resource = storage.read_resource(dialect.table, order_by=dialect.order_by)
+        self.resource.schema = resource.schema
+        yield resource.schema.field_names
+        yield from resource.read_data_stream()
 
     # Write
 
-    # NOTE: rewrite this method
-    # NOTE: create columns using extended native types
     def write(self, row_stream):
         sa = helpers.import_from_plugin("sqlalchemy", plugin="sql")
         engine = sa.create_engine(self.resource.source)
         dialect = self.resource.dialect
-        buffer = []
-        buffer_size = 1000
-        with engine.begin() as conn:
-            for row in row_stream:
-                schema = row.schema
-                if row.row_number == 1:
-                    meta = sa.MetaData()
-                    columns = [sa.Column(nm, sa.String()) for nm in schema.field_names]
-                    table = sa.Table(dialect.table, meta, *columns)
-                    meta.create_all(conn)
-                cells = list(row.values())
-                cells, notes = schema.write_data(cells, native_types=self.native_types)
-                buffer.append(cells)
-                if len(buffer) > buffer_size:
-                    conn.execute(table.insert().values(buffer))
-                    buffer = []
-            if len(buffer):
-                conn.execute(table.insert().values(buffer))
+        schema = self.resource.schema
+        storage = SqlStorage(engine=engine)
+        resource = Resource(name=dialect.table, data=row_stream, schema=schema)
+        storage.write_resource(resource)
 
 
 # Storage
@@ -214,13 +188,13 @@ class SqlStorage(Storage):
 
     # Read
 
-    def read_resource(self, name):
+    def read_resource(self, name, *, order_by=None):
         sql_table = self.__read_sql_table(name)
         if sql_table is None:
             note = f'Resource "{name}" does not exist'
             raise exceptions.FrictionlessException(errors.StorageError(note=note))
         schema = self.__read_convert_schema(sql_table)
-        data = partial(self.__read_data_stream, name)
+        data = partial(self.__read_data_stream, name, order_by=order_by)
         resource = Resource(name=name, schema=schema, data=data)
         return resource
 
@@ -305,16 +279,19 @@ class SqlStorage(Storage):
             sapg.UUID: "string",
         }
 
-    def __read_data_stream(self, name):
+    def __read_data_stream(self, name, *, order_by=None):
+        sa = helpers.import_from_plugin("sqlalchemy", plugin="sql")
         sql_table = self.__read_sql_table(name)
         with self.__connection.begin():
             # Streaming could be not working for some backends:
             # http://docs.sqlalchemy.org/en/latest/core/connections.html
             select = sql_table.select().execution_options(stream_results=True)
+            if order_by:
+                select = select.order_by(sa.sql.text(order_by))
             result = select.execute()
             yield result.keys()
             for item in result:
-                cells = tuple(item)
+                cells = list(item)
                 yield cells
 
     def __read_sql_table(self, name):
@@ -332,10 +309,6 @@ class SqlStorage(Storage):
     def write_package(self, package, force=False):
         existent_names = list(self)
 
-        # Copy/infer package
-        package = Package(package)
-        package.infer()
-
         # Check existent
         delete_names = []
         for resource in package.resources:
@@ -352,6 +325,8 @@ class SqlStorage(Storage):
             sql_tables = []
             self.delete_package(delete_names)
             for resource in package.resources:
+                if not resource.schema:
+                    resource.infer(only_sample=True)
                 sql_table = self.__write_convert_schema(resource)
                 sql_tables.append(sql_table)
             self.__metadata.create_all(tables=sql_tables)

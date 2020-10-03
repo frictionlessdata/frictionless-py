@@ -569,6 +569,7 @@ class Table:
             for field in schema.fields:
                 field.update((fields.get(field.get("name"), {})))
 
+        # Validate schema
         if len(schema.field_names) != len(set(schema.field_names)):
             note = "Schemas with duplicate field names are not supported"
             raise exceptions.FrictionlessException(errors.SchemaError(note=note))
@@ -789,10 +790,10 @@ class Table:
     # Write
 
     # NOTE: implement proper usage of loaders (e.g. write to s3)
-    # NOTE: allow None target and return result for inline/pandas/etc?
+    # TODO: allow None target and return result for inline/pandas/etc?
     def write(
         self,
-        target,
+        target=None,
         *,
         scheme=None,
         format=None,
@@ -821,6 +822,7 @@ class Table:
             compression_path=compression_path,
             control=control,
             dialect=dialect,
+            schema=self.schema,
             trusted=True,
         )
 
@@ -828,6 +830,7 @@ class Table:
         row_stream = self.__write_row_stream_create()
         parser = system.create_parser(resource)
         parser.write(row_stream)
+        return resource.source
 
     def __write_row_stream_create(self):
         self.__read_data_stream_raise_closed()

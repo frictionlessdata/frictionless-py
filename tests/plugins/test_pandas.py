@@ -1,8 +1,32 @@
 import pytest
 import isodate
 import datetime
-from frictionless import Package, Resource, exceptions
+import pandas as pd
+from frictionless import Table, Package, Resource, exceptions
 from frictionless.plugins.pandas import PandasStorage
+
+
+# Parser
+
+
+def test_table_pandas():
+    dataframe = pd.DataFrame(data={"id": [1, 2], "name": ["english", "中国人"]})
+    with Table(dataframe) as table:
+        assert table.header == ["id", "name"]
+        assert table.read_data() == [
+            [1, "english"],
+            [2, "中国人"],
+        ]
+
+
+def test_table_pandas_write():
+    with Table("data/table.csv") as table:
+        dataframe = table.write(format="pandas")
+        assert dataframe.to_dict("records") == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
+
 
 # Storage
 

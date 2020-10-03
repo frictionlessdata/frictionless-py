@@ -116,13 +116,23 @@ class Resource(Metadata):
             return
         super().__setattr__(name, value)
 
+    def __deepcopy__(self, memo=None):
+        # We need to exclude the `data` key from copying
+        # as it can contain unpickeble values like generators
+        data = self.get("data")
+        rest = {key: value for key, value in self.items() if key != "data"}
+        copy = deepcopy(rest, memo)
+        if data is not None:
+            copy["data"] = data
+        return copy
+
     @Metadata.property
     def name(self):
         """
         Returns
             str: resource name
         """
-        return self.get("name", "resource")
+        return self.get("name", self.__location.name)
 
     @Metadata.property
     def title(self):
@@ -401,7 +411,7 @@ class Resource(Metadata):
         if self.tabular:
             with self.to_table() as table:
                 patch["profile"] = "tabular-data-resource"
-                patch["name"] = self.get("name", helpers.detect_name(table.path))
+                patch["name"] = self.name
                 patch["scheme"] = table.scheme
                 patch["format"] = table.format
                 patch["hashing"] = table.hashing
@@ -418,7 +428,7 @@ class Resource(Metadata):
         else:
             with self.to_file() as file:
                 patch["profile"] = "data-resource"
-                patch["name"] = self.get("name", helpers.detect_name(file.path))
+                patch["name"] = self.name
                 patch["scheme"] = file.scheme
                 patch["format"] = file.format
                 patch["hashing"] = file.hashing
@@ -581,11 +591,11 @@ class Resource(Metadata):
 
     @staticmethod
     def from_source(source, **options):
-        if source in [None, (), []]:
+        if source is None:
             return Resource(data=[], **options)
         elif isinstance(source, str):
             return Resource(path=source, **options)
-        elif isinstance(source, list) and isinstance(source[0], str):
+        elif isinstance(source, list) and source and isinstance(source[0], str):
             return Resource(path=source, **options)
         return Resource(data=source, **options)
 
@@ -670,7 +680,7 @@ class Resource(Metadata):
             storage (Storage): storage instance
             force (bool): overwrite existent
         """
-        storage.write_resource(self, force=force)
+        storage.write_resource(self.to_copy(), force=force)
         return storage
 
     def to_sql(self, *, engine, prefix="", namespace=None, force=False):
@@ -729,6 +739,14 @@ class Resource(Metadata):
             ),
             force=force,
         )
+
+    def to_copy(self):
+        """Create a copy of the resource"""
+        if self.data and not isinstance(self.data, list):
+            # If data is not a static list e.g. a generator we can't deepcopy it
+            descriptor = {key: value for key, value in self.items() if key != "data"}
+            return Resource(descriptor, data=self.data)
+        return Resource(self)
 
     def to_dict(self, expand=False):
         """Convert resource to dict

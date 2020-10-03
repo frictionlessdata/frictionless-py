@@ -82,6 +82,14 @@ class Metadata(helpers.ControlledDict):
 
     # Import/Export
 
+    def to_copy(self):
+        """Create a copy of the metadata
+
+        Returns:
+            Metadata: a copy of the metadata
+        """
+        return deepcopy(self)
+
     def to_dict(self):
         """Convert metadata to a dict
 
@@ -178,7 +186,14 @@ class Metadata(helpers.ControlledDict):
             if descriptor is None:
                 return {}
             if isinstance(descriptor, dict):
-                return deepcopy(descriptor) if self.metadata_duplicate else descriptor
+                if not self.metadata_duplicate:
+                    return descriptor
+                try:
+                    return deepcopy(descriptor)
+                except Exception:
+                    note = "descriptor is not serializable"
+                    errors = import_module("frictionless.errors")
+                    raise exceptions.FrictionlessException(errors.Error(note=note))
             if isinstance(descriptor, str):
                 if helpers.is_remote_path(descriptor):
                     response = requests.get(descriptor)
