@@ -115,9 +115,6 @@ class SqlParser(Parser):
     """
 
     loading = False
-    native_types = [
-        "string",
-    ]
 
     # Read
 
