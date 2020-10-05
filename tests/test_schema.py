@@ -1,5 +1,6 @@
 import io
 import json
+import yaml
 import pytest
 import requests
 from decimal import Decimal
@@ -332,6 +333,18 @@ def test_schema_to_json(tmpdir):
     # Read
     with open(target, encoding="utf-8") as file:
         assert schema == json.load(file)
+
+
+def test_schema_to_yaml(tmpdir):
+
+    # Write
+    target = str(tmpdir.join("schema.yaml"))
+    schema = Schema(DESCRIPTOR_MIN)
+    schema.to_yaml(target)
+
+    # Read
+    with open(target, encoding="utf-8") as file:
+        assert schema == yaml.safe_load(file)
 
 
 # Issues
