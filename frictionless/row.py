@@ -216,10 +216,11 @@ class Row(OrderedDict):
         if json:
             result = {}
             for field in self.__schema.fields:
-                cell = self[field.name]
-                if field.type not in JsonParser.native_types:
-                    cell, notes = field.write_cell(cell)
-                result[field.name] = cell
+                if field.name in self:
+                    cell = self[field.name]
+                    if field.type not in JsonParser.native_types:
+                        cell, notes = field.write_cell(cell)
+                    result[field.name] = cell
             return result
         return dict(self)
 
@@ -234,9 +235,10 @@ class Row(OrderedDict):
         if json:
             result = []
             for field in self.__schema.fields:
-                cell = self[field.name]
-                if field.type not in JsonParser.native_types:
-                    cell, notes = field.write_cell(cell)
-                result.append(cell)
+                if field.name in self:
+                    cell = self[field.name]
+                    if field.type not in JsonParser.native_types:
+                        cell, notes = field.write_cell(cell)
+                    result.append(cell)
             return result
         return list(self.values())
