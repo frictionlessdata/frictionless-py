@@ -325,19 +325,6 @@ class Schema(Metadata):
         )
         return schema
 
-    def to_dict(self, expand=False):
-        """Convert resource to dict
-
-        Parameters:
-            expand (bool): whether to expand
-        """
-        result = super().to_dict()
-        if expand:
-            result = type(self)(result)
-            result.expand()
-            result = result.to_dict()
-        return result
-
     # Metadata
 
     metadata_duplicate = True

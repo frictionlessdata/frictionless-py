@@ -295,21 +295,6 @@ class Field(Metadata):
         """
         return self.__type.write_cell(cell)
 
-    # Import/Export
-
-    def to_dict(self, expand=False):
-        """Convert field to dict
-
-        Parameters:
-            expand (bool): whether to expand
-        """
-        result = super().to_dict()
-        if expand:
-            result = type(self)(result)
-            result.expand()
-            result = result.to_dict()
-        return result
-
     # Metadata
 
     def metadata_process(self):
