@@ -48,16 +48,6 @@ class Control(Metadata):
     def expand(self):
         pass
 
-    # Import/Export
-
-    def to_dict(self, expand=False):
-        result = super().to_dict()
-        if expand:
-            result = type(self)(result)
-            result.expand()
-            result = result.to_dict()
-        return result
-
     # Metadata
 
     metadata_Error = errors.ControlError

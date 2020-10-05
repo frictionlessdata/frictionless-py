@@ -1,5 +1,6 @@
 import os
 import json
+import yaml
 import pytest
 from frictionless import Resource, exceptions
 
@@ -585,7 +586,7 @@ def test_resource_infer_from_path():
 def test_resource_to_json(tmpdir):
 
     # Write
-    target = os.path.join(tmpdir, "dataresource.json")
+    target = os.path.join(tmpdir, "resource.json")
     resource = Resource("data/resource.json")
     resource.to_json(target)
 
@@ -594,10 +595,22 @@ def test_resource_to_json(tmpdir):
         assert resource == json.load(file)
 
 
+def test_resource_to_yaml(tmpdir):
+
+    # Write
+    target = os.path.join(tmpdir, "resource.yaml")
+    resource = Resource("data/resource.json")
+    resource.to_yaml(target)
+
+    # Read
+    with open(target, encoding="utf-8") as file:
+        assert resource == yaml.safe_load(file)
+
+
 def test_resource_to_zip(tmpdir):
 
     # Write
-    target = os.path.join(tmpdir, "dataresource.zip")
+    target = os.path.join(tmpdir, "resource.zip")
     resource = Resource("data/resource.json")
     resource.to_zip(target)
 
@@ -615,7 +628,7 @@ def test_resource_to_zip_source_remote(tmpdir):
 
     # Write
     path = BASE_URL % "data/table.csv"
-    target = os.path.join(tmpdir, "datapackage.zip")
+    target = os.path.join(tmpdir, "resource.zip")
     resource = Resource(name="name", path=path)
     resource.to_zip(target)
 
@@ -631,7 +644,7 @@ def test_resource_to_zip_source_remote(tmpdir):
 def test_resource_to_zip_source_inline(tmpdir):
 
     # Write
-    target = os.path.join(tmpdir, "dataresource.zip")
+    target = os.path.join(tmpdir, "resource.zip")
     data = [["id", "name"], ["1", "english"], ["2", "中国人"]]
     resource = Resource(name="name", data=data)
     resource.to_zip(target)

@@ -60,21 +60,6 @@ class Dialect(Metadata):
         self.setdefault("headerRows", self.header_rows)
         self.setdefault("headerJoin", self.header_join)
 
-    # Import/Export
-
-    def to_dict(self, expand=False):
-        """Conver to a dict
-
-        Parameters:
-            expand (bool): if True call `metadata.expand` for the exported copy
-        """
-        result = super().to_dict()
-        if expand:
-            result = type(self)(result)
-            result.expand()
-            result = result.to_dict()
-        return result
-
     # Metadata
 
     metadata_Error = errors.DialectError

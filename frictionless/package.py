@@ -324,6 +324,37 @@ class Package(Metadata):
         descriptor = {key: value for key, value in self.items() if key != "resources"}
         return Package(descriptor, resources=resources)
 
+    # NOTE: support multipart
+    def to_zip(self, target, encoder_class=None):
+        """Save package to a zip
+
+        Parameters:
+            target (str): target path
+
+        Raises:
+            FrictionlessException: on any error
+        """
+        try:
+            with zipfile.ZipFile(target, "w") as zip:
+                descriptor = self.copy()
+                for resource in self.resources:
+                    if resource.inline:
+                        continue
+                    if resource.remote:
+                        continue
+                    if resource.multipart:
+                        continue
+                    if not helpers.is_safe_path(resource.path):
+                        continue
+                    zip.write(resource.source, resource.path)
+                descriptor = json.dumps(
+                    descriptor, indent=2, ensure_ascii=False, cls=encoder_class
+                )
+                zip.writestr("datapackage.json", descriptor)
+        except Exception as exception:
+            error = errors.PackageError(note=str(exception))
+            raise exceptions.FrictionlessException(error) from exception
+
     def to_storage(self, storage, *, force=False):
         """Export package to storage
 
@@ -385,53 +416,6 @@ class Package(Metadata):
             ),
             force=force,
         )
-
-    def to_dict(self, expand=False):
-        """Convert package to a dict
-
-        Parameters:
-            expand? (bool): return expanded metadata
-
-        Returns:
-            dict: package as a dict
-        """
-        result = super().to_dict()
-        if expand:
-            result = type(self)(result)
-            result.expand()
-            result = result.to_dict()
-        return result
-
-    # NOTE: support multipart
-    def to_zip(self, target, encoder_class=None):
-        """Save package to a zip
-
-        Parameters:
-            target (str): target path
-
-        Raises:
-            FrictionlessException: on any error
-        """
-        try:
-            with zipfile.ZipFile(target, "w") as zip:
-                descriptor = self.copy()
-                for resource in self.resources:
-                    if resource.inline:
-                        continue
-                    if resource.remote:
-                        continue
-                    if resource.multipart:
-                        continue
-                    if not helpers.is_safe_path(resource.path):
-                        continue
-                    zip.write(resource.source, resource.path)
-                descriptor = json.dumps(
-                    descriptor, indent=2, ensure_ascii=False, cls=encoder_class
-                )
-                zip.writestr("datapackage.json", descriptor)
-        except Exception as exception:
-            error = errors.PackageError(note=str(exception))
-            raise exceptions.FrictionlessException(error) from exception
 
     # Metadata
 

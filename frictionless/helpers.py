@@ -245,33 +245,6 @@ def detect_source_scheme_and_format(source):
     return (scheme, format)
 
 
-def get_current_memory_usage():
-    # Current memory usage of the current process in MB
-    # This will only work on systems with a /proc file system (like Linux)
-    # https://stackoverflow.com/questions/897941/python-equivalent-of-phps-memory-get-usage
-    try:
-        with open("/proc/self/status") as status:
-            for line in status:
-                parts = line.split()
-                key = parts[0][2:-1].lower()
-                if key == "rss":
-                    return int(parts[1]) / 1000
-    except Exception:
-        pass
-
-
-class Timer:
-    def __init__(self):
-        self.__start = datetime.datetime.now()
-        self.__stop = None
-
-    @property
-    def time(self):
-        if not self.__stop:
-            self.__stop = datetime.datetime.now()
-        return round((self.__stop - self.__start).total_seconds(), 3)
-
-
 # Collections
 
 
@@ -368,6 +341,44 @@ class ControlledList(list):
         result = super().remove(*args, **kwargs)
         self.__onchange__()
         return result
+
+
+def deepnative(value):
+    if isinstance(value, dict):
+        value = {key: deepnative(value) for key, value in value.items()}
+    elif isinstance(value, list):
+        value = [deepnative(value) for value in value]
+    return value
+
+
+# Measurements
+
+
+class Timer:
+    def __init__(self):
+        self.__start = datetime.datetime.now()
+        self.__stop = None
+
+    @property
+    def time(self):
+        if not self.__stop:
+            self.__stop = datetime.datetime.now()
+        return round((self.__stop - self.__start).total_seconds(), 3)
+
+
+def get_current_memory_usage():
+    # Current memory usage of the current process in MB
+    # This will only work on systems with a /proc file system (like Linux)
+    # https://stackoverflow.com/questions/897941/python-equivalent-of-phps-memory-get-usage
+    try:
+        with open("/proc/self/status") as status:
+            for line in status:
+                parts = line.split()
+                key = parts[0][2:-1].lower()
+                if key == "rss":
+                    return int(parts[1]) / 1000
+    except Exception:
+        pass
 
 
 # Backports

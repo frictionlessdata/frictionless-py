@@ -96,7 +96,7 @@ class Metadata(helpers.ControlledDict):
         Returns:
             dict: metadata as a dict
         """
-        return self.copy()
+        return helpers.deepnative(self)
 
     # NOTE: improve this code
     def to_json(self, target=None, encoder_class=None):

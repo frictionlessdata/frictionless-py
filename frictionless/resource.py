@@ -673,73 +673,6 @@ class Resource(Metadata):
             name=name,
         )
 
-    def to_storage(self, storage, *, force=False):
-        """Export resource to storage
-
-        Parameters:
-            storage (Storage): storage instance
-            force (bool): overwrite existent
-        """
-        storage.write_resource(self.to_copy(), force=force)
-        return storage
-
-    def to_sql(self, *, engine, prefix="", namespace=None, force=False):
-        """Export resource to SQL table
-
-        Parameters:
-            engine (object): `sqlalchemy` engine
-            prefix (str): prefix for all tables
-            namespace (str): SQL scheme
-            force (bool): overwrite existent
-        """
-        return self.to_storage(
-            system.create_storage(
-                "sql", engine=engine, prefix=prefix, namespace=namespace
-            ),
-            force=force,
-        )
-
-    def to_pandas(self):
-        """Export resource to Pandas dataframe
-
-        Parameters:
-            dataframes (dict): pandas dataframes
-            force (bool): overwrite existent
-        """
-        return self.to_storage(system.create_storage("pandas"))
-
-    def to_spss(self, *, basepath, force=False):
-        """Export resource to SPSS file
-
-        Parameters:
-            basepath (str): SPSS dir path
-            force (bool): overwrite existent
-        """
-        return self.to_storage(
-            system.create_storage("spss", basepath=basepath), force=force
-        )
-
-    def to_bigquery(self, *, service, project, dataset, prefix="", force=False):
-        """Export resource to Bigquery table
-
-        Parameters:
-            service (object): BigQuery `Service` object
-            project (str): BigQuery project name
-            dataset (str): BigQuery dataset name
-            prefix? (str): prefix for all names
-            force (bool): overwrite existent
-        """
-        return self.to_storage(
-            system.create_storage(
-                "bigquery",
-                service=service,
-                project=project,
-                dataset=dataset,
-                prefix=prefix,
-            ),
-            force=force,
-        )
-
     def to_copy(self):
         """Create a copy of the resource"""
         if self.data and not isinstance(self.data, list):
@@ -747,19 +680,6 @@ class Resource(Metadata):
             descriptor = {key: value for key, value in self.items() if key != "data"}
             return Resource(descriptor, data=self.data)
         return Resource(self)
-
-    def to_dict(self, expand=False):
-        """Convert resource to dict
-
-        Parameters:
-            expand (bool): whether to expand
-        """
-        result = super().to_dict()
-        if expand:
-            result = type(self)(result)
-            result.expand()
-            result = result.to_dict()
-        return result
 
     # NOTE: cache lookup?
     def to_table(self, **options):
@@ -836,6 +756,73 @@ class Resource(Metadata):
         except (IOError, zipfile.BadZipfile, zipfile.LargeZipFile) as exception:
             error = errors.ResourceError(note=str(exception))
             raise exceptions.FrictionlessException(error) from exception
+
+    def to_storage(self, storage, *, force=False):
+        """Export resource to storage
+
+        Parameters:
+            storage (Storage): storage instance
+            force (bool): overwrite existent
+        """
+        storage.write_resource(self.to_copy(), force=force)
+        return storage
+
+    def to_sql(self, *, engine, prefix="", namespace=None, force=False):
+        """Export resource to SQL table
+
+        Parameters:
+            engine (object): `sqlalchemy` engine
+            prefix (str): prefix for all tables
+            namespace (str): SQL scheme
+            force (bool): overwrite existent
+        """
+        return self.to_storage(
+            system.create_storage(
+                "sql", engine=engine, prefix=prefix, namespace=namespace
+            ),
+            force=force,
+        )
+
+    def to_pandas(self):
+        """Export resource to Pandas dataframe
+
+        Parameters:
+            dataframes (dict): pandas dataframes
+            force (bool): overwrite existent
+        """
+        return self.to_storage(system.create_storage("pandas"))
+
+    def to_spss(self, *, basepath, force=False):
+        """Export resource to SPSS file
+
+        Parameters:
+            basepath (str): SPSS dir path
+            force (bool): overwrite existent
+        """
+        return self.to_storage(
+            system.create_storage("spss", basepath=basepath), force=force
+        )
+
+    def to_bigquery(self, *, service, project, dataset, prefix="", force=False):
+        """Export resource to Bigquery table
+
+        Parameters:
+            service (object): BigQuery `Service` object
+            project (str): BigQuery project name
+            dataset (str): BigQuery dataset name
+            prefix? (str): prefix for all names
+            force (bool): overwrite existent
+        """
+        return self.to_storage(
+            system.create_storage(
+                "bigquery",
+                service=service,
+                project=project,
+                dataset=dataset,
+                prefix=prefix,
+            ),
+            force=force,
+        )
 
     # Metadata
 

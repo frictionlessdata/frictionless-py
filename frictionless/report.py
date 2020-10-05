@@ -155,19 +155,6 @@ class Report(Metadata):
 
         return wrapper
 
-    def to_dict(self, expand=False):
-        """Convert field to dict
-
-        Parameters:
-            expand (bool): whether to expand
-        """
-        result = super().to_dict()
-        if expand:
-            result = type(self)(result)
-            result.expand()
-            result = result.to_dict()
-        return result
-
     # Metadata
 
     metadata_strict = True
@@ -404,21 +391,6 @@ class ReportTable(Metadata):
             context = {}
             context.update(error)
             result.append([context.get(prop) for prop in spec])
-        return result
-
-    # Import/Export
-
-    def to_dict(self, expand=False):
-        """Convert field to dict
-
-        Parameters:
-            expand (bool): whether to expand
-        """
-        result = super().to_dict()
-        if expand:
-            result = type(self)(result)
-            result.expand()
-            result = result.to_dict()
         return result
 
     # Metadata
