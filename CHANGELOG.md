@@ -2,6 +2,11 @@
 
 Here described only the breaking and most significant changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/frictionless-py/commits/master).
 
+## v3.16
+
+- Fixed metadata.to_yaml (#455)
+- Removed the `expand` argument from `metadata.to_dict`
+
 ## v3.15
 
 - Added native schema support to SqlParser (#452)
