@@ -4,6 +4,8 @@
 
 
 
+> Frictionless Framework requires Python3.6+
+
 Frictionless is a logical continuation of many currently existing packages:
 - goodtables
 - datapackage
