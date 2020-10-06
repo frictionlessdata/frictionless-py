@@ -28,11 +28,14 @@ class TimeType(Type):
                 return None
             try:
                 if self.field.format == "default":
-                    cell = datetime.strptime(cell, config.DEFAULT_TIME_PATTERN).time()
+                    pattern = config.DEFAULT_TIME_PATTERN
+                    if len(cell) >= 9:
+                        pattern = config.DEFAULT_TIME_PATTERN_WITH_TIMEZONE
+                    cell = datetime.strptime(cell, pattern).timetz()
                 elif self.field.format == "any":
-                    cell = parse(cell).time()
+                    cell = parse(cell).timetz()
                 else:
-                    cell = datetime.strptime(cell, self.field.format).time()
+                    cell = datetime.strptime(cell, self.field.format).timetz()
             except Exception:
                 return None
         return cell
@@ -40,5 +43,5 @@ class TimeType(Type):
     # Write
 
     def write_cell(self, cell):
-        format = self.field.get("format", config.DEFAULT_TIME_PATTERN)
+        format = self.field.get("format", config.DEFAULT_TIME_PATTERN_WITH_TIMEZONE)
         return cell.strftime(format)

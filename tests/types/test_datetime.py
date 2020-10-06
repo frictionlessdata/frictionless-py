@@ -24,6 +24,8 @@ from frictionless import Field
         ("default", True, None),
         ("default", "", None),
         ("any", datetime(2014, 1, 1, 6), datetime(2014, 1, 1, 6)),
+        ("any", "2014-01-01T06:00:00", datetime(2014, 1, 1, 6)),
+        ("any", "2014-01-01T06:00:00Z", datetime(2014, 1, 1, 6, tzinfo=timezone.utc)),
         ("any", "10th Jan 1969 9 am", datetime(1969, 1, 10, 9)),
         ("any", "invalid", None),
         ("any", True, None),
