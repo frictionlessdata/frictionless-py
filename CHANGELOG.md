@@ -2,10 +2,14 @@
 
 Here described only the breaking and most significant changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/frictionless-py/commits/master).
 
+## v3.17
+
+- Added timezone for datetime/time parsing (#457) (BREAKING)
+
 ## v3.16
 
 - Fixed metadata.to_yaml (#455)
-- Removed the `expand` argument from `metadata.to_dict`
+- Removed the `expand` argument from `metadata.to_dict` (BREAKING)
 
 ## v3.15
 
