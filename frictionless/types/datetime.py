@@ -44,4 +44,6 @@ class DatetimeType(Type):
 
     def write_cell(self, cell):
         format = self.field.get("format", config.DEFAULT_DATETIME_PATTERN_WITH_TIMEZONE)
-        return cell.strftime(format)
+        cell = cell.strftime(format)
+        cell = cell.replace("+0000", "Z")
+        return cell
