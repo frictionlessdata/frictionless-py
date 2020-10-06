@@ -1,5 +1,5 @@
 from datetime import datetime, time
-from dateutil.parser import parse
+from dateutil import parser
 from ..type import Type
 from .. import config
 
@@ -28,12 +28,12 @@ class TimeType(Type):
                 return None
             try:
                 if self.field.format == "default":
-                    pattern = config.DEFAULT_TIME_PATTERN
-                    if len(cell) >= 9:
-                        pattern = config.DEFAULT_TIME_PATTERN_WITH_TIMEZONE
-                    cell = datetime.strptime(cell, pattern).timetz()
+                    # Guard against shorter formats supported by dateutil
+                    assert cell[5] == ":"
+                    assert len(cell) >= 8
+                    cell = parser.isoparse(f"2000-01-01T{cell}").timetz()
                 elif self.field.format == "any":
-                    cell = parse(cell).timetz()
+                    cell = parser.parse(cell).timetz()
                 else:
                     cell = datetime.strptime(cell, self.field.format).timetz()
             except Exception:
@@ -43,7 +43,7 @@ class TimeType(Type):
     # Write
 
     def write_cell(self, cell):
-        format = self.field.get("format", config.DEFAULT_TIME_PATTERN_WITH_TIMEZONE)
+        format = self.field.get("format", config.DEFAULT_TIME_PATTERN)
         cell = cell.strftime(format)
         cell = cell.replace("+0000", "Z")
         return cell
