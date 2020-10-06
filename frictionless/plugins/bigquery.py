@@ -2,6 +2,7 @@ import io
 import re
 import json
 import time
+import warnings
 import unicodecsv
 from slugify import slugify
 from functools import partial
@@ -30,6 +31,7 @@ class BigqueryPlugin(Plugin):
 
     def create_storage(self, name, **options):
         if name == "bigquery":
+            warnings.warn("SPSS support is in a draft state", UserWarning)
             return BigqueryStorage(**options)
 
 

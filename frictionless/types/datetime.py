@@ -1,5 +1,5 @@
 from datetime import datetime
-from dateutil.parser import parse
+from dateutil import parser
 from ..type import Type
 from .. import config
 
@@ -28,9 +28,12 @@ class DatetimeType(Type):
                 return None
             try:
                 if self.field.format == "default":
-                    cell = datetime.strptime(cell, config.DEFAULT_DATETIME_PATTERN)
+                    # Guard against shorter formats supported by dateutil
+                    assert cell[16] == ":"
+                    assert len(cell) >= 19
+                    cell = parser.isoparse(cell)
                 elif self.field.format == "any":
-                    cell = parse(cell)
+                    cell = parser.parse(cell)
                 else:
                     cell = datetime.strptime(cell, self.field.format)
             except Exception:
@@ -41,4 +44,6 @@ class DatetimeType(Type):
 
     def write_cell(self, cell):
         format = self.field.get("format", config.DEFAULT_DATETIME_PATTERN)
-        return cell.strftime(format)
+        cell = cell.strftime(format)
+        cell = cell.replace("+0000", "Z")
+        return cell
