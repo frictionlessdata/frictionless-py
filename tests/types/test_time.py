@@ -1,6 +1,6 @@
 import pytest
 from dateutil import tz
-from datetime import time, timezone
+from datetime import time
 from frictionless import Field
 
 
@@ -12,7 +12,7 @@ from frictionless import Field
     [
         ("default", time(6), time(6)),
         ("default", "06:00:00", time(6)),
-        ("default", "06:00:00Z", time(6, tzinfo=timezone.utc)),
+        ("default", "06:00:00Z", time(6, tzinfo=tz.tzutc())),
         ("default", "06:00:00+01:00", time(6, tzinfo=tz.tzoffset("BST", 3600))),
         ("default", "06:00:00+1:00", None),
         ("default", "09:00", None),
@@ -23,7 +23,7 @@ from frictionless import Field
         ("default", "", None),
         ("any", time(6), time(6)),
         ("any", "06:00:00", time(6)),
-        ("any", "06:00:00Z", time(6, tzinfo=timezone.utc)),
+        ("any", "06:00:00Z", time(6, tzinfo=tz.tzutc())),
         ("any", "3:00 am", time(3)),
         ("any", "some night", None),
         ("any", "invalid", None),

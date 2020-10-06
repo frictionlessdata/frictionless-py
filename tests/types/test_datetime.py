@@ -1,6 +1,6 @@
 import pytest
 from dateutil import tz
-from datetime import datetime, timezone
+from datetime import datetime
 from frictionless import Field
 
 
@@ -12,7 +12,7 @@ from frictionless import Field
     [
         ("default", datetime(2014, 1, 1, 6), datetime(2014, 1, 1, 6)),
         ("default", "2014-01-01T06:00:00", datetime(2014, 1, 1, 6)),
-        ("default", "2014-01-01T06:00:00Z", datetime(2014, 1, 1, 6, tzinfo=timezone.utc)),
+        ("default", "2014-01-01T06:00:00Z", datetime(2014, 1, 1, 6, tzinfo=tz.tzutc())),
         (
             "default",
             "2014-01-01T06:00:00+01:00",
@@ -25,7 +25,7 @@ from frictionless import Field
         ("default", "", None),
         ("any", datetime(2014, 1, 1, 6), datetime(2014, 1, 1, 6)),
         ("any", "2014-01-01T06:00:00", datetime(2014, 1, 1, 6)),
-        ("any", "2014-01-01T06:00:00Z", datetime(2014, 1, 1, 6, tzinfo=timezone.utc)),
+        ("any", "2014-01-01T06:00:00Z", datetime(2014, 1, 1, 6, tzinfo=tz.tzutc())),
         ("any", "10th Jan 1969 9 am", datetime(1969, 1, 10, 9)),
         ("any", "invalid", None),
         ("any", True, None),
