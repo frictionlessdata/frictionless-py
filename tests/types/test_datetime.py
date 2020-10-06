@@ -10,6 +10,7 @@ from frictionless import Field
     "format, source, target",
     [
         ("default", datetime(2014, 1, 1, 6), datetime(2014, 1, 1, 6)),
+        ("default", "2014-01-01T06:00:00", datetime(2014, 1, 1, 6)),
         ("default", "2014-01-01T06:00:00Z", datetime(2014, 1, 1, 6)),
         ("default", "Mon 1st Jan 2014 9 am", None),
         ("default", "invalid", None),
