@@ -31,7 +31,7 @@ class BigqueryPlugin(Plugin):
 
     def create_storage(self, name, **options):
         if name == "bigquery":
-            warnings.warn("SPSS support is in a draft state", UserWarning)
+            warnings.warn("BigQuery support is in a draft state", UserWarning)
             return BigqueryStorage(**options)
 
 
@@ -230,7 +230,7 @@ class BigqueryStorage(Storage):
             self.__write_row_stream(resource)
 
     def __write_convert_name(self, name):
-        return self.__prefix + name
+        return _slugify_name(self.__prefix + name)
 
     def __write_convert_schema(self, schema):
 
@@ -245,7 +245,7 @@ class BigqueryStorage(Storage):
                 mode = "REQUIRED"
             bq_fields.append(
                 {
-                    "name": _slugify_field_name(field.name),
+                    "name": _slugify_name(field.name),
                     "type": bq_type,
                     "mode": mode,
                 }
@@ -395,19 +395,13 @@ class BigqueryStorage(Storage):
 BUFFER_SIZE = 10000
 
 
-def _slugify_field_name(name):
-
+def _slugify_name(name):
     # Referene:
     # https://cloud.google.com/bigquery/docs/reference/v2/tables
     MAX_LENGTH = 128
     VALID_NAME = r"^[a-zA-Z_]\w{0,%d}$" % (MAX_LENGTH - 1)
-
-    # Convert
     if not re.match(VALID_NAME, name):
         name = slugify(name, separator="_")
-        if not re.match("^[a-zA-Z_]", name):
-            name = "_" + name
-
     return name[:MAX_LENGTH]
 
 

@@ -1,7 +1,7 @@
 {
   "resources": [
     {
-      "name": "main",
+      "name": "constraints",
       "schema": {
         "fields": [
           {"name": "required", "type": "string", "constraints": {"required": true}},

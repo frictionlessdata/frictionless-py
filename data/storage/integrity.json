@@ -1,7 +1,7 @@
 {
   "resources": [
     {
-      "name": "main",
+      "name": "integrity_main",
       "schema": {
         "fields": [
           {"name": "id", "type": "integer"},
@@ -20,7 +20,7 @@
       ]
     },
     {
-      "name": "link",
+      "name": "integrity_link",
       "schema": {
         "fields": [
           {"name": "main_id", "type": "integer"},
@@ -29,7 +29,7 @@
         ],
         "primaryKey": ["main_id", "some_id"],
         "foreignKeys": [
-          {"fields": ["main_id"], "reference": {"resource": "main", "fields": ["id"]}}
+          {"fields": ["main_id"], "reference": {"resource": "integrity_main", "fields": ["id"]}}
         ]
       },
       "data": [

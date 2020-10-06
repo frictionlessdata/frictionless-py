@@ -79,7 +79,7 @@ def test_storage_types(database_url):
     target = Package.from_sql(engine=engine, prefix=prefix)
 
     # Assert metadata
-    assert target.get_resource("main").schema == {
+    assert target.get_resource("types").schema == {
         "fields": [
             {"name": "any", "type": "string"},  # type fallback
             {"name": "array", "type": "string"},  # type fallback
@@ -101,7 +101,7 @@ def test_storage_types(database_url):
     }
 
     # Assert data
-    assert target.get_resource("main").read_rows() == [
+    assert target.get_resource("types").read_rows() == [
         {
             "any": "note1",
             "array": '["Mike", "John"]',
@@ -136,7 +136,7 @@ def test_storage_integrity(database_url):
     target = Package.from_sql(engine=engine, prefix=prefix)
 
     # Assert metadata (main)
-    assert target.get_resource("main").schema == {
+    assert target.get_resource("integrity_main").schema == {
         "fields": [
             # added required
             {"name": "id", "type": "integer", "constraints": {"required": True}},
@@ -150,7 +150,7 @@ def test_storage_integrity(database_url):
     }
 
     # Assert metadata (link)
-    assert target.get_resource("link").schema == {
+    assert target.get_resource("integrity_link").schema == {
         "fields": [
             # added required
             {"name": "main_id", "type": "integer", "constraints": {"required": True}},
@@ -161,18 +161,21 @@ def test_storage_integrity(database_url):
         ],
         "primaryKey": ["main_id", "some_id"],
         "foreignKeys": [
-            {"fields": ["main_id"], "reference": {"resource": "main", "fields": ["id"]}}
+            {
+                "fields": ["main_id"],
+                "reference": {"resource": "integrity_main", "fields": ["id"]},
+            }
         ],
     }
 
     # Assert data (main)
-    assert target.get_resource("main").read_rows() == [
+    assert target.get_resource("integrity_main").read_rows() == [
         {"id": 1, "parent": None, "description": "english"},
         {"id": 2, "parent": 1, "description": "中国人"},
     ]
 
     # Assert data (link)
-    assert target.get_resource("link").read_rows() == [
+    assert target.get_resource("integrity_link").read_rows() == [
         {"main_id": 1, "some_id": 1, "description": "note1"},
         {"main_id": 2, "some_id": 2, "description": "note2"},
     ]
@@ -191,7 +194,7 @@ def test_storage_constraints(database_url):
     target = Package.from_sql(engine=engine, prefix=prefix)
 
     # Assert metadata
-    assert target.get_resource("main").schema == {
+    assert target.get_resource("constraints").schema == {
         "fields": [
             {"name": "required", "type": "string", "constraints": {"required": True}},
             {"name": "minLength", "type": "string"},  # constraint removal
@@ -204,7 +207,7 @@ def test_storage_constraints(database_url):
     }
 
     # Assert data
-    assert target.get_resource("main").read_rows() == [
+    assert target.get_resource("constraints").read_rows() == [
         {
             "required": "passing",
             "minLength": "passing",
@@ -235,7 +238,7 @@ def test_storage_constraints(database_url):
 def test_storage_constraints_not_valid_error(database_url, field_name, cell):
     engine = sa.create_engine(database_url)
     package = Package("data/storage/constraints.json")
-    resource = package.get_resource("main")
+    resource = package.get_resource("constraints")
     # We set an invalid cell to the data property
     for index, field in enumerate(resource.schema.fields):
         if field.name == field_name:
@@ -292,7 +295,7 @@ def test_postgresql_storage_types():
     target = Package.from_sql(engine=engine, prefix=prefix)
 
     # Assert metadata
-    assert target.get_resource("main").schema == {
+    assert target.get_resource("types").schema == {
         "fields": [
             {"name": "any", "type": "string"},  # type fallback
             {"name": "array", "type": "object"},  # type downgrade
@@ -314,7 +317,7 @@ def test_postgresql_storage_types():
     }
 
     # Assert data
-    assert target.get_resource("main").read_rows() == [
+    assert target.get_resource("types").read_rows() == [
         {
             "any": "note1",
             "array": None,  # TODO: fix array
@@ -350,7 +353,7 @@ def test_postgresql_storage_integrity():
     target = Package.from_sql(engine=engine, prefix=prefix)
 
     # Assert metadata (main)
-    assert target.get_resource("main").schema == {
+    assert target.get_resource("integrity_main").schema == {
         "fields": [
             # added required
             {"name": "id", "type": "integer", "constraints": {"required": True}},
@@ -364,7 +367,7 @@ def test_postgresql_storage_integrity():
     }
 
     # Assert metadata (link)
-    assert target.get_resource("link").schema == {
+    assert target.get_resource("integrity_link").schema == {
         "fields": [
             # added required
             {"name": "main_id", "type": "integer", "constraints": {"required": True}},
@@ -375,18 +378,21 @@ def test_postgresql_storage_integrity():
         ],
         "primaryKey": ["main_id", "some_id"],
         "foreignKeys": [
-            {"fields": ["main_id"], "reference": {"resource": "main", "fields": ["id"]}}
+            {
+                "fields": ["main_id"],
+                "reference": {"resource": "integrity_main", "fields": ["id"]},
+            }
         ],
     }
 
     # Assert data (main)
-    assert target.get_resource("main").read_rows() == [
+    assert target.get_resource("integrity_main").read_rows() == [
         {"id": 1, "parent": None, "description": "english"},
         {"id": 2, "parent": 1, "description": "中国人"},
     ]
 
     # Assert data (link)
-    assert target.get_resource("link").read_rows() == [
+    assert target.get_resource("integrity_link").read_rows() == [
         {"main_id": 1, "some_id": 1, "description": "note1"},
         {"main_id": 2, "some_id": 2, "description": "note2"},
     ]
@@ -408,7 +414,7 @@ def test_postgresql_storage_constraints(database_url):
     target = Package.from_sql(engine=engine, prefix=prefix)
 
     # Assert metadata
-    assert target.get_resource("main").schema == {
+    assert target.get_resource("constraints").schema == {
         "fields": [
             {"name": "required", "type": "string", "constraints": {"required": True}},
             {"name": "minLength", "type": "string"},  # constraint removal
@@ -421,7 +427,7 @@ def test_postgresql_storage_constraints(database_url):
     }
 
     # Assert data
-    assert target.get_resource("main").read_rows() == [
+    assert target.get_resource("constraints").read_rows() == [
         {
             "required": "passing",
             "minLength": "passing",
@@ -453,7 +459,7 @@ def test_postgresql_storage_constraints(database_url):
 def test_postgresql_storage_constraints_not_valid_error(database_url, field_name, cell):
     engine = sa.create_engine(os.environ["POSTGRESQL_URL"])
     package = Package("data/storage/constraints.json")
-    resource = package.get_resource("main")
+    resource = package.get_resource("constraints")
     # We set an invalid cell to the data property
     for index, field in enumerate(resource.schema.fields):
         if field.name == field_name:
@@ -476,7 +482,7 @@ def test_mysql_storage_types():
     target = Package.from_sql(engine=engine, prefix=prefix)
 
     # Assert metadata
-    assert target.get_resource("main").schema == {
+    assert target.get_resource("types").schema == {
         "fields": [
             {"name": "any", "type": "string"},  # type fallback
             {"name": "array", "type": "string"},  # type fallback
@@ -498,7 +504,7 @@ def test_mysql_storage_types():
     }
 
     # Assert data
-    assert target.get_resource("main").read_rows() == [
+    assert target.get_resource("types").read_rows() == [
         {
             "any": "note1",
             "array": '["Mike", "John"]',
@@ -536,7 +542,7 @@ def test_mysql_storage_integrity():
     target = Package.from_sql(engine=engine, prefix=prefix)
 
     # Assert metadata (main)
-    assert target.get_resource("main").schema == {
+    assert target.get_resource("integrity_main").schema == {
         "fields": [
             # added required
             {"name": "id", "type": "integer", "constraints": {"required": True}},
@@ -550,7 +556,7 @@ def test_mysql_storage_integrity():
     }
 
     # Assert metadata (link)
-    assert target.get_resource("link").schema == {
+    assert target.get_resource("integrity_link").schema == {
         "fields": [
             # added required
             {"name": "main_id", "type": "integer", "constraints": {"required": True}},
@@ -561,7 +567,10 @@ def test_mysql_storage_integrity():
         ],
         "primaryKey": ["main_id", "some_id"],
         "foreignKeys": [
-            {"fields": ["main_id"], "reference": {"resource": "main", "fields": ["id"]}}
+            {
+                "fields": ["main_id"],
+                "reference": {"resource": "integrity_main", "fields": ["id"]},
+            }
         ],
     }
 
@@ -594,7 +603,7 @@ def test_mysql_storage_constraints():
     target = Package.from_sql(engine=engine, prefix=prefix)
 
     # Assert metadata
-    assert target.get_resource("main").schema == {
+    assert target.get_resource("constraints").schema == {
         "fields": [
             {"name": "required", "type": "string", "constraints": {"required": True}},
             {"name": "minLength", "type": "string"},  # constraint removal
@@ -607,7 +616,7 @@ def test_mysql_storage_constraints():
     }
 
     # Assert data
-    assert target.get_resource("main").read_rows() == [
+    assert target.get_resource("constraints").read_rows() == [
         {
             "required": "passing",
             "minLength": "passing",
@@ -641,7 +650,7 @@ def test_mysql_storage_constraints():
 def test_mysql_storage_constraints_not_valid_error(field_name, cell):
     engine = sa.create_engine(os.environ["MYSQL_URL"])
     package = Package("data/storage/constraints.json")
-    resource = package.get_resource("main")
+    resource = package.get_resource("constraints")
     # We set an invalid cell to the data property
     for index, field in enumerate(resource.schema.fields):
         if field.name == field_name:

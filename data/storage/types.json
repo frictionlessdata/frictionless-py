@@ -1,7 +1,7 @@
 {
   "resources": [
     {
-      "name": "main",
+      "name": "types",
       "schema": {
         "fields": [
           {"name": "any", "type": "any"},
