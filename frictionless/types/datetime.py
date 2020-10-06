@@ -28,7 +28,10 @@ class DatetimeType(Type):
                 return None
             try:
                 if self.field.format == "default":
-                    cell = datetime.strptime(cell, config.DEFAULT_DATETIME_PATTERN)
+                    pattern = config.DEFAULT_DATETIME_PATTERN
+                    if len(cell) >= 20:
+                        pattern = config.DEFAULT_DATETIME_PATTERN_WITH_TIMEZONE
+                    cell = datetime.strptime(cell, pattern)
                 elif self.field.format == "any":
                     cell = parse(cell)
                 else:
@@ -40,5 +43,5 @@ class DatetimeType(Type):
     # Write
 
     def write_cell(self, cell):
-        format = self.field.get("format", config.DEFAULT_DATETIME_PATTERN)
+        format = self.field.get("format", config.DEFAULT_DATETIME_PATTERN_WITH_TIMEZONE)
         return cell.strftime(format)
