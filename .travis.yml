@@ -8,9 +8,7 @@ language:
   python
 
 python:
-  # NOTE: Recover after a fix:
-  # https://github.com/tobgu/pyrsistent/issues/208
-  # - 2.7
+  - 2.7
   - 3.6
   - 3.7
   - 3.8
