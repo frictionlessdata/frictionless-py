@@ -13,10 +13,6 @@ python:
   - 3.7
   - 3.8
 
-env:
-  global:
-    - TOXENV="py${PYTHON_VERSION//./}"
-
 install:
   - make install
   - pip install coveralls
