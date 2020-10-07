@@ -5,8 +5,10 @@ import simplejson
 from ..resource import Resource
 from ..parser import Parser
 from ..system import system
+from .. import exceptions
 from .. import dialects
 from .. import helpers
+from .. import errors
 
 
 class JsonParser(Parser):
@@ -40,7 +42,11 @@ class JsonParser(Parser):
         inline_dialect = dialects.InlineDialect(keys=dialect.keys)
         resource = Resource.from_source(source, dialect=inline_dialect)
         with system.create_parser(resource) as parser:
-            yield next(parser.data_stream)
+            try:
+                yield next(parser.data_stream)
+            except StopIteration:
+                error = errors.SourceError(note="cannot extract tabular data from JSON")
+                raise exceptions.FrictionlessException(error)
             if parser.resource.dialect.keyed:
                 dialect["keyed"] = True
             yield from parser.data_stream
