@@ -203,12 +203,6 @@ class Table:
             trusted=True,
         )
 
-    def __setattr__(self, name, value):
-        if name == "onerror":
-            self.__onerror = value
-            return
-        super().__setattr__(name, value)
-
     def __enter__(self):
         if self.closed:
             self.open()
@@ -220,6 +214,14 @@ class Table:
     def __iter__(self):
         self.__read_row_stream_raise_closed()
         return iter(self.__row_stream)
+
+    @property
+    def source(self):
+        """
+        Returns:
+            any: file source
+        """
+        return self.__resource.source
 
     @property
     def path(self):
@@ -236,14 +238,6 @@ class Table:
             str: file data
         """
         return self.__resource.data
-
-    @property
-    def source(self):
-        """
-        Returns:
-            any: file source
-        """
-        return self.__resource.source
 
     @property
     def scheme(self):
@@ -340,15 +334,6 @@ class Table:
 
         """
         return self.__resource.stats
-
-    @property
-    def onerror(self):
-        """
-        Returns:
-            ignore|warn|raise: on error bahaviour
-        """
-        assert self.__onerror in ["ignore", "warn", "raise"]
-        return self.__onerror
 
     @property
     def header(self):

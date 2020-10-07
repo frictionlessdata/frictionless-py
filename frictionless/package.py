@@ -31,9 +31,10 @@ class Package(Metadata):
         descriptor? (str|dict): package descriptor
         name? (str): package name (for machines)
         title? (str): package title (for humans)
-        descriptor? (str): package descriptor
-        resources? (dict|Resource[]): list of resource descriptors
+        description? (str): package description
         profile? (str): profile name like 'data-package'
+        resources? (dict|Resource[]): list of resource descriptors
+        hashing? (str): a hashing algorithm for resources
         basepath? (str): a basepath of the package
         onerror? (ignore|warn|raise): behaviour if there is an error
         trusted? (bool): don't raise an exception on unsafe paths
@@ -50,8 +51,9 @@ class Package(Metadata):
         name=None,
         title=None,
         description=None,
-        resources=None,
         profile=None,
+        resources=None,
+        hashing=None,
         basepath=None,
         onerror="ignore",
         trusted=False,
@@ -65,18 +67,26 @@ class Package(Metadata):
         self.setinitial("name", name)
         self.setinitial("title", title)
         self.setinitial("description", description)
-        self.setinitial("resources", resources)
         self.setinitial("profile", profile)
+        self.setinitial("resources", resources)
+        self.__hashing = hashing
         self.__basepath = basepath or helpers.detect_basepath(descriptor)
         self.__onerror = onerror
         self.__trusted = trusted
         super().__init__(descriptor)
 
     def __setattr__(self, name, value):
-        if name == "onerror":
+        if name == "hashing":
+            self.__hashing = value
+        elif name == "basepath":
+            self.__basepath = value
+        elif name == "onerror":
             self.__onerror = value
-            return
-        super().__setattr__(name, value)
+        elif name == "trusted":
+            self.__trusted = value
+        else:
+            return super().__setattr__(name, value)
+        self.metadata_process()
 
     @Metadata.property
     def name(self):
@@ -109,6 +119,14 @@ class Package(Metadata):
             str: package profile
         """
         return self.get("profile", config.DEFAULT_PACKAGE_PROFILE)
+
+    @Metadata.property(write=False)
+    def hashing(self):
+        """
+        Returns:
+            str: package hashing
+        """
+        return self.__hashing
 
     @Metadata.property(write=False)
     def basepath(self):
@@ -438,13 +456,13 @@ class Package(Metadata):
                         resource = {"name": f"resource{index+1}"}
                     resource = Resource(
                         resource,
+                        hashing=self.__hashing,
                         basepath=self.__basepath,
-                        trusted=self.__trusted,
-                        onerror=self.__onerror,
                         package=self,
                     )
                     list.__setitem__(resources, index, resource)
                 resource.onerror = self.__onerror
+                resource.trusted = self.__trusted
             if not isinstance(resources, helpers.ControlledList):
                 resources = helpers.ControlledList(resources)
                 resources.__onchange__(self.metadata_process)

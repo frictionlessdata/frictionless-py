@@ -90,6 +90,7 @@ class Resource(Metadata):
         self.setinitial("name", name)
         self.setinitial("title", title)
         self.setinitial("description", description)
+        self.setinitial("profile", profile)
         self.setinitial("path", path)
         self.setinitial("data", data)
         self.setinitial("scheme", scheme)
@@ -103,7 +104,6 @@ class Resource(Metadata):
         self.setinitial("query", query)
         self.setinitial("schema", schema)
         self.setinitial("stats", stats)
-        self.setinitial("profile", profile)
         self.__basepath = basepath or helpers.detect_basepath(descriptor)
         self.__onerror = onerror
         self.__trusted = trusted
@@ -111,10 +111,15 @@ class Resource(Metadata):
         super().__init__(descriptor)
 
     def __setattr__(self, name, value):
-        if name == "onerror":
+        if name == "basepath":
+            self.__basepath = value
+        elif name == "onerror":
             self.__onerror = value
-            return
-        super().__setattr__(name, value)
+        elif name == "trusted":
+            self.__trusted = value
+        else:
+            return super().__setattr__(name, value)
+        self.metadata_process()
 
     def __deepcopy__(self, memo=None):
         # We need to exclude the `data` key from copying
@@ -125,6 +130,14 @@ class Resource(Metadata):
         if data is not None:
             copy["data"] = data
         return copy
+
+    @Metadata.property(write=False)
+    def source(self):
+        """
+        Returns
+            any: data source
+        """
+        return self.__location.source
 
     @Metadata.property
     def name(self):
@@ -151,6 +164,14 @@ class Resource(Metadata):
         return self.get("description")
 
     @Metadata.property
+    def profile(self):
+        """
+        Returns
+            str?: resource profile
+        """
+        return self.get("profile", config.DEFAULT_RESOURCE_PROFILE)
+
+    @Metadata.property
     def path(self):
         """
         Returns
@@ -165,14 +186,6 @@ class Resource(Metadata):
             any[][]?: resource data
         """
         return self.get("data")
-
-    @Metadata.property(write=False)
-    def source(self):
-        """
-        Returns
-            any: data source
-        """
-        return self.__location.source
 
     @Metadata.property
     def scheme(self):
@@ -293,14 +306,6 @@ class Resource(Metadata):
         stats = {"hash": "", "bytes": 0, "fields": 0, "rows": 0}
         return self.metadata_attach("stats", self.get("stats", stats))
 
-    @Metadata.property
-    def profile(self):
-        """
-        Returns
-            str?: resource profile
-        """
-        return self.get("profile", config.DEFAULT_RESOURCE_PROFILE)
-
     @Metadata.property(write=False)
     def basepath(self):
         """
@@ -320,6 +325,23 @@ class Resource(Metadata):
         if self.multipart:
             return "multipart"
         return self.source
+
+    @property
+    def onerror(self):
+        """
+        Returns:
+            ignore|warn|raise: on error bahaviour
+        """
+        assert self.__onerror in ["ignore", "warn", "raise"]
+        return self.__onerror
+
+    @property
+    def trusted(self):
+        """
+        Returns:
+            bool: don't raise an exception on unsafe paths
+        """
+        return self.__trusted
 
     @Metadata.property(write=False)
     def inline(self):
@@ -357,23 +379,6 @@ class Resource(Metadata):
         except Exception:
             return False
 
-    @property
-    def onerror(self):
-        """
-        Returns:
-            ignore|warn|raise: on error bahaviour
-        """
-        assert self.__onerror in ["ignore", "warn", "raise"]
-        return self.__onerror
-
-    @property
-    def trusted(self):
-        """
-        Returns:
-            bool: don't raise an exception on unsafe paths
-        """
-        return self.__trusted
-
     # Expand
 
     def expand(self):
@@ -410,8 +415,8 @@ class Resource(Metadata):
         # Tabular
         if self.tabular:
             with self.to_table() as table:
-                patch["profile"] = "tabular-data-resource"
                 patch["name"] = self.name
+                patch["profile"] = "tabular-data-resource"
                 patch["scheme"] = table.scheme
                 patch["format"] = table.format
                 patch["hashing"] = table.hashing
@@ -427,8 +432,8 @@ class Resource(Metadata):
         # General
         else:
             with self.to_file() as file:
-                patch["profile"] = "data-resource"
                 patch["name"] = self.name
+                patch["profile"] = "data-resource"
                 patch["scheme"] = file.scheme
                 patch["format"] = file.format
                 patch["hashing"] = file.hashing

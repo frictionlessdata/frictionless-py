@@ -45,12 +45,12 @@ class Location:
         self.__compression_path = compression_path
 
     @property
-    def name(self):
-        return self.__name
-
-    @property
     def source(self):
         return self.__source
+
+    @property
+    def name(self):
+        return self.__name
 
     @property
     def scheme(self):

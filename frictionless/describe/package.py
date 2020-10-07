@@ -1,7 +1,7 @@
 from ..package import Package
 
 
-def describe_package(source, *, basepath=None, expand=False):
+def describe_package(source, *, hashing=None, basepath=None, expand=False):
     """Describe the given source as a package
 
     API      | Usage
@@ -10,6 +10,7 @@ def describe_package(source, *, basepath=None, expand=False):
 
     Parameters:
         source (any): data source
+        hashing? (str): a hashing algorithm for resources
         basepath? (str): package basepath
         expand? (bool): if `True` it will expand the metadata
 
@@ -19,7 +20,7 @@ def describe_package(source, *, basepath=None, expand=False):
     """
 
     # Infer package
-    package = Package(basepath=basepath)
+    package = Package(hashing=hashing, basepath=basepath)
     package.infer(source)
 
     # Expand package
