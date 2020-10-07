@@ -29,6 +29,31 @@ def test_table_s3(bucket_name):
         assert table.read_data() == [["1", "english"], ["2", "中国人"]]
 
 
+@mock_s3
+def test_table_s3_big_file(bucket_name):
+
+    # Write
+    client = boto3.resource("s3", region_name="us-east-1")
+    bucket = client.create_bucket(Bucket=bucket_name, ACL="public-read")
+    bucket.put_object(
+        ACL="private",
+        Body=open("data/table1.csv", "rb"),
+        Bucket=bucket_name,
+        ContentType="text/csv",
+        Key="table1.csv",
+    )
+
+    # Read
+    with Table("s3://%s/table1.csv" % bucket_name) as table:
+        assert table.read_rows()
+        assert table.stats == {
+            "hash": "78ea269458be04a0e02816c56fc684ef",
+            "bytes": 1000000,
+            "fields": 10,
+            "rows": 10000,
+        }
+
+
 # Fixtures
 
 
