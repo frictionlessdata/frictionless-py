@@ -7,11 +7,10 @@ from .main import program
 @click.argument("source", type=click.Path(), required=True)
 def program_transform(source):
     """Transform data
-
+    \f
     API      | Usage
     -------- | --------
     Public   | `$ frictionless transform`
-
     """
     try:
         transform(source)

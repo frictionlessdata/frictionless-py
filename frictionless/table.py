@@ -111,7 +111,6 @@ class Table:
 
         lookup? (dict): The lookup is a special object providing relational information.
             For more information, please check "Extracting  Data" guide.
-
     """
 
     # Public
@@ -351,7 +350,6 @@ class Table:
 
         Returns:
             list[]?: table sample
-
         """
         return self.__sample
 

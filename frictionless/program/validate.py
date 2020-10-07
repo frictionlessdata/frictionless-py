@@ -41,11 +41,10 @@ from .main import program
 @click.option("--noinfer", is_flag=True, help="Validate metadata as it is")
 def program_validate(source, *, source_type, json, **options):
     """Validate data
-
+    \f
     API      | Usage
     -------- | --------
     Public   | `$ frictionless validate`
-
     """
     for key, value in list(options.items()):
         if not value:

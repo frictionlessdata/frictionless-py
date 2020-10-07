@@ -28,11 +28,10 @@ from .main import program
 @click.option("--basepath", type=str, help="Package basepath")
 def program_describe(source, *, source_type, json, **options):
     """Describe data
-
+    \f
     API      | Usage
     -------- | --------
     Public   | `$ frictionless describe`
-
     """
     for key, value in list(options.items()):
         if not value:

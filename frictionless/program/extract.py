@@ -33,11 +33,10 @@ from .main import program
 @click.option("--trusted", type=str, help="Don't fail on unsafe paths")
 def program_extract(source, *, source_type, json, **options):
     """Extract data
-
+    \f
     API      | Usage
     -------- | --------
     Public   | `$ frictionless extract`
-
     """
     for key, value in list(options.items()):
         if not value:

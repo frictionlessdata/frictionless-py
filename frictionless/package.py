@@ -41,7 +41,6 @@ class Package(Metadata):
 
     Raises:
         FrictionlessException: raise any error that occurs during the process
-
     """
 
     def __init__(
