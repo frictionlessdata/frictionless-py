@@ -5,7 +5,7 @@ Here described only the breaking and most significant changes. The full changelo
 ## v3.18
 
 - Added `hashing` parameter to `describe/describe_package`
-- Removed `table.onerror` setter (BREAKING)
+- Removed `table.onerror` property (BREAKING)
 
 ## v3.17
 

@@ -1254,7 +1254,6 @@ def test_table_write_format_error_bad_format(tmpdir):
 
 def test_table_integrity_onerror():
     with Table("data/invalid.csv") as table:
-        assert table.onerror == "ignore"
         assert table.read_rows()
 
 
@@ -1262,7 +1261,6 @@ def test_table_integrity_onerror_header_warn():
     data = [["name"], [1], [2], [3]]
     schema = {"fields": [{"name": "bad", "type": "integer"}]}
     with Table(data, schema=schema, onerror="warn") as table:
-        assert table.onerror == "warn"
         with pytest.warns(UserWarning):
             table.read_rows()
 
@@ -1271,7 +1269,6 @@ def test_table_integrity_onerror_header_raise():
     data = [["name"], [1], [2], [3]]
     schema = {"fields": [{"name": "bad", "type": "integer"}]}
     with Table(data, schema=schema, onerror="raise") as table:
-        assert table.onerror == "raise"
         with pytest.raises(exceptions.FrictionlessException):
             table.read_rows()
 
@@ -1280,7 +1277,6 @@ def test_table_integrity_onerror_row_warn():
     data = [["name"], [1], [2], [3]]
     schema = {"fields": [{"name": "name", "type": "string"}]}
     with Table(data, schema=schema, onerror="warn") as table:
-        assert table.onerror == "warn"
         with pytest.warns(UserWarning):
             table.read_rows()
 
@@ -1289,7 +1285,6 @@ def test_table_integrity_onerror_row_raise():
     data = [["name"], [1], [2], [3]]
     schema = {"fields": [{"name": "name", "type": "string"}]}
     with Table(data, schema=schema, onerror="raise") as table:
-        assert table.onerror == "raise"
         with pytest.raises(exceptions.FrictionlessException):
             table.read_rows()
 

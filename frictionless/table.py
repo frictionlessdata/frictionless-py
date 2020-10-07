@@ -183,7 +183,6 @@ class Table:
         self.__infer_volume = infer_volume
         self.__infer_confidence = infer_confidence
         self.__infer_missing_values = infer_missing_values
-        self.__onerror = onerror
         self.__lookup = lookup
 
         # Create resource
@@ -681,9 +680,9 @@ class Table:
         # Handle header errors
         if not self.header.valid:
             error = self.header.errors[0]
-            if self.onerror == "warn":
+            if self.__resource.onerror == "warn":
                 warnings.warn(error.message, UserWarning)
-            elif self.onerror == "raise":
+            elif self.__resource.onerror == "raise":
                 raise exceptions.FrictionlessException(error)
 
         # Create state
@@ -759,9 +758,9 @@ class Table:
             # Handle row errors
             if not row.valid:
                 error = row.errors[0]
-                if self.onerror == "warn":
+                if self.__resource.onerror == "warn":
                     warnings.warn(error.message, UserWarning)
-                elif self.onerror == "raise":
+                elif self.__resource.onerror == "raise":
                     raise exceptions.FrictionlessException(error)
 
             # Stream row
