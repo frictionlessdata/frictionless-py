@@ -66,10 +66,12 @@ class RemoteByteStream:
         pass
 
     def read(self, size=-1):
+        if size == -1:
+            size = None
         return self.__response.raw.read(size)
 
     def read1(self, size=-1):
-        return self.__response.raw.read(size)
+        return self.read(size)
 
     def seek(self, offset, whence=0):
         assert offset == 0
