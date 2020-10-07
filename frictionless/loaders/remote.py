@@ -65,10 +65,10 @@ class RemoteByteStream:
     def flush(self):
         pass
 
-    def read(self, size=None):
+    def read(self, size=-1):
         return self.__response.raw.read(size)
 
-    def read1(self, size=None):
+    def read1(self, size=-1):
         return self.__response.raw.read(size)
 
     def seek(self, offset, whence=0):
