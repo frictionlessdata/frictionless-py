@@ -1,7 +1,9 @@
+import pytz
 import pytest
 import isodate
 import datetime
 import pandas as pd
+from decimal import Decimal
 from frictionless import Table, Package, Resource, exceptions
 from frictionless.plugins.pandas import PandasStorage
 
@@ -228,3 +230,34 @@ def test_storage_dataframe_property_not_single_error():
     error = excinfo.value.error
     assert error.code == "storage-error"
     assert error.note.count("single dataframe storages")
+
+
+def test_storage_dataframe_primary_key_with_datetimes():
+    df = pd.read_csv("data/vix.csv", sep=";", parse_dates=["Date"], index_col=["Date"])
+    resource = Resource.from_pandas(df)
+    assert resource.schema == {
+        "fields": [
+            {"name": "Date", "type": "datetime", "constraints": {"required": True}},
+            {"name": "VIXClose", "type": "number"},
+            {"name": "VIXHigh", "type": "number"},
+            {"name": "VIXLow", "type": "number"},
+            {"name": "VIXOpen", "type": "number"},
+        ],
+        "primaryKey": ["Date"],
+    }
+    assert resource.read_rows() == [
+        {
+            "Date": datetime.datetime(2004, 1, 5, tzinfo=pytz.utc),
+            "VIXClose": Decimal("17.49"),
+            "VIXHigh": Decimal("18.49"),
+            "VIXLow": Decimal("17.44"),
+            "VIXOpen": Decimal("18.45"),
+        },
+        {
+            "Date": datetime.datetime(2004, 1, 6, tzinfo=pytz.utc),
+            "VIXClose": Decimal("16.73"),
+            "VIXHigh": Decimal("17.67"),
+            "VIXLow": Decimal("16.19"),
+            "VIXOpen": Decimal("17.66"),
+        },
+    ]

@@ -207,16 +207,17 @@ class PandasStorage(Storage):
         yield schema.field_names
         for pk, item in dataframe.iterrows():
             cells = []
-            if schema.primary_key:
-                cells = list(pk) if len(schema.primary_key) > 1 else [pk]
             for field in schema.fields:
-                if field.name not in schema.primary_key:
+                if field.name in schema.primary_key:
+                    pk = pk if isinstance(pk, tuple) else [pk]
+                    value = pk[schema.primary_key.index(field.name)]
+                else:
                     value = item[field.name]
-                    if field.type == "number" and np.isnan(value):
-                        value = None
-                    elif field.type == "datetime":
-                        value = value.to_pydatetime()
-                    cells.append(value)
+                if field.type == "number" and np.isnan(value):
+                    value = None
+                elif field.type == "datetime":
+                    value = value.to_pydatetime()
+                cells.append(value)
             yield cells
 
     def __read_pandas_dataframe(self, name):
