@@ -261,10 +261,12 @@ class SqlStorage(Storage):
     def __read_convert_types(self):
         sa = helpers.import_from_plugin("sqlalchemy", plugin="sql")
         sapg = helpers.import_from_plugin("sqlalchemy.dialects.postgresql", plugin="sql")
+        sams = helpers.import_from_plugin("sqlalchemy.dialects.mysql", plugin="sql")
 
         # Return mapping
         return {
             sapg.ARRAY: "array",
+            sams.BIT: "string",
             sa.Boolean: "boolean",
             sa.Date: "date",
             sa.DateTime: "datetime",
@@ -275,6 +277,8 @@ class SqlStorage(Storage):
             sa.Numeric: "number",
             sa.Text: "string",
             sa.Time: "time",
+            sams.VARBINARY: "string",
+            sams.VARCHAR: "string",
             sa.VARCHAR: "string",
             sapg.UUID: "string",
         }
