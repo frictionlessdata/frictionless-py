@@ -235,8 +235,9 @@ We got an identical result but it's important to understand that on the table le
 
 ## Extraction Options
 
-All the `extract` fuctions accept only one common argument:
+All the `extract` fuctions accept those common argument:
 - `process`: it's a function getting a row object and returning whatever is needed as an ouput of the data extraction e.g. `lambda row: row.to_dict()`
+- `stream`: instead of reading all data into memory it will return row stream(s)
 
 
 **Package/Resource**
@@ -1011,7 +1012,7 @@ with Table('capital-3.csv', schema=schema) as table:
 
 **Sync Schema**
 
-There is a way to sync provided schema based on a header row's field order. It's very useful when you have a schema that represents only a subset of the table's fields:
+There is a way to sync provided schema based on a header row's field order. It's very useful when you have a schema that describes a subset or a superset of the table's fields:
 
 
 ```python
@@ -1095,12 +1096,12 @@ from frictionless import Table
 
 data = [["name"], [1], [2], [3]]
 schema = {"fields": [{"name": "name", "type": "string"}]}
-with  Table(data, schema=schema) as table:
-  table.onerror = 'raise' # it's possible to set this property after initialization
-  try:
-    table.read_rows()
-  except Exception as exception:
-    print(exception)
+resource = Resource(data=data, schema=schema)
+resource.onerror = 'raise' # for Resource/Package it's possible to set this property after initialization
+try:
+  resource.read_rows()
+except Exception as exception:
+  print(exception)
 ```
 
     [type-error] The cell "1" in row at position "2" and field "name" at position "1" has incompatible type: type is "string/default"
