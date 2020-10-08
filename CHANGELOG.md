@@ -2,6 +2,10 @@
 
 Here described only the breaking and most significant changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/frictionless-py/commits/master).
 
+## v3.20
+
+- Added support for SQL Views (#466)
+
 ## v3.19
 
 - Rebased AwsLoader on streaming (#460)
