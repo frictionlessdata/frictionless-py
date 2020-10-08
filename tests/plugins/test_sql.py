@@ -281,6 +281,23 @@ def test_storage_delete_resource_not_existent_error(database_url):
     assert error.note.count("does not exist")
 
 
+def test_storage_views_support(database_url):
+    engine = sa.create_engine(database_url)
+    engine.execute("CREATE VIEW data_view AS SELECT * FROM data")
+    storage = SqlStorage(engine=engine)
+    resource = storage.read_resource("data_view")
+    assert resource.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+        ]
+    }
+    assert resource.read_rows() == [
+        {"id": 1, "name": "english"},
+        {"id": 2, "name": "中国人"},
+    ]
+
+
 # Storage (PostgreSQL)
 
 
@@ -466,6 +483,27 @@ def test_postgresql_storage_constraints_not_valid_error(database_url, field_name
             resource.data[1][index] = cell
     with pytest.raises((sa.exc.IntegrityError, sa.exc.DataError)):
         resource.to_sql(engine=engine, force=True)
+
+
+def test_postgresql_storage_views_support():
+    engine = sa.create_engine(os.environ["POSTGRESQL_URL"])
+    engine.execute("DROP VIEW IF EXISTS data_view")
+    engine.execute("DROP TABLE IF EXISTS data")
+    engine.execute("CREATE TABLE data (id INTEGER PRIMARY KEY, name TEXT)")
+    engine.execute("INSERT INTO data VALUES (1, 'english'), (2, '中国人')")
+    engine.execute("CREATE VIEW data_view AS SELECT * FROM data")
+    storage = SqlStorage(engine=engine)
+    resource = storage.read_resource("data_view")
+    assert resource.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+        ]
+    }
+    assert resource.read_rows() == [
+        {"id": 1, "name": "english"},
+        {"id": 2, "name": "中国人"},
+    ]
 
 
 # Storage (MySQL)
@@ -658,3 +696,24 @@ def test_mysql_storage_constraints_not_valid_error(field_name, cell):
     # NOTE: should we wrap these exceptions?
     with pytest.raises(sa.exc.IntegrityError):
         resource.to_sql(engine=engine, force=True)
+
+
+def test_mysql_storage_views_support():
+    engine = sa.create_engine(os.environ["MYSQL_URL"])
+    engine.execute("DROP VIEW IF EXISTS data_view")
+    engine.execute("DROP TABLE IF EXISTS data")
+    engine.execute("CREATE TABLE data (id INTEGER PRIMARY KEY, name TEXT)")
+    engine.execute("INSERT INTO data VALUES (1, 'english'), (2, '中国人')")
+    engine.execute("CREATE VIEW data_view AS SELECT * FROM data")
+    storage = SqlStorage(engine=engine)
+    resource = storage.read_resource("data_view")
+    assert resource.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+        ]
+    }
+    assert resource.read_rows() == [
+        {"id": 1, "name": "english"},
+        {"id": 2, "name": "中国人"},
+    ]

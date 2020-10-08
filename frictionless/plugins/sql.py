@@ -172,7 +172,7 @@ class SqlStorage(Storage):
 
         # Create metadata and reflect
         self.__metadata = sa.MetaData(bind=self.__connection)
-        self.__metadata.reflect()
+        self.__metadata.reflect(views=True)
 
     def __iter__(self):
         names = []
@@ -500,7 +500,7 @@ class SqlStorage(Storage):
             # Drop tables, update metadata
             self.__metadata.drop_all(tables=sql_tables)
             self.__metadata.clear()
-            self.__metadata.reflect()
+            self.__metadata.reflect(views=True)
 
 
 # Internal
