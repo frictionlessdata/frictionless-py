@@ -164,23 +164,6 @@ def test_storage_constraints(options):
     storage.delete_package(target.resource_names)
 
 
-# NOTE: can we add constraints support to BigQuery?
-@pytest.mark.parametrize(
-    "field_name, cell",
-    [
-        ("required", ""),
-        ("minLength", "bad"),
-        ("maxLength", "badbadbad"),
-        ("pattern", "bad"),
-        ("enum", "bad"),
-        ("minimum", 3),
-        ("maximum", 9),
-    ],
-)
-def test_storage_constraints_not_valid_error(field_name, cell):
-    pass
-
-
 @pytest.mark.ci
 def test_storage_read_resource_not_existent_error(options):
     storage = BigqueryStorage(**options)
