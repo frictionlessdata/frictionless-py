@@ -217,7 +217,6 @@ def test_storage_delete_resource_not_existent_error(options):
 # Fixtures
 
 
-# TODO: create a separate project for frictionless at OKFN
 @pytest.fixture
 def options():
     os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = ".google.json"
@@ -226,6 +225,6 @@ def options():
         return {
             "service": build("bigquery", "v2", credentials=credentials),
             "project": json.load(file)["project_id"],
-            "dataset": "resource",
+            "dataset": "python",
             "prefix": "%s_" % uuid.uuid4().hex,
         }

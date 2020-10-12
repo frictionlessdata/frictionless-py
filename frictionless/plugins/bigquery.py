@@ -2,7 +2,6 @@ import io
 import re
 import json
 import time
-import warnings
 import unicodecsv
 from slugify import slugify
 from functools import partial
@@ -31,7 +30,6 @@ class BigqueryPlugin(Plugin):
 
     def create_storage(self, name, **options):
         if name == "bigquery":
-            warnings.warn("BigQuery support is in a draft state", UserWarning)
             return BigqueryStorage(**options)
 
 
@@ -42,6 +40,11 @@ class BigqueryPlugin(Plugin):
 # Storage
 
 
+# NOTE: can reading be streaming?
+# NOTE: make writing jobs in parallel?
+# NOTE: rebase on google-cloud-bigquery library
+# NOTE: provide a proper sorting solution for reading
+# NOTE: make it work for other locations (it can't find a job if it's not in the US)
 class BigqueryStorage(Storage):
     """BigQuery storage implementation
 
@@ -159,8 +162,6 @@ class BigqueryStorage(Storage):
         note = "Type %s is not supported" % type
         raise exceptions.FrictionlessException(errors.StorageError(note=note))
 
-    # NOTE: can it be streaming?
-    # NOTE: provide a proper sorting solution?
     def __read_data_stream(self, name, schema):
         bq_name = self.__write_convert_name(name)
 
@@ -305,7 +306,7 @@ class BigqueryStorage(Storage):
                 row[field.name], notes = field.write_cell(row[field.name])
             buffer.append(row.to_list())
             if len(buffer) > BUFFER_SIZE:
-                self.__write_data_(resource.name, buffer)
+                self.__write_row_stream_buffer(resource.name, buffer)
                 buffer = []
         if len(buffer) > 0:
             self.__write_row_stream_buffer(resource.name, buffer)
@@ -345,9 +346,17 @@ class BigqueryStorage(Storage):
             .insert(projectId=self.__project, body=body, media_body=media_body)
             .execute()
         )
-        self.__write_wait_job_id_done(response)
 
-    def __write_wait_job_id_done(self, response):
+        # Wait the job
+        try:
+            self.__write_wait_job_is_done(response)
+        except Exception as exception:
+            if "not found: job" in str(exception).lower():
+                note = "BigQuery plugin supports only the US location of datasets"
+                raise exceptions.FrictionlessException(errors.StorageError(note=note))
+            raise
+
+    def __write_wait_job_is_done(self, response):
 
         # Get job instance
         job = self.__service.jobs().get(
