@@ -40,11 +40,6 @@ class BigqueryPlugin(Plugin):
 # Storage
 
 
-# NOTE: can reading be streaming?
-# NOTE: make writing jobs in parallel?
-# NOTE: rebase on google-cloud-bigquery library
-# NOTE: provide a proper sorting solution for reading
-# NOTE: make it work for other locations (it can't find a job if it's not in the US)
 class BigqueryStorage(Storage):
     """BigQuery storage implementation
 
@@ -94,7 +89,6 @@ class BigqueryStorage(Storage):
         )
 
         # Get response
-        # NOTE: improve error handling
         try:
             response = (
                 self.__service.tables()
