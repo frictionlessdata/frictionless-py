@@ -6,8 +6,8 @@ import datetime
 from dateutil import tz
 from apiclient.discovery import build
 from oauth2client.client import GoogleCredentials
-from frictionless import Package, Resource, exceptions
-from frictionless.plugins.bigquery import BigqueryStorage
+from frictionless import Table, Package, Resource, exceptions
+from frictionless.plugins.bigquery import BigqueryDialect, BigqueryStorage
 
 
 # Environment
@@ -17,6 +17,24 @@ from frictionless.plugins.bigquery import BigqueryStorage
 pytestmark = pytest.mark.skipif(
     not os.path.isfile(".google.json"), reason="BigQuery environment is not available"
 )
+
+
+# Parser
+
+
+def test_table_bigquery(options):
+    prefix = options.pop("prefix")
+    service = options.pop("service")
+    dialect = BigqueryDialect(table=prefix, **options)
+
+    # Write
+    with Table("data/table.csv") as table:
+        table.write(service, dialect=dialect)
+
+    # Read
+    with Table(service, dialect=dialect) as table:
+        assert table.header == ["id", "name"]
+        assert table.read_data() == [["1", "english"], ["2", "中国人"]]
 
 
 # Storage
@@ -55,7 +73,7 @@ def test_storage_types(options):
     # Assert data
     assert target.get_resource("types").read_rows() == [
         {
-            "any": "note1",
+            "any": "中国人",
             "array": '["Mike", "John"]',
             "boolean": True,
             "date": datetime.date(2015, 1, 1),
@@ -68,7 +86,7 @@ def test_storage_types(options):
             "integer": 1,
             "number": 7,
             "object": '{"chars": 560}',
-            "string": "good",
+            "string": "english",
             "time": datetime.time(3, 0),
             "year": 2015,
             "yearmonth": "2015-01",
@@ -164,23 +182,6 @@ def test_storage_constraints(options):
     storage.delete_package(target.resource_names)
 
 
-# NOTE: can we add constraints support to BigQuery?
-@pytest.mark.parametrize(
-    "field_name, cell",
-    [
-        ("required", ""),
-        ("minLength", "bad"),
-        ("maxLength", "badbadbad"),
-        ("pattern", "bad"),
-        ("enum", "bad"),
-        ("minimum", 3),
-        ("maximum", 9),
-    ],
-)
-def test_storage_constraints_not_valid_error(field_name, cell):
-    pass
-
-
 @pytest.mark.ci
 def test_storage_read_resource_not_existent_error(options):
     storage = BigqueryStorage(**options)
@@ -214,10 +215,18 @@ def test_storage_delete_resource_not_existent_error(options):
     assert error.note.count("does not exist")
 
 
+@pytest.mark.ci
+def test_storage_big_file(options):
+    source = Resource(name="table", data=[[1]] * 1500)
+    storage = source.to_bigquery(force=True, **options)
+    target = Resource.from_bigquery(name="table", **options)
+    assert len(target.read_rows()) == 1500
+    storage.delete_package(list(storage))
+
+
 # Fixtures
 
 
-# TODO: create a separate project for frictionless at OKFN
 @pytest.fixture
 def options():
     os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = ".google.json"
@@ -226,6 +235,6 @@ def options():
         return {
             "service": build("bigquery", "v2", credentials=credentials),
             "project": json.load(file)["project_id"],
-            "dataset": "resource",
+            "dataset": "python",
             "prefix": "%s_" % uuid.uuid4().hex,
         }
