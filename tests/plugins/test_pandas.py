@@ -65,7 +65,7 @@ def test_storage_types():
     # Assert data
     assert target.get_resource("types").read_rows() == [
         {
-            "any": "note1",
+            "any": "中国人",
             "array": ["Mike", "John"],
             "boolean": True,
             "date": datetime.date(2015, 1, 1),
@@ -77,7 +77,7 @@ def test_storage_types():
             "integer": 1,
             "number": 7,
             "object": {"chars": 560},
-            "string": "good",
+            "string": "english",
             "time": datetime.time(3, 0),
             "year": 2015,
             "yearmonth": [2015, 1],
