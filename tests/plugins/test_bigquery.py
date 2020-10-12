@@ -6,8 +6,8 @@ import datetime
 from dateutil import tz
 from apiclient.discovery import build
 from oauth2client.client import GoogleCredentials
-from frictionless import Package, Resource, exceptions
-from frictionless.plugins.bigquery import BigqueryStorage
+from frictionless import Table, Package, Resource, exceptions
+from frictionless.plugins.bigquery import BigqueryDialect, BigqueryStorage
 
 
 # Environment
@@ -17,6 +17,24 @@ from frictionless.plugins.bigquery import BigqueryStorage
 pytestmark = pytest.mark.skipif(
     not os.path.isfile(".google.json"), reason="BigQuery environment is not available"
 )
+
+
+# Parser
+
+
+def test_table_bigquery(options):
+    prefix = options.pop("prefix")
+    service = options.pop("service")
+    dialect = BigqueryDialect(table=prefix, **options)
+
+    # Write
+    with Table("data/table.csv") as table:
+        table.write(service, dialect=dialect)
+
+    # Read
+    with Table(service, dialect=dialect) as table:
+        assert table.header == ["id", "name"]
+        assert table.read_data() == [["1", "english"], ["2", "中国人"]]
 
 
 # Storage

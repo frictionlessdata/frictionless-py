@@ -8,6 +8,9 @@ from functools import partial
 from ..resource import Resource
 from ..package import Package
 from ..storage import Storage
+from ..metadata import Metadata
+from ..dialects import Dialect
+from ..parser import Parser
 from ..plugin import Plugin
 from ..schema import Schema
 from ..field import Field
@@ -28,13 +31,132 @@ class BigqueryPlugin(Plugin):
 
     """
 
+    def create_dialect(self, resource, *, descriptor):
+        dis = helpers.import_from_plugin("googleapiclient.discovery", plugin="bigquery")
+        if isinstance(resource.source, dis.Resource):
+            return BigqueryDialect(descriptor)
+
+    def create_parser(self, resource):
+        dis = helpers.import_from_plugin("googleapiclient.discovery", plugin="bigquery")
+        if isinstance(resource.source, dis.Resource):
+            return BigqueryParser(resource)
+
     def create_storage(self, name, **options):
         if name == "bigquery":
             return BigqueryStorage(**options)
 
 
-# TODO: implement Dialect
-# TODO: implement Parser
+# Dialect
+
+
+class BigqueryDialect(Dialect):
+    """Bigquery dialect representation
+
+    API      | Usage
+    -------- | --------
+    Public   | `from frictionless.plugins.bigquery import BigqueryDialect`
+
+    Parameters:
+        descriptor? (str|dict): descriptor
+        project (str): project
+        dataset? (str): dataset
+        table? (str): table
+
+    Raises:
+        FrictionlessException: raise any error that occurs during the process
+
+    """
+
+    def __init__(
+        self,
+        descriptor=None,
+        *,
+        project=None,
+        dataset=None,
+        table=None,
+        header=None,
+        header_rows=None,
+        header_join=None,
+    ):
+        self.setinitial("project", project)
+        self.setinitial("dataset", dataset)
+        self.setinitial("table", table)
+        super().__init__(
+            descriptor=descriptor,
+            header=header,
+            header_rows=header_rows,
+            header_join=header_join,
+        )
+
+    @Metadata.property
+    def project(self):
+        return self.get("project")
+
+    @Metadata.property
+    def dataset(self):
+        return self.get("dataset")
+
+    @Metadata.property
+    def table(self):
+        return self.get("table")
+
+    # Metadata
+
+    metadata_profile = {  # type: ignore
+        "type": "object",
+        "required": ["table"],
+        "additionalProperties": False,
+        "properties": {
+            "project": {"type": "string"},
+            "dataset": {"type": "string"},
+            "table": {"type": "string"},
+            "header": {"type": "boolean"},
+            "headerRows": {"type": "array", "items": {"type": "number"}},
+            "headerJoin": {"type": "string"},
+        },
+    }
+
+
+# Parser
+
+
+class BigqueryParser(Parser):
+    """Bigquery parser implementation.
+
+    API      | Usage
+    -------- | --------
+    Public   | `from frictionless.plugins.bigquery import BigqueryParser`
+
+    """
+
+    loading = False
+
+    # Read
+
+    def read_data_stream_create(self):
+        dialect = self.resource.dialect
+        storage = BigqueryStorage(
+            service=self.resource.source,
+            project=dialect.project,
+            dataset=dialect.dataset,
+        )
+        resource = storage.read_resource(dialect.table)
+        self.resource.schema = resource.schema
+        yield resource.schema.field_names
+        yield from resource.read_data_stream()
+
+    # Write
+
+    def write(self, row_stream):
+        dialect = self.resource.dialect
+        schema = self.resource.schema
+        storage = BigqueryStorage(
+            service=self.resource.source,
+            project=dialect.project,
+            dataset=dialect.dataset,
+        )
+        resource = Resource(name=dialect.table, data=row_stream, schema=schema)
+        storage.write_resource(resource)
 
 
 # Storage
