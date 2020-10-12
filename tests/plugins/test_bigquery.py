@@ -197,6 +197,15 @@ def test_storage_delete_resource_not_existent_error(options):
     assert error.note.count("does not exist")
 
 
+@pytest.mark.ci
+def test_storage_big_file(options):
+    source = Resource(name="table", data=[[1]] * 1500)
+    storage = source.to_bigquery(force=True, **options)
+    target = Resource.from_bigquery(name="table", **options)
+    assert len(target.read_rows()) == 1500
+    storage.delete_package(list(storage))
+
+
 # Fixtures
 
 

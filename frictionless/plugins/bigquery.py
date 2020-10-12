@@ -395,7 +395,7 @@ class BigqueryStorage(Storage):
 
 # Internal
 
-BUFFER_SIZE = 10000
+BUFFER_SIZE = 1000
 
 
 def _slugify_name(name):
