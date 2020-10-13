@@ -1,5 +1,6 @@
 import re
 import os
+import warnings
 from functools import partial
 from ..resource import Resource
 from ..package import Package
@@ -50,11 +51,17 @@ class SpssStorage(Storage):
     """
 
     def __init__(self, *, basepath=None):
+
+        # Set attributes
         basepath = basepath or os.getcwd()
         if not os.path.isdir(basepath):
             note = f'Path "{basepath}" is not a directory, or doesn\'t exist'
             raise exceptions.FrictionlessException(errors.StorageError(note=note))
         self.__basepath = basepath
+
+        # Silent warnings
+        sav = helpers.import_from_plugin("savReaderWriter", plugin="spss")
+        warnings.filterwarnings("ignore", category=sav.SPSSIOWarning)
 
     def __iter__(self):
         names = []
@@ -72,8 +79,8 @@ class SpssStorage(Storage):
         if not os.path.isfile(path):
             note = f'Resource "{name}" does not exist'
             raise exceptions.FrictionlessException(errors.StorageError(note=note))
-        with sav.SavHeaderReader(path, ioUtf8=True) as header:
-            spss_schema = header.all()
+        with sav.SavHeaderReader(path, ioUtf8=True) as reader:
+            spss_schema = reader.all()
             schema = self.__read_convert_schema(spss_schema)
             data = partial(self.__read_convert_data, name, schema)
             resource = Resource(name=name, schema=schema, data=data)
@@ -178,13 +185,15 @@ class SpssStorage(Storage):
         return path
 
     def __write_convert_schema(self, resource):
-        spss_schema = {"varNames": [], "varTypes": {}, "formats": {}}
+        spss_schema = {"varNames": [], "varLabels": {}, "varTypes": {}, "formats": {}}
         mapping = self.__write_convert_type()
 
         # Add fields
         sizes = {}
         for field in resource.schema.fields:
             spss_schema["varNames"].append(field.name)
+            if field.title:
+                spss_schema["varLabels"][field.name] = field.title
             spss_type = mapping.get(field.type)
             if spss_type:
                 spss_schema["varTypes"][field.name] = spss_type[0]
