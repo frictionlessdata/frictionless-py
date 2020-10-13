@@ -210,7 +210,7 @@ class Metadata(helpers.ControlledDict):
                 return metadata
             raise TypeError("descriptor type is not supported")
         except Exception as exception:
-            note = f'canot extract metadata "{descriptor}" because "{exception}"'
+            note = f'cannot extract metadata "{descriptor}" because "{exception}"'
             raise exceptions.FrictionlessException(self.__Error(note=note)) from exception
 
     def metadata_process(self):

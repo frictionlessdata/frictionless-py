@@ -369,11 +369,11 @@ pprint(report)
     {'errors': [{'code': 'schema-error',
                  'description': 'Provided schema is not valid.',
                  'message': 'The data source could not be successfully described '
-                            'by the invalid Table Schema: canot extract metadata '
+                            'by the invalid Table Schema: cannot extract metadata '
                             '"bad.json" because "[Errno 2] No such file or '
                             'directory: \'bad.json\'"',
                  'name': 'Schema Error',
-                 'note': 'canot extract metadata "bad.json" because "[Errno 2] No '
+                 'note': 'cannot extract metadata "bad.json" because "[Errno 2] No '
                          'such file or directory: \'bad.json\'"',
                  'tags': ['#table', '#schema']}],
      'stats': {'errors': 1, 'tables': 0},
