@@ -136,7 +136,7 @@ class PandasStorage(Storage):
             note = f'Resource "{name}" does not exist'
             raise exceptions.FrictionlessException(errors.StorageError(note=note))
         schema = self.__read_convert_schema(dataframe)
-        data = partial(self.__read_convert_data_stream, name, schema)
+        data = partial(self.__read_convert_data, name, schema)
         resource = Resource(name=name, schema=schema, data=data)
         return resource
 
@@ -170,7 +170,7 @@ class PandasStorage(Storage):
         # Return schema
         return schema
 
-    def __read_convert_data_stream(self, name, schema):
+    def __read_convert_data(self, name, schema):
         np = helpers.import_from_plugin("numpy", plugin="pandas")
         dataframe = self.__read_pandas_dataframe(name)
         yield schema.field_names
@@ -305,35 +305,26 @@ class PandasStorage(Storage):
 
         return dataframe
 
-    def __write_convert_type(self, type):
+    def __write_convert_type(self, type=None):
         np = helpers.import_from_plugin("numpy", plugin="pandas")
 
         # Mapping
         mapping = {
-            "any": np.dtype("O"),
             "array": np.dtype(list),
             "boolean": np.dtype(bool),
-            "date": np.dtype("O"),
             "datetime": np.dtype("datetime64[ns]"),
-            "duration": np.dtype("O"),
-            "geojson": np.dtype("O"),
-            "geopoint": np.dtype("O"),
             "integer": np.dtype(int),
             "number": np.dtype(float),
             "object": np.dtype(dict),
-            "string": np.dtype("O"),
-            "time": np.dtype("O"),
             "year": np.dtype(int),
-            "yearmonth": np.dtype("O"),
         }
 
         # Return type
-        if type in mapping:
-            return mapping[type]
+        if type:
+            return mapping.get(type, np.dtype("O"))
 
-        # Not supported type
-        note = f'Field type "{type}" is not supported'
-        raise exceptions.FrictionlessException(errors.StorageError(note=note))
+        # Return mapping
+        return mapping
 
     # Delete
 
