@@ -14,7 +14,7 @@ def test_validate_invalid_source():
     assert report.flatten(["code", "note"]) == [
         [
             "resource-error",
-            'canot extract metadata "bad.json" because "[Errno 2] No such file or directory: \'bad.json\'"',
+            'cannot extract metadata "bad.json" because "[Errno 2] No such file or directory: \'bad.json\'"',
         ]
     ]
 
@@ -24,7 +24,7 @@ def test_validate_invalid_resource():
     assert report.flatten(["code", "note"]) == [
         [
             "schema-error",
-            'canot extract metadata "bad" because "[Errno 2] No such file or directory: \'bad\'"',
+            'cannot extract metadata "bad" because "[Errno 2] No such file or directory: \'bad\'"',
         ]
     ]
 
