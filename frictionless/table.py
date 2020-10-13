@@ -771,8 +771,8 @@ class Table:
 
     # Write
 
+    # TODO: change API to use independent iterators aka `() => row_stream`
     # NOTE: implement proper usage of loaders (e.g. write to s3)
-    # TODO: allow None target and return result for inline/pandas/etc?
     def write(
         self,
         target=None,

@@ -1,6 +1,5 @@
 import re
 import os
-import warnings
 from functools import partial
 from ..resource import Resource
 from ..package import Package
@@ -27,7 +26,6 @@ class SpssPlugin(Plugin):
 
     def create_storage(self, name, **options):
         if name == "spss":
-            warnings.warn("SPSS support is in a draft state", UserWarning)
             return SpssStorage(**options)
 
 
@@ -94,25 +92,13 @@ class SpssStorage(Storage):
 
     def __read_convert_schema(self, spss_schema):
         schema = Schema()
-
-        # Formats
-        date_formats = {
-            "time": TIME_FORMAT,
-            "date": DATE_FORMAT,
-            "datetime": DATETIME_FORMAT,
-        }
-
-        # Fields
         for name in spss_schema.varNames:
             type = self.__read_convert_type(spss_schema.formats[name])
             field = Field(name=name, type=type)
             title = spss_schema.varLabels[name]
             if title:
                 field.title = title
-            if type in date_formats.keys():
-                field.format = date_formats[type]
             schema.fields.append(field)
-
         return schema
 
     def __read_convert_type(self, spss_type):
@@ -145,20 +131,17 @@ class SpssStorage(Storage):
         sav = helpers.import_from_plugin("savReaderWriter", plugin="spss")
         path = self.__write_convert_name(name)
         yield schema.field_names
-        with sav.SavReader(path, ioUtf8=True, rawMode=False) as reader:
+        with sav.SavReader(path, ioUtf8=True) as reader:
             for item in reader:
                 cells = []
                 for index, field in enumerate(schema.fields):
                     value = item[index]
-                    # Fix decimals that should be integers
-                    if field.type == "integer" and value is not None:
-                        value = int(float(value))
-                    # We need to decode bytes to strings
-                    if isinstance(value, bytes):
-                        value = value.decode(reader.fileEncoding)
-                    # Time values need a decimal, add one if missing.
-                    if field.type == "time" and not re.search(r"\.\d*", value):
-                        value = "{}.0".format(value)
+                    if value is not None:
+                        if field.type == "integer":
+                            value = int(float(value))
+                        elif field.type in ["datetime", "date", "time"]:
+                            format = FORMAT_READ[field.type]
+                            value = reader.spss2strDate(value, format, None)
                     cells.append(value)
                 yield cells
 
@@ -183,7 +166,7 @@ class SpssStorage(Storage):
         for resource in package.resources:
             if not resource.schema:
                 resource.infer(only_sample=True)
-            self.__write_row_stream(resource)
+            self.__write_convert_row_stream(resource)
 
     def __write_convert_name(self, name):
         path = os.path.normpath(os.path.join(self.__basepath, f"{name}.sav"))
@@ -192,54 +175,67 @@ class SpssStorage(Storage):
             raise exceptions.FrictionlessException(errors.StorageError(note=note))
         return path
 
-    def __write_convert_schema(self, schema):
-        spss_schema = {"varNames": [], "varTypes": {}}
-        for field in schema.fields:
+    def __write_convert_schema(self, resource):
+        spss_schema = {"varNames": [], "varTypes": {}, "formats": {}}
+        mapping = self.__write_convert_types()
+
+        # Add fields
+        sizes = {}
+        for field in resource.schema.fields:
             spss_schema["varNames"].append(field.name)
-            spss_schema["varTypes"][field.name] = self.__write_convert_type(field.type)
+            spss_type = mapping.get(field.type)
+            if spss_type:
+                spss_schema["varTypes"][field.name] = spss_type[0]
+                spss_schema["formats"][field.name] = spss_type[1]
+            else:
+                sizes[field.name] = 0
+
+        # Set string sizes
+        for row in resource.read_row_stream():
+            for name in sizes.keys():
+                cell = row[name]
+                field = resource.schema.get_field(name)
+                cell, notes = field.write_cell(cell)
+                size = len(cell.encode("utf-8"))
+                if size > sizes[name]:
+                    sizes[name] = size
+        for name, size in sizes.items():
+            spss_schema["varTypes"][name] = size
+
         return spss_schema
 
-    def __write_convert_type(self, type):
-        if type in ["integer", "number", "date", "datetime", "time", "year"]:
-            return 0
-        return 5
-
-    # NOTE: move partially to write_package
-    def __write_row_stream(self, resource):
+    def __write_convert_row_stream(self, resource):
+        mapping = self.__write_convert_types()
         sav = helpers.import_from_plugin("savReaderWriter", plugin="spss")
-
-        # Prepare SPSS meta
         path = self.__write_convert_name(resource.name)
-        spss_schema = self.__write_convert_schema(resource.schema)
-        fallback_types = [
-            "boolean",
-            "object",
-            "geojson",
-            "geopoint",
-            "array",
-            "duration",
-            "yearmonth",
-        ]
-
-        # Write row stream
+        spss_schema = self.__write_convert_schema(resource)
         with sav.SavWriter(path, ioUtf8=True, **spss_schema) as writer:
-            for row in resource.read_rows():
+            for row in resource.read_row_stream():
                 result = []
                 for field in resource.schema.fields:
                     cell = row[field.name]
-                    if field.type == "date":
-                        cell = cell.strftime(DATE_FORMAT).encode()
-                        cell = writer.spssDateTime(cell, DATE_FORMAT)
-                    elif field.type == "datetime":
-                        cell = cell.strftime(DATETIME_FORMAT).encode()
-                        cell = writer.spssDateTime(cell, DATETIME_FORMAT)
-                    elif field.type == "time":
-                        cell = cell.strftime(TIME_FORMAT).encode()
-                        cell = writer.spssDateTime(cell, TIME_FORMAT)
-                    elif field.type in fallback_types:
+                    if field.type in ["datetime", "date", "time"]:
+                        format = FORMAT_WRITE[field.type]
+                        cell = writer.spssDateTime(cell.strftime(format).encode(), format)
+                    elif field.type not in mapping:
                         cell, notes = field.write_cell(cell)
+                        cell = cell.encode("utf-8")
                     result.append(cell)
                 writer.writerow(result)
+
+    def __write_convert_type(self, type):
+        mapping = self.__write_convert_types()
+        return mapping.get(type, [100, None])
+
+    def __write_convert_types(self):
+        return {
+            "integer": [0, "F10"],
+            "number": [0, "F10.2"],
+            "datetime": [0, "DATETIME20"],
+            "date": [0, "DATE10"],
+            "time": [0, "TIME8"],
+            "year": [0, "F10"],
+        }
 
     # Delete
 
@@ -263,6 +259,14 @@ class SpssStorage(Storage):
 
 # Internal
 
-DATE_FORMAT = "%Y-%m-%d"
-DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
-TIME_FORMAT = "%H:%M:%S.%f"
+FORMAT_READ = {
+    "date": "%Y-%m-%d",
+    "datetime": "%Y-%m-%d %H:%M:%S",
+    "time": "%H:%M:%S.%f",
+}
+
+FORMAT_WRITE = {
+    "date": "%Y-%m-%d",
+    "datetime": "%Y-%m-%d %H:%M:%S",
+    "time": "%H:%M:%S.%f",
+}

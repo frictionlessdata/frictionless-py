@@ -337,7 +337,7 @@ class SqlStorage(Storage):
 
             # Write data
             for resource in package.resources:
-                self.__write_row_stream(resource)
+                self.__write_convert_row_stream(resource)
 
     def __write_convert_name(self, name):
         return self.__prefix + name
@@ -405,6 +405,29 @@ class SqlStorage(Storage):
         sql_table = sa.Table(sql_name, self.__metadata, *(columns + constraints))
         return sql_table
 
+    def __write_convert_row_stream(self, resource):
+
+        # Fallback fields
+        fallback_fields = []
+        mapping = self.__write_convert_types()
+        for field in resource.schema.fields:
+            if mapping[field.type] is None:
+                fallback_fields.append(field)
+
+        # Write data
+        buffer = []
+        buffer_size = 1000
+        sql_table = self.__read_sql_table(resource.name)
+        for row in resource.read_row_stream():
+            for field in fallback_fields:
+                row[field.name], notes = field.write_cell(row[field.name])
+            buffer.append(row)
+            if len(buffer) > buffer_size:
+                self.__connection.execute(sql_table.insert().values(buffer))
+                buffer = []
+        if len(buffer):
+            self.__connection.execute(sql_table.insert().values(buffer))
+
     def __write_convert_type(self, type):
         mapping = self.__write_convert_types()
 
@@ -451,29 +474,6 @@ class SqlStorage(Storage):
             )
 
         return mapping
-
-    def __write_row_stream(self, resource):
-
-        # Fallback fields
-        fallback_fields = []
-        mapping = self.__write_convert_types()
-        for field in resource.schema.fields:
-            if mapping[field.type] is None:
-                fallback_fields.append(field)
-
-        # Write data
-        buffer = []
-        buffer_size = 1000
-        sql_table = self.__read_sql_table(resource.name)
-        for row in resource.read_row_stream():
-            for field in fallback_fields:
-                row[field.name], notes = field.write_cell(row[field.name])
-            buffer.append(row)
-            if len(buffer) > buffer_size:
-                self.__connection.execute(sql_table.insert().values(buffer))
-                buffer = []
-        if len(buffer):
-            self.__connection.execute(sql_table.insert().values(buffer))
 
     # Delete
 

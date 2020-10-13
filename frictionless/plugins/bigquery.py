@@ -344,7 +344,7 @@ class BigqueryStorage(Storage):
             ).execute()
 
             # Write data
-            self.__write_row_stream(resource)
+            self.__write_convert_row_stream(resource)
 
     def __write_convert_name(self, name):
         return _slugify_name(self.__prefix + name)
@@ -375,37 +375,7 @@ class BigqueryStorage(Storage):
 
         return bq_schema
 
-    def __write_convert_type(self, type):
-        mapping = self.__write_convert_types()
-
-        # Supported type
-        if type in mapping:
-            return mapping[type]
-
-        # Not supported
-        note = "Type %s is not supported" % type
-        raise exceptions.FrictionlessException(errors.StorageError(note=note))
-
-    def __write_convert_types(self):
-        return {
-            "any": "STRING",
-            "array": None,
-            "boolean": "BOOLEAN",
-            "date": "DATE",
-            "datetime": "DATETIME",
-            "duration": None,
-            "geojson": None,
-            "geopoint": None,
-            "integer": "INTEGER",
-            "number": "FLOAT",
-            "object": None,
-            "string": "STRING",
-            "time": "TIME",
-            "year": "INTEGER",
-            "yearmonth": None,
-        }
-
-    def __write_row_stream(self, resource):
+    def __write_convert_row_stream(self, resource):
         mapping = self.__write_convert_types()
 
         # Fallback fields
@@ -422,12 +392,12 @@ class BigqueryStorage(Storage):
                 row[field.name], notes = field.write_cell(row[field.name])
             buffer.append(row.to_list())
             if len(buffer) > BUFFER_SIZE:
-                self.__write_row_stream_buffer(resource.name, buffer)
+                self.__write_convert_row_stream_buffer(resource.name, buffer)
                 buffer = []
         if len(buffer) > 0:
-            self.__write_row_stream_buffer(resource.name, buffer)
+            self.__write_convert_row_stream_buffer(resource.name, buffer)
 
-    def __write_row_stream_buffer(self, name, buffer):
+    def __write_convert_row_stream_buffer(self, name, buffer):
         http = helpers.import_from_plugin("apiclient.http", plugin="bigquery")
         bq_name = self.__write_convert_name(name)
 
@@ -465,14 +435,14 @@ class BigqueryStorage(Storage):
 
         # Wait the job
         try:
-            self.__write_wait_job_is_done(response)
+            self.__write_convert_row_stream_wait(response)
         except Exception as exception:
             if "not found: job" in str(exception).lower():
                 note = "BigQuery plugin supports only the US location of datasets"
                 raise exceptions.FrictionlessException(errors.StorageError(note=note))
             raise
 
-    def __write_wait_job_is_done(self, response):
+    def __write_convert_row_stream_wait(self, response):
 
         # Get job instance
         job = self.__service.jobs().get(
@@ -489,6 +459,36 @@ class BigqueryStorage(Storage):
                     raise exceptions.FrictionlessException(errors.StorageError(note=note))
                 break
             time.sleep(1)
+
+    def __write_convert_type(self, type):
+        mapping = self.__write_convert_types()
+
+        # Supported type
+        if type in mapping:
+            return mapping[type]
+
+        # Not supported
+        note = "Type %s is not supported" % type
+        raise exceptions.FrictionlessException(errors.StorageError(note=note))
+
+    def __write_convert_types(self):
+        return {
+            "any": "STRING",
+            "array": None,
+            "boolean": "BOOLEAN",
+            "date": "DATE",
+            "datetime": "DATETIME",
+            "duration": None,
+            "geojson": None,
+            "geopoint": None,
+            "integer": "INTEGER",
+            "number": "FLOAT",
+            "object": None,
+            "string": "STRING",
+            "time": "TIME",
+            "year": "INTEGER",
+            "yearmonth": None,
+        }
 
     # Delete
 
