@@ -75,7 +75,7 @@ class SpssStorage(Storage):
         with sav.SavHeaderReader(path, ioUtf8=True) as header:
             spss_schema = header.all()
             schema = self.__read_convert_schema(spss_schema)
-            data = partial(self.__read_convert_data_stream, name, schema)
+            data = partial(self.__read_convert_data, name, schema)
             resource = Resource(name=name, schema=schema, data=data)
             return resource
 
@@ -101,7 +101,7 @@ class SpssStorage(Storage):
             schema.fields.append(field)
         return schema
 
-    def __read_convert_data_stream(self, name, schema):
+    def __read_convert_data(self, name, schema):
         sav = helpers.import_from_plugin("savReaderWriter", plugin="spss")
         path = self.__write_convert_name(name)
         yield schema.field_names
@@ -119,7 +119,7 @@ class SpssStorage(Storage):
                     cells.append(value)
                 yield cells
 
-    def __read_convert_type(self, spss_type):
+    def __read_convert_type(self, spss_type=None):
 
         # Mapping
         mapping = [
@@ -138,12 +138,14 @@ class SpssStorage(Storage):
         ]
 
         # Return type
-        for type, pattern in mapping:
-            if pattern.match(spss_type):
-                return type
+        if spss_type:
+            for type, pattern in mapping:
+                if pattern.match(spss_type):
+                    return type
+            return "string"
 
-        # Default
-        return "string"
+        # Return mapping
+        return mapping
 
     # Write
 
@@ -166,7 +168,7 @@ class SpssStorage(Storage):
         for resource in package.resources:
             if not resource.schema:
                 resource.infer(only_sample=True)
-            self.__write_convert_row_stream(resource)
+            self.__write_convert_data(resource)
 
     def __write_convert_name(self, name):
         path = os.path.normpath(os.path.join(self.__basepath, f"{name}.sav"))
@@ -177,7 +179,7 @@ class SpssStorage(Storage):
 
     def __write_convert_schema(self, resource):
         spss_schema = {"varNames": [], "varTypes": {}, "formats": {}}
-        mapping = self.__write_convert_types()
+        mapping = self.__write_convert_type()
 
         # Add fields
         sizes = {}
@@ -204,8 +206,8 @@ class SpssStorage(Storage):
 
         return spss_schema
 
-    def __write_convert_row_stream(self, resource):
-        mapping = self.__write_convert_types()
+    def __write_convert_data(self, resource):
+        mapping = self.__write_convert_type()
         sav = helpers.import_from_plugin("savReaderWriter", plugin="spss")
         path = self.__write_convert_name(resource.name)
         spss_schema = self.__write_convert_schema(resource)
@@ -223,12 +225,10 @@ class SpssStorage(Storage):
                     result.append(cell)
                 writer.writerow(result)
 
-    def __write_convert_type(self, type):
-        mapping = self.__write_convert_types()
-        return mapping.get(type, [100, None])
+    def __write_convert_type(self, type=None):
 
-    def __write_convert_types(self):
-        return {
+        # Mapping
+        mapping = {
             "integer": [0, "F10"],
             "number": [0, "F10.2"],
             "datetime": [0, "DATETIME20"],
@@ -236,6 +236,13 @@ class SpssStorage(Storage):
             "time": [0, "TIME8"],
             "year": [0, "F10"],
         }
+
+        # Return type
+        if type:
+            return mapping.get(type)
+
+        # Return mapping
+        return mapping
 
     # Delete
 
