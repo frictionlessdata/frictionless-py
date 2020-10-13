@@ -3,8 +3,10 @@ import os
 import warnings
 from functools import partial
 from ..resource import Resource
+from ..dialects import Dialect
 from ..package import Package
 from ..storage import Storage
+from ..parser import Parser
 from ..plugin import Plugin
 from ..schema import Schema
 from ..field import Field
@@ -25,13 +27,74 @@ class SpssPlugin(Plugin):
 
     """
 
+    def create_dialect(self, resource, *, descriptor):
+        if resource.format in ["sav", "zsav"]:
+            return SpssDialect(descriptor)
+
+    def create_parser(self, resource):
+        if resource.format in ["sav", "zsav"]:
+            return SpssParser(resource)
+
     def create_storage(self, name, **options):
         if name == "spss":
             return SpssStorage(**options)
 
 
-# TODO: implement Dialect
-# TODO: implement Parser
+# Dialect
+
+
+class SpssDialect(Dialect):
+    """Spss dialect representation
+
+    API      | Usage
+    -------- | --------
+    Public   | `from frictionless.plugins.spss import SpssDialect`
+
+    Parameters:
+        descriptor? (str|dict): descriptor
+
+    Raises:
+        FrictionlessException: raise any error that occurs during the process
+
+    """
+
+    pass
+
+
+# Parser
+
+
+class SpssParser(Parser):
+    """Spss parser implementation.
+
+    API      | Usage
+    -------- | --------
+    Public   | `from frictionless.plugins.spss import SpssParser`
+
+    """
+
+    loading = False
+
+    # Read
+
+    def read_data_stream_create(self):
+        name = os.path.basename(self.resource.path)
+        basepath = os.path.dirname(self.resource.path)
+        storage = SpssStorage(basepath=basepath)
+        resource = storage.read_resource(name)
+        self.resource.schema = resource.schema
+        yield resource.schema.field_names
+        yield from resource.read_data_stream()
+
+    # Write
+
+    def write(self, row_stream):
+        name = os.path.basename(self.resource.path)
+        basepath = os.path.dirname(self.resource.path)
+        schema = self.resource.schema
+        storage = SpssStorage(basepath=basepath)
+        resource = Resource(name=name, data=row_stream, schema=schema)
+        storage.write_resource(resource)
 
 
 # Storage

@@ -379,7 +379,7 @@ class BigqueryStorage(Storage):
 
         # Write data
         buffer = []
-        for row in resource.read_rows():
+        for row in resource.read_row_stream():
             for field in fallback_fields:
                 row[field.name], notes = field.write_cell(row[field.name])
             buffer.append(row.to_list())

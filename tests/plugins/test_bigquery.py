@@ -35,7 +35,10 @@ def test_table_bigquery(options):
     # Read
     with Table(service, dialect=dialect) as table:
         assert table.header == ["id", "name"]
-        assert table.read_data() == [["1", "english"], ["2", "中国人"]]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 # Storage

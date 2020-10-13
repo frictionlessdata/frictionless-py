@@ -1,7 +1,26 @@
 import pytest
 import datetime
-from frictionless import Package, Resource
+from frictionless import Package, Resource, Table
 from frictionless.plugins.spss import SpssStorage, exceptions
+
+
+# Parser
+
+
+def test_table_spss(tmpdir):
+    target = str(tmpdir.join("table.sav"))
+
+    # Write
+    with Table("data/table.csv") as table:
+        table.write(target)
+
+    # Read
+    with Table(target) as table:
+        assert table.header == ["id", "name"]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 # Storage

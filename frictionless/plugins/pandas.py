@@ -254,7 +254,7 @@ class PandasStorage(Storage):
         data_rows = []
         index_rows = []
         fixed_types = {}
-        for row in resource.read_rows():
+        for row in resource.read_row_stream():
             data_values = []
             index_values = []
             for field in resource.schema.fields:
