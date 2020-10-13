@@ -88,12 +88,12 @@ class SpssParser(Parser):
 
     # Write
 
-    def write(self, row_stream):
+    def write(self, read_row_stream):
         name = os.path.basename(self.resource.path)
         basepath = os.path.dirname(self.resource.path)
         schema = self.resource.schema
         storage = SpssStorage(basepath=basepath)
-        resource = Resource(name=name, data=row_stream, schema=schema)
+        resource = Resource(name=name, data=read_row_stream, schema=schema)
         storage.write_resource(resource)
 
 

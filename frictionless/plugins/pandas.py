@@ -88,10 +88,10 @@ class PandasParser(Parser):
 
     # Write
 
-    def write(self, row_stream):
+    def write(self, read_row_stream):
         schema = self.resource.schema
         storage = PandasStorage()
-        resource = Resource(name=self.resource.name, data=row_stream, schema=schema)
+        resource = Resource(name=self.resource.name, data=read_row_stream, schema=schema)
         storage.write_resource(resource)
         self.resource.data = storage.dataframe
 

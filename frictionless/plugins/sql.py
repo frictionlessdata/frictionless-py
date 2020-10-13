@@ -130,13 +130,13 @@ class SqlParser(Parser):
 
     # Write
 
-    def write(self, row_stream):
+    def write(self, read_row_stream):
         sa = helpers.import_from_plugin("sqlalchemy", plugin="sql")
         engine = sa.create_engine(self.resource.source)
         dialect = self.resource.dialect
         schema = self.resource.schema
         storage = SqlStorage(engine=engine)
-        resource = Resource(name=dialect.table, data=row_stream, schema=schema)
+        resource = Resource(name=dialect.table, data=read_row_stream, schema=schema)
         storage.write_resource(resource)
 
 

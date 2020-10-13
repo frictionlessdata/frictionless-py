@@ -141,9 +141,9 @@ class HtmlParser(Parser):
 
     # NOTE: rebase on proper pyquery
     # NOTE: take dialect into account
-    def write(self, row_stream):
+    def write(self, read_row_stream):
         html = "<html><body><table>\n"
-        for row in row_stream:
+        for row in read_row_stream():
             if row.row_number == 1:
                 html += "<tr>"
                 for name in row.schema.field_names:

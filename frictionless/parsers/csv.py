@@ -49,7 +49,7 @@ class CsvParser(Parser):
 
     # Write
 
-    def write(self, row_stream):
+    def write(self, read_row_stream):
         options = {}
         for name in vars(self.resource.dialect.to_python()):
             value = getattr(self.resource.dialect, name, None)
@@ -57,7 +57,7 @@ class CsvParser(Parser):
                 options[name] = value
         with tempfile.NamedTemporaryFile(delete=False) as file:
             writer = unicodecsv.writer(file, encoding=self.resource.encoding, **options)
-            for row in row_stream:
+            for row in read_row_stream():
                 schema = row.schema
                 if row.row_number == 1:
                     writer.writerow(schema.field_names)

@@ -165,7 +165,7 @@ class OdsParser(Parser):
 
     # Write
 
-    def write(self, row_stream):
+    def write(self, read_row_stream):
         dialect = self.resource.dialect
         helpers.ensure_dir(self.resource.source)
         ezodf = helpers.import_from_plugin("ezodf", plugin="ods")
@@ -173,7 +173,7 @@ class OdsParser(Parser):
         title = f"Sheet {dialect.sheet}"
         book.sheets += ezodf.Sheet(title)
         sheet = book.sheets[title]
-        for row_index, row in enumerate(row_stream):
+        for row_index, row in enumerate(read_row_stream()):
             if row.row_number == 1:
                 for field_index, name in enumerate(row.schema.field_names):
                     sheet[(0, field_index)].set_value(name)
