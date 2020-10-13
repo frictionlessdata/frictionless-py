@@ -227,7 +227,7 @@ class BigqueryStorage(Storage):
 
         # Create resource
         schema = self.__read_convert_schema(response["schema"])
-        data = partial(self.__read_convert_data_stream, name, schema)
+        data = partial(self.__read_convert_data, name, schema)
         resource = Resource(name=name, schema=schema, data=data)
 
         return resource
@@ -257,7 +257,7 @@ class BigqueryStorage(Storage):
 
         return schema
 
-    def __read_convert_data_stream(self, name, schema):
+    def __read_convert_data(self, name, schema):
         bq_name = self.__write_convert_name(name)
 
         # Get response
@@ -285,7 +285,7 @@ class BigqueryStorage(Storage):
         yield schema.field_names
         yield from data
 
-    def __read_convert_type(self, bq_type):
+    def __read_convert_type(self, bq_type=None):
 
         # Mapping
         mapping = {
@@ -299,12 +299,11 @@ class BigqueryStorage(Storage):
         }
 
         # Return type
-        if bq_type in mapping:
-            return mapping[bq_type]
+        if bq_type:
+            return mapping.get(bq_type, "string")
 
-        # Not supported
-        note = "Type %s is not supported" % type
-        raise exceptions.FrictionlessException(errors.StorageError(note=note))
+        # Return mapping
+        return mapping
 
     # Write
 
@@ -344,23 +343,21 @@ class BigqueryStorage(Storage):
             ).execute()
 
             # Write data
-            self.__write_convert_row_stream(resource)
+            self.__write_convert_data(resource)
 
     def __write_convert_name(self, name):
         return _slugify_name(self.__prefix + name)
 
     def __write_convert_schema(self, schema):
+        bq_schema = {"fields": []}
 
         # Fields
-        bq_fields = []
         for field in schema.fields:
             bq_type = self.__write_convert_type(field.type)
-            if not bq_type:
-                bq_type = "STRING"
             mode = "NULLABLE"
             if field.required:
                 mode = "REQUIRED"
-            bq_fields.append(
+            bq_schema["fields"].append(
                 {
                     "name": _slugify_name(field.name),
                     "type": bq_type,
@@ -368,21 +365,16 @@ class BigqueryStorage(Storage):
                 }
             )
 
-        # Schema
-        bq_schema = {
-            "fields": bq_fields,
-        }
-
         return bq_schema
 
-    def __write_convert_row_stream(self, resource):
-        mapping = self.__write_convert_types()
+    def __write_convert_data(self, resource):
+        mapping = self.__write_convert_type()
 
         # Fallback fields
         fallback_fields = []
-        mapping = self.__write_convert_types()
+        mapping = self.__write_convert_type()
         for field in resource.schema.fields:
-            if mapping[field.type] is None:
+            if not mapping.get(field.type):
                 fallback_fields.append(field)
 
         # Write data
@@ -392,12 +384,12 @@ class BigqueryStorage(Storage):
                 row[field.name], notes = field.write_cell(row[field.name])
             buffer.append(row.to_list())
             if len(buffer) > BUFFER_SIZE:
-                self.__write_convert_row_stream_buffer(resource.name, buffer)
+                self.__write_convert_data_start_job(resource.name, buffer)
                 buffer = []
         if len(buffer) > 0:
-            self.__write_convert_row_stream_buffer(resource.name, buffer)
+            self.__write_convert_data_start_job(resource.name, buffer)
 
-    def __write_convert_row_stream_buffer(self, name, buffer):
+    def __write_convert_data_start_job(self, name, buffer):
         http = helpers.import_from_plugin("apiclient.http", plugin="bigquery")
         bq_name = self.__write_convert_name(name)
 
@@ -435,14 +427,14 @@ class BigqueryStorage(Storage):
 
         # Wait the job
         try:
-            self.__write_convert_row_stream_wait(response)
+            self.__write_convert_data_finish_job(response)
         except Exception as exception:
             if "not found: job" in str(exception).lower():
                 note = "BigQuery plugin supports only the US location of datasets"
                 raise exceptions.FrictionlessException(errors.StorageError(note=note))
             raise
 
-    def __write_convert_row_stream_wait(self, response):
+    def __write_convert_data_finish_job(self, response):
 
         # Get job instance
         job = self.__service.jobs().get(
@@ -460,35 +452,27 @@ class BigqueryStorage(Storage):
                 break
             time.sleep(1)
 
-    def __write_convert_type(self, type):
-        mapping = self.__write_convert_types()
+    def __write_convert_type(self, type=None):
 
-        # Supported type
-        if type in mapping:
-            return mapping[type]
-
-        # Not supported
-        note = "Type %s is not supported" % type
-        raise exceptions.FrictionlessException(errors.StorageError(note=note))
-
-    def __write_convert_types(self):
-        return {
+        # Mapping
+        mapping = {
             "any": "STRING",
-            "array": None,
             "boolean": "BOOLEAN",
             "date": "DATE",
             "datetime": "DATETIME",
-            "duration": None,
-            "geojson": None,
-            "geopoint": None,
             "integer": "INTEGER",
             "number": "FLOAT",
-            "object": None,
             "string": "STRING",
             "time": "TIME",
             "year": "INTEGER",
-            "yearmonth": None,
         }
+
+        # Return type
+        if type:
+            return mapping.get(type, "STRING")
+
+        # Return mapping
+        return mapping
 
     # Delete
 
