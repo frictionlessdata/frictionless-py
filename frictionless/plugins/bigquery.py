@@ -227,7 +227,7 @@ class BigqueryStorage(Storage):
 
         # Create resource
         schema = self.__read_convert_schema(response["schema"])
-        data = partial(self.__read_data_stream, name, schema)
+        data = partial(self.__read_convert_data_stream, name, schema)
         resource = Resource(name=name, schema=schema, data=data)
 
         return resource
@@ -257,28 +257,7 @@ class BigqueryStorage(Storage):
 
         return schema
 
-    def __read_convert_type(self, bq_type):
-
-        # Mapping
-        mapping = {
-            "BOOLEAN": "boolean",
-            "DATE": "date",
-            "DATETIME": "datetime",
-            "INTEGER": "integer",
-            "FLOAT": "number",
-            "STRING": "string",
-            "TIME": "time",
-        }
-
-        # Return type
-        if bq_type in mapping:
-            return mapping[bq_type]
-
-        # Not supported
-        note = "Type %s is not supported" % type
-        raise exceptions.FrictionlessException(errors.StorageError(note=note))
-
-    def __read_data_stream(self, name, schema):
+    def __read_convert_data_stream(self, name, schema):
         bq_name = self.__write_convert_name(name)
 
         # Get response
@@ -305,6 +284,27 @@ class BigqueryStorage(Storage):
         # Emit data
         yield schema.field_names
         yield from data
+
+    def __read_convert_type(self, bq_type):
+
+        # Mapping
+        mapping = {
+            "BOOLEAN": "boolean",
+            "DATE": "date",
+            "DATETIME": "datetime",
+            "INTEGER": "integer",
+            "FLOAT": "number",
+            "STRING": "string",
+            "TIME": "time",
+        }
+
+        # Return type
+        if bq_type in mapping:
+            return mapping[bq_type]
+
+        # Not supported
+        note = "Type %s is not supported" % type
+        raise exceptions.FrictionlessException(errors.StorageError(note=note))
 
     # Write
 

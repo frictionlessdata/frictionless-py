@@ -75,7 +75,7 @@ class SpssStorage(Storage):
         with sav.SavHeaderReader(path, ioUtf8=True) as header:
             spss_schema = header.all()
             schema = self.__read_convert_schema(spss_schema)
-            data = partial(self.__read_data_stream, name, schema)
+            data = partial(self.__read_convert_data_stream, name, schema)
             resource = Resource(name=name, schema=schema, data=data)
             return resource
 
@@ -100,6 +100,24 @@ class SpssStorage(Storage):
                 field.title = title
             schema.fields.append(field)
         return schema
+
+    def __read_convert_data_stream(self, name, schema):
+        sav = helpers.import_from_plugin("savReaderWriter", plugin="spss")
+        path = self.__write_convert_name(name)
+        yield schema.field_names
+        with sav.SavReader(path, ioUtf8=True) as reader:
+            for item in reader:
+                cells = []
+                for index, field in enumerate(schema.fields):
+                    value = item[index]
+                    if value is not None:
+                        if field.type == "integer":
+                            value = int(float(value))
+                        elif field.type in ["datetime", "date", "time"]:
+                            format = FORMAT_READ[field.type]
+                            value = reader.spss2strDate(value, format, None)
+                    cells.append(value)
+                yield cells
 
     def __read_convert_type(self, spss_type):
 
@@ -126,24 +144,6 @@ class SpssStorage(Storage):
 
         # Default
         return "string"
-
-    def __read_data_stream(self, name, schema):
-        sav = helpers.import_from_plugin("savReaderWriter", plugin="spss")
-        path = self.__write_convert_name(name)
-        yield schema.field_names
-        with sav.SavReader(path, ioUtf8=True) as reader:
-            for item in reader:
-                cells = []
-                for index, field in enumerate(schema.fields):
-                    value = item[index]
-                    if value is not None:
-                        if field.type == "integer":
-                            value = int(float(value))
-                        elif field.type in ["datetime", "date", "time"]:
-                            format = FORMAT_READ[field.type]
-                            value = reader.spss2strDate(value, format, None)
-                    cells.append(value)
-                yield cells
 
     # Write
 

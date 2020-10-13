@@ -22,6 +22,7 @@ pytestmark = pytest.mark.skipif(
 # Parser
 
 
+@pytest.mark.ci
 def test_table_bigquery(options):
     prefix = options.pop("prefix")
     service = options.pop("service")

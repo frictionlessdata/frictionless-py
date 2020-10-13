@@ -62,7 +62,6 @@ def test_storage_types(tmpdir):
     storage.delete_package(target.resource_names)
 
 
-@pytest.mark.skip
 def test_storage_integrity(tmpdir):
 
     # Export/Import
@@ -74,8 +73,8 @@ def test_storage_integrity(tmpdir):
     assert target.get_resource("integrity_main").schema == {
         "fields": [
             # added required
-            {"name": "id", "type": "integer", "constraints": {"required": True}},
-            {"name": "parent", "type": "number"},  # type downgrade
+            {"name": "id", "type": "integer"},
+            {"name": "parent", "type": "integer"},
             {"name": "description", "type": "string"},
         ],
         # primary key removal
@@ -109,8 +108,6 @@ def test_storage_integrity(tmpdir):
     storage.delete_package(target.resource_names)
 
 
-# TODO: fix SPSS type mappings
-@pytest.mark.skip
 def test_storage_constraints(tmpdir):
 
     # Export/Import
@@ -146,24 +143,6 @@ def test_storage_constraints(tmpdir):
 
     # Cleanup storage
     storage.delete_package(target.resource_names)
-
-
-# NOTE: can we add consratins support to SPSS?
-@pytest.mark.skip
-@pytest.mark.parametrize(
-    "field_name, cell",
-    [
-        ("required", ""),
-        ("minLength", "bad"),
-        ("maxLength", "badbadbad"),
-        ("pattern", "bad"),
-        ("enum", "bad"),
-        ("minimum", 3),
-        ("maximum", 9),
-    ],
-)
-def test_storage_constraints_not_valid_error(field_name, cell):
-    pass
 
 
 def test_storage_read_resource_not_existent_error():
