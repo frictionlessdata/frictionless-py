@@ -2,6 +2,11 @@
 
 Here described only the breaking and most significant changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/frictionless-py/commits/master).
 
+## v3.21
+
+- Improved SPSS plugin (#483)
+- Improved BigQuery plugin (#470)
+
 ## v3.20
 
 - Added support for SQL Views (#466)
