@@ -23,9 +23,6 @@ before_install:
   - openssl aes-256-cbc -K $encrypted_4885f94bfb6d_key -iv $encrypted_4885f94bfb6d_iv -in .google.json.enc -out .google.json -d || echo 'Encrypted files have been removed for security reasons.'
 
 install:
-  # TODO: remove after
-  # https://stackoverflow.com/questions/63902467/module-six-moves-has-no-attribute-collections-abc
-  - pip install 'six>=1.13'
   - make install
 
 script:
