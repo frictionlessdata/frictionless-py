@@ -78,7 +78,7 @@ def test_validate_invalid_descriptor_path():
     assert report.flatten(["code", "note"]) == [
         [
             "package-error",
-            'canot extract metadata "bad/datapackage.json" because "[Errno 2] No such file or directory: \'bad/datapackage.json\'"',
+            'cannot extract metadata "bad/datapackage.json" because "[Errno 2] No such file or directory: \'bad/datapackage.json\'"',
         ]
     ]
 
@@ -88,7 +88,7 @@ def test_validate_invalid_package():
     assert report.flatten(["code", "note"]) == [
         [
             "schema-error",
-            'canot extract metadata "bad" because "[Errno 2] No such file or directory: \'bad\'"',
+            'cannot extract metadata "bad" because "[Errno 2] No such file or directory: \'bad\'"',
         ]
     ]
 
@@ -323,7 +323,7 @@ def test_validate_package_invalid_json_issue_192():
     assert report.flatten(["code", "note"]) == [
         [
             "package-error",
-            'canot extract metadata "data/invalid.json" because "Expecting property name enclosed in double quotes: line 2 column 5 (char 6)"',
+            'cannot extract metadata "data/invalid.json" because "Expecting property name enclosed in double quotes: line 2 column 5 (char 6)"',
         ]
     ]
 
