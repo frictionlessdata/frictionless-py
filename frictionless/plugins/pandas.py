@@ -88,10 +88,10 @@ class PandasParser(Parser):
 
     # Write
 
-    def write(self, row_stream):
+    def write(self, read_row_stream):
         schema = self.resource.schema
         storage = PandasStorage()
-        resource = Resource(name=self.resource.name, data=row_stream, schema=schema)
+        resource = Resource(name=self.resource.name, data=read_row_stream, schema=schema)
         storage.write_resource(resource)
         self.resource.data = storage.dataframe
 
@@ -136,7 +136,7 @@ class PandasStorage(Storage):
             note = f'Resource "{name}" does not exist'
             raise exceptions.FrictionlessException(errors.StorageError(note=note))
         schema = self.__read_convert_schema(dataframe)
-        data = partial(self.__read_data_stream, name, schema)
+        data = partial(self.__read_convert_data, name, schema)
         resource = Resource(name=name, schema=schema, data=data)
         return resource
 
@@ -170,6 +170,25 @@ class PandasStorage(Storage):
         # Return schema
         return schema
 
+    def __read_convert_data(self, name, schema):
+        np = helpers.import_from_plugin("numpy", plugin="pandas")
+        dataframe = self.__read_pandas_dataframe(name)
+        yield schema.field_names
+        for pk, item in dataframe.iterrows():
+            cells = []
+            for field in schema.fields:
+                if field.name in schema.primary_key:
+                    pk = pk if isinstance(pk, tuple) else [pk]
+                    value = pk[schema.primary_key.index(field.name)]
+                else:
+                    value = item[field.name]
+                if field.type == "number" and np.isnan(value):
+                    value = None
+                elif field.type == "datetime":
+                    value = value.to_pydatetime()
+                cells.append(value)
+            yield cells
+
     def __read_convert_type(self, dtype, sample=None):
         pdc = helpers.import_from_plugin("pandas.core.dtypes.api", plugin="pandas")
 
@@ -200,25 +219,6 @@ class PandasStorage(Storage):
 
         # Default
         return "string"
-
-    def __read_data_stream(self, name, schema):
-        np = helpers.import_from_plugin("numpy", plugin="pandas")
-        dataframe = self.__read_pandas_dataframe(name)
-        yield schema.field_names
-        for pk, item in dataframe.iterrows():
-            cells = []
-            for field in schema.fields:
-                if field.name in schema.primary_key:
-                    pk = pk if isinstance(pk, tuple) else [pk]
-                    value = pk[schema.primary_key.index(field.name)]
-                else:
-                    value = item[field.name]
-                if field.type == "number" and np.isnan(value):
-                    value = None
-                elif field.type == "datetime":
-                    value = value.to_pydatetime()
-                cells.append(value)
-            yield cells
 
     def __read_pandas_dataframe(self, name):
         return self.__dataframes.get(name)
@@ -254,7 +254,7 @@ class PandasStorage(Storage):
         data_rows = []
         index_rows = []
         fixed_types = {}
-        for row in resource.read_rows():
+        for row in resource.read_row_stream():
             data_values = []
             index_values = []
             for field in resource.schema.fields:
@@ -305,35 +305,26 @@ class PandasStorage(Storage):
 
         return dataframe
 
-    def __write_convert_type(self, type):
+    def __write_convert_type(self, type=None):
         np = helpers.import_from_plugin("numpy", plugin="pandas")
 
         # Mapping
         mapping = {
-            "any": np.dtype("O"),
             "array": np.dtype(list),
             "boolean": np.dtype(bool),
-            "date": np.dtype("O"),
             "datetime": np.dtype("datetime64[ns]"),
-            "duration": np.dtype("O"),
-            "geojson": np.dtype("O"),
-            "geopoint": np.dtype("O"),
             "integer": np.dtype(int),
             "number": np.dtype(float),
             "object": np.dtype(dict),
-            "string": np.dtype("O"),
-            "time": np.dtype("O"),
             "year": np.dtype(int),
-            "yearmonth": np.dtype("O"),
         }
 
         # Return type
-        if type in mapping:
-            return mapping[type]
+        if type:
+            return mapping.get(type, np.dtype("O"))
 
-        # Not supported type
-        note = f'Field type "{type}" is not supported'
-        raise exceptions.FrictionlessException(errors.StorageError(note=note))
+        # Return mapping
+        return mapping
 
     # Delete
 

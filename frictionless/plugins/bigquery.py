@@ -147,7 +147,7 @@ class BigqueryParser(Parser):
 
     # Write
 
-    def write(self, row_stream):
+    def write(self, read_row_stream):
         dialect = self.resource.dialect
         schema = self.resource.schema
         storage = BigqueryStorage(
@@ -155,7 +155,7 @@ class BigqueryParser(Parser):
             project=dialect.project,
             dataset=dialect.dataset,
         )
-        resource = Resource(name=dialect.table, data=row_stream, schema=schema)
+        resource = Resource(name=dialect.table, data=read_row_stream, schema=schema)
         storage.write_resource(resource)
 
 
@@ -227,7 +227,7 @@ class BigqueryStorage(Storage):
 
         # Create resource
         schema = self.__read_convert_schema(response["schema"])
-        data = partial(self.__read_data_stream, name, schema)
+        data = partial(self.__read_convert_data, name, schema)
         resource = Resource(name=name, schema=schema, data=data)
 
         return resource
@@ -257,28 +257,7 @@ class BigqueryStorage(Storage):
 
         return schema
 
-    def __read_convert_type(self, bq_type):
-
-        # Mapping
-        mapping = {
-            "BOOLEAN": "boolean",
-            "DATE": "date",
-            "DATETIME": "datetime",
-            "INTEGER": "integer",
-            "FLOAT": "number",
-            "STRING": "string",
-            "TIME": "time",
-        }
-
-        # Return type
-        if bq_type in mapping:
-            return mapping[bq_type]
-
-        # Not supported
-        note = "Type %s is not supported" % type
-        raise exceptions.FrictionlessException(errors.StorageError(note=note))
-
-    def __read_data_stream(self, name, schema):
+    def __read_convert_data(self, name, schema):
         bq_name = self.__write_convert_name(name)
 
         # Get response
@@ -305,6 +284,26 @@ class BigqueryStorage(Storage):
         # Emit data
         yield schema.field_names
         yield from data
+
+    def __read_convert_type(self, bq_type=None):
+
+        # Mapping
+        mapping = {
+            "BOOLEAN": "boolean",
+            "DATE": "date",
+            "DATETIME": "datetime",
+            "INTEGER": "integer",
+            "FLOAT": "number",
+            "STRING": "string",
+            "TIME": "time",
+        }
+
+        # Return type
+        if bq_type:
+            return mapping.get(bq_type, "string")
+
+        # Return mapping
+        return mapping
 
     # Write
 
@@ -344,23 +343,21 @@ class BigqueryStorage(Storage):
             ).execute()
 
             # Write data
-            self.__write_row_stream(resource)
+            self.__write_convert_data(resource)
 
     def __write_convert_name(self, name):
         return _slugify_name(self.__prefix + name)
 
     def __write_convert_schema(self, schema):
+        bq_schema = {"fields": []}
 
         # Fields
-        bq_fields = []
         for field in schema.fields:
             bq_type = self.__write_convert_type(field.type)
-            if not bq_type:
-                bq_type = "STRING"
             mode = "NULLABLE"
             if field.required:
                 mode = "REQUIRED"
-            bq_fields.append(
+            bq_schema["fields"].append(
                 {
                     "name": _slugify_name(field.name),
                     "type": bq_type,
@@ -368,66 +365,31 @@ class BigqueryStorage(Storage):
                 }
             )
 
-        # Schema
-        bq_schema = {
-            "fields": bq_fields,
-        }
-
         return bq_schema
 
-    def __write_convert_type(self, type):
-        mapping = self.__write_convert_types()
-
-        # Supported type
-        if type in mapping:
-            return mapping[type]
-
-        # Not supported
-        note = "Type %s is not supported" % type
-        raise exceptions.FrictionlessException(errors.StorageError(note=note))
-
-    def __write_convert_types(self):
-        return {
-            "any": "STRING",
-            "array": None,
-            "boolean": "BOOLEAN",
-            "date": "DATE",
-            "datetime": "DATETIME",
-            "duration": None,
-            "geojson": None,
-            "geopoint": None,
-            "integer": "INTEGER",
-            "number": "FLOAT",
-            "object": None,
-            "string": "STRING",
-            "time": "TIME",
-            "year": "INTEGER",
-            "yearmonth": None,
-        }
-
-    def __write_row_stream(self, resource):
-        mapping = self.__write_convert_types()
+    def __write_convert_data(self, resource):
+        mapping = self.__write_convert_type()
 
         # Fallback fields
         fallback_fields = []
-        mapping = self.__write_convert_types()
+        mapping = self.__write_convert_type()
         for field in resource.schema.fields:
-            if mapping[field.type] is None:
+            if not mapping.get(field.type):
                 fallback_fields.append(field)
 
         # Write data
         buffer = []
-        for row in resource.read_rows():
+        for row in resource.read_row_stream():
             for field in fallback_fields:
                 row[field.name], notes = field.write_cell(row[field.name])
             buffer.append(row.to_list())
             if len(buffer) > BUFFER_SIZE:
-                self.__write_row_stream_buffer(resource.name, buffer)
+                self.__write_convert_data_start_job(resource.name, buffer)
                 buffer = []
         if len(buffer) > 0:
-            self.__write_row_stream_buffer(resource.name, buffer)
+            self.__write_convert_data_start_job(resource.name, buffer)
 
-    def __write_row_stream_buffer(self, name, buffer):
+    def __write_convert_data_start_job(self, name, buffer):
         http = helpers.import_from_plugin("apiclient.http", plugin="bigquery")
         bq_name = self.__write_convert_name(name)
 
@@ -465,14 +427,14 @@ class BigqueryStorage(Storage):
 
         # Wait the job
         try:
-            self.__write_wait_job_is_done(response)
+            self.__write_convert_data_finish_job(response)
         except Exception as exception:
             if "not found: job" in str(exception).lower():
                 note = "BigQuery plugin supports only the US location of datasets"
                 raise exceptions.FrictionlessException(errors.StorageError(note=note))
             raise
 
-    def __write_wait_job_is_done(self, response):
+    def __write_convert_data_finish_job(self, response):
 
         # Get job instance
         job = self.__service.jobs().get(
@@ -489,6 +451,28 @@ class BigqueryStorage(Storage):
                     raise exceptions.FrictionlessException(errors.StorageError(note=note))
                 break
             time.sleep(1)
+
+    def __write_convert_type(self, type=None):
+
+        # Mapping
+        mapping = {
+            "any": "STRING",
+            "boolean": "BOOLEAN",
+            "date": "DATE",
+            "datetime": "DATETIME",
+            "integer": "INTEGER",
+            "number": "FLOAT",
+            "string": "STRING",
+            "time": "TIME",
+            "year": "INTEGER",
+        }
+
+        # Return type
+        if type:
+            return mapping.get(type, "STRING")
+
+        # Return mapping
+        return mapping
 
     # Delete
 

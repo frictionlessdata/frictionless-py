@@ -53,10 +53,10 @@ class JsonParser(Parser):
 
     # Write
 
-    def write(self, row_stream):
+    def write(self, read_row_stream):
         data = []
         dialect = self.resource.dialect
-        for row in row_stream:
+        for row in read_row_stream():
             cells = list(row.values())
             cells, notes = row.schema.write_data(cells, native_types=self.native_types)
             item = dict(zip(row.schema.field_names, cells)) if dialect.keyed else cells
@@ -103,11 +103,11 @@ class JsonlParser(Parser):
 
     # Write
 
-    def write(self, row_stream):
+    def write(self, read_row_stream):
         dialect = self.resource.dialect
         with tempfile.NamedTemporaryFile(delete=False) as file:
             writer = jsonlines.Writer(file)
-            for row in row_stream:
+            for row in read_row_stream():
                 schema = row.schema
                 cells = list(row.values())
                 cells, notes = schema.write_data(cells, native_types=self.native_types)

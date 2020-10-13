@@ -83,7 +83,6 @@ class GsheetParser(Parser):
 
     # Write
 
-    # NOTE: if we migrate to the native driver we can enable it
-    def write(self, row_stream, *, schema):
+    def write(self, read_row_stream):
         error = errors.Error(note="Writing to Google Sheets is not supported")
         raise exceptions.FrictionlessException(error)

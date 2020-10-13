@@ -130,13 +130,13 @@ class SqlParser(Parser):
 
     # Write
 
-    def write(self, row_stream):
+    def write(self, read_row_stream):
         sa = helpers.import_from_plugin("sqlalchemy", plugin="sql")
         engine = sa.create_engine(self.resource.source)
         dialect = self.resource.dialect
         schema = self.resource.schema
         storage = SqlStorage(engine=engine)
-        resource = Resource(name=dialect.table, data=row_stream, schema=schema)
+        resource = Resource(name=dialect.table, data=read_row_stream, schema=schema)
         storage.write_resource(resource)
 
 
@@ -194,7 +194,7 @@ class SqlStorage(Storage):
             note = f'Resource "{name}" does not exist'
             raise exceptions.FrictionlessException(errors.StorageError(note=note))
         schema = self.__read_convert_schema(sql_table)
-        data = partial(self.__read_data_stream, name, order_by=order_by)
+        data = partial(self.__read_convert_data, name, order_by=order_by)
         resource = Resource(name=name, schema=schema, data=data)
         return resource
 
@@ -246,25 +246,28 @@ class SqlStorage(Storage):
         # Return schema
         return schema
 
-    def __read_convert_type(self, sql_type):
-        mapping = self.__read_convert_types()
+    def __read_convert_data(self, name, *, order_by=None):
+        sa = helpers.import_from_plugin("sqlalchemy", plugin="sql")
+        sql_table = self.__read_sql_table(name)
+        with self.__connection.begin():
+            # Streaming could be not working for some backends:
+            # http://docs.sqlalchemy.org/en/latest/core/connections.html
+            select = sql_table.select().execution_options(stream_results=True)
+            if order_by:
+                select = select.order_by(sa.sql.text(order_by))
+            result = select.execute()
+            yield result.keys()
+            for item in result:
+                cells = list(item)
+                yield cells
 
-        # Supported type
-        for key, value in mapping.items():
-            if isinstance(sql_type, key):
-                return value
-
-        # Not supported type
-        note = f'Field type "{sql_type}" is not supported'
-        raise exceptions.FrictionlessException(errors.StorageError(note=note))
-
-    def __read_convert_types(self):
+    def __read_convert_type(self, sql_type=None):
         sa = helpers.import_from_plugin("sqlalchemy", plugin="sql")
         sapg = helpers.import_from_plugin("sqlalchemy.dialects.postgresql", plugin="sql")
         sams = helpers.import_from_plugin("sqlalchemy.dialects.mysql", plugin="sql")
 
         # Return mapping
-        return {
+        mapping = {
             sapg.ARRAY: "array",
             sams.BIT: "string",
             sa.Boolean: "boolean",
@@ -283,20 +286,15 @@ class SqlStorage(Storage):
             sapg.UUID: "string",
         }
 
-    def __read_data_stream(self, name, *, order_by=None):
-        sa = helpers.import_from_plugin("sqlalchemy", plugin="sql")
-        sql_table = self.__read_sql_table(name)
-        with self.__connection.begin():
-            # Streaming could be not working for some backends:
-            # http://docs.sqlalchemy.org/en/latest/core/connections.html
-            select = sql_table.select().execution_options(stream_results=True)
-            if order_by:
-                select = select.order_by(sa.sql.text(order_by))
-            result = select.execute()
-            yield result.keys()
-            for item in result:
-                cells = list(item)
-                yield cells
+        # Return type
+        if sql_type:
+            for key, value in mapping.items():
+                if isinstance(sql_type, key):
+                    return value
+            return "string"
+
+        # Return mapping
+        return mapping
 
     def __read_sql_table(self, name):
         sql_name = self.__write_convert_name(name)
@@ -337,7 +335,7 @@ class SqlStorage(Storage):
 
             # Write data
             for resource in package.resources:
-                self.__write_row_stream(resource)
+                self.__write_convert_data(resource)
 
     def __write_convert_name(self, name):
         return self.__prefix + name
@@ -357,8 +355,6 @@ class SqlStorage(Storage):
             checks = []
             nullable = not field.required
             column_type = self.__write_convert_type(field.type)
-            if not column_type:
-                column_type = sa.Text
             unique = field.constraints.get("unique", False)
             for const, value in field.constraints.items():
                 if const == "minLength":
@@ -405,60 +401,13 @@ class SqlStorage(Storage):
         sql_table = sa.Table(sql_name, self.__metadata, *(columns + constraints))
         return sql_table
 
-    def __write_convert_type(self, type):
-        mapping = self.__write_convert_types()
-
-        # Supported type
-        if type in mapping:
-            return mapping[type]
-
-        # Not supported type
-        note = f'Field type "{type}" is not supported'
-        raise exceptions.FrictionlessException(errors.StorageError(note=note))
-
-    def __write_convert_types(self):
-        sa = helpers.import_from_plugin("sqlalchemy", plugin="sql")
-        sapg = helpers.import_from_plugin("sqlalchemy.dialects.postgresql", plugin="sql")
-
-        # Default dialect
-        mapping = {
-            "any": sa.Text,
-            "array": None,
-            "boolean": sa.Boolean,
-            "date": sa.Date,
-            "datetime": sa.DateTime,
-            "duration": None,
-            "geojson": None,
-            "geopoint": None,
-            "integer": sa.Integer,
-            "number": sa.Float,
-            "object": None,
-            "string": sa.Text,
-            "time": sa.Time,
-            "year": sa.Integer,
-            "yearmonth": None,
-        }
-
-        # Postgresql dialect
-        if self.__connection.engine.dialect.name == "postgresql":
-            mapping.update(
-                {
-                    "array": sapg.JSONB,
-                    "geojson": sapg.JSONB,
-                    "number": sa.Numeric,
-                    "object": sapg.JSONB,
-                }
-            )
-
-        return mapping
-
-    def __write_row_stream(self, resource):
+    def __write_convert_data(self, resource):
 
         # Fallback fields
         fallback_fields = []
-        mapping = self.__write_convert_types()
+        mapping = self.__write_convert_type()
         for field in resource.schema.fields:
-            if mapping[field.type] is None:
+            if not mapping.get(field.type):
                 fallback_fields.append(field)
 
         # Write data
@@ -474,6 +423,41 @@ class SqlStorage(Storage):
                 buffer = []
         if len(buffer):
             self.__connection.execute(sql_table.insert().values(buffer))
+
+    def __write_convert_type(self, type=None):
+        sa = helpers.import_from_plugin("sqlalchemy", plugin="sql")
+        sapg = helpers.import_from_plugin("sqlalchemy.dialects.postgresql", plugin="sql")
+
+        # Default dialect
+        mapping = {
+            "any": sa.Text,
+            "boolean": sa.Boolean,
+            "date": sa.Date,
+            "datetime": sa.DateTime,
+            "integer": sa.Integer,
+            "number": sa.Float,
+            "string": sa.Text,
+            "time": sa.Time,
+            "year": sa.Integer,
+        }
+
+        # Postgresql dialect
+        if self.__connection.engine.dialect.name == "postgresql":
+            mapping.update(
+                {
+                    "array": sapg.JSONB,
+                    "geojson": sapg.JSONB,
+                    "number": sa.Numeric,
+                    "object": sapg.JSONB,
+                }
+            )
+
+        # Return type
+        if type:
+            return mapping.get(type, sa.Text)
+
+        # Return mapping
+        return mapping
 
     # Delete
 

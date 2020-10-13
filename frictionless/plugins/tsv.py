@@ -72,11 +72,11 @@ class TsvParser(Parser):
 
     # Write
 
-    def write(self, row_stream):
+    def write(self, read_row_stream):
         tsv = helpers.import_from_plugin("tsv", plugin="tsv")
         with tempfile.NamedTemporaryFile("wt", delete=False) as file:
             writer = tsv.writer(file)
-            for row in row_stream:
+            for row in read_row_stream():
                 schema = row.schema
                 if row.row_number == 1:
                     writer.writerow(schema.field_names)

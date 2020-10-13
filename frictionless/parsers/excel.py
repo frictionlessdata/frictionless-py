@@ -117,7 +117,7 @@ class XlsxParser(Parser):
 
     # Write
 
-    def write(self, row_stream):
+    def write(self, read_row_stream):
         dialect = self.resource.dialect
         helpers.ensure_dir(self.resource.source)
         book = openpyxl.Workbook(write_only=True)
@@ -125,7 +125,7 @@ class XlsxParser(Parser):
         if isinstance(title, int):
             title = f"Sheet {dialect.sheet}"
         sheet = book.create_sheet(title)
-        for row in row_stream:
+        for row in read_row_stream():
             cells = []
             if row.row_number == 1:
                 sheet.append(row.schema.field_names)
@@ -223,7 +223,7 @@ class XlsParser(Parser):
 
     # Write
 
-    def write(self, row_stream):
+    def write(self, read_row_stream):
         dialect = self.resource.dialect
         helpers.ensure_dir(self.resource.source)
         book = xlwt.Workbook()
@@ -231,7 +231,7 @@ class XlsParser(Parser):
         if isinstance(title, int):
             title = f"Sheet {dialect.sheet}"
         sheet = book.add_sheet(title)
-        for row_index, row in enumerate(row_stream):
+        for row_index, row in enumerate(read_row_stream()):
             if row.row_number == 1:
                 for field_index, name in enumerate(row.schema.field_names):
                     sheet.write(0, field_index, name)

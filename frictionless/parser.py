@@ -136,11 +136,11 @@ class Parser:
 
     # Write
 
-    def write(self, row_stream):
+    def write(self, read_row_stream):
         """Write row stream into the resource
 
         Parameters:
-            gen<Row[]>: row stream
+            read_row_stream (gen<Row[]>): row stream factory
         """
         raise NotImplementedError
 

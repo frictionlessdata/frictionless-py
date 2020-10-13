@@ -1,15 +1,31 @@
 import pytest
-import isodate
 import datetime
-from frictionless import Package, Resource
+from frictionless import Package, Resource, Table
 from frictionless.plugins.spss import SpssStorage, exceptions
+
+
+# Parser
+
+
+def test_table_spss(tmpdir):
+    target = str(tmpdir.join("table.sav"))
+
+    # Write
+    with Table("data/table.csv") as table:
+        table.write(target)
+
+    # Read
+    with Table(target) as table:
+        assert table.header == ["id", "name"]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 # Storage
 
 
-# TODO: fix SPSS type mappings
-@pytest.mark.skip
 def test_storage_types(tmpdir):
 
     # Export/Import
@@ -21,21 +37,21 @@ def test_storage_types(tmpdir):
     assert target.get_resource("types").schema == {
         "fields": [
             {"name": "any", "type": "string"},  # type fallback
-            {"name": "array", "type": "array"},
-            {"name": "boolean", "type": "boolean"},
+            {"name": "array", "type": "string"},  # type fallback
+            {"name": "boolean", "type": "string"},  # type fallback
             {"name": "date", "type": "date"},
             {"name": "date_year", "type": "date"},  # format removal
             {"name": "datetime", "type": "datetime"},
-            {"name": "duration", "type": "duration"},
-            {"name": "geojson", "type": "object"},
-            {"name": "geopoint", "type": "array"},
+            {"name": "duration", "type": "string"},  # type fallback
+            {"name": "geojson", "type": "string"},  # type fallback
+            {"name": "geopoint", "type": "string"},  # type fallback
             {"name": "integer", "type": "integer"},
             {"name": "number", "type": "number"},
-            {"name": "object", "type": "object"},
+            {"name": "object", "type": "string"},  # type fallback
             {"name": "string", "type": "string"},
             {"name": "time", "type": "time"},
             {"name": "year", "type": "integer"},  # type downgrade
-            {"name": "yearmonth", "type": "array"},  # type downgrade
+            {"name": "yearmonth", "type": "string"},  # type fallback
         ],
     }
 
@@ -43,21 +59,21 @@ def test_storage_types(tmpdir):
     assert target.get_resource("types").read_rows() == [
         {
             "any": "中国人",
-            "array": ["Mike", "John"],
-            "boolean": True,
+            "array": '["Mike", "John"]',
+            "boolean": "true",
             "date": datetime.date(2015, 1, 1),
             "date_year": datetime.date(2015, 1, 1),
             "datetime": datetime.datetime(2015, 1, 1, 3, 0),
-            "duration": isodate.parse_duration("P1Y1M"),
-            "geojson": {"type": "Point", "coordinates": [33, 33.33]},
-            "geopoint": [30, 70],
+            "duration": "P1Y1M",
+            "geojson": '{"type": "Point", "coordinates": [33, 33.33]}',
+            "geopoint": "30,70",
             "integer": 1,
-            "number": 7,
-            "object": {"chars": 560},
+            "number": 7.0,
+            "object": '{"chars": 560}',
             "string": "english",
             "time": datetime.time(3, 0),
             "year": 2015,
-            "yearmonth": [2015, 1],
+            "yearmonth": "2015-01",
         },
     ]
 
@@ -65,8 +81,6 @@ def test_storage_types(tmpdir):
     storage.delete_package(target.resource_names)
 
 
-# TODO: fix SPSS type mappings
-@pytest.mark.skip
 def test_storage_integrity(tmpdir):
 
     # Export/Import
@@ -78,25 +92,22 @@ def test_storage_integrity(tmpdir):
     assert target.get_resource("integrity_main").schema == {
         "fields": [
             # added required
-            {"name": "id", "type": "integer", "constraints": {"required": True}},
-            {"name": "parent", "type": "number"},  # type downgrade
+            {"name": "id", "type": "integer"},
+            {"name": "parent", "type": "integer"},
             {"name": "description", "type": "string"},
         ],
-        "primaryKey": ["id"],
+        # primary key removal
         # foreign keys removal
     }
 
     # Assert metadata (link)
     assert target.get_resource("integrity_link").schema == {
         "fields": [
-            # added required
-            {"name": "main_id", "type": "integer", "constraints": {"required": True}},
-            # added required; removed unique
-            {"name": "some_id", "type": "integer", "constraints": {"required": True}},
-            # removed unique
-            {"name": "description", "type": "string"},
+            {"name": "main_id", "type": "integer"},
+            {"name": "some_id", "type": "integer"},  # constraint removal
+            {"name": "description", "type": "string"},  # constraint removal
         ],
-        "primaryKey": ["main_id", "some_id"],
+        # primary key removal
         # foreign keys removal
     }
 
@@ -116,8 +127,6 @@ def test_storage_integrity(tmpdir):
     storage.delete_package(target.resource_names)
 
 
-# TODO: fix SPSS type mappings
-@pytest.mark.skip
 def test_storage_constraints(tmpdir):
 
     # Export/Import
@@ -153,24 +162,6 @@ def test_storage_constraints(tmpdir):
 
     # Cleanup storage
     storage.delete_package(target.resource_names)
-
-
-# NOTE: can we add consratins support to SPSS?
-@pytest.mark.skip
-@pytest.mark.parametrize(
-    "field_name, cell",
-    [
-        ("required", ""),
-        ("minLength", "bad"),
-        ("maxLength", "badbadbad"),
-        ("pattern", "bad"),
-        ("enum", "bad"),
-        ("minimum", 3),
-        ("maximum", 9),
-    ],
-)
-def test_storage_constraints_not_valid_error(field_name, cell):
-    pass
 
 
 def test_storage_read_resource_not_existent_error():

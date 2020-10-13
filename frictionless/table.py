@@ -772,7 +772,7 @@ class Table:
     # Write
 
     # NOTE: implement proper usage of loaders (e.g. write to s3)
-    # TODO: allow None target and return result for inline/pandas/etc?
+    # NOTE: can we rebase on source/target resources instead of read_row_stream?
     def write(
         self,
         target=None,
@@ -809,11 +809,12 @@ class Table:
         )
 
         # Write file
-        row_stream = self.__write_row_stream_create()
+        read_row_stream = self.__write_row_stream_create
         parser = system.create_parser(resource)
-        parser.write(row_stream)
+        parser.write(read_row_stream)
         return resource.source
 
     def __write_row_stream_create(self):
-        self.__read_data_stream_raise_closed()
-        yield from self.row_stream
+        if self.__row_position:
+            self.open()
+        return self.row_stream

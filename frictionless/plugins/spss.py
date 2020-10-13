@@ -3,8 +3,10 @@ import os
 import warnings
 from functools import partial
 from ..resource import Resource
+from ..dialects import Dialect
 from ..package import Package
 from ..storage import Storage
+from ..parser import Parser
 from ..plugin import Plugin
 from ..schema import Schema
 from ..field import Field
@@ -25,14 +27,74 @@ class SpssPlugin(Plugin):
 
     """
 
+    def create_dialect(self, resource, *, descriptor):
+        if resource.format in ["sav", "zsav"]:
+            return SpssDialect(descriptor)
+
+    def create_parser(self, resource):
+        if resource.format in ["sav", "zsav"]:
+            return SpssParser(resource)
+
     def create_storage(self, name, **options):
         if name == "spss":
-            warnings.warn("SPSS support is in a draft state", UserWarning)
             return SpssStorage(**options)
 
 
-# TODO: implement Dialect
-# TODO: implement Parser
+# Dialect
+
+
+class SpssDialect(Dialect):
+    """Spss dialect representation
+
+    API      | Usage
+    -------- | --------
+    Public   | `from frictionless.plugins.spss import SpssDialect`
+
+    Parameters:
+        descriptor? (str|dict): descriptor
+
+    Raises:
+        FrictionlessException: raise any error that occurs during the process
+
+    """
+
+    pass
+
+
+# Parser
+
+
+class SpssParser(Parser):
+    """Spss parser implementation.
+
+    API      | Usage
+    -------- | --------
+    Public   | `from frictionless.plugins.spss import SpssParser`
+
+    """
+
+    loading = False
+
+    # Read
+
+    def read_data_stream_create(self):
+        name = os.path.basename(self.resource.path)
+        basepath = os.path.dirname(self.resource.path)
+        storage = SpssStorage(basepath=basepath)
+        resource = storage.read_resource(name)
+        self.resource.schema = resource.schema
+        yield resource.schema.field_names
+        yield from resource.read_data_stream()
+
+    # Write
+
+    def write(self, read_row_stream):
+        name = os.path.basename(self.resource.path)
+        basepath = os.path.dirname(self.resource.path)
+        schema = self.resource.schema
+        storage = SpssStorage(basepath=basepath)
+        resource = Resource(name=name, data=read_row_stream, schema=schema)
+        storage.write_resource(resource)
 
 
 # Storage
@@ -52,11 +114,17 @@ class SpssStorage(Storage):
     """
 
     def __init__(self, *, basepath=None):
+
+        # Set attributes
         basepath = basepath or os.getcwd()
         if not os.path.isdir(basepath):
             note = f'Path "{basepath}" is not a directory, or doesn\'t exist'
             raise exceptions.FrictionlessException(errors.StorageError(note=note))
         self.__basepath = basepath
+
+        # Silent warnings
+        sav = helpers.import_from_plugin("savReaderWriter", plugin="spss")
+        warnings.filterwarnings("ignore", category=sav.SPSSIOWarning)
 
     def __iter__(self):
         names = []
@@ -74,10 +142,10 @@ class SpssStorage(Storage):
         if not os.path.isfile(path):
             note = f'Resource "{name}" does not exist'
             raise exceptions.FrictionlessException(errors.StorageError(note=note))
-        with sav.SavHeaderReader(path, ioUtf8=True) as header:
-            spss_schema = header.all()
+        with sav.SavHeaderReader(path, ioUtf8=True) as reader:
+            spss_schema = reader.all()
             schema = self.__read_convert_schema(spss_schema)
-            data = partial(self.__read_data_stream, name, schema)
+            data = partial(self.__read_convert_data, name, schema)
             resource = Resource(name=name, schema=schema, data=data)
             return resource
 
@@ -94,28 +162,34 @@ class SpssStorage(Storage):
 
     def __read_convert_schema(self, spss_schema):
         schema = Schema()
-
-        # Formats
-        date_formats = {
-            "time": TIME_FORMAT,
-            "date": DATE_FORMAT,
-            "datetime": DATETIME_FORMAT,
-        }
-
-        # Fields
         for name in spss_schema.varNames:
             type = self.__read_convert_type(spss_schema.formats[name])
             field = Field(name=name, type=type)
             title = spss_schema.varLabels[name]
             if title:
                 field.title = title
-            if type in date_formats.keys():
-                field.format = date_formats[type]
             schema.fields.append(field)
-
         return schema
 
-    def __read_convert_type(self, spss_type):
+    def __read_convert_data(self, name, schema):
+        sav = helpers.import_from_plugin("savReaderWriter", plugin="spss")
+        path = self.__write_convert_name(name)
+        yield schema.field_names
+        with sav.SavReader(path, ioUtf8=True) as reader:
+            for item in reader:
+                cells = []
+                for index, field in enumerate(schema.fields):
+                    value = item[index]
+                    if value is not None:
+                        if field.type == "integer":
+                            value = int(float(value))
+                        elif field.type in ["datetime", "date", "time"]:
+                            format = FORMAT_READ[field.type]
+                            value = reader.spss2strDate(value, format, None)
+                    cells.append(value)
+                yield cells
+
+    def __read_convert_type(self, spss_type=None):
 
         # Mapping
         mapping = [
@@ -134,33 +208,14 @@ class SpssStorage(Storage):
         ]
 
         # Return type
-        for type, pattern in mapping:
-            if pattern.match(spss_type):
-                return type
+        if spss_type:
+            for type, pattern in mapping:
+                if pattern.match(spss_type):
+                    return type
+            return "string"
 
-        # Default
-        return "string"
-
-    def __read_data_stream(self, name, schema):
-        sav = helpers.import_from_plugin("savReaderWriter", plugin="spss")
-        path = self.__write_convert_name(name)
-        yield schema.field_names
-        with sav.SavReader(path, ioUtf8=True, rawMode=False) as reader:
-            for item in reader:
-                cells = []
-                for index, field in enumerate(schema.fields):
-                    value = item[index]
-                    # Fix decimals that should be integers
-                    if field.type == "integer" and value is not None:
-                        value = int(float(value))
-                    # We need to decode bytes to strings
-                    if isinstance(value, bytes):
-                        value = value.decode(reader.fileEncoding)
-                    # Time values need a decimal, add one if missing.
-                    if field.type == "time" and not re.search(r"\.\d*", value):
-                        value = "{}.0".format(value)
-                    cells.append(value)
-                yield cells
+        # Return mapping
+        return mapping
 
     # Write
 
@@ -183,7 +238,7 @@ class SpssStorage(Storage):
         for resource in package.resources:
             if not resource.schema:
                 resource.infer(only_sample=True)
-            self.__write_row_stream(resource)
+            self.__write_convert_data(resource)
 
     def __write_convert_name(self, name):
         path = os.path.normpath(os.path.join(self.__basepath, f"{name}.sav"))
@@ -192,54 +247,74 @@ class SpssStorage(Storage):
             raise exceptions.FrictionlessException(errors.StorageError(note=note))
         return path
 
-    def __write_convert_schema(self, schema):
-        spss_schema = {"varNames": [], "varTypes": {}}
-        for field in schema.fields:
+    def __write_convert_schema(self, resource):
+        spss_schema = {"varNames": [], "varLabels": {}, "varTypes": {}, "formats": {}}
+        mapping = self.__write_convert_type()
+
+        # Add fields
+        sizes = {}
+        for field in resource.schema.fields:
             spss_schema["varNames"].append(field.name)
-            spss_schema["varTypes"][field.name] = self.__write_convert_type(field.type)
+            if field.title:
+                spss_schema["varLabels"][field.name] = field.title
+            spss_type = mapping.get(field.type)
+            if spss_type:
+                spss_schema["varTypes"][field.name] = spss_type[0]
+                spss_schema["formats"][field.name] = spss_type[1]
+            else:
+                sizes[field.name] = 0
+
+        # Set string sizes
+        for row in resource.read_row_stream():
+            for name in sizes.keys():
+                cell = row[name]
+                field = resource.schema.get_field(name)
+                cell, notes = field.write_cell(cell)
+                size = len(cell.encode("utf-8"))
+                if size > sizes[name]:
+                    sizes[name] = size
+        for name, size in sizes.items():
+            spss_schema["varTypes"][name] = size
+
         return spss_schema
 
-    def __write_convert_type(self, type):
-        if type in ["integer", "number", "date", "datetime", "time", "year"]:
-            return 0
-        return 5
-
-    # NOTE: move partially to write_package
-    def __write_row_stream(self, resource):
+    def __write_convert_data(self, resource):
+        mapping = self.__write_convert_type()
         sav = helpers.import_from_plugin("savReaderWriter", plugin="spss")
-
-        # Prepare SPSS meta
         path = self.__write_convert_name(resource.name)
-        spss_schema = self.__write_convert_schema(resource.schema)
-        fallback_types = [
-            "boolean",
-            "object",
-            "geojson",
-            "geopoint",
-            "array",
-            "duration",
-            "yearmonth",
-        ]
-
-        # Write row stream
+        spss_schema = self.__write_convert_schema(resource)
         with sav.SavWriter(path, ioUtf8=True, **spss_schema) as writer:
-            for row in resource.read_rows():
+            for row in resource.read_row_stream():
                 result = []
                 for field in resource.schema.fields:
                     cell = row[field.name]
-                    if field.type == "date":
-                        cell = cell.strftime(DATE_FORMAT).encode()
-                        cell = writer.spssDateTime(cell, DATE_FORMAT)
-                    elif field.type == "datetime":
-                        cell = cell.strftime(DATETIME_FORMAT).encode()
-                        cell = writer.spssDateTime(cell, DATETIME_FORMAT)
-                    elif field.type == "time":
-                        cell = cell.strftime(TIME_FORMAT).encode()
-                        cell = writer.spssDateTime(cell, TIME_FORMAT)
-                    elif field.type in fallback_types:
+                    if field.type in ["datetime", "date", "time"]:
+                        format = FORMAT_WRITE[field.type]
+                        cell = writer.spssDateTime(cell.strftime(format).encode(), format)
+                    elif field.type not in mapping:
                         cell, notes = field.write_cell(cell)
+                        cell = cell.encode("utf-8")
                     result.append(cell)
                 writer.writerow(result)
+
+    def __write_convert_type(self, type=None):
+
+        # Mapping
+        mapping = {
+            "integer": [0, "F10"],
+            "number": [0, "F10.2"],
+            "datetime": [0, "DATETIME20"],
+            "date": [0, "DATE10"],
+            "time": [0, "TIME8"],
+            "year": [0, "F10"],
+        }
+
+        # Return type
+        if type:
+            return mapping.get(type)
+
+        # Return mapping
+        return mapping
 
     # Delete
 
@@ -263,6 +338,14 @@ class SpssStorage(Storage):
 
 # Internal
 
-DATE_FORMAT = "%Y-%m-%d"
-DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
-TIME_FORMAT = "%H:%M:%S.%f"
+FORMAT_READ = {
+    "date": "%Y-%m-%d",
+    "datetime": "%Y-%m-%d %H:%M:%S",
+    "time": "%H:%M:%S.%f",
+}
+
+FORMAT_WRITE = {
+    "date": "%Y-%m-%d",
+    "datetime": "%Y-%m-%d %H:%M:%S",
+    "time": "%H:%M:%S.%f",
+}
