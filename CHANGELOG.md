@@ -2,6 +2,10 @@
 
 Here described only the breaking and most significant changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/frictionless-py/commits/master).
 
+## v3.23
+
+- Support "header_case" option for dialects (#488)
+
 ## v3.22
 
 - Added suppport for DB2 format (#485)
