@@ -375,7 +375,7 @@ class SqlStorage(Storage):
                 elif const == "maximum":
                     checks.append(Check('"%s" <= %s' % (field.name, value)))
                 elif const == "pattern":
-                    if self.__connection.engine.dialect.name in ["postgresql"]:
+                    if self.__connection.engine.dialect.name == "postgresql":
                         checks.append(Check("\"%s\" ~ '%s'" % (field.name, value)))
                     else:
                         check = Check("\"%s\" REGEXP '%s'" % (field.name, value))
