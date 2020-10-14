@@ -281,11 +281,11 @@ def test_package_expand_resource_dialect():
                     "header": True,
                     "headerRows": [1],
                     "headerJoin": " ",
+                    "headerCase": True,
                     "lineTerminator": "\r\n",
                     "quoteChar": '"',
                     "doubleQuote": True,
                     "skipInitialSpace": False,
-                    "caseSensitiveHeader": False,
                 },
                 "profile": "data-resource",
             }

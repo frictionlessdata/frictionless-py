@@ -556,12 +556,19 @@ class Table:
             note = "Schemas with duplicate field names are not supported"
             raise exceptions.FrictionlessException(errors.SchemaError(note=note))
 
-        # Store state/stats
+        # Store stats
+        self.__resource.stats["fields"] = len(schema.fields)
+
+        # Store state
         self.__sample = sample
         self.__field_positions = field_positions
         self.__sample_positions = sample_positions
-        self.__header = Header(header, schema=schema, field_positions=field_positions)
-        self.__resource.stats["fields"] = len(schema.fields)
+        self.__header = Header(
+            header,
+            schema=schema,
+            field_positions=field_positions,
+            ignore_case=not dialect.header_case,
+        )
 
     def __read_data_stream_infer_header(self, header_data):
         dialect = self.__resource.dialect

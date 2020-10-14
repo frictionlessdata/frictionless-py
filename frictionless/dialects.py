@@ -16,16 +16,25 @@ class Dialect(Metadata):
         header? (bool): whether there is a header row
         headerRows? (int[]): row numbers of header rows
         headerJoin? (str): a multiline header joiner
+        headerCase? (bool): case sensitive header
 
     Raises:
         FrictionlessException: raise any error that occurs during the process
 
     """
 
-    def __init__(self, descriptor=None, header=None, header_rows=None, header_join=None):
+    def __init__(
+        self,
+        descriptor=None,
+        header=None,
+        header_rows=None,
+        header_join=None,
+        header_case=None,
+    ):
         self.setinitial("header", header)
         self.setinitial("headerRows", header_rows)
         self.setinitial("headerJoin", header_join)
+        self.setinitial("headerCase", header_case)
         super().__init__(descriptor)
 
     @Metadata.property
@@ -52,6 +61,14 @@ class Dialect(Metadata):
         """
         return self.get("headerJoin", config.DEFAULT_HEADER_JOIN)
 
+    @Metadata.property
+    def header_case(self):
+        """
+        Returns:
+            str: header case sensitive
+        """
+        return self.get("headerCase", config.DEFAULT_HEADER_CASE)
+
     # Expand
 
     def expand(self):
@@ -59,6 +76,7 @@ class Dialect(Metadata):
         self.setdefault("header", self.header)
         self.setdefault("headerRows", self.header_rows)
         self.setdefault("headerJoin", self.header_join)
+        self.setdefault("headerCase", self.header_case)
 
     # Metadata
 
@@ -70,6 +88,7 @@ class Dialect(Metadata):
             "header": {"type": "boolean"},
             "headerRows": {"type": "array", "items": {"type": "number"}},
             "headerJoin": {"type": "string"},
+            "headerCase": {"type": "boolean"},
         },
     }
 
@@ -87,7 +106,6 @@ class CsvDialect(Dialect):
         null_sequence? (str): csv null sequence
         skip_initial_space? (bool): csv skip initial space
         comment_char? (str): csv comment char
-        case_sensitive_header? (bool): csv case sensitive header
 
     Raises:
         FrictionlessException: raise any error that occurs during the process
@@ -106,10 +124,10 @@ class CsvDialect(Dialect):
         null_sequence=None,
         skip_initial_space=None,
         comment_char=None,
-        case_sensitive_header=None,
         header=None,
         header_rows=None,
         header_join=None,
+        header_case=None,
     ):
         self.setinitial("delimiter", delimiter)
         self.setinitial("lineTerminator", line_terminator)
@@ -119,12 +137,12 @@ class CsvDialect(Dialect):
         self.setinitial("nullSequence", null_sequence)
         self.setinitial("skipInitialSpace", skip_initial_space)
         self.setinitial("commentChar", comment_char)
-        self.setinitial("caseSensitiveHeader", case_sensitive_header)
         super().__init__(
             descriptor=descriptor,
             header=header,
             header_rows=header_rows,
             header_join=header_join,
+            header_case=header_case,
         )
 
     @Metadata.property
@@ -191,14 +209,6 @@ class CsvDialect(Dialect):
         """
         return self.get("commentChar")
 
-    @Metadata.property
-    def case_sensitive_header(self):
-        """
-        Returns:
-            bool: case sensitive header
-        """
-        return self.get("caseSensitiveHeader", False)
-
     # Expand
 
     def expand(self):
@@ -209,7 +219,6 @@ class CsvDialect(Dialect):
         self.setdefault("quoteChar", self.quote_char)
         self.setdefault("doubleQuote", self.double_quote)
         self.setdefault("skipInitialSpace", self.skip_initial_space)
-        self.setdefault("caseSensitiveHeader", self.case_sensitive_header)
 
     # Import/Export
 
@@ -243,6 +252,7 @@ class CsvDialect(Dialect):
             "header": {"type": "boolean"},
             "headerRows": {"type": "array", "items": {"type": "number"}},
             "headerJoin": {"type": "string"},
+            "headerCase": {"type": "boolean"},
         },
     }
 
@@ -275,6 +285,7 @@ class ExcelDialect(Dialect):
         header=None,
         header_rows=None,
         header_join=None,
+        header_case=None,
     ):
         self.setinitial("sheet", sheet)
         self.setinitial("workbookCache", workbook_cache)
@@ -286,6 +297,7 @@ class ExcelDialect(Dialect):
             header=header,
             header_rows=header_rows,
             header_join=header_join,
+            header_case=header_case,
         )
 
     @Metadata.property
@@ -352,6 +364,7 @@ class ExcelDialect(Dialect):
             "header": {"type": "boolean"},
             "headerRows": {"type": "array", "items": {"type": "number"}},
             "headerJoin": {"type": "string"},
+            "headerCase": {"type": "boolean"},
         },
     }
 
@@ -369,18 +382,6 @@ class InlineDialect(Dialect):
 
     """
 
-    metadata_profile = {  # type: ignore
-        "type": "object",
-        "additionalProperties": False,
-        "properties": {
-            "keys": {"type": "array"},
-            "keyed": {"type": "boolean"},
-            "header": {"type": "boolean"},
-            "headerRows": {"type": "array", "items": {"type": "number"}},
-            "headerJoin": {"type": "string"},
-        },
-    }
-
     def __init__(
         self,
         descriptor=None,
@@ -390,6 +391,7 @@ class InlineDialect(Dialect):
         header=None,
         header_rows=None,
         header_join=None,
+        header_case=None,
     ):
         self.setinitial("keys", keys)
         self.setinitial("keyed", keyed)
@@ -398,6 +400,7 @@ class InlineDialect(Dialect):
             header=header,
             header_rows=header_rows,
             header_join=header_join,
+            header_case=header_case,
         )
 
     @Metadata.property
@@ -421,6 +424,21 @@ class InlineDialect(Dialect):
     def expand(self):
         """Expand metadata"""
         self.setdefault("keyed", self.keyed)
+
+    # Metadata
+
+    metadata_profile = {  # type: ignore
+        "type": "object",
+        "additionalProperties": False,
+        "properties": {
+            "keys": {"type": "array"},
+            "keyed": {"type": "boolean"},
+            "header": {"type": "boolean"},
+            "headerRows": {"type": "array", "items": {"type": "number"}},
+            "headerJoin": {"type": "string"},
+            "headerCase": {"type": "boolean"},
+        },
+    }
 
 
 class JsonDialect(Dialect):
@@ -447,6 +465,7 @@ class JsonDialect(Dialect):
         header=None,
         header_rows=None,
         header_join=None,
+        header_case=None,
     ):
         self.setinitial("keys", keys)
         self.setinitial("keyed", keyed)
@@ -456,6 +475,7 @@ class JsonDialect(Dialect):
             header=header,
             header_rows=header_rows,
             header_join=header_join,
+            header_case=header_case,
         )
 
     @Metadata.property
@@ -501,5 +521,6 @@ class JsonDialect(Dialect):
             "header": {"type": "boolean"},
             "headerRows": {"type": "array", "items": {"type": "number"}},
             "headerJoin": {"type": "string"},
+            "headerCase": {"type": "boolean"},
         },
     }

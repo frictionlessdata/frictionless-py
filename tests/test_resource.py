@@ -476,12 +476,12 @@ def test_resource_expand_with_dialect():
             "header": True,
             "headerRows": [1],
             "headerJoin": " ",
+            "headerCase": True,
             "delimiter": "custom",
             "lineTerminator": "\r\n",
             "doubleQuote": True,
             "quoteChar": '"',
             "skipInitialSpace": False,
-            "caseSensitiveHeader": False,
         },
     }
 
