@@ -28,14 +28,22 @@ class PandasPlugin(Plugin):
     """
 
     def create_dialect(self, resource, *, descriptor):
-        pd = helpers.import_from_plugin("pandas", plugin="pandas")
-        if resource.format == "pandas" or isinstance(resource.source, pd.DataFrame):
-            return PandasDialect(descriptor)
+        try:
+            # TODO: cannot be loaded with plugins; improve this solution
+            pd = helpers.import_from_plugin("pandas", plugin="pandas")
+            if resource.format == "pandas" or isinstance(resource.source, pd.DataFrame):
+                return PandasDialect(descriptor)
+        except Exception:
+            pass
 
     def create_parser(self, resource):
-        pd = helpers.import_from_plugin("pandas", plugin="pandas")
-        if resource.format == "pandas" or isinstance(resource.source, pd.DataFrame):
-            return PandasParser(resource)
+        try:
+            # TODO: cannot be loaded with plugins; improve this solution
+            pd = helpers.import_from_plugin("pandas", plugin="pandas")
+            if resource.format == "pandas" or isinstance(resource.source, pd.DataFrame):
+                return PandasParser(resource)
+        except Exception:
+            pass
 
     def create_storage(self, name, **options):
         if name == "pandas":
