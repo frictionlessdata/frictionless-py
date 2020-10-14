@@ -28,7 +28,6 @@ class BigqueryPlugin(Plugin):
     API      | Usage
     -------- | --------
     Public   | `from frictionless.plugins.bigquery import BigqueryPlugin`
-
     """
 
     def create_dialect(self, resource, *, descriptor):
@@ -64,7 +63,6 @@ class BigqueryDialect(Dialect):
 
     Raises:
         FrictionlessException: raise any error that occurs during the process
-
     """
 
     def __init__(
@@ -126,7 +124,6 @@ class BigqueryParser(Parser):
     API      | Usage
     -------- | --------
     Public   | `from frictionless.plugins.bigquery import BigqueryParser`
-
     """
 
     loading = False
