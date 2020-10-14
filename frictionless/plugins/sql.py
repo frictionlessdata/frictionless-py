@@ -513,6 +513,7 @@ SCHEME_PREFIXES = [
     "firebird",
     "sybase",
     "db2",
+    "ibm",
 ]
 
 
