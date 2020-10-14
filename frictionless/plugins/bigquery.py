@@ -31,14 +31,22 @@ class BigqueryPlugin(Plugin):
     """
 
     def create_dialect(self, resource, *, descriptor):
-        dis = helpers.import_from_plugin("googleapiclient.discovery", plugin="bigquery")
-        if isinstance(resource.source, dis.Resource):
-            return BigqueryDialect(descriptor)
+        try:
+            # TODO: cannot be loaded with plugins; improve this solution
+            d = helpers.import_from_plugin("googleapiclient.discovery", plugin="bigquery")
+            if isinstance(resource.source, d.Resource):
+                return BigqueryDialect(descriptor)
+        except Exception:
+            pass
 
     def create_parser(self, resource):
-        dis = helpers.import_from_plugin("googleapiclient.discovery", plugin="bigquery")
-        if isinstance(resource.source, dis.Resource):
-            return BigqueryParser(resource)
+        try:
+            # TODO: cannot be loaded with plugins; improve this solution
+            d = helpers.import_from_plugin("googleapiclient.discovery", plugin="bigquery")
+            if isinstance(resource.source, d.Resource):
+                return BigqueryParser(resource)
+        except Exception:
+            pass
 
     def create_storage(self, name, **options):
         if name == "bigquery":
