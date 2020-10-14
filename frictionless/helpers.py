@@ -219,6 +219,7 @@ def detect_source_type(source):
     return source_type
 
 
+# TODO: move to Location/plugins
 def detect_source_scheme_and_format(source):
     if hasattr(source, "read"):
         return ("stream", None)
@@ -229,7 +230,13 @@ def detect_source_scheme_and_format(source):
             return (None, "gsheet")
         elif "csv" in source:
             return ("https", "csv")
-    parsed = urlparse(source)
+    # Fix for sources like: db2+ibm_db://username:password@host:port/database
+    if re.search(r"\+.*://", source):
+        scheme, source = source.split("://", maxsplit=1)
+        parsed = urlparse(f"//{source}", scheme=scheme)
+    else:
+        parsed = urlparse(source)
+    print(parsed)
     scheme = parsed.scheme.lower()
     if len(scheme) < 2:
         scheme = config.DEFAULT_SCHEME
@@ -240,8 +247,6 @@ def detect_source_scheme_and_format(source):
         query_string_format = query_string.get("format")
         if query_string_format is not None and len(query_string_format) == 1:
             format = query_string_format[0]
-    if parsed.path.endswith("datapackage.json"):
-        return (None, "package")
     return (scheme, format)
 
 
