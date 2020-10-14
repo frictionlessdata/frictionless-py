@@ -240,8 +240,6 @@ def detect_source_scheme_and_format(source):
         query_string_format = query_string.get("format")
         if query_string_format is not None and len(query_string_format) == 1:
             format = query_string_format[0]
-    if parsed.path.endswith("datapackage.json"):
-        return (None, "package")
     return (scheme, format)
 
 

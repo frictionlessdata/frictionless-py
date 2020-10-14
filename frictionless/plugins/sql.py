@@ -27,12 +27,14 @@ class SqlPlugin(Plugin):
     """
 
     def create_dialect(self, resource, *, descriptor):
-        if resource.scheme in SQL_SCHEMES:
-            return SqlDialect(descriptor)
+        for prefix in SCHEME_PREFIXES:
+            if resource.scheme.startswith(prefix):
+                return SqlDialect(descriptor)
 
     def create_parser(self, resource):
-        if resource.scheme in SQL_SCHEMES:
-            return SqlParser(resource)
+        for prefix in SCHEME_PREFIXES:
+            if resource.scheme.startswith(prefix):
+                return SqlParser(resource)
 
     def create_storage(self, name, **options):
         if name == "sql":
@@ -65,12 +67,14 @@ class SqlDialect(Dialect):
         *,
         table=None,
         order_by=None,
+        namespace=None,
         header=None,
         header_rows=None,
         header_join=None,
     ):
         self.setinitial("table", table)
         self.setinitial("order_by", order_by)
+        self.setinitial("namespace", namespace)
         super().__init__(
             descriptor=descriptor,
             header=header,
@@ -86,6 +90,10 @@ class SqlDialect(Dialect):
     def order_by(self):
         return self.get("order_by")
 
+    @Metadata.property
+    def namespace(self):
+        return self.get("namespace")
+
     # Metadata
 
     metadata_profile = {  # type: ignore
@@ -95,6 +103,7 @@ class SqlDialect(Dialect):
         "properties": {
             "table": {"type": "string"},
             "order_by": {"type": "string"},
+            "namespace": {"type": "string"},
             "header": {"type": "boolean"},
             "headerRows": {"type": "array", "items": {"type": "number"}},
             "headerJoin": {"type": "string"},
@@ -122,7 +131,7 @@ class SqlParser(Parser):
         sa = helpers.import_from_plugin("sqlalchemy", plugin="sql")
         engine = sa.create_engine(self.resource.source)
         dialect = self.resource.dialect
-        storage = SqlStorage(engine=engine)
+        storage = SqlStorage(engine=engine, namespace=dialect.namespace)
         resource = storage.read_resource(dialect.table, order_by=dialect.order_by)
         self.resource.schema = resource.schema
         yield resource.schema.field_names
@@ -135,7 +144,7 @@ class SqlParser(Parser):
         engine = sa.create_engine(self.resource.source)
         dialect = self.resource.dialect
         schema = self.resource.schema
-        storage = SqlStorage(engine=engine)
+        storage = SqlStorage(engine=engine, namespace=dialect.namespace)
         resource = Resource(name=dialect.table, data=read_row_stream, schema=schema)
         storage.write_resource(resource)
 
@@ -493,8 +502,18 @@ class SqlStorage(Storage):
 
 # Internal
 
-
-SQL_SCHEMES = ["firebird", "mssql", "mysql", "oracle", "postgresql", "sqlite", "sybase"]
+# https://docs.sqlalchemy.org/en/13/core/engines.html
+# https://docs.sqlalchemy.org/en/13/dialects/index.html
+SCHEME_PREFIXES = [
+    "postgresql",
+    "mysql",
+    "oracle",
+    "mssql",
+    "sqlite",
+    "firebird",
+    "sybase",
+    "db2",
+]
 
 
 def regexp(expr, item):
