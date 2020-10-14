@@ -1,5 +1,5 @@
 import json
-import jsonschema
+from jsonschema.validators import validator_for
 from .. import config
 from ..type import Type
 
@@ -28,13 +28,11 @@ class GeojsonType(Type):
                 return None
         if not isinstance(cell, dict):
             return None
-        if self.field.format == "default":
+        if self.field.format in ["default", "topojson"]:
             try:
-                validator.validate(cell)
+                VALIDATORS[self.field.format].validate(cell)
             except Exception:
                 return None
-        elif self.field.format == "topojson":
-            pass  # Accept any dict as possibly topojson for now
         return cell
 
     # Write
@@ -46,6 +44,7 @@ class GeojsonType(Type):
 # Internal
 
 
-validator = jsonschema.validators.validator_for(config.GEOJSON_PROFILE)(
-    config.GEOJSON_PROFILE
-)
+VALIDATORS = {
+    "default": validator_for(config.GEOJSON_PROFILE)(config.GEOJSON_PROFILE),
+    "topojson": validator_for(config.TOPOJSON_PROFILE)(config.TOPOJSON_PROFILE),
+}
