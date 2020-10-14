@@ -24,7 +24,6 @@ class SpssPlugin(Plugin):
     API      | Usage
     -------- | --------
     Public   | `from frictionless.plugins.spss import SpssPlugin`
-
     """
 
     def create_dialect(self, resource, *, descriptor):
@@ -105,12 +104,11 @@ class SpssStorage(Storage):
 
     API      | Usage
     -------- | --------
-    Draft    | `from frictionless.plugins.spss import SpssStorage`
+    Public   | `from frictionless.plugins.spss import SpssStorage`
 
     Parameters:
         basepath? (str): A path to a dir for reading/writing SAV files.
             Defaults to current dir.
-
     """
 
     def __init__(self, *, basepath=None):

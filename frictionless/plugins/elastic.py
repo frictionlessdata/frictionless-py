@@ -23,8 +23,13 @@ class ElasticPlugin(Plugin):
     API      | Usage
     -------- | --------
     Public   | `from frictionless.plugins.elastic import ElasticPlugin`
-
     """
+
+    def create_dialect(self, resource, *, descriptor):
+        pass
+
+    def create_parser(self, resource):
+        pass
 
     def create_storage(self, name, **options):
         pass
@@ -38,7 +43,12 @@ class ElasticPlugin(Plugin):
 
 
 class Storage(object):
-    """Elastic storage implementation"""
+    """Elastic storage implementation
+
+    API      | Usage
+    -------- | --------
+    Public   | `from frictionless.plugins.elastic import ElasticStorage`
+    """
 
     def __init__(self, es=None):
         es_core = helpers.import_from_plugin("elasticsearch", plugin="elasticsearch")

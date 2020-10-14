@@ -21,9 +21,14 @@ class CkanPlugin(Plugin):
 
     API      | Usage
     -------- | --------
-    Public   | `from frictionless.plugins.bigquery import CkanPlugin`
-
+    Public   | `from frictionless.plugins.ckan import CkanPlugin`
     """
+
+    def create_dialect(self, resource, *, descriptor):
+        pass
+
+    def create_parser(self, resource):
+        pass
 
     def create_storage(self, name, **options):
         pass
@@ -37,7 +42,12 @@ class CkanPlugin(Plugin):
 
 
 class CkanStorage(Storage):
-    """Ckan storage implementation"""
+    """Ckan storage implementation
+
+    API      | Usage
+    -------- | --------
+    Public   | `from frictionless.plugins.ckan import CkanStorage`
+    """
 
     def __init__(self, base_url, dataset_id=None, api_key=None):
         base_path = "/api/3/action"

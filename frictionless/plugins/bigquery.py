@@ -28,7 +28,6 @@ class BigqueryPlugin(Plugin):
     API      | Usage
     -------- | --------
     Public   | `from frictionless.plugins.bigquery import BigqueryPlugin`
-
     """
 
     def create_dialect(self, resource, *, descriptor):
@@ -64,7 +63,6 @@ class BigqueryDialect(Dialect):
 
     Raises:
         FrictionlessException: raise any error that occurs during the process
-
     """
 
     def __init__(
@@ -77,6 +75,7 @@ class BigqueryDialect(Dialect):
         header=None,
         header_rows=None,
         header_join=None,
+        header_case=None,
     ):
         self.setinitial("project", project)
         self.setinitial("dataset", dataset)
@@ -86,6 +85,7 @@ class BigqueryDialect(Dialect):
             header=header,
             header_rows=header_rows,
             header_join=header_join,
+            header_case=header_case,
         )
 
     @Metadata.property
@@ -113,6 +113,7 @@ class BigqueryDialect(Dialect):
             "header": {"type": "boolean"},
             "headerRows": {"type": "array", "items": {"type": "number"}},
             "headerJoin": {"type": "string"},
+            "headerCase": {"type": "boolean"},
         },
     }
 
@@ -126,7 +127,6 @@ class BigqueryParser(Parser):
     API      | Usage
     -------- | --------
     Public   | `from frictionless.plugins.bigquery import BigqueryParser`
-
     """
 
     loading = False

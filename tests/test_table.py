@@ -1,7 +1,7 @@
 import io
 import sys
 import pytest
-from frictionless import Table, Query, controls, dialects, exceptions
+from frictionless import Table, Query, Schema, Field, controls, dialects, exceptions
 
 
 # General
@@ -165,90 +165,6 @@ def test_table_source_error_data():
     error = excinfo.value.error
     assert error.code == "source-error"
     assert error.note == "all data items must be lists"
-
-
-# Headers
-
-
-def test_table_headers():
-    with Table("data/table.csv") as table:
-        assert table.header == ["id", "name"]
-        assert table.read_data() == [["1", "english"], ["2", "中国人"]]
-
-
-def test_table_headers_unicode():
-    with Table("data/table-unicode-headers.csv") as table:
-        assert table.header == ["id", "国人"]
-        assert table.read_data() == [["1", "english"], ["2", "中国人"]]
-
-
-def test_table_headers_stream_context_manager():
-    source = open("data/table.csv", mode="rb")
-    with Table(source, format="csv") as table:
-        assert table.header == ["id", "name"]
-        assert table.read_data() == [["1", "english"], ["2", "中国人"]]
-
-
-def test_table_headers_inline():
-    source = [[], ["id", "name"], ["1", "english"], ["2", "中国人"]]
-    with Table(source, headers=2) as table:
-        assert table.header == ["id", "name"]
-        assert table.read_data() == [["1", "english"], ["2", "中国人"]]
-
-
-def test_table_headers_json_keyed():
-    source = "text://[" '{"id": 1, "name": "english"},' '{"id": 2, "name": "中国人"}]'
-    with Table(source, format="json") as table:
-        assert table.header == ["id", "name"]
-        assert table.read_data() == [[1, "english"], [2, "中国人"]]
-
-
-def test_table_headers_inline_keyed():
-    source = [{"id": "1", "name": "english"}, {"id": "2", "name": "中国人"}]
-    with Table(source) as table:
-        assert table.header == ["id", "name"]
-        assert table.read_data() == [["1", "english"], ["2", "中国人"]]
-
-
-def test_table_headers_inline_keyed_headers_is_none():
-    source = [{"id": "1", "name": "english"}, {"id": "2", "name": "中国人"}]
-    with Table(source, headers=False) as table:
-        assert table.header == []
-        assert table.read_data() == [["id", "name"], ["1", "english"], ["2", "中国人"]]
-
-
-def test_table_headers_xlsx_multiline():
-    source = "data/multiline-headers.xlsx"
-    dialect = dialects.ExcelDialect(fill_merged_cells=True)
-    with Table(source, dialect=dialect, headers=[1, 2, 3, 4, 5]) as table:
-        assert table.header == [
-            "Region",
-            "Caloric contribution (%)",
-            "Cumulative impact of changes on cost of food basket from previous quarter",
-            "Cumulative impact of changes on cost of food basket from baseline (%)",
-        ]
-        assert table.read_data() == [["A", "B", "C", "D"]]
-
-
-def test_table_headers_csv_multiline_headers_join():
-    source = "text://k1\nk2\nv1\nv2\nv3"
-    with Table(source, format="csv", headers=[[1, 2], ":"]) as table:
-        assert table.header == ["k1:k2"]
-        assert table.read_data() == [["v1"], ["v2"], ["v3"]]
-
-
-def test_table_headers_csv_multiline_headers_duplicates():
-    source = "text://k1\nk1\nv1\nv2\nv3"
-    with Table(source, format="csv", headers=[1, 2]) as table:
-        assert table.header == ["k1"]
-        assert table.read_data() == [["v1"], ["v2"], ["v3"]]
-
-
-def test_table_headers_strip_and_non_strings():
-    source = [[" header ", 2, 3, None], ["value1", "value2", "value3", "value4"]]
-    with Table(source, headers=1) as table:
-        assert table.header == ["header", "2", "3", ""]
-        assert table.read_data() == [["value1", "value2", "value3", "value4"]]
 
 
 # Scheme
@@ -631,6 +547,25 @@ def test_table_dialect_bad_property():
     assert error.note.count("bad")
 
 
+def test_table_dialect_header_case_default():
+    schema = Schema(fields=[Field(name="ID"), Field(name="NAME")])
+    with Table("data/table.csv", schema=schema) as table:
+        assert table.schema.field_names == ["ID", "NAME"]
+        assert table.header == ["id", "name"]
+        assert table.header.valid is False
+        assert table.header.errors[0].code == "non-matching-header"
+        assert table.header.errors[1].code == "non-matching-header"
+
+
+def test_table_dialect_header_case_is_false():
+    dialect = dialects.Dialect(header_case=False)
+    schema = Schema(fields=[Field(name="ID"), Field(name="NAME")])
+    with Table("data/table.csv", dialect=dialect, schema=schema) as table:
+        assert table.schema.field_names == ["ID", "NAME"]
+        assert table.header == ["id", "name"]
+        assert table.header.valid is True
+
+
 # Query
 
 
@@ -914,6 +849,90 @@ def test_table_limit_offset_rows():
     with Table(source, query=query) as table:
         assert table.header == ["id", "name"]
         assert table.read_data() == [["3", "c"], ["4", "d"]]
+
+
+# Header
+
+
+def test_table_header():
+    with Table("data/table.csv") as table:
+        assert table.header == ["id", "name"]
+        assert table.read_data() == [["1", "english"], ["2", "中国人"]]
+
+
+def test_table_header_unicode():
+    with Table("data/table-unicode-headers.csv") as table:
+        assert table.header == ["id", "国人"]
+        assert table.read_data() == [["1", "english"], ["2", "中国人"]]
+
+
+def test_table_header_stream_context_manager():
+    source = open("data/table.csv", mode="rb")
+    with Table(source, format="csv") as table:
+        assert table.header == ["id", "name"]
+        assert table.read_data() == [["1", "english"], ["2", "中国人"]]
+
+
+def test_table_header_inline():
+    source = [[], ["id", "name"], ["1", "english"], ["2", "中国人"]]
+    with Table(source, headers=2) as table:
+        assert table.header == ["id", "name"]
+        assert table.read_data() == [["1", "english"], ["2", "中国人"]]
+
+
+def test_table_header_json_keyed():
+    source = "text://[" '{"id": 1, "name": "english"},' '{"id": 2, "name": "中国人"}]'
+    with Table(source, format="json") as table:
+        assert table.header == ["id", "name"]
+        assert table.read_data() == [[1, "english"], [2, "中国人"]]
+
+
+def test_table_header_inline_keyed():
+    source = [{"id": "1", "name": "english"}, {"id": "2", "name": "中国人"}]
+    with Table(source) as table:
+        assert table.header == ["id", "name"]
+        assert table.read_data() == [["1", "english"], ["2", "中国人"]]
+
+
+def test_table_header_inline_keyed_headers_is_none():
+    source = [{"id": "1", "name": "english"}, {"id": "2", "name": "中国人"}]
+    with Table(source, headers=False) as table:
+        assert table.header == []
+        assert table.read_data() == [["id", "name"], ["1", "english"], ["2", "中国人"]]
+
+
+def test_table_header_xlsx_multiline():
+    source = "data/multiline-headers.xlsx"
+    dialect = dialects.ExcelDialect(fill_merged_cells=True)
+    with Table(source, dialect=dialect, headers=[1, 2, 3, 4, 5]) as table:
+        assert table.header == [
+            "Region",
+            "Caloric contribution (%)",
+            "Cumulative impact of changes on cost of food basket from previous quarter",
+            "Cumulative impact of changes on cost of food basket from baseline (%)",
+        ]
+        assert table.read_data() == [["A", "B", "C", "D"]]
+
+
+def test_table_header_csv_multiline_headers_join():
+    source = "text://k1\nk2\nv1\nv2\nv3"
+    with Table(source, format="csv", headers=[[1, 2], ":"]) as table:
+        assert table.header == ["k1:k2"]
+        assert table.read_data() == [["v1"], ["v2"], ["v3"]]
+
+
+def test_table_header_csv_multiline_headers_duplicates():
+    source = "text://k1\nk1\nv1\nv2\nv3"
+    with Table(source, format="csv", headers=[1, 2]) as table:
+        assert table.header == ["k1"]
+        assert table.read_data() == [["v1"], ["v2"], ["v3"]]
+
+
+def test_table_header_strip_and_non_strings():
+    source = [[" header ", 2, 3, None], ["value1", "value2", "value3", "value4"]]
+    with Table(source, headers=1) as table:
+        assert table.header == ["header", "2", "3", ""]
+        assert table.read_data() == [["value1", "value2", "value3", "value4"]]
 
 
 # Schema

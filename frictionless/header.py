@@ -17,7 +17,7 @@ class Header(list):
 
     """
 
-    def __init__(self, cells, *, schema, field_positions):
+    def __init__(self, cells, *, schema, field_positions, ignore_case=False):
         assert len(field_positions) in (len(cells), len(schema.fields))
 
         # Set attributes
@@ -104,7 +104,8 @@ class Header(list):
 
             # Non-matching Header
             if cell:
-                if field.name != cell:
+                name = field.name
+                if name.lower() != cell.lower() if ignore_case else name != cell:
                     self.__errors.append(
                         errors.NonMatchingHeaderError(
                             note="",

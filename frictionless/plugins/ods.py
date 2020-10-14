@@ -57,6 +57,7 @@ class OdsDialect(Dialect):
         header=None,
         header_rows=None,
         header_join=None,
+        header_case=None,
     ):
         self.setinitial("sheet", sheet)
         super().__init__(
@@ -64,6 +65,7 @@ class OdsDialect(Dialect):
             header=header,
             header_rows=header_rows,
             header_join=header_join,
+            header_case=header_case,
         )
 
     @Metadata.property
@@ -91,6 +93,7 @@ class OdsDialect(Dialect):
             "header": {"type": "boolean"},
             "headerRows": {"type": "array", "items": {"type": "number"}},
             "headerJoin": {"type": "string"},
+            "headerCase": {"type": "boolean"},
         },
     }
 
