@@ -236,7 +236,6 @@ def detect_source_scheme_and_format(source):
         parsed = urlparse(f"//{source}", scheme=scheme)
     else:
         parsed = urlparse(source)
-    print(parsed)
     scheme = parsed.scheme.lower()
     if len(scheme) < 2:
         scheme = config.DEFAULT_SCHEME
