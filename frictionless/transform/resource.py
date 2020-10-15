@@ -1,4 +1,7 @@
-def transform_resource(source):
+from functools import partial
+
+
+def transform_resource(resource, *, steps):
     """Transform resource
 
     API      | Usage
@@ -8,4 +11,11 @@ def transform_resource(source):
     Parameters:
         source (any): data source
     """
-    raise NotImplementedError()
+    resource.infer(only_sample=True)
+    target = resource
+    for step in steps:
+        source = target
+        target = source.to_copy()
+        target.data = partial(step.transform_resource, source, target)
+        target.format = "inline"
+    return target
