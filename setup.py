@@ -75,6 +75,7 @@ INSTALL_REQUIRES = [
     "ijson>=3.0",
     "xlrd>=1.2",
     "xlwt>=1.2",
+    "petl>=1.6",
 ]
 README = read("README.md")
 VERSION = read(PACKAGE, "assets", "VERSION")
