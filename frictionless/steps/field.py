@@ -1,5 +1,5 @@
 from ..step import Step
-from .helper import ResourceView
+from .helpers import ResourceView
 
 
 class remove_field(Step):
@@ -7,5 +7,5 @@ class remove_field(Step):
         self.__field_name = field_name
 
     def transform_resource(self, source, target):
+        target.data = ResourceView(source).cutout(self.__field_name)
         target.schema.remove_field(self.__field_name)
-        yield from ResourceView(source).cutout(self.__field_name)

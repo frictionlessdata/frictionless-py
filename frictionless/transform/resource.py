@@ -1,4 +1,4 @@
-from functools import partial
+from ..step import Step
 
 
 def transform_resource(resource, *, steps):
@@ -16,6 +16,8 @@ def transform_resource(resource, *, steps):
     for step in steps:
         source = target
         target = source.to_copy()
-        target.data = partial(step.transform_resource, source, target)
+        update = step.transform_resource if isinstance(step, Step) else step
+        update(source, target)
+        # TODO: resource should handle it
         target.format = "inline"
     return target
