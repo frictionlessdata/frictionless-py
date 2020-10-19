@@ -13,8 +13,8 @@ def test_step_remove_field():
     # TODO: why missing values are here?
     assert target.schema == {
         "fields": [
-            {"missingValues": [""], "name": "name", "type": "string"},
-            {"missingValues": [""], "name": "population", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
         ]
     }
     assert target.read_rows() == [
