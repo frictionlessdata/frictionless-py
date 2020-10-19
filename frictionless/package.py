@@ -335,10 +335,11 @@ class Package(Metadata):
 
     def to_copy(self):
         """Create a copy of the package"""
+        descriptor = self.to_dict()
         resources = []
-        for resource in self.resources:
-            resources.append(resource.to_copy())
-        descriptor = {key: value for key, value in self.items() if key != "resources"}
+        for resource in descriptor.get("resources", []):
+            resources.append(resource)
+        descriptor = {key: val for key, val in descriptor.items() if key != "resources"}
         return Package(descriptor, resources=resources)
 
     # NOTE: support multipart
