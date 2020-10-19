@@ -183,7 +183,7 @@ class SqlStorage(Storage):
             self.__connection.connection.create_function("REGEXP", 2, regexp)
 
         # Create metadata and reflect
-        self.__metadata = sa.MetaData(bind=self.__connection)
+        self.__metadata = sa.MetaData(bind=self.__connection, schema=self.__namespace)
         self.__metadata.reflect(views=True)
 
     def __iter__(self):
