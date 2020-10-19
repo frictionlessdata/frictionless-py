@@ -4,7 +4,7 @@ import yaml
 import pytest
 import requests
 from decimal import Decimal
-from frictionless import Schema, exceptions
+from frictionless import Schema, describe_schema, exceptions
 
 
 # General
@@ -41,9 +41,6 @@ def test_schema_extract_metadata_error():
 
 def test_schema_metadata_invalid():
     schema = Schema("data/schema-invalid-multiple-errors.json")
-    from pprint import pprint
-
-    pprint(schema.metadata_errors)
     assert len(schema.metadata_errors) == 5
 
 
@@ -281,7 +278,6 @@ def test_schema_infer_confidence_less():
     names = ["id", "age", "name"]
     schema = Schema()
     schema.infer(sample, names=names, confidence=0.75)
-    print(schema)
     assert schema == {
         "fields": [
             {"name": "id", "type": "integer"},
@@ -301,7 +297,6 @@ def test_schema_infer_confidence_full():
     names = ["id", "age", "name"]
     schema = Schema()
     schema.infer(sample, names=names, confidence=1)
-    print(schema)
     assert schema == {
         "fields": [
             {"name": "id", "type": "integer"},
@@ -321,6 +316,13 @@ def test_schema_infer_no_names():
 
 
 # Import/export
+
+
+def test_schema_to_copy():
+    source = describe_schema("data/table.csv")
+    target = source.to_copy()
+    assert source is not target
+    assert source == target
 
 
 def test_schema_to_json(tmpdir):

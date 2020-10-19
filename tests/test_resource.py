@@ -2,7 +2,7 @@ import os
 import json
 import yaml
 import pytest
-from frictionless import Resource, exceptions
+from frictionless import Resource, describe_resource, exceptions
 
 
 # General
@@ -581,6 +581,12 @@ def test_resource_infer_from_path():
 
 
 # Import/Export
+
+
+def test_resource_to_copy():
+    source = describe_resource("data/table.csv")
+    target = source.to_copy()
+    assert source == target
 
 
 def test_resource_to_json(tmpdir):

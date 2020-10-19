@@ -3,7 +3,7 @@ import json
 import yaml
 import zipfile
 import pytest
-from frictionless import Package, Resource, exceptions
+from frictionless import Package, Resource, describe_package, exceptions
 
 
 # General
@@ -398,6 +398,13 @@ def test_package_infer_empty_file():
 
 
 # Import/Export
+
+
+def test_package_to_copy():
+    source = describe_package("data/chunk*.csv")
+    target = source.to_copy()
+    assert source is not target
+    assert source == target
 
 
 def test_package_to_json(tmpdir):

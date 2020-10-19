@@ -88,7 +88,7 @@ class Metadata(helpers.ControlledDict):
         Returns:
             Metadata: a copy of the metadata
         """
-        return deepcopy(self)
+        return type(self)(self.to_dict())
 
     def to_dict(self):
         """Convert metadata to a dict

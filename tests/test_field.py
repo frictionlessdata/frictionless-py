@@ -261,3 +261,13 @@ def test_field_read_cell_multiple_constraints():
     )
     # Null value passes
     assert read("") == (None, None)
+
+
+# Import/Export
+
+
+def test_field_to_copy():
+    source = Field(type="integet")
+    target = source.to_copy()
+    assert source is not target
+    assert source == target
