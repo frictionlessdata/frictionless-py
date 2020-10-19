@@ -53,7 +53,7 @@ class DeviatedValueCheck(Check):
     Parameters:
        descriptor (dict): check's descriptor
        descriptor.fieldName (str): a field name to check
-       descriptor.average? (str): one of `main`, `median` or `mode`
+       descriptor.average? (str): one of "mean", "median" or "mode" (default: "mean")
        descriptor.interval? (str): statistical interval (default: 3)
 
     """
