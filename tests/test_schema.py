@@ -4,7 +4,7 @@ import yaml
 import pytest
 import requests
 from decimal import Decimal
-from frictionless import Schema, exceptions
+from frictionless import Schema, describe_schema, exceptions
 
 
 # General
@@ -321,6 +321,12 @@ def test_schema_infer_no_names():
 
 
 # Import/export
+
+
+def test_schema_to_copy():
+    source = describe_schema("data/table.csv")
+    target = source.to_copy()
+    assert source == target
 
 
 def test_schema_to_json(tmpdir):
