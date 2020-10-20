@@ -7,18 +7,16 @@ def test_step_remove_field():
         source,
         steps=[
             steps.remove_field("id"),
-            steps.remove_field("capital_id"),
+            steps.remove_field("population"),
         ],
     )
     assert target.schema == {
         "fields": [
             {"name": "name", "type": "string"},
-            {"name": "population", "type": "integer"},
         ]
     }
     assert target.read_rows() == [
-        {"name": "britain", "population": 67},
-        {"name": "france", "population": 67},
-        {"name": "germany", "population": 83},
-        {"name": "italy", "population": 60},
+        {"name": "germany"},
+        {"name": "france"},
+        {"name": "spain"},
     ]
