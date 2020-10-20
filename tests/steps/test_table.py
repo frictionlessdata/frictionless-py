@@ -1,4 +1,4 @@
-from frictionless import Resource, transform_resource, steps
+from frictionless import Resource, transform, steps
 
 
 # Merge Table
@@ -6,7 +6,7 @@ from frictionless import Resource, transform_resource, steps
 
 def test_step_merge_table():
     source = Resource(path="data/transform.csv")
-    target = transform_resource(
+    target = transform(
         source,
         steps=[
             steps.merge_table(
@@ -32,7 +32,7 @@ def test_step_merge_table():
 
 def test_step_merge_table_with_names():
     source = Resource(path="data/transform.csv")
-    target = transform_resource(
+    target = transform(
         source,
         steps=[
             steps.merge_table(
@@ -57,7 +57,7 @@ def test_step_merge_table_with_names():
 
 def test_step_merge_ignore_names():
     source = Resource(path="data/transform.csv")
-    target = transform_resource(
+    target = transform(
         source,
         steps=[
             steps.merge_table(

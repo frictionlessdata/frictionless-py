@@ -1,4 +1,4 @@
-from frictionless import Resource, transform_resource, steps
+from frictionless import Resource, transform, steps
 
 
 # Pick Fields
@@ -6,7 +6,7 @@ from frictionless import Resource, transform_resource, steps
 
 def test_step_replace_cells():
     source = Resource(path="data/transform.csv")
-    target = transform_resource(
+    target = transform(
         source, steps=[steps.replace_cells(source="france", target="FRANCE")]
     )
     assert target.schema == {
@@ -25,7 +25,7 @@ def test_step_replace_cells():
 
 def test_step_replace_cells_with_name():
     source = Resource(path="data/transform.csv")
-    target = transform_resource(
+    target = transform(
         source, steps=[steps.replace_cells(source="france", target="FRANCE", name="id")]
     )
     assert target.schema == {

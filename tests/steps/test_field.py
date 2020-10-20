@@ -1,4 +1,4 @@
-from frictionless import Resource, transform_resource, steps
+from frictionless import Resource, transform, steps
 
 
 # Pick Fields
@@ -6,7 +6,7 @@ from frictionless import Resource, transform_resource, steps
 
 def test_step_pick_fields():
     source = Resource(path="data/transform.csv")
-    target = transform_resource(source, steps=[steps.pick_fields(names=["id", "name"])])
+    target = transform(source, steps=[steps.pick_fields(names=["id", "name"])])
     assert target.schema == {
         "fields": [
             {"name": "id", "type": "integer"},
@@ -25,7 +25,7 @@ def test_step_pick_fields():
 
 def test_step_skip_fields():
     source = Resource(path="data/transform.csv")
-    target = transform_resource(source, steps=[steps.skip_fields(names=["id"])])
+    target = transform(source, steps=[steps.skip_fields(names=["id"])])
     assert target.schema == {
         "fields": [
             {"name": "name", "type": "string"},
@@ -44,7 +44,7 @@ def test_step_skip_fields():
 
 def test_step_move_field():
     source = Resource(path="data/transform.csv")
-    target = transform_resource(source, steps=[steps.move_field(name="id", position=3)])
+    target = transform(source, steps=[steps.move_field(name="id", position=3)])
     assert target.schema == {
         "fields": [
             {"name": "name", "type": "string"},
@@ -64,7 +64,7 @@ def test_step_move_field():
 
 def test_step_add_field():
     source = Resource(path="data/transform.csv")
-    target = transform_resource(
+    target = transform(
         source, steps=[steps.add_field(name="note", type="string", value="eu")]
     )
     assert target.schema == {
@@ -84,7 +84,7 @@ def test_step_add_field():
 
 def test_step_add_field_with_position():
     source = Resource(path="data/transform.csv")
-    target = transform_resource(
+    target = transform(
         source, steps=[steps.add_field(name="note", position=1, value="eu")]
     )
     assert target.schema == {
@@ -104,7 +104,7 @@ def test_step_add_field_with_position():
 
 def test_step_add_field_with_formula():
     source = Resource(path="data/transform.csv")
-    target = transform_resource(
+    target = transform(
         source,
         steps=[steps.add_field(name="calc", value="<formula>id * 100 + population")],
     )
@@ -125,7 +125,7 @@ def test_step_add_field_with_formula():
 
 def test_step_add_field_with_value_callable():
     source = Resource(path="data/transform.csv")
-    target = transform_resource(
+    target = transform(
         source,
         steps=[
             steps.add_field(
@@ -153,9 +153,7 @@ def test_step_add_field_with_value_callable():
 
 def test_step_add_increment_field():
     source = Resource(path="data/transform.csv")
-    target = transform_resource(
-        source, steps=[steps.add_increment_field(name="index", start=0)]
-    )
+    target = transform(source, steps=[steps.add_increment_field(name="index", start=0)])
     assert target.schema == {
         "fields": [
             {"name": "index", "type": "integer"},
@@ -176,7 +174,7 @@ def test_step_add_increment_field():
 
 def test_step_update_field():
     source = Resource(path="data/transform.csv")
-    target = transform_resource(
+    target = transform(
         source, steps=[steps.update_field(name="id", type="string", value=str)]
     )
     assert target.schema == {
