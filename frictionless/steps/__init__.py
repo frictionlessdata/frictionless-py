@@ -1,2 +1,2 @@
-from .filter import head, tail
+from .filter import head, tail, slice
 from .shape import remove_field
