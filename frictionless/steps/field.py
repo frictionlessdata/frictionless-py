@@ -70,14 +70,20 @@ class add_increment_field(Step):
         target.schema.fields.insert(0, field)
 
 
-#  class update_field(Step):
-#  def __init__(self, *, name, value=None, formula=None, **options):
-#  self.__name = name
-#  self.__start = start
+class update_field(Step):
+    def __init__(self, *, name, value=None, **options):
+        self.__name = name
+        self.__value = value
+        self.__options = options
 
-#  def transform_resource(self, source, target):
-#  target.data = ResourceView(source).addrownumbers(
-#  field=self.__name, start=self.__start
-#  )
-#  field = Field(name=self.__name, type="integer")
-#  target.schema.fields.insert(0, field)
+    def transform_resource(self, source, target):
+        value = self.__value
+        if isinstance(value, str) and value.startswith("<formula>"):
+            formula = value.replace("<formula>", "")
+            value = lambda val, row: simpleeval.simple_eval(formula, names=row)
+        elif not callable(value):
+            value = lambda val, row: value
+        target.data = ResourceView(source).convert(self.__name, value)
+        field = target.schema.get_field(self.__name)
+        for name, value in self.__options.items():
+            setattr(field, name, value)

@@ -169,3 +169,25 @@ def test_step_add_increment_field():
         {"index": 1, "id": 2, "name": "france", "population": 66},
         {"index": 2, "id": 3, "name": "spain", "population": 47},
     ]
+
+
+# Update Field
+
+
+def test_step_update_field():
+    source = Resource(path="data/transform.csv")
+    target = transform_resource(
+        source, steps=[steps.update_field(name="id", type="string", value=str)]
+    )
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "string"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+        ]
+    }
+    assert target.read_rows() == [
+        {"id": "1", "name": "germany", "population": 83},
+        {"id": "2", "name": "france", "population": 66},
+        {"id": "3", "name": "spain", "population": 47},
+    ]
