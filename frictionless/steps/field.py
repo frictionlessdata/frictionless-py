@@ -70,6 +70,7 @@ class add_increment_field(Step):
         target.schema.fields.insert(0, field)
 
 
+# TODO: accept WHERE clause
 class update_field(Step):
     def __init__(self, *, name, value=None, **options):
         self.__name = name
