@@ -6,7 +6,7 @@ from frictionless import Resource, transform_resource, steps
 
 def test_step_head():
     source = Resource(path="data/transform.csv")
-    target = transform_resource(source, steps=[steps.head(limit=2)])
+    target = transform_resource(source, steps=[steps.head_rows(limit=2)])
     assert target.schema == source.schema
     assert target.read_rows() == [
         {"id": 1, "name": "germany", "population": 83},
@@ -19,7 +19,7 @@ def test_step_head():
 
 def test_step_tail():
     source = Resource(path="data/transform.csv")
-    target = transform_resource(source, steps=[steps.tail(limit=2)])
+    target = transform_resource(source, steps=[steps.tail_rows(limit=2)])
     assert target.schema == source.schema
     assert target.read_rows() == [
         {"id": 2, "name": "france", "population": 66},
@@ -32,7 +32,7 @@ def test_step_tail():
 
 def test_step_slice():
     source = Resource(path="data/transform.csv")
-    target = transform_resource(source, steps=[steps.slice(stop=2)])
+    target = transform_resource(source, steps=[steps.slice_rows(stop=2)])
     assert target.schema == source.schema
     assert target.read_rows() == [
         {"id": 1, "name": "germany", "population": 83},
@@ -42,7 +42,7 @@ def test_step_slice():
 
 def test_step_slice_with_start():
     source = Resource(path="data/transform.csv")
-    target = transform_resource(source, steps=[steps.slice(start=1, stop=2)])
+    target = transform_resource(source, steps=[steps.slice_rows(start=1, stop=2)])
     assert target.schema == source.schema
     assert target.read_rows() == [
         {"id": 2, "name": "france", "population": 66},
@@ -51,7 +51,7 @@ def test_step_slice_with_start():
 
 def test_step_slice_with_start_and_step():
     source = Resource(path="data/transform.csv")
-    target = transform_resource(source, steps=[steps.slice(start=1, stop=3, step=2)])
+    target = transform_resource(source, steps=[steps.slice_rows(start=1, stop=3, step=2)])
     assert target.schema == source.schema
     assert target.read_rows() == [
         {"id": 2, "name": "france", "population": 66},

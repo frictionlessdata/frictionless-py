@@ -2,7 +2,7 @@ from ..step import Step
 from ..helpers import ResourceView
 
 
-class head(Step):
+class head_rows(Step):
     def __init__(self, *, limit):
         self.__limit = limit
 
@@ -10,7 +10,7 @@ class head(Step):
         target.data = ResourceView(source).head(self.__limit)
 
 
-class tail(Step):
+class tail_rows(Step):
     def __init__(self, limit):
         self.__limit = limit
 
@@ -18,7 +18,7 @@ class tail(Step):
         target.data = ResourceView(source).tail(self.__limit)
 
 
-class slice(Step):
+class slice_rows(Step):
     def __init__(self, *, start=None, stop, step=None):
         self.__start = start
         self.__stop = stop
