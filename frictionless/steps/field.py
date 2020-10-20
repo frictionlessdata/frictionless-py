@@ -1,4 +1,6 @@
+import simpleeval
 from ..step import Step
+from ..field import Field
 from ..helpers import ResourceView
 
 
@@ -32,3 +34,24 @@ class move_field(Step):
         target.data = ResourceView(source).movefield(self.__name, self.__position - 1)
         field = target.schema.remove_field(self.__name)
         target.schema.fields.insert(self.__position - 1, field)
+
+
+class add_field(Step):
+    def __init__(self, *, name, type=None, position=None, value=None, formula=None):
+        self.__name = name
+        self.__type = type
+        self.__position = position
+        self.__value = value
+        self.__formula = formula
+
+    def transform_resource(self, source, target):
+        value = self.__value
+        if self.__formula:
+            value = lambda row: simpleeval.simple_eval(self.__formula, names=row)
+        index = self.__position - 1 if self.__position else None
+        target.data = ResourceView(source).addfield(self.__name, value=value, index=index)
+        field = Field(name=self.__name, type=self.__type)
+        if index is None:
+            target.schema.add_field(field)
+        else:
+            target.schema.fields.insert(index, field)

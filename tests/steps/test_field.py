@@ -57,3 +57,91 @@ def test_step_move_field():
         {"name": "france", "population": 66, "id": 2},
         {"name": "spain", "population": 47, "id": 3},
     ]
+
+
+# Add Field
+
+
+def test_step_add_field():
+    source = Resource(path="data/transform.csv")
+    target = transform_resource(
+        source, steps=[steps.add_field(name="note", type="string", value="eu")]
+    )
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+            {"name": "note", "type": "string"},
+        ]
+    }
+    assert target.read_rows() == [
+        {"id": 1, "name": "germany", "population": 83, "note": "eu"},
+        {"id": 2, "name": "france", "population": 66, "note": "eu"},
+        {"id": 3, "name": "spain", "population": 47, "note": "eu"},
+    ]
+
+
+def test_step_add_field_with_position():
+    source = Resource(path="data/transform.csv")
+    target = transform_resource(
+        source, steps=[steps.add_field(name="note", position=1, value="eu")]
+    )
+    assert target.schema == {
+        "fields": [
+            {"name": "note"},
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+        ]
+    }
+    assert target.read_rows() == [
+        {"note": "eu", "id": 1, "name": "germany", "population": 83},
+        {"note": "eu", "id": 2, "name": "france", "population": 66},
+        {"note": "eu", "id": 3, "name": "spain", "population": 47},
+    ]
+
+
+def test_step_add_field_with_formula():
+    source = Resource(path="data/transform.csv")
+    target = transform_resource(
+        source, steps=[steps.add_field(name="calc", formula="id * 100 + population")]
+    )
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+            {"name": "calc"},
+        ]
+    }
+    assert target.read_rows() == [
+        {"id": 1, "name": "germany", "population": 83, "calc": 183},
+        {"id": 2, "name": "france", "population": 66, "calc": 266},
+        {"id": 3, "name": "spain", "population": 47, "calc": 347},
+    ]
+
+
+def test_step_add_field_with_value_callable():
+    source = Resource(path="data/transform.csv")
+    target = transform_resource(
+        source,
+        steps=[
+            steps.add_field(
+                name="calc", value=lambda row: row["id"] * 100 + row["population"]
+            )
+        ],
+    )
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+            {"name": "calc"},
+        ]
+    }
+    assert target.read_rows() == [
+        {"id": 1, "name": "germany", "population": 83, "calc": 183},
+        {"id": 2, "name": "france", "population": 66, "calc": 266},
+        {"id": 3, "name": "spain", "population": 47, "calc": 347},
+    ]
