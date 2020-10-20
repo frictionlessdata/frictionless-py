@@ -37,17 +37,17 @@ class move_field(Step):
 
 
 class add_field(Step):
-    def __init__(self, *, name, type=None, position=None, value=None, formula=None):
+    def __init__(self, *, name, type=None, position=None, value=None):
         self.__name = name
         self.__type = type
         self.__position = position
         self.__value = value
-        self.__formula = formula
 
     def transform_resource(self, source, target):
         value = self.__value
-        if self.__formula:
-            value = lambda row: simpleeval.simple_eval(self.__formula, names=row)
+        if isinstance(value, str) and value.startswith("<formula>"):
+            formula = value.replace("<formula>", "")
+            value = lambda row: simpleeval.simple_eval(formula, names=row)
         index = self.__position - 1 if self.__position else None
         target.data = ResourceView(source).addfield(self.__name, value=value, index=index)
         field = Field(name=self.__name, type=self.__type)
@@ -68,3 +68,16 @@ class add_increment_field(Step):
         )
         field = Field(name=self.__name, type="integer")
         target.schema.fields.insert(0, field)
+
+
+#  class update_field(Step):
+#  def __init__(self, *, name, value=None, formula=None, **options):
+#  self.__name = name
+#  self.__start = start
+
+#  def transform_resource(self, source, target):
+#  target.data = ResourceView(source).addrownumbers(
+#  field=self.__name, start=self.__start
+#  )
+#  field = Field(name=self.__name, type="integer")
+#  target.schema.fields.insert(0, field)

@@ -105,7 +105,8 @@ def test_step_add_field_with_position():
 def test_step_add_field_with_formula():
     source = Resource(path="data/transform.csv")
     target = transform_resource(
-        source, steps=[steps.add_field(name="calc", formula="id * 100 + population")]
+        source,
+        steps=[steps.add_field(name="calc", value="<formula>id * 100 + population")],
     )
     assert target.schema == {
         "fields": [
