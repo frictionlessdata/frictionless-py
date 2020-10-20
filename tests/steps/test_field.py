@@ -37,3 +37,23 @@ def test_step_skip_fields():
         {"name": "france", "population": 66},
         {"name": "spain", "population": 47},
     ]
+
+
+# Move Field
+
+
+def test_step_move_field():
+    source = Resource(path="data/transform.csv")
+    target = transform_resource(source, steps=[steps.move_field(name="id", position=3)])
+    assert target.schema == {
+        "fields": [
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+            {"name": "id", "type": "integer"},
+        ]
+    }
+    assert target.read_rows() == [
+        {"name": "germany", "population": 83, "id": 1},
+        {"name": "france", "population": 66, "id": 2},
+        {"name": "spain", "population": 47, "id": 3},
+    ]

@@ -21,3 +21,14 @@ class skip_fields(Step):
         target.data = ResourceView(source).cutout(*self.__names)
         for name in self.__names:
             target.schema.remove_field(name)
+
+
+class move_field(Step):
+    def __init__(self, *, name, position):
+        self.__name = name
+        self.__position = position
+
+    def transform_resource(self, source, target):
+        target.data = ResourceView(source).movefield(self.__name, self.__position - 1)
+        field = target.schema.remove_field(self.__name)
+        target.schema.fields.insert(self.__position - 1, field)
