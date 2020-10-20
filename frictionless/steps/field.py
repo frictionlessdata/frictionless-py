@@ -55,3 +55,16 @@ class add_field(Step):
             target.schema.add_field(field)
         else:
             target.schema.fields.insert(index, field)
+
+
+class add_increment_field(Step):
+    def __init__(self, *, name, start=1):
+        self.__name = name
+        self.__start = start
+
+    def transform_resource(self, source, target):
+        target.data = ResourceView(source).addrownumbers(
+            field=self.__name, start=self.__start
+        )
+        field = Field(name=self.__name, type="integer")
+        target.schema.fields.insert(0, field)

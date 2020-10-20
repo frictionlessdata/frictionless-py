@@ -145,3 +145,26 @@ def test_step_add_field_with_value_callable():
         {"id": 2, "name": "france", "population": 66, "calc": 266},
         {"id": 3, "name": "spain", "population": 47, "calc": 347},
     ]
+
+
+# Add Increment Field
+
+
+def test_step_add_increment_field():
+    source = Resource(path="data/transform.csv")
+    target = transform_resource(
+        source, steps=[steps.add_increment_field(name="index", start=0)]
+    )
+    assert target.schema == {
+        "fields": [
+            {"name": "index", "type": "integer"},
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+        ]
+    }
+    assert target.read_rows() == [
+        {"index": 0, "id": 1, "name": "germany", "population": 83},
+        {"index": 1, "id": 2, "name": "france", "population": 66},
+        {"index": 2, "id": 3, "name": "spain", "population": 47},
+    ]
