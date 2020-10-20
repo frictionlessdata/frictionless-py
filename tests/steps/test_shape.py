@@ -1,20 +1,39 @@
 from frictionless import Resource, transform_resource, steps
 
 
-# Remove Field
+# Pick Fields
 
 
-def test_step_remove_field():
+def test_step_pick_fields():
     source = Resource(path="data/transform.csv")
-    medium = [steps.remove_field(name="id"), steps.remove_field(name="population")]
-    target = transform_resource(source, steps=medium)
+    target = transform_resource(source, steps=[steps.pick_fields(names=["id", "name"])])
     assert target.schema == {
         "fields": [
+            {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},
         ]
     }
     assert target.read_rows() == [
-        {"name": "germany"},
-        {"name": "france"},
-        {"name": "spain"},
+        {"id": 1, "name": "germany"},
+        {"id": 2, "name": "france"},
+        {"id": 3, "name": "spain"},
+    ]
+
+
+# Skip Fields
+
+
+def test_step_skip_fields():
+    source = Resource(path="data/transform.csv")
+    target = transform_resource(source, steps=[steps.skip_fields(names=["id"])])
+    assert target.schema == {
+        "fields": [
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+        ]
+    }
+    assert target.read_rows() == [
+        {"name": "germany", "population": 83},
+        {"name": "france", "population": 66},
+        {"name": "spain", "population": 47},
     ]

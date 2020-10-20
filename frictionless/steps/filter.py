@@ -1,5 +1,5 @@
 from ..step import Step
-from .helpers import ResourceView
+from ..helpers import ResourceView
 
 
 class head(Step):
