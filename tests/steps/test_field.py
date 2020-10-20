@@ -10,7 +10,6 @@ def test_step_remove_field():
             steps.remove_field("capital_id"),
         ],
     )
-    # TODO: why missing values are here?
     assert target.schema == {
         "fields": [
             {"name": "name", "type": "string"},
