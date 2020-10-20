@@ -2,7 +2,7 @@ from ..step import Step
 from ..helpers import ResourceView
 
 
-# TODO: accept WHERE clause
+# TODO: accept WHERE/PREDICAT clause
 class replace_cells(Step):
     def __init__(self, *, source, target, name=None):
         self.__source = source

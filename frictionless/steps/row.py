@@ -1,3 +1,4 @@
+import simpleeval
 from ..step import Step
 from ..helpers import ResourceView
 
@@ -28,3 +29,15 @@ class slice_rows(Step):
         target.data = ResourceView(source).rowslice(
             self.__start, self.__stop, self.__step
         )
+
+
+class filter_rows(Step):
+    def __init__(self, *, predicat=None):
+        self.__predicat = predicat
+
+    def transform_resource(self, source, target):
+        predicat = self.__predicat
+        if isinstance(predicat, str) and predicat.startswith("<formula>"):
+            formula = predicat.replace("<formula>", "")
+            predicat = lambda row: simpleeval.simple_eval(formula, names=row)
+        target.data = ResourceView(source).select(predicat)

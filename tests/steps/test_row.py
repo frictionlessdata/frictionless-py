@@ -56,3 +56,28 @@ def test_step_slice_with_start_and_step():
     assert target.read_rows() == [
         {"id": 2, "name": "france", "population": 66},
     ]
+
+
+# Filter Rows
+
+
+def test_step_filter_rows():
+    source = Resource(path="data/transform.csv")
+    target = transform(source, steps=[steps.filter_rows(predicat="<formula>id > 1")])
+    assert target.schema == source.schema
+    assert target.read_rows() == [
+        {"id": 2, "name": "france", "population": 66},
+        {"id": 3, "name": "spain", "population": 47},
+    ]
+
+
+def test_step_filter_rows_with_callable_predicat():
+    source = Resource(path="data/transform.csv")
+    target = transform(
+        source, steps=[steps.filter_rows(predicat=lambda row: row["id"] > 1)]
+    )
+    assert target.schema == source.schema
+    assert target.read_rows() == [
+        {"id": 2, "name": "france", "population": 66},
+        {"id": 3, "name": "spain", "population": 47},
+    ]

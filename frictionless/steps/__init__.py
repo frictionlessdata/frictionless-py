@@ -7,5 +7,5 @@ from .field import (
     add_increment_field,
     update_field,
 )
-from .row import head_rows, tail_rows, slice_rows
+from .row import head_rows, tail_rows, slice_rows, filter_rows
 from .table import merge_table
