@@ -5,6 +5,7 @@ from .parsers import JsonParser
 from . import errors
 
 
+# TODO: rebase on list base class for permormance?
 class Row(OrderedDict):
     """Row representation
 

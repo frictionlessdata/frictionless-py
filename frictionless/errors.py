@@ -391,6 +391,7 @@ class ChecksumError(Error):
 # Head
 
 
+# TODO: Rename to ExtraLabelError?
 class ExtraHeaderError(HeaderError):
     code = "extra-header"
     name = "Extra Header"
@@ -399,6 +400,7 @@ class ExtraHeaderError(HeaderError):
     description = "The first row of the data source contains header that does not exist in the schema."
 
 
+# TODO: Rename to MissingLabelError?
 class MissingHeaderError(HeaderError):
     code = "missing-header"
     name = "Missing Header"
@@ -407,6 +409,7 @@ class MissingHeaderError(HeaderError):
     description = "Based on the schema there should be a header that is missing in the first row of the data source."
 
 
+# TODO: Rename to BlankLabelError?
 class BlankHeaderError(HeaderError):
     code = "blank-header"
     name = "Blank Header"
@@ -415,6 +418,7 @@ class BlankHeaderError(HeaderError):
     description = "A column in the header row is missing a value. Header should be provided and not be blank."
 
 
+# TODO: Rename to DuplicateLabelError?
 class DuplicateHeaderError(HeaderError):
     code = "duplicate-header"
     name = "Duplicate Header"
@@ -423,6 +427,7 @@ class DuplicateHeaderError(HeaderError):
     description = "Two columns in the header row have the same value. Column names should be unique."
 
 
+# TODO: Rename to IncorrectLabelError?
 class NonMatchingHeaderError(HeaderError):
     code = "non-matching-header"
     name = "Non-matching Header"
