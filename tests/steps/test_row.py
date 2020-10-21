@@ -81,3 +81,24 @@ def test_step_filter_rows_with_callable_predicat():
         {"id": 2, "name": "france", "population": 66},
         {"id": 3, "name": "spain", "population": 47},
     ]
+
+
+# Search Rows
+
+
+def test_step_search_rows():
+    source = Resource(path="data/transform.csv")
+    target = transform(source, steps=[steps.search_rows(regex=r"^f.*")])
+    assert target.schema == source.schema
+    assert target.read_rows() == [
+        {"id": 2, "name": "france", "population": 66},
+    ]
+
+
+def test_step_search_rows_with_name():
+    source = Resource(path="data/transform.csv")
+    target = transform(source, steps=[steps.search_rows(regex=r"^f.*", name="name")])
+    assert target.schema == source.schema
+    assert target.read_rows() == [
+        {"id": 2, "name": "france", "population": 66},
+    ]

@@ -41,3 +41,16 @@ class filter_rows(Step):
             formula = predicat.replace("<formula>", "")
             predicat = lambda row: simpleeval.simple_eval(formula, names=row)
         target.data = ResourceView(source).select(predicat)
+
+
+# TODO: merge with filter_rows?
+class search_rows(Step):
+    def __init__(self, *, regex, name=None):
+        self.__regex = regex
+        self.__name = name
+
+    def transform_resource(self, source, target):
+        if self.__name:
+            target.data = ResourceView(source).search(self.__name, self.__regex)
+        else:
+            target.data = ResourceView(source).search(self.__regex)
