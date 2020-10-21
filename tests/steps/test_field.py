@@ -260,3 +260,26 @@ def test_step_unpack_field_with_preserve():
         {"id": [1, 1], "name": "france", "population": 66, "id2": 1, "id3": 1},
         {"id": [1, 1], "name": "spain", "population": 47, "id2": 1, "id3": 1},
     ]
+
+
+def test_step_unpack_field_source_is_object():
+    source = Resource(path="data/transform.csv")
+    target = transform(
+        source,
+        steps=[
+            steps.update_field(name="id", type="object", value={"note": "eu"}),
+            steps.unpack_field(source="id", target=["note"]),
+        ],
+    )
+    assert target.schema == {
+        "fields": [
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+            {"name": "note", "type": "any"},
+        ]
+    }
+    assert target.read_rows() == [
+        {"name": "germany", "population": 83, "note": "eu"},
+        {"name": "france", "population": 66, "note": "eu"},
+        {"name": "spain", "population": 47, "note": "eu"},
+    ]

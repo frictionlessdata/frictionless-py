@@ -98,9 +98,14 @@ class unpack_field(Step):
         self.__preserve = preserve
 
     def transform_resource(self, source, target):
-        target.data = ResourceView(source).unpack(
-            self.__source, self.__target, include_original=self.__preserve
-        )
+        if target.schema.get_field(self.__source).type == "object":
+            target.data = ResourceView(source).unpackdict(
+                self.__source, self.__target, includeoriginal=self.__preserve
+            )
+        else:
+            target.data = ResourceView(source).unpack(
+                self.__source, self.__target, include_original=self.__preserve
+            )
         if not self.__preserve:
             target.schema.remove_field(self.__source)
         for name in self.__target:
