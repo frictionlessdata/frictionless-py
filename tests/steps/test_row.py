@@ -412,3 +412,29 @@ def test_step_conflict_rows_with_conflicts():
         {"id": 1, "name": "france", "population": 66},
         {"id": 1, "name": "spain", "population": 47},
     ]
+
+
+# Distinct Rows
+
+
+def test_step_distinct_rows():
+    source = Resource(path="data/transform.csv")
+    target = transform(source, steps=[steps.distinct_rows(name="id")])
+    assert target.schema == source.schema
+    assert target.read_rows() == [
+        {"id": 1, "name": "germany", "population": 83},
+        {"id": 2, "name": "france", "population": 66},
+        {"id": 3, "name": "spain", "population": 47},
+    ]
+
+
+def test_step_distinct_rows_with_distincts():
+    source = Resource(path="data/transform.csv")
+    target = transform(
+        source,
+        steps=[steps.update_field(name="id", value=1), steps.distinct_rows(name="id")],
+    )
+    assert target.schema == source.schema
+    assert target.read_rows() == [
+        {"id": 1, "name": "germany", "population": 83},
+    ]

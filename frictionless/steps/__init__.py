@@ -18,6 +18,7 @@ from .row import (
     duplicate_rows,
     unique_rows,
     conflict_rows,
+    distinct_rows,
 )
 from .table import merge_tables, join_tables
 

@@ -33,6 +33,8 @@ class slice_rows(Step):
         )
 
 
+# TODO: add skip_rows
+# TODO: rename to pick_rows
 # TODO: review simpleeval perfomance for this transform
 # TODO: provide formula/regex helper constructors on the lib level?
 class filter_rows(Step):
@@ -96,3 +98,12 @@ class conflict_rows(Step):
 
     def transform_resource(self, source, target):
         target.data = ResourceView(source).conflicts(self.__name)
+
+
+# TODO: update naming using verb-based?
+class distinct_rows(Step):
+    def __init__(self, *, name=None):
+        self.__name = name
+
+    def transform_resource(self, source, target):
+        target.data = ResourceView(source).distinct(self.__name)
