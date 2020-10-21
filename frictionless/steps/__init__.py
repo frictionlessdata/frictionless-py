@@ -1,4 +1,4 @@
-from .cell import replace_cells
+from .cell import replace_cells, fill_cells
 from .field import (
     pick_fields,
     skip_fields,

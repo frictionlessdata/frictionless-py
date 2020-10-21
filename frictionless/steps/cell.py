@@ -16,3 +16,24 @@ class replace_cells(Step):
             target.data = ResourceView(source).replace(
                 self.__name, self.__source, self.__target
             )
+
+
+class fill_cells(Step):
+    def __init__(self, *, name=None, value=None, direction=None):
+        assert direction in [None, "down", "right", "left"]
+        self.__name = name
+        self.__value = value
+        self.__direction = direction
+
+    def transform_resource(self, source, target):
+        if self.__value:
+            target.data = ResourceView(source).convert(self.__name, {None: self.__value})
+        elif self.__direction == "down":
+            if self.__name:
+                target.data = ResourceView(source).filldown(self.__name)
+            else:
+                target.data = ResourceView(source).filldown()
+        elif self.__direction == "right":
+            target.data = ResourceView(source).fillright()
+        elif self.__direction == "left":
+            target.data = ResourceView(source).fillleft()
