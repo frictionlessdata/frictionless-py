@@ -17,5 +17,8 @@ from .row import (
     sort_rows,
     duplicate_rows,
     unique_rows,
+    conflict_rows,
 )
 from .table import merge_tables, join_tables
+
+# TODO: implement steps - debug, validate

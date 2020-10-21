@@ -388,3 +388,27 @@ def test_step_unique_rows_with_name():
     )
     assert target.schema == source.schema
     assert target.read_rows() == []
+
+
+# Conflict Rows
+
+
+def test_step_conflict_rows():
+    source = Resource(path="data/transform.csv")
+    target = transform(source, steps=[steps.conflict_rows(name="id")])
+    assert target.schema == source.schema
+    assert target.read_rows() == []
+
+
+def test_step_conflict_rows_with_conflicts():
+    source = Resource(path="data/transform.csv")
+    target = transform(
+        source,
+        steps=[steps.update_field(name="id", value=1), steps.conflict_rows(name="id")],
+    )
+    assert target.schema == source.schema
+    assert target.read_rows() == [
+        {"id": 1, "name": "germany", "population": 83},
+        {"id": 1, "name": "france", "population": 66},
+        {"id": 1, "name": "spain", "population": 47},
+    ]

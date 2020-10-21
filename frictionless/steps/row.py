@@ -3,6 +3,7 @@ from ..step import Step
 from ..helpers import ResourceView
 
 
+# TODO: update naming using verb-based?
 class head_rows(Step):
     def __init__(self, *, limit):
         self.__limit = limit
@@ -11,6 +12,7 @@ class head_rows(Step):
         target.data = ResourceView(source).head(self.__limit)
 
 
+# TODO: update naming using verb-based?
 class tail_rows(Step):
     def __init__(self, limit):
         self.__limit = limit
@@ -69,6 +71,7 @@ class sort_rows(Step):
         target.data = ResourceView(source).sort(self.__names, reverse=self.__reverse)
 
 
+# TODO: update naming using verb-based?
 class duplicate_rows(Step):
     def __init__(self, *, name=None):
         self.__name = name
@@ -77,9 +80,19 @@ class duplicate_rows(Step):
         target.data = ResourceView(source).duplicates(self.__name)
 
 
+# TODO: update naming using verb-based?
 class unique_rows(Step):
     def __init__(self, *, name=None):
         self.__name = name
 
     def transform_resource(self, source, target):
         target.data = ResourceView(source).unique(self.__name)
+
+
+# TODO: update naming using verb-based?
+class conflict_rows(Step):
+    def __init__(self, *, name=None):
+        self.__name = name
+
+    def transform_resource(self, source, target):
+        target.data = ResourceView(source).conflicts(self.__name)
