@@ -8,5 +8,5 @@ from .field import (
     update_field,
     unpack_field,
 )
-from .row import head_rows, tail_rows, slice_rows, filter_rows, search_rows
+from .row import head_rows, tail_rows, slice_rows, filter_rows, search_rows, sort_rows
 from .table import merge_table

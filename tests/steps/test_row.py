@@ -102,3 +102,28 @@ def test_step_search_rows_with_name():
     assert target.read_rows() == [
         {"id": 2, "name": "france", "population": 66},
     ]
+
+
+# Sort Rows
+
+
+def test_step_sort_rows():
+    source = Resource(path="data/transform.csv")
+    target = transform(source, steps=[steps.sort_rows(names=["name"])])
+    assert target.schema == source.schema
+    assert target.read_rows() == [
+        {"id": 2, "name": "france", "population": 66},
+        {"id": 1, "name": "germany", "population": 83},
+        {"id": 3, "name": "spain", "population": 47},
+    ]
+
+
+def test_step_sort_rows_with_reverse():
+    source = Resource(path="data/transform.csv")
+    target = transform(source, steps=[steps.sort_rows(names=["id"], reverse=True)])
+    assert target.schema == source.schema
+    assert target.read_rows() == [
+        {"id": 3, "name": "spain", "population": 47},
+        {"id": 2, "name": "france", "population": 66},
+        {"id": 1, "name": "germany", "population": 83},
+    ]

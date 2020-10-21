@@ -54,3 +54,12 @@ class search_rows(Step):
             target.data = ResourceView(source).search(self.__name, self.__regex)
         else:
             target.data = ResourceView(source).search(self.__regex)
+
+
+class sort_rows(Step):
+    def __init__(self, *, names, reverse=False):
+        self.__names = names
+        self.__reverse = reverse
+
+    def transform_resource(self, source, target):
+        target.data = ResourceView(source).sort(self.__names, reverse=self.__reverse)
