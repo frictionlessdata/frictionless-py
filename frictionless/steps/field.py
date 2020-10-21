@@ -82,9 +82,27 @@ class update_field(Step):
         if isinstance(value, str) and value.startswith("<formula>"):
             formula = value.replace("<formula>", "")
             value = lambda val, row: simpleeval.simple_eval(formula, names=row)
-        elif not callable(value):
-            value = lambda val, row: value
-        target.data = ResourceView(source).convert(self.__name, value)
+        if not callable(value):
+            target.data = ResourceView(source).update(self.__name, value)
+        else:
+            target.data = ResourceView(source).convert(self.__name, value)
         field = target.schema.get_field(self.__name)
         for name, value in self.__options.items():
             setattr(field, name, value)
+
+
+class unpack_field(Step):
+    def __init__(self, *, source, target, preserve=False):
+        self.__source = source
+        self.__target = target
+        self.__preserve = preserve
+
+    def transform_resource(self, source, target):
+        target.data = ResourceView(source).unpack(
+            self.__source, self.__target, include_original=self.__preserve
+        )
+        if not self.__preserve:
+            target.schema.remove_field(self.__source)
+        for name in self.__target:
+            field = Field(name=name, type="any")
+            target.schema.add_field(field)

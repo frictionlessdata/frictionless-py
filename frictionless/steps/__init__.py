@@ -6,6 +6,7 @@ from .field import (
     add_field,
     add_increment_field,
     update_field,
+    unpack_field,
 )
 from .row import head_rows, tail_rows, slice_rows, filter_rows, search_rows
 from .table import merge_table

@@ -189,3 +189,74 @@ def test_step_update_field():
         {"id": "2", "name": "france", "population": 66},
         {"id": "3", "name": "spain", "population": 47},
     ]
+
+
+def test_step_update_field_with_exact_value():
+    source = Resource(path="data/transform.csv")
+    target = transform(
+        source, steps=[steps.update_field(name="id", type="string", value="x")]
+    )
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "string"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+        ]
+    }
+    assert target.read_rows() == [
+        {"id": "x", "name": "germany", "population": 83},
+        {"id": "x", "name": "france", "population": 66},
+        {"id": "x", "name": "spain", "population": 47},
+    ]
+
+
+# Unpack Field
+
+
+def test_step_unpack_field():
+    source = Resource(path="data/transform.csv")
+    target = transform(
+        source,
+        steps=[
+            steps.update_field(name="id", type="array", value=[1, 1]),
+            steps.unpack_field(source="id", target=["id2", "id3"]),
+        ],
+    )
+    assert target.schema == {
+        "fields": [
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+            {"name": "id2", "type": "any"},
+            {"name": "id3", "type": "any"},
+        ]
+    }
+    assert target.read_rows() == [
+        {"name": "germany", "population": 83, "id2": 1, "id3": 1},
+        {"name": "france", "population": 66, "id2": 1, "id3": 1},
+        {"name": "spain", "population": 47, "id2": 1, "id3": 1},
+    ]
+
+
+def test_step_unpack_field_with_preserve():
+    source = Resource(path="data/transform.csv")
+    target = transform(
+        source,
+        steps=[
+            steps.update_field(name="id", type="array", value=[1, 1]),
+            steps.unpack_field(source="id", target=["id2", "id3"], preserve=True),
+        ],
+    )
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "array"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+            {"name": "id2", "type": "any"},
+            {"name": "id3", "type": "any"},
+        ]
+    }
+    assert target.read_rows() == [
+        {"id": [1, 1], "name": "germany", "population": 83, "id2": 1, "id3": 1},
+        {"id": [1, 1], "name": "france", "population": 66, "id2": 1, "id3": 1},
+        {"id": [1, 1], "name": "spain", "population": 47, "id2": 1, "id3": 1},
+    ]
