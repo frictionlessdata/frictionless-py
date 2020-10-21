@@ -67,3 +67,19 @@ class sort_rows(Step):
 
     def transform_resource(self, source, target):
         target.data = ResourceView(source).sort(self.__names, reverse=self.__reverse)
+
+
+class duplicate_rows(Step):
+    def __init__(self, *, name=None):
+        self.__name = name
+
+    def transform_resource(self, source, target):
+        target.data = ResourceView(source).duplicates(self.__name)
+
+
+class unique_rows(Step):
+    def __init__(self, *, name=None):
+        self.__name = name
+
+    def transform_resource(self, source, target):
+        target.data = ResourceView(source).unique(self.__name)

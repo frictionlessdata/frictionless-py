@@ -340,3 +340,51 @@ def test_step_sort_rows_with_reverse():
         {"id": 2, "name": "france", "population": 66},
         {"id": 1, "name": "germany", "population": 83},
     ]
+
+
+# Duplicate Rows
+
+
+def test_step_duplicate_rows():
+    source = Resource(path="data/transform.csv")
+    target = transform(source, steps=[steps.duplicate_rows()])
+    assert target.schema == source.schema
+    assert target.read_rows() == []
+
+
+def test_step_duplicate_rows_with_name():
+    source = Resource(path="data/transform.csv")
+    target = transform(
+        source,
+        steps=[steps.update_field(name="id", value=1), steps.duplicate_rows(name="id")],
+    )
+    assert target.schema == source.schema
+    assert target.read_rows() == [
+        {"id": 1, "name": "germany", "population": 83},
+        {"id": 1, "name": "france", "population": 66},
+        {"id": 1, "name": "spain", "population": 47},
+    ]
+
+
+# Unique Rows
+
+
+def test_step_unique_rows():
+    source = Resource(path="data/transform.csv")
+    target = transform(source, steps=[steps.unique_rows()])
+    assert target.schema == source.schema
+    assert target.read_rows() == [
+        {"id": 1, "name": "germany", "population": 83},
+        {"id": 2, "name": "france", "population": 66},
+        {"id": 3, "name": "spain", "population": 47},
+    ]
+
+
+def test_step_unique_rows_with_name():
+    source = Resource(path="data/transform.csv")
+    target = transform(
+        source,
+        steps=[steps.update_field(name="id", value=1), steps.unique_rows(name="id")],
+    )
+    assert target.schema == source.schema
+    assert target.read_rows() == []
