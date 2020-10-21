@@ -245,3 +245,29 @@ def test_step_join_tables_mode_cross():
         {"id": 3, "name": "spain", "population": 47, "id2": 1, "note": "beer"},
         {"id": 3, "name": "spain", "population": 47, "id2": 4, "note": "rum"},
     ]
+
+
+def test_step_join_tables_hash_is_true():
+    source = Resource(path="data/transform.csv")
+    target = transform(
+        source,
+        steps=[
+            steps.join_tables(
+                resource=Resource(data=[["id", "note"], [1, "beer"], [2, "vine"]]),
+                name="id",
+                hash=True,
+            )
+        ],
+    )
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+            {"name": "note", "type": "string"},
+        ]
+    }
+    assert target.read_rows() == [
+        {"id": 1, "name": "germany", "population": 83, "note": "beer"},
+        {"id": 2, "name": "france", "population": 66, "note": "vine"},
+    ]
