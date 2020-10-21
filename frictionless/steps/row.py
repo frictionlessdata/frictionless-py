@@ -31,6 +31,8 @@ class slice_rows(Step):
         )
 
 
+# TODO: review simpleeval perfomance for this transform
+# TODO: provide formula/regex helper constructors on the lib level?
 class filter_rows(Step):
     def __init__(self, *, predicat=None):
         self.__predicat = predicat
@@ -39,7 +41,9 @@ class filter_rows(Step):
         predicat = self.__predicat
         if isinstance(predicat, str) and predicat.startswith("<formula>"):
             formula = predicat.replace("<formula>", "")
-            predicat = lambda row: simpleeval.simple_eval(formula, names=row)
+            # TODO: review EvalWithCompoundTypes/sync with checks
+            evalclass = simpleeval.EvalWithCompoundTypes
+            predicat = lambda row: evalclass(names=row).eval(formula)
         target.data = ResourceView(source).select(predicat)
 
 
