@@ -271,3 +271,29 @@ def test_step_join_tables_hash_is_true():
         {"id": 1, "name": "germany", "population": 83, "note": "beer"},
         {"id": 2, "name": "france", "population": 66, "note": "vine"},
     ]
+
+
+# Attach Tables
+
+
+def test_step_attach_tables():
+    source = Resource(path="data/transform.csv")
+    target = transform(
+        source,
+        steps=[
+            steps.attach_tables(resource=Resource(data=[["note"], ["large"], ["mid"]]))
+        ],
+    )
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+            {"name": "note", "type": "string"},
+        ]
+    }
+    assert target.read_rows() == [
+        {"id": 1, "name": "germany", "population": 83, "note": "large"},
+        {"id": 2, "name": "france", "population": 66, "note": "mid"},
+        {"id": 3, "name": "spain", "population": 47, "note": None},
+    ]

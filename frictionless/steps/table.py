@@ -60,3 +60,16 @@ class join_tables(Step):
         for field in self.__resource.schema.fields:
             if field.name != self.__name:
                 target.schema.fields.append(field.to_copy())
+
+
+class attach_tables(Step):
+    def __init__(self, *, resource):
+        self.__resource = resource
+
+    def transform_resource(self, source, target):
+        self.__resource.infer(only_sample=True)
+        view1 = ResourceView(source)
+        view2 = ResourceView(self.__resource)
+        target.data = petl.annex(view1, view2)
+        for field in self.__resource.schema.fields:
+            target.schema.fields.append(field.to_copy())

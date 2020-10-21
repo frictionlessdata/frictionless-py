@@ -20,6 +20,6 @@ from .row import (
     conflict_rows,
     distinct_rows,
 )
-from .table import merge_tables, join_tables
+from .table import merge_tables, join_tables, attach_tables
 
 # TODO: implement steps - debug, validate
