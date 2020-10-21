@@ -40,7 +40,7 @@ class merge_tables(Step):
 
 class join_tables(Step):
     def __init__(self, *, resource, name=None, mode="inner", hash=False):
-        assert mode in ["inner", "left", "right", "outer", "cross"]
+        assert mode in ["inner", "left", "right", "outer", "cross", "anti"]
         self.__resource = resource
         self.__name = name
         self.__mode = mode
@@ -63,9 +63,13 @@ class join_tables(Step):
             target.data = petl.outerjoin(view1, view2, self.__name)
         elif self.__mode == "cross":
             target.data = petl.crossjoin(view1, view2)
-        for field in self.__resource.schema.fields:
-            if field.name != self.__name:
-                target.schema.fields.append(field.to_copy())
+        elif self.__mode == "anti":
+            antijoin = petl.hashantijoin if self.__hash else petl.antijoin
+            target.data = antijoin(view1, view2, self.__name)
+        if self.__mode not in ["anti"]:
+            for field in self.__resource.schema.fields:
+                if field.name != self.__name:
+                    target.schema.fields.append(field.to_copy())
 
 
 class attach_tables(Step):

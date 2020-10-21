@@ -273,6 +273,30 @@ def test_step_join_tables_mode_cross():
     ]
 
 
+def test_step_join_tables_mode_anti():
+    source = Resource(path="data/transform.csv")
+    target = transform(
+        source,
+        steps=[
+            steps.join_tables(
+                resource=Resource(data=[["id", "note"], [1, "beer"], [4, "rum"]]),
+                mode="anti",
+            )
+        ],
+    )
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+        ]
+    }
+    assert target.read_rows() == [
+        {"id": 2, "name": "france", "population": 66},
+        {"id": 3, "name": "spain", "population": 47},
+    ]
+
+
 def test_step_join_tables_hash_is_true():
     source = Resource(path="data/transform.csv")
     target = transform(
