@@ -1,15 +1,15 @@
 from frictionless import Resource, transform, steps
 
 
-# Merge Table
+# Merge Tables
 
 
-def test_step_merge_table():
+def test_step_merge_tables():
     source = Resource(path="data/transform.csv")
     target = transform(
         source,
         steps=[
-            steps.merge_table(
+            steps.merge_tables(
                 resource=Resource(data=[["id", "name", "note"], [4, "malta", "island"]])
             )
         ],
@@ -30,12 +30,12 @@ def test_step_merge_table():
     ]
 
 
-def test_step_merge_table_with_names():
+def test_step_merge_tables_with_names():
     source = Resource(path="data/transform.csv")
     target = transform(
         source,
         steps=[
-            steps.merge_table(
+            steps.merge_tables(
                 resource=Resource(data=[["id", "name", "note"], [4, "malta", "island"]]),
                 names=["id", "name"],
             )
@@ -60,7 +60,7 @@ def test_step_merge_ignore_names():
     target = transform(
         source,
         steps=[
-            steps.merge_table(
+            steps.merge_tables(
                 resource=Resource(data=[["id2", "name2"], [4, "malta"]]),
                 ignore_names=True,
             )
@@ -78,4 +78,59 @@ def test_step_merge_ignore_names():
         {"id": 2, "name": "france", "population": 66},
         {"id": 3, "name": "spain", "population": 47},
         {"id": 4, "name": "malta", "population": None},
+    ]
+
+
+# Join Tables
+
+
+def test_step_join_tables():
+    source = Resource(path="data/transform.csv")
+    target = transform(
+        source,
+        steps=[
+            steps.join_tables(
+                resource=Resource(data=[["id", "note"], [1, "beer"], [2, "vine"]]),
+                name="id",
+            )
+        ],
+    )
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+            {"name": "note", "type": "string"},
+        ]
+    }
+    assert target.read_rows() == [
+        {"id": 1, "name": "germany", "population": 83, "note": "beer"},
+        {"id": 2, "name": "france", "population": 66, "note": "vine"},
+    ]
+
+
+def test_step_join_tables_with_name_is_not_first_field():
+    source = Resource(path="data/transform.csv")
+    target = transform(
+        source,
+        steps=[
+            steps.join_tables(
+                resource=Resource(
+                    data=[["name", "note"], ["germany", "beer"], ["france", "vine"]]
+                ),
+                name="name",
+            )
+        ],
+    )
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+            {"name": "note", "type": "string"},
+        ]
+    }
+    assert target.read_rows() == [
+        {"id": 2, "name": "france", "population": 66, "note": "vine"},
+        {"id": 1, "name": "germany", "population": 83, "note": "beer"},
     ]

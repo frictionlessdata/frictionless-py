@@ -3,7 +3,7 @@ from ..step import Step
 from ..helpers import ResourceView
 
 
-class merge_table(Step):
+class merge_tables(Step):
     def __init__(self, *, resource, names=None, ignore_names=False):
         self.__resource = resource
         self.__names = names
@@ -30,3 +30,18 @@ class merge_table(Step):
                 for field in target.schema.fields:
                     if field.name not in self.__names:
                         target.schema.remove_field(field.name)
+
+
+class join_tables(Step):
+    def __init__(self, *, resource, name):
+        self.__resource = resource
+        self.__name = name
+
+    def transform_resource(self, source, target):
+        self.__resource.infer(only_sample=True)
+        view1 = ResourceView(source)
+        view2 = ResourceView(self.__resource)
+        target.data = petl.join(view1, view2)
+        for field in self.__resource.schema.fields:
+            if field.name != self.__name:
+                target.schema.fields.append(field)
