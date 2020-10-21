@@ -33,15 +33,26 @@ class merge_tables(Step):
 
 
 class join_tables(Step):
-    def __init__(self, *, resource, name):
+    def __init__(self, *, resource, name=None, mode="inner"):
+        assert mode in ["inner", "left", "right", "outer", "cross"]
         self.__resource = resource
         self.__name = name
+        self.__mode = mode
 
     def transform_resource(self, source, target):
         self.__resource.infer(only_sample=True)
         view1 = ResourceView(source)
         view2 = ResourceView(self.__resource)
-        target.data = petl.join(view1, view2)
+        if self.__mode == "inner":
+            target.data = petl.join(view1, view2, self.__name)
+        elif self.__mode == "left":
+            target.data = petl.leftjoin(view1, view2, self.__name)
+        elif self.__mode == "right":
+            target.data = petl.rightjoin(view1, view2, self.__name)
+        elif self.__mode == "outer":
+            target.data = petl.outerjoin(view1, view2, self.__name)
+        elif self.__mode == "cross":
+            target.data = petl.crossjoin(view1, view2)
         for field in self.__resource.schema.fields:
             if field.name != self.__name:
-                target.schema.fields.append(field)
+                target.schema.fields.append(field.to_copy())
