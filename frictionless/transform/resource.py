@@ -1,6 +1,7 @@
 from ..step import Step
 
 
+# TODO: implement error handling
 def transform_resource(resource, *, steps):
     """Transform resource
 
