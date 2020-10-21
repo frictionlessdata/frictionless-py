@@ -81,6 +81,32 @@ def test_step_merge_ignore_names():
     ]
 
 
+def test_step_merge_tables_with_sort():
+    source = Resource(path="data/transform.csv")
+    target = transform(
+        source,
+        steps=[
+            steps.merge_tables(
+                resource=Resource(data=[["id", "name", "population"], [4, "malta", 1]]),
+                sort=["population"],
+            )
+        ],
+    )
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+        ]
+    }
+    assert target.read_rows() == [
+        {"id": 4, "name": "malta", "population": 1},
+        {"id": 3, "name": "spain", "population": 47},
+        {"id": 2, "name": "france", "population": 66},
+        {"id": 1, "name": "germany", "population": 83},
+    ]
+
+
 # Join Tables
 
 

@@ -23,3 +23,4 @@ from .row import (
 from .table import merge_tables, join_tables, attach_tables
 
 # TODO: implement steps - debug, validate, normalize
+# TODO: rename steps to procs/or?

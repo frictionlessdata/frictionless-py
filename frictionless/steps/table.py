@@ -4,10 +4,11 @@ from ..helpers import ResourceView
 
 
 class merge_tables(Step):
-    def __init__(self, *, resource, names=None, ignore_names=False):
+    def __init__(self, *, resource, names=None, ignore_names=False, sort=False):
         self.__resource = resource
         self.__names = names
         self.__ignore_names = ignore_names
+        self.__sort = sort
 
     def transform_resource(self, source, target):
         self.__resource.infer(only_sample=True)
@@ -22,7 +23,12 @@ class merge_tables(Step):
 
         # Default
         else:
-            target.data = petl.cat(view1, view2, header=self.__names)
+            if self.__sort:
+                target.data = petl.mergesort(
+                    view1, view2, key=self.__sort, header=self.__names
+                )
+            else:
+                target.data = petl.cat(view1, view2, header=self.__names)
             for field in self.__resource.schema.fields:
                 if field.name not in target.schema.field_names:
                     target.schema.add_field(field)

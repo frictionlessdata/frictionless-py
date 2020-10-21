@@ -296,6 +296,19 @@ def test_step_filter_rows_petl_selectisnone():
     ]
 
 
+def test_step_filter_rows_petl_rowlenselect():
+    source = Resource(path="data/transform.csv")
+    target = transform(
+        source, steps=[steps.filter_rows(predicat=lambda row: len(row) == 3)]
+    )
+    assert target.schema == source.schema
+    assert target.read_rows() == [
+        {"id": 1, "name": "germany", "population": 83},
+        {"id": 2, "name": "france", "population": 66},
+        {"id": 3, "name": "spain", "population": 47},
+    ]
+
+
 # Search Rows
 
 
