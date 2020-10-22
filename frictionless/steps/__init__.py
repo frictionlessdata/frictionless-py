@@ -26,6 +26,7 @@ from .row import (
     unique_rows,
     conflict_rows,
     distinct_rows,
+    split_rows,
 )
 from .table import merge_tables, join_tables, attach_tables
 
@@ -33,3 +34,4 @@ from .table import merge_tables, join_tables, attach_tables
 # TODO: add an issue - support intervaltree transforms
 # TODO: rename steps to procs/or?
 # TODO: rename to obj/verb
+# TODO: rename name -> field_name

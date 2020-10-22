@@ -110,3 +110,12 @@ class distinct_rows(Step):
 
     def transform_resource(self, source, target):
         target.data = ResourceView(source).distinct(self.__name)
+
+
+class split_rows(Step):
+    def __init__(self, *, name, pattern):
+        self.__name = name
+        self.__pattern = pattern
+
+    def transform_resource(self, source, target):
+        target.data = ResourceView(source).splitdown(self.__name, self.__pattern)

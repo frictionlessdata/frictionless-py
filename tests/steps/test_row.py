@@ -461,3 +461,20 @@ def test_step_distinct_rows_with_distincts():
     assert target.read_rows() == [
         {"id": 1, "name": "germany", "population": 83},
     ]
+
+
+# Split Rows
+
+
+def test_step_split_rows():
+    source = Resource(path="data/transform.csv")
+    target = transform(source, steps=[steps.split_rows(name="name", pattern="a")])
+    assert target.schema == source.schema
+    assert target.read_rows() == [
+        {"id": 1, "name": "germ", "population": 83},
+        {"id": 1, "name": "ny", "population": 83},
+        {"id": 2, "name": "fr", "population": 66},
+        {"id": 2, "name": "nce", "population": 66},
+        {"id": 3, "name": "sp", "population": 47},
+        {"id": 3, "name": "in", "population": 47},
+    ]
