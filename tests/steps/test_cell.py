@@ -7,7 +7,7 @@ from frictionless import Resource, transform, steps
 def test_step_replace_cells():
     source = Resource(path="data/transform.csv")
     target = transform(
-        source, steps=[steps.replace_cells(source="france", target="FRANCE")]
+        source, steps=[steps.replace_cells(pattern="france", replace="FRANCE")]
     )
     assert target.schema == source.schema
     assert target.read_rows() == [
@@ -20,18 +20,28 @@ def test_step_replace_cells():
 def test_step_replace_cells_with_name():
     source = Resource(path="data/transform.csv")
     target = transform(
-        source, steps=[steps.replace_cells(source="france", target="FRANCE", name="id")]
+        source, steps=[steps.replace_cells(pattern="france", replace="FRANCE", name="id")]
     )
-    assert target.schema == {
-        "fields": [
-            {"name": "id", "type": "integer"},
-            {"name": "name", "type": "string"},
-            {"name": "population", "type": "integer"},
-        ]
-    }
+    assert target.schema == source.schema
     assert target.read_rows() == [
         {"id": 1, "name": "germany", "population": 83},
         {"id": 2, "name": "france", "population": 66},
+        {"id": 3, "name": "spain", "population": 47},
+    ]
+
+
+def test_step_replace_cells_using_regex():
+    source = Resource(path="data/transform.csv")
+    target = transform(
+        source,
+        steps=[
+            steps.replace_cells(pattern="<regex>.*r.*", replace="center", name="name")
+        ],
+    )
+    assert target.schema == source.schema
+    assert target.read_rows() == [
+        {"id": 1, "name": "center", "population": 83},
+        {"id": 2, "name": "center", "population": 66},
         {"id": 3, "name": "spain", "population": 47},
     ]
 
@@ -44,7 +54,7 @@ def test_step_fill_cells():
     target = transform(
         source,
         steps=[
-            steps.replace_cells(source="france", target=None),
+            steps.replace_cells(pattern="france", replace=None),
             steps.fill_cells(name="name", value="FRANCE"),
         ],
     )
@@ -61,7 +71,7 @@ def test_step_fill_cells_direction_down():
     target = transform(
         source,
         steps=[
-            steps.replace_cells(source="france", target=None),
+            steps.replace_cells(pattern="france", replace=None),
             steps.fill_cells(direction="down"),
         ],
     )
@@ -81,7 +91,7 @@ def test_step_fill_cells_direction_right():
     target = transform(
         source,
         steps=[
-            steps.replace_cells(source="france", target=None),
+            steps.replace_cells(pattern="france", replace=None),
             steps.fill_cells(direction="right"),
         ],
     )
@@ -101,7 +111,7 @@ def test_step_fill_cells_direction_left():
     target = transform(
         source,
         steps=[
-            steps.replace_cells(source="france", target=None),
+            steps.replace_cells(pattern="france", replace=None),
             steps.fill_cells(direction="left"),
         ],
     )

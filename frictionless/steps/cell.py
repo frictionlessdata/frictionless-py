@@ -1,3 +1,4 @@
+import petl
 from ..step import Step
 from ..helpers import ResourceView
 
@@ -5,17 +6,22 @@ from ..helpers import ResourceView
 # TODO: add set_cells?
 # TODO: accept WHERE/PREDICAT clause
 class replace_cells(Step):
-    def __init__(self, *, source, target, name=None):
-        self.__source = source
-        self.__target = target
+    def __init__(self, *, pattern, replace, name=None):
+        self.__pattern = pattern
+        self.__replace = replace
         self.__name = name
 
     def transform_resource(self, source, target):
         if not self.__name:
-            target.data = ResourceView(source).replaceall(self.__source, self.__target)
+            target.data = ResourceView(source).replaceall(self.__pattern, self.__replace)
         else:
-            target.data = ResourceView(source).replace(
-                self.__name, self.__source, self.__target
+            pattern = self.__pattern
+            function = petl.replace
+            if self.__pattern.startswith("<regex>"):
+                pattern = pattern.replace("<regex>", "")
+                function = petl.sub
+            target.data = function(
+                ResourceView(source), self.__name, pattern, self.__replace
             )
 
 
