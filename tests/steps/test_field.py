@@ -283,3 +283,55 @@ def test_step_unpack_field_source_is_object():
         {"name": "france", "population": 66, "note": "eu"},
         {"name": "spain", "population": 47, "note": "eu"},
     ]
+
+
+# Split Field
+
+
+def test_step_split_field():
+    source = Resource(path="data/transform.csv")
+    target = transform(
+        source,
+        steps=[
+            steps.split_field(name="name", to_names=["name1", "name2"], pattern="a"),
+        ],
+    )
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "population", "type": "integer"},
+            {"name": "name1", "type": "string"},
+            {"name": "name2", "type": "string"},
+        ]
+    }
+    assert target.read_rows() == [
+        {"id": 1, "population": 83, "name1": "germ", "name2": "ny"},
+        {"id": 2, "population": 66, "name1": "fr", "name2": "nce"},
+        {"id": 3, "population": 47, "name1": "sp", "name2": "in"},
+    ]
+
+
+def test_step_split_field_with_preserve():
+    source = Resource(path="data/transform.csv")
+    target = transform(
+        source,
+        steps=[
+            steps.split_field(
+                name="name", to_names=["name1", "name2"], pattern="a", preserve=True
+            ),
+        ],
+    )
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+            {"name": "name1", "type": "string"},
+            {"name": "name2", "type": "string"},
+        ]
+    }
+    assert target.read_rows() == [
+        {"id": 1, "name": "germany", "population": 83, "name1": "germ", "name2": "ny"},
+        {"id": 2, "name": "france", "population": 66, "name1": "fr", "name2": "nce"},
+        {"id": 3, "name": "spain", "population": 47, "name1": "sp", "name2": "in"},
+    ]

@@ -111,3 +111,21 @@ class unpack_field(Step):
         for name in self.__target:
             field = Field(name=name, type="any")
             target.schema.add_field(field)
+
+
+class split_field(Step):
+    def __init__(self, *, name, to_names, pattern, preserve=False):
+        self.__name = name
+        self.__to_names = to_names
+        self.__pattern = pattern
+        self.__preserve = preserve
+
+    def transform_resource(self, source, target):
+        target.data = ResourceView(source).split(
+            self.__name, self.__pattern, self.__to_names, include_original=self.__preserve
+        )
+        if not self.__preserve:
+            target.schema.remove_field(self.__name)
+        for name in self.__to_names:
+            field = Field(name=name, type="string")
+            target.schema.add_field(field)

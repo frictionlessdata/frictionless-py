@@ -13,6 +13,7 @@ from .field import (
     add_increment_field,
     update_field,
     unpack_field,
+    split_field,
 )
 from .row import (
     head_rows,
@@ -31,3 +32,4 @@ from .table import merge_tables, join_tables, attach_tables
 # TODO: implement steps - debug, validate, normalize
 # TODO: add an issue - support intervaltree transforms
 # TODO: rename steps to procs/or?
+# TODO: rename to obj/verb
