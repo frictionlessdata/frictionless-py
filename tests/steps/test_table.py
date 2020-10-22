@@ -397,3 +397,27 @@ def test_step_diff_tables_with_ignore_order():
     assert target.read_rows() == [
         {"id": 2, "name": "france", "population": 66},
     ]
+
+
+def test_step_diff_tables_with_use_hash():
+    source = Resource(path="data/transform.csv")
+    target = transform(
+        source,
+        steps=[
+            steps.diff_tables(
+                resource=Resource(
+                    data=[
+                        ["id", "name", "population"],
+                        [1, "germany", 83],
+                        [2, "france", 50],
+                        [3, "spain", 47],
+                    ]
+                ),
+                use_hash=True,
+            )
+        ],
+    )
+    assert target.schema == source.schema
+    assert target.read_rows() == [
+        {"id": 2, "name": "france", "population": 66},
+    ]

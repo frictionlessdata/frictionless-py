@@ -87,13 +87,17 @@ class attach_tables(Step):
 
 # TODO: update naming using verb-based?
 class diff_tables(Step):
-    def __init__(self, *, resource, ignore_order=False):
+    def __init__(self, *, resource, ignore_order=False, use_hash=False):
         self.__resource = resource
         self.__ignore_order = ignore_order
+        self.__use_hash = use_hash
 
     def transform_resource(self, source, target):
         self.__resource.infer(only_sample=True)
         view1 = ResourceView(source)
         view2 = ResourceView(self.__resource)
         function = petl.recordcomplement if self.__ignore_order else petl.complement
+        # TODO: raise an error for ignore/hash
+        if self.__use_hash and not self.__ignore_order:
+            function = petl.hashcomplement
         target.data = function(view1, view2)
