@@ -330,6 +330,16 @@ def test_step_search_rows_with_name():
     ]
 
 
+def test_step_search_rows_with_anti():
+    source = Resource(path="data/transform.csv")
+    target = transform(source, steps=[steps.search_rows(regex=r"^f.*", anti=True)])
+    assert target.schema == source.schema
+    assert target.read_rows() == [
+        {"id": 1, "name": "germany", "population": 83},
+        {"id": 3, "name": "spain", "population": 47},
+    ]
+
+
 # Sort Rows
 
 

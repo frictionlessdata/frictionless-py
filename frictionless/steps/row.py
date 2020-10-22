@@ -1,3 +1,4 @@
+import petl
 import simpleeval
 from ..step import Step
 from ..helpers import ResourceView
@@ -53,15 +54,17 @@ class filter_rows(Step):
 
 # TODO: merge with filter_rows?
 class search_rows(Step):
-    def __init__(self, *, regex, name=None):
+    def __init__(self, *, regex, name=None, anti=False):
         self.__regex = regex
         self.__name = name
+        self.__anti = anti
 
     def transform_resource(self, source, target):
+        search = petl.searchcomplement if self.__anti else petl.search
         if self.__name:
-            target.data = ResourceView(source).search(self.__name, self.__regex)
+            target.data = search(ResourceView(source), self.__name, self.__regex)
         else:
-            target.data = ResourceView(source).search(self.__regex)
+            target.data = search(ResourceView(source), self.__regex)
 
 
 class sort_rows(Step):
