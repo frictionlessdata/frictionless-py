@@ -38,3 +38,22 @@ class fill_cells(Step):
             target.data = ResourceView(source).fillright()
         elif self.__direction == "left":
             target.data = ResourceView(source).fillleft()
+
+
+# TODO: accept WHERE/PREDICAT clause
+class convert_cells(Step):
+    def __init__(self, *, value, name=None):
+        self.__value = value
+        self.__name = name
+
+    def transform_resource(self, source, target):
+        value = self.__value
+        if not self.__name:
+            if not callable(value):
+                value = lambda val: self.__value
+            target.data = ResourceView(source).convertall(value)
+        else:
+            if not callable(value):
+                target.data = ResourceView(source).update(self.__name, value)
+            else:
+                target.data = ResourceView(source).convert(self.__name, value)
