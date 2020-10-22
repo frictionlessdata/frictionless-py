@@ -219,7 +219,7 @@ def test_step_unpack_field():
         source,
         steps=[
             steps.update_field(name="id", type="array", value=[1, 1]),
-            steps.unpack_field(source="id", target=["id2", "id3"]),
+            steps.unpack_field(name="id", to_names=["id2", "id3"]),
         ],
     )
     assert target.schema == {
@@ -243,7 +243,7 @@ def test_step_unpack_field_with_preserve():
         source,
         steps=[
             steps.update_field(name="id", type="array", value=[1, 1]),
-            steps.unpack_field(source="id", target=["id2", "id3"], preserve=True),
+            steps.unpack_field(name="id", to_names=["id2", "id3"], preserve=True),
         ],
     )
     assert target.schema == {
@@ -268,7 +268,7 @@ def test_step_unpack_field_source_is_object():
         source,
         steps=[
             steps.update_field(name="id", type="object", value={"note": "eu"}),
-            steps.unpack_field(source="id", target=["note"]),
+            steps.unpack_field(name="id", to_names=["note"]),
         ],
     )
     assert target.schema == {

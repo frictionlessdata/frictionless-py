@@ -92,23 +92,23 @@ class update_field(Step):
 
 
 class unpack_field(Step):
-    def __init__(self, *, source, target, preserve=False):
-        self.__source = source
-        self.__target = target
+    def __init__(self, *, name, to_names, preserve=False):
+        self.__name = name
+        self.__to_names = to_names
         self.__preserve = preserve
 
     def transform_resource(self, source, target):
-        if target.schema.get_field(self.__source).type == "object":
+        if target.schema.get_field(self.__name).type == "object":
             target.data = ResourceView(source).unpackdict(
-                self.__source, self.__target, includeoriginal=self.__preserve
+                self.__name, self.__to_names, includeoriginal=self.__preserve
             )
         else:
             target.data = ResourceView(source).unpack(
-                self.__source, self.__target, include_original=self.__preserve
+                self.__name, self.__to_names, include_original=self.__preserve
             )
         if not self.__preserve:
-            target.schema.remove_field(self.__source)
-        for name in self.__target:
+            target.schema.remove_field(self.__name)
+        for name in self.__to_names:
             field = Field(name=name, type="any")
             target.schema.add_field(field)
 
