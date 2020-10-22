@@ -1,3 +1,4 @@
+import petl
 import simpleeval
 from ..step import Step
 from ..field import Field
@@ -121,8 +122,16 @@ class split_field(Step):
         self.__preserve = preserve
 
     def transform_resource(self, source, target):
-        target.data = ResourceView(source).split(
-            self.__name, self.__pattern, self.__to_names, include_original=self.__preserve
+        processor = petl.split
+        # TODO: implement this check properly
+        if "(" in self.__pattern:
+            processor = petl.capture
+        target.data = processor(
+            ResourceView(source),
+            self.__name,
+            self.__pattern,
+            self.__to_names,
+            include_original=self.__preserve,
         )
         if not self.__preserve:
             target.schema.remove_field(self.__name)
