@@ -85,7 +85,6 @@ class attach_tables(Step):
             target.schema.fields.append(field.to_copy())
 
 
-# TODO: update naming using verb-based?
 class diff_tables(Step):
     def __init__(self, *, resource, ignore_order=False, use_hash=False):
         self.__resource = resource
@@ -100,4 +99,17 @@ class diff_tables(Step):
         # TODO: raise an error for ignore/hash
         if self.__use_hash and not self.__ignore_order:
             function = petl.hashcomplement
+        target.data = function(view1, view2)
+
+
+class intersect_tables(Step):
+    def __init__(self, *, resource, use_hash=False):
+        self.__resource = resource
+        self.__use_hash = use_hash
+
+    def transform_resource(self, source, target):
+        self.__resource.infer(only_sample=True)
+        view1 = ResourceView(source)
+        view2 = ResourceView(self.__resource)
+        function = petl.hashintersection if self.__use_hash else petl.intersection
         target.data = function(view1, view2)

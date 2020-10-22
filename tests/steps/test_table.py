@@ -5,6 +5,7 @@ from frictionless import Resource, transform, steps
 
 
 def test_step_merge_tables():
+    # TODO: renamed population header to people
     source = Resource(path="data/transform.csv")
     target = transform(
         source,
@@ -420,4 +421,56 @@ def test_step_diff_tables_with_use_hash():
     assert target.schema == source.schema
     assert target.read_rows() == [
         {"id": 2, "name": "france", "population": 66},
+    ]
+
+
+# Intersect Tables
+
+
+def test_step_intersect_tables():
+    source = Resource(path="data/transform.csv")
+    target = transform(
+        source,
+        steps=[
+            steps.intersect_tables(
+                resource=Resource(
+                    data=[
+                        ["id", "name", "population"],
+                        [1, "germany", 83],
+                        [2, "france", 50],
+                        [3, "spain", 47],
+                    ]
+                )
+            )
+        ],
+    )
+    assert target.schema == source.schema
+    assert target.read_rows() == [
+        {"id": 1, "name": "germany", "population": 83},
+        {"id": 3, "name": "spain", "population": 47},
+    ]
+
+
+def test_step_intersect_tables_with_use_hash():
+    source = Resource(path="data/transform.csv")
+    target = transform(
+        source,
+        steps=[
+            steps.intersect_tables(
+                resource=Resource(
+                    data=[
+                        ["id", "name", "population"],
+                        [1, "germany", 83],
+                        [2, "france", 50],
+                        [3, "spain", 47],
+                    ]
+                ),
+                use_hash=True,
+            )
+        ],
+    )
+    assert target.schema == source.schema
+    assert target.read_rows() == [
+        {"id": 1, "name": "germany", "population": 83},
+        {"id": 3, "name": "spain", "population": 47},
     ]
