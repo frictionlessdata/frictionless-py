@@ -57,3 +57,16 @@ class convert_cells(Step):
                 target.data = ResourceView(source).update(self.__name, value)
             else:
                 target.data = ResourceView(source).convert(self.__name, value)
+
+
+# TODO: accept WHERE/PREDICAT clause
+class format_cells(Step):
+    def __init__(self, *, template, name=None):
+        self.__template = template
+        self.__name = name
+
+    def transform_resource(self, source, target):
+        if not self.__name:
+            target.data = ResourceView(source).formatall(self.__template)
+        else:
+            target.data = ResourceView(source).format(self.__name, self.__template)

@@ -139,3 +139,33 @@ def test_step_convert_cells_with_name():
         {"id": 2, "name": "n/a", "population": 66},
         {"id": 3, "name": "n/a", "population": 47},
     ]
+
+
+# Format Cells
+
+
+def test_step_format_cells():
+    source = Resource(path="data/transform.csv")
+    source.infer(only_sample=True)
+    source.schema.get_field("id").type = "string"
+    source.schema.get_field("population").type = "string"
+    target = transform(source, steps=[steps.format_cells(template="Prefix: {0}")])
+    assert target.schema == source.schema
+    assert target.read_rows() == [
+        {"id": "Prefix: 1", "name": "Prefix: germany", "population": "Prefix: 83"},
+        {"id": "Prefix: 2", "name": "Prefix: france", "population": "Prefix: 66"},
+        {"id": "Prefix: 3", "name": "Prefix: spain", "population": "Prefix: 47"},
+    ]
+
+
+def test_step_format_cells_with_name():
+    source = Resource(path="data/transform.csv")
+    target = transform(
+        source, steps=[steps.format_cells(template="Prefix: {0}", name="name")]
+    )
+    assert target.schema == source.schema
+    assert target.read_rows() == [
+        {"id": 1, "name": "Prefix: germany", "population": 83},
+        {"id": 2, "name": "Prefix: france", "population": 66},
+        {"id": 3, "name": "Prefix: spain", "population": 47},
+    ]
