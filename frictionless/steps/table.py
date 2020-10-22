@@ -83,3 +83,17 @@ class attach_tables(Step):
         target.data = petl.annex(view1, view2)
         for field in self.__resource.schema.fields:
             target.schema.fields.append(field.to_copy())
+
+
+# TODO: update naming using verb-based?
+class diff_tables(Step):
+    def __init__(self, *, resource, ignore_order=False):
+        self.__resource = resource
+        self.__ignore_order = ignore_order
+
+    def transform_resource(self, source, target):
+        self.__resource.infer(only_sample=True)
+        view1 = ResourceView(source)
+        view2 = ResourceView(self.__resource)
+        function = petl.recordcomplement if self.__ignore_order else petl.complement
+        target.data = function(view1, view2)

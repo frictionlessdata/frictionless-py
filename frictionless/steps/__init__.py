@@ -28,7 +28,7 @@ from .row import (
     distinct_rows,
     split_rows,
 )
-from .table import merge_tables, join_tables, attach_tables
+from .table import merge_tables, join_tables, attach_tables, diff_tables
 
 # TODO: implement steps - debug, validate, normalize
 # TODO: add an issue - support intervaltree transforms
