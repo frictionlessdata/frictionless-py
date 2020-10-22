@@ -1,4 +1,10 @@
-from .cell import replace_cells, fill_cells, convert_cells, format_cells
+from .cell import (
+    replace_cells,
+    fill_cells,
+    convert_cells,
+    format_cells,
+    interpolate_cells,
+)
 from .field import (
     pick_fields,
     skip_fields,
@@ -23,4 +29,5 @@ from .row import (
 from .table import merge_tables, join_tables, attach_tables
 
 # TODO: implement steps - debug, validate, normalize
+# TODO: add an issue - support intervaltree transforms
 # TODO: rename steps to procs/or?
