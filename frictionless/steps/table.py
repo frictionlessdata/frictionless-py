@@ -177,3 +177,15 @@ class transpose_table(Step):
         # TODO: review this approach
         target.schema.fields.clear()
         target.infer(only_sample=True)
+
+
+# TODO: improve this step
+class pivot_table(Step):
+    def __init__(self, **options):
+        self.__options = options
+
+    def transform_resource(self, source, target):
+        target.data = ResourceView(source).pivot(**self.__options)
+        # TODO: review this approach
+        target.schema.fields.clear()
+        target.infer(only_sample=True)

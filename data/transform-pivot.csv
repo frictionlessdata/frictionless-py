@@ -1,0 +1,13 @@
+region,gender,style,units
+east,boy,tee,12
+east,boy,golf,14
+east,boy,fancy,7
+east,girl,tee,3
+east,girl,golf,8
+east,girl,fancy,18
+west,boy,tee,12
+west,boy,golf,15
+west,boy,fancy,8
+west,girl,tee,6
+west,girl,golf,16
+west,girl,fancy,1

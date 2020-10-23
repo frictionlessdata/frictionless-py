@@ -629,7 +629,28 @@ def test_step_transpose_table():
             {"name": "spain", "type": "integer"},
         ]
     }
-    print(target.read_rows())
     assert target.read_rows() == [
         {"name": "population", "germany": 83, "france": 66, "spain": 47}
+    ]
+
+
+# Pivot Table
+
+
+def test_step_pivot_table():
+    source = Resource(path="data/transform-pivot.csv")
+    target = transform(
+        source,
+        steps=[steps.pivot_table(f1="region", f2="gender", f3="units", aggfun=sum)],
+    )
+    assert target.schema == {
+        "fields": [
+            {"name": "region", "type": "string"},
+            {"name": "boy", "type": "integer"},
+            {"name": "girl", "type": "integer"},
+        ]
+    }
+    assert target.read_rows() == [
+        {"region": "east", "boy": 33, "girl": 29},
+        {"region": "west", "boy": 35, "girl": 23},
     ]

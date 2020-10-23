@@ -39,6 +39,7 @@ from .table import (
     melt_table,
     recast_table,
     transpose_table,
+    pivot_table,
 )
 
 # TODO: add an issue - support intervaltree transforms
