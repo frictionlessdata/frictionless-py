@@ -226,8 +226,8 @@ def test_step_unpack_field():
         "fields": [
             {"name": "name", "type": "string"},
             {"name": "population", "type": "integer"},
-            {"name": "id2", "type": "any"},
-            {"name": "id3", "type": "any"},
+            {"name": "id2"},
+            {"name": "id3"},
         ]
     }
     assert target.read_rows() == [
@@ -251,8 +251,8 @@ def test_step_unpack_field_with_preserve():
             {"name": "id", "type": "array"},
             {"name": "name", "type": "string"},
             {"name": "population", "type": "integer"},
-            {"name": "id2", "type": "any"},
-            {"name": "id3", "type": "any"},
+            {"name": "id2"},
+            {"name": "id3"},
         ]
     }
     assert target.read_rows() == [
@@ -275,7 +275,7 @@ def test_step_unpack_field_source_is_object():
         "fields": [
             {"name": "name", "type": "string"},
             {"name": "population", "type": "integer"},
-            {"name": "note", "type": "any"},
+            {"name": "note"},
         ]
     }
     assert target.read_rows() == [

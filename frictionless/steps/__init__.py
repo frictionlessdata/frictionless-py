@@ -28,9 +28,15 @@ from .row import (
     distinct_rows,
     split_rows,
 )
-from .table import merge_tables, join_tables, attach_tables, diff_tables, intersect_tables
+from .table import (
+    merge_tables,
+    join_tables,
+    attach_tables,
+    diff_tables,
+    intersect_tables,
+    aggregate_table,
+)
 
-# TODO: implement steps - debug, validate, normalize
 # TODO: add an issue - support intervaltree transforms
 # TODO: add an issue - support maps transforms
 # TODO: rename steps to procs/or?

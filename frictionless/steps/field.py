@@ -110,7 +110,7 @@ class unpack_field(Step):
         if not self.__preserve:
             target.schema.remove_field(self.__name)
         for name in self.__to_names:
-            field = Field(name=name, type="any")
+            field = Field(name=name)
             target.schema.add_field(field)
 
 

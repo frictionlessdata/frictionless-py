@@ -6,6 +6,7 @@ from . import errors
 
 
 # TODO: rebase on list base class for permormance?
+# TODO: if not list - drop OrderedDict? From Python3.7 order is guaranteed
 class Row(OrderedDict):
     """Row representation
 

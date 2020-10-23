@@ -1,5 +1,6 @@
 import petl
 from ..step import Step
+from ..field import Field
 from ..helpers import ResourceView
 
 
@@ -113,3 +114,19 @@ class intersect_tables(Step):
         view2 = ResourceView(self.__resource)
         function = petl.hashintersection if self.__use_hash else petl.intersection
         target.data = function(view1, view2)
+
+
+class aggregate_table(Step):
+    def __init__(self, *, group_name, aggregation):
+        self.__group_name = group_name
+        self.__aggregation = aggregation
+
+    def transform_resource(self, source, target):
+        target.data = ResourceView(source).aggregate(
+            self.__group_name, self.__aggregation
+        )
+        field = target.schema.get_field(self.__group_name)
+        target.schema.fields.clear()
+        target.schema.add_field(field)
+        for name in self.__aggregation.keys():
+            target.schema.add_field(Field(name=name))
