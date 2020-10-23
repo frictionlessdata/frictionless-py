@@ -404,6 +404,7 @@ class Resource(Metadata):
 
     # Infer
 
+    # TODO: use stats=True instead of only_sample?
     # NOTE: optimize this logic/don't re-open
     def infer(self, source=None, *, only_sample=False):
         """Infer metadata

@@ -596,3 +596,19 @@ def test_step_melt_table_with_to_names():
         {"name": "france", "key": "population", "val": 66},
         {"name": "spain", "key": "population", "val": 47},
     ]
+
+
+# Recast Table
+
+
+def test_step_recast_table():
+    source = Resource(path="data/transform.csv")
+    target = transform(
+        source, steps=[steps.melt_table(name="id"), steps.recast_table(name="id")]
+    )
+    assert target.schema == source.schema
+    assert target.read_rows() == [
+        {"id": 1, "name": "germany", "population": 83},
+        {"id": 2, "name": "france", "population": 66},
+        {"id": 3, "name": "spain", "population": 47},
+    ]

@@ -37,6 +37,7 @@ from .table import (
     intersect_tables,
     aggregate_table,
     melt_table,
+    recast_table,
 )
 
 # TODO: add an issue - support intervaltree transforms

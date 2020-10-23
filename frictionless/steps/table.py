@@ -151,3 +151,20 @@ class melt_table(Step):
         target.schema.add_field(field)
         for name in self.__to_names:
             target.schema.add_field(Field(name=name))
+
+
+class recast_table(Step):
+    def __init__(self, *, name, from_names=["variable", "value"]):
+        assert len(from_names) == 2
+        self.__name = name
+        self.__from_names = from_names
+
+    def transform_resource(self, source, target):
+        target.data = ResourceView(source).recast(
+            key=self.__name,
+            variablefield=self.__from_names[0],
+            valuefield=self.__from_names[1],
+        )
+        # TODO: review this approach
+        target.schema.fields.clear()
+        target.infer(only_sample=True)

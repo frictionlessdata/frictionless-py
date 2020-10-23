@@ -241,6 +241,7 @@ class Package(Metadata):
 
     # Infer
 
+    # TODO: use stats=True instead of only_sample?
     def infer(self, source=None, *, only_sample=False):
         """Infer package's attributes
 
