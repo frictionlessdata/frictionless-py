@@ -119,3 +119,20 @@ class split_rows(Step):
 
     def transform_resource(self, source, target):
         target.data = ResourceView(source).splitdown(self.__name, self.__pattern)
+
+
+class pick_group_rows(Step):
+    def __init__(self, *, group_name, selection, value_name=None):
+        assert selection in ["first", "last", "min", "max"]
+        self.__group_name = group_name
+        self.__selection = selection
+        self.__value_name = value_name
+
+    def transform_resource(self, source, target):
+        function = getattr(petl, f"groupselect{self.__selection}")
+        if self.__selection in ["first", "last"]:
+            target.data = function(ResourceView(source), self.__group_name)
+        else:
+            target.data = function(
+                ResourceView(source), self.__group_name, self.__value_name
+            )

@@ -478,3 +478,68 @@ def test_step_split_rows():
         {"id": 3, "name": "sp", "population": 47},
         {"id": 3, "name": "in", "population": 47},
     ]
+
+
+# Pick Group Rows
+
+
+def test_step_pick_group_rows_first():
+    source = Resource(path="data/transform-groups.csv")
+    target = transform(
+        source, steps=[steps.pick_group_rows(group_name="name", selection="first")]
+    )
+    assert target.schema == source.schema
+    assert target.read_rows() == [
+        {"id": 3, "name": "france", "population": 66, "year": 2020},
+        {"id": 1, "name": "germany", "population": 83, "year": 2020},
+        {"id": 5, "name": "spain", "population": 47, "year": 2020},
+    ]
+
+
+def test_step_pick_group_rows_last():
+    source = Resource(path="data/transform-groups.csv")
+    target = transform(
+        source, steps=[steps.pick_group_rows(group_name="name", selection="last")]
+    )
+    assert target.schema == source.schema
+    assert target.read_rows() == [
+        {"id": 4, "name": "france", "population": 54, "year": 1920},
+        {"id": 2, "name": "germany", "population": 77, "year": 1920},
+        {"id": 6, "name": "spain", "population": 33, "year": 1920},
+    ]
+
+
+def test_step_pick_group_rows_min():
+    source = Resource(path="data/transform-groups.csv")
+    target = transform(
+        source,
+        steps=[
+            steps.pick_group_rows(
+                group_name="name", selection="min", value_name="population"
+            )
+        ],
+    )
+    assert target.schema == source.schema
+    assert target.read_rows() == [
+        {"id": 4, "name": "france", "population": 54, "year": 1920},
+        {"id": 2, "name": "germany", "population": 77, "year": 1920},
+        {"id": 6, "name": "spain", "population": 33, "year": 1920},
+    ]
+
+
+def test_step_pick_group_rows_max():
+    source = Resource(path="data/transform-groups.csv")
+    target = transform(
+        source,
+        steps=[
+            steps.pick_group_rows(
+                group_name="name", selection="max", value_name="population"
+            )
+        ],
+    )
+    assert target.schema == source.schema
+    assert target.read_rows() == [
+        {"id": 3, "name": "france", "population": 66, "year": 2020},
+        {"id": 1, "name": "germany", "population": 83, "year": 2020},
+        {"id": 5, "name": "spain", "population": 47, "year": 2020},
+    ]

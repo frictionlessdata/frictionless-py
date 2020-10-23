@@ -27,6 +27,7 @@ from .row import (
     conflict_rows,
     distinct_rows,
     split_rows,
+    pick_group_rows,
 )
 from .table import (
     merge_tables,
