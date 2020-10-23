@@ -612,3 +612,24 @@ def test_step_recast_table():
         {"id": 2, "name": "france", "population": 66},
         {"id": 3, "name": "spain", "population": 47},
     ]
+
+
+# Transpose Table
+
+
+# TODO: fix this step
+def test_step_transpose_table():
+    source = Resource(path="data/transform.csv")
+    target = transform(source, steps=[steps.transpose_table()])
+    assert target.schema == {
+        "fields": [
+            {"name": "name", "type": "string"},
+            {"name": "germany", "type": "integer"},
+            {"name": "france", "type": "integer"},
+            {"name": "spain", "type": "integer"},
+        ]
+    }
+    print(target.read_rows())
+    assert target.read_rows() == [
+        {"name": "population", "germany": 83, "france": 66, "spain": 47}
+    ]

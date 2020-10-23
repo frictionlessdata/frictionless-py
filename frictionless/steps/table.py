@@ -168,3 +168,12 @@ class recast_table(Step):
         # TODO: review this approach
         target.schema.fields.clear()
         target.infer(only_sample=True)
+
+
+# TODO: fix this step - see tests
+class transpose_table(Step):
+    def transform_resource(self, source, target):
+        target.data = ResourceView(source).transpose()
+        # TODO: review this approach
+        target.schema.fields.clear()
+        target.infer(only_sample=True)
