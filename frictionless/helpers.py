@@ -389,6 +389,7 @@ def get_current_memory_usage():
 # Wrappers
 
 
+# TODO: move to resource.from/to_petl(normalize=False)
 class ResourceView(petl.Table):
     def __init__(self, resource):
         self.__resource = resource
