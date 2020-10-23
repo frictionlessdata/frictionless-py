@@ -32,6 +32,7 @@ from .table import merge_tables, join_tables, attach_tables, diff_tables, inters
 
 # TODO: implement steps - debug, validate, normalize
 # TODO: add an issue - support intervaltree transforms
+# TODO: add an issue - support maps transforms
 # TODO: rename steps to procs/or?
 # TODO: rename to obj/verb
 # TODO: rename name -> field_name
