@@ -552,6 +552,7 @@ class Table:
                 field.update((fields.get(field.get("name"), {})))
 
         # Validate schema
+        # TODO: reconsider this - not perfect for transform
         if len(schema.field_names) != len(set(schema.field_names)):
             note = "Schemas with duplicate field names are not supported"
             raise exceptions.FrictionlessException(errors.SchemaError(note=note))

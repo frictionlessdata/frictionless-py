@@ -16,6 +16,7 @@ class pick_fields(Step):
                 target.schema.remove_field(name)
 
 
+# TODO: remove_fields?
 class skip_fields(Step):
     def __init__(self, *, names):
         self.__names = names

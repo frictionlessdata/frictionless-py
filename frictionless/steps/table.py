@@ -130,3 +130,24 @@ class aggregate_table(Step):
         target.schema.add_field(field)
         for name in self.__aggregation.keys():
             target.schema.add_field(Field(name=name))
+
+
+class melt_table(Step):
+    def __init__(self, *, name, variables=None, to_names=["variable", "value"]):
+        assert len(to_names) == 2
+        self.__name = name
+        self.__variables = variables
+        self.__to_names = to_names
+
+    def transform_resource(self, source, target):
+        target.data = ResourceView(source).melt(
+            key=self.__name,
+            variables=self.__variables,
+            variablefield=self.__to_names[0],
+            valuefield=self.__to_names[1],
+        )
+        field = target.schema.get_field(self.__name)
+        target.schema.fields.clear()
+        target.schema.add_field(field)
+        for name in self.__to_names:
+            target.schema.add_field(Field(name=name))

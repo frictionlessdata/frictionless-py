@@ -530,3 +530,69 @@ def test_step_aggregate_table_multiple():
         {"name": "germany", "sum": 160, "min": 77, "max": 83},
         {"name": "spain", "sum": 80, "min": 33, "max": 47},
     ]
+
+
+# Melt Table
+
+
+def test_step_melt_table():
+    source = Resource(path="data/transform.csv")
+    target = transform(source, steps=[steps.melt_table(name="name")])
+    assert target.schema == {
+        "fields": [
+            {"name": "name", "type": "string"},
+            {"name": "variable"},
+            {"name": "value"},
+        ]
+    }
+    assert target.read_rows() == [
+        {"name": "germany", "variable": "id", "value": 1},
+        {"name": "germany", "variable": "population", "value": 83},
+        {"name": "france", "variable": "id", "value": 2},
+        {"name": "france", "variable": "population", "value": 66},
+        {"name": "spain", "variable": "id", "value": 3},
+        {"name": "spain", "variable": "population", "value": 47},
+    ]
+
+
+def test_step_melt_table_with_variables():
+    source = Resource(path="data/transform.csv")
+    target = transform(
+        source, steps=[steps.melt_table(name="name", variables=["population"])]
+    )
+    assert target.schema == {
+        "fields": [
+            {"name": "name", "type": "string"},
+            {"name": "variable"},
+            {"name": "value"},
+        ]
+    }
+    assert target.read_rows() == [
+        {"name": "germany", "variable": "population", "value": 83},
+        {"name": "france", "variable": "population", "value": 66},
+        {"name": "spain", "variable": "population", "value": 47},
+    ]
+
+
+def test_step_melt_table_with_to_names():
+    source = Resource(path="data/transform.csv")
+    target = transform(
+        source,
+        steps=[
+            steps.melt_table(
+                name="name", variables=["population"], to_names=["key", "val"]
+            )
+        ],
+    )
+    assert target.schema == {
+        "fields": [
+            {"name": "name", "type": "string"},
+            {"name": "key"},
+            {"name": "val"},
+        ]
+    }
+    assert target.read_rows() == [
+        {"name": "germany", "key": "population", "val": 83},
+        {"name": "france", "key": "population", "val": 66},
+        {"name": "spain", "key": "population", "val": 47},
+    ]
