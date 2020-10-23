@@ -7,7 +7,10 @@ from frictionless import Resource, transform, steps
 def test_step_replace_cells():
     source = Resource(path="data/transform.csv")
     target = transform(
-        source, steps=[steps.replace_cells(pattern="france", replace="FRANCE")]
+        source,
+        steps=[
+            steps.replace_cells(pattern="france", replace="FRANCE"),
+        ],
     )
     assert target.schema == source.schema
     assert target.read_rows() == [
@@ -20,7 +23,10 @@ def test_step_replace_cells():
 def test_step_replace_cells_with_name():
     source = Resource(path="data/transform.csv")
     target = transform(
-        source, steps=[steps.replace_cells(pattern="france", replace="FRANCE", name="id")]
+        source,
+        steps=[
+            steps.replace_cells(pattern="france", replace="FRANCE", name="id"),
+        ],
     )
     assert target.schema == source.schema
     assert target.read_rows() == [
@@ -35,7 +41,7 @@ def test_step_replace_cells_using_regex():
     target = transform(
         source,
         steps=[
-            steps.replace_cells(pattern="<regex>.*r.*", replace="center", name="name")
+            steps.replace_cells(pattern="<regex>.*r.*", replace="center", name="name"),
         ],
     )
     assert target.schema == source.schema
@@ -131,7 +137,12 @@ def test_step_convert_cells():
     source.infer(only_sample=True)
     source.schema.get_field("id").type = "string"
     source.schema.get_field("population").type = "string"
-    target = transform(source, steps=[steps.convert_cells(value="n/a")])
+    target = transform(
+        source,
+        steps=[
+            steps.convert_cells(value="n/a"),
+        ],
+    )
     assert target.schema == source.schema
     assert target.read_rows() == [
         {"id": "n/a", "name": "n/a", "population": "n/a"},
@@ -142,7 +153,12 @@ def test_step_convert_cells():
 
 def test_step_convert_cells_with_name():
     source = Resource(path="data/transform.csv")
-    target = transform(source, steps=[steps.convert_cells(value="n/a", name="name")])
+    target = transform(
+        source,
+        steps=[
+            steps.convert_cells(value="n/a", name="name"),
+        ],
+    )
     assert target.schema == source.schema
     assert target.read_rows() == [
         {"id": 1, "name": "n/a", "population": 83},
@@ -159,7 +175,12 @@ def test_step_format_cells():
     source.infer(only_sample=True)
     source.schema.get_field("id").type = "string"
     source.schema.get_field("population").type = "string"
-    target = transform(source, steps=[steps.format_cells(template="Prefix: {0}")])
+    target = transform(
+        source,
+        steps=[
+            steps.format_cells(template="Prefix: {0}"),
+        ],
+    )
     assert target.schema == source.schema
     assert target.read_rows() == [
         {"id": "Prefix: 1", "name": "Prefix: germany", "population": "Prefix: 83"},
@@ -171,7 +192,10 @@ def test_step_format_cells():
 def test_step_format_cells_with_name():
     source = Resource(path="data/transform.csv")
     target = transform(
-        source, steps=[steps.format_cells(template="Prefix: {0}", name="name")]
+        source,
+        steps=[
+            steps.format_cells(template="Prefix: {0}", name="name"),
+        ],
     )
     assert target.schema == source.schema
     assert target.read_rows() == [
@@ -189,7 +213,12 @@ def test_step_interpolate_cells():
     source.infer(only_sample=True)
     source.schema.get_field("id").type = "string"
     source.schema.get_field("population").type = "string"
-    target = transform(source, steps=[steps.interpolate_cells(template="Prefix: %s")])
+    target = transform(
+        source,
+        steps=[
+            steps.interpolate_cells(template="Prefix: %s"),
+        ],
+    )
     assert target.schema == source.schema
     assert target.read_rows() == [
         {"id": "Prefix: 1", "name": "Prefix: germany", "population": "Prefix: 83"},
@@ -201,7 +230,10 @@ def test_step_interpolate_cells():
 def test_step_interpolate_cells_with_name():
     source = Resource(path="data/transform.csv")
     target = transform(
-        source, steps=[steps.interpolate_cells(template="Prefix: %s", name="name")]
+        source,
+        steps=[
+            steps.interpolate_cells(template="Prefix: %s", name="name"),
+        ],
     )
     assert target.schema == source.schema
     assert target.read_rows() == [

@@ -6,7 +6,12 @@ from frictionless import Resource, transform, steps
 
 def test_step_pick_fields():
     source = Resource(path="data/transform.csv")
-    target = transform(source, steps=[steps.pick_fields(names=["id", "name"])])
+    target = transform(
+        source,
+        steps=[
+            steps.pick_fields(names=["id", "name"]),
+        ],
+    )
     assert target.schema == {
         "fields": [
             {"name": "id", "type": "integer"},
@@ -25,7 +30,12 @@ def test_step_pick_fields():
 
 def test_step_skip_fields():
     source = Resource(path="data/transform.csv")
-    target = transform(source, steps=[steps.skip_fields(names=["id"])])
+    target = transform(
+        source,
+        steps=[
+            steps.skip_fields(names=["id"]),
+        ],
+    )
     assert target.schema == {
         "fields": [
             {"name": "name", "type": "string"},
@@ -44,7 +54,12 @@ def test_step_skip_fields():
 
 def test_step_move_field():
     source = Resource(path="data/transform.csv")
-    target = transform(source, steps=[steps.move_field(name="id", position=3)])
+    target = transform(
+        source,
+        steps=[
+            steps.move_field(name="id", position=3),
+        ],
+    )
     assert target.schema == {
         "fields": [
             {"name": "name", "type": "string"},
@@ -65,7 +80,10 @@ def test_step_move_field():
 def test_step_add_field():
     source = Resource(path="data/transform.csv")
     target = transform(
-        source, steps=[steps.add_field(name="note", type="string", value="eu")]
+        source,
+        steps=[
+            steps.add_field(name="note", type="string", value="eu"),
+        ],
     )
     assert target.schema == {
         "fields": [
@@ -85,7 +103,10 @@ def test_step_add_field():
 def test_step_add_field_with_position():
     source = Resource(path="data/transform.csv")
     target = transform(
-        source, steps=[steps.add_field(name="note", position=1, value="eu")]
+        source,
+        steps=[
+            steps.add_field(name="note", position=1, value="eu"),
+        ],
     )
     assert target.schema == {
         "fields": [
@@ -106,7 +127,10 @@ def test_step_add_field_with_formula():
     source = Resource(path="data/transform.csv")
     target = transform(
         source,
-        steps=[steps.add_field(name="calc", value="<formula>id * 100 + population")],
+        steps=[
+            steps.normalize_table(),
+            steps.add_field(name="calc", value="<formula>id * 100 + population"),
+        ],
     )
     assert target.schema == {
         "fields": [
@@ -128,9 +152,10 @@ def test_step_add_field_with_value_callable():
     target = transform(
         source,
         steps=[
+            steps.normalize_table(),
             steps.add_field(
                 name="calc", value=lambda row: row["id"] * 100 + row["population"]
-            )
+            ),
         ],
     )
     assert target.schema == {
@@ -153,7 +178,12 @@ def test_step_add_field_with_value_callable():
 
 def test_step_add_increment_field():
     source = Resource(path="data/transform.csv")
-    target = transform(source, steps=[steps.add_increment_field(name="index", start=0)])
+    target = transform(
+        source,
+        steps=[
+            steps.add_increment_field(name="index", start=0),
+        ],
+    )
     assert target.schema == {
         "fields": [
             {"name": "index", "type": "integer"},
@@ -175,7 +205,10 @@ def test_step_add_increment_field():
 def test_step_update_field():
     source = Resource(path="data/transform.csv")
     target = transform(
-        source, steps=[steps.update_field(name="id", type="string", value=str)]
+        source,
+        steps=[
+            steps.update_field(name="id", type="string", value=str),
+        ],
     )
     assert target.schema == {
         "fields": [
@@ -194,7 +227,10 @@ def test_step_update_field():
 def test_step_update_field_with_exact_value():
     source = Resource(path="data/transform.csv")
     target = transform(
-        source, steps=[steps.update_field(name="id", type="string", value="x")]
+        source,
+        steps=[
+            steps.update_field(name="id", type="string", value="x"),
+        ],
     )
     assert target.schema == {
         "fields": [

@@ -12,7 +12,7 @@ def test_step_merge_tables():
         steps=[
             steps.merge_tables(
                 resource=Resource(data=[["id", "name", "note"], [4, "malta", "island"]])
-            )
+            ),
         ],
     )
     assert target.schema == {
@@ -39,7 +39,7 @@ def test_step_merge_tables_with_names():
             steps.merge_tables(
                 resource=Resource(data=[["id", "name", "note"], [4, "malta", "island"]]),
                 names=["id", "name"],
-            )
+            ),
         ],
     )
     assert target.schema == {
@@ -64,7 +64,7 @@ def test_step_merge_ignore_names():
             steps.merge_tables(
                 resource=Resource(data=[["id2", "name2"], [4, "malta"]]),
                 ignore_names=True,
-            )
+            ),
         ],
     )
     assert target.schema == {
@@ -90,7 +90,7 @@ def test_step_merge_tables_with_sort():
             steps.merge_tables(
                 resource=Resource(data=[["id", "name", "population"], [4, "malta", 1]]),
                 sort=["population"],
-            )
+            ),
         ],
     )
     assert target.schema == {
@@ -116,10 +116,11 @@ def test_step_join_tables():
     target = transform(
         source,
         steps=[
+            steps.normalize_table(),
             steps.join_tables(
                 resource=Resource(data=[["id", "note"], [1, "beer"], [2, "vine"]]),
                 name="id",
-            )
+            ),
         ],
     )
     assert target.schema == {
@@ -146,7 +147,7 @@ def test_step_join_tables_with_name_is_not_first_field():
                     data=[["name", "note"], ["germany", "beer"], ["france", "vine"]]
                 ),
                 name="name",
-            )
+            ),
         ],
     )
     assert target.schema == {
@@ -168,11 +169,12 @@ def test_step_join_tables_mode_left():
     target = transform(
         source,
         steps=[
+            steps.normalize_table(),
             steps.join_tables(
                 resource=Resource(data=[["id", "note"], [1, "beer"], [2, "vine"]]),
                 name="id",
                 mode="left",
-            )
+            ),
         ],
     )
     assert target.schema == {
@@ -195,11 +197,12 @@ def test_step_join_tables_mode_right():
     target = transform(
         source,
         steps=[
+            steps.normalize_table(),
             steps.join_tables(
                 resource=Resource(data=[["id", "note"], [1, "beer"], [4, "rum"]]),
                 name="id",
                 mode="right",
-            )
+            ),
         ],
     )
     assert target.schema == {
@@ -221,11 +224,12 @@ def test_step_join_tables_mode_outer():
     target = transform(
         source,
         steps=[
+            steps.normalize_table(),
             steps.join_tables(
                 resource=Resource(data=[["id", "note"], [1, "beer"], [4, "rum"]]),
                 name="id",
                 mode="outer",
-            )
+            ),
         ],
     )
     assert target.schema == {
@@ -252,7 +256,7 @@ def test_step_join_tables_mode_cross():
             steps.join_tables(
                 resource=Resource(data=[["id2", "note"], [1, "beer"], [4, "rum"]]),
                 mode="cross",
-            )
+            ),
         ],
     )
     assert target.schema == {
@@ -279,10 +283,11 @@ def test_step_join_tables_mode_anti():
     target = transform(
         source,
         steps=[
+            steps.normalize_table(),
             steps.join_tables(
                 resource=Resource(data=[["id", "note"], [1, "beer"], [4, "rum"]]),
                 mode="anti",
-            )
+            ),
         ],
     )
     assert target.schema == {
@@ -303,11 +308,12 @@ def test_step_join_tables_hash_is_true():
     target = transform(
         source,
         steps=[
+            steps.normalize_table(),
             steps.join_tables(
                 resource=Resource(data=[["id", "note"], [1, "beer"], [2, "vine"]]),
                 name="id",
                 hash=True,
-            )
+            ),
         ],
     )
     assert target.schema == {
@@ -358,6 +364,7 @@ def test_step_diff_tables():
     target = transform(
         source,
         steps=[
+            steps.normalize_table(),
             steps.diff_tables(
                 resource=Resource(
                     data=[
@@ -367,7 +374,7 @@ def test_step_diff_tables():
                         [3, "spain", 47],
                     ]
                 )
-            )
+            ),
         ],
     )
     assert target.schema == source.schema
@@ -381,6 +388,7 @@ def test_step_diff_tables_with_ignore_order():
     target = transform(
         source,
         steps=[
+            steps.normalize_table(),
             steps.diff_tables(
                 resource=Resource(
                     data=[
@@ -391,7 +399,7 @@ def test_step_diff_tables_with_ignore_order():
                     ]
                 ),
                 ignore_order=True,
-            )
+            ),
         ],
     )
     assert target.schema == source.schema
@@ -405,6 +413,7 @@ def test_step_diff_tables_with_use_hash():
     target = transform(
         source,
         steps=[
+            steps.normalize_table(),
             steps.diff_tables(
                 resource=Resource(
                     data=[
@@ -415,7 +424,7 @@ def test_step_diff_tables_with_use_hash():
                     ]
                 ),
                 use_hash=True,
-            )
+            ),
         ],
     )
     assert target.schema == source.schema
@@ -432,6 +441,7 @@ def test_step_intersect_tables():
     target = transform(
         source,
         steps=[
+            steps.normalize_table(),
             steps.intersect_tables(
                 resource=Resource(
                     data=[
@@ -441,7 +451,7 @@ def test_step_intersect_tables():
                         [3, "spain", 47],
                     ]
                 )
-            )
+            ),
         ],
     )
     assert target.schema == source.schema
@@ -456,6 +466,7 @@ def test_step_intersect_tables_with_use_hash():
     target = transform(
         source,
         steps=[
+            steps.normalize_table(),
             steps.intersect_tables(
                 resource=Resource(
                     data=[
@@ -466,7 +477,7 @@ def test_step_intersect_tables_with_use_hash():
                     ]
                 ),
                 use_hash=True,
-            )
+            ),
         ],
     )
     assert target.schema == source.schema
@@ -484,9 +495,10 @@ def test_step_aggregate_table():
     target = transform(
         source,
         steps=[
+            steps.normalize_table(),
             steps.aggregate_table(
                 group_name="name", aggregation={"sum": ("population", sum)}
-            )
+            ),
         ],
     )
     assert target.schema == {
@@ -507,6 +519,7 @@ def test_step_aggregate_table_multiple():
     target = transform(
         source,
         steps=[
+            steps.normalize_table(),
             steps.aggregate_table(
                 group_name="name",
                 aggregation={
@@ -514,7 +527,7 @@ def test_step_aggregate_table_multiple():
                     "min": ("population", min),
                     "max": ("population", max),
                 },
-            )
+            ),
         ],
     )
     assert target.schema == {
@@ -537,7 +550,13 @@ def test_step_aggregate_table_multiple():
 
 def test_step_melt_table():
     source = Resource(path="data/transform.csv")
-    target = transform(source, steps=[steps.melt_table(name="name")])
+    target = transform(
+        source,
+        steps=[
+            steps.normalize_table(),
+            steps.melt_table(name="name"),
+        ],
+    )
     assert target.schema == {
         "fields": [
             {"name": "name", "type": "string"},
@@ -558,7 +577,11 @@ def test_step_melt_table():
 def test_step_melt_table_with_variables():
     source = Resource(path="data/transform.csv")
     target = transform(
-        source, steps=[steps.melt_table(name="name", variables=["population"])]
+        source,
+        steps=[
+            steps.normalize_table(),
+            steps.melt_table(name="name", variables=["population"]),
+        ],
     )
     assert target.schema == {
         "fields": [
@@ -579,9 +602,10 @@ def test_step_melt_table_with_to_names():
     target = transform(
         source,
         steps=[
+            steps.normalize_table(),
             steps.melt_table(
                 name="name", variables=["population"], to_names=["key", "val"]
-            )
+            ),
         ],
     )
     assert target.schema == {
@@ -604,7 +628,12 @@ def test_step_melt_table_with_to_names():
 def test_step_recast_table():
     source = Resource(path="data/transform.csv")
     target = transform(
-        source, steps=[steps.melt_table(name="id"), steps.recast_table(name="id")]
+        source,
+        steps=[
+            steps.normalize_table(),
+            steps.melt_table(name="id"),
+            steps.recast_table(name="id"),
+        ],
     )
     assert target.schema == source.schema
     assert target.read_rows() == [
@@ -620,7 +649,13 @@ def test_step_recast_table():
 # TODO: fix this step
 def test_step_transpose_table():
     source = Resource(path="data/transform.csv")
-    target = transform(source, steps=[steps.transpose_table()])
+    target = transform(
+        source,
+        steps=[
+            steps.normalize_table(),
+            steps.transpose_table(),
+        ],
+    )
     assert target.schema == {
         "fields": [
             {"name": "name", "type": "string"},
@@ -641,7 +676,10 @@ def test_step_pivot_table():
     source = Resource(path="data/transform-pivot.csv")
     target = transform(
         source,
-        steps=[steps.pivot_table(f1="region", f2="gender", f3="units", aggfun=sum)],
+        steps=[
+            steps.normalize_table(),
+            steps.pivot_table(f1="region", f2="gender", f3="units", aggfun=sum),
+        ],
     )
     assert target.schema == {
         "fields": [

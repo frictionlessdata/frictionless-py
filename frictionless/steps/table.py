@@ -3,6 +3,13 @@ from ..step import Step
 from ..field import Field
 from ..helpers import ResourceView
 
+# TODO: implement steps - debug, validate, write
+
+
+class normalize_table(Step):
+    def transform_resource(self, source, target):
+        target.data = source.read_rows
+
 
 class merge_tables(Step):
     def __init__(self, *, resource, names=None, ignore_names=False, sort=False):

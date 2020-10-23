@@ -30,6 +30,7 @@ from .row import (
     pick_group_rows,
 )
 from .table import (
+    normalize_table,
     merge_tables,
     join_tables,
     attach_tables,

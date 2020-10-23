@@ -15,10 +15,6 @@ def transform_resource(resource, *, steps):
     # TODO: don't modify input
     resource.infer(only_sample=True)
     target = resource.to_copy()
-    # TODO: don't do this and provide "normalize" step?
-    target.data = resource.read_rows
-    # TODO: resource should handle it
-    target.format = "inline"
     for step in steps:
         source = target
         target = source.to_copy()
