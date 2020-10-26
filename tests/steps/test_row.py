@@ -1,127 +1,6 @@
 from frictionless import Resource, transform, steps
 
 
-# Choose
-
-
-def test_step_row_choose_conflicts():
-    source = Resource(path="data/transform.csv")
-    target = transform(
-        source,
-        steps=[
-            steps.row_choose(group="conflicts", name="id"),
-        ],
-    )
-    assert target.schema == source.schema
-    assert target.read_rows() == []
-
-
-def test_step_row_choose_conflicts_with_duplicates():
-    source = Resource(path="data/transform.csv")
-    target = transform(
-        source,
-        steps=[
-            steps.field_update(name="id", value=1),
-            steps.row_choose(group="conflicts", name="id"),
-        ],
-    )
-    assert target.schema == source.schema
-    assert target.read_rows() == [
-        {"id": 1, "name": "germany", "population": 83},
-        {"id": 1, "name": "france", "population": 66},
-        {"id": 1, "name": "spain", "population": 47},
-    ]
-
-
-def test_step_row_choose_distinct():
-    source = Resource(path="data/transform.csv")
-    target = transform(
-        source,
-        steps=[
-            steps.row_choose(group="distinct", name="id"),
-        ],
-    )
-    assert target.schema == source.schema
-    assert target.read_rows() == [
-        {"id": 1, "name": "germany", "population": 83},
-        {"id": 2, "name": "france", "population": 66},
-        {"id": 3, "name": "spain", "population": 47},
-    ]
-
-
-def test_step_row_choose_distinct_with_duplicates():
-    source = Resource(path="data/transform.csv")
-    target = transform(
-        source,
-        steps=[
-            steps.field_update(name="id", value=1),
-            steps.row_choose(group="distinct", name="id"),
-        ],
-    )
-    assert target.schema == source.schema
-    assert target.read_rows() == [
-        {"id": 1, "name": "germany", "population": 83},
-    ]
-
-
-def test_step_row_choose_duplicates():
-    source = Resource(path="data/transform.csv")
-    target = transform(
-        source,
-        steps=[
-            steps.row_choose(group="duplicates"),
-        ],
-    )
-    assert target.schema == source.schema
-    assert target.read_rows() == []
-
-
-def test_step_row_choose_duplicates_with_name():
-    source = Resource(path="data/transform.csv")
-    target = transform(
-        source,
-        steps=[
-            steps.field_update(name="id", value=1),
-            steps.row_choose(group="duplicates", name="id"),
-        ],
-    )
-    assert target.schema == source.schema
-    assert target.read_rows() == [
-        {"id": 1, "name": "germany", "population": 83},
-        {"id": 1, "name": "france", "population": 66},
-        {"id": 1, "name": "spain", "population": 47},
-    ]
-
-
-def test_step_row_choose_unique():
-    source = Resource(path="data/transform.csv")
-    target = transform(
-        source,
-        steps=[
-            steps.row_choose(group="unique"),
-        ],
-    )
-    assert target.schema == source.schema
-    assert target.read_rows() == [
-        {"id": 1, "name": "germany", "population": 83},
-        {"id": 2, "name": "france", "population": 66},
-        {"id": 3, "name": "spain", "population": 47},
-    ]
-
-
-def test_step_row_choose_unique_with_name():
-    source = Resource(path="data/transform.csv")
-    target = transform(
-        source,
-        steps=[
-            steps.field_update(name="id", value=1),
-            steps.row_choose(group="unique", name="id"),
-        ],
-    )
-    assert target.schema == source.schema
-    assert target.read_rows() == []
-
-
 # Filter
 
 
@@ -670,6 +549,127 @@ def test_step_row_split():
         {"id": 3, "name": "sp", "population": 47},
         {"id": 3, "name": "in", "population": 47},
     ]
+
+
+# Subset
+
+
+def test_step_row_subset_conflicts():
+    source = Resource(path="data/transform.csv")
+    target = transform(
+        source,
+        steps=[
+            steps.row_subset(subset="conflicts", name="id"),
+        ],
+    )
+    assert target.schema == source.schema
+    assert target.read_rows() == []
+
+
+def test_step_row_subset_conflicts_with_duplicates():
+    source = Resource(path="data/transform.csv")
+    target = transform(
+        source,
+        steps=[
+            steps.field_update(name="id", value=1),
+            steps.row_subset(subset="conflicts", name="id"),
+        ],
+    )
+    assert target.schema == source.schema
+    assert target.read_rows() == [
+        {"id": 1, "name": "germany", "population": 83},
+        {"id": 1, "name": "france", "population": 66},
+        {"id": 1, "name": "spain", "population": 47},
+    ]
+
+
+def test_step_row_subset_distinct():
+    source = Resource(path="data/transform.csv")
+    target = transform(
+        source,
+        steps=[
+            steps.row_subset(subset="distinct", name="id"),
+        ],
+    )
+    assert target.schema == source.schema
+    assert target.read_rows() == [
+        {"id": 1, "name": "germany", "population": 83},
+        {"id": 2, "name": "france", "population": 66},
+        {"id": 3, "name": "spain", "population": 47},
+    ]
+
+
+def test_step_row_subset_distinct_with_duplicates():
+    source = Resource(path="data/transform.csv")
+    target = transform(
+        source,
+        steps=[
+            steps.field_update(name="id", value=1),
+            steps.row_subset(subset="distinct", name="id"),
+        ],
+    )
+    assert target.schema == source.schema
+    assert target.read_rows() == [
+        {"id": 1, "name": "germany", "population": 83},
+    ]
+
+
+def test_step_row_subset_duplicates():
+    source = Resource(path="data/transform.csv")
+    target = transform(
+        source,
+        steps=[
+            steps.row_subset(subset="duplicates"),
+        ],
+    )
+    assert target.schema == source.schema
+    assert target.read_rows() == []
+
+
+def test_step_row_subset_duplicates_with_name():
+    source = Resource(path="data/transform.csv")
+    target = transform(
+        source,
+        steps=[
+            steps.field_update(name="id", value=1),
+            steps.row_subset(subset="duplicates", name="id"),
+        ],
+    )
+    assert target.schema == source.schema
+    assert target.read_rows() == [
+        {"id": 1, "name": "germany", "population": 83},
+        {"id": 1, "name": "france", "population": 66},
+        {"id": 1, "name": "spain", "population": 47},
+    ]
+
+
+def test_step_row_subset_unique():
+    source = Resource(path="data/transform.csv")
+    target = transform(
+        source,
+        steps=[
+            steps.row_subset(subset="unique"),
+        ],
+    )
+    assert target.schema == source.schema
+    assert target.read_rows() == [
+        {"id": 1, "name": "germany", "population": 83},
+        {"id": 2, "name": "france", "population": 66},
+        {"id": 3, "name": "spain", "population": 47},
+    ]
+
+
+def test_step_row_subset_unique_with_name():
+    source = Resource(path="data/transform.csv")
+    target = transform(
+        source,
+        steps=[
+            steps.field_update(name="id", value=1),
+            steps.row_subset(subset="unique", name="id"),
+        ],
+    )
+    assert target.schema == source.schema
+    assert target.read_rows() == []
 
 
 # Ungroup

@@ -3,23 +3,6 @@ import simpleeval
 from ..step import Step
 
 
-class row_choose(Step):
-    def __init__(self, group, *, name=None):
-        assert group in ["conflicts", "distinct", "duplicates", "unique"]
-        self.__group = group
-        self.__name = name
-
-    def transform_resource(self, source, target):
-        if self.__group == "conflicts":
-            target.data = source.to_petl().conflicts(self.__name)
-        elif self.__group == "distinct":
-            target.data = source.to_petl().distinct(self.__name)
-        elif self.__group == "duplicates":
-            target.data = source.to_petl().duplicates(self.__name)
-        elif self.__group == "unique":
-            target.data = source.to_petl().unique(self.__name)
-
-
 # TODO: review simpleeval perfomance for this transform
 # TODO: provide formula/regex helper constructors on the lib level?
 class row_filter(Step):
@@ -85,6 +68,23 @@ class row_split(Step):
 
     def transform_resource(self, source, target):
         target.data = source.to_petl().splitdown(self.__name, self.__pattern)
+
+
+class row_subset(Step):
+    def __init__(self, subset, *, name=None):
+        assert subset in ["conflicts", "distinct", "duplicates", "unique"]
+        self.__subset = subset
+        self.__name = name
+
+    def transform_resource(self, source, target):
+        if self.__subset == "conflicts":
+            target.data = source.to_petl().conflicts(self.__name)
+        elif self.__subset == "distinct":
+            target.data = source.to_petl().distinct(self.__name)
+        elif self.__subset == "duplicates":
+            target.data = source.to_petl().duplicates(self.__name)
+        elif self.__subset == "unique":
+            target.data = source.to_petl().unique(self.__name)
 
 
 class row_ungroup(Step):

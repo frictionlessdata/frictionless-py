@@ -16,12 +16,12 @@ from .field import (
     field_update,
 )
 from .row import (
-    row_choose,
     row_filter,
     row_search,
     row_slice,
     row_sort,
     row_split,
+    row_subset,
     row_ungroup,
 )
 from .table import (
