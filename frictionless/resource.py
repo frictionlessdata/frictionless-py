@@ -787,10 +787,13 @@ class Resource(Metadata):
         # Define view
         class ResourceView(petl.Table):
             def __iter__(self):
-                yield resource.schema.field_names
-                yield from resource.read_data_stream() if not normalize else map(
-                    lambda row: row.to_list(), resource.read_row_stream()
+                stream = (
+                    map(lambda row: row.to_list(), resource.read_row_stream())
+                    if normalize
+                    else resource.read_data_stream()
                 )
+                yield resource.schema.field_names
+                yield from stream
 
         return ResourceView()
 
