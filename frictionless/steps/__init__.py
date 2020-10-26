@@ -1,4 +1,5 @@
 from .cell import (
+    set_cells,
     replace_cells,
     fill_cells,
     convert_cells,

@@ -2,6 +2,15 @@ import petl
 from ..step import Step
 
 
+class set_cells(Step):
+    def __init__(self, *, name=None, value=None):
+        self.__name = name
+        self.__value = value
+
+    def transform_resource(self, source, target):
+        target.data = source.to_petl().update(self.__name, self.__value)
+
+
 # TODO: add set_cells?
 # TODO: accept WHERE/PREDICAT clause
 class replace_cells(Step):

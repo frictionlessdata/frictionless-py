@@ -1,6 +1,25 @@
 from frictionless import Resource, transform, steps
 
 
+# Set Cells
+
+
+def test_step_set_cells():
+    source = Resource(path="data/transform.csv")
+    target = transform(
+        source,
+        steps=[
+            steps.set_cells(name="population", value=100),
+        ],
+    )
+    assert target.schema == source.schema
+    assert target.read_rows() == [
+        {"id": 1, "name": "germany", "population": 100},
+        {"id": 2, "name": "france", "population": 100},
+        {"id": 3, "name": "spain", "population": 100},
+    ]
+
+
 # Replace Cells
 
 

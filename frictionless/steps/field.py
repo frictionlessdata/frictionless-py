@@ -4,6 +4,7 @@ from ..step import Step
 from ..field import Field
 
 
+# TODO: rename to filter_fields?
 class pick_fields(Step):
     def __init__(self, *, names):
         self.__names = names
@@ -15,7 +16,7 @@ class pick_fields(Step):
                 target.schema.remove_field(name)
 
 
-# TODO: remove_fields?
+# TODO: rename to remove_fields?
 class skip_fields(Step):
     def __init__(self, *, names):
         self.__names = names
