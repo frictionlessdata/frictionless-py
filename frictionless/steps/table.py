@@ -12,7 +12,7 @@ class normalize_table(Step):
 
 class print_table(Step):
     def transform_resource(self, source, target):
-        print(source.to_petl().look(style="simple"))
+        print(source.to_petl().look(vrepr=str, style="simple"))
 
 
 class merge_tables(Step):

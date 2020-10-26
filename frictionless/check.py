@@ -2,6 +2,7 @@ from .metadata import Metadata
 from . import errors
 
 
+# TODO: sync naming/etc with steps
 class Check(Metadata):
     """Check representation.
 
