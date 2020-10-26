@@ -19,6 +19,7 @@ from . import errors
 from . import config
 
 
+# TODO: implement save/write as we have table.write
 class Resource(Metadata):
     """Resource representation.
 

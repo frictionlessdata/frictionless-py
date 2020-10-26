@@ -22,6 +22,31 @@ def test_step_validate_table():
     assert error.note == 'type is "integer/default"'
 
 
+# Write Table
+
+
+def test_step_write_table(tmpdir):
+    path = str(tmpdir.join("table.json"))
+
+    # Write
+    source = Resource(path="data/transform.csv")
+    transform(
+        source,
+        steps=[
+            steps.set_cells(name="population", value=100),
+            steps.write_table(path=path),
+        ],
+    )
+
+    # Read
+    resource = Resource(path=path, trusted=True)
+    assert resource.read_rows() == [
+        {"id": 1, "name": "germany", "population": 100},
+        {"id": 2, "name": "france", "population": 100},
+        {"id": 3, "name": "spain", "population": 100},
+    ]
+
+
 # Merge Tables
 
 

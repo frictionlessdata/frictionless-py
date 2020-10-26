@@ -50,6 +50,17 @@ class validate_table(Step):
         target.data = data
 
 
+# TODO: review this step
+class write_table(Step):
+    def __init__(self, *, path, **options):
+        self.__path = path
+        self.__options = options
+
+    def transform_resource(self, source, target):
+        with target.to_table() as table:
+            table.write(self.__path, **self.__options)
+
+
 class merge_tables(Step):
     def __init__(self, *, resource, names=None, ignore_names=False, sort=False):
         self.__resource = resource
