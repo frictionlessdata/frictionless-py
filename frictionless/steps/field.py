@@ -4,30 +4,7 @@ from ..step import Step
 from ..field import Field
 
 
-# TODO: rename to filter_fields?
-class pick_fields(Step):
-    def __init__(self, *, names):
-        self.__names = names
-
-    def transform_resource(self, source, target):
-        target.data = source.to_petl().cut(*self.__names)
-        for name in target.schema.field_names:
-            if name not in self.__names:
-                target.schema.remove_field(name)
-
-
-class move_field(Step):
-    def __init__(self, *, name, position):
-        self.__name = name
-        self.__position = position
-
-    def transform_resource(self, source, target):
-        target.data = source.to_petl().movefield(self.__name, self.__position - 1)
-        field = target.schema.remove_field(self.__name)
-        target.schema.fields.insert(self.__position - 1, field)
-
-
-class add_field(Step):
+class field_add(Step):
     def __init__(self, *, name, value=None, position=None, incremental=False, **options):
         self.__name = name
         self.__value = value
@@ -52,7 +29,29 @@ class add_field(Step):
             target.schema.fields.insert(index, field)
 
 
-class remove_field(Step):
+class field_filter(Step):
+    def __init__(self, *, names):
+        self.__names = names
+
+    def transform_resource(self, source, target):
+        target.data = source.to_petl().cut(*self.__names)
+        for name in target.schema.field_names:
+            if name not in self.__names:
+                target.schema.remove_field(name)
+
+
+class field_move(Step):
+    def __init__(self, *, name, position):
+        self.__name = name
+        self.__position = position
+
+    def transform_resource(self, source, target):
+        target.data = source.to_petl().movefield(self.__name, self.__position - 1)
+        field = target.schema.remove_field(self.__name)
+        target.schema.fields.insert(self.__position - 1, field)
+
+
+class field_remove(Step):
     def __init__(self, *, names):
         self.__names = names
 
@@ -62,50 +61,7 @@ class remove_field(Step):
             target.schema.remove_field(name)
 
 
-# TODO: accept WHERE/PREDICAT clause
-class update_field(Step):
-    def __init__(self, *, name, value=None, **options):
-        self.__name = name
-        self.__value = value
-        self.__options = options
-
-    def transform_resource(self, source, target):
-        value = self.__value
-        if isinstance(value, str) and value.startswith("<formula>"):
-            formula = value.replace("<formula>", "")
-            value = lambda val, row: simpleeval.simple_eval(formula, names=row)
-        if not callable(value):
-            target.data = source.to_petl().update(self.__name, value)
-        else:
-            target.data = source.to_petl().convert(self.__name, value)
-        field = target.schema.get_field(self.__name)
-        for name, value in self.__options.items():
-            setattr(field, name, value)
-
-
-class unpack_field(Step):
-    def __init__(self, *, name, to_names, preserve=False):
-        self.__name = name
-        self.__to_names = to_names
-        self.__preserve = preserve
-
-    def transform_resource(self, source, target):
-        if target.schema.get_field(self.__name).type == "object":
-            target.data = source.to_petl().unpackdict(
-                self.__name, self.__to_names, includeoriginal=self.__preserve
-            )
-        else:
-            target.data = source.to_petl().unpack(
-                self.__name, self.__to_names, include_original=self.__preserve
-            )
-        if not self.__preserve:
-            target.schema.remove_field(self.__name)
-        for name in self.__to_names:
-            field = Field(name=name)
-            target.schema.add_field(field)
-
-
-class split_field(Step):
+class field_split(Step):
     def __init__(self, *, name, to_names, pattern, preserve=False):
         self.__name = name
         self.__to_names = to_names
@@ -129,3 +85,46 @@ class split_field(Step):
         for name in self.__to_names:
             field = Field(name=name, type="string")
             target.schema.add_field(field)
+
+
+class field_unpack(Step):
+    def __init__(self, *, name, to_names, preserve=False):
+        self.__name = name
+        self.__to_names = to_names
+        self.__preserve = preserve
+
+    def transform_resource(self, source, target):
+        if target.schema.get_field(self.__name).type == "object":
+            target.data = source.to_petl().unpackdict(
+                self.__name, self.__to_names, includeoriginal=self.__preserve
+            )
+        else:
+            target.data = source.to_petl().unpack(
+                self.__name, self.__to_names, include_original=self.__preserve
+            )
+        if not self.__preserve:
+            target.schema.remove_field(self.__name)
+        for name in self.__to_names:
+            field = Field(name=name)
+            target.schema.add_field(field)
+
+
+# TODO: accept WHERE/PREDICAT clause
+class field_update(Step):
+    def __init__(self, *, name, value=None, **options):
+        self.__name = name
+        self.__value = value
+        self.__options = options
+
+    def transform_resource(self, source, target):
+        value = self.__value
+        if isinstance(value, str) and value.startswith("<formula>"):
+            formula = value.replace("<formula>", "")
+            value = lambda val, row: simpleeval.simple_eval(formula, names=row)
+        if not callable(value):
+            target.data = source.to_petl().update(self.__name, value)
+        else:
+            target.data = source.to_petl().convert(self.__name, value)
+        field = target.schema.get_field(self.__name)
+        for name, value in self.__options.items():
+            setattr(field, name, value)

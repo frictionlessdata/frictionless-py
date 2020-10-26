@@ -555,7 +555,7 @@ def test_step_duplicate_rows_with_name():
     target = transform(
         source,
         steps=[
-            steps.update_field(name="id", value=1),
+            steps.field_update(name="id", value=1),
             steps.duplicate_rows(name="id"),
         ],
     )
@@ -591,7 +591,7 @@ def test_step_unique_rows_with_name():
     target = transform(
         source,
         steps=[
-            steps.update_field(name="id", value=1),
+            steps.field_update(name="id", value=1),
             steps.unique_rows(name="id"),
         ],
     )
@@ -619,7 +619,7 @@ def test_step_conflict_rows_with_conflicts():
     target = transform(
         source,
         steps=[
-            steps.update_field(name="id", value=1),
+            steps.field_update(name="id", value=1),
             steps.conflict_rows(name="id"),
         ],
     )
@@ -655,7 +655,7 @@ def test_step_distinct_rows_with_distincts():
     target = transform(
         source,
         steps=[
-            steps.update_field(name="id", value=1),
+            steps.field_update(name="id", value=1),
             steps.distinct_rows(name="id"),
         ],
     )

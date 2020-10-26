@@ -1,88 +1,15 @@
 from frictionless import Resource, transform, steps
 
 
-# Pick Fields
+# Add
 
 
-def test_step_pick_fields():
+def test_step_field_add():
     source = Resource(path="data/transform.csv")
     target = transform(
         source,
         steps=[
-            steps.pick_fields(names=["id", "name"]),
-        ],
-    )
-    assert target.schema == {
-        "fields": [
-            {"name": "id", "type": "integer"},
-            {"name": "name", "type": "string"},
-        ]
-    }
-    assert target.read_rows() == [
-        {"id": 1, "name": "germany"},
-        {"id": 2, "name": "france"},
-        {"id": 3, "name": "spain"},
-    ]
-
-
-# Remove Field
-
-
-def test_step_remove_field():
-    source = Resource(path="data/transform.csv")
-    target = transform(
-        source,
-        steps=[
-            steps.remove_field(names=["id"]),
-        ],
-    )
-    assert target.schema == {
-        "fields": [
-            {"name": "name", "type": "string"},
-            {"name": "population", "type": "integer"},
-        ]
-    }
-    assert target.read_rows() == [
-        {"name": "germany", "population": 83},
-        {"name": "france", "population": 66},
-        {"name": "spain", "population": 47},
-    ]
-
-
-# Move Field
-
-
-def test_step_move_field():
-    source = Resource(path="data/transform.csv")
-    target = transform(
-        source,
-        steps=[
-            steps.move_field(name="id", position=3),
-        ],
-    )
-    assert target.schema == {
-        "fields": [
-            {"name": "name", "type": "string"},
-            {"name": "population", "type": "integer"},
-            {"name": "id", "type": "integer"},
-        ]
-    }
-    assert target.read_rows() == [
-        {"name": "germany", "population": 83, "id": 1},
-        {"name": "france", "population": 66, "id": 2},
-        {"name": "spain", "population": 47, "id": 3},
-    ]
-
-
-# Add Field
-
-
-def test_step_add_field():
-    source = Resource(path="data/transform.csv")
-    target = transform(
-        source,
-        steps=[
-            steps.add_field(name="note", type="string", value="eu"),
+            steps.field_add(name="note", type="string", value="eu"),
         ],
     )
     assert target.schema == {
@@ -100,12 +27,12 @@ def test_step_add_field():
     ]
 
 
-def test_step_add_field_with_position():
+def test_step_field_add_with_position():
     source = Resource(path="data/transform.csv")
     target = transform(
         source,
         steps=[
-            steps.add_field(name="note", position=1, value="eu"),
+            steps.field_add(name="note", position=1, value="eu"),
         ],
     )
     assert target.schema == {
@@ -123,13 +50,13 @@ def test_step_add_field_with_position():
     ]
 
 
-def test_step_add_field_with_formula():
+def test_step_field_add_with_formula():
     source = Resource(path="data/transform.csv")
     target = transform(
         source,
         steps=[
             steps.normalize_table(),
-            steps.add_field(name="calc", value="<formula>id * 100 + population"),
+            steps.field_add(name="calc", value="<formula>id * 100 + population"),
         ],
     )
     assert target.schema == {
@@ -147,13 +74,13 @@ def test_step_add_field_with_formula():
     ]
 
 
-def test_step_add_field_with_value_callable():
+def test_step_field_add_with_value_callable():
     source = Resource(path="data/transform.csv")
     target = transform(
         source,
         steps=[
             steps.normalize_table(),
-            steps.add_field(
+            steps.field_add(
                 name="calc", value=lambda row: row["id"] * 100 + row["population"]
             ),
         ],
@@ -173,12 +100,12 @@ def test_step_add_field_with_value_callable():
     ]
 
 
-def test_step_add_field_with_incremental():
+def test_step_field_add_with_incremental():
     source = Resource(path="data/transform.csv")
     target = transform(
         source,
         steps=[
-            steps.add_field(name="number", incremental=True),
+            steps.field_add(name="number", incremental=True),
         ],
     )
     assert target.schema == {
@@ -196,137 +123,88 @@ def test_step_add_field_with_incremental():
     ]
 
 
-# Update Field
+# Filter
 
 
-def test_step_update_field():
+def test_step_field_filter():
     source = Resource(path="data/transform.csv")
     target = transform(
         source,
         steps=[
-            steps.update_field(name="id", type="string", value=str),
+            steps.field_filter(names=["id", "name"]),
         ],
     )
     assert target.schema == {
         "fields": [
-            {"name": "id", "type": "string"},
+            {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},
-            {"name": "population", "type": "integer"},
         ]
     }
     assert target.read_rows() == [
-        {"id": "1", "name": "germany", "population": 83},
-        {"id": "2", "name": "france", "population": 66},
-        {"id": "3", "name": "spain", "population": 47},
+        {"id": 1, "name": "germany"},
+        {"id": 2, "name": "france"},
+        {"id": 3, "name": "spain"},
     ]
 
 
-def test_step_update_field_with_exact_value():
+# Move
+
+
+def test_step_field_move():
     source = Resource(path="data/transform.csv")
     target = transform(
         source,
         steps=[
-            steps.update_field(name="id", type="string", value="x"),
-        ],
-    )
-    assert target.schema == {
-        "fields": [
-            {"name": "id", "type": "string"},
-            {"name": "name", "type": "string"},
-            {"name": "population", "type": "integer"},
-        ]
-    }
-    assert target.read_rows() == [
-        {"id": "x", "name": "germany", "population": 83},
-        {"id": "x", "name": "france", "population": 66},
-        {"id": "x", "name": "spain", "population": 47},
-    ]
-
-
-# Unpack Field
-
-
-def test_step_unpack_field():
-    source = Resource(path="data/transform.csv")
-    target = transform(
-        source,
-        steps=[
-            steps.update_field(name="id", type="array", value=[1, 1]),
-            steps.unpack_field(name="id", to_names=["id2", "id3"]),
+            steps.field_move(name="id", position=3),
         ],
     )
     assert target.schema == {
         "fields": [
             {"name": "name", "type": "string"},
             {"name": "population", "type": "integer"},
-            {"name": "id2"},
-            {"name": "id3"},
+            {"name": "id", "type": "integer"},
         ]
     }
     assert target.read_rows() == [
-        {"name": "germany", "population": 83, "id2": 1, "id3": 1},
-        {"name": "france", "population": 66, "id2": 1, "id3": 1},
-        {"name": "spain", "population": 47, "id2": 1, "id3": 1},
+        {"name": "germany", "population": 83, "id": 1},
+        {"name": "france", "population": 66, "id": 2},
+        {"name": "spain", "population": 47, "id": 3},
     ]
 
 
-def test_step_unpack_field_with_preserve():
+# Remove
+
+
+def test_step_field_remove():
     source = Resource(path="data/transform.csv")
     target = transform(
         source,
         steps=[
-            steps.update_field(name="id", type="array", value=[1, 1]),
-            steps.unpack_field(name="id", to_names=["id2", "id3"], preserve=True),
-        ],
-    )
-    assert target.schema == {
-        "fields": [
-            {"name": "id", "type": "array"},
-            {"name": "name", "type": "string"},
-            {"name": "population", "type": "integer"},
-            {"name": "id2"},
-            {"name": "id3"},
-        ]
-    }
-    assert target.read_rows() == [
-        {"id": [1, 1], "name": "germany", "population": 83, "id2": 1, "id3": 1},
-        {"id": [1, 1], "name": "france", "population": 66, "id2": 1, "id3": 1},
-        {"id": [1, 1], "name": "spain", "population": 47, "id2": 1, "id3": 1},
-    ]
-
-
-def test_step_unpack_field_source_is_object():
-    source = Resource(path="data/transform.csv")
-    target = transform(
-        source,
-        steps=[
-            steps.update_field(name="id", type="object", value={"note": "eu"}),
-            steps.unpack_field(name="id", to_names=["note"]),
+            steps.field_remove(names=["id"]),
         ],
     )
     assert target.schema == {
         "fields": [
             {"name": "name", "type": "string"},
             {"name": "population", "type": "integer"},
-            {"name": "note"},
         ]
     }
     assert target.read_rows() == [
-        {"name": "germany", "population": 83, "note": "eu"},
-        {"name": "france", "population": 66, "note": "eu"},
-        {"name": "spain", "population": 47, "note": "eu"},
+        {"name": "germany", "population": 83},
+        {"name": "france", "population": 66},
+        {"name": "spain", "population": 47},
     ]
 
 
-# Split Field
+# Split
 
 
-def test_step_split_field():
+def test_step_field_split():
     source = Resource(path="data/transform.csv")
     target = transform(
         source,
         steps=[
-            steps.split_field(name="name", to_names=["name1", "name2"], pattern="a"),
+            steps.field_split(name="name", to_names=["name1", "name2"], pattern="a"),
         ],
     )
     assert target.schema == {
@@ -344,12 +222,12 @@ def test_step_split_field():
     ]
 
 
-def test_step_split_field_with_preserve():
+def test_step_field_split_with_preserve():
     source = Resource(path="data/transform.csv")
     target = transform(
         source,
         steps=[
-            steps.split_field(
+            steps.field_split(
                 name="name", to_names=["name1", "name2"], pattern="a", preserve=True
             ),
         ],
@@ -370,12 +248,12 @@ def test_step_split_field_with_preserve():
     ]
 
 
-def test_step_split_field_with_capturing_groups():
+def test_step_field_split_with_capturing_groups():
     source = Resource(path="data/transform.csv")
     target = transform(
         source,
         steps=[
-            steps.split_field(
+            steps.field_split(
                 name="name", to_names=["name1", "name2"], pattern=r"(.{2})(.*)"
             ),
         ],
@@ -392,4 +270,126 @@ def test_step_split_field_with_capturing_groups():
         {"id": 1, "population": 83, "name1": "ge", "name2": "rmany"},
         {"id": 2, "population": 66, "name1": "fr", "name2": "ance"},
         {"id": 3, "population": 47, "name1": "sp", "name2": "ain"},
+    ]
+
+
+# Unpack
+
+
+def test_step_field_unpack():
+    source = Resource(path="data/transform.csv")
+    target = transform(
+        source,
+        steps=[
+            steps.field_update(name="id", type="array", value=[1, 1]),
+            steps.field_unpack(name="id", to_names=["id2", "id3"]),
+        ],
+    )
+    assert target.schema == {
+        "fields": [
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+            {"name": "id2"},
+            {"name": "id3"},
+        ]
+    }
+    assert target.read_rows() == [
+        {"name": "germany", "population": 83, "id2": 1, "id3": 1},
+        {"name": "france", "population": 66, "id2": 1, "id3": 1},
+        {"name": "spain", "population": 47, "id2": 1, "id3": 1},
+    ]
+
+
+def test_step_field_unpack_with_preserve():
+    source = Resource(path="data/transform.csv")
+    target = transform(
+        source,
+        steps=[
+            steps.field_update(name="id", type="array", value=[1, 1]),
+            steps.field_unpack(name="id", to_names=["id2", "id3"], preserve=True),
+        ],
+    )
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "array"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+            {"name": "id2"},
+            {"name": "id3"},
+        ]
+    }
+    assert target.read_rows() == [
+        {"id": [1, 1], "name": "germany", "population": 83, "id2": 1, "id3": 1},
+        {"id": [1, 1], "name": "france", "population": 66, "id2": 1, "id3": 1},
+        {"id": [1, 1], "name": "spain", "population": 47, "id2": 1, "id3": 1},
+    ]
+
+
+def test_step_field_unpack_source_is_object():
+    source = Resource(path="data/transform.csv")
+    target = transform(
+        source,
+        steps=[
+            steps.field_update(name="id", type="object", value={"note": "eu"}),
+            steps.field_unpack(name="id", to_names=["note"]),
+        ],
+    )
+    assert target.schema == {
+        "fields": [
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+            {"name": "note"},
+        ]
+    }
+    assert target.read_rows() == [
+        {"name": "germany", "population": 83, "note": "eu"},
+        {"name": "france", "population": 66, "note": "eu"},
+        {"name": "spain", "population": 47, "note": "eu"},
+    ]
+
+
+# Update
+
+
+def test_step_field_update():
+    source = Resource(path="data/transform.csv")
+    target = transform(
+        source,
+        steps=[
+            steps.field_update(name="id", type="string", value=str),
+        ],
+    )
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "string"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+        ]
+    }
+    assert target.read_rows() == [
+        {"id": "1", "name": "germany", "population": 83},
+        {"id": "2", "name": "france", "population": 66},
+        {"id": "3", "name": "spain", "population": 47},
+    ]
+
+
+def test_step_field_update_with_exact_value():
+    source = Resource(path="data/transform.csv")
+    target = transform(
+        source,
+        steps=[
+            steps.field_update(name="id", type="string", value="x"),
+        ],
+    )
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "string"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+        ]
+    }
+    assert target.read_rows() == [
+        {"id": "x", "name": "germany", "population": 83},
+        {"id": "x", "name": "france", "population": 66},
+        {"id": "x", "name": "spain", "population": 47},
     ]

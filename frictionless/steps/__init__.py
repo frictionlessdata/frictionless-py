@@ -7,13 +7,13 @@ from .cell import (
     interpolate_cells,
 )
 from .field import (
-    pick_fields,
-    move_field,
-    add_field,
-    remove_field,
-    update_field,
-    unpack_field,
-    split_field,
+    field_add,
+    field_filter,
+    field_move,
+    field_remove,
+    field_split,
+    field_unpack,
+    field_update,
 )
 from .row import (
     head_rows,
