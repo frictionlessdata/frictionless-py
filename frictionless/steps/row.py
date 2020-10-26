@@ -3,39 +3,26 @@ import simpleeval
 from ..step import Step
 
 
-# TODO: update naming using verb-based?
-class head_rows(Step):
-    def __init__(self, *, limit):
-        self.__limit = limit
+class row_choose(Step):
+    def __init__(self, group, *, name=None):
+        assert group in ["conflicts", "distinct", "duplicates", "unique"]
+        self.__group = group
+        self.__name = name
 
     def transform_resource(self, source, target):
-        target.data = source.to_petl().head(self.__limit)
+        if self.__group == "conflicts":
+            target.data = source.to_petl().conflicts(self.__name)
+        elif self.__group == "distinct":
+            target.data = source.to_petl().distinct(self.__name)
+        elif self.__group == "duplicates":
+            target.data = source.to_petl().duplicates(self.__name)
+        elif self.__group == "unique":
+            target.data = source.to_petl().unique(self.__name)
 
 
-# TODO: update naming using verb-based?
-class tail_rows(Step):
-    def __init__(self, limit):
-        self.__limit = limit
-
-    def transform_resource(self, source, target):
-        target.data = source.to_petl().tail(self.__limit)
-
-
-class slice_rows(Step):
-    def __init__(self, *, start=None, stop, step=None):
-        self.__start = start
-        self.__stop = stop
-        self.__step = step
-
-    def transform_resource(self, source, target):
-        target.data = source.to_petl().rowslice(self.__start, self.__stop, self.__step)
-
-
-# TODO: add skip_rows
-# TODO: rename to pick_rows
 # TODO: review simpleeval perfomance for this transform
 # TODO: provide formula/regex helper constructors on the lib level?
-class filter_rows(Step):
+class row_filter(Step):
     def __init__(self, *, predicat=None):
         self.__predicat = predicat
 
@@ -49,8 +36,7 @@ class filter_rows(Step):
         target.data = source.to_petl().select(predicat)
 
 
-# TODO: merge with filter_rows?
-class search_rows(Step):
+class row_search(Step):
     def __init__(self, *, regex, name=None, anti=False):
         self.__regex = regex
         self.__name = name
@@ -64,7 +50,26 @@ class search_rows(Step):
             target.data = search(source.to_petl(), self.__regex)
 
 
-class sort_rows(Step):
+class row_slice(Step):
+    def __init__(self, *, start=None, stop=None, step=None, head=None, tail=None):
+        self.__start = start
+        self.__stop = stop
+        self.__step = step
+        self.__head = head
+        self.__tail = tail
+
+    def transform_resource(self, source, target):
+        if self.__head:
+            target.data = source.to_petl().head(self.__head)
+        elif self.__tail:
+            target.data = source.to_petl().tail(self.__tail)
+        else:
+            target.data = source.to_petl().rowslice(
+                self.__start, self.__stop, self.__step
+            )
+
+
+class row_sort(Step):
     def __init__(self, *, names, reverse=False):
         self.__names = names
         self.__reverse = reverse
@@ -73,43 +78,7 @@ class sort_rows(Step):
         target.data = source.to_petl().sort(self.__names, reverse=self.__reverse)
 
 
-# TODO: update naming using verb-based?
-class duplicate_rows(Step):
-    def __init__(self, *, name=None):
-        self.__name = name
-
-    def transform_resource(self, source, target):
-        target.data = source.to_petl().duplicates(self.__name)
-
-
-# TODO: update naming using verb-based?
-class unique_rows(Step):
-    def __init__(self, *, name=None):
-        self.__name = name
-
-    def transform_resource(self, source, target):
-        target.data = source.to_petl().unique(self.__name)
-
-
-# TODO: update naming using verb-based?
-class conflict_rows(Step):
-    def __init__(self, *, name=None):
-        self.__name = name
-
-    def transform_resource(self, source, target):
-        target.data = source.to_petl().conflicts(self.__name)
-
-
-# TODO: update naming using verb-based?
-class distinct_rows(Step):
-    def __init__(self, *, name=None):
-        self.__name = name
-
-    def transform_resource(self, source, target):
-        target.data = source.to_petl().distinct(self.__name)
-
-
-class split_rows(Step):
+class row_split(Step):
     def __init__(self, *, name, pattern):
         self.__name = name
         self.__pattern = pattern
@@ -118,7 +87,7 @@ class split_rows(Step):
         target.data = source.to_petl().splitdown(self.__name, self.__pattern)
 
 
-class pick_group_rows(Step):
+class row_ungroup(Step):
     def __init__(self, *, group_name, selection, value_name=None):
         assert selection in ["first", "last", "min", "max"]
         self.__group_name = group_name

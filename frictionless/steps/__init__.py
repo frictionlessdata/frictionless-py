@@ -16,18 +16,13 @@ from .field import (
     field_update,
 )
 from .row import (
-    head_rows,
-    tail_rows,
-    slice_rows,
-    filter_rows,
-    search_rows,
-    sort_rows,
-    duplicate_rows,
-    unique_rows,
-    conflict_rows,
-    distinct_rows,
-    split_rows,
-    pick_group_rows,
+    row_choose,
+    row_filter,
+    row_search,
+    row_slice,
+    row_sort,
+    row_split,
+    row_ungroup,
 )
 from .table import (
     table_aggregate,
@@ -46,7 +41,3 @@ from .table import (
     table_validate,
     table_write,
 )
-
-# TODO: add an issue - support intervaltree transforms
-# TODO: add an issue - support maps transforms
-# TODO: rename name -> field_name
