@@ -28,38 +28,28 @@ class move_field(Step):
 
 
 class add_field(Step):
-    def __init__(self, *, name, type=None, position=None, value=None):
+    def __init__(self, *, name, value=None, position=None, incremental=False, **options):
         self.__name = name
-        self.__type = type
-        self.__position = position
         self.__value = value
+        self.__position = position if not incremental else 1
+        self.__incremental = incremental
+        self.__options = options
 
     def transform_resource(self, source, target):
-        value = self.__value
-        if isinstance(value, str) and value.startswith("<formula>"):
-            formula = value.replace("<formula>", "")
-            value = lambda row: simpleeval.simple_eval(formula, names=row)
         index = self.__position - 1 if self.__position else None
-        target.data = source.to_petl().addfield(self.__name, value=value, index=index)
-        field = Field(name=self.__name, type=self.__type)
+        if self.__incremental:
+            target.data = source.to_petl().addrownumbers(field=self.__name)
+        else:
+            value = self.__value
+            if isinstance(value, str) and value.startswith("<formula>"):
+                formula = value.replace("<formula>", "")
+                value = lambda row: simpleeval.simple_eval(formula, names=row)
+            target.data = source.to_petl().addfield(self.__name, value=value, index=index)
+        field = Field(name=self.__name, **self.__options)
         if index is None:
             target.schema.add_field(field)
         else:
             target.schema.fields.insert(index, field)
-
-
-# TODO: merge to add_field?
-class add_increment_field(Step):
-    def __init__(self, *, name, start=1):
-        self.__name = name
-        self.__start = start
-
-    def transform_resource(self, source, target):
-        target.data = source.to_petl().addrownumbers(
-            field=self.__name, start=self.__start
-        )
-        field = Field(name=self.__name, type="integer")
-        target.schema.fields.insert(0, field)
 
 
 class remove_field(Step):
