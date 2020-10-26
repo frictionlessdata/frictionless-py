@@ -32,6 +32,7 @@ from .row import (
 from .table import (
     normalize_table,
     print_table,
+    debug_table,
     merge_tables,
     join_tables,
     attach_tables,
@@ -46,6 +47,5 @@ from .table import (
 
 # TODO: add an issue - support intervaltree transforms
 # TODO: add an issue - support maps transforms
-# TODO: rename steps to procs/or?
 # TODO: rename to obj/verb
 # TODO: rename name -> field_name

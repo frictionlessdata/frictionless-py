@@ -2,8 +2,6 @@ import petl
 from ..step import Step
 from ..field import Field
 
-# TODO: implement steps - validate, write
-
 
 class normalize_table(Step):
     def transform_resource(self, source, target):
@@ -13,6 +11,23 @@ class normalize_table(Step):
 class print_table(Step):
     def transform_resource(self, source, target):
         print(source.to_petl().look(vrepr=str, style="simple"))
+
+
+class debug_table(Step):
+    def __init__(self, *, function):
+        self.__function = function
+
+    def transform_resource(self, source, target):
+
+        # Data
+        def data():
+            yield source.schema.field_names
+            for cells in source.read_data_stream():
+                self.__function(cells)
+                yield cells
+
+        # Meta
+        target.data = data
 
 
 class merge_tables(Step):
