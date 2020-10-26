@@ -1,6 +1,7 @@
 import petl
 from ..step import Step
 from ..field import Field
+from .. import exceptions
 
 
 class normalize_table(Step):
@@ -25,6 +26,25 @@ class debug_table(Step):
             for cells in source.read_data_stream():
                 self.__function(cells)
                 yield cells
+
+        # Meta
+        target.data = data
+
+
+# TODO: improve this step (add an ability to get a report instead of raising?)
+class validate_table(Step):
+    def transform_resource(self, source, target):
+
+        # Data
+        def data():
+            yield source.schema.field_names
+            with source.to_table() as table:
+                if not table.header.valid:
+                    raise exceptions.FrictionlessException(error=table.header.errors[0])
+                for row in table.row_stream:
+                    if not row.valid:
+                        raise exceptions.FrictionlessException(error=row.errors[0])
+                    yield row
 
         # Meta
         target.data = data

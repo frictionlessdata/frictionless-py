@@ -1,4 +1,25 @@
-from frictionless import Resource, transform, steps
+import pytest
+from frictionless import Resource, transform, steps, exceptions
+
+
+# Validate Table
+
+
+def test_step_validate_table():
+    source = Resource(path="data/transform.csv")
+    target = transform(
+        source,
+        steps=[
+            steps.set_cells(name="population", value="bad"),
+            steps.validate_table(),
+        ],
+    )
+    assert target.schema == source.schema
+    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+        target.read_rows()
+    error = excinfo.value.error
+    assert error.code == "type-error"
+    assert error.note == 'type is "integer/default"'
 
 
 # Merge Tables

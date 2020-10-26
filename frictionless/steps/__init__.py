@@ -34,6 +34,7 @@ from .table import (
     normalize_table,
     print_table,
     debug_table,
+    validate_table,
     merge_tables,
     join_tables,
     attach_tables,
