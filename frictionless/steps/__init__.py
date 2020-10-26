@@ -30,24 +30,23 @@ from .row import (
     pick_group_rows,
 )
 from .table import (
-    normalize_table,
-    print_table,
-    debug_table,
-    validate_table,
-    write_table,
-    merge_tables,
-    join_tables,
-    attach_tables,
-    diff_tables,
-    intersect_tables,
-    aggregate_table,
-    melt_table,
-    recast_table,
-    transpose_table,
-    pivot_table,
+    table_aggregate,
+    table_attach,
+    table_debug,
+    table_diff,
+    table_intersect,
+    table_join,
+    table_melt,
+    table_merge,
+    table_normalize,
+    table_pivot,
+    table_print,
+    table_recast,
+    table_transpose,
+    table_validate,
+    table_write,
 )
 
 # TODO: add an issue - support intervaltree transforms
 # TODO: add an issue - support maps transforms
-# TODO: rename to obj/verb
 # TODO: rename name -> field_name

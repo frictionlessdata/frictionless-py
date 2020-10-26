@@ -55,7 +55,7 @@ def test_step_field_add_with_formula():
     target = transform(
         source,
         steps=[
-            steps.normalize_table(),
+            steps.table_normalize(),
             steps.field_add(name="calc", value="<formula>id * 100 + population"),
         ],
     )
@@ -79,7 +79,7 @@ def test_step_field_add_with_value_callable():
     target = transform(
         source,
         steps=[
-            steps.normalize_table(),
+            steps.table_normalize(),
             steps.field_add(
                 name="calc", value=lambda row: row["id"] * 100 + row["population"]
             ),

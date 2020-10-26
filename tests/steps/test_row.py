@@ -91,7 +91,7 @@ def test_step_filter_rows():
     target = transform(
         source,
         steps=[
-            steps.normalize_table(),
+            steps.table_normalize(),
             steps.filter_rows(predicat="<formula>id > 1"),
         ],
     )
@@ -107,7 +107,7 @@ def test_step_filter_rows_with_callable_predicat():
     target = transform(
         source,
         steps=[
-            steps.normalize_table(),
+            steps.table_normalize(),
             steps.filter_rows(predicat=lambda row: row["id"] > 1),
         ],
     )
@@ -123,7 +123,7 @@ def test_step_filter_rows_petl_selectop():
     target = transform(
         source,
         steps=[
-            steps.normalize_table(),
+            steps.table_normalize(),
             steps.filter_rows(predicat="<formula>id == 1"),
         ],
     )
@@ -138,7 +138,7 @@ def test_step_filter_rows_petl_selecteq():
     target = transform(
         source,
         steps=[
-            steps.normalize_table(),
+            steps.table_normalize(),
             steps.filter_rows(predicat="<formula>id == 1"),
         ],
     )
@@ -153,7 +153,7 @@ def test_step_filter_rows_petl_selectne():
     target = transform(
         source,
         steps=[
-            steps.normalize_table(),
+            steps.table_normalize(),
             steps.filter_rows(predicat="<formula>id != 1"),
         ],
     )
@@ -169,7 +169,7 @@ def test_step_filter_rows_petl_selectlt():
     target = transform(
         source,
         steps=[
-            steps.normalize_table(),
+            steps.table_normalize(),
             steps.filter_rows(predicat="<formula>id < 2"),
         ],
     )
@@ -184,7 +184,7 @@ def test_step_filter_rows_petl_selectle():
     target = transform(
         source,
         steps=[
-            steps.normalize_table(),
+            steps.table_normalize(),
             steps.filter_rows(predicat="<formula>id <= 2"),
         ],
     )
@@ -200,7 +200,7 @@ def test_step_filter_rows_petl_selectgt():
     target = transform(
         source,
         steps=[
-            steps.normalize_table(),
+            steps.table_normalize(),
             steps.filter_rows(predicat="<formula>id > 2"),
         ],
     )
@@ -215,7 +215,7 @@ def test_step_filter_rows_petl_selectge():
     target = transform(
         source,
         steps=[
-            steps.normalize_table(),
+            steps.table_normalize(),
             steps.filter_rows(predicat="<formula>id >= 2"),
         ],
     )
@@ -231,7 +231,7 @@ def test_step_filter_rows_petl_selectrangeopen():
     target = transform(
         source,
         steps=[
-            steps.normalize_table(),
+            steps.table_normalize(),
             steps.filter_rows(predicat="<formula>1 <= id <= 3"),
         ],
     )
@@ -248,7 +248,7 @@ def test_step_filter_rows_petl_selectrangeopenleft():
     target = transform(
         source,
         steps=[
-            steps.normalize_table(),
+            steps.table_normalize(),
             steps.filter_rows(predicat="<formula>1 <= id < 3"),
         ],
     )
@@ -264,7 +264,7 @@ def test_step_filter_rows_petl_selectrangeopenright():
     target = transform(
         source,
         steps=[
-            steps.normalize_table(),
+            steps.table_normalize(),
             steps.filter_rows(predicat="<formula>1 < id <= 3"),
         ],
     )
@@ -280,7 +280,7 @@ def test_step_filter_rows_petl_selectrangeclosed():
     target = transform(
         source,
         steps=[
-            steps.normalize_table(),
+            steps.table_normalize(),
             steps.filter_rows(predicat="<formula>1 < id < 3"),
         ],
     )
@@ -309,7 +309,7 @@ def test_step_filter_rows_petl_selectin():
     target = transform(
         source,
         steps=[
-            steps.normalize_table(),
+            steps.table_normalize(),
             steps.filter_rows(predicat="<formula>id in [1]"),
         ],
     )
@@ -324,7 +324,7 @@ def test_step_filter_rows_petl_selectnoin():
     target = transform(
         source,
         steps=[
-            steps.normalize_table(),
+            steps.table_normalize(),
             steps.filter_rows(predicat="<formula>id not in [2, 3]"),
         ],
     )
@@ -339,7 +339,7 @@ def test_step_filter_rows_petl_selectis():
     target = transform(
         source,
         steps=[
-            steps.normalize_table(),
+            steps.table_normalize(),
             steps.filter_rows(predicat="<formula>id is 1"),
         ],
     )
@@ -354,7 +354,7 @@ def test_step_filter_rows_petl_selectisnot():
     target = transform(
         source,
         steps=[
-            steps.normalize_table(),
+            steps.table_normalize(),
             steps.filter_rows(predicat="<formula>id is not 1"),
         ],
     )
@@ -370,7 +370,7 @@ def test_step_filter_rows_petl_selectisinstance():
     target = transform(
         source,
         steps=[
-            steps.normalize_table(),
+            steps.table_normalize(),
             steps.filter_rows(predicat=lambda row: isinstance(row["id"], int)),
         ],
     )
