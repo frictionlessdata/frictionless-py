@@ -31,6 +31,7 @@ from .row import (
 )
 from .table import (
     normalize_table,
+    print_table,
     merge_tables,
     join_tables,
     attach_tables,

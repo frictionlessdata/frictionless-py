@@ -2,12 +2,17 @@ import petl
 from ..step import Step
 from ..field import Field
 
-# TODO: implement steps - debug, validate, write
+# TODO: implement steps - validate, write
 
 
 class normalize_table(Step):
     def transform_resource(self, source, target):
         target.data = source.read_rows
+
+
+class print_table(Step):
+    def transform_resource(self, source, target):
+        print(source.to_petl().look(style="simple"))
 
 
 class merge_tables(Step):
