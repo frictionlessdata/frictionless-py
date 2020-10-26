@@ -1,7 +1,6 @@
 import petl
 import simpleeval
 from ..step import Step
-from ..helpers import ResourceView
 
 
 # TODO: update naming using verb-based?
@@ -10,7 +9,7 @@ class head_rows(Step):
         self.__limit = limit
 
     def transform_resource(self, source, target):
-        target.data = ResourceView(source).head(self.__limit)
+        target.data = source.to_petl().head(self.__limit)
 
 
 # TODO: update naming using verb-based?
@@ -19,7 +18,7 @@ class tail_rows(Step):
         self.__limit = limit
 
     def transform_resource(self, source, target):
-        target.data = ResourceView(source).tail(self.__limit)
+        target.data = source.to_petl().tail(self.__limit)
 
 
 class slice_rows(Step):
@@ -29,9 +28,7 @@ class slice_rows(Step):
         self.__step = step
 
     def transform_resource(self, source, target):
-        target.data = ResourceView(source).rowslice(
-            self.__start, self.__stop, self.__step
-        )
+        target.data = source.to_petl().rowslice(self.__start, self.__stop, self.__step)
 
 
 # TODO: add skip_rows
@@ -49,7 +46,7 @@ class filter_rows(Step):
             # TODO: review EvalWithCompoundTypes/sync with checks
             evalclass = simpleeval.EvalWithCompoundTypes
             predicat = lambda row: evalclass(names=row).eval(formula)
-        target.data = ResourceView(source).select(predicat)
+        target.data = source.to_petl().select(predicat)
 
 
 # TODO: merge with filter_rows?
@@ -62,9 +59,9 @@ class search_rows(Step):
     def transform_resource(self, source, target):
         search = petl.searchcomplement if self.__anti else petl.search
         if self.__name:
-            target.data = search(ResourceView(source), self.__name, self.__regex)
+            target.data = search(source.to_petl(), self.__name, self.__regex)
         else:
-            target.data = search(ResourceView(source), self.__regex)
+            target.data = search(source.to_petl(), self.__regex)
 
 
 class sort_rows(Step):
@@ -73,7 +70,7 @@ class sort_rows(Step):
         self.__reverse = reverse
 
     def transform_resource(self, source, target):
-        target.data = ResourceView(source).sort(self.__names, reverse=self.__reverse)
+        target.data = source.to_petl().sort(self.__names, reverse=self.__reverse)
 
 
 # TODO: update naming using verb-based?
@@ -82,7 +79,7 @@ class duplicate_rows(Step):
         self.__name = name
 
     def transform_resource(self, source, target):
-        target.data = ResourceView(source).duplicates(self.__name)
+        target.data = source.to_petl().duplicates(self.__name)
 
 
 # TODO: update naming using verb-based?
@@ -91,7 +88,7 @@ class unique_rows(Step):
         self.__name = name
 
     def transform_resource(self, source, target):
-        target.data = ResourceView(source).unique(self.__name)
+        target.data = source.to_petl().unique(self.__name)
 
 
 # TODO: update naming using verb-based?
@@ -100,7 +97,7 @@ class conflict_rows(Step):
         self.__name = name
 
     def transform_resource(self, source, target):
-        target.data = ResourceView(source).conflicts(self.__name)
+        target.data = source.to_petl().conflicts(self.__name)
 
 
 # TODO: update naming using verb-based?
@@ -109,7 +106,7 @@ class distinct_rows(Step):
         self.__name = name
 
     def transform_resource(self, source, target):
-        target.data = ResourceView(source).distinct(self.__name)
+        target.data = source.to_petl().distinct(self.__name)
 
 
 class split_rows(Step):
@@ -118,7 +115,7 @@ class split_rows(Step):
         self.__pattern = pattern
 
     def transform_resource(self, source, target):
-        target.data = ResourceView(source).splitdown(self.__name, self.__pattern)
+        target.data = source.to_petl().splitdown(self.__name, self.__pattern)
 
 
 class pick_group_rows(Step):
@@ -131,8 +128,6 @@ class pick_group_rows(Step):
     def transform_resource(self, source, target):
         function = getattr(petl, f"groupselect{self.__selection}")
         if self.__selection in ["first", "last"]:
-            target.data = function(ResourceView(source), self.__group_name)
+            target.data = function(source.to_petl(), self.__group_name)
         else:
-            target.data = function(
-                ResourceView(source), self.__group_name, self.__value_name
-            )
+            target.data = function(source.to_petl(), self.__group_name, self.__value_name)

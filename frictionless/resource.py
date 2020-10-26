@@ -1,6 +1,7 @@
 import io
 import os
 import json
+import petl
 import zipfile
 import warnings
 from copy import deepcopy
@@ -139,6 +140,9 @@ class Resource(Metadata):
         if data is not None:
             copy["data"] = data
         return copy
+
+    def __iter__(self):
+        yield from self.read_row_stream() if self.tabular else []
 
     @Metadata.property(write=False)
     def source(self):
@@ -615,6 +619,10 @@ class Resource(Metadata):
         return Resource(data=source, **options)
 
     @staticmethod
+    def from_petl(storage, *, view, **options):
+        return Resource(data=view, **options)
+
+    @staticmethod
     def from_storage(storage, *, name):
         """Import resource from storage
 
@@ -772,6 +780,19 @@ class Resource(Metadata):
         except (IOError, zipfile.BadZipfile, zipfile.LargeZipFile) as exception:
             error = errors.ResourceError(note=str(exception))
             raise exceptions.FrictionlessException(error) from exception
+
+    def to_petl(self, *, normalize=False):
+        resource = self
+
+        # Define view
+        class ResourceView(petl.Table):
+            def __iter__(self):
+                yield resource.schema.field_names
+                yield from resource.read_data_stream() if not normalize else map(
+                    lambda row: row.to_list(), resource.read_row_stream()
+                )
+
+        return ResourceView()
 
     def to_storage(self, storage, *, force=False):
         """Export resource to storage

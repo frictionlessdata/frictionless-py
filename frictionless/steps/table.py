@@ -1,7 +1,6 @@
 import petl
 from ..step import Step
 from ..field import Field
-from ..helpers import ResourceView
 
 # TODO: implement steps - debug, validate, write
 
@@ -20,8 +19,8 @@ class merge_tables(Step):
 
     def transform_resource(self, source, target):
         self.__resource.infer(only_sample=True)
-        view1 = ResourceView(source)
-        view2 = ResourceView(self.__resource)
+        view1 = source.to_petl()
+        view2 = self.__resource.to_petl()
 
         # Ignore names
         if self.__ignore_names:
@@ -56,8 +55,8 @@ class join_tables(Step):
 
     def transform_resource(self, source, target):
         self.__resource.infer(only_sample=True)
-        view1 = ResourceView(source)
-        view2 = ResourceView(self.__resource)
+        view1 = source.to_petl()
+        view2 = self.__resource.to_petl()
         if self.__mode == "inner":
             join = petl.hashjoin if self.__hash else petl.join
             target.data = join(view1, view2, self.__name)
@@ -86,8 +85,8 @@ class attach_tables(Step):
 
     def transform_resource(self, source, target):
         self.__resource.infer(only_sample=True)
-        view1 = ResourceView(source)
-        view2 = ResourceView(self.__resource)
+        view1 = source.to_petl()
+        view2 = self.__resource.to_petl()
         target.data = petl.annex(view1, view2)
         for field in self.__resource.schema.fields:
             target.schema.fields.append(field.to_copy())
@@ -101,8 +100,8 @@ class diff_tables(Step):
 
     def transform_resource(self, source, target):
         self.__resource.infer(only_sample=True)
-        view1 = ResourceView(source)
-        view2 = ResourceView(self.__resource)
+        view1 = source.to_petl()
+        view2 = self.__resource.to_petl()
         function = petl.recordcomplement if self.__ignore_order else petl.complement
         # TODO: raise an error for ignore/hash
         if self.__use_hash and not self.__ignore_order:
@@ -117,8 +116,8 @@ class intersect_tables(Step):
 
     def transform_resource(self, source, target):
         self.__resource.infer(only_sample=True)
-        view1 = ResourceView(source)
-        view2 = ResourceView(self.__resource)
+        view1 = source.to_petl()
+        view2 = self.__resource.to_petl()
         function = petl.hashintersection if self.__use_hash else petl.intersection
         target.data = function(view1, view2)
 
@@ -129,9 +128,7 @@ class aggregate_table(Step):
         self.__aggregation = aggregation
 
     def transform_resource(self, source, target):
-        target.data = ResourceView(source).aggregate(
-            self.__group_name, self.__aggregation
-        )
+        target.data = source.to_petl().aggregate(self.__group_name, self.__aggregation)
         field = target.schema.get_field(self.__group_name)
         target.schema.fields.clear()
         target.schema.add_field(field)
@@ -147,7 +144,7 @@ class melt_table(Step):
         self.__to_names = to_names
 
     def transform_resource(self, source, target):
-        target.data = ResourceView(source).melt(
+        target.data = source.to_petl().melt(
             key=self.__name,
             variables=self.__variables,
             variablefield=self.__to_names[0],
@@ -167,7 +164,7 @@ class recast_table(Step):
         self.__from_names = from_names
 
     def transform_resource(self, source, target):
-        target.data = ResourceView(source).recast(
+        target.data = source.to_petl().recast(
             key=self.__name,
             variablefield=self.__from_names[0],
             valuefield=self.__from_names[1],
@@ -180,7 +177,7 @@ class recast_table(Step):
 # TODO: fix this step - see tests
 class transpose_table(Step):
     def transform_resource(self, source, target):
-        target.data = ResourceView(source).transpose()
+        target.data = source.to_petl().transpose()
         # TODO: review this approach
         target.schema.fields.clear()
         target.infer(only_sample=True)
@@ -192,7 +189,7 @@ class pivot_table(Step):
         self.__options = options
 
     def transform_resource(self, source, target):
-        target.data = ResourceView(source).pivot(**self.__options)
+        target.data = source.to_petl().pivot(**self.__options)
         # TODO: review this approach
         target.schema.fields.clear()
         target.infer(only_sample=True)

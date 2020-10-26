@@ -213,7 +213,7 @@ class Table:
     # TODO: implement the same for resource?
     def __iter__(self):
         self.__read_row_stream_raise_closed()
-        return iter(self.__row_stream)
+        yield from self.__row_stream
 
     @property
     def source(self):
