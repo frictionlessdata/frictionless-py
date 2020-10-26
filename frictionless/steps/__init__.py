@@ -8,10 +8,10 @@ from .cell import (
 )
 from .field import (
     pick_fields,
-    skip_fields,
     move_field,
     add_field,
     add_increment_field,
+    remove_field,
     update_field,
     unpack_field,
     split_field,

@@ -25,15 +25,15 @@ def test_step_pick_fields():
     ]
 
 
-# Skip Fields
+# Remove Field
 
 
-def test_step_skip_fields():
+def test_step_remove_field():
     source = Resource(path="data/transform.csv")
     target = transform(
         source,
         steps=[
-            steps.skip_fields(names=["id"]),
+            steps.remove_field(names=["id"]),
         ],
     )
     assert target.schema == {

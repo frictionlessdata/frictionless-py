@@ -16,17 +16,6 @@ class pick_fields(Step):
                 target.schema.remove_field(name)
 
 
-# TODO: rename to remove_fields?
-class skip_fields(Step):
-    def __init__(self, *, names):
-        self.__names = names
-
-    def transform_resource(self, source, target):
-        target.data = source.to_petl().cutout(*self.__names)
-        for name in self.__names:
-            target.schema.remove_field(name)
-
-
 class move_field(Step):
     def __init__(self, *, name, position):
         self.__name = name
@@ -59,6 +48,7 @@ class add_field(Step):
             target.schema.fields.insert(index, field)
 
 
+# TODO: merge to add_field?
 class add_increment_field(Step):
     def __init__(self, *, name, start=1):
         self.__name = name
@@ -70,6 +60,16 @@ class add_increment_field(Step):
         )
         field = Field(name=self.__name, type="integer")
         target.schema.fields.insert(0, field)
+
+
+class remove_field(Step):
+    def __init__(self, *, names):
+        self.__names = names
+
+    def transform_resource(self, source, target):
+        target.data = source.to_petl().cutout(*self.__names)
+        for name in self.__names:
+            target.schema.remove_field(name)
 
 
 # TODO: accept WHERE/PREDICAT clause
