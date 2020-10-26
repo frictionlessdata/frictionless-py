@@ -1,10 +1,10 @@
 from .cell import (
-    set_cells,
-    replace_cells,
-    fill_cells,
-    convert_cells,
-    format_cells,
-    interpolate_cells,
+    cell_convert,
+    cell_fill,
+    cell_format,
+    cell_interpolate,
+    cell_replace,
+    cell_set,
 )
 from .field import (
     field_add,
