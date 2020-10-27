@@ -23,12 +23,12 @@ def test_step_cell_convert():
     ]
 
 
-def test_step_cell_convert_with_name():
+def test_step_cell_convert_with_field_name():
     source = Resource(path="data/transform.csv")
     target = transform(
         source,
         steps=[
-            steps.cell_convert(value="n/a", name="name"),
+            steps.cell_convert(value="n/a", field_name="name"),
         ],
     )
     assert target.schema == source.schema
@@ -48,7 +48,7 @@ def test_step_cell_fill():
         source,
         steps=[
             steps.cell_replace(pattern="france", replace=None),
-            steps.cell_fill(name="name", value="FRANCE"),
+            steps.cell_fill(field_name="name", value="FRANCE"),
         ],
     )
     assert target.schema == source.schema
@@ -143,7 +143,7 @@ def test_step_cell_format_with_name():
     target = transform(
         source,
         steps=[
-            steps.cell_format(template="Prefix: {0}", name="name"),
+            steps.cell_format(template="Prefix: {0}", field_name="name"),
         ],
     )
     assert target.schema == source.schema
@@ -181,7 +181,7 @@ def test_step_cell_interpolate_with_name():
     target = transform(
         source,
         steps=[
-            steps.cell_interpolate(template="Prefix: %s", name="name"),
+            steps.cell_interpolate(template="Prefix: %s", field_name="name"),
         ],
     )
     assert target.schema == source.schema
@@ -211,12 +211,12 @@ def test_step_cell_replace():
     ]
 
 
-def test_step_cell_replace_with_name():
+def test_step_cell_replace_with_field_name():
     source = Resource(path="data/transform.csv")
     target = transform(
         source,
         steps=[
-            steps.cell_replace(pattern="france", replace="FRANCE", name="id"),
+            steps.cell_replace(pattern="france", replace="FRANCE", field_name="id"),
         ],
     )
     assert target.schema == source.schema
@@ -232,7 +232,9 @@ def test_step_cell_replace_using_regex():
     target = transform(
         source,
         steps=[
-            steps.cell_replace(pattern="<regex>.*r.*", replace="center", name="name"),
+            steps.cell_replace(
+                pattern="<regex>.*r.*", replace="center", field_name="name"
+            ),
         ],
     )
     assert target.schema == source.schema
@@ -251,7 +253,7 @@ def test_step_cell_set():
     target = transform(
         source,
         steps=[
-            steps.cell_set(name="population", value=100),
+            steps.cell_set(field_name="population", value=100),
         ],
     )
     assert target.schema == source.schema

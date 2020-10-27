@@ -703,7 +703,7 @@ def test_step_table_validate():
     target = transform(
         source,
         steps=[
-            steps.cell_set(name="population", value="bad"),
+            steps.cell_set(field_name="population", value="bad"),
             steps.table_validate(),
         ],
     )
@@ -726,7 +726,7 @@ def test_step_table_write(tmpdir):
     transform(
         source,
         steps=[
-            steps.cell_set(name="population", value=100),
+            steps.cell_set(field_name="population", value=100),
             steps.table_write(path=path),
         ],
     )
