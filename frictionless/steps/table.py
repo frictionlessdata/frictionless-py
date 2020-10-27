@@ -79,10 +79,10 @@ class table_intersect(Step):
 
 
 class table_join(Step):
-    def __init__(self, *, resource, name=None, mode="inner", hash=False):
+    def __init__(self, *, resource, field_name=None, mode="inner", hash=False):
         assert mode in ["inner", "left", "right", "outer", "cross", "anti"]
         self.__resource = resource
-        self.__name = name
+        self.__field_name = field_name
         self.__mode = mode
         self.__hash = hash
 
@@ -92,52 +92,54 @@ class table_join(Step):
         view2 = self.__resource.to_petl()
         if self.__mode == "inner":
             join = petl.hashjoin if self.__hash else petl.join
-            target.data = join(view1, view2, self.__name)
+            target.data = join(view1, view2, self.__field_name)
         elif self.__mode == "left":
             leftjoin = petl.hashleftjoin if self.__hash else petl.leftjoin
-            target.data = leftjoin(view1, view2, self.__name)
+            target.data = leftjoin(view1, view2, self.__field_name)
         elif self.__mode == "right":
             rightjoin = petl.hashrightjoin if self.__hash else petl.rightjoin
-            target.data = rightjoin(view1, view2, self.__name)
+            target.data = rightjoin(view1, view2, self.__field_name)
         elif self.__mode == "outer":
-            target.data = petl.outerjoin(view1, view2, self.__name)
+            target.data = petl.outerjoin(view1, view2, self.__field_name)
         elif self.__mode == "cross":
             target.data = petl.crossjoin(view1, view2)
         elif self.__mode == "anti":
             antijoin = petl.hashantijoin if self.__hash else petl.antijoin
-            target.data = antijoin(view1, view2, self.__name)
+            target.data = antijoin(view1, view2, self.__field_name)
         if self.__mode not in ["anti"]:
             for field in self.__resource.schema.fields:
-                if field.name != self.__name:
+                if field.name != self.__field_name:
                     target.schema.fields.append(field.to_copy())
 
 
 class table_melt(Step):
-    def __init__(self, *, name, variables=None, to_names=["variable", "value"]):
-        assert len(to_names) == 2
-        self.__name = name
+    def __init__(
+        self, *, field_name, variables=None, to_field_names=["variable", "value"]
+    ):
+        assert len(to_field_names) == 2
+        self.__field_name = field_name
         self.__variables = variables
-        self.__to_names = to_names
+        self.__to_field_names = to_field_names
 
     def transform_resource(self, source, target):
         target.data = source.to_petl().melt(
-            key=self.__name,
+            key=self.__field_name,
             variables=self.__variables,
-            variablefield=self.__to_names[0],
-            valuefield=self.__to_names[1],
+            variablefield=self.__to_field_names[0],
+            valuefield=self.__to_field_names[1],
         )
-        field = target.schema.get_field(self.__name)
+        field = target.schema.get_field(self.__field_name)
         target.schema.fields.clear()
         target.schema.add_field(field)
-        for name in self.__to_names:
+        for name in self.__to_field_names:
             target.schema.add_field(Field(name=name))
 
 
 class table_merge(Step):
-    def __init__(self, *, resource, names=None, ignore_names=False, sort=False):
+    def __init__(self, *, resource, field_names=None, ignore_fields=False, sort=False):
         self.__resource = resource
-        self.__names = names
-        self.__ignore_names = ignore_names
+        self.__field_names = field_names
+        self.__ignore_fields = ignore_fields
         self.__sort = sort
 
     def transform_resource(self, source, target):
@@ -145,8 +147,8 @@ class table_merge(Step):
         view1 = source.to_petl()
         view2 = self.__resource.to_petl()
 
-        # Ignore names
-        if self.__ignore_names:
+        # Ignore fields
+        if self.__ignore_fields:
             target.data = petl.stack(view1, view2)
             for field in self.__resource.schema.fields[len(target.schema.fields) :]:
                 target.schema.add_field(field)
@@ -155,16 +157,16 @@ class table_merge(Step):
         else:
             if self.__sort:
                 target.data = petl.mergesort(
-                    view1, view2, key=self.__sort, header=self.__names
+                    view1, view2, key=self.__sort, header=self.__field_names
                 )
             else:
-                target.data = petl.cat(view1, view2, header=self.__names)
+                target.data = petl.cat(view1, view2, header=self.__field_names)
             for field in self.__resource.schema.fields:
                 if field.name not in target.schema.field_names:
                     target.schema.add_field(field)
-            if self.__names:
+            if self.__field_names:
                 for field in target.schema.fields:
-                    if field.name not in self.__names:
+                    if field.name not in self.__field_names:
                         target.schema.remove_field(field.name)
 
 
@@ -191,16 +193,16 @@ class table_print(Step):
 
 
 class table_recast(Step):
-    def __init__(self, *, name, from_names=["variable", "value"]):
-        assert len(from_names) == 2
-        self.__name = name
-        self.__from_names = from_names
+    def __init__(self, *, field_name, from_field_names=["variable", "value"]):
+        assert len(from_field_names) == 2
+        self.__field_name = field_name
+        self.__from_field_names = from_field_names
 
     def transform_resource(self, source, target):
         target.data = source.to_petl().recast(
-            key=self.__name,
-            variablefield=self.__from_names[0],
-            valuefield=self.__from_names[1],
+            key=self.__field_name,
+            variablefield=self.__from_field_names[0],
+            valuefield=self.__from_field_names[1],
         )
         # TODO: review this approach
         target.schema.fields.clear()

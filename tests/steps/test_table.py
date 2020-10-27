@@ -228,7 +228,7 @@ def test_step_table_join():
             steps.table_normalize(),
             steps.table_join(
                 resource=Resource(data=[["id", "note"], [1, "beer"], [2, "vine"]]),
-                name="id",
+                field_name="id",
             ),
         ],
     )
@@ -255,7 +255,7 @@ def test_step_table_join_with_name_is_not_first_field():
                 resource=Resource(
                     data=[["name", "note"], ["germany", "beer"], ["france", "vine"]]
                 ),
-                name="name",
+                field_name="name",
             ),
         ],
     )
@@ -281,7 +281,7 @@ def test_step_table_join_mode_left():
             steps.table_normalize(),
             steps.table_join(
                 resource=Resource(data=[["id", "note"], [1, "beer"], [2, "vine"]]),
-                name="id",
+                field_name="id",
                 mode="left",
             ),
         ],
@@ -309,7 +309,7 @@ def test_step_table_join_mode_right():
             steps.table_normalize(),
             steps.table_join(
                 resource=Resource(data=[["id", "note"], [1, "beer"], [4, "rum"]]),
-                name="id",
+                field_name="id",
                 mode="right",
             ),
         ],
@@ -336,7 +336,7 @@ def test_step_table_join_mode_outer():
             steps.table_normalize(),
             steps.table_join(
                 resource=Resource(data=[["id", "note"], [1, "beer"], [4, "rum"]]),
-                name="id",
+                field_name="id",
                 mode="outer",
             ),
         ],
@@ -420,7 +420,7 @@ def test_step_table_join_hash_is_true():
             steps.table_normalize(),
             steps.table_join(
                 resource=Resource(data=[["id", "note"], [1, "beer"], [2, "vine"]]),
-                name="id",
+                field_name="id",
                 hash=True,
             ),
         ],
@@ -448,7 +448,7 @@ def test_step_table_melt():
         source,
         steps=[
             steps.table_normalize(),
-            steps.table_melt(name="name"),
+            steps.table_melt(field_name="name"),
         ],
     )
     assert target.schema == {
@@ -474,7 +474,7 @@ def test_step_table_melt_with_variables():
         source,
         steps=[
             steps.table_normalize(),
-            steps.table_melt(name="name", variables=["population"]),
+            steps.table_melt(field_name="name", variables=["population"]),
         ],
     )
     assert target.schema == {
@@ -491,14 +491,14 @@ def test_step_table_melt_with_variables():
     ]
 
 
-def test_step_table_melt_with_to_names():
+def test_step_table_melt_with_to_field_names():
     source = Resource(path="data/transform.csv")
     target = transform(
         source,
         steps=[
             steps.table_normalize(),
             steps.table_melt(
-                name="name", variables=["population"], to_names=["key", "val"]
+                field_name="name", variables=["population"], to_field_names=["key", "val"]
             ),
         ],
     )
@@ -546,14 +546,14 @@ def test_step_table_merge():
     ]
 
 
-def test_step_table_merge_with_names():
+def test_step_table_merge_with_field_names():
     source = Resource(path="data/transform.csv")
     target = transform(
         source,
         steps=[
             steps.table_merge(
                 resource=Resource(data=[["id", "name", "note"], [4, "malta", "island"]]),
-                names=["id", "name"],
+                field_names=["id", "name"],
             ),
         ],
     )
@@ -571,14 +571,14 @@ def test_step_table_merge_with_names():
     ]
 
 
-def test_step_merge_ignore_names():
+def test_step_merge_ignore_fields():
     source = Resource(path="data/transform.csv")
     target = transform(
         source,
         steps=[
             steps.table_merge(
                 resource=Resource(data=[["id2", "name2"], [4, "malta"]]),
-                ignore_names=True,
+                ignore_fields=True,
             ),
         ],
     )
@@ -657,8 +657,8 @@ def test_step_table_recast():
         source,
         steps=[
             steps.table_normalize(),
-            steps.table_melt(name="id"),
-            steps.table_recast(name="id"),
+            steps.table_melt(field_name="id"),
+            steps.table_recast(field_name="id"),
         ],
     )
     assert target.schema == source.schema
