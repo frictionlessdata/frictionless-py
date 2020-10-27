@@ -1,6 +1,7 @@
 from ..step import Step
 
 
+# TODO: fix base path problems
 # TODO: don't modify input
 # TODO: implement error handling
 def transform_package(package, *, steps):

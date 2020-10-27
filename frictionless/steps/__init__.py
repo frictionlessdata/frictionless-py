@@ -18,6 +18,7 @@ from .field import (
 from .resource import (
     resource_add,
     resource_remove,
+    resource_transform,
     resource_update,
 )
 from .row import (
