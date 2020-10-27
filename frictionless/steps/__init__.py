@@ -15,6 +15,9 @@ from .field import (
     field_unpack,
     field_update,
 )
+from .resource import (
+    resource_update,
+)
 from .row import (
     row_filter,
     row_search,

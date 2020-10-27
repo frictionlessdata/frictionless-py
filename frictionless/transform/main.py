@@ -1,6 +1,8 @@
+from ..package import Package
 from ..resource import Resource
 from .package import transform_package
 from .resource import transform_resource
+from .pipeline import transform_pipeline
 
 
 def transform(source, **options):
@@ -15,4 +17,6 @@ def transform(source, **options):
     """
     if isinstance(source, Resource):
         return transform_resource(source, **options)
-    return transform_package(source)
+    elif isinstance(source, Package):
+        return transform_package(source, **options)
+    return transform_pipeline(source)

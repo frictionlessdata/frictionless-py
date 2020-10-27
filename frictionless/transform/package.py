@@ -1,7 +1,9 @@
-from ..pipeline import Pipeline
+from ..step import Step
 
 
-def transform_package(source):
+# TODO: don't modify input
+# TODO: implement error handling
+def transform_package(package, *, steps):
     """Transform package
 
     API      | Usage
@@ -9,10 +11,13 @@ def transform_package(source):
     Public   | `from frictionless import transform_package`
 
     Parameters:
-        source (any): a pipeline descriptor
-
+        source (any): data source
     """
-
-    # Run pipeline
-    pipeline = Pipeline(source)
-    pipeline.run()
+    package.infer(only_sample=True)
+    target = package.to_copy()
+    for step in steps:
+        source = target
+        target = source.to_copy()
+        update = step.transform_package if isinstance(step, Step) else step
+        update(source, target)
+    return target

@@ -1,6 +1,7 @@
 from ..step import Step
 
 
+# TODO: don't modify input
 # TODO: implement error handling
 def transform_resource(resource, *, steps):
     """Transform resource
@@ -12,7 +13,6 @@ def transform_resource(resource, *, steps):
     Parameters:
         source (any): data source
     """
-    # TODO: don't modify input
     resource.infer(only_sample=True)
     target = resource.to_copy()
     for step in steps:
