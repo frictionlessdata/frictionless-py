@@ -394,7 +394,7 @@ def test_step_row_search_with_name():
     target = transform(
         source,
         steps=[
-            steps.row_search(regex=r"^f.*", name="name"),
+            steps.row_search(regex=r"^f.*", field_name="name"),
         ],
     )
     assert target.schema == source.schema
@@ -502,7 +502,7 @@ def test_step_row_sort():
     target = transform(
         source,
         steps=[
-            steps.row_sort(names=["name"]),
+            steps.row_sort(field_names=["name"]),
         ],
     )
     assert target.schema == source.schema
@@ -518,7 +518,7 @@ def test_step_row_sort_with_reverse():
     target = transform(
         source,
         steps=[
-            steps.row_sort(names=["id"], reverse=True),
+            steps.row_sort(field_names=["id"], reverse=True),
         ],
     )
     assert target.schema == source.schema
@@ -537,7 +537,7 @@ def test_step_row_split():
     target = transform(
         source,
         steps=[
-            steps.row_split(name="name", pattern="a"),
+            steps.row_split(field_name="name", pattern="a"),
         ],
     )
     assert target.schema == source.schema
@@ -559,7 +559,7 @@ def test_step_row_subset_conflicts():
     target = transform(
         source,
         steps=[
-            steps.row_subset(subset="conflicts", name="id"),
+            steps.row_subset(subset="conflicts", field_name="id"),
         ],
     )
     assert target.schema == source.schema
@@ -572,7 +572,7 @@ def test_step_row_subset_conflicts_with_duplicates():
         source,
         steps=[
             steps.field_update(name="id", value=1),
-            steps.row_subset(subset="conflicts", name="id"),
+            steps.row_subset(subset="conflicts", field_name="id"),
         ],
     )
     assert target.schema == source.schema
@@ -588,7 +588,7 @@ def test_step_row_subset_distinct():
     target = transform(
         source,
         steps=[
-            steps.row_subset(subset="distinct", name="id"),
+            steps.row_subset(subset="distinct", field_name="id"),
         ],
     )
     assert target.schema == source.schema
@@ -605,7 +605,7 @@ def test_step_row_subset_distinct_with_duplicates():
         source,
         steps=[
             steps.field_update(name="id", value=1),
-            steps.row_subset(subset="distinct", name="id"),
+            steps.row_subset(subset="distinct", field_name="id"),
         ],
     )
     assert target.schema == source.schema
@@ -632,7 +632,7 @@ def test_step_row_subset_duplicates_with_name():
         source,
         steps=[
             steps.field_update(name="id", value=1),
-            steps.row_subset(subset="duplicates", name="id"),
+            steps.row_subset(subset="duplicates", field_name="id"),
         ],
     )
     assert target.schema == source.schema
@@ -665,7 +665,7 @@ def test_step_row_subset_unique_with_name():
         source,
         steps=[
             steps.field_update(name="id", value=1),
-            steps.row_subset(subset="unique", name="id"),
+            steps.row_subset(subset="unique", field_name="id"),
         ],
     )
     assert target.schema == source.schema

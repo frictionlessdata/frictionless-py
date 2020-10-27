@@ -20,15 +20,15 @@ class row_filter(Step):
 
 
 class row_search(Step):
-    def __init__(self, *, regex, name=None, anti=False):
+    def __init__(self, *, regex, field_name=None, anti=False):
         self.__regex = regex
-        self.__name = name
+        self.__field_name = field_name
         self.__anti = anti
 
     def transform_resource(self, source, target):
         search = petl.searchcomplement if self.__anti else petl.search
-        if self.__name:
-            target.data = search(source.to_petl(), self.__name, self.__regex)
+        if self.__field_name:
+            target.data = search(source.to_petl(), self.__field_name, self.__regex)
         else:
             target.data = search(source.to_petl(), self.__regex)
 
@@ -53,38 +53,38 @@ class row_slice(Step):
 
 
 class row_sort(Step):
-    def __init__(self, *, names, reverse=False):
-        self.__names = names
+    def __init__(self, *, field_names, reverse=False):
+        self.__field_names = field_names
         self.__reverse = reverse
 
     def transform_resource(self, source, target):
-        target.data = source.to_petl().sort(self.__names, reverse=self.__reverse)
+        target.data = source.to_petl().sort(self.__field_names, reverse=self.__reverse)
 
 
 class row_split(Step):
-    def __init__(self, *, name, pattern):
-        self.__name = name
+    def __init__(self, *, field_name, pattern):
+        self.__field_name = field_name
         self.__pattern = pattern
 
     def transform_resource(self, source, target):
-        target.data = source.to_petl().splitdown(self.__name, self.__pattern)
+        target.data = source.to_petl().splitdown(self.__field_name, self.__pattern)
 
 
 class row_subset(Step):
-    def __init__(self, subset, *, name=None):
+    def __init__(self, subset, *, field_name=None):
         assert subset in ["conflicts", "distinct", "duplicates", "unique"]
         self.__subset = subset
-        self.__name = name
+        self.__field_name = field_name
 
     def transform_resource(self, source, target):
         if self.__subset == "conflicts":
-            target.data = source.to_petl().conflicts(self.__name)
+            target.data = source.to_petl().conflicts(self.__field_name)
         elif self.__subset == "distinct":
-            target.data = source.to_petl().distinct(self.__name)
+            target.data = source.to_petl().distinct(self.__field_name)
         elif self.__subset == "duplicates":
-            target.data = source.to_petl().duplicates(self.__name)
+            target.data = source.to_petl().duplicates(self.__field_name)
         elif self.__subset == "unique":
-            target.data = source.to_petl().unique(self.__name)
+            target.data = source.to_petl().unique(self.__field_name)
 
 
 class row_ungroup(Step):
