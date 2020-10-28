@@ -184,12 +184,14 @@ class Package(Metadata):
         self["resources"].append(descriptor)
         return self.resources[-1]
 
-    # TODO: should raise if not found
     def get_resource(self, name):
         """Get resource by name.
 
         Parameters:
             name (str): resource name
+
+        Raises:
+            FrictionlessException: if resource is not found
 
         Returns:
            Resource/None: `Resource` instance or `None` if not found
@@ -197,7 +199,8 @@ class Package(Metadata):
         for resource in self.resources:
             if resource.name == name:
                 return resource
-        return None
+        error = errors.PackageError(note=f'resource "{name}" does not exist')
+        raise exceptions.FrictionlessException(error)
 
     def has_resource(self, name):
         """Check if a resource is present
@@ -213,20 +216,20 @@ class Package(Metadata):
                 return True
         return False
 
-    # TODO: should raise if not found
     def remove_resource(self, name):
         """Remove resource by name.
 
         Parameters:
             name (str): resource name
 
+        Raises:
+            FrictionlessException: if resource is not found
+
         Returns:
             Resource/None: removed `Resource` instances or `None` if not found
         """
         resource = self.get_resource(name)
-        if resource:
-            predicat = lambda resource: resource.name != name
-            self["resources"] = list(filter(predicat, self.resources))
+        self.resources.remove(resource)
         return resource
 
     # Expand
