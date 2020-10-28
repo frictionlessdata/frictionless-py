@@ -4,8 +4,7 @@ from .. import exceptions
 from .. import errors
 
 
-# TODO: fix base path problems
-# TODO: don't modify input
+# TODO: fix basepath problems
 def transform_package(package, *, steps):
     """Transform package
 
@@ -18,8 +17,8 @@ def transform_package(package, *, steps):
     """
 
     # Prepare
-    package.infer(only_sample=True)
     target = package.to_copy()
+    target.infer(only_sample=True)
     # TODO: should be handled by Package.to_copy
     target.basepath = package.basepath
 

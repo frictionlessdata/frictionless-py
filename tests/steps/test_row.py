@@ -6,6 +6,7 @@ from frictionless import Resource, transform, steps
 
 def test_step_row_filter():
     source = Resource(path="data/transform.csv")
+    source.infer(only_sample=True)
     target = transform(
         source,
         steps=[
@@ -22,6 +23,7 @@ def test_step_row_filter():
 
 def test_step_row_filter_with_callable_predicat():
     source = Resource(path="data/transform.csv")
+    source.infer(only_sample=True)
     target = transform(
         source,
         steps=[
@@ -38,6 +40,7 @@ def test_step_row_filter_with_callable_predicat():
 
 def test_step_row_filter_petl_selectop():
     source = Resource(path="data/transform.csv")
+    source.infer(only_sample=True)
     target = transform(
         source,
         steps=[
@@ -53,6 +56,7 @@ def test_step_row_filter_petl_selectop():
 
 def test_step_row_filter_petl_selecteq():
     source = Resource(path="data/transform.csv")
+    source.infer(only_sample=True)
     target = transform(
         source,
         steps=[
@@ -68,6 +72,7 @@ def test_step_row_filter_petl_selecteq():
 
 def test_step_row_filter_petl_selectne():
     source = Resource(path="data/transform.csv")
+    source.infer(only_sample=True)
     target = transform(
         source,
         steps=[
@@ -84,6 +89,7 @@ def test_step_row_filter_petl_selectne():
 
 def test_step_row_filter_petl_selectlt():
     source = Resource(path="data/transform.csv")
+    source.infer(only_sample=True)
     target = transform(
         source,
         steps=[
@@ -99,6 +105,7 @@ def test_step_row_filter_petl_selectlt():
 
 def test_step_row_filter_petl_selectle():
     source = Resource(path="data/transform.csv")
+    source.infer(only_sample=True)
     target = transform(
         source,
         steps=[
@@ -115,6 +122,7 @@ def test_step_row_filter_petl_selectle():
 
 def test_step_row_filter_petl_selectgt():
     source = Resource(path="data/transform.csv")
+    source.infer(only_sample=True)
     target = transform(
         source,
         steps=[
@@ -130,6 +138,7 @@ def test_step_row_filter_petl_selectgt():
 
 def test_step_row_filter_petl_selectge():
     source = Resource(path="data/transform.csv")
+    source.infer(only_sample=True)
     target = transform(
         source,
         steps=[
@@ -146,6 +155,7 @@ def test_step_row_filter_petl_selectge():
 
 def test_step_row_filter_petl_selectrangeopen():
     source = Resource(path="data/transform.csv")
+    source.infer(only_sample=True)
     target = transform(
         source,
         steps=[
@@ -163,6 +173,7 @@ def test_step_row_filter_petl_selectrangeopen():
 
 def test_step_row_filter_petl_selectrangeopenleft():
     source = Resource(path="data/transform.csv")
+    source.infer(only_sample=True)
     target = transform(
         source,
         steps=[
@@ -179,6 +190,7 @@ def test_step_row_filter_petl_selectrangeopenleft():
 
 def test_step_row_filter_petl_selectrangeopenright():
     source = Resource(path="data/transform.csv")
+    source.infer(only_sample=True)
     target = transform(
         source,
         steps=[
@@ -195,6 +207,7 @@ def test_step_row_filter_petl_selectrangeopenright():
 
 def test_step_row_filter_petl_selectrangeclosed():
     source = Resource(path="data/transform.csv")
+    source.infer(only_sample=True)
     target = transform(
         source,
         steps=[
@@ -210,6 +223,7 @@ def test_step_row_filter_petl_selectrangeclosed():
 
 def test_step_row_filter_petl_selectcontains():
     source = Resource(path="data/transform.csv")
+    source.infer(only_sample=True)
     target = transform(
         source,
         steps=[
@@ -224,6 +238,7 @@ def test_step_row_filter_petl_selectcontains():
 
 def test_step_row_filter_petl_selectin():
     source = Resource(path="data/transform.csv")
+    source.infer(only_sample=True)
     target = transform(
         source,
         steps=[
@@ -239,6 +254,7 @@ def test_step_row_filter_petl_selectin():
 
 def test_step_row_filter_petl_selectnoin():
     source = Resource(path="data/transform.csv")
+    source.infer(only_sample=True)
     target = transform(
         source,
         steps=[
@@ -254,6 +270,7 @@ def test_step_row_filter_petl_selectnoin():
 
 def test_step_row_filter_petl_selectis():
     source = Resource(path="data/transform.csv")
+    source.infer(only_sample=True)
     target = transform(
         source,
         steps=[
@@ -269,6 +286,7 @@ def test_step_row_filter_petl_selectis():
 
 def test_step_row_filter_petl_selectisnot():
     source = Resource(path="data/transform.csv")
+    source.infer(only_sample=True)
     target = transform(
         source,
         steps=[
@@ -285,6 +303,7 @@ def test_step_row_filter_petl_selectisnot():
 
 def test_step_row_filter_petl_selectisinstance():
     source = Resource(path="data/transform.csv")
+    source.infer(only_sample=True)
     target = transform(
         source,
         steps=[
@@ -302,6 +321,7 @@ def test_step_row_filter_petl_selectisinstance():
 
 def test_step_row_filter_petl_selectistrue():
     source = Resource(path="data/transform.csv")
+    source.infer(only_sample=True)
     target = transform(
         source,
         steps=[
@@ -318,6 +338,7 @@ def test_step_row_filter_petl_selectistrue():
 
 def test_step_row_filter_petl_selectisfalse():
     source = Resource(path="data/transform.csv")
+    source.infer(only_sample=True)
     target = transform(
         source,
         steps=[
@@ -330,6 +351,7 @@ def test_step_row_filter_petl_selectisfalse():
 
 def test_step_row_filter_petl_selectnone():
     source = Resource(path="data/transform.csv")
+    source.infer(only_sample=True)
     target = transform(
         source,
         steps=[
@@ -342,6 +364,7 @@ def test_step_row_filter_petl_selectnone():
 
 def test_step_row_filter_petl_selectisnone():
     source = Resource(path="data/transform.csv")
+    source.infer(only_sample=True)
     target = transform(
         source,
         steps=[
@@ -358,6 +381,7 @@ def test_step_row_filter_petl_selectisnone():
 
 def test_step_row_filter_petl_rowlenselect():
     source = Resource(path="data/transform.csv")
+    source.infer(only_sample=True)
     target = transform(
         source,
         steps=[
@@ -377,6 +401,7 @@ def test_step_row_filter_petl_rowlenselect():
 
 def test_step_row_search():
     source = Resource(path="data/transform.csv")
+    source.infer(only_sample=True)
     target = transform(
         source,
         steps=[
@@ -391,6 +416,7 @@ def test_step_row_search():
 
 def test_step_row_search_with_name():
     source = Resource(path="data/transform.csv")
+    source.infer(only_sample=True)
     target = transform(
         source,
         steps=[
@@ -405,6 +431,7 @@ def test_step_row_search_with_name():
 
 def test_step_row_search_with_anti():
     source = Resource(path="data/transform.csv")
+    source.infer(only_sample=True)
     target = transform(
         source,
         steps=[
@@ -423,6 +450,7 @@ def test_step_row_search_with_anti():
 
 def test_step_row_slice():
     source = Resource(path="data/transform.csv")
+    source.infer(only_sample=True)
     target = transform(
         source,
         steps=[
@@ -438,6 +466,7 @@ def test_step_row_slice():
 
 def test_step_row_slice_with_start():
     source = Resource(path="data/transform.csv")
+    source.infer(only_sample=True)
     target = transform(
         source,
         steps=[
@@ -452,6 +481,7 @@ def test_step_row_slice_with_start():
 
 def test_step_row_slice_with_start_and_step():
     source = Resource(path="data/transform.csv")
+    source.infer(only_sample=True)
     target = transform(
         source,
         steps=[
@@ -466,6 +496,7 @@ def test_step_row_slice_with_start_and_step():
 
 def test_step_row_slice_with_head():
     source = Resource(path="data/transform.csv")
+    source.infer(only_sample=True)
     target = transform(
         source,
         steps=[
@@ -481,6 +512,7 @@ def test_step_row_slice_with_head():
 
 def test_step_row_slice_with_tail():
     source = Resource(path="data/transform.csv")
+    source.infer(only_sample=True)
     target = transform(
         source,
         steps=[
@@ -499,6 +531,7 @@ def test_step_row_slice_with_tail():
 
 def test_step_row_sort():
     source = Resource(path="data/transform.csv")
+    source.infer(only_sample=True)
     target = transform(
         source,
         steps=[
@@ -515,6 +548,7 @@ def test_step_row_sort():
 
 def test_step_row_sort_with_reverse():
     source = Resource(path="data/transform.csv")
+    source.infer(only_sample=True)
     target = transform(
         source,
         steps=[
@@ -534,6 +568,7 @@ def test_step_row_sort_with_reverse():
 
 def test_step_row_split():
     source = Resource(path="data/transform.csv")
+    source.infer(only_sample=True)
     target = transform(
         source,
         steps=[
@@ -556,6 +591,7 @@ def test_step_row_split():
 
 def test_step_row_subset_conflicts():
     source = Resource(path="data/transform.csv")
+    source.infer(only_sample=True)
     target = transform(
         source,
         steps=[
@@ -568,6 +604,7 @@ def test_step_row_subset_conflicts():
 
 def test_step_row_subset_conflicts_with_duplicates():
     source = Resource(path="data/transform.csv")
+    source.infer(only_sample=True)
     target = transform(
         source,
         steps=[
@@ -585,6 +622,7 @@ def test_step_row_subset_conflicts_with_duplicates():
 
 def test_step_row_subset_distinct():
     source = Resource(path="data/transform.csv")
+    source.infer(only_sample=True)
     target = transform(
         source,
         steps=[
@@ -601,6 +639,7 @@ def test_step_row_subset_distinct():
 
 def test_step_row_subset_distinct_with_duplicates():
     source = Resource(path="data/transform.csv")
+    source.infer(only_sample=True)
     target = transform(
         source,
         steps=[
@@ -616,6 +655,7 @@ def test_step_row_subset_distinct_with_duplicates():
 
 def test_step_row_subset_duplicates():
     source = Resource(path="data/transform.csv")
+    source.infer(only_sample=True)
     target = transform(
         source,
         steps=[
@@ -628,6 +668,7 @@ def test_step_row_subset_duplicates():
 
 def test_step_row_subset_duplicates_with_name():
     source = Resource(path="data/transform.csv")
+    source.infer(only_sample=True)
     target = transform(
         source,
         steps=[
@@ -645,6 +686,7 @@ def test_step_row_subset_duplicates_with_name():
 
 def test_step_row_subset_unique():
     source = Resource(path="data/transform.csv")
+    source.infer(only_sample=True)
     target = transform(
         source,
         steps=[
@@ -661,6 +703,7 @@ def test_step_row_subset_unique():
 
 def test_step_row_subset_unique_with_name():
     source = Resource(path="data/transform.csv")
+    source.infer(only_sample=True)
     target = transform(
         source,
         steps=[
@@ -677,6 +720,7 @@ def test_step_row_subset_unique_with_name():
 
 def test_step_row_ungroup_first():
     source = Resource(path="data/transform-groups.csv")
+    source.infer(only_sample=True)
     target = transform(
         source,
         steps=[
@@ -693,6 +737,7 @@ def test_step_row_ungroup_first():
 
 def test_step_row_ungroup_last():
     source = Resource(path="data/transform-groups.csv")
+    source.infer(only_sample=True)
     target = transform(
         source,
         steps=[
@@ -709,6 +754,7 @@ def test_step_row_ungroup_last():
 
 def test_step_row_ungroup_min():
     source = Resource(path="data/transform-groups.csv")
+    source.infer(only_sample=True)
     target = transform(
         source,
         steps=[
@@ -727,6 +773,7 @@ def test_step_row_ungroup_min():
 
 def test_step_row_ungroup_max():
     source = Resource(path="data/transform-groups.csv")
+    source.infer(only_sample=True)
     target = transform(
         source,
         steps=[

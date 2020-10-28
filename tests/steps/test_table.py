@@ -91,6 +91,7 @@ def test_step_table_attach():
 
 def test_step_table_diff():
     source = Resource(path="data/transform.csv")
+    source.infer(only_sample=True)
     target = transform(
         source,
         steps=[
@@ -115,6 +116,7 @@ def test_step_table_diff():
 
 def test_step_table_diff_with_ignore_order():
     source = Resource(path="data/transform.csv")
+    source.infer(only_sample=True)
     target = transform(
         source,
         steps=[
@@ -140,6 +142,7 @@ def test_step_table_diff_with_ignore_order():
 
 def test_step_table_diff_with_use_hash():
     source = Resource(path="data/transform.csv")
+    source.infer(only_sample=True)
     target = transform(
         source,
         steps=[
@@ -168,6 +171,7 @@ def test_step_table_diff_with_use_hash():
 
 def test_step_table_intersect():
     source = Resource(path="data/transform.csv")
+    source.infer(only_sample=True)
     target = transform(
         source,
         steps=[
@@ -193,6 +197,7 @@ def test_step_table_intersect():
 
 def test_step_table_intersect_with_use_hash():
     source = Resource(path="data/transform.csv")
+    source.infer(only_sample=True)
     target = transform(
         source,
         steps=[
@@ -704,6 +709,7 @@ def test_step_table_transpose():
 
 def test_step_table_validate():
     source = Resource(path="data/transform.csv")
+    source.infer(only_sample=True)
     target = transform(
         source,
         steps=[

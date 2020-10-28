@@ -4,7 +4,6 @@ from .. import exceptions
 from .. import errors
 
 
-# TODO: don't modify input
 def transform_resource(resource, *, steps):
     """Transform resource
 
@@ -17,8 +16,8 @@ def transform_resource(resource, *, steps):
     """
 
     # Prepare
-    resource.infer(only_sample=True)
     target = resource.to_copy()
+    target.infer(only_sample=True)
     # TODO: should be handled by Resource.to_copy
     target.basepath = resource.basepath
 
