@@ -1,8 +1,7 @@
-import stringcase
 from importlib import import_module
 from .metadata import Metadata
-from . import exceptions
-from . import helpers
+from .resource import Resource
+from .package import Package
 from . import errors
 
 
@@ -72,41 +71,97 @@ class Pipeline(Metadata):
 
     # Run
 
-    # NOTE: rebase on the plugin system
     def run(self):
         """Run the pipeline"""
-
-        # Check type
-        if self.type != "package":
-            error = errors.Error(note='For now, the only supported type is "package"')
-            raise exceptions.FrictionlessException(error)
-
-        # Import dataflows
-        try:
-            dataflows = import_module("dataflows")
-        except ImportError:
-            error = errors.Error(note='Please install "frictionless[dataflows]"')
-            raise exceptions.FrictionlessException(error)
-
-        # Create flow
-        items = []
-        for step in self.steps:
-            func = getattr(dataflows, stringcase.lowercase(step["type"]))
-            items.append(func(**helpers.create_options(step["spec"])))
-        flow = dataflows.Flow(*items)
-
-        # Process flow
-        flow.process()
+        raise NotImplementedError()
 
     # Metadata
 
     metadata_Error = errors.PipelineError
     metadata_profile = {  # type: ignore
         "type": "object",
-        "required": ["type", "steps"],
+        "required": ["type", "source", "steps"],
         "properties": {
             "name": {"type": "string"},
             "type": {"type": "string"},
+            "steps": {
+                "type": "array",
+                "items": {"type": "object", "required": ["type", "spec"]},
+            },
+        },
+    }
+
+
+class ResourcePipeline(Pipeline):
+    def __init__(self, descriptor=None, *, name=None, type=None, source=None, steps=None):
+        self.setinitial("source", source)
+        super().__init__(descriptor, name=name, type=type, steps=steps)
+
+    @Metadata.property
+    def source(self):
+        """
+        Returns:
+            dict[]?: pipeline source
+        """
+        return self.get("source")
+
+    # Run
+
+    def run(self):
+        """Run the pipeline"""
+        transforms = import_module("frictionless.transform")
+        source = Resource(self.source)
+        target = transforms.transform_resource(source, steps=self.steps)
+        return target
+
+    # Metadata
+
+    metadata_profile = {  # type: ignore
+        "type": "object",
+        "required": ["type", "source", "steps"],
+        "properties": {
+            "name": {"type": "string"},
+            "type": {"type": "string"},
+            "source": {"type": "object"},
+            "steps": {
+                "type": "array",
+                "items": {"type": "object", "required": ["type", "spec"]},
+            },
+        },
+    }
+
+
+class PackagePipeline(Pipeline):
+    def __init__(self, descriptor=None, *, name=None, type=None, source=None, steps=None):
+        self.setinitial("source", source)
+        super().__init__(descriptor, name=name, type=type, steps=steps)
+
+    @Metadata.property
+    def source(self):
+        """
+        Returns:
+            dict[]?: pipeline source
+        """
+        return self.get("source")
+
+    # Run
+
+    def run(self):
+        """Run the pipeline"""
+        transforms = import_module("frictionless.transform")
+        source = Package(self.source)
+        target = transforms.transform_package(source, steps=self.steps)
+        return target
+
+    # Metadata
+
+    metadata_profile = {  # type: ignore
+        "type": "object",
+        "required": ["type", "source", "steps"],
+        "properties": {
+            "name": {"type": "string"},
+            "type": {"type": "string"},
+            "source": {"type": "object"},
             "steps": {
                 "type": "array",
                 "items": {"type": "object", "required": ["type", "spec"]},

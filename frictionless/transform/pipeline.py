@@ -1,4 +1,4 @@
-from ..pipeline import Pipeline
+from ..system import system
 
 
 def transform_pipeline(source):
@@ -14,5 +14,5 @@ def transform_pipeline(source):
     """
 
     # Run pipeline
-    pipeline = Pipeline(source)
-    pipeline.run()
+    pipeline = system.create_pipeline(source)
+    return pipeline.run()

@@ -1,14 +1,15 @@
 import os
-from frictionless import transform, Package
+from frictionless import Package
+from frictionless.plugins.dataflows import DataflowsPipeline
 
 
 # General
 
 
-def test_ensure_dir(tmpdir):
+def test_pipeline(tmpdir):
 
     # Write
-    transform(
+    pipeline = DataflowsPipeline(
         {
             "type": "dataflows",
             "steps": [
@@ -18,6 +19,7 @@ def test_ensure_dir(tmpdir):
             ],
         }
     )
+    pipeline.run()
 
     # Read
     package = Package(os.path.join(tmpdir, "datapackage.json"))

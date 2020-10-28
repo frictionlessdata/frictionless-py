@@ -1,10 +1,13 @@
 import os
+import pytest
 from frictionless import Pipeline, Package
 
 
 # General
 
 
+# TODO: rebase on Resource/PackagePipeline
+@pytest.mark.skip
 def test_pipeline(tmpdir):
 
     # Write

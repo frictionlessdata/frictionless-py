@@ -30,6 +30,7 @@ class System:
         "create_dialect",
         "create_loader",
         "create_parser",
+        "create_pipeline",
         "create_server",
         "create_storage",
     ]
@@ -179,6 +180,29 @@ class System:
         elif name in ["jsonl", "ndjson"]:
             return parsers.JsonlParser(resource)
         note = f'cannot create parser "{name}". Try installing "frictionless-{name}"'
+        raise exceptions.FrictionlessException(errors.FormatError(note=note))
+
+    def create_pipeline(self, descriptor):
+        """Create parser
+
+        Parameters:
+            descriptor (str|dict): pipeline descriptor
+
+        Returns:
+            Pipeline: pipeline
+        """
+        metadata = import_module("frictionless.metadata")
+        pipelines = import_module("frictionless.pipeline")
+        type = metadata.Metadata(descriptor).get("type", "resource")
+        for func in self.methods["create_pipeline"].values():
+            pipeline = func(type, descriptor=descriptor)
+            if pipeline is not None:
+                return pipeline
+        if type == "resource":
+            return pipelines.ResourcePipeline(descriptor)
+        elif type == "package":
+            return pipelines.PackagePipeline(descriptor)
+        note = f'cannot create pipeline "{type}". Try installing "frictionless-{type}"'
         raise exceptions.FrictionlessException(errors.FormatError(note=note))
 
     def create_server(self, name, **options):
