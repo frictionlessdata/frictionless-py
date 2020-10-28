@@ -351,6 +351,14 @@ class Resource(Metadata):
         """
         return self.__trusted
 
+    @property
+    def package(self):
+        """
+        Returns:
+            Package?: parent package
+        """
+        return self.__package
+
     @Metadata.property(write=False)
     def inline(self):
         """

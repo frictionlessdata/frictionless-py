@@ -23,6 +23,8 @@ class table_attach(Step):
         self.__resource = resource
 
     def transform_resource(self, source, target):
+        if isinstance(self.__resource, str):
+            self.__resource = source.package.get_resource(self.__resource)
         self.__resource.infer(only_sample=True)
         view1 = source.to_petl()
         view2 = self.__resource.to_petl()
@@ -55,6 +57,8 @@ class table_diff(Step):
         self.__use_hash = use_hash
 
     def transform_resource(self, source, target):
+        if isinstance(self.__resource, str):
+            self.__resource = source.package.get_resource(self.__resource)
         self.__resource.infer(only_sample=True)
         view1 = source.to_petl()
         view2 = self.__resource.to_petl()
@@ -71,6 +75,8 @@ class table_intersect(Step):
         self.__use_hash = use_hash
 
     def transform_resource(self, source, target):
+        if isinstance(self.__resource, str):
+            self.__resource = source.package.get_resource(self.__resource)
         self.__resource.infer(only_sample=True)
         view1 = source.to_petl()
         view2 = self.__resource.to_petl()
@@ -87,6 +93,8 @@ class table_join(Step):
         self.__hash = hash
 
     def transform_resource(self, source, target):
+        if isinstance(self.__resource, str):
+            self.__resource = source.package.get_resource(self.__resource)
         self.__resource.infer(only_sample=True)
         view1 = source.to_petl()
         view2 = self.__resource.to_petl()
@@ -143,6 +151,8 @@ class table_merge(Step):
         self.__sort = sort
 
     def transform_resource(self, source, target):
+        if isinstance(self.__resource, str):
+            self.__resource = source.package.get_resource(self.__resource)
         self.__resource.infer(only_sample=True)
         view1 = source.to_petl()
         view2 = self.__resource.to_petl()
