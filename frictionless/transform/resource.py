@@ -36,7 +36,7 @@ def transform_resource(resource, *, steps):
 
         # Postprocess
         if source.data is not target.data:
-            target.data = data_wrapper(target.data, step=step)
+            target.data = DataWithErrorHandling(target.data, step=step)
             # NOTE: can be removed when path/data updates is implemented for resource
             target.format = "inline"
 
@@ -46,12 +46,17 @@ def transform_resource(resource, *, steps):
 # Internal
 
 
-def data_wrapper(data, *, step):
-    try:
-        yield from data() if callable(data) else data
-    except Exception as exception:
-        if isinstance(exception, exceptions.FrictionlessException):
-            if exception.error.code == "step-error":
-                raise
-        error = errors.StepError(note=f'"{get_name(step)}" raises "{exception}"')
-        raise exceptions.FrictionlessException(error) from exception
+class DataWithErrorHandling:
+    def __init__(self, data, *, step):
+        self.data = data
+        self.step = step
+
+    def __iter__(self):
+        try:
+            yield from self.data() if callable(self.data) else self.data
+        except Exception as exception:
+            if isinstance(exception, exceptions.FrictionlessException):
+                if exception.error.code == "step-error":
+                    raise
+            error = errors.StepError(note=f'"{get_name(self.step)}" raises "{exception}"')
+            raise exceptions.FrictionlessException(error) from exception

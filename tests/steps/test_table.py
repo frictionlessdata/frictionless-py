@@ -656,10 +656,9 @@ def test_step_table_pivot():
 # Recast
 
 
-# TODO: recover
-@pytest.mark.skip
 def test_step_table_recast():
     source = Resource(path="data/transform.csv")
+    source.infer(only_sample=True)
     target = transform(
         source,
         steps=[
@@ -680,8 +679,6 @@ def test_step_table_recast():
 
 
 # TODO: fix this step
-# TODO: recover
-@pytest.mark.skip
 def test_step_table_transpose():
     source = Resource(path="data/transform.csv")
     target = transform(
