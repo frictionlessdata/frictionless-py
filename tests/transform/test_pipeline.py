@@ -4,7 +4,7 @@ from frictionless import transform
 # General
 
 
-def test_transform():
+def test_transform_pipeline():
     source = {
         "type": "resource",
         "source": {"path": "data/transform.csv"},

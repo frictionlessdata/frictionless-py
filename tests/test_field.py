@@ -4,6 +4,7 @@ from frictionless import Field
 
 # General
 
+
 DESCRIPTOR = {
     "name": "id",
     "type": "integer",
