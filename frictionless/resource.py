@@ -128,6 +128,8 @@ class Resource(Metadata):
             self.__onerror = value
         elif name == "trusted":
             self.__trusted = value
+        elif name == "package":
+            self.__package = value
         else:
             return super().__setattr__(name, value)
         self.metadata_process()
@@ -704,7 +706,13 @@ class Resource(Metadata):
             # If data is not a static list e.g. a generator we can't deepcopy it
             descriptor = {key: val for key, val in descriptor.items() if key != "data"}
             return Resource(descriptor, data=self.data)
-        return Resource(descriptor)
+        return Resource(
+            descriptor,
+            basepath=self.__basepath,
+            onerror=self.__onerror,
+            trusted=self.__trusted,
+            package=self.__package,
+        )
 
     # NOTE: cache lookup?
     def to_table(self, **options):

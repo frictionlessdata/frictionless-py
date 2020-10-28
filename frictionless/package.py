@@ -343,7 +343,13 @@ class Package(Metadata):
         for resource in descriptor.get("resources", []):
             resources.append(resource)
         descriptor = {key: val for key, val in descriptor.items() if key != "resources"}
-        return Package(descriptor, resources=resources)
+        return Package(
+            descriptor,
+            resources=resources,
+            basepath=self.__basepath,
+            onerror=self.__onerror,
+            trusted=self.__trusted,
+        )
 
     # NOTE: support multipart
     def to_zip(self, target, encoder_class=None):
@@ -461,11 +467,11 @@ class Package(Metadata):
                         resource,
                         hashing=self.__hashing,
                         basepath=self.__basepath,
-                        package=self,
                     )
                     list.__setitem__(resources, index, resource)
                 resource.onerror = self.__onerror
                 resource.trusted = self.__trusted
+                resource.package = self
             if not isinstance(resources, helpers.ControlledList):
                 resources = helpers.ControlledList(resources)
                 resources.__onchange__(self.metadata_process)

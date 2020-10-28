@@ -11,8 +11,7 @@ class resource_add(Step):
         self.__options = options
 
     def transform_package(self, source, target):
-        # TODO: review whether package.add_resource can handle basepath/etc?
-        resource = Resource(name=self.__name, **self.__options, basepath=target.basepath)
+        resource = Resource(name=self.__name, basepath=target.basepath, **self.__options)
         resource.infer(only_sample=True)
         target.add_resource(resource)
 
@@ -46,6 +45,7 @@ class resource_transform(Step):
         target.resources[index] = transform_resource(resource, steps=self.__steps)
 
 
+# TODO: add patch_schema param?
 class resource_update(Step):
     def __init__(self, *, name, steps=None, **options):
         self.__name = name

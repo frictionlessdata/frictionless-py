@@ -18,8 +18,6 @@ def transform_resource(resource, *, steps):
     # Prepare
     target = resource.to_copy()
     target.infer(only_sample=True)
-    # TODO: should be handled by Resource.to_copy
-    target.basepath = resource.basepath
 
     # Run transforms
     for step in steps:
@@ -27,8 +25,6 @@ def transform_resource(resource, *, steps):
         # Preprocess
         source = target
         target = source.to_copy()
-        # TODO: should be handled by Resource.to_copy
-        target.basepath = source.basepath
 
         # Transform
         try:
