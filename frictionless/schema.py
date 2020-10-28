@@ -1,6 +1,7 @@
 from copy import copy, deepcopy
 from .metadata import Metadata
 from .field import Field
+from . import exceptions
 from . import helpers
 from . import errors
 from . import config
@@ -114,20 +115,23 @@ class Schema(Metadata):
         self["fields"].append(descriptor)
         return self.fields[-1]
 
-    # TODO: should raise if not found
     def get_field(self, name):
         """Get schema's field by name.
 
         Parameters:
             name (str): schema field name
 
+        Raises:
+            FrictionlessException: if field is not found
+
         Returns:
-           Field/None: `Field` instance or `None` if not found
+           Field: `Field` instance or `None` if not found
         """
         for field in self.fields:
             if field.name == name:
                 return field
-        return None
+        error = errors.SchemaError(note=f'field "{name}" does not exist')
+        raise exceptions.FrictionlessException(error)
 
     def has_field(self, name):
         """Check if a field is present
