@@ -147,7 +147,6 @@ class Schema(Metadata):
                 return True
         return False
 
-    # TODO: should raise if not found
     def remove_field(self, name):
         """Remove field by name.
 
@@ -156,13 +155,14 @@ class Schema(Metadata):
         Parameters:
             name (str): schema field name
 
+        Raises:
+            FrictionlessException: if field is not found
+
         Returns:
             Field/None: removed `Field` instances or `None` if not found
         """
         field = self.get_field(name)
-        if field:
-            predicat = lambda field: field.name != name
-            self["fields"] = list(filter(predicat, self.fields))
+        self.fields.remove(field)
         return field
 
     # Expand

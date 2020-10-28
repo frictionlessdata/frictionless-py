@@ -165,7 +165,7 @@ class table_merge(Step):
                 if field.name not in target.schema.field_names:
                     target.schema.add_field(field)
             if self.__field_names:
-                for field in target.schema.fields:
+                for field in list(target.schema.fields):
                     if field.name not in self.__field_names:
                         target.schema.remove_field(field.name)
 
