@@ -281,6 +281,14 @@ class CheckError(Error):
     description = "A validation check cannot be created"
 
 
+class StepError(Error):
+    code = "step-error"
+    name = "Step Error"
+    tags = ["#general"]
+    template = "The transfrom step has an error: {note}"
+    description = "A transform step cannot be finished"
+
+
 class StorageError(Error):
     code = "storage-error"
     name = "Storage Error"

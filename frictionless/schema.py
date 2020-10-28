@@ -114,6 +114,7 @@ class Schema(Metadata):
         self["fields"].append(descriptor)
         return self.fields[-1]
 
+    # TODO: should raise if not found
     def get_field(self, name):
         """Get schema's field by name.
 
@@ -142,6 +143,7 @@ class Schema(Metadata):
                 return True
         return False
 
+    # TODO: should raise if not found
     def remove_field(self, name):
         """Remove field by name.
 

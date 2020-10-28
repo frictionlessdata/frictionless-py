@@ -184,6 +184,7 @@ class Package(Metadata):
         self["resources"].append(descriptor)
         return self.resources[-1]
 
+    # TODO: should raise if not found
     def get_resource(self, name):
         """Get resource by name.
 
@@ -212,6 +213,7 @@ class Package(Metadata):
                 return True
         return False
 
+    # TODO: should raise if not found
     def remove_resource(self, name):
         """Remove resource by name.
 

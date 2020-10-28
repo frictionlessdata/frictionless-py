@@ -34,6 +34,10 @@ def stringify_header(cells):
     return ["" if cell is None else str(cell).strip() for cell in cells]
 
 
+def get_name(value):
+    return getattr(value, "__name__", value.__class__.__name__)
+
+
 def pass_through(iterator):
     for item in iterator:
         pass
