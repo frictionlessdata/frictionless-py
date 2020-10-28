@@ -35,10 +35,10 @@ def transform_resource(resource, *, steps):
             raise exceptions.FrictionlessException(error) from exception
 
         # Postprocess
-        # TODO: resource should handle it
-        target.format = "inline"
         if source.data is not target.data:
             target.data = data_wrapper(target.data, step=step)
+            # NOTE: can be removed when path/data updates is implemented for resource
+            target.format = "inline"
 
     return target
 

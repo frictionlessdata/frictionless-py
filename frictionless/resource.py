@@ -19,6 +19,8 @@ from . import errors
 from . import config
 
 
+# TODO: rework path/data/location etc
+# TODO: rework path/data updates syncing
 # TODO: implement save/write as we have table.write
 class Resource(Metadata):
     """Resource representation.
