@@ -339,10 +339,11 @@ class Package(Metadata):
     def to_copy(self):
         """Create a copy of the package"""
         descriptor = self.to_dict()
+        # Resource's data can be not serializable (generators/functions)
+        descriptor.pop("resources", None)
         resources = []
-        for resource in descriptor.get("resources", []):
-            resources.append(resource)
-        descriptor = {key: val for key, val in descriptor.items() if key != "resources"}
+        for resource in self.resources:
+            resources.append(resource.to_copy())
         return Package(
             descriptor,
             resources=resources,

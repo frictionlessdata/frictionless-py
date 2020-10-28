@@ -702,12 +702,11 @@ class Resource(Metadata):
     def to_copy(self):
         """Create a copy of the resource"""
         descriptor = self.to_dict()
-        if self.data and not isinstance(self.data, list):
-            # If data is not a static list e.g. a generator we can't deepcopy it
-            descriptor = {key: val for key, val in descriptor.items() if key != "data"}
-            return Resource(descriptor, data=self.data)
+        # Data can be not serializable (generators/functions)
+        data = descriptor.pop("data", None)
         return Resource(
             descriptor,
+            data=data,
             basepath=self.__basepath,
             onerror=self.__onerror,
             trusted=self.__trusted,
