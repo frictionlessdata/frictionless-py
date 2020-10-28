@@ -13,6 +13,7 @@ from frictionless import Field
         ("default", 1 << 63, 1 << 63, {}),
         ("default", "1", 1, {}),
         ("default", 1.0, 1, {}),
+        ("default", "000835", 835, {}),
         ("default", Decimal("1.0"), 1, {}),
         ("default", "1$", 1, {"bareNumber": False}),
         ("default", "ab1$", 1, {"bareNumber": False}),
