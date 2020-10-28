@@ -134,16 +134,6 @@ class Resource(Metadata):
             return super().__setattr__(name, value)
         self.metadata_process()
 
-    def __deepcopy__(self, memo=None):
-        # We need to exclude the `data` key from copying
-        # as it can contain unpickeble values like generators
-        data = self.get("data")
-        rest = {key: value for key, value in self.items() if key != "data"}
-        copy = deepcopy(rest, memo)
-        if data is not None:
-            copy["data"] = data
-        return copy
-
     def __iter__(self):
         yield from self.read_row_stream() if self.tabular else []
 

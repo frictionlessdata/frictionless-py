@@ -43,6 +43,16 @@ def pass_through(iterator):
         pass
 
 
+def deepfork(value):
+    if isinstance(value, dict):
+        value = {key: deepfork(value) for key, value in value.items()}
+    elif isinstance(value, list):
+        value = [deepfork(value) for value in value]
+    elif isinstance(value, set):
+        value = {deepfork(value) for value in value}
+    return value
+
+
 def import_from_plugin(name, *, plugin):
     try:
         return import_module(name)
@@ -339,14 +349,6 @@ class ControlledList(list):
         result = super().remove(*args, **kwargs)
         self.__onchange__()
         return result
-
-
-def deepnative(value):
-    if isinstance(value, dict):
-        value = {key: deepnative(value) for key, value in value.items()}
-    elif isinstance(value, list):
-        value = [deepnative(value) for value in value]
-    return value
 
 
 # Measurements
