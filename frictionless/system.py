@@ -191,17 +191,15 @@ class System:
         Returns:
             Pipeline: pipeline
         """
-        metadata = import_module("frictionless.metadata")
-        pipelines = import_module("frictionless.pipeline")
-        type = metadata.Metadata(descriptor).get("type", "resource")
+        Metadata = import_module("frictionless.metadata").Metadata
+        Pipeline = import_module("frictionless.pipeline").Pipeline
+        type = Metadata(descriptor).get("type", "resource")
         for func in self.methods["create_pipeline"].values():
             pipeline = func(type, descriptor=descriptor)
             if pipeline is not None:
                 return pipeline
-        if type == "resource":
-            return pipelines.ResourcePipeline(descriptor)
-        elif type == "package":
-            return pipelines.PackagePipeline(descriptor)
+        if type in ["resource", "package"]:
+            return Pipeline(descriptor)
         note = f'cannot create pipeline "{type}". Try installing "frictionless-{type}"'
         raise exceptions.FrictionlessException(errors.FormatError(note=note))
 

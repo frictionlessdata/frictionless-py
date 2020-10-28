@@ -14,8 +14,8 @@ def test_pipeline(tmpdir):
             "type": "dataflows",
             "steps": [
                 {"type": "load", "spec": {"loadSource": "data/table.csv"}},
-                {"type": "set_type", "spec": {"name": "id", "type": "string"}},
-                {"type": "dump_to_path", "spec": {"outPath": tmpdir}},
+                {"type": "setType", "spec": {"name": "id", "type": "string"}},
+                {"type": "dumpToPath", "spec": {"outPath": tmpdir}},
             ],
         }
     )

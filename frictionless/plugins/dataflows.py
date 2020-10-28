@@ -75,7 +75,7 @@ class DataflowsPipeline(Pipeline):
         # Create flow
         items = []
         for step in self.steps:
-            func = getattr(dataflows, stringcase.lowercase(step["type"]))
+            func = getattr(dataflows, stringcase.snakecase(step["type"]))
             items.append(func(**helpers.create_options(step["spec"])))
         flow = dataflows.Flow(*items)
 

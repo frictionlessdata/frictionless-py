@@ -1,7 +1,9 @@
+import stringcase
 from importlib import import_module
 from .metadata import Metadata
 from .resource import Resource
 from .package import Package
+from . import helpers
 from . import errors
 
 
@@ -39,9 +41,10 @@ class Pipeline(Metadata):
 
     """
 
-    def __init__(self, descriptor=None, *, name=None, type=None, steps=None):
+    def __init__(self, descriptor=None, *, name=None, type=None, source=None, steps=None):
         self.setinitial("name", name)
         self.setinitial("type", type)
+        self.setinitial("source", source)
         self.setinitial("steps", steps)
         super().__init__(descriptor)
 
@@ -59,7 +62,15 @@ class Pipeline(Metadata):
         Returns:
             str?: pipeline type
         """
-        return self.get("type")
+        return self.get("type", "resource")
+
+    @Metadata.property
+    def source(self):
+        """
+        Returns:
+            dict[]?: pipeline source
+        """
+        return self.get("source")
 
     @Metadata.property
     def steps(self):
@@ -73,88 +84,23 @@ class Pipeline(Metadata):
 
     def run(self):
         """Run the pipeline"""
-        raise NotImplementedError()
+        steps = import_module("frictionless.steps")
+        transforms = import_module("frictionless.transform")
+        # TODO: it will not work for nested steps like steps.resource_transform
+        items = []
+        for step in self.steps:
+            func = getattr(steps, stringcase.snakecase(step["type"]))
+            items.append(func(**helpers.create_options(step["spec"])))
+        if self.type == "resource":
+            source = Resource(self.source)
+            return transforms.transform_resource(source, steps=items)
+        else:
+            source = Package(self.source)
+            return transforms.transform_package(source, steps=items)
 
     # Metadata
 
     metadata_Error = errors.PipelineError
-    metadata_profile = {  # type: ignore
-        "type": "object",
-        "required": ["type", "source", "steps"],
-        "properties": {
-            "name": {"type": "string"},
-            "type": {"type": "string"},
-            "steps": {
-                "type": "array",
-                "items": {"type": "object", "required": ["type", "spec"]},
-            },
-        },
-    }
-
-
-class ResourcePipeline(Pipeline):
-    def __init__(self, descriptor=None, *, name=None, type=None, source=None, steps=None):
-        self.setinitial("source", source)
-        super().__init__(descriptor, name=name, type=type, steps=steps)
-
-    @Metadata.property
-    def source(self):
-        """
-        Returns:
-            dict[]?: pipeline source
-        """
-        return self.get("source")
-
-    # Run
-
-    def run(self):
-        """Run the pipeline"""
-        transforms = import_module("frictionless.transform")
-        source = Resource(self.source)
-        target = transforms.transform_resource(source, steps=self.steps)
-        return target
-
-    # Metadata
-
-    metadata_profile = {  # type: ignore
-        "type": "object",
-        "required": ["type", "source", "steps"],
-        "properties": {
-            "name": {"type": "string"},
-            "type": {"type": "string"},
-            "source": {"type": "object"},
-            "steps": {
-                "type": "array",
-                "items": {"type": "object", "required": ["type", "spec"]},
-            },
-        },
-    }
-
-
-class PackagePipeline(Pipeline):
-    def __init__(self, descriptor=None, *, name=None, type=None, source=None, steps=None):
-        self.setinitial("source", source)
-        super().__init__(descriptor, name=name, type=type, steps=steps)
-
-    @Metadata.property
-    def source(self):
-        """
-        Returns:
-            dict[]?: pipeline source
-        """
-        return self.get("source")
-
-    # Run
-
-    def run(self):
-        """Run the pipeline"""
-        transforms = import_module("frictionless.transform")
-        source = Package(self.source)
-        target = transforms.transform_package(source, steps=self.steps)
-        return target
-
-    # Metadata
-
     metadata_profile = {  # type: ignore
         "type": "object",
         "required": ["type", "source", "steps"],
