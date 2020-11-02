@@ -133,3 +133,9 @@ def test_describe_resource_values_with_leading_zeros_issue_492():
     resource = describe("data/leading-zeros.csv")
     assert resource.schema == {"fields": [{"name": "value", "type": "integer"}]}
     assert resource.read_rows() == [{"value": 1}, {"value": 2}, {"value": 3}]
+
+
+def test_describe_schema_proper_quote_issue_493():
+    resource = describe("data/issue493.csv")
+    assert resource.dialect.quote_char == '"'
+    assert len(resource.schema.fields) == 126
