@@ -44,6 +44,10 @@ class CsvParser(Parser):
                 continue
             if name in self.resource.dialect:
                 continue
+            # We can't rely on this guess as it's can be confused with embeded JSON
+            # https://github.com/frictionlessdata/frictionless-py/issues/493
+            if name == "quoteChar" and value == "'":
+                value = '"'
             self.resource.dialect[name] = value
         return sample
 
