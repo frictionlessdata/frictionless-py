@@ -56,7 +56,7 @@ def test_table_s3_big_file(bucket_name):
 
 @mock_s3
 @pytest.mark.ci
-def test_s3_validate_multiprocessing_problem_issue_496(bucket_name):
+def test_validate_s3_multiprocessing_problem_issue_496(bucket_name):
 
     # Write
     client = boto3.resource("s3", region_name="us-east-1")
@@ -80,6 +80,26 @@ def test_s3_validate_multiprocessing_problem_issue_496(bucket_name):
     report = validate(descriptor)
     assert report.valid
     assert report.stats["tables"] == 2
+
+
+@mock_s3
+def test_table_s3_problem_with_spaces_issue_501(bucket_name):
+
+    # Write
+    client = boto3.resource("s3", region_name="us-east-1")
+    bucket = client.create_bucket(Bucket=bucket_name, ACL="public-read")
+    bucket.put_object(
+        ACL="private",
+        Body=open("data/table.csv", "rb"),
+        Bucket=bucket_name,
+        ContentType="text/csv",
+        Key="table with space.csv",
+    )
+
+    # Read
+    with Table("s3://%s/table with space.csv" % bucket_name) as table:
+        assert table.header == ["id", "name"]
+        assert table.read_data() == [["1", "english"], ["2", "中国人"]]
 
 
 # Fixtures
