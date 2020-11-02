@@ -1,0 +1,73 @@
+{
+  "author": "Test Author",
+  "author_email": "test@example.com",
+  "creator_user_id": "d9394fed-8637-4671-88ce-8eed35171268",
+  "extras": [
+    {
+      "key": "Atualizado Em",
+      "value": "2020/07/18"
+    },
+    {
+      "key": "Área",
+      "value": "infraestrutura"
+    }
+  ],
+  "groups": [],
+  "id": "d644520b-cdab-40cc-876d-469fc632c7ea",
+  "isopen": true,
+  "license_id": "cc-zero",
+  "license_title": "Creative Commons CCZero",
+  "license_url": "http://www.opendefinition.org/licenses/cc-zero",
+  "maintainer": "Test Mantainer",
+  "maintainer_email": "maintainer@example.com",
+  "metadata_created": "2020-07-18T21:24:09.119107",
+  "metadata_modified": "2020-07-20T12:35:59.929906",
+  "name": "just-another-test-dataset",
+  "notes": "Just another test dataset",
+  "num_resources": 1,
+  "num_tags": 1,
+  "organization": null,
+  "owner_org": null,
+  "private": false,
+  "relationships_as_object": [],
+  "relationships_as_subject": [],
+  "resources": [
+    {
+      "cache_last_updated": null,
+      "cache_url": null,
+      "created": "2020-07-18T21:25:21.460146",
+      "datastore_active": true,
+      "description": "A list of schools in Birmingham, UK, extracted from https://data.birmingham.gov.uk/dataset/birmingham-schools-datasets.",
+      "format": "CSV",
+      "hash": "",
+      "id": "fc6bdb80-7f22-412d-b439-97e1ebc929f1",
+      "last_modified": null,
+      "mimetype": null,
+      "mimetype_inner": null,
+      "name": "birmingham-schools",
+      "package_id": "d644520b-cdab-40cc-876d-469fc632c7ea",
+      "position": 0,
+      "resource_type": null,
+      "revision_id": "39e4c0be-64e8-44fb-b344-6d9ba71a766d",
+      "size": null,
+      "state": "active",
+      "url": "https://raw.githubusercontent.com/vitorbaptista/birmingham_schools/master/data/birmingham_schools.csv",
+      "url_type": null
+    }
+  ],
+  "revision_id": "39e4c0be-64e8-44fb-b344-6d9ba71a766d",
+  "state": "active",
+  "tags": [
+    {
+      "display_name": "just for test",
+      "id": "8e95decc-1f40-427e-9a72-2c99ce821289",
+      "name": "just for test",
+      "state": "active",
+      "vocabulary_id": null
+    }
+  ],
+  "title": "Just Another Test Dataset",
+  "type": "dataset",
+  "url": "https://example.com/test-data.csv",
+  "version": "0.75"
+}

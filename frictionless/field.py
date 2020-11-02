@@ -58,6 +58,13 @@ class Field(Metadata):
         self.__type = None
         super().__init__(descriptor)
 
+        # Replace deprecated "fmt:"
+        format = self.get("format")
+        if format and format.startswith("fmt:"):
+            message = 'Format "fmt:<PATTERN>" is deprecated. Please remove "fmt:" prefix.'
+            warnings.warn(message, UserWarning)
+            self["format"] = format.replace("fmt:", "")
+
     @Metadata.property
     def name(self):
         """
@@ -97,13 +104,6 @@ class Field(Metadata):
             str: format
         """
         format = self.get("format", "default")
-        if format.startswith("fmt:"):
-            warnings.warn(
-                'Format "fmt:<PATTERN>" is deprecated. '
-                'Please use "<PATTERN>" without "fmt:" prefix.',
-                UserWarning,
-            )
-            format = format.replace("fmt:", "")
         return format
 
     @Metadata.property

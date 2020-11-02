@@ -2,6 +2,7 @@ import io
 import os
 import json
 import zipfile
+import warnings
 from copy import deepcopy
 from importlib import import_module
 from .metadata import Metadata
@@ -110,6 +111,14 @@ class Resource(Metadata):
         self.__package = package
         super().__init__(descriptor)
 
+        # Replace deprecated "url"
+        url = self.get("url")
+        path = self.get("path")
+        if url and not path:
+            message = 'Property "url" is deprecated. Please use "path" instead.'
+            warnings.warn(message, UserWarning)
+            self["path"] = self.pop("url")
+
     def __setattr__(self, name, value):
         if name == "basepath":
             self.__basepath = value
@@ -193,7 +202,7 @@ class Resource(Metadata):
         Returns
             str?: resource scheme
         """
-        return self.get("scheme", self.__location.scheme)
+        return self.get("scheme", self.__location.scheme).lower()
 
     @Metadata.property
     def format(self):
@@ -201,7 +210,7 @@ class Resource(Metadata):
         Returns
             str?: resource format
         """
-        return self.get("format", self.__location.format)
+        return self.get("format", self.__location.format).lower()
 
     @Metadata.property
     def hashing(self):
@@ -209,7 +218,7 @@ class Resource(Metadata):
         Returns
             str?: resource hashing
         """
-        return self.get("hashing", config.DEFAULT_HASHING)
+        return self.get("hashing", config.DEFAULT_HASHING).lower()
 
     @Metadata.property
     def encoding(self):
@@ -217,7 +226,7 @@ class Resource(Metadata):
         Returns
             str?: resource encoding
         """
-        return self.get("encoding", config.DEFAULT_ENCODING)
+        return self.get("encoding", config.DEFAULT_ENCODING).lower()
 
     @Metadata.property
     def compression(self):
@@ -225,7 +234,7 @@ class Resource(Metadata):
         Returns
             str?: resource compression
         """
-        return self.get("compression", self.__location.compression)
+        return self.get("compression", self.__location.compression).lower()
 
     @Metadata.property
     def compression_path(self):
