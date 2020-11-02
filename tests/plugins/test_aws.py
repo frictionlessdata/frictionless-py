@@ -3,7 +3,7 @@ import pytest
 import string
 import random
 from moto import mock_s3
-from frictionless import Table
+from frictionless import Table, validate
 
 
 # Loader
@@ -52,6 +52,34 @@ def test_table_s3_big_file(bucket_name):
             "fields": 10,
             "rows": 10000,
         }
+
+
+@mock_s3
+@pytest.mark.ci
+def test_s3_validate_multiprocessing_problem_issue_496(bucket_name):
+
+    # Write
+    client = boto3.resource("s3", region_name="us-east-1")
+    bucket = client.create_bucket(Bucket=bucket_name, ACL="public-read")
+    for number in [1, 2]:
+        bucket.put_object(
+            ACL="private",
+            Body=open("data/table.csv", "rb"),
+            Bucket=bucket_name,
+            ContentType="text/csv",
+            Key=f"table{number}.csv",
+        )
+
+    # Validate
+    descriptor = {
+        "resources": [
+            {"path": "s3://%s/table1.csv" % bucket_name},
+            {"path": "s3://%s/table2.csv" % bucket_name},
+        ]
+    }
+    report = validate(descriptor)
+    assert report.valid
+    assert report.stats["tables"] == 2
 
 
 # Fixtures
