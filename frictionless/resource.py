@@ -202,7 +202,7 @@ class Resource(Metadata):
         Returns
             str?: resource scheme
         """
-        return self.get("scheme", self.__location.scheme)
+        return self.get("scheme", self.__location.scheme).lower()
 
     @Metadata.property
     def format(self):
@@ -210,7 +210,7 @@ class Resource(Metadata):
         Returns
             str?: resource format
         """
-        return self.get("format", self.__location.format)
+        return self.get("format", self.__location.format).lower()
 
     @Metadata.property
     def hashing(self):
@@ -218,7 +218,7 @@ class Resource(Metadata):
         Returns
             str?: resource hashing
         """
-        return self.get("hashing", config.DEFAULT_HASHING)
+        return self.get("hashing", config.DEFAULT_HASHING).lower()
 
     @Metadata.property
     def encoding(self):
@@ -226,7 +226,7 @@ class Resource(Metadata):
         Returns
             str?: resource encoding
         """
-        return self.get("encoding", config.DEFAULT_ENCODING)
+        return self.get("encoding", config.DEFAULT_ENCODING).lower()
 
     @Metadata.property
     def compression(self):
@@ -234,7 +234,7 @@ class Resource(Metadata):
         Returns
             str?: resource compression
         """
-        return self.get("compression", self.__location.compression)
+        return self.get("compression", self.__location.compression).lower()
 
     @Metadata.property
     def compression_path(self):

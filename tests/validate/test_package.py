@@ -405,8 +405,8 @@ def test_validate_package_with_schema_issue_348():
     ]
 
 
+@pytest.mark.ci
 def test_validate_package_uppercase_format_issue_494():
     report = validate("data/issue494.package.json")
-    import pprint
-
-    pprint.pprint(report)
+    assert report.valid
+    assert report.stats["tables"] == 1
