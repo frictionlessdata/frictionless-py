@@ -2,6 +2,10 @@
 
 Here described only the breaking and most significant changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/frictionless-py/commits/master).
 
+## v3.24
+
+- Lower case resource.scheme/format/hashing/encoding/compression (#499) (BREAKING)
+
 ## v3.23
 
 - Support "header_case" option for dialects (#488)
