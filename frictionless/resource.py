@@ -2,6 +2,7 @@ import io
 import os
 import json
 import zipfile
+import warnings
 from copy import deepcopy
 from importlib import import_module
 from .metadata import Metadata
@@ -109,6 +110,14 @@ class Resource(Metadata):
         self.__trusted = trusted
         self.__package = package
         super().__init__(descriptor)
+
+        # Replace deprecated "url"
+        url = self.get("url")
+        path = self.get("path")
+        if url and not path:
+            message = 'Property "url" is deprecated. Please use "path" instead.'
+            warnings.warn(message, UserWarning)
+            self["path"] = self.pop("url")
 
     def __setattr__(self, name, value):
         if name == "basepath":

@@ -403,3 +403,10 @@ def test_validate_package_with_schema_issue_348():
         [2, 4, "missing-cell"],
         [3, 4, "missing-cell"],
     ]
+
+
+def test_validate_package_uppercase_format_issue_494():
+    report = validate("data/issue494.package.json")
+    import pprint
+
+    pprint.pprint(report)
