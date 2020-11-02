@@ -61,20 +61,14 @@ def test_s3_validate_multiprocessing_problem_issue_496(bucket_name):
     # Write
     client = boto3.resource("s3", region_name="us-east-1")
     bucket = client.create_bucket(Bucket=bucket_name, ACL="public-read")
-    bucket.put_object(
-        ACL="private",
-        Body=open("data/table.csv", "rb"),
-        Bucket=bucket_name,
-        ContentType="text/csv",
-        Key="table1.csv",
-    )
-    bucket.put_object(
-        ACL="private",
-        Body=open("data/table.csv", "rb"),
-        Bucket=bucket_name,
-        ContentType="text/csv",
-        Key="table2.csv",
-    )
+    for number in [1, 2]:
+        bucket.put_object(
+            ACL="private",
+            Body=open("data/table.csv", "rb"),
+            Bucket=bucket_name,
+            ContentType="text/csv",
+            Key=f"table{number}.csv",
+        )
 
     # Validate
     descriptor = {
