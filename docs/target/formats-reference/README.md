@@ -56,12 +56,6 @@ Csv skip initial space
 
 Csv comment char
 
-#### Case Sensitive Header
-
-> Type: bool
-
-Csv case sensitive header
-
 
 
 ## Excel
@@ -145,6 +139,31 @@ A path within json to the data
 
 
 
+## Bigquery
+
+
+### Options
+
+#### Project
+
+> Type: str
+
+Project
+
+#### Dataset
+
+> Type: str
+
+Dataset
+
+#### Table
+
+> Type: str
+
+Table
+
+
+
 ## Gsheet
 
 
@@ -175,6 +194,18 @@ Html selector
 
 Sheet
 
+
+
+## Pandas
+
+
+There are no options available.
+
+
+## Spss
+
+
+There are no options available.
 
 
 ## Sql

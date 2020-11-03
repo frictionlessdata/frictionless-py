@@ -2,6 +2,55 @@
 
 Here described only the breaking and most significant changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/frictionless-py/commits/master).
 
+## v3.25
+
+- Add transform functionality (#505)
+- Methods `schema.get/remove_field` now raise if not found (#505) (BREAKING)
+- Methods `package.get/remove_resource` now raise if not found (#505) (BREAKING)
+
+## v3.24
+
+- Lower case resource.scheme/format/hashing/encoding/compression (#499) (BREAKING)
+
+## v3.23
+
+- Support "header_case" option for dialects (#488)
+
+## v3.22
+
+- Added suppport for DB2 format (#485)
+
+## v3.21
+
+- Improved SPSS plugin (#483)
+- Improved BigQuery plugin (#470)
+
+## v3.20
+
+- Added support for SQL Views (#466)
+
+## v3.19
+
+- Rebased AwsLoader on streaming (#460)
+
+## v3.18
+
+- Added `hashing` parameter to `describe/describe_package`
+- Removed `table.onerror` property (BREAKING)
+
+## v3.17
+
+- Added timezone for datetime/time parsing (#457) (BREAKING)
+
+## v3.16
+
+- Fixed metadata.to_yaml (#455)
+- Removed the `expand` argument from `metadata.to_dict` (BREAKING)
+
+## v3.15
+
+- Added native schema support to SqlParser (#452)
+
 ## v3.14
 
 - Make Resource the main internal interface (#446) (BREAKING: for plugin authors)

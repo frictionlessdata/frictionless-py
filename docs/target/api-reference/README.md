@@ -346,6 +346,18 @@ pipeline.run()
 
 - `str?` - pipeline type
 
+<a name="frictionless.pipeline.Pipeline.source"></a>
+#### <big>source</big>
+
+```python
+ | @Metadata.property
+ | source()
+```
+
+**Returns**:
+
+- `dict[]?` - pipeline source
+
 <a name="frictionless.pipeline.Pipeline.steps"></a>
 #### <big>steps</big>
 
@@ -1328,6 +1340,11 @@ Get resource by name.
 - `name` _str_ - resource name
   
 
+**Raises**:
+
+- `FrictionlessException` - if resource is not found
+  
+
 **Returns**:
 
 - `Resource/None` - `Resource` instance or `None` if not found
@@ -1362,6 +1379,11 @@ Remove resource by name.
 **Arguments**:
 
 - `name` _str_ - resource name
+  
+
+**Raises**:
+
+- `FrictionlessException` - if resource is not found
   
 
 **Returns**:
@@ -2263,6 +2285,18 @@ Public   | `from frictionless import Field`
 
 - `bool` - if field is requried
 
+<a name="frictionless.field.Field.schema"></a>
+#### <big>schema</big>
+
+```python
+ | @property
+ | schema()
+```
+
+**Returns**:
+
+- `Schema?` - parent schema
+
 <a name="frictionless.field.Field.true_values"></a>
 #### <big>true\_values</big>
 
@@ -2421,11 +2455,20 @@ Write cell low-level (cast)
 <a name="frictionless.steps"></a>
 ## frictionless.steps
 
+<a name="frictionless.steps.table"></a>
+## frictionless.steps.table
+
+<a name="frictionless.steps.row"></a>
+## frictionless.steps.row
+
 <a name="frictionless.steps.field"></a>
 ## frictionless.steps.field
 
-<a name="frictionless.steps.helpers"></a>
-## frictionless.steps.helpers
+<a name="frictionless.steps.cell"></a>
+## frictionless.steps.cell
+
+<a name="frictionless.steps.resource"></a>
+## frictionless.steps.resource
 
 <a name="frictionless.query"></a>
 ## frictionless.query
@@ -2732,6 +2775,24 @@ Create parser
 
 - `Parser` - parser
 
+<a name="frictionless.system.System.create_pipeline"></a>
+#### <big>create\_pipeline</big>
+
+```python
+ | create_pipeline(descriptor)
+```
+
+Create parser
+
+**Arguments**:
+
+- `descriptor` _str|dict_ - pipeline descriptor
+  
+
+**Returns**:
+
+- `Pipeline` - pipeline
+
 <a name="frictionless.system.System.create_server"></a>
 #### <big>create\_server</big>
 
@@ -2966,6 +3027,46 @@ Plugin for Dataflows
 API      | Usage
 -------- | --------
 Public   | `from frictionless.plugins.dataflows import DataflowsPlugin`
+
+<a name="frictionless.plugins.dataflows.DataflowsPipeline"></a>
+### DataflowsPipeline
+
+```python
+class DataflowsPipeline(Pipeline)
+```
+
+Dataflows Pipeline representation
+
+API      | Usage
+-------- | --------
+Public   | `from frictionless.plugins.dataflows import DataflowsPipeline`
+
+For now, only the `package` type is supported where `steps` should
+conform to the `dataflows`s processors. The File class inherits
+from the Metadata class all the metadata's functionality
+
+
+
+```python
+pipeline = Pipeline(
+    {
+        "type": "package",
+        "steps": [
+            {"type": "load", "spec": {"loadSource": "data/table.csv"}},
+            {"type": "set_type", "spec": {"name": "id", "type": "string"}},
+            {"type": "dump_to_path", "spec": {"outPath": tmpdir}},
+        ],
+    }
+)
+pipeline.run()
+```
+
+**Arguments**:
+
+- `descriptor` _str|dict_ - pipeline descriptor
+- `name?` _str_ - pipeline name
+- `type?` _str_ - pipeline type
+- `steps?` _dict[]_ - pipeline steps
 
 <a name="frictionless.plugins.pandas"></a>
 ## frictionless.plugins.pandas
@@ -4406,9 +4507,14 @@ Get schema's field by name.
 - `name` _str_ - schema field name
   
 
+**Raises**:
+
+- `FrictionlessException` - if field is not found
+  
+
 **Returns**:
 
-- `Field/None` - `Field` instance or `None` if not found
+- `Field` - `Field` instance or `None` if not found
 
 <a name="frictionless.schema.Schema.has_field"></a>
 #### <big>has\_field</big>
@@ -4442,6 +4548,11 @@ The schema descriptor will be validated after field descriptor removal.
 **Arguments**:
 
 - `name` _str_ - schema field name
+  
+
+**Raises**:
+
+- `FrictionlessException` - if field is not found
   
 
 **Returns**:
@@ -4965,6 +5076,18 @@ Returns
 
 - `bool` - don't raise an exception on unsafe paths
 
+<a name="frictionless.resource.Resource.package"></a>
+#### <big>package</big>
+
+```python
+ | @property
+ | package()
+```
+
+**Returns**:
+
+- `Package?` - parent package
+
 <a name="frictionless.resource.Resource.inline"></a>
 #### <big>inline</big>
 
@@ -5417,7 +5540,7 @@ Public   | `from frictionless import exceptions`
 #### <big>transform</big>
 
 ```python
-transform(source)
+transform(source, **options)
 ```
 
 Transform resource
@@ -5430,14 +5553,14 @@ Public   | `from frictionless import transform`
 
 - `source` _any_ - data source
 
-<a name="frictionless.transform.package"></a>
-## frictionless.transform.package
+<a name="frictionless.transform.pipeline"></a>
+## frictionless.transform.pipeline
 
-<a name="frictionless.transform.package.transform_package"></a>
-#### <big>transform\_package</big>
+<a name="frictionless.transform.pipeline.transform_pipeline"></a>
+#### <big>transform\_pipeline</big>
 
 ```python
-transform_package(source)
+transform_pipeline(source)
 ```
 
 Transform package
@@ -5449,6 +5572,26 @@ Public   | `from frictionless import transform_package`
 **Arguments**:
 
 - `source` _any_ - a pipeline descriptor
+
+<a name="frictionless.transform.package"></a>
+## frictionless.transform.package
+
+<a name="frictionless.transform.package.transform_package"></a>
+#### <big>transform\_package</big>
+
+```python
+transform_package(package, *, steps)
+```
+
+Transform package
+
+API      | Usage
+-------- | --------
+Public   | `from frictionless import transform_package`
+
+**Arguments**:
+
+- `source` _any_ - data source
 
 <a name="frictionless.transform.resource"></a>
 ## frictionless.transform.resource
@@ -6064,6 +6207,9 @@ spec (any[]): flatten specification
 **Returns**:
 
 - `any[]` - flatten table report
+
+<a name="frictionless.utils"></a>
+## frictionless.utils
 
 <a name="frictionless.step"></a>
 ## frictionless.step

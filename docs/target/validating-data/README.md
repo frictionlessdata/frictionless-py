@@ -369,11 +369,11 @@ pprint(report)
     {'errors': [{'code': 'schema-error',
                  'description': 'Provided schema is not valid.',
                  'message': 'The data source could not be successfully described '
-                            'by the invalid Table Schema: cannot extract metadata '
+                            'by the invalid Table Schema: canot extract metadata '
                             '"bad.json" because "[Errno 2] No such file or '
                             'directory: \'bad.json\'"',
                  'name': 'Schema Error',
-                 'note': 'cannot extract metadata "bad.json" because "[Errno 2] No '
+                 'note': 'canot extract metadata "bad.json" because "[Errno 2] No '
                          'such file or directory: \'bad.json\'"',
                  'tags': ['#table', '#schema']}],
      'stats': {'errors': 1, 'tables': 0},
@@ -631,7 +631,7 @@ pprint(report.flatten(['code', 'message']))
 
 **Deviated Value**
 
-This checks uses the extranal `statistics` package to checks a field for deviations. For example:
+This check uses the Python's builtin `statistics` module to check a field's data for deviations. By default, deviated values are outside of the average +- three standard deviations. Take a look at the [API Reference](https://github.com/frictionlessdata/frictionless-py/blob/master/docs/target/api-reference/README.md#deviatedvaluecheck) for more details about available options and default values. The exact algorithm can be found [here](https://github.com/frictionlessdata/frictionless-py/blob/7ae8bae9a9197adbfe443233a6bad8a94e065ece/frictionless/checks/heuristic.py#L94). For example:
 
 
 ```python
@@ -679,7 +679,7 @@ pprint(report.flatten(["code", "message"]))
 
 ## Regulation Checks
 
-In countrary to probably checks, regulation checks gives you an ability to provide additional rules for your data. Use the `extra_checks` argument of the `validate` function to active one or more of these checks.
+In countrary to heuristic checks, regulation checks gives you an ability to provide additional rules for your data. Use the `extra_checks` argument of the `validate` function to active one or more of these checks.
 
 **Blacklisted Value**
 

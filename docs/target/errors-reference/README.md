@@ -92,6 +92,14 @@ Template: `The validation check has an error: {note}` <br>
 Description: `A validation check cannot be created` <br>
 
 
+## Step Error
+
+Code: `step-error` <br>
+Tags: `#general` <br>
+Template: `The transfrom step has an error: {note}` <br>
+Description: `A transform step cannot be finished` <br>
+
+
 ## Storage Error
 
 Code: `storage-error` <br>

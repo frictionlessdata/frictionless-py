@@ -96,7 +96,7 @@ $ frictionless extract --source-type table
 The `extract` functions always read data in a form of rows (see the object description below) into memory. The lower-level interfaces will allow you to stream data and various output forms.
 
 
-### Extracting a Package
+### Extracting Package
 
 Let's start by using the command line-interface. We're going to provide two files to the `extract` command which will be enough to detect that it's a dataset:
 
@@ -212,7 +212,7 @@ resource.to_yaml('capital.resource.yaml')
 
 So what's happened? We set textual representation of the number "3" to be a missing value. It was done only for the presentational purpose because it's definitely not a missing value. On the other hand, it demonstrated how metadata can be used.
 
-### Extracting a Table
+### Extracting Table
 
 While the package and resource concepts contain both data and metadata, a table is solely data. Because of this fact we can provide many more options to the `extract_table` function. Most of these options are encapsulated into the resource descriptor as we saw with the `missingValues` example above. We will reproduce it:
 
@@ -237,7 +237,7 @@ We got an identical result but it's important to understand that on the table le
 
 All the `extract` fuctions accept those common argument:
 - `process`: it's a function getting a row object and returning whatever is needed as an ouput of the data extraction e.g. `lambda row: row.to_dict()`
-- `stream`: instead of reading all data into memory it will return row stream(s)
+- `stream`: instead of reading all the data into memory it will return row stream(s)
 
 
 **Package/Resource**
@@ -800,6 +800,27 @@ with Table('capital-3.csv', dialect=dialect) as table:
     [Row([('id/1/2', 3), ('name/London/Berlin', 'Paris')]),
      Row([('id/1/2', 4), ('name/London/Berlin', 'Madrid')]),
      Row([('id/1/2', 5), ('name/London/Berlin', 'Rome')])]
+
+
+**Header Case**
+
+> *New in version 3.23*
+
+By default a header is validated in a case sensitive mode. To disable this behaviour we can set the `header_case` parameter to `False`. This option is accepted by any Dialect and a dialect can be passed to `extract`, `validate` and other functions. Please note that it doesn't affect a resulting header it only affects how it's validated:
+
+
+```python
+from frictionless import Table, Schema, Field, dialects
+
+dialect = dialects.Dialect(header_case=False)
+schema = Schema(fields=[Field(name="ID"), Field(name="NAME")])
+with Table('capital-3.csv', dialect=dialect, schema=schema) as table:
+  print(f'Header: {table.header}')
+  print(f'Valid: {table.header.valid}')  # without "header_case" it will have 2 errors
+```
+
+    Header: ['id', 'name']
+    Valid: True
 
 
 Further reading:
