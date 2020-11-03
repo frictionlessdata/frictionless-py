@@ -2,6 +2,12 @@
 
 Here described only the breaking and most significant changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/frictionless-py/commits/master).
 
+## v3.25
+
+- Add transform functionality (#505)
+- Methods `schema.get/remove_field` now raise if not found (#505) (BREAKING)
+- Methods `package.get/remove_resource` now raise if not found (#505) (BREAKING)
+
 ## v3.24
 
 - Lower case resource.scheme/format/hashing/encoding/compression (#499) (BREAKING)
