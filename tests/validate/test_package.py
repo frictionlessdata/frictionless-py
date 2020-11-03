@@ -299,7 +299,7 @@ def test_validate_integrity_foreign_key_internal_resource_violation():
 @pytest.mark.ci
 def test_validate_integrity_foreign_key_internal_resource_violation_non_existent():
     descriptor = deepcopy(DESCRIPTOR_FK)
-    del descriptor["resources"][1]
+    descriptor["resources"][1]["data"] = [["label", "population"], [10, 10]]
     report = validate(descriptor)
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [2, None, "foreign-key-error"],

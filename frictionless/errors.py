@@ -2,6 +2,9 @@ from .metadata import Metadata
 from . import exceptions
 
 
+# TODO: swith code notation to camelCase?
+
+
 class Error(Metadata):
     """Error representation
 
