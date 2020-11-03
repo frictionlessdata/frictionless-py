@@ -18,6 +18,7 @@ from .resource import Resource
 from .row import Row
 from .schema import Schema
 from .server import Server
+from .step import Step
 from .storage import Storage
 from .system import system
 from .table import Table
@@ -31,4 +32,5 @@ from . import errors
 from . import exceptions
 from . import loaders
 from . import parsers
+from . import steps
 from . import types

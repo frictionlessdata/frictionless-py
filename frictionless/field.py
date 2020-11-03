@@ -136,6 +136,14 @@ class Field(Metadata):
         """
         return self.constraints.get("required", False)
 
+    @property
+    def schema(self):
+        """
+        Returns:
+            Schema?: parent schema
+        """
+        return self.__schema
+
     # Boolean
 
     @Metadata.property

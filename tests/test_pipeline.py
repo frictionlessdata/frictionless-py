@@ -1,28 +1,43 @@
-import os
-from frictionless import Pipeline, Package
+from frictionless import Pipeline
 
 
 # General
 
 
-def test_pipeline(tmpdir):
-
-    # Write
+def test_pipeline_resource():
     pipeline = Pipeline(
         {
-            "type": "package",
+            "type": "resource",
+            "source": {"path": "data/transform.csv"},
             "steps": [
-                {"type": "load", "spec": {"loadSource": "data/table.csv"}},
-                {"type": "set_type", "spec": {"name": "id", "type": "string"}},
-                {"type": "dump_to_path", "spec": {"outPath": tmpdir}},
+                {"type": "cellSet", "spec": {"fieldName": "population", "value": 100}},
             ],
         }
     )
-    pipeline.run()
-
-    # Read
-    package = Package(os.path.join(tmpdir, "datapackage.json"))
-    assert package.get_resource("table").read_rows() == [
-        {"id": "1", "name": "english"},
-        {"id": "2", "name": "中国人"},
+    target = pipeline.run()
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+        ]
+    }
+    assert target.read_rows() == [
+        {"id": 1, "name": "germany", "population": 100},
+        {"id": 2, "name": "france", "population": 100},
+        {"id": 3, "name": "spain", "population": 100},
     ]
+
+
+def test_pipeline_package():
+    pipeline = Pipeline(
+        {
+            "type": "package",
+            "source": "data/package/datapackage.json",
+            "steps": [
+                {"type": "resourceRemove", "spec": {"name": "data2"}},
+            ],
+        }
+    )
+    target = pipeline.run()
+    assert target.resource_names == ["data"]

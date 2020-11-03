@@ -209,9 +209,11 @@ class Table:
     def __exit__(self, type, value, traceback):
         self.close()
 
+    # TODO: make compatible with petl?
+    # TODO: implement the same for resource?
     def __iter__(self):
         self.__read_row_stream_raise_closed()
-        return iter(self.__row_stream)
+        yield from self.__row_stream
 
     @property
     def source(self):
@@ -552,6 +554,7 @@ class Table:
                 field.update((fields.get(field.get("name"), {})))
 
         # Validate schema
+        # TODO: reconsider this - not perfect for transform
         if len(schema.field_names) != len(set(schema.field_names)):
             note = "Schemas with duplicate field names are not supported"
             raise exceptions.FrictionlessException(errors.SchemaError(note=note))

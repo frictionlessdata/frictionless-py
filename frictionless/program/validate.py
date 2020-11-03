@@ -1,11 +1,10 @@
+import petl
 import click
 import simplejson
-from tabulate import tabulate
 from ..validate import validate
 from .main import program
 
 
-# NOTE: rebase on tabulate?
 # NOTE: rewrite this function
 @program.command(name="validate")
 @click.argument("source", type=click.Path(), nargs=-1, required=True)
@@ -69,7 +68,13 @@ def program_validate(source, *, source_type, json, **options):
         click.secho("")
         for error in report.errors:
             content.append([error.code, error.message])
-        click.secho(tabulate(content, headers=["code", "message"]))
+        click.secho(
+            str(
+                petl.util.vis.lookall(
+                    [["code", "message"]] + content, vrepr=str, style="simple"
+                )
+            )
+        )
 
     # Tables
     prev_invalid = False
@@ -91,7 +96,15 @@ def program_validate(source, *, source_type, json, **options):
                         error.message,
                     ]
                 )
-            click.secho(tabulate(content, headers=["row", "field", "code", "message"]))
+            click.secho(
+                str(
+                    petl.util.vis.lookall(
+                        [["row", "field", "code", "message"]] + content,
+                        vrepr=str,
+                        style="simple",
+                    )
+                )
+            )
 
     # Retcode
     exit(int(not report.valid))

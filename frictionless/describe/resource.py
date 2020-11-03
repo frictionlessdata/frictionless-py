@@ -4,6 +4,7 @@ from .. import helpers
 from .. import config
 
 
+# TODO: support only_sample
 def describe_resource(
     source,
     *,

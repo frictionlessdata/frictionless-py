@@ -5,7 +5,6 @@ import tempfile
 import requests
 import jsonschema
 import stringcase
-from copy import deepcopy
 from operator import setitem
 from functools import partial
 from importlib import import_module
@@ -96,7 +95,7 @@ class Metadata(helpers.ControlledDict):
         Returns:
             dict: metadata as a dict
         """
-        return helpers.deepnative(self)
+        return helpers.deepfork(self)
 
     # NOTE: improve this code
     def to_json(self, target=None, encoder_class=None):
@@ -189,7 +188,7 @@ class Metadata(helpers.ControlledDict):
                 if not self.metadata_duplicate:
                     return descriptor
                 try:
-                    return deepcopy(descriptor)
+                    return helpers.deepfork(descriptor)
                 except Exception:
                     note = "descriptor is not serializable"
                     errors = import_module("frictionless.errors")

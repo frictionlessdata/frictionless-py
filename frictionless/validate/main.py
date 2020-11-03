@@ -7,6 +7,7 @@ from ..report import Report
 from .. import helpers
 
 
+# TODO: support Resource/Package instances as an input source
 @Report.from_validate
 def validate(source, source_type=None, **options):
     """Validate resource

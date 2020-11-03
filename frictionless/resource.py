@@ -1,6 +1,7 @@
 import io
 import os
 import json
+import petl
 import zipfile
 import warnings
 from copy import deepcopy
@@ -18,6 +19,9 @@ from . import errors
 from . import config
 
 
+# TODO: rework path/data/location etc
+# TODO: rework path/data updates syncing
+# TODO: implement save/write as we have table.write
 class Resource(Metadata):
     """Resource representation.
 
@@ -126,19 +130,14 @@ class Resource(Metadata):
             self.__onerror = value
         elif name == "trusted":
             self.__trusted = value
+        elif name == "package":
+            self.__package = value
         else:
             return super().__setattr__(name, value)
         self.metadata_process()
 
-    def __deepcopy__(self, memo=None):
-        # We need to exclude the `data` key from copying
-        # as it can contain unpickeble values like generators
-        data = self.get("data")
-        rest = {key: value for key, value in self.items() if key != "data"}
-        copy = deepcopy(rest, memo)
-        if data is not None:
-            copy["data"] = data
-        return copy
+    def __iter__(self):
+        yield from self.read_row_stream() if self.tabular else []
 
     @Metadata.property(write=False)
     def source(self):
@@ -352,6 +351,14 @@ class Resource(Metadata):
         """
         return self.__trusted
 
+    @property
+    def package(self):
+        """
+        Returns:
+            Package?: parent package
+        """
+        return self.__package
+
     @Metadata.property(write=False)
     def inline(self):
         """
@@ -404,6 +411,7 @@ class Resource(Metadata):
 
     # Infer
 
+    # TODO: use stats=True instead of only_sample?
     # NOTE: optimize this logic/don't re-open
     def infer(self, source=None, *, only_sample=False):
         """Infer metadata
@@ -614,6 +622,10 @@ class Resource(Metadata):
         return Resource(data=source, **options)
 
     @staticmethod
+    def from_petl(storage, *, view, **options):
+        return Resource(data=view, **options)
+
+    @staticmethod
     def from_storage(storage, *, name):
         """Import resource from storage
 
@@ -690,11 +702,16 @@ class Resource(Metadata):
     def to_copy(self):
         """Create a copy of the resource"""
         descriptor = self.to_dict()
-        if self.data and not isinstance(self.data, list):
-            # If data is not a static list e.g. a generator we can't deepcopy it
-            descriptor = {key: val for key, val in descriptor.items() if key != "data"}
-            return Resource(descriptor, data=self.data)
-        return Resource(descriptor)
+        # Data can be not serializable (generators/functions)
+        data = descriptor.pop("data", None)
+        return Resource(
+            descriptor,
+            data=data,
+            basepath=self.__basepath,
+            onerror=self.__onerror,
+            trusted=self.__trusted,
+            package=self.__package,
+        )
 
     # NOTE: cache lookup?
     def to_table(self, **options):
@@ -771,6 +788,22 @@ class Resource(Metadata):
         except (IOError, zipfile.BadZipfile, zipfile.LargeZipFile) as exception:
             error = errors.ResourceError(note=str(exception))
             raise exceptions.FrictionlessException(error) from exception
+
+    def to_petl(self, *, normalize=False):
+        resource = self
+
+        # Define view
+        class ResourceView(petl.Table):
+            def __iter__(self):
+                stream = (
+                    map(lambda row: row.to_list(), resource.read_row_stream())
+                    if normalize
+                    else resource.read_data_stream()
+                )
+                yield resource.schema.field_names
+                yield from stream
+
+        return ResourceView()
 
     def to_storage(self, storage, *, force=False):
         """Export resource to storage

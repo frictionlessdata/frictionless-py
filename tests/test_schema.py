@@ -122,7 +122,15 @@ def test_schema_get_field():
     schema = Schema(DESCRIPTOR_MIN)
     assert schema.get_field("id").name == "id"
     assert schema.get_field("height").name == "height"
-    assert schema.get_field("undefined") is None
+
+
+def test_schema_get_field_error_not_found():
+    schema = Schema(DESCRIPTOR_MIN)
+    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+        schema.get_field("bad")
+    error = excinfo.value.error
+    assert error.code == "schema-error"
+    assert error.note == 'field "bad" does not exist'
 
 
 def test_schema_update_field():
@@ -138,6 +146,21 @@ def test_schema_has_field():
     assert schema.has_field("id")
     assert schema.has_field("height")
     assert not schema.has_field("undefined")
+
+
+def test_schema_remove_field():
+    schema = Schema(DESCRIPTOR_MIN)
+    assert schema.remove_field("height")
+    assert schema.field_names == ["id"]
+
+
+def test_schema_remove_field_error_not_found():
+    schema = Schema(DESCRIPTOR_MIN)
+    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+        schema.remove_field("bad")
+    error = excinfo.value.error
+    assert error.code == "schema-error"
+    assert error.note == 'field "bad" does not exist'
 
 
 def test_schema_field_names():

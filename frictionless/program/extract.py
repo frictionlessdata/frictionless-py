@@ -1,6 +1,6 @@
+import petl
 import click
 import simplejson
-from tabulate import tabulate
 from ..extract import extract
 from .main import program
 
@@ -56,9 +56,17 @@ def program_extract(source, *, source_type, json, **options):
         if isinstance(data, list):
             click.secho(f"[data] {source}", bold=True)
             click.secho("")
-            return click.secho(tabulate(data, headers="keys"))
+            if data:
+                # TODO: rewrite
+                data = [list(data[0].keys())] + [row.to_list() for row in data]
+            return click.secho(
+                str(petl.util.vis.lookall(data, vrepr=str, style="simple"))
+            )
         for number, (name, rows) in enumerate(data.items(), start=1):
             if number != 1:
                 click.secho("")
             click.secho(f"[data] {name}\n", bold=True)
-            click.secho(tabulate(rows, headers="keys"))
+            if rows:
+                # TODO: rewrite
+                rows = [list(rows[0].keys())] + [row.to_list() for row in rows]
+            click.secho(str(petl.util.vis.lookall(rows, vrepr=str, style="simple")))

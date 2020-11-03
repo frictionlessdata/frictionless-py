@@ -7,8 +7,6 @@ import chardet
 import tempfile
 import datetime
 import stringcase
-from pprint import pformat
-from tabulate import tabulate
 from inspect import signature
 from importlib import import_module
 from urllib.parse import urlparse, parse_qs
@@ -36,9 +34,23 @@ def stringify_header(cells):
     return ["" if cell is None else str(cell).strip() for cell in cells]
 
 
+def get_name(value):
+    return getattr(value, "__name__", value.__class__.__name__)
+
+
 def pass_through(iterator):
     for item in iterator:
         pass
+
+
+def deepfork(value):
+    if isinstance(value, dict):
+        value = {key: deepfork(value) for key, value in value.items()}
+    elif isinstance(value, list):
+        value = [deepfork(value) for value in value]
+    elif isinstance(value, set):
+        value = {deepfork(value) for value in value}
+    return value
 
 
 def import_from_plugin(name, *, plugin):
@@ -73,14 +85,6 @@ def compile_regex(items):
                 item = re.compile(item.replace("<regex>", ""))
             result.append(item)
         return result
-
-
-def tabulate_metadata(metadata):
-    headers = ["name", "value"]
-    content = []
-    for key, value in metadata.items():
-        content.append([key, pformat(value)])
-    return tabulate(content, headers=headers)
 
 
 def detect_name(source):
@@ -345,14 +349,6 @@ class ControlledList(list):
         result = super().remove(*args, **kwargs)
         self.__onchange__()
         return result
-
-
-def deepnative(value):
-    if isinstance(value, dict):
-        value = {key: deepnative(value) for key, value in value.items()}
-    elif isinstance(value, list):
-        value = [deepnative(value) for value in value]
-    return value
 
 
 # Measurements

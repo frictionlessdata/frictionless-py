@@ -188,11 +188,35 @@ def test_package_add_resource():
     assert resource.name == "name"
 
 
+def test_package_get_resource():
+    package = Package("data/package/datapackage.json")
+    resource = package.get_resource("data")
+    assert resource.name == "data"
+
+
+def test_package_get_resource_error_not_found():
+    package = Package("data/package/datapackage.json")
+    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+        package.get_resource("bad")
+    error = excinfo.value.error
+    assert error.code == "package-error"
+    assert error.note == 'resource "bad" does not exist'
+
+
 def test_package_remove_resource():
-    package = Package({"resources": [{"name": "name", "data": []}]})
-    resource = package.remove_resource("name")
-    assert len(package.resources) == 0
-    assert resource.name == "name"
+    package = Package("data/package/datapackage.json")
+    resource = package.remove_resource("data")
+    assert package.resource_names == ["data2"]
+    assert resource.name == "data"
+
+
+def test_package_remove_resource_error_not_found():
+    package = Package("data/package/datapackage.json")
+    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+        package.remove_resource("bad")
+    error = excinfo.value.error
+    assert error.code == "package-error"
+    assert error.note == 'resource "bad" does not exist'
 
 
 def test_package_update_resource():

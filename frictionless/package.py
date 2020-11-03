@@ -190,13 +190,17 @@ class Package(Metadata):
         Parameters:
             name (str): resource name
 
+        Raises:
+            FrictionlessException: if resource is not found
+
         Returns:
            Resource/None: `Resource` instance or `None` if not found
         """
         for resource in self.resources:
             if resource.name == name:
                 return resource
-        return None
+        error = errors.PackageError(note=f'resource "{name}" does not exist')
+        raise exceptions.FrictionlessException(error)
 
     def has_resource(self, name):
         """Check if a resource is present
@@ -218,13 +222,14 @@ class Package(Metadata):
         Parameters:
             name (str): resource name
 
+        Raises:
+            FrictionlessException: if resource is not found
+
         Returns:
             Resource/None: removed `Resource` instances or `None` if not found
         """
         resource = self.get_resource(name)
-        if resource:
-            predicat = lambda resource: resource.name != name
-            self["resources"] = list(filter(predicat, self.resources))
+        self.resources.remove(resource)
         return resource
 
     # Expand
@@ -241,6 +246,7 @@ class Package(Metadata):
 
     # Infer
 
+    # TODO: use stats=True instead of only_sample?
     def infer(self, source=None, *, only_sample=False):
         """Infer package's attributes
 
@@ -336,11 +342,18 @@ class Package(Metadata):
     def to_copy(self):
         """Create a copy of the package"""
         descriptor = self.to_dict()
+        # Resource's data can be not serializable (generators/functions)
+        descriptor.pop("resources", None)
         resources = []
-        for resource in descriptor.get("resources", []):
-            resources.append(resource)
-        descriptor = {key: val for key, val in descriptor.items() if key != "resources"}
-        return Package(descriptor, resources=resources)
+        for resource in self.resources:
+            resources.append(resource.to_copy())
+        return Package(
+            descriptor,
+            resources=resources,
+            basepath=self.__basepath,
+            onerror=self.__onerror,
+            trusted=self.__trusted,
+        )
 
     # NOTE: support multipart
     def to_zip(self, target, encoder_class=None):
@@ -458,11 +471,11 @@ class Package(Metadata):
                         resource,
                         hashing=self.__hashing,
                         basepath=self.__basepath,
-                        package=self,
                     )
                     list.__setitem__(resources, index, resource)
                 resource.onerror = self.__onerror
                 resource.trusted = self.__trusted
+                resource.package = self
             if not isinstance(resources, helpers.ControlledList):
                 resources = helpers.ControlledList(resources)
                 resources.__onchange__(self.metadata_process)
