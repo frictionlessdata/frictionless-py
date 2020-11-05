@@ -116,7 +116,7 @@ def program_extract(
 
     # Extract data
     try:
-        process = (lambda row: row.to_dict(json=True)) if json else None
+        process = (lambda row: row.to_dict(json=True)) if json or yaml else None
         data = extract(source, source_type=source_type, process=process, **options)
     except Exception as exception:
         typer.secho(str(exception), err=True, fg=typer.colors.RED, bold=True)
@@ -128,28 +128,23 @@ def program_extract(
         typer.secho(content)
         raise typer.Exit()
 
-    # TODO: fix
     # Return YAML
     if yaml:
-        content = pyyaml.safe_dump(data)
+        content = pyyaml.safe_dump(data).strip()
         typer.secho(content)
         raise typer.Exit()
 
-    # TODO: rewrite
-    # Return default
+    # Normalize data
     if isinstance(data, list):
-        typer.secho("---")
-        typer.secho(f"data: {source}", bold=True)
-        typer.secho("---")
-        if data:
-            # TODO: rewrite
-            data = [list(data[0].keys())] + [row.to_list() for row in data]
-        return typer.secho(str(petl.util.vis.lookall(data, vrepr=str, style="simple")))
+        data = {source: data}
+
+    # Return default
     for number, (name, rows) in enumerate(data.items(), start=1):
-        if number != 1:
+        typer.secho("---")
+        typer.secho(f"data: {name}", bold=True)
+        typer.secho("---")
+        typer.secho("")
+        subdata = helpers.rows_to_data(rows)
+        typer.secho(str(petl.util.vis.lookall(subdata, vrepr=str, style="simple")))
+        if number < len(data):
             typer.secho("")
-        typer.secho(f"[data] {name}\n", bold=True)
-        if rows:
-            # TODO: rewrite
-            rows = [list(rows[0].keys())] + [row.to_list() for row in rows]
-        typer.secho(str(petl.util.vis.lookall(rows, vrepr=str, style="simple")))

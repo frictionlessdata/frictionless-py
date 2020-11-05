@@ -137,4 +137,6 @@ def program_describe(
     typer.secho("---")
     typer.secho(f"metadata: {source}", bold=True)
     typer.secho("---")
+    typer.secho("")
     typer.secho(metadata.to_yaml().strip())
+    typer.secho("")
