@@ -19,7 +19,6 @@ def describe_resource(
     control=None,
     dialect=None,
     query=None,
-    # TODO: rename to header preserving deprecated headers OR just deprecate?
     headers=None,
     # Infer
     infer_type=None,

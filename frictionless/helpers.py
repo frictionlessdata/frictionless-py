@@ -1,5 +1,7 @@
 import re
 import os
+import io
+import csv
 import atexit
 import shutil
 import zipfile
@@ -41,6 +43,27 @@ def get_name(value):
 def pass_through(iterator):
     for item in iterator:
         pass
+
+
+def remote_non_values(mapping):
+    return {key: value for key, value in mapping.items() if value is not None}
+
+
+def parse_csv_string(string, *, convert=str, fallback=False):
+    if string is None:
+        return None
+    reader = csv.reader(io.StringIO(string), delimiter=",")
+    result = []
+    for row in reader:
+        for cell in row:
+            try:
+                cell = convert(cell)
+            except ValueError:
+                if not fallback:
+                    raise
+                pass
+            result.append(cell)
+        return result
 
 
 def deepfork(value):
