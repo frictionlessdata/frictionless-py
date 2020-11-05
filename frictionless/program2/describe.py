@@ -5,9 +5,9 @@ from typer import Option as Opt
 from typer import Argument as Arg
 from ..describe import describe
 from ..query import Query
+from .main import program
 from .. import dialects
 from .. import helpers
-from .main import program
 
 
 @program.command(name="describe")
