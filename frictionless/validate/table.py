@@ -34,7 +34,6 @@ def validate_table(
     infer_confidence=config.DEFAULT_INFER_CONFIDENCE,
     infer_missing_values=config.DEFAULT_MISSING_VALUES,
     # Integrity
-    onerror="ignore",
     lookup=None,
     # Validation
     checksum=None,
@@ -185,8 +184,7 @@ def validate_table(
         infer_volume=infer_volume,
         infer_confidence=infer_confidence,
         infer_missing_values=infer_missing_values,
-        # Lookup
-        onerror=onerror,
+        # Integrity
         lookup=lookup,
     )
 

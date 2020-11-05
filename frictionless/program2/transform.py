@@ -18,4 +18,6 @@ def program_transform(
         raise typer.Exit(1)
 
     # Return default
-    typer.secho(f'[success] pipeline "{source}"', bold=True, fg=typer.colors.GREEN)
+    typer.secho("---")
+    typer.secho(f'success: "{source}"', bold=True)
+    typer.secho("---")

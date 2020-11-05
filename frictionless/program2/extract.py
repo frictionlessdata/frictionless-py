@@ -114,10 +114,10 @@ def program_extract(
         )
     )
 
-    # Extract data
+    # Extract source
     try:
         process = (lambda row: row.to_dict(json=True)) if json or yaml else None
-        data = extract(source, source_type=source_type, process=process, **options)
+        data = extract(source, process=process, **options)
     except Exception as exception:
         typer.secho(str(exception), err=True, fg=typer.colors.RED, bold=True)
         raise typer.Exit(1)
