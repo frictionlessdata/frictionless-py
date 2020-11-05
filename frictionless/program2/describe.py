@@ -14,8 +14,6 @@ from .. import helpers
 def program_describe(
     source: List[str] = Arg(..., help="Data source to describe"),
     source_type: str = Opt(None, help='Specify source type e.g. "package"'),
-    yaml: bool = Opt(False, help="Return in pure YAML format"),
-    json: bool = Opt(False, help="Return in JSON format"),
     # File
     scheme: str = Opt(None, help="Specify schema  [default: inferred]"),
     format: str = Opt(None, help="Specify format  [default: inferred]"),
@@ -43,7 +41,10 @@ def program_describe(
     # Package/Resource
     basepath: str = Opt(None, help="Basepath of the resource/package"),
     # Description
-    expand: bool = Opt(False, help="Expand default values"),
+    expand: bool = Opt(None, help="Expand default values"),
+    # Output
+    yaml: bool = Opt(False, help="Return in pure YAML format"),
+    json: bool = Opt(False, help="Return in JSON format"),
 ):
     """
     Describe a data source.
