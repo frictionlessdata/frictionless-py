@@ -1,14 +1,28 @@
-import click
+import typer
+from typing import Optional
 from .. import config
 
 
-@click.group(name="frictionless")
-@click.version_option(config.VERSION, message="%(version)s", help="Print version")
-def program():
-    """Describe, extract, validate and transform tabular data.
-    \f
-    API      | Usage
-    -------- | --------
-    Public   | `$ frictionless`
-    """
+# Program
+
+program = typer.Typer()
+
+
+# Helpers
+
+
+def version(value: bool):
+    if value:
+        typer.echo(config.VERSION)
+        raise typer.Exit()
+
+
+# Command
+
+
+@program.callback()
+def program_main(
+    version: Optional[bool] = typer.Option(None, "--version", callback=version)
+):
+    """Describe, extract, validate and transform tabular data."""
     pass

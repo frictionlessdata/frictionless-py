@@ -1,74 +1,171 @@
 import petl
-import click
+import typer
 import simplejson
+import yaml as pyyaml
+from typing import List
+from typer import Option as Opt
+from typer import Argument as Arg
 from ..validate import validate
+from ..query import Query
 from .main import program
+from .. import dialects
+from .. import helpers
 
 
-# NOTE: rewrite this function
 @program.command(name="validate")
-@click.argument("source", type=click.Path(), nargs=-1, required=True)
-@click.option("--source-type", type=str, help="Source type")
-@click.option("--json", is_flag=True, help="Output report as JSON")
-# File
-@click.option("--scheme", type=str, help="File scheme")
-@click.option("--format", type=str, help="File format")
-@click.option("--hashing", type=str, help="File hashing")
-@click.option("--encoding", type=str, help="File encoding")
-@click.option("--compression", type=str, help="File compression")
-@click.option("--compression-path", type=str, help="File compression path")
-# Table
-@click.option("--headers", type=int, multiple=True, help="Headers")
-@click.option("--schema", type=click.Path(), help="Schema")
-@click.option("--sync-schema", is_flag=True, help="Sync schema")
-@click.option("--infer-type", type=str, help="Infer type")
-@click.option("--infer-names", type=str, multiple=True, help="Infer names")
-@click.option("--infer-sample", type=int, help="Infer sample")
-@click.option("--infer-confidence", type=float, help="Infer confidence")
-@click.option("--infer-missing-values", type=str, multiple=True, help="Infer missing")
-# Validation
-@click.option("--checksum-hash", type=str, help="Expected hash based on hashing option")
-@click.option("--checksum-bytes", type=int, help="Expected size in bytes")
-@click.option("--checksum-rows", type=int, help="Expected size in bytes")
-@click.option("--pick-errors", type=str, multiple=True, help="Pick errors")
-@click.option("--skip-errors", type=str, multiple=True, help="Skip errors")
-@click.option("--limit-errors", type=int, help="Limit errors")
-@click.option("--limit-memory", type=int, help="Limit memory")
-# Package/Resource
-@click.option("--basepath", type=str, help="Package basepath")
-@click.option("--trusted", type=str, help="Don't fail on unsafe paths")
-@click.option("--noinfer", is_flag=True, help="Validate metadata as it is")
-def program_validate(source, *, source_type, json, **options):
-    """Validate data
-    \f
-    API      | Usage
-    -------- | --------
-    Public   | `$ frictionless validate`
+def program_validate(
+    source: List[str] = Arg(..., help="Data source to describe"),
+    source_type: str = Opt(None, help='Specify source type e.g. "package"'),
+    # File
+    scheme: str = Opt(None, help="Specify schema  [default: inferred]"),
+    format: str = Opt(None, help="Specify format  [default: inferred]"),
+    hashing: str = Opt(None, help="Specify hashing algorithm  [default: inferred]"),
+    encoding: str = Opt(None, help="Specify encoding  [default: inferred]"),
+    compression: str = Opt(None, help="Specify compression  [default: inferred]"),
+    compression_path: str = Opt(None, help="Specify in-archive path  [default: first]"),
+    # Control/Dialect/Query/Header
+    header_rows: str = Opt(None, help="Comma-separated row numbers  [default: 1]"),
+    header_join: str = Opt(None, help="A separator to join a multiline header"),
+    pick_fields: str = Opt(None, help='Comma-separated fields to pick e.g. "1,name1"'),
+    skip_fields: str = Opt(None, help='Comma-separated fields to skip e.g. "2,name2"'),
+    limit_fields: int = Opt(None, help="Limit fields by this integer"),
+    offset_fields: int = Opt(None, help="Offset fields by this integer"),
+    pick_rows: str = Opt(None, help='Comma-separated rows to pick e.g. "1,<blank>"'),
+    skip_rows: str = Opt(None, help='Comma-separated rows to skip e.g. "2,3,4,5"'),
+    limit_rows: int = Opt(None, help="Limit rows by this integer"),
+    offset_rows: int = Opt(None, help="Offset rows by this integer"),
+    # Schema
+    schema: str = Opt(None, help="Specify a path to a schema"),
+    sync_schema: bool = Opt(None, help="Sync the schema based on headers"),
+    # Infer
+    infer_type: str = Opt(None, help="Force all the fields to have this type"),
+    infer_names: str = Opt(None, help="Comma-separated list of field names"),
+    infer_volume: int = Opt(None, help="Limit data sample size by this integer"),
+    infer_confidence: float = Opt(None, help="A float from 0 to 1"),
+    infer_missing_values: str = Opt(None, help="Comma-separated list of missing values"),
+    # Validation
+    checksum_hash: str = Opt(None, help="Expected hash based on hashing option"),
+    checksum_bytes: int = Opt(None, help="Expected size in bytes"),
+    checksum_rows: int = Opt(None, help="Expected amoutn of rows"),
+    pick_errors: str = Opt(None, help='Comma-separated errors to pick e.g. "type-error"'),
+    skip_errors: str = Opt(None, help='Comma-separated errors to skip e.g. "blank-row"'),
+    limit_errors: int = Opt(None, help="Limit errors by this integer"),
+    limit_memory: int = Opt(None, help="Limit memory by this integer in MB"),
+    # Output
+    yaml: bool = Opt(False, help="Return in pure YAML format"),
+    json: bool = Opt(False, help="Return in JSON format"),
+):
     """
-    for key, value in list(options.items()):
-        if not value:
-            del options[key]
-        elif isinstance(value, tuple):
-            options[key] = list(value)
+    Validate a data source.
+
+    Based on the inferred data source type it will validate resource or package.
+    Default output format is YAML with a front matter.
+    """
+
+    # Normalize parameters
     source = list(source) if len(source) > 1 else source[0]
+    header_rows = helpers.parse_csv_string(header_rows, convert=int)
+    pick_fields = helpers.parse_csv_string(pick_fields, convert=int, fallback=True)
+    skip_fields = helpers.parse_csv_string(skip_fields, convert=int, fallback=True)
+    pick_rows = helpers.parse_csv_string(pick_rows, convert=int, fallback=True)
+    skip_rows = helpers.parse_csv_string(skip_rows, convert=int, fallback=True)
+    infer_names = helpers.parse_csv_string(infer_names)
+    infer_missing_values = helpers.parse_csv_string(infer_missing_values)
+    pick_errors = helpers.parse_csv_string(pick_errors)
+    skip_errors = helpers.parse_csv_string(skip_errors)
+
+    # Prepare dialect
+    dialect = (
+        dialects.Dialect(
+            header_rows=header_rows,
+            header_join=header_join,
+        )
+        or None
+    )
+
+    # Prepare query
+    query = (
+        Query(
+            pick_fields=pick_fields,
+            skip_fields=skip_fields,
+            limit_fields=limit_fields,
+            offset_fields=offset_fields,
+            pick_rows=pick_rows,
+            skip_rows=skip_rows,
+            limit_rows=limit_rows,
+            offset_rows=offset_rows,
+        )
+        or None
+    )
+
+    # Prepare checksum
+    checksum = (
+        helpers.remove_non_values(
+            dict(hash=checksum_hash, bytes=checksum_bytes, rows=checksum_rows)
+        )
+        or None
+    )
+
+    # Prepare options
+    options = helpers.remove_non_values(
+        dict(
+            source_type=source_type,
+            # File
+            scheme=scheme,
+            format=format,
+            hashing=hashing,
+            encoding=encoding,
+            compression=compression,
+            compression_path=compression_path,
+            # Control/Dialect/Query/Header
+            dialect=dialect,
+            query=query,
+            # Schema
+            schema=schema,
+            sync_schema=sync_schema,
+            # Infer
+            infer_type=infer_type,
+            infer_names=infer_names,
+            infer_volume=infer_volume,
+            infer_confidence=infer_confidence,
+            infer_missing_values=infer_missing_values,
+            # Validation
+            checksum=checksum,
+            pick_errors=pick_errors,
+            skip_errors=skip_errors,
+            limit_errors=limit_errors,
+            limit_memory=limit_memory,
+        )
+    )
+
+    # Validate source
     try:
-        report = validate(source, source_type=source_type, **options)
+        report = validate(source, **options)
     except Exception as exception:
-        click.secho(str(exception), err=True)
-        exit(1)
+        typer.secho(str(exception), err=True, fg=typer.colors.RED, bold=True)
+        raise typer.Exit(1)
 
-    # Json
+    # Return JSON
     if json:
-        return click.secho(simplejson.dumps(report, indent=2, ensure_ascii=False))
+        content = simplejson.dumps(report, indent=2, ensure_ascii=False)
+        typer.secho(content)
+        raise typer.Exit()
 
-    # Report
+    # Return YAML
+    if yaml:
+        content = pyyaml.safe_dump(report).strip()
+        typer.secho(content)
+        raise typer.Exit()
+
+    # Return report
     if report.errors:
         content = []
-        click.secho(f"[invalid] {source}", bold=True)
-        click.secho("")
+        typer.secho("---")
+        typer.secho(f"invalid: {source}", bold=True)
+        typer.secho("---")
         for error in report.errors:
             content.append([error.code, error.message])
-        click.secho(
+        typer.secho(
             str(
                 petl.util.vis.lookall(
                     [["code", "message"]] + content, vrepr=str, style="simple"
@@ -76,16 +173,18 @@ def program_validate(source, *, source_type, json, **options):
             )
         )
 
-    # Tables
+    # Return tables
     prev_invalid = False
     for number, table in enumerate(report.tables, start=1):
         if number != 1 and prev_invalid:
-            click.secho("")
+            typer.secho("")
         prefix = "valid" if table.valid else "invalid"
-        click.secho(f"[{prefix}] {table.path}", bold=True)
+        typer.secho("---")
+        typer.secho(f"{prefix}: {table.path}", bold=True)
+        typer.secho("---")
         if table.errors:
             prev_invalid = True
-            click.secho("")
+            typer.secho("")
             content = []
             for error in table.errors:
                 content.append(
@@ -96,7 +195,7 @@ def program_validate(source, *, source_type, json, **options):
                         error.message,
                     ]
                 )
-            click.secho(
+            typer.secho(
                 str(
                     petl.util.vis.lookall(
                         [["row", "field", "code", "message"]] + content,
@@ -106,5 +205,5 @@ def program_validate(source, *, source_type, json, **options):
                 )
             )
 
-    # Retcode
-    exit(int(not report.valid))
+    # Return retcode
+    raise typer.Exit(int(not report.valid))
