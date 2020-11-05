@@ -52,7 +52,7 @@ def program_describe(
     Default output format is YAML with a front matter.
     """
 
-    # Prepare types
+    # Normalize parameters
     source = list(source) if len(source) > 1 else source[0]
     header_rows = helpers.parse_csv_string(header_rows, convert=int)
     pick_fields = helpers.parse_csv_string(pick_fields, convert=int, fallback=True)
@@ -87,7 +87,7 @@ def program_describe(
     )
 
     # Prepare options
-    options = helpers.remote_non_values(
+    options = helpers.remove_non_values(
         dict(
             source_type=source_type,
             # File

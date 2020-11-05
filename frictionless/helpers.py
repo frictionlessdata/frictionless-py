@@ -45,7 +45,7 @@ def pass_through(iterator):
         pass
 
 
-def remote_non_values(mapping):
+def remove_non_values(mapping):
     return {key: value for key, value in mapping.items() if value is not None}
 
 
