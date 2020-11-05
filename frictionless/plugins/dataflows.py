@@ -75,6 +75,7 @@ class DataflowsPipeline(Pipeline):
         # Create flow
         items = []
         for step in self.steps:
+            # TODO: remove nested naming just use "step" prop
             func = getattr(dataflows, stringcase.snakecase(step["type"]))
             items.append(func(**helpers.create_options(step["spec"])))
         flow = dataflows.Flow(*items)
