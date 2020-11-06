@@ -485,6 +485,7 @@ def test_postgresql_storage_constraints_not_valid_error(database_url, field_name
         resource.to_sql(engine=engine, force=True)
 
 
+@pytest.mark.ci
 def test_postgresql_storage_views_support():
     engine = sa.create_engine(os.environ["POSTGRESQL_URL"])
     engine.execute("DROP VIEW IF EXISTS data_view")
@@ -698,6 +699,7 @@ def test_mysql_storage_constraints_not_valid_error(field_name, cell):
         resource.to_sql(engine=engine, force=True)
 
 
+@pytest.mark.ci
 def test_mysql_storage_views_support():
     engine = sa.create_engine(os.environ["MYSQL_URL"])
     engine.execute("DROP VIEW IF EXISTS data_view")
