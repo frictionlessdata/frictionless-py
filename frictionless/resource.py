@@ -731,7 +731,9 @@ class Resource(Metadata):
         options.setdefault("encoding", self.encoding)
         options.setdefault("compression", self.compression)
         options.setdefault("compression_path", self.compression_path)
+        options.setdefault("control", self.control)
         options.setdefault("dialect", self.dialect)
+        options.setdefault("query", self.query)
         options.setdefault("schema", self.schema)
         options.setdefault("onerror", self.__onerror)
         if "lookup" not in options:

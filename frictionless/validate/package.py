@@ -7,7 +7,9 @@ from .. import exceptions
 
 
 @Report.from_validate
-def validate_package(source, basepath=None, trusted=False, noinfer=False, **options):
+def validate_package(
+    source, basepath=None, trusted=False, noinfer=False, nolookup=False, **options
+):
     """Validate package
 
     API      | Usage
@@ -19,6 +21,7 @@ def validate_package(source, basepath=None, trusted=False, noinfer=False, **opti
         basepath? (str): package basepath
         trusted? (bool): don't raise an exception on unsafe paths
         noinfer? (bool): don't call `package.infer`
+        nolookup? (bool): don't read lookup tables skipping integrity checks
         **options (dict): options for every extracted table
 
     Returns:
@@ -46,7 +49,7 @@ def validate_package(source, basepath=None, trusted=False, noinfer=False, **opti
     descriptor = {"tasks": []}
     for resource in package.resources:
         if resource.profile == "tabular-data-resource":
-            lookup = resource.read_lookup()
+            lookup = None if nolookup else resource.read_lookup()
             descriptor["tasks"].append(
                 helpers.create_descriptor(
                     **options,

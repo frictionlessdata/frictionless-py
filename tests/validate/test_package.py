@@ -309,6 +309,14 @@ def test_validate_integrity_foreign_key_internal_resource_violation_non_existent
     ]
 
 
+@pytest.mark.ci
+def test_validate_integrity_foreign_key_internal_resource_violation_with_nolookup():
+    descriptor = deepcopy(DESCRIPTOR_FK)
+    del descriptor["resources"][1]["data"][4]
+    report = validate(descriptor, nolookup=True)
+    assert report.valid
+
+
 # Issues
 
 
