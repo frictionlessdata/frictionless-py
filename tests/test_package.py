@@ -3,7 +3,7 @@ import json
 import yaml
 import zipfile
 import pytest
-from frictionless import Package, Resource, describe_package, exceptions
+from frictionless import Package, Resource, Query, describe_package, exceptions
 
 
 # General
@@ -239,6 +239,14 @@ def test_package_resources_remove_in_place():
     package = Package({"resources": [{"name": "newname", "data": data}]})
     del package.resources[0]
     assert package == {"resources": []}
+
+
+def test_package_resources_respect_query_set_after_creation_issue_503():
+    package = Package(resources=[Resource(path="data/table.csv")])
+    resource = package.get_resource("table")
+    resource.query = Query(limit_rows=1)
+    assert resource.read_header() == ["id", "name"]
+    assert resource.read_rows() == [{"id": 1, "name": "english"}]
 
 
 # Expand
