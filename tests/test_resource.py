@@ -2,7 +2,7 @@ import os
 import json
 import yaml
 import pytest
-from frictionless import Resource, describe_resource, exceptions
+from frictionless import Resource, Query, describe_resource, exceptions
 
 
 # General
@@ -706,6 +706,13 @@ def test_resource_to_table_source_non_tabular():
     error = excinfo.value.error
     assert error.code == "format-error"
     assert error.note == 'cannot create parser "txt". Try installing "frictionless-txt"'
+
+
+def test_resource_to_table_respect_query_issue_503():
+    resource = Resource(path="data/table.csv", query=Query(limit_rows=1))
+    with resource.to_table() as table:
+        assert table.header == ["id", "name"]
+        assert table.read_rows() == [{"id": 1, "name": "english"}]
 
 
 # Multipart
