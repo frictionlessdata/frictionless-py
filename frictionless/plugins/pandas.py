@@ -54,7 +54,7 @@ class PandasPlugin(Plugin):
 
 
 class PandasDialect(Dialect):
-    """Tsv dialect representation
+    """Pandas dialect representation
 
     API      | Usage
     -------- | --------

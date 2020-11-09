@@ -9,7 +9,7 @@ class Dialect(Metadata):
 
     API      | Usage
     -------- | --------
-    Public   | `from frictionless import dialects`
+    Public   | `from frictionless.dialects import Dialect`
 
     Parameters:
         descriptor? (str|dict): descriptor
