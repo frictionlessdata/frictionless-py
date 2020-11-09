@@ -342,6 +342,16 @@ def test_resource_dialect_from_path_error_path_not_safe():
     assert error.note.count("dialect.json")
 
 
+# Query
+
+
+def test_resource_respect_query_set_after_creation_issue_503():
+    resource = Resource(path="data/table.csv")
+    resource.query = Query(limit_rows=1)
+    assert resource.read_header() == ["id", "name"]
+    assert resource.read_rows() == [{"id": 1, "name": "english"}]
+
+
 # Schema
 
 
