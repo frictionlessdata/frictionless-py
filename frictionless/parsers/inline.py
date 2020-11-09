@@ -1,5 +1,4 @@
 from itertools import chain
-from collections import OrderedDict
 from ..parser import Parser
 from .. import exceptions
 from .. import errors
@@ -54,8 +53,6 @@ class InlineParser(Parser):
         if isinstance(cells, dict):
             dialect["keyed"] = True
             headers = dialect.keys or list(cells.keys())
-            if not dialect.keys and not isinstance(cells, OrderedDict):
-                headers = sorted(headers)
             yield headers
             for cells in chain([cells], data):
                 if not isinstance(cells, dict):
