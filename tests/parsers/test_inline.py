@@ -20,6 +20,14 @@ def test_table_inline_keyed():
         assert table.read_data() == [["1", "english"], ["2", "中国人"]]
 
 
+def test_table_inline_keyed_order_is_preserved():
+    source = [{"name": "english", "id": "1"}, {"name": "中国人", "id": "2"}]
+    with Table(source, format="inline") as table:
+        assert table.dialect.keyed is True
+        assert table.header == ["name", "id"]
+        assert table.read_data() == [["english", "1"], ["中国人", "2"]]
+
+
 def test_table_inline_keyed_with_keys_provided():
     source = [{"id": "1", "name": "english"}, {"id": "2", "name": "中国人"}]
     dialect = dialects.InlineDialect(keys=["name", "id"])
