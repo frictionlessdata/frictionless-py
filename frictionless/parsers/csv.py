@@ -12,7 +12,7 @@ class CsvParser(Parser):
 
     API      | Usage
     -------- | --------
-    Public   | `from frictionless import parsers`
+    Public   | `from frictionless import parsers
 
     """
 

@@ -321,7 +321,7 @@ class Package(Metadata):
 
     @staticmethod
     def from_bigquery(*, service, project, dataset, prefix=""):
-        """Import package from SPSS directory
+        """Import package from Bigquery
 
         Parameters:
             service (object): BigQuery `Service` object
@@ -428,7 +428,7 @@ class Package(Metadata):
         )
 
     def to_bigquery(self, *, service, project, dataset, prefix="", force=False):
-        """Export package to SPSS directory
+        """Export package to Bigquery
 
         Parameters:
             service (object): BigQuery `Service` object

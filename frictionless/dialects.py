@@ -96,6 +96,10 @@ class Dialect(Metadata):
 class CsvDialect(Dialect):
     """Csv dialect representation
 
+    API      | Usage
+    -------- | --------
+    Public   | `from frictionless import dialects`
+
     Parameters:
         descriptor? (str|dict): descriptor
         delimiter? (str): csv delimiter
@@ -260,6 +264,10 @@ class CsvDialect(Dialect):
 class ExcelDialect(Dialect):
     """Excel dialect representation
 
+    API      | Usage
+    -------- | --------
+    Public   | `from frictionless import dialects`
+
     Parameters:
         descriptor? (str|dict): descriptor
         sheet? (int|str): number from 1 or name of an excel sheet
@@ -372,6 +380,10 @@ class ExcelDialect(Dialect):
 class InlineDialect(Dialect):
     """Inline dialect representation
 
+    API      | Usage
+    -------- | --------
+    Public   | `from frictionless import dialects`
+
     Parameters:
         descriptor? (str|dict): descriptor
         keys? (str[]): a list of strings to use as data keys
@@ -443,6 +455,10 @@ class InlineDialect(Dialect):
 
 class JsonDialect(Dialect):
     """Json dialect representation
+
+    API      | Usage
+    -------- | --------
+    Public   | `from frictionless import dialects`
 
     Parameters:
         descriptor? (str|dict): descriptor

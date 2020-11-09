@@ -21,7 +21,7 @@ class XlsxParser(Parser):
 
     API      | Usage
     -------- | --------
-    Public   | `from frictionless import parsers`
+    Public   | `from frictionless import parsers
 
     """
 
@@ -140,7 +140,7 @@ class XlsParser(Parser):
 
     API      | Usage
     -------- | --------
-    Public   | `from frictionless import parsers`
+    Public   | `from frictionless import parsers
 
     """
 
