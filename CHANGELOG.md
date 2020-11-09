@@ -2,6 +2,10 @@
 
 Here described only the breaking and most significant changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/frictionless-py/commits/master).
 
+## v3.27
+
+- Stop sorting keyed sources as the order is now guaranteed by Python (#512) (BREAKING)
+
 ## v3.26
 
 - Added "nolookup" argument for validate_package (#515)
