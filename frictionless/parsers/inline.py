@@ -11,7 +11,7 @@ class InlineParser(Parser):
 
     API      | Usage
     -------- | --------
-    Public   | `from frictionless.parsers import InlineParser`
+    Public   | `from frictionless import parsers
 
     """
 

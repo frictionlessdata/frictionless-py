@@ -64,6 +64,10 @@ class Control(Metadata):
 class LocalControl(Control):
     """Local control representation
 
+    API      | Usage
+    -------- | --------
+    Public   | `from frictionless import controls`
+
     Parameters:
         descriptor? (str|dict): descriptor
 
@@ -86,6 +90,10 @@ class LocalControl(Control):
 
 class RemoteControl(Control):
     """Remote control representation
+
+    API      | Usage
+    -------- | --------
+    Public   | `from frictionless import controls`
 
     Parameters:
         descriptor? (str|dict): descriptor
@@ -167,6 +175,10 @@ class RemoteControl(Control):
 class StreamControl(Control):
     """Stream control representation
 
+    API      | Usage
+    -------- | --------
+    Public   | `from frictionless import controls`
+
     Parameters:
         descriptor? (str|dict): descriptor
 
@@ -189,6 +201,10 @@ class StreamControl(Control):
 
 class TextControl(Control):
     """Text control representation
+
+    API      | Usage
+    -------- | --------
+    Public   | `from frictionless import controls`
 
     Parameters:
         descriptor? (str|dict): descriptor

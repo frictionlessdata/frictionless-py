@@ -16,7 +16,7 @@ class JsonParser(Parser):
 
     API      | Usage
     -------- | --------
-    Public   | `from frictionless.parsers import JsonParser`
+    Public   | `from frictionless import parsers
 
     """
 
@@ -73,7 +73,7 @@ class JsonlParser(Parser):
 
     API      | Usage
     -------- | --------
-    Public   | `from frictionless.parsers import JsonlParser`
+    Public   | `from frictionless import parsers
 
     """
 
