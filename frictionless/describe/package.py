@@ -21,7 +21,7 @@ def describe_package(source, *, hashing=None, basepath=None, expand=False):
     """
 
     # Infer package
-    package = Package(hashing=hashing, basepath=basepath)
+    package = Package(hashing=hashing, basepath=basepath, trusted=True)
     package.infer(source)
 
     # Expand package

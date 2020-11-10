@@ -142,6 +142,7 @@ def describe_resource(
             schema=table.schema,
             stats=table.stats,
             profile="tabular-data-resource",
+            trusted=True,
         )
 
     # Inline resource
