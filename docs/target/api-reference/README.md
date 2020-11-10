@@ -434,13 +434,13 @@ with Table("data/table.csv") as table:
   It defaults to the first file in the archive.
   
 - `control?` _dict|Control_ - File control.
-  For more infromation, please check the Control documentation.
+  For more information, please check the Control documentation.
   
 - `dialect?` _dict|Dialect_ - Table dialect.
-  For more infromation, please check the Dialect documentation.
+  For more information, please check the Dialect documentation.
   
 - `query?` _dict|Query_ - Table query.
-  For more infromation, please check the Query documentation.
+  For more information, please check the Query documentation.
   
 - `headers?` _int|int[]|[int[], str]_ - Either a row
   number or list of row numbers (in case of multi-line headers) to be
@@ -449,7 +449,7 @@ with Table("data/table.csv") as table:
   header joiner.  It defaults to 1.
   
 - `schema?` _dict|Schema_ - Table schema.
-  For more infromation, please check the Schema documentation.
+  For more information, please check the Schema documentation.
   
 - `sync_schema?` _bool_ - Whether to sync the schema.
   If it sets to `True` the provided schema will be mapped to
@@ -3932,13 +3932,13 @@ Public   | `from frictionless import extract_table`
   It defaults to the first file in the archive.
   
 - `control?` _dict|Control_ - File control.
-  For more infromation, please check the Control documentation.
+  For more information, please check the Control documentation.
   
 - `dialect?` _dict|Dialect_ - Table dialect.
-  For more infromation, please check the Dialect documentation.
+  For more information, please check the Dialect documentation.
   
 - `query?` _dict|Query_ - Table query.
-  For more infromation, please check the Query documentation.
+  For more information, please check the Query documentation.
   
 - `headers?` _int|int[]|[int[], str]_ - Either a row
   number or list of row numbers (in case of multi-line headers) to be
@@ -3947,7 +3947,7 @@ Public   | `from frictionless import extract_table`
   header joiner.  It defaults to 1.
   
 - `schema?` _dict|Schema_ - Table schema.
-  For more infromation, please check the Schema documentation.
+  For more information, please check the Schema documentation.
   
 - `sync_schema?` _bool_ - Whether to sync the schema.
   If it sets to `True` the provided schema will be mapped to
@@ -4343,13 +4343,13 @@ Public   | `from frictionless import describe_resource`
   It defaults to the first file in the archive.
   
 - `control?` _dict|Control_ - File control.
-  For more infromation, please check the Control documentation.
+  For more information, please check the Control documentation.
   
 - `dialect?` _dict|Dialect_ - Table dialect.
-  For more infromation, please check the Dialect documentation.
+  For more information, please check the Dialect documentation.
   
 - `query?` _dict|Query_ - Table query.
-  For more infromation, please check the Query documentation.
+  For more information, please check the Query documentation.
   
 - `headers?` _int|int[]|[int[], str]_ - Either a row
   number or list of row numbers (in case of multi-line headers) to be
@@ -5955,7 +5955,7 @@ Public   | `from frictionless import ReportTable`
 - `descriptor?` _str|dict_ - schema descriptor
 - `time` _float_ - validation time
 - `scope` _str[]_ - validation scope
-- `partial` _bool_ - wehter validation was partial
+- `partial` _bool_ - whether validation was partial
 - `errors` _Error[]_ - validation errors
 - `table` _Table_ - validation table
   
@@ -6455,7 +6455,7 @@ Excel dialect representation
 - `sheet?` _int|str_ - number from 1 or name of an excel sheet
 - `workbook_cache?` _dict_ - workbook cache
 - `fill_merged_cells?` _bool_ - whether to fill merged cells
-- `preserve_formatting?` _bool_ - whither to preserve formatting
+- `preserve_formatting?` _bool_ - whether to preserve formatting
 - `adjust_floating_point_error?` _bool_ - whether to adjust floating point error
   
 
