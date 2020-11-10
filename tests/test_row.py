@@ -1,4 +1,4 @@
-from frictionless import Row, Field, Schema
+from frictionless import Row, Field, Schema, extract
 
 
 # General
@@ -18,8 +18,26 @@ def test_basic():
 # Import/Export
 
 
-def test_to_dict_json_with_null_values():
-    pass
+def test_to_dict_with_json_null_values_issue_519():
+    source = "text://value\n2020-01-01\n\n2020-03-03"
+    process = lambda row: row.to_dict(json=True)
+    data = extract(source, format="csv", process=process)
+    assert data == [
+        {"value": "2020-01-01"},
+        {"value": None},
+        {"value": "2020-03-03"},
+    ]
+
+
+def test_to_list_with_json_null_values_issue_519():
+    source = "text://value\n2020-01-01\n\n2020-03-03"
+    process = lambda row: row.to_list(json=True)
+    data = extract(source, format="csv", process=process)
+    assert data == [
+        ["2020-01-01"],
+        [None],
+        ["2020-03-03"],
+    ]
 
 
 # Helpers
