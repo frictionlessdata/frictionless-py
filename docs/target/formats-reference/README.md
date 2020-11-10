@@ -85,7 +85,7 @@ Whether to fill merged cells
 
 > Type: bool
 
-Whither to preserve formatting
+Whether to preserve formatting
 
 #### Adjust Floating Point Error
 
