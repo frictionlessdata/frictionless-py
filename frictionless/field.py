@@ -213,7 +213,7 @@ class Field(Metadata):
     # Read
 
     def read_cell(self, cell):
-        """Read cell (cast)
+        """Read cell
 
         Parameters:
             cell (any): cell
@@ -237,8 +237,8 @@ class Field(Metadata):
                     notes[name] = f'constraint "{name}" is "{self.constraints[name]}"'
         return cell, notes
 
-    def read_cell_cast(self, cell):
-        """Read cell low-level (cast)
+    def read_cell_convert(self, cell):
+        """Read cell (convert only)
 
         Parameters:
             cell (any): cell
@@ -251,7 +251,7 @@ class Field(Metadata):
 
     @Metadata.property(write=False)
     def read_cell_checks(self):
-        """Read cell low-level (cast)
+        """Read cell (checks only)
 
         Returns:
             OrderedDict: dictionlary of check function by a constraint name
@@ -262,19 +262,20 @@ class Field(Metadata):
             constraint = self.constraints.get(name)
             if constraint is not None:
                 if name in ["minimum", "maximum"]:
-                    constraint = self.read_cell_cast(constraint)
+                    constraint = self.__type.read_cell(constraint)
                 if name == "enum":
-                    constraint = list(map(self.read_cell_cast, constraint))
+                    constraint = list(map(self.__type.read_cell, constraint))
                 checks[name] = partial(globals().get(f"check_{name}"), constraint)
         return checks
 
     # Write
 
-    def write_cell(self, cell):
-        """Write cell (cast)
+    def write_cell(self, cell, *, ignore_missing=False):
+        """Write cell
 
         Parameters:
-            cell (any): cell
+            cell (any): cell to convert
+            ignore_missing? (bool): don't convert None values
 
         Returns:
             (any, OrderedDict): processed cell and dict of notes
@@ -282,17 +283,16 @@ class Field(Metadata):
         """
         notes = None
         if cell is None:
-            cell = ""
-        if cell is not None:
-            cell = self.__type.write_cell(cell)
+            missing_value = cell if ignore_missing else self.write_cell_missing_value
+            return missing_value, notes
+        cell = self.__type.write_cell(cell)
         if cell is None:
             notes = notes or OrderedDict()
             notes["type"] = f'type is "{self.type}/{self.format}"'
         return cell, notes
 
-    # NOTE: rename to convert everywhere like in storage?
-    def write_cell_cast(self, cell):
-        """Write cell low-level (cast)
+    def write_cell_convert(self, cell):
+        """Write cell (convert only)
 
         Parameters:
             cell (any): cell
@@ -302,6 +302,18 @@ class Field(Metadata):
 
         """
         return self.__type.write_cell(cell)
+
+    @Metadata.property(write=False)
+    def write_cell_missing_value(self):
+        """Write cell (missing value only)
+
+        Returns:
+            str: a value to replace None cells
+
+        """
+        if self.missing_values:
+            return self.missing_values[0]
+        return config.DEFAULT_MISSING_VALUES[0]
 
     # Metadata
 
