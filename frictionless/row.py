@@ -221,7 +221,7 @@ class Row(OrderedDict):
                 if field.name in self:
                     cell = self[field.name]
                     if field.type not in JsonParser.native_types:
-                        cell, notes = field.write_cell(cell)
+                        cell, notes = field.write_cell(cell, ignore_missing=True)
                     result[field.name] = cell
             return result
         return dict(self)
@@ -240,7 +240,7 @@ class Row(OrderedDict):
                 if field.name in self:
                     cell = self[field.name]
                     if field.type not in JsonParser.native_types:
-                        cell, notes = field.write_cell(cell)
+                        cell, notes = field.write_cell(cell, ignore_missing=True)
                     result.append(cell)
             return result
         return list(self.values())

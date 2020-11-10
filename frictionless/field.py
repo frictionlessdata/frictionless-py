@@ -270,11 +270,12 @@ class Field(Metadata):
 
     # Write
 
-    def write_cell(self, cell):
+    def write_cell(self, cell, *, ignore_missing=False):
         """Write cell
 
         Parameters:
-            cell (any): cell
+            cell (any): cell to convert
+            ignore_missing? (bool): don't convert None values
 
         Returns:
             (any, OrderedDict): processed cell and dict of notes
@@ -282,9 +283,9 @@ class Field(Metadata):
         """
         notes = None
         if cell is None:
-            cell = ""
-        if cell is not None:
-            cell = self.__type.write_cell(cell)
+            missing_value = cell if ignore_missing else self.write_cell_missing_value
+            return missing_value, notes
+        cell = self.__type.write_cell(cell)
         if cell is None:
             notes = notes or OrderedDict()
             notes["type"] = f'type is "{self.type}/{self.format}"'
@@ -301,6 +302,18 @@ class Field(Metadata):
 
         """
         return self.__type.write_cell(cell)
+
+    @Metadata.property(write=False)
+    def write_cell_missing_value(self):
+        """Write cell (missing value only)
+
+        Returns:
+            str: a value to replace None cells
+
+        """
+        if self.missing_values:
+            return self.missing_values[0]
+        return config.DEFAULT_MISSING_VALUES[0]
 
     # Metadata
 
