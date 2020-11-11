@@ -851,6 +851,50 @@ def test_table_limit_offset_rows():
         assert table.read_data() == [["3", "c"], ["4", "d"]]
 
 
+def test_table_limit_fields_error_zero_issue_521():
+    source = "data/long.csv"
+    query = Query(limit_fields=0)
+    table = Table(source, query=query)
+    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+        table.open()
+    error = excinfo.value.error
+    assert error.code == "query-error"
+    assert error.note.count('minimum of 1" at "limitFields')
+
+
+def test_table_offset_fields_error_zero_issue_521():
+    source = "data/long.csv"
+    query = Query(offset_fields=0)
+    table = Table(source, query=query)
+    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+        table.open()
+    error = excinfo.value.error
+    assert error.code == "query-error"
+    assert error.note.count('minimum of 1" at "offsetFields')
+
+
+def test_table_limit_rows_error_zero_issue_521():
+    source = "data/long.csv"
+    query = Query(limit_rows=0)
+    table = Table(source, query=query)
+    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+        table.open()
+    error = excinfo.value.error
+    assert error.code == "query-error"
+    assert error.note.count('minimum of 1" at "limitRows')
+
+
+def test_table_offset_rows_error_zero_issue_521():
+    source = "data/long.csv"
+    query = Query(offset_rows=0)
+    table = Table(source, query=query)
+    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+        table.open()
+    error = excinfo.value.error
+    assert error.code == "query-error"
+    assert error.note.count('minimum of 1" at "offsetRows')
+
+
 # Header
 
 
