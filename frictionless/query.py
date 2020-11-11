@@ -170,11 +170,11 @@ class Query(Metadata):
         "properties": {
             "pickFields": {"type": "array"},
             "skipFields": {"type": "array"},
-            "limitFields": {"type": "number"},
-            "offsetFields": {"type": "number"},
+            "limitFields": {"type": "number", "minimum": 1},
+            "offsetFields": {"type": "number", "minimum": 1},
             "pickRows": {"type": "array"},
             "skipRows": {"type": "array"},
-            "limitRows": {"type": "number"},
-            "offsetRows": {"type": "number"},
+            "limitRows": {"type": "number", "minimum": 1},
+            "offsetRows": {"type": "number", "minimum": 1},
         },
     }
