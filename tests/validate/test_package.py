@@ -146,6 +146,15 @@ def test_validate_package_dialect_header_false():
     assert report.valid
 
 
+def test_validate_with_nopool():
+    report = validate("data/invalid/datapackage.json", nopool=True)
+    assert report.flatten(["tablePosition", "rowPosition", "fieldPosition", "code"]) == [
+        [1, 3, None, "blank-row"],
+        [1, 3, None, "primary-key-error"],
+        [2, 4, None, "blank-row"],
+    ]
+
+
 # Checksum
 
 DESCRIPTOR_SH = {
