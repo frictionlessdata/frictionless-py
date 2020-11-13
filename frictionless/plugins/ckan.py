@@ -184,11 +184,71 @@ class CkanStorage(Storage):
 
     # Write
 
-    def write_resource(self, resource, *, force=False, **options):
-        pass
+    def _write_table(self, table, force=False):
+        # Check for existence
+        if table.name in self._read_table_names():
+            if not force:
+                note = f'Table "{table.name}" already exists'
+                raise exceptions.FrictionlessException(errors.StorageError(note=note))
+            self._write_table_remove(table.name)
 
-    def write_package(self, package, *, force=False, **options):
-        pass
+        # Define tables
+        self.__tables[table.name] = table
+        datastore_dict = self._write_table_convert_table(table)
+        datastore_url = "{}/datastore_create".format(self.__base_endpoint)
+        self.__make_ckan_request(datastore_url, method="POST", json=datastore_dict)
+
+        # Invalidate cache
+        self.__bucket_cache = None
+
+    def _write_table_convert_table(self, table):
+        schema = table.schema
+        datastore_dict = {"fields": [], "resource_id": table.name, "force": True}
+        for field in schema.fields:
+            datastore_field = {"id": field.name}
+            datastore_type = self._write_table_convert_field_type(field.type)
+            if datastore_type:
+                datastore_field["type"] = datastore_type
+            datastore_dict["fields"].append(datastore_field)
+        if schema.primary_key is not None:
+            datastore_dict["primary_key"] = schema.primary_key
+        return datastore_dict
+
+    def _write_table_convert_field_type(self, type):
+        DESCRIPTOR_TYPE_MAPPING = {
+            "number": "float",
+            "string": "text",
+            "integer": "int",
+            "boolean": "bool",
+            "object": "json",
+            "array": "text[]",
+            "geojson": "json",
+            "date": "text",
+            "time": "time",
+            "year": "int",
+            "datetime": "timestamp",
+        }
+        return DESCRIPTOR_TYPE_MAPPING.get(type, "text")
+
+    def _write_table_row_stream(self, name, row_stream):
+        table = self._read_table(name)
+        datastore_upsert_url = "{}/datastore_upsert".format(self.__base_endpoint)
+        records = [r.to_dict(json=True) for r in row_stream]
+        params = {
+            "resource_id": table.name,
+            "method": "insert",
+            "force": True,
+            "records": records,
+        }
+        self.__make_ckan_request(datastore_upsert_url, method="POST", json=params)
+
+    def write_resource(self, resource, *, force=False):
+        self._write_table(resource, force=force)
+        self._write_table_row_stream(resource.name, resource.read_row_stream())
+
+    def write_package(self, package, *, force=False):
+        for resource in package.resources:
+            self.write_resource(resource, force=force)
 
     # Delete
 
