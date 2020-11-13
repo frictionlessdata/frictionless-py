@@ -1,0 +1,7 @@
+{
+  "help": "https://demo.ckan.org/api/3/action/help_show?name=datastore_delete",
+  "success": true,
+  "result": {
+    "resource_id": "79843e49-7974-411c-8eb5-fb2d1111d707"
+  }
+}

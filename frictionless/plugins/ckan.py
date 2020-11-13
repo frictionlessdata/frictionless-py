@@ -192,11 +192,31 @@ class CkanStorage(Storage):
 
     # Delete
 
-    def delete_resource(self, name, *, ignore=False, **options):
-        pass
+    def _write_table_remove(self, name, ignore=False):
+        # Check existent
+        if name not in self._read_table_names():
+            if not ignore:
+                note = f'Table "{name}" does not exist'
+                raise exceptions.FrictionlessException(errors.StorageError(note=note))
 
-    def delete_package(self, names, *, ignore=False, **options):
-        pass
+        # Remove from table
+        if name in self.__tables:
+            del self.__tables[name]
+
+        # Remove from ckan
+        datastore_delete_url = "{}/datastore_delete".format(self.__base_endpoint)
+        params = {"resource_id": name, "force": True}
+        self.__make_ckan_request(datastore_delete_url, method="POST", json=params)
+
+        # Invalidate cache
+        self.__bucket_cache = None
+
+    def delete_resource(self, name, *, ignore=False):
+        self._write_table_remove(name, ignore=ignore)
+
+    def delete_package(self, names, *, ignore=False):
+        for name in names:
+            self._write_table_remove(name, ignore=ignore)
 
     # Private
 

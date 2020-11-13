@@ -5,9 +5,20 @@ import urllib
 import pytest
 import responses
 from frictionless import Package, Resource, exceptions
+from frictionless.plugins.ckan import CkanStorage
+
+"""
+Tests for CKAN plugin
+
+Note: in this module we decorate all test functions with `@responses.activate` even
+if we don't expect the test to make any HTTP calls. This way, if a test we are not
+expecting to communicate over HTTP tries to make a HTTP request we will throw
+`Connection refused by Responses - the call doesn't match any registered mock`
+instead of silently making the request.
+"""
 
 
-def assert_resource_valid(resource):
+def _assert_resource_valid(resource):
     assert resource.schema == {
         "fields": [
             {"name": "id", "type": "integer"},
@@ -140,7 +151,7 @@ def test_read_package_valid():
     resource = package.get_resource(resources_ids[1])
     resource.onerror = "raise"  # be strict about errors under test
 
-    assert_resource_valid(resource)
+    _assert_resource_valid(resource)
 
 
 @responses.activate
@@ -224,7 +235,7 @@ def test_read_resource_valid():
     )
     resource.onerror = "raise"  # be strict about errors under test
 
-    assert_resource_valid(resource)
+    _assert_resource_valid(resource)
 
 
 @responses.activate
@@ -254,3 +265,45 @@ def test_read_resource_bad_resource_id():
     error = excinfo.value.error
     assert error.code == "storage-error"
     assert error.note.count("Not found")
+
+
+@responses.activate
+def test_delete_valid():
+    resource_id = "79843e49-7974-411c-8eb5-fb2d1111d707"
+    base_url = "https://demo.ckan.org"
+
+    for method, params in [
+        ("delete_package", [resource_id]),
+        ("delete_resource", resource_id),
+    ]:
+        payload = json.load(
+            open(
+                "data/ckan_mock_responses/datastore_delete.json",
+                encoding="utf-8",
+            )
+        )
+        responses.add(
+            responses.POST,
+            f"{base_url}/api/3/action/datastore_delete",
+            json=payload,
+            status=200,
+        )
+
+        storage = CkanStorage(base_url=base_url)
+        storage._CkanStorage__bucket_cache = [resource_id]
+        getattr(storage, method)(params)
+
+        assert responses.assert_call_count(f"{base_url}/api/3/action/datastore_delete", 1)
+        responses.reset()
+
+
+@responses.activate
+def test_delete_bad_resource_id():
+    for method, params in [("delete_package", ["bad-id"]), ("delete_resource", "bad-id")]:
+        storage = CkanStorage(base_url="https://demo.ckan.org")
+        storage._CkanStorage__bucket_cache = ["79843e49-7974-411c-8eb5-fb2d1111d707"]
+        with pytest.raises(exceptions.FrictionlessException) as excinfo:
+            getattr(storage, method)(params)
+        error = excinfo.value.error
+        assert error.code == "storage-error"
+        assert error.note.count('Table "bad-id" does not exist')
