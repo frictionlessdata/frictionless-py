@@ -268,7 +268,7 @@ def test_field_read_cell_multiple_constraints():
 
 
 def test_field_to_copy():
-    source = Field(type="integet")
+    source = Field(type="integer")
     target = source.to_copy()
     assert source is not target
     assert source == target
