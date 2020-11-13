@@ -285,6 +285,17 @@ class Package(Metadata):
         return storage.read_package()
 
     @staticmethod
+    def from_ckan(*, base_url, dataset_id, api_key=None):
+        return Package.from_storage(
+            system.create_storage(
+                "ckan_datastore",
+                base_url=base_url,
+                dataset_id=dataset_id,
+                api_key=api_key,
+            )
+        )
+
+    @staticmethod
     def from_sql(*, engine, prefix="", namespace=None):
         """Import package from SQL
 

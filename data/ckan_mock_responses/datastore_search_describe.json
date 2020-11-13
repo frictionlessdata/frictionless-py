@@ -1,0 +1,67 @@
+{
+  "help": "https://demo.ckan.org/api/3/action/help_show?name=datastore_search",
+  "success": true,
+  "result": {
+    "resource_id": "79843e49-7974-411c-8eb5-fb2d1111d707",
+    "fields": [
+      {
+        "type": "int4",
+        "id": "_id"
+      },
+      {
+        "type": "int4",
+        "id": "id"
+      },
+      {
+        "type": "int4",
+        "id": "parent"
+      },
+      {
+        "type": "text",
+        "id": "name"
+      },
+      {
+        "type": "bool",
+        "id": "current"
+      },
+      {
+        "type": "float8",
+        "id": "rating"
+      },
+      {
+        "type": "int4",
+        "id": "created_year"
+      },
+      {
+        "type": "date",
+        "id": "created_date"
+      },
+      {
+        "type": "time",
+        "id": "created_time"
+      },
+      {
+        "type": "timestamp",
+        "id": "created_datetime"
+      },
+      {
+        "type": "json",
+        "id": "stats"
+      },
+      {
+        "type": "_text",
+        "id": "persons"
+      },
+      {
+        "type": "json",
+        "id": "location"
+      }
+    ],
+    "records": [],
+    "_links": {
+      "start": "/api/3/action/datastore_search?limit=0&resource_id=79843e49-7974-411c-8eb5-fb2d1111d707",
+      "next": "/api/3/action/datastore_search?offset=0&limit=0&resource_id=79843e49-7974-411c-8eb5-fb2d1111d707"
+    },
+    "limit": 0
+  }
+}

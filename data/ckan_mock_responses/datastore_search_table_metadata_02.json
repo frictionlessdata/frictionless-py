@@ -1,0 +1,37 @@
+{
+  "help": "https://demo.ckan.org/api/3/action/help_show?name=datastore_search",
+  "success": true,
+  "result": {
+    "resource_id": "_table_metadata",
+    "fields": [
+      {
+        "type": "text",
+        "id": "_id"
+      },
+      {
+        "type": "name",
+        "id": "name"
+      },
+      {
+        "type": "oid",
+        "id": "oid"
+      },
+      {
+        "type": "name",
+        "id": "alias_of"
+      }
+    ],
+    "records": [],
+    "_links": {
+      "start": "/api/3/action/datastore_search?filters=%7B%22name%22%3A+%5B%22bd79c992-40f0-454a-a0ff-887f84a792fb%22%2C+%2279843e49-7974-411c-8eb5-fb2d1111d707%22%5D%7D&resource_id=_table_metadata",
+      "next": "/api/3/action/datastore_search?offset=200&filters=%7B%22name%22%3A+%5B%22bd79c992-40f0-454a-a0ff-887f84a792fb%22%2C+%2279843e49-7974-411c-8eb5-fb2d1111d707%22%5D%7D&resource_id=_table_metadata"
+    },
+    "filters": {
+      "name": [
+        "bd79c992-40f0-454a-a0ff-887f84a792fb",
+        "79843e49-7974-411c-8eb5-fb2d1111d707"
+      ]
+    },
+    "offset": 100
+  }
+}

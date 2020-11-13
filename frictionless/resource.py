@@ -636,6 +636,17 @@ class Resource(Metadata):
         return storage.read_resource(name)
 
     @staticmethod
+    def from_ckan(*, base_url, resource_id, api_key=None):
+        return Resource.from_storage(
+            system.create_storage(
+                "ckan_datastore",
+                base_url=base_url,
+                api_key=api_key,
+            ),
+            name=resource_id,
+        )
+
+    @staticmethod
     def from_sql(*, name, engine, prefix="", namespace=None):
         """Import resource from SQL table
 

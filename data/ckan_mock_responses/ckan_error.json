@@ -1,0 +1,8 @@
+{
+  "help": "https://demo.ckan.org/api/3/action/help_show?name=package_show", 
+  "success": false, 
+  "error": {
+    "message": "Not found", 
+    "__type": "Not Found Error"
+  }
+}
