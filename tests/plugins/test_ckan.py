@@ -26,6 +26,8 @@ def _mock_json_call(url, json_file, *, method=responses.GET, status=200, **kwarg
 
 class TestRead:
     def _assert_resource_valid(self, resource):
+
+        # metadata
         assert resource.schema == {
             "fields": [
                 {"name": "id", "type": "integer"},
@@ -43,6 +45,7 @@ class TestRead:
             ]
         }
 
+        # data
         rows = resource.read_rows()
         assert len(rows) == 3
         assert rows[0].to_dict() == {
@@ -329,6 +332,8 @@ class TestWriteDoesNotExist:
         package.resources[0].to_ckan(
             base_url=self.base_url, dataset_id=self.dataset_id, api_key="env:CKAN_API_KEY"
         )
+
+        # metdadata
         assert json.loads(responses.calls[2].request.body) == {
             "fields": [
                 {"id": "any", "type": "text"},  # type fallback
@@ -353,6 +358,33 @@ class TestWriteDoesNotExist:
             "primary_key": [],
         }
 
+        # data
+        assert json.loads(responses.calls[3].request.body) == {
+            "resource_id": self.target_resource_id,
+            "method": "insert",
+            "force": True,
+            "records": [
+                {
+                    "any": "中国人",
+                    "array": ["Mike", "John"],
+                    "boolean": True,
+                    "date": "2015-01-01",
+                    "date_year": "2015",
+                    "datetime": "2015-01-01T03:00:00",
+                    "duration": "P1Y1M",
+                    "geojson": {"type": "Point", "coordinates": [33, 33.33]},
+                    "geopoint": "30,70",
+                    "integer": 1,
+                    "number": 7.0,
+                    "object": {"chars": 560},
+                    "string": "english",
+                    "time": "03:00:00",
+                    "year": 2015,
+                    "yearmonth": "2015-01",
+                }
+            ],
+        }
+
     @responses.activate
     def test_write_integrity(self):
         package = Package("data/storage/integrity.json")
@@ -365,6 +397,8 @@ class TestWriteDoesNotExist:
         package.to_ckan(
             base_url=self.base_url, dataset_id=self.dataset_id, api_key="env:CKAN_API_KEY"
         )
+
+        # metadata
         assert json.loads(responses.calls[2].request.body) == {
             "fields": [
                 {"id": "id", "type": "int"},  # constraint removal
@@ -388,6 +422,26 @@ class TestWriteDoesNotExist:
             # foreign keys removal
         }
 
+        # data
+        assert json.loads(responses.calls[3].request.body) == {
+            "resource_id": self.existing_resources_ids[0],
+            "method": "insert",
+            "force": True,
+            "records": [
+                {"id": 1, "parent": None, "description": "english"},
+                {"id": 2, "parent": 1, "description": "中国人"},
+            ],
+        }
+        assert json.loads(responses.calls[7].request.body) == {
+            "resource_id": self.existing_resources_ids[1],
+            "method": "insert",
+            "force": True,
+            "records": [
+                {"main_id": 1, "some_id": 1, "description": "note1"},
+                {"main_id": 2, "some_id": 2, "description": "note2"},
+            ],
+        }
+
     @responses.activate
     def test_write_constraints(self):
         package = Package("data/storage/constraints.json")
@@ -396,6 +450,8 @@ class TestWriteDoesNotExist:
         package.to_ckan(
             base_url=self.base_url, dataset_id=self.dataset_id, api_key="env:CKAN_API_KEY"
         )
+
+        # metadata
         assert json.loads(responses.calls[2].request.body) == {
             "fields": [
                 {"id": "required", "type": "text"},  # constraint removal
@@ -409,6 +465,24 @@ class TestWriteDoesNotExist:
             "resource_id": self.target_resource_id,
             "force": True,
             "primary_key": [],
+        }
+
+        # data
+        assert json.loads(responses.calls[3].request.body) == {
+            "resource_id": self.target_resource_id,
+            "method": "insert",
+            "force": True,
+            "records": [
+                {
+                    "required": "passing",
+                    "minLength": "passing",
+                    "maxLength": "passing",
+                    "pattern": "passing",
+                    "enum": "passing",
+                    "minimum": 5,
+                    "maximum": 5,
+                }
+            ],
         }
 
 
