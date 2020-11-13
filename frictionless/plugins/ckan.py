@@ -259,14 +259,14 @@ class CkanStorage(Storage):
                 note = f'Table "{name}" does not exist'
                 raise exceptions.FrictionlessException(errors.StorageError(note=note))
 
-        # Remove from table
-        if name in self.__tables:
-            del self.__tables[name]
-
         # Remove from ckan
         datastore_delete_url = "{}/datastore_delete".format(self.__base_endpoint)
         params = {"resource_id": name, "force": True}
         self.__make_ckan_request(datastore_delete_url, method="POST", json=params)
+
+        # Remove from table
+        if name in self.__tables:
+            del self.__tables[name]
 
         # Invalidate cache
         self.__bucket_cache = None
