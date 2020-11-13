@@ -828,6 +828,17 @@ class Resource(Metadata):
         storage.write_resource(self.to_copy(), force=force)
         return storage
 
+    def to_ckan(self, *, base_url, dataset_id=None, api_key=None, force=False):
+        return self.to_storage(
+            system.create_storage(
+                "ckan_datastore",
+                base_url=base_url,
+                dataset_id=dataset_id,
+                api_key=api_key,
+            ),
+            force=force,
+        )
+
     def to_sql(self, *, engine, prefix="", namespace=None, force=False):
         """Export resource to SQL table
 
