@@ -31,7 +31,7 @@ TESTS_REQUIRE = [
     "docstring-parser",
     "python-dotenv",
     "oauth2client",
-    "responses",
+    "responses==0.12.0",
     "coveralls",
     "nbconvert",
     "ipython",
