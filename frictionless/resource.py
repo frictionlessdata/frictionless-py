@@ -637,6 +637,13 @@ class Resource(Metadata):
 
     @staticmethod
     def from_ckan(*, base_url, resource_id, api_key=None):
+        """Import resource from CKAN
+
+        Parameters:
+            base_url (str): (required) URL for CKAN instance (e.g: https://demo.ckan.org/ )
+            resource_id (str): (required) ID of resource to fetch
+            api_key (str): (optional) Your CKAN API key
+        """
         return Resource.from_storage(
             system.create_storage(
                 "ckan_datastore",
@@ -829,6 +836,14 @@ class Resource(Metadata):
         return storage
 
     def to_ckan(self, *, base_url, dataset_id=None, api_key=None, force=False):
+        """Export resource to CKAN
+
+        Parameters:
+            base_url (str): (required) URL for CKAN instance (e.g: https://demo.ckan.org/ )
+            dataset_id (str): (optional) ID or slug of dataset this resource belongs to
+            api_key (str): (optional) Your CKAN API key
+            force (bool): (optional) overwrite existing data
+        """
         return self.to_storage(
             system.create_storage(
                 "ckan_datastore",
