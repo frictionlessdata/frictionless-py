@@ -1,3 +1,5 @@
+import json
+from decimal import Decimal
 from frictionless import Row, Field, Schema, extract
 
 
@@ -38,6 +40,20 @@ def test_to_list_with_json_null_values_issue_519():
         [None],
         ["2020-03-03"],
     ]
+
+
+def test_decimal_to_json():
+    row = Row(
+        [Decimal("53.940135311587831")],
+        schema=Schema({"fields": [{"name": "dec1", "type": "number"}]}),
+        field_positions=[1],
+        row_position=1,
+        row_number=1,
+    )
+    # all we really want to 'assert' here is that these methods run without throwing
+    # TypeError: Object of type 'Decimal' is not JSON serializable
+    assert isinstance(json.dumps(row.to_dict(json=True)), str)
+    assert isinstance(json.dumps(row.to_list(json=True)), str)
 
 
 # Helpers
