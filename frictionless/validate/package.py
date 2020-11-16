@@ -8,7 +8,13 @@ from .. import exceptions
 
 @Report.from_validate
 def validate_package(
-    source, basepath=None, trusted=False, noinfer=False, nolookup=False, **options
+    source,
+    basepath=None,
+    trusted=False,
+    noinfer=False,
+    nolookup=False,
+    nopool=False,
+    **options
 ):
     """Validate package
 
@@ -22,6 +28,7 @@ def validate_package(
         trusted? (bool): don't raise an exception on unsafe paths
         noinfer? (bool): don't call `package.infer`
         nolookup? (bool): don't read lookup tables skipping integrity checks
+        nopool? (bool): disable multiprocessing
         **options (dict): options for every extracted table
 
     Returns:
@@ -62,7 +69,7 @@ def validate_package(
 
     # Validate inquiry
     inquiry = Inquiry(descriptor)
-    report = validate_inquiry(inquiry)
+    report = validate_inquiry(inquiry, nopool=nopool)
 
     # Return report
     return Report(time=timer.time, errors=report["errors"], tables=report["tables"])
