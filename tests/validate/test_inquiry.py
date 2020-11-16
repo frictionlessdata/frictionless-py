@@ -101,3 +101,20 @@ def test_validate_with_multiple_packages():
         [3, 3, None, "primary-key-error"],
         [4, 4, None, "blank-row"],
     ]
+
+
+def test_validate_with_multiple_packages_with_nopool():
+    report = validate(
+        {
+            "tasks": [
+                {"source": "data/package/datapackage.json"},
+                {"source": "data/invalid/datapackage.json"},
+            ]
+        },
+        nopool=True,
+    )
+    assert report.flatten(["tablePosition", "rowPosition", "fieldPosition", "code"]) == [
+        [3, 3, None, "blank-row"],
+        [3, 3, None, "primary-key-error"],
+        [4, 4, None, "blank-row"],
+    ]

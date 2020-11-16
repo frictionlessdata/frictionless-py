@@ -9,7 +9,7 @@ from .. import exceptions
 
 
 @Report.from_validate
-def validate_inquiry(source):
+def validate_inquiry(source, *, nopool=False):
     """Validate inquiry
 
     API      | Usage
@@ -18,6 +18,7 @@ def validate_inquiry(source):
 
     Parameters:
         source (dict|str): an inquiry descriptor
+        nopool? (bool): disable multiprocessing
 
     Returns:
         Report: validation report
@@ -44,13 +45,14 @@ def validate_inquiry(source):
             continue
         tasks.append(task)
 
-    # Validate task
-    if len(tasks) == 1:
-        report = validate(**helpers.create_options(tasks[0]))
-        reports.append(report)
+    # Validate sequentially
+    if len(tasks) == 1 or nopool:
+        for task in tasks:
+            report = validate(**helpers.create_options(task))
+            reports.append(report)
 
-    # Validate tasks
-    if len(tasks) > 1:
+    # Validate in-parallel
+    else:
         with Pool() as pool:
             reports.extend(pool.map(partial(helpers.apply_function, validate), tasks))
 
