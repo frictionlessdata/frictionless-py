@@ -1,5 +1,6 @@
 from itertools import zip_longest
 from collections import OrderedDict
+from decimal import Decimal
 from .helpers import cached_property
 from .parsers import JsonParser
 from . import errors
@@ -222,6 +223,8 @@ class Row(OrderedDict):
                     cell = self[field.name]
                     if field.type not in JsonParser.native_types:
                         cell, notes = field.write_cell(cell, ignore_missing=True)
+                    if isinstance(cell, Decimal):
+                        cell = float(cell)
                     result[field.name] = cell
             return result
         return dict(self)
@@ -241,6 +244,8 @@ class Row(OrderedDict):
                     cell = self[field.name]
                     if field.type not in JsonParser.native_types:
                         cell, notes = field.write_cell(cell, ignore_missing=True)
+                    if isinstance(cell, Decimal):
+                        cell = float(cell)
                     result.append(cell)
             return result
         return list(self.values())

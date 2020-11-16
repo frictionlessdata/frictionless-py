@@ -1,0 +1,137 @@
+{
+  "help": "https://demo.ckan.org/api/3/action/help_show?name=datastore_search",
+  "success": true,
+  "result": {
+    "resource_id": "79843e49-7974-411c-8eb5-fb2d1111d707",
+    "fields": [
+      {
+        "type": "int4",
+        "id": "_id"
+      },
+      {
+        "type": "int4",
+        "id": "id"
+      },
+      {
+        "type": "int4",
+        "id": "parent"
+      },
+      {
+        "type": "text",
+        "id": "name"
+      },
+      {
+        "type": "bool",
+        "id": "current"
+      },
+      {
+        "type": "float8",
+        "id": "rating"
+      },
+      {
+        "type": "int4",
+        "id": "created_year"
+      },
+      {
+        "type": "date",
+        "id": "created_date"
+      },
+      {
+        "type": "time",
+        "id": "created_time"
+      },
+      {
+        "type": "timestamp",
+        "id": "created_datetime"
+      },
+      {
+        "type": "json",
+        "id": "stats"
+      },
+      {
+        "type": "_text",
+        "id": "persons"
+      },
+      {
+        "type": "json",
+        "id": "location"
+      }
+    ],
+    "records": [
+      {
+        "rating": 9.5,
+        "stats": {
+          "chars": 560,
+          "height": 54.8
+        },
+        "name": "Taxes",
+        "parent": null,
+        "created_datetime": "2015-01-01T03:00:00",
+        "created_year": 2015,
+        "current": true,
+        "persons": [
+          "mike",
+          "alice"
+        ],
+        "location": {
+          "type": "Point",
+          "coordinates": [
+            50.0,
+            50.0
+          ]
+        },
+        "created_date": "2015-01-01",
+        "created_time": "03:00:00",
+        "_id": 1,
+        "id": 1
+      },
+      {
+        "rating": 7.0,
+        "stats": {
+          "chars": 970,
+          "height": 40
+        },
+        "name": "中国人",
+        "parent": 1,
+        "created_datetime": "2015-12-31T15:45:33",
+        "created_year": 2015,
+        "current": false,
+        "persons": [
+          "chen",
+          "alice"
+        ],
+        "location": {
+          "type": "Point",
+          "coordinates": [
+            33.33,
+            33.33
+          ]
+        },
+        "created_date": "2015-12-31",
+        "created_time": "15:45:33",
+        "_id": 2,
+        "id": 2
+      },
+      {
+        "rating": null,
+        "stats": null,
+        "name": "",
+        "parent": 1,
+        "created_datetime": null,
+        "created_year": null,
+        "current": false,
+        "persons": null,
+        "location": null,
+        "created_date": null,
+        "created_time": null,
+        "_id": 3,
+        "id": 3
+      }
+    ],
+    "_links": {
+      "start": "/api/3/action/datastore_search?resource_id=79843e49-7974-411c-8eb5-fb2d1111d707",
+      "next": "/api/3/action/datastore_search?offset=100&resource_id=79843e49-7974-411c-8eb5-fb2d1111d707"
+    },
+    "total": 3
+  }
+}

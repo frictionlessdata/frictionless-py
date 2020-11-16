@@ -636,6 +636,24 @@ class Resource(Metadata):
         return storage.read_resource(name)
 
     @staticmethod
+    def from_ckan(*, base_url, resource_id, api_key=None):
+        """Import resource from CKAN
+
+        Parameters:
+            base_url (str): (required) URL for CKAN instance (e.g: https://demo.ckan.org/ )
+            resource_id (str): (required) ID of resource to fetch
+            api_key (str): (optional) Your CKAN API key
+        """
+        return Resource.from_storage(
+            system.create_storage(
+                "ckan_datastore",
+                base_url=base_url,
+                api_key=api_key,
+            ),
+            name=resource_id,
+        )
+
+    @staticmethod
     def from_sql(*, name, engine, prefix="", namespace=None):
         """Import resource from SQL table
 
@@ -816,6 +834,25 @@ class Resource(Metadata):
         """
         storage.write_resource(self.to_copy(), force=force)
         return storage
+
+    def to_ckan(self, *, base_url, dataset_id=None, api_key=None, force=False):
+        """Export resource to CKAN
+
+        Parameters:
+            base_url (str): (required) URL for CKAN instance (e.g: https://demo.ckan.org/ )
+            dataset_id (str): (optional) ID or slug of dataset this resource belongs to
+            api_key (str): (optional) Your CKAN API key
+            force (bool): (optional) overwrite existing data
+        """
+        return self.to_storage(
+            system.create_storage(
+                "ckan_datastore",
+                base_url=base_url,
+                dataset_id=dataset_id,
+                api_key=api_key,
+            ),
+            force=force,
+        )
 
     def to_sql(self, *, engine, prefix="", namespace=None, force=False):
         """Export resource to SQL table

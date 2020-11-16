@@ -1,0 +1,4 @@
+{
+  "success": true,
+  "comment": "Use this mock when it doesn't matter what is in the response. If we're just looking for a 200 OK status and success: true this mock will do."
+}

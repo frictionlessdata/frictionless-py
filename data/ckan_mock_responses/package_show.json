@@ -1,0 +1,103 @@
+{
+  "help": "https://demo.ckan.org/api/3/action/help_show?name=package_show",
+  "success": true,
+  "result": {
+    "license_title": "",
+    "maintainer": "",
+    "relationships_as_object": [],
+    "private": false,
+    "maintainer_email": "",
+    "num_tags": 0,
+    "id": "7766839b-face-4336-8e1a-3c51c5e7634d",
+    "metadata_created": "2017-10-13T14:00:49.983285",
+    "metadata_modified": "2017-10-18T14:44:12.587015",
+    "author": "",
+    "author_email": "",
+    "state": "active",
+    "version": "",
+    "creator_user_id": "9cdbdaf8-b7e9-468b-bd72-4b23a07b9066",
+    "type": "dataset",
+    "resources": [
+      {
+        "mimetype": null,
+        "cache_url": null,
+        "hash": "",
+        "description": "",
+        "name": "co2-mm-mlo_csv_not_streamed",
+        "format": "CSV",
+        "url": "https://pkgstore.datahub.io/core/co2-ppm:co2-mm-mlo_csv/data/co2-mm-mlo_csv.csv",
+        "datastore_active": true,
+        "cache_last_updated": null,
+        "package_id": "7766839b-face-4336-8e1a-3c51c5e7634d",
+        "created": "2017-10-18T14:44:10.636629",
+        "state": "active",
+        "mimetype_inner": null,
+        "last_modified": null,
+        "position": 0,
+        "revision_id": "99b5f272-aaca-4f69-9b74-b64432b27cde",
+        "url_type": null,
+        "id": "bd79c992-40f0-454a-a0ff-887f84a792fb",
+        "resource_type": null,
+        "size": null
+      },
+      {
+        "mimetype": null,
+        "cache_url": null,
+        "hash": "d83fd70eeef26cbc33904cf84664d99c",
+        "description": "",
+        "name": "co2-mm-mlo_csv_streamed",
+        "encoding": "utf-8",
+        "url": "https://demo.ckan.org/dataset/7766839b-face-4336-8e1a-3c51c5e7634d/resource/79843e49-7974-411c-8eb5-fb2d1111d707/download/co2-mm-mlo_csv_streamed.csv",
+        "datastore_active": true,
+        "format": "CSV",
+        "cache_last_updated": null,
+        "package_id": "7766839b-face-4336-8e1a-3c51c5e7634d",
+        "created": "2017-10-18T14:44:12.692356",
+        "state": "active",
+        "mimetype_inner": null,
+        "last_modified": null,
+        "position": 1,
+        "revision_id": "99b5f272-aaca-4f69-9b74-b64432b27cde",
+        "url_type": "upload",
+        "id": "79843e49-7974-411c-8eb5-fb2d1111d707",
+        "resource_type": null,
+        "size": null
+      }
+    ],
+    "num_resources": 2,
+    "tags": [],
+    "groups": [],
+    "license_id": "",
+    "relationships_as_subject": [],
+    "organization": {
+      "description": "",
+      "created": "2017-10-13T14:00:40.959338",
+      "title": "My Test Org",
+      "name": "my-test-org",
+      "is_organization": true,
+      "state": "active",
+      "image_url": "",
+      "revision_id": "bf91def8-2b83-41a8-98dd-6a27707fdba4",
+      "type": "organization",
+      "id": "4c0827c9-8eb0-4ec0-a95c-28491bceeb6f",
+      "approval_status": "approved"
+    },
+    "name": "test-dataset-010203",
+    "isopen": false,
+    "url": "",
+    "notes": "",
+    "owner_org": "4c0827c9-8eb0-4ec0-a95c-28491bceeb6f",
+    "extras": [
+      {
+        "key": "hash",
+        "value": "ae07f1ac9c7960e614f74d4160d1bf80"
+      },
+      {
+        "key": "profile",
+        "value": "data-package"
+      }
+    ],
+    "title": "Test Dataset",
+    "revision_id": "70564e27-9576-4c15-9dc2-6d57791f35da"
+  }
+}

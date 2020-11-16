@@ -285,6 +285,24 @@ class Package(Metadata):
         return storage.read_package()
 
     @staticmethod
+    def from_ckan(*, base_url, dataset_id, api_key=None):
+        """Import package from CKAN
+
+        Parameters:
+            base_url (str): (required) URL for CKAN instance (e.g: https://demo.ckan.org/ )
+            dataset_id (str): (required) ID or slug of dataset to fetch
+            api_key (str): (optional) Your CKAN API key
+        """
+        return Package.from_storage(
+            system.create_storage(
+                "ckan_datastore",
+                base_url=base_url,
+                dataset_id=dataset_id,
+                api_key=api_key,
+            )
+        )
+
+    @staticmethod
     def from_sql(*, engine, prefix="", namespace=None):
         """Import package from SQL
 
@@ -395,6 +413,25 @@ class Package(Metadata):
         """
         storage.write_package(self.to_copy(), force=force)
         return storage
+
+    def to_ckan(self, *, base_url, dataset_id=None, api_key=None, force=False):
+        """Export package to CKAN
+
+        Parameters:
+            base_url (str): (required) URL for CKAN instance (e.g: https://demo.ckan.org/ )
+            dataset_id (str): (optional) ID or slug of dataset this resource belongs to
+            api_key (str): (optional) Your CKAN API key
+            force (bool): (optional) overwrite existing data
+        """
+        return self.to_storage(
+            system.create_storage(
+                "ckan_datastore",
+                base_url=base_url,
+                dataset_id=dataset_id,
+                api_key=api_key,
+            ),
+            force=force,
+        )
 
     def to_sql(self, *, engine, prefix="", namespace=None, force=False):
         """Export package to SQL
