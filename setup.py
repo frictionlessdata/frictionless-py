@@ -31,7 +31,8 @@ TESTS_REQUIRE = [
     "docstring-parser",
     "python-dotenv",
     "oauth2client",
-    "responses==0.12.0",
+    # TODO: remove when it's fixed upstream
+    "responses>=0.12",
     "coveralls",
     "nbconvert",
     "ipython",

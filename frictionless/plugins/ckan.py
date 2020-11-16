@@ -45,6 +45,7 @@ class CkanPlugin(Plugin):
 # Storage
 
 
+# TODO: review/update (see https://github.com/frictionlessdata/frictionless-py/pull/528)
 class CkanStorage(Storage):
     """Ckan storage implementation
 
