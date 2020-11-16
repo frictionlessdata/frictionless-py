@@ -32,7 +32,7 @@ TESTS_REQUIRE = [
     "python-dotenv",
     "oauth2client",
     # TODO: remove when it's fixed upstream
-    "responses>=0.12",
+    "responses==0.12",
     "coveralls",
     "nbconvert",
     "ipython",
