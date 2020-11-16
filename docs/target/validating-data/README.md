@@ -435,7 +435,7 @@ pprint(error)
      'tags': ['#head', '#structure']}
 
 
-Please explore "Errors Reference" to learn about all the avialble errors and their properties.
+Please explore "Errors Reference" to learn about all the available errors and their properties.
 
 ## Errors Options
 

@@ -1481,7 +1481,7 @@ Import package from SPSS directory
  | from_bigquery(*, service, project, dataset, prefix="")
 ```
 
-Import package from SPSS directory
+Import package from Bigquery
 
 **Arguments**:
 
@@ -1577,7 +1577,7 @@ Export package to SPSS directory
  | to_bigquery(*, service, project, dataset, prefix="", force=False)
 ```
 
-Export package to SPSS directory
+Export package to Bigquery
 
 **Arguments**:
 
@@ -2373,7 +2373,7 @@ Expand metadata
  | read_cell(cell)
 ```
 
-Read cell (cast)
+Read cell
 
 **Arguments**:
 
@@ -2384,14 +2384,14 @@ Read cell (cast)
 
   (any, OrderedDict): processed cell and dict of notes
 
-<a name="frictionless.field.Field.read_cell_cast"></a>
-#### <big>read\_cell\_cast</big>
+<a name="frictionless.field.Field.read_cell_convert"></a>
+#### <big>read\_cell\_convert</big>
 
 ```python
- | read_cell_cast(cell)
+ | read_cell_convert(cell)
 ```
 
-Read cell low-level (cast)
+Read cell (convert only)
 
 **Arguments**:
 
@@ -2410,7 +2410,7 @@ Read cell low-level (cast)
  | read_cell_checks()
 ```
 
-Read cell low-level (cast)
+Read cell (checks only)
 
 **Returns**:
 
@@ -2420,28 +2420,29 @@ Read cell low-level (cast)
 #### <big>write\_cell</big>
 
 ```python
- | write_cell(cell)
+ | write_cell(cell, *, ignore_missing=False)
 ```
 
-Write cell (cast)
+Write cell
 
 **Arguments**:
 
-- `cell` _any_ - cell
+- `cell` _any_ - cell to convert
+- `ignore_missing?` _bool_ - don't convert None values
   
 
 **Returns**:
 
   (any, OrderedDict): processed cell and dict of notes
 
-<a name="frictionless.field.Field.write_cell_cast"></a>
-#### <big>write\_cell\_cast</big>
+<a name="frictionless.field.Field.write_cell_convert"></a>
+#### <big>write\_cell\_convert</big>
 
 ```python
- | write_cell_cast(cell)
+ | write_cell_convert(cell)
 ```
 
-Write cell low-level (cast)
+Write cell (convert only)
 
 **Arguments**:
 
@@ -2451,6 +2452,20 @@ Write cell low-level (cast)
 **Returns**:
 
 - `any/None` - processed cell or None if an error
+
+<a name="frictionless.field.Field.write_cell_missing_value"></a>
+#### <big>write\_cell\_missing\_value</big>
+
+```python
+ | @Metadata.property(write=False)
+ | write_cell_missing_value()
+```
+
+Write cell (missing value only)
+
+**Returns**:
+
+- `str` - a value to replace None cells
 
 <a name="frictionless.steps"></a>
 ## frictionless.steps
@@ -3091,7 +3106,7 @@ Public   | `from frictionless.plugins.pandas import PandasPlugin`
 class PandasDialect(Dialect)
 ```
 
-Tsv dialect representation
+Pandas dialect representation
 
 API      | Usage
 -------- | --------
@@ -3779,7 +3794,7 @@ XLSX parser implementation.
 
 API      | Usage
 -------- | --------
-Public   | `from frictionless import parsers`
+Public   | `from frictionless import parsers
 
 <a name="frictionless.parsers.excel.XlsParser"></a>
 ### XlsParser
@@ -3792,7 +3807,7 @@ XLS parser implementation.
 
 API      | Usage
 -------- | --------
-Public   | `from frictionless import parsers`
+Public   | `from frictionless import parsers
 
 <a name="frictionless.parsers.csv"></a>
 ## frictionless.parsers.csv
@@ -3808,7 +3823,7 @@ CSV parser implementation.
 
 API      | Usage
 -------- | --------
-Public   | `from frictionless import parsers`
+Public   | `from frictionless import parsers
 
 <a name="frictionless.parsers.json"></a>
 ## frictionless.parsers.json
@@ -3824,7 +3839,7 @@ JSON parser implementation.
 
 API      | Usage
 -------- | --------
-Public   | `from frictionless import parser`
+Public   | `from frictionless import parsers
 
 <a name="frictionless.parsers.json.JsonlParser"></a>
 ### JsonlParser
@@ -3837,7 +3852,7 @@ JSONL parser implementation.
 
 API      | Usage
 -------- | --------
-Public   | `from frictionless import parsers`
+Public   | `from frictionless import parsers
 
 <a name="frictionless.parsers.inline"></a>
 ## frictionless.parsers.inline
@@ -3853,7 +3868,7 @@ Inline parser implementation.
 
 API      | Usage
 -------- | --------
-Public   | `from frictionless import parsers`
+Public   | `from frictionless import parsers
 
 <a name="frictionless.location"></a>
 ## frictionless.location
@@ -6309,6 +6324,10 @@ class CsvDialect(Dialect)
 
 Csv dialect representation
 
+API      | Usage
+-------- | --------
+Public   | `from frictionless import dialects`
+
 **Arguments**:
 
 - `descriptor?` _str|dict_ - descriptor
@@ -6449,6 +6468,10 @@ class ExcelDialect(Dialect)
 
 Excel dialect representation
 
+API      | Usage
+-------- | --------
+Public   | `from frictionless import dialects`
+
 **Arguments**:
 
 - `descriptor?` _str|dict_ - descriptor
@@ -6541,6 +6564,10 @@ class InlineDialect(Dialect)
 
 Inline dialect representation
 
+API      | Usage
+-------- | --------
+Public   | `from frictionless import dialects`
+
 **Arguments**:
 
 - `descriptor?` _str|dict_ - descriptor
@@ -6593,6 +6620,10 @@ class JsonDialect(Dialect)
 ```
 
 Json dialect representation
+
+API      | Usage
+-------- | --------
+Public   | `from frictionless import dialects`
 
 **Arguments**:
 
@@ -7286,7 +7317,7 @@ Public   | `from frictionless import validate_table`
 
 ```python
 @Report.from_validate
-validate_package(source, basepath=None, trusted=False, noinfer=False, **options)
+validate_package(source, basepath=None, trusted=False, noinfer=False, nolookup=False, nopool=False, **options)
 ```
 
 Validate package
@@ -7301,6 +7332,8 @@ Public   | `from frictionless import validate_package`
 - `basepath?` _str_ - package basepath
 - `trusted?` _bool_ - don't raise an exception on unsafe paths
 - `noinfer?` _bool_ - don't call `package.infer`
+- `nolookup?` _bool_ - don't read lookup tables skipping integrity checks
+- `nopool?` _bool_ - disable multiprocessing
 - `**options` _dict_ - options for every extracted table
   
 
@@ -7316,7 +7349,7 @@ Public   | `from frictionless import validate_package`
 
 ```python
 @Report.from_validate
-validate_inquiry(source)
+validate_inquiry(source, *, nopool=False)
 ```
 
 Validate inquiry
@@ -7328,6 +7361,7 @@ Public   | `from frictionless import validate_inquiry`
 **Arguments**:
 
 - `source` _dict|str_ - an inquiry descriptor
+- `nopool?` _bool_ - disable multiprocessing
   
 
 **Returns**:
@@ -7451,6 +7485,10 @@ class LocalControl(Control)
 
 Local control representation
 
+API      | Usage
+-------- | --------
+Public   | `from frictionless import controls`
+
 **Arguments**:
 
 - `descriptor?` _str|dict_ - descriptor
@@ -7468,6 +7506,10 @@ class RemoteControl(Control)
 ```
 
 Remote control representation
+
+API      | Usage
+-------- | --------
+Public   | `from frictionless import controls`
 
 **Arguments**:
 
@@ -7535,6 +7577,10 @@ class StreamControl(Control)
 
 Stream control representation
 
+API      | Usage
+-------- | --------
+Public   | `from frictionless import controls`
+
 **Arguments**:
 
 - `descriptor?` _str|dict_ - descriptor
@@ -7552,6 +7598,10 @@ class TextControl(Control)
 ```
 
 Text control representation
+
+API      | Usage
+-------- | --------
+Public   | `from frictionless import controls`
 
 **Arguments**:
 

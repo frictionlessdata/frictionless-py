@@ -74,7 +74,7 @@ The main difference between the first two and pipelines that resource and packag
 
 ## Transform Functions
 
-The high-level interface for validating data provided by Frictionless is a set of `transform` functions:
+The high-level interface for transforming data provided by Frictionless is a set of `transform` functions:
 - `transform`: it will detect the source type and transform data accordingly
 - `transform_resource`: it transforms a resource
 - `transform_package`: it transforms a package
@@ -239,7 +239,7 @@ Whenever it's possible Frictionless streams the data instead of reading it into 
 
 **Lazy Evaluation**
 
-Unlike to systems like `Data Package Pipelines` core Frictionless Transforms doesn't have a back-pressured flow as all data manupulation happens on-demand. For example, if you transform a data package containing 10 big csv files but you only need to transpose one table Frictionless will not even read other tables. Actually, when you call `target = transform(source)` it does almost nothing untill the data reading call like `target.read_rows()` is made.
+Unlike to systems like `Data Package Pipelines` core Frictionless Transforms doesn't have a back-pressured flow as all data manupulation happen on-demand. For example, if you transform a data package containing 10 big csv files but you only need to reshape one table Frictionless will not even read other tables. Actually, when you call `target = transform(source)` it does almost nothing untill the data reading call like `target.read_rows()` is made.
 
 **Lean Processing**
 
@@ -247,7 +247,7 @@ Similiar to the section above, Frictionless tries to be as much explicit as poss
 
 ## Transform Steps
 
-Frictionless includes more than 40+ builtin transform steps. They are groupped by the object so you can find them easily if you have code autocomplition. Start typing, for example, `steps.table...` and you will see all the available steps. The groups is listed below and you will find every group described in more detail in the next sections. It's also possible to write custom transform steps. Please read the section below to learn more about it.
+Frictionless includes more than 40+ builtin transform steps. They are groupped by the object so you can find them easily if you have code autocomplition. Start typing, for example, `steps.table...` and you will see all the available steps. The groups are listed below and you will find every group described in more detail in the next sections. It's also possible to write custom transform steps. Please read the section below to learn more about it.
 
 - resource
 - table

@@ -1006,7 +1006,7 @@ with Table('capital-3.csv', headers=[[1,2,3], '/']) as table:
 
 ## Schema Options
 
-By default, a schema for a table is inferred under the hood but we can also pass it explicetely.
+By default, a schema for a table is inferred under the hood but we can also pass it explicitly.
 
 **Schema**
 
@@ -1178,7 +1178,7 @@ with Table('capital-3.csv') as table:
     As List: ['id', 'name']
 
 
-The example above covers the case when a header is valid. For a header with tabular errors this information can be much more useful revealing discrepancies, dublicates or missing cells information. Please read "API Reference" for more details.
+The example above covers the case when a header is valid. For a header with tabular errors this information can be much more useful revealing discrepancies, duplicates or missing cells information. Please read "API Reference" for more details.
 
 ## Row Object
 
