@@ -1,5 +1,7 @@
+import io
 import re
 import os
+import csv
 import atexit
 import shutil
 import zipfile
@@ -43,6 +45,41 @@ def pass_through(iterator):
         pass
 
 
+def remove_non_values(mapping):
+    return {key: value for key, value in mapping.items() if value is not None}
+
+
+def rows_to_data(rows):
+    if not rows:
+        return []
+    return [list(rows[0].schema.field_names)] + [row.to_list() for row in rows]
+
+
+def parse_csv_string(string, *, convert=str, fallback=False):
+    if string is None:
+        return None
+    reader = csv.reader(io.StringIO(string), delimiter=",")
+    result = []
+    for row in reader:
+        for cell in row:
+            try:
+                cell = convert(cell)
+            except ValueError:
+                if not fallback:
+                    raise
+                pass
+            result.append(cell)
+        return result
+
+
+def stringify_csv_string(cells):
+    stream = io.StringIO()
+    writer = csv.writer(stream)
+    writer.writerow(cells)
+    result = stream.getvalue().rstrip("\r\n")
+    return result
+
+
 def deepfork(value):
     if isinstance(value, dict):
         value = {key: deepfork(value) for key, value in value.items()}
@@ -50,6 +87,18 @@ def deepfork(value):
         value = [deepfork(value) for value in value]
     elif isinstance(value, set):
         value = {deepfork(value) for value in value}
+    return value
+
+
+def deepsafe(value):
+    if isinstance(value, dict):
+        value = {key: deepsafe(value) for key, value in value.items()}
+    elif isinstance(value, list):
+        value = [deepsafe(value) for value in value]
+    elif isinstance(value, set):
+        value = {deepsafe(value) for value in value}
+    elif isinstance(value, io.BufferedRandom):
+        value = "inline"
     return value
 
 
@@ -88,7 +137,7 @@ def compile_regex(items):
 
 
 def detect_name(source):
-    if isinstance(source, str):
+    if isinstance(source, str) and "\n" not in source:
         return os.path.splitext(os.path.basename(source))[0]
     if isinstance(source, list) and source and isinstance(source[0], str):
         return os.path.splitext(os.path.basename(source[0]))[0]
@@ -122,6 +171,13 @@ def copy_file(source, target):
         target = os.path.join(*target)
     ensure_dir(target)
     shutil.copy(source, target)
+
+
+def create_byte_stream(bytes):
+    stream = io.BufferedRandom(io.BytesIO())
+    stream.write(bytes)
+    stream.seek(0)
+    return stream
 
 
 def is_remote_path(path):

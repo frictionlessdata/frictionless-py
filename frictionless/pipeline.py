@@ -89,6 +89,7 @@ class Pipeline(Metadata):
         # TODO: it will not work for nested steps like steps.resource_transform
         items = []
         for step in self.steps:
+            # TODO: remove nested naming just use "step" prop
             func = getattr(steps, stringcase.snakecase(step["type"]))
             items.append(func(**helpers.create_options(step["spec"])))
         if self.type == "resource":

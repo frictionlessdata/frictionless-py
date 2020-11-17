@@ -34,7 +34,9 @@ def extract(source, *, source_type=None, process=None, stream=False, **options):
     # NOTE: move to helpers
     if not source_type:
         if not callable(source):
-            if isinstance(source, list) or glob.has_magic(source):
+            if hasattr(source, "read"):
+                source_type = "resource"
+            elif isinstance(source, list) or glob.has_magic(source):
                 package = Package()
                 package.infer(source)
                 source = package

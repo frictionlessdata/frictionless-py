@@ -20,6 +20,19 @@ def test_basic():
 # Import/Export
 
 
+def test_to_str():
+    rows = extract("data/table.csv")
+    assert rows[0].to_str() == "1,english"
+    assert rows[1].to_str() == "2,中国人"
+
+
+def test_to_str_with_doublequotes():
+    source = 'id,name\n1,"english,UK"\n2,"german,GE"'
+    rows = extract(source, scheme="text", format="csv")
+    assert rows[0].to_str() == '1,"english,UK"'
+    assert rows[1].to_str() == '2,"german,GE"'
+
+
 def test_to_dict_with_json_null_values_issue_519():
     source = "text://value\n2020-01-01\n\n2020-03-03"
     process = lambda row: row.to_dict(json=True)

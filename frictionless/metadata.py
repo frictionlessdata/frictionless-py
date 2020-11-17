@@ -131,10 +131,10 @@ class Metadata(helpers.ControlledDict):
             FrictionlessException: on any error
         """
         if not target:
-            return yaml.dump(self.to_dict(), Dumper=IndentDumper)
+            return yaml.dump(helpers.deepsafe(self.to_dict()), Dumper=IndentDumper)
         try:
             with tempfile.NamedTemporaryFile("wt", delete=False) as file:
-                yaml.dump(self.to_dict(), file, Dumper=IndentDumper)
+                yaml.dump(helpers.deepsafe(self.to_dict()), file, Dumper=IndentDumper)
             helpers.move_file(file.name, target)
         except Exception as exc:
             raise exceptions.FrictionlessException(self.__Error(note=str(exc))) from exc

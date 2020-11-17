@@ -3,6 +3,7 @@ from collections import OrderedDict
 from decimal import Decimal
 from .helpers import cached_property
 from .parsers import JsonParser
+from . import helpers
 from . import errors
 
 
@@ -207,6 +208,18 @@ class Row(OrderedDict):
         return not self.__errors
 
     # Import/Export
+
+    def to_str(self):
+        """
+        Returns:
+            str: a row as a CSV string
+        """
+        cells = []
+        for field in self.__schema.fields:
+            if field.name in self:
+                cell, notes = field.write_cell(self[field.name])
+                cells.append(cell)
+        return helpers.stringify_csv_string(cells)
 
     def to_dict(self, *, json=False):
         """
