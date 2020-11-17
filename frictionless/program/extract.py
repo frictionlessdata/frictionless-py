@@ -151,6 +151,8 @@ def program_extract(
     if csv:
         for number, rows in enumerate(normdata.values(), start=1):
             for row in rows:
+                if row.row_number == 1:
+                    typer.secho(helpers.stringify_csv_string(row.schema.field_names))
                 typer.secho(row.to_str())
             if number < len(normdata):
                 typer.secho("")

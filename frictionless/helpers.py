@@ -72,6 +72,14 @@ def parse_csv_string(string, *, convert=str, fallback=False):
         return result
 
 
+def stringify_csv_string(cells):
+    stream = io.StringIO()
+    writer = csv.writer(stream)
+    writer.writerow(cells)
+    result = stream.getvalue().rstrip("\r\n")
+    return result
+
+
 def deepfork(value):
     if isinstance(value, dict):
         value = {key: deepfork(value) for key, value in value.items()}

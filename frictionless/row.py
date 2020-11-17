@@ -1,10 +1,9 @@
-import io
-import csv
 from itertools import zip_longest
 from collections import OrderedDict
 from decimal import Decimal
 from .helpers import cached_property
 from .parsers import JsonParser
+from . import helpers
 from . import errors
 
 
@@ -220,11 +219,7 @@ class Row(OrderedDict):
             if field.name in self:
                 cell, notes = field.write_cell(self[field.name])
                 cells.append(cell)
-        stream = io.StringIO()
-        writer = csv.writer(stream)
-        writer.writerow(cells)
-        result = stream.getvalue().rstrip("\r\n")
-        return result
+        return helpers.stringify_csv_string(cells)
 
     def to_dict(self, *, json=False):
         """
