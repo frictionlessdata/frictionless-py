@@ -13,7 +13,7 @@ from .. import helpers
 
 @program.command(name="describe")
 def program_describe(
-    source: List[str] = Arg(None, help="Data source to describe"),
+    source: List[str] = Arg(None, help="Data source to describe [default: stdin]"),
     source_type: str = Opt(None, help='Specify source type e.g. "package"'),
     # File
     scheme: str = Opt(None, help="Specify schema  [default: inferred]"),
