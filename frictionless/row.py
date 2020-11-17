@@ -1,3 +1,5 @@
+import io
+import csv
 from itertools import zip_longest
 from collections import OrderedDict
 from decimal import Decimal
@@ -207,6 +209,22 @@ class Row(OrderedDict):
         return not self.__errors
 
     # Import/Export
+
+    def to_str(self):
+        """
+        Returns:
+            str: a row as a CSV string
+        """
+        cells = []
+        for field in self.__schema.fields:
+            if field.name in self:
+                cell, notes = field.write_cell(self[field.name])
+                cells.append(cell)
+        stream = io.StringIO()
+        writer = csv.writer(stream)
+        writer.writerow(cells)
+        result = stream.getvalue().rstrip("\r\n")
+        return result
 
     def to_dict(self, *, json=False):
         """

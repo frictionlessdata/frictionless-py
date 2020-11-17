@@ -3,6 +3,7 @@ from ..loader import Loader
 from .. import config
 
 
+# TODO: do we support something like "text://id,name\n1,value.csv"?
 class TextLoader(Loader):
     """Text loader implementation.
 
