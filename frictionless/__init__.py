@@ -1,4 +1,5 @@
 from .check import Check
+from .config import VERSION as __version__
 from .describe import *
 from .extract import *
 from .field import Field
