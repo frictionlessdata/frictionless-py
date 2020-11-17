@@ -47,6 +47,7 @@ def program_extract(
     # Output
     yaml: bool = Opt(False, help="Return in pure YAML format"),
     json: bool = Opt(False, help="Return in JSON format"),
+    csv: bool = Opt(False, help="Return in CSV format"),
 ):
     """
     Extract a data source.
@@ -144,6 +145,12 @@ def program_extract(
     # Normalize data
     if isinstance(data, list):
         data = {source: data}
+
+    # Return CSV
+    if csv:
+        for rows in data.values():
+            print(rows)
+        raise typer.Exit()
 
     # Return default
     for number, (name, rows) in enumerate(data.items(), start=1):
