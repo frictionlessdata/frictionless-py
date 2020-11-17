@@ -1,3 +1,4 @@
+import sys
 import petl
 import typer
 import simplejson
@@ -14,7 +15,7 @@ from .. import helpers
 
 @program.command(name="validate")
 def program_validate(
-    source: List[str] = Arg(..., help="Data source to describe"),
+    source: List[str] = Arg(None, help="Data source to describe [default: stdin]"),
     source_type: str = Opt(None, help='Specify source type e.g. "package"'),
     # File
     scheme: str = Opt(None, help="Specify schema  [default: inferred]"),
@@ -61,6 +62,12 @@ def program_validate(
     Based on the inferred data source type it will validate resource or package.
     Default output format is YAML with a front matter.
     """
+    is_stdin = False
+
+    # Support stdin
+    if not source:
+        is_stdin = True
+        source = [helpers.create_byte_stream(sys.stdin.buffer.read())]
 
     # Normalize parameters
     source = list(source) if len(source) > 1 else source[0]
@@ -160,6 +167,8 @@ def program_validate(
     # Return report
     if report.errors:
         content = []
+        if is_stdin:
+            source = "stdin"
         typer.secho("---")
         typer.secho(f"invalid: {source}", bold=True)
         typer.secho("---")
@@ -179,8 +188,11 @@ def program_validate(
         if number != 1 and prev_invalid:
             typer.secho("")
         prefix = "valid" if table.valid else "invalid"
+        source = table.path
+        if is_stdin:
+            source = "stdin"
         typer.secho("---")
-        typer.secho(f"{prefix}: {table.path}", bold=True)
+        typer.secho(f"{prefix}: {source}", bold=True)
         typer.secho("---")
         if table.errors:
             prev_invalid = True
