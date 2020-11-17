@@ -13,6 +13,7 @@ from .plugin import Plugin
 from .query import Query
 from .parser import Parser
 from .pipeline import Pipeline
+from .program import program
 from .report import Report, ReportTable
 from .resource import Resource
 from .row import Row
