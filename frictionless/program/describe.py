@@ -1,3 +1,4 @@
+import sys
 import typer
 import simplejson
 from typing import List
@@ -12,7 +13,7 @@ from .. import helpers
 
 @program.command(name="describe")
 def program_describe(
-    source: List[str] = Arg(..., help="Data source to describe"),
+    source: List[str] = Arg(None, help="Data source to describe"),
     source_type: str = Opt(None, help='Specify source type e.g. "package"'),
     # File
     scheme: str = Opt(None, help="Specify schema  [default: inferred]"),
@@ -52,6 +53,12 @@ def program_describe(
     Based on the inferred data source type it will return resource or package descriptor.
     Default output format is YAML with a front matter.
     """
+    is_stdin = False
+
+    # Support stdin
+    if not source:
+        is_stdin = True
+        source = [helpers.create_byte_stream(sys.stdin.buffer.read())]
 
     # Normalize parameters
     source = list(source) if len(source) > 1 else source[0]
@@ -132,7 +139,9 @@ def program_describe(
         raise typer.Exit()
 
     # Return default
-    if isinstance(source, list):
+    if is_stdin:
+        source = "stdin"
+    elif isinstance(source, list):
         source = " ".join(source)
     typer.secho("---")
     typer.secho(f"metadata: {source}", bold=True)

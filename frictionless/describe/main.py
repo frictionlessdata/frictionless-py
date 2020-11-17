@@ -34,6 +34,8 @@ def describe(source, *, source_type=None, **options):
         if isinstance(source, list):
             if source and isinstance(source[0], str):
                 source_type = "package"
+        elif hasattr(source, "read"):
+            source_type = "resource"
         elif glob.has_magic(source):
             source_type = "package"
         elif os.path.isdir(source):

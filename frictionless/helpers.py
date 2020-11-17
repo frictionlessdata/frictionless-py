@@ -1,6 +1,6 @@
+import io
 import re
 import os
-import io
 import csv
 import atexit
 import shutil
@@ -82,6 +82,18 @@ def deepfork(value):
     return value
 
 
+def deepsafe(value):
+    if isinstance(value, dict):
+        value = {key: deepsafe(value) for key, value in value.items()}
+    elif isinstance(value, list):
+        value = [deepsafe(value) for value in value]
+    elif isinstance(value, set):
+        value = {deepsafe(value) for value in value}
+    elif isinstance(value, io.BufferedRandom):
+        value = "inline"
+    return value
+
+
 def import_from_plugin(name, *, plugin):
     try:
         return import_module(name)
@@ -117,7 +129,7 @@ def compile_regex(items):
 
 
 def detect_name(source):
-    if isinstance(source, str):
+    if isinstance(source, str) and "\n" not in source:
         return os.path.splitext(os.path.basename(source))[0]
     if isinstance(source, list) and source and isinstance(source[0], str):
         return os.path.splitext(os.path.basename(source[0]))[0]
@@ -151,6 +163,13 @@ def copy_file(source, target):
         target = os.path.join(*target)
     ensure_dir(target)
     shutil.copy(source, target)
+
+
+def create_byte_stream(bytes):
+    stream = io.BufferedRandom(io.BytesIO())
+    stream.write(bytes)
+    stream.seek(0)
+    return stream
 
 
 def is_remote_path(path):
