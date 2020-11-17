@@ -130,16 +130,16 @@ def test_describe_expand():
     assert json.loads(result.stdout) == describe("data/table.csv", expand=True)
 
 
-def test_describe_json():
-    result = runner.invoke(program, "describe data/table.csv --json")
-    assert result.exit_code == 0
-    assert json.loads(result.stdout) == describe("data/table.csv")
-
-
 def test_describe_yaml():
     result = runner.invoke(program, "describe data/table.csv --yaml")
     assert result.exit_code == 0
     assert yaml.safe_load(result.stdout) == describe("data/table.csv")
+
+
+def test_describe_json():
+    result = runner.invoke(program, "describe data/table.csv --json")
+    assert result.exit_code == 0
+    assert json.loads(result.stdout) == describe("data/table.csv")
 
 
 def test_describe_error_not_found():

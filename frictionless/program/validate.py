@@ -1,8 +1,6 @@
 import sys
 import petl
 import typer
-import simplejson
-import yaml as pyyaml
 from typing import List
 from typer import Option as Opt
 from typer import Argument as Arg
@@ -154,13 +152,13 @@ def program_validate(
 
     # Return JSON
     if json:
-        content = simplejson.dumps(report, indent=2, ensure_ascii=False)
+        content = report.to_json()
         typer.secho(content)
         raise typer.Exit()
 
     # Return YAML
     if yaml:
-        content = pyyaml.safe_dump(report).strip()
+        content = report.to_yaml().strip()
         typer.secho(content)
         raise typer.Exit()
 
@@ -218,4 +216,4 @@ def program_validate(
             )
 
     # Return retcode
-    raise typer.Exit(int(not report.valid))
+    raise typer.Exit(code=int(not report.valid))

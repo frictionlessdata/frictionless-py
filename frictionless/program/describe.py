@@ -1,6 +1,5 @@
 import sys
 import typer
-import simplejson
 from typing import List
 from typer import Option as Opt
 from typer import Argument as Arg
@@ -128,7 +127,7 @@ def program_describe(
 
     # Return JSON
     if json:
-        descriptor = simplejson.dumps(metadata, indent=2, ensure_ascii=False)
+        descriptor = metadata.to_json()
         typer.secho(descriptor)
         raise typer.Exit()
 
