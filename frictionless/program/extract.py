@@ -122,13 +122,18 @@ def program_extract(
         )
     )
 
-    # Extract source
+    # Extract data
     try:
         process = (lambda row: row.to_dict(json=True)) if json or yaml else None
         data = extract(source, process=process, **options)
     except Exception as exception:
         typer.secho(str(exception), err=True, fg=typer.colors.RED, bold=True)
         raise typer.Exit(1)
+
+    # Normalize data
+    normdata = data
+    if isinstance(data, list):
+        normdata = {source: data}
 
     # Return JSON
     if json:
@@ -142,18 +147,17 @@ def program_extract(
         typer.secho(content)
         raise typer.Exit()
 
-    # Normalize data
-    if isinstance(data, list):
-        data = {source: data}
-
     # Return CSV
     if csv:
-        for rows in data.values():
-            print(rows)
+        for number, rows in enumerate(normdata.values(), start=1):
+            for row in rows:
+                typer.secho(row.to_str())
+            if number < len(normdata):
+                typer.secho("")
         raise typer.Exit()
 
     # Return default
-    for number, (name, rows) in enumerate(data.items(), start=1):
+    for number, (name, rows) in enumerate(normdata.items(), start=1):
         if is_stdin:
             name = "stdin"
         typer.secho("---")
@@ -162,5 +166,5 @@ def program_extract(
         typer.secho("")
         subdata = helpers.rows_to_data(rows)
         typer.secho(str(petl.util.vis.lookall(subdata, vrepr=str, style="simple")))
-        if number < len(data):
+        if number < len(normdata):
             typer.secho("")
