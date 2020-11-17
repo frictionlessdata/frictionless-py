@@ -54,9 +54,9 @@ def program_extract(
     Based on the inferred data source type it will return resource or package data.
     Default output format is tabulated with a front matter.
     """
-    is_stdin = False
 
     # Support stdin
+    is_stdin = False
     if not source:
         is_stdin = True
         source = [helpers.create_byte_stream(sys.stdin.buffer.read())]

@@ -62,9 +62,9 @@ def program_validate(
     Based on the inferred data source type it will validate resource or package.
     Default output format is YAML with a front matter.
     """
-    is_stdin = False
 
     # Support stdin
+    is_stdin = False
     if not source:
         is_stdin = True
         source = [helpers.create_byte_stream(sys.stdin.buffer.read())]

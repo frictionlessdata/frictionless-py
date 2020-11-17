@@ -53,9 +53,9 @@ def program_describe(
     Based on the inferred data source type it will return resource or package descriptor.
     Default output format is YAML with a front matter.
     """
-    is_stdin = False
 
     # Support stdin
+    is_stdin = False
     if not source:
         is_stdin = True
         source = [helpers.create_byte_stream(sys.stdin.buffer.read())]
