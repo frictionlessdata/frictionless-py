@@ -38,10 +38,14 @@ class BaselineCheck(Check):
 
     # Validate
 
+    # TODO: use something like table.empty here?
+    # TODO: move source error to validate_source?
     def validate_schema(self, schema):
-        yield from schema.metadata_errors if self.table.sample else [
-            errors.SchemaError(note="there is no data available")
-        ]
+        yield from (
+            schema.metadata_errors
+            if self.table.header or self.table.sample
+            else [errors.SourceError(note="the source is empty")]
+        )
 
     def validate_header(self, header):
         yield from header.errors
