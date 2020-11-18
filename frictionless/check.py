@@ -53,6 +53,7 @@ class Check(Metadata):
         """
         yield from []
 
+    # TODO: we actually don't need a schema argument here as self.table is available
     def validate_schema(self, schema):
         """Called to validate the given schema
 
@@ -64,6 +65,7 @@ class Check(Metadata):
         """
         yield from []
 
+    # TODO: we actually don't need a header argument here as self.table is available
     def validate_header(self, header):
         """Called to validate the given header
 
