@@ -86,9 +86,7 @@ def test_validate_no_data():
 
 def test_validate_no_rows():
     report = validate("data/without-rows.csv")
-    assert report.flatten(["code", "note"]) == [
-        ["schema-error", "there is no data available"],
-    ]
+    assert report.valid
 
 
 def test_validate_task_error():
