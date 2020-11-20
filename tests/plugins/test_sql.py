@@ -507,6 +507,11 @@ def test_postgresql_storage_views_support():
     ]
 
 
+@pytest.mark.ci
+def test_postgresql_storage_url_argument():
+    pass
+
+
 # Storage (MySQL)
 
 
