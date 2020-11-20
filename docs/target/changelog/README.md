@@ -2,6 +2,30 @@
 
 Here described only the breaking and most significant changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/frictionless-py/commits/master).
 
+## v3.33
+
+- Implemented resource.write (#537)
+
+## v3.32
+
+- Added url parameter to SQL import/export (#535)
+
+## v3.31
+
+- Made tables with header and no data rows valid (#534) (BREAKING: minor)
+
+## v3.30
+
+- Various CLI improvements (#532)
+    - Added autocompletion
+    - Added stdin support
+    - Added "extract --csv"
+    - Exposed more options
+
+## v3.29
+
+- Added experimental CKAN support (#528)
+
 ## v3.28
 
 - Add a "nopool" argument to validate (#527)

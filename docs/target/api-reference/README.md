@@ -931,6 +931,17 @@ A mapping indexed by a field name with error cells before parsing
 
 - `bool` - if row valid
 
+<a name="frictionless.row.Row.to_str"></a>
+#### <big>to\_str</big>
+
+```python
+ | to_str()
+```
+
+**Returns**:
+
+- `str` - a row as a CSV string
+
 <a name="frictionless.row.Row.to_dict"></a>
 #### <big>to\_dict</big>
 
@@ -1429,21 +1440,38 @@ Import package from storage
 
 - `storage` _Storage_ - storage instance
 
+<a name="frictionless.package.Package.from_ckan"></a>
+#### <big>from\_ckan</big>
+
+```python
+ | @staticmethod
+ | from_ckan(*, base_url, dataset_id, api_key=None)
+```
+
+Import package from CKAN
+
+**Arguments**:
+
+- `base_url` _str_ - (required) URL for CKAN instance (e.g: https://demo.ckan.org/ )
+- `dataset_id` _str_ - (required) ID or slug of dataset to fetch
+- `api_key` _str_ - (optional) Your CKAN API key
+
 <a name="frictionless.package.Package.from_sql"></a>
 #### <big>from\_sql</big>
 
 ```python
  | @staticmethod
- | from_sql(*, engine, prefix="", namespace=None)
+ | from_sql(*, url=None, engine=None, prefix="", namespace=None)
 ```
 
 Import package from SQL
 
 **Arguments**:
 
-- `engine` _object_ - `sqlalchemy` engine
-- `prefix` _str_ - prefix for all tables
-- `namespace` _str_ - SQL scheme
+- `url?` _string_ - SQL connection string
+- `engine?` _object_ - `sqlalchemy` engine
+- `prefix?` _str_ - prefix for all tables
+- `namespace?` _str_ - SQL scheme
 
 <a name="frictionless.package.Package.from_pandas"></a>
 #### <big>from\_pandas</big>
@@ -1531,20 +1559,37 @@ Export package to storage
 - `storage` _Storage_ - storage instance
 - `force` _bool_ - overwrite existent
 
+<a name="frictionless.package.Package.to_ckan"></a>
+#### <big>to\_ckan</big>
+
+```python
+ | to_ckan(*, base_url, dataset_id=None, api_key=None, force=False)
+```
+
+Export package to CKAN
+
+**Arguments**:
+
+- `base_url` _str_ - (required) URL for CKAN instance (e.g: https://demo.ckan.org/ )
+- `dataset_id` _str_ - (optional) ID or slug of dataset this resource belongs to
+- `api_key` _str_ - (optional) Your CKAN API key
+- `force` _bool_ - (optional) overwrite existing data
+
 <a name="frictionless.package.Package.to_sql"></a>
 #### <big>to\_sql</big>
 
 ```python
- | to_sql(*, engine, prefix="", namespace=None, force=False)
+ | to_sql(*, url=None, engine=None, prefix="", namespace=None, force=False)
 ```
 
 Export package to SQL
 
 **Arguments**:
 
-- `engine` _object_ - `sqlalchemy` engine
-- `prefix` _str_ - prefix for all tables
-- `namespace` _str_ - SQL scheme
+- `url?` _string_ - SQL connection string
+- `engine?` _object_ - `sqlalchemy` engine
+- `prefix?` _str_ - prefix for all tables
+- `namespace?` _str_ - SQL scheme
 - `force` _bool_ - overwrite existent
 
 <a name="frictionless.package.Package.to_pandas"></a>
@@ -1723,20 +1768,15 @@ Create server
 <a name="frictionless.program.main"></a>
 ## frictionless.program.main
 
-<a name="frictionless.program.main.program"></a>
-#### <big>program</big>
+<a name="frictionless.program.main.program_main"></a>
+#### <big>program\_main</big>
 
 ```python
-@click.group(name="frictionless")
-@click.version_option(config.VERSION, message="%(version)s", help="Print version")
-program()
+@program.callback()
+program_main(version: Optional[bool] = typer.Option(None, "--version", callback=version))
 ```
 
 Describe, extract, validate and transform tabular data.
-\f
-API      | Usage
--------- | --------
-Public   | `$ frictionless`
 
 <a name="frictionless.program.validate"></a>
 ## frictionless.program.validate
@@ -1746,41 +1786,13 @@ Public   | `$ frictionless`
 
 ```python
 @program.command(name="validate")
-@click.argument("source", type=click.Path(), nargs=-1, required=True)
-@click.option("--source-type", type=str, help="Source type")
-@click.option("--json", is_flag=True, help="Output report as JSON")
-@click.option("--scheme", type=str, help="File scheme")
-@click.option("--format", type=str, help="File format")
-@click.option("--hashing", type=str, help="File hashing")
-@click.option("--encoding", type=str, help="File encoding")
-@click.option("--compression", type=str, help="File compression")
-@click.option("--compression-path", type=str, help="File compression path")
-@click.option("--headers", type=int, multiple=True, help="Headers")
-@click.option("--schema", type=click.Path(), help="Schema")
-@click.option("--sync-schema", is_flag=True, help="Sync schema")
-@click.option("--infer-type", type=str, help="Infer type")
-@click.option("--infer-names", type=str, multiple=True, help="Infer names")
-@click.option("--infer-sample", type=int, help="Infer sample")
-@click.option("--infer-confidence", type=float, help="Infer confidence")
-@click.option("--infer-missing-values", type=str, multiple=True, help="Infer missing")
-@click.option("--checksum-hash", type=str, help="Expected hash based on hashing option")
-@click.option("--checksum-bytes", type=int, help="Expected size in bytes")
-@click.option("--checksum-rows", type=int, help="Expected size in bytes")
-@click.option("--pick-errors", type=str, multiple=True, help="Pick errors")
-@click.option("--skip-errors", type=str, multiple=True, help="Skip errors")
-@click.option("--limit-errors", type=int, help="Limit errors")
-@click.option("--limit-memory", type=int, help="Limit memory")
-@click.option("--basepath", type=str, help="Package basepath")
-@click.option("--trusted", type=str, help="Don't fail on unsafe paths")
-@click.option("--noinfer", is_flag=True, help="Validate metadata as it is")
-program_validate(source, *, source_type, json, **options)
+program_validate(source: List[str] = Arg(None, help="Data source to describe [default: stdin]"), source_type: str = Opt(None, help='Specify source type e.g. "package"'), scheme: str = Opt(None, help="Specify schema  [default: inferred]"), format: str = Opt(None, help="Specify format  [default: inferred]"), hashing: str = Opt(None, help="Specify hashing algorithm  [default: inferred]"), encoding: str = Opt(None, help="Specify encoding  [default: inferred]"), compression: str = Opt(None, help="Specify compression  [default: inferred]"), compression_path: str = Opt(None, help="Specify in-archive path  [default: first]"), header_rows: str = Opt(None, help="Comma-separated row numbers  [default: 1]"), header_join: str = Opt(None, help="A separator to join a multiline header"), pick_fields: str = Opt(None, help='Comma-separated fields to pick e.g. "1,name1"'), skip_fields: str = Opt(None, help='Comma-separated fields to skip e.g. "2,name2"'), limit_fields: int = Opt(None, help="Limit fields by this integer"), offset_fields: int = Opt(None, help="Offset fields by this integer"), pick_rows: str = Opt(None, help='Comma-separated rows to pick e.g. "1,<blank>"'), skip_rows: str = Opt(None, help='Comma-separated rows to skip e.g. "2,3,4,5"'), limit_rows: int = Opt(None, help="Limit rows by this integer"), offset_rows: int = Opt(None, help="Offset rows by this integer"), schema: str = Opt(None, help="Specify a path to a schema"), sync_schema: bool = Opt(None, help="Sync the schema based on headers"), infer_type: str = Opt(None, help="Force all the fields to have this type"), infer_names: str = Opt(None, help="Comma-separated list of field names"), infer_volume: int = Opt(None, help="Limit data sample size by this integer"), infer_confidence: float = Opt(None, help="A float from 0 to 1"), infer_missing_values: str = Opt(None, help="Comma-separated list of missing values"), checksum_hash: str = Opt(None, help="Expected hash based on hashing option"), checksum_bytes: int = Opt(None, help="Expected size in bytes"), checksum_rows: int = Opt(None, help="Expected amoutn of rows"), pick_errors: str = Opt(None, help='Comma-separated errors to pick e.g. "type-error"'), skip_errors: str = Opt(None, help='Comma-separated errors to skip e.g. "blank-row"'), limit_errors: int = Opt(None, help="Limit errors by this integer"), limit_memory: int = Opt(None, help="Limit memory by this integer in MB"), yaml: bool = Opt(False, help="Return in pure YAML format"), json: bool = Opt(False, help="Return in JSON format"))
 ```
 
-Validate data
-\f
-API      | Usage
--------- | --------
-Public   | `$ frictionless validate`
+Validate a data source.
+
+Based on the inferred data source type it will validate resource or package.
+Default output format is YAML with a front matter.
 
 <a name="frictionless.program.transform"></a>
 ## frictionless.program.transform
@@ -1790,15 +1802,10 @@ Public   | `$ frictionless validate`
 
 ```python
 @program.command(name="transform")
-@click.argument("source", type=click.Path(), required=True)
-program_transform(source)
+program_transform(source: str = Arg(None, help="Path to a transform pipeline [default: stdin]"))
 ```
 
-Transform data
-\f
-API      | Usage
--------- | --------
-Public   | `$ frictionless transform`
+Transform data source using a provided pipeline.
 
 <a name="frictionless.program.describe"></a>
 ## frictionless.program.describe
@@ -1808,30 +1815,13 @@ Public   | `$ frictionless transform`
 
 ```python
 @program.command(name="describe")
-@click.argument("source", type=click.Path(), nargs=-1, required=True)
-@click.option("--source-type", type=str, help="Source type")
-@click.option("--json", is_flag=True, help="Output report as JSON")
-@click.option("--scheme", type=str, help="File scheme")
-@click.option("--format", type=str, help="File format")
-@click.option("--hashing", type=str, help="File hashing")
-@click.option("--encoding", type=str, help="File encoding")
-@click.option("--compression", type=str, help="File compression")
-@click.option("--compression-path", type=str, help="File compression path")
-@click.option("--sync-schema", is_flag=True, help="Sync schema")
-@click.option("--infer-type", type=str, help="Infer type")
-@click.option("--infer-names", type=str, multiple=True, help="Infer names")
-@click.option("--infer-sample", type=int, help="Infer sample")
-@click.option("--infer-confidence", type=float, help="Infer confidence")
-@click.option("--infer-missing-values", type=str, multiple=True, help="Infer missing")
-@click.option("--basepath", type=str, help="Package basepath")
-program_describe(source, *, source_type, json, **options)
+program_describe(source: List[str] = Arg(None, help="Data source to describe [default: stdin]"), source_type: str = Opt(None, help='Specify source type e.g. "package"'), scheme: str = Opt(None, help="Specify schema  [default: inferred]"), format: str = Opt(None, help="Specify format  [default: inferred]"), hashing: str = Opt(None, help="Specify hashing algorithm  [default: inferred]"), encoding: str = Opt(None, help="Specify encoding  [default: inferred]"), compression: str = Opt(None, help="Specify compression  [default: inferred]"), compression_path: str = Opt(None, help="Specify in-archive path  [default: first]"), header_rows: str = Opt(None, help="Comma-separated row numbers  [default: 1]"), header_join: str = Opt(None, help="A separator to join a multiline header"), pick_fields: str = Opt(None, help='Comma-separated fields to pick e.g. "1,name1"'), skip_fields: str = Opt(None, help='Comma-separated fields to skip e.g. "2,name2"'), limit_fields: int = Opt(None, help="Limit fields by this integer"), offset_fields: int = Opt(None, help="Offset fields by this integer"), pick_rows: str = Opt(None, help='Comma-separated rows to pick e.g. "1,<blank>"'), skip_rows: str = Opt(None, help='Comma-separated rows to skip e.g. "2,3,4,5"'), limit_rows: int = Opt(None, help="Limit rows by this integer"), offset_rows: int = Opt(None, help="Offset rows by this integer"), infer_type: str = Opt(None, help="Force all the fields to have this type"), infer_names: str = Opt(None, help="Comma-separated list of field names"), infer_volume: int = Opt(None, help="Limit data sample size by this integer"), infer_confidence: float = Opt(None, help="A float from 0 to 1"), infer_missing_values: str = Opt(None, help="Comma-separated list of missing values"), basepath: str = Opt(None, help="Basepath of the resource/package"), expand: bool = Opt(None, help="Expand default values"), yaml: bool = Opt(False, help="Return in pure YAML format"), json: bool = Opt(False, help="Return in JSON format"))
 ```
 
-Describe data
-\f
-API      | Usage
--------- | --------
-Public   | `$ frictionless describe`
+Describe a data source.
+
+Based on the inferred data source type it will return resource or package descriptor.
+Default output format is YAML with a front matter.
 
 <a name="frictionless.program.api"></a>
 ## frictionless.program.api
@@ -1841,15 +1831,10 @@ Public   | `$ frictionless describe`
 
 ```python
 @program.command(name="api")
-@click.option("--port", type=int, default=config.DEFAULT_SERVER_PORT, help="Server port")
-program_api(port)
+program_api(port: int = Opt(config.DEFAULT_SERVER_PORT, help="Specify server port"))
 ```
 
-Start API
-\f
-API      | Usage
--------- | --------
-Public   | `$ frictionless api`
+Start API server
 
 <a name="frictionless.program.extract"></a>
 ## frictionless.program.extract
@@ -1859,32 +1844,13 @@ Public   | `$ frictionless api`
 
 ```python
 @program.command(name="extract")
-@click.argument("source", type=click.Path(), nargs=-1, required=True)
-@click.option("--source-type", type=str, help="Source type")
-@click.option("--json", is_flag=True, help="Output report as JSON")
-@click.option("--scheme", type=str, help="File scheme")
-@click.option("--format", type=str, help="File format")
-@click.option("--hashing", type=str, help="File hashing")
-@click.option("--encoding", type=str, help="File encoding")
-@click.option("--compression", type=str, help="File compression")
-@click.option("--compression-path", type=str, help="File compression path")
-@click.option("--sync-schema", is_flag=True, help="Sync schema")
-@click.option("--infer-type", type=str, help="Infer type")
-@click.option("--infer-names", type=str, multiple=True, help="Infer names")
-@click.option("--infer-sample", type=int, help="Infer sample")
-@click.option("--infer-confidence", type=float, help="Infer confidence")
-@click.option("--infer-missing-values", type=str, multiple=True, help="Infer missing")
-@click.option("--onerror", type=str, help="Behaviour on errors")
-@click.option("--basepath", type=str, help="Package basepath")
-@click.option("--trusted", type=str, help="Don't fail on unsafe paths")
-program_extract(source, *, source_type, json, **options)
+program_extract(source: List[str] = Arg(None, help="Data source to describe [default: stdin]"), source_type: str = Opt(None, help='Specify source type e.g. "package"'), scheme: str = Opt(None, help="Specify schema  [default: inferred]"), format: str = Opt(None, help="Specify format  [default: inferred]"), hashing: str = Opt(None, help="Specify hashing algorithm  [default: inferred]"), encoding: str = Opt(None, help="Specify encoding  [default: inferred]"), compression: str = Opt(None, help="Specify compression  [default: inferred]"), compression_path: str = Opt(None, help="Specify in-archive path  [default: first]"), header_rows: str = Opt(None, help="Comma-separated row numbers  [default: 1]"), header_join: str = Opt(None, help="A separator to join a multiline header"), pick_fields: str = Opt(None, help='Comma-separated fields to pick e.g. "1,name1"'), skip_fields: str = Opt(None, help='Comma-separated fields to skip e.g. "2,name2"'), limit_fields: int = Opt(None, help="Limit fields by this integer"), offset_fields: int = Opt(None, help="Offset fields by this integer"), pick_rows: str = Opt(None, help='Comma-separated rows to pick e.g. "1,<blank>"'), skip_rows: str = Opt(None, help='Comma-separated rows to skip e.g. "2,3,4,5"'), limit_rows: int = Opt(None, help="Limit rows by this integer"), offset_rows: int = Opt(None, help="Offset rows by this integer"), schema: str = Opt(None, help="Specify a path to a schema"), sync_schema: bool = Opt(None, help="Sync the schema based on headers"), infer_type: str = Opt(None, help="Force all the fields to have this type"), infer_names: str = Opt(None, help="Comma-separated list of field names"), infer_volume: int = Opt(None, help="Limit data sample size by this integer"), infer_confidence: float = Opt(None, help="A float from 0 to 1"), infer_missing_values: str = Opt(None, help="Comma-separated list of missing values"), yaml: bool = Opt(False, help="Return in pure YAML format"), json: bool = Opt(False, help="Return in JSON format"), csv: bool = Opt(False, help="Return in CSV format"))
 ```
 
-Extract data
-\f
-API      | Usage
--------- | --------
-Public   | `$ frictionless extract`
+Extract a data source.
+
+Based on the inferred data source type it will return resource or package data.
+Default output format is tabulated with a front matter.
 
 <a name="frictionless.type"></a>
 ## frictionless.type
@@ -3635,9 +3601,10 @@ Public   | `from frictionless.plugins.sql import SqlStorage`
 
 **Arguments**:
 
-- `engine` _object_ - `sqlalchemy` engine
-- `prefix` _str_ - prefix for all tables
-- `namespace` _str_ - SQL scheme
+- `url?` _string_ - SQL connection string
+- `engine?` _object_ - `sqlalchemy` engine
+- `prefix?` _str_ - prefix for all tables
+- `namespace?` _str_ - SQL scheme
 
 <a name="frictionless.plugins.ckan"></a>
 ## frictionless.plugins.ckan
@@ -5296,6 +5263,40 @@ Returns
 Returns
     dict: resource lookup structure
 
+<a name="frictionless.resource.Resource.write"></a>
+#### <big>write</big>
+
+```python
+ | write(target=None, **options)
+```
+
+Write the resource to the target
+
+**Arguments**:
+
+- `target` _str_ - target path
+- `**options` - subset of Resource's constructor options
+
+<a name="frictionless.resource.Resource.from_source"></a>
+#### <big>from\_source</big>
+
+```python
+ | @staticmethod
+ | from_source(source, **options)
+```
+
+Create a resource from path OR data
+
+<a name="frictionless.resource.Resource.from_petl"></a>
+#### <big>from\_petl</big>
+
+```python
+ | @staticmethod
+ | from_petl(storage, *, view, **options)
+```
+
+Create a resource from PETL container
+
 <a name="frictionless.resource.Resource.from_storage"></a>
 #### <big>from\_storage</big>
 
@@ -5311,12 +5312,28 @@ Import resource from storage
 - `storage` _Storage_ - storage instance
 - `name` _str_ - resource name
 
+<a name="frictionless.resource.Resource.from_ckan"></a>
+#### <big>from\_ckan</big>
+
+```python
+ | @staticmethod
+ | from_ckan(*, base_url, resource_id, api_key=None)
+```
+
+Import resource from CKAN
+
+**Arguments**:
+
+- `base_url` _str_ - (required) URL for CKAN instance (e.g: https://demo.ckan.org/ )
+- `resource_id` _str_ - (required) ID of resource to fetch
+- `api_key` _str_ - (optional) Your CKAN API key
+
 <a name="frictionless.resource.Resource.from_sql"></a>
 #### <big>from\_sql</big>
 
 ```python
  | @staticmethod
- | from_sql(*, name, engine, prefix="", namespace=None)
+ | from_sql(*, name, url=None, engine=None, prefix="", namespace=None)
 ```
 
 Import resource from SQL table
@@ -5324,9 +5341,10 @@ Import resource from SQL table
 **Arguments**:
 
 - `name` _str_ - resource name
-- `engine` _object_ - `sqlalchemy` engine
-- `prefix` _str_ - prefix for all tables
-- `namespace` _str_ - SQL scheme
+- `url?` _string_ - SQL connection string
+- `engine?` _object_ - `sqlalchemy` engine
+- `prefix?` _str_ - prefix for all tables
+- `namespace?` _str_ - SQL scheme
 
 <a name="frictionless.resource.Resource.from_pandas"></a>
 #### <big>from\_pandas</big>
@@ -5452,21 +5470,38 @@ Export resource to storage
 - `storage` _Storage_ - storage instance
 - `force` _bool_ - overwrite existent
 
+<a name="frictionless.resource.Resource.to_ckan"></a>
+#### <big>to\_ckan</big>
+
+```python
+ | to_ckan(*, base_url, dataset_id=None, api_key=None, force=False)
+```
+
+Export resource to CKAN
+
+**Arguments**:
+
+- `base_url` _str_ - (required) URL for CKAN instance (e.g: https://demo.ckan.org/ )
+- `dataset_id` _str_ - (optional) ID or slug of dataset this resource belongs to
+- `api_key` _str_ - (optional) Your CKAN API key
+- `force` _bool_ - (optional) overwrite existing data
+
 <a name="frictionless.resource.Resource.to_sql"></a>
 #### <big>to\_sql</big>
 
 ```python
- | to_sql(*, engine, prefix="", namespace=None, force=False)
+ | to_sql(*, url=None, engine=None, prefix="", namespace=None, force=False)
 ```
 
 Export resource to SQL table
 
 **Arguments**:
 
-- `engine` _object_ - `sqlalchemy` engine
-- `prefix` _str_ - prefix for all tables
-- `namespace` _str_ - SQL scheme
-- `force` _bool_ - overwrite existent
+- `url?` _string_ - SQL connection string
+- `engine?` _object_ - `sqlalchemy` engine
+- `prefix?` _str_ - prefix for all tables
+- `namespace?` _str_ - SQL scheme
+- `force?` _bool_ - overwrite existent
 
 <a name="frictionless.resource.Resource.to_pandas"></a>
 #### <big>to\_pandas</big>
@@ -7207,7 +7242,7 @@ Public   | `from frictionless import validate`
 
 ```python
 @Report.from_validate
-validate_table(source, *, scheme=None, format=None, hashing=None, encoding=None, compression=None, compression_path=None, control=None, dialect=None, query=None, headers=None, schema=None, sync_schema=False, patch_schema=False, infer_type=None, infer_names=None, infer_volume=config.DEFAULT_INFER_VOLUME, infer_confidence=config.DEFAULT_INFER_CONFIDENCE, infer_missing_values=config.DEFAULT_MISSING_VALUES, onerror="ignore", lookup=None, checksum=None, extra_checks=None, pick_errors=None, skip_errors=None, limit_errors=None, limit_memory=config.DEFAULT_LIMIT_MEMORY)
+validate_table(source, *, scheme=None, format=None, hashing=None, encoding=None, compression=None, compression_path=None, control=None, dialect=None, query=None, headers=None, schema=None, sync_schema=False, patch_schema=False, infer_type=None, infer_names=None, infer_volume=config.DEFAULT_INFER_VOLUME, infer_confidence=config.DEFAULT_INFER_CONFIDENCE, infer_missing_values=config.DEFAULT_MISSING_VALUES, lookup=None, checksum=None, extra_checks=None, pick_errors=None, skip_errors=None, limit_errors=None, limit_memory=config.DEFAULT_LIMIT_MEMORY)
 ```
 
 Validate table
