@@ -2,6 +2,10 @@
 
 Here described only the breaking and most significant changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/frictionless-py/commits/master).
 
+## v3.33
+
+- Implemented resource.write (#537)
+
 ## v3.32
 
 - Added url parameter to SQL import/export (#535)
