@@ -867,7 +867,7 @@ class Resource(Metadata):
         """
         return self.to_storage(
             system.create_storage(
-                "sql", engine=engine, prefix=prefix, namespace=namespace
+                "sql", url=url, engine=engine, prefix=prefix, namespace=namespace
             ),
             force=force,
         )
