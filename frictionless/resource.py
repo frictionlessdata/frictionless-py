@@ -21,7 +21,6 @@ from . import config
 
 # TODO: rework path/data/location etc
 # TODO: rework path/data updates syncing
-# TODO: implement save/write as we have table.write
 class Resource(Metadata):
     """Resource representation.
 
@@ -609,10 +608,23 @@ class Resource(Metadata):
                     lookup[source_name][source_key].add(cells)
         return lookup
 
+    # Write
+
+    def write(self, target=None, **options):
+        """Write the resource to the target
+
+        Parameters:
+            target (str): target path
+            **options: subset of Resource's constructor options
+        """
+        with self.to_table() as table:
+            return table.write(target, **options)
+
     # Import/Export
 
     @staticmethod
     def from_source(source, **options):
+        """Create a resource from path OR data"""
         if source is None:
             return Resource(data=[], **options)
         elif isinstance(source, str):
@@ -623,6 +635,7 @@ class Resource(Metadata):
 
     @staticmethod
     def from_petl(storage, *, view, **options):
+        """Create a resource from PETL container"""
         return Resource(data=view, **options)
 
     @staticmethod

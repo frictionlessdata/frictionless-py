@@ -524,6 +524,22 @@ def test_resource_expand_with_schema():
     }
 
 
+# Write
+
+
+def test_resource_write(tmpdir):
+    path1 = "data/table.csv"
+    path2 = str(tmpdir.join("table.csv"))
+    source = Resource(path=path1)
+    source.write(path2)
+    target = Resource(path=path2, trusted=True)
+    assert target.read_header() == ["id", "name"]
+    assert target.read_rows() == [
+        {"id": 1, "name": "english"},
+        {"id": 2, "name": "中国人"},
+    ]
+
+
 # Infer
 
 
@@ -672,9 +688,6 @@ def test_resource_to_zip_source_inline(tmpdir):
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
-
-
-# Import/Export
 
 
 def test_resource_to_table():
