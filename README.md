@@ -72,7 +72,7 @@ $ frictionless validate data/invalid.csv
 - [Working with Inline](https://github.com/frictionlessdata/frictionless-py/blob/master/docs/target/working-with-inline/README.md)
 - [Working with JSON](https://github.com/frictionlessdata/frictionless-py/blob/master/docs/target/working-with-json/README.md)
 - [Working with ODS](https://github.com/frictionlessdata/frictionless-py/blob/master/docs/target/working-with-ods/README.md)
-- [Working with Pandas](https://github.com/frictionlessdata/frictionless-py/blob/master/docs/target/working-with-padas/README.md)
+- [Working with Pandas](https://github.com/frictionlessdata/frictionless-py/blob/master/docs/target/working-with-pandas/README.md)
 - [Working with Server](https://github.com/frictionlessdata/frictionless-py/blob/master/docs/target/working-with-server/README.md)
 - [Working with SPSS](https://github.com/frictionlessdata/frictionless-py/blob/master/docs/target/working-with-spss/README.md)
 - [Working with SQL](https://github.com/frictionlessdata/frictionless-py/blob/master/docs/target/working-with-sql/README.md)
