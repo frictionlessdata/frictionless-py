@@ -163,14 +163,20 @@ class SqlStorage(Storage):
     Public   | `from frictionless.plugins.sql import SqlStorage`
 
     Parameters:
-        engine (object): `sqlalchemy` engine
-        prefix (str): prefix for all tables
-        namespace (str): SQL scheme
+        url? (string): SQL connection string
+        engine? (object): `sqlalchemy` engine
+        prefix? (str): prefix for all tables
+        namespace? (str): SQL scheme
 
     """
 
-    def __init__(self, *, engine, prefix="", namespace=None):
+    def __init__(self, *, url=None, engine=None, prefix="", namespace=None):
+        assert url or engine, "It's required to provide `url` or `engine`"
         sa = helpers.import_from_plugin("sqlalchemy", plugin="sql")
+
+        # Create engine
+        if not engine:
+            engine = sa.create_engine(url)
 
         # Set attributes
         self.__prefix = prefix

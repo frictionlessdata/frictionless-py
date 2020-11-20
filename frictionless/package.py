@@ -303,17 +303,18 @@ class Package(Metadata):
         )
 
     @staticmethod
-    def from_sql(*, engine, prefix="", namespace=None):
+    def from_sql(*, url=None, engine=None, prefix="", namespace=None):
         """Import package from SQL
 
         Parameters:
-            engine (object): `sqlalchemy` engine
-            prefix (str): prefix for all tables
-            namespace (str): SQL scheme
+            url? (string): SQL connection string
+            engine? (object): `sqlalchemy` engine
+            prefix? (str): prefix for all tables
+            namespace? (str): SQL scheme
         """
         return Package.from_storage(
             system.create_storage(
-                "sql", engine=engine, prefix=prefix, namespace=namespace
+                "sql", url=url, engine=engine, prefix=prefix, namespace=namespace
             )
         )
 
@@ -433,18 +434,19 @@ class Package(Metadata):
             force=force,
         )
 
-    def to_sql(self, *, engine, prefix="", namespace=None, force=False):
+    def to_sql(self, *, url=None, engine=None, prefix="", namespace=None, force=False):
         """Export package to SQL
 
         Parameters:
-            engine (object): `sqlalchemy` engine
-            prefix (str): prefix for all tables
-            namespace (str): SQL scheme
+            url? (string): SQL connection string
+            engine? (object): `sqlalchemy` engine
+            prefix? (str): prefix for all tables
+            namespace? (str): SQL scheme
             force (bool): overwrite existent
         """
         return self.to_storage(
             system.create_storage(
-                "sql", engine=engine, prefix=prefix, namespace=namespace
+                "sql", url=url, engine=engine, prefix=prefix, namespace=namespace
             ),
             force=force,
         )

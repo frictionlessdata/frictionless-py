@@ -298,6 +298,38 @@ def test_storage_views_support(database_url):
     ]
 
 
+def test_storage_resource_url_argument(database_url):
+    source = Resource(path="data/table.csv")
+    source.to_sql(url=database_url)
+    target = Resource.from_sql(name="table", url=database_url)
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+        ]
+    }
+    assert target.read_rows() == [
+        {"id": 1, "name": "english"},
+        {"id": 2, "name": "中国人"},
+    ]
+
+
+def test_storage_package_url_argument(database_url):
+    source = Package(resources=[Resource(path="data/table.csv")])
+    source.to_sql(url=database_url)
+    target = Package.from_sql(url=database_url)
+    assert target.get_resource("table").schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+        ]
+    }
+    assert target.get_resource("table").read_rows() == [
+        {"id": 1, "name": "english"},
+        {"id": 2, "name": "中国人"},
+    ]
+
+
 # Storage (PostgreSQL)
 
 
