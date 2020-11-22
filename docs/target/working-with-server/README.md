@@ -6,6 +6,8 @@
 
 > Status: **PLUGIN / EXPERIMENTAL**
 
+It's possible to start Frictionless API as a standalone server.
+
 
 ```bash
 !pip install frictionless[server]
