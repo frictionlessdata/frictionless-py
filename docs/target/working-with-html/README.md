@@ -6,6 +6,8 @@
 
 > Status: **PLUGIN / STABLE**
 
+Frictionless supports parsing HTML format
+
 
 ```bash
 !pip install frictionless[html]
@@ -69,8 +71,34 @@ resource.write('table.new.html')
 ```
 
 
+
+
+    'table.new.html'
+
+
+
+
 ```bash
-!cat table.new.csv
+!cat table.new.html
 ```
 
+    <html><body><table>
+    <tr><td>id</td><td>name</td></tr>
+    <tr><td>1</td><td>english</td></tr>
+    <tr><td>2</td><td>german</td></tr>
+    </table></body></html>
+
 ## Configuring HTML
+
+There is a dialect to configure HTML, for example:
+
+```python
+from frictionless import Resource
+from frictionless.plugins.html import HtmlDialect
+
+resource = Resource(path='table.html', dialect=HtmlDialect(selector='#id'))
+print(resource.read_rows())
+```
+
+References:
+- [HTML Dialect](https://frictionlessdata.io/tooling/python/formats-reference/#html)
