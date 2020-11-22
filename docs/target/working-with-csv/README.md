@@ -53,8 +53,50 @@ resource.write('table.new.csv')
 ```
 
 
+
+
+    'table.new.csv'
+
+
+
+
 ```bash
 !cat table.new.csv
 ```
 
+    id,name
+    1,english
+    2,german
+
+
 ## Configuring CSV
+
+There is a dialect to configure how Frictionless read and write files in this format. For example:
+
+
+```python
+from frictionless import Resource, dialects
+
+resource = Resource(data=[['id', 'name'], [1, 'english'], [2, 'german']])
+resource.write('table.new.csv', dialect=dialects.CsvDialect(delimiter=';'))
+```
+
+
+
+
+    'table.new.csv'
+
+
+
+
+```bash
+!cat table.new.csv
+```
+
+    id;name
+    1;english
+    2;german
+
+
+References:
+- [CSV Dialect](https://frictionlessdata.io/tooling/python/formats-reference/#csv)
