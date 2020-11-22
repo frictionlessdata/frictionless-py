@@ -6,6 +6,8 @@
 
 > Status: **CORE / STABLE**
 
+Frictionless supports parsing Inline Data.
+
 
 ```bash
 !pip install frictionless
@@ -31,11 +33,11 @@ You can read data in this format using `Package/Resource` or `Table` API, for ex
 ```python
 from frictionless import Resource
 
-resource = Resource(path='table.csv')
+resource = Resource(data=[['id', 'name'], [1, 'english'], [2, 'german']])
 print(resource.read_rows())
 ```
 
-    [Row([('id', 1), ('name', 'english')]), Row([('id', 2), ('name', '中国人')])]
+    [Row([('id', 1), ('name', 'english')]), Row([('id', 2), ('name', 'german')])]
 
 
 ## Writing Inline Data
@@ -46,13 +48,34 @@ The same is actual for writing:
 ```python
 from frictionless import Resource
 
-resource = Resource(data=[['id', 'name'], [1, 'english'], [2, 'german']])
-resource.write('table.new.csv')
+resource = Resource(path='table.csv')
+resource.write(format='inline')
 ```
 
 
-```bash
-!cat table.new.csv
-```
+
+
+    [['id', 'name'], [1, 'english'], [2, '中国人']]
+
+
 
 ## Configuring Inline Data
+
+There is a dialect to configure this format, for example:
+
+
+
+
+```python
+from frictionless import Resource, dialects
+
+dialect = dialects.InlineDialect(keyed=True)
+resource = Resource(data=[{'id': 1, 'name': 'english'}, {'id': 2, 'name': 'german'}])
+print(resource.read_rows())
+```
+
+    [Row([('id', 1), ('name', 'english')]), Row([('id', 2), ('name', 'german')])]
+
+
+References:
+- [I Dialect](https://frictionlessdata.io/tooling/python/formats-reference/#csv)
