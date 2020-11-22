@@ -6,6 +6,8 @@
 
 > Status: **PLUGIN / STABLE**
 
+Frictionless supports ODS parsing.
+
 
 ```bash
 !pip install frictionless[ods]
@@ -45,8 +47,31 @@ resource.write('table.new.ods')
 ```
 
 
-```bash
-!cat table.new.csv
-```
+
+
+    'table.new.ods'
+
+
 
 ## Configuring ODS
+
+There is a dialect to configure how Frictionless read and write files in this format. For example:
+
+
+```python
+from frictionless import Resource
+from frictionless.plugins.ods import OdsDialect
+
+resource = Resource(data=[['id', 'name'], [1, 'english'], [2, 'german']])
+resource.write('table.new.ods', dialect=OdsDialect(sheet='My Table'))
+```
+
+
+
+
+    'table.new.ods'
+
+
+
+References:
+- [ODS Dialect](https://frictionlessdata.io/tooling/python/formats-reference/#ods)
