@@ -6,6 +6,8 @@
 
 > Status: **CORE / STABLE**
 
+Frictionless supports loading textual data
+
 
 ```bash
 !pip install frictionless
@@ -36,12 +38,11 @@ The same is actual for writing Text Data:
 from frictionless import Resource
 
 resource = Resource(data=[['id', 'name'], [1, 'english'], [2, 'german']])
-resource.write('table.new.csv')
-```
-
-
-```bash
-!cat table.new.csv
+resource.write(scheme='text', format='csv')
 ```
 
 ## Configuring Text Data
+
+> Not supported
+
+

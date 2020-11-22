@@ -6,6 +6,8 @@
 
 > Status: **PLUGIN / STABLE**
 
+Frictionless supports parsing JSON tables (json and jsonl/ndjson).
+
 
 ```bash
 !pip install frictionless
@@ -27,13 +29,13 @@
 ## Reading JSON
 
 
-You can read CSV using `Package/Resource` or `Table` API, for example:
+You can read this format using `Package/Resource` or `Table` API, for example:
 
 
 ```python
 from frictionless import Resource
 
-resource = Resource(path='table.csv')
+resource = Resource(path='table.json')
 print(resource.read_rows())
 ```
 
@@ -42,7 +44,7 @@ print(resource.read_rows())
 
 ## Writing JSON
 
-The same is actual for writing JSON:
+The same is actual for writing:
 
 
 ```python
@@ -53,8 +55,66 @@ resource.write('table.new.json')
 ```
 
 
+
+
+    'table.new.json'
+
+
+
+
 ```bash
 !cat table.new.json
 ```
 
+    [
+      [
+        "id",
+        "name"
+      ],
+      [
+        1,
+        "english"
+      ],
+      [
+        2,
+        "german"
+      ]
+    ]
+
 ## Configuring JSON
+
+There is a dialect to configure how Frictionless read and write files in this format. For example:
+
+
+```python
+from frictionless import Resource, dialects
+
+resource = Resource(data=[['id', 'name'], [1, 'english'], [2, 'german']])
+resource.write('table.new.json', dialect=dialects.JsonDialect(keyed=True))
+```
+
+
+
+
+    'table.new.json'
+
+
+
+
+```bash
+!cat table.new.json
+```
+
+    [
+      {
+        "id": 1,
+        "name": "english"
+      },
+      {
+        "id": 2,
+        "name": "german"
+      }
+    ]
+
+References:
+- [CSV Dialect](https://frictionlessdata.io/tooling/python/formats-reference/#csv)

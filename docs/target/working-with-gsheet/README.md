@@ -6,9 +6,11 @@
 
 > Status: **PLUGIN / EXPERIMENTAL**
 
+Frictionless supports parsing Google Sheets data as a file format.
+
 
 ```bash
-!pip install frictionless
+!pip install frictionless[gsheet]
 ```
 
 ## Reading from Google Sheets
@@ -32,3 +34,7 @@ print(resource.read_rows())
 > Not supported
 
 ## Configuring Google Sheets
+
+There is a dialect to configure Google Sheets interactions:
+
+

@@ -6,7 +6,7 @@
 
 > Status: **PLUGIN / STABLE**
 
-Excel is a very popular spreadsheets format that usually has `xlsx` (newer) and `xls` (older) file extensions. Frictionless supports Excel files extensively.
+Excel is a very popular tabular data format that usually has `xlsx` (newer) and `xls` (older) file extensions. Frictionless supports Excel files extensively.
 
 
 ```bash
@@ -20,7 +20,7 @@ Excel is a very popular spreadsheets format that usually has `xlsx` (newer) and 
 
 ## Reading Excel
 
-You can read Excel using `Package/Resource` or `Table` API, for example:
+You can read this format using `Package/Resource` or `Table` API, for example:
 
 
 ```python
@@ -35,7 +35,7 @@ print(resource.read_rows())
 
 ## Writing Excel
 
-The same is actual for writing CSV:
+The same is actual for writing:
 
 
 ```python
@@ -45,4 +45,31 @@ resource = Resource(data=[['id', 'name'], [1, 'english'], [2, 'german']])
 resource.write('table.new.xlsx')
 ```
 
+
+
+
+    'table.new.xlsx'
+
+
+
 ## Configuring Excel
+
+There is a dialect to configure how Frictionless read and write files in this format. For example:
+
+
+```python
+from frictionless import Resource, dialects
+
+resource = Resource(data=[['id', 'name'], [1, 'english'], [2, 'german']])
+resource.write('table.new.xlsx', dialect=dialects.ExcelDialect(sheet='My Table'))
+```
+
+
+
+
+    'table.new.xlsx'
+
+
+
+References:
+- [Excel Dialect](https://frictionlessdata.io/tooling/python/formats-reference/#excel)
