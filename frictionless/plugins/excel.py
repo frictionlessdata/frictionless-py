@@ -8,7 +8,10 @@ import tempfile
 import openpyxl
 import datetime
 from itertools import chain
+from ..metadata import Metadata
 from ..resource import Resource
+from ..dialects import Dialect
+from ..plugin import Plugin
 from ..parser import Parser
 from ..system import system
 from .. import exceptions
@@ -16,12 +19,157 @@ from .. import helpers
 from .. import errors
 
 
+# Plugin
+
+
+class ExcelPlugin(Plugin):
+    """Plugin for Excel
+
+    API      | Usage
+    -------- | --------
+    Public   | `from frictionless.plugins.excel import ExcelPlugin`
+
+    """
+
+    def create_dialect(self, resource, *, descriptor):
+        if resource.format in ["xlsx", "xls"]:
+            return ExcelDialect(descriptor)
+
+    def create_parser(self, resource):
+        if resource.format == "xlsx":
+            return XlsxParser(resource)
+        elif resource.format == "xls":
+            return XlsParser(resource)
+
+
+# Dialect
+
+
+class ExcelDialect(Dialect):
+    """Excel dialect representation
+
+    API      | Usage
+    -------- | --------
+    Public   | `from frictionless.plugins.excel import ExcelDialect`
+
+    Parameters:
+        descriptor? (str|dict): descriptor
+        sheet? (int|str): number from 1 or name of an excel sheet
+        workbook_cache? (dict): workbook cache
+        fill_merged_cells? (bool): whether to fill merged cells
+        preserve_formatting? (bool): whither to preserve formatting
+        adjust_floating_point_error? (bool): whether to adjust floating point error
+
+    Raises:
+        FrictionlessException: raise any error that occurs during the process
+
+    """
+
+    def __init__(
+        self,
+        descriptor=None,
+        *,
+        sheet=None,
+        workbook_cache=None,
+        fill_merged_cells=None,
+        preserve_formatting=None,
+        adjust_floating_point_error=None,
+        header=None,
+        header_rows=None,
+        header_join=None,
+        header_case=None,
+    ):
+        self.setinitial("sheet", sheet)
+        self.setinitial("workbookCache", workbook_cache)
+        self.setinitial("fillMergedCells", fill_merged_cells)
+        self.setinitial("preserveFormatting", preserve_formatting)
+        self.setinitial("adjustFloatingPointError", adjust_floating_point_error)
+        super().__init__(
+            descriptor=descriptor,
+            header=header,
+            header_rows=header_rows,
+            header_join=header_join,
+            header_case=header_case,
+        )
+
+    @Metadata.property
+    def sheet(self):
+        """
+        Returns:
+            str|int: sheet
+        """
+        return self.get("sheet", 1)
+
+    @Metadata.property
+    def workbook_cache(self):
+        """
+        Returns:
+            dict: workbook cache
+        """
+        return self.get("workbookCache")
+
+    @Metadata.property
+    def fill_merged_cells(self):
+        """
+        Returns:
+            bool: fill merged cells
+        """
+        return self.get("fillMergedCells", False)
+
+    @Metadata.property
+    def preserve_formatting(self):
+        """
+        Returns:
+            bool: preserve formatting
+        """
+        return self.get("preserveFormatting", False)
+
+    @Metadata.property
+    def adjust_floating_point_error(self):
+        """
+        Returns:
+            bool: adjust floating point error
+        """
+        return self.get("adjustFloatingPointError", False)
+
+    # Expand
+
+    def expand(self):
+        """Expand metadata"""
+        super().expand()
+        self.setdefault("sheet", self.sheet)
+        self.setdefault("fillMergedCells", self.fill_merged_cells)
+        self.setdefault("preserveFormatting", self.preserve_formatting)
+        self.setdefault("adjustFloatingPointError", self.adjust_floating_point_error)
+
+    # Metadata
+
+    metadata_profile = {  # type: ignore
+        "type": "object",
+        "additionalProperties": False,
+        "properties": {
+            "sheet": {"type": ["number", "string"]},
+            "workbookCache": {"type": "object"},
+            "fillMergedCells": {"type": "boolean"},
+            "preserveFormatting": {"type": "boolean"},
+            "adjustFloatingPointError": {"type": "boolean"},
+            "header": {"type": "boolean"},
+            "headerRows": {"type": "array", "items": {"type": "number"}},
+            "headerJoin": {"type": "string"},
+            "headerCase": {"type": "boolean"},
+        },
+    }
+
+
+# Parser
+
+
 class XlsxParser(Parser):
     """XLSX parser implementation.
 
     API      | Usage
     -------- | --------
-    Public   | `from frictionless import parsers
+    Public   | `from frictionless.plugins.excel import XlsxParser
 
     """
 
@@ -140,7 +288,7 @@ class XlsParser(Parser):
 
     API      | Usage
     -------- | --------
-    Public   | `from frictionless import parsers
+    Public   | `from frictionless.plugins.excel import XlsParser
 
     """
 

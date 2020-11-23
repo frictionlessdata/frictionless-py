@@ -104,12 +104,8 @@ class System:
             dialect = func(resource, descriptor=descriptor)
             if dialect is not None:
                 return dialect
-        if name == "csv":
-            return dialects.CsvDialect(descriptor)
-        elif name == "inline":
+        if name == "inline":
             return dialects.InlineDialect(descriptor)
-        elif name in ["xlsx", "xls"]:
-            return dialects.ExcelDialect(descriptor)
         elif name in ["json", "jsonl", "ndjson"]:
             return dialects.JsonDialect(descriptor)
         return dialects.Dialect(descriptor)
@@ -148,14 +144,8 @@ class System:
             parser = func(resource)
             if parser is not None:
                 return parser
-        if name == "csv":
-            return parsers.CsvParser(resource)
-        elif name == "inline":
+        if name == "inline":
             return parsers.InlineParser(resource)
-        elif name == "xlsx":
-            return parsers.XlsxParser(resource)
-        elif name == "xls":
-            return parsers.XlsParser(resource)
         elif name == "json":
             return parsers.JsonParser(resource)
         elif name in ["jsonl", "ndjson"]:

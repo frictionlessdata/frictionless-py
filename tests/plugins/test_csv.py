@@ -1,5 +1,6 @@
 import pytest
-from frictionless import Table, dialects
+from frictionless import Table
+from frictionless.plugins.csv import CsvDialect
 
 BASE_URL = "https://raw.githubusercontent.com/okfn/tabulator-py/master/%s"
 
@@ -34,7 +35,7 @@ def test_table_csv_excel():
 
 def test_table_csv_excel_tab():
     source = "header1\theader2\nvalue1\tvalue2\nvalue3\tvalue4"
-    dialect = dialects.CsvDialect(delimiter="\t")
+    dialect = CsvDialect(delimiter="\t")
     with Table(source, scheme="text", format="csv", dialect=dialect) as table:
         assert table.header == ["header1", "header2"]
         assert table.read_data() == [["value1", "value2"], ["value3", "value4"]]
@@ -48,7 +49,7 @@ def test_table_csv_unix():
 
 
 def test_table_csv_escaping():
-    dialect = dialects.CsvDialect(escape_char="\\")
+    dialect = CsvDialect(escape_char="\\")
     with Table("data/escaping.csv", dialect=dialect) as table:
         assert table.header == ["ID", "Test"]
         assert table.read_data() == [
@@ -101,7 +102,7 @@ def test_table_csv_remote_non_ascii_url():
 
 def test_table_csv_delimiter():
     source = '"header1";"header2"\n"value1";"value2"\n"value3";"value4"'
-    dialect = dialects.CsvDialect(delimiter=";")
+    dialect = CsvDialect(delimiter=";")
     with Table(source, scheme="text", format="csv", dialect=dialect) as table:
         assert table.header == ["header1", "header2"]
         assert table.read_data() == [["value1", "value2"], ["value3", "value4"]]
@@ -109,7 +110,7 @@ def test_table_csv_delimiter():
 
 def test_table_csv_escapechar():
     source = "header1%,header2\nvalue1%,value2\nvalue3%,value4"
-    dialect = dialects.CsvDialect(escape_char="%")
+    dialect = CsvDialect(escape_char="%")
     with Table(source, scheme="text", format="csv", dialect=dialect) as table:
         assert table.header == ["header1,header2"]
         assert table.read_data() == [["value1,value2"], ["value3,value4"]]
@@ -117,7 +118,7 @@ def test_table_csv_escapechar():
 
 def test_table_csv_quotechar():
     source = "%header1,header2%\n%value1,value2%\n%value3,value4%"
-    dialect = dialects.CsvDialect(quote_char="%")
+    dialect = CsvDialect(quote_char="%")
     with Table(source, scheme="text", format="csv", dialect=dialect) as table:
         assert table.header == ["header1,header2"]
         assert table.read_data() == [["value1,value2"], ["value3,value4"]]
@@ -125,7 +126,7 @@ def test_table_csv_quotechar():
 
 def test_table_csv_skipinitialspace():
     source = "header1, header2\nvalue1, value2\nvalue3, value4"
-    dialect = dialects.CsvDialect(skip_initial_space=False)
+    dialect = CsvDialect(skip_initial_space=False)
     with Table(source, scheme="text", format="csv", dialect=dialect) as table:
         assert table.header == ["header1", "header2"]
         assert table.read_data() == [["value1", " value2"], ["value3", " value4"]]
@@ -159,7 +160,7 @@ def test_table_csv_detect_delimiter_pipe():
 def test_table_csv_dialect_should_not_persist_if_sniffing_fails_issue_goodtables_228():
     source1 = "a;b;c\n#comment"
     source2 = "a,b,c\n#comment"
-    dialect = dialects.CsvDialect(delimiter=";")
+    dialect = CsvDialect(delimiter=";")
     with Table(source1, scheme="text", format="csv", dialect=dialect) as table:
         assert table.header == ["a", "b", "c"]
     with Table(source2, scheme="text", format="csv") as table:
@@ -168,7 +169,7 @@ def test_table_csv_dialect_should_not_persist_if_sniffing_fails_issue_goodtables
 
 def test_table_csv_quotechar_is_empty_string():
     source = 'header1,header2",header3\nvalue1,value2",value3'
-    dialect = dialects.CsvDialect(quote_char="")
+    dialect = CsvDialect(quote_char="")
     with Table(source, scheme="text", format="csv", dialect=dialect) as table:
         table.header == ["header1", 'header2"', "header3"]
         table.read_data() == [["value1", 'value2"', "value3"]]
@@ -190,7 +191,7 @@ def test_table_csv_write(tmpdir):
 def test_table_csv_write_delimiter(tmpdir):
     source = "data/table.csv"
     target = str(tmpdir.join("table.csv"))
-    dialect = dialects.CsvDialect(delimiter=";")
+    dialect = CsvDialect(delimiter=";")
     with Table(source) as table:
         table.write(target, dialect=dialect)
     with Table(target, dialect=dialect) as table:

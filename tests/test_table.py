@@ -2,6 +2,7 @@ import io
 import sys
 import pytest
 from frictionless import Table, Query, Schema, Field, controls, dialects, exceptions
+from frictionless.plugins.excel import ExcelDialect
 
 
 # General
@@ -947,7 +948,7 @@ def test_table_header_inline_keyed_headers_is_none():
 
 def test_table_header_xlsx_multiline():
     source = "data/multiline-headers.xlsx"
-    dialect = dialects.ExcelDialect(fill_merged_cells=True)
+    dialect = ExcelDialect(fill_merged_cells=True)
     with Table(source, dialect=dialect, headers=[1, 2, 3, 4, 5]) as table:
         assert table.header == [
             "Region",
@@ -1471,7 +1472,7 @@ def test_table_chardet_raises_remote_issue_305():
 
 def test_table_skip_rows_non_string_cell_issue_320():
     source = "data/issue320.xlsx"
-    dialect = dialects.ExcelDialect(fill_merged_cells=True)
+    dialect = ExcelDialect(fill_merged_cells=True)
     with pytest.warns(UserWarning):
         with Table(source, dialect=dialect, headers=[10, 11, 12]) as table:
             assert table.header[7] == "Current Population Analysed % of total county Pop"
