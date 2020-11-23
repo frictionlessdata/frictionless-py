@@ -1,11 +1,8 @@
 import os
 import sys
-import xlrd
-import xlwt
 import shutil
 import atexit
 import tempfile
-import openpyxl
 import datetime
 from itertools import chain
 from ..exception import FrictionlessException
@@ -218,6 +215,7 @@ class XlsxParser(Parser):
             return loader.open()
 
     def read_data_stream_create(self):
+        openpyxl = helpers.import_from_plugin("openpyxl", plugin="excel")
         dialect = self.resource.dialect
 
         # Get book
@@ -266,6 +264,7 @@ class XlsxParser(Parser):
     # Write
 
     def write(self, read_row_stream):
+        openpyxl = helpers.import_from_plugin("openpyxl", plugin="excel")
         dialect = self.resource.dialect
         helpers.ensure_dir(self.resource.source)
         book = openpyxl.Workbook(write_only=True)
@@ -306,6 +305,7 @@ class XlsParser(Parser):
     # Read
 
     def read_data_stream_create(self):
+        xlrd = helpers.import_from_plugin("xlrd", plugin="excel")
         dialect = self.resource.dialect
 
         # Get book
@@ -372,6 +372,7 @@ class XlsParser(Parser):
     # Write
 
     def write(self, read_row_stream):
+        xlwt = helpers.import_from_plugin("xlwt", plugin="excel")
         dialect = self.resource.dialect
         helpers.ensure_dir(self.resource.source)
         book = xlwt.Workbook()

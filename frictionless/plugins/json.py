@@ -1,6 +1,4 @@
-import ijson
 import tempfile
-import jsonlines
 import simplejson
 from ..plugins.inline import InlineDialect
 from ..exception import FrictionlessException
@@ -155,6 +153,7 @@ class JsonParser(Parser):
     # Read
 
     def read_data_stream_create(self, dialect=None):
+        ijson = helpers.import_from_plugin("ijson", plugin="json")
         path = "item"
         dialect = self.resource.dialect
         if dialect.property is not None:
@@ -212,6 +211,7 @@ class JsonlParser(Parser):
     # Read
 
     def read_data_stream_create(self, dialect=None):
+        jsonlines = helpers.import_from_plugin("jsonlines", plugin="json")
         dialect = self.resource.dialect
         source = iter(jsonlines.Reader(self.loader.text_stream))
         dialect = InlineDialect(keys=dialect.keys)
@@ -225,6 +225,7 @@ class JsonlParser(Parser):
     # Write
 
     def write(self, read_row_stream):
+        jsonlines = helpers.import_from_plugin("jsonlines", plugin="json")
         dialect = self.resource.dialect
         with tempfile.NamedTemporaryFile(delete=False) as file:
             writer = jsonlines.Writer(file)
