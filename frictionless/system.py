@@ -86,9 +86,7 @@ class System:
             control = func(resource, descriptor=descriptor)
             if control is not None:
                 return control
-        if name == "stream":
-            return controls.StreamControl(descriptor)
-        elif name == "text":
+        if name == "text":
             return controls.TextControl(descriptor)
         return controls.Control(descriptor)
 
@@ -135,9 +133,7 @@ class System:
             loader = func(resource)
             if loader is not None:
                 return loader
-        if name == "stream":
-            return loaders.StreamLoader(resource)
-        elif name == "text":
+        if name == "text":
             return loaders.TextLoader(resource)
         note = f'cannot create loader "{name}". Try installing "frictionless-{name}"'
         raise exceptions.FrictionlessException(errors.SchemeError(note=note))
