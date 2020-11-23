@@ -117,4 +117,4 @@ resource.write('table.new.json', dialect=dialects.JsonDialect(keyed=True))
     ]
 
 References:
-- [CSV Dialect](https://frictionlessdata.io/tooling/python/formats-reference/#csv)
+- [JSON Dialect](https://frictionlessdata.io/tooling/python/formats-reference/#csv)

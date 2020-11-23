@@ -27,7 +27,7 @@ CSV is a file format which you can you in Frictionless for reading and writing. 
 ## Reading CSV
 
 
-You can read CSV using `Package/Resource` or `Table` API, for example:
+You can read this format using `Package/Resource` or `Table` API, for example:
 
 
 ```python
@@ -42,7 +42,7 @@ print(resource.read_rows())
 
 ## Writing CSV
 
-The same is actual for writing CSV:
+The same is actual for writing:
 
 
 ```python

@@ -78,4 +78,4 @@ print(resource.read_rows())
 
 
 References:
-- [I Dialect](https://frictionlessdata.io/tooling/python/formats-reference/#csv)
+- [Inline Dialect](https://frictionlessdata.io/tooling/python/formats-reference/#inline)

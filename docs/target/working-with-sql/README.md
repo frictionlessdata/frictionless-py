@@ -34,9 +34,9 @@ You can write SQL databases:
 from frictionless import Package
 
 package = Package('path/to/datapackage.json')
-package.to_spss(basepath='target')
+package.to_spss(utl='postgresql://mydatabase')
 ```
 
-## Configuring SPSS
+## Configuring SQL
 
 > Not supported yet

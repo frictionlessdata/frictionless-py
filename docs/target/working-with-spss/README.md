@@ -34,9 +34,9 @@ You can write SPSS files:
 from frictionless import Package
 
 package = Package('path/to/datapackage.json')
-dataframes = package.to_spss(basepath='target')
+package.to_spss(basepath='target')
 ```
 
-## Configuring Pandas
+## Configuring SPSS
 
 > Not supported yet

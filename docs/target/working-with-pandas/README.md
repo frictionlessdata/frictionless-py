@@ -39,4 +39,4 @@ dataframes = package.to_pandas()
 
 ## Configuring Pandas
 
-> not yet available
+> Not supported yet

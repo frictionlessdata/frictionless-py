@@ -35,6 +35,6 @@ print(resource.read_rows())
 
 ## Configuring Google Sheets
 
-There is a dialect to configure Google Sheets interactions:
+> Not supported
 
 

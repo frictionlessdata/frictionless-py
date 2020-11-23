@@ -50,13 +50,6 @@ resource = Resource(data=[['id', 'name'], [1, 'english'], [2, 'german']])
 resource.write(scheme='stream')
 ```
 
-
-
-
-    [['id', 'name'], [1, 'english'], [2, 'german']]
-
-
-
 ## Configuring Filelike Data
 
 > Not supported
