@@ -140,9 +140,7 @@ class System:
             loader = func(resource)
             if loader is not None:
                 return loader
-        if name == "file":
-            return loaders.LocalLoader(resource)
-        elif name in config.REMOTE_SCHEMES:
+        if name in config.REMOTE_SCHEMES:
             return loaders.RemoteLoader(resource)
         elif name == "stream":
             return loaders.StreamLoader(resource)
