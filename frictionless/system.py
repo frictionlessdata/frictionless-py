@@ -5,7 +5,6 @@ from importlib import import_module
 from .helpers import cached_property
 from . import exceptions
 from . import errors
-from . import config
 
 
 # NOTE: Consider plugins priority
@@ -87,11 +86,7 @@ class System:
             control = func(resource, descriptor=descriptor)
             if control is not None:
                 return control
-        if name == "file":
-            return controls.LocalControl(descriptor)
-        elif name in config.REMOTE_SCHEMES:
-            return controls.RemoteControl(descriptor)
-        elif name == "stream":
+        if name == "stream":
             return controls.StreamControl(descriptor)
         elif name == "text":
             return controls.TextControl(descriptor)
@@ -140,9 +135,7 @@ class System:
             loader = func(resource)
             if loader is not None:
                 return loader
-        if name in config.REMOTE_SCHEMES:
-            return loaders.RemoteLoader(resource)
-        elif name == "stream":
+        if name == "stream":
             return loaders.StreamLoader(resource)
         elif name == "text":
             return loaders.TextLoader(resource)
