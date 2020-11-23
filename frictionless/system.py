@@ -80,14 +80,11 @@ class System:
             Control: control
         """
         control = None
-        name = resource.scheme
         controls = import_module("frictionless.controls")
         for func in self.methods["create_control"].values():
             control = func(resource, descriptor=descriptor)
             if control is not None:
                 return control
-        if name == "text":
-            return controls.TextControl(descriptor)
         return controls.Control(descriptor)
 
     def create_dialect(self, resource, *, descriptor):
@@ -128,13 +125,10 @@ class System:
         """
         loader = None
         name = resource.scheme
-        loaders = import_module("frictionless.loaders")
         for func in self.methods["create_loader"].values():
             loader = func(resource)
             if loader is not None:
                 return loader
-        if name == "text":
-            return loaders.TextLoader(resource)
         note = f'cannot create loader "{name}". Try installing "frictionless-{name}"'
         raise exceptions.FrictionlessException(errors.SchemeError(note=note))
 
