@@ -37,6 +37,8 @@ class Location:
             detect = helpers.detect_source_scheme_and_format(new_source)
         scheme = detect[0] or config.DEFAULT_SCHEME
         format = detect[1] or config.DEFAULT_FORMAT
+        if scheme == "text" and source.endswith(f".{format}"):
+            source = source[: -(len(format) + 1)]
 
         # Set attributes
         self.__name = name
