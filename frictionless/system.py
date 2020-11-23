@@ -104,9 +104,7 @@ class System:
             dialect = func(resource, descriptor=descriptor)
             if dialect is not None:
                 return dialect
-        if name == "inline":
-            return dialects.InlineDialect(descriptor)
-        elif name in ["json", "jsonl", "ndjson"]:
+        if name in ["json", "jsonl", "ndjson"]:
             return dialects.JsonDialect(descriptor)
         return dialects.Dialect(descriptor)
 
@@ -144,9 +142,7 @@ class System:
             parser = func(resource)
             if parser is not None:
                 return parser
-        if name == "inline":
-            return parsers.InlineParser(resource)
-        elif name == "json":
+        if name == "json":
             return parsers.JsonParser(resource)
         elif name in ["jsonl", "ndjson"]:
             return parsers.JsonlParser(resource)

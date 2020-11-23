@@ -2,11 +2,11 @@ import ijson
 import tempfile
 import jsonlines
 import simplejson
+from ..plugins.inline import InlineDialect
 from ..resource import Resource
 from ..parser import Parser
 from ..system import system
 from .. import exceptions
-from .. import dialects
 from .. import helpers
 from .. import errors
 
@@ -39,7 +39,7 @@ class JsonParser(Parser):
         if dialect.property is not None:
             path = "%s.item" % self.resource.dialect.property
         source = ijson.items(self.loader.byte_stream, path)
-        inline_dialect = dialects.InlineDialect(keys=dialect.keys)
+        inline_dialect = InlineDialect(keys=dialect.keys)
         resource = Resource.from_source(source, dialect=inline_dialect)
         with system.create_parser(resource) as parser:
             try:
@@ -93,7 +93,7 @@ class JsonlParser(Parser):
     def read_data_stream_create(self, dialect=None):
         dialect = self.resource.dialect
         source = iter(jsonlines.Reader(self.loader.text_stream))
-        dialect = dialects.InlineDialect(keys=dialect.keys)
+        dialect = InlineDialect(keys=dialect.keys)
         resource = Resource.from_source(source, dialect=dialect)
         with system.create_parser(resource) as parser:
             yield next(parser.data_stream)
