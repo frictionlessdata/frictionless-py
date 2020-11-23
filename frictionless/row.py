@@ -1,8 +1,9 @@
+# TODO: reconsider this dependency
+from .plugins.json import JsonParser
 from itertools import zip_longest
 from collections import OrderedDict
 from decimal import Decimal
 from .helpers import cached_property
-from .parsers import JsonParser
 from . import helpers
 from . import errors
 

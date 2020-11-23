@@ -98,14 +98,11 @@ class System:
             Dialect: dialect
         """
         dialect = None
-        name = resource.format
         dialects = import_module("frictionless.dialects")
         for func in self.methods["create_dialect"].values():
             dialect = func(resource, descriptor=descriptor)
             if dialect is not None:
                 return dialect
-        if name in ["json", "jsonl", "ndjson"]:
-            return dialects.JsonDialect(descriptor)
         return dialects.Dialect(descriptor)
 
     def create_loader(self, resource):
@@ -137,15 +134,10 @@ class System:
         """
         parser = None
         name = resource.format
-        parsers = import_module("frictionless.parsers")
         for func in self.methods["create_parser"].values():
             parser = func(resource)
             if parser is not None:
                 return parser
-        if name == "json":
-            return parsers.JsonParser(resource)
-        elif name in ["jsonl", "ndjson"]:
-            return parsers.JsonlParser(resource)
         note = f'cannot create parser "{name}". Try installing "frictionless-{name}"'
         raise exceptions.FrictionlessException(errors.FormatError(note=note))
 

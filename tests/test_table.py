@@ -3,6 +3,7 @@ import sys
 import pytest
 from frictionless import Table, Query, Schema, Field, controls, dialects, exceptions
 from frictionless.plugins.excel import ExcelDialect
+from frictionless.plugins.json import JsonDialect
 
 
 # General
@@ -533,7 +534,7 @@ def test_table_dialect_csv_delimiter():
 
 def test_table_dialect_json_property():
     source = '{"root": [["header1", "header2"], ["value1", "value2"]]}'
-    dialect = dialects.JsonDialect(property="root")
+    dialect = JsonDialect(property="root")
     with Table(source, scheme="text", format="json", dialect=dialect) as table:
         assert table.header == ["header1", "header2"]
         assert table.read_data() == [["value1", "value2"]]

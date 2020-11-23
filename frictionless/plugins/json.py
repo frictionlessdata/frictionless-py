@@ -3,7 +3,10 @@ import tempfile
 import jsonlines
 import simplejson
 from ..plugins.inline import InlineDialect
+from ..metadata import Metadata
 from ..resource import Resource
+from ..dialects import Dialect
+from ..plugin import Plugin
 from ..parser import Parser
 from ..system import system
 from .. import exceptions
@@ -11,12 +14,130 @@ from .. import helpers
 from .. import errors
 
 
+# Plugin
+
+
+class JsonPlugin(Plugin):
+    """Plugin for Json
+
+    API      | Usage
+    -------- | --------
+    Public   | `from frictionless.plugins.json import JsonPlugin`
+
+    """
+
+    def create_dialect(self, resource, *, descriptor):
+        if resource.format in ["json", "jsonl", "ndjson"]:
+            return JsonDialect(descriptor)
+
+    def create_parser(self, resource):
+        if resource.format == "json":
+            return JsonParser(resource)
+        elif resource.format in ["jsonl", "ndjson"]:
+            return JsonlParser(resource)
+
+
+# Dialect
+
+
+class JsonDialect(Dialect):
+    """Json dialect representation
+
+    API      | Usage
+    -------- | --------
+    Public   | `from frictionless.plugins.json import JsonDialect`
+
+    Parameters:
+        descriptor? (str|dict): descriptor
+        keys? (str[]): a list of strings to use as data keys
+        keyed? (bool): whether data rows are keyed
+        property? (str): a path within JSON to the data
+
+    Raises:
+        FrictionlessException: raise any error that occurs during the process
+
+    """
+
+    def __init__(
+        self,
+        descriptor=None,
+        *,
+        keys=None,
+        keyed=None,
+        property=None,
+        header=None,
+        header_rows=None,
+        header_join=None,
+        header_case=None,
+    ):
+        self.setinitial("keys", keys)
+        self.setinitial("keyed", keyed)
+        self.setinitial("property", property)
+        super().__init__(
+            descriptor=descriptor,
+            header=header,
+            header_rows=header_rows,
+            header_join=header_join,
+            header_case=header_case,
+        )
+
+    @Metadata.property
+    def keys(self):
+        """
+        Returns:
+            str[]?: keys
+        """
+        return self.get("keys")
+
+    @Metadata.property
+    def keyed(self):
+        """
+        Returns:
+            bool: keyed
+        """
+        return self.get("keyed", False)
+
+    @Metadata.property
+    def property(self):
+        """
+        Returns:
+            str?: property
+        """
+        return self.get("property")
+
+    # Expand
+
+    def expand(self):
+        """Expand metadata"""
+        super().expand()
+        self.setdefault("keyed", self.keyed)
+
+    # Metadata
+
+    metadata_profile = {  # type: ignore
+        "type": "object",
+        "additionalProperties": False,
+        "properties": {
+            "keys": {"type": "array"},
+            "keyed": {"type": "boolean"},
+            "property": {"type": "string"},
+            "header": {"type": "boolean"},
+            "headerRows": {"type": "array", "items": {"type": "number"}},
+            "headerJoin": {"type": "string"},
+            "headerCase": {"type": "boolean"},
+        },
+    }
+
+
+# Parser
+
+
 class JsonParser(Parser):
     """JSON parser implementation.
 
     API      | Usage
     -------- | --------
-    Public   | `from frictionless import parsers
+    Public   | `from frictionless.plugins.json import JsonParser
 
     """
 
@@ -73,7 +194,7 @@ class JsonlParser(Parser):
 
     API      | Usage
     -------- | --------
-    Public   | `from frictionless import parsers
+    Public   | `from frictionless.plugins.json import JsonlParser
 
     """
 

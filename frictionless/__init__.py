@@ -32,6 +32,5 @@ from . import controls
 from . import dialects
 from . import errors
 from . import exceptions
-from . import parsers
 from . import steps
 from . import types
