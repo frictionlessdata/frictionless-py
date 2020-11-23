@@ -8,7 +8,7 @@ from copy import deepcopy
 from importlib import import_module
 from .metadata import Metadata
 from .location import Location
-from .controls import Control
+from .control import Control
 from .dialects import Dialect
 from .schema import Schema
 from .system import system

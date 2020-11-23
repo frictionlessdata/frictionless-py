@@ -1,7 +1,8 @@
 import io
 import sys
 import pytest
-from frictionless import Table, Query, Schema, Field, controls, dialects, exceptions
+from frictionless import Table, Query, Schema, Field, Control, dialects, exceptions
+from frictionless.plugins.remote import RemoteControl
 from frictionless.plugins.excel import ExcelDialect
 from frictionless.plugins.json import JsonDialect
 
@@ -482,7 +483,7 @@ def test_table_compression_error_invalid_gz():
 
 
 def test_table_control():
-    control = controls.Control(detect_encoding=lambda sample: "utf-8")
+    control = Control(detect_encoding=lambda sample: "utf-8")
     with Table("data/table.csv", control=control) as table:
         assert table.encoding == "utf-8"
         assert table.header == ["id", "name"]
@@ -491,7 +492,7 @@ def test_table_control():
 
 @pytest.mark.ci
 def test_table_control_http_preload():
-    control = controls.RemoteControl(http_preload=True)
+    control = RemoteControl(http_preload=True)
     with Table(BASE_URL % "data/table.csv", control=control) as table:
         assert table.header == ["id", "name"]
         assert table.sample == [["1", "english"], ["2", "中国人"]]

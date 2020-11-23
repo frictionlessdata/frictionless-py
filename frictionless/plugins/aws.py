@@ -1,7 +1,7 @@
 import io
 import os
 from urllib.parse import urlparse
-from ..controls import Control
+from ..control import Control
 from ..plugin import Plugin
 from ..loader import Loader
 from .. import helpers

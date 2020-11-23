@@ -8,7 +8,7 @@ class Control(Metadata):
 
     API      | Usage
     -------- | --------
-    Public   | `from frictionless import controls`
+    Public   | `from frictionless import Control`
 
     Parameters:
         descriptor? (str|dict): descriptor

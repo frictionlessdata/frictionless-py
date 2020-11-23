@@ -1,7 +1,7 @@
 import io
 from ..plugin import Plugin
 from ..loader import Loader
-from ..controls import Control
+from ..control import Control
 
 
 # Plugin

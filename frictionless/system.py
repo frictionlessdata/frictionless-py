@@ -3,6 +3,7 @@ import pkgutil
 from collections import OrderedDict
 from importlib import import_module
 from .helpers import cached_property
+from .control import Control
 from . import exceptions
 from . import errors
 
@@ -80,12 +81,11 @@ class System:
             Control: control
         """
         control = None
-        controls = import_module("frictionless.controls")
         for func in self.methods["create_control"].values():
             control = func(resource, descriptor=descriptor)
             if control is not None:
                 return control
-        return controls.Control(descriptor)
+        return Control(descriptor)
 
     def create_dialect(self, resource, *, descriptor):
         """Create dialect

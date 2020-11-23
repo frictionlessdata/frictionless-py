@@ -2,7 +2,7 @@ import io
 import requests.utils
 from ..plugin import Plugin
 from ..loader import Loader
-from ..controls import Control
+from ..control import Control
 from ..metadata import Metadata
 from .. import config
 

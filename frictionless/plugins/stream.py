@@ -1,6 +1,6 @@
 from ..plugin import Plugin
 from ..loader import Loader
-from ..controls import Control
+from ..control import Control
 from .. import exceptions
 from .. import errors
 
