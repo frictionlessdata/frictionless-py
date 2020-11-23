@@ -2,6 +2,7 @@ from .check import Check
 from .config import VERSION as __version__
 from .control import Control
 from .describe import *
+from .dialect import Dialect
 from .extract import *
 from .field import Field
 from .file import File
@@ -29,7 +30,6 @@ from .transform import *
 from .type import Type
 from .validate import *
 from . import checks
-from . import dialects
 from . import errors
 from . import exceptions
 from . import steps

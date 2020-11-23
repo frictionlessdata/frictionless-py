@@ -9,7 +9,7 @@ from ..resource import Resource
 from ..package import Package
 from ..storage import Storage
 from ..metadata import Metadata
-from ..dialects import Dialect
+from ..dialect import Dialect
 from ..parser import Parser
 from ..plugin import Plugin
 from ..schema import Schema

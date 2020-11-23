@@ -6,7 +6,7 @@ from scripts import docs
 from jinja2 import Template
 from docstring_parser import parse
 from importlib import import_module
-from frictionless import controls, plugins
+from frictionless import plugins
 
 
 # Helpers
@@ -14,7 +14,7 @@ from frictionless import controls, plugins
 
 def get_schemes():
     schemes = []
-    modules = [controls]
+    modules = []
     for item in pkgutil.iter_modules([os.path.dirname(plugins.__file__)]):
         modules.append(import_module(f"frictionless.plugins.{item.name}"))
     for module in modules:

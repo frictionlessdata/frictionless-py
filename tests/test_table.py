@@ -1,7 +1,7 @@
 import io
 import sys
 import pytest
-from frictionless import Table, Query, Schema, Field, Control, dialects, exceptions
+from frictionless import Table, Query, Schema, Field, Control, Dialect, exceptions
 from frictionless.plugins.remote import RemoteControl
 from frictionless.plugins.excel import ExcelDialect
 from frictionless.plugins.json import JsonDialect
@@ -561,7 +561,7 @@ def test_table_dialect_header_case_default():
 
 
 def test_table_dialect_header_case_is_false():
-    dialect = dialects.Dialect(header_case=False)
+    dialect = Dialect(header_case=False)
     schema = Schema(fields=[Field(name="ID"), Field(name="NAME")])
     with Table("data/table.csv", dialect=dialect, schema=schema) as table:
         assert table.schema.field_names == ["ID", "NAME"]

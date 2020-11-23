@@ -10,7 +10,7 @@ import datetime
 from itertools import chain
 from ..metadata import Metadata
 from ..resource import Resource
-from ..dialects import Dialect
+from ..dialect import Dialect
 from ..plugin import Plugin
 from ..parser import Parser
 from ..system import system

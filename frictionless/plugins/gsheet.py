@@ -2,7 +2,7 @@ import re
 from ..plugin import Plugin
 from ..parser import Parser
 from ..system import system
-from ..dialects import Dialect
+from ..dialect import Dialect
 from ..resource import Resource
 from .. import exceptions
 from .. import errors

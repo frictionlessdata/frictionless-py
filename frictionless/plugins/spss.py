@@ -3,7 +3,7 @@ import os
 import warnings
 from functools import partial
 from ..resource import Resource
-from ..dialects import Dialect
+from ..dialect import Dialect
 from ..package import Package
 from ..storage import Storage
 from ..parser import Parser

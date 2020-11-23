@@ -2,7 +2,7 @@ import isodate
 import datetime
 import collections
 from functools import partial
-from ..dialects import Dialect
+from ..dialect import Dialect
 from ..resource import Resource
 from ..package import Package
 from ..storage import Storage

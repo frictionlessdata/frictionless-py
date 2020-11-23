@@ -4,6 +4,7 @@ from collections import OrderedDict
 from importlib import import_module
 from .helpers import cached_property
 from .control import Control
+from .dialect import Dialect
 from . import exceptions
 from . import errors
 
@@ -98,12 +99,11 @@ class System:
             Dialect: dialect
         """
         dialect = None
-        dialects = import_module("frictionless.dialects")
         for func in self.methods["create_dialect"].values():
             dialect = func(resource, descriptor=descriptor)
             if dialect is not None:
                 return dialect
-        return dialects.Dialect(descriptor)
+        return Dialect(descriptor)
 
     def create_loader(self, resource):
         """Create loader

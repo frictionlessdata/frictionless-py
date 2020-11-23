@@ -1,7 +1,7 @@
 import tempfile
 from ..parser import Parser
 from ..plugin import Plugin
-from ..dialects import Dialect
+from ..dialect import Dialect
 from .. import helpers
 
 

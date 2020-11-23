@@ -9,7 +9,7 @@ from importlib import import_module
 from .metadata import Metadata
 from .location import Location
 from .control import Control
-from .dialects import Dialect
+from .dialect import Dialect
 from .schema import Schema
 from .system import system
 from .query import Query

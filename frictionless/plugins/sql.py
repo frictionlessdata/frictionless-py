@@ -1,7 +1,7 @@
 import re
 from functools import partial
 from ..metadata import Metadata
-from ..dialects import Dialect
+from ..dialect import Dialect
 from ..resource import Resource
 from ..storage import Storage
 from ..package import Package
