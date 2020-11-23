@@ -21,6 +21,8 @@ class Location:
             basepath = resource.basepath
             headless = resource.get("dialect", {}).get("header") is False
             source = MultipartSource(resource.path, basepath=basepath, headless=headless)
+        elif resource.path:
+            source = resource.path
 
         # Detect scheme/format/compression/compression_path
         name = helpers.detect_name(source)
