@@ -2,6 +2,7 @@ import re
 import os
 import warnings
 from functools import partial
+from ..exception import FrictionlessException
 from ..resource import Resource
 from ..dialect import Dialect
 from ..package import Package
@@ -10,7 +11,6 @@ from ..parser import Parser
 from ..plugin import Plugin
 from ..schema import Schema
 from ..field import Field
-from .. import exceptions
 from .. import helpers
 from .. import errors
 
@@ -117,7 +117,7 @@ class SpssStorage(Storage):
         basepath = basepath or os.getcwd()
         if not os.path.isdir(basepath):
             note = f'Path "{basepath}" is not a directory, or doesn\'t exist'
-            raise exceptions.FrictionlessException(errors.StorageError(note=note))
+            raise FrictionlessException(errors.StorageError(note=note))
         self.__basepath = basepath
 
         # Silent warnings
@@ -139,7 +139,7 @@ class SpssStorage(Storage):
         path = self.__write_convert_name(name)
         if not os.path.isfile(path):
             note = f'Resource "{name}" does not exist'
-            raise exceptions.FrictionlessException(errors.StorageError(note=note))
+            raise FrictionlessException(errors.StorageError(note=note))
         with sav.SavHeaderReader(path, ioUtf8=True) as reader:
             spss_schema = reader.all()
             schema = self.__read_convert_schema(spss_schema)
@@ -229,7 +229,7 @@ class SpssStorage(Storage):
             if resource.name in existent_names:
                 if not force:
                     note = f'Resource "{resource.name}" already exists'
-                    raise exceptions.FrictionlessException(errors.StorageError(note=note))
+                    raise FrictionlessException(errors.StorageError(note=note))
                 self.delete_resource(resource.name)
 
         # Save resources
@@ -242,7 +242,7 @@ class SpssStorage(Storage):
         path = os.path.normpath(os.path.join(self.__basepath, f"{name}.sav"))
         if not path.startswith(os.path.normpath(self.__basepath)):
             note = f'Resource name "{name}" is not valid.'
-            raise exceptions.FrictionlessException(errors.StorageError(note=note))
+            raise FrictionlessException(errors.StorageError(note=note))
         return path
 
     def __write_convert_schema(self, resource):
@@ -326,7 +326,7 @@ class SpssStorage(Storage):
             if name not in self:
                 if not ignore:
                     note = f'Resource "{name}" does not exist'
-                    raise exceptions.FrictionlessException(errors.StorageError(note=note))
+                    raise FrictionlessException(errors.StorageError(note=note))
                 continue
 
             # Delete file

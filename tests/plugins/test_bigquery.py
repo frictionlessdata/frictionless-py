@@ -6,7 +6,7 @@ import datetime
 from dateutil import tz
 from apiclient.discovery import build
 from oauth2client.client import GoogleCredentials
-from frictionless import Table, Package, Resource, exceptions
+from frictionless import Table, Package, Resource, FrictionlessException
 from frictionless.plugins.bigquery import BigqueryDialect, BigqueryStorage
 
 
@@ -189,7 +189,7 @@ def test_storage_constraints(options):
 @pytest.mark.ci
 def test_storage_read_resource_not_existent_error(options):
     storage = BigqueryStorage(**options)
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         storage.read_resource("bad")
     error = excinfo.value.error
     assert error.code == "storage-error"
@@ -200,7 +200,7 @@ def test_storage_read_resource_not_existent_error(options):
 def test_storage_write_resource_existent_error(options):
     resource = Resource(path="data/table.csv")
     storage = resource.to_bigquery(force=True, **options)
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         storage.write_resource(resource)
     error = excinfo.value.error
     assert error.code == "storage-error"
@@ -212,7 +212,7 @@ def test_storage_write_resource_existent_error(options):
 @pytest.mark.ci
 def test_storage_delete_resource_not_existent_error(options):
     storage = BigqueryStorage(**options)
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         storage.delete_resource("bad")
     error = excinfo.value.error
     assert error.code == "storage-error"

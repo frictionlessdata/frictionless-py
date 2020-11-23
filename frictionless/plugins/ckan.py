@@ -2,16 +2,15 @@ import json
 import logging
 import os
 from functools import partial
-
 import requests
-
-from .. import errors, exceptions
+from ..exception import FrictionlessException
 from ..field import Field
 from ..package import Package
 from ..plugin import Plugin
 from ..resource import Resource
 from ..schema import Schema
 from ..storage import Storage
+from .. import errors
 
 log = logging.getLogger(__name__)
 
@@ -190,7 +189,7 @@ class CkanStorage(Storage):
         if table.name in self._read_table_names():
             if not force:
                 note = f'Table "{table.name}" already exists'
-                raise exceptions.FrictionlessException(errors.StorageError(note=note))
+                raise FrictionlessException(errors.StorageError(note=note))
             self._write_table_remove(table.name)
 
         # Define tables
@@ -258,7 +257,7 @@ class CkanStorage(Storage):
         if name not in self._read_table_names():
             if not ignore:
                 note = f'Table "{name}" does not exist'
-                raise exceptions.FrictionlessException(errors.StorageError(note=note))
+                raise FrictionlessException(errors.StorageError(note=note))
 
         # Remove from ckan
         datastore_delete_url = "{}/datastore_delete".format(self.__base_endpoint)
@@ -295,7 +294,7 @@ class CkanStorage(Storage):
         ckan_error = get_ckan_error(response)
         if ckan_error:
             note = "CKAN returned an error: " + json.dumps(ckan_error)
-            raise exceptions.FrictionlessException(errors.StorageError(note=note))
+            raise FrictionlessException(errors.StorageError(note=note))
         return response
 
 

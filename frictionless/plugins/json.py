@@ -3,13 +3,13 @@ import tempfile
 import jsonlines
 import simplejson
 from ..plugins.inline import InlineDialect
+from ..exception import FrictionlessException
 from ..metadata import Metadata
 from ..resource import Resource
 from ..dialect import Dialect
 from ..plugin import Plugin
 from ..parser import Parser
 from ..system import system
-from .. import exceptions
 from .. import helpers
 from .. import errors
 
@@ -167,7 +167,7 @@ class JsonParser(Parser):
                 yield next(parser.data_stream)
             except StopIteration:
                 error = errors.SourceError(note="cannot extract tabular data from JSON")
-                raise exceptions.FrictionlessException(error)
+                raise FrictionlessException(error)
             if parser.resource.dialect.keyed:
                 dialect["keyed"] = True
             yield from parser.data_stream

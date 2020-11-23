@@ -1,7 +1,7 @@
 import io
 import pytest
 from datetime import datetime
-from frictionless import Table, Query, exceptions
+from frictionless import Table, Query, FrictionlessException
 from frictionless.plugins.excel import ExcelDialect
 
 BASE_URL = "https://raw.githubusercontent.com/frictionlessdata/tabulator-py/master/%s"
@@ -37,7 +37,7 @@ def test_table_xlsx_format_error_sheet_by_index_not_existent():
     source = "data/sheet2.xlsx"
     dialect = ExcelDialect(sheet=3)
     table = Table(source, dialect=dialect)
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         table.open()
     error = excinfo.value.error
     assert error.code == "format-error"
@@ -56,7 +56,7 @@ def test_table_xlsx_format_errors_sheet_by_name_not_existent():
     source = "data/sheet2.xlsx"
     dialect = ExcelDialect(sheet="bad")
     table = Table(source, dialect=dialect)
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         table.open()
     error = excinfo.value.error
     assert error.code == "format-error"
@@ -175,7 +175,7 @@ def test_table_xls_sheet_by_index():
 def test_table_xls_sheet_by_index_not_existent():
     source = "data/sheet2.xls"
     dialect = ExcelDialect(sheet=3)
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         Table(source, dialect=dialect).open()
     assert 'sheet "3"' in str(excinfo.value)
 
@@ -191,7 +191,7 @@ def test_table_xls_sheet_by_name():
 def test_table_xls_sheet_by_name_not_existent():
     source = "data/sheet2.xls"
     dialect = ExcelDialect(sheet="bad")
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         Table(source, dialect=dialect).open()
     assert 'sheet "bad"' in str(excinfo.value)
 

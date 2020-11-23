@@ -1,7 +1,7 @@
 from ..plugin import Plugin
 from ..loader import Loader
 from ..control import Control
-from .. import exceptions
+from ..exception import FrictionlessException
 from .. import errors
 
 
@@ -65,5 +65,5 @@ class StreamLoader(Loader):
         source = self.resource.source
         if hasattr(source, "encoding"):
             error = errors.SchemeError(note="only byte streams are supported")
-            raise exceptions.FrictionlessException(error)
+            raise FrictionlessException(error)
         return source

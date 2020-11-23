@@ -2,8 +2,8 @@ from .. import helpers
 from ..report import Report
 from ..package import Package
 from ..inquiry import Inquiry
+from ..exception import FrictionlessException
 from .inquiry import validate_inquiry
-from .. import exceptions
 
 
 @Report.from_validate
@@ -42,7 +42,7 @@ def validate_package(
     # Create package
     try:
         package = Package(source, basepath=basepath, trusted=trusted)
-    except exceptions.FrictionlessException as exception:
+    except FrictionlessException as exception:
         return Report(time=timer.time, errors=[exception.error], tables=[])
 
     # Prepare package

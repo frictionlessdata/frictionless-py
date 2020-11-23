@@ -3,10 +3,10 @@ import json
 import glob
 import zipfile
 from copy import deepcopy
+from .exception import FrictionlessException
 from .metadata import Metadata
 from .resource import Resource
 from .system import system
-from . import exceptions
 from . import helpers
 from . import errors
 from . import config
@@ -200,7 +200,7 @@ class Package(Metadata):
             if resource.name == name:
                 return resource
         error = errors.PackageError(note=f'resource "{name}" does not exist')
-        raise exceptions.FrictionlessException(error)
+        raise FrictionlessException(error)
 
     def has_resource(self, name):
         """Check if a resource is present
@@ -403,7 +403,7 @@ class Package(Metadata):
                 zip.writestr("datapackage.json", descriptor)
         except Exception as exception:
             error = errors.PackageError(note=str(exception))
-            raise exceptions.FrictionlessException(error) from exception
+            raise FrictionlessException(error) from exception
 
     def to_storage(self, storage, *, force=False):
         """Export package to storage

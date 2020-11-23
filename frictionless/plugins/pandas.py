@@ -2,15 +2,15 @@ import isodate
 import datetime
 import collections
 from functools import partial
-from ..dialect import Dialect
+from ..exception import FrictionlessException
 from ..resource import Resource
+from ..dialect import Dialect
 from ..package import Package
 from ..storage import Storage
 from ..plugin import Plugin
 from ..parser import Parser
 from ..schema import Schema
 from ..field import Field
-from .. import exceptions
 from .. import helpers
 from .. import errors
 
@@ -133,7 +133,7 @@ class PandasStorage(Storage):
     def dataframe(self):
         if len(self.__dataframes) != 1:
             note = 'The "storage.dataframe" is available for single dataframe storages'
-            raise exceptions.FrictionlessException(errors.StorageError(note=note))
+            raise FrictionlessException(errors.StorageError(note=note))
         return list(self.__dataframes.values())[0]
 
     # Read
@@ -142,7 +142,7 @@ class PandasStorage(Storage):
         dataframe = self.__read_pandas_dataframe(name)
         if dataframe is None:
             note = f'Resource "{name}" does not exist'
-            raise exceptions.FrictionlessException(errors.StorageError(note=note))
+            raise FrictionlessException(errors.StorageError(note=note))
         schema = self.__read_convert_schema(dataframe)
         data = partial(self.__read_convert_data, name, schema)
         resource = Resource(name=name, schema=schema, data=data)
@@ -245,7 +245,7 @@ class PandasStorage(Storage):
             if resource.name in existent_names:
                 if not force:
                     note = f'Table "{resource.name}" already exists'
-                    raise exceptions.FrictionlessException(errors.StorageError(note=note))
+                    raise FrictionlessException(errors.StorageError(note=note))
                 self.delete_resource(resource.name)
 
         # Write resources
@@ -349,7 +349,7 @@ class PandasStorage(Storage):
             if name not in existent_names:
                 if not ignore:
                     note = f'Resource "{name}" does not exist'
-                    raise exceptions.FrictionlessException(errors.StorageError(note=note))
+                    raise FrictionlessException(errors.StorageError(note=note))
                 return
 
             # Remove resource

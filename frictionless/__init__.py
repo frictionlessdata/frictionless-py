@@ -4,6 +4,7 @@ from .control import Control
 from .describe import *
 from .dialect import Dialect
 from .extract import *
+from .exception import FrictionlessException
 from .field import Field
 from .file import File
 from .header import Header
@@ -31,6 +32,5 @@ from .type import Type
 from .validate import *
 from . import checks
 from . import errors
-from . import exceptions
 from . import steps
 from . import types

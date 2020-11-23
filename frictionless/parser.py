@@ -1,5 +1,5 @@
+from .exception import FrictionlessException
 from .system import system
-from . import exceptions
 from . import errors
 from . import config
 
@@ -67,7 +67,7 @@ class Parser:
         self.close()
         if self.__resource.dialect.metadata_errors:
             error = self.__resource.dialect.metadata_errors[0]
-            raise exceptions.FrictionlessException(error)
+            raise FrictionlessException(error)
         try:
             self.__loader = self.read_loader()
             self.__data_stream = self.read_data_stream()
@@ -161,14 +161,14 @@ class DataStreamWithErrorHandling:
             return self.data_stream.__next__()
         except StopIteration:
             raise
-        except exceptions.FrictionlessException:
+        except FrictionlessException:
             raise
         except config.COMPRESSION_EXCEPTIONS as exception:
             error = errors.CompressionError(note=str(exception))
-            raise exceptions.FrictionlessException(error)
+            raise FrictionlessException(error)
         except UnicodeDecodeError as exception:
             error = errors.EncodingError(note=str(exception))
-            raise exceptions.FrictionlessException(error) from exception
+            raise FrictionlessException(error) from exception
         except Exception as exception:
             error = errors.SourceError(note=str(exception))
-            raise exceptions.FrictionlessException(error) from exception
+            raise FrictionlessException(error) from exception

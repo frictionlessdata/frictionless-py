@@ -8,13 +8,13 @@ import tempfile
 import openpyxl
 import datetime
 from itertools import chain
+from ..exception import FrictionlessException
 from ..metadata import Metadata
 from ..resource import Resource
 from ..dialect import Dialect
 from ..plugin import Plugin
 from ..parser import Parser
 from ..system import system
-from .. import exceptions
 from .. import helpers
 from .. import errors
 
@@ -231,7 +231,7 @@ class XlsxParser(Parser):
             )
         except Exception as exception:
             error = errors.FormatError(note=f'invalid excel file "{self.resource.path}"')
-            raise exceptions.FrictionlessException(error) from exception
+            raise FrictionlessException(error) from exception
 
         # Get sheet
         try:
@@ -242,7 +242,7 @@ class XlsxParser(Parser):
         except (KeyError, IndexError):
             note = 'Excel document "%s" does not have a sheet "%s"'
             error = errors.FormatError(note=note % (self.resource.source, dialect.sheet))
-            raise exceptions.FrictionlessException(error)
+            raise FrictionlessException(error)
 
         # Fill merged cells
         # NOTE: use algorithm from xls to merge after reading (to use read-only mode)?
@@ -334,7 +334,7 @@ class XlsParser(Parser):
         except (xlrd.XLRDError, IndexError):
             note = 'Excel document "%s" does not have a sheet "%s"'
             error = errors.FormatError(note=note % (self.resource.source, dialect.sheet))
-            raise exceptions.FrictionlessException(error)
+            raise FrictionlessException(error)
 
         def type_value(ctype, value):
             """ Detects boolean value, int value, datetime """

@@ -3,7 +3,7 @@ class FrictionlessException(Exception):
 
     API      | Usage
     -------- | --------
-    Public   | `from frictionless import exceptions`
+    Public   | `from frictionless import FrictionlessException`
 
     Parameters:
         error (Error): an underlaying error

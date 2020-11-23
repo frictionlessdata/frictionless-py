@@ -1,7 +1,7 @@
 from ..step import Step
 from ..resource import Resource
 from ..transform import transform_resource
-from .. import exceptions
+from ..exception import FrictionlessException
 from .. import errors
 
 
@@ -25,7 +25,7 @@ class resource_remove(Step):
         resource = target.get_resource(self.__name)
         if not resource:
             error = errors.ResourceError(note=f'No resource "{self.__name}"')
-            raise exceptions.FrictionlessException(error=error)
+            raise FrictionlessException(error=error)
         # TODO: this method should raise instead of ignoring?
         target.remove_resource(self.__name)
 
@@ -41,7 +41,7 @@ class resource_transform(Step):
         index = target.resources.index(resource)
         if not resource:
             error = errors.ResourceError(note=f'No resource "{self.__name}"')
-            raise exceptions.FrictionlessException(error=error)
+            raise FrictionlessException(error=error)
         target.resources[index] = transform_resource(resource, steps=self.__steps)
 
 
@@ -57,6 +57,6 @@ class resource_update(Step):
         resource = target.get_resource(self.__name)
         if not resource:
             error = errors.ResourceError(note=f'No resource "{self.__name}"')
-            raise exceptions.FrictionlessException(error=error)
+            raise FrictionlessException(error=error)
         for name, value in self.__options.items():
             setattr(resource, name, value)

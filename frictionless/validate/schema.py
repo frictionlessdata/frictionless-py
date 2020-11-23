@@ -1,7 +1,7 @@
 from .. import helpers
+from ..exception import FrictionlessException
 from ..report import Report
 from ..schema import Schema
-from .. import exceptions
 
 
 @Report.from_validate
@@ -26,7 +26,7 @@ def validate_schema(source):
     # Create schema
     try:
         schema = Schema(source)
-    except exceptions.FrictionlessException as exception:
+    except FrictionlessException as exception:
         return Report(time=timer.time, errors=[exception.error], tables=[])
 
     # Return report

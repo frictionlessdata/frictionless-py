@@ -1,5 +1,5 @@
 import pytest
-from frictionless import Resource, transform, steps, exceptions
+from frictionless import Resource, FrictionlessException, transform, steps
 
 
 # Aggregate
@@ -715,7 +715,7 @@ def test_step_table_validate():
         ],
     )
     assert target.schema == source.schema
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         target.read_rows()
     error = excinfo.value.error
     assert error.code == "step-error"

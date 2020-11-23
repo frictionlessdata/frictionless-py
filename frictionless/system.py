@@ -2,10 +2,10 @@ import os
 import pkgutil
 from collections import OrderedDict
 from importlib import import_module
+from .exception import FrictionlessException
 from .helpers import cached_property
 from .control import Control
 from .dialect import Dialect
-from . import exceptions
 from . import errors
 
 
@@ -69,7 +69,7 @@ class System:
         elif name == "row-constraint":
             return checks.RowConstraintCheck(descriptor)
         note = f'cannot create check "{name}". Try installing "frictionless-{name}"'
-        raise exceptions.FrictionlessException(errors.CheckError(note=note))
+        raise FrictionlessException(errors.CheckError(note=note))
 
     def create_control(self, resource, *, descriptor):
         """Create control
@@ -121,7 +121,7 @@ class System:
             if loader is not None:
                 return loader
         note = f'cannot create loader "{name}". Try installing "frictionless-{name}"'
-        raise exceptions.FrictionlessException(errors.SchemeError(note=note))
+        raise FrictionlessException(errors.SchemeError(note=note))
 
     def create_parser(self, resource):
         """Create parser
@@ -139,7 +139,7 @@ class System:
             if parser is not None:
                 return parser
         note = f'cannot create parser "{name}". Try installing "frictionless-{name}"'
-        raise exceptions.FrictionlessException(errors.FormatError(note=note))
+        raise FrictionlessException(errors.FormatError(note=note))
 
     def create_pipeline(self, descriptor):
         """Create parser
@@ -160,7 +160,7 @@ class System:
         if type in ["resource", "package"]:
             return Pipeline(descriptor)
         note = f'cannot create pipeline "{type}". Try installing "frictionless-{type}"'
-        raise exceptions.FrictionlessException(errors.FormatError(note=note))
+        raise FrictionlessException(errors.FormatError(note=note))
 
     def create_server(self, name, **options):
         """Create server
@@ -179,7 +179,7 @@ class System:
                 break
         if server is None:
             note = f'cannot create server "{name}". Try installing "frictionless-{name}"'
-            raise exceptions.FrictionlessException(errors.Error(note=note))
+            raise FrictionlessException(errors.Error(note=note))
         return server
 
     def create_storage(self, name, **options):
@@ -199,7 +199,7 @@ class System:
                 break
         if storage is None:
             note = f'cannot create storage "{name}". Try installing "frictionless-{name}"'
-            raise exceptions.FrictionlessException(errors.Error(note=note))
+            raise FrictionlessException(errors.Error(note=note))
         return storage
 
     # Methods

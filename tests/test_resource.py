@@ -2,7 +2,7 @@ import os
 import json
 import yaml
 import pytest
-from frictionless import Resource, Query, describe_resource, exceptions
+from frictionless import Resource, Query, FrictionlessException, describe_resource
 
 
 # General
@@ -47,7 +47,7 @@ def test_resource_from_path():
 
 
 def test_resource_from_path_error_bad_path():
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         Resource("data/bad.json")
     error = excinfo.value.error
     assert error.code == "resource-error"
@@ -76,7 +76,7 @@ def test_resource_from_zip():
 
 @pytest.mark.ci
 def test_resource_from_path_remote_error_bad_path():
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         Resource(BASE_URL % "data/bad.json")
     error = excinfo.value.error
     assert error.code == "resource-error"
@@ -124,7 +124,7 @@ def test_resource_source_non_tabular_remote():
 
 def test_resource_source_non_tabular_error_bad_path():
     resource = Resource(path="data/bad.txt")
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         resource.read_bytes()
     error = excinfo.value.error
     assert error.code == "scheme-error"
@@ -193,7 +193,7 @@ def test_resource_source_path_remote_and_basepath_remote():
 
 def test_resource_source_path_error_bad_path():
     resource = Resource({"name": "name", "path": "table.csv"})
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         resource.read_rows()
     error = excinfo.value.error
     assert error.code == "scheme-error"
@@ -201,7 +201,7 @@ def test_resource_source_path_error_bad_path():
 
 
 def test_resource_source_path_error_bad_path_not_safe_absolute():
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         Resource(path=os.path.abspath("data/table.csv"))
     error = excinfo.value.error
     assert error.code == "resource-error"
@@ -209,7 +209,7 @@ def test_resource_source_path_error_bad_path_not_safe_absolute():
 
 
 def test_resource_source_path_error_bad_path_not_safe_traversing():
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         Resource(path="data/../data/table.csv")
     error = excinfo.value.error
     assert error.code == "resource-error"
@@ -335,7 +335,7 @@ def test_resource_dialect_from_path_remote():
 
 def test_resource_dialect_from_path_error_path_not_safe():
     dialect = os.path.abspath("data/dialect.json")
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         Resource({"name": "name", "path": "path", "dialect": dialect})
     error = excinfo.value.error
     assert error.code == "resource-error"
@@ -445,7 +445,7 @@ def test_resource_schema_from_path_remote():
 
 def test_resource_schema_from_path_error_bad_path():
     resource = Resource({"name": "name", "path": "path", "schema": "data/bad.json"})
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         resource.read_rows()
     error = excinfo.value.error
     assert error.code == "schema-error"
@@ -454,7 +454,7 @@ def test_resource_schema_from_path_error_bad_path():
 
 def test_resource_schema_from_path_error_path_not_safe():
     schema = os.path.abspath("data/schema.json")
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         Resource({"name": "name", "path": "path", "schema": schema})
     error = excinfo.value.error
     assert error.code == "resource-error"
@@ -724,7 +724,7 @@ def test_resource_to_table_source_remote():
 
 def test_resource_to_table_source_non_tabular():
     resource = Resource(path="data/text.txt")
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         resource.to_table().open()
     error = excinfo.value.error
     assert error.code == "format-error"
@@ -794,7 +794,7 @@ def test_resource_source_multipart_remote_both_path_and_basepath():
 
 def test_resource_source_multipart_error_bad_path():
     resource = Resource({"name": "name", "path": ["chunk1.csv", "chunk2.csv"]})
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         resource.read_rows()
     error = excinfo.value.error
     assert error.code == "source-error"
@@ -803,7 +803,7 @@ def test_resource_source_multipart_error_bad_path():
 
 def test_resource_source_multipart_error_bad_path_not_safe_absolute():
     bad_path = os.path.abspath("data/chunk1.csv")
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         Resource({"name": "name", "path": [bad_path, "data/chunk2.csv"]})
     error = excinfo.value.error
     assert error.code == "resource-error"
@@ -812,7 +812,7 @@ def test_resource_source_multipart_error_bad_path_not_safe_absolute():
 
 def test_resource_source_multipart_error_bad_path_not_safe_traversing():
     bad_path = os.path.abspath("data/../chunk2.csv")
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         Resource({"name": "name", "path": ["data/chunk1.csv", bad_path]})
     error = excinfo.value.error
     assert error.code == "resource-error"
@@ -874,7 +874,7 @@ def test_resource_integrity_onerror_header_raise():
     schema = {"fields": [{"name": "bad", "type": "integer"}]}
     resource = Resource(data=data, schema=schema, onerror="raise")
     assert resource.onerror == "raise"
-    with pytest.raises(exceptions.FrictionlessException):
+    with pytest.raises(FrictionlessException):
         resource.read_rows()
 
 
@@ -892,7 +892,7 @@ def test_resource_integrity_onerror_row_raise():
     schema = {"fields": [{"name": "name", "type": "string"}]}
     resource = Resource(data=data, schema=schema, onerror="raise")
     assert resource.onerror == "raise"
-    with pytest.raises(exceptions.FrictionlessException):
+    with pytest.raises(FrictionlessException):
         resource.read_rows()
 
 
@@ -952,7 +952,7 @@ def test_resource_integrity_read_lookup():
 
 def test_resource_relative_parent_path_with_trusted_option_issue_171():
     # trusted=false (default)
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         Resource(path="data/../data/table.csv")
     error = excinfo.value.error
     assert error.code == "resource-error"

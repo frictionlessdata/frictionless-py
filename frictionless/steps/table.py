@@ -1,7 +1,7 @@
 import petl
 from ..step import Step
 from ..field import Field
-from .. import exceptions
+from ..exception import FrictionlessException
 
 
 # TODO: implement table_preload/cache step
@@ -240,10 +240,10 @@ class table_validate(Step):
             yield source.schema.field_names
             with source.to_table() as table:
                 if not table.header.valid:
-                    raise exceptions.FrictionlessException(error=table.header.errors[0])
+                    raise FrictionlessException(error=table.header.errors[0])
                 for row in table.row_stream:
                     if not row.valid:
-                        raise exceptions.FrictionlessException(error=row.errors[0])
+                        raise FrictionlessException(error=row.errors[0])
                     yield row
 
         # Meta

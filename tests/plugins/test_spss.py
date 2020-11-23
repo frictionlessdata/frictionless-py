@@ -1,7 +1,7 @@
 import pytest
 import datetime
-from frictionless import Package, Resource, Table
-from frictionless.plugins.spss import SpssStorage, exceptions
+from frictionless import Package, Resource, Table, FrictionlessException
+from frictionless.plugins.spss import SpssStorage
 
 
 # Parser
@@ -166,7 +166,7 @@ def test_storage_constraints(tmpdir):
 
 def test_storage_read_resource_not_existent_error():
     storage = SpssStorage()
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         storage.read_resource("bad")
     error = excinfo.value.error
     assert error.code == "storage-error"
@@ -176,7 +176,7 @@ def test_storage_read_resource_not_existent_error():
 def test_storage_write_resource_existent_error(tmpdir):
     resource = Resource(path="data/table.csv")
     storage = resource.to_spss(basepath=tmpdir)
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         storage.write_resource(resource)
     error = excinfo.value.error
     assert error.code == "storage-error"
@@ -187,7 +187,7 @@ def test_storage_write_resource_existent_error(tmpdir):
 
 def test_storage_delete_resource_not_existent_error():
     storage = SpssStorage()
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         storage.delete_resource("bad")
     error = excinfo.value.error
     assert error.code == "storage-error"

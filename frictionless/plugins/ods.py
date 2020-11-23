@@ -1,10 +1,10 @@
 import io
 from datetime import datetime
+from ..exception import FrictionlessException
 from ..metadata import Metadata
 from ..dialect import Dialect
 from ..plugin import Plugin
 from ..parser import Parser
-from .. import exceptions
 from .. import helpers
 from .. import errors
 
@@ -139,7 +139,7 @@ class OdsParser(Parser):
         except (KeyError, IndexError):
             note = 'OpenOffice document "%s" does not have a sheet "%s"'
             note = note % (self.resource.source, dialect.sheet)
-            raise exceptions.FrictionlessException(errors.FormatError(note=note))
+            raise FrictionlessException(errors.FormatError(note=note))
 
         # Type cells
         def type_value(cell):

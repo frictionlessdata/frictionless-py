@@ -1,9 +1,9 @@
 from itertools import chain
-from ..plugin import Plugin
+from ..exception import FrictionlessException
 from ..metadata import Metadata
 from ..dialect import Dialect
+from ..plugin import Plugin
 from ..parser import Parser
-from .. import exceptions
 from .. import errors
 
 
@@ -165,7 +165,7 @@ class InlineParser(Parser):
             for cells in chain([cells], data):
                 if not isinstance(cells, dict):
                     error = errors.SourceError(note="all keyed data items must be dicts")
-                    raise exceptions.FrictionlessException(error)
+                    raise FrictionlessException(error)
                 yield [cells.get(header) for header in headers]
             return
 
@@ -173,7 +173,7 @@ class InlineParser(Parser):
         for cells in chain([cells], data):
             if not isinstance(cells, (list, tuple)):
                 error = errors.SourceError(note="all data items must be lists")
-                raise exceptions.FrictionlessException(error)
+                raise FrictionlessException(error)
             yield cells
 
     # Write

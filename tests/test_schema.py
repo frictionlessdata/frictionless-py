@@ -4,7 +4,7 @@ import yaml
 import pytest
 import requests
 from decimal import Decimal
-from frictionless import Schema, describe_schema, exceptions
+from frictionless import Schema, FrictionlessException, describe_schema
 
 
 # General
@@ -35,7 +35,7 @@ def test_schema():
 
 
 def test_schema_extract_metadata_error():
-    with pytest.raises(exceptions.FrictionlessException):
+    with pytest.raises(FrictionlessException):
         Schema([])
 
 
@@ -126,7 +126,7 @@ def test_schema_get_field():
 
 def test_schema_get_field_error_not_found():
     schema = Schema(DESCRIPTOR_MIN)
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         schema.get_field("bad")
     error = excinfo.value.error
     assert error.code == "schema-error"
@@ -156,7 +156,7 @@ def test_schema_remove_field():
 
 def test_schema_remove_field_error_not_found():
     schema = Schema(DESCRIPTOR_MIN)
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         schema.remove_field("bad")
     error = excinfo.value.error
     assert error.code == "schema-error"

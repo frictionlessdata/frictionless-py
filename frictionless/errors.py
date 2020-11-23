@@ -1,5 +1,5 @@
+from .exception import FrictionlessException
 from .metadata import Metadata
-from . import exceptions
 
 
 # TODO: swith code notation to camelCase?
@@ -222,7 +222,7 @@ class CellError(RowError):
                     field_position=field_position,
                 )
         error = Error(note=f"Field {field_name} is not in the row")
-        raise exceptions.FrictionlessException(error)
+        raise FrictionlessException(error)
 
 
 # General
