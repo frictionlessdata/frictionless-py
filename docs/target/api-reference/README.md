@@ -3770,57 +3770,6 @@ API      | Usage
 -------- | --------
 Public   | `from frictionless.plugins.html import HtmlParser`
 
-<a name="frictionless.plugins.tsv"></a>
-## frictionless.plugins.tsv
-
-<a name="frictionless.plugins.tsv.TsvPlugin"></a>
-### TsvPlugin
-
-```python
-class TsvPlugin(Plugin)
-```
-
-Plugin for TSV
-
-API      | Usage
--------- | --------
-Public   | `from frictionless.plugins.tsv import TsvPlugin`
-
-<a name="frictionless.plugins.tsv.TsvDialect"></a>
-### TsvDialect
-
-```python
-class TsvDialect(Dialect)
-```
-
-Tsv dialect representation
-
-API      | Usage
--------- | --------
-Public   | `from frictionless.plugins.tsv import TsvDialect`
-
-**Arguments**:
-
-- `descriptor?` _str|dict_ - descriptor
-  
-
-**Raises**:
-
-- `FrictionlessException` - raise any error that occurs during the process
-
-<a name="frictionless.plugins.tsv.TsvParser"></a>
-### TsvParser
-
-```python
-class TsvParser(Parser)
-```
-
-TSV parser implementation.
-
-API      | Usage
--------- | --------
-Public   | `from frictionless.plugins.tsv import TsvParser`
-
 <a name="frictionless.plugins.csv"></a>
 ## frictionless.plugins.csv
 

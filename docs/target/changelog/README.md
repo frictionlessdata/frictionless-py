@@ -2,6 +2,35 @@
 
 Here described only the breaking and most significant changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/frictionless-py/commits/master).
 
+## v3.34
+
+- Moved `frictionless.controls` to `frictionless.plugins.*` (BREAKING)
+- Moved `frictionless.dialects` to `frictionless.plugins.*` (BREAKING)
+- Moved `frictionless.exceptions.FrictionlessException` to `frictionless.FrictionlessException` (BREAKING)
+- Moved `excel` dependencies to `frictionless[excel]` extras (BREAKING)
+- Moved `json` dependencies to `frictionless[json]` extras (BREAKING)
+- Consider `json` files to be a metadata by default (BREAKING)
+
+Code example:
+
+```python
+# Before
+# pip install frictionless
+from frictionless import dialects, exceptions
+excel_dialect = dialects.ExcelDialect()
+json_dialect = dialects.JsonDialect()
+exception = exceptions.FrictionlessException()
+
+# After
+# pip install frictionless[excel,json]
+from frictionless import FrictionlessException
+from frictionless.plugins.excel import ExcelDialect
+from frictionless.plugins.json import JsonDialect
+excel_dialect = dialects.ExcelDialect()
+json_dialect = dialects.JsonDialect()
+exception = FrictionlessException()
+```
+
 ## v3.33
 
 - Implemented resource.write (#537)
