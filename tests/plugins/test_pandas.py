@@ -4,7 +4,7 @@ import isodate
 import datetime
 import pandas as pd
 from decimal import Decimal
-from frictionless import Table, Package, Resource, exceptions
+from frictionless import Table, Package, Resource, FrictionlessException
 from frictionless.plugins.pandas import PandasStorage
 
 
@@ -176,7 +176,7 @@ def test_storage_constraints():
 
 def test_storage_read_resource_not_existent_error():
     storage = PandasStorage()
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         storage.read_resource("bad")
     error = excinfo.value.error
     assert error.code == "storage-error"
@@ -186,7 +186,7 @@ def test_storage_read_resource_not_existent_error():
 def test_storage_write_resource_existent_error():
     resource = Resource(path="data/table.csv")
     storage = resource.to_pandas()
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         storage.write_resource(resource)
     error = excinfo.value.error
     assert error.code == "storage-error"
@@ -197,7 +197,7 @@ def test_storage_write_resource_existent_error():
 
 def test_storage_delete_resource_not_existent_error():
     storage = PandasStorage()
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         storage.delete_resource("bad")
     error = excinfo.value.error
     assert error.code == "storage-error"
@@ -207,7 +207,7 @@ def test_storage_delete_resource_not_existent_error():
 def test_storage_dataframe_property_not_single_error():
     package = Package("data/package-storage.json")
     storage = package.to_pandas()
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         storage.dataframe
     error = excinfo.value.error
     assert error.code == "storage-error"

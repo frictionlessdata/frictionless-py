@@ -4,7 +4,7 @@
 
 
 
-> Status: **PLUGIN / EXPERIMENTAL**
+> Status: **EXPERIMENTAL**
 
 The dataflows pipelines are powered by [DataFlows](http://www.dataflows.org/),
 a novel and intuitive way of building data processing flows in Python. Frictionless provides an ability to declaratively describe and run DataFlows pipelines.

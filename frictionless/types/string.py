@@ -1,9 +1,5 @@
-import re
-import uuid
 import base64
-import rfc3986.exceptions
-import rfc3986.validators
-import rfc3986.uri
+import validators
 from ..type import Type
 
 
@@ -32,18 +28,13 @@ class StringType(Type):
         if self.field.format == "default":
             return cell
         elif self.field.format == "uri":
-            uri = uri_from_string(cell)
-            try:
-                uri_validator.validate(uri)
-            except rfc3986.exceptions.ValidationError:
+            if not validators.url(cell):
                 return None
         elif self.field.format == "email":
-            if not re.match(email_pattern, cell):
+            if not validators.email(cell):
                 return None
         elif self.field.format == "uuid":
-            try:
-                uuid.UUID(cell, version=4)
-            except Exception:
+            if not validators.uuid(cell):
                 return None
         elif self.field.format == "binary":
             try:
@@ -56,10 +47,3 @@ class StringType(Type):
 
     def write_cell(self, cell):
         return cell
-
-
-# Internal
-
-email_pattern = re.compile(r"[^@]+@[^@]+\.[^@]+")
-uri_from_string = rfc3986.uri.URIReference.from_string
-uri_validator = rfc3986.validators.Validator().require_presence_of("scheme")

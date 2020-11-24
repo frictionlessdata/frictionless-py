@@ -1,6 +1,6 @@
 import pytest
 from datetime import datetime
-from frictionless import Table, Query, exceptions
+from frictionless import Table, Query, FrictionlessException
 from frictionless.plugins.ods import OdsDialect
 
 BASE_URL = "https://raw.githubusercontent.com/okfn/tabulator-py/master/%s"
@@ -34,7 +34,7 @@ def test_table_ods_sheet_by_index():
 def test_table_ods_sheet_by_index_not_existent():
     dialect = OdsDialect(sheet=3)
     table = Table("data/table.ods", dialect=dialect)
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         table.open()
     error = excinfo.value.error
     assert error.code == "format-error"
@@ -51,7 +51,7 @@ def test_table_ods_sheet_by_name():
 def test_table_ods_sheet_by_name_not_existent():
     dialect = OdsDialect(sheet="bad")
     table = Table("data/table.ods", dialect=dialect)
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         table.open()
     error = excinfo.value.error
     assert error.code == "format-error"

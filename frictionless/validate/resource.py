@@ -1,8 +1,8 @@
 from .. import helpers
 from ..report import Report
 from ..resource import Resource
+from ..exception import FrictionlessException
 from .table import validate_table
-from .. import exceptions
 
 
 @Report.from_validate
@@ -34,7 +34,7 @@ def validate_resource(
     # Create resource
     try:
         resource = Resource(source, basepath=basepath, trusted=trusted)
-    except exceptions.FrictionlessException as exception:
+    except FrictionlessException as exception:
         return Report(time=timer.time, errors=[exception.error], tables=[])
 
     # Prepare resource

@@ -4,7 +4,7 @@
 
 
 
-> Status: **PLUGIN / STABLE**
+> Status: **STABLE**
 
 Frictionless supports reading and writing Pandas dataframes.
 

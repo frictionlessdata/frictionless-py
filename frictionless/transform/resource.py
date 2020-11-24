@@ -1,6 +1,6 @@
 from ..step import Step
 from ..helpers import get_name
-from .. import exceptions
+from ..exception import FrictionlessException
 from .. import errors
 
 
@@ -32,7 +32,7 @@ def transform_resource(resource, *, steps):
             transform(source, target)
         except Exception as exception:
             error = errors.StepError(note=f'"{get_name(step)}" raises "{exception}"')
-            raise exceptions.FrictionlessException(error) from exception
+            raise FrictionlessException(error) from exception
 
         # Postprocess
         if source.data is not target.data:
@@ -55,8 +55,8 @@ class DataWithErrorHandling:
         try:
             yield from self.data() if callable(self.data) else self.data
         except Exception as exception:
-            if isinstance(exception, exceptions.FrictionlessException):
+            if isinstance(exception, FrictionlessException):
                 if exception.error.code == "step-error":
                     raise
             error = errors.StepError(note=f'"{get_name(self.step)}" raises "{exception}"')
-            raise exceptions.FrictionlessException(error) from exception
+            raise FrictionlessException(error) from exception

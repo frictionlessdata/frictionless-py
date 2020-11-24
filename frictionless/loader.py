@@ -5,7 +5,7 @@ import shutil
 import hashlib
 import zipfile
 import tempfile
-from . import exceptions
+from .exception import FrictionlessException
 from . import errors
 from . import config
 
@@ -76,7 +76,7 @@ class Loader:
         self.close()
         if self.__resource.control.metadata_errors:
             error = self.__resource.control.metadata_errors[0]
-            raise exceptions.FrictionlessException(error)
+            raise FrictionlessException(error)
         try:
             self.__byte_stream = self.read_byte_stream()
             return self
@@ -113,10 +113,10 @@ class Loader:
             byte_stream = self.read_byte_stream_decompress(byte_stream)
         except IOError as exception:
             error = errors.SchemeError(note=str(exception))
-            raise exceptions.FrictionlessException(error)
+            raise FrictionlessException(error)
         except config.COMPRESSION_EXCEPTIONS as exception:
             error = errors.CompressionError(note=str(exception))
-            raise exceptions.FrictionlessException(error)
+            raise FrictionlessException(error)
         return byte_stream
 
     def read_byte_stream_create(self):
@@ -179,7 +179,7 @@ class Loader:
         if self.resource.compression == "no":
             return byte_stream
         note = f'compression "{self.resource.compression}" is not supported'
-        raise exceptions.FrictionlessException(errors.CompressionError(note=note))
+        raise FrictionlessException(errors.CompressionError(note=note))
 
     def read_text_stream(self):
         """Read text stream
@@ -191,7 +191,7 @@ class Loader:
             self.read_text_stream_infer_encoding(self.byte_stream)
         except (LookupError, UnicodeDecodeError) as exception:
             error = errors.EncodingError(note=str(exception))
-            raise exceptions.FrictionlessException(error) from exception
+            raise FrictionlessException(error) from exception
         return self.read_text_stream_decode(self.byte_stream)
 
     def read_text_stream_infer_encoding(self, byte_stream):
@@ -248,7 +248,7 @@ class ByteStreamWithStatsHandling:
             self.__hasher = hashlib.new(resource.hashing) if resource.hashing else None
         except Exception as exception:
             error = errors.HashingError(note=str(exception))
-            raise exceptions.FrictionlessException(error)
+            raise FrictionlessException(error)
         # TODO: document why we ignore stats if there is hash
         self.__stats = resource.stats if not resource.stats["hash"] else {}
         self.__byte_stream = byte_stream

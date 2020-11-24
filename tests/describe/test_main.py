@@ -1,4 +1,5 @@
-from frictionless import describe, Resource, Package, dialects
+from frictionless import describe, Resource, Package
+from frictionless.plugins.csv import CsvDialect
 
 
 # General
@@ -82,7 +83,7 @@ def test_describe_whitespace_cells_issue_7():
 
 def test_describe_whitespace_cells_with_skip_initial_space_issue_7():
     source = "header1,header2\n1, \n2, \n3, \n"
-    dialect = dialects.CsvDialect(skip_initial_space=True)
+    dialect = CsvDialect(skip_initial_space=True)
     resource = describe(source, scheme="text", format="csv", dialect=dialect)
     assert resource.schema == {
         "fields": [

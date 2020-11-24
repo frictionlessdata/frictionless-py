@@ -2,9 +2,9 @@ import re
 from ..plugin import Plugin
 from ..parser import Parser
 from ..system import system
-from ..dialects import Dialect
+from ..dialect import Dialect
 from ..resource import Resource
-from .. import exceptions
+from ..exception import FrictionlessException
 from .. import errors
 
 
@@ -85,4 +85,4 @@ class GsheetParser(Parser):
 
     def write(self, read_row_stream):
         error = errors.Error(note="Writing to Google Sheets is not supported")
-        raise exceptions.FrictionlessException(error)
+        raise FrictionlessException(error)

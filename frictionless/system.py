@@ -2,10 +2,11 @@ import os
 import pkgutil
 from collections import OrderedDict
 from importlib import import_module
+from .exception import FrictionlessException
 from .helpers import cached_property
-from . import exceptions
+from .control import Control
+from .dialect import Dialect
 from . import errors
-from . import config
 
 
 # NOTE: Consider plugins priority
@@ -68,7 +69,7 @@ class System:
         elif name == "row-constraint":
             return checks.RowConstraintCheck(descriptor)
         note = f'cannot create check "{name}". Try installing "frictionless-{name}"'
-        raise exceptions.FrictionlessException(errors.CheckError(note=note))
+        raise FrictionlessException(errors.CheckError(note=note))
 
     def create_control(self, resource, *, descriptor):
         """Create control
@@ -81,21 +82,11 @@ class System:
             Control: control
         """
         control = None
-        name = resource.scheme
-        controls = import_module("frictionless.controls")
         for func in self.methods["create_control"].values():
             control = func(resource, descriptor=descriptor)
             if control is not None:
                 return control
-        if name == "file":
-            return controls.LocalControl(descriptor)
-        elif name in config.REMOTE_SCHEMES:
-            return controls.RemoteControl(descriptor)
-        elif name == "stream":
-            return controls.StreamControl(descriptor)
-        elif name == "text":
-            return controls.TextControl(descriptor)
-        return controls.Control(descriptor)
+        return Control(descriptor)
 
     def create_dialect(self, resource, *, descriptor):
         """Create dialect
@@ -108,21 +99,11 @@ class System:
             Dialect: dialect
         """
         dialect = None
-        name = resource.format
-        dialects = import_module("frictionless.dialects")
         for func in self.methods["create_dialect"].values():
             dialect = func(resource, descriptor=descriptor)
             if dialect is not None:
                 return dialect
-        if name == "csv":
-            return dialects.CsvDialect(descriptor)
-        elif name == "inline":
-            return dialects.InlineDialect(descriptor)
-        elif name in ["xlsx", "xls"]:
-            return dialects.ExcelDialect(descriptor)
-        elif name in ["json", "jsonl", "ndjson"]:
-            return dialects.JsonDialect(descriptor)
-        return dialects.Dialect(descriptor)
+        return Dialect(descriptor)
 
     def create_loader(self, resource):
         """Create loader
@@ -135,21 +116,12 @@ class System:
         """
         loader = None
         name = resource.scheme
-        loaders = import_module("frictionless.loaders")
         for func in self.methods["create_loader"].values():
             loader = func(resource)
             if loader is not None:
                 return loader
-        if name == "file":
-            return loaders.LocalLoader(resource)
-        elif name in config.REMOTE_SCHEMES:
-            return loaders.RemoteLoader(resource)
-        elif name == "stream":
-            return loaders.StreamLoader(resource)
-        elif name == "text":
-            return loaders.TextLoader(resource)
         note = f'cannot create loader "{name}". Try installing "frictionless-{name}"'
-        raise exceptions.FrictionlessException(errors.SchemeError(note=note))
+        raise FrictionlessException(errors.SchemeError(note=note))
 
     def create_parser(self, resource):
         """Create parser
@@ -162,25 +134,12 @@ class System:
         """
         parser = None
         name = resource.format
-        parsers = import_module("frictionless.parsers")
         for func in self.methods["create_parser"].values():
             parser = func(resource)
             if parser is not None:
                 return parser
-        if name == "csv":
-            return parsers.CsvParser(resource)
-        elif name == "inline":
-            return parsers.InlineParser(resource)
-        elif name == "xlsx":
-            return parsers.XlsxParser(resource)
-        elif name == "xls":
-            return parsers.XlsParser(resource)
-        elif name == "json":
-            return parsers.JsonParser(resource)
-        elif name in ["jsonl", "ndjson"]:
-            return parsers.JsonlParser(resource)
         note = f'cannot create parser "{name}". Try installing "frictionless-{name}"'
-        raise exceptions.FrictionlessException(errors.FormatError(note=note))
+        raise FrictionlessException(errors.FormatError(note=note))
 
     def create_pipeline(self, descriptor):
         """Create parser
@@ -201,7 +160,7 @@ class System:
         if type in ["resource", "package"]:
             return Pipeline(descriptor)
         note = f'cannot create pipeline "{type}". Try installing "frictionless-{type}"'
-        raise exceptions.FrictionlessException(errors.FormatError(note=note))
+        raise FrictionlessException(errors.FormatError(note=note))
 
     def create_server(self, name, **options):
         """Create server
@@ -220,7 +179,7 @@ class System:
                 break
         if server is None:
             note = f'cannot create server "{name}". Try installing "frictionless-{name}"'
-            raise exceptions.FrictionlessException(errors.Error(note=note))
+            raise FrictionlessException(errors.Error(note=note))
         return server
 
     def create_storage(self, name, **options):
@@ -240,7 +199,7 @@ class System:
                 break
         if storage is None:
             note = f'cannot create storage "{name}". Try installing "frictionless-{name}"'
-            raise exceptions.FrictionlessException(errors.Error(note=note))
+            raise FrictionlessException(errors.Error(note=note))
         return storage
 
     # Methods

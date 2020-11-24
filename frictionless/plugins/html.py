@@ -1,6 +1,6 @@
 import tempfile
 from ..metadata import Metadata
-from ..dialects import Dialect
+from ..dialect import Dialect
 from ..plugin import Plugin
 from ..parser import Parser
 from .. import helpers

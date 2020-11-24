@@ -3,7 +3,7 @@ import json
 import yaml
 import zipfile
 import pytest
-from frictionless import Package, Resource, Query, describe_package, exceptions
+from frictionless import Package, Resource, Query, FrictionlessException, describe_package
 
 
 # General
@@ -41,7 +41,7 @@ def test_package_from_path():
 
 
 def test_package_from_path_error_bad_path():
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         Package("data/bad.json")
     error = excinfo.value.error
     assert error.code == "package-error"
@@ -49,7 +49,7 @@ def test_package_from_path_error_bad_path():
 
 
 def test_package_from_path_error_non_json():
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         Package("data/table.csv")
     error = excinfo.value.error
     assert error.code == "package-error"
@@ -57,7 +57,7 @@ def test_package_from_path_error_non_json():
 
 
 def test_package_from_path_error_bad_json():
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         Package("data/invalid.json")
     error = excinfo.value.error
     assert error.code == "package-error"
@@ -65,7 +65,7 @@ def test_package_from_path_error_bad_json():
 
 
 def test_package_from_path_error_bad_json_not_dict():
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         Package("data/table.json")
     error = excinfo.value.error
     assert error.code == "package-error"
@@ -81,7 +81,7 @@ def test_package_from_path_remote():
 
 @pytest.mark.ci
 def test_package_from_path_remote_error_not_found():
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         Package(BASE_URL % "data/bad.json")
     error = excinfo.value.error
     assert error.code == "package-error"
@@ -90,7 +90,7 @@ def test_package_from_path_remote_error_not_found():
 
 @pytest.mark.ci
 def test_package_from_path_remote_error_bad_json():
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         Package(BASE_URL % "data/invalid.json")
     error = excinfo.value.error
     assert error.code == "package-error"
@@ -99,7 +99,7 @@ def test_package_from_path_remote_error_bad_json():
 
 @pytest.mark.ci
 def test_package_from_path_remote_error_bad_json_not_dict():
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         Package(BASE_URL % "data/table-lists.json")
     error = excinfo.value.error
     assert error.code == "package-error"
@@ -107,7 +107,7 @@ def test_package_from_path_remote_error_bad_json_not_dict():
 
 
 def test_package_from_invalid_descriptor_type():
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         Package(51)
     error = excinfo.value.error
     assert error.code == "package-error"
@@ -141,7 +141,7 @@ def test_package_from_zip_no_descriptor(tmpdir):
     descriptor = str(tmpdir.join("package.zip"))
     with zipfile.ZipFile(descriptor, "w") as zip:
         zip.writestr("data.txt", "foobar")
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         Package(descriptor)
     error = excinfo.value.error
     assert error.code == "package-error"
@@ -196,7 +196,7 @@ def test_package_get_resource():
 
 def test_package_get_resource_error_not_found():
     package = Package("data/package/datapackage.json")
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         package.get_resource("bad")
     error = excinfo.value.error
     assert error.code == "package-error"
@@ -212,7 +212,7 @@ def test_package_remove_resource():
 
 def test_package_remove_resource_error_not_found():
     package = Package("data/package/datapackage.json")
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         package.remove_resource("bad")
     error = excinfo.value.error
     assert error.code == "package-error"
@@ -591,7 +591,7 @@ def test_resource_integrity_onerror_header_raise():
     resource = package.resources[0]
     assert package.onerror == "raise"
     assert resource.onerror == "raise"
-    with pytest.raises(exceptions.FrictionlessException):
+    with pytest.raises(FrictionlessException):
         resource.read_rows()
 
 
@@ -613,7 +613,7 @@ def test_resource_integrity_onerror_row_raise():
     resource = package.resources[0]
     assert package.onerror == "raise"
     assert resource.onerror == "raise"
-    with pytest.raises(exceptions.FrictionlessException):
+    with pytest.raises(FrictionlessException):
         resource.read_rows()
 
 

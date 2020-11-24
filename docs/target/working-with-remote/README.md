@@ -4,7 +4,7 @@
 
 
 
-> Status: **CORE / STABLE**
+> Status: **STABLE**
 
 You can read files remotely with Frictionless. It's basic functionality.
 

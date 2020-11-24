@@ -8,8 +8,8 @@ import stringcase
 from operator import setitem
 from functools import partial
 from importlib import import_module
+from .exception import FrictionlessException
 from .helpers import cached_property
-from . import exceptions
 from . import helpers
 
 
@@ -67,7 +67,7 @@ class Metadata(helpers.ControlledDict):
             self.metadata_process()
             if self.metadata_strict:
                 for error in self.metadata_errors:
-                    raise exceptions.FrictionlessException(error)
+                    raise FrictionlessException(error)
 
     def setinitial(self, key, value):
         """Set an initial item in a subclass' constructor
@@ -118,7 +118,7 @@ class Metadata(helpers.ControlledDict):
                 )
             helpers.move_file(file.name, target)
         except Exception as exc:
-            raise exceptions.FrictionlessException(self.__Error(note=str(exc))) from exc
+            raise FrictionlessException(self.__Error(note=str(exc))) from exc
 
     # NOTE: improve this code
     def to_yaml(self, target=None):
@@ -137,7 +137,7 @@ class Metadata(helpers.ControlledDict):
                 yaml.dump(helpers.deepsafe(self.to_dict()), file, Dumper=IndentDumper)
             helpers.move_file(file.name, target)
         except Exception as exc:
-            raise exceptions.FrictionlessException(self.__Error(note=str(exc))) from exc
+            raise FrictionlessException(self.__Error(note=str(exc))) from exc
 
     # Metadata
 
@@ -192,7 +192,7 @@ class Metadata(helpers.ControlledDict):
                 except Exception:
                     note = "descriptor is not serializable"
                     errors = import_module("frictionless.errors")
-                    raise exceptions.FrictionlessException(errors.Error(note=note))
+                    raise FrictionlessException(errors.Error(note=note))
             if isinstance(descriptor, str):
                 if helpers.is_remote_path(descriptor):
                     response = requests.get(descriptor)
@@ -210,7 +210,7 @@ class Metadata(helpers.ControlledDict):
             raise TypeError("descriptor type is not supported")
         except Exception as exception:
             note = f'cannot extract metadata "{descriptor}" because "{exception}"'
-            raise exceptions.FrictionlessException(self.__Error(note=note)) from exception
+            raise FrictionlessException(self.__Error(note=note)) from exception
 
     def metadata_process(self):
         """Helper method called on any metadata change"""

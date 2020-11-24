@@ -2,7 +2,7 @@ import shutil
 import tempfile
 from .system import system
 from .resource import Resource
-from . import exceptions
+from .exception import FrictionlessException
 from . import helpers
 from . import errors
 
@@ -251,7 +251,7 @@ class File:
     def __read_raise_closed(self):
         if not self.__loader:
             note = 'the file has not been opened by "file.open()"'
-            raise exceptions.FrictionlessException(errors.Error(note=note))
+            raise FrictionlessException(errors.Error(note=note))
 
     # Write
 

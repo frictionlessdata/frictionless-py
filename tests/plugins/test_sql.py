@@ -2,7 +2,7 @@ import os
 import pytest
 import datetime
 import sqlalchemy as sa
-from frictionless import Table, Package, Resource, exceptions
+from frictionless import Table, Package, Resource, FrictionlessException
 from frictionless.plugins.sql import SqlDialect, SqlStorage
 from dotenv import load_dotenv
 
@@ -42,7 +42,7 @@ def test_table_sql_order_by_desc(database_url):
 
 def test_table_sql_table_is_required_error(database_url):
     table = Table(database_url)
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         table.open()
     error = excinfo.value.error
     assert error.code == "dialect-error"
@@ -251,7 +251,7 @@ def test_storage_constraints_not_valid_error(database_url, field_name, cell):
 def test_storage_read_resource_not_existent_error(database_url):
     engine = sa.create_engine(database_url)
     storage = SqlStorage(engine=engine)
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         storage.read_resource("bad")
     error = excinfo.value.error
     assert error.code == "storage-error"
@@ -262,7 +262,7 @@ def test_storage_write_resource_existent_error(database_url):
     engine = sa.create_engine(database_url)
     resource = Resource(path="data/table.csv")
     storage = resource.to_sql(engine=engine)
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         storage.write_resource(resource)
     error = excinfo.value.error
     assert error.code == "storage-error"
@@ -274,7 +274,7 @@ def test_storage_write_resource_existent_error(database_url):
 def test_storage_delete_resource_not_existent_error(database_url):
     engine = sa.create_engine(database_url)
     storage = SqlStorage(engine=engine)
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         storage.delete_resource("bad")
     error = excinfo.value.error
     assert error.code == "storage-error"

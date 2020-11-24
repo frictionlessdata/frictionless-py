@@ -4,9 +4,9 @@ from typing import List
 from typer import Option as Opt
 from typer import Argument as Arg
 from ..describe import describe
+from ..dialect import Dialect
 from ..query import Query
 from .main import program
-from .. import dialects
 from .. import helpers
 
 
@@ -71,7 +71,7 @@ def program_describe(
 
     # Prepare dialect
     dialect = (
-        dialects.Dialect(
+        Dialect(
             header_rows=header_rows,
             header_join=header_join,
         )

@@ -1,7 +1,11 @@
 import io
 import sys
 import pytest
-from frictionless import Table, Query, Schema, Field, controls, dialects, exceptions
+from frictionless import FrictionlessException
+from frictionless import Table, Query, Schema, Field, Control, Dialect
+from frictionless.plugins.remote import RemoteControl
+from frictionless.plugins.excel import ExcelDialect
+from frictionless.plugins.json import JsonDialect
 
 
 # General
@@ -151,7 +155,7 @@ def test_table_without_headers():
 
 def test_table_error_read_closed():
     table = Table("data/table.csv")
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         table.read_data()
     error = excinfo.value.error
     assert error.code == "error"
@@ -160,7 +164,7 @@ def test_table_error_read_closed():
 
 def test_table_source_error_data():
     table = Table("[1,2]", scheme="text", format="json")
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         table.open()
     error = excinfo.value.error
     assert error.code == "source-error"
@@ -181,9 +185,9 @@ def test_table_scheme_https():
         assert table.scheme == "https"
 
 
-def test_table_scheme_stream():
+def test_table_scheme_filelike():
     with Table(open("data/table.csv", mode="rb"), format="csv") as table:
-        assert table.scheme == "stream"
+        assert table.scheme == "filelike"
 
 
 def test_table_scheme_text():
@@ -193,7 +197,7 @@ def test_table_scheme_text():
 
 def test_table_scheme_error_bad_scheme():
     table = Table("", scheme="bad")
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         table.open()
     error = excinfo.value.error
     assert error.code == "scheme-error"
@@ -202,7 +206,7 @@ def test_table_scheme_error_bad_scheme():
 
 def test_table_scheme_error_bad_scheme_and_format():
     table = Table("bad://bad.bad")
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         table.open()
     error = excinfo.value.error
     assert error.code == "scheme-error"
@@ -211,7 +215,7 @@ def test_table_scheme_error_bad_scheme_and_format():
 
 def test_table_scheme_error_file_not_found():
     table = Table("bad.csv")
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         table.open()
     error = excinfo.value.error
     assert error.code == "scheme-error"
@@ -221,7 +225,7 @@ def test_table_scheme_error_file_not_found():
 @pytest.mark.ci
 def test_table_scheme_error_file_not_found_remote():
     table = Table("https://example.com/bad.csv")
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         table.open()
     error = excinfo.value.error
     assert error.code == "scheme-error"
@@ -230,7 +234,7 @@ def test_table_scheme_error_file_not_found_remote():
 
 def test_table_scheme_error_file_not_found_bad_format():
     table = Table("bad.bad")
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         table.open()
     error = excinfo.value.error
     assert error.code == "scheme-error"
@@ -239,7 +243,7 @@ def test_table_scheme_error_file_not_found_bad_format():
 
 def test_table_scheme_error_file_not_found_bad_compression():
     table = Table("bad.csv", compression="bad")
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         table.open()
     error = excinfo.value.error
     assert error.code == "scheme-error"
@@ -276,7 +280,7 @@ def test_table_format_xlsx():
 
 def test_table_format_error_bad_format():
     table = Table("data/table.bad")
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         table.open()
     error = excinfo.value.error
     assert error.code == "format-error"
@@ -285,7 +289,7 @@ def test_table_format_error_bad_format():
 
 def test_table_format_error_non_matching_format():
     table = Table("data/table.csv", format="xlsx")
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         table.open()
     error = excinfo.value.error
     assert error.code == "format-error"
@@ -311,7 +315,7 @@ def test_table_hashing_provided():
 
 def test_table_hashing_error_bad_hashing():
     table = Table("data/table.csv", hashing="bad")
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         table.open()
     error = excinfo.value.error
     assert error.code == "hashing-error"
@@ -352,7 +356,7 @@ def test_table_encoding_utf_16():
 
 def test_table_encoding_error_bad_encoding():
     table = Table("data/table.csv", encoding="bad")
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         table.open()
     error = excinfo.value.error
     assert error.code == "encoding-error"
@@ -361,7 +365,7 @@ def test_table_encoding_error_bad_encoding():
 
 def test_table_encoding_error_non_matching_encoding():
     table = Table("data/table.csv", encoding="ascii")
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         table.open()
     error = excinfo.value.error
     assert error.code == "encoding-error"
@@ -448,7 +452,7 @@ def test_table_compression_remote_csv_gz():
 
 def test_table_compression_error_bad():
     table = Table("data/table.csv", compression="bad")
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         table.open()
     error = excinfo.value.error
     assert error.code == "compression-error"
@@ -458,7 +462,7 @@ def test_table_compression_error_bad():
 def test_table_compression_error_invalid_zip():
     source = "id,filename\n1,archive.zip"
     table = Table(source, scheme="text", format="csv")
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         table.open()
     error = excinfo.value.error
     assert error.code == "compression-error"
@@ -469,7 +473,7 @@ def test_table_compression_error_invalid_zip():
 def test_table_compression_error_invalid_gz():
     source = "id,filename\n\1,dump.tar.gz"
     table = Table(source, scheme="text", format="csv")
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         table.open()
     error = excinfo.value.error
     assert error.code == "compression-error"
@@ -480,7 +484,7 @@ def test_table_compression_error_invalid_gz():
 
 
 def test_table_control():
-    control = controls.Control(detect_encoding=lambda sample: "utf-8")
+    control = Control(detect_encoding=lambda sample: "utf-8")
     with Table("data/table.csv", control=control) as table:
         assert table.encoding == "utf-8"
         assert table.header == ["id", "name"]
@@ -489,7 +493,7 @@ def test_table_control():
 
 @pytest.mark.ci
 def test_table_control_http_preload():
-    control = controls.RemoteControl(http_preload=True)
+    control = RemoteControl(http_preload=True)
     with Table(BASE_URL % "data/table.csv", control=control) as table:
         assert table.header == ["id", "name"]
         assert table.sample == [["1", "english"], ["2", "中国人"]]
@@ -498,7 +502,7 @@ def test_table_control_http_preload():
 
 def test_table_control_bad_property():
     table = Table("data/table.csv", control={"bad": True})
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         table.open()
     error = excinfo.value.error
     assert error.code == "control-error"
@@ -532,7 +536,7 @@ def test_table_dialect_csv_delimiter():
 
 def test_table_dialect_json_property():
     source = '{"root": [["header1", "header2"], ["value1", "value2"]]}'
-    dialect = dialects.JsonDialect(property="root")
+    dialect = JsonDialect(property="root")
     with Table(source, scheme="text", format="json", dialect=dialect) as table:
         assert table.header == ["header1", "header2"]
         assert table.read_data() == [["value1", "value2"]]
@@ -540,7 +544,7 @@ def test_table_dialect_json_property():
 
 def test_table_dialect_bad_property():
     table = Table("data/table.csv", dialect={"bad": True})
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         table.open()
     error = excinfo.value.error
     assert error.code == "dialect-error"
@@ -558,7 +562,7 @@ def test_table_dialect_header_case_default():
 
 
 def test_table_dialect_header_case_is_false():
-    dialect = dialects.Dialect(header_case=False)
+    dialect = Dialect(header_case=False)
     schema = Schema(fields=[Field(name="ID"), Field(name="NAME")])
     with Table("data/table.csv", dialect=dialect, schema=schema) as table:
         assert table.schema.field_names == ["ID", "NAME"]
@@ -855,7 +859,7 @@ def test_table_limit_fields_error_zero_issue_521():
     source = "data/long.csv"
     query = Query(limit_fields=0)
     table = Table(source, query=query)
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         table.open()
     error = excinfo.value.error
     assert error.code == "query-error"
@@ -866,7 +870,7 @@ def test_table_offset_fields_error_zero_issue_521():
     source = "data/long.csv"
     query = Query(offset_fields=0)
     table = Table(source, query=query)
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         table.open()
     error = excinfo.value.error
     assert error.code == "query-error"
@@ -877,7 +881,7 @@ def test_table_limit_rows_error_zero_issue_521():
     source = "data/long.csv"
     query = Query(limit_rows=0)
     table = Table(source, query=query)
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         table.open()
     error = excinfo.value.error
     assert error.code == "query-error"
@@ -888,7 +892,7 @@ def test_table_offset_rows_error_zero_issue_521():
     source = "data/long.csv"
     query = Query(offset_rows=0)
     table = Table(source, query=query)
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         table.open()
     error = excinfo.value.error
     assert error.code == "query-error"
@@ -947,7 +951,7 @@ def test_table_header_inline_keyed_headers_is_none():
 
 def test_table_header_xlsx_multiline():
     source = "data/multiline-headers.xlsx"
-    dialect = dialects.ExcelDialect(fill_merged_cells=True)
+    dialect = ExcelDialect(fill_merged_cells=True)
     with Table(source, dialect=dialect, headers=[1, 2, 3, 4, 5]) as table:
         assert table.header == [
             "Region",
@@ -1303,7 +1307,7 @@ def test_table_write_format_error_bad_format(tmpdir):
     source = "data/table.csv"
     target = str(tmpdir.join("table.bad"))
     with Table(source) as table:
-        with pytest.raises(exceptions.FrictionlessException) as excinfo:
+        with pytest.raises(FrictionlessException) as excinfo:
             table.write(target)
         error = excinfo.value.error
         assert error.code == "format-error"
@@ -1332,7 +1336,7 @@ def test_table_integrity_onerror_header_raise():
     data = [["name"], [1], [2], [3]]
     schema = {"fields": [{"name": "bad", "type": "integer"}]}
     with Table(data, schema=schema, onerror="raise") as table:
-        with pytest.raises(exceptions.FrictionlessException):
+        with pytest.raises(FrictionlessException):
             table.read_rows()
 
 
@@ -1348,7 +1352,7 @@ def test_table_integrity_onerror_row_raise():
     data = [["name"], [1], [2], [3]]
     schema = {"fields": [{"name": "name", "type": "string"}]}
     with Table(data, schema=schema, onerror="raise") as table:
-        with pytest.raises(exceptions.FrictionlessException):
+        with pytest.raises(FrictionlessException):
             table.read_rows()
 
 
@@ -1444,7 +1448,7 @@ def test_table_wrong_encoding_detection_issue_265():
 
 def test_table_not_existent_local_file_with_no_format_issue_287():
     table = Table("bad")
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         table.open()
     error = excinfo.value.error
     assert error.code == "scheme-error"
@@ -1454,7 +1458,7 @@ def test_table_not_existent_local_file_with_no_format_issue_287():
 @pytest.mark.ci
 def test_table_not_existent_remote_file_with_no_format_issue_287():
     table = Table("http://example.com/bad")
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         table.open()
     error = excinfo.value.error
     assert error.code == "scheme-error"
@@ -1471,7 +1475,7 @@ def test_table_chardet_raises_remote_issue_305():
 
 def test_table_skip_rows_non_string_cell_issue_320():
     source = "data/issue320.xlsx"
-    dialect = dialects.ExcelDialect(fill_merged_cells=True)
+    dialect = ExcelDialect(fill_merged_cells=True)
     with pytest.warns(UserWarning):
         with Table(source, dialect=dialect, headers=[10, 11, 12]) as table:
             assert table.header[7] == "Current Population Analysed % of total county Pop"

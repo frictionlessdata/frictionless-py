@@ -1,10 +1,10 @@
+from ..table import Table
+from ..system import system
+from ..exception import FrictionlessException
+from ..report import Report, ReportTable
 from .. import config
 from .. import errors
 from .. import helpers
-from .. import exceptions
-from ..table import Table
-from ..system import system
-from ..report import Report, ReportTable
 
 
 @Report.from_validate
@@ -191,7 +191,7 @@ def validate_table(
     # Open table
     try:
         table.open()
-    except exceptions.FrictionlessException as exception:
+    except FrictionlessException as exception:
         table_errors.append(exception.error, force=True)
 
     # Enter table

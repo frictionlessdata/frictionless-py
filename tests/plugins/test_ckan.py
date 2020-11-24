@@ -5,7 +5,7 @@ from decimal import Decimal
 
 import pytest
 import responses
-from frictionless import Package, Resource, exceptions
+from frictionless import Package, Resource, FrictionlessException
 from frictionless.plugins.ckan import CkanStorage
 
 """
@@ -189,7 +189,7 @@ def test_read_package_bad_package_id():
         status=404,
     )
 
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         Package.from_ckan(
             base_url=base_url,
             dataset_id=dataset_id,
@@ -211,7 +211,7 @@ def test_read_resource_bad_resource_id():
         status=404,
     )
 
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         Resource.from_ckan(
             base_url=base_url,
             resource_id=resource_id,
@@ -243,7 +243,7 @@ class TestDelete:
 
     @responses.activate
     def test_delete_package_exists(self):
-        with pytest.raises(exceptions.FrictionlessException) as excinfo:
+        with pytest.raises(FrictionlessException) as excinfo:
             self.storage.delete_package(["bad-id"])
         error = excinfo.value.error
         assert error.code == "storage-error"
@@ -258,7 +258,7 @@ class TestDelete:
 
     @responses.activate
     def test_delete_package_does_not_exist(self):
-        with pytest.raises(exceptions.FrictionlessException) as excinfo:
+        with pytest.raises(FrictionlessException) as excinfo:
             self.storage.delete_resource("bad-id")
         error = excinfo.value.error
         assert error.code == "storage-error"
@@ -375,7 +375,7 @@ class TestWriteDoesNotExist:
                     "geojson": {"type": "Point", "coordinates": [33, 33.33]},
                     "geopoint": "30,70",
                     "integer": 1,
-                    "number": 7.0,
+                    "number": "7",
                     "object": {"chars": 560},
                     "string": "english",
                     "time": "03:00:00",
@@ -538,7 +538,7 @@ class TestWriteExists:
 
     @responses.activate
     def test_write_resource_no_force(self):
-        with pytest.raises(exceptions.FrictionlessException) as excinfo:
+        with pytest.raises(FrictionlessException) as excinfo:
             self.package.to_ckan(
                 base_url=self.base_url,
                 dataset_id=self.dataset_id,
@@ -562,7 +562,7 @@ class TestWriteExists:
 
     @responses.activate
     def test_write_package_no_force(self):
-        with pytest.raises(exceptions.FrictionlessException) as excinfo:
+        with pytest.raises(FrictionlessException) as excinfo:
             self.package.to_ckan(
                 base_url=self.base_url,
                 dataset_id=self.dataset_id,

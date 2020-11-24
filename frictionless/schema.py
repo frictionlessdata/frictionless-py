@@ -1,7 +1,7 @@
 from copy import copy, deepcopy
+from .exception import FrictionlessException
 from .metadata import Metadata
 from .field import Field
-from . import exceptions
 from . import helpers
 from . import errors
 from . import config
@@ -131,7 +131,7 @@ class Schema(Metadata):
             if field.name == name:
                 return field
         error = errors.SchemaError(note=f'field "{name}" does not exist')
-        raise exceptions.FrictionlessException(error)
+        raise FrictionlessException(error)
 
     def has_field(self, name):
         """Check if a field is present

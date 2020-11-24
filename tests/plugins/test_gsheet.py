@@ -1,5 +1,5 @@
 import pytest
-from frictionless import Table, exceptions
+from frictionless import Table, FrictionlessException
 
 
 # Parser
@@ -24,7 +24,7 @@ def test_table_gsheet_with_gid():
 @pytest.mark.ci
 def test_table_gsheet_bad_url():
     table = Table("https://docs.google.com/spreadsheets/d/bad")
-    with pytest.raises(exceptions.FrictionlessException) as excinfo:
+    with pytest.raises(FrictionlessException) as excinfo:
         table.open()
     error = excinfo.value.error
     assert error.code == "scheme-error"

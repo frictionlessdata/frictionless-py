@@ -3,13 +3,13 @@ import warnings
 from pathlib import Path
 from copy import deepcopy
 from itertools import chain
+from .exception import FrictionlessException
 from .resource import Resource
 from .system import system
 from .header import Header
 from .row import Row
-from . import exceptions
-from . import errors
 from . import helpers
+from . import errors
 from . import config
 
 
@@ -135,7 +135,7 @@ class Table:
         # Schema
         schema=None,
         sync_schema=False,
-        patch_schema=False,
+        patch_schema=None,
         # Infer
         infer_type=None,
         infer_names=None,
@@ -385,7 +385,7 @@ class Table:
         self.close()
         if self.__resource.query.metadata_errors:
             error = self.__resource.query.metadata_errors[0]
-            raise exceptions.FrictionlessException(error)
+            raise FrictionlessException(error)
         try:
             self.__resource.stats = {"hash": "", "bytes": 0, "fields": 0, "rows": 0}
             self.__parser = system.create_parser(self.__resource)
@@ -395,7 +395,7 @@ class Table:
             self.__row_number = 0
             self.__row_position = 0
             return self
-        except exceptions.FrictionlessException as exception:
+        except FrictionlessException as exception:
             self.close()
             # Ensure not found file is a scheme error
             if exception.error.code == "format-error":
@@ -558,7 +558,7 @@ class Table:
         # TODO: reconsider this - not perfect for transform
         if len(schema.field_names) != len(set(schema.field_names)):
             note = "Schemas with duplicate field names are not supported"
-            raise exceptions.FrictionlessException(errors.SchemaError(note=note))
+            raise FrictionlessException(errors.SchemaError(note=note))
 
         # Store stats
         self.__resource.stats["fields"] = len(schema.fields)
@@ -669,7 +669,7 @@ class Table:
     def __read_data_stream_raise_closed(self):
         if not self.__data_stream:
             note = 'the table has not been opened by "table.open()"'
-            raise exceptions.FrictionlessException(errors.Error(note=note))
+            raise FrictionlessException(errors.Error(note=note))
 
     def read_rows(self):
         """Read row stream into memory
@@ -692,7 +692,7 @@ class Table:
             if self.__resource.onerror == "warn":
                 warnings.warn(error.message, UserWarning)
             elif self.__resource.onerror == "raise":
-                raise exceptions.FrictionlessException(error)
+                raise FrictionlessException(error)
 
         # Create state
         memory_unique = {}
@@ -770,7 +770,7 @@ class Table:
                 if self.__resource.onerror == "warn":
                     warnings.warn(error.message, UserWarning)
                 elif self.__resource.onerror == "raise":
-                    raise exceptions.FrictionlessException(error)
+                    raise FrictionlessException(error)
 
             # Stream row
             yield row
@@ -778,7 +778,7 @@ class Table:
     def __read_row_stream_raise_closed(self):
         if not self.__row_stream:
             note = 'the table has not been opened by "table.open()"'
-            raise exceptions.FrictionlessException(errors.Error(note=note))
+            raise FrictionlessException(errors.Error(note=note))
 
     # Write
 

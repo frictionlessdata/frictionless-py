@@ -4,7 +4,7 @@
 
 
 
-> Status: **CORE / STABLE**
+> Status: **STABLE**
 
 Frictionless supports parsing Inline Data.
 
@@ -69,12 +69,12 @@ There is a dialect to configure this format, for example:
 ```python
 from frictionless import Resource, dialects
 
-dialect = dialects.InlineDialect(keyed=True)
-resource = Resource(data=[{'id': 1, 'name': 'english'}, {'id': 2, 'name': 'german'}])
+dialect = dialects.InlineDialect(keyed=True, keys=['name', 'id'])
+resource = Resource(data=[{'id': 1, 'name': 'english'}, {'id': 2, 'name': 'german'}], dialect=dialect)
 print(resource.read_rows())
 ```
 
-    [Row([('id', 1), ('name', 'english')]), Row([('id', 2), ('name', 'german')])]
+    [Row([('name', 'english'), ('id', 1)]), Row([('name', 'german'), ('id', 2)])]
 
 
 References:

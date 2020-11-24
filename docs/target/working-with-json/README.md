@@ -4,13 +4,13 @@
 
 
 
-> Status: **PLUGIN / STABLE**
+> Status: **STABLE**
 
 Frictionless supports parsing JSON tables (json and jsonl/ndjson).
 
 
 ```bash
-!pip install frictionless
+!pip install frictionless[json]
 ```
 
 

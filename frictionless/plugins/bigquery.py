@@ -1,20 +1,20 @@
 import io
 import re
+import csv
 import json
 import time
-import unicodecsv
 from slugify import slugify
 from functools import partial
+from ..exception import FrictionlessException
 from ..resource import Resource
 from ..package import Package
 from ..storage import Storage
 from ..metadata import Metadata
-from ..dialects import Dialect
+from ..dialect import Dialect
 from ..parser import Parser
 from ..plugin import Plugin
 from ..schema import Schema
 from ..field import Field
-from .. import exceptions
 from .. import helpers
 from .. import errors
 
@@ -231,7 +231,7 @@ class BigqueryStorage(Storage):
             )
         except google_errors.HttpError:
             note = f'Resource "{name}" does not exist'
-            raise exceptions.FrictionlessException(errors.StorageError(note=note))
+            raise FrictionlessException(errors.StorageError(note=note))
 
         # Create resource
         schema = self.__read_convert_schema(response["schema"])
@@ -327,7 +327,7 @@ class BigqueryStorage(Storage):
             if resource.name in existent_names:
                 if not force:
                     note = f'Resource "{resource.name}" already exists'
-                    raise exceptions.FrictionlessException(errors.StorageError(note=note))
+                    raise FrictionlessException(errors.StorageError(note=note))
                 self.delete_resource(resource.name)
 
         # Write resource
@@ -402,11 +402,11 @@ class BigqueryStorage(Storage):
         bq_name = self.__write_convert_name(name)
 
         # Process buffer to byte stream csv
-        bytes = io.BufferedRandom(io.BytesIO())
-        writer = unicodecsv.writer(bytes, encoding="utf-8")
+        chars = io.StringIO()
+        writer = csv.writer(chars)
         for cells in buffer:
             writer.writerow(cells)
-        bytes.seek(0)
+        bytes = io.BufferedRandom(io.BytesIO(chars.getvalue().encode("utf-8")))
 
         # Prepare job body
         body = {
@@ -439,7 +439,7 @@ class BigqueryStorage(Storage):
         except Exception as exception:
             if "not found: job" in str(exception).lower():
                 note = "BigQuery plugin supports only the US location of datasets"
-                raise exceptions.FrictionlessException(errors.StorageError(note=note))
+                raise FrictionlessException(errors.StorageError(note=note))
             raise
 
     def __write_convert_data_finish_job(self, response):
@@ -456,7 +456,7 @@ class BigqueryStorage(Storage):
             if result["status"]["state"] == "DONE":
                 if result["status"].get("errors"):
                     note = "\n".join(er["message"] for er in result["status"]["errors"])
-                    raise exceptions.FrictionlessException(errors.StorageError(note=note))
+                    raise FrictionlessException(errors.StorageError(note=note))
                 break
             time.sleep(1)
 
@@ -497,7 +497,7 @@ class BigqueryStorage(Storage):
             if name not in existent_names:
                 if not ignore:
                     note = f'Resource "{name}" does not exist'
-                    raise exceptions.FrictionlessException(errors.StorageError(note=note))
+                    raise FrictionlessException(errors.StorageError(note=note))
                 continue
 
             # Make delete request

@@ -5,9 +5,9 @@ from typing import List
 from typer import Option as Opt
 from typer import Argument as Arg
 from ..validate import validate
+from ..dialect import Dialect
 from ..query import Query
 from .main import program
-from .. import dialects
 from .. import helpers
 
 
@@ -81,7 +81,7 @@ def program_validate(
 
     # Prepare dialect
     dialect = (
-        dialects.Dialect(
+        Dialect(
             header_rows=header_rows,
             header_join=header_join,
         )

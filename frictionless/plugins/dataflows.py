@@ -1,8 +1,8 @@
 import stringcase
 from importlib import import_module
+from ..exception import FrictionlessException
 from ..pipeline import Pipeline
 from ..plugin import Plugin
-from .. import exceptions
 from .. import helpers
 from .. import errors
 
@@ -70,7 +70,7 @@ class DataflowsPipeline(Pipeline):
             dataflows = import_module("dataflows")
         except ImportError:
             error = errors.Error(note='Please install "frictionless[dataflows]"')
-            raise exceptions.FrictionlessException(error)
+            raise FrictionlessException(error)
 
         # Create flow
         items = []

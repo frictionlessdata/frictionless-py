@@ -6,14 +6,14 @@ import zipfile
 import warnings
 from copy import deepcopy
 from importlib import import_module
+from .exception import FrictionlessException
 from .metadata import Metadata
 from .location import Location
-from .controls import Control
-from .dialects import Dialect
+from .control import Control
+from .dialect import Dialect
 from .schema import Schema
 from .system import system
 from .query import Query
-from . import exceptions
 from . import helpers
 from . import errors
 from . import config
@@ -821,7 +821,7 @@ class Resource(Metadata):
                 zip.writestr("dataresource.json", descriptor)
         except (IOError, zipfile.BadZipfile, zipfile.LargeZipFile) as exception:
             error = errors.ResourceError(note=str(exception))
-            raise exceptions.FrictionlessException(error) from exception
+            raise FrictionlessException(error) from exception
 
     def to_petl(self, *, normalize=False):
         resource = self
@@ -973,7 +973,7 @@ class Resource(Metadata):
                 if not all(helpers.is_safe_path(chunk) for chunk in path):
                     note = f'path "{path}" is not safe'
                     error = errors.ResourceError(note=note)
-                    raise exceptions.FrictionlessException(error)
+                    raise FrictionlessException(error)
 
     def metadata_validate(self):
         yield from super().metadata_validate()

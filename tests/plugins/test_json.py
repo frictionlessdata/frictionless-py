@@ -1,6 +1,7 @@
 import json
 import pytest
-from frictionless import Table, dialects
+from frictionless import Table
+from frictionless.plugins.json import JsonDialect
 
 BASE_URL = "https://raw.githubusercontent.com/okfn/tabulator-py/master/%s"
 
@@ -22,7 +23,7 @@ def test_table_json_keyed():
 
 
 def test_table_json_keyed_with_keys_provided():
-    dialect = dialects.JsonDialect(keys=["name", "id"])
+    dialect = JsonDialect(keys=["name", "id"])
     with Table("data/table.keyed.json", dialect=dialect) as table:
         assert table.dialect.keyed is True
         assert table.header == ["name", "id"]
@@ -87,10 +88,23 @@ def test_table_json_write(tmpdir):
         ]
 
 
+def test_table_json_write_decimal(tmpdir):
+    source = [["id", "name"], [1.5, "english"], [2.5, "german"]]
+    target = str(tmpdir.join("table.json"))
+    dialect = JsonDialect(keyed=True)
+    with Table(source) as table:
+        table.write(target, dialect=dialect)
+    with open(target) as file:
+        assert json.load(file) == [
+            {"id": "1.5", "name": "english"},
+            {"id": "2.5", "name": "german"},
+        ]
+
+
 def test_table_json_write_keyed(tmpdir):
     source = "data/table.csv"
     target = str(tmpdir.join("table.json"))
-    dialect = dialects.JsonDialect(keyed=True)
+    dialect = JsonDialect(keyed=True)
     with Table(source) as table:
         table.write(target, dialect=dialect)
     with open(target) as file:
@@ -113,7 +127,7 @@ def test_table_jsonl_write(tmpdir):
 def test_table_jsonl_write_keyed(tmpdir):
     source = "data/table.csv"
     target = str(tmpdir.join("table.jsonl"))
-    dialect = dialects.JsonDialect(keyed=True)
+    dialect = JsonDialect(keyed=True)
     with Table(source) as table:
         table.write(target, dialect=dialect)
     with Table(target, dialect=dialect) as table:

@@ -1,5 +1,6 @@
 from collections import OrderedDict
-from frictionless import Table, dialects
+from frictionless import Table
+from frictionless.plugins.inline import InlineDialect
 
 
 # Read
@@ -30,7 +31,7 @@ def test_table_inline_keyed_order_is_preserved():
 
 def test_table_inline_keyed_with_keys_provided():
     source = [{"id": "1", "name": "english"}, {"id": "2", "name": "中国人"}]
-    dialect = dialects.InlineDialect(keys=["name", "id"])
+    dialect = InlineDialect(keys=["name", "id"])
     with Table(source, format="inline", dialect=dialect) as table:
         assert table.dialect.keyed is True
         assert table.header == ["name", "id"]
@@ -92,7 +93,7 @@ def test_table_inline_write(tmpdir):
 
 def test_table_inline_write_keyed(tmpdir):
     source = "data/table.csv"
-    dialect = dialects.InlineDialect(keyed=True)
+    dialect = InlineDialect(keyed=True)
     with Table(source) as table:
         table.write(format="inline", dialect=dialect) == [
             {"id": 1, "name": "english"},

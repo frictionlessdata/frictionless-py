@@ -106,10 +106,10 @@ def import_from_plugin(name, *, plugin):
     try:
         return import_module(name)
     except ImportError:
-        exceptions = import_module("frictionless.exceptions")
+        module = import_module("frictionless.exception")
         errors = import_module("frictionless.errors")
         error = errors.Error(note=f'Please install "frictionless[{plugin}]"')
-        raise exceptions.FrictionlessException(error)
+        raise module.FrictionlessException(error)
 
 
 def copy_merge(source, patch):
@@ -136,6 +136,7 @@ def compile_regex(items):
         return result
 
 
+# TODO: use slugify
 def detect_name(source):
     if isinstance(source, str) and "\n" not in source:
         return os.path.splitext(os.path.basename(source))[0]
@@ -259,22 +260,21 @@ def detect_encoding(sample):
 def detect_source_type(source):
     source_type = "table"
     if isinstance(source, dict):
+        source_type = "resource"
         if source.get("fields") is not None:
             source_type = "schema"
-        if source.get("path") is not None or source.get("data") is not None:
-            source_type = "resource"
-        if source.get("resources") is not None:
+        elif source.get("resources") is not None:
             source_type = "package"
-        if source.get("tasks") is not None:
+        elif source.get("tasks") is not None:
             source_type = "inquiry"
-    if isinstance(source, str):
-        if source.endswith("schema.json") or source.endswith("schema.yaml"):
+    # TODO: we need to open it to improve detection
+    elif isinstance(source, str) and source.endswith((".json", ".yaml")):
+        source_type = "resource"
+        if source.endswith(("schema.json", "schema.yaml")):
             source_type = "schema"
-        if source.endswith("resource.json") or source.endswith("resource.yaml"):
-            source_type = "resource"
-        if source.endswith("package.json") or source.endswith("package.yaml"):
+        if source.endswith(("package.json", "package.yaml")):
             source_type = "package"
-        if source.endswith("inquiry.json") or source.endswith("inquiry.yaml"):
+        if source.endswith(("inquiry.json", "inquiry.yaml")):
             source_type = "inquiry"
     return source_type
 
@@ -282,7 +282,7 @@ def detect_source_type(source):
 # TODO: move to Location/plugins
 def detect_source_scheme_and_format(source):
     if hasattr(source, "read"):
-        return ("stream", None)
+        return ("filelike", None)
     if not isinstance(source, str):
         return (None, "inline")
     if "docs.google.com/spreadsheets" in source:

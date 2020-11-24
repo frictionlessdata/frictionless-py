@@ -1,10 +1,10 @@
 import functools
 from copy import deepcopy
-from . import config
-from . import helpers
-from . import exceptions
 from .metadata import Metadata
 from .errors import Error, TaskError, ReportError
+from .exception import FrictionlessException
+from . import config
+from . import helpers
 
 
 class Report(Metadata):
@@ -96,7 +96,7 @@ class Report(Metadata):
         """
         if len(self.tables) != 1:
             error = Error(note='The "report.table" is available for single table reports')
-            raise exceptions.FrictionlessException(error)
+            raise FrictionlessException(error)
         return self.tables[0]
 
     # Expand
@@ -149,7 +149,7 @@ class Report(Metadata):
                 return validate(*args, **kwargs)
             except Exception as exception:
                 error = TaskError(note=str(exception))
-                if isinstance(exception, exceptions.FrictionlessException):
+                if isinstance(exception, FrictionlessException):
                     error = exception.error
                 return Report(time=timer.time, errors=[error], tables=[])
 
@@ -364,7 +364,7 @@ class ReportTable(Metadata):
         """
         if len(self.errors) != 1:
             error = Error(note='The "table.error" is available for single error tables')
-            raise exceptions.FrictionlessException(error)
+            raise FrictionlessException(error)
         return self.errors[0]
 
     # Expand

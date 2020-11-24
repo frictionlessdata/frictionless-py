@@ -1,15 +1,15 @@
 import sys
 import petl
 import typer
-import simplejson
+import json as pyjson
 import yaml as pyyaml
 from typing import List
 from typer import Option as Opt
 from typer import Argument as Arg
 from ..extract import extract
+from ..dialect import Dialect
 from ..query import Query
 from .main import program
-from .. import dialects
 from .. import helpers
 
 
@@ -74,7 +74,7 @@ def program_extract(
 
     # Prepare dialect
     dialect = (
-        dialects.Dialect(
+        Dialect(
             header_rows=header_rows,
             header_join=header_join,
         )
@@ -137,7 +137,7 @@ def program_extract(
 
     # Return JSON
     if json:
-        content = simplejson.dumps(data, indent=2, ensure_ascii=False)
+        content = pyjson.dumps(data, indent=2, ensure_ascii=False)
         typer.secho(content)
         raise typer.Exit()
 
