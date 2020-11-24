@@ -260,22 +260,21 @@ def detect_encoding(sample):
 def detect_source_type(source):
     source_type = "table"
     if isinstance(source, dict):
+        source_type = "resource"
         if source.get("fields") is not None:
             source_type = "schema"
-        if source.get("path") is not None or source.get("data") is not None:
-            source_type = "resource"
-        if source.get("resources") is not None:
+        elif source.get("resources") is not None:
             source_type = "package"
-        if source.get("tasks") is not None:
+        elif source.get("tasks") is not None:
             source_type = "inquiry"
-    if isinstance(source, str):
-        if source.endswith("schema.json") or source.endswith("schema.yaml"):
+    # TODO: we need to open it to improve detection
+    elif isinstance(source, str) and source.endswith((".json", ".yaml")):
+        source_type = "resource"
+        if source.endswith(("schema.json", "schema.yaml")):
             source_type = "schema"
-        if source.endswith("resource.json") or source.endswith("resource.yaml"):
-            source_type = "resource"
-        if source.endswith("package.json") or source.endswith("package.yaml"):
+        if source.endswith(("package.json", "package.yaml")):
             source_type = "package"
-        if source.endswith("inquiry.json") or source.endswith("inquiry.yaml"):
+        if source.endswith(("inquiry.json", "inquiry.yaml")):
             source_type = "inquiry"
     return source_type
 
