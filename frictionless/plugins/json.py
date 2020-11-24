@@ -1,5 +1,5 @@
+import json
 import tempfile
-import simplejson
 from ..plugins.inline import InlineDialect
 from ..exception import FrictionlessException
 from ..metadata import Metadata
@@ -144,7 +144,6 @@ class JsonParser(Parser):
         "boolean",
         "geojson",
         "integer",
-        "number",
         "object",
         "string",
         "year",
@@ -184,7 +183,7 @@ class JsonParser(Parser):
                 data.append(row.schema.field_names)
             data.append(item)
         with tempfile.NamedTemporaryFile("wt", delete=False) as file:
-            simplejson.dump(data, file, indent=2)
+            json.dump(data, file, indent=2)
         helpers.move_file(file.name, self.resource.source)
 
 

@@ -1,7 +1,7 @@
 import sys
 import petl
 import typer
-import simplejson
+import json as pyjson
 import yaml as pyyaml
 from typing import List
 from typer import Option as Opt
@@ -137,7 +137,7 @@ def program_extract(
 
     # Return JSON
     if json:
-        content = simplejson.dumps(data, indent=2, ensure_ascii=False)
+        content = pyjson.dumps(data, indent=2, ensure_ascii=False)
         typer.secho(content)
         raise typer.Exit()
 

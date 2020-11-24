@@ -88,6 +88,19 @@ def test_table_json_write(tmpdir):
         ]
 
 
+def test_table_json_write_decimal(tmpdir):
+    source = [["id", "name"], [1.5, "english"], [2.5, "german"]]
+    target = str(tmpdir.join("table.json"))
+    dialect = JsonDialect(keyed=True)
+    with Table(source) as table:
+        table.write(target, dialect=dialect)
+    with open(target) as file:
+        assert json.load(file) == [
+            {"id": "1.5", "name": "english"},
+            {"id": "2.5", "name": "german"},
+        ]
+
+
 def test_table_json_write_keyed(tmpdir):
     source = "data/table.csv"
     target = str(tmpdir.join("table.json"))

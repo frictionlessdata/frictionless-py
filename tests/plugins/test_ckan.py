@@ -375,7 +375,7 @@ class TestWriteDoesNotExist:
                     "geojson": {"type": "Point", "coordinates": [33, 33.33]},
                     "geopoint": "30,70",
                     "integer": 1,
-                    "number": 7.0,
+                    "number": "7",
                     "object": {"chars": 560},
                     "string": "english",
                     "time": "03:00:00",
