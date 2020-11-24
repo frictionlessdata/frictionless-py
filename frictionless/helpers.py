@@ -282,7 +282,7 @@ def detect_source_type(source):
 # TODO: move to Location/plugins
 def detect_source_scheme_and_format(source):
     if hasattr(source, "read"):
-        return ("stream", None)
+        return ("filelike", None)
     if not isinstance(source, str):
         return (None, "inline")
     if "docs.google.com/spreadsheets" in source:

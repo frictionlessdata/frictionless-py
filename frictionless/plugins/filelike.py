@@ -8,33 +8,33 @@ from .. import errors
 # Plugin
 
 
-class StreamPlugin(Plugin):
+class FilelikePlugin(Plugin):
     """Plugin for Local Data
 
     API      | Usage
     -------- | --------
-    Public   | `from frictionless.plugins.stream import StreamPlugin`
+    Public   | `from frictionless.plugins.filelike import FilelikePlugin`
 
     """
 
     def create_control(self, resource, *, descriptor):
-        if resource.scheme == "stream":
-            return StreamControl(descriptor)
+        if resource.scheme == "filelike":
+            return FilelikeControl(descriptor)
 
     def create_loader(self, resource):
-        if resource.scheme == "stream":
-            return StreamLoader(resource)
+        if resource.scheme == "filelike":
+            return FilelikeLoader(resource)
 
 
 # Control
 
 
-class StreamControl(Control):
-    """Stream control representation
+class FilelikeControl(Control):
+    """Filelike control representation
 
     API      | Usage
     -------- | --------
-    Public   | `from frictionless.plugins.stream import StreamControl`
+    Public   | `from frictionless.plugins.filelike import FilelikeControl`
 
     Parameters:
         descriptor? (str|dict): descriptor
@@ -50,12 +50,12 @@ class StreamControl(Control):
 # Loader
 
 
-class StreamLoader(Loader):
-    """Stream loader implementation.
+class FilelikeLoader(Loader):
+    """Filelike loader implementation.
 
     API      | Usage
     -------- | --------
-    Public   | `from frictionless.plugins.stream import StreamLoader`
+    Public   | `from frictionless.plugins.filelike import FilelikeLoader`
 
     """
 

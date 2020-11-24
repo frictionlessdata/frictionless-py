@@ -185,9 +185,9 @@ def test_table_scheme_https():
         assert table.scheme == "https"
 
 
-def test_table_scheme_stream():
+def test_table_scheme_filelike():
     with Table(open("data/table.csv", mode="rb"), format="csv") as table:
-        assert table.scheme == "stream"
+        assert table.scheme == "filelike"
 
 
 def test_table_scheme_text():

@@ -827,7 +827,7 @@ def test_resource_source_multipart_infer():
         "path": ["data/chunk1.csv", "data/chunk2.csv"],
         "profile": "tabular-data-resource",
         "name": "memory",
-        "scheme": "stream",
+        "scheme": "filelike",
         "format": "csv",
         "hashing": "md5",
         "encoding": "utf-8",
