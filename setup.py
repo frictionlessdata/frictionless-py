@@ -63,6 +63,7 @@ INSTALL_REQUIRES = [
     "pyyaml>=5.3",
     "chardet>=3.0",
     "requests>=2.10",
+    "validators>=0.18",
     "jsonschema>=2.5",
     "simpleeval>=0.9",
     "stringcase>=1.2",
@@ -72,7 +73,6 @@ INSTALL_REQUIRES = [
     "unicodecsv>=0.14",
     "simplejson>=3.10",
     "isodate>=0.6",
-    "rfc3986>=1.4",
 ]
 README = read("README.md")
 VERSION = read(PACKAGE, "assets", "VERSION")

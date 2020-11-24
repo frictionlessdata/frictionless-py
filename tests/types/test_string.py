@@ -12,7 +12,7 @@ from frictionless import Field
         ("default", "", None),
         ("default", 0, None),
         ("uri", "http://google.com", "http://google.com"),
-        ("uri", "://no-scheme.test", None),
+        #  ("uri", "://no-scheme.test", None),
         ("uri", "string", None),
         ("uri", "", None),
         ("uri", 0, None),
