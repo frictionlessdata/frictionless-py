@@ -71,7 +71,6 @@ INSTALL_REQUIRES = [
     "validators>=0.18",
     "python-slugify>=1.2",
     "python-dateutil>=2.8",
-    "unicodecsv>=0.14",
     "simplejson>=3.10",
 ]
 README = read("README.md")

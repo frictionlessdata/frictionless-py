@@ -1,8 +1,8 @@
 import io
 import re
+import csv
 import json
 import time
-import unicodecsv
 from slugify import slugify
 from functools import partial
 from ..exception import FrictionlessException
@@ -402,11 +402,11 @@ class BigqueryStorage(Storage):
         bq_name = self.__write_convert_name(name)
 
         # Process buffer to byte stream csv
-        bytes = io.BufferedRandom(io.BytesIO())
-        writer = unicodecsv.writer(bytes, encoding="utf-8")
+        chars = io.StringIO()
+        writer = csv.writer(chars)
         for cells in buffer:
             writer.writerow(cells)
-        bytes.seek(0)
+        bytes = io.BufferedRandom(io.BytesIO(chars.getvalue().encode("utf-8")))
 
         # Prepare job body
         body = {

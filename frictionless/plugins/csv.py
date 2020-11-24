@@ -1,7 +1,6 @@
 import csv
 import tempfile
 import stringcase
-import unicodecsv
 from itertools import chain
 from ..metadata import Metadata
 from ..dialect import Dialect
@@ -259,8 +258,10 @@ class CsvParser(Parser):
             value = getattr(self.resource.dialect, name, None)
             if value is not None:
                 options[name] = value
-        with tempfile.NamedTemporaryFile(delete=False) as file:
-            writer = unicodecsv.writer(file, encoding=self.resource.encoding, **options)
+        with tempfile.NamedTemporaryFile(
+            "wt", delete=False, encoding=self.resource.encoding, newline=""
+        ) as file:
+            writer = csv.writer(file, **options)
             for row in read_row_stream():
                 schema = row.schema
                 if row.row_number == 1:
