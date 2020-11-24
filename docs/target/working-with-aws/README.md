@@ -4,7 +4,7 @@
 
 
 
-> Status: **PLUGIN / STABLE**
+> Status: **STABLE**
 
 Frictionless supports reading data from S3 cloud source. You can read file in any format that is available in your bucket.
 

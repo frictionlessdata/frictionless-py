@@ -4,7 +4,7 @@
 
 
 
-> Status: **PLUGIN / EXPERIMENTAL**
+> Status: **EXPERIMENTAL**
 
 Frictionless supports reading and writing SPSS files.
 

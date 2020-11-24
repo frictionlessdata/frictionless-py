@@ -4,7 +4,7 @@
 
 
 
-> Status: **PLUGIN / EXPERIMENTAL**
+> Status: **EXPERIMENTAL**
 
 It's possible to start Frictionless API as a standalone server.
 

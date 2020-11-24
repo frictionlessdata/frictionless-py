@@ -2942,6 +2942,105 @@ Convert to a list
 <a name="frictionless.plugins"></a>
 ## frictionless.plugins
 
+<a name="frictionless.plugins.remote"></a>
+## frictionless.plugins.remote
+
+<a name="frictionless.plugins.remote.RemotePlugin"></a>
+### RemotePlugin
+
+```python
+class RemotePlugin(Plugin)
+```
+
+Plugin for Remote Data
+
+API      | Usage
+-------- | --------
+Public   | `from frictionless.plugins.remote import RemotePlugin`
+
+<a name="frictionless.plugins.remote.RemoteControl"></a>
+### RemoteControl
+
+```python
+class RemoteControl(Control)
+```
+
+Remote control representation
+
+API      | Usage
+-------- | --------
+Public   | `from frictionless.plugins.remote import RemoteControl`
+
+**Arguments**:
+
+- `descriptor?` _str|dict_ - descriptor
+- `http_session?` _requests.Session_ - user defined HTTP session
+- `http_preload?` _bool_ - don't use HTTP streaming and preload all the data
+- `http_timeout?` _int_ - user defined HTTP timeout in minutes
+  
+
+**Raises**:
+
+- `FrictionlessException` - raise any error that occurs during the process
+
+<a name="frictionless.plugins.remote.RemoteControl.http_session"></a>
+#### <big>http\_session</big>
+
+```python
+ | @Metadata.property
+ | http_session()
+```
+
+**Returns**:
+
+- `requests.Session` - HTTP session
+
+<a name="frictionless.plugins.remote.RemoteControl.http_preload"></a>
+#### <big>http\_preload</big>
+
+```python
+ | @Metadata.property
+ | http_preload()
+```
+
+**Returns**:
+
+- `bool` - if not streaming
+
+<a name="frictionless.plugins.remote.RemoteControl.http_timeout"></a>
+#### <big>http\_timeout</big>
+
+```python
+ | @Metadata.property
+ | http_timeout()
+```
+
+**Returns**:
+
+- `int` - HTTP timeout in minutes
+
+<a name="frictionless.plugins.remote.RemoteControl.expand"></a>
+#### <big>expand</big>
+
+```python
+ | expand()
+```
+
+Expand metadata
+
+<a name="frictionless.plugins.remote.RemoteLoader"></a>
+### RemoteLoader
+
+```python
+class RemoteLoader(Loader)
+```
+
+Remote loader implementation.
+
+API      | Usage
+-------- | --------
+Public   | `from frictionless.plugins.remote import RemoteLoader`
+
 <a name="frictionless.plugins.gsheet"></a>
 ## frictionless.plugins.gsheet
 
@@ -3409,6 +3508,195 @@ API      | Usage
 -------- | --------
 Public   | `from frictionless.plugins.ods import OdsParser`
 
+<a name="frictionless.plugins.filelike"></a>
+## frictionless.plugins.filelike
+
+<a name="frictionless.plugins.filelike.FilelikePlugin"></a>
+### FilelikePlugin
+
+```python
+class FilelikePlugin(Plugin)
+```
+
+Plugin for Local Data
+
+API      | Usage
+-------- | --------
+Public   | `from frictionless.plugins.filelike import FilelikePlugin`
+
+<a name="frictionless.plugins.filelike.FilelikeControl"></a>
+### FilelikeControl
+
+```python
+class FilelikeControl(Control)
+```
+
+Filelike control representation
+
+API      | Usage
+-------- | --------
+Public   | `from frictionless.plugins.filelike import FilelikeControl`
+
+**Arguments**:
+
+- `descriptor?` _str|dict_ - descriptor
+  
+
+**Raises**:
+
+- `FrictionlessException` - raise any error that occurs during the process
+
+<a name="frictionless.plugins.filelike.FilelikeLoader"></a>
+### FilelikeLoader
+
+```python
+class FilelikeLoader(Loader)
+```
+
+Filelike loader implementation.
+
+API      | Usage
+-------- | --------
+Public   | `from frictionless.plugins.filelike import FilelikeLoader`
+
+<a name="frictionless.plugins.excel"></a>
+## frictionless.plugins.excel
+
+<a name="frictionless.plugins.excel.ExcelPlugin"></a>
+### ExcelPlugin
+
+```python
+class ExcelPlugin(Plugin)
+```
+
+Plugin for Excel
+
+API      | Usage
+-------- | --------
+Public   | `from frictionless.plugins.excel import ExcelPlugin`
+
+<a name="frictionless.plugins.excel.ExcelDialect"></a>
+### ExcelDialect
+
+```python
+class ExcelDialect(Dialect)
+```
+
+Excel dialect representation
+
+API      | Usage
+-------- | --------
+Public   | `from frictionless.plugins.excel import ExcelDialect`
+
+**Arguments**:
+
+- `descriptor?` _str|dict_ - descriptor
+- `sheet?` _int|str_ - number from 1 or name of an excel sheet
+- `workbook_cache?` _dict_ - workbook cache
+- `fill_merged_cells?` _bool_ - whether to fill merged cells
+- `preserve_formatting?` _bool_ - whither to preserve formatting
+- `adjust_floating_point_error?` _bool_ - whether to adjust floating point error
+  
+
+**Raises**:
+
+- `FrictionlessException` - raise any error that occurs during the process
+
+<a name="frictionless.plugins.excel.ExcelDialect.sheet"></a>
+#### <big>sheet</big>
+
+```python
+ | @Metadata.property
+ | sheet()
+```
+
+**Returns**:
+
+- `str|int` - sheet
+
+<a name="frictionless.plugins.excel.ExcelDialect.workbook_cache"></a>
+#### <big>workbook\_cache</big>
+
+```python
+ | @Metadata.property
+ | workbook_cache()
+```
+
+**Returns**:
+
+- `dict` - workbook cache
+
+<a name="frictionless.plugins.excel.ExcelDialect.fill_merged_cells"></a>
+#### <big>fill\_merged\_cells</big>
+
+```python
+ | @Metadata.property
+ | fill_merged_cells()
+```
+
+**Returns**:
+
+- `bool` - fill merged cells
+
+<a name="frictionless.plugins.excel.ExcelDialect.preserve_formatting"></a>
+#### <big>preserve\_formatting</big>
+
+```python
+ | @Metadata.property
+ | preserve_formatting()
+```
+
+**Returns**:
+
+- `bool` - preserve formatting
+
+<a name="frictionless.plugins.excel.ExcelDialect.adjust_floating_point_error"></a>
+#### <big>adjust\_floating\_point\_error</big>
+
+```python
+ | @Metadata.property
+ | adjust_floating_point_error()
+```
+
+**Returns**:
+
+- `bool` - adjust floating point error
+
+<a name="frictionless.plugins.excel.ExcelDialect.expand"></a>
+#### <big>expand</big>
+
+```python
+ | expand()
+```
+
+Expand metadata
+
+<a name="frictionless.plugins.excel.XlsxParser"></a>
+### XlsxParser
+
+```python
+class XlsxParser(Parser)
+```
+
+XLSX parser implementation.
+
+API      | Usage
+-------- | --------
+Public   | `from frictionless.plugins.excel import XlsxParser
+
+<a name="frictionless.plugins.excel.XlsParser"></a>
+### XlsParser
+
+```python
+class XlsParser(Parser)
+```
+
+XLS parser implementation.
+
+API      | Usage
+-------- | --------
+Public   | `from frictionless.plugins.excel import XlsParser
+
 <a name="frictionless.plugins.html"></a>
 ## frictionless.plugins.html
 
@@ -3532,6 +3820,179 @@ TSV parser implementation.
 API      | Usage
 -------- | --------
 Public   | `from frictionless.plugins.tsv import TsvParser`
+
+<a name="frictionless.plugins.csv"></a>
+## frictionless.plugins.csv
+
+<a name="frictionless.plugins.csv.CsvPlugin"></a>
+### CsvPlugin
+
+```python
+class CsvPlugin(Plugin)
+```
+
+Plugin for Pandas
+
+API      | Usage
+-------- | --------
+Public   | `from frictionless.plugins.csv import CsvPlugin`
+
+<a name="frictionless.plugins.csv.CsvDialect"></a>
+### CsvDialect
+
+```python
+class CsvDialect(Dialect)
+```
+
+Csv dialect representation
+
+API      | Usage
+-------- | --------
+Public   | `from frictionless.plugins.csv import CsvDialect`
+
+**Arguments**:
+
+- `descriptor?` _str|dict_ - descriptor
+- `delimiter?` _str_ - csv delimiter
+- `line_terminator?` _str_ - csv line terminator
+- `quote_char?` _str_ - csv quote char
+- `double_quote?` _bool_ - csv double quote
+- `escape_char?` _str_ - csv escape char
+- `null_sequence?` _str_ - csv null sequence
+- `skip_initial_space?` _bool_ - csv skip initial space
+- `comment_char?` _str_ - csv comment char
+  
+
+**Raises**:
+
+- `FrictionlessException` - raise any error that occurs during the process
+
+<a name="frictionless.plugins.csv.CsvDialect.delimiter"></a>
+#### <big>delimiter</big>
+
+```python
+ | @Metadata.property
+ | delimiter()
+```
+
+**Returns**:
+
+- `str` - delimiter
+
+<a name="frictionless.plugins.csv.CsvDialect.line_terminator"></a>
+#### <big>line\_terminator</big>
+
+```python
+ | @Metadata.property
+ | line_terminator()
+```
+
+**Returns**:
+
+- `str` - line terminator
+
+<a name="frictionless.plugins.csv.CsvDialect.quote_char"></a>
+#### <big>quote\_char</big>
+
+```python
+ | @Metadata.property
+ | quote_char()
+```
+
+**Returns**:
+
+- `str` - quote char
+
+<a name="frictionless.plugins.csv.CsvDialect.double_quote"></a>
+#### <big>double\_quote</big>
+
+```python
+ | @Metadata.property
+ | double_quote()
+```
+
+**Returns**:
+
+- `bool` - double quote
+
+<a name="frictionless.plugins.csv.CsvDialect.escape_char"></a>
+#### <big>escape\_char</big>
+
+```python
+ | @Metadata.property
+ | escape_char()
+```
+
+**Returns**:
+
+- `str?` - escape char
+
+<a name="frictionless.plugins.csv.CsvDialect.null_sequence"></a>
+#### <big>null\_sequence</big>
+
+```python
+ | @Metadata.property
+ | null_sequence()
+```
+
+**Returns**:
+
+- `str?` - null sequence
+
+<a name="frictionless.plugins.csv.CsvDialect.skip_initial_space"></a>
+#### <big>skip\_initial\_space</big>
+
+```python
+ | @Metadata.property
+ | skip_initial_space()
+```
+
+**Returns**:
+
+- `bool` - if skipping initial space
+
+<a name="frictionless.plugins.csv.CsvDialect.comment_char"></a>
+#### <big>comment\_char</big>
+
+```python
+ | @Metadata.property
+ | comment_char()
+```
+
+**Returns**:
+
+- `str?` - comment char
+
+<a name="frictionless.plugins.csv.CsvDialect.expand"></a>
+#### <big>expand</big>
+
+```python
+ | expand()
+```
+
+Expand metadata
+
+<a name="frictionless.plugins.csv.CsvDialect.to_python"></a>
+#### <big>to\_python</big>
+
+```python
+ | to_python()
+```
+
+Conver to Python's `csv.Dialect`
+
+<a name="frictionless.plugins.csv.CsvParser"></a>
+### CsvParser
+
+```python
+class CsvParser(Parser)
+```
+
+CSV parser implementation.
+
+API      | Usage
+-------- | --------
+Public   | `from frictionless.plugins.csv import CsvPlugins
 
 <a name="frictionless.plugins.sql"></a>
 ## frictionless.plugins.sql
@@ -3683,6 +4144,204 @@ API      | Usage
 -------- | --------
 Public   | `from frictionless.plugins.server import ApiParser`
 
+<a name="frictionless.plugins.json"></a>
+## frictionless.plugins.json
+
+<a name="frictionless.plugins.json.JsonPlugin"></a>
+### JsonPlugin
+
+```python
+class JsonPlugin(Plugin)
+```
+
+Plugin for Json
+
+API      | Usage
+-------- | --------
+Public   | `from frictionless.plugins.json import JsonPlugin`
+
+<a name="frictionless.plugins.json.JsonDialect"></a>
+### JsonDialect
+
+```python
+class JsonDialect(Dialect)
+```
+
+Json dialect representation
+
+API      | Usage
+-------- | --------
+Public   | `from frictionless.plugins.json import JsonDialect`
+
+**Arguments**:
+
+- `descriptor?` _str|dict_ - descriptor
+- `keys?` _str[]_ - a list of strings to use as data keys
+- `keyed?` _bool_ - whether data rows are keyed
+- `property?` _str_ - a path within JSON to the data
+  
+
+**Raises**:
+
+- `FrictionlessException` - raise any error that occurs during the process
+
+<a name="frictionless.plugins.json.JsonDialect.keys"></a>
+#### <big>keys</big>
+
+```python
+ | @Metadata.property
+ | keys()
+```
+
+**Returns**:
+
+- `str[]?` - keys
+
+<a name="frictionless.plugins.json.JsonDialect.keyed"></a>
+#### <big>keyed</big>
+
+```python
+ | @Metadata.property
+ | keyed()
+```
+
+**Returns**:
+
+- `bool` - keyed
+
+<a name="frictionless.plugins.json.JsonDialect.property"></a>
+#### <big>property</big>
+
+```python
+ | @Metadata.property
+ | property()
+```
+
+**Returns**:
+
+- `str?` - property
+
+<a name="frictionless.plugins.json.JsonDialect.expand"></a>
+#### <big>expand</big>
+
+```python
+ | expand()
+```
+
+Expand metadata
+
+<a name="frictionless.plugins.json.JsonParser"></a>
+### JsonParser
+
+```python
+class JsonParser(Parser)
+```
+
+JSON parser implementation.
+
+API      | Usage
+-------- | --------
+Public   | `from frictionless.plugins.json import JsonParser
+
+<a name="frictionless.plugins.json.JsonlParser"></a>
+### JsonlParser
+
+```python
+class JsonlParser(Parser)
+```
+
+JSONL parser implementation.
+
+API      | Usage
+-------- | --------
+Public   | `from frictionless.plugins.json import JsonlParser
+
+<a name="frictionless.plugins.inline"></a>
+## frictionless.plugins.inline
+
+<a name="frictionless.plugins.inline.InlinePlugin"></a>
+### InlinePlugin
+
+```python
+class InlinePlugin(Plugin)
+```
+
+Plugin for Inline
+
+API      | Usage
+-------- | --------
+Public   | `from frictionless.plugins.inline import InlinePlugin`
+
+<a name="frictionless.plugins.inline.InlineDialect"></a>
+### InlineDialect
+
+```python
+class InlineDialect(Dialect)
+```
+
+Inline dialect representation
+
+API      | Usage
+-------- | --------
+Public   | `from frictionless.plugins.inline import InlineDialect`
+
+**Arguments**:
+
+- `descriptor?` _str|dict_ - descriptor
+- `keys?` _str[]_ - a list of strings to use as data keys
+- `keyed?` _bool_ - whether data rows are keyed
+  
+
+**Raises**:
+
+- `FrictionlessException` - raise any error that occurs during the process
+
+<a name="frictionless.plugins.inline.InlineDialect.keys"></a>
+#### <big>keys</big>
+
+```python
+ | @Metadata.property
+ | keys()
+```
+
+**Returns**:
+
+- `str[]?` - keys
+
+<a name="frictionless.plugins.inline.InlineDialect.keyed"></a>
+#### <big>keyed</big>
+
+```python
+ | @Metadata.property
+ | keyed()
+```
+
+**Returns**:
+
+- `bool` - keyed
+
+<a name="frictionless.plugins.inline.InlineDialect.expand"></a>
+#### <big>expand</big>
+
+```python
+ | expand()
+```
+
+Expand metadata
+
+<a name="frictionless.plugins.inline.InlineParser"></a>
+### InlineParser
+
+```python
+class InlineParser(Parser)
+```
+
+Inline parser implementation.
+
+API      | Usage
+-------- | --------
+Public   | `from frictionless.plugins.inline import InlineParser
+
 <a name="frictionless.plugins.aws"></a>
 ## frictionless.plugins.aws
 
@@ -3744,98 +4403,158 @@ API      | Usage
 -------- | --------
 Public   | `from frictionless.plugins.aws import S3Loader`
 
-<a name="frictionless.parsers"></a>
-## frictionless.parsers
+<a name="frictionless.plugins.text"></a>
+## frictionless.plugins.text
 
-<a name="frictionless.parsers.excel"></a>
-## frictionless.parsers.excel
-
-<a name="frictionless.parsers.excel.XlsxParser"></a>
-### XlsxParser
+<a name="frictionless.plugins.text.TextPlugin"></a>
+### TextPlugin
 
 ```python
-class XlsxParser(Parser)
+class TextPlugin(Plugin)
 ```
 
-XLSX parser implementation.
+Plugin for Text Data
 
 API      | Usage
 -------- | --------
-Public   | `from frictionless import parsers
+Public   | `from frictionless.plugins.local import TextPlugin`
 
-<a name="frictionless.parsers.excel.XlsParser"></a>
-### XlsParser
+<a name="frictionless.plugins.text.TextControl"></a>
+### TextControl
 
 ```python
-class XlsParser(Parser)
+class TextControl(Control)
 ```
 
-XLS parser implementation.
+Text control representation
 
 API      | Usage
 -------- | --------
-Public   | `from frictionless import parsers
+Public   | `from frictionless.plugins.text import TextControl`
 
-<a name="frictionless.parsers.csv"></a>
-## frictionless.parsers.csv
+**Arguments**:
 
-<a name="frictionless.parsers.csv.CsvParser"></a>
-### CsvParser
+- `descriptor?` _str|dict_ - descriptor
+  
+
+**Raises**:
+
+- `FrictionlessException` - raise any error that occurs during the process
+
+<a name="frictionless.plugins.text.TextLoader"></a>
+### TextLoader
 
 ```python
-class CsvParser(Parser)
+class TextLoader(Loader)
 ```
 
-CSV parser implementation.
+Text loader implementation.
 
 API      | Usage
 -------- | --------
-Public   | `from frictionless import parsers
+Public   | `from frictionless.plugins.text import TextLoader`
 
-<a name="frictionless.parsers.json"></a>
-## frictionless.parsers.json
+<a name="frictionless.plugins.local"></a>
+## frictionless.plugins.local
 
-<a name="frictionless.parsers.json.JsonParser"></a>
-### JsonParser
+<a name="frictionless.plugins.local.LocalPlugin"></a>
+### LocalPlugin
 
 ```python
-class JsonParser(Parser)
+class LocalPlugin(Plugin)
 ```
 
-JSON parser implementation.
+Plugin for Local Data
 
 API      | Usage
 -------- | --------
-Public   | `from frictionless import parsers
+Public   | `from frictionless.plugins.local import LocalPlugin`
 
-<a name="frictionless.parsers.json.JsonlParser"></a>
-### JsonlParser
+<a name="frictionless.plugins.local.LocalControl"></a>
+### LocalControl
 
 ```python
-class JsonlParser(Parser)
+class LocalControl(Control)
 ```
 
-JSONL parser implementation.
+Local control representation
 
 API      | Usage
 -------- | --------
-Public   | `from frictionless import parsers
+Public   | `from frictionless.plugins.local import LocalControl`
 
-<a name="frictionless.parsers.inline"></a>
-## frictionless.parsers.inline
+**Arguments**:
 
-<a name="frictionless.parsers.inline.InlineParser"></a>
-### InlineParser
+- `descriptor?` _str|dict_ - descriptor
+  
+
+**Raises**:
+
+- `FrictionlessException` - raise any error that occurs during the process
+
+<a name="frictionless.plugins.local.LocalLoader"></a>
+### LocalLoader
 
 ```python
-class InlineParser(Parser)
+class LocalLoader(Loader)
 ```
 
-Inline parser implementation.
+Local loader implementation.
 
 API      | Usage
 -------- | --------
-Public   | `from frictionless import parsers
+Public   | `from frictionless.plugins.local import LocalLoader`
+
+<a name="frictionless.control"></a>
+## frictionless.control
+
+<a name="frictionless.control.Control"></a>
+### Control
+
+```python
+class Control(Metadata)
+```
+
+Control representation
+
+API      | Usage
+-------- | --------
+Public   | `from frictionless import Control`
+
+**Arguments**:
+
+- `descriptor?` _str|dict_ - descriptor
+- `newline?` _str_ - a string to be used for `io.open(..., newline=newline)`
+- `detectEncoding?` _func_ - a function to detect encoding `(sample) -> encoding`
+  
+
+**Raises**:
+
+- `FrictionlessException` - raise any error that occurs during the process
+
+<a name="frictionless.control.Control.newline"></a>
+#### <big>newline</big>
+
+```python
+ | @Metadata.property
+ | newline()
+```
+
+**Returns**:
+
+- `str` - a string to be used for `io.open(..., newline=newline)`
+
+<a name="frictionless.control.Control.detect_encoding"></a>
+#### <big>detect\_encoding</big>
+
+```python
+ | @Metadata.property
+ | detect_encoding()
+```
+
+**Returns**:
+
+- `func` - detect encoding function
 
 <a name="frictionless.location"></a>
 ## frictionless.location
@@ -5548,37 +6267,91 @@ Export resource to Bigquery table
 - `prefix?` _str_ - prefix for all names
 - `force` _bool_ - overwrite existent
 
-<a name="frictionless.exceptions"></a>
-## frictionless.exceptions
+<a name="frictionless.dialect"></a>
+## frictionless.dialect
 
-<a name="frictionless.exceptions.FrictionlessException"></a>
-### FrictionlessException
+<a name="frictionless.dialect.Dialect"></a>
+### Dialect
 
 ```python
-class FrictionlessException(Exception)
+class Dialect(Metadata)
 ```
 
-Main Frictionless exception
+Dialect representation
 
 API      | Usage
 -------- | --------
-Public   | `from frictionless import exceptions`
+Public   | `from frictionless import Dialect`
 
 **Arguments**:
 
-- `error` _Error_ - an underlaying error
+- `descriptor?` _str|dict_ - descriptor
+- `header?` _bool_ - whether there is a header row
+- `headerRows?` _int[]_ - row numbers of header rows
+- `headerJoin?` _str_ - a multiline header joiner
+- `headerCase?` _bool_ - case sensitive header
+  
 
-<a name="frictionless.exceptions.FrictionlessException.error"></a>
-#### <big>error</big>
+**Raises**:
+
+- `FrictionlessException` - raise any error that occurs during the process
+
+<a name="frictionless.dialect.Dialect.header"></a>
+#### <big>header</big>
 
 ```python
- | @property
- | error()
+ | @Metadata.property
+ | header()
 ```
 
 **Returns**:
 
-- `Error` - error
+- `bool` - if there is a header row
+
+<a name="frictionless.dialect.Dialect.header_rows"></a>
+#### <big>header\_rows</big>
+
+```python
+ | @Metadata.property
+ | header_rows()
+```
+
+**Returns**:
+
+- `int[]` - header rows
+
+<a name="frictionless.dialect.Dialect.header_join"></a>
+#### <big>header\_join</big>
+
+```python
+ | @Metadata.property
+ | header_join()
+```
+
+**Returns**:
+
+- `str` - header joiner
+
+<a name="frictionless.dialect.Dialect.header_case"></a>
+#### <big>header\_case</big>
+
+```python
+ | @Metadata.property
+ | header_case()
+```
+
+**Returns**:
+
+- `str` - header case sensitive
+
+<a name="frictionless.dialect.Dialect.expand"></a>
+#### <big>expand</big>
+
+```python
+ | expand()
+```
+
+Expand metadata
 
 <a name="frictionless.transform"></a>
 ## frictionless.transform
@@ -6264,459 +7037,6 @@ spec (any[]): flatten specification
 <a name="frictionless.step"></a>
 ## frictionless.step
 
-<a name="frictionless.dialects"></a>
-## frictionless.dialects
-
-<a name="frictionless.dialects.Dialect"></a>
-### Dialect
-
-```python
-class Dialect(Metadata)
-```
-
-Dialect representation
-
-API      | Usage
--------- | --------
-Public   | `from frictionless import dialects`
-
-**Arguments**:
-
-- `descriptor?` _str|dict_ - descriptor
-- `header?` _bool_ - whether there is a header row
-- `headerRows?` _int[]_ - row numbers of header rows
-- `headerJoin?` _str_ - a multiline header joiner
-- `headerCase?` _bool_ - case sensitive header
-  
-
-**Raises**:
-
-- `FrictionlessException` - raise any error that occurs during the process
-
-<a name="frictionless.dialects.Dialect.header"></a>
-#### <big>header</big>
-
-```python
- | @Metadata.property
- | header()
-```
-
-**Returns**:
-
-- `bool` - if there is a header row
-
-<a name="frictionless.dialects.Dialect.header_rows"></a>
-#### <big>header\_rows</big>
-
-```python
- | @Metadata.property
- | header_rows()
-```
-
-**Returns**:
-
-- `int[]` - header rows
-
-<a name="frictionless.dialects.Dialect.header_join"></a>
-#### <big>header\_join</big>
-
-```python
- | @Metadata.property
- | header_join()
-```
-
-**Returns**:
-
-- `str` - header joiner
-
-<a name="frictionless.dialects.Dialect.header_case"></a>
-#### <big>header\_case</big>
-
-```python
- | @Metadata.property
- | header_case()
-```
-
-**Returns**:
-
-- `str` - header case sensitive
-
-<a name="frictionless.dialects.Dialect.expand"></a>
-#### <big>expand</big>
-
-```python
- | expand()
-```
-
-Expand metadata
-
-<a name="frictionless.dialects.CsvDialect"></a>
-### CsvDialect
-
-```python
-class CsvDialect(Dialect)
-```
-
-Csv dialect representation
-
-API      | Usage
--------- | --------
-Public   | `from frictionless import dialects`
-
-**Arguments**:
-
-- `descriptor?` _str|dict_ - descriptor
-- `delimiter?` _str_ - csv delimiter
-- `line_terminator?` _str_ - csv line terminator
-- `quote_char?` _str_ - csv quote char
-- `double_quote?` _bool_ - csv double quote
-- `escape_char?` _str_ - csv escape char
-- `null_sequence?` _str_ - csv null sequence
-- `skip_initial_space?` _bool_ - csv skip initial space
-- `comment_char?` _str_ - csv comment char
-  
-
-**Raises**:
-
-- `FrictionlessException` - raise any error that occurs during the process
-
-<a name="frictionless.dialects.CsvDialect.delimiter"></a>
-#### <big>delimiter</big>
-
-```python
- | @Metadata.property
- | delimiter()
-```
-
-**Returns**:
-
-- `str` - delimiter
-
-<a name="frictionless.dialects.CsvDialect.line_terminator"></a>
-#### <big>line\_terminator</big>
-
-```python
- | @Metadata.property
- | line_terminator()
-```
-
-**Returns**:
-
-- `str` - line terminator
-
-<a name="frictionless.dialects.CsvDialect.quote_char"></a>
-#### <big>quote\_char</big>
-
-```python
- | @Metadata.property
- | quote_char()
-```
-
-**Returns**:
-
-- `str` - quote char
-
-<a name="frictionless.dialects.CsvDialect.double_quote"></a>
-#### <big>double\_quote</big>
-
-```python
- | @Metadata.property
- | double_quote()
-```
-
-**Returns**:
-
-- `bool` - double quote
-
-<a name="frictionless.dialects.CsvDialect.escape_char"></a>
-#### <big>escape\_char</big>
-
-```python
- | @Metadata.property
- | escape_char()
-```
-
-**Returns**:
-
-- `str?` - escape char
-
-<a name="frictionless.dialects.CsvDialect.null_sequence"></a>
-#### <big>null\_sequence</big>
-
-```python
- | @Metadata.property
- | null_sequence()
-```
-
-**Returns**:
-
-- `str?` - null sequence
-
-<a name="frictionless.dialects.CsvDialect.skip_initial_space"></a>
-#### <big>skip\_initial\_space</big>
-
-```python
- | @Metadata.property
- | skip_initial_space()
-```
-
-**Returns**:
-
-- `bool` - if skipping initial space
-
-<a name="frictionless.dialects.CsvDialect.comment_char"></a>
-#### <big>comment\_char</big>
-
-```python
- | @Metadata.property
- | comment_char()
-```
-
-**Returns**:
-
-- `str?` - comment char
-
-<a name="frictionless.dialects.CsvDialect.expand"></a>
-#### <big>expand</big>
-
-```python
- | expand()
-```
-
-Expand metadata
-
-<a name="frictionless.dialects.CsvDialect.to_python"></a>
-#### <big>to\_python</big>
-
-```python
- | to_python()
-```
-
-Conver to Python's `csv.Dialect`
-
-<a name="frictionless.dialects.ExcelDialect"></a>
-### ExcelDialect
-
-```python
-class ExcelDialect(Dialect)
-```
-
-Excel dialect representation
-
-API      | Usage
--------- | --------
-Public   | `from frictionless import dialects`
-
-**Arguments**:
-
-- `descriptor?` _str|dict_ - descriptor
-- `sheet?` _int|str_ - number from 1 or name of an excel sheet
-- `workbook_cache?` _dict_ - workbook cache
-- `fill_merged_cells?` _bool_ - whether to fill merged cells
-- `preserve_formatting?` _bool_ - whither to preserve formatting
-- `adjust_floating_point_error?` _bool_ - whether to adjust floating point error
-  
-
-**Raises**:
-
-- `FrictionlessException` - raise any error that occurs during the process
-
-<a name="frictionless.dialects.ExcelDialect.sheet"></a>
-#### <big>sheet</big>
-
-```python
- | @Metadata.property
- | sheet()
-```
-
-**Returns**:
-
-- `str|int` - sheet
-
-<a name="frictionless.dialects.ExcelDialect.workbook_cache"></a>
-#### <big>workbook\_cache</big>
-
-```python
- | @Metadata.property
- | workbook_cache()
-```
-
-**Returns**:
-
-- `dict` - workbook cache
-
-<a name="frictionless.dialects.ExcelDialect.fill_merged_cells"></a>
-#### <big>fill\_merged\_cells</big>
-
-```python
- | @Metadata.property
- | fill_merged_cells()
-```
-
-**Returns**:
-
-- `bool` - fill merged cells
-
-<a name="frictionless.dialects.ExcelDialect.preserve_formatting"></a>
-#### <big>preserve\_formatting</big>
-
-```python
- | @Metadata.property
- | preserve_formatting()
-```
-
-**Returns**:
-
-- `bool` - preserve formatting
-
-<a name="frictionless.dialects.ExcelDialect.adjust_floating_point_error"></a>
-#### <big>adjust\_floating\_point\_error</big>
-
-```python
- | @Metadata.property
- | adjust_floating_point_error()
-```
-
-**Returns**:
-
-- `bool` - adjust floating point error
-
-<a name="frictionless.dialects.ExcelDialect.expand"></a>
-#### <big>expand</big>
-
-```python
- | expand()
-```
-
-Expand metadata
-
-<a name="frictionless.dialects.InlineDialect"></a>
-### InlineDialect
-
-```python
-class InlineDialect(Dialect)
-```
-
-Inline dialect representation
-
-API      | Usage
--------- | --------
-Public   | `from frictionless import dialects`
-
-**Arguments**:
-
-- `descriptor?` _str|dict_ - descriptor
-- `keys?` _str[]_ - a list of strings to use as data keys
-- `keyed?` _bool_ - whether data rows are keyed
-  
-
-**Raises**:
-
-- `FrictionlessException` - raise any error that occurs during the process
-
-<a name="frictionless.dialects.InlineDialect.keys"></a>
-#### <big>keys</big>
-
-```python
- | @Metadata.property
- | keys()
-```
-
-**Returns**:
-
-- `str[]?` - keys
-
-<a name="frictionless.dialects.InlineDialect.keyed"></a>
-#### <big>keyed</big>
-
-```python
- | @Metadata.property
- | keyed()
-```
-
-**Returns**:
-
-- `bool` - keyed
-
-<a name="frictionless.dialects.InlineDialect.expand"></a>
-#### <big>expand</big>
-
-```python
- | expand()
-```
-
-Expand metadata
-
-<a name="frictionless.dialects.JsonDialect"></a>
-### JsonDialect
-
-```python
-class JsonDialect(Dialect)
-```
-
-Json dialect representation
-
-API      | Usage
--------- | --------
-Public   | `from frictionless import dialects`
-
-**Arguments**:
-
-- `descriptor?` _str|dict_ - descriptor
-- `keys?` _str[]_ - a list of strings to use as data keys
-- `keyed?` _bool_ - whether data rows are keyed
-- `property?` _str_ - a path within JSON to the data
-  
-
-**Raises**:
-
-- `FrictionlessException` - raise any error that occurs during the process
-
-<a name="frictionless.dialects.JsonDialect.keys"></a>
-#### <big>keys</big>
-
-```python
- | @Metadata.property
- | keys()
-```
-
-**Returns**:
-
-- `str[]?` - keys
-
-<a name="frictionless.dialects.JsonDialect.keyed"></a>
-#### <big>keyed</big>
-
-```python
- | @Metadata.property
- | keyed()
-```
-
-**Returns**:
-
-- `bool` - keyed
-
-<a name="frictionless.dialects.JsonDialect.property"></a>
-#### <big>property</big>
-
-```python
- | @Metadata.property
- | property()
-```
-
-**Returns**:
-
-- `str?` - property
-
-<a name="frictionless.dialects.JsonDialect.expand"></a>
-#### <big>expand</big>
-
-```python
- | expand()
-```
-
-Expand metadata
-
 <a name="frictionless.__main__"></a>
 ## frictionless.\_\_main\_\_
 
@@ -6757,6 +7077,38 @@ Start the server
 ```
 
 Stop the server
+
+<a name="frictionless.exception"></a>
+## frictionless.exception
+
+<a name="frictionless.exception.FrictionlessException"></a>
+### FrictionlessException
+
+```python
+class FrictionlessException(Exception)
+```
+
+Main Frictionless exception
+
+API      | Usage
+-------- | --------
+Public   | `from frictionless import FrictionlessException`
+
+**Arguments**:
+
+- `error` _Error_ - an underlaying error
+
+<a name="frictionless.exception.FrictionlessException.error"></a>
+#### <big>error</big>
+
+```python
+ | @property
+ | error()
+```
+
+**Returns**:
+
+- `Error` - error
 
 <a name="frictionless.types"></a>
 ## frictionless.types
@@ -7459,258 +7811,4 @@ Public   | `from frictionless import validate_resource`
 **Returns**:
 
 - `Report` - validation report
-
-<a name="frictionless.controls"></a>
-## frictionless.controls
-
-<a name="frictionless.controls.Control"></a>
-### Control
-
-```python
-class Control(Metadata)
-```
-
-Control representation
-
-API      | Usage
--------- | --------
-Public   | `from frictionless import controls`
-
-**Arguments**:
-
-- `descriptor?` _str|dict_ - descriptor
-- `newline?` _str_ - a string to be used for `io.open(..., newline=newline)`
-- `detectEncoding?` _func_ - a function to detect encoding `(sample) -> encoding`
-  
-
-**Raises**:
-
-- `FrictionlessException` - raise any error that occurs during the process
-
-<a name="frictionless.controls.Control.newline"></a>
-#### <big>newline</big>
-
-```python
- | @Metadata.property
- | newline()
-```
-
-**Returns**:
-
-- `str` - a string to be used for `io.open(..., newline=newline)`
-
-<a name="frictionless.controls.Control.detect_encoding"></a>
-#### <big>detect\_encoding</big>
-
-```python
- | @Metadata.property
- | detect_encoding()
-```
-
-**Returns**:
-
-- `func` - detect encoding function
-
-<a name="frictionless.controls.LocalControl"></a>
-### LocalControl
-
-```python
-class LocalControl(Control)
-```
-
-Local control representation
-
-API      | Usage
--------- | --------
-Public   | `from frictionless import controls`
-
-**Arguments**:
-
-- `descriptor?` _str|dict_ - descriptor
-  
-
-**Raises**:
-
-- `FrictionlessException` - raise any error that occurs during the process
-
-<a name="frictionless.controls.RemoteControl"></a>
-### RemoteControl
-
-```python
-class RemoteControl(Control)
-```
-
-Remote control representation
-
-API      | Usage
--------- | --------
-Public   | `from frictionless import controls`
-
-**Arguments**:
-
-- `descriptor?` _str|dict_ - descriptor
-- `http_session?` _requests.Session_ - user defined HTTP session
-- `http_preload?` _bool_ - don't use HTTP streaming and preload all the data
-- `http_timeout?` _int_ - user defined HTTP timeout in minutes
-  
-
-**Raises**:
-
-- `FrictionlessException` - raise any error that occurs during the process
-
-<a name="frictionless.controls.RemoteControl.http_session"></a>
-#### <big>http\_session</big>
-
-```python
- | @Metadata.property
- | http_session()
-```
-
-**Returns**:
-
-- `requests.Session` - HTTP session
-
-<a name="frictionless.controls.RemoteControl.http_preload"></a>
-#### <big>http\_preload</big>
-
-```python
- | @Metadata.property
- | http_preload()
-```
-
-**Returns**:
-
-- `bool` - if not streaming
-
-<a name="frictionless.controls.RemoteControl.http_timeout"></a>
-#### <big>http\_timeout</big>
-
-```python
- | @Metadata.property
- | http_timeout()
-```
-
-**Returns**:
-
-- `int` - HTTP timeout in minutes
-
-<a name="frictionless.controls.RemoteControl.expand"></a>
-#### <big>expand</big>
-
-```python
- | expand()
-```
-
-Expand metadata
-
-<a name="frictionless.controls.StreamControl"></a>
-### StreamControl
-
-```python
-class StreamControl(Control)
-```
-
-Stream control representation
-
-API      | Usage
--------- | --------
-Public   | `from frictionless import controls`
-
-**Arguments**:
-
-- `descriptor?` _str|dict_ - descriptor
-  
-
-**Raises**:
-
-- `FrictionlessException` - raise any error that occurs during the process
-
-<a name="frictionless.controls.TextControl"></a>
-### TextControl
-
-```python
-class TextControl(Control)
-```
-
-Text control representation
-
-API      | Usage
--------- | --------
-Public   | `from frictionless import controls`
-
-**Arguments**:
-
-- `descriptor?` _str|dict_ - descriptor
-  
-
-**Raises**:
-
-- `FrictionlessException` - raise any error that occurs during the process
-
-<a name="frictionless.loaders"></a>
-## frictionless.loaders
-
-<a name="frictionless.loaders.remote"></a>
-## frictionless.loaders.remote
-
-<a name="frictionless.loaders.remote.RemoteLoader"></a>
-### RemoteLoader
-
-```python
-class RemoteLoader(Loader)
-```
-
-Remote loader implementation.
-
-API      | Usage
--------- | --------
-Public   | `from frictionless import loaders`
-
-<a name="frictionless.loaders.stream"></a>
-## frictionless.loaders.stream
-
-<a name="frictionless.loaders.stream.StreamLoader"></a>
-### StreamLoader
-
-```python
-class StreamLoader(Loader)
-```
-
-Stream loader implementation.
-
-API      | Usage
--------- | --------
-Public   | `from frictionless import loaders`
-
-<a name="frictionless.loaders.text"></a>
-## frictionless.loaders.text
-
-<a name="frictionless.loaders.text.TextLoader"></a>
-### TextLoader
-
-```python
-class TextLoader(Loader)
-```
-
-Text loader implementation.
-
-API      | Usage
--------- | --------
-Public   | `from frictionless import loaders`
-
-<a name="frictionless.loaders.local"></a>
-## frictionless.loaders.local
-
-<a name="frictionless.loaders.local.LocalLoader"></a>
-### LocalLoader
-
-```python
-class LocalLoader(Loader)
-```
-
-Local loader implementation.
-
-API      | Usage
--------- | --------
-Public   | `from frictionless import loaders`
 

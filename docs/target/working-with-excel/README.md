@@ -4,13 +4,13 @@
 
 
 
-> Status: **PLUGIN / STABLE**
+> Status: **STABLE**
 
 Excel is a very popular tabular data format that usually has `xlsx` (newer) and `xls` (older) file extensions. Frictionless supports Excel files extensively.
 
 
 ```bash
-!pip install frictionless
+!pip install frictionless[excel]
 ```
 
 

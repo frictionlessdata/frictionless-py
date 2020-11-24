@@ -3,6 +3,31 @@
 It's a formats reference supported by the main Frictionless package. If you have installed external plugins, there can be more formats available. Below we're listing a format group name (or a parser name) like Excel, which is used, for example, for `xlsx`, `xls` etc formats. Options can be used for creating dialects, for example, `dialect = ExcelDialect(sheet=1)`.
 
 
+## Bigquery
+
+
+### Options
+
+#### Project
+
+> Type: str
+
+Project
+
+#### Dataset
+
+> Type: str
+
+Dataset
+
+#### Table
+
+> Type: str
+
+Table
+
+
+
 ## Csv
 
 
@@ -95,6 +120,44 @@ Whether to adjust floating point error
 
 
 
+## Gsheet
+
+
+There are no options available.
+
+
+## Html
+
+
+### Options
+
+#### Selector
+
+> Type: str
+
+Html selector
+
+
+
+## Inline
+
+
+### Options
+
+#### Keys
+
+> Type: str[]
+
+A list of strings to use as data keys
+
+#### Keyed
+
+> Type: bool
+
+Whether data rows are keyed
+
+
+
 ## Inline
 
 
@@ -136,50 +199,6 @@ Whether data rows are keyed
 > Type: str
 
 A path within json to the data
-
-
-
-## Bigquery
-
-
-### Options
-
-#### Project
-
-> Type: str
-
-Project
-
-#### Dataset
-
-> Type: str
-
-Dataset
-
-#### Table
-
-> Type: str
-
-Table
-
-
-
-## Gsheet
-
-
-There are no options available.
-
-
-## Html
-
-
-### Options
-
-#### Selector
-
-> Type: str
-
-Html selector
 
 
 

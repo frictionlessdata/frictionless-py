@@ -4,7 +4,7 @@
 
 
 
-> Status: **CORE / STABLE**
+> Status: **STABLE**
 
 Frictionless supports loading textual data
 
@@ -22,7 +22,7 @@ You can read Text Data using `Package/Resource` or `Table` API, for example:
 ```python
 from frictionless import Resource
 
-resource = Resource(path='text://id,name\n1,english\n2,german', format='csv')
+resource = Resource(path='text://id,name\n1,english\n2,german.csv')
 print(resource.read_rows())
 ```
 

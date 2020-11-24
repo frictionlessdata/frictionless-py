@@ -4,7 +4,7 @@
 
 
 
-> Status: **CORE / STABLE**
+> Status: **STABLE**
 
 You can read and write files locally with Frictionless. It's basic functionality.
 
