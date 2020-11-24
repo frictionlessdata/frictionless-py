@@ -135,7 +135,7 @@ class Table:
         # Schema
         schema=None,
         sync_schema=False,
-        patch_schema=False,
+        patch_schema=None,
         # Infer
         infer_type=None,
         infer_names=None,

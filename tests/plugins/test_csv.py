@@ -175,6 +175,17 @@ def test_table_csv_quotechar_is_empty_string():
         table.read_data() == [["value1", 'value2"', "value3"]]
 
 
+def test_table_format_tsv():
+    with Table("data/table.tsv", patch_schema={"missingValues": ["\\N"]}) as table:
+        assert table.dialect == {"delimiter": "\t"}
+        assert table.header == ["id", "name"]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+            {"id": 3, "name": None},
+        ]
+
+
 # Write
 
 
@@ -208,3 +219,12 @@ def test_table_csv_write_inline_source(tmpdir):
     with Table(target) as table:
         assert table.header == ["key1", "key2"]
         assert table.read_data() == [["value1", "value2"]]
+
+
+def test_table_tsv_write(tmpdir):
+    source = "data/table.csv"
+    target = str(tmpdir.join("table.tsv"))
+    with Table(source) as table:
+        table.write(target)
+    with open(target) as file:
+        assert file.read() == "id\tname\n1\tenglish\n2\t中国人\n"

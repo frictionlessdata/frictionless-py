@@ -25,9 +25,11 @@ class CsvPlugin(Plugin):
     def create_dialect(self, resource, *, descriptor):
         if resource.format == "csv":
             return CsvDialect(descriptor)
+        elif resource.format == "tsv":
+            return CsvDialect(descriptor, delimiter="\t")
 
     def create_parser(self, resource):
-        if resource.format == "csv":
+        if resource.format in ["csv", "tsv"]:
             return CsvParser(resource)
 
 
