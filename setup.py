@@ -21,24 +21,24 @@ PACKAGE = "frictionless"
 NAME = PACKAGE.replace("_", "-")
 TESTS_REQUIRE = [
     "mypy",
+    "moto",
     "black",
+    "gdown",
+    "jinja2",
     "pylama",
     "pytest",
+    "ipython",
     "pymysql",
     "psycopg2",
-    "pytest-cov",
-    "pydoc-markdown",
-    "docstring-parser",
-    "python-dotenv",
-    "oauth2client",
     # TODO: remove when it's fixed upstream
     "responses==0.12",
-    "coveralls",
     "nbconvert",
-    "ipython",
-    "jinja2",
-    "gdown",
-    "moto",
+    "coveralls",
+    "pytest-cov",
+    "oauth2client",
+    "python-dotenv",
+    "pydoc-markdown",
+    "docstring-parser",
 ]
 EXTRAS_REQUIRE = {
     "aws": ["boto3>=1.9"],
@@ -61,18 +61,18 @@ EXTRAS_REQUIRE = {
 INSTALL_REQUIRES = [
     "petl>=1.6",
     "pyyaml>=5.3",
+    "isodate>=0.6",
     "chardet>=3.0",
     "requests>=2.10",
-    "validators>=0.18",
     "jsonschema>=2.5",
     "simpleeval>=0.9",
     "stringcase>=1.2",
     "typer[all]>=0.3",
-    "python-dateutil>=2.8",
+    "validators>=0.18",
     "python-slugify>=1.2",
+    "python-dateutil>=2.8",
     "unicodecsv>=0.14",
     "simplejson>=3.10",
-    "isodate>=0.6",
 ]
 README = read("README.md")
 VERSION = read(PACKAGE, "assets", "VERSION")

@@ -136,6 +136,7 @@ def compile_regex(items):
         return result
 
 
+# TODO: use slugify
 def detect_name(source):
     if isinstance(source, str) and "\n" not in source:
         return os.path.splitext(os.path.basename(source))[0]
