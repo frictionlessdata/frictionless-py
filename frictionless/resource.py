@@ -313,7 +313,7 @@ class Resource(Metadata):
         stats = {"hash": "", "bytes": 0, "fields": 0, "rows": 0}
         return self.metadata_attach("stats", self.get("stats", stats))
 
-    @Metadata.property(write=False)
+    @Metadata.property(cache=False, write=False)
     def basepath(self):
         """
         Returns
@@ -321,7 +321,7 @@ class Resource(Metadata):
         """
         return self.__basepath
 
-    @Metadata.property(write=False)
+    @Metadata.property(cache=False, write=False)
     def fullpath(self):
         """
         Returns
@@ -333,16 +333,15 @@ class Resource(Metadata):
             return "multipart"
         return self.source
 
-    @property
+    @Metadata.property(cache=False, write=False)
     def onerror(self):
         """
         Returns:
             ignore|warn|raise: on error bahaviour
         """
-        assert self.__onerror in ["ignore", "warn", "raise"]
         return self.__onerror
 
-    @property
+    @Metadata.property(cache=False, write=False)
     def trusted(self):
         """
         Returns:
@@ -350,7 +349,7 @@ class Resource(Metadata):
         """
         return self.__trusted
 
-    @property
+    @Metadata.property(cache=False, write=False)
     def package(self):
         """
         Returns:
