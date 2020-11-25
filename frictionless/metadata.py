@@ -112,7 +112,9 @@ class Metadata(helpers.ControlledDict):
                 self.to_dict(), indent=2, ensure_ascii=False, cls=encoder_class
             )
         try:
-            with tempfile.NamedTemporaryFile("wt", delete=False) as file:
+            with tempfile.NamedTemporaryFile(
+                "wt", delete=False, encoding="utf-8"
+            ) as file:
                 json.dump(
                     self.to_dict(), file, indent=2, ensure_ascii=False, cls=encoder_class
                 )
@@ -133,7 +135,9 @@ class Metadata(helpers.ControlledDict):
         if not target:
             return yaml.dump(helpers.deepsafe(self.to_dict()), Dumper=IndentDumper)
         try:
-            with tempfile.NamedTemporaryFile("wt", delete=False) as file:
+            with tempfile.NamedTemporaryFile(
+                "wt", delete=False, encoding="utf-8"
+            ) as file:
                 yaml.dump(helpers.deepsafe(self.to_dict()), file, Dumper=IndentDumper)
             helpers.move_file(file.name, target)
         except Exception as exc:
