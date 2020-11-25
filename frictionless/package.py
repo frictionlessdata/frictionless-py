@@ -119,7 +119,7 @@ class Package(Metadata):
         """
         return self.get("profile", config.DEFAULT_PACKAGE_PROFILE)
 
-    @Metadata.property(write=False)
+    @Metadata.property(cache=False, write=False)
     def hashing(self):
         """
         Returns:
@@ -127,7 +127,7 @@ class Package(Metadata):
         """
         return self.__hashing
 
-    @Metadata.property(write=False)
+    @Metadata.property(cache=False, write=False)
     def basepath(self):
         """
         Returns:
@@ -135,16 +135,15 @@ class Package(Metadata):
         """
         return self.__basepath
 
-    @property
+    @Metadata.property(cache=False, write=False)
     def onerror(self):
         """
         Returns:
             ignore|warn|raise: on error bahaviour
         """
-        assert self.__onerror in ["ignore", "warn", "raise"]
         return self.__onerror
 
-    @Metadata.property(write=False)
+    @Metadata.property(cache=False, write=False)
     def trusted(self):
         """
         Returns:
@@ -163,7 +162,7 @@ class Package(Metadata):
         resources = self.get("resources", [])
         return self.metadata_attach("resources", resources)
 
-    @Metadata.property(write=False)
+    @Metadata.property(cache=False, write=False)
     def resource_names(self):
         """
         Returns:
@@ -272,6 +271,15 @@ class Package(Metadata):
         # General
         for resource in self.resources:
             resource.infer(only_sample=only_sample)
+
+        # Deduplicate names
+        if len(self.resource_names) != len(set(self.resource_names)):
+            seen_names = []
+            for index, name in enumerate(self.resource_names):
+                count = seen_names.count(name) + 1
+                if count > 1:
+                    self.resources[index].name = "%s%s" % (name, count)
+                seen_names.append(name)
 
     # Import/Export
 

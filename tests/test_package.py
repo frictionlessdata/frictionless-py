@@ -429,6 +429,20 @@ def test_package_infer_empty_file():
     assert package.resources[0].stats["bytes"] == 0
 
 
+def test_package_infer_duplicate_resource_names_issue_530():
+    package = Package(
+        resources=[
+            Resource(path="data/chunk1.csv"),
+            Resource(path="data/chunk2.csv"),
+            Resource(path="data/tables/chunk1.csv"),
+            Resource(path="data/tables/chunk2.csv"),
+        ]
+    )
+    package.infer()
+    assert len(set(package.resource_names)) == 4
+    assert package.resource_names == ["chunk1", "chunk2", "chunk12", "chunk22"]
+
+
 # Import/Export
 
 

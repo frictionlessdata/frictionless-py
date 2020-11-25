@@ -92,7 +92,7 @@ class Schema(Metadata):
         fields = self.get("fields", [])
         return self.metadata_attach("fields", fields)
 
-    @Metadata.property(write=False)
+    @Metadata.property(cache=False, write=False)
     def field_names(self):
         """
         Returns:
