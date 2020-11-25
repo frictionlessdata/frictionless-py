@@ -606,6 +606,13 @@ def test_resource_infer_from_path():
     assert resource.path == "data/table.csv"
 
 
+def test_resource_infer_not_slugified_name_issue_531():
+    resource = Resource()
+    resource.infer("data/Table With Data.csv")
+    assert resource.metadata_valid
+    assert resource.name == "table-with-data"
+
+
 # Import/Export
 
 

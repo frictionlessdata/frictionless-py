@@ -9,6 +9,7 @@ import chardet
 import tempfile
 import datetime
 import stringcase
+from slugify import slugify
 from inspect import signature
 from importlib import import_module
 from urllib.parse import urlparse, parse_qs
@@ -136,13 +137,14 @@ def compile_regex(items):
         return result
 
 
-# TODO: use slugify
 def detect_name(source):
+    name = "memory"
     if isinstance(source, str) and "\n" not in source:
-        return os.path.splitext(os.path.basename(source))[0]
-    if isinstance(source, list) and source and isinstance(source[0], str):
-        return os.path.splitext(os.path.basename(source[0]))[0]
-    return "memory"
+        name = os.path.splitext(os.path.basename(source))[0]
+    elif isinstance(source, list) and source and isinstance(source[0], str):
+        name = os.path.splitext(os.path.basename(source[0]))[0]
+    name = slugify(name).lower()
+    return name
 
 
 def detect_basepath(descriptor):
