@@ -58,10 +58,11 @@ There is a dialect to configure how Frictionless read and write files in this fo
 
 
 ```python
-from frictionless import Resource, dialects
+from frictionless import Resource
+from frictionless.plugins.excel import ExcelDialect
 
 resource = Resource(data=[['id', 'name'], [1, 'english'], [2, 'german']])
-resource.write('table.new.xlsx', dialect=dialects.ExcelDialect(sheet='My Table'))
+resource.write('table.new.xlsx', dialect=ExcelDialect(sheet='My Table'))
 ```
 
 

@@ -75,10 +75,11 @@ There is a dialect to configure how Frictionless read and write files in this fo
 
 
 ```python
-from frictionless import Resource, dialects
+from frictionless import Resource
+from frictionless.plugins.csv import CsvDialect
 
 resource = Resource(data=[['id', 'name'], [1, 'english'], [2, 'german']])
-resource.write('table.new.csv', dialect=dialects.CsvDialect(delimiter=';'))
+resource.write('table.new.csv', dialect=CsvDialect(delimiter=';'))
 ```
 
 

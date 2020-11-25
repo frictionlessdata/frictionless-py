@@ -67,9 +67,10 @@ There is a dialect to configure this format, for example:
 
 
 ```python
-from frictionless import Resource, dialects
+from frictionless import Resource
+from frictionless.plugins.inline import InlineDialect
 
-dialect = dialects.InlineDialect(keyed=True, keys=['name', 'id'])
+dialect = InlineDialect(keyed=True, keys=['name', 'id'])
 resource = Resource(data=[{'id': 1, 'name': 'english'}, {'id': 2, 'name': 'german'}], dialect=dialect)
 print(resource.read_rows())
 ```

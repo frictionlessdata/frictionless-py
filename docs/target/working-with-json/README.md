@@ -87,10 +87,11 @@ There is a dialect to configure how Frictionless read and write files in this fo
 
 
 ```python
-from frictionless import Resource, dialects
+from frictionless import Resource
+from frictionless.plugins.json import JsonDialect
 
 resource = Resource(data=[['id', 'name'], [1, 'english'], [2, 'german']])
-resource.write('table.new.json', dialect=dialects.JsonDialect(keyed=True))
+resource.write('table.new.json', dialect=JsonDialect(keyed=True))
 ```
 
 
