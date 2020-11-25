@@ -23,13 +23,14 @@ TESTS_REQUIRE = [
     "mypy",
     "moto",
     "black",
-    "gdown",
     "jinja2",
     "pylama",
     "pytest",
     "ipython",
     "pymysql",
     "psycopg2",
+    "notedown",
+    "ipykernel",
     # TODO: remove when it's fixed upstream
     "responses==0.12",
     "nbconvert",
@@ -37,7 +38,6 @@ TESTS_REQUIRE = [
     "pytest-cov",
     "oauth2client",
     "python-dotenv",
-    "pydoc-markdown",
     "docstring-parser",
 ]
 EXTRAS_REQUIRE = {
