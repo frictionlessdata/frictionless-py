@@ -60,7 +60,7 @@ class Field(Metadata):
 
         # Replace deprecated "fmt:"
         format = self.get("format")
-        if format and format.startswith("fmt:"):
+        if format and isinstance(format, str) and format.startswith("fmt:"):
             message = 'Format "fmt:<PATTERN>" is deprecated. Please remove "fmt:" prefix.'
             warnings.warn(message, UserWarning)
             self["format"] = format.replace("fmt:", "")
