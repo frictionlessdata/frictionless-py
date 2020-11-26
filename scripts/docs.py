@@ -21,7 +21,7 @@ def main(name=None):
                 from_python(filename)
             elif path.endswith(".md"):
                 from_markdown(filename)
-            print(f"Build: {filename}")
+            print(f"Built: {filename}")
 
 
 # Converters
