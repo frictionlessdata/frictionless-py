@@ -1,6 +1,4 @@
 import os
-import shutil
-from scripts import docs
 
-
-shutil.copy("README.md", os.path.join(docs.TARGET_DIR, "README.md"))
+TARGET_DIR = os.environ["TARGET_DIR"]
+os.system(f"cp README.md {TARGET_DIR}/README.md")

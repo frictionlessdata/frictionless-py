@@ -1,21 +1,12 @@
 # Getting Started
 
-[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1VyDx6C3pxF3Vab8MxH_sI86OTSNmYuDJ)
-
-
-
 Let's get started with Frictionless! We will learn how to install and use the framework. The simple example below will showcase the framework's basic functionality.
-
 
 ## Installation
 
 > Versioning follows the [SemVer Standard](https://semver.org/)
 
-
-
-
-
-```bash
+```
 ! pip install frictionless
 # pip install frictionless[sql] - to install a core plugin
 ```
@@ -33,18 +24,12 @@ The framework can be used:
 For example, all the examples below do the same thing:
 
 
-
-```bash
-! wget -q -O invalid.csv https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/invalid.csv
-```
-
-
 ```python
 from frictionless import extract
 
-rows = extract('invalid.csv')
-# CLI: $ frictionless extract table.csv
-# API: [POST] /extract {"source': 'table.csv"}
+rows = extract('data/table.csv')
+# CLI: $ frictionless extract data/table.csv
+# API: [POST] /extract {"source': 'data/table.csv"}
 ```
 
 All these interfaces are close as much as possible regarding naming and the way you interact with them. Usually, it's straightforward to translate e.g., Python code to a command-line call. Frictionless provides code completion for Python and command-line, which should help to get useful hints in real-time.
@@ -56,7 +41,7 @@ Arguments follow this naming rule:
 
 To get documentation for a command-line interface just use the `--help` flag:
 
-```bash
+```
 $ frictionless --help
 $ frictionless describe --help
 $ frictionless extract --help
@@ -72,16 +57,11 @@ $ frictionless transform --help
 We will take a very dirty data file:
 
 
-
-```bash
+```python
 ! cat invalid.csv
 ```
 
-    id,name,,name
-    1,english
-    1,english
-
-    2,german,1,2,3
+    cat: invalid.csv: No such file or directory
 
 
 Firt of all, let's infer the metadata. We can save and edit it to provide useful information about the table:
@@ -89,12 +69,13 @@ Firt of all, let's infer the metadata. We can save and edit it to provide useful
 > This output is in [YAML](https://yaml.org/), it is a default Frictionless output format.
 
 
-
-```bash
-! frictionless describe invalid.csv
+```python
+! frictionless describe data/invalid.csv
 ```
 
-    [metadata] invalid.csv
+    ---
+    metadata: data/invalid.csv
+    ---
 
     compression: 'no'
     compressionPath: ''
@@ -105,7 +86,7 @@ Firt of all, let's infer the metadata. We can save and edit it to provide useful
     format: csv
     hashing: md5
     name: invalid
-    path: invalid.csv
+    path: data/invalid.csv
     profile: tabular-data-resource
     query: {}
     schema:
@@ -126,44 +107,53 @@ Firt of all, let's infer the metadata. We can save and edit it to provide useful
       rows: 4
 
 
+
 Secondly, we can extract a normalized data. It conforms to the inferred schema from above e.g., the dimension is fixed, and bad cells are omitted:
 
 
-
-```bash
-! frictionless extract invalid.csv
+```python
+! frictionless extract data/invalid.csv
 ```
 
-    [data] invalid.csv
+    ---
+    data: data/invalid.csv
+    ---
 
-      id  name       field3    name2
-    ----  -------  --------  -------
-       1  english
-       1  english
+    ====  =======  ======  =====
+    id    name     field3  name2
+    ====  =======  ======  =====
+       1  english  None    None
+       1  english  None    None
+    None  None     None    None
+       2  german        1      2
+    ====  =======  ======  =====
 
-       2  german          1        2
 
 
 Last but not least, let's get a validation report. This report will help us to fix all these errors as comprehensive information is provided for every tabular problem:
 
 
-
-```bash
-! frictionless validate invalid.csv
+```python
+! frictionless validate data/invalid.csv
 ```
 
-    [invalid] invalid.csv
+    ---
+    invalid: data/invalid.csv
+    ---
 
-      row    field  code              message
-    -----  -------  ----------------  ------------------------------------------------------------------------------------------------
-                 3  blank-header      Header in field at position "3" is blank
-                 4  duplicate-header  Header "name" in field at position "4" is duplicated to header in another field: at position "2"
-        2        3  missing-cell      Row at position "2" has a missing cell in field "field3" at position "3"
-        2        4  missing-cell      Row at position "2" has a missing cell in field "name2" at position "4"
-        3        3  missing-cell      Row at position "3" has a missing cell in field "field3" at position "3"
-        3        4  missing-cell      Row at position "3" has a missing cell in field "name2" at position "4"
-        4           blank-row         Row at position "4" is completely blank
-        5        5  extra-cell        Row at position "5" has an extra value in field at position "5"
+    ====  =====  ================  ================================================================================================
+    row   field  code              message
+    ====  =====  ================  ================================================================================================
+    None      3  blank-header      Header in field at position "3" is blank
+    None      4  duplicate-header  Header "name" in field at position "4" is duplicated to header in another field: at position "2"
+       2      3  missing-cell      Row at position "2" has a missing cell in field "field3" at position "3"
+       2      4  missing-cell      Row at position "2" has a missing cell in field "name2" at position "4"
+       3      3  missing-cell      Row at position "3" has a missing cell in field "field3" at position "3"
+       3      4  missing-cell      Row at position "3" has a missing cell in field "name2" at position "4"
+       4  None   blank-row         Row at position "4" is completely blank
+       5      5  extra-cell        Row at position "5" has an extra value in field at position "5"
+    ====  =====  ================  ================================================================================================
+
 
 
 Now having all this information:
