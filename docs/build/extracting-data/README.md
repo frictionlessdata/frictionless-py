@@ -1,7 +1,5 @@
 # Extracting Data
 
-[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1is_PcpzFl42aWI2B2tHaBGj3jxsKZ_eZ)
-
 Extracting data means reading tabular data from some source. We can use various customizations for this process such as providing a file format, table schema, limiting fields or rows amount, and much more. Let's see this with real files:
 
 
@@ -238,11 +236,11 @@ All the `extract` fuctions accept those common argument:
 - `process`: it's a function getting a row object and returning whatever is needed as an ouput of the data extraction e.g. `lambda row: row.to_dict()`
 - `stream`: instead of reading all the data into memory it will return row stream(s)
 
-**Package/Resource**
+### Package/Resource
 
 These `extract` functions doesn't accept any additional arguments.
 
-**Table**
+### Table
 
 We will take a look at all the `extract_table` options in the sections below. As an overview, it accepts:
 - File Details
@@ -297,7 +295,7 @@ The Resource class is also a metadata class which provides various read and stre
 ! frictionless describe data/country-3.csv --json > tmp/country.resource.json
 ```
 
-**Exploring Data**
+### Exploring Data
 
 There are various functions to help explore your resource, such as checking a header or other attributes like stats:
 
@@ -323,7 +321,7 @@ pprint(resource.read_stats())
      'rows': 5}
 
 
-**Reading Data**
+### Reading Data
 
 The `extract` functions always read rows into memory; Resource can do the same but it also gives a choice regarding ouput data. It can be `rows`, `data`, `text`, or `bytes`. Let's try reading all of them:
 
@@ -358,7 +356,7 @@ pprint(resource.read_rows())
      Row([('id', 5), ('capital_id', 4), ('name', 'Spain'), ('population', 47)])]
 
 
-**Streaming Data**
+### Streaming Data
 
 It's really handy to read all your data into memory but it's not always possible as a file can be really big. For such cases, Frictionless provides streaming functions:
 
@@ -375,10 +373,10 @@ for row in resource.read_row_stream():
   print(row)
 ```
 
-    <frictionless.loader.ByteStreamWithStatsHandling object at 0x7f7758acf760>
+    <frictionless.loader.ByteStreamWithStatsHandling object at 0x7fb2fd673a00>
     <_io.TextIOWrapper name='./data/country-3.csv' encoding='utf-8'>
-    <generator object Resource.read_data_stream at 0x7f775fbc7ba0>
-    <generator object Resource.read_row_stream at 0x7f775fbc7ba0>
+    <generator object Resource.read_data_stream at 0x7fb2fdccc0b0>
+    <generator object Resource.read_row_stream at 0x7fb2fdccc0b0>
     Row([('id', 1), ('capital_id', 1), ('name', 'Britain'), ('population', 67)])
     Row([('id', 2), ('capital_id', 3), ('name', 'France'), ('population', 67)])
     Row([('id', 3), ('capital_id', 2), ('name', 'Germany'), ('population', 83)])
@@ -390,7 +388,7 @@ for row in resource.read_row_stream():
 
 The Table class is at the heart of all the tabular capabilities of Frictionless. It's used by all the higher-level classes and provides a comprehensive user interface by itself. The main difference with, for example, Resource class is that Table has a state of a lower-level file descriptor and needs to be opened and closed. Usually we use a context manager (the `with` keyword) to work with Table. In-general, Table is a streaming interface that needs to be re-opened if data is already read.
 
-**Exploring Data**
+### Exploring Data
 
 First of all, let's take a look at the file details information:
 
@@ -459,7 +457,7 @@ with Table('data/capital-3.csv', scheme='file', format='csv') as table:
     csv
 
 
-**Reading Data**
+### Reading Data
 
 There are 2 different types of ouput that Table can produce:
 
@@ -487,7 +485,7 @@ with Table('data/capital-3.csv') as table:
 
 The `data` format is just a raw array of arrays similiar to JSON while the `row` format is a rich object with all the cells normalized and converted to proper types. We will explore the Row class later.
 
-**Streaming Data**
+### Streaming Data
 
 It was mentioned for Resource and it's the same for Table, we can stream our tabular data. The core difference is that Table is stateful so we use properties instead of the read functions:
 
@@ -505,13 +503,13 @@ with Table('data/capital-3.csv') as table:
     print(row)
 ```
 
-    <generator object Table.__read_data_stream_create at 0x7f775fbc7c80>
+    <generator object Table.__read_data_stream_create at 0x7fb2fdadbd60>
     ['1', 'London']
     ['2', 'Berlin']
     ['3', 'Paris']
     ['4', 'Madrid']
     ['5', 'Rome']
-    <generator object Table.__read_row_stream_create at 0x7f775fbc7660>
+    <generator object Table.__read_row_stream_create at 0x7fb2fdac3ac0>
     Row([('id', 1), ('name', 'London')])
     Row([('id', 2), ('name', 'Berlin')])
     Row([('id', 3), ('name', 'Paris')])
@@ -519,7 +517,7 @@ with Table('data/capital-3.csv') as table:
     Row([('id', 5), ('name', 'Rome')])
 
 
-**Table's Lifecycle**
+### Table's Lifecycle
 
 You might have noticed that we had to duplicate the `with Table(...)` statement in some examples. The reason is that Table is a streaming interface. Once it's read you need to open it again. Let's show it in an example:
 
@@ -555,7 +553,7 @@ table.close()
 
 Let's overview the details we can specify for a file. Usually you don't need to provide those details as Frictionless is capable to infer it on its own. Although, there are situation when you need to specify it manually. The following example will use the `Table` class but the same options can be used for the `extract` and `extract_table` functions.
 
-**Scheme**
+### Scheme
 
 The scheme also know as protocol indicates which loader Frictionless should use to read or write data. It can be `file` (default), `text`, `http`, `https`, `s3`, and others.
 
@@ -572,7 +570,7 @@ with Table('header1,header2\nvalue1,value2.csv', scheme='text') as table:
     [Row([('header1', 'value1'), ('header2', 'value2.csv')])]
 
 
-**Format**
+### Format
 
 The format or as it's also called extension helps Frictionless to choose a proper parser to handle the file. Popular formats are `csv`, `xlsx`, `json` and others
 
@@ -589,7 +587,7 @@ with Table('text://header1,header2\nvalue1,value2.csv', format='csv') as table:
     [Row([('header1', 'value1'), ('header2', 'value2')])]
 
 
-**Hashing**
+### Hashing
 
 The hashing option controls which hashing algorithm should be used for generating the `hash` property. It doesn't affect the `extract` function but can be used with the `Table` class:
 
@@ -607,7 +605,7 @@ with Table('data/country-3.csv', hashing='sha256') as table:
     408b5058f961915c1e1f3bc318ab01d7d094a4daccdf03ad6022cfc7b8ea4e3e
 
 
-**Encoding**
+### Encoding
 
 Frictionless automatically detects encoding of files but sometimes it can be innacurate. It's possible to provide an encoding manually:
 
@@ -624,7 +622,7 @@ with Table('data/country-3.csv', encoding='utf-8') as table:
     data/country-3.csv
 
 
-**Compression**
+### Compression
 
 It's possible to adjust compression detection by providing the algorithm explicitly. For the example below it's not required as it would be detected anyway:
 
@@ -641,7 +639,7 @@ with Table('data/table.csv.zip', compression='zip') as table:
     [Row([('id', 1), ('name', 'english')]), Row([('id', 2), ('name', '中国人')])]
 
 
-**Compression Path**
+### Compression Path
 
 By default, Frictionless uses the first file found in a zip archive. It's possible to adjust this behaviour:
 
@@ -686,7 +684,7 @@ with Table(source, control=control) as table:
 
 Exact parameters depend on schemes and can be found in the "Schemes Reference". For example, the Remote Control provides `http_timeout`, `http_session`, and others but there is only one option available for all controls:
 
-**Detect Encoding**
+### Detect Encoding
 
 It's a function that can be provided to adjust the encoding detection. This function accepts a data sample and returns a detected encoding:
 
@@ -729,7 +727,7 @@ with Table(source, scheme='text', format='csv', dialect=dialect) as table:
 
 There are a great deal of options available for different dialects that can be found in "Formats Reference". We will list the properties that can be used with every dialect:
 
-**Header**
+### Header
 
 It's a boolean flag wich deaults to `True` indicating whether the data has a header row or not. In the following example the header row will be treated as a data row:
 
@@ -752,7 +750,7 @@ with Table('data/capital-3.csv', dialect=dialect) as table:
      Row([('field1', '5'), ('field2', 'Rome')])]
 
 
-**Header Rows**
+### Header Rows
 
 If header is `True` which is default, this parameters indicates where to find the header row or header rows for a multiline header. Let's see on example how the first two data rows can be treated as a part of a header:
 
@@ -772,7 +770,7 @@ with Table('data/capital-3.csv', dialect=dialect) as table:
      Row([('id 1 2', 5), ('name London Berlin', 'Rome')])]
 
 
-**Header Join**
+### Header Join
 
 If there are multiple header rows which is managed by `header_rows` parameter, we can set a string to be a separator for a header's cell join operation. Usually it's very handy for some "fancy" Excel files. For the sake of simplicity, we will show on a CSV file:
 
@@ -792,7 +790,7 @@ with Table('data/capital-3.csv', dialect=dialect) as table:
      Row([('id/1/2', 5), ('name/London/Berlin', 'Rome')])]
 
 
-**Header Case**
+### Header Case
 
 > *New in version 3.23*
 
@@ -832,7 +830,7 @@ Using header management described in the "Table Dialect" section we can have a b
     41,42,43,44
 
 
-**Pick/Skip Fields**
+### Pick/Skip Fields
 
 We can pick and skip arbitrary fields based on a header row. These options accept a list of field numbers, a list of strings or a regex to match. All the queries below do the same thing for this file:
 
@@ -856,7 +854,7 @@ print(extract('data/matrix.csv', query=Query(skip_fields=['<regex>f[14]'])))
     [Row([('f2', 12), ('f3', 13)]), Row([('f2', 22), ('f3', 23)]), Row([('f2', 32), ('f3', 33)]), Row([('f2', 42), ('f3', 43)])]
 
 
-**Limit/Offset Fields**
+### Limit/Offset Fields
 
 There are two options that provide an ability to limit amount of fields similiar to SQL's directives:
 
@@ -872,7 +870,7 @@ print(extract('data/matrix.csv', query=Query(offset_fields=2)))
     [Row([('f3', 13), ('f4', 14)]), Row([('f3', 23), ('f4', 24)]), Row([('f3', 33), ('f4', 34)]), Row([('f3', 43), ('f4', 44)])]
 
 
-**Pick/Skip Rows**
+### Pick/Skip Rows
 
 It's alike the field counterparts but it will be compared to the first cell of a row. All the queries below do the same thing for this file but take into account that when picking we need to also pick a header row. In addition, there is special value `<blank>` that matches a row if it's competely blank:
 
@@ -898,7 +896,7 @@ print(extract('data/matrix.csv', query=Query(pick_rows=['<blank>'])))
     []
 
 
-**Limit/Offset Rows**
+### Limit/Offset Rows
 
 This is a quite popular option used to limit amount of rows to read:
 
@@ -994,7 +992,7 @@ with Table('data/capital-3.csv', headers=[[1,2,3], '/']) as table:
 
 By default, a schema for a table is inferred under the hood but we can also pass it explicitly.
 
-**Schema**
+### Schema
 
 The most common way is providing a schema argument to the Table constructor. For example, let's make the `id` field be a string instead of an integer:
 
@@ -1017,7 +1015,7 @@ with Table('data/capital-3.csv', schema=schema) as table:
      Row([('id', '5'), ('name', 'Rome')])]
 
 
-**Sync Schema**
+### Sync Schema
 
 There is a way to sync provided schema based on a header row's field order. It's very useful when you have a schema that describes a subset or a superset of the table's fields:
 
@@ -1041,7 +1039,7 @@ with Table('data/capital-3.csv', schema=schema, sync_schema=True) as table:
      Row([('id', '5'), ('name', 'Rome')])]
 
 
-**Patch Schema**
+### Patch Schema
 
 Sometimes we just want to update only a few fields or some schema's properties without providing a brand new schema. For example, the two examples above can be simplified as:
 
@@ -1067,7 +1065,7 @@ with Table('data/capital-3.csv', patch_schema={'fields': {'id': {'type': 'string
 
 Exctraction function and classes accepts a few options that are needed to manage integrity behaviour:
 
-**On Error**
+### On Error
 
 This option accept one of the three possible values configuring an `extract`, `Table`, `Resource` or `Package` behaviour if there is an error during the row reading process:
 - ignore (default)
@@ -1113,7 +1111,7 @@ except Exception as exception:
     [type-error] The cell "1" in row at position "2" and field "name" at position "1" has incompatible type: type is "string/default"
 
 
-**Lookup**
+### Lookup
 
 The lookup is a special object providing relational information in cases when it's not possible to extract. For example, the Package is capable of getting a lookup object from its resource while a table object needs it to be provided. Let's see an example:
 
