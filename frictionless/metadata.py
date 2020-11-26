@@ -203,7 +203,7 @@ class Metadata(helpers.ControlledDict):
                     response.raise_for_status()
                     content = response.text
                 else:
-                    with open(descriptor) as file:
+                    with open(descriptor, encoding="utf-8") as file:
                         content = file.read()
                 if descriptor.endswith(".yaml"):
                     metadata = yaml.safe_load(io.StringIO(content))
