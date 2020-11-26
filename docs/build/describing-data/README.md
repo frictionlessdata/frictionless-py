@@ -550,11 +550,11 @@ To continue learning about data resources please read:
 The `describe` functions above share the only one common argument:
 - `expand`: whether to expand output metadata or not (see "Expanding Metadata")
 
-**Package**
+### Package
 
 The `describe_package` doesn't accept any additional options.
 
-**Resource**
+## Resource
 
 With the `describe_resource` function you can use as options:
 - File Details (see "Extracting Data")
@@ -933,7 +933,7 @@ This class exists for subclassing and here is important points that will help to
 
 Let's explore some handy options to customize the infer process. All of them are available in some form for all the functions above and for different invocation types: in Python, in CLI, or for a REST server.
 
-**Infer Type**
+### Infer Type
 
 This option allows manually setting all the field types to a given type. It's useful when you need to skip datacasting (setting `any` type) or have everything as a string (setting `string` type):
 
@@ -977,7 +977,7 @@ This option allows manually setting all the field types to a given type. It's us
 
 
 
-**Infer Names**
+### Infer Names
 
 Sometimes you don't want to use existent header row to compose field names. It's possible to provide custom names:
 
@@ -992,7 +992,7 @@ print(resource.schema.field_names)
     ['f1', 'f2', 'f3', 'f4']
 
 
-**Infer Volume**
+### Infer Volume
 
 By default, Frictionless will use the first 100 rows to detect field types. This can be customized. The following code will be slower but the result can be more accurate
 
@@ -1003,7 +1003,7 @@ from frictionless import describe
 resource = describe("data/country-1.csv", infer_volume=1000)
 ```
 
-**Infer Confidence**
+### Infer Confidence
 
 By default, Frictionless uses 0.9 (90%) confidence level for data types detection. It means that it there are 9 integers in a field and one string it will be inferred as an integer. If you want a guarantee that an inferred schema will conform to the data you can set it to 1 (100%):
 
@@ -1014,7 +1014,7 @@ from frictionless import describe
 resource = describe("data/country-1.csv", infer_confidence=1)
 ```
 
-**Infer Missing Values**
+### Infer Missing Values
 
 Missing Values is an important concept in data description. It provides information about what cell values should be considered as nulls. We can customize the defaults:
 
