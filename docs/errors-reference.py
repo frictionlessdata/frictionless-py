@@ -2,6 +2,7 @@ import sys
 from jinja2 import Template
 from frictionless import errors
 
+
 TEMPLATE = """
 # Errors Reference
 
@@ -18,6 +19,7 @@ Description: `{{ Error.description }}` <br>
 
 {% endfor %}
 """
+
 
 template = Template(TEMPLATE)
 Errors = [item for item in vars(errors).values() if hasattr(item, "code")]
