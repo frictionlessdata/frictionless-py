@@ -29,11 +29,13 @@ def main(name=None):
 
 def from_python(name):
     source_py = os.path.join(SOURCE_DIR, f"{name}.py")
+    target_dir = os.path.join(TARGET_DIR, name)
+    target_md = os.path.join(target_dir, "README.md")
     command = f"python3 {source_py}"
-    subenv = os.environ.copy()
-    subenv["SOURCE_DIR"] = SOURCE_DIR
-    subenv["TARGET_DIR"] = TARGET_DIR
-    subprocess.run(command, shell=True, check=True, env=subenv)
+    content = subprocess.check_output(command, shell=True)
+    os.makedirs(target_dir, exist_ok=True)
+    with open(target_md, "wb") as file:
+        file.write(content)
 
 
 def from_markdown(name):
