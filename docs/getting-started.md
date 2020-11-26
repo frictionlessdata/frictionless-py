@@ -55,7 +55,7 @@ We will take a very dirty data file:
 
 
 ```python
-! cat invalid.csv
+! cat data/invalid.csv
 ```
 
 Firt of all, let's infer the metadata. We can save and edit it to provide useful information about the table:

@@ -42,6 +42,8 @@ def program_validate(
     infer_volume: int = Opt(None, help="Limit data sample size by this integer"),
     infer_confidence: float = Opt(None, help="A float from 0 to 1"),
     infer_missing_values: str = Opt(None, help="Comma-separated list of missing values"),
+    # Package/Resource
+    basepath: str = Opt(None, help="Basepath of the resource/package"),
     # Validation
     checksum_hash: str = Opt(None, help="Expected hash based on hashing option"),
     checksum_bytes: int = Opt(None, help="Expected size in bytes"),
@@ -134,6 +136,8 @@ def program_validate(
             infer_volume=infer_volume,
             infer_confidence=infer_confidence,
             infer_missing_values=infer_missing_values,
+            # Package/Resource
+            basepath=basepath,
             # Validation
             checksum=checksum,
             pick_errors=pick_errors,
