@@ -1,12 +1,36 @@
 import re
 import os
+import sys
 import pkgutil
 import stringcase
-from scripts import docs
 from jinja2 import Template
 from docstring_parser import parse
 from importlib import import_module
 from frictionless import plugins
+
+
+TEMPLATE = """
+# Formats Reference
+
+It's a formats reference supported by the main Frictionless package. If you have installed external plugins, there can be more formats available. Below we're listing a format group name (or a parser name) like Excel, which is used, for example, for `xlsx`, `xls` etc formats. Options can be used for creating dialects, for example, `dialect = ExcelDialect(sheet=1)`.
+
+{% for format in formats %}
+## {{ format.name }}
+
+{% if format.options %}
+### Options
+{% for option in format.options %}
+#### {{ option.name }}
+
+> Type: {{ option.type }}
+
+{{ option.text }}
+{% endfor %}
+{% else %}
+There are no options available.
+{% endif %}
+{% endfor %}
+"""
 
 
 # Helpers
@@ -39,13 +63,7 @@ def get_formats():
 # Main
 
 
-source = os.path.join(docs.SOURCE_DIR, "formats-reference.md")
-target_dir = os.path.join(docs.TARGET_DIR, "formats-reference")
-target_md = os.path.join(target_dir, "README.md")
-os.makedirs(target_dir, exist_ok=True)
 formats = get_formats()
-with open(source) as file:
-    template = Template(file.read())
-    document = template.render(formats=formats)
-with open(target_md, "wt") as file:
-    file.write(document)
+template = Template(TEMPLATE)
+document = template.render(formats=formats).strip()
+sys.stdout.write(document)

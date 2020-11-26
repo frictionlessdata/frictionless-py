@@ -83,5 +83,6 @@ tabulator
 jsontableschema
 datapackage
 .mypy_cache
-!docs/target
+!docs/build
 .google.json
+tmp

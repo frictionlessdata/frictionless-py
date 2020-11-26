@@ -1,4 +1,3 @@
-from scripts import docs
+import os
 
-
-docs.from_markdown(source="AUTHORS.md", target="authors")
+os.system(f"cat AUTHORS.md")

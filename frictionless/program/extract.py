@@ -44,6 +44,8 @@ def program_extract(
     infer_volume: int = Opt(None, help="Limit data sample size by this integer"),
     infer_confidence: float = Opt(None, help="A float from 0 to 1"),
     infer_missing_values: str = Opt(None, help="Comma-separated list of missing values"),
+    # Package/Resource
+    basepath: str = Opt(None, help="Basepath of the resource/package"),
     # Output
     yaml: bool = Opt(False, help="Return in pure YAML format"),
     json: bool = Opt(False, help="Return in JSON format"),
@@ -119,6 +121,8 @@ def program_extract(
             infer_volume=infer_volume,
             infer_confidence=infer_confidence,
             infer_missing_values=infer_missing_values,
+            # Package/Resource
+            basepath=basepath,
         )
     )
 

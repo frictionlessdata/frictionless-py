@@ -1,4 +1,3 @@
-from scripts import docs
+import os
 
-
-docs.from_markdown(source="CHANGELOG.md", target="changelog")
+os.system(f"cat CHANGELOG.md")

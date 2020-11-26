@@ -1,4 +1,3 @@
-from scripts import docs
+import os
 
-
-docs.from_markdown(source="CONTRIBUTING.md", target="contributing")
+os.system(f"cat CONTRIBUTING.md")
