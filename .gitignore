@@ -85,3 +85,4 @@ datapackage
 .mypy_cache
 !docs/build
 .google.json
+tmp
