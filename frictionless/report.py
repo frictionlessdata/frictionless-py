@@ -157,7 +157,8 @@ class Report(Metadata):
 
     # Metadata
 
-    metadata_strict = True
+    # TODO: review
+    #  metadata_strict = True
     metadata_Error = ReportError
     metadata_profile = deepcopy(config.REPORT_PROFILE)
     metadata_profile["properties"]["tables"] = {
@@ -395,6 +396,9 @@ class ReportTable(Metadata):
 
     # Metadata
 
-    metadata_strict = True
+    # TODO: review
+    #  metadata_strict = True
     metadata_Error = ReportError
     metadata_profile = config.REPORT_PROFILE["properties"]["tables"]["items"]
+    # TODO: review: should we validate errors for performance reasons
+    #  del metadata_profile["properties"]["errors"]
