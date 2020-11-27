@@ -2,6 +2,8 @@ from .metadata import Metadata
 from .exception import FrictionlessException
 
 
+# TODO: consider other approached for report/errors as dict is not really effective as
+# it can be very memory consumig; as an alternative - hard limit for errors
 # TODO: swith code notation to camelCase?
 # TODO: compare performance if it's Metadata and if it's just a dict (5% diff?)
 
