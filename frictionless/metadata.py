@@ -30,6 +30,7 @@ class Metadata(helpers.ControlledDict):
 
     metadata_Error = None
     metadata_profile = None
+    # TODO: review this flag and classes using it
     metadata_strict = False
     metadata_duplicate = False
 

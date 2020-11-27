@@ -1,8 +1,11 @@
-from .exception import FrictionlessException
 from .metadata import Metadata
+from .exception import FrictionlessException
 
 
+# TODO: consider other approached for report/errors as dict is not really effective as
+# it can be very memory consumig; as an alternative - hard limit for errors
 # TODO: swith code notation to camelCase?
+# TODO: compare performance if it's Metadata and if it's just a dict (5% diff?)
 
 
 class Error(Metadata):
@@ -28,12 +31,12 @@ class Error(Metadata):
     description = "Error"
 
     def __init__(self, descriptor=None, *, note):
-        self["code"] = self.code
-        self["name"] = self.name
-        self["tags"] = self.tags
-        self["note"] = note
-        self["message"] = self.template.format(**self)
-        self["description"] = self.description
+        self.setinitial("code", self.code)
+        self.setinitial("name", self.name)
+        self.setinitial("tags", self.tags)
+        self.setinitial("note", note)
+        self.setinitial("message", self.template.format(**self))
+        self.setinitial("description", self.description)
         super().__init__(descriptor)
 
     @property
@@ -87,11 +90,11 @@ class HeaderError(Error):
         field_number,
         field_position,
     ):
-        self["cells"] = cells
-        self["cell"] = cell
-        self["fieldName"] = field_name
-        self["fieldNumber"] = field_number
-        self["fieldPosition"] = field_position
+        self.setinitial("cells", cells)
+        self.setinitial("cell", cell)
+        self.setinitial("fieldName", field_name)
+        self.setinitial("fieldNumber", field_number)
+        self.setinitial("fieldPosition", field_position)
         super().__init__(descriptor, note=note)
 
 
@@ -116,9 +119,9 @@ class RowError(Error):
     description = "Row Error"
 
     def __init__(self, descriptor=None, *, note, cells, row_number, row_position):
-        self["cells"] = cells
-        self["rowNumber"] = row_number
-        self["rowPosition"] = row_position
+        self.setinitial("cells", cells)
+        self.setinitial("rowNumber", row_number)
+        self.setinitial("rowPosition", row_position)
         super().__init__(descriptor, note=note)
 
     # Create
@@ -180,10 +183,10 @@ class CellError(RowError):
         field_number,
         field_position,
     ):
-        self["cell"] = cell
-        self["fieldName"] = field_name
-        self["fieldNumber"] = field_number
-        self["fieldPosition"] = field_position
+        self.setinitial("cell", cell)
+        self.setinitial("fieldName", field_name)
+        self.setinitial("fieldNumber", field_number)
+        self.setinitial("fieldPosition", field_position)
         super().__init__(
             descriptor,
             note=note,
