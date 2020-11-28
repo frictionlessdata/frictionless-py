@@ -2,6 +2,7 @@ import os
 import json
 import glob
 import zipfile
+import tempfile
 from copy import deepcopy
 from .exception import FrictionlessException
 from .metadata import Metadata
@@ -382,33 +383,80 @@ class Package(Metadata):
             trusted=self.__trusted,
         )
 
-    # NOTE: support multipart
-    def to_zip(self, target, encoder_class=None):
+    # TODO: support multipart
+    # TODO: there is 100% duplication with resource.to_zip
+    def to_zip(self, target, *, resolve=[], encoder_class=None):
         """Save package to a zip
 
         Parameters:
             target (str): target path
+            resolve (str[]): Data sources to resolve.
+                For "inline" data it means saving them as CSV and including into ZIP.
+                For "remote" data it means downloading them and including into ZIP.
+                For example, `resolve=["inline", "remote"]`
+            encoder_class (object): json encoder class
 
         Raises:
             FrictionlessException: on any error
         """
         try:
             with zipfile.ZipFile(target, "w") as zip:
-                descriptor = self.copy()
-                for resource in self.resources:
-                    if resource.inline:
-                        continue
-                    if resource.remote:
-                        continue
+                package_descriptor = self.copy()
+                for index, resource in enumerate(self.resources):
+                    descriptor = package_descriptor["resources"][index]
+
+                    # Multipart data
                     if resource.multipart:
-                        continue
-                    if not helpers.is_safe_path(resource.path):
-                        continue
-                    zip.write(resource.source, resource.path)
-                descriptor = json.dumps(
-                    descriptor, indent=2, ensure_ascii=False, cls=encoder_class
+                        note = "Zipping multipart resource is not yet supported"
+                        raise FrictionlessException(errors.ResourceError(note=note))
+
+                    # Inline data
+                    elif resource.inline:
+                        if "inline" in resolve:
+                            path = f"{resource.name}.csv"
+                            descriptor["path"] = path
+                            del descriptor["data"]
+                            with tempfile.NamedTemporaryFile() as file:
+                                resource.write(file.name, format="csv")
+                                zip.write(file.name, path)
+                        elif not isinstance(resource.data, list):
+                            note = f"Use resolve argument to zip {resource.data}"
+                            raise FrictionlessException(errors.ResourceError(note=note))
+
+                    # Remote data
+                    elif resource.remote:
+                        if "remote" in resolve:
+                            path = f"{resource.name}.{resource.format}"
+                            descriptor["path"] = path
+                            with tempfile.NamedTemporaryFile() as file:
+                                byte_stream = resource.read_byte_stream()
+                                while True:
+                                    chunk = byte_stream.read(1024)
+                                    if not chunk:
+                                        break
+                                    file.write(chunk)
+                                file.flush()
+                                zip.write(file.name, path)
+
+                    # Local Data
+                    else:
+                        path = resource.path
+                        if not helpers.is_safe_path(path):
+                            path = f"{resource.name}.{resource.format}"
+                            descriptor["path"] = path
+                        zip.write(resource.source, path)
+
+                # Metadata
+                zip.writestr(
+                    "datapackage.json",
+                    json.dumps(
+                        package_descriptor,
+                        indent=2,
+                        ensure_ascii=False,
+                        cls=encoder_class,
+                    ),
                 )
-                zip.writestr("datapackage.json", descriptor)
+
         except Exception as exception:
             error = errors.PackageError(note=str(exception))
             raise FrictionlessException(error) from exception

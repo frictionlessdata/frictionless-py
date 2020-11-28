@@ -792,7 +792,8 @@ class Resource(Metadata):
         options.setdefault("control", self.control)
         return module.File(**options)
 
-    # NOTE: support multipart
+    # TODO: support multipart
+    # TODO: there is 100% duplication with package.to_zip
     def to_zip(self, target, *, resolve=[], encoder_class=None):
         """Save resource to a zip
 
@@ -809,59 +810,60 @@ class Resource(Metadata):
         """
         try:
             with zipfile.ZipFile(target, "w") as zip:
-                descriptor = self.copy()
+                for resource in [self]:
+                    descriptor = self.copy()
 
-                # Multipart data
-                if self.multipart:
-                    note = "Zipping multipart resource is not yet supported"
-                    raise FrictionlessException(errors.ResourceError(note=note))
-
-                # Inline data
-                elif self.inline:
-                    if "inline" in resolve:
-                        path = f"{self.name}.csv"
-                        descriptor["path"] = path
-                        del descriptor["data"]
-                        with tempfile.NamedTemporaryFile() as file:
-                            self.write(file.name, format="csv")
-                            zip.write(file.name, path)
-                    elif not isinstance(self.data, list):
-                        note = f"Zipping {self.data} without resolving is not supported"
+                    # Multipart data
+                    if resource.multipart:
+                        note = "Zipping multipart resource is not yet supported"
                         raise FrictionlessException(errors.ResourceError(note=note))
 
-                # Remote data
-                elif self.remote:
-                    if "remote" in resolve:
-                        path = f"{self.name}.{self.format}"
-                        descriptor["path"] = path
-                        with tempfile.NamedTemporaryFile() as file:
-                            byte_stream = self.read_byte_stream()
-                            while True:
-                                chunk = byte_stream.read(1024)
-                                if not chunk:
-                                    break
-                                file.write(chunk)
-                            file.flush()
-                            zip.write(file.name, path)
+                    # Inline data
+                    elif resource.inline:
+                        if "inline" in resolve:
+                            path = f"{resource.name}.csv"
+                            descriptor["path"] = path
+                            del descriptor["data"]
+                            with tempfile.NamedTemporaryFile() as file:
+                                resource.write(file.name, format="csv")
+                                zip.write(file.name, path)
+                        elif not isinstance(resource.data, list):
+                            note = f"Use resolve argument to zip {resource.data}"
+                            raise FrictionlessException(errors.ResourceError(note=note))
 
-                # Local Data
-                else:
-                    path = self.path
-                    if not helpers.is_safe_path(path):
-                        path = f"{self.name}.{self.format}"
-                        descriptor["path"] = path
-                    zip.write(self.source, path)
+                    # Remote data
+                    elif resource.remote:
+                        if "remote" in resolve:
+                            path = f"{resource.name}.{resource.format}"
+                            descriptor["path"] = path
+                            with tempfile.NamedTemporaryFile() as file:
+                                byte_stream = resource.read_byte_stream()
+                                while True:
+                                    chunk = byte_stream.read(1024)
+                                    if not chunk:
+                                        break
+                                    file.write(chunk)
+                                file.flush()
+                                zip.write(file.name, path)
 
-                # Metadata
-                zip.writestr(
-                    "dataresource.json",
-                    json.dumps(
-                        descriptor,
-                        indent=2,
-                        ensure_ascii=False,
-                        cls=encoder_class,
-                    ),
-                )
+                    # Local Data
+                    else:
+                        path = resource.path
+                        if not helpers.is_safe_path(path):
+                            path = f"{resource.name}.{resource.format}"
+                            descriptor["path"] = path
+                        zip.write(resource.source, path)
+
+                    # Metadata
+                    zip.writestr(
+                        "dataresource.json",
+                        json.dumps(
+                            descriptor,
+                            indent=2,
+                            ensure_ascii=False,
+                            cls=encoder_class,
+                        ),
+                    )
 
         except (IOError, zipfile.BadZipfile, zipfile.LargeZipFile) as exception:
             error = errors.ResourceError(note=str(exception))
