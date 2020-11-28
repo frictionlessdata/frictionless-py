@@ -1531,7 +1531,7 @@ Create a copy of the package
 #### <big>to\_zip</big>
 
 ```python
- | to_zip(target, encoder_class=None)
+ | to_zip(target, *, resolve=[], encoder_class=None)
 ```
 
 Save package to a zip
@@ -1539,6 +1539,11 @@ Save package to a zip
 **Arguments**:
 
 - `target` _str_ - target path
+- `resolve` _str[]_ - Data sources to resolve.
+  For "inline" data it means saving them as CSV and including into ZIP.
+  For "remote" data it means downloading them and including into ZIP.
+  For example, `resolve=["inline", "remote"]`
+- `encoder_class` _object_ - json encoder class
   
 
 **Raises**:
@@ -6110,7 +6115,7 @@ Convert resource to File
 #### <big>to\_zip</big>
 
 ```python
- | to_zip(target, encoder_class=None)
+ | to_zip(target, *, resolve=[], encoder_class=None)
 ```
 
 Save resource to a zip
@@ -6118,6 +6123,11 @@ Save resource to a zip
 **Arguments**:
 
 - `target` _str_ - target path
+- `resolve` _str[]_ - Data sources to resolve.
+  For "inline" data it means saving them as CSV and including into ZIP.
+  For "remote" data it means downloading them and including into ZIP.
+  For example, `resolve=["inline", "remote"]`
+- `encoder_class` _object_ - json encoder class
   
 
 **Raises**:

@@ -486,11 +486,120 @@ def test_package_to_zip(tmpdir):
 
     # Read
     package = Package(target)
-    assert package == {
-        "name": "name",
-        "resources": [{"name": "name", "path": "table.csv"}],
-    }
+    assert package.name == "name"
+    assert package.get_resource("name").name == "name"
+    assert package.get_resource("name").path == "table.csv"
     assert package.get_resource("name").read_rows() == [
+        {"id": 1, "name": "english"},
+        {"id": 2, "name": "中国人"},
+    ]
+
+
+def test_package_to_zip_withdir_path(tmpdir):
+
+    # Write
+    target = os.path.join(tmpdir, "package.zip")
+    resource = Resource(path="data/table.csv")
+    package = Package(resources=[resource])
+    package.to_zip(target)
+
+    # Read
+    package = Package(target)
+    assert package.get_resource("table").path == "data/table.csv"
+    assert package.get_resource("table").read_rows() == [
+        {"id": 1, "name": "english"},
+        {"id": 2, "name": "中国人"},
+    ]
+
+
+def test_package_to_zip_absolute_path(tmpdir):
+
+    # Write
+    target = os.path.join(tmpdir, "package.zip")
+    resource = Resource(path=os.path.abspath("data/table.csv"), trusted=True)
+    package = Package(resources=[resource], trusted=True)
+    package.to_zip(target)
+
+    # Read
+    package = Package(target)
+    assert package.get_resource("table").path == "table.csv"
+    assert package.get_resource("table").read_rows() == [
+        {"id": 1, "name": "english"},
+        {"id": 2, "name": "中国人"},
+    ]
+
+
+def test_package_to_zip_resolve_inline(tmpdir):
+
+    # Write
+    target = os.path.join(tmpdir, "package.zip")
+    resource = Resource(name="table", data=[["id", "name"], [1, "english"], [2, "中国人"]])
+    package = Package(resources=[resource])
+    package.to_zip(target, resolve=["inline"])
+
+    # Read
+    package = Package(target)
+    assert package.get_resource("table").path == "table.csv"
+    assert package.get_resource("table").read_rows() == [
+        {"id": 1, "name": "english"},
+        {"id": 2, "name": "中国人"},
+    ]
+
+
+def test_package_to_zip_resolve_inline_sql(tmpdir, database_url):
+
+    # Write
+    target = os.path.join(tmpdir, "package.zip")
+    resource = Resource.from_sql(name="table", url=database_url)
+    package = Package(resources=[resource])
+    package.to_zip(target, resolve=["inline"])
+
+    # Read
+    package = Package(target)
+    assert package.get_resource("table").path == "table.csv"
+    assert package.get_resource("table").read_rows() == [
+        {"id": 1, "name": "english"},
+        {"id": 2, "name": "中国人"},
+    ]
+
+
+@pytest.mark.ci
+def test_package_to_zip_resolve_remote(tmpdir):
+
+    # Write
+    target = os.path.join(tmpdir, "package.zip")
+    resource = Resource(path=BASE_URL % "data/table.csv")
+    package = Package(resources=[resource])
+    package.to_zip(target, resolve=["remote"])
+
+    # Read
+    package = Package(target)
+    assert package.get_resource("table").path == "table.csv"
+    assert package.get_resource("table").read_rows() == [
+        {"id": 1, "name": "english"},
+        {"id": 2, "name": "中国人"},
+    ]
+
+
+@pytest.mark.ci
+def test_package_to_zip_resolve_inline_and_remote(tmpdir):
+
+    # Write
+    target = os.path.join(tmpdir, "package.zip")
+    resource1 = Resource(name="name1", data=[["id", "name"], [1, "english"], [2, "中国人"]])
+    resource2 = Resource(name="name2", path=BASE_URL % "data/table.csv")
+    package = Package(resources=[resource1, resource2])
+    package.to_zip(target, resolve=["inline", "remote"])
+
+    # Read
+    package = Package(target)
+    assert package.get_resource("name1").path == "name1.csv"
+    assert package.get_resource("name1").read_rows() == [
+        {"id": 1, "name": "english"},
+        {"id": 2, "name": "中国人"},
+    ]
+    assert package.get_resource("name2").path == "name2.csv"
+    assert package.get_resource("name2").read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]

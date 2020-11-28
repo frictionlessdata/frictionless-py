@@ -662,6 +662,90 @@ def test_resource_to_zip(tmpdir):
     ]
 
 
+def test_resource_to_zip_withdir_path(tmpdir):
+
+    # Write
+    target = os.path.join(tmpdir, "resource.zip")
+    resource = Resource(path="data/table.csv")
+    resource.to_zip(target)
+
+    # Read
+    resource = Resource(target)
+    assert resource == {"path": "data/table.csv"}
+    assert resource.read_rows() == [
+        {"id": 1, "name": "english"},
+        {"id": 2, "name": "中国人"},
+    ]
+
+
+def test_resource_to_zip_absolute_path(tmpdir):
+
+    # Write
+    target = os.path.join(tmpdir, "resource.zip")
+    resource = Resource(path=os.path.abspath("data/table.csv"), trusted=True)
+    resource.to_zip(target)
+
+    # Read
+    resource = Resource(target)
+    assert resource == {"path": "table.csv"}
+    assert resource.read_rows() == [
+        {"id": 1, "name": "english"},
+        {"id": 2, "name": "中国人"},
+    ]
+
+
+def test_resource_to_zip_resolve_inline(tmpdir):
+
+    # Write
+    target = os.path.join(tmpdir, "resource.zip")
+    resource = Resource(name="table", data=[["id", "name"], [1, "english"], [2, "中国人"]])
+    resource.to_zip(target, resolve=["inline"])
+
+    # Read
+    resource = Resource(target)
+    assert resource.name == "table"
+    assert resource.path == "table.csv"
+    assert resource.read_rows() == [
+        {"id": 1, "name": "english"},
+        {"id": 2, "name": "中国人"},
+    ]
+
+
+def test_resource_to_zip_resolve_inline_sql(tmpdir, database_url):
+
+    # Write
+    target = os.path.join(tmpdir, "resource.zip")
+    resource = Resource.from_sql(name="table", url=database_url)
+    resource.to_zip(target, resolve=["inline"])
+
+    # Read
+    resource = Resource(target)
+    assert resource.name == "table"
+    assert resource.path == "table.csv"
+    assert resource.read_rows() == [
+        {"id": 1, "name": "english"},
+        {"id": 2, "name": "中国人"},
+    ]
+
+
+@pytest.mark.ci
+def test_resource_to_zip_resolve_remote(tmpdir):
+
+    # Write
+    target = os.path.join(tmpdir, "resource.zip")
+    resource = Resource(path=BASE_URL % "data/table.csv")
+    resource.to_zip(target, resolve=["remote"])
+
+    # Read
+    resource = Resource(target)
+    assert resource.name == "table"
+    assert resource.path == "table.csv"
+    assert resource.read_rows() == [
+        {"id": 1, "name": "english"},
+        {"id": 2, "name": "中国人"},
+    ]
+
+
 @pytest.mark.ci
 def test_resource_to_zip_source_remote(tmpdir):
 
