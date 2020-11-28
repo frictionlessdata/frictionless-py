@@ -811,7 +811,7 @@ class Resource(Metadata):
         try:
             with zipfile.ZipFile(target, "w") as zip:
                 for resource in [self]:
-                    descriptor = self.copy()
+                    descriptor = self.to_dict()
 
                     # Multipart data
                     if resource.multipart:

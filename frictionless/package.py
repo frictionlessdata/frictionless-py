@@ -401,7 +401,7 @@ class Package(Metadata):
         """
         try:
             with zipfile.ZipFile(target, "w") as zip:
-                package_descriptor = self.copy()
+                package_descriptor = self.to_dict()
                 for index, resource in enumerate(self.resources):
                     descriptor = package_descriptor["resources"][index]
 
