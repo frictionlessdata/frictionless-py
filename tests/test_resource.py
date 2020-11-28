@@ -662,6 +662,38 @@ def test_resource_to_zip(tmpdir):
     ]
 
 
+def test_resource_to_zip_withdir_path(tmpdir):
+
+    # Write
+    target = os.path.join(tmpdir, "resource.zip")
+    resource = Resource(path="data/table.csv")
+    resource.to_zip(target)
+
+    # Read
+    resource = Resource(target)
+    assert resource == {"path": "data/table.csv"}
+    assert resource.read_rows() == [
+        {"id": 1, "name": "english"},
+        {"id": 2, "name": "中国人"},
+    ]
+
+
+def test_resource_to_zip_absolute_path(tmpdir):
+
+    # Write
+    target = os.path.join(tmpdir, "resource.zip")
+    resource = Resource(path=os.path.abspath("data/table.csv"), trusted=True)
+    resource.to_zip(target)
+
+    # Read
+    resource = Resource(target)
+    assert resource == {"path": "table.csv"}
+    assert resource.read_rows() == [
+        {"id": 1, "name": "english"},
+        {"id": 2, "name": "中国人"},
+    ]
+
+
 def test_resource_to_zip_resolve_inline(tmpdir):
 
     # Write

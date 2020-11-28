@@ -846,7 +846,11 @@ class Resource(Metadata):
 
                 # Local Data
                 else:
-                    zip.write(self.source, self.path)
+                    path = self.path
+                    if not helpers.is_safe_path(path):
+                        path = f"{self.name}.{self.format}"
+                        descriptor["path"] = path
+                    zip.write(self.source, path)
 
                 # Metadata
                 zip.writestr(
