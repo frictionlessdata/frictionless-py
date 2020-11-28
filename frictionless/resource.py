@@ -811,26 +811,42 @@ class Resource(Metadata):
             with zipfile.ZipFile(target, "w") as zip:
                 descriptor = self.copy()
 
-                # Inline data
-                if self.inline and "inline" in resolve:
-                    path = f"{self.name}.csv"
-                    file = tempfile.NamedTemporaryFile(delete=True)
-                    self.write(file.name, format="csv")
-                    zip.write(file.name, path)
-                    descriptor["path"] = path
-                    del descriptor["data"]
+                # Multipart data
+                if self.multipart:
+                    note = "Zipping multipart resource is not yet supported"
+                    raise FrictionlessException(errors.ResourceError(note=note))
 
-                # Data
-                for resource in [self]:
-                    if resource.inline:
-                        continue
-                    if resource.remote:
-                        continue
-                    if resource.multipart:
-                        continue
-                    if not helpers.is_safe_path(resource.path):
-                        continue
-                    zip.write(resource.source, resource.path)
+                # Inline data
+                elif self.inline:
+                    if "inline" in resolve:
+                        path = f"{self.name}.csv"
+                        descriptor["path"] = path
+                        del descriptor["data"]
+                        with tempfile.NamedTemporaryFile() as file:
+                            self.write(file.name, format="csv")
+                            zip.write(file.name, path)
+                    elif not isinstance(self.data, list):
+                        note = f"Zipping {self.data} without resolving is not supported"
+                        raise FrictionlessException(errors.ResourceError(note=note))
+
+                # Remote data
+                elif self.remote:
+                    if "remote" in resolve:
+                        path = f"{self.name}.{self.format}"
+                        descriptor["path"] = path
+                        with tempfile.NamedTemporaryFile() as file:
+                            byte_stream = self.read_byte_stream()
+                            while True:
+                                chunk = byte_stream.read(1024)
+                                if not chunk:
+                                    break
+                                file.write(chunk)
+                            file.flush()
+                            zip.write(file.name, path)
+
+                # Local Data
+                else:
+                    zip.write(self.source, self.path)
 
                 # Metadata
                 zip.writestr(

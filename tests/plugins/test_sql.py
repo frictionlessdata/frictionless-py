@@ -13,7 +13,7 @@ load_dotenv(".env")
 
 
 def test_table_sql(database_url):
-    dialect = SqlDialect(table="data")
+    dialect = SqlDialect(table="table")
     with Table(database_url, dialect=dialect) as table:
         assert table.schema == {
             "fields": [
@@ -27,14 +27,14 @@ def test_table_sql(database_url):
 
 
 def test_table_sql_order_by(database_url):
-    dialect = SqlDialect(table="data", order_by="id")
+    dialect = SqlDialect(table="table", order_by="id")
     with Table(database_url, dialect=dialect) as table:
         assert table.header == ["id", "name"]
         assert table.read_data() == [[1, "english"], [2, "中国人"]]
 
 
 def test_table_sql_order_by_desc(database_url):
-    dialect = SqlDialect(table="data", order_by="id desc")
+    dialect = SqlDialect(table="table", order_by="id desc")
     with Table(database_url, dialect=dialect) as table:
         assert table.header == ["id", "name"]
         assert table.read_data() == [[2, "中国人"], [1, "english"]]
@@ -50,7 +50,7 @@ def test_table_sql_table_is_required_error(database_url):
 
 
 def test_table_sql_headers_false(database_url):
-    dialect = SqlDialect(table="data")
+    dialect = SqlDialect(table="table")
     with Table(database_url, dialect=dialect, headers=False) as table:
         assert table.header == []
         assert table.read_data() == [["id", "name"], [1, "english"], [2, "中国人"]]
@@ -69,8 +69,8 @@ def test_table_sql_write(database_url):
 # Storage
 
 
-def test_storage_types(database_url):
-    engine = sa.create_engine(database_url)
+def test_storage_types(sqlite_url):
+    engine = sa.create_engine(sqlite_url)
     prefix = "prefix_"
 
     # Export/Import
@@ -126,8 +126,8 @@ def test_storage_types(database_url):
     storage.delete_package(target.resource_names)
 
 
-def test_storage_integrity(database_url):
-    engine = sa.create_engine(database_url)
+def test_storage_integrity(sqlite_url):
+    engine = sa.create_engine(sqlite_url)
     prefix = "prefix_"
 
     # Export/Import
@@ -184,8 +184,8 @@ def test_storage_integrity(database_url):
     storage.delete_package(target.resource_names)
 
 
-def test_storage_constraints(database_url):
-    engine = sa.create_engine(database_url)
+def test_storage_constraints(sqlite_url):
+    engine = sa.create_engine(sqlite_url)
     prefix = "prefix_"
 
     # Export/Import
@@ -235,8 +235,8 @@ def test_storage_constraints(database_url):
         ("maximum", 9),
     ],
 )
-def test_storage_constraints_not_valid_error(database_url, field_name, cell):
-    engine = sa.create_engine(database_url)
+def test_storage_constraints_not_valid_error(sqlite_url, field_name, cell):
+    engine = sa.create_engine(sqlite_url)
     package = Package("data/storage/constraints.json")
     resource = package.get_resource("constraints")
     # We set an invalid cell to the data property
@@ -248,8 +248,8 @@ def test_storage_constraints_not_valid_error(database_url, field_name, cell):
         resource.to_sql(engine=engine, force=True)
 
 
-def test_storage_read_resource_not_existent_error(database_url):
-    engine = sa.create_engine(database_url)
+def test_storage_read_resource_not_existent_error(sqlite_url):
+    engine = sa.create_engine(sqlite_url)
     storage = SqlStorage(engine=engine)
     with pytest.raises(FrictionlessException) as excinfo:
         storage.read_resource("bad")
@@ -258,8 +258,8 @@ def test_storage_read_resource_not_existent_error(database_url):
     assert error.note.count("does not exist")
 
 
-def test_storage_write_resource_existent_error(database_url):
-    engine = sa.create_engine(database_url)
+def test_storage_write_resource_existent_error(sqlite_url):
+    engine = sa.create_engine(sqlite_url)
     resource = Resource(path="data/table.csv")
     storage = resource.to_sql(engine=engine)
     with pytest.raises(FrictionlessException) as excinfo:
@@ -271,8 +271,8 @@ def test_storage_write_resource_existent_error(database_url):
     storage.delete_package(list(storage))
 
 
-def test_storage_delete_resource_not_existent_error(database_url):
-    engine = sa.create_engine(database_url)
+def test_storage_delete_resource_not_existent_error(sqlite_url):
+    engine = sa.create_engine(sqlite_url)
     storage = SqlStorage(engine=engine)
     with pytest.raises(FrictionlessException) as excinfo:
         storage.delete_resource("bad")
@@ -281,11 +281,13 @@ def test_storage_delete_resource_not_existent_error(database_url):
     assert error.note.count("does not exist")
 
 
-def test_storage_views_support(database_url):
-    engine = sa.create_engine(database_url)
-    engine.execute("CREATE VIEW data_view AS SELECT * FROM data")
+def test_storage_views_support(sqlite_url):
+    engine = sa.create_engine(sqlite_url)
+    engine.execute("CREATE TABLE 'table' (id INTEGER PRIMARY KEY, name TEXT)")
+    engine.execute("INSERT INTO 'table' VALUES (1, 'english'), (2, '中国人')")
+    engine.execute("CREATE VIEW 'table_view' AS SELECT * FROM 'table'")
     storage = SqlStorage(engine=engine)
-    resource = storage.read_resource("data_view")
+    resource = storage.read_resource("table_view")
     assert resource.schema == {
         "fields": [
             {"name": "id", "type": "integer"},
@@ -298,10 +300,10 @@ def test_storage_views_support(database_url):
     ]
 
 
-def test_storage_resource_url_argument(database_url):
+def test_storage_resource_url_argument(sqlite_url):
     source = Resource(path="data/table.csv")
-    source.to_sql(url=database_url)
-    target = Resource.from_sql(name="table", url=database_url)
+    source.to_sql(url=sqlite_url)
+    target = Resource.from_sql(name="table", url=sqlite_url)
     assert target.schema == {
         "fields": [
             {"name": "id", "type": "integer"},
@@ -314,10 +316,10 @@ def test_storage_resource_url_argument(database_url):
     ]
 
 
-def test_storage_package_url_argument(database_url):
+def test_storage_package_url_argument(sqlite_url):
     source = Package(resources=[Resource(path="data/table.csv")])
-    source.to_sql(url=database_url)
-    target = Package.from_sql(url=database_url)
+    source.to_sql(url=sqlite_url)
+    target = Package.from_sql(url=sqlite_url)
     assert target.get_resource("table").schema == {
         "fields": [
             {"name": "id", "type": "integer"},
@@ -453,7 +455,7 @@ def test_postgresql_storage_integrity():
 # TODO: recover enum support
 @pytest.mark.ci
 @pytest.mark.skip
-def test_postgresql_storage_constraints(database_url):
+def test_postgresql_storage_constraints(sqlite_url):
     engine = sa.create_engine(os.environ["POSTGRESQL_URL"])
     prefix = "prefix_"
 
@@ -505,7 +507,7 @@ def test_postgresql_storage_constraints(database_url):
         ("maximum", 9),
     ],
 )
-def test_postgresql_storage_constraints_not_valid_error(database_url, field_name, cell):
+def test_postgresql_storage_constraints_not_valid_error(sqlite_url, field_name, cell):
     engine = sa.create_engine(os.environ["POSTGRESQL_URL"])
     package = Package("data/storage/constraints.json")
     resource = package.get_resource("constraints")
