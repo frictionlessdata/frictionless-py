@@ -3,6 +3,7 @@ import os
 import json
 import petl
 import zipfile
+import tempfile
 import warnings
 from copy import deepcopy
 from importlib import import_module
@@ -792,11 +793,16 @@ class Resource(Metadata):
         return module.File(**options)
 
     # NOTE: support multipart
-    def to_zip(self, target, encoder_class=None):
+    def to_zip(self, target, *, resolve=[], encoder_class=None):
         """Save resource to a zip
 
         Parameters:
             target (str): target path
+            resolve (str[]): Data sources to resolve.
+                For "inline" data it means saving them as CSV and including into ZIP.
+                For "remote" data it means downloading them and including into ZIP.
+                For example, `resolve=["inline", "remote"]`
+            encoder_class (object): json encoder class
 
         Raises:
             FrictionlessException: on any error
@@ -804,6 +810,17 @@ class Resource(Metadata):
         try:
             with zipfile.ZipFile(target, "w") as zip:
                 descriptor = self.copy()
+
+                # Inline data
+                if self.inline and "inline" in resolve:
+                    path = f"{self.name}.csv"
+                    file = tempfile.NamedTemporaryFile(delete=True)
+                    self.write(file.name, format="csv")
+                    zip.write(file.name, path)
+                    descriptor["path"] = path
+                    del descriptor["data"]
+
+                # Data
                 for resource in [self]:
                     if resource.inline:
                         continue
@@ -814,10 +831,18 @@ class Resource(Metadata):
                     if not helpers.is_safe_path(resource.path):
                         continue
                     zip.write(resource.source, resource.path)
-                descriptor = json.dumps(
-                    descriptor, indent=2, ensure_ascii=False, cls=encoder_class
+
+                # Metadata
+                zip.writestr(
+                    "dataresource.json",
+                    json.dumps(
+                        descriptor,
+                        indent=2,
+                        ensure_ascii=False,
+                        cls=encoder_class,
+                    ),
                 )
-                zip.writestr("dataresource.json", descriptor)
+
         except (IOError, zipfile.BadZipfile, zipfile.LargeZipFile) as exception:
             error = errors.ResourceError(note=str(exception))
             raise FrictionlessException(error) from exception

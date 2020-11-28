@@ -662,6 +662,40 @@ def test_resource_to_zip(tmpdir):
     ]
 
 
+def test_resource_to_zip_resolve_inline(tmpdir):
+
+    # Write
+    target = os.path.join(tmpdir, "resource.zip")
+    resource = Resource(name="data", data=[["id", "name"], [1, "english"], [2, "german"]])
+    resource.to_zip(target, resolve=["inline"])
+
+    # Read
+    resource = Resource(target)
+    assert resource.name == "data"
+    assert resource.path == "data.csv"
+    assert resource.read_rows() == [
+        {"id": 1, "name": "english"},
+        {"id": 2, "name": "german"},
+    ]
+
+
+def test_resource_to_zip_resolve_inline_sql(tmpdir, database_url):
+
+    # Write
+    target = os.path.join(tmpdir, "resource.zip")
+    resource = Resource.from_sql(name="data", url=database_url)
+    resource.to_zip(target, resolve=["inline"])
+
+    # Read
+    resource = Resource(target)
+    assert resource.name == "data"
+    assert resource.path == "data.csv"
+    assert resource.read_rows() == [
+        {"id": 1, "name": "english"},
+        {"id": 2, "name": "中国人"},
+    ]
+
+
 @pytest.mark.ci
 def test_resource_to_zip_source_remote(tmpdir):
 
