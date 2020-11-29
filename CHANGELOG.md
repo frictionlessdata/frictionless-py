@@ -2,6 +2,10 @@
 
 Here described only the breaking and most significant changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/frictionless-py/commits/master).
 
+## v3.36
+
+- Support custom types (#557)
+
 ## v3.35
 
 - Added "resolve" option to "resource/package.to_zip" (#556)
