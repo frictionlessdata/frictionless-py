@@ -9,8 +9,10 @@ from .dialect import Dialect
 from . import errors
 
 
-# NOTE: Consider plugins priority
-# NOTE: Consider an ability to register plugins dynamically
+# TODO: Add plugin.name?
+# TODO: Rework system.register
+# TODO: Consider plugins priority
+# TODO: Use lists instead of ordered dicts?
 class System:
     """System representation
 
@@ -23,6 +25,21 @@ class System:
 
     """
 
+    def __init__(self):
+        self.__dynamic_plugins = OrderedDict()
+
+    def register(self, name, plugin):
+        """Register a plugin
+
+        Parameters:
+            name (str): plugin name
+            plugin (Plugin): plugin to register
+        """
+        self.__dynamic_plugins[name] = plugin
+        if "methods" in self.__dict__:
+            del self.__dict__["plugins"]
+            del self.__dict__["methods"]
+
     # Actions
 
     actions = [
@@ -34,6 +51,7 @@ class System:
         "create_pipeline",
         "create_server",
         "create_storage",
+        "create_type",
     ]
 
     def create_check(self, name, *, descriptor=None):
@@ -202,6 +220,27 @@ class System:
             raise FrictionlessException(errors.Error(note=note))
         return storage
 
+    def create_type(self, field):
+        """Create checks
+
+        Parameters:
+            field (Field): corresponding field
+
+        Returns:
+            Type: type
+        """
+        name = field.type
+        types = import_module("frictionless.types")
+        for func in self.methods["create_type"].values():
+            type = func(field)
+            if type is not None:
+                return type
+        Class = getattr(types, f"{name.capitalize()}Type", getattr(types, "AnyType"))
+        #  if Class is None:
+        #  note = f'cannot create type "{name}". Try installing "frictionless-{name}"'
+        #  raise FrictionlessException(errors.FieldError(note=note))
+        return Class(field)
+
     # Methods
 
     @cached_property
@@ -228,7 +267,7 @@ class System:
         for _, name, _ in pkgutil.iter_modules([os.path.dirname(module.__file__)]):
             module = import_module(f"frictionless.plugins.{name}")
             modules[name] = module
-        plugins = OrderedDict()
+        plugins = OrderedDict(self.__dynamic_plugins)
         for name, module in modules.items():
             Plugin = getattr(module, f"{name.capitalize()}Plugin", None)
             if Plugin:
