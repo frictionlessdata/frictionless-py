@@ -7,6 +7,7 @@ from operator import setitem
 from functools import partial
 from collections import OrderedDict
 from .metadata import Metadata
+from .system import system
 from . import errors
 from . import config
 
@@ -320,10 +321,7 @@ class Field(Metadata):
     def metadata_process(self):
 
         # Type
-        type = self.get("type", "any")
-        name = f"{type.capitalize()}Type"
-        module = importlib.import_module("frictionless.types")
-        self.__type = getattr(module, name, getattr(module, "AnyType"))(self)
+        self.__type = system.create_type(self)
 
     def metadata_validate(self):
         yield from super().metadata_validate()

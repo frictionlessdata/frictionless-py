@@ -50,6 +50,7 @@ class System:
         "create_pipeline",
         "create_server",
         "create_storage",
+        "create_type",
     ]
 
     def create_check(self, name, *, descriptor=None):
@@ -217,6 +218,24 @@ class System:
             note = f'cannot create storage "{name}". Try installing "frictionless-{name}"'
             raise FrictionlessException(errors.Error(note=note))
         return storage
+
+    def create_type(self, field):
+        """Create checks
+
+        Parameters:
+            field (Field): corresponding field
+
+        Returns:
+            Type: type
+        """
+        types = import_module("frictionless.types")
+        for func in self.methods["create_type"].values():
+            type = func(field)
+            if type is not None:
+                return type
+        prefix = field.get("type", "any")
+        name = f"{prefix.capitalize()}Type"
+        return getattr(types, name, getattr(types, "AnyType"))(field)
 
     # Methods
 
