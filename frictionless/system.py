@@ -10,6 +10,7 @@ from . import errors
 
 
 # TODO: Add plugin.name?
+# TODO: Rework system.register
 # TODO: Consider plugins priority
 # TODO: Use lists instead of ordered dicts?
 class System:
@@ -27,7 +28,7 @@ class System:
     def __init__(self):
         self.__dynamic_plugins = OrderedDict()
 
-    def register(self, *, name, plugin):
+    def register(self, name, plugin):
         """Register a plugin
 
         Parameters:
@@ -228,14 +229,17 @@ class System:
         Returns:
             Type: type
         """
+        name = field.type
         types = import_module("frictionless.types")
         for func in self.methods["create_type"].values():
             type = func(field)
             if type is not None:
                 return type
-        prefix = field.get("type", "any")
-        name = f"{prefix.capitalize()}Type"
-        return getattr(types, name, getattr(types, "AnyType"))(field)
+        Class = getattr(types, f"{name.capitalize()}Type", getattr(types, "AnyType"))
+        #  if Class is None:
+        #  note = f'cannot create type "{name}". Try installing "frictionless-{name}"'
+        #  raise FrictionlessException(errors.FieldError(note=note))
+        return Class(field)
 
     # Methods
 

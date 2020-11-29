@@ -1,7 +1,6 @@
 import re
 import decimal
 import warnings
-import importlib
 from copy import copy
 from operator import setitem
 from functools import partial
@@ -72,7 +71,7 @@ class Field(Metadata):
         Returns:
             str: name
         """
-        return self.get("name", "field")
+        return self.get("name", self.type)
 
     @Metadata.property
     def title(self):
