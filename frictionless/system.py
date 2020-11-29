@@ -9,8 +9,9 @@ from .dialect import Dialect
 from . import errors
 
 
-# NOTE: Consider plugins priority
-# NOTE: Consider an ability to register plugins dynamically
+# TODO: Add plugin.name?
+# TODO: Consider plugins priority
+# TODO: Use lists instead of ordered dicts?
 class System:
     """System representation
 
@@ -22,6 +23,21 @@ class System:
     It's available as `frictionless.system` singletone.
 
     """
+
+    def __init__(self):
+        self.__dynamic_plugins = OrderedDict()
+
+    def register(self, *, name, plugin):
+        """Register a plugin
+
+        Parameters:
+            name (str): plugin name
+            plugin (Plugin): plugin to register
+        """
+        self.__dynamic_plugins[name] = plugin
+        if "methods" in self.__dict__:
+            del self.__dict__["plugins"]
+            del self.__dict__["methods"]
 
     # Actions
 
@@ -228,7 +244,7 @@ class System:
         for _, name, _ in pkgutil.iter_modules([os.path.dirname(module.__file__)]):
             module = import_module(f"frictionless.plugins.{name}")
             modules[name] = module
-        plugins = OrderedDict()
+        plugins = OrderedDict(self.__dynamic_plugins)
         for name, module in modules.items():
             Plugin = getattr(module, f"{name.capitalize()}Plugin", None)
             if Plugin:
