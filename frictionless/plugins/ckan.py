@@ -56,30 +56,28 @@ class CkanStorage(Storage):
     """
 
     def __init__(self, *, url, dataset, apikey=None):
-        self.__endpoint = f'{url.rstrip("/")}/api/3/action'
+        self.__url = url.rstrip("/")
+        self.__endpoint = f"{self.__url}/api/3/action"
         self.__dataset = dataset
         self.__apikey = apikey
 
     def __iter__(self):
-        params = {"resource_id": "_table_metadata"}
-        filter_ids = self.__get_resource_ids_for_dataset(self.__dataset)
-        params.update({"filters": json.dumps({"name": filter_ids})})
-        datastore_search_url = "{}/datastore_search".format(self.__endpoint)
-        response = self.__make_ckan_request(datastore_search_url, params=params)
-        names = [r["name"] for r in response["result"]["records"]]
-        while response["result"]["records"]:
-            next_url = self.__base_url + response["result"]["_links"]["next"]
-            response = self.__make_ckan_request(next_url)
-            records = response["result"]["records"]
-            if records:
-                names = names + [r["name"] for r in response["result"]["records"]]
+        names = []
+        params = {"id": self.__dataset}
+        endpoint = f"{self.__endpoint}/package_show"
+        response = self.__make_ckan_request(endpoint, params=params)
+        for resource in response["result"]["resources"]:
+            names.append(resource.get("name", resource["id"]))
         return iter(names)
 
     # Read
 
     def read_resource(self, name):
         ckan_table = self.__read_ckan_table(name)
-        schema = self.__read_convert_schema(name, ckan_table)
+        if ckan_table is None:
+            note = f'Resource "{name}" does not exist'
+            raise FrictionlessException(errors.StorageError(note=note))
+        schema = self.__read_convert_schema(ckan_table)
         resource = Resource(
             name=name,
             schema=schema,
@@ -95,7 +93,7 @@ class CkanStorage(Storage):
             package.resources.append(resource)
         return package
 
-    def __read_table_convert_schema(self, ckan_table):
+    def __read_convert_schema(self, ckan_table):
         schema = Schema()
 
         # Fields
@@ -116,13 +114,13 @@ class CkanStorage(Storage):
         return schema
 
     def __read_convert_data(self, ckan_table):
-        datastore_search_url = "{}/datastore_search".format(self.__endpoint)
+        endpoint = f"{self.__endpoint}/datastore_search"
         params = {"resource_id": ckan_table.name}
-        response = self.__make_ckan_request(datastore_search_url, params=params)
+        response = self.__make_ckan_request(endpoint, params=params)
         while response["result"]["records"]:
             for row in response["result"]["records"]:
                 yield row
-            next_url = self.__base_url + response["result"]["_links"]["next"]
+            next_url = self.__url + response["result"]["_links"]["next"]
             response = self.__make_ckan_request(next_url)
 
     def __read_convert_type(self, ckan_type=None):
@@ -162,10 +160,15 @@ class CkanStorage(Storage):
         return mapping
 
     def __read_ckan_table(self, name):
-        datastore_search_url = "{}/datastore_search".format(self.__endpoint)
-        params = {"limit": 0, "resource_id": name}
-        response = self.__make_ckan_request(datastore_search_url, params=params)
-        return response["result"]
+        params = {"id": self.__dataset}
+        endpoint = f"{self.__endpoint}/package_show"
+        response = self.__make_ckan_request(endpoint, params=params)
+        for resource in response["result"]["resources"]:
+            if name == resource.get("name", resource["id"]):
+                endpoint = "{}/datastore_search".format(self.__endpoint)
+                params = {"limit": 0, "resource_id": resource["id"]}
+                response = self.__make_ckan_request(endpoint, params=params)
+                return response["result"]
 
     # Write
 
@@ -193,20 +196,26 @@ class CkanStorage(Storage):
             self.__write_convert_data(resource)
 
     def __write_convert_schema(self, resource):
-        ckan_table = {"fields": [], "resource_id": resource.table.name, "force": True}
+        ckan_table = {"resource": {"package_id": self.__dataset, "name": resource.name}}
+
+        # Fields
+        ckan_table["fields"] = []
         for field in resource.schema.fields:
             ckan_field = {"id": field.name}
             ckan_type = self.__write_convert_type(field.type)
             if ckan_type:
                 ckan_field["type"] = ckan_type
             ckan_table["fields"].append(ckan_field)
+
+        # Primary Key
         if resource.schema.primary_key is not None:
             ckan_table["primary_key"] = resource.schema.primary_key
+
         return ckan_table
 
     def __write_convert_data(self, resource):
         ckan_table = self.__read_ckan_table(resource.name)
-        endpoint = "{}/datastore_upsert".format(self.__endpoint)
+        endpoint = f"{self.__endpoint}/datastore_upsert"
         records = [row.to_dict(json=True) for row in resource.read_row_stream()]
         self.__make_ckan_request(
             endpoint,
@@ -277,11 +286,18 @@ class CkanStorage(Storage):
         return resource_ids
 
     def __make_ckan_request(self, endpoint, **options):
+        print("---")
+        print(endpoint)
+        print()
+        print(options)
+        print()
         response = make_ckan_request(endpoint, apikey=self.__apikey, **options)
         ckan_error = get_ckan_error(response)
         if ckan_error:
             note = "CKAN returned an error: " + json.dumps(ckan_error)
             raise FrictionlessException(errors.StorageError(note=note))
+        print(response)
+        print("---")
         return response
 
 
