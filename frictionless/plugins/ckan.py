@@ -96,26 +96,21 @@ class CkanStorage(Storage):
     def __read_convert_schema(self, ckan_table):
         schema = Schema()
 
+        print(ckan_table)
+
         # Fields
         for ckan_field in ckan_table["fields"]:
-            # Don't include datastore internal field '_id'.
-            if ckan_field["id"] == "_id":
-                continue
-            ckan_type = ckan_field["type"]
-            type = self.__read_convert_type(ckan_type)
-            field = Field(name=ckan_field["id"], type=type)
-            # TODO: review
-            if ckan_type in ["timestamp", "date", "time"]:
-                field.format = "any"
-            elif ckan_type in ["uuid"]:
-                field.format = "uuid"
-            schema.fields.append(field)
+            if ckan_field["id"] != "_id":
+                ckan_type = ckan_field["type"]
+                type = self.__read_convert_type(ckan_type)
+                field = Field(name=ckan_field["id"], type=type)
+                schema.fields.append(field)
 
         return schema
 
     def __read_convert_data(self, ckan_table):
         endpoint = f"{self.__endpoint}/datastore_search"
-        params = {"resource_id": ckan_table.name}
+        params = {"resource_id": ckan_table["resource_id"]}
         response = self.__make_ckan_request(endpoint, params=params)
         while response["result"]["records"]:
             for row in response["result"]["records"]:
@@ -165,7 +160,7 @@ class CkanStorage(Storage):
         response = self.__make_ckan_request(endpoint, params=params)
         for resource in response["result"]["resources"]:
             if name == resource.get("name", resource["id"]):
-                endpoint = "{}/datastore_search".format(self.__endpoint)
+                endpoint = f"{self.__endpoint}/datastore_search"
                 params = {"limit": 0, "resource_id": resource["id"]}
                 response = self.__make_ckan_request(endpoint, params=params)
                 return response["result"]
@@ -180,16 +175,17 @@ class CkanStorage(Storage):
         existent_names = list(self)
 
         # Check existent
-        delete_names = []
         for resource in package.resources:
             if resource.name in existent_names:
                 if not force:
                     note = f'Resource "{resource.name}" already exists'
                     raise FrictionlessException(errors.StorageError(note=note))
-                delete_names.append(resource.name)
+                self.delete_resource(resource.name)
 
         # Write resources
         for resource in package.resources:
+            if not resource.schema:
+                resource.infer(only_sample=True)
             endpoint = f"{self.__endpoint}/datastore_create"
             ckan_table = self.__write_convert_schema(resource)
             self.__make_ckan_request(endpoint, method="POST", json=ckan_table)
@@ -221,9 +217,8 @@ class CkanStorage(Storage):
             endpoint,
             method="POST",
             json={
-                "resource_id": ckan_table.name,
+                "resource_id": ckan_table["resource_id"],
                 "method": "insert",
-                "force": True,
                 "records": records,
             },
         )
@@ -271,8 +266,9 @@ class CkanStorage(Storage):
                 continue
 
             # Remove from CKAN
-            endpoint = f"{self.__endpoint}/datastore_delete"
-            params = {"resource_id": name, "force": True}
+            ckan_table = self.__read_ckan_table(name)
+            endpoint = f"{self.__endpoint}/resource_delete"
+            params = {"id": ckan_table["resource_id"]}
             self.__make_ckan_request(endpoint, method="POST", json=params)
 
     # Helpers
@@ -286,18 +282,11 @@ class CkanStorage(Storage):
         return resource_ids
 
     def __make_ckan_request(self, endpoint, **options):
-        print("---")
-        print(endpoint)
-        print()
-        print(options)
-        print()
         response = make_ckan_request(endpoint, apikey=self.__apikey, **options)
         ckan_error = get_ckan_error(response)
         if ckan_error:
             note = "CKAN returned an error: " + json.dumps(ckan_error)
             raise FrictionlessException(errors.StorageError(note=note))
-        print(response)
-        print("---")
         return response
 
 
