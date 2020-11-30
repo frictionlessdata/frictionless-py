@@ -84,6 +84,7 @@ $ frictionless validate data/invalid.csv
 - [Working with Inline](https://frictionlessdata.io/tooling/python/working-with-inline/)
 - [Working with JSON](https://frictionlessdata.io/tooling/python/working-with-json/)
 - [Working with Local](https://frictionlessdata.io/tooling/python/working-with-local/)
+- [Working with Multipart](https://frictionlessdata.io/tooling/python/working-with-multipart/)
 - [Working with ODS](https://frictionlessdata.io/tooling/python/working-with-ods/)
 - [Working with Pandas](https://frictionlessdata.io/tooling/python/working-with-pandas/)
 - [Working with Remote](https://frictionlessdata.io/tooling/python/working-with-remote/)
