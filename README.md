@@ -77,7 +77,6 @@ $ frictionless validate data/invalid.csv
 - [Working with CKAN](https://frictionlessdata.io/tooling/python/working-with-ckan/)
 - [Working with CSV](https://frictionlessdata.io/tooling/python/working-with-csv/)
 - [Working with DataFlows](https://frictionlessdata.io/tooling/python/working-with-dataflows/)
-- [Working with Elastic](https://frictionlessdata.io/tooling/python/working-with-elastic/)
 - [Working with Excel](https://frictionlessdata.io/tooling/python/working-with-excel/)
 - [Working with Filelike](https://frictionlessdata.io/tooling/python/working-with-filelike/)
 - [Working with GSheet](https://frictionlessdata.io/tooling/python/working-with-gsheet/)
