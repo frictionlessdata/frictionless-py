@@ -50,7 +50,7 @@ class CkanStorage(Storage):
     Parameters:
         url (string): CKAN instance url e.g. "https://demo.ckan.org"
         dataset (string): dataset id in CKAN e.g. "my-dataset"
-        apikey? (str): API key for CKAN e.g. "xxxxxxxxxxxxxxxxxxx"
+        apikey? (str): API key for CKAN e.g. "51912f57-a657-4caa-b2a7-0a1c16821f4b"
 
 
     API      | Usage
@@ -248,24 +248,26 @@ class CkanStorage(Storage):
 
     # Delete
 
-    def _write_table_remove(self, name, ignore=False):
-        # Check existent
-        if name not in self._read_table_names():
-            if not ignore:
-                note = f'Table "{name}" does not exist'
-                raise FrictionlessException(errors.StorageError(note=note))
-
-        # Remove from ckan
-        datastore_delete_url = "{}/datastore_delete".format(self.__endpoint)
-        params = {"resource_id": name, "force": True}
-        self.__make_ckan_request(datastore_delete_url, method="POST", json=params)
-
     def delete_resource(self, name, *, ignore=False):
-        self._write_table_remove(name, ignore=ignore)
+        return self.delete_package([name], ignore=ignore)
 
     def delete_package(self, names, *, ignore=False):
+        existent_names = list(self)
+
+        # Delete resources
         for name in names:
-            self._write_table_remove(name, ignore=ignore)
+
+            # Check existent
+            if name not in existent_names:
+                if not ignore:
+                    note = f'Resource "{name}" does not exist'
+                    raise FrictionlessException(errors.StorageError(note=note))
+                continue
+
+            # Remove from CKAN
+            endpoint = f"{self.__endpoint}/datastore_delete"
+            params = {"resource_id": name, "force": True}
+            self.__make_ckan_request(endpoint, method="POST", json=params)
 
     # Helpers
 
