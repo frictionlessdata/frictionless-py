@@ -132,26 +132,26 @@ class CkanStorage(Storage):
 
         # Create mapping
         mapping = {
-            "int": ("integer", None),
-            "float": ("number", None),
-            "smallint": ("integer", None),
-            "bigint": ("integer", None),
-            "integer": ("integer", None),
-            "numeric": ("number", None),
-            "money": ("number", None),
-            "timestamp": ("datetime", "any"),
-            "date": ("date", "any"),
-            "time": ("time", "any"),
-            "interval": ("duration", None),
-            "text": ("string", None),
-            "varchar": ("string", None),
-            "char": ("string", None),
-            "uuid": ("string", "uuid"),
-            "boolean": ("boolean", None),
-            "bool": ("boolean", None),
-            "json": ("object", None),
-            "jsonb": ("object", None),
-            "array": ("array", None),
+            "int": "integer",
+            "float": "number",
+            "smallint": "integer",
+            "bigint": "integer",
+            "integer": "integer",
+            "numeric": "number",
+            "money": "number",
+            "timestamp": "datetime",
+            "date": "date",
+            "time": "time",
+            "interval": "duration",
+            "text": "string",
+            "varchar": "string",
+            "char": "string",
+            "uuid": "string",
+            "boolean": "boolean",
+            "bool": "boolean",
+            "json": "object",
+            "jsonb": "object",
+            "array": "array",
         }
 
         # Return type
@@ -172,34 +172,60 @@ class CkanStorage(Storage):
 
     # Write
 
-    def _write_table(self, table, force=False):
-        # Check for existence
-        if table.name in self._read_table_names():
-            if not force:
-                note = f'Table "{table.name}" already exists'
-                raise FrictionlessException(errors.StorageError(note=note))
-            self._write_table_remove(table.name)
+    def write_resource(self, resource, *, force=False):
+        package = Package(resources=[resource])
+        return self.write_package(package, force=force)
 
-        # Define tables
-        datastore_dict = self._write_table_convert_table(table)
-        datastore_url = "{}/datastore_create".format(self.__endpoint)
-        self.__make_ckan_request(datastore_url, method="POST", json=datastore_dict)
+    def write_package(self, package, *, force=False):
+        existent_names = list(self)
 
-    def _write_table_convert_table(self, table):
-        schema = table.schema
-        datastore_dict = {"fields": [], "resource_id": table.name, "force": True}
-        for field in schema.fields:
-            datastore_field = {"id": field.name}
-            ckan_type = self._write_table_convert_field_type(field.type)
+        # Check existent
+        delete_names = []
+        for resource in package.resources:
+            if resource.name in existent_names:
+                if not force:
+                    note = f'Resource "{resource.name}" already exists'
+                    raise FrictionlessException(errors.StorageError(note=note))
+                delete_names.append(resource.name)
+
+        # Write resources
+        for resource in package.resources:
+            endpoint = f"{self.__endpoint}/datastore_create"
+            ckan_table = self.__write_convert_schema(resource)
+            self.__make_ckan_request(endpoint, method="POST", json=ckan_table)
+            self.__write_convert_data(resource)
+
+    def __write_convert_schema(self, resource):
+        ckan_table = {"fields": [], "resource_id": resource.table.name, "force": True}
+        for field in resource.schema.fields:
+            ckan_field = {"id": field.name}
+            ckan_type = self.__write_convert_type(field.type)
             if ckan_type:
-                datastore_field["type"] = ckan_type
-            datastore_dict["fields"].append(datastore_field)
-        if schema.primary_key is not None:
-            datastore_dict["primary_key"] = schema.primary_key
-        return datastore_dict
+                ckan_field["type"] = ckan_type
+            ckan_table["fields"].append(ckan_field)
+        if resource.schema.primary_key is not None:
+            ckan_table["primary_key"] = resource.schema.primary_key
+        return ckan_table
 
-    def _write_table_convert_field_type(self, type):
-        DESCRIPTOR_TYPE_MAPPING = {
+    def __write_convert_data(self, resource):
+        ckan_table = self.__read_ckan_table(resource.name)
+        endpoint = "{}/datastore_upsert".format(self.__endpoint)
+        records = [row.to_dict(json=True) for row in resource.read_row_stream()]
+        self.__make_ckan_request(
+            endpoint,
+            method="POST",
+            json={
+                "resource_id": ckan_table.name,
+                "method": "insert",
+                "force": True,
+                "records": records,
+            },
+        )
+
+    def __write_convert_type(self, type=None):
+
+        # Create mapping
+        mapping = {
             "number": "float",
             "string": "text",
             "integer": "int",
@@ -212,27 +238,13 @@ class CkanStorage(Storage):
             "year": "int",
             "datetime": "timestamp",
         }
-        return DESCRIPTOR_TYPE_MAPPING.get(type, "text")
 
-    def _write_table_row_stream(self, name, row_stream):
-        table = self._read_table(name)
-        datastore_upsert_url = "{}/datastore_upsert".format(self.__endpoint)
-        records = [r.to_dict(json=True) for r in row_stream]
-        params = {
-            "resource_id": table.name,
-            "method": "insert",
-            "force": True,
-            "records": records,
-        }
-        self.__make_ckan_request(datastore_upsert_url, method="POST", json=params)
+        # Return type
+        if type:
+            return mapping.get(type, "text")
 
-    def write_resource(self, resource, *, force=False):
-        self._write_table(resource, force=force)
-        self._write_table_row_stream(resource.name, resource.read_row_stream())
-
-    def write_package(self, package, *, force=False):
-        for resource in package.resources:
-            self.write_resource(resource, force=force)
+        # Return mapping
+        return mapping
 
     # Delete
 
@@ -255,19 +267,18 @@ class CkanStorage(Storage):
         for name in names:
             self._write_table_remove(name, ignore=ignore)
 
-    # Private
+    # Helpers
 
     def __get_resource_ids_for_dataset(self, dataset):
-        """Get a list of resource ids for the passed dataset id."""
         package_show_url = "{}/package_show".format(self.__endpoint)
         response = self.__make_ckan_request(package_show_url, params=dict(id=dataset))
         dataset = response["result"]
         resources = dataset["resources"]
-        resource_ids = [r["id"] for r in resources]
+        resource_ids = [resource["id"] for resource in resources]
         return resource_ids
 
-    def __make_ckan_request(self, datastore_url, **kwargs):
-        response = make_ckan_request(datastore_url, api_key=self.__api_key, **kwargs)
+    def __make_ckan_request(self, endpoint, **options):
+        response = make_ckan_request(endpoint, apikey=self.__apikey, **options)
         ckan_error = get_ckan_error(response)
         if ckan_error:
             note = "CKAN returned an error: " + json.dumps(ckan_error)
@@ -278,33 +289,29 @@ class CkanStorage(Storage):
 # Internal
 
 
-def make_ckan_request(url, method="GET", headers=None, api_key=None, **kwargs):
-    """Make a CKAN API request to `url` and return the json response. **kwargs
-    are passed to requests.request()"""
+def make_ckan_request(url, method="GET", headers=None, api_key=None, **options):
 
+    # Handle headers
     if headers is None:
         headers = {}
 
+    # Handle API key
     if api_key:
         if api_key.startswith("env:"):
             api_key = os.environ.get(api_key[4:])
         headers.update({"Authorization": api_key})
 
-    response = requests.request(
-        method=method, url=url, headers=headers, allow_redirects=True, **kwargs
-    )
-
-    try:
-        return response.json()
-    except json.decoder.JSONDecodeError:
-        log.error("Expected JSON in response from: {}".format(url))
-        raise
+    # Make a request
+    return requests.request(
+        method=method, url=url, headers=headers, allow_redirects=True, **options
+    ).json()
 
 
 def get_ckan_error(response):
-    """Return the error from a ckan json response, or None."""
-    ckan_error = None
+
+    # Get an error
     try:
+        ckan_error = None
         if not response["success"] and response["error"]:
             ckan_error = response["error"]
     except TypeError:
