@@ -649,21 +649,23 @@ class Resource(Metadata):
         return storage.read_resource(name)
 
     @staticmethod
-    def from_ckan(*, base_url, resource_id, api_key=None):
+    def from_ckan(*, name, url, dataset, apikey=None):
         """Import resource from CKAN
 
         Parameters:
-            base_url (str): (required) URL for CKAN instance (e.g: https://demo.ckan.org/ )
-            resource_id (str): (required) ID of resource to fetch
-            api_key (str): (optional) Your CKAN API key
+            name (string): resource name
+            url (string): CKAN instance url e.g. "https://demo.ckan.org"
+            dataset (string): dataset id in CKAN e.g. "my-dataset"
+            apikey? (str): API key for CKAN e.g. "51912f57-a657-4caa-b2a7-0a1c16821f4b"
         """
         return Resource.from_storage(
             system.create_storage(
-                "ckan_datastore",
-                base_url=base_url,
-                api_key=api_key,
+                "ckan",
+                url=url,
+                dataset=dataset,
+                apikey=apikey,
             ),
-            name=resource_id,
+            name=name,
         )
 
     @staticmethod
@@ -895,21 +897,21 @@ class Resource(Metadata):
         storage.write_resource(self.to_copy(), force=force)
         return storage
 
-    def to_ckan(self, *, base_url, dataset_id=None, api_key=None, force=False):
+    def to_ckan(self, *, url, dataset, apikey=None, force=False):
         """Export resource to CKAN
 
         Parameters:
-            base_url (str): (required) URL for CKAN instance (e.g: https://demo.ckan.org/ )
-            dataset_id (str): (optional) ID or slug of dataset this resource belongs to
-            api_key (str): (optional) Your CKAN API key
+            url (string): CKAN instance url e.g. "https://demo.ckan.org"
+            dataset (string): dataset id in CKAN e.g. "my-dataset"
+            apikey? (str): API key for CKAN e.g. "51912f57-a657-4caa-b2a7-0a1c16821f4b"
             force (bool): (optional) overwrite existing data
         """
         return self.to_storage(
             system.create_storage(
-                "ckan_datastore",
-                base_url=base_url,
-                dataset_id=dataset_id,
-                api_key=api_key,
+                "ckan",
+                url=url,
+                dataset=dataset,
+                apikey=apikey,
             ),
             force=force,
         )
