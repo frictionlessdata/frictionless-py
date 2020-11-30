@@ -96,8 +96,6 @@ class CkanStorage(Storage):
     def __read_convert_schema(self, ckan_table):
         schema = Schema()
 
-        print(ckan_table)
-
         # Fields
         for ckan_field in ckan_table["fields"]:
             if ckan_field["id"] != "_id":
