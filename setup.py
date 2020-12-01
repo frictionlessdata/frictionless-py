@@ -31,8 +31,7 @@ TESTS_REQUIRE = [
     "psycopg2",
     "notedown",
     "ipykernel",
-    # TODO: remove when it's fixed upstream
-    "responses==0.12",
+    "responses",
     "nbconvert",
     "coveralls",
     "pytest-cov",

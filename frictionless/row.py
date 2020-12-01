@@ -1,4 +1,4 @@
-# TODO: reconsider this dependency
+# TODO: review this dependency
 from .plugins.json import JsonParser
 from itertools import zip_longest
 from collections import OrderedDict

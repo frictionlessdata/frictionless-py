@@ -284,7 +284,7 @@ class SqlStorage(Storage):
         sapg = helpers.import_from_plugin("sqlalchemy.dialects.postgresql", plugin="sql")
         sams = helpers.import_from_plugin("sqlalchemy.dialects.mysql", plugin="sql")
 
-        # Return mapping
+        # Create mapping
         mapping = {
             sapg.ARRAY: "array",
             sams.BIT: "string",
