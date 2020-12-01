@@ -240,6 +240,7 @@ def test_table_xls_with_ints_floats_dates():
 
 
 @pytest.mark.ci
+@pytest.mark.skip
 def test_fix_for_2007_xls():
     source = "https://ams3.digitaloceanspaces.com/budgetkey-files/spending-reports/2018-3-משרד התרבות והספורט-לשכת הפרסום הממשלתית-2018-10-22-c457.xls"
     with Table(source) as table:
