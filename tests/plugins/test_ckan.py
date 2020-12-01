@@ -1,7 +1,28 @@
 import pytest
 import datetime
-from frictionless import Package, Resource, FrictionlessException
-from frictionless.plugins.ckan import CkanStorage
+from frictionless import Table, Package, Resource, FrictionlessException
+from frictionless.plugins.ckan import CkanStorage, CkanDialect
+
+
+# Parser
+
+
+@pytest.mark.ci
+def test_table_ckan(options):
+    url = options.pop("url")
+    dialect = CkanDialect(resource="table", **options)
+
+    # Write
+    with Table("data/table.csv") as table:
+        table.write(url, format="ckan", dialect=dialect)
+
+    # Read
+    with Table(url, format="ckan", dialect=dialect) as table:
+        assert table.header == ["id", "name"]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 # Storage

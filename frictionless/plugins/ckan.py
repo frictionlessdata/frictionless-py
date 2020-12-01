@@ -51,8 +51,8 @@ class CkanDialect(Dialect):
 
     Parameters:
         descriptor? (str|dict): descriptor
-        dataset? (str): dataset
         resource? (str): resource
+        dataset? (str): dataset
         apikey? (str): apikey
 
     Raises:
@@ -71,6 +71,7 @@ class CkanDialect(Dialect):
         header_join=None,
         header_case=None,
     ):
+        self.setinitial("resource", resource)
         self.setinitial("dataset", dataset)
         self.setinitial("apikey", apikey)
         super().__init__(
@@ -82,12 +83,12 @@ class CkanDialect(Dialect):
         )
 
     @Metadata.property
-    def dataset(self):
-        return self.get("dataset")
-
-    @Metadata.property
     def resource(self):
         return self.get("resource")
+
+    @Metadata.property
+    def dataset(self):
+        return self.get("dataset")
 
     @Metadata.property
     def apikey(self):
@@ -97,11 +98,11 @@ class CkanDialect(Dialect):
 
     metadata_profile = {  # type: ignore
         "type": "object",
-        "required": ["dataset"],
+        "required": ["resource", "dataset"],
         "additionalProperties": False,
         "properties": {
-            "dataset": {"type": "string"},
             "resource": {"type": "string"},
+            "dataset": {"type": "string"},
             "apikey": {"type": "string"},
             "header": {"type": "boolean"},
             "headerRows": {"type": "array", "items": {"type": "number"}},
@@ -146,10 +147,9 @@ class CkanParser(Parser):
         storage = CkanStorage(
             url=self.resource.source,
             dataset=dialect.dataset,
-            resource=dialect.resource,
             apikey=dialect.apikey,
         )
-        resource = Resource(name=dialect.table, data=read_row_stream, schema=schema)
+        resource = Resource(name=dialect.resource, data=read_row_stream, schema=schema)
         storage.write_resource(resource)
 
 
