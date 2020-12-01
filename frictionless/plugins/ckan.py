@@ -4,12 +4,14 @@ import requests
 from functools import partial
 from ..exception import FrictionlessException
 from ..metadata import Metadata
-from ..field import Field
-from ..package import Package
-from ..plugin import Plugin
 from ..resource import Resource
-from ..schema import Schema
+from ..package import Package
 from ..storage import Storage
+from ..dialect import Dialect
+from ..parser import Parser
+from ..plugin import Plugin
+from ..schema import Schema
+from ..field import Field
 from .. import errors
 
 
@@ -25,18 +27,16 @@ class CkanPlugin(Plugin):
     """
 
     def create_dialect(self, resource, *, descriptor):
-        if resource.format == 'ckan':
+        if resource.format == "ckan":
             return CkanDialect(descriptor)
 
     def create_parser(self, resource):
-        pass
+        if resource.format == "ckan":
+            return CkanParser(resource)
 
     def create_storage(self, name, **options):
         if name == "ckan":
             return CkanStorage(**options)
-
-
-# TODO: implement Parser
 
 
 # Dialect
@@ -52,6 +52,7 @@ class CkanDialect(Dialect):
     Parameters:
         descriptor? (str|dict): descriptor
         dataset? (str): dataset
+        resource? (str): resource
         apikey? (str): apikey
 
     Raises:
@@ -63,6 +64,7 @@ class CkanDialect(Dialect):
         descriptor=None,
         *,
         dataset=None,
+        resource=None,
         apikey=None,
         header=None,
         header_rows=None,
@@ -84,6 +86,10 @@ class CkanDialect(Dialect):
         return self.get("dataset")
 
     @Metadata.property
+    def resource(self):
+        return self.get("resource")
+
+    @Metadata.property
     def apikey(self):
         return self.get("apikey")
 
@@ -95,6 +101,7 @@ class CkanDialect(Dialect):
         "additionalProperties": False,
         "properties": {
             "dataset": {"type": "string"},
+            "resource": {"type": "string"},
             "apikey": {"type": "string"},
             "header": {"type": "boolean"},
             "headerRows": {"type": "array", "items": {"type": "number"}},
@@ -102,6 +109,48 @@ class CkanDialect(Dialect):
             "headerCase": {"type": "boolean"},
         },
     }
+
+
+# Parser
+
+
+class CkanParser(Parser):
+    """Ckan parser implementation.
+
+    API      | Usage
+    -------- | --------
+    Public   | `from frictionless.plugins.ckan import CkanParser`
+    """
+
+    loading = False
+
+    # Read
+
+    def read_data_stream_create(self):
+        dialect = self.resource.dialect
+        storage = CkanStorage(
+            url=self.resource.source,
+            dataset=dialect.dataset,
+            apikey=dialect.apikey,
+        )
+        resource = storage.read_resource(dialect.resource)
+        self.resource.schema = resource.schema
+        yield resource.schema.field_names
+        yield from resource.read_data_stream()
+
+    # Write
+
+    def write(self, read_row_stream):
+        dialect = self.resource.dialect
+        schema = self.resource.schema
+        storage = CkanStorage(
+            url=self.resource.source,
+            dataset=dialect.dataset,
+            resource=dialect.resource,
+            apikey=dialect.apikey,
+        )
+        resource = Resource(name=dialect.table, data=read_row_stream, schema=schema)
+        storage.write_resource(resource)
 
 
 # Storage
