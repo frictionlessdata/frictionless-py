@@ -1,4 +1,5 @@
 import os
+import sys
 import json
 import uuid
 import pytest
@@ -23,6 +24,7 @@ pytestmark = pytest.mark.skipif(
 
 
 @pytest.mark.ci
+@pytest.mark.skipif(sys.version_info < (3, 8), reason="Speed up CI")
 def test_table_bigquery(options):
     prefix = options.pop("prefix")
     service = options.pop("service")
@@ -45,6 +47,7 @@ def test_table_bigquery(options):
 
 
 @pytest.mark.ci
+@pytest.mark.skipif(sys.version_info < (3, 8), reason="Speed up CI")
 def test_storage_types(options):
 
     # Export/Import
@@ -102,6 +105,7 @@ def test_storage_types(options):
 
 
 @pytest.mark.ci
+@pytest.mark.skipif(sys.version_info < (3, 8), reason="Speed up CI")
 def test_storage_integrity(options):
 
     # Export/Import
@@ -149,6 +153,7 @@ def test_storage_integrity(options):
 
 
 @pytest.mark.ci
+@pytest.mark.skipif(sys.version_info < (3, 8), reason="Speed up CI")
 def test_storage_constraints(options):
 
     # Export/Import
@@ -187,6 +192,7 @@ def test_storage_constraints(options):
 
 
 @pytest.mark.ci
+@pytest.mark.skipif(sys.version_info < (3, 8), reason="Speed up CI")
 def test_storage_read_resource_not_existent_error(options):
     storage = BigqueryStorage(**options)
     with pytest.raises(FrictionlessException) as excinfo:
@@ -197,6 +203,7 @@ def test_storage_read_resource_not_existent_error(options):
 
 
 @pytest.mark.ci
+@pytest.mark.skipif(sys.version_info < (3, 8), reason="Speed up CI")
 def test_storage_write_resource_existent_error(options):
     resource = Resource(path="data/table.csv")
     storage = resource.to_bigquery(force=True, **options)
@@ -210,6 +217,7 @@ def test_storage_write_resource_existent_error(options):
 
 
 @pytest.mark.ci
+@pytest.mark.skipif(sys.version_info < (3, 8), reason="Speed up CI")
 def test_storage_delete_resource_not_existent_error(options):
     storage = BigqueryStorage(**options)
     with pytest.raises(FrictionlessException) as excinfo:
@@ -220,6 +228,7 @@ def test_storage_delete_resource_not_existent_error(options):
 
 
 @pytest.mark.ci
+@pytest.mark.skipif(sys.version_info < (3, 8), reason="Speed up CI")
 def test_storage_big_file(options):
     source = Resource(name="table", data=[[1]] * 1500)
     storage = source.to_bigquery(force=True, **options)
