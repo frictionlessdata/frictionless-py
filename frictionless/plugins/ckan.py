@@ -3,6 +3,7 @@ import json
 import requests
 from functools import partial
 from ..exception import FrictionlessException
+from ..metadata import Metadata
 from ..field import Field
 from ..package import Package
 from ..plugin import Plugin
@@ -24,7 +25,8 @@ class CkanPlugin(Plugin):
     """
 
     def create_dialect(self, resource, *, descriptor):
-        pass
+        if resource.format == 'ckan':
+            return CkanDialect(descriptor)
 
     def create_parser(self, resource):
         pass
@@ -34,8 +36,72 @@ class CkanPlugin(Plugin):
             return CkanStorage(**options)
 
 
-# TODO: implement Dialect
 # TODO: implement Parser
+
+
+# Dialect
+
+
+class CkanDialect(Dialect):
+    """Ckan dialect representation
+
+    API      | Usage
+    -------- | --------
+    Public   | `from frictionless.plugins.ckan import CkanDialect`
+
+    Parameters:
+        descriptor? (str|dict): descriptor
+        dataset? (str): dataset
+        apikey? (str): apikey
+
+    Raises:
+        FrictionlessException: raise any error that occurs during the process
+    """
+
+    def __init__(
+        self,
+        descriptor=None,
+        *,
+        dataset=None,
+        apikey=None,
+        header=None,
+        header_rows=None,
+        header_join=None,
+        header_case=None,
+    ):
+        self.setinitial("dataset", dataset)
+        self.setinitial("apikey", apikey)
+        super().__init__(
+            descriptor=descriptor,
+            header=header,
+            header_rows=header_rows,
+            header_join=header_join,
+            header_case=header_case,
+        )
+
+    @Metadata.property
+    def dataset(self):
+        return self.get("dataset")
+
+    @Metadata.property
+    def apikey(self):
+        return self.get("apikey")
+
+    # Metadata
+
+    metadata_profile = {  # type: ignore
+        "type": "object",
+        "required": ["dataset"],
+        "additionalProperties": False,
+        "properties": {
+            "dataset": {"type": "string"},
+            "apikey": {"type": "string"},
+            "header": {"type": "boolean"},
+            "headerRows": {"type": "array", "items": {"type": "number"}},
+            "headerJoin": {"type": "string"},
+            "headerCase": {"type": "boolean"},
+        },
+    }
 
 
 # Storage
