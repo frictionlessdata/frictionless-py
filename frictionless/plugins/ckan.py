@@ -150,7 +150,7 @@ class CkanParser(Parser):
             apikey=dialect.apikey,
         )
         resource = Resource(name=dialect.resource, data=read_row_stream, schema=schema)
-        storage.write_resource(resource)
+        storage.write_resource(resource, force=True)
 
 
 # Storage

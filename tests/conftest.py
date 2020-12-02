@@ -1,6 +1,7 @@
 import os
 import pytest
 import sqlite3
+import sqlalchemy as sa
 from pytest_cov.embed import cleanup_on_sigterm
 
 
@@ -32,12 +33,26 @@ def sqlite_url(tmpdir):
 
 @pytest.fixture
 def postgresql_url():
-    return os.environ["POSTGRESQL_URL"]
+    yield os.environ["POSTGRESQL_URL"]
+    engine = sa.create_engine(os.environ["POSTGRESQL_URL"])
+    conn = engine.connect()
+    meta = sa.MetaData(bind=conn)
+    meta.reflect(views=True)
+    for table in reversed(meta.sorted_tables):
+        conn.execute(table.delete())
+    conn.close()
 
 
 @pytest.fixture
 def mysql_url():
-    return os.environ["MYSQL_URL"]
+    yield os.environ["MYSQL_URL"]
+    engine = sa.create_engine(os.environ["MYSQL_URL"])
+    conn = engine.connect()
+    meta = sa.MetaData(bind=conn)
+    meta.reflect(views=True)
+    for table in reversed(meta.sorted_tables):
+        conn.execute(table.delete())
+    conn.close()
 
 
 # Settings

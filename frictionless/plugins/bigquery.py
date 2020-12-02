@@ -164,7 +164,7 @@ class BigqueryParser(Parser):
             dataset=dialect.dataset,
         )
         resource = Resource(name=dialect.table, data=read_row_stream, schema=schema)
-        storage.write_resource(resource)
+        storage.write_resource(resource, force=True)
 
 
 # Storage

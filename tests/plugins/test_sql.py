@@ -66,6 +66,53 @@ def test_table_sql_write(database_url):
         assert table.read_data() == [[1, "english"], [2, "中国人"]]
 
 
+def test_table_sql_write_timezone(sqlite_url):
+    source = "data/timezone.csv"
+    dialect = SqlDialect(table="timezone")
+    with Table(source) as table:
+        table.write(sqlite_url, dialect=dialect)
+    with Table(sqlite_url, dialect=dialect) as table:
+        assert table.header == ["datetime", "time"]
+        assert table.read_rows() == [
+            {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
+            {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
+            {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
+            {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
+        ]
+
+
+@pytest.mark.ci
+def test_table_sql_write_timezone_postgresql(postgresql_url):
+    source = "data/timezone.csv"
+    dialect = SqlDialect(table="timezone")
+    with Table(source) as table:
+        table.write(postgresql_url, dialect=dialect)
+    with Table(postgresql_url, dialect=dialect) as table:
+        assert table.header == ["datetime", "time"]
+        assert table.read_rows() == [
+            {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
+            {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
+            {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
+            {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
+        ]
+
+
+@pytest.mark.ci
+def test_table_sql_write_timezone_mysql(mysql_url):
+    source = "data/timezone.csv"
+    dialect = SqlDialect(table="timezone")
+    with Table(source) as table:
+        table.write(mysql_url, dialect=dialect)
+    with Table(mysql_url, dialect=dialect) as table:
+        assert table.header == ["datetime", "time"]
+        assert table.read_rows() == [
+            {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
+            {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
+            {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
+            {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
+        ]
+
+
 # Storage
 
 

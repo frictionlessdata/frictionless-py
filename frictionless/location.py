@@ -35,7 +35,9 @@ class Location:
             if resource.get("compression_path"):
                 new_source = os.path.join(new_source, resource.get("compression_path"))
             detect = helpers.detect_source_scheme_and_format(new_source)
+        # TODO: review; do we need defaults?
         scheme = detect[0] or config.DEFAULT_SCHEME
+        # TODO: review; do we need defaults?
         format = detect[1] or config.DEFAULT_FORMAT
         if scheme == "text" and source.endswith(f".{format}"):
             source = source[: -(len(format) + 1)]
