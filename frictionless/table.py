@@ -137,6 +137,7 @@ class Table:
         sync_schema=False,
         patch_schema=None,
         # Infer
+        # TODO: group as we did for Query?
         infer_type=None,
         infer_names=None,
         infer_volume=config.DEFAULT_INFER_VOLUME,
