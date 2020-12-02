@@ -30,6 +30,18 @@ def test_table_pandas_write():
         ]
 
 
+def test_table_pandas_write_timezone():
+    with Table("data/timezone.csv") as table:
+        dataframe = table.write(format="pandas")
+    with Table(dataframe) as table:
+        assert table.read_rows() == [
+            {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
+            {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
+            {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
+            {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
+        ]
+
+
 # Storage
 
 

@@ -93,7 +93,7 @@ class SpssParser(Parser):
         schema = self.resource.schema
         storage = SpssStorage(basepath=basepath)
         resource = Resource(name=name, data=read_row_stream, schema=schema)
-        storage.write_resource(resource)
+        storage.write_resource(resource, force=True)
 
 
 # Storage

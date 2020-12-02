@@ -23,7 +23,9 @@ for resource in package.resources:
 ```
 
 
-## Wriring to CKAN
+## Writing to CKAN
+
+> **[NOTE]** Timezone information is ignored for `datetime` and `time` types.
 
 You can write a dataset to CKAN:
 

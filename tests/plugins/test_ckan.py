@@ -16,6 +16,7 @@ def test_table_ckan(options):
 
     # Write
     with Table("data/table.csv") as table:
+        # TODO: detect format by dialect if provided in plugins.ckan.CkanPlugin
         table.write(url, format="ckan", dialect=dialect)
 
     # Read
@@ -24,6 +25,22 @@ def test_table_ckan(options):
         assert table.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
+        ]
+
+
+@pytest.mark.ci
+@pytest.mark.skipif(sys.version_info < (3, 8), reason="Speed up CI")
+def test_table_ckan_write_timezone(options):
+    url = options.pop("url")
+    dialect = CkanDialect(resource="timezone", **options)
+    with Table("data/timezone.csv") as table:
+        table.write(url, format="ckan", dialect=dialect)
+    with Table(url, format="ckan", dialect=dialect) as table:
+        assert table.read_rows() == [
+            {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
+            {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
+            {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
+            {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
         ]
 
 

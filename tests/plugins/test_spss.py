@@ -23,6 +23,19 @@ def test_table_spss(tmpdir):
         ]
 
 
+def test_table_spss_write_timezone(tmpdir):
+    target = str(tmpdir.join("table.sav"))
+    with Table("data/timezone.csv") as table:
+        table.write(target)
+    with Table(target) as table:
+        assert table.read_rows() == [
+            {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
+            {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
+            {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
+            {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
+        ]
+
+
 # Storage
 
 

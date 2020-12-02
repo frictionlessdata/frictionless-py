@@ -28,6 +28,31 @@ Table
 
 
 
+## Ckan
+
+
+### Options
+
+#### Resource
+
+> Type: str
+
+Resource
+
+#### Dataset
+
+> Type: str
+
+Dataset
+
+#### Apikey
+
+> Type: str
+
+Apikey
+
+
+
 ## Csv
 
 

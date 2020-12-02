@@ -1,6 +1,6 @@
 # Working with SQL
 
-> Status: **STABLE**
+> Status: **EXPERIMENTAL**
 
 Frictionless supports reading and writing SQL databases.
 
@@ -24,6 +24,8 @@ for resource in package.resources:
 
 
 ## Wriring to SQL
+
+> **[NOTE]** Timezone information is ignored for `datetime` and `time` types.
 
 You can write SQL databases:
 

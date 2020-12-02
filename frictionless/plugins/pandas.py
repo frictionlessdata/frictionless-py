@@ -273,6 +273,8 @@ class PandasStorage(Storage):
                 if value is None and field.type in ("number", "integer"):
                     fixed_types[field.name] = "number"
                     value = np.NaN
+                if field.type in ["datetime", "time"] and value is not None:
+                    value = value.replace(tzinfo=None)
                 if field.name in resource.schema.primary_key:
                     index_values.append(value)
                 else:

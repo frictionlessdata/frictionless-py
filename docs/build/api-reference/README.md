@@ -1445,16 +1445,16 @@ Import package from storage
 
 ```python
  | @staticmethod
- | from_ckan(*, base_url, dataset_id, api_key=None)
+ | from_ckan(*, url, dataset, apikey=None)
 ```
 
 Import package from CKAN
 
 **Arguments**:
 
-- `base_url` _str_ - (required) URL for CKAN instance (e.g: https://demo.ckan.org/ )
-- `dataset_id` _str_ - (required) ID or slug of dataset to fetch
-- `api_key` _str_ - (optional) Your CKAN API key
+- `url` _string_ - CKAN instance url e.g. "https://demo.ckan.org"
+- `dataset` _string_ - dataset id in CKAN e.g. "my-dataset"
+- `apikey?` _str_ - API key for CKAN e.g. "51912f57-a657-4caa-b2a7-0a1c16821f4b"
 
 <a name="frictionless.package.Package.from_sql"></a>
 #### <big>from\_sql</big>
@@ -1568,16 +1568,16 @@ Export package to storage
 #### <big>to\_ckan</big>
 
 ```python
- | to_ckan(*, base_url, dataset_id=None, api_key=None, force=False)
+ | to_ckan(*, url, dataset, apikey=None, force=False)
 ```
 
 Export package to CKAN
 
 **Arguments**:
 
-- `base_url` _str_ - (required) URL for CKAN instance (e.g: https://demo.ckan.org/ )
-- `dataset_id` _str_ - (optional) ID or slug of dataset this resource belongs to
-- `api_key` _str_ - (optional) Your CKAN API key
+- `url` _string_ - CKAN instance url e.g. "https://demo.ckan.org"
+- `dataset` _string_ - dataset id in CKAN e.g. "my-dataset"
+- `apikey?` _str_ - API key for CKAN e.g. "51912f57-a657-4caa-b2a7-0a1c16821f4b"
 - `force` _bool_ - (optional) overwrite existing data
 
 <a name="frictionless.package.Package.to_sql"></a>
@@ -2668,6 +2668,20 @@ Public   | `from frictionless import system`
 This class provides an ability to make system Frictionless calls.
 It's available as `frictionless.system` singletone.
 
+<a name="frictionless.system.System.register"></a>
+#### <big>register</big>
+
+```python
+ | register(name, plugin)
+```
+
+Register a plugin
+
+**Arguments**:
+
+- `name` _str_ - plugin name
+- `plugin` _Plugin_ - plugin to register
+
 <a name="frictionless.system.System.create_check"></a>
 #### <big>create\_check</big>
 
@@ -2816,6 +2830,24 @@ Create storage
 **Returns**:
 
 - `Storage` - storage
+
+<a name="frictionless.system.System.create_type"></a>
+#### <big>create\_type</big>
+
+```python
+ | create_type(field)
+```
+
+Create checks
+
+**Arguments**:
+
+- `field` _Field_ - corresponding field
+  
+
+**Returns**:
+
+- `Type` - type
 
 <a name="frictionless.helpers"></a>
 ## frictionless.helpers
@@ -3289,82 +3321,6 @@ Public   | `from frictionless.plugins.spss import SpssStorage`
 
 - `basepath?` _str_ - A path to a dir for reading/writing SAV files.
   Defaults to current dir.
-
-<a name="frictionless.plugins.elastic"></a>
-## frictionless.plugins.elastic
-
-<a name="frictionless.plugins.elastic.ElasticPlugin"></a>
-### ElasticPlugin
-
-```python
-class ElasticPlugin(Plugin)
-```
-
-Plugin for ElasticSearch
-
-API      | Usage
--------- | --------
-Public   | `from frictionless.plugins.elastic import ElasticPlugin`
-
-<a name="frictionless.plugins.elastic.Storage"></a>
-### Storage
-
-```python
-class Storage(object)
-```
-
-Elastic storage implementation
-
-API      | Usage
--------- | --------
-Public   | `from frictionless.plugins.elastic import ElasticStorage`
-
-<a name="frictionless.plugins.elastic.Storage.write_table"></a>
-#### <big>write\_table</big>
-
-```python
- | write_table(bucket, doc_types, reindex=False, always_recreate=False, mapping_generator_cls=None, index_settings=None)
-```
-
-Create index with mapping by schema.
-
-__Arguments__
-
-- __bucket__ (`str`):
-        Name of index to be created
-- __doc_types__ (`list<(doc_type, descriptor)>`):
-        List of tuples of doc_types and matching descriptors
-- __always_recreate__:
-        Delete index if already exists (otherwise just update mapping)
-- __reindex__:
-        On mapping mismath, automatically create
-        new index and migrate existing indexes to it
-- __mapping_generator_cls__:
-        subclass of MappingGenerator
-- __index_settings__:
-        settings which will be used in index creation
-
-<a name="frictionless.plugins.elastic.Storage.write_table_convert"></a>
-#### <big>write\_table\_convert</big>
-
-```python
- | write_table_convert(descriptor, mapping_generator_cls=None)
-```
-
-Convert descriptor to ElasticSearch Mapping.
-
-<a name="frictionless.plugins.elastic.Storage.write_table_remove"></a>
-#### <big>write\_table\_remove</big>
-
-```python
- | write_table_remove(bucket=None)
-```
-
-Delete index with mapping by schema.
-
-__Arguments__
-
-- __bucket__ (`str`): Name of index to delete
 
 <a name="frictionless.plugins.bigquery"></a>
 ## frictionless.plugins.bigquery
@@ -4037,6 +3993,44 @@ API      | Usage
 -------- | --------
 Public   | `from frictionless.plugins.ckan import CkanPlugin`
 
+<a name="frictionless.plugins.ckan.CkanDialect"></a>
+### CkanDialect
+
+```python
+class CkanDialect(Dialect)
+```
+
+Ckan dialect representation
+
+API      | Usage
+-------- | --------
+Public   | `from frictionless.plugins.ckan import CkanDialect`
+
+**Arguments**:
+
+- `descriptor?` _str|dict_ - descriptor
+- `resource?` _str_ - resource
+- `dataset?` _str_ - dataset
+- `apikey?` _str_ - apikey
+  
+
+**Raises**:
+
+- `FrictionlessException` - raise any error that occurs during the process
+
+<a name="frictionless.plugins.ckan.CkanParser"></a>
+### CkanParser
+
+```python
+class CkanParser(Parser)
+```
+
+Ckan parser implementation.
+
+API      | Usage
+-------- | --------
+Public   | `from frictionless.plugins.ckan import CkanParser`
+
 <a name="frictionless.plugins.ckan.CkanStorage"></a>
 ### CkanStorage
 
@@ -4046,28 +4040,16 @@ class CkanStorage(Storage)
 
 Ckan storage implementation
 
-API      | Usage
--------- | --------
-Public   | `from frictionless.plugins.ckan import CkanStorage`
+**Arguments**:
 
-<a name="frictionless.plugins.ckan.make_ckan_request"></a>
-#### <big>make\_ckan\_request</big>
-
-```python
-make_ckan_request(url, method="GET", headers=None, api_key=None, **kwargs)
-```
-
-Make a CKAN API request to `url` and return the json response. **kwargs
-are passed to requests.request()
-
-<a name="frictionless.plugins.ckan.get_ckan_error"></a>
-#### <big>get\_ckan\_error</big>
-
-```python
-get_ckan_error(response)
-```
-
-Return the error from a ckan json response, or None.
+- `url` _string_ - CKAN instance url e.g. "https://demo.ckan.org"
+- `dataset` _string_ - dataset id in CKAN e.g. "my-dataset"
+- `apikey?` _str_ - API key for CKAN e.g. "51912f57-a657-4caa-b2a7-0a1c16821f4b"
+  
+  
+  API      | Usage
+  -------- | --------
+  Public   | `from frictionless.plugins.ckan import CkanStorage`
 
 <a name="frictionless.plugins.server"></a>
 ## frictionless.plugins.server
@@ -4356,6 +4338,9 @@ S3 loader implementation.
 API      | Usage
 -------- | --------
 Public   | `from frictionless.plugins.aws import S3Loader`
+
+<a name="frictionless.plugins.multipart"></a>
+## frictionless.plugins.multipart
 
 <a name="frictionless.plugins.text"></a>
 ## frictionless.plugins.text
@@ -5990,16 +5975,17 @@ Import resource from storage
 
 ```python
  | @staticmethod
- | from_ckan(*, base_url, resource_id, api_key=None)
+ | from_ckan(*, name, url, dataset, apikey=None)
 ```
 
 Import resource from CKAN
 
 **Arguments**:
 
-- `base_url` _str_ - (required) URL for CKAN instance (e.g: https://demo.ckan.org/ )
-- `resource_id` _str_ - (required) ID of resource to fetch
-- `api_key` _str_ - (optional) Your CKAN API key
+- `name` _string_ - resource name
+- `url` _string_ - CKAN instance url e.g. "https://demo.ckan.org"
+- `dataset` _string_ - dataset id in CKAN e.g. "my-dataset"
+- `apikey?` _str_ - API key for CKAN e.g. "51912f57-a657-4caa-b2a7-0a1c16821f4b"
 
 <a name="frictionless.resource.Resource.from_sql"></a>
 #### <big>from\_sql</big>
@@ -6152,16 +6138,16 @@ Export resource to storage
 #### <big>to\_ckan</big>
 
 ```python
- | to_ckan(*, base_url, dataset_id=None, api_key=None, force=False)
+ | to_ckan(*, url, dataset, apikey=None, force=False)
 ```
 
 Export resource to CKAN
 
 **Arguments**:
 
-- `base_url` _str_ - (required) URL for CKAN instance (e.g: https://demo.ckan.org/ )
-- `dataset_id` _str_ - (optional) ID or slug of dataset this resource belongs to
-- `api_key` _str_ - (optional) Your CKAN API key
+- `url` _string_ - CKAN instance url e.g. "https://demo.ckan.org"
+- `dataset` _string_ - dataset id in CKAN e.g. "my-dataset"
+- `apikey?` _str_ - API key for CKAN e.g. "51912f57-a657-4caa-b2a7-0a1c16821f4b"
 - `force` _bool_ - (optional) overwrite existing data
 
 <a name="frictionless.resource.Resource.to_sql"></a>

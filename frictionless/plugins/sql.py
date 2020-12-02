@@ -149,7 +149,7 @@ class SqlParser(Parser):
         schema = self.resource.schema
         storage = SqlStorage(engine=engine, namespace=dialect.namespace)
         resource = Resource(name=dialect.table, data=read_row_stream, schema=schema)
-        storage.write_resource(resource)
+        storage.write_resource(resource, force=True)
 
 
 # Storage
@@ -428,6 +428,12 @@ class SqlStorage(Storage):
             if not mapping.get(field.type):
                 fallback_fields.append(field)
 
+        # Timezone fields
+        timezone_fields = []
+        for field in resource.schema.fields:
+            if field.type in ["datetime", "time"]:
+                timezone_fields.append(field)
+
         # Write data
         buffer = []
         buffer_size = 1000
@@ -435,6 +441,9 @@ class SqlStorage(Storage):
         for row in resource.read_row_stream():
             for field in fallback_fields:
                 row[field.name], notes = field.write_cell(row[field.name])
+            for field in timezone_fields:
+                if row[field.name] is not None:
+                    row[field.name] = row[field.name].replace(tzinfo=None)
             buffer.append(row)
             if len(buffer) > buffer_size:
                 self.__connection.execute(sql_table.insert().values(buffer))

@@ -66,6 +66,53 @@ def test_table_sql_write(database_url):
         assert table.read_data() == [[1, "english"], [2, "中国人"]]
 
 
+def test_table_sql_write_timezone(sqlite_url):
+    source = "data/timezone.csv"
+    dialect = SqlDialect(table="timezone")
+    with Table(source) as table:
+        table.write(sqlite_url, dialect=dialect)
+    with Table(sqlite_url, dialect=dialect) as table:
+        assert table.header == ["datetime", "time"]
+        assert table.read_rows() == [
+            {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
+            {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
+            {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
+            {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
+        ]
+
+
+@pytest.mark.ci
+def test_table_sql_write_timezone_postgresql(postgresql_url):
+    source = "data/timezone.csv"
+    dialect = SqlDialect(table="timezone")
+    with Table(source) as table:
+        table.write(postgresql_url, dialect=dialect)
+    with Table(postgresql_url, dialect=dialect) as table:
+        assert table.header == ["datetime", "time"]
+        assert table.read_rows() == [
+            {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
+            {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
+            {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
+            {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
+        ]
+
+
+@pytest.mark.ci
+def test_table_sql_write_timezone_mysql(mysql_url):
+    source = "data/timezone.csv"
+    dialect = SqlDialect(table="timezone")
+    with Table(source) as table:
+        table.write(mysql_url, dialect=dialect)
+    with Table(mysql_url, dialect=dialect) as table:
+        assert table.header == ["datetime", "time"]
+        assert table.read_rows() == [
+            {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
+            {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
+            {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
+            {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
+        ]
+
+
 # Storage
 
 
@@ -336,8 +383,8 @@ def test_storage_package_url_argument(sqlite_url):
 
 
 @pytest.mark.ci
-def test_postgresql_storage_types():
-    engine = sa.create_engine(os.environ["POSTGRESQL_URL"])
+def test_postgresql_storage_types(postgresql_url):
+    engine = sa.create_engine(postgresql_url)
     prefix = "prefix_"
 
     # Export/Import
@@ -394,8 +441,8 @@ def test_postgresql_storage_types():
 
 
 @pytest.mark.ci
-def test_postgresql_storage_integrity():
-    engine = sa.create_engine(os.environ["POSTGRESQL_URL"])
+def test_postgresql_storage_integrity(postgresql_url):
+    engine = sa.create_engine(postgresql_url)
     prefix = "prefix_"
 
     # Export/Import
@@ -455,8 +502,8 @@ def test_postgresql_storage_integrity():
 # TODO: recover enum support
 @pytest.mark.ci
 @pytest.mark.skip
-def test_postgresql_storage_constraints(sqlite_url):
-    engine = sa.create_engine(os.environ["POSTGRESQL_URL"])
+def test_postgresql_storage_constraints(postgresql_url):
+    engine = sa.create_engine(postgresql_url)
     prefix = "prefix_"
 
     # Export/Import
@@ -520,8 +567,8 @@ def test_postgresql_storage_constraints_not_valid_error(sqlite_url, field_name, 
 
 
 @pytest.mark.ci
-def test_postgresql_storage_views_support():
-    engine = sa.create_engine(os.environ["POSTGRESQL_URL"])
+def test_postgresql_storage_views_support(postgresql_url):
+    engine = sa.create_engine(postgresql_url)
     engine.execute("DROP VIEW IF EXISTS data_view")
     engine.execute("DROP TABLE IF EXISTS data")
     engine.execute("CREATE TABLE data (id INTEGER PRIMARY KEY, name TEXT)")
@@ -545,8 +592,8 @@ def test_postgresql_storage_views_support():
 
 
 @pytest.mark.ci
-def test_mysql_storage_types():
-    engine = sa.create_engine(os.environ["MYSQL_URL"])
+def test_mysql_storage_types(mysql_url):
+    engine = sa.create_engine(mysql_url)
     prefix = "prefix_"
 
     # Export/Import
@@ -605,8 +652,8 @@ def test_mysql_storage_types():
 # TODO: fix unique for MySQL
 @pytest.mark.ci
 @pytest.mark.skip
-def test_mysql_storage_integrity():
-    engine = sa.create_engine(os.environ["MYSQL_URL"])
+def test_mysql_storage_integrity(mysql_url):
+    engine = sa.create_engine(mysql_url)
     prefix = "prefix_"
 
     # Export/Import
@@ -666,8 +713,8 @@ def test_mysql_storage_integrity():
 # TODO: fix enum for MySQL
 @pytest.mark.ci
 @pytest.mark.skip
-def test_mysql_storage_constraints():
-    engine = sa.create_engine(os.environ["MYSQL_URL"])
+def test_mysql_storage_constraints(mysql_url):
+    engine = sa.create_engine(mysql_url)
     prefix = "prefix_"
 
     # Export/Import
@@ -720,8 +767,8 @@ def test_mysql_storage_constraints():
         ("maximum", 9),
     ],
 )
-def test_mysql_storage_constraints_not_valid_error(field_name, cell):
-    engine = sa.create_engine(os.environ["MYSQL_URL"])
+def test_mysql_storage_constraints_not_valid_error(mysql_url, field_name, cell):
+    engine = sa.create_engine(mysql_url)
     package = Package("data/storage/constraints.json")
     resource = package.get_resource("constraints")
     # We set an invalid cell to the data property
@@ -734,8 +781,8 @@ def test_mysql_storage_constraints_not_valid_error(field_name, cell):
 
 
 @pytest.mark.ci
-def test_mysql_storage_views_support():
-    engine = sa.create_engine(os.environ["MYSQL_URL"])
+def test_mysql_storage_views_support(mysql_url):
+    engine = sa.create_engine(mysql_url)
     engine.execute("DROP VIEW IF EXISTS data_view")
     engine.execute("DROP TABLE IF EXISTS data")
     engine.execute("CREATE TABLE data (id INTEGER PRIMARY KEY, name TEXT)")
