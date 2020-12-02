@@ -1,3 +1,4 @@
+import os
 import pytest
 import sqlite3
 from pytest_cov.embed import cleanup_on_sigterm
@@ -23,11 +24,20 @@ def database_url(tmpdir):
     conn.close()
 
 
-# TODO: create the same for other databases
 @pytest.fixture
 def sqlite_url(tmpdir):
     path = str(tmpdir.join("database.db"))
     return "sqlite:///%s" % path
+
+
+@pytest.fixture
+def postgresql_url():
+    return os.environ["POSTGRESQL_URL"]
+
+
+@pytest.fixture
+def mysql_url():
+    return os.environ["MYSQL_URL"]
 
 
 # Settings
