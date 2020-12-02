@@ -123,11 +123,11 @@ class Resource(Metadata):
         self.setinitial("stats", stats)
         self.__sync_schema = sync_schema
         self.__patch_schema = patch_schema
-        self.__infer_type=infer_type
-        self.__infer_names=infer_names
-        self.__infer_volume=infer_volume
-        self.__infer_confidence=infer_confidence
-        self.__infer_missing_values=infer_missing_values
+        self.__infer_type = infer_type
+        self.__infer_names = infer_names
+        self.__infer_volume = infer_volume
+        self.__infer_confidence = infer_confidence
+        self.__infer_missing_values = infer_missing_values
         self.__basepath = basepath or helpers.detect_basepath(descriptor)
         self.__onerror = onerror
         self.__trusted = trusted

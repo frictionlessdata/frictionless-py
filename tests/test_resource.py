@@ -495,6 +495,7 @@ def test_table_schema_patch_schema():
 
 # Infer
 
+
 def test_resource_infer():
     resource = Resource(path="data/table.csv")
     resource.infer()
