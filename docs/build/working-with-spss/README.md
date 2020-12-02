@@ -25,6 +25,8 @@ for resource in package.resources:
 
 ## Wriring to SPSS
 
+> **[NOTE]** Timezone information is ignored for `datetime` and `time` types.
+
 You can write SPSS files:
 
 ```py
