@@ -461,6 +461,38 @@ def test_resource_schema_from_path_error_path_not_safe():
     assert error.note.count("schema.json")
 
 
+def test_resource_sync_schema():
+    schema = {
+        "fields": [{"name": "name", "type": "string"}, {"name": "id", "type": "integer"}]
+    }
+    resource = Resource(path="data/sync-schema.csv", schema=schema, sync_schema=True)
+    resource.infer()
+    assert resource.schema == schema
+    assert resource.read_header() == ["name", "id"]
+    assert resource.read_sample() == [["english", "1"], ["中国人", "2"]]
+    assert resource.read_rows() == [
+        {"id": 1, "name": "english"},
+        {"id": 2, "name": "中国人"},
+    ]
+
+
+def test_table_schema_patch_schema():
+    patch_schema = {"fields": {"id": {"name": "new", "type": "string"}}}
+    resource = Resource(path="data/table.csv", patch_schema=patch_schema)
+    resource.infer()
+    assert resource.schema == {
+        "fields": [
+            {"name": "new", "type": "string"},
+            {"name": "name", "type": "string"},
+        ]
+    }
+    assert resource.read_header() == ["id", "name"]
+    assert resource.read_rows() == [
+        {"new": "1", "name": "english"},
+        {"new": "2", "name": "中国人"},
+    ]
+
+
 # Expand
 
 
