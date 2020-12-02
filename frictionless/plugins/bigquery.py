@@ -279,9 +279,6 @@ class BigqueryStorage(Storage):
         data = []
         for fields in response["rows"]:
             cells = [field["v"] for field in fields["f"]]
-            for index, field in enumerate(schema.fields):
-                if field.type == "datetime":
-                    cells[index] = f"{cells[index]}Z"
             data.append(cells)
 
         # Sort data
@@ -385,11 +382,20 @@ class BigqueryStorage(Storage):
             if not mapping.get(field.type):
                 fallback_fields.append(field)
 
+        # Timezone fields
+        timezone_fields = []
+        for field in resource.schema.fields:
+            if field.type in ["datetime", "time"]:
+                timezone_fields.append(field)
+
         # Write data
         buffer = []
         for row in resource.read_row_stream():
             for field in fallback_fields:
                 row[field.name], notes = field.write_cell(row[field.name])
+            for field in timezone_fields:
+                if row[field.name] is not None:
+                    row[field.name] = row[field.name].replace(tzinfo=None)
             buffer.append(row.to_list())
             if len(buffer) > BUFFER_SIZE:
                 self.__write_convert_data_start_job(resource.name, buffer)

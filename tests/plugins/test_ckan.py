@@ -29,6 +29,7 @@ def test_table_ckan(options):
 
 
 @pytest.mark.ci
+@pytest.mark.skipif(sys.version_info < (3, 8), reason="Speed up CI")
 def test_table_ckan_write_timezone(options):
     url = options.pop("url")
     dialect = CkanDialect(resource="timezone", **options)

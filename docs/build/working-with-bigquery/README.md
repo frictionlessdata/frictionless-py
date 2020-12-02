@@ -47,6 +47,8 @@ for resource in package.resources:
 
 ## Writing to BigQuery
 
+> **[NOTE]** Timezone information is ignored for `datetime` and `time` types.
+
 We can export a package to a BigQuery dataset:
 
 ```py

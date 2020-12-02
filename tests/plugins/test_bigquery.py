@@ -4,7 +4,6 @@ import json
 import uuid
 import pytest
 import datetime
-from dateutil import tz
 from apiclient.discovery import build
 from oauth2client.client import GoogleCredentials
 from frictionless import Table, Package, Resource, FrictionlessException
@@ -40,6 +39,23 @@ def test_table_bigquery(options):
         assert table.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
+        ]
+
+
+@pytest.mark.ci
+@pytest.mark.skipif(sys.version_info < (3, 8), reason="Speed up CI")
+def test_table_bigquery_write_timezone(options):
+    prefix = options.pop("prefix")
+    service = options.pop("service")
+    dialect = BigqueryDialect(table=prefix, **options)
+    with Table("data/timezone.csv") as table:
+        table.write(service, format="ckan", dialect=dialect)
+    with Table(service, format="ckan", dialect=dialect) as table:
+        assert table.read_rows() == [
+            {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
+            {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
+            {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
+            {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
         ]
 
 
@@ -86,7 +102,7 @@ def test_storage_types(options):
             "date": datetime.date(2015, 1, 1),
             "date_year": datetime.date(2015, 1, 1),
             # converted into UTC
-            "datetime": datetime.datetime(2015, 1, 1, 3, 0, tzinfo=tz.tzutc()),
+            "datetime": datetime.datetime(2015, 1, 1, 3, 0),
             "duration": "P1Y1M",
             "geojson": '{"type": "Point", "coordinates": [33, 33.33]}',
             "geopoint": "30,70",
