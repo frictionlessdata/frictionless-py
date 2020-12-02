@@ -373,10 +373,10 @@ for row in resource.read_row_stream():
   print(row)
 ```
 
-    <frictionless.loader.ByteStreamWithStatsHandling object at 0x7fb2fd673a00>
+    <frictionless.loader.ByteStreamWithStatsHandling object at 0x7fe7e3664910>
     <_io.TextIOWrapper name='./data/country-3.csv' encoding='utf-8'>
-    <generator object Resource.read_data_stream at 0x7fb2fdccc0b0>
-    <generator object Resource.read_row_stream at 0x7fb2fdccc0b0>
+    <generator object Resource.read_data_stream at 0x7fe7e3c93a50>
+    <generator object Resource.read_row_stream at 0x7fe7e3c93a50>
     Row([('id', 1), ('capital_id', 1), ('name', 'Britain'), ('population', 67)])
     Row([('id', 2), ('capital_id', 3), ('name', 'France'), ('population', 67)])
     Row([('id', 3), ('capital_id', 2), ('name', 'Germany'), ('population', 83)])
@@ -503,13 +503,13 @@ with Table('data/capital-3.csv') as table:
     print(row)
 ```
 
-    <generator object Table.__read_data_stream_create at 0x7fb2fdadbd60>
+    <generator object Table.__read_data_stream_create at 0x7fe7fd726c10>
     ['1', 'London']
     ['2', 'Berlin']
     ['3', 'Paris']
     ['4', 'Madrid']
     ['5', 'Rome']
-    <generator object Table.__read_row_stream_create at 0x7fb2fdac3ac0>
+    <generator object Table.__read_row_stream_create at 0x7fe7fd726900>
     Row([('id', 1), ('name', 'London')])
     Row([('id', 2), ('name', 'Berlin')])
     Row([('id', 3), ('name', 'Paris')])

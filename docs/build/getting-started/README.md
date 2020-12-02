@@ -58,10 +58,14 @@ We will take a very dirty data file:
 
 
 ```python
-! cat invalid.csv
+! cat data/invalid.csv
 ```
 
-    cat: invalid.csv: No such file or directory
+    id,name,,name
+    1,english
+    1,english
+
+    2,german,1,2,3
 
 
 Firt of all, let's infer the metadata. We can save and edit it to provide useful information about the table:

@@ -1,6 +1,6 @@
 # Working with Pandas
 
-> Status: **STABLE**
+> Status: **EXPERIMENTAL**
 
 Frictionless supports reading and writing Pandas dataframes.
 
@@ -24,6 +24,8 @@ for resource in package.resources:
 
 
 ## Wriring to Pandas
+
+> **[NOTE]** Timezone information is ignored for `datetime` and `time` types.
 
 You can write a dataset to Pandas:
 

@@ -1,6 +1,6 @@
 # Working with Filelike Data
 
-> Status: **CORE / STABLE**
+> Status: **STABLE**
 
 Frictionless supports loading Filelike data.
 

@@ -359,11 +359,11 @@ pprint(report)
                            'fields': 3,
                            'hash': 'dcdeae358cfd50860c18d953e021f836',
                            'rows': 11},
-                 'time': 0.017,
+                 'time': 0.019,
                  'valid': False}],
-     'time': 0.017,
+     'time': 0.019,
      'valid': False,
-     'version': '3.34.3'}
+     'version': '3.38.1'}
 
 
 As we can see, there are a lot of information; you can find its details description in "API Reference". Errors are groupped by tables; for some validation there are can be dozens of tables. Let's use the `report.flatten` function to simplify errors representation:
@@ -405,9 +405,9 @@ pprint(report)
                  'tags': ['#table', '#schema']}],
      'stats': {'errors': 1, 'tables': 0},
      'tables': [],
-     'time': 0.001,
+     'time': 0.0,
      'valid': False,
-     'version': '3.34.3'}
+     'version': '3.38.1'}
 
 
 ## Validation Errors

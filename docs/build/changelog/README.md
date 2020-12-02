@@ -2,6 +2,22 @@
 
 Here described only the breaking and most significant changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/frictionless-py/commits/master).
 
+## v3.38
+
+- Improved ckan plugin (#560)
+
+## v3.37
+
+- Remove not working elastic plugin draft (#558)
+
+## v3.36
+
+- Support custom types (#557)
+
+## v3.35
+
+- Added "resolve" option to "resource/package.to_zip" (#556)
+
 ## v3.34
 
 - Moved `frictionless.controls` to `frictionless.plugins.*` (BREAKING)

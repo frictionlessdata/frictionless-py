@@ -1,6 +1,6 @@
 # Working with SQL
 
-> Status: **STABLE**
+> Status: **EXPERIMENTAL**
 
 Frictionless supports reading and writing SQL databases.
 
