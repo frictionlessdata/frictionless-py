@@ -21,6 +21,7 @@ class Header(list):
         assert len(field_positions) in (len(cells), len(schema.fields))
 
         # Set attributes
+        original_cells = cells.copy()
         fields = schema.fields
         self.__schema = schema
         self.__field_positions = field_positions
@@ -35,7 +36,7 @@ class Header(list):
                 self.__errors.append(
                     errors.ExtraHeaderError(
                         note="",
-                        cells=cells,
+                        cells=list(map(str, original_cells)),
                         cell="",
                         field_name="",
                         field_number=len(fields) + field_position - start,
@@ -52,7 +53,7 @@ class Header(list):
                     self.__errors.append(
                         errors.MissingHeaderError(
                             note="",
-                            cells=list(map(str, cells)),
+                            cells=list(map(str, original_cells)),
                             cell="",
                             field_name=field.name,
                             field_number=field_number,
@@ -71,7 +72,7 @@ class Header(list):
                 self.__errors.append(
                     errors.BlankHeaderError(
                         note="",
-                        cells=list(map(str, cells)),
+                        cells=list(map(str, original_cells)),
                         cell="",
                         field_name=field.name,
                         field_number=field_number,
@@ -94,7 +95,7 @@ class Header(list):
                     self.__errors.append(
                         errors.DuplicateHeaderError(
                             note=note,
-                            cells=list(map(str, cells)),
+                            cells=list(map(str, original_cells)),
                             cell=str(cells[field_number - 1]),
                             field_name=field.name,
                             field_number=field_number,
@@ -109,7 +110,7 @@ class Header(list):
                     self.__errors.append(
                         errors.NonMatchingHeaderError(
                             note="",
-                            cells=list(map(str, cells)),
+                            cells=list(map(str, original_cells)),
                             cell=str(cell),
                             field_name=field.name,
                             field_number=field_number,
@@ -118,7 +119,7 @@ class Header(list):
                     )
 
         # Save header
-        super().__init__(cells)
+        super().__init__(original_cells)
 
     @cached_property
     def schema(self):
