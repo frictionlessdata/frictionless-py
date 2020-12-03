@@ -13,6 +13,7 @@ from . import errors
 # TODO: Rework system.register
 # TODO: Consider plugins priority
 # TODO: Use lists instead of ordered dicts?
+# TODO: Implement hard errors/memory limit setting
 class System:
     """System representation
 

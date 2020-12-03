@@ -44,6 +44,7 @@ def program_validate(
     infer_missing_values: str = Opt(None, help="Comma-separated list of missing values"),
     # Package/Resource
     basepath: str = Opt(None, help="Basepath of the resource/package"),
+    nopool: bool = Opt(None, help="Disable multiprocessing"),
     # Validation
     checksum_hash: str = Opt(None, help="Expected hash based on hashing option"),
     checksum_bytes: int = Opt(None, help="Expected size in bytes"),
@@ -138,6 +139,7 @@ def program_validate(
             infer_missing_values=infer_missing_values,
             # Package/Resource
             basepath=basepath,
+            nopool=nopool,
             # Validation
             checksum=checksum,
             pick_errors=pick_errors,
