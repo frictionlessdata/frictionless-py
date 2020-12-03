@@ -101,6 +101,11 @@ class Table:
             For more information, please check "Describing  Data" guide.
             It defaults to 0.9
 
+        infer_float_numbers? (bool): Flag to indicate desired number type.
+            By default numbers will be `Decimal`; if `True` - `float`.
+            For more information, please check "Describing  Data" guide.
+            It defaults to `False`
+
         infer_missing_values? (str[]): String to be considered as missing values.
             For more information, please check "Describing  Data" guide.
             It defaults to `['']`
@@ -142,6 +147,7 @@ class Table:
         infer_names=None,
         infer_volume=config.DEFAULT_INFER_VOLUME,
         infer_confidence=config.DEFAULT_INFER_CONFIDENCE,
+        infer_float_numbers=config.DEFAULT_FLOAT_NUMBER,
         infer_missing_values=config.DEFAULT_MISSING_VALUES,
         # Integrity
         onerror="ignore",
@@ -183,6 +189,7 @@ class Table:
         self.__infer_names = infer_names
         self.__infer_volume = infer_volume
         self.__infer_confidence = infer_confidence
+        self.__infer_float_numbers = infer_float_numbers
         self.__infer_missing_values = infer_missing_values
         self.__lookup = lookup
 
@@ -536,6 +543,7 @@ class Table:
                 type=self.__infer_type,
                 names=self.__infer_names or header,
                 confidence=self.__infer_confidence,
+                float_numbers=self.__infer_float_numbers,
                 missing_values=self.__infer_missing_values,
             )
 

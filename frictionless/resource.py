@@ -87,6 +87,7 @@ class Resource(Metadata):
         infer_names=None,
         infer_volume=config.DEFAULT_INFER_VOLUME,
         infer_confidence=config.DEFAULT_INFER_CONFIDENCE,
+        infer_float_numbers=config.DEFAULT_FLOAT_NUMBER,
         infer_missing_values=config.DEFAULT_MISSING_VALUES,
         # Misc
         stats=None,
@@ -127,6 +128,7 @@ class Resource(Metadata):
         self.__infer_names = infer_names
         self.__infer_volume = infer_volume
         self.__infer_confidence = infer_confidence
+        self.__infer_float_numbers = infer_float_numbers
         self.__infer_missing_values = infer_missing_values
         self.__basepath = basepath or helpers.detect_basepath(descriptor)
         self.__onerror = onerror
@@ -794,6 +796,7 @@ class Resource(Metadata):
         options.setdefault("infer_names", self.__infer_names)
         options.setdefault("infer_volume", self.__infer_volume)
         options.setdefault("infer_confidence", self.__infer_confidence)
+        options.setdefault("infer_float_numbers", self.__infer_float_numbers)
         options.setdefault("infer_missing_values", self.__infer_missing_values)
         options.setdefault("onerror", self.__onerror)
         if "lookup" not in options:

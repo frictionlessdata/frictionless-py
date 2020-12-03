@@ -183,6 +183,7 @@ class Schema(Metadata):
         type=None,
         names=None,
         confidence=config.DEFAULT_INFER_CONFIDENCE,
+        float_numbers=config.DEFAULT_FLOAT_NUMBER,
         missing_values=config.DEFAULT_MISSING_VALUES,
     ):
         """Infer schema
@@ -192,6 +193,7 @@ class Schema(Metadata):
             type? (str): enforce all the field to be the given type
             names (str[]): enforce field names
             confidence (float): infer confidence from 0 to 1
+            float_numbers (bool): infer numbers as `float` instead of `Decimal`
             missing_values (str[]): provide custom missing values
         """
 
@@ -232,6 +234,8 @@ class Schema(Metadata):
             candidates.append([])
             for type in INFER_TYPES:
                 field = Field(name=name, type=type, schema=self)
+                if type == "number" and float_numbers:
+                    field.float_number = True
                 candidates[index].append({"field": field, "score": 0})
             fields.append(Field(name=name, type="any", schema=self))
 

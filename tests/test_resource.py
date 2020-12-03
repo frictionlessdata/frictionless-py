@@ -598,6 +598,23 @@ def test_resource_infer_names():
     ]
 
 
+def test_resource_infer_float_numbers():
+    data = [["number"], ["1.1"], ["2.2"], ["3.3"]]
+    resource = Resource(data=data, infer_float_numbers=True)
+    resource.infer()
+    assert resource.schema == {
+        "fields": [
+            {"name": "number", "type": "number", "floatNumber": True},
+        ]
+    }
+    assert resource.read_header() == ["number"]
+    assert resource.read_rows() == [
+        {"number": 1.1},
+        {"number": 2.2},
+        {"number": 3.3},
+    ]
+
+
 # Expand
 
 
