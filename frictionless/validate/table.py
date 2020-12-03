@@ -41,7 +41,7 @@ def validate_table(
     extra_checks=None,
     pick_errors=None,
     skip_errors=None,
-    limit_errors=None,
+    limit_errors=config.DEFAULT_LIMIT_ERRORS,
     limit_memory=config.DEFAULT_LIMIT_MEMORY,
 ):
     """Validate table
