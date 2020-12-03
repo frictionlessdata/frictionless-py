@@ -931,6 +931,13 @@
                       "boolean"
                     ]
                   },
+                  "format": {
+                    "description": "There are no format keyword options for `boolean`: only `default` is allowed.",
+                    "enum": [
+                      "default"
+                    ],
+                    "default": "default"
+                  },
                   "trueValues": {
                     "type": "array",
                     "minItems": 1,

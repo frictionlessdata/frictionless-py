@@ -2,7 +2,8 @@ import os
 import json
 import yaml
 import pytest
-from frictionless import Resource, Query, FrictionlessException, describe_resource
+from frictionless import Resource, Schema, Field, Query, describe_resource
+from frictionless import FrictionlessException
 
 
 # General
@@ -908,6 +909,24 @@ def test_resource_to_table_respect_query_issue_503():
     with resource.to_table() as table:
         assert table.header == ["id", "name"]
         assert table.read_rows() == [{"id": 1, "name": "english"}]
+
+
+# Metadata
+
+
+def test_resource_metadata_bad_schema_format():
+    schema = Schema(
+        fields=[
+            Field(
+                name="name",
+                type="boolean",
+                format={"trueValues": "Yes", "falseValues": "No"},
+            )
+        ]
+    )
+    resource = Resource(name="name", path="data/table.csv", schema=schema)
+    assert resource.metadata_valid is False
+    assert resource.metadata_errors[0].code == "field-error"
 
 
 # Multipart

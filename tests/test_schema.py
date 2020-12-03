@@ -4,7 +4,7 @@ import yaml
 import pytest
 import requests
 from decimal import Decimal
-from frictionless import Schema, FrictionlessException, describe_schema
+from frictionless import Schema, Field, FrictionlessException, describe_schema
 
 
 # General
@@ -370,6 +370,23 @@ def test_schema_to_yaml(tmpdir):
     # Read
     with open(target, encoding="utf-8") as file:
         assert schema == yaml.safe_load(file)
+
+
+# Metadata
+
+
+def test_schema_metadata_bad_schema_format():
+    schema = Schema(
+        fields=[
+            Field(
+                name="name",
+                type="boolean",
+                format={"trueValues": "Yes", "falseValues": "No"},
+            )
+        ]
+    )
+    assert schema.metadata_valid is False
+    assert schema.metadata_errors[0].code == "field-error"
 
 
 # Issues
