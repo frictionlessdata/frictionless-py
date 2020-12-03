@@ -2,6 +2,13 @@
 
 Here described only the breaking and most significant changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/frictionless-py/commits/master).
 
+## v3.39
+
+- Fixed Header not being an original one (#572)
+- Fix bad format validation (#571)
+- Added default errors limit equals to 1000 (#570)
+- Added support for field.float_number (#569)
+
 ## v3.38
 
 - Improved ckan plugin (#560)
