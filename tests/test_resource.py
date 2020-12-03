@@ -915,10 +915,18 @@ def test_resource_to_table_respect_query_issue_503():
 
 
 def test_resource_metadata_bad_schema_format():
-    schema = Schema(fields=[Field(name='name', type='boolean', format={'trueValues': 'Yes', 'falseValues': 'No'})])
-    resource = Resource(name='name', path='data/table.csv', schema=schema)
+    schema = Schema(
+        fields=[
+            Field(
+                name="name",
+                type="boolean",
+                format={"trueValues": "Yes", "falseValues": "No"},
+            )
+        ]
+    )
+    resource = Resource(name="name", path="data/table.csv", schema=schema)
     assert resource.metadata_valid is False
-    assert resource.metadata_errors[0].code == 'field-error'
+    assert resource.metadata_errors[0].code == "field-error"
 
 
 # Multipart
