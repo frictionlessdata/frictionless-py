@@ -175,6 +175,14 @@ class Field(Metadata):
         return self.get("bareNumber", config.DEFAULT_BARE_NUMBER)
 
     @Metadata.property
+    def float_number(self):
+        """
+        Returns:
+            bool: whether it's a floating point number
+        """
+        return self.get("floatNumber", config.DEFAULT_FLOAT_NUMBER)
+
+    @Metadata.property
     def decimal_char(self):
         """
         Returns:

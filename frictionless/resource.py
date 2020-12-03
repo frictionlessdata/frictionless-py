@@ -67,16 +67,29 @@ class Resource(Metadata):
         description=None,
         path=None,
         data=None,
+        # File
         scheme=None,
         format=None,
         hashing=None,
         encoding=None,
         compression=None,
         compression_path=None,
+        # Control/Dialect/Query
         control=None,
         dialect=None,
         query=None,
+        # Schema
         schema=None,
+        sync_schema=False,
+        patch_schema=None,
+        # Infer
+        infer_type=None,
+        infer_names=None,
+        infer_volume=config.DEFAULT_INFER_VOLUME,
+        infer_confidence=config.DEFAULT_INFER_CONFIDENCE,
+        infer_float_numbers=config.DEFAULT_FLOAT_NUMBER,
+        infer_missing_values=config.DEFAULT_MISSING_VALUES,
+        # Misc
         stats=None,
         profile=None,
         basepath=None,
@@ -109,6 +122,14 @@ class Resource(Metadata):
         self.setinitial("query", query)
         self.setinitial("schema", schema)
         self.setinitial("stats", stats)
+        self.__sync_schema = sync_schema
+        self.__patch_schema = patch_schema
+        self.__infer_type = infer_type
+        self.__infer_names = infer_names
+        self.__infer_volume = infer_volume
+        self.__infer_confidence = infer_confidence
+        self.__infer_float_numbers = infer_float_numbers
+        self.__infer_missing_values = infer_missing_values
         self.__basepath = basepath or helpers.detect_basepath(descriptor)
         self.__onerror = onerror
         self.__trusted = trusted
@@ -769,6 +790,14 @@ class Resource(Metadata):
         options.setdefault("dialect", self.dialect)
         options.setdefault("query", self.query)
         options.setdefault("schema", self.schema)
+        options.setdefault("sync_schema", self.__sync_schema)
+        options.setdefault("patch_schema", self.__patch_schema)
+        options.setdefault("infer_type", self.__infer_type)
+        options.setdefault("infer_names", self.__infer_names)
+        options.setdefault("infer_volume", self.__infer_volume)
+        options.setdefault("infer_confidence", self.__infer_confidence)
+        options.setdefault("infer_float_numbers", self.__infer_float_numbers)
+        options.setdefault("infer_missing_values", self.__infer_missing_values)
         options.setdefault("onerror", self.__onerror)
         if "lookup" not in options:
             options["lookup"] = self.read_lookup()

@@ -1064,7 +1064,10 @@ def test_table_schema_patch_schema_missing_values():
         ]
 
 
-def test_table_schema_infer_type():
+# Infer
+
+
+def test_table_infer_type():
     with Table("data/table.csv", infer_type="string") as table:
         assert table.header == ["id", "name"]
         assert table.schema == {
@@ -1079,7 +1082,7 @@ def test_table_schema_infer_type():
         ]
 
 
-def test_table_schema_infer_names():
+def test_table_infer_names():
     with Table("data/table.csv", infer_names=["new1", "new2"]) as table:
         assert table.header == ["id", "name"]
         assert table.schema == {
@@ -1092,6 +1095,9 @@ def test_table_schema_infer_names():
             {"new1": 1, "new2": "english"},
             {"new1": 2, "new2": "中国人"},
         ]
+
+
+# Integrity
 
 
 def test_table_schema_lookup_foreign_keys():

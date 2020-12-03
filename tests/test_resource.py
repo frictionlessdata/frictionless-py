@@ -461,6 +461,160 @@ def test_resource_schema_from_path_error_path_not_safe():
     assert error.note.count("schema.json")
 
 
+def test_resource_sync_schema():
+    schema = {
+        "fields": [{"name": "name", "type": "string"}, {"name": "id", "type": "integer"}]
+    }
+    resource = Resource(path="data/sync-schema.csv", schema=schema, sync_schema=True)
+    resource.infer()
+    assert resource.schema == schema
+    assert resource.read_header() == ["name", "id"]
+    assert resource.read_sample() == [["english", "1"], ["中国人", "2"]]
+    assert resource.read_rows() == [
+        {"id": 1, "name": "english"},
+        {"id": 2, "name": "中国人"},
+    ]
+
+
+def test_table_schema_patch_schema():
+    patch_schema = {"fields": {"id": {"name": "new", "type": "string"}}}
+    resource = Resource(path="data/table.csv", patch_schema=patch_schema)
+    resource.infer()
+    assert resource.schema == {
+        "fields": [
+            {"name": "new", "type": "string"},
+            {"name": "name", "type": "string"},
+        ]
+    }
+    assert resource.read_header() == ["id", "name"]
+    assert resource.read_rows() == [
+        {"new": "1", "name": "english"},
+        {"new": "2", "name": "中国人"},
+    ]
+
+
+# Infer
+
+
+def test_resource_infer():
+    resource = Resource(path="data/table.csv")
+    resource.infer()
+    assert resource.metadata_valid
+    assert resource == {
+        "path": "data/table.csv",
+        "profile": "tabular-data-resource",
+        "name": "table",
+        "scheme": "file",
+        "format": "csv",
+        "hashing": "md5",
+        "encoding": "utf-8",
+        "compression": "no",
+        "compressionPath": "",
+        "control": {"newline": ""},
+        "dialect": {},
+        "query": {},
+        "schema": {
+            "fields": [
+                {"name": "id", "type": "integer"},
+                {"name": "name", "type": "string"},
+            ]
+        },
+        "stats": {
+            "hash": "6c2c61dd9b0e9c6876139a449ed87933",
+            "bytes": 30,
+            "fields": 2,
+            "rows": 2,
+        },
+    }
+
+
+def test_resource_infer_source_non_tabular():
+    resource = Resource(path="data/text.txt")
+    resource.infer()
+    assert resource.metadata_valid
+    assert resource == {
+        "name": "text",
+        "path": "data/text.txt",
+        "profile": "data-resource",
+        "scheme": "file",
+        "format": "txt",
+        "hashing": "md5",
+        "encoding": "utf-8",
+        "compression": "no",
+        "compressionPath": "",
+        "control": {},
+        "stats": {
+            "hash": "e1cbb0c3879af8347246f12c559a86b5",
+            "bytes": 5,
+            "fields": 0,
+            "rows": 0,
+        },
+    }
+
+
+def test_resource_infer_from_path():
+    resource = Resource()
+    resource.infer("data/table.csv")
+    assert resource.metadata_valid
+    assert resource.path == "data/table.csv"
+
+
+def test_resource_infer_not_slugified_name_issue_531():
+    resource = Resource()
+    resource.infer("data/Table With Data.csv")
+    assert resource.metadata_valid
+    assert resource.name == "table-with-data"
+
+
+def test_resource_infer_type():
+    resource = Resource(path="data/table.csv", infer_type="string")
+    resource.infer()
+    assert resource.schema == {
+        "fields": [
+            {"name": "id", "type": "string"},
+            {"name": "name", "type": "string"},
+        ]
+    }
+    assert resource.read_header() == ["id", "name"]
+    assert resource.read_rows() == [
+        {"id": "1", "name": "english"},
+        {"id": "2", "name": "中国人"},
+    ]
+
+
+def test_resource_infer_names():
+    resource = Resource(path="data/table.csv", infer_names=["new1", "new2"])
+    resource.infer()
+    assert resource.schema == {
+        "fields": [
+            {"name": "new1", "type": "integer"},
+            {"name": "new2", "type": "string"},
+        ]
+    }
+    assert resource.read_header() == ["id", "name"]
+    assert resource.read_rows() == [
+        {"new1": 1, "new2": "english"},
+        {"new1": 2, "new2": "中国人"},
+    ]
+
+
+def test_resource_infer_float_numbers():
+    data = [["number"], ["1.1"], ["2.2"], ["3.3"]]
+    resource = Resource(data=data, infer_float_numbers=True)
+    resource.infer()
+    assert resource.schema == {
+        "fields": [
+            {"name": "number", "type": "number", "floatNumber": True},
+        ]
+    }
+    assert resource.read_header() == ["number"]
+    assert resource.read_rows() == [
+        {"number": 1.1},
+        {"number": 2.2},
+        {"number": 3.3},
+    ]
+
+
 # Expand
 
 
@@ -538,79 +692,6 @@ def test_resource_write(tmpdir):
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
-
-
-# Infer
-
-
-def test_resource_infer():
-    resource = Resource(path="data/table.csv")
-    resource.infer()
-    assert resource.metadata_valid
-    assert resource == {
-        "path": "data/table.csv",
-        "profile": "tabular-data-resource",
-        "name": "table",
-        "scheme": "file",
-        "format": "csv",
-        "hashing": "md5",
-        "encoding": "utf-8",
-        "compression": "no",
-        "compressionPath": "",
-        "control": {"newline": ""},
-        "dialect": {},
-        "query": {},
-        "schema": {
-            "fields": [
-                {"name": "id", "type": "integer"},
-                {"name": "name", "type": "string"},
-            ]
-        },
-        "stats": {
-            "hash": "6c2c61dd9b0e9c6876139a449ed87933",
-            "bytes": 30,
-            "fields": 2,
-            "rows": 2,
-        },
-    }
-
-
-def test_resource_infer_source_non_tabular():
-    resource = Resource(path="data/text.txt")
-    resource.infer()
-    assert resource.metadata_valid
-    assert resource == {
-        "name": "text",
-        "path": "data/text.txt",
-        "profile": "data-resource",
-        "scheme": "file",
-        "format": "txt",
-        "hashing": "md5",
-        "encoding": "utf-8",
-        "compression": "no",
-        "compressionPath": "",
-        "control": {},
-        "stats": {
-            "hash": "e1cbb0c3879af8347246f12c559a86b5",
-            "bytes": 5,
-            "fields": 0,
-            "rows": 0,
-        },
-    }
-
-
-def test_resource_infer_from_path():
-    resource = Resource()
-    resource.infer("data/table.csv")
-    assert resource.metadata_valid
-    assert resource.path == "data/table.csv"
-
-
-def test_resource_infer_not_slugified_name_issue_531():
-    resource = Resource()
-    resource.infer("data/Table With Data.csv")
-    assert resource.metadata_valid
-    assert resource.name == "table-with-data"
 
 
 # Import/Export

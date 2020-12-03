@@ -23,21 +23,26 @@ class NumberType(Type):
     # Read
 
     def read_cell(self, cell):
+        Primary = Decimal
+        Secondary = float
+        if self.field.float_number:
+            Primary = float
+            Secondary = Decimal
         if isinstance(cell, str):
             if self.read_cell_processor:
                 cell = self.read_cell_processor(cell)
             try:
-                return Decimal(cell)
+                return Primary(cell)
             except Exception:
                 return None
-        elif isinstance(cell, Decimal):
+        elif isinstance(cell, Primary):
             return cell
         elif cell is True or cell is False:
             return None
         elif isinstance(cell, int):
             return cell
-        elif isinstance(cell, float):
-            return Decimal(str(cell))
+        elif isinstance(cell, Secondary):
+            return Primary(str(cell) if Primary is Decimal else cell)
         return None
 
     @Metadata.property(write=False)

@@ -26,6 +26,7 @@ def extract_table(
     infer_names=None,
     infer_volume=config.DEFAULT_INFER_VOLUME,
     infer_confidence=config.DEFAULT_INFER_CONFIDENCE,
+    infer_float_numbers=config.DEFAULT_FLOAT_NUMBER,
     infer_missing_values=config.DEFAULT_MISSING_VALUES,
     # Integrity
     onerror="ignore",
@@ -155,6 +156,8 @@ def extract_table(
         infer_names=infer_names,
         infer_volume=infer_volume,
         infer_confidence=infer_confidence,
+        infer_float_numbers=infer_float_numbers,
+        infer_missing_values=infer_missing_values,
         # Integrity
         onerror=onerror,
         lookup=lookup,
