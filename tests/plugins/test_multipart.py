@@ -107,8 +107,8 @@ def test_resource_source_multipart_infer():
     assert resource == {
         "path": ["data/chunk1.csv", "data/chunk2.csv"],
         "profile": "tabular-data-resource",
-        "name": "memory",
-        "scheme": "filelike",
+        "name": "chunk1",
+        "scheme": "multipart",
         "format": "csv",
         "hashing": "md5",
         "encoding": "utf-8",

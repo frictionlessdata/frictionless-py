@@ -11,8 +11,8 @@ import datetime
 import stringcase
 from slugify import slugify
 from inspect import signature
+from urllib.parse import urlparse
 from importlib import import_module
-from urllib.parse import urlparse, parse_qs
 from _thread import RLock  # type: ignore
 from . import config
 
@@ -184,6 +184,7 @@ def create_byte_stream(bytes):
 
 
 def is_remote_path(path):
+    path = path[0] if path and isinstance(path, list) else path
     return urlparse(path).scheme in config.REMOTE_SCHEMES
 
 
@@ -279,36 +280,6 @@ def detect_source_type(source):
         if source.endswith(("inquiry.json", "inquiry.yaml")):
             source_type = "inquiry"
     return source_type
-
-
-# TODO: move to Location/plugins
-def detect_source_scheme_and_format(source):
-    if hasattr(source, "read"):
-        return ("filelike", None)
-    if not isinstance(source, str):
-        return (None, "inline")
-    if "docs.google.com/spreadsheets" in source:
-        if "export" not in source and "pub" not in source:
-            return (None, "gsheet")
-        elif "csv" in source:
-            return ("https", "csv")
-    # Fix for sources like: db2+ibm_db://username:password@host:port/database
-    if re.search(r"\+.*://", source):
-        scheme, source = source.split("://", maxsplit=1)
-        parsed = urlparse(f"//{source}", scheme=scheme)
-    else:
-        parsed = urlparse(source)
-    scheme = parsed.scheme.lower()
-    if len(scheme) < 2:
-        scheme = config.DEFAULT_SCHEME
-    format = os.path.splitext(parsed.path or parsed.netloc)[1][1:].lower() or None
-    if format is None:
-        # Test if query string contains a "format=" parameter.
-        query_string = parse_qs(parsed.query)
-        query_string_format = query_string.get("format")
-        if query_string_format is not None and len(query_string_format) == 1:
-            format = query_string_format[0]
-    return (scheme, format)
 
 
 # Collections

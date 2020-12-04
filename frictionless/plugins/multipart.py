@@ -1,9 +1,7 @@
-import os
 from urllib.request import urlopen
 from ..loader import Loader
 from ..plugin import Plugin
 from ..control import Control
-from .. import helpers
 
 
 # Plugin
@@ -60,16 +58,21 @@ class MultipartLoader(Loader):
 
     """
 
-    pass
+    def read_byte_stream_create(self):
+        source = self.resource.source
+        remote = self.resource.remote
+        headless = self.resource.get("dialect", {}).get("header") is False
+        byte_stream = MultipartByteStream(source, remote=remote, headless=headless)
+        return byte_stream
 
 
 # Internal
 
 
 class MultipartByteStream:
-    def __init__(self, path, *, basepath, headless):
+    def __init__(self, path, *, remote, headless):
         self.__path = path
-        self.__basepath = basepath
+        self.__remote = remote
         self.__headless = headless
         self.__line_stream = self.read_line_stream()
 
@@ -84,11 +87,7 @@ class MultipartByteStream:
 
     @property
     def remote(self):
-        if not self.__path:
-            return False
-        if self.__basepath:
-            return helpers.is_remote_path(self.__basepath)
-        return helpers.is_remote_path(self.__path[0])
+        return self.__remote
 
     @property
     def closed(self):
@@ -130,16 +129,9 @@ class MultipartByteStream:
     def read_line_stream(self):
         streams = []
         if self.remote:
-            paths = []
-            for path in self.__path:
-                path = path
-                if not helpers.is_remote_path(path):
-                    path = os.path.join(self.__basepath, path)
-                paths.append(path)
-            streams = (urlopen(path) for path in paths)
+            streams = (urlopen(path) for path in self.path)
         else:
-            process = lambda path: open(os.path.join(self.__basepath, path), "rb")
-            streams = (process(path) for path in self.__path)
+            streams = (open(path, "rb") for path in self.__path)
         for stream_number, stream in enumerate(streams, start=1):
             for line_number, line in enumerate(stream, start=1):
                 if not line.endswith(b"\n"):

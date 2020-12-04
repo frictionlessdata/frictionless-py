@@ -1,11 +1,11 @@
 import os
-from urllib.request import urlopen
+import re
+from urllib.parse import urlparse, parse_qs
 from . import helpers
 from . import config
 
 
 # TODO: Normalize detection functions
-# TODO: Merge into Resource when MultipartSource is moved?
 class Location:
     def __init__(self, resource):
 
@@ -18,15 +18,16 @@ class Location:
             if not helpers.is_remote_path(source):
                 source = os.path.join(resource.basepath, resource.path)
         elif isinstance(resource.path, list):
-            basepath = resource.basepath
-            headless = resource.get("dialect", {}).get("header") is False
-            source = MultipartSource(resource.path, basepath=basepath, headless=headless)
+            source = []
+            for path in resource.path:
+                if not helpers.is_remote_path(resource.path[0]):
+                    source.append(os.path.join(resource.basepath, path))
         elif resource.path:
             source = resource.path
 
         # Detect scheme/format/compression/compression_path
         name = helpers.detect_name(source)
-        detect = helpers.detect_source_scheme_and_format(source)
+        detect = detect_source_scheme_and_format(source)
         compression = config.DEFAULT_COMPRESSION
         compression_path = config.DEFAULT_COMPRESSION_PATH
         if detect[1] in config.COMPRESSION_FORMATS:
@@ -34,7 +35,7 @@ class Location:
             new_source = source[: -len(detect[1]) - 1]
             if resource.get("compression_path"):
                 new_source = os.path.join(new_source, resource.get("compression_path"))
-            detect = helpers.detect_source_scheme_and_format(new_source)
+            detect = detect_source_scheme_and_format(new_source)
         # TODO: review; do we need defaults?
         scheme = detect[0] or config.DEFAULT_SCHEME
         # TODO: review; do we need defaults?
@@ -76,105 +77,58 @@ class Location:
 
     @property
     def inline(self):
+        # TODO: rebase on self.__format == 'inline'
         if self.multipart:
             return False
         return not isinstance(self.source, str)
 
     @property
     def multipart(self):
-        return isinstance(self.source, MultipartSource)
+        # TODO: rebase on self.__scheme == 'multipart'
+        return (
+            isinstance(self.source, list)
+            and self.source
+            and isinstance(self.source[0], str)
+        )
 
     @property
     def remote(self):
         if self.inline:
             return False
-        if self.multipart:
-            return self.source.remote
         return helpers.is_remote_path(self.source)
 
 
 # Internal
 
 
-# TODO: move it to Table/LocalLoader?
-class MultipartSource:
-    def __init__(self, path, *, basepath, headless):
-        self.__path = path
-        self.__basepath = basepath
-        self.__headless = headless
-        self.__line_stream = self.read_line_stream()
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, *args, **kwargs):
-        pass
-
-    def __iter__(self):
-        return self.__line_stream
-
-    @property
-    def remote(self):
-        if not self.__path:
-            return False
-        if self.__basepath:
-            return helpers.is_remote_path(self.__basepath)
-        return helpers.is_remote_path(self.__path[0])
-
-    @property
-    def closed(self):
-        return False
-
-    def readable(self):
-        return True
-
-    def seekable(self):
-        return True
-
-    def writable(self):
-        return False
-
-    def close(self):
-        pass
-
-    def flush(self):
-        pass
-
-    def read1(self, size):
-        return self.read(size)
-
-    def seek(self, offset):
-        assert offset == 0
-        self.__line_stream = self.read_line_stream()
-
-    def read(self, size):
-        res = b""
-        while True:
-            try:
-                res += next(self.__line_stream)
-            except StopIteration:
-                break
-            if len(res) > size:
-                break
-        return res
-
-    def read_line_stream(self):
-        streams = []
-        if self.remote:
-            paths = []
-            for path in self.__path:
-                path = path
-                if not helpers.is_remote_path(path):
-                    path = os.path.join(self.__basepath, path)
-                paths.append(path)
-            streams = (urlopen(path) for path in paths)
-        else:
-            process = lambda path: open(os.path.join(self.__basepath, path), "rb")
-            streams = (process(path) for path in self.__path)
-        for stream_number, stream in enumerate(streams, start=1):
-            for line_number, line in enumerate(stream, start=1):
-                if not line.endswith(b"\n"):
-                    line += b"\n"
-                if not self.__headless and stream_number > 1 and line_number == 1:
-                    continue
-                yield line
+# TODO: move to Location/plugins
+def detect_source_scheme_and_format(source):
+    if isinstance(source, list) and source and isinstance(source[0], str):
+        scheme, format = detect_source_scheme_and_format(source[0])
+        return ("multipart", format)
+    if hasattr(source, "read"):
+        return ("filelike", None)
+    if not isinstance(source, str):
+        return (None, "inline")
+    if "docs.google.com/spreadsheets" in source:
+        if "export" not in source and "pub" not in source:
+            return (None, "gsheet")
+        elif "csv" in source:
+            return ("https", "csv")
+    # Fix for sources like: db2+ibm_db://username:password@host:port/database
+    if re.search(r"\+.*://", source):
+        scheme, source = source.split("://", maxsplit=1)
+        parsed = urlparse(f"//{source}", scheme=scheme)
+    else:
+        parsed = urlparse(source)
+    scheme = parsed.scheme.lower()
+    if len(scheme) < 2:
+        scheme = config.DEFAULT_SCHEME
+    format = os.path.splitext(parsed.path or parsed.netloc)[1][1:].lower() or None
+    if format is None:
+        # Test if query string contains a "format=" parameter.
+        query_string = parse_qs(parsed.query)
+        query_string_format = query_string.get("format")
+        if query_string_format is not None and len(query_string_format) == 1:
+            format = query_string_format[0]
+    return (scheme, format)
