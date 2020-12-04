@@ -19,6 +19,15 @@ def test_table_multipart():
         ]
 
 
+def test_table_multipart_with_compression():
+    with Table(["data/chunk1.csv.zip", "data/chunk2.csv.zip"]) as table:
+        assert table.header == ["id", "name"]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
+
+
 # Resource
 
 
