@@ -50,7 +50,7 @@ EXTRAS_REQUIRE = {
     "json": ["ijson>=3.0", "jsonlines>=1.2"],
     "ods": ["ezodf>=0.3"],
     "pandas": ["pandas>=1.0"],
-    "server": ["gunicorn>=20.0", "fastapi>=0.62"],
+    "server": ["gunicorn>=20.0", "flask>=1.1"],
     "spss": ["savReaderWriter>=3.0"],
     "sql": ["sqlalchemy>=1.3"],
     "tsv": ["linear-tsv>=1.0"],
