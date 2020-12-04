@@ -9,9 +9,6 @@ from .. import helpers
 from .. import config
 
 
-# TODO: Use FastAPI - https://github.com/tiangolo/fastapi
-
-
 # Plugin
 
 
@@ -50,7 +47,6 @@ class ApiServer(Server):
 # Internal
 
 
-# NOTE: it's a POC: not secure and with no error handling
 def create_api():
     flask = helpers.import_from_plugin("flask", plugin="server")
 
