@@ -5,7 +5,7 @@ from . import helpers
 from . import config
 
 
-# TODO: Normalize detection functions
+# TODO: Normalize detection functions; merge with Resource?
 class Location:
     def __init__(self, resource):
 
@@ -32,10 +32,17 @@ class Location:
         compression_path = config.DEFAULT_COMPRESSION_PATH
         if detect[1] in config.COMPRESSION_FORMATS:
             compression = detect[1]
-            new_source = source[: -len(detect[1]) - 1]
-            if resource.get("compression_path"):
-                new_source = os.path.join(new_source, resource.get("compression_path"))
-            detect = detect_source_scheme_and_format(new_source)
+            if isinstance(source, list):
+                new_source = []
+                for path in source:
+                    new_source.append(path[: -len(detect[1]) - 1])
+                detect = detect_source_scheme_and_format(new_source)
+            else:
+                new_source = source[: -len(detect[1]) - 1]
+                compression_path = resource.get("compression_path")
+                if compression_path:
+                    new_source = os.path.join(new_source, compression_path)
+                detect = detect_source_scheme_and_format(new_source)
         # TODO: review; do we need defaults?
         scheme = detect[0] or config.DEFAULT_SCHEME
         # TODO: review; do we need defaults?
