@@ -2,6 +2,10 @@
 
 Here described only the breaking and most significant changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/frictionless-py/commits/master).
 
+## v3.40
+
+- Implemented a standalone multipart loader (#573)
+
 ## v3.39
 
 - Fixed Header not being an original one (#572)
