@@ -1,7 +1,8 @@
-from urllib.request import urlopen
-from ..loader import Loader
-from ..plugin import Plugin
+from ..resource import Resource
 from ..control import Control
+from ..plugin import Plugin
+from ..loader import Loader
+from ..system import system
 
 
 # Plugin
@@ -127,15 +128,12 @@ class MultipartByteStream:
         return res
 
     def read_line_stream(self):
-        streams = []
-        if self.remote:
-            streams = (urlopen(path) for path in self.path)
-        else:
-            streams = (open(path, "rb") for path in self.__path)
-        for stream_number, stream in enumerate(streams, start=1):
-            for line_number, line in enumerate(stream, start=1):
-                if not line.endswith(b"\n"):
-                    line += b"\n"
-                if not self.__headless and stream_number > 1 and line_number == 1:
-                    continue
-                yield line
+        for number, path in enumerate(self.__path, start=1):
+            with system.create_loader(Resource(path=path)) as loader:
+                byte_stream = loader.read_byte_stream()
+                for line_number, line in enumerate(byte_stream, start=1):
+                    if not line.endswith(b"\n"):
+                        line += b"\n"
+                    if not self.__headless and number > 1 and line_number == 1:
+                        continue
+                    yield line

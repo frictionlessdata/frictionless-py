@@ -31,18 +31,17 @@ class Location:
         compression = config.DEFAULT_COMPRESSION
         compression_path = config.DEFAULT_COMPRESSION_PATH
         if detect[1] in config.COMPRESSION_FORMATS:
-            compression = detect[1]
             if isinstance(source, list):
-                new_source = []
+                newsource = []
                 for path in source:
-                    new_source.append(path[: -len(detect[1]) - 1])
-                detect = detect_source_scheme_and_format(new_source)
+                    newsource.append(path[: -len(detect[1]) - 1])
+                detect = detect_source_scheme_and_format(newsource)
             else:
-                new_source = source[: -len(detect[1]) - 1]
-                compression_path = resource.get("compression_path")
-                if compression_path:
-                    new_source = os.path.join(new_source, compression_path)
-                detect = detect_source_scheme_and_format(new_source)
+                compression = detect[1]
+                newsource = source[: -len(detect[1]) - 1]
+                if resource.get("compressionPath"):
+                    newsource = os.path.join(newsource, resource.get("compressionPath"))
+                detect = detect_source_scheme_and_format(newsource)
         # TODO: review; do we need defaults?
         scheme = detect[0] or config.DEFAULT_SCHEME
         # TODO: review; do we need defaults?

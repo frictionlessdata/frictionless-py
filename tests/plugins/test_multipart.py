@@ -19,8 +19,10 @@ def test_table_multipart():
         ]
 
 
-def test_table_multipart_with_compression():
+def test_table_multipart_with_compressed_parts():
     with Table(["data/chunk1.csv.zip", "data/chunk2.csv.zip"]) as table:
+        assert table.compression == "no"
+        assert table.compression_path == ""
         assert table.header == ["id", "name"]
         assert table.read_rows() == [
             {"id": 1, "name": "english"},
@@ -87,7 +89,7 @@ def test_resource_source_multipart_error_bad_path():
     with pytest.raises(FrictionlessException) as excinfo:
         resource.read_rows()
     error = excinfo.value.error
-    assert error.code == "source-error"
+    assert error.code == "scheme-error"
     assert error.note == "[Errno 2] No such file or directory: 'chunk1.csv'"
 
 
