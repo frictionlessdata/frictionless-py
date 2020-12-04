@@ -1,10 +1,22 @@
 import os
 import pytest
-from frictionless import Resource, validate
+from frictionless import Table, Resource, validate
 from frictionless import FrictionlessException
 
 
 BASE_URL = "https://raw.githubusercontent.com/frictionlessdata/datapackage-py/master/%s"
+
+
+# Table
+
+
+def test_table_multipart():
+    with Table(["data/chunk1.csv", "data/chunk2.csv"]) as table:
+        assert table.header == ["id", "name"]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 # Resource
