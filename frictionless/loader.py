@@ -136,7 +136,7 @@ class Loader:
         Returns:
             io.ByteStream: resource byte stream
         """
-        if not self.resource.stats:
+        if not self.resource.get("stats"):
             return byte_stream
         return ByteStreamWithStatsHandling(byte_stream, resource=self.resource)
 

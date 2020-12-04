@@ -53,12 +53,6 @@ def test_validate_invalid_table():
     ]
 
 
-def test_validate_multipart_resource():
-    report = validate({"path": ["data/chunk1.csv", "data/chunk2.csv"]})
-    assert report.valid
-    assert report.table.stats["rows"] == 2
-
-
 # Integrity
 
 
