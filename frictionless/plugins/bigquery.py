@@ -155,7 +155,7 @@ class BigqueryParser(Parser):
 
     # Write
 
-    def write(self, read_row_stream):
+    def write_row_stream_record(self, read_row_stream):
         dialect = self.resource.dialect
         schema = self.resource.schema
         storage = BigqueryStorage(
@@ -165,6 +165,7 @@ class BigqueryParser(Parser):
         )
         resource = Resource(name=dialect.table, data=read_row_stream, schema=schema)
         storage.write_resource(resource, force=True)
+        return self.resource.source
 
 
 # Storage

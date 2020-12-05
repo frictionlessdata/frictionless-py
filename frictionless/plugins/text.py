@@ -1,7 +1,9 @@
 import io
+from ..exception import FrictionlessException
+from ..control import Control
 from ..plugin import Plugin
 from ..loader import Loader
-from ..control import Control
+from .. import errors
 from .. import config
 
 
@@ -70,3 +72,10 @@ class TextLoader(Loader):
         byte_stream.write(source.encode(config.DEFAULT_ENCODING))
         byte_stream.seek(0)
         return byte_stream
+
+    # Write
+
+    def write_byte_stream_record(self, byte_stream):
+        # TODO: review
+        error = errors.Error(note="Writing to Text is not supported")
+        raise FrictionlessException(error)

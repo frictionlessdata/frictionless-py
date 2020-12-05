@@ -1,7 +1,9 @@
 import io
+import os
 import gzip
 import codecs
 import shutil
+import atexit
 import hashlib
 import zipfile
 import tempfile
@@ -125,7 +127,7 @@ class Loader:
         Returns:
             io.ByteStream: resource byte stream
         """
-        raise NotImplementedError
+        raise NotImplementedError()
 
     def read_byte_stream_infer_stats(self, byte_stream):
         """Infer byte stream stats
@@ -234,6 +236,38 @@ class Loader:
         return io.TextIOWrapper(
             byte_stream, self.resource.encoding, newline=self.resource.control.newline
         )
+
+    # Write
+
+    def write_byte_stream(self, path):
+        """Write from a temporary file
+
+        Parameters:
+            path (str): path to a temporary file
+
+        Returns:
+            any: result of writing e.g. resulting path
+        """
+        byte_stream = self.write_byte_stream_create(path)
+        result = self.write_byte_stream_store(byte_stream)
+        return result
+
+    def write_byte_stream_create(self, path):
+        """Create byte stream for writing
+
+        Parameters:
+            path (str): path to a temporary file
+
+        Returns:
+            io.ByteStream: byte stream
+        """
+        atexit(os.remove, path)
+        file = open(path, "rb")
+        return file
+
+    def write_byte_stream_store(self, byte_stream):
+        """Store byte stream"""
+        raise NotImplementedError()
 
 
 # Internal

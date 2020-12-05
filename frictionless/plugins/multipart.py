@@ -1,8 +1,10 @@
+from ..exception import FrictionlessException
 from ..resource import Resource
 from ..control import Control
 from ..plugin import Plugin
 from ..loader import Loader
 from ..system import system
+from .. import errors
 
 
 # Plugin
@@ -59,12 +61,21 @@ class MultipartLoader(Loader):
 
     """
 
+    # Read
+
     def read_byte_stream_create(self):
         source = self.resource.source
         remote = self.resource.remote
         headless = self.resource.get("dialect", {}).get("header") is False
         byte_stream = MultipartByteStream(source, remote=remote, headless=headless)
         return byte_stream
+
+    # Write
+
+    # TODO: review
+    def write_byte_stream_record(self, byte_stream):
+        error = errors.Error(note="Writing to Multipart Target is not supported")
+        raise FrictionlessException(error)
 
 
 # Internal

@@ -2,6 +2,7 @@ import io
 from ..plugin import Plugin
 from ..loader import Loader
 from ..control import Control
+from .. import helpers
 
 
 # Plugin
@@ -67,3 +68,8 @@ class LocalLoader(Loader):
             source = source.replace(scheme, "", 1)
         byte_stream = io.open(source, "rb")
         return byte_stream
+
+    # Write
+
+    def write_byte_stream(self, path):
+        helpers.move_file(path, self.resource.source)

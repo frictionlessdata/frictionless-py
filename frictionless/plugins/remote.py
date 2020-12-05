@@ -1,9 +1,11 @@
 import io
 import requests.utils
+from ..exception import FrictionlessException
+from ..metadata import Metadata
+from ..control import Control
 from ..plugin import Plugin
 from ..loader import Loader
-from ..control import Control
-from ..metadata import Metadata
+from .. import errors
 from .. import config
 
 
@@ -142,6 +144,12 @@ class RemoteLoader(Loader):
             buffer.seek(0)
             byte_stream = buffer
         return byte_stream
+
+    # Write
+
+    def write_byte_stream_record(self, byte_stream):
+        error = errors.Error(note="Writing to Remote is not supported")
+        raise FrictionlessException(error)
 
 
 # Internal

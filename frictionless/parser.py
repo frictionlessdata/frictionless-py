@@ -121,7 +121,7 @@ class Parser:
         Returns:
             gen<any[][]>: data stream
         """
-        raise NotImplementedError
+        raise NotImplementedError()
 
     def read_data_stream_handle_errors(self, data_stream):
         """Wrap data stream into error handler
@@ -136,13 +136,21 @@ class Parser:
 
     # Write
 
-    def write(self, read_row_stream):
+    def write_row_stream(self, read_row_stream):
         """Write row stream into the resource
 
         Parameters:
             read_row_stream (gen<Row[]>): row stream factory
         """
-        raise NotImplementedError
+        read_row_stream = self.write_row_stream_create(read_row_stream)
+        result = self.write_row_stream_record(read_row_stream)
+        return result
+
+    def write_row_stream_create(self, read_row_stream):
+        return read_row_stream
+
+    def write_row_stream_record(self, read_row_stream):
+        raise NotImplementedError()
 
 
 # Internal

@@ -67,3 +67,8 @@ class FilelikeLoader(Loader):
             error = errors.SchemeError(note="only byte streams are supported")
             raise FrictionlessException(error)
         return source
+
+    # Write
+
+    def write_byte_stream_record(self, byte_stream):
+        return byte_stream
