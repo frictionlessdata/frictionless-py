@@ -1,12 +1,10 @@
 import io
 import os
 from urllib.parse import urlparse
-from ..exception import FrictionlessException
 from ..control import Control
 from ..plugin import Plugin
 from ..loader import Loader
 from .. import helpers
-from .. import errors
 
 
 # Plugin
@@ -110,8 +108,12 @@ class S3Loader(Loader):
     # Write
 
     def write_byte_stream_save(self, byte_stream):
-        error = errors.SchemeError(note="Writing to S3 is not supported")
-        raise FrictionlessException(error)
+        boto3 = helpers.import_from_plugin("boto3", plugin="aws")
+        control = self.resource.control
+        parts = urlparse(self.resource.source, allow_fragments=False)
+        client = boto3.resource("s3", endpoint_url=control.endpoint_url)
+        object = client.Object(bucket_name=parts.netloc, key=parts.path[1:])
+        object.put(Body=byte_stream)
 
 
 # Internal
