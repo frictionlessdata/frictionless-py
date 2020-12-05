@@ -119,7 +119,7 @@ def detect_source_scheme_and_format(source):
         return (None, "inline")
     if "docs.google.com/spreadsheets" in source:
         if "export" not in source and "pub" not in source:
-            return (None, "gsheet")
+            return (None, "gsheets")
         elif "csv" in source:
             return ("https", "csv")
     # Fix for sources like: db2+ibm_db://username:password@host:port/database

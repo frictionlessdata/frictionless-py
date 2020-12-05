@@ -18,7 +18,7 @@ format:
 	black $(PACKAGE) tests
 
 install:
-	pip install --upgrade -e .[aws,bigquery,ckan,dataflows,excel,gsheet,html,json,ods,pandas,server,spss,sql,dev]
+	pip install --upgrade -e .[aws,bigquery,ckan,dataflows,excel,gsheets,html,json,ods,pandas,server,spss,sql,dev]
 	test -f '.git/hooks/pre-commit' || cp .gitverify .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
 
 lint:

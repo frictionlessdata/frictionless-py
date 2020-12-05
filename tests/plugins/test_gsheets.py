@@ -6,7 +6,7 @@ from frictionless import Table, FrictionlessException
 
 
 @pytest.mark.ci
-def test_table_gsheet():
+def test_table_gsheets():
     source = "https://docs.google.com/spreadsheets/d/1mHIWnDvW9cALRMq9OdNfRwjAthCUFUOACPp0Lkyl7b4/edit?usp=sharing"
     with Table(source) as table:
         assert table.header == ["id", "name"]
@@ -14,7 +14,7 @@ def test_table_gsheet():
 
 
 @pytest.mark.ci
-def test_table_gsheet_with_gid():
+def test_table_gsheets_with_gid():
     source = "https://docs.google.com/spreadsheets/d/1mHIWnDvW9cALRMq9OdNfRwjAthCUFUOACPp0Lkyl7b4/edit#gid=960698813"
     with Table(source) as table:
         assert table.header == ["id", "name"]
@@ -22,7 +22,7 @@ def test_table_gsheet_with_gid():
 
 
 @pytest.mark.ci
-def test_table_gsheet_bad_url():
+def test_table_gsheets_bad_url():
     table = Table("https://docs.google.com/spreadsheets/d/bad")
     with pytest.raises(FrictionlessException) as excinfo:
         table.open()

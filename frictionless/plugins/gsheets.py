@@ -11,33 +11,33 @@ from .. import errors
 # Plugin
 
 
-class GsheetPlugin(Plugin):
+class GsheetsPlugin(Plugin):
     """Plugin for Google Sheets
 
     API      | Usage
     -------- | --------
-    Public   | `from frictionless.plugins.gsheet import GsheetPlugin`
+    Public   | `from frictionless.plugins.gsheets import GsheetsPlugin`
 
     """
 
     def create_dialect(self, resource, *, descriptor):
-        if resource.format == "gsheet":
-            return GsheetDialect(descriptor)
+        if resource.format == "gsheets":
+            return GsheetsDialect(descriptor)
 
     def create_parser(self, resource):
-        if resource.format == "gsheet":
-            return GsheetParser(resource)
+        if resource.format == "gsheets":
+            return GsheetsParser(resource)
 
 
 # Dialect
 
 
-class GsheetDialect(Dialect):
-    """Gsheet dialect representation
+class GsheetsDialect(Dialect):
+    """Gsheets dialect representation
 
     API      | Usage
     -------- | --------
-    Public   | `from frictionless.plugins.gsheet import GsheetDialect`
+    Public   | `from frictionless.plugins.gsheets import GsheetsDialect`
 
     Parameters:
         descriptor? (str|dict): descriptor
@@ -53,12 +53,12 @@ class GsheetDialect(Dialect):
 # Parser
 
 
-class GsheetParser(Parser):
+class GsheetsParser(Parser):
     """Google Sheets parser implementation.
 
     API      | Usage
     -------- | --------
-    Public   | `from frictionless.plugins.gsheet import GsheetParser`
+    Public   | `from frictionless.plugins.gsheets import GsheetsParser`
 
     """
 
