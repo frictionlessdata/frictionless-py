@@ -25,7 +25,15 @@ For reading from a private bucket you need to setup AWS creadentials as it's des
 
 ## Writing to AWS
 
-> it's not yet supported
+The same is actual for writing:
+
+```py
+from frictionless import Resource
+
+resource = Resource(path='data/table.csv')
+resource.write('s3://bucket/table.csv')
+```
+
 
 ## Configuring AWS
 
