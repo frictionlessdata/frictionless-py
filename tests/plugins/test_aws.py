@@ -102,6 +102,21 @@ def test_table_s3_problem_with_spaces_issue_501(bucket_name):
         assert table.read_data() == [["1", "english"], ["2", "中国人"]]
 
 
+@mock_s3
+def test_table_s3_write(bucket_name):
+    client = boto3.resource("s3", region_name="us-east-1")
+    client.create_bucket(Bucket=bucket_name, ACL="public-read")
+
+    # Write
+    with Table("data/table.csv") as table:
+        table.write("s3://%s/table.csv" % bucket_name)
+
+    # Read
+    with Table("s3://%s/table.csv" % bucket_name) as table:
+        assert table.header == ["id", "name"]
+        assert table.read_data() == [["1", "english"], ["2", "中国人"]]
+
+
 # Fixtures
 
 
