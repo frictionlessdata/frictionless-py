@@ -260,7 +260,7 @@ class CsvParser(Parser):
 
     # Write
 
-    def write_row_stream_record(self, read_row_stream):
+    def write_row_stream_save(self, read_row_stream):
         options = {}
         for name in vars(self.resource.dialect.to_python()):
             value = getattr(self.resource.dialect, name, None)

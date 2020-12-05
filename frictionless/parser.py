@@ -143,13 +143,13 @@ class Parser:
             read_row_stream (gen<Row[]>): row stream factory
         """
         read_row_stream = self.write_row_stream_create(read_row_stream)
-        result = self.write_row_stream_record(read_row_stream)
+        result = self.write_row_stream_save(read_row_stream)
         return result
 
     def write_row_stream_create(self, read_row_stream):
         return read_row_stream
 
-    def write_row_stream_record(self, read_row_stream):
+    def write_row_stream_save(self, read_row_stream):
         raise NotImplementedError()
 
 

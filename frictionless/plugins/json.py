@@ -172,7 +172,7 @@ class JsonParser(Parser):
 
     # Write
 
-    def write_row_stream_record(self, read_row_stream):
+    def write_row_stream_save(self, read_row_stream):
         data = []
         dialect = self.resource.dialect
         for row in read_row_stream():
@@ -225,7 +225,7 @@ class JsonlParser(Parser):
 
     # Write
 
-    def write_row_stream_record(self, read_row_stream):
+    def write_row_stream_save(self, read_row_stream):
         jsonlines = helpers.import_from_plugin("jsonlines", plugin="json")
         dialect = self.resource.dialect
         with tempfile.NamedTemporaryFile(delete=False) as file:

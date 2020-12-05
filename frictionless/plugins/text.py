@@ -75,7 +75,7 @@ class TextLoader(Loader):
 
     # Write
 
-    def write_byte_stream_record(self, byte_stream):
+    def write_byte_stream_save(self, byte_stream):
         # TODO: review
         error = errors.Error(note="Writing to Text is not supported")
         raise FrictionlessException(error)

@@ -249,7 +249,7 @@ class Loader:
             any: result of writing e.g. resulting path
         """
         byte_stream = self.write_byte_stream_create(path)
-        result = self.write_byte_stream_record(byte_stream)
+        result = self.write_byte_stream_save(byte_stream)
         return result
 
     def write_byte_stream_create(self, path):
@@ -265,7 +265,7 @@ class Loader:
         file = open(path, "rb")
         return file
 
-    def write_byte_stream_record(self, byte_stream):
+    def write_byte_stream_save(self, byte_stream):
         """Store byte stream"""
         raise NotImplementedError()
 

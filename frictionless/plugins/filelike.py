@@ -70,5 +70,5 @@ class FilelikeLoader(Loader):
 
     # Write
 
-    def write_byte_stream_record(self, byte_stream):
+    def write_byte_stream_save(self, byte_stream):
         return byte_stream

@@ -263,7 +263,7 @@ class XlsxParser(Parser):
 
     # Write
 
-    def write_row_stream_record(self, read_row_stream):
+    def write_row_stream_save(self, read_row_stream):
         openpyxl = helpers.import_from_plugin("openpyxl", plugin="excel")
         dialect = self.resource.dialect
         helpers.ensure_dir(self.resource.source)
@@ -375,7 +375,7 @@ class XlsParser(Parser):
 
     # Write
 
-    def write_row_stream_record(self, read_row_stream):
+    def write_row_stream_save(self, read_row_stream):
         xlwt = helpers.import_from_plugin("xlwt", plugin="excel")
         dialect = self.resource.dialect
         helpers.ensure_dir(self.resource.source)

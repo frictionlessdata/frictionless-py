@@ -141,7 +141,7 @@ class CkanParser(Parser):
 
     # Write
 
-    def write_row_stream_record(self, read_row_stream):
+    def write_row_stream_save(self, read_row_stream):
         dialect = self.resource.dialect
         schema = self.resource.schema
         storage = CkanStorage(
