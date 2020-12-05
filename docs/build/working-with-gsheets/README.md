@@ -26,8 +26,23 @@ print(resource.read_rows())
 
 ## Writing to Google Sheets
 
-> Not supported
+The same is actual for writing:
+
+```py
+from frictionless import Resource
+
+resource = Resource(path='data/table.csv')
+resource.write("https://docs.google.com/spreadsheets/d/<id>/edit", dialect={"credentials": ".google.json"})
+```
+
 
 ## Configuring Google Sheets
 
-> Not supported
+There is a dialect to configure how Frictionless read and write files in this format. For example:
+
+```py
+from frictionless import Resource
+
+resource = Resource(path='data/table.csv')
+resource.write("https://docs.google.com/spreadsheets/d/<id>/edit", dialect={"credentials": ".google.json"})
+```
