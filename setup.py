@@ -45,7 +45,7 @@ EXTRAS_REQUIRE = {
     "ckan": ["ckanapi>=4.3"],
     "dataflows": ["dataflows>=0.1"],
     "excel": ["openpyxl>=3.0", "xlrd>=1.2", "xlwt>=1.2"],
-    "gsheet": ["google-api-python-client>=1.5"],
+    "gsheets": ["pygsheets>=2.0"],
     "html": ["pyquery>=1.4"],
     "json": ["ijson>=3.0", "jsonlines>=1.2"],
     "ods": ["ezodf>=0.3"],
@@ -53,7 +53,6 @@ EXTRAS_REQUIRE = {
     "server": ["gunicorn>=20.0", "flask>=1.1"],
     "spss": ["savReaderWriter>=3.0"],
     "sql": ["sqlalchemy>=1.3"],
-    "tsv": ["linear-tsv>=1.0"],
     "dev": TESTS_REQUIRE,
 }
 INSTALL_REQUIRES = [

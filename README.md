@@ -79,7 +79,7 @@ $ frictionless validate data/invalid.csv
 - [Working with DataFlows](https://frictionlessdata.io/tooling/python/working-with-dataflows/)
 - [Working with Excel](https://frictionlessdata.io/tooling/python/working-with-excel/)
 - [Working with Filelike](https://frictionlessdata.io/tooling/python/working-with-filelike/)
-- [Working with GSheet](https://frictionlessdata.io/tooling/python/working-with-gsheet/)
+- [Working with GSheets](https://frictionlessdata.io/tooling/python/working-with-gsheets/)
 - [Working with HTML](https://frictionlessdata.io/tooling/python/working-with-html/)
 - [Working with Inline](https://frictionlessdata.io/tooling/python/working-with-inline/)
 - [Working with JSON](https://frictionlessdata.io/tooling/python/working-with-json/)
