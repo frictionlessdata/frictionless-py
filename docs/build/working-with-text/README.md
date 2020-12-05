@@ -23,12 +23,19 @@ print(resource.read_rows())
 
 The same is actual for writing Text Data:
 
-```py
+
+```python
 from frictionless import Resource
 
 resource = Resource(data=[['id', 'name'], [1, 'english'], [2, 'german']])
 resource.write(scheme='text', format='csv')
 ```
+
+
+
+
+    'id,name\r\n1,english\r\n2,german\r\n'
+
 
 
 ## Configuring Text Data

@@ -148,7 +148,7 @@ class RemoteLoader(Loader):
     # Write
 
     def write_byte_stream_save(self, byte_stream):
-        error = errors.Error(note="Writing to Remote is not supported")
+        error = errors.SchemeError(note="Writing to Remote Data is not supported")
         raise FrictionlessException(error)
 
 

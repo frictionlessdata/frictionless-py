@@ -72,9 +72,8 @@ class MultipartLoader(Loader):
 
     # Write
 
-    # TODO: review
     def write_byte_stream_save(self, byte_stream):
-        error = errors.Error(note="Writing to Multipart Target is not supported")
+        error = errors.SchemeError(note="Writing to Multipart Data is not supported")
         raise FrictionlessException(error)
 
 
