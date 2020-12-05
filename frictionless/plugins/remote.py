@@ -161,6 +161,13 @@ class RemoteByteStream:
         self.__session = session
         self.__timeout = timeout
 
+    def __iter__(self):
+        while True:
+            bytes = self.read(8192)
+            if not bytes:
+                break
+            yield from bytes.splitlines(keepends=True)
+
     def readable(self):
         return True
 

@@ -20,7 +20,7 @@ class Location:
         elif isinstance(resource.path, list):
             source = []
             for path in resource.path:
-                if not helpers.is_remote_path(resource.path[0]):
+                if not helpers.is_remote_path(path):
                     path = os.path.join(resource.basepath, path)
                 source.append(path)
         elif resource.path:
