@@ -4,7 +4,9 @@ from ..parser import Parser
 from ..system import system
 from ..dialect import Dialect
 from ..resource import Resource
+from ..metadata import Metadata
 from ..exception import FrictionlessException
+from .. import helpers
 from .. import errors
 
 
@@ -47,7 +49,46 @@ class GsheetsDialect(Dialect):
 
     """
 
-    pass
+    def __init__(
+        self,
+        descriptor=None,
+        *,
+        credentials=None,
+        header=None,
+        header_rows=None,
+        header_join=None,
+        header_case=None,
+    ):
+        self.setinitial("credentials", credentials)
+        super().__init__(
+            descriptor=descriptor,
+            header=header,
+            header_rows=header_rows,
+            header_join=header_join,
+            header_case=header_case,
+        )
+
+    @Metadata.property
+    def credentials(self):
+        """
+        Returns:
+            str: credentials
+        """
+        return self.get("credentials")
+
+    # Metadata
+
+    metadata_profile = {  # type: ignore
+        "type": "object",
+        "additionalProperties": False,
+        "properties": {
+            "credentials": {"type": "string"},
+            "header": {"type": "boolean"},
+            "headerRows": {"type": "array", "items": {"type": "number"}},
+            "headerJoin": {"type": "string"},
+            "headerCase": {"type": "boolean"},
+        },
+    }
 
 
 # Parser
@@ -84,5 +125,21 @@ class GsheetsParser(Parser):
     # Write
 
     def write_row_stream_save(self, read_row_stream):
-        error = errors.FormatError(note="Writing to Google Sheets is not supported")
-        raise FrictionlessException(error)
+        pygsheets = helpers.import_from_plugin("pygsheets", plugin="gsheets")
+        source = self.resource.source
+        match = re.search(r".*/d/(?P<key>[^/]+)/.*?(?:gid=(?P<gid>\d+))?$", source)
+        if not match:
+            error = errors.FormatError(note=f"Cannot save {source}")
+            raise FrictionlessException(error)
+        key = match.group("key")
+        gid = match.group("gid")
+        gc = pygsheets.authorize(service_account_file=self.resource.dialect.credentials)
+        sh = gc.open_by_key(key)
+        wks = sh.worksheet_by_id(gid) if gid else sh[0]
+        data = []
+        for row in read_row_stream():
+            if row.row_number == 1:
+                data.append(row.schema.field_names)
+            data.append(row.to_list())
+        wks.update_values("A1", data)
+        return source
