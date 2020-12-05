@@ -1,10 +1,12 @@
 import io
 import os
 from urllib.parse import urlparse
+from ..exception import FrictionlessException
 from ..control import Control
 from ..plugin import Plugin
 from ..loader import Loader
 from .. import helpers
+from .. import errors
 
 
 # Plugin
@@ -104,6 +106,12 @@ class S3Loader(Loader):
         object = client.Object(bucket_name=parts.netloc, key=parts.path[1:])
         byte_stream = S3ByteStream(object)
         return byte_stream
+
+    # Write
+
+    def write_byte_stream_save(self, byte_stream):
+        error = errors.SchemeError(note="Writing to S3 is not supported")
+        raise FrictionlessException(error)
 
 
 # Internal

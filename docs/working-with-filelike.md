@@ -20,11 +20,11 @@ with open('data/table.csv', 'rb') as file:
 
 The same is actual for writing CSV:
 
-```py
+```python
 from frictionless import Resource
 
 resource = Resource(data=[['id', 'name'], [1, 'english'], [2, 'german']])
-resource.write(scheme='stream')
+resource.write(scheme='filelike', format='csv')
 ```
 
 ## Configuring Filelike Data

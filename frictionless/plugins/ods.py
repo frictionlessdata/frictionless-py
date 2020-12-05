@@ -1,10 +1,12 @@
 import io
+import tempfile
 from datetime import datetime
 from ..exception import FrictionlessException
 from ..metadata import Metadata
 from ..dialect import Dialect
 from ..plugin import Plugin
 from ..parser import Parser
+from ..system import system
 from .. import helpers
 from .. import errors
 
@@ -168,11 +170,12 @@ class OdsParser(Parser):
 
     # Write
 
-    def write(self, read_row_stream):
+    def write_row_stream_save(self, read_row_stream):
+        ezodf = helpers.import_from_plugin("ezodf", plugin="ods")
         dialect = self.resource.dialect
         helpers.ensure_dir(self.resource.source)
-        ezodf = helpers.import_from_plugin("ezodf", plugin="ods")
-        book = ezodf.newdoc(doctype="ods", filename=self.resource.source)
+        file = tempfile.NamedTemporaryFile(delete=False)
+        book = ezodf.newdoc(doctype="ods", filename=file.name)
         title = f"Sheet {dialect.sheet}"
         book.sheets += ezodf.Sheet(title)
         sheet = book.sheets[title]
@@ -185,3 +188,6 @@ class OdsParser(Parser):
             for field_index, cell in enumerate(cells):
                 sheet[(row_index + 1, field_index)].set_value(cell)
         book.save()
+        loader = system.create_loader(self.resource)
+        result = loader.write_byte_stream(file.name)
+        return result

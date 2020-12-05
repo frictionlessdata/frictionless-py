@@ -142,7 +142,7 @@ class SqlParser(Parser):
 
     # Write
 
-    def write(self, read_row_stream):
+    def write_row_stream_save(self, read_row_stream):
         sa = helpers.import_from_plugin("sqlalchemy", plugin="sql")
         engine = sa.create_engine(self.resource.source)
         dialect = self.resource.dialect
@@ -150,6 +150,7 @@ class SqlParser(Parser):
         storage = SqlStorage(engine=engine, namespace=dialect.namespace)
         resource = Resource(name=dialect.table, data=read_row_stream, schema=schema)
         storage.write_resource(resource, force=True)
+        return self.resource.source
 
 
 # Storage

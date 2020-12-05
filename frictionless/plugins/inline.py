@@ -178,11 +178,12 @@ class InlineParser(Parser):
 
     # Write
 
-    def write(self, read_row_stream):
+    def write_row_stream_save(self, read_row_stream):
+        data = []
         dialect = self.resource.dialect
-        self.resource.data = []
         for row in read_row_stream():
             item = row.to_dict() if dialect.keyed else list(row.values())
             if not dialect.keyed and row.row_number == 1:
                 self.resource.data.append(row.schema.field_names)
-            self.resource.data.append(item)
+            data.append(item)
+        return data

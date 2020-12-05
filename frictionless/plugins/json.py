@@ -172,7 +172,7 @@ class JsonParser(Parser):
 
     # Write
 
-    def write(self, read_row_stream):
+    def write_row_stream_save(self, read_row_stream):
         data = []
         dialect = self.resource.dialect
         for row in read_row_stream():
@@ -184,7 +184,9 @@ class JsonParser(Parser):
             data.append(item)
         with tempfile.NamedTemporaryFile("wt", delete=False) as file:
             json.dump(data, file, indent=2)
-        helpers.move_file(file.name, self.resource.source)
+        loader = system.create_loader(self.resource)
+        result = loader.write_byte_stream(file.name)
+        return result
 
 
 class JsonlParser(Parser):
@@ -223,7 +225,7 @@ class JsonlParser(Parser):
 
     # Write
 
-    def write(self, read_row_stream):
+    def write_row_stream_save(self, read_row_stream):
         jsonlines = helpers.import_from_plugin("jsonlines", plugin="json")
         dialect = self.resource.dialect
         with tempfile.NamedTemporaryFile(delete=False) as file:
@@ -236,4 +238,6 @@ class JsonlParser(Parser):
                 if not dialect.keyed and row.row_number == 1:
                     writer.write(schema.field_names)
                 writer.write(item)
-        helpers.move_file(file.name, self.resource.source)
+        loader = system.create_loader(self.resource)
+        result = loader.write_byte_stream(file.name)
+        return result

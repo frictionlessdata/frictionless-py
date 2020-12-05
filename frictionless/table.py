@@ -791,7 +791,6 @@ class Table:
 
     # Write
 
-    # NOTE: implement proper usage of loaders (e.g. write to s3)
     # NOTE: can we rebase on source/target resources instead of read_row_stream?
     def write(
         self,
@@ -813,7 +812,7 @@ class Table:
             **options: subset of Table's constructor options
         """
 
-        # Create file
+        # Create resource
         resource = Resource.from_source(
             target,
             scheme=scheme,
@@ -828,11 +827,11 @@ class Table:
             trusted=True,
         )
 
-        # Write file
-        read_row_stream = self.__write_row_stream_create
+        # Write resource
         parser = system.create_parser(resource)
-        parser.write(read_row_stream)
-        return resource.source
+        read_row_stream = self.__write_row_stream_create
+        result = parser.write_row_stream(read_row_stream)
+        return result
 
     def __write_row_stream_create(self):
         if self.__row_position:

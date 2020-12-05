@@ -263,7 +263,7 @@ class XlsxParser(Parser):
 
     # Write
 
-    def write(self, read_row_stream):
+    def write_row_stream_save(self, read_row_stream):
         openpyxl = helpers.import_from_plugin("openpyxl", plugin="excel")
         dialect = self.resource.dialect
         helpers.ensure_dir(self.resource.source)
@@ -279,7 +279,11 @@ class XlsxParser(Parser):
             cells = list(row.values())
             cells, notes = row.schema.write_data(cells, native_types=self.native_types)
             sheet.append(cells)
-        book.save(self.resource.source)
+        file = tempfile.NamedTemporaryFile(delete=False)
+        book.save(file.name)
+        loader = system.create_loader(self.resource)
+        result = loader.write_byte_stream(file.name)
+        return result
 
 
 class XlsParser(Parser):
@@ -371,7 +375,7 @@ class XlsParser(Parser):
 
     # Write
 
-    def write(self, read_row_stream):
+    def write_row_stream_save(self, read_row_stream):
         xlwt = helpers.import_from_plugin("xlwt", plugin="excel")
         dialect = self.resource.dialect
         helpers.ensure_dir(self.resource.source)
@@ -388,7 +392,11 @@ class XlsParser(Parser):
             cells, notes = row.schema.write_data(cells, native_types=self.native_types)
             for field_index, cell in enumerate(cells):
                 sheet.write(row_index + 1, field_index, cell)
-        book.save(self.resource.source)
+        file = tempfile.NamedTemporaryFile(delete=False)
+        book.save(file.name)
+        loader = system.create_loader(self.resource)
+        result = loader.write_byte_stream(file.name)
+        return result
 
 
 # Internal

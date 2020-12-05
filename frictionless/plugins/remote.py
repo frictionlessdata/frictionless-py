@@ -1,9 +1,11 @@
 import io
 import requests.utils
+from ..exception import FrictionlessException
+from ..metadata import Metadata
+from ..control import Control
 from ..plugin import Plugin
 from ..loader import Loader
-from ..control import Control
-from ..metadata import Metadata
+from .. import errors
 from .. import config
 
 
@@ -143,6 +145,12 @@ class RemoteLoader(Loader):
             byte_stream = buffer
         return byte_stream
 
+    # Write
+
+    def write_byte_stream_save(self, byte_stream):
+        error = errors.SchemeError(note="Writing to Remote Data is not supported")
+        raise FrictionlessException(error)
+
 
 # Internal
 
@@ -152,6 +160,13 @@ class RemoteByteStream:
         self.__source = source
         self.__session = session
         self.__timeout = timeout
+
+    def __iter__(self):
+        while True:
+            bytes = self.read(8192)
+            if not bytes:
+                break
+            yield from bytes.splitlines(keepends=True)
 
     def readable(self):
         return True

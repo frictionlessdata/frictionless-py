@@ -6,7 +6,7 @@ from ..metadata import Metadata
 from ..dialect import Dialect
 from ..plugin import Plugin
 from ..parser import Parser
-from .. import helpers
+from ..system import system
 from .sql import SCHEME_PREFIXES
 
 
@@ -260,7 +260,7 @@ class CsvParser(Parser):
 
     # Write
 
-    def write(self, read_row_stream):
+    def write_row_stream_save(self, read_row_stream):
         options = {}
         for name in vars(self.resource.dialect.to_python()):
             value = getattr(self.resource.dialect, name, None)
@@ -277,7 +277,9 @@ class CsvParser(Parser):
                 cells = row.to_list()
                 cells, notes = schema.write_data(cells, native_types=self.native_types)
                 writer.writerow(cells)
-        helpers.move_file(file.name, self.resource.source)
+        loader = system.create_loader(self.resource)
+        result = loader.write_byte_stream(file.name)
+        return result
 
 
 # Internal

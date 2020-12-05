@@ -83,6 +83,6 @@ class GsheetParser(Parser):
 
     # Write
 
-    def write(self, read_row_stream):
-        error = errors.Error(note="Writing to Google Sheets is not supported")
+    def write_row_stream_save(self, read_row_stream):
+        error = errors.FormatError(note="Writing to Google Sheets is not supported")
         raise FrictionlessException(error)
