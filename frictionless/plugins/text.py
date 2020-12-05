@@ -1,9 +1,7 @@
 import io
-from ..exception import FrictionlessException
 from ..control import Control
 from ..plugin import Plugin
 from ..loader import Loader
-from .. import errors
 from .. import config
 
 

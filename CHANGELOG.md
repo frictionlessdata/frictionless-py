@@ -2,6 +2,10 @@
 
 Here described only the breaking and most significant changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/frictionless-py/commits/master).
 
+## v3.41
+
+- Update Loader/Parser API to write to different targets (#579) (BREAKING: minor)
+
 ## v3.40
 
 - Implemented a standalone multipart loader (#573)
