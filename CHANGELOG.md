@@ -2,6 +2,10 @@
 
 Here described only the breaking and most significant changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/frictionless-py/commits/master).
 
+## v3.45
+
+- Drafted support for writing Multipart Data (#583)
+
 ## v3.44
 
 - Added support for writing to Remote Data (#582)
