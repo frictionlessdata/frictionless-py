@@ -17,8 +17,27 @@ print(resource.read_rows())
 
 ## Writing Multipart Data
 
-> Not supported
+The actual for writing:
+
+```py
+from frictionless import Resource
+
+resource = Resource(path='data/table.json')
+resource.write('tmp/table{number}.json', scheme="multipart", control={"chunkSize": 1000000})
+```
 
 ## Configuring Local Data
 
-> Not supported
+There is a control to configure how Frictionless read files using this scheme. For example:
+
+```py
+from frictionless import Resource
+from frictionless.plugins.multipart import MultipartControl
+
+control = MultipartControl(chunk_size=1000000)
+resource = Resource(data=[['id', 'name'], [1, 'english'], [2, 'german']])
+resource.write('tmp/table{number}.json', scheme="multipart", control=control)
+```
+
+References:
+- [Multipart Control](https://frictionlessdata.io/tooling/python/schemes-reference/#multipart)

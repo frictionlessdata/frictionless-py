@@ -55,7 +55,6 @@ class S3Control(Control):
 
     @property
     def endpoint_url(self):
-        super().expand()
         return (
             self.get("endpointUrl")
             or os.environ.get("S3_ENDPOINT_URL")
@@ -66,6 +65,7 @@ class S3Control(Control):
 
     def expand(self):
         """Expand metadata"""
+        super().expand()
         self.setdefault("endpointUrl", self.endpoint_url)
 
     # Metadata
