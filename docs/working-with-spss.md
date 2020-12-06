@@ -36,4 +36,7 @@ package.to_spss(basepath='target')
 
 ## Configuring SPSS
 
-> Not supported yet
+There are no options available in `SpssDialect`.
+
+References:
+- [SPSS Dialect](https://frictionlessdata.io/tooling/python/dialects-reference/#spss)

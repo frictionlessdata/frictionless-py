@@ -31,13 +31,6 @@ resource = Resource(data=[['id', 'name'], [1, 'english'], [2, 'german']])
 resource.write('tmp/table.csv')
 ```
 
-
-
-
-    'tmp/table.csv'
-
-
-
 ```bash
 !cat tmp/table.csv
 ```
@@ -45,4 +38,7 @@ resource.write('tmp/table.csv')
 
 ## Configuring Local Data
 
-> Not supported
+There are no options available in `LocalControl`.
+
+References:
+- [Local Control](https://frictionlessdata.io/tooling/python/controls-reference/#local)

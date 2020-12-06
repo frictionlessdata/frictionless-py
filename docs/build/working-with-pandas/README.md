@@ -39,4 +39,7 @@ dataframes = package.to_pandas()
 
 ## Configuring Pandas
 
-> Not supported yet
+There are no options available in `PandasDialect`.
+
+References:
+- [Pandas Dialect](https://frictionlessdata.io/tooling/python/dialects-reference/#pandas)

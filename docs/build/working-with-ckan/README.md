@@ -39,4 +39,16 @@ package.to_ckan(base_url='<base_url>', dataset_id='<dataset_id>', api_key='<api_
 
 ## Configuring CKAN
 
-> CKAN dialect is not yet available
+There is a dialect to configure how Frictionless read and write files in this format. For example:
+
+```py
+from frictionless import Resource
+from frictionless.plugins.ckan import CkanDialect
+
+dialect = CkanDialect(resource='resource', dataset='dataset', apikey='apikey')
+resource = Resource('https://ckan-portal.com', format='ckan', dialect=dialect)
+```
+
+
+References:
+- [CKAN Dialect](https://frictionlessdata.io/tooling/python/dialects-reference/#ckan)

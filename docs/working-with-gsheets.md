@@ -40,5 +40,3 @@ from frictionless import Resource
 resource = Resource(path='data/table.csv')
 resource.write("https://docs.google.com/spreadsheets/d/<id>/edit", dialect={"credentials": ".google.json"})
 ```
-
-

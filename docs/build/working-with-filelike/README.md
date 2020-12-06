@@ -35,10 +35,13 @@ resource.write(scheme='filelike', format='csv')
 
 
 
-    <_io.BufferedReader name='/tmp/tmpep36lof3'>
+    <_io.BufferedReader name='/tmp/tmplh6mlh54'>
 
 
 
 ## Configuring Filelike Data
 
-> Not supported
+There are no options available in `FilelikeControl`.
+
+References:
+- [Filelike Control](https://frictionlessdata.io/tooling/python/controls-reference/#filelike)

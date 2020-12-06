@@ -36,4 +36,15 @@ package.to_spss(utl='postgresql://mydatabase')
 
 ## Configuring SQL
 
-> Not supported yet
+There is a dialect to configure how Frictionless read and write files in this format. For example:
+
+```py
+from frictionless import Resource
+from frictionless.plugins.sql import SqlDialect
+
+dialect = SqlDialect(table='table', order_by='field')
+resource = Resource('postgresql://database', dialect=dialect)
+```
+
+References:
+- [SQL Dialect](https://frictionlessdata.io/tooling/python/dialects-reference/#sql)

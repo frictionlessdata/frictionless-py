@@ -28,4 +28,7 @@ resource.write(scheme='text', format='csv')
 
 ## Configuring Text Data
 
-> Not supported
+There are no options available in `TextControl`.
+
+References:
+- [Text Control](https://frictionlessdata.io/tooling/python/controls-reference/#text)

@@ -29,4 +29,7 @@ resource.write(scheme='filelike', format='csv')
 
 ## Configuring Filelike Data
 
-> Not supported
+There are no options available in `FilelikeControl`.
+
+References:
+- [Filelike Control](https://frictionlessdata.io/tooling/python/controls-reference/#filelike)
