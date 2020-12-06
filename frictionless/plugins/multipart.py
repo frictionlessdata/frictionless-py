@@ -1,10 +1,11 @@
-from ..exception import FrictionlessException
+import tempfile
 from ..resource import Resource
 from ..control import Control
 from ..plugin import Plugin
 from ..loader import Loader
 from ..system import system
-from .. import errors
+from .. import helpers
+from .. import config
 
 
 # Plugin
@@ -46,7 +47,33 @@ class MultipartControl(Control):
 
     """
 
-    pass
+    def __init__(
+        self, descriptor=None, chunk_size=None, newline=None, detect_encoding=None
+    ):
+        self.setinitial("chunkSize", chunk_size)
+        super().__init__(descriptor, newline=newline, detect_encoding=detect_encoding)
+
+    @property
+    def chunk_size(self):
+        return self.get("chunkSize", config.DEFAULT_MULTIPART_CHUNK_SIZE)
+
+    # Expand
+
+    def expand(self):
+        """Expand metadata"""
+        super().expand()
+        self.setdefault("chunkSize", self.chunk_size)
+
+    # Metadata
+
+    metadata_profile = {  # type: ignore
+        "type": "object",
+        "properties": {
+            "chunkSize": {"type": "number"},
+            "newline": {"type": "string"},
+            "detectEncoding": {},
+        },
+    }
 
 
 # Loader
@@ -66,15 +93,26 @@ class MultipartLoader(Loader):
     def read_byte_stream_create(self):
         source = self.resource.source
         remote = self.resource.remote
+        # TODO: review
         headless = self.resource.get("dialect", {}).get("header") is False
+        headless = headless or self.resource.format != "csv"
         byte_stream = MultipartByteStream(source, remote=remote, headless=headless)
         return byte_stream
 
     # Write
 
+    # TODO: raise an exception for csv/header situation?
     def write_byte_stream_save(self, byte_stream):
-        error = errors.SchemeError(note="Writing to Multipart Data is not supported")
-        raise FrictionlessException(error)
+        number = 0
+        while True:
+            bytes = byte_stream.read(self.resource.control.chunk_size)
+            if not bytes:
+                break
+            number += 1
+            path = self.resource.source.format(number=number)
+            with tempfile.NamedTemporaryFile(delete=False) as file:
+                file.write(bytes)
+            helpers.move_file(file.name, path)
 
 
 # Internal
@@ -126,6 +164,7 @@ class MultipartByteStream:
         assert offset == 0
         self.__line_stream = self.read_line_stream()
 
+    # TODO: review
     def read(self, size):
         res = b""
         while True:
@@ -137,12 +176,11 @@ class MultipartByteStream:
                 break
         return res
 
+    # TODO: review (this situation with header/no-header/skipping like is not yet clear)
     def read_line_stream(self):
         for number, path in enumerate(self.__path, start=1):
-            with system.create_loader(Resource(path=path)) as loader:
+            with system.create_loader(Resource(path=path, trusted=True)) as loader:
                 for line_number, line in enumerate(loader.byte_stream, start=1):
-                    if not line.endswith(b"\n"):
-                        line += b"\n"
                     if not self.__headless and number > 1 and line_number == 1:
                         continue
                     yield line

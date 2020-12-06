@@ -143,6 +143,27 @@ def test_resource_source_multipart_infer():
     }
 
 
+# TODO: fix this test
+@pytest.mark.skip
+def test_resource_multipart_write_file(tmpdir):
+    source = "data/table.json"
+    target = str(tmpdir.join("table{number}.json"))
+    target1 = str(tmpdir.join("table1.json"))
+    target2 = str(tmpdir.join("table2.json"))
+
+    # Write
+    resource = Resource(path=source)
+    resource.write(target, scheme="multipart", control={"chunkSize": 80})
+
+    # Read
+    resource = Resource(path=[target1, target2], trusted=True)
+    resource.read_header() == ["id", "name"]
+    assert resource.read_rows() == [
+        {"id": 1, "name": "english"},
+        {"id": 2, "name": "中国人"},
+    ]
+
+
 # Validate
 
 
