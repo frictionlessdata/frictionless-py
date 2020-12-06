@@ -15,7 +15,7 @@ from frictionless.plugins.bigquery import BigqueryDialect, BigqueryStorage
 
 # In forked pull requests `.google.json` will not be available
 pytestmark = pytest.mark.skipif(
-    not os.path.isfile(".google.json"), reason="BigQuery environment is not available"
+    not os.path.isfile(".google.json"), reason="Google environment is not available"
 )
 
 

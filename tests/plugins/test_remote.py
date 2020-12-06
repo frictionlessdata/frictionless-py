@@ -8,21 +8,21 @@ BASE_URL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/m
 
 
 @pytest.mark.ci
-def test_table_https():
+def test_table_remote():
     with Table(BASE_URL % "data/table.csv") as table:
         assert table.header == ["id", "name"]
         assert table.read_data() == [["1", "english"], ["2", "中国人"]]
 
 
 @pytest.mark.ci
-def test_table_https_latin1():
+def test_table_remote_latin1():
     # Github returns wrong encoding `utf-8`
     with Table(BASE_URL % "data/latin1.csv") as table:
         assert table.read_data()
 
 
 @pytest.mark.ci
-def test_table_https_big_file():
+def test_table_remote_big_file():
     with Table(BASE_URL % "data/table1.csv") as table:
         assert table.read_rows()
         assert table.stats == {
@@ -31,3 +31,22 @@ def test_table_https_big_file():
             "fields": 10,
             "rows": 10000,
         }
+
+
+# Write
+
+
+# TODO: test using "responses" mock
+@pytest.mark.ci
+@pytest.mark.skip
+def test_table_remote_write():
+    path = "https://example.com/post/table.csv"
+
+    # Write
+    with Table("data/table.csv") as table:
+        table.write(path)
+
+    # Read
+    with Table(path) as table:
+        assert table.header == ["id", "name"]
+        assert table.read_data() == [["1", "english"], ["2", "中国人"]]

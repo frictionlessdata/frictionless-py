@@ -17,7 +17,15 @@ print(resource.read_rows())
 
 ## Writing Remote Data
 
-> Not supported
+The save is actual for writing:
+
+
+```py
+from frictionless import Resource
+
+resource = Resource(path='data/table.csv')
+resource.write('https://example.com/data/table.csv') # will POST the file to the server
+```
 
 ## Configuring Remote Data
 
