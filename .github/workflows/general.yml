@@ -27,7 +27,8 @@ jobs:
       - name: Install MySQL
         uses: mirromutth/mysql-action@v1.1
         with:
-          mysql user: root
+          mysql user: mysql
+          mysql password: test
           character set server: utf8
           collation server: utf8_general_ci
       - name: Install dependencies
