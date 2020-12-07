@@ -41,7 +41,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-      # TODO: add realease to PyPi
+      # TODO: add release to PyPi
       - name: Release to GitHub
         uses: softprops/action-gh-release@v1
         env:
