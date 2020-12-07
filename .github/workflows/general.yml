@@ -29,18 +29,10 @@ jobs:
       - name: Test software
         # TODO: swith to make test-ci
         run: make test
-
-  # Report
-
-  report:
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-    - name: Report to Coveralls
-      uses: coverallsapp/github-action@master
-      with:
-        github-token: ${{ secrets.github_token }}
-        parallel-finished: true
+      - name: Report coverage
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
   # Deploy
 
