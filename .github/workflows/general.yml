@@ -27,7 +27,7 @@ jobs:
       - name: Install dependencies
         run: make install
       - name: Prepare environment
-        run: >
+        run: |
           cp .env.example .env
           echo $GOOGLE_CREDENTIALS > .google.json
         shell: bash
