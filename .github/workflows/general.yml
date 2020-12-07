@@ -30,10 +30,7 @@ jobs:
         # TODO: swith to make test-ci
         run: make test
       - name: Report coverage
-        uses: coverallsapp/github-action@master
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          path-to-lcov: .coverage
+        uses: codecov/codecov-action@v1
 
   # Deploy
 
