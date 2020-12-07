@@ -39,6 +39,8 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
         run: make install
+      - name: Prepare environment
+        run: cp .env.example .env
       - name: Test software
         run: make test-ci
       - name: Report coverage
