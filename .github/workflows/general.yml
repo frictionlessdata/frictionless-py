@@ -72,7 +72,21 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-      # TODO: add release to PyPi
+      - name: Install Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install setuptools wheel
+      - name: Build distribution
+        run: |
+          python setup.py sdist bdist_wheel
+      - name: Publish to PYPI
+        uses: pypa/gh-action-pypi-publish@master
+        with:
+          password: ${{ secrets.PYPI_API_KEY }}
       - name: Release to GitHub
         uses: softprops/action-gh-release@v1
         env:
