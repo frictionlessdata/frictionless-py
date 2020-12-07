@@ -1,4 +1,4 @@
-name: General
+name: general
 
 on:
   push:
