@@ -17,6 +17,19 @@ jobs:
     strategy:
       matrix:
         python-version: [3.6, 3.7, 3.8]
+    services:
+      postgres:
+        image: postgres:12
+        env:
+          POSTGRES_DB: test
+          POSTGRES_PASSWORD: test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -27,8 +40,7 @@ jobs:
       - name: Install dependencies
         run: make install
       - name: Test software
-        # TODO: swith to make test-ci
-        run: make test
+        run: make test-ci
       - name: Report coverage
         uses: codecov/codecov-action@v1
 
