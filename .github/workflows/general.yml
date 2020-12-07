@@ -24,13 +24,6 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Install MySQL
-        uses: mirromutth/mysql-action@v1.1
-        with:
-          mysql user: mysql
-          mysql password: test
-          character set server: utf8
-          collation server: utf8_general_ci
       - name: Install dependencies
         run: make install
       - name: Prepare environment
@@ -52,6 +45,18 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+      mysql:
+        image: mysql:5
+        env:
+            MYSQL_DATABASE: test
+            MYSQL_ALLOW_EMPTY_PASSWORD: yes
+        ports:
+            - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
 
   # Deploy
 

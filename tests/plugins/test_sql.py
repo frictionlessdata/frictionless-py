@@ -591,7 +591,6 @@ def test_postgresql_storage_views_support(postgresql_url):
 # Storage (MySQL)
 
 
-@pytest.mark.skip
 @pytest.mark.ci
 def test_mysql_storage_types(mysql_url):
     engine = sa.create_engine(mysql_url)
