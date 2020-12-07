@@ -42,8 +42,6 @@ def test_table_bigquery(options):
         ]
 
 
-# TODO: recover
-@pytest.mark.skip
 @pytest.mark.ci
 @pytest.mark.skipif(sys.version_info < (3, 8), reason="Speed up CI")
 def test_table_bigquery_write_timezone(options):
@@ -64,8 +62,6 @@ def test_table_bigquery_write_timezone(options):
 # Storage
 
 
-# TODO: recover
-@pytest.mark.skip
 @pytest.mark.ci
 @pytest.mark.skipif(sys.version_info < (3, 8), reason="Speed up CI")
 def test_storage_types(options):
@@ -124,8 +120,6 @@ def test_storage_types(options):
     storage.delete_package(target.resource_names)
 
 
-# TODO: recover
-@pytest.mark.skip
 @pytest.mark.ci
 @pytest.mark.skipif(sys.version_info < (3, 8), reason="Speed up CI")
 def test_storage_integrity(options):
@@ -174,8 +168,6 @@ def test_storage_integrity(options):
     storage.delete_package(target.resource_names)
 
 
-# TODO: recover
-@pytest.mark.skip
 @pytest.mark.ci
 @pytest.mark.skipif(sys.version_info < (3, 8), reason="Speed up CI")
 def test_storage_constraints(options):
@@ -215,8 +207,6 @@ def test_storage_constraints(options):
     storage.delete_package(target.resource_names)
 
 
-# TODO: recover
-@pytest.mark.skip
 @pytest.mark.ci
 @pytest.mark.skipif(sys.version_info < (3, 8), reason="Speed up CI")
 def test_storage_read_resource_not_existent_error(options):
@@ -228,8 +218,6 @@ def test_storage_read_resource_not_existent_error(options):
     assert error.note.count("does not exist")
 
 
-# TODO: recover
-@pytest.mark.skip
 @pytest.mark.ci
 @pytest.mark.skipif(sys.version_info < (3, 8), reason="Speed up CI")
 def test_storage_write_resource_existent_error(options):
@@ -244,8 +232,6 @@ def test_storage_write_resource_existent_error(options):
     storage.delete_package(list(storage))
 
 
-# TODO: recover
-@pytest.mark.skip
 @pytest.mark.ci
 @pytest.mark.skipif(sys.version_info < (3, 8), reason="Speed up CI")
 def test_storage_delete_resource_not_existent_error(options):
@@ -257,8 +243,6 @@ def test_storage_delete_resource_not_existent_error(options):
     assert error.note.count("does not exist")
 
 
-# TODO: recover
-@pytest.mark.skip
 @pytest.mark.ci
 @pytest.mark.skipif(sys.version_info < (3, 8), reason="Speed up CI")
 def test_storage_big_file(options):
