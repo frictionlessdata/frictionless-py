@@ -591,8 +591,6 @@ def test_postgresql_storage_views_support(postgresql_url):
 # Storage (MySQL)
 
 
-# TODO: recover
-@pytest.mark.skip
 @pytest.mark.ci
 def test_mysql_storage_types(mysql_url):
     engine = sa.create_engine(mysql_url)
@@ -782,8 +780,6 @@ def test_mysql_storage_constraints_not_valid_error(mysql_url, field_name, cell):
         resource.to_sql(engine=engine, force=True)
 
 
-# TODO: recover
-@pytest.mark.skip
 @pytest.mark.ci
 def test_mysql_storage_views_support(mysql_url):
     engine = sa.create_engine(mysql_url)

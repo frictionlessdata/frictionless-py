@@ -17,19 +17,6 @@ jobs:
     strategy:
       matrix:
         python-version: [3.6, 3.7, 3.8]
-    services:
-      postgres:
-        image: postgres:12
-        env:
-          POSTGRES_DB: test
-          POSTGRES_PASSWORD: test
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -45,6 +32,31 @@ jobs:
         run: make test-ci
       - name: Report coverage
         uses: codecov/codecov-action@v1
+    services:
+      postgres:
+        image: postgres:12
+        env:
+          POSTGRES_DB: test
+          POSTGRES_PASSWORD: test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      mysql:
+        image: mysql:5
+        env:
+            MYSQL_DATABASE: test
+            MYSQL_ALLOW_EMPTY_PASSWORD: yes
+        ports:
+            - 3306
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
 
   # Deploy
 
