@@ -49,9 +49,9 @@ jobs:
         image: mysql:5
         env:
             MYSQL_DATABASE: test
-            MYSQL_ALLOW_EMPTY_PASSWORD: yes
+            MYSQL_PASSWORD: test
         ports:
-            - 3306
+            - 3306:3306
         options: >-
           --health-cmd="mysqladmin ping"
           --health-interval=10s
