@@ -16,7 +16,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-      - name: Set up Python
+      - name: Install Python
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
@@ -27,14 +27,23 @@ jobs:
         run: make test
 
   # Report
-  # TODO: add coveralls
+
+  report:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+    - name: Report to Coveralls
+      uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.github_token }}
+        parallel-finished: true
 
   # Deploy
 
   deploy:
+    if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
     needs: test
-    if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2

@@ -33,7 +33,6 @@ TESTS_REQUIRE = [
     "ipykernel",
     "responses",
     "nbconvert",
-    "coveralls",
     "pytest-cov",
     "oauth2client",
     "python-dotenv",
