@@ -27,10 +27,10 @@ jobs:
       - name: Install dependencies
         run: make install
       - name: Prepare environment
-        run: |
-          cp .env.example .env
-          echo $GOOGLE_CREDENTIALS > .google.json
-        shell: bash
+        run: cp .env.example .env
+      - name: Prepare secrets
+        if: github.event.pull_request.head.repo.full_name == github.repository
+        run: echo $GOOGLE_CREDENTIALS > .google.json
         env:
           GOOGLE_CREDENTIALS: ${{secrets.GOOGLE_CREDENTIALS}}
       - name: Test software
