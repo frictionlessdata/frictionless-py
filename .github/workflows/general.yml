@@ -29,7 +29,7 @@ jobs:
       - name: Prepare environment
         run: |
           cp .env.example .env
-          echo "$GOOGLE_CREDENTIALS" > .google.json
+          echo $GOOGLE_CREDENTIALS > .google.json
         shell: bash
         env:
           GOOGLE_CREDENTIALS: ${{secrets.GOOGLE_CREDENTIALS}}
