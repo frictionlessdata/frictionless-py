@@ -31,7 +31,7 @@ jobs:
       - name: Prepare environment
         run: cp .env.example .env
       - name: Prepare secrets
-        if: github.event.pull_request.head.repo.full_name == github.repository
+        if: env.GOOGLE_CREDENTIALS != null
         run: echo $GOOGLE_CREDENTIALS > .google.json
         env:
           GOOGLE_CREDENTIALS: ${{secrets.GOOGLE_CREDENTIALS}}
