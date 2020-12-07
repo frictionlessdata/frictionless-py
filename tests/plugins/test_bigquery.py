@@ -22,8 +22,6 @@ pytestmark = pytest.mark.skipif(
 # Parser
 
 
-# TODO: recover
-@pytest.mark.skip
 @pytest.mark.ci
 @pytest.mark.skipif(sys.version_info < (3, 8), reason="Speed up CI")
 def test_table_bigquery(options):

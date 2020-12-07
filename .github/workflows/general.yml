@@ -27,7 +27,12 @@ jobs:
       - name: Install dependencies
         run: make install
       - name: Prepare environment
-        run: cp .env.example .env
+        run: |
+          cp .env.example .env
+          echo "$GOOGLE_CREDENTIALS" > .google.json
+        shell: bash
+        env:
+          GOOGLE_CREDENTIALS: ${{secrets.GOOGLE_CREDENTIALS}}
       - name: Test software
         run: make test-ci
       - name: Report coverage
@@ -40,7 +45,7 @@ jobs:
           POSTGRES_PASSWORD: test
         ports:
           - 5432:5432
-        options: >-
+        options: |-
           --health-cmd pg_isready
           --health-interval 10s
           --health-timeout 5s
@@ -52,7 +57,7 @@ jobs:
             MYSQL_ALLOW_EMPTY_PASSWORD: yes
         ports:
             - 3306:3306
-        options: >-
+        options: |-
           --health-cmd="mysqladmin ping"
           --health-interval=10s
           --health-timeout=5s
