@@ -1,6 +1,6 @@
 import pytest
 import pathlib
-from frictionless import validate, Check, Query, errors
+from frictionless import validate, Check, Query, errors, helpers
 
 
 # General
