@@ -81,12 +81,28 @@ jobs:
       - name: Test software
         run: make test
 
+  # Test (Windows)
+
+  test-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Install Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Install dependencies
+        run: make install
+      - name: Test software
+        run: make test
+
   # Deploy
 
   deploy:
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
-    needs: [test-linux, test-macos]
+    needs: [test-linux, test-macos, test-windows]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2

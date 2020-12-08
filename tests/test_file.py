@@ -1,4 +1,5 @@
-from frictionless import File
+import pytest
+from frictionless import File, helpers
 
 
 # General
@@ -7,6 +8,7 @@ from frictionless import File
 BASE_URL = "https://raw.githubusercontent.com/frictionlessdata/tabulator-py/master/%s"
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_file():
     with File("data/table.csv") as file:
         assert file.path == "data/table.csv"

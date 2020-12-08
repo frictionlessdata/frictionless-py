@@ -2,7 +2,7 @@ import json
 import pytest
 import pathlib
 from copy import deepcopy
-from frictionless import validate
+from frictionless import validate, helpers
 
 
 # General
@@ -172,6 +172,7 @@ DESCRIPTOR_SH = {
 }
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_validate_checksum():
     source = deepcopy(DESCRIPTOR_SH)
     report = validate(source)
@@ -189,6 +190,7 @@ def test_validate_checksum_invalid():
     ]
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_validate_checksum_size():
     source = deepcopy(DESCRIPTOR_SH)
     source["resources"][0]["stats"].pop("hash")
@@ -206,6 +208,7 @@ def test_validate_checksum_size_invalid():
     ]
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_validate_checksum_hash():
     source = deepcopy(DESCRIPTOR_SH)
     source["resources"][0]["stats"].pop("bytes")

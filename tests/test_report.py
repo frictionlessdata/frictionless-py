@@ -1,9 +1,11 @@
-from frictionless import validate
+import pytest
+from frictionless import validate, helpers
 
 
 # Report
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_report():
     report = validate("data/table.csv")
     # Report

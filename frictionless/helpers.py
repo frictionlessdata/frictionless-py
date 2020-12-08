@@ -8,6 +8,7 @@ import zipfile
 import chardet
 import tempfile
 import datetime
+import platform
 import stringcase
 from slugify import slugify
 from inspect import signature
@@ -181,6 +182,17 @@ def create_byte_stream(bytes):
     stream.write(bytes)
     stream.seek(0)
     return stream
+
+
+def is_platform(name):
+    current = platform.system()
+    if name == "linux":
+        return current == "Linux"
+    elif name == "macos":
+        return current == "Darwin"
+    elif name == "windows":
+        return current == "Windows"
+    return False
 
 
 def is_remote_path(path):

@@ -1,9 +1,11 @@
-from frictionless import describe
+import pytest
+from frictionless import describe, helpers
 
 
 # General
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_describe_package():
     package = describe("data/chunk*.csv")
     assert package.metadata_valid
@@ -74,6 +76,7 @@ def test_describe_package_basepath():
     assert package.get_resource("chunk2").basepath == "data"
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_describe_package_hashing():
     package = describe("data/chunk*.csv", hashing="sha256")
     assert package.get_resource("chunk1").hashing == "sha256"

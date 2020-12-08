@@ -1,5 +1,6 @@
+import pytest
 from typer.testing import CliRunner
-from frictionless import program
+from frictionless import program, helpers
 
 runner = CliRunner()
 
@@ -7,6 +8,7 @@ runner = CliRunner()
 # General
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_transform():
     result = runner.invoke(program, "transform data/pipeline.yaml")
     assert result.exit_code == 0

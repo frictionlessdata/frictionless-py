@@ -1,16 +1,19 @@
 import types
-from frictionless import extract
+import pytest
+from frictionless import extract, helpers
 
 
 # General
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_extract_package():
     assert extract("data/package.json") == {
         "data/table.csv": [{"id": 1, "name": "english"}, {"id": 2, "name": "中国人"}]
     }
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_extract_package_process():
     process = lambda row: row.to_list()
     assert extract("data/package.json", process=process) == {
@@ -21,6 +24,7 @@ def test_extract_package_process():
     }
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_extract_package_stream():
     row_streams = extract("data/package.json", stream=True)
     row_stream = row_streams["data/table.csv"]
@@ -31,6 +35,7 @@ def test_extract_package_stream():
     ]
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_extract_package_process_and_stream():
     process = lambda row: row.to_list()
     data_streams = extract("data/package.json", process=process, stream=True)

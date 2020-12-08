@@ -1,7 +1,7 @@
 import io
 import pytest
 from datetime import datetime
-from frictionless import Table, Query, FrictionlessException
+from frictionless import Table, Query, FrictionlessException, helpers
 from frictionless.plugins.excel import ExcelDialect
 
 BASE_URL = "https://raw.githubusercontent.com/frictionlessdata/tabulator-py/master/%s"
@@ -98,6 +98,7 @@ def test_table_xlsx_adjust_floating_point_error_default():
             assert table.read_data()[1][2] == 274.65999999999997
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_table_xlsx_preserve_formatting():
     source = "data/preserve-formatting.xlsx"
     dialect = ExcelDialect(preserve_formatting=True)
@@ -250,6 +251,7 @@ def test_fix_for_2007_xls():
 # Write
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_table_xlsx_write(tmpdir):
     source = "data/table.csv"
     target = str(tmpdir.join("table.xlsx"))
@@ -260,6 +262,7 @@ def test_table_xlsx_write(tmpdir):
         assert table.read_data() == [[1, "english"], [2, "中国人"]]
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_table_xlsx_write_sheet_name(tmpdir):
     source = "data/table.csv"
     target = str(tmpdir.join("table.xlsx"))
@@ -271,6 +274,7 @@ def test_table_xlsx_write_sheet_name(tmpdir):
         assert table.read_data() == [[1, "english"], [2, "中国人"]]
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_table_xls_write(tmpdir):
     source = "data/table.csv"
     target = str(tmpdir.join("table.xls"))
@@ -281,6 +285,7 @@ def test_table_xls_write(tmpdir):
         assert table.read_data() == [[1, "english"], [2, "中国人"]]
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_table_xls_write_sheet_name(tmpdir):
     source = "data/table.csv"
     target = str(tmpdir.join("table.xls"))

@@ -3,7 +3,7 @@ import pytest
 import string
 import random
 from moto import mock_s3
-from frictionless import Table, validate
+from frictionless import Table, validate, helpers
 
 
 # Loader
@@ -29,6 +29,7 @@ def test_table_s3(bucket_name):
         assert table.read_data() == [["1", "english"], ["2", "中国人"]]
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 @mock_s3
 def test_table_s3_big_file(bucket_name):
 

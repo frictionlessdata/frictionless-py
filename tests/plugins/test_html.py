@@ -1,5 +1,5 @@
 import pytest
-from frictionless import Table
+from frictionless import Table, helpers
 from frictionless.plugins.html import HtmlDialect
 
 
@@ -23,6 +23,7 @@ def test_table_html(source, selector):
         assert table.read_data() == [["1", "english"], ["2", "中国人"]]
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_table_html_write(tmpdir):
     source = "data/table.csv"
     target = str(tmpdir.join("table.html"))
