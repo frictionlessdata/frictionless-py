@@ -14,6 +14,7 @@ def test_ensure_dir(tmpdir):
     assert os.path.isdir(dir_path)
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 @pytest.mark.parametrize(
     "path,is_safe",
     (

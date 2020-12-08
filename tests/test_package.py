@@ -3,7 +3,8 @@ import json
 import yaml
 import zipfile
 import pytest
-from frictionless import Package, Resource, Query, FrictionlessException, describe_package
+from frictionless import Package, Resource, Query, describe_package, helpers
+from frictionless import FrictionlessException
 
 
 # General
@@ -114,6 +115,7 @@ def test_package_from_invalid_descriptor_type():
     assert error.note.count("51")
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_package_from_zip():
     package = Package("data/package.zip")
     assert package.name == "testing"
@@ -137,6 +139,7 @@ def test_package_from_zip_remote():
     ]
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_package_from_zip_no_descriptor(tmpdir):
     descriptor = str(tmpdir.join("package.zip"))
     with zipfile.ZipFile(descriptor, "w") as zip:
@@ -477,6 +480,7 @@ def test_package_to_yaml(tmpdir):
         assert package == yaml.safe_load(file)
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_package_to_zip(tmpdir):
 
     # Write
@@ -495,6 +499,7 @@ def test_package_to_zip(tmpdir):
     ]
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_package_to_zip_withdir_path(tmpdir):
 
     # Write
@@ -512,6 +517,7 @@ def test_package_to_zip_withdir_path(tmpdir):
     ]
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_package_to_zip_absolute_path(tmpdir):
 
     # Write
@@ -529,6 +535,7 @@ def test_package_to_zip_absolute_path(tmpdir):
     ]
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_package_to_zip_resolve_inline(tmpdir):
 
     # Write
@@ -546,6 +553,7 @@ def test_package_to_zip_resolve_inline(tmpdir):
     ]
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_package_to_zip_resolve_inline_sql(tmpdir, database_url):
 
     # Write
@@ -626,6 +634,7 @@ def test_package_to_zip_source_remote(tmpdir):
     ]
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_package_to_zip_source_inline(tmpdir):
 
     # Read
