@@ -1,4 +1,5 @@
 import pytest
+import platform
 import datetime
 from frictionless import Package, Resource, Table, FrictionlessException
 from frictionless.plugins.spss import SpssStorage
@@ -7,6 +8,7 @@ from frictionless.plugins.spss import SpssStorage
 # Parser
 
 
+@pytest.mark.skipif(platform.system() == "Darwin", reason="SPSS doesn't work for MacOS")
 def test_table_spss(tmpdir):
     target = str(tmpdir.join("table.sav"))
 
@@ -23,6 +25,7 @@ def test_table_spss(tmpdir):
         ]
 
 
+@pytest.mark.skipif(platform.system() == "Darwin", reason="SPSS doesn't work for MacOS")
 def test_table_spss_write_timezone(tmpdir):
     target = str(tmpdir.join("table.sav"))
     with Table("data/timezone.csv") as table:
@@ -39,6 +42,7 @@ def test_table_spss_write_timezone(tmpdir):
 # Storage
 
 
+@pytest.mark.skipif(platform.system() == "Darwin", reason="SPSS doesn't work for MacOS")
 def test_storage_types(tmpdir):
 
     # Export/Import
@@ -94,6 +98,7 @@ def test_storage_types(tmpdir):
     storage.delete_package(target.resource_names)
 
 
+@pytest.mark.skipif(platform.system() == "Darwin", reason="SPSS doesn't work for MacOS")
 def test_storage_integrity(tmpdir):
 
     # Export/Import
@@ -140,6 +145,7 @@ def test_storage_integrity(tmpdir):
     storage.delete_package(target.resource_names)
 
 
+@pytest.mark.skipif(platform.system() == "Darwin", reason="SPSS doesn't work for MacOS")
 def test_storage_constraints(tmpdir):
 
     # Export/Import
@@ -177,6 +183,7 @@ def test_storage_constraints(tmpdir):
     storage.delete_package(target.resource_names)
 
 
+@pytest.mark.skipif(platform.system() == "Darwin", reason="SPSS doesn't work for MacOS")
 def test_storage_read_resource_not_existent_error():
     storage = SpssStorage()
     with pytest.raises(FrictionlessException) as excinfo:
@@ -186,6 +193,7 @@ def test_storage_read_resource_not_existent_error():
     assert error.note.count("does not exist")
 
 
+@pytest.mark.skipif(platform.system() == "Darwin", reason="SPSS doesn't work for MacOS")
 def test_storage_write_resource_existent_error(tmpdir):
     resource = Resource(path="data/table.csv")
     storage = resource.to_spss(basepath=tmpdir)
@@ -198,6 +206,7 @@ def test_storage_write_resource_existent_error(tmpdir):
     storage.delete_package(list(storage))
 
 
+@pytest.mark.skipif(platform.system() == "Darwin", reason="SPSS doesn't work for MacOS")
 def test_storage_delete_resource_not_existent_error():
     storage = SpssStorage()
     with pytest.raises(FrictionlessException) as excinfo:

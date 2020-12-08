@@ -33,8 +33,11 @@ def sqlite_url(tmpdir):
 
 @pytest.fixture
 def postgresql_url():
-    yield os.environ["POSTGRESQL_URL"]
-    engine = sa.create_engine(os.environ["POSTGRESQL_URL"])
+    url = os.environ.get("POSTGRESQL_URL")
+    if not url:
+        pytest.skip('Environment varialbe "POSTGRESQL_URL" is not available')
+    yield url
+    engine = sa.create_engine(url)
     conn = engine.connect()
     meta = sa.MetaData(bind=conn)
     meta.reflect(views=True)
@@ -45,8 +48,11 @@ def postgresql_url():
 
 @pytest.fixture
 def mysql_url():
-    yield os.environ["MYSQL_URL"]
-    engine = sa.create_engine(os.environ["MYSQL_URL"])
+    url = os.environ.get("MYSQL_URL")
+    if not url:
+        pytest.skip('Environment varialbe "MYSQL_URL" is not available')
+    yield url
+    engine = sa.create_engine(url)
     conn = engine.connect()
     meta = sa.MetaData(bind=conn)
     meta.reflect(views=True)
