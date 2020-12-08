@@ -2,7 +2,7 @@ import io
 import sys
 import pytest
 from frictionless import FrictionlessException
-from frictionless import Table, Query, Schema, Field, Control, Dialect
+from frictionless import Table, Query, Schema, Field, Control, Dialect, helpers
 from frictionless.plugins.remote import RemoteControl
 from frictionless.plugins.excel import ExcelDialect
 from frictionless.plugins.json import JsonDialect
@@ -299,6 +299,7 @@ def test_table_format_error_non_matching_format():
 # Hashing
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_table_hashing():
     with Table("data/table.csv") as table:
         table.read_data()
@@ -306,6 +307,7 @@ def test_table_hashing():
         assert table.stats["hash"] == "6c2c61dd9b0e9c6876139a449ed87933"
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_table_hashing_provided():
     with Table("data/table.csv", hashing="sha1") as table:
         table.read_data()
@@ -363,6 +365,7 @@ def test_table_encoding_error_bad_encoding():
     assert error.note == "unknown encoding: bad"
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_table_encoding_error_non_matching_encoding():
     table = Table("data/table.csv", encoding="ascii")
     with pytest.raises(FrictionlessException) as excinfo:
@@ -1125,6 +1128,7 @@ def test_table_schema_lookup_foreign_keys_error():
 # Stats
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_table_stats_hash():
     with Table("data/doublequote.csv") as table:
         table.read_data()
@@ -1132,6 +1136,7 @@ def test_table_stats_hash():
         assert table.stats["hash"] == "d82306001266c4343a2af4830321ead8"
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_table_stats_hash_md5():
     with Table("data/doublequote.csv", hashing="md5") as table:
         table.read_data()
@@ -1139,6 +1144,7 @@ def test_table_stats_hash_md5():
         assert table.stats["hash"] == "d82306001266c4343a2af4830321ead8"
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_table_stats_hash_sha1():
     with Table("data/doublequote.csv", hashing="sha1") as table:
         table.read_data()
@@ -1146,6 +1152,7 @@ def test_table_stats_hash_sha1():
         assert table.stats["hash"] == "2842768834a6804d8644dd689da61c7ab71cbb33"
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_table_stats_hash_sha256():
     with Table("data/doublequote.csv", hashing="sha256") as table:
         table.read_data()
@@ -1156,6 +1163,7 @@ def test_table_stats_hash_sha256():
         )
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_table_stats_hash_sha512():
     with Table("data/doublequote.csv", hashing="sha512") as table:
         table.read_data()
@@ -1166,6 +1174,7 @@ def test_table_stats_hash_sha512():
         )
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_table_stats_hash_compressed():
     with Table("data/doublequote.csv.zip") as table:
         table.read_data()
@@ -1173,6 +1182,7 @@ def test_table_stats_hash_compressed():
         assert table.stats["hash"] == "2a72c90bd48c1fa48aec632db23ce8f7"
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 @pytest.mark.ci
 def test_table_stats_hash_remote():
     with Table(BASE_URL % "data/special/doublequote.csv") as table:
@@ -1181,18 +1191,21 @@ def test_table_stats_hash_remote():
         assert table.stats["hash"] == "d82306001266c4343a2af4830321ead8"
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_table_stats_bytes():
     with Table("data/doublequote.csv") as table:
         table.read_data()
         assert table.stats["bytes"] == 7346
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_table_stats_bytes_compressed():
     with Table("data/doublequote.csv.zip") as table:
         table.read_data()
         assert table.stats["bytes"] == 1265
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 @pytest.mark.ci
 def test_table_stats_bytes_remote():
     with Table(BASE_URL % "data/special/doublequote.csv") as table:

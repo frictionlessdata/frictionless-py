@@ -191,6 +191,7 @@ def test_validate_encoding():
     assert report.valid
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_validate_encoding_invalid():
     report = validate("data/latin1.csv", encoding="utf-8")
     assert report.flatten(["code", "note"]) == [
@@ -589,12 +590,14 @@ def test_validate_infer_names():
 # Validation
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_validate_checksum_hash():
     hash = "6c2c61dd9b0e9c6876139a449ed87933"
     report = validate("data/table.csv", checksum={"hash": hash})
     assert report.table.valid
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_validate_checksum_hash_invalid():
     hash = "6c2c61dd9b0e9c6876139a449ed87933"
     report = validate("data/table.csv", checksum={"hash": "bad"})
@@ -603,12 +606,14 @@ def test_validate_checksum_hash_invalid():
     ]
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_validate_checksum_hash_md5():
     hash = "6c2c61dd9b0e9c6876139a449ed87933"
     report = validate("data/table.csv", checksum={"hash": hash})
     assert report.table.valid
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_validate_checksum_hash_md5_invalid():
     hash = "6c2c61dd9b0e9c6876139a449ed87933"
     report = validate("data/table.csv", checksum={"hash": "bad"})
@@ -617,12 +622,14 @@ def test_validate_checksum_hash_md5_invalid():
     ]
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_validate_checksum_hash_sha1():
     hash = "db6ea2f8ff72a9e13e1d70c28ed1c6b42af3bb0e"
     report = validate("data/table.csv", hashing="sha1", checksum={"hash": hash})
     assert report.table.valid
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_validate_checksum_hash_sha1_invalid():
     hash = "db6ea2f8ff72a9e13e1d70c28ed1c6b42af3bb0e"
     report = validate("data/table.csv", hashing="sha1", checksum={"hash": "bad"})
@@ -631,12 +638,14 @@ def test_validate_checksum_hash_sha1_invalid():
     ]
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_validate_checksum_hash_sha256():
     hash = "a1fd6c5ff3494f697874deeb07f69f8667e903dd94a7bc062dd57550cea26da8"
     report = validate("data/table.csv", hashing="sha256", checksum={"hash": hash})
     assert report.table.valid
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_validate_checksum_hash_sha256_invalid():
     hash = "a1fd6c5ff3494f697874deeb07f69f8667e903dd94a7bc062dd57550cea26da8"
     report = validate("data/table.csv", hashing="sha256", checksum={"hash": "bad"})
@@ -645,12 +654,14 @@ def test_validate_checksum_hash_sha256_invalid():
     ]
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_validate_checksum_hash_sha512():
     hash = "d52e3f5f5693894282f023b9985967007d7984292e9abd29dca64454500f27fa45b980132d7b496bc84d336af33aeba6caf7730ec1075d6418d74fb8260de4fd"
     report = validate("data/table.csv", hashing="sha512", checksum={"hash": hash})
     assert report.table.valid
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_validate_checksum_hash_sha512_invalid():
     hash = "d52e3f5f5693894282f023b9985967007d7984292e9abd29dca64454500f27fa45b980132d7b496bc84d336af33aeba6caf7730ec1075d6418d74fb8260de4fd"
     report = validate("data/table.csv", hashing="sha512", checksum={"hash": "bad"})
@@ -659,11 +670,13 @@ def test_validate_checksum_hash_sha512_invalid():
     ]
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_validate_checksum_bytes():
     report = validate("data/table.csv", checksum={"bytes": 30})
     assert report.table.valid
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_validate_checksum_bytes_invalid():
     report = validate("data/table.csv", checksum={"bytes": 40})
     assert report.table.error.get("rowPosition") is None
@@ -673,11 +686,13 @@ def test_validate_checksum_bytes_invalid():
     ]
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_validate_checksum_rows():
     report = validate("data/table.csv", checksum={"rows": 2})
     assert report.table.valid
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_validate_checksum_rows_invalid():
     report = validate("data/table.csv", checksum={"rows": 3})
     assert report.table.error.get("rowPosition") is None
