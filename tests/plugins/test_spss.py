@@ -1,5 +1,4 @@
 import pytest
-import platform
 import datetime
 from frictionless import Package, Resource, Table, FrictionlessException, helpers
 from frictionless.plugins.spss import SpssStorage
