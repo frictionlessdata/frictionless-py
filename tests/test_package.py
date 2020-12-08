@@ -332,6 +332,7 @@ def test_package_expand_resource_dialect():
 # Infer
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_package_infer():
     package = Package()
     package.infer("data/infer/*.csv")

@@ -1,7 +1,8 @@
 import json
 import yaml
+import pytest
 from typer.testing import CliRunner
-from frictionless import program, extract
+from frictionless import program, extract, helpers
 
 runner = CliRunner()
 
@@ -9,6 +10,7 @@ runner = CliRunner()
 # General
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_extract():
     result = runner.invoke(program, "extract data/table.csv")
     assert result.exit_code == 0

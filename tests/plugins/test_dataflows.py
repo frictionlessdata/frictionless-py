@@ -1,11 +1,13 @@
 import os
-from frictionless import Package
+import pytest
+from frictionless import Package, helpers
 from frictionless.plugins.dataflows import DataflowsPipeline
 
 
 # General
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_pipeline(tmpdir):
 
     # Write
