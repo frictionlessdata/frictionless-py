@@ -77,9 +77,7 @@ jobs:
         with:
           python-version: 3.8
       - name: Install dependencies
-        run: |
-          brew install postgresql
-          make install
+        run: LDFLAGS=`echo $(pg_config --ldflags)` make install
       - name: Test software
         run: make test
 
