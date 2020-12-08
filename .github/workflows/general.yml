@@ -12,9 +12,9 @@ on:
 
 jobs:
 
-  # Test
+  # Test (Linux)
 
-  test:
+  test-linux:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -64,6 +64,22 @@ jobs:
           --health-interval=10s
           --health-timeout=5s
           --health-retries=3
+
+  # Test (MacOS)
+
+  test-linux:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Install Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Install dependencies
+        run: make install
+      - name: Test software
+        run: make test
 
   # Deploy
 
