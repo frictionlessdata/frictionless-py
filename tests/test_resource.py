@@ -2,7 +2,7 @@ import os
 import json
 import yaml
 import pytest
-from frictionless import Resource, Schema, Field, Query, describe_resource
+from frictionless import Resource, Schema, Field, Query, describe_resource, helpers
 from frictionless import FrictionlessException
 
 
@@ -12,6 +12,7 @@ from frictionless import FrictionlessException
 BASE_URL = "https://raw.githubusercontent.com/frictionlessdata/datapackage-py/master/%s"
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource():
     resource = Resource("data/resource.json")
     assert resource.name == "name"
@@ -66,6 +67,7 @@ def test_resource_from_path_remote():
     ]
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_from_zip():
     resource = Resource("data/resource.zip")
     assert resource.path == "table.csv"
@@ -84,6 +86,7 @@ def test_resource_from_path_remote_error_bad_path():
     assert error.note.count("bad.json")
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_source_non_tabular():
     path = "data/text.txt"
     resource = Resource(path=path)
@@ -132,6 +135,7 @@ def test_resource_source_non_tabular_error_bad_path():
     assert error.note.count("data/bad.txt")
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_source_path():
     path = "data/table.csv"
     resource = Resource({"path": path})
@@ -161,6 +165,7 @@ def test_resource_source_path():
     }
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_source_path_and_basepath():
     resource = Resource(path="table.csv", basepath="data")
     assert resource.path == "table.csv"
@@ -201,6 +206,7 @@ def test_resource_source_path_error_bad_path():
     assert error.note == "[Errno 2] No such file or directory: 'table.csv'"
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_source_path_error_bad_path_not_safe_absolute():
     with pytest.raises(FrictionlessException) as excinfo:
         Resource(path=os.path.abspath("data/table.csv"))
@@ -209,6 +215,7 @@ def test_resource_source_path_error_bad_path_not_safe_absolute():
     assert error.note.count("data/table.csv")
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_source_path_error_bad_path_not_safe_traversing():
     with pytest.raises(FrictionlessException) as excinfo:
         Resource(path="data/../data/table.csv")
@@ -497,6 +504,7 @@ def test_table_schema_patch_schema():
 # Infer
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_infer():
     resource = Resource(path="data/table.csv")
     resource.infer()
@@ -529,6 +537,7 @@ def test_resource_infer():
     }
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_infer_source_non_tabular():
     resource = Resource(path="data/text.txt")
     resource.infer()
@@ -728,6 +737,7 @@ def test_resource_to_yaml(tmpdir):
         assert resource == yaml.safe_load(file)
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_to_zip(tmpdir):
 
     # Write
@@ -744,6 +754,7 @@ def test_resource_to_zip(tmpdir):
     ]
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_to_zip_withdir_path(tmpdir):
 
     # Write
@@ -760,6 +771,7 @@ def test_resource_to_zip_withdir_path(tmpdir):
     ]
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_to_zip_absolute_path(tmpdir):
 
     # Write
@@ -776,6 +788,7 @@ def test_resource_to_zip_absolute_path(tmpdir):
     ]
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_to_zip_resolve_inline(tmpdir):
 
     # Write
@@ -793,6 +806,7 @@ def test_resource_to_zip_resolve_inline(tmpdir):
     ]
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_to_zip_resolve_inline_sql(tmpdir, database_url):
 
     # Write
@@ -810,6 +824,7 @@ def test_resource_to_zip_resolve_inline_sql(tmpdir, database_url):
     ]
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 @pytest.mark.ci
 def test_resource_to_zip_resolve_remote(tmpdir):
 
@@ -828,6 +843,7 @@ def test_resource_to_zip_resolve_remote(tmpdir):
     ]
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 @pytest.mark.ci
 def test_resource_to_zip_source_remote(tmpdir):
 
@@ -846,6 +862,7 @@ def test_resource_to_zip_source_remote(tmpdir):
     ]
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_to_zip_source_inline(tmpdir):
 
     # Write
@@ -1028,6 +1045,7 @@ def test_resource_integrity_read_lookup():
 # Issues
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_relative_parent_path_with_trusted_option_issue_171():
     # trusted=false (default)
     with pytest.raises(FrictionlessException) as excinfo:
@@ -1043,6 +1061,7 @@ def test_resource_relative_parent_path_with_trusted_option_issue_171():
     ]
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_preserve_format_from_descriptor_on_infer_issue_188():
     resource = Resource({"path": "data/table.csvformat", "format": "csv"})
     resource.infer()

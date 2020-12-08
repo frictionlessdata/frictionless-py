@@ -571,6 +571,7 @@ def test_package_to_zip_resolve_inline_sql(tmpdir, database_url):
     ]
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 @pytest.mark.ci
 def test_package_to_zip_resolve_remote(tmpdir):
 
@@ -589,6 +590,7 @@ def test_package_to_zip_resolve_remote(tmpdir):
     ]
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 @pytest.mark.ci
 def test_package_to_zip_resolve_inline_and_remote(tmpdir):
 
@@ -613,6 +615,7 @@ def test_package_to_zip_resolve_inline_and_remote(tmpdir):
     ]
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 @pytest.mark.ci
 def test_package_to_zip_source_remote(tmpdir):
 
