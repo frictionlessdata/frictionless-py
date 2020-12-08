@@ -1,6 +1,6 @@
 import os
 import pytest
-from frictionless import Table, Resource, validate
+from frictionless import Table, Resource, validate, helpers
 from frictionless import FrictionlessException
 
 
@@ -111,6 +111,7 @@ def test_resource_source_multipart_error_bad_path_not_safe_traversing():
     assert error.note.count("not safe")
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_source_multipart_infer():
     descriptor = {"path": ["data/chunk1.csv", "data/chunk2.csv"]}
     resource = Resource(descriptor)

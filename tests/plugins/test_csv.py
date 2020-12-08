@@ -1,5 +1,5 @@
 import pytest
-from frictionless import Table
+from frictionless import Table, helpers
 from frictionless.plugins.csv import CsvDialect
 
 BASE_URL = "https://raw.githubusercontent.com/okfn/tabulator-py/master/%s"
@@ -221,6 +221,7 @@ def test_table_csv_write_inline_source(tmpdir):
         assert table.read_data() == [["value1", "value2"]]
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_table_tsv_write(tmpdir):
     source = "data/table.csv"
     target = str(tmpdir.join("table.tsv"))

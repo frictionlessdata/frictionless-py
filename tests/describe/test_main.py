@@ -1,10 +1,12 @@
-from frictionless import describe, Resource, Package
+import pytest
+from frictionless import describe, Resource, Package, helpers
 from frictionless.plugins.csv import CsvDialect
 
 
 # General
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_describe():
     resource = describe("data/table.csv")
     assert resource.metadata_valid

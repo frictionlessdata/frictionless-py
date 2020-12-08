@@ -1,9 +1,11 @@
-from frictionless import describe
+import pytest
+from frictionless import describe, helpers
 
 
 # General
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_describe_resource():
     resource = describe("data/table.csv")
     assert resource.metadata_valid

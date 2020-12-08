@@ -149,6 +149,7 @@ def test_extract_json():
     assert json.loads(result.stdout) == extract("data/table.csv")
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_extract_csv():
     result = runner.invoke(program, "extract data/table.csv --csv")
     assert result.exit_code == 0
