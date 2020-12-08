@@ -1,3 +1,9 @@
-comment: false
+comment: no
 coverage:
-  range: '70...100'
+  range: 80..90
+  status:
+    project:
+      default:
+        target: auto
+        threshold: 5%
+    patch: false
