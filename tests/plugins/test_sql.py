@@ -1,4 +1,3 @@
-import os
 import pytest
 import datetime
 import sqlalchemy as sa
@@ -554,8 +553,8 @@ def test_postgresql_storage_constraints(postgresql_url):
         ("maximum", 9),
     ],
 )
-def test_postgresql_storage_constraints_not_valid_error(sqlite_url, field_name, cell):
-    engine = sa.create_engine(os.environ["POSTGRESQL_URL"])
+def test_postgresql_storage_constraints_not_valid_error(postgresql_url, field_name, cell):
+    engine = sa.create_engine(postgresql_url)
     package = Package("data/storage/constraints.json")
     resource = package.get_resource("constraints")
     # We set an invalid cell to the data property
