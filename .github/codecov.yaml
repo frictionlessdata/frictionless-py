@@ -2,8 +2,5 @@ comment: no
 coverage:
   range: 80..90
   status:
-    project:
-      default:
-        target: auto
-        threshold: 5%
+    project: false
     patch: false
