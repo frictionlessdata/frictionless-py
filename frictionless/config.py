@@ -77,7 +77,7 @@ DEFAULT_HTTP_HEADERS = {
 # Backports
 
 
-# NOTE: Can be removed for Python3.8+
+# It can be removed after dropping support for Python 3.6 and Python 3.7
 COMPRESSION_EXCEPTIONS = (
     (zipfile.BadZipFile, gzip.BadGzipFile)
     if hasattr(gzip, "BadGzipFile")

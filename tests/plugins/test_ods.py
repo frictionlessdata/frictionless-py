@@ -83,7 +83,7 @@ def test_table_write_ods(tmpdir):
     target = str(tmpdir.join("table.ods"))
     with Table(source) as table:
         table.write(target)
-    # NOTE: ezodf writer creates more cells than we ask
+    # TODO: fix ezodf writer creates more cells than we ask (remove limits)
     query = Query(limit_fields=2, limit_rows=2)
     with Table(target, query=query) as table:
         assert table.header == ["id", "name"]

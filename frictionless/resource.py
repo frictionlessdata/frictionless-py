@@ -432,7 +432,7 @@ class Resource(Metadata):
     # Infer
 
     # TODO: use stats=True instead of only_sample?
-    # NOTE: optimize this logic/don't re-open
+    # TODO: optimize this logic/don't re-open
     def infer(self, source=None, *, only_sample=False):
         """Infer metadata
 
@@ -582,7 +582,7 @@ class Resource(Metadata):
         with self.to_table() as table:
             return table.sample
 
-    # NOTE: optimize this logic/don't re-open
+    # TODO: optimize this logic/don't re-open
     def read_stats(self):
         """
         Returns
@@ -596,7 +596,7 @@ class Resource(Metadata):
                 return table.stats
 
         # General
-        # NOTE: make loader.ByteStreamWithStatsHandling iterable / rebase on pass_through?
+        # TODO: make loader.ByteStreamWithStatsHandling iterable / rebase on pass_through?
         with self.to_file() as file:
             bytes = True
             while bytes:
@@ -768,7 +768,7 @@ class Resource(Metadata):
             package=self.__package,
         )
 
-    # NOTE: cache lookup?
+    # TODO: cache lookup?
     def to_table(self, **options):
         """Convert resource to Table
 

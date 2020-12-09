@@ -791,7 +791,7 @@ class Table:
 
     # Write
 
-    # NOTE: can we rebase on source/target resources instead of read_row_stream?
+    # TODO: can we rebase on source/target resources instead of read_row_stream?
     def write(
         self,
         target=None,

@@ -26,12 +26,12 @@ def extract(source, *, source_type=None, process=None, stream=False, **options):
     module = import_module("frictionless.extract")
 
     # Normalize source
-    # NOTE: move to lower-levels
+    # TODO: move to lower-levels
     if isinstance(source, Path):
         source = str(source)
 
     # Detect source type
-    # NOTE: move to helpers
+    # TODO: move to helpers
     if not source_type:
         if not callable(source):
             if hasattr(source, "read"):

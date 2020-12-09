@@ -289,7 +289,7 @@ def test_storage_constraints_not_valid_error(sqlite_url, field_name, cell):
     for index, field in enumerate(resource.schema.fields):
         if field.name == field_name:
             resource.data[1][index] = cell
-    # NOTE: should we wrap these exceptions?
+    # TODO: should we wrap these exceptions?
     with pytest.raises(sa.exc.IntegrityError):
         resource.to_sql(engine=engine, force=True)
 
@@ -774,7 +774,7 @@ def test_mysql_storage_constraints_not_valid_error(mysql_url, field_name, cell):
     for index, field in enumerate(resource.schema.fields):
         if field.name == field_name:
             resource.data[1][index] = cell
-    # NOTE: should we wrap these exceptions?
+    # TODO: should we wrap these exceptions?
     with pytest.raises(sa.exc.IntegrityError):
         resource.to_sql(engine=engine, force=True)
 

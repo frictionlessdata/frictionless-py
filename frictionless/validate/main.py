@@ -27,12 +27,12 @@ def validate(source, source_type=None, **options):
     module = import_module("frictionless.validate")
 
     # Normalize source
-    # NOTE: move to lower-levels
+    # TODO: move to lower-levels
     if isinstance(source, Path):
         source = str(source)
 
     # Detect source type
-    # NOTE: move to helpers
+    # TODO: move to helpers
     if not source_type:
         if source and isinstance(source, list) and isinstance(source[0], str):
             basepath = options.pop("basepath", None)

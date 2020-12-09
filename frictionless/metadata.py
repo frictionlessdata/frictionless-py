@@ -98,7 +98,7 @@ class Metadata(helpers.ControlledDict):
         """
         return helpers.deepfork(self)
 
-    # NOTE: improve this code
+    # TODO: improve this code
     def to_json(self, target=None, encoder_class=None):
         """Save metadata as a json
 
@@ -123,7 +123,7 @@ class Metadata(helpers.ControlledDict):
         except Exception as exc:
             raise FrictionlessException(self.__Error(note=str(exc))) from exc
 
-    # NOTE: improve this code
+    # TODO: improve this code
     def to_yaml(self, target=None):
         """Save metadata as a yaml
 
@@ -271,11 +271,7 @@ class Metadata(helpers.ControlledDict):
 
 
 def metadata_attach(self, name, value):
-    # NOTE: setitem without a wrapper doesn't work for Python3.6
-    # NOTE: review the new implementation
-    # Previously we copied the "value" object:
-    # copy = dict if isinstance(value, dict) else list
-    # setitem(self, name, copy(value))
+    # Using standalone `setitem` without a wrapper doesn't work for Python3.6
     return setitem(self, name, value)
 
 

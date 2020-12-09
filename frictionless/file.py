@@ -202,7 +202,7 @@ class File:
         self.close()
         try:
             self.__resource.stats = {"hash": "", "bytes": 0, "fields": 0, "rows": 0}
-            # NOTE: handle cases like Inline/SQL/etc
+            # TODO: handle cases like Inline/SQL/etc
             self.__loader = system.create_loader(self.__resource)
             self.__loader.open()
             return self

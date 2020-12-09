@@ -23,12 +23,12 @@ def describe(source, *, source_type=None, **options):
     module = import_module("frictionless.describe")
 
     # Normalize source
-    # NOTE: move to lower-levels
+    # TODO: move to lower-levels
     if isinstance(source, Path):
         source = str(source)
 
     # Detect source type
-    # NOTE: move to helpers
+    # TODO: move to helpers
     if not source_type:
         source_type = "resource"
         if isinstance(source, list):

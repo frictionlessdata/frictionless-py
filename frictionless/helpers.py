@@ -425,7 +425,7 @@ def get_current_memory_usage():
 # Backports
 
 
-# NOTE: Can be removed for Python3.8+
+# It can be removed after dropping support for Python 3.6 and Python 3.7
 class cached_property:
     def __init__(self, func):
         self.func = func

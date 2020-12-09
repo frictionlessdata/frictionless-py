@@ -124,7 +124,6 @@ class HtmlParser(Parser):
             table = page
 
         # Stream headers
-        # NOTE: support th headers tag
         data = (
             table.children("thead").children("tr")
             + table.children("thead")
@@ -143,8 +142,8 @@ class HtmlParser(Parser):
 
     # Write
 
-    # NOTE: rebase on proper pyquery
-    # NOTE: take dialect into account
+    # We can rebase on pyquery for writing this html
+    # It will give us an ability to support HtmlDialect
     def write_row_stream_save(self, read_row_stream):
         html = "<html><body><table>\n"
         for row in read_row_stream():

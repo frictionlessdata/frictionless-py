@@ -273,9 +273,9 @@ class Loader:
 # Internal
 
 
-# NOTE: implement __iter__
-# NOTE: review read/read1 usage
-# NOTE: Try buffering byte sample especially for remote
+# We can try buffering byte sample especially for remote
+# Also, currently read/read1/item implementation is not complete
+# As an option, we can thing of subclassing some io.* class
 class ByteStreamWithStatsHandling:
     def __init__(self, byte_stream, *, resource):
         try:
