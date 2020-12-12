@@ -10,22 +10,22 @@ BASE_URL = "https://raw.githubusercontent.com/frictionlessdata/tabulator-py/mast
 # Read
 
 
-def test_table_xlsx_table():
+def test_xlsx_parser_table():
     source = io.open("data/table.xlsx", mode="rb")
     with Table(source, format="xlsx") as table:
         assert table.header == ["id", "name"]
         assert table.read_data() == [[1.0, "english"], [2.0, "中国人"]]
 
 
-@pytest.mark.ci
-def test_table_xlsx_remote():
+@pytest.mark.vcr
+def test_xlsx_parser_remote():
     source = BASE_URL % "data/table.xlsx"
     with Table(source) as table:
         assert table.header == ["id", "name"]
         assert table.read_data() == [[1.0, "english"], [2.0, "中国人"]]
 
 
-def test_table_xlsx_sheet_by_index():
+def test_xlsx_parser_sheet_by_index():
     source = "data/sheet2.xlsx"
     dialect = ExcelDialect(sheet=2)
     with Table(source, dialect=dialect) as table:
@@ -33,7 +33,7 @@ def test_table_xlsx_sheet_by_index():
         assert table.read_data() == [[1.0, "english"], [2.0, "中国人"]]
 
 
-def test_table_xlsx_format_error_sheet_by_index_not_existent():
+def test_xlsx_parser_format_error_sheet_by_index_not_existent():
     source = "data/sheet2.xlsx"
     dialect = ExcelDialect(sheet=3)
     table = Table(source, dialect=dialect)
@@ -44,7 +44,7 @@ def test_table_xlsx_format_error_sheet_by_index_not_existent():
     assert error.note == 'Excel document "data/sheet2.xlsx" does not have a sheet "3"'
 
 
-def test_table_xlsx_sheet_by_name():
+def test_xlsx_parser_sheet_by_name():
     source = "data/sheet2.xlsx"
     dialect = ExcelDialect(sheet="Sheet2")
     with Table(source, dialect=dialect) as table:
@@ -52,7 +52,7 @@ def test_table_xlsx_sheet_by_name():
         assert table.read_data() == [[1.0, "english"], [2.0, "中国人"]]
 
 
-def test_table_xlsx_format_errors_sheet_by_name_not_existent():
+def test_xlsx_parser_format_errors_sheet_by_name_not_existent():
     source = "data/sheet2.xlsx"
     dialect = ExcelDialect(sheet="bad")
     table = Table(source, dialect=dialect)
@@ -63,20 +63,20 @@ def test_table_xlsx_format_errors_sheet_by_name_not_existent():
     assert error.note == 'Excel document "data/sheet2.xlsx" does not have a sheet "bad"'
 
 
-def test_table_xlsx_merged_cells():
+def test_xlsx_parser_merged_cells():
     source = "data/merged-cells.xlsx"
     with Table(source, headers=False) as table:
         assert table.read_data() == [["data", None]]
 
 
-def test_table_xlsx_merged_cells_fill():
+def test_xlsx_parser_merged_cells_fill():
     source = "data/merged-cells.xlsx"
     dialect = ExcelDialect(fill_merged_cells=True)
     with Table(source, dialect=dialect, headers=False) as table:
         assert table.read_data() == [["data", "data"], ["data", "data"], ["data", "data"]]
 
 
-def test_table_xlsx_adjust_floating_point_error():
+def test_xlsx_parser_adjust_floating_point_error():
     source = "data/adjust-floating-point-error.xlsx"
     dialect = ExcelDialect(
         fill_merged_cells=False,
@@ -89,7 +89,7 @@ def test_table_xlsx_adjust_floating_point_error():
             assert table.read_data()[1][2] == 274.66
 
 
-def test_table_xlsx_adjust_floating_point_error_default():
+def test_xlsx_parser_adjust_floating_point_error_default():
     source = "data/adjust-floating-point-error.xlsx"
     dialect = ExcelDialect(preserve_formatting=True)
     query = Query(skip_fields=["<blank>"])
@@ -99,7 +99,7 @@ def test_table_xlsx_adjust_floating_point_error_default():
 
 
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-def test_table_xlsx_preserve_formatting():
+def test_xlsx_parser_preserve_formatting():
     source = "data/preserve-formatting.xlsx"
     dialect = ExcelDialect(preserve_formatting=True)
     with Table(source, dialect=dialect, headers=1, infer_type="any") as table:
@@ -123,7 +123,7 @@ def test_table_xlsx_preserve_formatting():
         ]
 
 
-def test_table_xlsx_preserve_formatting_percentage():
+def test_xlsx_parser_preserve_formatting_percentage():
     source = "data/preserve-formatting-percentage.xlsx"
     dialect = ExcelDialect(preserve_formatting=True)
     with Table(source, dialect=dialect) as table:
@@ -134,7 +134,7 @@ def test_table_xlsx_preserve_formatting_percentage():
         ]
 
 
-def test_table_xlsx_preserve_formatting_number_multicode():
+def test_xlsx_parser_preserve_formatting_number_multicode():
     source = "data/number-format-multicode.xlsx"
     dialect = ExcelDialect(preserve_formatting=True)
     query = Query(skip_fields=["<blank>"])
@@ -142,8 +142,8 @@ def test_table_xlsx_preserve_formatting_number_multicode():
         assert table.read_data() == [["4.5"], ["-9.032"], ["15.8"]]
 
 
-@pytest.mark.ci
-def test_table_xlsx_workbook_cache():
+@pytest.mark.vcr
+def test_xlsx_parser_workbook_cache():
     source = BASE_URL % "data/special/sheets.xlsx"
     for sheet in ["Sheet1", "Sheet2", "Sheet3"]:
         dialect = ExcelDialect(sheet=sheet, workbook_cache={})
@@ -158,14 +158,14 @@ def test_table_local_xls():
         assert table.read_data() == [[1, "english"], [2, "中国人"]]
 
 
-@pytest.mark.ci
+@pytest.mark.vcr
 def test_table_remote_xls():
     with Table(BASE_URL % "data/table.xls") as table:
         assert table.header == ["id", "name"]
         assert table.read_data() == [[1, "english"], [2, "中国人"]]
 
 
-def test_table_xls_sheet_by_index():
+def test_xls_parser_sheet_by_index():
     source = "data/sheet2.xls"
     dialect = ExcelDialect(sheet=2)
     with Table(source, dialect=dialect) as table:
@@ -173,7 +173,7 @@ def test_table_xls_sheet_by_index():
         assert table.read_data() == [[1, "english"], [2, "中国人"]]
 
 
-def test_table_xls_sheet_by_index_not_existent():
+def test_xls_parser_sheet_by_index_not_existent():
     source = "data/sheet2.xls"
     dialect = ExcelDialect(sheet=3)
     with pytest.raises(FrictionlessException) as excinfo:
@@ -181,7 +181,7 @@ def test_table_xls_sheet_by_index_not_existent():
     assert 'sheet "3"' in str(excinfo.value)
 
 
-def test_table_xls_sheet_by_name():
+def test_xls_parser_sheet_by_name():
     source = "data/sheet2.xls"
     dialect = ExcelDialect(sheet="Sheet2")
     with Table(source, dialect=dialect) as table:
@@ -189,7 +189,7 @@ def test_table_xls_sheet_by_name():
         assert table.read_data() == [[1, "english"], [2, "中国人"]]
 
 
-def test_table_xls_sheet_by_name_not_existent():
+def test_xls_parser_sheet_by_name_not_existent():
     source = "data/sheet2.xls"
     dialect = ExcelDialect(sheet="bad")
     with pytest.raises(FrictionlessException) as excinfo:
@@ -197,39 +197,39 @@ def test_table_xls_sheet_by_name_not_existent():
     assert 'sheet "bad"' in str(excinfo.value)
 
 
-def test_table_xls_merged_cells():
+def test_xls_parser_merged_cells():
     source = "data/merged-cells.xls"
     with Table(source, headers=False) as table:
         assert table.read_data() == [["data", ""], ["", ""], ["", ""]]
 
 
-def test_table_xls_merged_cells_fill():
+def test_xls_parser_merged_cells_fill():
     source = "data/merged-cells.xls"
     dialect = ExcelDialect(fill_merged_cells=True)
     with Table(source, dialect=dialect, headers=False) as table:
         assert table.read_data() == [["data", "data"], ["data", "data"], ["data", "data"]]
 
 
-def test_table_xls_with_boolean():
+def test_xls_parser_with_boolean():
     with Table("data/table-with-booleans.xls") as table:
         assert table.header == ["id", "boolean"]
         assert table.read_data() == [[1, True], [2, False]]
 
 
-def test_table_xlsx_merged_cells_boolean():
+def test_xlsx_parser_merged_cells_boolean():
     source = "data/merged-cells-boolean.xls"
     with Table(source, headers=False) as table:
         assert table.read_data() == [[True, ""], ["", ""], ["", ""]]
 
 
-def test_table_xlsx_merged_cells_fill_boolean():
+def test_xlsx_parser_merged_cells_fill_boolean():
     source = "data/merged-cells-boolean.xls"
     dialect = ExcelDialect(fill_merged_cells=True)
     with Table(source, dialect=dialect, headers=False) as table:
         assert table.read_data() == [[True, True], [True, True], [True, True]]
 
 
-def test_table_xls_with_ints_floats_dates():
+def test_xls_parser_with_ints_floats_dates():
     source = "data/table-with-ints-floats-dates.xls"
     with Table(source) as table:
         assert table.header == ["Int", "Float", "Date"]
@@ -240,7 +240,7 @@ def test_table_xls_with_ints_floats_dates():
         ]
 
 
-@pytest.mark.ci
+@pytest.mark.vcr
 @pytest.mark.skip
 def test_fix_for_2007_xls():
     source = "https://ams3.digitaloceanspaces.com/budgetkey-files/spending-reports/2018-3-משרד התרבות והספורט-לשכת הפרסום הממשלתית-2018-10-22-c457.xls"
@@ -252,7 +252,7 @@ def test_fix_for_2007_xls():
 
 
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-def test_table_xlsx_write(tmpdir):
+def test_xlsx_parser_write(tmpdir):
     source = "data/table.csv"
     target = str(tmpdir.join("table.xlsx"))
     with Table(source) as table:
@@ -263,7 +263,7 @@ def test_table_xlsx_write(tmpdir):
 
 
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-def test_table_xlsx_write_sheet_name(tmpdir):
+def test_xlsx_parser_write_sheet_name(tmpdir):
     source = "data/table.csv"
     target = str(tmpdir.join("table.xlsx"))
     dialect = ExcelDialect(sheet="sheet")
@@ -275,7 +275,7 @@ def test_table_xlsx_write_sheet_name(tmpdir):
 
 
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-def test_table_xls_write(tmpdir):
+def test_xls_parser_write(tmpdir):
     source = "data/table.csv"
     target = str(tmpdir.join("table.xls"))
     with Table(source) as table:
@@ -286,7 +286,7 @@ def test_table_xls_write(tmpdir):
 
 
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-def test_table_xls_write_sheet_name(tmpdir):
+def test_xls_parser_write_sheet_name(tmpdir):
     source = "data/table.csv"
     target = str(tmpdir.join("table.xls"))
     dialect = ExcelDialect(sheet="sheet")
