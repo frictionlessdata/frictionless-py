@@ -1,0 +1,84 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/54.0.2840.87 Safari/537.36
+    method: GET
+    uri: https://docs.google.com/spreadsheets/d//export?format=csv&id=
+  response:
+    body:
+      string: !!binary |
+        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
+    headers:
+      Alt-Svc:
+      - h3-29=":443"; ma=2592000,h3-T051=":443"; ma=2592000,h3-Q050=":443"; ma=2592000,h3-Q046=":443";
+        ma=2592000,h3-Q043=":443"; ma=2592000,quic=":443"; ma=2592000; v="46,43"
+      Cache-Control:
+      - no-cache, no-store, max-age=0, must-revalidate
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - 'base-uri ''self'';object-src ''self'';report-uri https://docs.google.com/spreadsheets/cspreport;script-src
+        ''unsafe-inline'' https: http: ''unsafe-eval'';worker-src ''self'''
+      Content-Type:
+      - text/html; charset=utf-8
+      Date:
+      - Sat, 12 Dec 2020 12:20:59 GMT
+      Expires:
+      - Mon, 01 Jan 1990 00:00:00 GMT
+      P3P:
+      - CP="This is not a P3P policy! See g.co/p3phelp for more info."
+      Pragma:
+      - no-cache
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Server:
+      - GSE
+      Set-Cookie:
+      - NID=204=CdX6SFKLTIl7m9W1oKc2Pswjxp8IuQB5qoJVlb2V78GQIue6BlrM9YJmWyr8KF7GMzefrBbqnKk9--S-0ZD6KSREbYmLli__V3QDkzFGqSIms7i2LidUIhmS--slmMUNl0Mcu5np1TttORJmANcC-T6GHmg0yq4DEukMUMblJlA;
+        expires=Sun, 13-Jun-2021 12:20:59 GMT; path=/; domain=.google.com; Secure;
+        HttpOnly
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      X-XSS-Protection:
+      - 1; mode=block
+      x-chromium-appcache-fallback-override:
+      - disallow-fallback
+    status:
+      code: 404
+      message: Not Found
+version: 1
