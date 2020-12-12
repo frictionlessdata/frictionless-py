@@ -79,7 +79,7 @@ jobs:
       - name: Install dependencies
         run: LDFLAGS=`echo $(pg_config --ldflags)` make install
       - name: Test software
-        run: make test
+        run: make test-ci
 
   # Test (Windows)
 

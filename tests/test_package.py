@@ -556,6 +556,7 @@ def test_package_to_zip_resolve_inline(tmpdir):
     ]
 
 
+@pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_package_to_zip_resolve_inline_sql(tmpdir, database_url):
 
@@ -575,6 +576,7 @@ def test_package_to_zip_resolve_inline_sql(tmpdir, database_url):
 
 
 @pytest.mark.vcr
+@pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_package_to_zip_resolve_remote(tmpdir):
 
