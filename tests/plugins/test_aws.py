@@ -56,7 +56,6 @@ def test_s3_loader_big_file(bucket_name):
 
 
 @mock_s3
-@pytest.mark.ci
 def test_s3_loader_multiprocessing_problem_issue_496(bucket_name):
 
     # Write
@@ -78,7 +77,7 @@ def test_s3_loader_multiprocessing_problem_issue_496(bucket_name):
             {"path": "s3://%s/table2.csv" % bucket_name},
         ]
     }
-    report = validate(descriptor)
+    report = validate(descriptor, nopool=True)
     assert report.valid
     assert report.stats["tables"] == 2
 
