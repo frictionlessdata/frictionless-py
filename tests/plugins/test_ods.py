@@ -9,29 +9,29 @@ BASE_URL = "https://raw.githubusercontent.com/okfn/tabulator-py/master/%s"
 # Parser
 
 
-def test_table_ods():
+def test_ods_parser():
     with Table("data/table.ods") as table:
         assert table.format == "ods"
         assert table.header == ["id", "name"]
         assert table.read_data() == [[1, "english"], [2, "中国人"]]
 
 
-@pytest.mark.ci
-def test_table_ods_remote():
+@pytest.mark.vcr
+def test_ods_parser_remote():
     source = BASE_URL % "data/table.ods"
     with Table(source) as table:
         assert table.header == ["id", "name"]
         assert table.read_data() == [[1, "english"], [2, "中国人"]]
 
 
-def test_table_ods_sheet_by_index():
+def test_ods_parser_sheet_by_index():
     dialect = OdsDialect(sheet=1)
     with Table("data/table.ods", dialect=dialect) as table:
         assert table.header == ["id", "name"]
         assert table.read_data() == [[1, "english"], [2, "中国人"]]
 
 
-def test_table_ods_sheet_by_index_not_existent():
+def test_ods_parser_sheet_by_index_not_existent():
     dialect = OdsDialect(sheet=3)
     table = Table("data/table.ods", dialect=dialect)
     with pytest.raises(FrictionlessException) as excinfo:
@@ -41,14 +41,14 @@ def test_table_ods_sheet_by_index_not_existent():
     assert error.note == 'OpenOffice document "data/table.ods" does not have a sheet "3"'
 
 
-def test_table_ods_sheet_by_name():
+def test_ods_parser_sheet_by_name():
     dialect = OdsDialect(sheet="Лист1")
     with Table("data/table.ods", dialect=dialect) as table:
         assert table.header == ["id", "name"]
         assert table.read_data() == [[1, "english"], [2, "中国人"]]
 
 
-def test_table_ods_sheet_by_name_not_existent():
+def test_ods_parser_sheet_by_name_not_existent():
     dialect = OdsDialect(sheet="bad")
     table = Table("data/table.ods", dialect=dialect)
     with pytest.raises(FrictionlessException) as excinfo:
@@ -60,13 +60,13 @@ def test_table_ods_sheet_by_name_not_existent():
     )
 
 
-def test_table_ods_with_boolean():
+def test_ods_parser_with_boolean():
     with Table("data/table-with-booleans.ods") as table:
         assert table.header == ["id", "boolean"]
         assert table.read_data() == [[1, True], [2, False]]
 
 
-def test_table_ods_with_ints_floats_dates():
+def test_ods_parser_with_ints_floats_dates():
     source = "data/table-with-ints-floats-dates.ods"
     with Table(source) as table:
         assert table.header == ["Int", "Float", "Date", "Datetime"]

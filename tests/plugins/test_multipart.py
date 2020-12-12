@@ -10,7 +10,7 @@ BASE_URL = "https://raw.githubusercontent.com/frictionlessdata/datapackage-py/ma
 # Table
 
 
-def test_table_multipart():
+def test_multipart_loader():
     with Table(["data/chunk1.csv", "data/chunk2.csv"]) as table:
         assert table.header == ["id", "name"]
         assert table.read_rows() == [
@@ -19,7 +19,7 @@ def test_table_multipart():
         ]
 
 
-def test_table_multipart_with_compressed_parts():
+def test_multipart_loader_with_compressed_parts():
     with Table(["data/chunk1.csv.zip", "data/chunk2.csv.zip"]) as table:
         assert table.compression == "no"
         assert table.compression_path == ""
