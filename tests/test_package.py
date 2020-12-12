@@ -128,6 +128,7 @@ def test_package_from_zip():
 
 
 @pytest.mark.vcr
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_package_from_zip_remote():
     package = Package(BASE_URL % "data/package.zip")
     assert package.name == "testing"

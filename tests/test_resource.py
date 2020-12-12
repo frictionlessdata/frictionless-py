@@ -57,6 +57,7 @@ def test_resource_from_path_error_bad_path():
 
 
 @pytest.mark.vcr
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_from_path_remote():
     resource = Resource(BASE_URL % "data/resource.json")
     assert resource.source == BASE_URL % "data/table.csv"
@@ -178,6 +179,7 @@ def test_resource_source_path_and_basepath():
 
 
 @pytest.mark.vcr
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_source_path_and_basepath_remote():
     resource = Resource(path="table.csv", basepath=BASE_URL % "data")
     assert resource.source == BASE_URL % "data/table.csv"
@@ -328,6 +330,7 @@ def test_resource_dialect_from_path():
 
 
 @pytest.mark.vcr
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_dialect_from_path_remote():
     resource = Resource(BASE_URL % "data/resource-with-dereferencing.json")
     assert resource == {
@@ -398,6 +401,7 @@ def test_resource_schema_source_data():
 
 
 @pytest.mark.vcr
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_schema_source_remote():
     descriptor = {
         "name": "name",
@@ -438,6 +442,7 @@ def test_resource_schema_from_path_with_basepath():
 
 
 @pytest.mark.vcr
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_schema_from_path_remote():
     resource = Resource(BASE_URL % "data/resource-with-dereferencing.json")
     assert resource == {

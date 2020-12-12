@@ -49,6 +49,7 @@ def test_multipart_loader_resource():
 
 
 @pytest.mark.vcr
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_multipart_loader_resource_remote():
     descriptor = {
         "name": "name",
