@@ -5,7 +5,8 @@ from frictionless import Table, FrictionlessException, helpers
 
 
 # We don't use VCR for this module testing because
-# HTTP requests can contain secrets from ".google.json"
+# HTTP requests can contain secrets from ".google.json". Consider using:
+# https://vcrpy.readthedocs.io/en/latest/advanced.html#filter-sensitive-data-from-the-request
 
 
 # Parser
