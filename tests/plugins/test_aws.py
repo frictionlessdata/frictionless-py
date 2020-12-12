@@ -29,8 +29,9 @@ def test_s3_loader(bucket_name):
         assert table.read_data() == [["1", "english"], ["2", "中国人"]]
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 @mock_s3
+@pytest.mark.ci
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_s3_loader_big_file(bucket_name):
 
     # Write

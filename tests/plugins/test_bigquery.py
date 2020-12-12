@@ -13,6 +13,7 @@ from frictionless.plugins.bigquery import BigqueryDialect, BigqueryStorage
 # Parser
 
 
+@pytest.mark.ci
 def test_bigquery_parser(options):
     prefix = options.pop("prefix")
     service = options.pop("service")
@@ -31,6 +32,7 @@ def test_bigquery_parser(options):
         ]
 
 
+@pytest.mark.ci
 def test_bigquery_parser_write_timezone(options):
     prefix = options.pop("prefix")
     service = options.pop("service")
@@ -49,6 +51,7 @@ def test_bigquery_parser_write_timezone(options):
 # Storage
 
 
+@pytest.mark.ci
 def test_bigquery_storage_types(options):
 
     # Export/Import
@@ -105,6 +108,7 @@ def test_bigquery_storage_types(options):
     storage.delete_package(target.resource_names)
 
 
+@pytest.mark.ci
 def test_bigquery_storage_integrity(options):
 
     # Export/Import
@@ -151,6 +155,7 @@ def test_bigquery_storage_integrity(options):
     storage.delete_package(target.resource_names)
 
 
+@pytest.mark.ci
 def test_bigquery_storage_constraints(options):
 
     # Export/Import
@@ -188,6 +193,7 @@ def test_bigquery_storage_constraints(options):
     storage.delete_package(target.resource_names)
 
 
+@pytest.mark.ci
 def test_bigquery_storage_read_resource_not_existent_error(options):
     storage = BigqueryStorage(**options)
     with pytest.raises(FrictionlessException) as excinfo:
@@ -197,6 +203,7 @@ def test_bigquery_storage_read_resource_not_existent_error(options):
     assert error.note.count("does not exist")
 
 
+@pytest.mark.ci
 def test_bigquery_storage_write_resource_existent_error(options):
     resource = Resource(path="data/table.csv")
     storage = resource.to_bigquery(force=True, **options)
@@ -209,6 +216,7 @@ def test_bigquery_storage_write_resource_existent_error(options):
     storage.delete_package(list(storage))
 
 
+@pytest.mark.ci
 def test_bigquery_storage_delete_resource_not_existent_error(options):
     storage = BigqueryStorage(**options)
     with pytest.raises(FrictionlessException) as excinfo:
@@ -218,6 +226,7 @@ def test_bigquery_storage_delete_resource_not_existent_error(options):
     assert error.note.count("does not exist")
 
 
+@pytest.mark.ci
 def test_storage_big_file(options):
     source = Resource(name="table", data=[[1]] * 1500)
     storage = source.to_bigquery(force=True, **options)

@@ -21,6 +21,7 @@ def test_remote_loader_latin1():
         assert table.read_data()
 
 
+@pytest.mark.ci
 @pytest.mark.vcr
 def test_remote_loader_big_file():
     with Table(BASE_URL % "data/table1.csv") as table:
