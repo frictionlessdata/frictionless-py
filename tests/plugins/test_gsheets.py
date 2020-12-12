@@ -1,16 +1,5 @@
-import os
-import sys
 import pytest
 from frictionless import Table, FrictionlessException
-
-
-# Environment
-
-
-# In forked pull requests `.google.json` will not be available
-pytestmark = pytest.mark.skipif(
-    not os.path.isfile(".google.json"), reason="Google environment is not available"
-)
 
 
 # Parser
@@ -43,7 +32,6 @@ def test_gsheets_parser_bad_url():
 
 
 @pytest.mark.vcr
-@pytest.mark.skipif(sys.version_info < (3, 8), reason="Speed up CI")
 def test_gsheets_parser_write():
     path = "https://docs.google.com/spreadsheets/d/1F2OiYmaf8e3x7jSc95_uNgfUyBlSXrcRg-4K_MFNZQI/edit"
 
