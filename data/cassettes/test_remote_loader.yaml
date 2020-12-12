@@ -12,11 +12,11 @@ interactions:
       - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
         like Gecko) Chrome/54.0.2840.87 Safari/537.36
     method: GET
-    uri: https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/latin1.csv
+    uri: https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/table.csv
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAA8tM0clLzE3lMtRJzUvPySzO4DLSWckFACVx2SIWAAAA
+        H4sIAAAAAAAAA8tM0clLzE3lMtRJzUvPySzO4DLSebJj7dPZe5/s2sUFAAFuQI0eAAAA
     headers:
       Accept-Ranges:
       - bytes
@@ -29,17 +29,17 @@ interactions:
       Content-Encoding:
       - gzip
       Content-Length:
-      - '42'
+      - '51'
       Content-Security-Policy:
       - default-src 'none'; style-src 'unsafe-inline'; sandbox
       Content-Type:
       - text/plain; charset=utf-8
       Date:
-      - Sat, 12 Dec 2020 11:36:49 GMT
+      - Sat, 12 Dec 2020 12:02:37 GMT
       ETag:
-      - W/"8b016720e196389395fa5f64c0ebb9e285eb2ccee3e6bcf8b3e7ed472744f22f"
+      - W/"0172a2fd99319bed82fe7cccbd7a44b27a77f7200caf0d04b7f23cbb6b81026d"
       Expires:
-      - Sat, 12 Dec 2020 11:41:49 GMT
+      - Sat, 12 Dec 2020 12:07:37 GMT
       Source-Age:
       - '0'
       Strict-Transport-Security:
@@ -49,21 +49,21 @@ interactions:
       Via:
       - 1.1 varnish (Varnish/6.0), 1.1 varnish
       X-Cache:
-      - MISS, MISS
+      - MISS, HIT
       X-Cache-Hits:
-      - 0, 0
+      - 0, 1
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - db225dab216f33ba99b3f252bc950bd6d1a1f9f5
+      - a80ac33fb70030279e9722c45b4f72e169f9a1e1
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 35F0:A59D:2B870E:2DFD31:5FD4AB51
+      - 4DAA:A114:9AB36:A5A0C:5FD4A850
       X-Served-By:
-      - cache-fra19149-FRA
+      - cache-fra19139-FRA
       X-Timer:
-      - S1607773009.307430,VS0,VE183
+      - S1607774557.319687,VS0,VE179
       X-XSS-Protection:
       - 1; mode=block
     status:
@@ -82,11 +82,11 @@ interactions:
       - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
         like Gecko) Chrome/54.0.2840.87 Safari/537.36
     method: GET
-    uri: https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/latin1.csv
+    uri: https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/table.csv
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAA8tM0clLzE3lMtRJzUvPySzO4DLSWckFACVx2SIWAAAA
+        H4sIAAAAAAAAA8tM0clLzE3lMtRJzUvPySzO4DLSebJj7dPZe5/s2sUFAAFuQI0eAAAA
     headers:
       Accept-Ranges:
       - bytes
@@ -99,17 +99,17 @@ interactions:
       Content-Encoding:
       - gzip
       Content-Length:
-      - '42'
+      - '51'
       Content-Security-Policy:
       - default-src 'none'; style-src 'unsafe-inline'; sandbox
       Content-Type:
       - text/plain; charset=utf-8
       Date:
-      - Sat, 12 Dec 2020 11:36:49 GMT
+      - Sat, 12 Dec 2020 12:02:37 GMT
       ETag:
-      - W/"8b016720e196389395fa5f64c0ebb9e285eb2ccee3e6bcf8b3e7ed472744f22f"
+      - W/"0172a2fd99319bed82fe7cccbd7a44b27a77f7200caf0d04b7f23cbb6b81026d"
       Expires:
-      - Sat, 12 Dec 2020 11:41:49 GMT
+      - Sat, 12 Dec 2020 12:07:37 GMT
       Source-Age:
       - '0'
       Strict-Transport-Security:
@@ -125,15 +125,15 @@ interactions:
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 5856bcfa7cc8f8afe0532b387497af1b19c890db
+      - 781870129a5b016ce3b900e21c0cdea5796c8947
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 35F0:A59D:2B870E:2DFD31:5FD4AB51
+      - 4DAA:A114:9AB36:A5A0C:5FD4A850
       X-Served-By:
-      - cache-fra19162-FRA
+      - cache-fra19127-FRA
       X-Timer:
-      - S1607773010.695307,VS0,VE1
+      - S1607774558.725405,VS0,VE1
       X-XSS-Protection:
       - 1; mode=block
     status:
