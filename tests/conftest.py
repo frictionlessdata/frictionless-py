@@ -78,3 +78,8 @@ def pytest_configure(config):
     if not config.option.ci:
         expr = getattr(config.option, "markexpr")
         setattr(config.option, "markexpr", "{expr} and not ci" if expr else "not ci")
+
+
+@pytest.fixture(scope="module")
+def vcr_cassette_dir(request):
+    return os.path.join("data", "cassettes")

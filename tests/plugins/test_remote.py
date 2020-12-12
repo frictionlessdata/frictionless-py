@@ -7,21 +7,21 @@ BASE_URL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/m
 # Read
 
 
-@pytest.mark.ci
+@pytest.mark.vcr()
 def test_table_remote():
     with Table(BASE_URL % "data/table.csv") as table:
         assert table.header == ["id", "name"]
         assert table.read_data() == [["1", "english"], ["2", "中国人"]]
 
 
-@pytest.mark.ci
+@pytest.mark.vcr()
 def test_table_remote_latin1():
     # Github returns wrong encoding `utf-8`
     with Table(BASE_URL % "data/latin1.csv") as table:
         assert table.read_data()
 
 
-@pytest.mark.ci
+@pytest.mark.vcr()
 def test_table_remote_big_file():
     with Table(BASE_URL % "data/table1.csv") as table:
         assert table.read_rows()
@@ -36,8 +36,7 @@ def test_table_remote_big_file():
 # Write
 
 
-# TODO: test using "responses" mock
-@pytest.mark.ci
+# TODO: implement
 @pytest.mark.skip
 def test_table_remote_write():
     path = "https://example.com/post/table.csv"
