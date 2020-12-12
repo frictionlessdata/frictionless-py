@@ -1,4 +1,3 @@
-import sys
 import pytest
 import datetime
 from frictionless import Table, Package, Resource, FrictionlessException
@@ -8,11 +7,8 @@ from frictionless.plugins.ckan import CkanStorage, CkanDialect
 # Parser
 
 
-# TODO: recover
-@pytest.mark.skip
-@pytest.mark.ci
-@pytest.mark.skipif(sys.version_info < (3, 8), reason="Speed up CI")
-def test_table_ckan(options):
+@pytest.mark.vcr
+def test_ckan_parser(options):
     url = options.pop("url")
     dialect = CkanDialect(resource="table", **options)
 
@@ -30,11 +26,8 @@ def test_table_ckan(options):
         ]
 
 
-# TODO: recover
-@pytest.mark.skip
-@pytest.mark.ci
-@pytest.mark.skipif(sys.version_info < (3, 8), reason="Speed up CI")
-def test_table_ckan_write_timezone(options):
+@pytest.mark.vcr
+def test_ckan_parser_timezone(options):
     url = options.pop("url")
     dialect = CkanDialect(resource="timezone", **options)
     with Table("data/timezone.csv") as table:
@@ -51,11 +44,8 @@ def test_table_ckan_write_timezone(options):
 # Storage
 
 
-# TODO: recover
-@pytest.mark.skip
-@pytest.mark.ci
-@pytest.mark.skipif(sys.version_info < (3, 8), reason="Speed up CI")
-def test_storage_types(options):
+@pytest.mark.vcr
+def test_ckan_storage_types(options):
 
     # Export/Import
     source = Package("data/storage/types.json")
@@ -110,11 +100,8 @@ def test_storage_types(options):
     storage.delete_package(target.resource_names)
 
 
-# TODO: recover
-@pytest.mark.skip
-@pytest.mark.ci
-@pytest.mark.skipif(sys.version_info < (3, 8), reason="Speed up CI")
-def test_storage_integrity(options):
+@pytest.mark.vcr
+def test_ckan_storage_integrity(options):
 
     # Export/Import
     source = Package("data/storage/integrity.json")
@@ -159,11 +146,8 @@ def test_storage_integrity(options):
     storage.delete_package(target.resource_names)
 
 
-# TODO: recover
-@pytest.mark.skip
-@pytest.mark.ci
-@pytest.mark.skipif(sys.version_info < (3, 8), reason="Speed up CI")
-def test_storage_constraints(options):
+@pytest.mark.vcr
+def test_ckan_storage_constraints(options):
 
     # Export/Import
     source = Package("data/storage/constraints.json")
@@ -200,11 +184,8 @@ def test_storage_constraints(options):
     storage.delete_package(target.resource_names)
 
 
-# TODO: recover
-@pytest.mark.skip
-@pytest.mark.ci
-@pytest.mark.skipif(sys.version_info < (3, 8), reason="Speed up CI")
-def test_storage_read_resource_not_existent_error(options):
+@pytest.mark.vcr
+def test_ckan_storage_not_existent_error(options):
     storage = CkanStorage(**options)
     with pytest.raises(FrictionlessException) as excinfo:
         storage.read_resource("bad")
@@ -213,11 +194,8 @@ def test_storage_read_resource_not_existent_error(options):
     assert error.note.count("does not exist")
 
 
-# TODO: recover
-@pytest.mark.skip
-@pytest.mark.ci
-@pytest.mark.skipif(sys.version_info < (3, 8), reason="Speed up CI")
-def test_storage_write_resource_existent_error(options):
+@pytest.mark.vcr
+def test_ckan_storage_write_resource_existent_error(options):
     resource = Resource(path="data/table.csv")
     storage = resource.to_ckan(**options, force=True)
     with pytest.raises(FrictionlessException) as excinfo:
@@ -229,11 +207,8 @@ def test_storage_write_resource_existent_error(options):
     storage.delete_package(list(storage))
 
 
-# TODO: recover
-@pytest.mark.skip
-@pytest.mark.ci
-@pytest.mark.skipif(sys.version_info < (3, 8), reason="Speed up CI")
-def test_storage_delete_resource_not_existent_error(options):
+@pytest.mark.vcr
+def test_ckan_storage_delete_resource_not_existent_error(options):
     storage = CkanStorage(**options)
     with pytest.raises(FrictionlessException) as excinfo:
         storage.delete_resource("bad")

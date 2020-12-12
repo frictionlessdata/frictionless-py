@@ -15,7 +15,7 @@ from frictionless.plugins.html import HtmlDialect
         ("data/table4.html", ""),
     ],
 )
-def test_table_html(source, selector):
+def test_html_parser(source, selector):
     dialect = HtmlDialect(selector=selector)
     with Table(source, dialect=dialect) as table:
         assert table.format == "html"
@@ -24,7 +24,7 @@ def test_table_html(source, selector):
 
 
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-def test_table_html_write(tmpdir):
+def test_html_parser_write(tmpdir):
     source = "data/table.csv"
     target = str(tmpdir.join("table.html"))
     with Table(source) as table:

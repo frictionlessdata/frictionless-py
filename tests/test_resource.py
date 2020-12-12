@@ -56,7 +56,8 @@ def test_resource_from_path_error_bad_path():
     assert error.note.count("bad.json")
 
 
-@pytest.mark.ci
+@pytest.mark.vcr
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_from_path_remote():
     resource = Resource(BASE_URL % "data/resource.json")
     assert resource.source == BASE_URL % "data/table.csv"
@@ -67,6 +68,7 @@ def test_resource_from_path_remote():
     ]
 
 
+@pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_from_zip():
     resource = Resource("data/resource.zip")
@@ -77,7 +79,7 @@ def test_resource_from_zip():
     ]
 
 
-@pytest.mark.ci
+@pytest.mark.vcr
 def test_resource_from_path_remote_error_bad_path():
     with pytest.raises(FrictionlessException) as excinfo:
         Resource(BASE_URL % "data/bad.json")
@@ -106,7 +108,7 @@ def test_resource_source_non_tabular():
     }
 
 
-@pytest.mark.ci
+@pytest.mark.vcr
 def test_resource_source_non_tabular_remote():
     path = BASE_URL % "data/foo.txt"
     resource = Resource(path=path)
@@ -177,7 +179,8 @@ def test_resource_source_path_and_basepath():
     ]
 
 
-@pytest.mark.ci
+@pytest.mark.vcr
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_source_path_and_basepath_remote():
     resource = Resource(path="table.csv", basepath=BASE_URL % "data")
     assert resource.source == BASE_URL % "data/table.csv"
@@ -187,7 +190,7 @@ def test_resource_source_path_and_basepath_remote():
     ]
 
 
-@pytest.mark.ci
+@pytest.mark.vcr
 def test_resource_source_path_remote_and_basepath_remote():
     resource = Resource(path=BASE_URL % "data/table.csv", basepath=BASE_URL % "data")
     assert resource.source == BASE_URL % "data/table.csv"
@@ -327,7 +330,8 @@ def test_resource_dialect_from_path():
     }
 
 
-@pytest.mark.ci
+@pytest.mark.vcr
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_dialect_from_path_remote():
     resource = Resource(BASE_URL % "data/resource-with-dereferencing.json")
     assert resource == {
@@ -397,7 +401,8 @@ def test_resource_schema_source_data():
     ]
 
 
-@pytest.mark.ci
+@pytest.mark.vcr
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_schema_source_remote():
     descriptor = {
         "name": "name",
@@ -437,7 +442,8 @@ def test_resource_schema_from_path_with_basepath():
     }
 
 
-@pytest.mark.ci
+@pytest.mark.vcr
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_schema_from_path_remote():
     resource = Resource(BASE_URL % "data/resource-with-dereferencing.json")
     assert resource == {
@@ -825,7 +831,7 @@ def test_resource_to_zip_resolve_inline_sql(tmpdir, database_url):
 
 
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-@pytest.mark.ci
+@pytest.mark.vcr
 def test_resource_to_zip_resolve_remote(tmpdir):
 
     # Write
@@ -844,7 +850,7 @@ def test_resource_to_zip_resolve_remote(tmpdir):
 
 
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-@pytest.mark.ci
+@pytest.mark.vcr
 def test_resource_to_zip_source_remote(tmpdir):
 
     # Write
@@ -901,7 +907,7 @@ def test_resource_to_table_source_data():
         ]
 
 
-@pytest.mark.ci
+@pytest.mark.vcr
 def test_resource_to_table_source_remote():
     resource = Resource(path=BASE_URL % "data/table.csv")
     with resource.to_table() as table:

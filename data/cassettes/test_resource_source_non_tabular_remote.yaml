@@ -1,0 +1,142 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/54.0.2840.87 Safari/537.36
+    method: GET
+    uri: https://raw.githubusercontent.com/frictionlessdata/datapackage-py/master/data/foo.txt
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA0vLz+cCAKhlMn4EAAAA
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - max-age=300
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '24'
+      Content-Security-Policy:
+      - default-src 'none'; style-src 'unsafe-inline'; sandbox
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Sat, 12 Dec 2020 12:33:11 GMT
+      ETag:
+      - W/"abfd4f21a4d3062bd1485e55113f2774c27470a908c2e23f6d972af79b9f366b"
+      Expires:
+      - Sat, 12 Dec 2020 12:38:11 GMT
+      Source-Age:
+      - '0'
+      Strict-Transport-Security:
+      - max-age=31536000
+      Vary:
+      - Authorization,Accept-Encoding, Accept-Encoding
+      Via:
+      - 1.1 varnish (Varnish/6.0), 1.1 varnish
+      X-Cache:
+      - MISS, MISS
+      X-Cache-Hits:
+      - 0, 0
+      X-Content-Type-Options:
+      - nosniff
+      X-Fastly-Request-ID:
+      - 02c981adc2e2d3be6d90cb43d27acb38a38dc232
+      X-Frame-Options:
+      - deny
+      X-GitHub-Request-Id:
+      - 5340:62D1:2C3D33:2EB22B:5FD4B887
+      X-Served-By:
+      - cache-bma1645-BMA
+      X-Timer:
+      - S1607776392.608799,VS0,VE185
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/54.0.2840.87 Safari/537.36
+    method: GET
+    uri: https://raw.githubusercontent.com/frictionlessdata/datapackage-py/master/data/foo.txt
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA0vLz+cCAKhlMn4EAAAA
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - max-age=300
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '24'
+      Content-Security-Policy:
+      - default-src 'none'; style-src 'unsafe-inline'; sandbox
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Sat, 12 Dec 2020 12:33:12 GMT
+      ETag:
+      - W/"abfd4f21a4d3062bd1485e55113f2774c27470a908c2e23f6d972af79b9f366b"
+      Expires:
+      - Sat, 12 Dec 2020 12:38:12 GMT
+      Source-Age:
+      - '0'
+      Strict-Transport-Security:
+      - max-age=31536000
+      Vary:
+      - Authorization,Accept-Encoding, Accept-Encoding
+      Via:
+      - 1.1 varnish (Varnish/6.0), 1.1 varnish
+      X-Cache:
+      - MISS, HIT
+      X-Cache-Hits:
+      - 0, 1
+      X-Content-Type-Options:
+      - nosniff
+      X-Fastly-Request-ID:
+      - 334b915cb6f84df9236a1af16d720a1f2e5441e3
+      X-Frame-Options:
+      - deny
+      X-GitHub-Request-Id:
+      - 5340:62D1:2C3D33:2EB22B:5FD4B887
+      X-Served-By:
+      - cache-bma1621-BMA
+      X-Timer:
+      - S1607776392.005371,VS0,VE1
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+version: 1

@@ -1,0 +1,64 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.25.0
+    method: GET
+    uri: https://raw.githubusercontent.com/frictionlessdata/datapackage-py/master/data/bad.json
+  response:
+    body:
+      string: '404: Not Found'
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '14'
+      Content-Security-Policy:
+      - default-src 'none'; style-src 'unsafe-inline'; sandbox
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Sat, 12 Dec 2020 12:30:58 GMT
+      Expires:
+      - Sat, 12 Dec 2020 12:35:58 GMT
+      Source-Age:
+      - '0'
+      Strict-Transport-Security:
+      - max-age=31536000
+      Vary:
+      - Authorization,Accept-Encoding
+      Via:
+      - 1.1 varnish (Varnish/6.0), 1.1 varnish
+      X-Cache:
+      - MISS, MISS
+      X-Cache-Hits:
+      - 0, 0
+      X-Content-Type-Options:
+      - nosniff
+      X-Fastly-Request-ID:
+      - 4928ee8eab4275579bfb7092a51539aecb6ea807
+      X-Frame-Options:
+      - deny
+      X-GitHub-Request-Id:
+      - D9AE:DE70:2B03AB:2D63A3:5FD4B7FE
+      X-Served-By:
+      - cache-bma1643-BMA
+      X-Timer:
+      - S1607776258.088994,VS0,VE451
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 404
+      message: Not Found
+version: 1

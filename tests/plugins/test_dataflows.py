@@ -8,7 +8,7 @@ from frictionless.plugins.dataflows import DataflowsPipeline
 
 
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-def test_pipeline(tmpdir):
+def test_dataflows_pipeline(tmpdir):
 
     # Write
     pipeline = DataflowsPipeline(

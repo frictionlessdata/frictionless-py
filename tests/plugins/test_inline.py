@@ -6,14 +6,14 @@ from frictionless.plugins.inline import InlineDialect
 # Read
 
 
-def test_table_inline():
+def test_inline_parser():
     source = [["id", "name"], ["1", "english"], ["2", "中国人"]]
     with Table(source) as table:
         assert table.header == ["id", "name"]
         assert table.read_data() == [["1", "english"], ["2", "中国人"]]
 
 
-def test_table_inline_keyed():
+def test_inline_parser_keyed():
     source = [{"id": "1", "name": "english"}, {"id": "2", "name": "中国人"}]
     with Table(source, format="inline") as table:
         assert table.dialect.keyed is True
@@ -21,7 +21,7 @@ def test_table_inline_keyed():
         assert table.read_data() == [["1", "english"], ["2", "中国人"]]
 
 
-def test_table_inline_keyed_order_is_preserved():
+def test_inline_parser_keyed_order_is_preserved():
     source = [{"name": "english", "id": "1"}, {"name": "中国人", "id": "2"}]
     with Table(source, format="inline") as table:
         assert table.dialect.keyed is True
@@ -29,7 +29,7 @@ def test_table_inline_keyed_order_is_preserved():
         assert table.read_data() == [["english", "1"], ["中国人", "2"]]
 
 
-def test_table_inline_keyed_with_keys_provided():
+def test_inline_parser_keyed_with_keys_provided():
     source = [{"id": "1", "name": "english"}, {"id": "2", "name": "中国人"}]
     dialect = InlineDialect(keys=["name", "id"])
     with Table(source, format="inline", dialect=dialect) as table:
@@ -38,14 +38,14 @@ def test_table_inline_keyed_with_keys_provided():
         assert table.read_data() == [["english", "1"], ["中国人", "2"]]
 
 
-def test_table_inline_from_iterator():
+def test_inline_parser_from_iterator():
     source = iter([["id", "name"], ["1", "english"], ["2", "中国人"]])
     with Table(source) as table:
         assert table.header == ["id", "name"]
         assert table.read_data() == [["1", "english"], ["2", "中国人"]]
 
 
-def test_table_inline_from_generator():
+def test_inline_parser_from_generator():
     def generator():
         yield ["id", "name"]
         yield ["1", "english"]
@@ -56,7 +56,7 @@ def test_table_inline_from_generator():
         assert table.read_data() == [["1", "english"], ["2", "中国人"]]
 
 
-def test_table_inline_from_generator_not_callable():
+def test_inline_parser_from_generator_not_callable():
     def generator():
         yield ["id", "name"]
         yield ["1", "english"]
@@ -67,7 +67,7 @@ def test_table_inline_from_generator_not_callable():
         assert table.read_data() == [["1", "english"], ["2", "中国人"]]
 
 
-def test_table_inline_from_ordered_dict():
+def test_inline_parser_from_ordered_dict():
     source = [
         OrderedDict([("name", "english"), ("id", "1")]),
         OrderedDict([("name", "中国人"), ("id", "2")]),
@@ -81,7 +81,7 @@ def test_table_inline_from_ordered_dict():
 # Write
 
 
-def test_table_inline_write(tmpdir):
+def test_inline_parser_write(tmpdir):
     source = "data/table.csv"
     with Table(source) as table:
         table.write(format="inline") == [
@@ -91,7 +91,7 @@ def test_table_inline_write(tmpdir):
         ]
 
 
-def test_table_inline_write_keyed(tmpdir):
+def test_inline_parser_write_keyed(tmpdir):
     source = "data/table.csv"
     dialect = InlineDialect(keyed=True)
     with Table(source) as table:

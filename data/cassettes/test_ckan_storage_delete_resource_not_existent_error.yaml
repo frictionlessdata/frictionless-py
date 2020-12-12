@@ -1,0 +1,61 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Authorization:
+      - 51912f57-a657-4caa-b2a7-0a1c16821f4b
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.25.0
+    method: GET
+    uri: https://demo.ckan.org/api/3/action/package_show?id=frictionless
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA2xTS4+bMBD+K5YvvcQB80gAqaqqlSr1vreqQoMZE3cBI9sk3a72v1cDeW57tD3z
+        zfcYv/ED9hOvGD+EMPkqiloc7Fa9wLi1rotgMlEagQrGjhGV1v5gT19GGPDzBOoFOlxu+IZxPyuF
+        3vOKBTfjhnGHfu4Dr9gb743C0WMdTOiRxj05hGCOyJ7sMNjRs68hONPMNIjABjBjADOio2q+oPVA
+        r/5gJl+Dr23zCxXB//i5YXxy5giBsDX0Hh8gahzA9BegcR7qAB0RjTeMm5Yeikw3IBsQLZStyPKi
+        EQBNLNJcpjqWbduUsPDCAC0EqBUJwKU3iZNYSCnS+Dkuq2xfpek232VFljx0DLY12ty3JEImzzKp
+        4rTKy21SJHJtgTkc7FX4enrU4MOqlVM0R6SrIzpP5p0rFn7W1bNHV68a90qqWGIr4nZXiEznWjRp
+        sRello3a6SxPkz21htdpwSbWHsNqvrezU+gvdpOJ95fk5NnU5b1zdp6up0v8Kw+lRPP630j9/JCp
+        dR2M5s9Swys2zn1Po2FY6Glnlr3saekoSG8nHG/rN7tb5DYsLPn38MkzYAF9YHfy7Im2xLruNgV/
+        Bwf/CDhj0mepouh0Om1pZovajIa4LJ/mXOyjq9Dr2n/7wNnh0VBqZ2cSBXlcaClanUqRAcSizNJM
+        qFwWugCd407z9/e/AAAA//8DAIk9eoG2AwAA
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 60074e2b99207b8b-DME
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json;charset=utf-8
+      Date:
+      - Sat, 12 Dec 2020 12:04:00 GMT
+      Expect-CT:
+      - max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"
+      NEL:
+      - '{"report_to":"cf-nel","max_age":604800}'
+      Report-To:
+      - '{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report?s=ppjcUOOaWn5OD%2BQ9vrqBHWG0jBQo3DjldA6t3FimPpn1vvEjeQ5j%2FZ558Rvkrk8T0Sg7Q2YutlsA7goSL2c%2FnX4do6iS%2BqrmLLkUMKXU"}],"group":"cf-nel","max_age":604800}'
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cfduid=d8d61a2aa2aba8f59f80c57e2cc56aa411607774639; expires=Mon, 11-Jan-21
+        12:03:59 GMT; path=/; domain=.ckan.org; HttpOnly; SameSite=Lax; Secure
+      Transfer-Encoding:
+      - chunked
+      cf-request-id:
+      - 06f86f2f4200007b8ba310d000000001
+    status:
+      code: 200
+      message: OK
+version: 1

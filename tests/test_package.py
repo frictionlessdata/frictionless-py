@@ -73,14 +73,14 @@ def test_package_from_path_error_bad_json_not_dict():
     assert error.note.count("table.json")
 
 
-@pytest.mark.ci
+@pytest.mark.vcr
 def test_package_from_path_remote():
     package = Package(BASE_URL % "data/package.json")
     assert package.basepath == BASE_URL % "data"
     assert package == {"resources": [{"name": "name", "path": "path"}]}
 
 
-@pytest.mark.ci
+@pytest.mark.vcr
 def test_package_from_path_remote_error_not_found():
     with pytest.raises(FrictionlessException) as excinfo:
         Package(BASE_URL % "data/bad.json")
@@ -89,7 +89,7 @@ def test_package_from_path_remote_error_not_found():
     assert error.note.count("bad.json")
 
 
-@pytest.mark.ci
+@pytest.mark.vcr
 def test_package_from_path_remote_error_bad_json():
     with pytest.raises(FrictionlessException) as excinfo:
         Package(BASE_URL % "data/invalid.json")
@@ -98,7 +98,7 @@ def test_package_from_path_remote_error_bad_json():
     assert error.note.count("invalid.json")
 
 
-@pytest.mark.ci
+@pytest.mark.vcr
 def test_package_from_path_remote_error_bad_json_not_dict():
     with pytest.raises(FrictionlessException) as excinfo:
         Package(BASE_URL % "data/table-lists.json")
@@ -127,7 +127,8 @@ def test_package_from_zip():
     ]
 
 
-@pytest.mark.ci
+@pytest.mark.vcr
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_package_from_zip_remote():
     package = Package(BASE_URL % "data/package.zip")
     assert package.name == "testing"
@@ -536,6 +537,7 @@ def test_package_to_zip_absolute_path(tmpdir):
     ]
 
 
+@pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_package_to_zip_resolve_inline(tmpdir):
 
@@ -554,6 +556,7 @@ def test_package_to_zip_resolve_inline(tmpdir):
     ]
 
 
+@pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_package_to_zip_resolve_inline_sql(tmpdir, database_url):
 
@@ -572,8 +575,9 @@ def test_package_to_zip_resolve_inline_sql(tmpdir, database_url):
     ]
 
 
+@pytest.mark.vcr
+@pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-@pytest.mark.ci
 def test_package_to_zip_resolve_remote(tmpdir):
 
     # Write
@@ -591,8 +595,9 @@ def test_package_to_zip_resolve_remote(tmpdir):
     ]
 
 
+@pytest.mark.vcr
+@pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-@pytest.mark.ci
 def test_package_to_zip_resolve_inline_and_remote(tmpdir):
 
     # Write
@@ -616,8 +621,8 @@ def test_package_to_zip_resolve_inline_and_remote(tmpdir):
     ]
 
 
+@pytest.mark.vcr
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-@pytest.mark.ci
 def test_package_to_zip_source_remote(tmpdir):
 
     # Write

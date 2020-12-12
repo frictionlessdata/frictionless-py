@@ -780,6 +780,16 @@ def test_validate_limit_memory():
     ]
 
 
+@pytest.mark.ci
+def test_validate_limit_memory_small():
+    source = lambda: ([integer] for integer in range(1, 100000000))
+    schema = {"fields": [{"name": "integer", "type": "integer"}], "primaryKey": "integer"}
+    report = validate(source, headers=False, schema=schema, limit_memory=1)
+    assert report.flatten(["code", "note"]) == [
+        ["task-error", 'exceeded memory limit "1MB"']
+    ]
+
+
 def test_validate_extra_checks():
 
     # Create check

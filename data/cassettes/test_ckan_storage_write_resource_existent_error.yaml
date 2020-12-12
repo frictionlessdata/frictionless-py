@@ -1,0 +1,655 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Authorization:
+      - 51912f57-a657-4caa-b2a7-0a1c16821f4b
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.25.0
+    method: GET
+    uri: https://demo.ckan.org/api/3/action/package_show?id=frictionless
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA2xTS4/bIBD+K4hLLyEGPxLHUlVVK1XqfW9VZY3x4NC1jQU46Xa1/70a573tEZj5
+        5nsMb3yP/cQrxvcxTqFKkhYHt9YvMK6d7xKYbJIloKN1Y0Klddi745cRBvw8gX6BDpcbvmI8zFpj
+        CLxi0c+4YtxjmPvIK/bGe6txDFhHG3ukcU8eIdoDsic3DG4M7GuM3jYzDSKwAewYwY7oqZovaD3Q
+        a9jbKdQQatf8Qk3wP36uGJ+8PUAkbAN9wAeIGgew/QVonIc6QkdE5Ypx29JDmZsGVAOihV0r8qJs
+        BEAjRVaozEjVts0OFl4YoYUItSYBuPSmMpVCKZHJZ7mr8m2VZetik5d5+tAxuNYae9+SCpU+q7SS
+        WVWk6+22KFJFLTDHvbsKP50eNYR40sopmgPS1QF9IPPOFQs/5+s5oK9PGrdaaamwFbLdlCI3hRFN
+        Vm7FzqhGb0xeZOmWWuPrtGAT64DxZH5ws9cYLnaTifeX5OTZ1OW9826erqdL/CceWovm9b+Rhvkh
+        U+c7GO2fpYZXbJz7nkbDsNAz3i572dPSUZDBTTje1m/2t8hdXFjy7/FTYMAihsju5LkjbYnz3W0K
+        /o4e/hFwxqTPUiXJ8Xhc08wWjR0tcVk+zbk4JFeh17X/9oGzx4Ol1M7OpBoKWRolWpMpkQNIscuz
+        XOhClaYEU+DG8Pf3vwAAAP//AwDPklvetgMAAA==
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 60074e0518f48e47-DME
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json;charset=utf-8
+      Date:
+      - Sat, 12 Dec 2020 12:03:54 GMT
+      Expect-CT:
+      - max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"
+      NEL:
+      - '{"report_to":"cf-nel","max_age":604800}'
+      Report-To:
+      - '{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report?s=IYH8aVrIAic%2B8UbueW7Tswdgm92nK5MnuICBN1nBy7q3jjKAy2cqVokJCNkXP580fS4DE1lxV%2FnyigI18ELTJEZBjHFcCf3BGDfXkDuw"}],"group":"cf-nel","max_age":604800}'
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cfduid=d21e7bc7b387a8b3ce7c2baa7148d75a71607774633; expires=Mon, 11-Jan-21
+        12:03:53 GMT; path=/; domain=.ckan.org; HttpOnly; SameSite=Lax; Secure
+      Transfer-Encoding:
+      - chunked
+      cf-request-id:
+      - 06f86f172d00008e47910e9000000001
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"resource": {"package_id": "frictionless", "name": "table"}, "fields":
+      [{"id": "id", "type": "int"}, {"id": "name", "type": "text"}], "primary_key":
+      []}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Authorization:
+      - 51912f57-a657-4caa-b2a7-0a1c16821f4b
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '153'
+      Content-Type:
+      - application/json
+      User-Agent:
+      - python-requests/2.25.0
+    method: POST
+    uri: https://demo.ckan.org/api/3/action/datastore_create
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA0yP4WqEMBCEXyXsbz2vVawnlD7IUUJM1jMYE0lWWhHfvayWXv9lM7PfzG4woJuh
+        FTAQzaktCoNTuOhR+UuIj0LNtigLpckGX7BVpiF8fXg14btRpBKFiFJHVISQCUiL1pgStILigpmA
+        iGlxBK3Y+BmWqPEYlug4VT4hwbtV/nkyAbPSo3qgtIadfbRHC8f4TABX4H9SnUPY2R/tpOIqR1yh
+        FffPM/3A/TLquilNh2Xe9dc+r17qW94Z0+embK5N9Yr6rboxu7foDB9x34DW+cixnlg6QdZw4lMk
+        /P6nHtV2zp+QhnBu+ISRYN9/AAAA//8DAJCizxdyAQAA
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 60074e073b593a95-DME
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json;charset=utf-8
+      Date:
+      - Sat, 12 Dec 2020 12:03:56 GMT
+      Expect-CT:
+      - max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"
+      NEL:
+      - '{"report_to":"cf-nel","max_age":604800}'
+      Report-To:
+      - '{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report?s=u2wARF4fqpIa02WPTMmSOpZ9zCp1IjUI9B%2FBvYM9djko194x4CmDR19ESlsohopq%2BF9DxDgp37sOYhZ4eTjMk%2FsR69jaaonbEYDBc5P6"}],"group":"cf-nel","max_age":604800}'
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cfduid=d241605f1d79fc9a50bbf33fa813d20b11607774634; expires=Mon, 11-Jan-21
+        12:03:54 GMT; path=/; domain=.ckan.org; HttpOnly; SameSite=Lax; Secure
+      Transfer-Encoding:
+      - chunked
+      cf-request-id:
+      - 06f86f187f00003a959eb62000000001
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Authorization:
+      - 51912f57-a657-4caa-b2a7-0a1c16821f4b
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.25.0
+    method: GET
+    uri: https://demo.ckan.org/api/3/action/package_show?id=frictionless
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA5RUwY6cOBD9FcRlL+MGY0MDUhRFkSLtfW5RhAq73O0NYGSb7k1G8+8rG+jpTnak
+        3RvGrqr3Xr2ql/SMw5y2SXr2fnZtlkkczUF8h+lg7CmDWWcsA+G1mbLwtHNnc/04wYgfZhDf4YTx
+        T/qUpG4RAp1L28TbBZ+S1KJbBp+2yUs6aIGTw85rP2Ao99kieH3B5LMZRzO55JP3VvdLKBSSjaAn
+        D3pCG16nMdsA4dad9ew6cJ3p/0IR0n/99pSks9UX8CG3gsHhQ4oOR9DDnmhaxs7DKQDNn5JUy3BR
+        c9UD7YFIaCThZd0TgD4nrKRM5VTKvoGICz1I8NCJQABjbJEXOaGUsPw5b1p+bBk7lBWvefEQMRqp
+        lb4PKQgtnmnR5qwtywOvqrJhIQQWfzY34uvpkYPzK9c0tOaC4dcFrQvibS8iPmO7xaHtVo5HQUVO
+        UZJcVjXhqlSkZ/WRNIr2olK8ZMUxhPofc8wdUDv0q/jOLFZgEO3rSzrqEbdX0zIMoRyIM3aLHd5+
+        ncGddzQSnbB69ncAg4fCt4d+iASUsSP4/XpN9Y4tIzJvLGZyGeesqmome2SkV7kinFYN6aVURLI6
+        r3mB4sibiGIP6zbZblZd4Q/gfLfMcmvsxmP3+f8zym/+uG82P1Qlpbx8p5W7vJ2e1gHYkER8dzba
+        ARqnN2Xz2KuLDk7YAMuqKZDnQHiDDeEsr0lf9A0paqaaQklas+MmePfQ+SBUehuQ/6rx7pTu0R9O
+        /9xPr9+2Ibw3FQ2+W4cyjvPJmmW+nfb1sUIRgvQ//nUluOVhJxh7gkn/hE2cDcpuPGV13GtDWFqB
+        pzMzTm+e2BwYvWp8RJn+6f9wCSQenU/uxsNcw5Yx9vRWBf/2Fn4jcOfqNsuu1+sh1JSo9BRbGN29
+        PXbZjehtbX75BfMvvS4ElHmtKJGKUcIBctJwxokoaa1qUCVWKn19/QcAAP//AwAV8f2k9gUAAA==
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 60074e143f540065-DME
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json;charset=utf-8
+      Date:
+      - Sat, 12 Dec 2020 12:03:56 GMT
+      Expect-CT:
+      - max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"
+      NEL:
+      - '{"report_to":"cf-nel","max_age":604800}'
+      Report-To:
+      - '{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report?s=qxgR7JX7BmFZk7M6C6QQSqRIWviV3E8%2B2KjM9%2B2C9Q9nc0MEvwXpCjbAtTst2F6dFZdHeVFFWw3rPAX4oDQY5SGxa4dMkMDT%2BG7OR4fT"}],"group":"cf-nel","max_age":604800}'
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cfduid=d3e4a13e20309d5899d21a76b5e913e751607774636; expires=Mon, 11-Jan-21
+        12:03:56 GMT; path=/; domain=.ckan.org; HttpOnly; SameSite=Lax; Secure
+      Transfer-Encoding:
+      - chunked
+      cf-request-id:
+      - 06f86f20a100000065f5a96000000001
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Authorization:
+      - 51912f57-a657-4caa-b2a7-0a1c16821f4b
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.25.0
+    method: GET
+    uri: https://demo.ckan.org/api/3/action/datastore_search?limit=0&resource_id=6683dbe3-bf0f-4169-bddf-d380842ec749
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA5xRy26DMBD8FWsPPUGgBaUJEsqHVBUy9ro4MTayF7VVxL9XS1XlcWnV88zsPPYM
+        A7oJGgED0ZSaotA4ho06Sb8J8a2Qky2qQiqywRdM7dIQ3g9ejthqSTJRiNgllFENkAlIs1KYEjSC
+        4oyZgIhpdgSNOIP1ys0aOwok3Q0jzFFhZzXn2G53le6xyntTmrx+3O7zXmuT62pX7uonVM/1np2M
+        RafZ6OUM9Dkha60nhr4P8b0lEzdofYHvUcKPKzEXhOV1jadC1KkzIY6Si0Doj6gowQXkFMx1drRM
+        KTMBnbP+lNbiiWRclbdz3u93WOVt+XC1SPvXOTzH/90iGJOQPf7ttWQCfj5YLssXAAAA//8DAEzo
+        lK5BAgAA
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 60074e163fe93aa1-DME
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json;charset=utf-8
+      Date:
+      - Sat, 12 Dec 2020 12:03:56 GMT
+      Expect-CT:
+      - max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"
+      NEL:
+      - '{"report_to":"cf-nel","max_age":604800}'
+      Report-To:
+      - '{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report?s=BO%2FZcROZI3nTqteEHrC2cCDWEdFuLP%2ByqPW%2FXAogHOc6%2FKL4XJtTIZhi0deGdY6Gpwrns37YYsPDJkbnHhZYdMcChaVAjojL7fD%2Bdk2m"}],"group":"cf-nel","max_age":604800}'
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cfduid=d771351d7a4e31bbe592eb16eae0b26561607774636; expires=Mon, 11-Jan-21
+        12:03:56 GMT; path=/; domain=.ckan.org; HttpOnly; SameSite=Lax; Secure
+      Transfer-Encoding:
+      - chunked
+      cf-request-id:
+      - 06f86f21e800003aa1930f1000000001
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"resource_id": "6683dbe3-bf0f-4169-bddf-d380842ec749", "method": "insert",
+      "records": [{"id": 1, "name": "english"}, {"id": 2, "name": "\u4e2d\u56fd\u4eba"}]}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Authorization:
+      - 51912f57-a657-4caa-b2a7-0a1c16821f4b
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '159'
+      Content-Type:
+      - application/json
+      User-Agent:
+      - python-requests/2.25.0
+    method: POST
+    uri: https://demo.ckan.org/api/3/action/datastore_upsert
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA0yOwWrDMBBEf0XsWY4S23UdQemHJMXI2nUsYktGK5GD8b8XlRZ6G3jDm9lhpmUD
+        LWBOaWOtFNIaTvZp/CnEhzKbU40yNrngVakOPIfXpzcrfaBJhlOINOSNKSaQAjhbS8ygRYqZpIBI
+        nJcEWuwQyYaIhd12cAhaXKSAoir75B+L4xkOKX5p/Y/ec0s13vNbN2HJo4HjSwpYKc2hlMH5vw+R
+        OORoafixQNf1DY7UVON0nqr20l2rEXGqsOnPfVuTfW+vcBzfAAAA//8DAMwMrpQKAQAA
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 60074e173cbe7b4b-DME
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json;charset=utf-8
+      Date:
+      - Sat, 12 Dec 2020 12:03:56 GMT
+      Expect-CT:
+      - max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"
+      NEL:
+      - '{"report_to":"cf-nel","max_age":604800}'
+      Report-To:
+      - '{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report?s=PMsTMMV%2FCIn8DtRyZrKiawUH%2FpbPStVf1yUfTkUjjxwK9jeH4hoG64aDXAseIyH7o%2BN68Uj9ctXg1u5%2BYXK1cin8DI%2Fl%2BAJgrKW%2FCd6Z"}],"group":"cf-nel","max_age":604800}'
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cfduid=d36b6121a24ebccd745265d453053991b1607774636; expires=Mon, 11-Jan-21
+        12:03:56 GMT; path=/; domain=.ckan.org; HttpOnly; SameSite=Lax; Secure
+      Transfer-Encoding:
+      - chunked
+      cf-request-id:
+      - 06f86f228200007b4b4f174000000001
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Authorization:
+      - 51912f57-a657-4caa-b2a7-0a1c16821f4b
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.25.0
+    method: GET
+    uri: https://demo.ckan.org/api/3/action/package_show?id=frictionless
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA5RUwY6cOBD9FcRlL+MGY0MDUhRFkSLtfW5RhAq73O0NYGSb7k1G8+8rG+jpTnak
+        3RvGrqr3Xr2ql/SMw5y2SXr2fnZtlkkczUF8h+lg7CmDWWcsA+G1mbLwtHNnc/04wYgfZhDf4YTx
+        T/qUpG4RAp1L28TbBZ+S1KJbBp+2yUs6aIGTw85rP2Ao99kieH3B5LMZRzO55JP3VvdLKBSSjaAn
+        D3pCG16nMdsA4dad9ew6cJ3p/0IR0n/99pSks9UX8CG3gsHhQ4oOR9DDnmhaxs7DKQDNn5JUy3BR
+        c9UD7YFIaCThZd0TgD4nrKRM5VTKvoGICz1I8NCJQABjbJEXOaGUsPw5b1p+bBk7lBWvefEQMRqp
+        lb4PKQgtnmnR5qwtywOvqrJhIQQWfzY34uvpkYPzK9c0tOaC4dcFrQvibS8iPmO7xaHtVo5HQUVO
+        UZJcVjXhqlSkZ/WRNIr2olK8ZMUxhPofc8wdUDv0q/jOLFZgEO3rSzrqEbdX0zIMoRyIM3aLHd5+
+        ncGddzQSnbB69ncAg4fCt4d+iASUsSP4/XpN9Y4tIzJvLGZyGeesqmome2SkV7kinFYN6aVURLI6
+        r3mB4sibiGIP6zbZblZd4Q/gfLfMcmvsxmP3+f8zym/+uG82P1Qlpbx8p5W7vJ2e1gHYkER8dzba
+        ARqnN2Xz2KuLDk7YAMuqKZDnQHiDDeEsr0lf9A0paqaaQklas+MmePfQ+SBUehuQ/6rx7pTu0R9O
+        /9xPr9+2Ibw3FQ2+W4cyjvPJmmW+nfb1sUIRgvQ//nUluOVhJxh7gkn/hE2cDcpuPGV13GtDWFqB
+        pzMzTm+e2BwYvWp8RJn+6f9wCSQenU/uxsNcw5Yx9vRWBf/2Fn4jcOfqNsuu1+sh1JSo9BRbGN29
+        PXbZjehtbX75BfMvvS4ElHmtKJGKUcIBctJwxokoaa1qUCVWKn19/QcAAP//AwAV8f2k9gUAAA==
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 60074e1859cc8ed1-DME
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json;charset=utf-8
+      Date:
+      - Sat, 12 Dec 2020 12:03:57 GMT
+      Expect-CT:
+      - max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"
+      NEL:
+      - '{"report_to":"cf-nel","max_age":604800}'
+      Report-To:
+      - '{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report?s=Vuck9748fXTbgdScMn89BXuwbfAEKa%2F2%2BEi7H1KSsakr1niVVCbQzSadx%2FI25%2B18boaOm%2BKj68Lb0adD823Px6dbKZ%2B7%2Fto14yy4ouBN"}],"group":"cf-nel","max_age":604800}'
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cfduid=d249034c6a1b09c632179d98dfb054d921607774636; expires=Mon, 11-Jan-21
+        12:03:56 GMT; path=/; domain=.ckan.org; HttpOnly; SameSite=Lax; Secure
+      Transfer-Encoding:
+      - chunked
+      cf-request-id:
+      - 06f86f233c00008ed142bfa000000001
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Authorization:
+      - 51912f57-a657-4caa-b2a7-0a1c16821f4b
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.25.0
+    method: GET
+    uri: https://demo.ckan.org/api/3/action/package_show?id=frictionless
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA5RUwY6cOBD9FcRlL+MGY0MDUhRFkSLtfW5RhAq73O0NYGSb7k1G8+8rG+jpTnak
+        3RvGrqr3Xr2ql/SMw5y2SXr2fnZtlkkczUF8h+lg7CmDWWcsA+G1mbLwtHNnc/04wYgfZhDf4YTx
+        T/qUpG4RAp1L28TbBZ+S1KJbBp+2yUs6aIGTw85rP2Ao99kieH3B5LMZRzO55JP3VvdLKBSSjaAn
+        D3pCG16nMdsA4dad9ew6cJ3p/0IR0n/99pSks9UX8CG3gsHhQ4oOR9DDnmhaxs7DKQDNn5JUy3BR
+        c9UD7YFIaCThZd0TgD4nrKRM5VTKvoGICz1I8NCJQABjbJEXOaGUsPw5b1p+bBk7lBWvefEQMRqp
+        lb4PKQgtnmnR5qwtywOvqrJhIQQWfzY34uvpkYPzK9c0tOaC4dcFrQvibS8iPmO7xaHtVo5HQUVO
+        UZJcVjXhqlSkZ/WRNIr2olK8ZMUxhPofc8wdUDv0q/jOLFZgEO3rSzrqEbdX0zIMoRyIM3aLHd5+
+        ncGddzQSnbB69ncAg4fCt4d+iASUsSP4/XpN9Y4tIzJvLGZyGeesqmome2SkV7kinFYN6aVURLI6
+        r3mB4sibiGIP6zbZblZd4Q/gfLfMcmvsxmP3+f8zym/+uG82P1Qlpbx8p5W7vJ2e1gHYkER8dzba
+        ARqnN2Xz2KuLDk7YAMuqKZDnQHiDDeEsr0lf9A0paqaaQklas+MmePfQ+SBUehuQ/6rx7pTu0R9O
+        /9xPr9+2Ibw3FQ2+W4cyjvPJmmW+nfb1sUIRgvQ//nUluOVhJxh7gkn/hE2cDcpuPGV13GtDWFqB
+        pzMzTm+e2BwYvWp8RJn+6f9wCSQenU/uxsNcw5Yx9vRWBf/2Fn4jcOfqNsuu1+sh1JSo9BRbGN29
+        PXbZjehtbX75BfMvvS4ElHmtKJGKUcIBctJwxokoaa1qUCVWKn19/QcAAP//AwAV8f2k9gUAAA==
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 60074e1a9cd72de2-DME
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json;charset=utf-8
+      Date:
+      - Sat, 12 Dec 2020 12:03:57 GMT
+      Expect-CT:
+      - max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"
+      NEL:
+      - '{"report_to":"cf-nel","max_age":604800}'
+      Report-To:
+      - '{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report?s=bsvBoGIZSLeagUiNG7Lb%2B3bEWKnojfhNp26uPlryRreQtW35Zx4RnZiwtKG3RiKlTPS7EDbCQA9Q0u1zqIBn7MY4D%2Fbs%2F8h%2B3AxuXeXV"}],"group":"cf-nel","max_age":604800}'
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cfduid=de9292c8d22efd697c43b59932234b1dc1607774637; expires=Mon, 11-Jan-21
+        12:03:57 GMT; path=/; domain=.ckan.org; HttpOnly; SameSite=Lax; Secure
+      Transfer-Encoding:
+      - chunked
+      cf-request-id:
+      - 06f86f249e00002de281b07000000001
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Authorization:
+      - 51912f57-a657-4caa-b2a7-0a1c16821f4b
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.25.0
+    method: GET
+    uri: https://demo.ckan.org/api/3/action/package_show?id=frictionless
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA5RUwY6cOBD9FcRlL+MGY0MDUhRFkSLtfW5RhAq73O0NYGSb7k1G8+8rG+jpTnak
+        3RvGrqr3Xr2ql/SMw5y2SXr2fnZtlkkczUF8h+lg7CmDWWcsA+G1mbLwtHNnc/04wYgfZhDf4YTx
+        T/qUpG4RAp1L28TbBZ+S1KJbBp+2yUs6aIGTw85rP2Ao99kieH3B5LMZRzO55JP3VvdLKBSSjaAn
+        D3pCG16nMdsA4dad9ew6cJ3p/0IR0n/99pSks9UX8CG3gsHhQ4oOR9DDnmhaxs7DKQDNn5JUy3BR
+        c9UD7YFIaCThZd0TgD4nrKRM5VTKvoGICz1I8NCJQABjbJEXOaGUsPw5b1p+bBk7lBWvefEQMRqp
+        lb4PKQgtnmnR5qwtywOvqrJhIQQWfzY34uvpkYPzK9c0tOaC4dcFrQvibS8iPmO7xaHtVo5HQUVO
+        UZJcVjXhqlSkZ/WRNIr2olK8ZMUxhPofc8wdUDv0q/jOLFZgEO3rSzrqEbdX0zIMoRyIM3aLHd5+
+        ncGddzQSnbB69ncAg4fCt4d+iASUsSP4/XpN9Y4tIzJvLGZyGeesqmome2SkV7kinFYN6aVURLI6
+        r3mB4sibiGIP6zbZblZd4Q/gfLfMcmvsxmP3+f8zym/+uG82P1Qlpbx8p5W7vJ2e1gHYkER8dzba
+        ARqnN2Xz2KuLDk7YAMuqKZDnQHiDDeEsr0lf9A0paqaaQklas+MmePfQ+SBUehuQ/6rx7pTu0R9O
+        /9xPr9+2Ibw3FQ2+W4cyjvPJmmW+nfb1sUIRgvQ//nUluOVhJxh7gkn/hE2cDcpuPGV13GtDWFqB
+        pzMzTm+e2BwYvWp8RJn+6f9wCSQenU/uxsNcw5Yx9vRWBf/2Fn4jcOfqNsuu1+sh1JSo9BRbGN29
+        PXbZjehtbX75BfMvvS4ElHmtKJGKUcIBctJwxokoaa1qUCVWKn19/QcAAP//AwAV8f2k9gUAAA==
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 60074e1dad0c8e65-DME
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json;charset=utf-8
+      Date:
+      - Sat, 12 Dec 2020 12:03:57 GMT
+      Expect-CT:
+      - max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"
+      NEL:
+      - '{"report_to":"cf-nel","max_age":604800}'
+      Report-To:
+      - '{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report?s=u9uAPiIgaZDJJK3J3TdeBmDve8BfCWYMZXB0z%2FcT3IUBNU5CQPkQ2s7P4IWLJHWeYxOGpU%2BZQY7lE5QVXzIFXGqWpedEvVzTqsuvyOvs"}],"group":"cf-nel","max_age":604800}'
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cfduid=d172eea5757f046d84e4056e45d0e10e11607774637; expires=Mon, 11-Jan-21
+        12:03:57 GMT; path=/; domain=.ckan.org; HttpOnly; SameSite=Lax; Secure
+      Transfer-Encoding:
+      - chunked
+      cf-request-id:
+      - 06f86f268c00008e65731b8000000001
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Authorization:
+      - 51912f57-a657-4caa-b2a7-0a1c16821f4b
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.25.0
+    method: GET
+    uri: https://demo.ckan.org/api/3/action/package_show?id=frictionless
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA5RUwY6cOBD9FcRlL+MGY0MDUhRFkSLtfW5RhAq73O0NYGSb7k1G8+8rG+jpTnak
+        3RvGrqr3Xr2ql/SMw5y2SXr2fnZtlkkczUF8h+lg7CmDWWcsA+G1mbLwtHNnc/04wYgfZhDf4YTx
+        T/qUpG4RAp1L28TbBZ+S1KJbBp+2yUs6aIGTw85rP2Ao99kieH3B5LMZRzO55JP3VvdLKBSSjaAn
+        D3pCG16nMdsA4dad9ew6cJ3p/0IR0n/99pSks9UX8CG3gsHhQ4oOR9DDnmhaxs7DKQDNn5JUy3BR
+        c9UD7YFIaCThZd0TgD4nrKRM5VTKvoGICz1I8NCJQABjbJEXOaGUsPw5b1p+bBk7lBWvefEQMRqp
+        lb4PKQgtnmnR5qwtywOvqrJhIQQWfzY34uvpkYPzK9c0tOaC4dcFrQvibS8iPmO7xaHtVo5HQUVO
+        UZJcVjXhqlSkZ/WRNIr2olK8ZMUxhPofc8wdUDv0q/jOLFZgEO3rSzrqEbdX0zIMoRyIM3aLHd5+
+        ncGddzQSnbB69ncAg4fCt4d+iASUsSP4/XpN9Y4tIzJvLGZyGeesqmome2SkV7kinFYN6aVURLI6
+        r3mB4sibiGIP6zbZblZd4Q/gfLfMcmvsxmP3+f8zym/+uG82P1Qlpbx8p5W7vJ2e1gHYkER8dzba
+        ARqnN2Xz2KuLDk7YAMuqKZDnQHiDDeEsr0lf9A0paqaaQklas+MmePfQ+SBUehuQ/6rx7pTu0R9O
+        /9xPr9+2Ibw3FQ2+W4cyjvPJmmW+nfb1sUIRgvQ//nUluOVhJxh7gkn/hE2cDcpuPGV13GtDWFqB
+        pzMzTm+e2BwYvWp8RJn+6f9wCSQenU/uxsNcw5Yx9vRWBf/2Fn4jcOfqNsuu1+sh1JSo9BRbGN29
+        PXbZjehtbX75BfMvvS4ElHmtKJGKUcIBctJwxokoaa1qUCVWKn19/QcAAP//AwAV8f2k9gUAAA==
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 60074e2169f57b5f-DME
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json;charset=utf-8
+      Date:
+      - Sat, 12 Dec 2020 12:03:58 GMT
+      Expect-CT:
+      - max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"
+      NEL:
+      - '{"report_to":"cf-nel","max_age":604800}'
+      Report-To:
+      - '{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report?s=uC%2FT8tunNJO2yskvVkv2K%2B5ve34nPjY%2Ft%2F2EMwf8%2Fq18VJ3qpqkxwOvp6yAanYUpAr4qS38KBfiWbrVxgo1S4X1pz97qlU0cyLTAy6li"}],"group":"cf-nel","max_age":604800}'
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cfduid=da3b0ac1c6c907daa47976e9f72ce48a91607774638; expires=Mon, 11-Jan-21
+        12:03:58 GMT; path=/; domain=.ckan.org; HttpOnly; SameSite=Lax; Secure
+      Transfer-Encoding:
+      - chunked
+      cf-request-id:
+      - 06f86f28e600007b5f9c9b5000000001
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Authorization:
+      - 51912f57-a657-4caa-b2a7-0a1c16821f4b
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.25.0
+    method: GET
+    uri: https://demo.ckan.org/api/3/action/datastore_search?limit=0&resource_id=6683dbe3-bf0f-4169-bddf-d380842ec749
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA5xRy26DMBD8FWsPPUGgAdEEKcqHVBUy9rq4MTayF7VVxL9XS1XlcWnV88zsPPYM
+        A7oJWgED0ZTaotA4ho06Sb8J8bWQky2qQiqywRdM7dIQ3o9ejnjQkmSiELFLKKMaIBOQZqUwJWgF
+        xRkzARHT7AhacQbrlZs1dhRIuhtGmKPCzmrO0TS7SvdY5b0pTV4/Nvu819rkutqVu3qL6qnes5Ox
+        6DQbPZ+BPidkrfXE0Pchvrdk4gatL/A9SvhxJeaCsLys8VSIOnUmxFFyEQj9GypKcAE5BXOdHS1T
+        ykxA56w/pbV4IhlX5e2c9/sdV/mhfLha5PDXOTzH/90iGJOQPf7ttWQCfj64XZYvAAAA//8DACI8
+        EK1BAgAA
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 60074e247b947a69-DME
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json;charset=utf-8
+      Date:
+      - Sat, 12 Dec 2020 12:03:59 GMT
+      Expect-CT:
+      - max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"
+      NEL:
+      - '{"report_to":"cf-nel","max_age":604800}'
+      Report-To:
+      - '{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report?s=ZyuvAECOCt7yImIrB0CfiJYdQZWj8iOOOVCAFFZPU0E57ToUQzeLBZQvXIRwb63zlG5eyKAFArSZKmjD4HNv0ufITLJnL3tXjt5UOzq7"}],"group":"cf-nel","max_age":604800}'
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cfduid=d2a76f74d27abd049c57331359b9762ca1607774638; expires=Mon, 11-Jan-21
+        12:03:58 GMT; path=/; domain=.ckan.org; HttpOnly; SameSite=Lax; Secure
+      Transfer-Encoding:
+      - chunked
+      cf-request-id:
+      - 06f86f2acc00007a6927b14000000001
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"id": "6683dbe3-bf0f-4169-bddf-d380842ec749"}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Authorization:
+      - 51912f57-a657-4caa-b2a7-0a1c16821f4b
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '46'
+      Content-Type:
+      - application/json
+      User-Agent:
+      - python-requests/2.25.0
+    method: POST
+    uri: https://demo.ckan.org/api/3/action/resource_delete
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAxTKMQrDMAwF0KsIzSEashlKjxKM8qlDFdtYMhlK71765vfhAuuciEtE9yRy4Gqr
+        vnNd23hJ7qdskjXOVuVfdy/tftZ84THgbQ7FfsAQ4IXYpyrcOVGMiYV4wKcFJ6rT7PsDAAD//wMA
+        mgUNGG4AAAA=
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 60074e2679643a8f-DME
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json;charset=utf-8
+      Date:
+      - Sat, 12 Dec 2020 12:03:59 GMT
+      Expect-CT:
+      - max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"
+      NEL:
+      - '{"report_to":"cf-nel","max_age":604800}'
+      Report-To:
+      - '{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report?s=%2FQUkS0L6knAibTRjnH%2BEUbBJsBZK%2Bpn4lPdLJeQ%2BjU7Kfe%2BG%2BxajdF5DRBbH9ocneSh%2B1n%2FhznLP6FjOwgUfamJvzRVqiJ62W%2FiwmvjV"}],"group":"cf-nel","max_age":604800}'
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cfduid=d26e943ae28d4703e87233444971fe9f61607774639; expires=Mon, 11-Jan-21
+        12:03:59 GMT; path=/; domain=.ckan.org; HttpOnly; SameSite=Lax; Secure
+      Transfer-Encoding:
+      - chunked
+      cf-request-id:
+      - 06f86f2c0f00003a8f34817000000001
+    status:
+      code: 200
+      message: OK
+version: 1

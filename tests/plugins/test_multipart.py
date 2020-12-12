@@ -10,7 +10,7 @@ BASE_URL = "https://raw.githubusercontent.com/frictionlessdata/datapackage-py/ma
 # Table
 
 
-def test_table_multipart():
+def test_multipart_loader():
     with Table(["data/chunk1.csv", "data/chunk2.csv"]) as table:
         assert table.header == ["id", "name"]
         assert table.read_rows() == [
@@ -19,7 +19,7 @@ def test_table_multipart():
         ]
 
 
-def test_table_multipart_with_compressed_parts():
+def test_multipart_loader_with_compressed_parts():
     with Table(["data/chunk1.csv.zip", "data/chunk2.csv.zip"]) as table:
         assert table.compression == "no"
         assert table.compression_path == ""
@@ -33,7 +33,7 @@ def test_table_multipart_with_compressed_parts():
 # Resource
 
 
-def test_resource_source_multipart():
+def test_multipart_loader_resource():
     descriptor = {
         "path": ["chunk1.csv", "chunk2.csv"],
         "schema": "resource-schema.json",
@@ -48,8 +48,9 @@ def test_resource_source_multipart():
     ]
 
 
-@pytest.mark.ci
-def test_resource_source_multipart_remote():
+@pytest.mark.vcr
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
+def test_multipart_loader_resource_remote():
     descriptor = {
         "name": "name",
         "path": ["chunk2.csv", "chunk3.csv"],
@@ -66,8 +67,9 @@ def test_resource_source_multipart_remote():
     ]
 
 
-@pytest.mark.ci
-def test_resource_source_multipart_remote_both_path_and_basepath():
+@pytest.mark.vcr
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
+def test_multipart_loader_resource_remote_both_path_and_basepath():
     descriptor = {
         "name": "name",
         "path": ["chunk2.csv", BASE_URL % "data/chunk3.csv"],
@@ -84,7 +86,7 @@ def test_resource_source_multipart_remote_both_path_and_basepath():
     ]
 
 
-def test_resource_source_multipart_error_bad_path():
+def test_multipart_loader_resource_error_bad_path():
     resource = Resource({"name": "name", "path": ["chunk1.csv", "chunk2.csv"]})
     with pytest.raises(FrictionlessException) as excinfo:
         resource.read_rows()
@@ -93,7 +95,7 @@ def test_resource_source_multipart_error_bad_path():
     assert error.note == "[Errno 2] No such file or directory: 'chunk1.csv'"
 
 
-def test_resource_source_multipart_error_bad_path_not_safe_absolute():
+def test_multipart_loader_resource_error_bad_path_not_safe_absolute():
     bad_path = os.path.abspath("data/chunk1.csv")
     with pytest.raises(FrictionlessException) as excinfo:
         Resource({"name": "name", "path": [bad_path, "data/chunk2.csv"]})
@@ -102,7 +104,7 @@ def test_resource_source_multipart_error_bad_path_not_safe_absolute():
     assert error.note.count("not safe")
 
 
-def test_resource_source_multipart_error_bad_path_not_safe_traversing():
+def test_multipart_loader_resource_error_bad_path_not_safe_traversing():
     bad_path = os.path.abspath("data/../chunk2.csv")
     with pytest.raises(FrictionlessException) as excinfo:
         Resource({"name": "name", "path": ["data/chunk1.csv", bad_path]})
@@ -112,7 +114,7 @@ def test_resource_source_multipart_error_bad_path_not_safe_traversing():
 
 
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-def test_resource_source_multipart_infer():
+def test_multipart_loader_resource_infer():
     descriptor = {"path": ["data/chunk1.csv", "data/chunk2.csv"]}
     resource = Resource(descriptor)
     resource.infer()
@@ -146,7 +148,7 @@ def test_resource_source_multipart_infer():
 
 # TODO: fix this test
 @pytest.mark.skip
-def test_resource_multipart_write_file(tmpdir):
+def test_multipart_loader_resource_write_file(tmpdir):
     source = "data/table.json"
     target = str(tmpdir.join("table{number}.json"))
     target1 = str(tmpdir.join("table1.json"))
@@ -168,7 +170,7 @@ def test_resource_multipart_write_file(tmpdir):
 # Validate
 
 
-def test_validate_multipart_resource():
+def test_multipart_loader_resource_validate():
     report = validate({"path": ["data/chunk1.csv", "data/chunk2.csv"]})
     assert report.valid
     assert report.table.stats["rows"] == 2

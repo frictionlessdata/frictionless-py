@@ -6,25 +6,15 @@ import pytest
 import datetime
 from apiclient.discovery import build
 from oauth2client.client import GoogleCredentials
-from frictionless import Table, Package, Resource, FrictionlessException
+from frictionless import Table, Package, Resource, FrictionlessException, helpers
 from frictionless.plugins.bigquery import BigqueryDialect, BigqueryStorage
-
-
-# Environment
-
-
-# In forked pull requests `.google.json` will not be available
-pytestmark = pytest.mark.skipif(
-    not os.path.isfile(".google.json"), reason="Google environment is not available"
-)
 
 
 # Parser
 
 
 @pytest.mark.ci
-@pytest.mark.skipif(sys.version_info < (3, 8), reason="Speed up CI")
-def test_table_bigquery(options):
+def test_bigquery_parser(options):
     prefix = options.pop("prefix")
     service = options.pop("service")
     dialect = BigqueryDialect(table=prefix, **options)
@@ -43,8 +33,7 @@ def test_table_bigquery(options):
 
 
 @pytest.mark.ci
-@pytest.mark.skipif(sys.version_info < (3, 8), reason="Speed up CI")
-def test_table_bigquery_write_timezone(options):
+def test_bigquery_parser_write_timezone(options):
     prefix = options.pop("prefix")
     service = options.pop("service")
     dialect = BigqueryDialect(table=prefix, **options)
@@ -63,8 +52,7 @@ def test_table_bigquery_write_timezone(options):
 
 
 @pytest.mark.ci
-@pytest.mark.skipif(sys.version_info < (3, 8), reason="Speed up CI")
-def test_storage_types(options):
+def test_bigquery_storage_types(options):
 
     # Export/Import
     source = Package("data/storage/types.json")
@@ -121,8 +109,7 @@ def test_storage_types(options):
 
 
 @pytest.mark.ci
-@pytest.mark.skipif(sys.version_info < (3, 8), reason="Speed up CI")
-def test_storage_integrity(options):
+def test_bigquery_storage_integrity(options):
 
     # Export/Import
     source = Package("data/storage/integrity.json")
@@ -169,8 +156,7 @@ def test_storage_integrity(options):
 
 
 @pytest.mark.ci
-@pytest.mark.skipif(sys.version_info < (3, 8), reason="Speed up CI")
-def test_storage_constraints(options):
+def test_bigquery_storage_constraints(options):
 
     # Export/Import
     source = Package("data/storage/constraints.json")
@@ -208,8 +194,7 @@ def test_storage_constraints(options):
 
 
 @pytest.mark.ci
-@pytest.mark.skipif(sys.version_info < (3, 8), reason="Speed up CI")
-def test_storage_read_resource_not_existent_error(options):
+def test_bigquery_storage_read_resource_not_existent_error(options):
     storage = BigqueryStorage(**options)
     with pytest.raises(FrictionlessException) as excinfo:
         storage.read_resource("bad")
@@ -219,8 +204,7 @@ def test_storage_read_resource_not_existent_error(options):
 
 
 @pytest.mark.ci
-@pytest.mark.skipif(sys.version_info < (3, 8), reason="Speed up CI")
-def test_storage_write_resource_existent_error(options):
+def test_bigquery_storage_write_resource_existent_error(options):
     resource = Resource(path="data/table.csv")
     storage = resource.to_bigquery(force=True, **options)
     with pytest.raises(FrictionlessException) as excinfo:
@@ -233,8 +217,7 @@ def test_storage_write_resource_existent_error(options):
 
 
 @pytest.mark.ci
-@pytest.mark.skipif(sys.version_info < (3, 8), reason="Speed up CI")
-def test_storage_delete_resource_not_existent_error(options):
+def test_bigquery_storage_delete_resource_not_existent_error(options):
     storage = BigqueryStorage(**options)
     with pytest.raises(FrictionlessException) as excinfo:
         storage.delete_resource("bad")
@@ -244,7 +227,6 @@ def test_storage_delete_resource_not_existent_error(options):
 
 
 @pytest.mark.ci
-@pytest.mark.skipif(sys.version_info < (3, 8), reason="Speed up CI")
 def test_storage_big_file(options):
     source = Resource(name="table", data=[[1]] * 1500)
     storage = source.to_bigquery(force=True, **options)
@@ -258,9 +240,13 @@ def test_storage_big_file(options):
 
 @pytest.fixture
 def options():
-    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = ".google.json"
+    path = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
+    if not path or not os.path.isfile(path):
+        pytest.skip('Environment for "BigQuery" is not available')
+    elif not helpers.is_platform("linux") or sys.version_info < (3, 8):
+        pytest.skip('Testing "BigQuery" only for Linux / Python 3.8')
     credentials = GoogleCredentials.get_application_default()
-    with open(".google.json") as file:
+    with open(path) as file:
         return {
             "service": build("bigquery", "v2", credentials=credentials),
             "project": json.load(file)["project_id"],
