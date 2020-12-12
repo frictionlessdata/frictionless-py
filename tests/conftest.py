@@ -19,19 +19,13 @@ cleanup_on_sigterm()
 
 
 @pytest.fixture
-def database_url(sqlite_url):
-    engine = sa.create_engine(sqlite_url)
-    conn = engine.connect()
-    conn.execute("CREATE TABLE 'table' (id INTEGER PRIMARY KEY, name TEXT)")
-    conn.execute("INSERT INTO 'table' VALUES (1, 'english'), (2, '中国人')")
-    yield sqlite_url
-    conn.close()
-
-
-@pytest.fixture
-def sqlite_url(tmpdir):
-    path = str(tmpdir.join("database.db"))
-    return "sqlite:///%s" % path
+def google_credentials_path():
+    path = os.environ.get("GOOGLE_CREDENTIALS_PATH")
+    if not path or not os.path.isfile(path):
+        pytest.skip('Environment variable "GOOGLE_CREDENTIALS_PATH" is not available')
+    elif not helpers.is_platform("linux") or sys.version_info < (3, 8):
+        pytest.skip('Environment variable "GOOGLE_CREDENTIALS_PATH" is Linux/Python3.8')
+    return path
 
 
 @pytest.fixture
@@ -65,13 +59,19 @@ def mysql_url():
 
 
 @pytest.fixture
-def google_credentials_path():
-    path = os.environ.get("GOOGLE_CREDENTIALS_PATH")
-    if not path or not os.path.isfile(path):
-        pytest.skip('Environment variable "GOOGLE_CREDENTIALS_PATH" is not available')
-    elif not helpers.is_platform("linux") or sys.version_info < (3, 8):
-        pytest.skip('Environment variable "GOOGLE_CREDENTIALS_PATH" is Linux/Python3.8')
-    return path
+def sqlite_url(tmpdir):
+    path = str(tmpdir.join("database.db"))
+    return "sqlite:///%s" % path
+
+
+@pytest.fixture
+def database_url(sqlite_url):
+    engine = sa.create_engine(sqlite_url)
+    conn = engine.connect()
+    conn.execute("CREATE TABLE 'table' (id INTEGER PRIMARY KEY, name TEXT)")
+    conn.execute("INSERT INTO 'table' VALUES (1, 'english'), (2, '中国人')")
+    yield sqlite_url
+    conn.close()
 
 
 # Settings

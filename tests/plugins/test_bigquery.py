@@ -1,12 +1,11 @@
 import os
-import sys
 import json
 import uuid
 import pytest
 import datetime
 from apiclient.discovery import build
 from oauth2client.client import GoogleCredentials
-from frictionless import Table, Package, Resource, FrictionlessException, helpers
+from frictionless import Table, Package, Resource, FrictionlessException
 from frictionless.plugins.bigquery import BigqueryDialect, BigqueryStorage
 
 
