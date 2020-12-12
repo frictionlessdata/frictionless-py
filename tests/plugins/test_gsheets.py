@@ -1,6 +1,7 @@
 import os
+import sys
 import pytest
-from frictionless import Table, FrictionlessException
+from frictionless import Table, FrictionlessException, helpers
 
 
 # Parser
@@ -51,6 +52,9 @@ def test_gsheets_parser_write(credentials):
 
 @pytest.fixture
 def credentials():
-    if not os.path.isfile(".google.json"):
+    path = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
+    if not path or not os.path.isfile(path):
         pytest.skip('Environment for "Google Sheets" writing is not available')
-    return ".google.json"
+    elif not helpers.is_platform("linux") or sys.version_info < (3, 8):
+        pytest.skip('Testing "Google Sheets" writing only for Linux / Python 3.8')
+    return path

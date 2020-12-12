@@ -4,9 +4,6 @@ import datetime
 import sqlalchemy as sa
 from frictionless import Table, Package, Resource, FrictionlessException
 from frictionless.plugins.sql import SqlDialect, SqlStorage
-from dotenv import load_dotenv
-
-load_dotenv(".env")
 
 
 # Parser

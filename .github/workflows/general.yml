@@ -31,7 +31,7 @@ jobs:
       - name: Prepare environment
         run: cp .env.example .env
       - name: Prepare secrets
-        if: env.GOOGLE_CREDENTIALS != null && matrix.python-version == 3.8
+        if: env.GOOGLE_CREDENTIALS != null
         run: echo $GOOGLE_CREDENTIALS > .google.json
         env:
           GOOGLE_CREDENTIALS: ${{secrets.GOOGLE_CREDENTIALS}}
@@ -79,7 +79,7 @@ jobs:
       - name: Install dependencies
         run: LDFLAGS=`echo $(pg_config --ldflags)` make install
       - name: Test software
-        run: make test-ci
+        run: make test
 
   # Test (Windows)
 
@@ -95,7 +95,7 @@ jobs:
       - name: Install dependencies
         run: make install
       - name: Test software
-        run: make test-ci
+        run: make test
 
   # Deploy
 
