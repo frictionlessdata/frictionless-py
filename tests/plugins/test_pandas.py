@@ -11,7 +11,7 @@ from frictionless.plugins.pandas import PandasStorage
 # Parser
 
 
-def test_table_pandas():
+def test_pandas_parser():
     dataframe = pd.DataFrame(data={"id": [1, 2], "name": ["english", "中国人"]})
     with Table(dataframe) as table:
         assert table.header == ["id", "name"]
@@ -21,7 +21,7 @@ def test_table_pandas():
         ]
 
 
-def test_table_pandas_write():
+def test_pandas_parser_write():
     with Table("data/table.csv") as table:
         dataframe = table.write(format="pandas")
         assert dataframe.to_dict("records") == [
@@ -30,7 +30,7 @@ def test_table_pandas_write():
         ]
 
 
-def test_table_pandas_write_timezone():
+def test_pandas_parser_write_timezone():
     with Table("data/timezone.csv") as table:
         dataframe = table.write(format="pandas")
     with Table(dataframe) as table:
@@ -45,7 +45,7 @@ def test_table_pandas_write_timezone():
 # Storage
 
 
-def test_storage_types():
+def test_pandas_storage_types():
 
     # Export/Import
     source = Package("data/storage/types.json")
@@ -100,7 +100,7 @@ def test_storage_types():
     storage.delete_package(target.resource_names)
 
 
-def test_storage_integrity():
+def test_pandas_storage_integrity():
 
     # Export/Import
     source = Package("data/storage/integrity.json")
@@ -149,7 +149,7 @@ def test_storage_integrity():
     storage.delete_package(target.resource_names)
 
 
-def test_storage_constraints():
+def test_pandas_storage_constraints():
 
     # Export/Import
     source = Package("data/storage/constraints.json")
@@ -186,7 +186,7 @@ def test_storage_constraints():
     storage.delete_package(target.resource_names)
 
 
-def test_storage_read_resource_not_existent_error():
+def test_pandas_storage_read_resource_not_existent_error():
     storage = PandasStorage()
     with pytest.raises(FrictionlessException) as excinfo:
         storage.read_resource("bad")
@@ -195,7 +195,7 @@ def test_storage_read_resource_not_existent_error():
     assert error.note.count("does not exist")
 
 
-def test_storage_write_resource_existent_error():
+def test_pandas_storage_write_resource_existent_error():
     resource = Resource(path="data/table.csv")
     storage = resource.to_pandas()
     with pytest.raises(FrictionlessException) as excinfo:
@@ -207,7 +207,7 @@ def test_storage_write_resource_existent_error():
     storage.delete_package(list(storage))
 
 
-def test_storage_delete_resource_not_existent_error():
+def test_pandas_storage_delete_resource_not_existent_error():
     storage = PandasStorage()
     with pytest.raises(FrictionlessException) as excinfo:
         storage.delete_resource("bad")
@@ -216,7 +216,7 @@ def test_storage_delete_resource_not_existent_error():
     assert error.note.count("does not exist")
 
 
-def test_storage_dataframe_property_not_single_error():
+def test_pandas_storage_dataframe_property_not_single_error():
     package = Package("data/package-storage.json")
     storage = package.to_pandas()
     with pytest.raises(FrictionlessException) as excinfo:
@@ -226,7 +226,7 @@ def test_storage_dataframe_property_not_single_error():
     assert error.note.count("single dataframe storages")
 
 
-def test_storage_dataframe_primary_key_with_datetimes():
+def test_pandas_storage_dataframe_primary_key_with_datetimes():
     df = pd.read_csv("data/vix.csv", sep=";", parse_dates=["Date"], index_col=["Date"])
     resource = Resource.from_pandas(df)
     assert resource.schema == {
