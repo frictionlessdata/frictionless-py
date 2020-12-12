@@ -4,10 +4,14 @@ import pytest
 from frictionless import Table, FrictionlessException, helpers
 
 
+# We don't use VCR for this module testing because
+# HTTP requests can contain secrets from ".google.json"
+
+
 # Parser
 
 
-@pytest.mark.vcr
+@pytest.mark.ci
 def test_gsheets_parser():
     source = "https://docs.google.com/spreadsheets/d/1mHIWnDvW9cALRMq9OdNfRwjAthCUFUOACPp0Lkyl7b4/edit?usp=sharing"
     with Table(source) as table:
@@ -15,7 +19,7 @@ def test_gsheets_parser():
         assert table.read_data() == [["1", "english"], ["2", "中国人"]]
 
 
-@pytest.mark.vcr
+@pytest.mark.ci
 def test_gsheets_parser_with_gid():
     source = "https://docs.google.com/spreadsheets/d/1mHIWnDvW9cALRMq9OdNfRwjAthCUFUOACPp0Lkyl7b4/edit#gid=960698813"
     with Table(source) as table:
@@ -23,7 +27,7 @@ def test_gsheets_parser_with_gid():
         assert table.read_data() == [["2", "中国人"], ["3", "german"]]
 
 
-@pytest.mark.vcr
+@pytest.mark.ci
 def test_gsheets_parser_bad_url():
     table = Table("https://docs.google.com/spreadsheets/d/bad")
     with pytest.raises(FrictionlessException) as excinfo:

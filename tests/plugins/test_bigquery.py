@@ -10,6 +10,10 @@ from frictionless import Table, Package, Resource, FrictionlessException, helper
 from frictionless.plugins.bigquery import BigqueryDialect, BigqueryStorage
 
 
+# We don't use VCR for this module testing because
+# HTTP requests can contain secrets from ".google.json"
+
+
 # Parser
 
 
