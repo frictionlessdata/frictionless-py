@@ -1,3 +1,4 @@
+import os
 import pytest
 import datetime
 import sqlalchemy as sa
@@ -787,3 +788,42 @@ def test_mysql_storage_views_support(mysql_url):
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
+
+
+# Fixturs
+
+
+@pytest.fixture
+def sqlite_url(tmpdir):
+    path = str(tmpdir.join("database.db"))
+    return "sqlite:///%s" % path
+
+
+@pytest.fixture
+def postgresql_url():
+    url = os.environ.get("POSTGRESQL_URL")
+    if not url:
+        pytest.skip('Environment varialbe "POSTGRESQL_URL" is not available')
+    yield url
+    engine = sa.create_engine(url)
+    conn = engine.connect()
+    meta = sa.MetaData(bind=conn)
+    meta.reflect(views=True)
+    for table in reversed(meta.sorted_tables):
+        conn.execute(table.delete())
+    conn.close()
+
+
+@pytest.fixture
+def mysql_url():
+    url = os.environ.get("MYSQL_URL")
+    if not url:
+        pytest.skip('Environment varialbe "MYSQL_URL" is not available')
+    yield url
+    engine = sa.create_engine(url)
+    conn = engine.connect()
+    meta = sa.MetaData(bind=conn)
+    meta.reflect(views=True)
+    for table in reversed(meta.sorted_tables):
+        conn.execute(table.delete())
+    conn.close()
