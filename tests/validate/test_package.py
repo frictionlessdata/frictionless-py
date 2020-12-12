@@ -45,11 +45,13 @@ def test_validate_package_from_path_invalid():
     ]
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_validate_package_from_zip():
     report = validate("data/package.zip", source_type="package", nopool=True)
     assert report.valid
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_validate_package_from_zip_invalid():
     report = validate("data/package-invalid.zip", source_type="package", nopool=True)
     assert report.flatten(["tablePosition", "rowPosition", "fieldPosition", "code"]) == [
