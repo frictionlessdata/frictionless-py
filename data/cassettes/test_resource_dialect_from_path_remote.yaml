@@ -1,0 +1,141 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.25.0
+    method: GET
+    uri: https://raw.githubusercontent.com/frictionlessdata/datapackage-py/master/data/resource-with-dereferencing.json
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA6vmUgACpbzE3FQlKyitAxErSCzJAImVJCblpOolF5cpQSWKkzNScxNBUhCWbnFm
+        bgFQSVZxfh5MTUpmYk5qcglIEZQJkeaq5QIAd1vWInMAAAA=
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - max-age=300
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '92'
+      Content-Security-Policy:
+      - default-src 'none'; style-src 'unsafe-inline'; sandbox
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Sat, 12 Dec 2020 12:33:13 GMT
+      ETag:
+      - W/"4f3e34f5dcc3c4fc7bf4d99d5d86a9702c593ab41a91c516b9e3bb940348058d"
+      Expires:
+      - Sat, 12 Dec 2020 12:38:13 GMT
+      Source-Age:
+      - '0'
+      Strict-Transport-Security:
+      - max-age=31536000
+      Vary:
+      - Authorization,Accept-Encoding, Accept-Encoding
+      Via:
+      - 1.1 varnish (Varnish/6.0), 1.1 varnish
+      X-Cache:
+      - MISS, MISS
+      X-Cache-Hits:
+      - 0, 0
+      X-Content-Type-Options:
+      - nosniff
+      X-Fastly-Request-ID:
+      - 3716d7c4ca8153c46d0b47a8b28f2cefc3e410ed
+      X-Frame-Options:
+      - deny
+      X-GitHub-Request-Id:
+      - E172:62D1:2C3DB9:2EB2B3:5FD4B888
+      X-Served-By:
+      - cache-bma1629-BMA
+      X-Timer:
+      - S1607776393.281848,VS0,VE201
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.25.0
+    method: GET
+    uri: https://raw.githubusercontent.com/frictionlessdata/datapackage-py/master/data/dialect.json
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA6vmUlBQSknNyczNLEktUrJSULJW4qrlAgDqiElbFwAAAA==
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - max-age=300
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '43'
+      Content-Security-Policy:
+      - default-src 'none'; style-src 'unsafe-inline'; sandbox
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Sat, 12 Dec 2020 12:33:13 GMT
+      ETag:
+      - W/"a1f72ad9445d14d57df5ecbe099a39a948f645607c830a57306dc70843a75219"
+      Expires:
+      - Sat, 12 Dec 2020 12:38:13 GMT
+      Source-Age:
+      - '0'
+      Strict-Transport-Security:
+      - max-age=31536000
+      Vary:
+      - Authorization,Accept-Encoding, Accept-Encoding
+      Via:
+      - 1.1 varnish (Varnish/6.0), 1.1 varnish
+      X-Cache:
+      - MISS, MISS
+      X-Cache-Hits:
+      - 0, 0
+      X-Content-Type-Options:
+      - nosniff
+      X-Fastly-Request-ID:
+      - 8dfc958ac83315095ef200ac144504dfdba39d43
+      X-Frame-Options:
+      - deny
+      X-GitHub-Request-Id:
+      - 6E56:A59D:2F73F8:32158E:5FD4B889
+      X-Served-By:
+      - cache-bma1630-BMA
+      X-Timer:
+      - S1607776394.691075,VS0,VE293
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+version: 1
