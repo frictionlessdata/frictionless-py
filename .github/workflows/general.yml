@@ -31,7 +31,7 @@ jobs:
       - name: Prepare environment
         run: cp .env.example .env
       - name: Prepare secrets
-        if: env.GOOGLE_CREDENTIALS != null and matrix.python-version == 3.8
+        if: env.GOOGLE_CREDENTIALS != null && matrix.python-version == 3.8
         run: echo $GOOGLE_CREDENTIALS > .google.json
         env:
           GOOGLE_CREDENTIALS: ${{secrets.GOOGLE_CREDENTIALS}}
