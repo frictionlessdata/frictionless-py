@@ -52,5 +52,5 @@ def test_gsheets_parser_write(credentials):
 @pytest.fixture
 def credentials():
     if not os.path.isfile(".google.json"):
-        pytest.skip('Environment for "Google Sheets" is not available')
+        pytest.skip('Environment for "Google Sheets" writing is not available')
     return ".google.json"
