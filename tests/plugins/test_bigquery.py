@@ -24,7 +24,7 @@ pytestmark = pytest.mark.skipif(
 
 @pytest.mark.ci
 @pytest.mark.skipif(sys.version_info < (3, 8), reason="Speed up CI")
-def test_table_bigquery(options):
+def test_bigquery_parser(options):
     prefix = options.pop("prefix")
     service = options.pop("service")
     dialect = BigqueryDialect(table=prefix, **options)
@@ -44,7 +44,7 @@ def test_table_bigquery(options):
 
 @pytest.mark.ci
 @pytest.mark.skipif(sys.version_info < (3, 8), reason="Speed up CI")
-def test_table_bigquery_write_timezone(options):
+def test_bigquery_parser_write_timezone(options):
     prefix = options.pop("prefix")
     service = options.pop("service")
     dialect = BigqueryDialect(table=prefix, **options)
@@ -64,7 +64,7 @@ def test_table_bigquery_write_timezone(options):
 
 @pytest.mark.ci
 @pytest.mark.skipif(sys.version_info < (3, 8), reason="Speed up CI")
-def test_storage_types(options):
+def test_bigquery_storage_types(options):
 
     # Export/Import
     source = Package("data/storage/types.json")
@@ -122,7 +122,7 @@ def test_storage_types(options):
 
 @pytest.mark.ci
 @pytest.mark.skipif(sys.version_info < (3, 8), reason="Speed up CI")
-def test_storage_integrity(options):
+def test_bigquery_storage_integrity(options):
 
     # Export/Import
     source = Package("data/storage/integrity.json")
@@ -170,7 +170,7 @@ def test_storage_integrity(options):
 
 @pytest.mark.ci
 @pytest.mark.skipif(sys.version_info < (3, 8), reason="Speed up CI")
-def test_storage_constraints(options):
+def test_bigquery_storage_constraints(options):
 
     # Export/Import
     source = Package("data/storage/constraints.json")
@@ -209,7 +209,7 @@ def test_storage_constraints(options):
 
 @pytest.mark.ci
 @pytest.mark.skipif(sys.version_info < (3, 8), reason="Speed up CI")
-def test_storage_read_resource_not_existent_error(options):
+def test_bigquery_storage_read_resource_not_existent_error(options):
     storage = BigqueryStorage(**options)
     with pytest.raises(FrictionlessException) as excinfo:
         storage.read_resource("bad")
@@ -220,7 +220,7 @@ def test_storage_read_resource_not_existent_error(options):
 
 @pytest.mark.ci
 @pytest.mark.skipif(sys.version_info < (3, 8), reason="Speed up CI")
-def test_storage_write_resource_existent_error(options):
+def test_bigquery_storage_write_resource_existent_error(options):
     resource = Resource(path="data/table.csv")
     storage = resource.to_bigquery(force=True, **options)
     with pytest.raises(FrictionlessException) as excinfo:
@@ -234,7 +234,7 @@ def test_storage_write_resource_existent_error(options):
 
 @pytest.mark.ci
 @pytest.mark.skipif(sys.version_info < (3, 8), reason="Speed up CI")
-def test_storage_delete_resource_not_existent_error(options):
+def test_bigquery_storage_delete_resource_not_existent_error(options):
     storage = BigqueryStorage(**options)
     with pytest.raises(FrictionlessException) as excinfo:
         storage.delete_resource("bad")

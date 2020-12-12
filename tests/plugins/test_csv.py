@@ -8,32 +8,32 @@ BASE_URL = "https://raw.githubusercontent.com/okfn/tabulator-py/master/%s"
 # Read
 
 
-def test_table_csv():
+def test_csv_parser():
     with Table("data/table.csv") as table:
         assert table.header == ["id", "name"]
         assert table.read_data() == [["1", "english"], ["2", "中国人"]]
 
 
-def test_table_csv_with_bom():
+def test_csv_parser_with_bom():
     with Table("data/bom.csv") as table:
         assert table.header == ["id", "name"]
         assert table.read_data() == [["1", "english"], ["2", "中国人"]]
 
 
-def test_table_csv_with_bom_with_encoding():
+def test_csv_parser_with_bom_with_encoding():
     with Table("data/bom.csv", encoding="utf-8") as table:
         assert table.header == ["id", "name"]
         assert table.read_data() == [["1", "english"], ["2", "中国人"]]
 
 
-def test_table_csv_excel():
+def test_csv_parser_excel():
     source = "header1,header2\nvalue1,value2\nvalue3,value4"
     with Table(source, scheme="text", format="csv") as table:
         assert table.header == ["header1", "header2"]
         assert table.read_data() == [["value1", "value2"], ["value3", "value4"]]
 
 
-def test_table_csv_excel_tab():
+def test_csv_parser_excel_tab():
     source = "header1\theader2\nvalue1\tvalue2\nvalue3\tvalue4"
     dialect = CsvDialect(delimiter="\t")
     with Table(source, scheme="text", format="csv", dialect=dialect) as table:
@@ -41,14 +41,14 @@ def test_table_csv_excel_tab():
         assert table.read_data() == [["value1", "value2"], ["value3", "value4"]]
 
 
-def test_table_csv_unix():
+def test_csv_parser_unix():
     source = '"header1","header2"\n"value1","value2"\n"value3","value4"'
     with Table(source, scheme="text", format="csv") as table:
         assert table.header == ["header1", "header2"]
         assert table.read_data() == [["value1", "value2"], ["value3", "value4"]]
 
 
-def test_table_csv_escaping():
+def test_csv_parser_escaping():
     dialect = CsvDialect(escape_char="\\")
     with Table("data/escaping.csv", dialect=dialect) as table:
         assert table.header == ["ID", "Test"]
@@ -59,36 +59,36 @@ def test_table_csv_escaping():
         ]
 
 
-def test_table_csv_doublequote():
+def test_csv_parser_doublequote():
     with Table("data/doublequote.csv") as table:
         assert len(table.header) == 17
         for row in table:
             assert len(row) == 17
 
 
-def test_table_csv_stream():
+def test_csv_parser_stream():
     source = open("data/table.csv", mode="rb")
     with Table(source, format="csv") as table:
         assert table.header == ["id", "name"]
         assert table.read_data() == [["1", "english"], ["2", "中国人"]]
 
 
-def test_table_csv_text():
+def test_csv_parser_text():
     source = "text://id,name\n1,english\n2,中国人\n"
     with Table(source, format="csv") as table:
         assert table.header == ["id", "name"]
         assert table.read_data() == [["1", "english"], ["2", "中国人"]]
 
 
-@pytest.mark.ci
-def test_table_csv_remote():
+@pytest.mark.vcr
+def test_csv_parser_remote():
     with Table(BASE_URL % "data/table.csv") as table:
         assert table.header == ["id", "name"]
         assert table.read_data() == [["1", "english"], ["2", "中国人"]]
 
 
-@pytest.mark.ci
-def test_table_csv_remote_non_ascii_url():
+@pytest.mark.vcr
+def test_csv_parser_remote_non_ascii_url():
     source = "http://data.defra.gov.uk/ops/government_procurement_card/over_£500_GPC_apr_2013.csv"
     with Table(source) as table:
         assert table.header == [
@@ -100,7 +100,7 @@ def test_table_csv_remote_non_ascii_url():
         ]
 
 
-def test_table_csv_delimiter():
+def test_csv_parser_delimiter():
     source = '"header1";"header2"\n"value1";"value2"\n"value3";"value4"'
     dialect = CsvDialect(delimiter=";")
     with Table(source, scheme="text", format="csv", dialect=dialect) as table:
@@ -108,7 +108,7 @@ def test_table_csv_delimiter():
         assert table.read_data() == [["value1", "value2"], ["value3", "value4"]]
 
 
-def test_table_csv_escapechar():
+def test_csv_parser_escapechar():
     source = "header1%,header2\nvalue1%,value2\nvalue3%,value4"
     dialect = CsvDialect(escape_char="%")
     with Table(source, scheme="text", format="csv", dialect=dialect) as table:
@@ -116,7 +116,7 @@ def test_table_csv_escapechar():
         assert table.read_data() == [["value1,value2"], ["value3,value4"]]
 
 
-def test_table_csv_quotechar():
+def test_csv_parser_quotechar():
     source = "%header1,header2%\n%value1,value2%\n%value3,value4%"
     dialect = CsvDialect(quote_char="%")
     with Table(source, scheme="text", format="csv", dialect=dialect) as table:
@@ -124,7 +124,7 @@ def test_table_csv_quotechar():
         assert table.read_data() == [["value1,value2"], ["value3,value4"]]
 
 
-def test_table_csv_skipinitialspace():
+def test_csv_parser_skipinitialspace():
     source = "header1, header2\nvalue1, value2\nvalue3, value4"
     dialect = CsvDialect(skip_initial_space=False)
     with Table(source, scheme="text", format="csv", dialect=dialect) as table:
@@ -132,32 +132,32 @@ def test_table_csv_skipinitialspace():
         assert table.read_data() == [["value1", " value2"], ["value3", " value4"]]
 
 
-def test_table_csv_skipinitialspace_default():
+def test_csv_parser_skipinitialspace_default():
     source = "header1, header2\nvalue1, value2\nvalue3, value4"
     with Table(source, scheme="text", format="csv") as table:
         assert table.header == ["header1", "header2"]
         assert table.read_data() == [["value1", "value2"], ["value3", "value4"]]
 
 
-def test_table_csv_detect_delimiter_tab():
+def test_csv_parser_detect_delimiter_tab():
     source = "a1\tb1\tc1A,c1B\na2\tb2\tc2\n"
     with Table(source, scheme="text", format="csv", headers=False) as table:
         assert table.read_data() == [["a1", "b1", "c1A,c1B"], ["a2", "b2", "c2"]]
 
 
-def test_table_csv_detect_delimiter_semicolon():
+def test_csv_parser_detect_delimiter_semicolon():
     source = "a1;b1\na2;b2\n"
     with Table(source, scheme="text", format="csv", headers=False) as table:
         assert table.read_data() == [["a1", "b1"], ["a2", "b2"]]
 
 
-def test_table_csv_detect_delimiter_pipe():
+def test_csv_parser_detect_delimiter_pipe():
     source = "a1|b1\na2|b2\n"
     with Table(source, scheme="text", format="csv", headers=False) as table:
         assert table.read_data() == [["a1", "b1"], ["a2", "b2"]]
 
 
-def test_table_csv_dialect_should_not_persist_if_sniffing_fails_issue_goodtables_228():
+def test_csv_parser_dialect_should_not_persist_if_sniffing_fails_issue_goodtables_228():
     source1 = "a;b;c\n#comment"
     source2 = "a,b,c\n#comment"
     dialect = CsvDialect(delimiter=";")
@@ -167,7 +167,7 @@ def test_table_csv_dialect_should_not_persist_if_sniffing_fails_issue_goodtables
         assert table.header == ["a", "b", "c"]
 
 
-def test_table_csv_quotechar_is_empty_string():
+def test_csv_parser_quotechar_is_empty_string():
     source = 'header1,header2",header3\nvalue1,value2",value3'
     dialect = CsvDialect(quote_char="")
     with Table(source, scheme="text", format="csv", dialect=dialect) as table:
@@ -189,7 +189,7 @@ def test_table_format_tsv():
 # Write
 
 
-def test_table_csv_write(tmpdir):
+def test_csv_parser_write(tmpdir):
     source = "data/table.csv"
     target = str(tmpdir.join("table.csv"))
     with Table(source) as table:
@@ -199,7 +199,7 @@ def test_table_csv_write(tmpdir):
         assert table.read_data() == [["1", "english"], ["2", "中国人"]]
 
 
-def test_table_csv_write_delimiter(tmpdir):
+def test_csv_parser_write_delimiter(tmpdir):
     source = "data/table.csv"
     target = str(tmpdir.join("table.csv"))
     dialect = CsvDialect(delimiter=";")
@@ -211,7 +211,7 @@ def test_table_csv_write_delimiter(tmpdir):
         assert table.dialect == {"delimiter": ";"}
 
 
-def test_table_csv_write_inline_source(tmpdir):
+def test_csv_parser_write_inline_source(tmpdir):
     source = [{"key1": "value1", "key2": "value2"}]
     target = str(tmpdir.join("table.csv"))
     with Table(source) as table:

@@ -10,7 +10,7 @@ from frictionless import Table, validate, helpers
 
 
 @mock_s3
-def test_table_s3(bucket_name):
+def test_s3_loader(bucket_name):
 
     # Write
     client = boto3.resource("s3", region_name="us-east-1")
@@ -31,7 +31,7 @@ def test_table_s3(bucket_name):
 
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 @mock_s3
-def test_table_s3_big_file(bucket_name):
+def test_s3_loader_big_file(bucket_name):
 
     # Write
     client = boto3.resource("s3", region_name="us-east-1")
@@ -57,7 +57,7 @@ def test_table_s3_big_file(bucket_name):
 
 @mock_s3
 @pytest.mark.ci
-def test_validate_s3_multiprocessing_problem_issue_496(bucket_name):
+def test_s3_loader_multiprocessing_problem_issue_496(bucket_name):
 
     # Write
     client = boto3.resource("s3", region_name="us-east-1")
@@ -84,7 +84,7 @@ def test_validate_s3_multiprocessing_problem_issue_496(bucket_name):
 
 
 @mock_s3
-def test_table_s3_problem_with_spaces_issue_501(bucket_name):
+def test_s3_loader_problem_with_spaces_issue_501(bucket_name):
 
     # Write
     client = boto3.resource("s3", region_name="us-east-1")
@@ -104,7 +104,7 @@ def test_table_s3_problem_with_spaces_issue_501(bucket_name):
 
 
 @mock_s3
-def test_table_s3_write(bucket_name):
+def test_s3_loader_write(bucket_name):
     client = boto3.resource("s3", region_name="us-east-1")
     client.create_bucket(Bucket=bucket_name, ACL="public-read")
 
