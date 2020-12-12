@@ -1,11 +1,9 @@
-import os
-import sys
 import pytest
-from frictionless import Table, FrictionlessException, helpers
+from frictionless import Table, FrictionlessException
 
 
 # We don't use VCR for this module testing because
-# HTTP requests can contain secrets from ".google.json". Consider using:
+# HTTP requests can contain secrets from Google Credentials. Consider using:
 # https://vcrpy.readthedocs.io/en/latest/advanced.html#filter-sensitive-data-from-the-request
 
 
@@ -39,27 +37,14 @@ def test_gsheets_parser_bad_url():
 
 
 @pytest.mark.ci
-def test_gsheets_parser_write(credentials):
+def test_gsheets_parser_write(google_credentials_path):
     path = "https://docs.google.com/spreadsheets/d/1F2OiYmaf8e3x7jSc95_uNgfUyBlSXrcRg-4K_MFNZQI/edit"
 
     # Write
     with Table("data/table.csv") as table:
-        table.write(path, dialect={"credentials": credentials})
+        table.write(path, dialect={"credentials": google_credentials_path})
 
     # Read
     with Table(path) as table:
         assert table.header == ["id", "name"]
         assert table.read_data() == [["1", "english"], ["2", "中国人"]]
-
-
-# Fixtures
-
-
-@pytest.fixture
-def credentials():
-    path = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
-    if not path or not os.path.isfile(path):
-        pytest.skip('Environment for "Google Sheets" writing is not available')
-    elif not helpers.is_platform("linux") or sys.version_info < (3, 8):
-        pytest.skip('Testing "Google Sheets" writing only for Linux / Python 3.8')
-    return path

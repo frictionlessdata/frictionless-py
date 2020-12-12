@@ -31,10 +31,10 @@ jobs:
       - name: Prepare environment
         run: cp .env.example .env
       - name: Prepare secrets
-        if: env.GOOGLE_APPLICATION_CREDENTIALS_CONTENTS != null
-        run: echo $GOOGLE_APPLICATION_CREDENTIALS_CONTENTS > .google.json
+        if: env.GOOGLE_CREDENTIALS_DATA != null
+        run: echo $GOOGLE_CREDENTIALS_DATA > .google.json
         env:
-          GOOGLE_CREDENTIALS: ${{secrets.GOOGLE_APPLICATION_CREDENTIALS_CONTENTS}}
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS_DATA }}
       - name: Test software
         run: make test-ci
       - name: Report coverage

@@ -11,7 +11,7 @@ from frictionless.plugins.bigquery import BigqueryDialect, BigqueryStorage
 
 
 # We don't use VCR for this module testing because
-# HTTP requests can contain secrets from ".google.json". Consider using:
+# HTTP requests can contain secrets from Google Credentials. Consider using:
 # https://vcrpy.readthedocs.io/en/latest/advanced.html#filter-sensitive-data-from-the-request
 
 
@@ -244,14 +244,10 @@ def test_storage_big_file(options):
 
 
 @pytest.fixture
-def options():
-    path = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
-    if not path or not os.path.isfile(path):
-        pytest.skip('Environment for "BigQuery" is not available')
-    elif not helpers.is_platform("linux") or sys.version_info < (3, 8):
-        pytest.skip('Testing "BigQuery" only for Linux / Python 3.8')
+def options(google_credentials_path):
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = google_credentials_path
     credentials = GoogleCredentials.get_application_default()
-    with open(path) as file:
+    with open(google_credentials_path) as file:
         return {
             "service": build("bigquery", "v2", credentials=credentials),
             "project": json.load(file)["project_id"],
