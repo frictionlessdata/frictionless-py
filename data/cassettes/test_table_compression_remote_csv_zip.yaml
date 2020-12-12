@@ -1,0 +1,73 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/54.0.2840.87 Safari/537.36
+    method: GET
+    uri: https://raw.githubusercontent.com/frictionlessdata/tabulator-py/master/data/table.csv.zip
+  response:
+    body:
+      string: !!binary |
+        UEsDBAoAAAAAAPJQZUkBbkCNHgAAAB4AAAAJABwAdGFibGUuY3N2VVQJAAM3hR1Y0J/oWXV4CwAB
+        BOgDAAAE6AMAAGlkLG5hbWUKMSxlbmdsaXNoCjIs5Lit5Zu95Lq6ClBLAQIeAwoAAAAAAPJQZUkB
+        bkCNHgAAAB4AAAAJABgAAAAAAAEAAAC0gQAAAAB0YWJsZS5jc3ZVVAUAAzeFHVh1eAsAAQToAwAA
+        BOgDAABQSwUGAAAAAAEAAQBPAAAAYQAAAAAA
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - max-age=300
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '198'
+      Content-Security-Policy:
+      - default-src 'none'; style-src 'unsafe-inline'; sandbox
+      Content-Type:
+      - application/zip
+      Date:
+      - Sat, 12 Dec 2020 12:37:34 GMT
+      ETag:
+      - W/"8d94a272dee43d9209f7ec9e49b9e266c6e6f474c2c796c7faa4b068ecad96be"
+      Expires:
+      - Sat, 12 Dec 2020 12:42:34 GMT
+      Source-Age:
+      - '0'
+      Strict-Transport-Security:
+      - max-age=31536000
+      Vary:
+      - Authorization,Accept-Encoding, Accept-Encoding
+      Via:
+      - 1.1 varnish (Varnish/6.0), 1.1 varnish
+      X-Cache:
+      - MISS, MISS
+      X-Cache-Hits:
+      - 0, 0
+      X-Content-Type-Options:
+      - nosniff
+      X-Fastly-Request-ID:
+      - 11ecdc1e62d9488107410224b214d251fcf6c115
+      X-Frame-Options:
+      - deny
+      X-GitHub-Request-Id:
+      - 291E:4206:2D0E70:2F890F:5FD4B98D
+      X-Served-By:
+      - cache-bma1640-BMA
+      X-Timer:
+      - S1607776654.118285,VS0,VE234
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+version: 1

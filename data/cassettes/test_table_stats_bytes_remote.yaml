@@ -1,0 +1,182 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/54.0.2840.87 Safari/537.36
+    method: GET
+    uri: https://raw.githubusercontent.com/frictionlessdata/tabulator-py/master/data/special/doublequote.csv
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA+1ZzY7bNhC+9ykIX3oRBMte+Qc9uV5nYSCxjd3uuaAl2mAgkQ4pLtZ5gx6LPkGO
+        OeyhyC3H6sX6jWjJWmf3VKBAEF1s/g05f5xvOOotV/Pl3boX9Fbrd7/eLpru/aIZq5qz8k9aNV9f
+        L2/Ws00zWTWvF3fz2+Vmvlyvqr5ftbld39zO3s2ata2BFkVr1J/uqUF1v2iaTvye6BRjByOsOzhh
+        C55q6u8k/W5l76feLFyFi3ATYmCW5lJJWxieyPKLYiv8a8Uzlgq2SF1yGt6UX7eZTDjxvLijX62s
+        eK8vlt2JxKmUG4mFg340DSZBb3F9P5/Nl+Vfq4osB2MKm2faMivMg8R5lhG3xKhlnPHM5QqtI8OY
+        SyVXhbABus9JUp0ImvmFZZzttMlddmL2yPiFVDjvoLPyqYAIlgmSq5APHLvyA4nlZccqhX1o2Ih9
+        vR3WuEIb+bHZHXolxm2lsJMoxIsB0+gKaKb8m6uPHKS2fGKJzjUxKdUDJJL700b+6JSToKRvy43R
+        WaaZeMT+MseOsINQYKaWLNGq0gK3ThWVis4qbOkDM3tuaYEnhUFJtRU19HuhnCPbE1snYWpBaiWB
+        7oMTTOYHbgowU417fcFowiY64yaAAWVOdg/AUe0DYM8p+SCMlYWfO6tDw+MsNIKDC0cuJ/w5WyPh
+        QKoyaKPwhB/QLnw/ZC0n4ifPaQx41gd3jzKTHI5V2Yi3OA+8ScCCsgcNsYjrvTMy5SlslnndV3tS
+        V7/nuYQ1NDpQgT8rLz+n8BzIqFONuaz8sj/1K0d4kRFYQDxq2xaBpyIvP1kwCMe0iYOtya48oQmJ
+        dg4poD66As/WeJ+WSfnELyzU+B8Mq4SBE+Hu+DtSW44b6CNrmITLFXA5bRASRn1c2iVcFWarzCJS
+        cJAQK3DUD04eTtrAdWa45nEwxE+/PwzGV8O4P8Gtr8mhPywKMXc1iv9z3HkjKK61As+bs4/AMc/R
+        qoo9cRd7utjTxZ5zEPweYk8c9F6/1O0pCn5G7wSFKJ69GOKlSjJ3RK5RYW8LTwiiCcRSTdhgNUIb
+        dgjZW87eiiO7OcVMLGslQKt/vrJoEl4NA0Jk6xjQsHxKHOBaGR2yYQSU2UlVIU3rsGeIGbLyD6Q5
+        YRiyn3s9KwiRE7GVpvzkEemcOjDEYzAGRH2OoQQNW24STjTfyJVzIDnQJ2B1ixXl50TJhMa8xkjq
+        drtKWc6gviufrMexF5TUTmhA5kH8JG0D4cCVO2SUIuevZZOGYATABCUAcIAgcYUgcRBF4+F0NLmK
+        4AcOQAvjeuT1MDKeDscdjHQpbJfCIi+tXhVdClvn2e0UtoOR+gX6Y8LIcBL1x3HU//YhMojHow5B
+        OgTpEKRDEBS0Xi2CdAjyYyNINIpGk9E0HoyD3gaVMHpl0hsk6k+Hg//7DTLqSlldKasrZX1fpaxR
+        H0WMy69r/kNEq6xE5abzt5fN+RvVb/RtgmxOtamm0l7XSQbxJB5Nxqi0v1QmieIJktx/AQetV2ey
+        HAAA
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - max-age=300
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '1143'
+      Content-Security-Policy:
+      - default-src 'none'; style-src 'unsafe-inline'; sandbox
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Sat, 12 Dec 2020 12:37:36 GMT
+      ETag:
+      - W/"066c22a33ca23b13adaee1ecacf91b1a7edab00d39c4d6386d8e705cfe09cf42"
+      Expires:
+      - Sat, 12 Dec 2020 12:42:36 GMT
+      Source-Age:
+      - '1'
+      Strict-Transport-Security:
+      - max-age=31536000
+      Vary:
+      - Authorization,Accept-Encoding, Accept-Encoding
+      Via:
+      - 1.1 varnish (Varnish/6.0), 1.1 varnish
+      X-Cache:
+      - MISS, HIT
+      X-Cache-Hits:
+      - 0, 1
+      X-Content-Type-Options:
+      - nosniff
+      X-Fastly-Request-ID:
+      - 31c01a65f32e4cb401761e2c08c04783c7432084
+      X-Frame-Options:
+      - deny
+      X-GitHub-Request-Id:
+      - 5198:645A:9EFC2:A9D57:5FD4B98F
+      X-Served-By:
+      - cache-bma1645-BMA
+      X-Timer:
+      - S1607776657.772248,VS0,VE1
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/54.0.2840.87 Safari/537.36
+    method: GET
+    uri: https://raw.githubusercontent.com/frictionlessdata/tabulator-py/master/data/special/doublequote.csv
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA+1ZzY7bNhC+9ykIX3oRBMte+Qc9uV5nYSCxjd3uuaAl2mAgkQ4pLtZ5gx6LPkGO
+        OeyhyC3H6sX6jWjJWmf3VKBAEF1s/g05f5xvOOotV/Pl3boX9Fbrd7/eLpru/aIZq5qz8k9aNV9f
+        L2/Ws00zWTWvF3fz2+Vmvlyvqr5ftbld39zO3s2ata2BFkVr1J/uqUF1v2iaTvye6BRjByOsOzhh
+        C55q6u8k/W5l76feLFyFi3ATYmCW5lJJWxieyPKLYiv8a8Uzlgq2SF1yGt6UX7eZTDjxvLijX62s
+        eK8vlt2JxKmUG4mFg340DSZBb3F9P5/Nl+Vfq4osB2MKm2faMivMg8R5lhG3xKhlnPHM5QqtI8OY
+        SyVXhbABus9JUp0ImvmFZZzttMlddmL2yPiFVDjvoLPyqYAIlgmSq5APHLvyA4nlZccqhX1o2Ih9
+        vR3WuEIb+bHZHXolxm2lsJMoxIsB0+gKaKb8m6uPHKS2fGKJzjUxKdUDJJL700b+6JSToKRvy43R
+        WaaZeMT+MseOsINQYKaWLNGq0gK3ThWVis4qbOkDM3tuaYEnhUFJtRU19HuhnCPbE1snYWpBaiWB
+        7oMTTOYHbgowU417fcFowiY64yaAAWVOdg/AUe0DYM8p+SCMlYWfO6tDw+MsNIKDC0cuJ/w5WyPh
+        QKoyaKPwhB/QLnw/ZC0n4ifPaQx41gd3jzKTHI5V2Yi3OA+8ScCCsgcNsYjrvTMy5SlslnndV3tS
+        V7/nuYQ1NDpQgT8rLz+n8BzIqFONuaz8sj/1K0d4kRFYQDxq2xaBpyIvP1kwCMe0iYOtya48oQmJ
+        dg4poD66As/WeJ+WSfnELyzU+B8Mq4SBE+Hu+DtSW44b6CNrmITLFXA5bRASRn1c2iVcFWarzCJS
+        cJAQK3DUD04eTtrAdWa45nEwxE+/PwzGV8O4P8Gtr8mhPywKMXc1iv9z3HkjKK61As+bs4/AMc/R
+        qoo9cRd7utjTxZ5zEPweYk8c9F6/1O0pCn5G7wSFKJ69GOKlSjJ3RK5RYW8LTwiiCcRSTdhgNUIb
+        dgjZW87eiiO7OcVMLGslQKt/vrJoEl4NA0Jk6xjQsHxKHOBaGR2yYQSU2UlVIU3rsGeIGbLyD6Q5
+        YRiyn3s9KwiRE7GVpvzkEemcOjDEYzAGRH2OoQQNW24STjTfyJVzIDnQJ2B1ixXl50TJhMa8xkjq
+        drtKWc6gviufrMexF5TUTmhA5kH8JG0D4cCVO2SUIuevZZOGYATABCUAcIAgcYUgcRBF4+F0NLmK
+        4AcOQAvjeuT1MDKeDscdjHQpbJfCIi+tXhVdClvn2e0UtoOR+gX6Y8LIcBL1x3HU//YhMojHow5B
+        OgTpEKRDEBS0Xi2CdAjyYyNINIpGk9E0HoyD3gaVMHpl0hsk6k+Hg//7DTLqSlldKasrZX1fpaxR
+        H0WMy69r/kNEq6xE5abzt5fN+RvVb/RtgmxOtamm0l7XSQbxJB5Nxqi0v1QmieIJktx/AQetV2ey
+        HAAA
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - max-age=300
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '1143'
+      Content-Security-Policy:
+      - default-src 'none'; style-src 'unsafe-inline'; sandbox
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Sat, 12 Dec 2020 12:37:37 GMT
+      ETag:
+      - W/"066c22a33ca23b13adaee1ecacf91b1a7edab00d39c4d6386d8e705cfe09cf42"
+      Expires:
+      - Sat, 12 Dec 2020 12:42:37 GMT
+      Source-Age:
+      - '1'
+      Strict-Transport-Security:
+      - max-age=31536000
+      Vary:
+      - Authorization,Accept-Encoding, Accept-Encoding
+      Via:
+      - 1.1 varnish (Varnish/6.0), 1.1 varnish
+      X-Cache:
+      - MISS, HIT
+      X-Cache-Hits:
+      - 0, 1
+      X-Content-Type-Options:
+      - nosniff
+      X-Fastly-Request-ID:
+      - 3705df7e2d26f9bb64459c39b04616afc004bfec
+      X-Frame-Options:
+      - deny
+      X-GitHub-Request-Id:
+      - 5198:645A:9EFC2:A9D57:5FD4B98F
+      X-Served-By:
+      - cache-bma1624-BMA
+      X-Timer:
+      - S1607776657.016624,VS0,VE1
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+version: 1

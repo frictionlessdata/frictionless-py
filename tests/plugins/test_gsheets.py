@@ -42,7 +42,7 @@ def test_gsheets_parser_bad_url():
     assert error.note.count("404 Client Error: Not Found for url")
 
 
-@pytest.mark.ci
+@pytest.mark.vcr
 @pytest.mark.skipif(sys.version_info < (3, 8), reason="Speed up CI")
 def test_gsheets_parser_write():
     path = "https://docs.google.com/spreadsheets/d/1F2OiYmaf8e3x7jSc95_uNgfUyBlSXrcRg-4K_MFNZQI/edit"
