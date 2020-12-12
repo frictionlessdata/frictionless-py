@@ -68,7 +68,7 @@ def test_resource_from_path_remote():
     ]
 
 
-@pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Windows")
+@pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_from_zip():
     resource = Resource("data/resource.zip")
