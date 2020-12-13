@@ -72,7 +72,6 @@ $ frictionless validate data/invalid.csv
 
 ### Specific
 
-- [Working with AWS](https://frictionlessdata.io/tooling/python/working-with-aws/)
 - [Working with BigQuery](https://frictionlessdata.io/tooling/python/working-with-bigquery/)
 - [Working with CKAN](https://frictionlessdata.io/tooling/python/working-with-ckan/)
 - [Working with CSV](https://frictionlessdata.io/tooling/python/working-with-csv/)
@@ -88,6 +87,7 @@ $ frictionless validate data/invalid.csv
 - [Working with ODS](https://frictionlessdata.io/tooling/python/working-with-ods/)
 - [Working with Pandas](https://frictionlessdata.io/tooling/python/working-with-pandas/)
 - [Working with Remote](https://frictionlessdata.io/tooling/python/working-with-remote/)
+- [Working with S3](https://frictionlessdata.io/tooling/python/working-with-s3/)
 - [Working with Server](https://frictionlessdata.io/tooling/python/working-with-server/)
 - [Working with SPSS](https://frictionlessdata.io/tooling/python/working-with-spss/)
 - [Working with SQL](https://frictionlessdata.io/tooling/python/working-with-sql/)

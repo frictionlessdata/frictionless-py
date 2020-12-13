@@ -10,12 +10,12 @@ from .. import helpers
 # Plugin
 
 
-class AwsPlugin(Plugin):
-    """Plugin for AWS
+class S3Plugin(Plugin):
+    """Plugin for S3
 
     API      | Usage
     -------- | --------
-    Public   | `from frictionless.plugins.aws import AwsPlugin`
+    Public   | `from frictionless.plugins.s3 import S3Plugin`
 
     """
 
@@ -36,7 +36,7 @@ class S3Control(Control):
 
     API      | Usage
     -------- | --------
-    Public   | `from frictionless.plugins.aws import S3Control`
+    Public   | `from frictionless.plugins.s3 import S3Control`
 
     Parameters:
         descriptor? (str|dict): descriptor
@@ -88,7 +88,7 @@ class S3Loader(Loader):
 
     API      | Usage
     -------- | --------
-    Public   | `from frictionless.plugins.aws import S3Loader`
+    Public   | `from frictionless.plugins.s3 import S3Loader`
 
     """
 
@@ -97,7 +97,7 @@ class S3Loader(Loader):
     # Read
 
     def read_byte_stream_create(self):
-        boto3 = helpers.import_from_plugin("boto3", plugin="aws")
+        boto3 = helpers.import_from_plugin("boto3", plugin="s3")
         control = self.resource.control
         parts = urlparse(self.resource.source, allow_fragments=False)
         client = boto3.resource("s3", endpoint_url=control.endpoint_url)
@@ -108,7 +108,7 @@ class S3Loader(Loader):
     # Write
 
     def write_byte_stream_save(self, byte_stream):
-        boto3 = helpers.import_from_plugin("boto3", plugin="aws")
+        boto3 = helpers.import_from_plugin("boto3", plugin="s3")
         control = self.resource.control
         parts = urlparse(self.resource.source, allow_fragments=False)
         client = boto3.resource("s3", endpoint_url=control.endpoint_url)
