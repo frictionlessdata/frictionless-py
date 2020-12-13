@@ -2,6 +2,15 @@
 
 Here described only the breaking and most significant changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/frictionless-py/commits/master).
 
+## v3.46
+
+- Renamed aws plugin to s3 (#594) (BREAKING)
+
+```bash
+$ pip install frictionless[aws] # before
+$ pip install frictionless[s3] # after
+```
+
 ## v3.45
 
 - Drafted support for writing Multipart Data (#583)
