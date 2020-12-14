@@ -1,7 +1,6 @@
 # TODO: review this dependency
 from .plugins.json import JsonParser
 from itertools import zip_longest
-from collections import OrderedDict
 from decimal import Decimal
 from .helpers import cached_property
 from . import helpers
@@ -9,8 +8,7 @@ from . import errors
 
 
 # TODO: rebase on list base class for permormance?
-# TODO: if not list - drop OrderedDict? From Python3.7 order is guaranteed
-class Row(OrderedDict):
+class Row(dict):
     """Row representation
 
     API      | Usage
