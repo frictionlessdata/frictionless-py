@@ -8,7 +8,7 @@ from .resource import Resource
 from .system import system
 from .header import Header
 from .row import Row
-from .row2 import Row2
+from .row4 import Row4
 from . import helpers
 from . import errors
 from . import config
@@ -834,7 +834,7 @@ class Table:
         for cells in self.__data_stream:
 
             # Create row
-            row = Row2(
+            row = Row4(
                 cells,
                 schema=self.__resource.schema,
                 field_map=field_map,
