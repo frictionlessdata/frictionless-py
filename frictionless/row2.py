@@ -99,8 +99,9 @@ class Row2(dict):
                     )
                 )
 
-        # Set missing value
+        # Set/return value
         self[field.name] = target
+        return target
 
     def __validate(self):
         cells = self.__cells

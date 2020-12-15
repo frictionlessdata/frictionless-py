@@ -8,6 +8,7 @@ from .resource import Resource
 from .system import system
 from .header import Header
 from .row import Row
+from .row2 import Row2
 from . import helpers
 from . import errors
 from . import config
@@ -780,6 +781,118 @@ class Table:
                     warnings.warn(error.message, UserWarning)
                 elif self.__resource.onerror == "raise":
                     raise FrictionlessException(error)
+
+            # Stream row
+            yield row
+
+    def read_rows2(self):
+        """Read row stream into memory
+
+        Returns:
+            Row[][]: table rows
+        """
+        self.__read_row_stream_raise_closed()
+        return list(self.__row_stream_create2())
+
+    def read_row_stream2(self):
+        return self.__read_row_stream_create2()
+
+    def __read_row_stream_create2(self):
+        schema = self.schema
+
+        # Handle header errors
+        if not self.header.valid:
+            error = self.header.errors[0]
+            if self.__resource.onerror == "warn":
+                warnings.warn(error.message, UserWarning)
+            elif self.__resource.onerror == "raise":
+                raise FrictionlessException(error)
+
+        # Create field map
+        field_map = {}
+        field_number = 0
+        for field_position, field in zip(self.__field_positions, schema.fields):
+            field_number += 1
+            field_map[field.name] = (field, field_position, field_number)
+
+        # Create state
+        memory_unique = {}
+        memory_primary = {}
+        foreign_groups = []
+        for field in self.schema.fields:
+            if field.constraints.get("unique"):
+                memory_unique[field.name] = {}
+        if self.__lookup:
+            for fk in self.schema.foreign_keys:
+                group = {}
+                group["sourceName"] = fk["reference"]["resource"]
+                group["sourceKey"] = tuple(fk["reference"]["fields"])
+                group["targetKey"] = tuple(fk["fields"])
+                foreign_groups.append(group)
+
+        # Stream rows
+        for cells in self.__data_stream:
+
+            # Create row
+            row = Row2(
+                cells,
+                schema=self.__resource.schema,
+                field_map=field_map,
+                field_positions=self.__field_positions,
+                row_position=self.__row_position,
+                row_number=self.__resource.stats["rows"],
+            )
+
+            # Unique Error
+            if memory_unique:
+                for field_name in memory_unique.keys():
+                    cell = row[field_name]
+                    if cell is not None:
+                        match = memory_unique[field_name].get(cell)
+                        memory_unique[field_name][cell] = row.row_position
+                        if match:
+                            Error = errors.UniqueError
+                            note = "the same as in the row at position %s" % match
+                            error = Error.from_row(row, note=note, field_name=field_name)
+                            row.errors.append(error)
+
+            # Primary Key Error
+            if schema.primary_key:
+                cells = tuple(row[field_name] for field_name in schema.primary_key)
+                if set(cells) == {None}:
+                    note = 'cells composing the primary keys are all "None"'
+                    error = errors.PrimaryKeyError.from_row(row, note=note)
+                    row.errors.append(error)
+                else:
+                    match = memory_primary.get(cells)
+                    memory_primary[cells] = row.row_position
+                    if match:
+                        if match:
+                            note = "the same as in the row at position %s" % match
+                            error = errors.PrimaryKeyError.from_row(row, note=note)
+                            row.errors.append(error)
+
+            # Foreign Key Error
+            if foreign_groups:
+                for group in foreign_groups:
+                    group_lookup = self.__lookup.get(group["sourceName"])
+                    if group_lookup:
+                        cells = tuple(row[name] for name in group["targetKey"])
+                        if set(cells) == {None}:
+                            continue
+                        match = cells in group_lookup.get(group["sourceKey"], set())
+                        if not match:
+                            note = "not found in the lookup table"
+                            error = errors.ForeignKeyError.from_row(row, note=note)
+                            row.errors.append(error)
+
+            # Handle row errors
+            if self.__resource.onerror in ["warn", "error"]:
+                if not row.valid:
+                    error = row.errors[0]
+                    if self.__resource.onerror == "raise":
+                        raise FrictionlessException(error)
+                    warnings.warn(error.message, UserWarning)
 
             # Stream row
             yield row
