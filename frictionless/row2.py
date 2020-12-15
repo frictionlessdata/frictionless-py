@@ -47,15 +47,75 @@ class Row2(dict):
         self.__field_positions = field_positions
         self.__row_position = row_position
         self.__row_number = row_number
-        self.__validated = False
         self.__blank_cells = {}
         self.__error_cells = {}
+        self.__partial = True
         self.__errors = []
 
-    def __iter__(self):
-        return iter(self.__schema.field_names)
+    def __validate(self):
+        #  print('validate')
+        cells = self.__cells
+        fields = self.__schema.fields
+        field_positions = self.__field_positions
+
+        # Type/Constraint error
+        for field_name in self.__schema.field_names:
+            self[field_name]
+
+        # Extra cells
+        if len(fields) < len(cells):
+            iterator = cells[len(fields) :]
+            start = max(field_positions[: len(fields)]) + 1
+            for field_position, cell in enumerate(iterator, start=start):
+                self.__errors.append(
+                    errors.ExtraCellError(
+                        note="",
+                        cells=list(map(str, cells)),
+                        row_number=self.__row_number,
+                        row_position=self.__row_position,
+                        cell=str(cell),
+                        field_name="",
+                        field_number=len(fields) + field_position - start,
+                        field_position=field_position,
+                    )
+                )
+
+        # Missing cells
+        if len(fields) > len(cells):
+            start = len(cells) + 1
+            iterator = zip_longest(field_positions[len(cells) :], fields[len(cells) :])
+            for field_number, (field_position, field) in enumerate(iterator, start=start):
+                if field is not None:
+                    self.__errors.append(
+                        errors.MissingCellError(
+                            note="",
+                            cells=list(map(str, cells)),
+                            row_number=self.__row_number,
+                            row_position=self.__row_position,
+                            cell="",
+                            field_name=field.name,
+                            field_number=field_number,
+                            field_position=field_position
+                            or max(field_positions) + field_number - start + 1,
+                        )
+                    )
+
+        # Blank row
+        if len(fields) == len(self.__blank_cells):
+            self.__errors = [
+                errors.BlankRowError(
+                    note="",
+                    cells=list(map(str, cells)),
+                    row_number=self.__row_number,
+                    row_position=self.__row_position,
+                )
+            ]
+
+        # Set partial flag
+        self.__partial = False
 
     def __missing__(self, key):
+        #  print('missing')
         field, field_position, field_number = self.__field_map[key]
 
         # Read cell
@@ -103,70 +163,59 @@ class Row2(dict):
         self[field.name] = target
         return target
 
-    def __validate(self):
-        cells = self.__cells
-        fields = self.__schema.fields
-        field_positions = self.__field_positions
+    def __str__(self):
+        print('str')
+        if self.__partial:
+            self.__validate()
+        return super().__str__()
 
-        # Type/Constraint error
-        for field_name in self:
-            if field_name not in self:
-                self[field_name]
+    def __repr__(self):
+        print('repr')
+        if self.__partial:
+            self.__validate()
+        return super().__repr__()
 
-        # Extra cells
-        if len(fields) < len(cells):
-            iterator = cells[len(fields) :]
-            start = max(field_positions[: len(fields)]) + 1
-            for field_position, cell in enumerate(iterator, start=start):
-                self.__errors.append(
-                    errors.ExtraCellError(
-                        note="",
-                        cells=list(map(str, cells)),
-                        row_number=self.__row_number,
-                        row_position=self.__row_position,
-                        cell=str(cell),
-                        field_name="",
-                        field_number=len(fields) + field_position - start,
-                        field_position=field_position,
-                    )
-                )
+    def __iter__(self):
+        print('iter')
+        if self.__partial:
+            self.__validate()
+        return super().__iter__()
 
-        # Missing cells
-        if len(fields) > len(cells):
-            start = len(cells) + 1
-            iterator = zip_longest(field_positions[len(cells) :], fields[len(cells) :])
-            for field_number, (field_position, field) in enumerate(iterator, start=start):
-                if field is not None:
-                    self.__errors.append(
-                        errors.MissingCellError(
-                            note="",
-                            cells=list(map(str, cells)),
-                            row_number=self.__row_number,
-                            row_position=self.__row_position,
-                            cell="",
-                            field_name=field.name,
-                            field_number=field_number,
-                            field_position=field_position
-                            or max(field_positions) + field_number - start + 1,
-                        )
-                    )
+    def __len__(self):
+        print('len')
+        if self.__partial:
+            self.__validate()
+        return super().__len__()
 
-        # Blank row
-        if len(self) == len(self.__blank_cells):
-            self.__errors = [
-                errors.BlankRowError(
-                    note="",
-                    cells=list(map(str, cells)),
-                    row_number=self.__row_number,
-                    row_position=self.__row_position,
-                )
-            ]
+    def __contains__(self, key):
+        print('contains')
+        if self.__partial:
+            self.__validate()
+        return super().__contains__(key)
 
-        # Set validated flag
-        self.__validated = True
+    def __reversed__(self, key):
+        print('reversed')
+        if self.__partial:
+            self.__validate()
+        return super().__reversed__(key)
 
     def keys(self):
-        return list(self)
+        print('keys')
+        if self.__partial:
+            self.__validate()
+        return super().keys()
+
+    def values(self):
+        print('values')
+        if self.__partial:
+            self.__validate()
+        return super().values()
+
+    def items(self):
+        print('items')
+        if self.__partial:
+            self.__validate()
+        return super().items()
 
     @cached_property
     def cells(self):
@@ -215,7 +264,7 @@ class Row2(dict):
         Returns:
             dict: row blank cells
         """
-        if not self.__validated:
+        if self.__partial:
             self.__validate()
         return self.__blank_cells
 
@@ -226,7 +275,7 @@ class Row2(dict):
         Returns:
             dict: row error cells
         """
-        if not self.__validated:
+        if self.__partial:
             self.__validate()
         return self.__error_cells
 
@@ -236,7 +285,7 @@ class Row2(dict):
         Returns:
             Error[]: row errors
         """
-        if not self.__validated:
+        if self.__partial:
             self.__validate()
         return self.__errors
 
@@ -246,7 +295,7 @@ class Row2(dict):
         Returns:
             bool: if row valid
         """
-        if not self.__validated:
+        if self.__partial:
             self.__validate()
         return not self.__errors
 
