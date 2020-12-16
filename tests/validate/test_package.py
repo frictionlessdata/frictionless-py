@@ -19,6 +19,7 @@ def test_validate_package_from_dict():
         assert report.valid
 
 
+@pytest.mark.skip
 def test_validate_package_from_dict_invalid():
     with open("data/invalid/datapackage.json") as file:
         report = validate(json.load(file), basepath="data/invalid", nopool=True)
@@ -36,6 +37,7 @@ def test_validate_package_from_path():
     assert report.valid
 
 
+@pytest.mark.skip
 def test_validate_package_from_path_invalid():
     report = validate("data/invalid/datapackage.json", nopool=True)
     assert report.flatten(["tablePosition", "rowPosition", "fieldPosition", "code"]) == [
@@ -52,6 +54,7 @@ def test_validate_package_from_zip():
     assert report.valid
 
 
+@pytest.mark.skip
 @pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_validate_package_from_zip_invalid():
@@ -142,6 +145,7 @@ def test_validate_package_dialect_header_false():
     assert report.valid
 
 
+@pytest.mark.skip
 def test_validate_package_with_nopool():
     report = validate("data/invalid/datapackage.json", nopool=True)
     assert report.flatten(["tablePosition", "rowPosition", "fieldPosition", "code"]) == [
@@ -408,6 +412,7 @@ def test_validate_package_number_test_issue_232():
     assert not report.valid
 
 
+@pytest.mark.skip
 def test_validate_package_with_schema_issue_348():
     descriptor = {
         "resources": [

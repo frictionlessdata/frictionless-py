@@ -19,7 +19,7 @@ def test_transform_package():
         ],
     )
     assert target.resource_names == ["chunk1"]
-    assert target.get_resource("chunk1").read_rows() == [
+    assert target.get_resource("chunk1").read_rows(dict=True) == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]

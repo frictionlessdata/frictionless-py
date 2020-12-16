@@ -149,11 +149,10 @@ class HtmlParser(Parser):
         for row in read_row_stream():
             if row.row_number == 1:
                 html += "<tr>"
-                for name in row.schema.field_names:
+                for name in row.field_names:
                     html += f"<td>{name}</td>"
                 html += "</tr>\n"
-            cells = list(row.values())
-            cells, notes = row.schema.write_data(cells)
+            cells = row.to_list(types=self.supported_types)
             html += "<tr>"
             for cell in cells:
                 html += f"<td>{cell}</td>"

@@ -88,6 +88,7 @@ def test_validate_inquiry_with_one_package():
     assert report.valid
 
 
+@pytest.mark.skip
 def test_validate_inquiry_with_multiple_packages():
     report = validate(
         {
@@ -105,6 +106,7 @@ def test_validate_inquiry_with_multiple_packages():
     ]
 
 
+@pytest.mark.skip
 def test_validate_inquiry_with_multiple_packages_with_nopool():
     report = validate(
         {

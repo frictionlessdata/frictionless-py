@@ -181,7 +181,7 @@ class OdsParser(Parser):
         sheet = book.sheets[title]
         for row_index, row in enumerate(read_row_stream()):
             if row.row_number == 1:
-                for field_index, name in enumerate(row.schema.field_names):
+                for field_index, name in enumerate(row.field_names):
                     sheet[(0, field_index)].set_value(name)
             cells = row.to_list(types=self.supported_types)
             for field_index, cell in enumerate(cells):

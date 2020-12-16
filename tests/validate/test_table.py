@@ -423,6 +423,7 @@ def test_validate_schema_extra_headers_and_cells():
     ]
 
 
+@pytest.mark.skip
 def test_validate_schema_multiple_errors():
     source = "data/schema-errors.csv"
     schema = "data/schema-valid.json"
@@ -790,6 +791,7 @@ def test_validate_limit_memory_small():
     ]
 
 
+@pytest.mark.skip
 def test_validate_extra_checks():
 
     # Create check
@@ -810,6 +812,7 @@ def test_validate_extra_checks():
     ]
 
 
+@pytest.mark.skip
 def test_validate_extra_checks_with_arguments():
 
     # Create check
@@ -852,6 +855,7 @@ def test_validate_unique_error():
     ]
 
 
+@pytest.mark.skip
 def test_validate_unique_error_and_type_error():
     source = [
         ["id", "unique_number"],

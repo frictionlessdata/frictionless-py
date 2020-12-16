@@ -1,8 +1,17 @@
+import builtins
 from ..resource import Resource
 
 
 def extract_resource(
-    source, *, basepath=None, onerror="ignore", trusted=False, process=None, stream=False
+    source,
+    *,
+    basepath=None,
+    onerror="ignore",
+    trusted=False,
+    stream=False,
+    dict=False,
+    list=False,
+    json=False
 ):
     """Extract resource rows
 
@@ -26,6 +35,5 @@ def extract_resource(
     resource = Resource(source, basepath=basepath, onerror=onerror, trusted=trusted)
 
     # Extract resource
-    data = resource.read_row_stream()
-    data = (process(row) for row in data) if process else data
-    return data if stream else list(data)
+    data = resource.read_row_stream(dict=dict, list=list, json=json)
+    return data if stream else builtins.list(data)

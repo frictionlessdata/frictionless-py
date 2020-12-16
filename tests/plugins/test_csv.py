@@ -179,7 +179,7 @@ def test_table_format_tsv():
     with Table("data/table.tsv", patch_schema={"missingValues": ["\\N"]}) as table:
         assert table.dialect == {"delimiter": "\t"}
         assert table.header == ["id", "name"]
-        assert table.read_rows() == [
+        assert table.read_rows(dict=True) == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
             {"id": 3, "name": None},

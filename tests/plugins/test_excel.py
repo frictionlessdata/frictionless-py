@@ -103,7 +103,7 @@ def test_xlsx_parser_preserve_formatting():
     source = "data/preserve-formatting.xlsx"
     dialect = ExcelDialect(preserve_formatting=True)
     with Table(source, dialect=dialect, headers=1, infer_type="any") as table:
-        assert table.read_rows() == [
+        assert table.read_rows(dict=True) == [
             {
                 # general
                 "empty": None,

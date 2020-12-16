@@ -14,6 +14,6 @@ def test_extract():
 
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_extract_source_type():
-    assert extract("data/package.json", source_type="package") == {
+    assert extract("data/package.json", source_type="package", dict=True) == {
         "data/table.csv": [{"id": 1, "name": "english"}, {"id": 2, "name": "中国人"}]
     }

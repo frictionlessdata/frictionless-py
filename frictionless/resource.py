@@ -564,14 +564,18 @@ class Resource(Metadata):
             result.append(item)
         return result
 
-    def read_row_stream(self):
+    def read_row_stream(self, *, dict=False, list=False, json=False):
         """
         Returns
             gen<Row[]>: row stream
         """
         with self.to_table() as table:
-            for row in table.row_stream:
-                yield row
+            for item in table.row_stream:
+                if dict:
+                    item = item.to_dict(json=json)
+                elif list:
+                    item = item.to_list(json=json)
+                yield item
 
     def read_header(self):
         """

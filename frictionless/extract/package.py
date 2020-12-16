@@ -1,3 +1,4 @@
+import builtins
 from collections import OrderedDict
 from ..package import Package
 
@@ -39,7 +40,6 @@ def extract_package(
     result = OrderedDict()
     for number, resource in enumerate(package.resources, start=1):
         key = resource.fullpath if not resource.inline else f"memory{number}"
-        data = resource.read_row_stream()
-        data = (process(row) for row in data) if process else data
-        result[key] = data if stream else list(data)
+        data = resource.read_row_stream(dict=dict, list=list, json=json)
+        result[key] = data if stream else builtins.list(data)
     return result
