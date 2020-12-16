@@ -53,7 +53,7 @@ class Row(list):
         if isinstance(key, str):
             if key not in self.__read_cells:
                 return self.__process(key)
-            return self.__read_cell[key]
+            return self.__read_cells[key]
         return super().__getitem__(key)
 
     def __setitem__(self, key, value):
@@ -172,7 +172,7 @@ class Row(list):
         self.__process()
         result = {name: self.__read_cells[name] for name in self.__field_info["names"]}
         if types is None and json:
-            types = JsonParser.native_types
+            types = JsonParser.supported_types
 
         # Covert
         if types is not None:
@@ -200,7 +200,7 @@ class Row(list):
         self.__process()
         result = [self.__read_cells[name] for name in self.__field_info["names"]]
         if types is None and json:
-            types = JsonParser.native_types
+            types = JsonParser.supported_types
 
         # Convert
         if types is not None:

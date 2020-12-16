@@ -170,7 +170,7 @@ class XlsxParser(Parser):
 
     """
 
-    native_types = [
+    supported_types = [
         "boolean",
         "date",
         "datetime",
@@ -277,8 +277,7 @@ class XlsxParser(Parser):
             cells = []
             if row.row_number == 1:
                 sheet.append(row.schema.field_names)
-            cells = list(row.values())
-            cells, notes = row.schema.write_data(cells, native_types=self.native_types)
+            cells = row.to_list(types=self.supported_types)
             sheet.append(cells)
         file = tempfile.NamedTemporaryFile(delete=False)
         book.save(file.name)
@@ -296,7 +295,7 @@ class XlsParser(Parser):
 
     """
 
-    native_types = [
+    supported_types = [
         "boolean",
         "date",
         "datetime",
@@ -389,8 +388,7 @@ class XlsParser(Parser):
             if row.row_number == 1:
                 for field_index, name in enumerate(row.schema.field_names):
                     sheet.write(0, field_index, name)
-            cells = list(row.values())
-            cells, notes = row.schema.write_data(cells, native_types=self.native_types)
+            cells = row.to_list(types=self.supported_types)
             for field_index, cell in enumerate(cells):
                 sheet.write(row_index + 1, field_index, cell)
         file = tempfile.NamedTemporaryFile(delete=False)

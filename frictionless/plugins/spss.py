@@ -72,7 +72,7 @@ class SpssParser(Parser):
 
     """
 
-    loading = False
+    needs_loader = False
 
     # Read
 

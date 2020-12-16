@@ -794,7 +794,7 @@ class Table:
                             row.errors.append(error)
 
             # Handle row errors
-            if self.__resource.onerror in ["warn", "error"]:
+            if self.__resource.onerror in ["warn", "raise"]:
                 if not row.valid:
                     error = row.errors[0]
                     if self.__resource.onerror == "raise":

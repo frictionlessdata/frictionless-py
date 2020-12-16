@@ -123,7 +123,7 @@ class CkanParser(Parser):
     Public   | `from frictionless.plugins.ckan import CkanParser`
     """
 
-    loading = False
+    needs_loader = False
 
     # Read
 

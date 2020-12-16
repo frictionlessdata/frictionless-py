@@ -121,8 +121,8 @@ class InlineParser(Parser):
 
     """
 
-    loading = False
-    native_types = [
+    needs_loader = False
+    supported_types = [
         "array",
         "boolean",
         "date",

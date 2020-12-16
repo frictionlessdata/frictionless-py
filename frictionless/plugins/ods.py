@@ -112,7 +112,7 @@ class OdsParser(Parser):
 
     """
 
-    native_types = [
+    supported_types = [
         "boolean",
         "date",
         "datetime",
@@ -183,8 +183,7 @@ class OdsParser(Parser):
             if row.row_number == 1:
                 for field_index, name in enumerate(row.schema.field_names):
                     sheet[(0, field_index)].set_value(name)
-            cells = list(row.values())
-            cells, notes = row.schema.write_data(cells, native_types=self.native_types)
+            cells = row.to_list(types=self.supported_types)
             for field_index, cell in enumerate(cells):
                 sheet[(row_index + 1, field_index)].set_value(cell)
         book.save()

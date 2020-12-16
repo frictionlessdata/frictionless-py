@@ -103,7 +103,7 @@ class GsheetsParser(Parser):
 
     """
 
-    loading = False
+    needs_loader = False
 
     # Read
 

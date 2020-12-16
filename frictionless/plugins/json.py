@@ -139,7 +139,7 @@ class JsonParser(Parser):
 
     """
 
-    native_types = [
+    supported_types = [
         "array",
         "boolean",
         "geojson",
@@ -176,8 +176,7 @@ class JsonParser(Parser):
         data = []
         dialect = self.resource.dialect
         for row in read_row_stream():
-            cells = list(row.values())
-            cells, notes = row.schema.write_data(cells, native_types=self.native_types)
+            cells = row.to_list(json=True)
             item = dict(zip(row.schema.field_names, cells)) if dialect.keyed else cells
             if not dialect.keyed and row.row_number == 1:
                 data.append(row.schema.field_names)
@@ -198,7 +197,7 @@ class JsonlParser(Parser):
 
     """
 
-    native_types = [
+    supported_types = [
         "array",
         "boolean",
         "geojson",
@@ -232,8 +231,7 @@ class JsonlParser(Parser):
             writer = jsonlines.Writer(file)
             for row in read_row_stream():
                 schema = row.schema
-                cells = list(row.values())
-                cells, notes = schema.write_data(cells, native_types=self.native_types)
+                cells = row.to_list(json=True)
                 item = dict(zip(schema.field_names, cells)) if dialect.keyed else cells
                 if not dialect.keyed and row.row_number == 1:
                     writer.write(schema.field_names)

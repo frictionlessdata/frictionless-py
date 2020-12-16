@@ -224,7 +224,7 @@ class CsvParser(Parser):
     """
 
     newline = ""
-    native_types = [
+    supported_types = [
         "string",
     ]
 
@@ -273,7 +273,7 @@ class CsvParser(Parser):
             for row in read_row_stream():
                 if row.row_number == 1:
                     writer.writerow(row.field_names)
-                writer.writerow(row.to_list(types=self.native_types))
+                writer.writerow(row.to_list(types=self.supported_types))
         loader = system.create_loader(self.resource)
         result = loader.write_byte_stream(file.name)
         return result
