@@ -6,7 +6,7 @@ from . import helpers
 from . import errors
 
 
-class Row(list):
+class Row(dict):
     """Row representation
 
     API      | Usage
@@ -38,34 +38,68 @@ class Row(list):
         row_position,
         row_number,
     ):
-        self.extend(cells)
+        self.__cells = cells
         self.__field_info = field_info
         self.__row_position = row_position
         self.__row_number = row_number
         self.__processed = False
         self.__blank_cells = {}
         self.__error_cells = {}
-        self.__read_cells = {}
         self.__errors = []
 
-    def __getitem__(self, key):
-        if isinstance(key, str):
-            if key not in self.__read_cells:
-                return self.__process(key)
-            return self.__read_cells[key]
-        return super().__getitem__(key)
-
     def __setitem__(self, key, value):
-        if isinstance(key, str):
-            # TODO: improve key error
-            field, field_number, field_position = self.__field_info["mapping"][key]
-            key = field_number
-        return super().__setitem__(key, value)
+        # TODO: improve key error
+        field, field_number, field_position = self.__field_info["mapping"][key]
+        self.__cells[field_number] = value
+        if key in self:
+            del self[key]
+
+    def __missing__(self, key):
+        return self.__process(key)
+
+    def __str__(self):
+        self.__process()
+        return super().__str__()
+
+    def __repr__(self):
+        self.__process()
+        return super().__repr__()
+
+    def __iter__(self):
+        self.__process()
+        return super().__iter__()
+
+    def __len__(self):
+        self.__process()
+        return super().__len__()
 
     def __contains__(self, key):
-        if isinstance(key, str):
-            return key in self.__field_info["mapping"]
+        self.__process()
         return super().__contains__(key)
+
+    def __reversed__(self, key):
+        self.__process()
+        return super().__reversed__(key)
+
+    def keys(self):
+        self.__process()
+        return super().keys()
+
+    def values(self):
+        self.__process()
+        return super().values()
+
+    def items(self):
+        self.__process()
+        return super().items()
+
+    @cached_property
+    def cells(self):
+        """
+        Returns:
+            Field[]: table schema fields
+        """
+        return self.__cells
 
     @cached_property
     def fields(self):
@@ -147,17 +181,6 @@ class Row(list):
 
     # Import/Export
 
-    def to_str(self):
-        """
-        Returns:
-            str: a row as a CSV string
-        """
-        cells = []
-        for field in self.__field_info["objects"]:
-            cell, notes = field.write_cell(self[field.name])
-            cells.append(cell)
-        return helpers.stringify_csv_string(cells)
-
     def to_dict(self, *, json=False, types=None):
         """
         Parameters:
@@ -169,7 +192,7 @@ class Row(list):
 
         # Prepare
         self.__process()
-        result = {name: self.__read_cells[name] for name in self.__field_info["names"]}
+        result = {name: self[name] for name in self.__field_info["names"]}
         if types is None and json:
             types = JsonParser.supported_types
 
@@ -197,7 +220,7 @@ class Row(list):
 
         # Prepare
         self.__process()
-        result = [self.__read_cells[name] for name in self.__field_info["names"]]
+        result = [self[name] for name in self.__field_info["names"]]
         if types is None and json:
             types = JsonParser.supported_types
 
@@ -213,6 +236,14 @@ class Row(list):
         # Return
         return result
 
+    def to_str(self):
+        """
+        Returns:
+            str: a row as a CSV string
+        """
+        cells = self.to_list(types=[])
+        return helpers.stringify_csv_string(cells)
+
     # Process
 
     def __process(self, key=None):
@@ -224,12 +255,14 @@ class Row(list):
             return
 
         # Prepare context
+        cells = self.__cells
         fields = self.__field_info["objects"]
+        field_mapping = self.__field_info["mapping"]
         field_positions = self.__field_info["positions"]
-        iterator = zip_longest(self.__field_info["mapping"].values(), self)
+        iterator = zip_longest(field_mapping.values(), cells)
         if key:
-            field, field_num, field_pos = self.__field_info["mapping"][key]
-            iterator = zip([(field, field_num, field_pos)], [self[field_num - 1]])
+            field, field_num, field_pos = field_mapping[key]
+            iterator = zip([(field, field_num, field_pos)], [cells[field_num - 1]])
 
         # Iterate cells
         for field_mapping, source in iterator:
@@ -251,7 +284,7 @@ class Row(list):
                 self.__errors.append(
                     errors.TypeError(
                         note=type_note,
-                        cells=list(map(str, self)),
+                        cells=list(map(str, cells)),
                         row_number=self.__row_number,
                         row_position=self.__row_position,
                         cell=str(source),
@@ -267,7 +300,7 @@ class Row(list):
                     self.__errors.append(
                         errors.ConstraintError(
                             note=note,
-                            cells=list(map(str, self)),
+                            cells=list(map(str, cells)),
                             row_number=self.__row_number,
                             row_position=self.__row_position,
                             cell=str(source),
@@ -278,19 +311,19 @@ class Row(list):
                     )
 
             # Set/return value
-            self.__read_cells[field.name] = target
+            super().__setitem__(field.name, target)
             if key:
                 return target
 
         # Extra cells
-        if len(fields) < len(self):
-            iterator = self[len(fields) :]
+        if len(fields) < len(cells):
+            iterator = cells[len(fields) :]
             start = max(field_positions[: len(fields)]) + 1
             for field_position, cell in enumerate(iterator, start=start):
                 self.__errors.append(
                     errors.ExtraCellError(
                         note="",
-                        cells=list(map(str, self)),
+                        cells=list(map(str, cells)),
                         row_number=self.__row_number,
                         row_position=self.__row_position,
                         cell=str(cell),
@@ -301,15 +334,15 @@ class Row(list):
                 )
 
         # Missing cells
-        if len(fields) > len(self):
-            start = len(self) + 1
-            iterator = zip_longest(field_positions[len(self) :], fields[len(self) :])
+        if len(fields) > len(cells):
+            start = len(cells) + 1
+            iterator = zip_longest(field_positions[len(cells) :], fields[len(cells) :])
             for field_number, (field_position, field) in enumerate(iterator, start=start):
                 if field is not None:
                     self.__errors.append(
                         errors.MissingCellError(
                             note="",
-                            cells=list(map(str, self)),
+                            cells=list(map(str, cells)),
                             row_number=self.__row_number,
                             row_position=self.__row_position,
                             cell="",
@@ -325,7 +358,7 @@ class Row(list):
             self.__errors = [
                 errors.BlankRowError(
                     note="",
-                    cells=list(map(str, self)),
+                    cells=list(map(str, cells)),
                     row_number=self.__row_number,
                     row_position=self.__row_position,
                 )
