@@ -120,7 +120,7 @@ def test_package_from_zip():
     package = Package("data/package.zip")
     assert package.name == "testing"
     assert len(package.resources) == 2
-    assert package.get_resource("data2").read_rows() == [
+    assert package.get_resource("data2").read_rows(dict=True) == [
         {"parent": "A3001", "comment": "comment1"},
         {"parent": "A3001", "comment": "comment2"},
         {"parent": "A5032", "comment": "comment3"},
@@ -133,7 +133,7 @@ def test_package_from_zip_remote():
     package = Package(BASE_URL % "data/package.zip")
     assert package.name == "testing"
     assert len(package.resources) == 2
-    assert package.get_resource("data2").read_rows() == [
+    assert package.get_resource("data2").read_rows(dict=True) == [
         {"parent": "A3001", "comment": "comment1"},
         {"parent": "A3001", "comment": "comment2"},
         {"parent": "A5032", "comment": "comment3"},
@@ -173,7 +173,7 @@ def test_package_resources_inline():
     assert resource.path is None
     assert resource.data == data
     assert resource.source == data
-    assert resource.read_rows() == [
+    assert resource.read_rows(dict=True) == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
@@ -250,7 +250,7 @@ def test_package_resources_respect_query_set_after_creation_issue_503():
     resource = package.get_resource("table")
     resource.query = Query(limit_rows=1)
     assert resource.read_header() == ["id", "name"]
-    assert resource.read_rows() == [{"id": 1, "name": "english"}]
+    assert resource.read_rows(dict=True) == [{"id": 1, "name": "english"}]
 
 
 # Expand
@@ -495,7 +495,7 @@ def test_package_to_zip(tmpdir):
     assert package.name == "name"
     assert package.get_resource("name").name == "name"
     assert package.get_resource("name").path == "table.csv"
-    assert package.get_resource("name").read_rows() == [
+    assert package.get_resource("name").read_rows(dict=True) == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
@@ -513,7 +513,7 @@ def test_package_to_zip_withdir_path(tmpdir):
     # Read
     package = Package(target)
     assert package.get_resource("table").path == "data/table.csv"
-    assert package.get_resource("table").read_rows() == [
+    assert package.get_resource("table").read_rows(dict=True) == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
@@ -531,7 +531,7 @@ def test_package_to_zip_absolute_path(tmpdir):
     # Read
     package = Package(target)
     assert package.get_resource("table").path == "table.csv"
-    assert package.get_resource("table").read_rows() == [
+    assert package.get_resource("table").read_rows(dict=True) == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
@@ -550,7 +550,7 @@ def test_package_to_zip_resolve_inline(tmpdir):
     # Read
     package = Package(target)
     assert package.get_resource("table").path == "table.csv"
-    assert package.get_resource("table").read_rows() == [
+    assert package.get_resource("table").read_rows(dict=True) == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
@@ -569,7 +569,7 @@ def test_package_to_zip_resolve_inline_sql(tmpdir, database_url):
     # Read
     package = Package(target)
     assert package.get_resource("table").path == "table.csv"
-    assert package.get_resource("table").read_rows() == [
+    assert package.get_resource("table").read_rows(dict=True) == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
@@ -589,7 +589,7 @@ def test_package_to_zip_resolve_remote(tmpdir):
     # Read
     package = Package(target)
     assert package.get_resource("table").path == "table.csv"
-    assert package.get_resource("table").read_rows() == [
+    assert package.get_resource("table").read_rows(dict=True) == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
@@ -610,12 +610,12 @@ def test_package_to_zip_resolve_inline_and_remote(tmpdir):
     # Read
     package = Package(target)
     assert package.get_resource("name1").path == "name1.csv"
-    assert package.get_resource("name1").read_rows() == [
+    assert package.get_resource("name1").read_rows(dict=True) == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
     assert package.get_resource("name2").path == "name2.csv"
-    assert package.get_resource("name2").read_rows() == [
+    assert package.get_resource("name2").read_rows(dict=True) == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
@@ -637,7 +637,7 @@ def test_package_to_zip_source_remote(tmpdir):
         "name": "name",
         "resources": [{"name": "name", "path": path}],
     }
-    assert package.get_resource("name").read_rows() == [
+    assert package.get_resource("name").read_rows(dict=True) == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
@@ -658,7 +658,7 @@ def test_package_to_zip_source_inline(tmpdir):
         "name": "name",
         "resources": [{"name": "name", "data": data}],
     }
-    assert package.get_resource("name").read_rows() == [
+    assert package.get_resource("name").read_rows(dict=True) == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
@@ -670,7 +670,7 @@ def test_package_to_zip_source_inline(tmpdir):
 def test_package_compression_implicit_gz():
     package = Package("data/compression/datapackage.json")
     resource = package.get_resource("implicit-gz")
-    assert resource.read_rows() == [
+    assert resource.read_rows(dict=True) == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
@@ -679,7 +679,7 @@ def test_package_compression_implicit_gz():
 def test_package_compression_implicit_zip():
     package = Package("data/compression/datapackage.json")
     resource = package.get_resource("implicit-zip")
-    assert resource.read_rows() == [
+    assert resource.read_rows(dict=True) == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
@@ -688,7 +688,7 @@ def test_package_compression_implicit_zip():
 def test_package_compression_explicit_gz():
     package = Package("data/compression/datapackage.json")
     resource = package.get_resource("explicit-gz")
-    assert resource.read_rows() == [
+    assert resource.read_rows(dict=True) == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
@@ -697,7 +697,7 @@ def test_package_compression_explicit_gz():
 def test_package_compression_explicit_zip():
     package = Package("data/compression/datapackage.json")
     resource = package.get_resource("explicit-zip")
-    assert resource.read_rows() == [
+    assert resource.read_rows(dict=True) == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
@@ -803,11 +803,24 @@ def test_package_integrity_foreign_key():
     assert rows[0].valid
     assert rows[1].valid
     assert rows[2].valid
-    assert rows == [
-        {"id": "1", "name": "Alex", "surname": "Martin", "parent_id": None},
-        {"id": "2", "name": "John", "surname": "Dockins", "parent_id": "1"},
-        {"id": "3", "name": "Walter", "surname": "White", "parent_id": "2"},
-    ]
+    assert rows[0].to_dict() == {
+        "id": "1",
+        "name": "Alex",
+        "surname": "Martin",
+        "parent_id": None,
+    }
+    assert rows[1].to_dict() == {
+        "id": "2",
+        "name": "John",
+        "surname": "Dockins",
+        "parent_id": "1",
+    }
+    assert rows[2].to_dict() == {
+        "id": "3",
+        "name": "Walter",
+        "surname": "White",
+        "parent_id": "2",
+    }
 
 
 def test_package_integrity_foreign_key_invalid():
@@ -818,11 +831,24 @@ def test_package_integrity_foreign_key_invalid():
     assert rows[0].valid
     assert rows[1].valid
     assert rows[2].errors[0].code == "foreign-key-error"
-    assert rows == [
-        {"id": "1", "name": "Alex", "surname": "Martin", "parent_id": None},
-        {"id": "2", "name": "John", "surname": "Dockins", "parent_id": "1"},
-        {"id": "3", "name": "Walter", "surname": "White", "parent_id": "2"},
-    ]
+    assert rows[0].to_dict() == {
+        "id": "1",
+        "name": "Alex",
+        "surname": "Martin",
+        "parent_id": None,
+    }
+    assert rows[1].to_dict() == {
+        "id": "2",
+        "name": "John",
+        "surname": "Dockins",
+        "parent_id": "1",
+    }
+    assert rows[2].to_dict() == {
+        "id": "3",
+        "name": "Walter",
+        "surname": "White",
+        "parent_id": "2",
+    }
 
 
 def test_package_integrity_foreign_key_self_reference():
