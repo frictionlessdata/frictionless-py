@@ -159,7 +159,7 @@ Our resource metadata includes the schema metadata we created earlier but also i
 - information about CSV Dialect helping software understand how to read it
 - checksum information as though hash, bytes, and rows
 
-But the most important difference is that resource metadata contains the `path` property. It conceptually distinct Data Resource specification from Table Schema specification because while a Table Schema descriptor can describe a class of data files, a Data Resource descriptor describes the only one exact data file, `data/country-2.csv` in our case.
+But the most important difference is that resource metadata contains the `path` property. Presence of `path` conceptually distiguishes a Data Resource specification from a Table Schema specification. While a Table Schema descriptor can describe a class of data files, a Data Resource descriptor describes only one exact data file, `data/country-2.csv` in our case.
 
 Using programming terminology we could say that:
 - Table Schema descriptor is abstract (for a class of files)
@@ -275,13 +275,13 @@ Trying to extract the data will fail the same way:
 ! frictionless extract data/country-2.csv
 ```
 
-Basically, that's a really important idea - with not metadata many software will not be able to even read this data file, furthermore, without metadata people can not understand the purpose of this data. Let's now use the `country.resource.yaml` the file we created in the "Data Resource" section:
+Basically, that's a really important idea - without metadata many software products will not be able to even read this data file, furthermore, without metadata people can not understand the purpose of this data. Let's now use the `country.resource.yaml` file we created in the "Data Resource" section:
 
 ```python
 ! frictionless extract tmp/country.resource.yaml --basepath .
 ```
 
-As we can see, it's now fixed. The metadata we'd had saved the day. If we explore this data in Python we can discover that it also correct data types e.g. `id` is Python's integer not string. This fact will allow exporting and sharing this data without any fear.
+As we can see, it's now fixed. The metadata we had saved the day. If we explore this data in Python we can discover that it also correct data types e.g. `id` is Python's integer not string. This fact will allow exporting and sharing this data without any fear.
 
 ## Metadata Classes
 
@@ -337,7 +337,7 @@ resource = describe("data/country-1.csv")
 pprint(resource.schema)
 ```
 
-Under the hood it, for example, still treats empty string as missing values because it's the specs' default. We can make reveal implicit metadata by expanding it:
+Under the hood it, for example, still treats empty string as missing values because it's the specs' default. We can reveal implicit metadata by expanding it:
 
 ```python
 resource.schema.expand()
@@ -442,7 +442,7 @@ This option allows manually setting all the field types to a given type. It's us
 
 ### Infer Names
 
-Sometimes you don't want to use existent header row to compose field names. It's possible to provide custom names:
+Sometimes you don't want to use an existing header row to compose field names. It's possible to provide custom names:
 
 ```python
 from frictionless import describe
