@@ -1,11 +1,12 @@
-# TODO: review this dependency
-from .plugins.json import JsonParser
 from itertools import zip_longest
+from .plugins.csv import CsvParser
+from .plugins.json import JsonParser
 from .helpers import cached_property
 from . import helpers
 from . import errors
 
 
+# TODO: disable/limit dict.update/setdefault/pop/popitem/clear
 class Row(dict):
     """Row representation
 
@@ -47,15 +48,9 @@ class Row(dict):
         self.__error_cells = {}
         self.__errors = []
 
-    def __setitem__(self, key, value):
-        # TODO: improve key error
-        field, field_number, field_position = self.__field_info["mapping"][key]
-        self.__cells[field_number] = value
-        if key in self:
-            del self[key]
-
-    def __missing__(self, key):
-        return self.__process(key)
+    def __eq__(self, other):
+        self.__process()
+        return super().__eq__(other)
 
     def __str__(self):
         self.__process()
@@ -65,25 +60,29 @@ class Row(dict):
         self.__process()
         return super().__repr__()
 
+    def __setitem__(self, key, value):
+        # TODO: improve key error
+        field, field_number, field_position = self.__field_info["mapping"][key]
+        self.__cells[field_number - 1] = value
+        self.__process(key)
+
+    def __missing__(self, key):
+        return self.__process(key)
+
     def __iter__(self):
-        self.__process()
-        return super().__iter__()
+        return iter(self.__field_info["names"])
 
     def __len__(self):
-        self.__process()
-        return super().__len__()
+        return len(self.__field_info["names"])
 
     def __contains__(self, key):
-        self.__process()
-        return super().__contains__(key)
+        return key in self.__field_info["mapping"]
 
     def __reversed__(self, key):
-        self.__process()
-        return super().__reversed__(key)
+        return reversed(self)
 
     def keys(self):
-        self.__process()
-        return super().keys()
+        return self.__field_info["mapping"].keys()
 
     def values(self):
         self.__process()
@@ -92,6 +91,11 @@ class Row(dict):
     def items(self):
         self.__process()
         return super().items()
+
+    def get(self, key, default=None):
+        if key not in self.__field_info["names"]:
+            return default
+        return self[key]
 
     @cached_property
     def cells(self):
@@ -241,17 +245,18 @@ class Row(dict):
         Returns:
             str: a row as a CSV string
         """
-        cells = self.to_list(types=[])
+        cells = self.to_list(types=CsvParser.supported_types)
         return helpers.stringify_csv_string(cells)
 
     # Process
 
+    # TODO: currently we duplicate data normalization for scenario:
+    # - there is random access like row[key1], row[key2]
+    # - full __process call
     def __process(self, key=None):
 
         # Exit if processed
-        if self.__processed:
-            if key:
-                raise KeyError(key)
+        if self.__processed and not key:
             return
 
         # Prepare context

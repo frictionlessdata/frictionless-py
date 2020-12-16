@@ -680,22 +680,14 @@ class Table:
             note = 'the table has not been opened by "table.open()"'
             raise FrictionlessException(errors.Error(note=note))
 
-    def read_rows(self, *, dict=False, list=False, json=False):
+    def read_rows(self):
         """Read row stream into memory
 
         Returns:
             Row[][]: table rows
         """
         self.__read_row_stream_raise_closed()
-        data = []
-        # TODO: move to __read_row_stream_create
-        for item in self.__row_stream:
-            if dict:
-                item = item.to_dict(json=json)
-            elif list:
-                item = item.to_list(json=json)
-            data.append(item)
-        return data
+        return list(self.__row_stream)
 
     def __read_row_stream(self):
         return self.__read_row_stream_create()

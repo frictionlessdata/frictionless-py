@@ -1,11 +1,9 @@
-import pytest
 from frictionless import Resource, transform, steps
 
 
 # Filter
 
 
-@pytest.mark.skip
 def test_step_row_filter():
     source = Resource(path="data/transform.csv")
     source.infer(only_sample=True)
@@ -17,13 +15,12 @@ def test_step_row_filter():
         ],
     )
     assert target.schema == source.schema
-    assert target.read_rows(dict=True) == [
+    assert target.read_rows() == [
         {"id": 2, "name": "france", "population": 66},
         {"id": 3, "name": "spain", "population": 47},
     ]
 
 
-@pytest.mark.skip
 def test_step_row_filter_with_callable_predicat():
     source = Resource(path="data/transform.csv")
     source.infer(only_sample=True)
@@ -35,13 +32,12 @@ def test_step_row_filter_with_callable_predicat():
         ],
     )
     assert target.schema == source.schema
-    assert target.read_rows(dict=True) == [
+    assert target.read_rows() == [
         {"id": 2, "name": "france", "population": 66},
         {"id": 3, "name": "spain", "population": 47},
     ]
 
 
-@pytest.mark.skip
 def test_step_row_filter_petl_selectop():
     source = Resource(path="data/transform.csv")
     source.infer(only_sample=True)
@@ -53,12 +49,11 @@ def test_step_row_filter_petl_selectop():
         ],
     )
     assert target.schema == source.schema
-    assert target.read_rows(dict=True) == [
+    assert target.read_rows() == [
         {"id": 1, "name": "germany", "population": 83},
     ]
 
 
-@pytest.mark.skip
 def test_step_row_filter_petl_selecteq():
     source = Resource(path="data/transform.csv")
     source.infer(only_sample=True)
@@ -70,12 +65,11 @@ def test_step_row_filter_petl_selecteq():
         ],
     )
     assert target.schema == source.schema
-    assert target.read_rows(dict=True) == [
+    assert target.read_rows() == [
         {"id": 1, "name": "germany", "population": 83},
     ]
 
 
-@pytest.mark.skip
 def test_step_row_filter_petl_selectne():
     source = Resource(path="data/transform.csv")
     source.infer(only_sample=True)
@@ -87,13 +81,12 @@ def test_step_row_filter_petl_selectne():
         ],
     )
     assert target.schema == source.schema
-    assert target.read_rows(dict=True) == [
+    assert target.read_rows() == [
         {"id": 2, "name": "france", "population": 66},
         {"id": 3, "name": "spain", "population": 47},
     ]
 
 
-@pytest.mark.skip
 def test_step_row_filter_petl_selectlt():
     source = Resource(path="data/transform.csv")
     source.infer(only_sample=True)
@@ -105,12 +98,11 @@ def test_step_row_filter_petl_selectlt():
         ],
     )
     assert target.schema == source.schema
-    assert target.read_rows(dict=True) == [
+    assert target.read_rows() == [
         {"id": 1, "name": "germany", "population": 83},
     ]
 
 
-@pytest.mark.skip
 def test_step_row_filter_petl_selectle():
     source = Resource(path="data/transform.csv")
     source.infer(only_sample=True)
@@ -122,13 +114,12 @@ def test_step_row_filter_petl_selectle():
         ],
     )
     assert target.schema == source.schema
-    assert target.read_rows(dict=True) == [
+    assert target.read_rows() == [
         {"id": 1, "name": "germany", "population": 83},
         {"id": 2, "name": "france", "population": 66},
     ]
 
 
-@pytest.mark.skip
 def test_step_row_filter_petl_selectgt():
     source = Resource(path="data/transform.csv")
     source.infer(only_sample=True)
@@ -140,12 +131,11 @@ def test_step_row_filter_petl_selectgt():
         ],
     )
     assert target.schema == source.schema
-    assert target.read_rows(dict=True) == [
+    assert target.read_rows() == [
         {"id": 3, "name": "spain", "population": 47},
     ]
 
 
-@pytest.mark.skip
 def test_step_row_filter_petl_selectge():
     source = Resource(path="data/transform.csv")
     source.infer(only_sample=True)
@@ -157,13 +147,12 @@ def test_step_row_filter_petl_selectge():
         ],
     )
     assert target.schema == source.schema
-    assert target.read_rows(dict=True) == [
+    assert target.read_rows() == [
         {"id": 2, "name": "france", "population": 66},
         {"id": 3, "name": "spain", "population": 47},
     ]
 
 
-@pytest.mark.skip
 def test_step_row_filter_petl_selectrangeopen():
     source = Resource(path="data/transform.csv")
     source.infer(only_sample=True)
@@ -175,14 +164,13 @@ def test_step_row_filter_petl_selectrangeopen():
         ],
     )
     assert target.schema == source.schema
-    assert target.read_rows(dict=True) == [
+    assert target.read_rows() == [
         {"id": 1, "name": "germany", "population": 83},
         {"id": 2, "name": "france", "population": 66},
         {"id": 3, "name": "spain", "population": 47},
     ]
 
 
-@pytest.mark.skip
 def test_step_row_filter_petl_selectrangeopenleft():
     source = Resource(path="data/transform.csv")
     source.infer(only_sample=True)
@@ -194,13 +182,12 @@ def test_step_row_filter_petl_selectrangeopenleft():
         ],
     )
     assert target.schema == source.schema
-    assert target.read_rows(dict=True) == [
+    assert target.read_rows() == [
         {"id": 1, "name": "germany", "population": 83},
         {"id": 2, "name": "france", "population": 66},
     ]
 
 
-@pytest.mark.skip
 def test_step_row_filter_petl_selectrangeopenright():
     source = Resource(path="data/transform.csv")
     source.infer(only_sample=True)
@@ -212,13 +199,12 @@ def test_step_row_filter_petl_selectrangeopenright():
         ],
     )
     assert target.schema == source.schema
-    assert target.read_rows(dict=True) == [
+    assert target.read_rows() == [
         {"id": 2, "name": "france", "population": 66},
         {"id": 3, "name": "spain", "population": 47},
     ]
 
 
-@pytest.mark.skip
 def test_step_row_filter_petl_selectrangeclosed():
     source = Resource(path="data/transform.csv")
     source.infer(only_sample=True)
@@ -230,12 +216,11 @@ def test_step_row_filter_petl_selectrangeclosed():
         ],
     )
     assert target.schema == source.schema
-    assert target.read_rows(dict=True) == [
+    assert target.read_rows() == [
         {"id": 2, "name": "france", "population": 66},
     ]
 
 
-@pytest.mark.skip
 def test_step_row_filter_petl_selectcontains():
     source = Resource(path="data/transform.csv")
     source.infer(only_sample=True)
@@ -246,12 +231,11 @@ def test_step_row_filter_petl_selectcontains():
         ],
     )
     assert target.schema == source.schema
-    assert target.read_rows(dict=True) == [
+    assert target.read_rows() == [
         {"id": 1, "name": "germany", "population": 83},
     ]
 
 
-@pytest.mark.skip
 def test_step_row_filter_petl_selectin():
     source = Resource(path="data/transform.csv")
     source.infer(only_sample=True)
@@ -263,12 +247,11 @@ def test_step_row_filter_petl_selectin():
         ],
     )
     assert target.schema == source.schema
-    assert target.read_rows(dict=True) == [
+    assert target.read_rows() == [
         {"id": 1, "name": "germany", "population": 83},
     ]
 
 
-@pytest.mark.skip
 def test_step_row_filter_petl_selectnoin():
     source = Resource(path="data/transform.csv")
     source.infer(only_sample=True)
@@ -280,12 +263,11 @@ def test_step_row_filter_petl_selectnoin():
         ],
     )
     assert target.schema == source.schema
-    assert target.read_rows(dict=True) == [
+    assert target.read_rows() == [
         {"id": 1, "name": "germany", "population": 83},
     ]
 
 
-@pytest.mark.skip
 def test_step_row_filter_petl_selectis():
     source = Resource(path="data/transform.csv")
     source.infer(only_sample=True)
@@ -297,12 +279,11 @@ def test_step_row_filter_petl_selectis():
         ],
     )
     assert target.schema == source.schema
-    assert target.read_rows(dict=True) == [
+    assert target.read_rows() == [
         {"id": 1, "name": "germany", "population": 83},
     ]
 
 
-@pytest.mark.skip
 def test_step_row_filter_petl_selectisnot():
     source = Resource(path="data/transform.csv")
     source.infer(only_sample=True)
@@ -314,13 +295,12 @@ def test_step_row_filter_petl_selectisnot():
         ],
     )
     assert target.schema == source.schema
-    assert target.read_rows(dict=True) == [
+    assert target.read_rows() == [
         {"id": 2, "name": "france", "population": 66},
         {"id": 3, "name": "spain", "population": 47},
     ]
 
 
-@pytest.mark.skip
 def test_step_row_filter_petl_selectisinstance():
     source = Resource(path="data/transform.csv")
     source.infer(only_sample=True)
@@ -332,14 +312,13 @@ def test_step_row_filter_petl_selectisinstance():
         ],
     )
     assert target.schema == source.schema
-    assert target.read_rows(dict=True) == [
+    assert target.read_rows() == [
         {"id": 1, "name": "germany", "population": 83},
         {"id": 2, "name": "france", "population": 66},
         {"id": 3, "name": "spain", "population": 47},
     ]
 
 
-@pytest.mark.skip
 def test_step_row_filter_petl_selectistrue():
     source = Resource(path="data/transform.csv")
     source.infer(only_sample=True)
@@ -350,14 +329,13 @@ def test_step_row_filter_petl_selectistrue():
         ],
     )
     assert target.schema == source.schema
-    assert target.read_rows(dict=True) == [
+    assert target.read_rows() == [
         {"id": 1, "name": "germany", "population": 83},
         {"id": 2, "name": "france", "population": 66},
         {"id": 3, "name": "spain", "population": 47},
     ]
 
 
-@pytest.mark.skip
 def test_step_row_filter_petl_selectisfalse():
     source = Resource(path="data/transform.csv")
     source.infer(only_sample=True)
@@ -368,10 +346,9 @@ def test_step_row_filter_petl_selectisfalse():
         ],
     )
     assert target.schema == source.schema
-    assert target.read_rows(dict=True) == []
+    assert target.read_rows() == []
 
 
-@pytest.mark.skip
 def test_step_row_filter_petl_selectnone():
     source = Resource(path="data/transform.csv")
     source.infer(only_sample=True)
@@ -382,10 +359,9 @@ def test_step_row_filter_petl_selectnone():
         ],
     )
     assert target.schema == source.schema
-    assert target.read_rows(dict=True) == []
+    assert target.read_rows() == []
 
 
-@pytest.mark.skip
 def test_step_row_filter_petl_selectisnone():
     source = Resource(path="data/transform.csv")
     source.infer(only_sample=True)
@@ -396,14 +372,13 @@ def test_step_row_filter_petl_selectisnone():
         ],
     )
     assert target.schema == source.schema
-    assert target.read_rows(dict=True) == [
+    assert target.read_rows() == [
         {"id": 1, "name": "germany", "population": 83},
         {"id": 2, "name": "france", "population": 66},
         {"id": 3, "name": "spain", "population": 47},
     ]
 
 
-@pytest.mark.skip
 def test_step_row_filter_petl_rowlenselect():
     source = Resource(path="data/transform.csv")
     source.infer(only_sample=True)
@@ -414,7 +389,7 @@ def test_step_row_filter_petl_rowlenselect():
         ],
     )
     assert target.schema == source.schema
-    assert target.read_rows(dict=True) == [
+    assert target.read_rows() == [
         {"id": 1, "name": "germany", "population": 83},
         {"id": 2, "name": "france", "population": 66},
         {"id": 3, "name": "spain", "population": 47},
@@ -434,7 +409,7 @@ def test_step_row_search():
         ],
     )
     assert target.schema == source.schema
-    assert target.read_rows(dict=True) == [
+    assert target.read_rows() == [
         {"id": 2, "name": "france", "population": 66},
     ]
 
@@ -449,7 +424,7 @@ def test_step_row_search_with_name():
         ],
     )
     assert target.schema == source.schema
-    assert target.read_rows(dict=True) == [
+    assert target.read_rows() == [
         {"id": 2, "name": "france", "population": 66},
     ]
 
@@ -464,7 +439,7 @@ def test_step_row_search_with_anti():
         ],
     )
     assert target.schema == source.schema
-    assert target.read_rows(dict=True) == [
+    assert target.read_rows() == [
         {"id": 1, "name": "germany", "population": 83},
         {"id": 3, "name": "spain", "population": 47},
     ]
@@ -483,7 +458,7 @@ def test_step_row_slice():
         ],
     )
     assert target.schema == source.schema
-    assert target.read_rows(dict=True) == [
+    assert target.read_rows() == [
         {"id": 1, "name": "germany", "population": 83},
         {"id": 2, "name": "france", "population": 66},
     ]
@@ -499,7 +474,7 @@ def test_step_row_slice_with_start():
         ],
     )
     assert target.schema == source.schema
-    assert target.read_rows(dict=True) == [
+    assert target.read_rows() == [
         {"id": 2, "name": "france", "population": 66},
     ]
 
@@ -514,7 +489,7 @@ def test_step_row_slice_with_start_and_step():
         ],
     )
     assert target.schema == source.schema
-    assert target.read_rows(dict=True) == [
+    assert target.read_rows() == [
         {"id": 2, "name": "france", "population": 66},
     ]
 
@@ -529,7 +504,7 @@ def test_step_row_slice_with_head():
         ],
     )
     assert target.schema == source.schema
-    assert target.read_rows(dict=True) == [
+    assert target.read_rows() == [
         {"id": 1, "name": "germany", "population": 83},
         {"id": 2, "name": "france", "population": 66},
     ]
@@ -545,7 +520,7 @@ def test_step_row_slice_with_tail():
         ],
     )
     assert target.schema == source.schema
-    assert target.read_rows(dict=True) == [
+    assert target.read_rows() == [
         {"id": 2, "name": "france", "population": 66},
         {"id": 3, "name": "spain", "population": 47},
     ]
@@ -564,7 +539,7 @@ def test_step_row_sort():
         ],
     )
     assert target.schema == source.schema
-    assert target.read_rows(dict=True) == [
+    assert target.read_rows() == [
         {"id": 2, "name": "france", "population": 66},
         {"id": 1, "name": "germany", "population": 83},
         {"id": 3, "name": "spain", "population": 47},
@@ -581,7 +556,7 @@ def test_step_row_sort_with_reverse():
         ],
     )
     assert target.schema == source.schema
-    assert target.read_rows(dict=True) == [
+    assert target.read_rows() == [
         {"id": 3, "name": "spain", "population": 47},
         {"id": 2, "name": "france", "population": 66},
         {"id": 1, "name": "germany", "population": 83},
@@ -601,7 +576,7 @@ def test_step_row_split():
         ],
     )
     assert target.schema == source.schema
-    assert target.read_rows(dict=True) == [
+    assert target.read_rows() == [
         {"id": 1, "name": "germ", "population": 83},
         {"id": 1, "name": "ny", "population": 83},
         {"id": 2, "name": "fr", "population": 66},
@@ -638,7 +613,7 @@ def test_step_row_subset_conflicts_with_duplicates():
         ],
     )
     assert target.schema == source.schema
-    assert target.read_rows(dict=True) == [
+    assert target.read_rows() == [
         {"id": 1, "name": "germany", "population": 83},
         {"id": 1, "name": "france", "population": 66},
         {"id": 1, "name": "spain", "population": 47},
@@ -655,7 +630,7 @@ def test_step_row_subset_distinct():
         ],
     )
     assert target.schema == source.schema
-    assert target.read_rows(dict=True) == [
+    assert target.read_rows() == [
         {"id": 1, "name": "germany", "population": 83},
         {"id": 2, "name": "france", "population": 66},
         {"id": 3, "name": "spain", "population": 47},
@@ -673,7 +648,7 @@ def test_step_row_subset_distinct_with_duplicates():
         ],
     )
     assert target.schema == source.schema
-    assert target.read_rows(dict=True) == [
+    assert target.read_rows() == [
         {"id": 1, "name": "germany", "population": 83},
     ]
 
@@ -702,7 +677,7 @@ def test_step_row_subset_duplicates_with_name():
         ],
     )
     assert target.schema == source.schema
-    assert target.read_rows(dict=True) == [
+    assert target.read_rows() == [
         {"id": 1, "name": "germany", "population": 83},
         {"id": 1, "name": "france", "population": 66},
         {"id": 1, "name": "spain", "population": 47},
@@ -719,7 +694,7 @@ def test_step_row_subset_unique():
         ],
     )
     assert target.schema == source.schema
-    assert target.read_rows(dict=True) == [
+    assert target.read_rows() == [
         {"id": 1, "name": "germany", "population": 83},
         {"id": 2, "name": "france", "population": 66},
         {"id": 3, "name": "spain", "population": 47},
@@ -753,7 +728,7 @@ def test_step_row_ungroup_first():
         ],
     )
     assert target.schema == source.schema
-    assert target.read_rows(dict=True) == [
+    assert target.read_rows() == [
         {"id": 3, "name": "france", "population": 66, "year": 2020},
         {"id": 1, "name": "germany", "population": 83, "year": 2020},
         {"id": 5, "name": "spain", "population": 47, "year": 2020},
@@ -770,7 +745,7 @@ def test_step_row_ungroup_last():
         ],
     )
     assert target.schema == source.schema
-    assert target.read_rows(dict=True) == [
+    assert target.read_rows() == [
         {"id": 4, "name": "france", "population": 54, "year": 1920},
         {"id": 2, "name": "germany", "population": 77, "year": 1920},
         {"id": 6, "name": "spain", "population": 33, "year": 1920},
@@ -789,7 +764,7 @@ def test_step_row_ungroup_min():
         ],
     )
     assert target.schema == source.schema
-    assert target.read_rows(dict=True) == [
+    assert target.read_rows() == [
         {"id": 4, "name": "france", "population": 54, "year": 1920},
         {"id": 2, "name": "germany", "population": 77, "year": 1920},
         {"id": 6, "name": "spain", "population": 33, "year": 1920},
@@ -808,7 +783,7 @@ def test_step_row_ungroup_max():
         ],
     )
     assert target.schema == source.schema
-    assert target.read_rows(dict=True) == [
+    assert target.read_rows() == [
         {"id": 3, "name": "france", "population": 66, "year": 2020},
         {"id": 1, "name": "germany", "population": 83, "year": 2020},
         {"id": 5, "name": "spain", "population": 47, "year": 2020},

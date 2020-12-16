@@ -103,7 +103,7 @@ def test_xlsx_parser_preserve_formatting():
     source = "data/preserve-formatting.xlsx"
     dialect = ExcelDialect(preserve_formatting=True)
     with Table(source, dialect=dialect, headers=1, infer_type="any") as table:
-        assert table.read_rows(dict=True) == [
+        assert table.read_rows() == [
             {
                 # general
                 "empty": None,
@@ -240,9 +240,9 @@ def test_xls_parser_with_ints_floats_dates():
         ]
 
 
-@pytest.mark.vcr
 @pytest.mark.skip
-def test_fix_for_2007_xls():
+@pytest.mark.vcr
+def test_xls_parser_fix_for_2007_xls():
     source = "https://ams3.digitaloceanspaces.com/budgetkey-files/spending-reports/2018-3-משרד התרבות והספורט-לשכת הפרסום הממשלתית-2018-10-22-c457.xls"
     with Table(source) as table:
         assert len(table.read_data()) > 10

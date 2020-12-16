@@ -16,7 +16,7 @@ def test_transform_resource():
         ],
     )
     assert target.schema == source.schema
-    assert target.read_rows(dict=True) == [
+    assert target.read_rows() == [
         {"id": 1, "name": "germany", "population": 83},
         {"id": 2, "name": "france", "population": 66},
         {"id": 3, "name": "spain", "population": 47},

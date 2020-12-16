@@ -80,8 +80,8 @@ def test_table_row_stream():
     with Table("data/table.csv") as table:
         assert table.header == ["id", "name"]
         assert list(table.row_stream) == [
-            ["1", "english"],
-            ["2", "中国人"],
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
         ]
         assert list(table.row_stream) == []
 
@@ -582,7 +582,7 @@ def test_table_pick_fields():
     with Table(source, format="csv", query=query) as table:
         assert table.header == ["header2"]
         assert table.header.field_positions == [2]
-        assert table.read_rows(dict=True) == [
+        assert table.read_rows() == [
             {"header2": "value2"},
         ]
 
@@ -593,7 +593,7 @@ def test_table_pick_fields_position():
     with Table(source, format="csv", query=query) as table:
         assert table.header == ["header2"]
         assert table.header.field_positions == [2]
-        assert table.read_rows(dict=True) == [
+        assert table.read_rows() == [
             {"header2": "value2"},
         ]
 
@@ -604,7 +604,7 @@ def test_table_pick_fields_regex():
     with Table(source, format="csv", query=query) as table:
         assert table.header == ["header2"]
         assert table.header.field_positions == [2]
-        assert table.read_rows(dict=True) == [
+        assert table.read_rows() == [
             {"header2": "value2"},
         ]
 
@@ -615,7 +615,7 @@ def test_table_pick_fields_position_and_prefix():
     with Table(source, format="csv", query=query) as table:
         assert table.header == ["header2", "header3"]
         assert table.header.field_positions == [2, 3]
-        assert table.read_rows(dict=True) == [
+        assert table.read_rows() == [
             {"header2": "value2", "header3": "value3"},
         ]
 
@@ -626,7 +626,7 @@ def test_table_skip_fields():
     with Table(source, format="csv", query=query) as table:
         assert table.header == ["header1", "header3"]
         assert table.header.field_positions == [1, 3]
-        assert table.read_rows(dict=True) == [
+        assert table.read_rows() == [
             {"header1": "value1", "header3": "value3"},
         ]
 
@@ -637,7 +637,7 @@ def test_table_skip_fields_position():
     with Table(source, format="csv", query=query) as table:
         assert table.header == ["header1", "header3"]
         assert table.header.field_positions == [1, 3]
-        assert table.read_rows(dict=True) == [
+        assert table.read_rows() == [
             {"header1": "value1", "header3": "value3"},
         ]
 
@@ -648,7 +648,7 @@ def test_table_skip_fields_regex():
     with Table(source, format="csv", query=query) as table:
         assert table.header == ["header2"]
         assert table.header.field_positions == [2]
-        assert table.read_rows(dict=True) == [
+        assert table.read_rows() == [
             {"header2": "value2"},
         ]
 
@@ -659,7 +659,7 @@ def test_table_skip_fields_position_and_prefix():
     with Table(source, format="csv", query=query) as table:
         assert table.header == ["header1"]
         assert table.header.field_positions == [1]
-        assert table.read_rows(dict=True) == [
+        assert table.read_rows() == [
             {"header1": "value1"},
         ]
 
@@ -670,7 +670,7 @@ def test_table_skip_fields_blank_header():
     with Table(source, format="csv", query=query) as table:
         assert table.header == ["header1", "header3"]
         assert table.header.field_positions == [1, 3]
-        assert table.read_rows(dict=True) == [
+        assert table.read_rows() == [
             {"header1": "value1", "header3": "value3"},
         ]
 
@@ -681,7 +681,7 @@ def test_table_skip_fields_blank_header_notation():
     with Table(source, format="csv", query=query) as table:
         assert table.header == ["header1", "header3"]
         assert table.header.field_positions == [1, 3]
-        assert table.read_rows(dict=True) == [
+        assert table.read_rows() == [
             {"header1": "value1", "header3": "value3"},
         ]
 
@@ -708,7 +708,7 @@ def test_table_limit_fields():
     with Table(source, format="csv", query=query) as table:
         assert table.header == ["header1"]
         assert table.header.field_positions == [1]
-        assert table.read_rows(dict=True) == [
+        assert table.read_rows() == [
             {"header1": "value1"},
         ]
 
@@ -719,7 +719,7 @@ def test_table_offset_fields():
     with Table(source, format="csv", query=query) as table:
         assert table.header == ["header2", "header3"]
         assert table.header.field_positions == [2, 3]
-        assert table.read_rows(dict=True) == [
+        assert table.read_rows() == [
             {"header2": "value2", "header3": "value3"},
         ]
 
@@ -730,7 +730,7 @@ def test_table_limit_offset_fields():
     with Table(source, format="csv", query=query) as table:
         assert table.header == ["header2"]
         assert table.header.field_positions == [2]
-        assert table.read_rows(dict=True) == [
+        assert table.read_rows() == [
             {"header2": "value2"},
         ]
 
@@ -998,7 +998,7 @@ def test_table_schema():
                 {"name": "name", "type": "string"},
             ]
         }
-        assert table.read_rows(dict=True) == [
+        assert table.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
         ]
@@ -1014,7 +1014,7 @@ def test_table_schema_provided():
     with Table("data/table.csv", schema=schema) as table:
         assert table.header == ["id", "name"]
         assert table.schema == schema
-        assert table.read_rows(dict=True) == [
+        assert table.read_rows() == [
             {"new1": "1", "new2": "english"},
             {"new1": "2", "new2": "中国人"},
         ]
@@ -1028,7 +1028,7 @@ def test_table_sync_schema():
         assert table.schema == schema
         assert table.header == ["name", "id"]
         assert table.sample == [["english", "1"], ["中国人", "2"]]
-        assert table.read_rows(dict=True) == [
+        assert table.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
         ]
@@ -1044,7 +1044,7 @@ def test_table_schema_patch_schema():
                 {"name": "name", "type": "string"},
             ]
         }
-        assert table.read_rows(dict=True) == [
+        assert table.read_rows() == [
             {"new": "1", "name": "english"},
             {"new": "2", "name": "中国人"},
         ]
@@ -1061,7 +1061,7 @@ def test_table_schema_patch_schema_missing_values():
             ],
             "missingValues": ["1", "2"],
         }
-        assert table.read_rows(dict=True) == [
+        assert table.read_rows() == [
             {"id": None, "name": "english"},
             {"id": None, "name": "中国人"},
         ]
@@ -1079,7 +1079,7 @@ def test_table_infer_type():
                 {"name": "name", "type": "string"},
             ]
         }
-        assert table.read_rows(dict=True) == [
+        assert table.read_rows() == [
             {"id": "1", "name": "english"},
             {"id": "2", "name": "中国人"},
         ]
@@ -1094,7 +1094,7 @@ def test_table_infer_names():
                 {"name": "new2", "type": "string"},
             ]
         }
-        assert table.read_rows(dict=True) == [
+        assert table.read_rows() == [
             {"new1": 1, "new2": "english"},
             {"new1": 2, "new2": "中国人"},
         ]

@@ -13,7 +13,7 @@ BASE_URL = "https://raw.githubusercontent.com/frictionlessdata/datapackage-py/ma
 def test_multipart_loader():
     with Table(["data/chunk1.csv", "data/chunk2.csv"]) as table:
         assert table.header == ["id", "name"]
-        assert table.read_rows(dict=True) == [
+        assert table.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
         ]
@@ -24,7 +24,7 @@ def test_multipart_loader_with_compressed_parts():
         assert table.compression == "no"
         assert table.compression_path == ""
         assert table.header == ["id", "name"]
-        assert table.read_rows(dict=True) == [
+        assert table.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
         ]
@@ -42,7 +42,7 @@ def test_multipart_loader_resource():
     assert resource.inline is False
     assert resource.multipart is True
     assert resource.tabular is True
-    assert resource.read_rows(dict=True) == [
+    assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
@@ -61,7 +61,7 @@ def test_multipart_loader_resource_remote():
     assert resource.inline is False
     assert resource.multipart is True
     assert resource.tabular is True
-    assert resource.read_rows(dict=True) == [
+    assert resource.read_rows() == [
         {"id": 2, "name": "中国人"},
         {"id": 3, "name": "german"},
     ]
@@ -80,7 +80,7 @@ def test_multipart_loader_resource_remote_both_path_and_basepath():
     assert resource.inline is False
     assert resource.multipart is True
     assert resource.tabular is True
-    assert resource.read_rows(dict=True) == [
+    assert resource.read_rows() == [
         {"id": 2, "name": "中国人"},
         {"id": 3, "name": "german"},
     ]
@@ -89,7 +89,7 @@ def test_multipart_loader_resource_remote_both_path_and_basepath():
 def test_multipart_loader_resource_error_bad_path():
     resource = Resource({"name": "name", "path": ["chunk1.csv", "chunk2.csv"]})
     with pytest.raises(FrictionlessException) as excinfo:
-        resource.read_rows(dict=True)
+        resource.read_rows()
     error = excinfo.value.error
     assert error.code == "scheme-error"
     assert error.note == "[Errno 2] No such file or directory: 'chunk1.csv'"
@@ -161,7 +161,7 @@ def test_multipart_loader_resource_write_file(tmpdir):
     # Read
     resource = Resource(path=[target1, target2], trusted=True)
     resource.read_header() == ["id", "name"]
-    assert resource.read_rows(dict=True) == [
+    assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]

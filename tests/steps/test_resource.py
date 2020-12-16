@@ -15,7 +15,7 @@ def test_step_resource_add():
         ],
     )
     assert target.resource_names == ["data", "data2"]
-    assert target.get_resource("data2").read_rows(dict=True) == [
+    assert target.get_resource("data2").read_rows() == [
         {"parent": "A3001", "comment": "comment1"},
         {"parent": "A3001", "comment": "comment2"},
         {"parent": "A5032", "comment": "comment3"},
@@ -64,11 +64,11 @@ def test_step_resource_transform():
         ],
     )
     assert target.resource_names == ["data", "data2"]
-    assert target.get_resource("data").read_rows(dict=True) == [
+    assert target.get_resource("data").read_rows() == [
         {"id": "A3001", "name": "Taxes", "description": "Zeroed", "amount": 0},
         {"id": "A5032", "name": "Parking Fees", "description": "Zeroed", "amount": 0},
     ]
-    assert target.get_resource("data2").read_rows(dict=True) == [
+    assert target.get_resource("data2").read_rows() == [
         {"parent": "A3001", "comment": "It works!"},
         {"parent": "A3001", "comment": "It works!"},
         {"parent": "A5032", "comment": "It works!"},

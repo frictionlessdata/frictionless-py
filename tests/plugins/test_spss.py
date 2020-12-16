@@ -18,7 +18,7 @@ def test_spss_parser(tmpdir):
     # Read
     with Table(target) as table:
         assert table.header == ["id", "name"]
-        assert table.read_rows(dict=True) == [
+        assert table.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
         ]
@@ -31,7 +31,7 @@ def test_spss_parser_write_timezone(tmpdir):
     with Table("data/timezone.csv") as table:
         table.write(target)
     with Table(target) as table:
-        assert table.read_rows(dict=True) == [
+        assert table.read_rows() == [
             {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
             {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
             {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
@@ -73,7 +73,7 @@ def test_spss_storage_types(tmpdir):
     }
 
     # Assert data
-    assert target.get_resource("types").read_rows(dict=True) == [
+    assert target.get_resource("types").read_rows() == [
         {
             "any": "中国人",
             "array": '["Mike", "John"]',
@@ -130,13 +130,13 @@ def test_spss_storage_integrity(tmpdir):
     }
 
     # Assert data (main)
-    assert target.get_resource("integrity_main").read_rows(dict=True) == [
+    assert target.get_resource("integrity_main").read_rows() == [
         {"id": 1, "parent": None, "description": "english"},
         {"id": 2, "parent": 1, "description": "中国人"},
     ]
 
     # Assert data (link)
-    assert target.get_resource("integrity_link").read_rows(dict=True) == [
+    assert target.get_resource("integrity_link").read_rows() == [
         {"main_id": 1, "some_id": 1, "description": "note1"},
         {"main_id": 2, "some_id": 2, "description": "note2"},
     ]
@@ -167,7 +167,7 @@ def test_spss_storage_constraints(tmpdir):
     }
 
     # Assert data
-    assert target.get_resource("constraints").read_rows(dict=True) == [
+    assert target.get_resource("constraints").read_rows() == [
         {
             "required": "passing",
             "minLength": "passing",

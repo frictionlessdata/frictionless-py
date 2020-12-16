@@ -128,7 +128,8 @@ def program_extract(
 
     # Extract data
     try:
-        data = extract(source, dict=True, json=json or yaml, **options)
+        process = (lambda row: row.to_dict(json=True)) if json or yaml else None
+        data = extract(source, process=process, **options)
     except Exception as exception:
         typer.secho(str(exception), err=True, fg=typer.colors.RED, bold=True)
         raise typer.Exit(1)
@@ -155,7 +156,7 @@ def program_extract(
         for number, rows in enumerate(normdata.values(), start=1):
             for row in rows:
                 if row.row_number == 1:
-                    typer.secho(helpers.stringify_csv_string(row.schema.field_names))
+                    typer.secho(helpers.stringify_csv_string(row.field_names))
                 typer.secho(row.to_str())
             if number < len(normdata):
                 typer.secho("")

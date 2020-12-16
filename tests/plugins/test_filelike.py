@@ -14,7 +14,7 @@ def test_filelike_loader():
 def test_filelike_loader_resource():
     with open("data/table.csv", mode="rb") as file:
         resource = Resource(path=file, format="csv")
-        assert resource.read_rows(dict=True) == [
+        assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
         ]

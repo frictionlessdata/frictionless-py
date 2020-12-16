@@ -549,33 +549,22 @@ class Resource(Metadata):
             for cells in table.data_stream:
                 yield cells
 
-    def read_rows(self, *, dict=False, list=False, json=False):
+    def read_rows(self):
         """
         Returns
             Row[]: resource rows
         """
-        # TODO: it's a duplication while we haven't merged Resource/Table
-        result = []
-        for item in self.read_row_stream():
-            if dict:
-                item = item.to_dict(json=json)
-            elif list:
-                item = item.to_list(json=json)
-            result.append(item)
-        return result
+        rows = list(self.read_row_stream())
+        return rows
 
-    def read_row_stream(self, *, dict=False, list=False, json=False):
+    def read_row_stream(self):
         """
         Returns
             gen<Row[]>: row stream
         """
         with self.to_table() as table:
-            for item in table.row_stream:
-                if dict:
-                    item = item.to_dict(json=json)
-                elif list:
-                    item = item.to_list(json=json)
-                yield item
+            for row in table.row_stream:
+                yield row
 
     def read_header(self):
         """
@@ -634,7 +623,7 @@ class Resource(Metadata):
                 continue
             with source_res.to_table(lookup=None) as table:
                 for row in table.row_stream:
-                    cells = tuple(row[field_name] for field_name in source_key)
+                    cells = tuple(row.get(field_name) for field_name in source_key)
                     if set(cells) == {None}:
                         continue
                     lookup[source_name][source_key].add(cells)

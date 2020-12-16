@@ -1,6 +1,6 @@
 import json
 from decimal import Decimal
-from frictionless import Resource
+from frictionless import Resource, extract
 
 
 # General
@@ -9,7 +9,7 @@ from frictionless import Resource
 def test_basic():
     resource = Resource(data=[["field1", "field2", "field3"], ["1", "2", "3"]])
     row = resource.read_rows()[0]
-    assert row == ["1", "2", "3"]
+    assert row == {"field1": 1, "field2": 2, "field3": 3}
     assert row.field_positions == [1, 2, 3]
     assert row.row_position == 2
     assert row.row_number == 1
@@ -40,8 +40,8 @@ def test_to_str_with_doublequotes():
 
 def test_to_dict_with_json_null_values_issue_519():
     source = "text://value\n2020-01-01\n\n2020-03-03"
-    resource = Resource(path=source, format="csv")
-    resource.read_rows(dict=True, json=True) == [
+    process = lambda row: row.to_dict(json=True)
+    extract(source, format="csv", process=process) == [
         {"value": "2020-01-01"},
         {"value": None},
         {"value": "2020-03-03"},
@@ -50,8 +50,8 @@ def test_to_dict_with_json_null_values_issue_519():
 
 def test_to_list_with_json_null_values_issue_519():
     source = "text://value\n2020-01-01\n\n2020-03-03"
-    resource = Resource(path=source, format="csv")
-    resource.read_rows(list=True, json=True) == [
+    process = lambda row: row.to_list(json=True)
+    extract(source, format="csv", process=process) == [
         ["2020-01-01"],
         [None],
         ["2020-03-03"],

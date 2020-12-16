@@ -134,7 +134,7 @@ def test_describe_resource_schema_increase_limit_issue_212():
 def test_describe_resource_values_with_leading_zeros_issue_492():
     resource = describe("data/leading-zeros.csv")
     assert resource.schema == {"fields": [{"name": "value", "type": "integer"}]}
-    assert resource.read_rows(dict=True) == [{"value": 1}, {"value": 2}, {"value": 3}]
+    assert resource.read_rows() == [{"value": 1}, {"value": 2}, {"value": 3}]
 
 
 def test_describe_schema_proper_quote_issue_493():

@@ -25,7 +25,7 @@ def test_dataflows_pipeline(tmpdir):
 
     # Read
     package = Package(os.path.join(tmpdir, "datapackage.json"))
-    assert package.get_resource("table").read_rows(dict=True) == [
+    assert package.get_resource("table").read_rows() == [
         {"id": "1", "name": "english"},
         {"id": "2", "name": "中国人"},
     ]

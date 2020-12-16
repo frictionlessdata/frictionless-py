@@ -20,7 +20,7 @@ def test_resource():
     assert resource.source == "data/table.csv"
     assert resource.basepath == "data"
     assert resource.profile == "data-resource"
-    assert resource.read_rows(dict=True) == [
+    assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
@@ -32,7 +32,7 @@ def test_resource_from_dict():
         "name": "name",
         "path": "data/table.csv",
     }
-    assert resource.read_rows(dict=True) == [
+    assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
@@ -42,7 +42,7 @@ def test_resource_from_path():
     resource = Resource("data/resource.json")
     assert resource == {"name": "name", "path": "table.csv"}
     assert resource.basepath == "data"
-    assert resource.read_rows(dict=True) == [
+    assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
@@ -62,7 +62,7 @@ def test_resource_from_path_remote():
     resource = Resource(BASE_URL % "data/resource.json")
     assert resource.source == BASE_URL % "data/table.csv"
     assert resource.path == "table.csv"
-    assert resource.read_rows(dict=True) == [
+    assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
@@ -73,7 +73,7 @@ def test_resource_from_path_remote():
 def test_resource_from_zip():
     resource = Resource("data/resource.zip")
     assert resource.path == "table.csv"
-    assert resource.read_rows(dict=True) == [
+    assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
@@ -153,7 +153,7 @@ def test_resource_source_path():
         == b"id,name\n1,english\n2,\xe4\xb8\xad\xe5\x9b\xbd\xe4\xba\xba\n"
     )
     assert resource.read_data() == [["1", "english"], ["2", "中国人"]]
-    assert resource.read_rows(dict=True) == [
+    assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
@@ -173,7 +173,7 @@ def test_resource_source_path_and_basepath():
     assert resource.path == "table.csv"
     assert resource.source == "data/table.csv"
     assert resource.basepath == "data"
-    assert resource.read_rows(dict=True) == [
+    assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
@@ -184,7 +184,7 @@ def test_resource_source_path_and_basepath():
 def test_resource_source_path_and_basepath_remote():
     resource = Resource(path="table.csv", basepath=BASE_URL % "data")
     assert resource.source == BASE_URL % "data/table.csv"
-    assert resource.read_rows(dict=True) == [
+    assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
@@ -194,7 +194,7 @@ def test_resource_source_path_and_basepath_remote():
 def test_resource_source_path_remote_and_basepath_remote():
     resource = Resource(path=BASE_URL % "data/table.csv", basepath=BASE_URL % "data")
     assert resource.source == BASE_URL % "data/table.csv"
-    assert resource.read_rows(dict=True) == [
+    assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
@@ -239,7 +239,7 @@ def test_resource_source_data():
     assert resource.multipart is False
     assert resource.read_bytes() == b""
     assert resource.read_data() == data[1:]
-    assert resource.read_rows(dict=True) == [
+    assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
@@ -259,7 +259,7 @@ def test_resource_source_path_and_data():
     assert resource.path == "path"
     assert resource.data == data
     assert resource.source == data
-    assert resource.read_rows(dict=True) == [
+    assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
@@ -293,7 +293,7 @@ def test_resource_dialect():
     }
     resource = Resource(descriptor, basepath="data")
     assert resource.dialect == dialect
-    assert resource.read_rows(dict=True) == [
+    assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": " |##"},
     ]
@@ -310,7 +310,7 @@ def test_resource_dialect_header_false():
     }
     resource = Resource(descriptor, basepath="data")
     assert resource.dialect == dialect
-    assert resource.read_rows(dict=True) == [
+    assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
         {"id": 3, "name": "german"},
@@ -361,7 +361,7 @@ def test_resource_respect_query_set_after_creation_issue_503():
     resource = Resource(path="data/table.csv")
     resource.query = Query(limit_rows=1)
     assert resource.read_header() == ["id", "name"]
-    assert resource.read_rows(dict=True) == [{"id": 1, "name": "english"}]
+    assert resource.read_rows() == [{"id": 1, "name": "english"}]
 
 
 # Schema
@@ -378,7 +378,7 @@ def test_resource_schema():
     assert resource.schema == {
         "fields": [{"name": "id", "type": "integer"}, {"name": "name", "type": "string"}]
     }
-    assert resource.read_rows(dict=True) == [
+    assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
@@ -395,7 +395,7 @@ def test_resource_schema_source_data():
     assert resource.schema == {
         "fields": [{"name": "id", "type": "integer"}, {"name": "name", "type": "string"}]
     }
-    assert resource.read_rows(dict=True) == [
+    assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
@@ -414,7 +414,7 @@ def test_resource_schema_source_remote():
     assert resource.schema == {
         "fields": [{"name": "id", "type": "integer"}, {"name": "name", "type": "string"}]
     }
-    assert resource.read_rows(dict=True) == [
+    assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
@@ -484,7 +484,7 @@ def test_resource_sync_schema():
     assert resource.schema == schema
     assert resource.read_header() == ["name", "id"]
     assert resource.read_sample() == [["english", "1"], ["中国人", "2"]]
-    assert resource.read_rows(dict=True) == [
+    assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
@@ -501,7 +501,7 @@ def test_table_schema_patch_schema():
         ]
     }
     assert resource.read_header() == ["id", "name"]
-    assert resource.read_rows(dict=True) == [
+    assert resource.read_rows() == [
         {"new": "1", "name": "english"},
         {"new": "2", "name": "中国人"},
     ]
@@ -592,7 +592,7 @@ def test_resource_infer_type():
         ]
     }
     assert resource.read_header() == ["id", "name"]
-    assert resource.read_rows(dict=True) == [
+    assert resource.read_rows() == [
         {"id": "1", "name": "english"},
         {"id": "2", "name": "中国人"},
     ]
@@ -608,7 +608,7 @@ def test_resource_infer_names():
         ]
     }
     assert resource.read_header() == ["id", "name"]
-    assert resource.read_rows(dict=True) == [
+    assert resource.read_rows() == [
         {"new1": 1, "new2": "english"},
         {"new1": 2, "new2": "中国人"},
     ]
@@ -624,7 +624,7 @@ def test_resource_infer_float_numbers():
         ]
     }
     assert resource.read_header() == ["number"]
-    assert resource.read_rows(dict=True) == [
+    assert resource.read_rows() == [
         {"number": 1.1},
         {"number": 2.2},
         {"number": 3.3},
@@ -704,7 +704,7 @@ def test_resource_write(tmpdir):
     source.write(path2)
     target = Resource(path=path2, trusted=True)
     assert target.read_header() == ["id", "name"]
-    assert target.read_rows(dict=True) == [
+    assert target.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
@@ -754,7 +754,7 @@ def test_resource_to_zip(tmpdir):
     # Read
     resource = Resource(target)
     assert resource == {"name": "name", "path": "table.csv"}
-    assert resource.read_rows(dict=True) == [
+    assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
@@ -771,7 +771,7 @@ def test_resource_to_zip_withdir_path(tmpdir):
     # Read
     resource = Resource(target)
     assert resource == {"path": "data/table.csv"}
-    assert resource.read_rows(dict=True) == [
+    assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
@@ -788,7 +788,7 @@ def test_resource_to_zip_absolute_path(tmpdir):
     # Read
     resource = Resource(target)
     assert resource == {"path": "table.csv"}
-    assert resource.read_rows(dict=True) == [
+    assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
@@ -806,7 +806,7 @@ def test_resource_to_zip_resolve_inline(tmpdir):
     resource = Resource(target)
     assert resource.name == "table"
     assert resource.path == "table.csv"
-    assert resource.read_rows(dict=True) == [
+    assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
@@ -824,7 +824,7 @@ def test_resource_to_zip_resolve_inline_sql(tmpdir, database_url):
     resource = Resource(target)
     assert resource.name == "table"
     assert resource.path == "table.csv"
-    assert resource.read_rows(dict=True) == [
+    assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
@@ -843,7 +843,7 @@ def test_resource_to_zip_resolve_remote(tmpdir):
     resource = Resource(target)
     assert resource.name == "table"
     assert resource.path == "table.csv"
-    assert resource.read_rows(dict=True) == [
+    assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
@@ -862,7 +862,7 @@ def test_resource_to_zip_source_remote(tmpdir):
     # Read
     resource = Resource(target)
     assert resource == {"name": "name", "path": path}
-    assert resource.read_rows(dict=True) == [
+    assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
@@ -880,7 +880,7 @@ def test_resource_to_zip_source_inline(tmpdir):
     # Read
     resource = Resource(target)
     assert resource == {"name": "name", "data": data}
-    assert resource.read_rows(dict=True) == [
+    assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
@@ -890,7 +890,7 @@ def test_resource_to_table():
     resource = Resource(path="data/table.csv")
     with resource.to_table() as table:
         assert table.header == ["id", "name"]
-        assert table.read_rows(dict=True) == [
+        assert table.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
         ]
@@ -901,7 +901,7 @@ def test_resource_to_table_source_data():
     resource = Resource(data=data)
     with resource.to_table() as table:
         assert table.header == ["id", "name"]
-        assert table.read_rows(dict=True) == [
+        assert table.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
         ]
@@ -912,7 +912,7 @@ def test_resource_to_table_source_remote():
     resource = Resource(path=BASE_URL % "data/table.csv")
     with resource.to_table() as table:
         assert table.header == ["id", "name"]
-        assert table.read_rows(dict=True) == [
+        assert table.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
         ]
@@ -931,7 +931,7 @@ def test_resource_to_table_respect_query_issue_503():
     resource = Resource(path="data/table.csv", query=Query(limit_rows=1))
     with resource.to_table() as table:
         assert table.header == ["id", "name"]
-        assert table.read_rows(dict=True) == [{"id": 1, "name": "english"}]
+        assert table.read_rows() == [{"id": 1, "name": "english"}]
 
 
 # Metadata
@@ -1057,7 +1057,7 @@ def test_resource_relative_parent_path_with_trusted_option_issue_171():
     assert error.note.count("data/table.csv")
     # trusted=true
     resource = Resource(path="data/../data/table.csv", trusted=True)
-    assert resource.read_rows(dict=True) == [
+    assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
