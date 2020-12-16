@@ -159,7 +159,7 @@ class Row(list):
             cells.append(cell)
         return helpers.stringify_csv_string(cells)
 
-    def to_dict(self, *, json=False):
+    def to_dict(self, *, json=False, types=None):
         """
         Parameters:
             json (bool): make data types compatible with JSON format
@@ -167,41 +167,52 @@ class Row(list):
         Returns:
             dict: a row as a dictionary
         """
-        # TODO: change in-place
-        if json:
-            result = {}
-            for field in self.__field_info["fields"]:
-                cell = self[field.name]
-                if field.type not in JsonParser.native_types:
-                    cell, notes = field.write_cell(cell, ignore_missing=True)
-                if isinstance(cell, Decimal):
-                    cell = float(cell)
-                result[field.name] = cell
-            return result
-        self.__process()
-        return self.__read_cells.copy()
 
-    def to_list(self, *, json=False):
+        # Prepare
+        self.__process()
+        result = {name: self.__read_cells[name] for name in self.__field_info["names"]}
+        if types is None and json:
+            types = JsonParser.native_types
+
+        # Covert
+        if types is not None:
+            for index, field in enumerate(self.__field_info["objects"]):
+                # Here we can optimize performance if we use a types mapping
+                if field.type not in types:
+                    cell = result[field.name]
+                    cell, notes = field.write_cell(cell, ignore_missing=True)
+                    result[field.name] = cell
+
+        # Return
+        return result
+
+    def to_list(self, *, json=False, types=None):
         """
         Parameters:
             json (bool): make data types compatible with JSON format
+            types (str[]): list of supported types
 
         Returns:
             dict: a row as a list
         """
-        # TODO: change in-place
-        if json:
-            result = []
-            for field in self.__field_info["fields"]:
-                cell = self[field.name]
-                if field.type not in JsonParser.native_types:
-                    cell, notes = field.write_cell(cell, ignore_missing=True)
-                if isinstance(cell, Decimal):
-                    cell = float(cell)
-                result.append(cell)
-            return result
+
+        # Prepare
         self.__process()
-        return list(self.__read_cells.values())
+        result = [self.__read_cells[name] for name in self.__field_info["names"]]
+        if types is None and json:
+            types = JsonParser.native_types
+
+        # Convert
+        if types is not None:
+            for index, field in enumerate(self.__field_info["objects"]):
+                # Here we can optimize performance if we use a types mapping
+                if field.type not in types:
+                    cell = result[index]
+                    cell, notes = field.write_cell(cell, ignore_missing=True)
+                    result[index] = cell
+
+        # Return
+        return result
 
     # Process
 

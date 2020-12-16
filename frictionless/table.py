@@ -687,12 +687,19 @@ class Table:
             Row[][]: table rows
         """
         self.__read_row_stream_raise_closed()
-        return list(self.__row_stream_create(dict=dict, list=list, json=json))
+        result = []
+        for item in self.__row_stream:
+            if dict:
+                item = item.to_dict(json=json)
+            elif list:
+                item = item.to_list(json=json)
+            result.append(item)
+        return result
 
     def __read_row_stream(self):
         return self.__read_row_stream_create()
 
-    def __read_row_stream_create(self, *, dict=False, list=False, json=False):
+    def __read_row_stream_create(self):
         schema = self.schema
 
         # Handle header errors
@@ -794,13 +801,8 @@ class Table:
                         raise FrictionlessException(error)
                     warnings.warn(error.message, UserWarning)
 
-            # Stream item
-            item = row
-            if dict:
-                item = row.to_dict(json=json)
-            elif list:
-                item = row.to_list(json=json)
-            yield item
+            # Stream row
+            yield row
 
     def __read_row_stream_raise_closed(self):
         if not self.__row_stream:

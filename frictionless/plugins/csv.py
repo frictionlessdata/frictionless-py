@@ -271,12 +271,9 @@ class CsvParser(Parser):
         ) as file:
             writer = csv.writer(file, **options)
             for row in read_row_stream():
-                schema = row.schema
                 if row.row_number == 1:
-                    writer.writerow(schema.field_names)
-                cells = row.to_list()
-                cells, notes = schema.write_data(cells, native_types=self.native_types)
-                writer.writerow(cells)
+                    writer.writerow(row.field_names)
+                writer.writerow(row.to_list(types=self.native_types))
         loader = system.create_loader(self.resource)
         result = loader.write_byte_stream(file.name)
         return result

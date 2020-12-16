@@ -189,6 +189,7 @@ def test_table_format_tsv():
 # Write
 
 
+@pytest.mark.skip
 def test_csv_parser_write(tmpdir):
     source = "data/table.csv"
     target = str(tmpdir.join("table.csv"))

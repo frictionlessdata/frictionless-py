@@ -139,7 +139,7 @@ class RowError(Error):
         """
         return cls(
             note=note,
-            cells=list(map(str, row.values())),
+            cells=list(map(str, row)),
             row_number=row.row_number,
             row_position=row.row_position,
         )
