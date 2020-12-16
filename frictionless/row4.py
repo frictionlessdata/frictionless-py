@@ -12,9 +12,11 @@ class Row4(list):
 
     API      | Usage
     -------- | --------
-    Public   | `from frictionless import Table`
+    Public   | `from frictionless import Row`
 
-    This object is returned by `extract`, `table.read_rows`, and other functions.
+    > Constructor of this object is not Public API
+
+    This object is returned by `extract`, `resource.read_rows`, and other functions.
 
     ```python
     rows = extract("data/table.csv")
@@ -24,27 +26,21 @@ class Row4(list):
 
     Parameters:
         cells (any[]): array of cells
-        schema (Schema): table schema
-        field_positions (int[]): table field positions
+        field_info (dict): special field info structure
         row_position (int): row position from 1
         row_number (int): row number from 1
-
     """
 
     def __init__(
         self,
         cells,
         *,
-        schema,
-        field_map,
-        field_positions,
+        field_info,
         row_position,
         row_number,
     ):
         self.extend(cells)
-        self.__schema = schema
-        self.__field_map = field_map
-        self.__field_positions = field_positions
+        self.__field_info = field_info
         self.__row_position = row_position
         self.__row_number = row_number
         self.__processed = False
@@ -63,22 +59,30 @@ class Row4(list):
     def __setitem__(self, key, value):
         if isinstance(key, str):
             # TODO: improve key error
-            field, field_position, field_number = self.__field_map[key]
+            field, field_number, field_position = self.__field_info["mapping"][key]
             key = field_number
         return super().__setitem__(key, value)
 
     def __contains__(self, key):
         if isinstance(key, str):
-            return key in self.__field_map
+            return key in self.__field_info["mapping"]
         return super().__contains__(key)
 
     @cached_property
-    def schema(self):
+    def fields(self):
+        """
+        Returns:
+            Field[]: table schema fields
+        """
+        return self.__field_info["objects"]
+
+    @cached_property
+    def field_names(self):
         """
         Returns:
             Schema: table schema
         """
-        return self.__schema
+        return self.__field_info["names"]
 
     @cached_property
     def field_positions(self):
@@ -86,7 +90,7 @@ class Row4(list):
         Returns:
             int[]: table field positions
         """
-        return self.__field_positions
+        return self.__field_info["positions"]
 
     @cached_property
     def row_position(self):
@@ -150,10 +154,9 @@ class Row4(list):
             str: a row as a CSV string
         """
         cells = []
-        for field in self.__schema.fields:
-            if field.name in self:
-                cell, notes = field.write_cell(self[field.name])
-                cells.append(cell)
+        for field in self.__field_info["fields"]:
+            cell, notes = field.write_cell(self[field.name])
+            cells.append(cell)
         return helpers.stringify_csv_string(cells)
 
     def to_dict(self, *, json=False):
@@ -166,14 +169,13 @@ class Row4(list):
         """
         if json:
             result = {}
-            for field in self.__schema.fields:
-                if field.name in self:
-                    cell = self[field.name]
-                    if field.type not in JsonParser.native_types:
-                        cell, notes = field.write_cell(cell, ignore_missing=True)
-                    if isinstance(cell, Decimal):
-                        cell = float(cell)
-                    result[field.name] = cell
+            for field in self.__field_info["fields"]:
+                cell = self[field.name]
+                if field.type not in JsonParser.native_types:
+                    cell, notes = field.write_cell(cell, ignore_missing=True)
+                if isinstance(cell, Decimal):
+                    cell = float(cell)
+                result[field.name] = cell
             return result
         self.__process()
         return self.__read_cells.copy()
@@ -188,14 +190,13 @@ class Row4(list):
         """
         if json:
             result = []
-            for field in self.__schema.fields:
-                if field.name in self:
-                    cell = self[field.name]
-                    if field.type not in JsonParser.native_types:
-                        cell, notes = field.write_cell(cell, ignore_missing=True)
-                    if isinstance(cell, Decimal):
-                        cell = float(cell)
-                    result.append(cell)
+            for field in self.__field_info["fields"]:
+                cell = self[field.name]
+                if field.type not in JsonParser.native_types:
+                    cell, notes = field.write_cell(cell, ignore_missing=True)
+                if isinstance(cell, Decimal):
+                    cell = float(cell)
+                result.append(cell)
             return result
         self.__process()
         return list(self.__read_cells.values())
@@ -203,8 +204,6 @@ class Row4(list):
     # Process
 
     def __process(self, key=None):
-        fields = self.__schema.fields
-        field_positions = self.__field_positions
 
         # Exit if processed
         if self.__processed:
@@ -212,22 +211,18 @@ class Row4(list):
                 raise KeyError(key)
             return
 
-        # Iterate cells
-        # TODO: improve
-        field_number = 0
-        iterator = zip(field_positions, fields, self)
+        # Prepare context
+        fields = self.__field_info["objects"]
+        field_positions = self.__field_info["positions"]
+        iterator = zip(self.__field_info["mapping"].values(), self)
         if key:
-            field, field_position, field_number = self.__field_map[key]
-            iterator = zip([field_position], [field], self[field_number-1])
-            field_number = field_number -1
-        for field_position, field, source in iterator:
-            field_number += 1
+            field, field_num, field_pos = self.__field_info["mapping"][key]
+            iterator = zip([(field, field_num, field_pos)], [self[field_num - 1]])
+
+        # Iterate cells
+        for (field, field_number, field_position), source in iterator:
 
             # Read cell
-            # TODO: recover
-            #  source = None
-            #  if len(self) >= field_number:
-            #  source = super().__getitem__(field_number - 1)
             target, notes = field.read_cell(source)
             type_note = notes.pop("type", None) if notes else None
             if target is None and not type_note:
@@ -272,7 +267,7 @@ class Row4(list):
 
         # Extra cells
         if len(fields) < len(self):
-            iterator = cells[len(fields) :]
+            iterator = self[len(fields) :]
             start = max(field_positions[: len(fields)]) + 1
             for field_position, cell in enumerate(iterator, start=start):
                 self.__errors.append(

@@ -2,7 +2,7 @@ import typing
 import warnings
 from pathlib import Path
 from copy import deepcopy
-from itertools import chain
+from itertools import chain, zip_longest
 from .exception import FrictionlessException
 from .resource import Resource
 from .system import system
@@ -808,12 +808,19 @@ class Table:
             elif self.__resource.onerror == "raise":
                 raise FrictionlessException(error)
 
-        # Create field map
-        field_map = {}
+        # Create field info
+        # This structure is optimized and detached version of schema.fields
+        # We create all data structures in-advance to share them between rows
         field_number = 0
-        for field_position, field in zip(self.__field_positions, schema.fields):
+        field_info = {"names": [], "objects": [], "positions": [], "mapping": {}}
+        for field, field_position in zip_longest(schema.fields, self.__field_positions):
+            if field is None:
+                break
             field_number += 1
-            field_map[field.name] = (field, field_position, field_number)
+            field_info["names"].append(field.name)
+            field_info["objects"].append(field.to_copy())
+            field_info["positions"].append(field_position)
+            field_info["mapping"][field.name] = (field, field_number, field_position)
 
         # Create state
         memory_unique = {}
@@ -836,9 +843,7 @@ class Table:
             # Create row
             row = Row4(
                 cells,
-                schema=self.__resource.schema,
-                field_map=field_map,
-                field_positions=self.__field_positions,
+                field_info=field_info,
                 row_position=self.__row_position,
                 row_number=self.__resource.stats["rows"],
             )
