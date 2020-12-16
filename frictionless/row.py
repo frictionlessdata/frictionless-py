@@ -1,7 +1,6 @@
 # TODO: review this dependency
 from .plugins.json import JsonParser
 from itertools import zip_longest
-from decimal import Decimal
 from .helpers import cached_property
 from . import helpers
 from . import errors
@@ -154,7 +153,7 @@ class Row(list):
             str: a row as a CSV string
         """
         cells = []
-        for field in self.__field_info["fields"]:
+        for field in self.__field_info["objects"]:
             cell, notes = field.write_cell(self[field.name])
             cells.append(cell)
         return helpers.stringify_csv_string(cells)
@@ -227,13 +226,18 @@ class Row(list):
         # Prepare context
         fields = self.__field_info["objects"]
         field_positions = self.__field_info["positions"]
-        iterator = zip(self.__field_info["mapping"].values(), self)
+        iterator = zip_longest(self.__field_info["mapping"].values(), self)
         if key:
             field, field_num, field_pos = self.__field_info["mapping"][key]
             iterator = zip([(field, field_num, field_pos)], [self[field_num - 1]])
 
         # Iterate cells
-        for (field, field_number, field_position), source in iterator:
+        for field_mapping, source in iterator:
+
+            # Prepare context
+            if field_mapping is None:
+                break
+            field, field_number, field_position = field_mapping
 
             # Read cell
             target, notes = field.read_cell(source)

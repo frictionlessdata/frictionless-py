@@ -22,7 +22,7 @@ def test_pipeline_resource():
             {"name": "population", "type": "integer"},
         ]
     }
-    assert target.read_rows() == [
+    assert target.read_rows(dict=True) == [
         {"id": 1, "name": "germany", "population": 100},
         {"id": 2, "name": "france", "population": 100},
         {"id": 3, "name": "spain", "population": 100},

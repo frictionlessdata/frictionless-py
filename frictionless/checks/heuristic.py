@@ -23,7 +23,7 @@ class DuplicateRowCheck(Check):
         self.__memory = {}
 
     def validate_row(self, row):
-        text = ",".join(map(str, row.values()))
+        text = ",".join(map(str, row))
         hash = hashlib.sha256(text.encode("utf-8")).hexdigest()
         match = self.__memory.get(hash)
         if match:
@@ -141,7 +141,8 @@ class TruncatedValueCheck(Check):
     possible_Errors = [errors.TruncatedValueError]  # type: ignore
 
     def validate_row(self, row):
-        for field_name, cell in row.items():
+        for field_name in row.field_names:
+            cell = row[field_name]
             truncated = False
             if cell is None:
                 continue

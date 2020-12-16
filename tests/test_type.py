@@ -18,7 +18,7 @@ def test_type_custom():
     system.register("custom", CustomPlugin())
     schema = Schema(fields=[Field(type="integer"), Field(type="custom")])
     resource = Resource(path="data/table.csv", schema=schema)
-    assert resource.read_rows() == [
+    assert resource.read_rows(dict=True) == [
         {"integer": 1, "custom": ["english"]},
         {"integer": 2, "custom": ["中国人"]},
     ]

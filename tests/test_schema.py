@@ -65,43 +65,43 @@ def test_schema_descriptor_url():
     assert actual == expect
 
 
-def test_schema_read_data():
+def test_schema_read_cells():
     schema = Schema(DESCRIPTOR_MAX)
     source = ["string", "10.0", "1", "string", "string"]
     target = ["string", Decimal(10.0), 1, "string", "string"]
-    cells, notes = schema.read_data(source)
+    cells, notes = schema.read_cells(source)
     assert cells == target
 
 
-def test_schema_read_data_null_values():
+def test_schema_read_cells_null_values():
     schema = Schema(DESCRIPTOR_MAX)
     source = ["string", "", "-", "string", "null"]
     target = ["string", None, None, "string", None]
-    cells, notes = schema.read_data(source)
+    cells, notes = schema.read_cells(source)
     assert cells == target
 
 
-def test_schema_read_data_too_short():
+def test_schema_read_cells_too_short():
     schema = Schema(DESCRIPTOR_MAX)
     source = ["string", "10.0", "1", "string"]
     target = ["string", Decimal(10.0), 1, "string", None]
-    cells, notes = schema.read_data(source)
+    cells, notes = schema.read_cells(source)
     assert cells == target
 
 
-def test_schema_read_data_too_long():
+def test_schema_read_cells_too_long():
     schema = Schema(DESCRIPTOR_MAX)
     source = ["string", "10.0", "1", "string", "string", "string"]
     target = ["string", Decimal(10.0), 1, "string", "string"]
-    cells, notes = schema.read_data(source)
+    cells, notes = schema.read_cells(source)
     assert cells == target
 
 
-def test_schema_read_data_wrong_type():
+def test_schema_read_cells_wrong_type():
     schema = Schema(DESCRIPTOR_MAX)
     source = ["string", "notdecimal", "10.6", "string", "string"]
     target = ["string", None, None, "string", "string"]
-    cells, notes = schema.read_data(source)
+    cells, notes = schema.read_cells(source)
     assert cells == target
     assert notes[1] == {"type": 'type is "number/default"'}
     assert notes[2] == {"type": 'type is "integer/default"'}

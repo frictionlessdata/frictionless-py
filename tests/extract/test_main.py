@@ -6,7 +6,7 @@ from frictionless import extract, helpers
 
 
 def test_extract():
-    assert extract("data/table.csv") == [
+    assert extract("data/table.csv", dict=True) == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]

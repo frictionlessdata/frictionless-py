@@ -8,8 +8,10 @@ def extract_package(
     basepath=None,
     onerror="ignore",
     trusted=False,
-    process=None,
     stream=False,
+    dict=False,
+    list=False,
+    json=False,
 ):
     """Extract package rows
 

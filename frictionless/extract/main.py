@@ -1,12 +1,22 @@
 import os
 import glob
+import builtins
 from pathlib import Path
 from importlib import import_module
 from ..package import Package
 from .. import helpers
 
 
-def extract(source, *, source_type=None, process=None, stream=False, **options):
+def extract(
+    source,
+    *,
+    source_type=None,
+    stream=False,
+    dict=False,
+    list=False,
+    json=False,
+    **options,
+):
     """Extract resource rows
 
     API      | Usage
@@ -36,7 +46,7 @@ def extract(source, *, source_type=None, process=None, stream=False, **options):
         if not callable(source):
             if hasattr(source, "read"):
                 source_type = "resource"
-            elif isinstance(source, list) or glob.has_magic(source):
+            elif isinstance(source, builtins.list) or glob.has_magic(source):
                 package = Package()
                 package.infer(source)
                 source = package
@@ -48,4 +58,4 @@ def extract(source, *, source_type=None, process=None, stream=False, **options):
 
     # Extract source
     extract = getattr(module, "extract_%s" % source_type)
-    return extract(source, process=process, stream=stream, **options)
+    return extract(source, stream=stream, dict=dict, list=list, json=json, **options)

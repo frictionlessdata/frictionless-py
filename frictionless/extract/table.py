@@ -1,3 +1,4 @@
+import builtins
 from ..table import Table
 from .. import config
 
@@ -32,8 +33,10 @@ def extract_table(
     onerror="ignore",
     lookup=None,
     # Extraction
-    process=None,
     stream=False,
+    dict=False,
+    list=False,
+    json=False,
 ):
     """Extract table rows
 
@@ -164,15 +167,18 @@ def extract_table(
     )
 
     # Extract table
-    data = read_row_stream(table)
-    data = (process(row) for row in data) if process else data
-    return data if stream else list(data)
+    data = read_row_stream(table, dict=dict, list=list, json=json)
+    return data if stream else builtins.list(data)
 
 
 # Internal
 
 
-def read_row_stream(table):
+def read_row_stream(table, *, dict=False, list=False, json=False):
     with table as table:
-        for row in table.row_stream:
-            yield row
+        for item in table.row_stream:
+            if dict:
+                item = item.to_dict(json=json)
+            elif list:
+                item = item.to_list(json=json)
+            yield item

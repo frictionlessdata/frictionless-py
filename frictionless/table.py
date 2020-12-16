@@ -687,14 +687,15 @@ class Table:
             Row[][]: table rows
         """
         self.__read_row_stream_raise_closed()
-        result = []
+        data = []
+        # TODO: move to __read_row_stream_create
         for item in self.__row_stream:
             if dict:
                 item = item.to_dict(json=json)
             elif list:
                 item = item.to_list(json=json)
-            result.append(item)
-        return result
+            data.append(item)
+        return data
 
     def __read_row_stream(self):
         return self.__read_row_stream_create()
