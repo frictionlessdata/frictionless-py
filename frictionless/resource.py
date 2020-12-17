@@ -783,7 +783,9 @@ class Resource(Metadata):
         options.setdefault("scheme", self.scheme)
         options.setdefault("format", self.format)
         options.setdefault("hashing", self.hashing)
-        options.setdefault("encoding", self.encoding)
+        # TODO: it's a quickfix; resolve fully on Resource/Table merge
+        if "encoding" in self:
+            options.setdefault("encoding", self.encoding)
         options.setdefault("compression", self.compression)
         options.setdefault("compression_path", self.compression_path)
         options.setdefault("control", self.control)
