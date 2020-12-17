@@ -1,6 +1,6 @@
 # Working with HTML
 
-> Status: **EXPERIMENTAL**
+> Status: **STABLE**
 
 Frictionless supports parsing HTML format
 

@@ -1,6 +1,6 @@
 # Working with Multipart Data
 
-> Status: **STABLE**
+> Status: **EXPERIMENTAL**
 
 You can read and write files split into chunks with Frictionless.
 

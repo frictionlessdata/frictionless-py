@@ -1,4 +1,5 @@
 import os
+import json
 import pytest
 from frictionless import Table, Resource, validate, helpers
 from frictionless import FrictionlessException
@@ -146,25 +147,23 @@ def test_multipart_loader_resource_infer():
     }
 
 
-# TODO: fix this test
-@pytest.mark.skip
+# We're better implement here a round-robin testing including
+# reading using Resource as we do for other tests
 def test_multipart_loader_resource_write_file(tmpdir):
-    source = "data/table.json"
     target = str(tmpdir.join("table{number}.json"))
     target1 = str(tmpdir.join("table1.json"))
     target2 = str(tmpdir.join("table2.json"))
 
     # Write
-    resource = Resource(path=source)
+    resource = Resource(data=[["id", "name"], [1, "english"], [2, "german"]])
     resource.write(target, scheme="multipart", control={"chunkSize": 80})
 
     # Read
-    resource = Resource(path=[target1, target2], trusted=True)
-    resource.read_header() == ["id", "name"]
-    assert resource.read_rows() == [
-        {"id": 1, "name": "english"},
-        {"id": 2, "name": "中国人"},
-    ]
+    text = ""
+    for path in [target1, target2]:
+        with open(path) as file:
+            text += file.read()
+    assert json.loads(text) == [["id", "name"], [1, "english"], [2, "german"]]
 
 
 # Validate

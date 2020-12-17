@@ -131,9 +131,6 @@ class MultipartByteStream:
     def __exit__(self, *args, **kwargs):
         pass
 
-    def __iter__(self):
-        return self.__line_stream
-
     @property
     def remote(self):
         return self.__remote
