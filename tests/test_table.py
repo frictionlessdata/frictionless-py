@@ -168,7 +168,7 @@ def test_table_source_error_data():
         table.open()
     error = excinfo.value.error
     assert error.code == "source-error"
-    assert error.note == "all data items must be lists"
+    assert error.note == "unsupported inline data"
 
 
 # Scheme
