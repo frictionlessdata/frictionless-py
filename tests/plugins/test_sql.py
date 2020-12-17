@@ -491,8 +491,6 @@ def test_postgresql_storage_integrity(postgresql_url):
     storage.delete_package(target.resource_names)
 
 
-# TODO: recover enum support
-@pytest.mark.skip
 def test_postgresql_storage_constraints(postgresql_url):
     engine = sa.create_engine(postgresql_url)
     prefix = "prefix_"
