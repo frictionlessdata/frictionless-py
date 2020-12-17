@@ -110,7 +110,6 @@ def test_sql_parser_write_timezone_mysql(mysql_url):
 # Storage
 
 
-@pytest.mark.skip
 def test_sql_storage_types(sqlite_url):
     engine = sa.create_engine(sqlite_url)
     prefix = "prefix_"
@@ -377,7 +376,6 @@ def test_sql_storage_package_url_argument(sqlite_url):
 # Storage (PostgreSQL)
 
 
-@pytest.mark.skip
 def test_postgresql_storage_types(postgresql_url):
     engine = sa.create_engine(postgresql_url)
     prefix = "prefix_"
@@ -435,7 +433,6 @@ def test_postgresql_storage_types(postgresql_url):
     storage.delete_package(target.resource_names)
 
 
-@pytest.mark.skip
 def test_postgresql_storage_integrity(postgresql_url):
     engine = sa.create_engine(postgresql_url)
     prefix = "prefix_"
@@ -583,7 +580,6 @@ def test_postgresql_storage_views_support(postgresql_url):
 # Storage (MySQL)
 
 
-@pytest.mark.skip
 def test_mysql_storage_types(mysql_url):
     engine = sa.create_engine(mysql_url)
     prefix = "prefix_"

@@ -61,10 +61,14 @@ class Row(dict):
         return super().__repr__()
 
     def __setitem__(self, key, value):
-        # TODO: improve key error
-        field, field_number, field_position = self.__field_info["mapping"][key]
+        try:
+            field, field_number, field_position = self.__field_info["mapping"][key]
+        except KeyError:
+            raise KeyError(f"Row does not have a field {key}")
+        if len(self.__cells) < field_number:
+            self.__cells.extend([None] * (field_number - len(self.__cells)))
         self.__cells[field_number - 1] = value
-        self.__process(key)
+        super().__setitem__(key, value)
 
     def __missing__(self, key):
         return self.__process(key)
@@ -263,8 +267,10 @@ class Row(dict):
         field_positions = self.__field_info["positions"]
         iterator = zip_longest(field_mapping.values(), cells)
         if key:
-            # TODO: improve key error
-            field, field_number, field_position = field_mapping[key]
+            try:
+                field, field_number, field_position = self.__field_info["mapping"][key]
+            except KeyError:
+                raise KeyError(f"Row does not have a field {key}")
             cell = cells[field_number - 1] if len(cells) >= field_number else None
             iterator = zip([(field, field_number, field_position)], [cell])
 
