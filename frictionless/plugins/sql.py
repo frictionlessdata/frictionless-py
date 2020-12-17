@@ -370,25 +370,27 @@ class SqlStorage(Storage):
 
         # Fields
         Check = sa.CheckConstraint
+        quote = self.__connection.engine.dialect.identifier_preparer.quote
         for field in resource.schema.fields:
             checks = []
             nullable = not field.required
+            quoted_name = quote(field.name)
             column_type = self.__write_convert_type(field.type)
             unique = field.constraints.get("unique", False)
             for const, value in field.constraints.items():
                 if const == "minLength":
-                    checks.append(Check('LENGTH("%s") >= %s' % (field.name, value)))
+                    checks.append(Check("LENGTH(%s) >= %s" % (quoted_name, value)))
                 elif const == "maxLength":
-                    checks.append(Check('LENGTH("%s") <= %s' % (field.name, value)))
+                    checks.append(Check("LENGTH(%s) <= %s" % (quoted_name, value)))
                 elif const == "minimum":
-                    checks.append(Check('"%s" >= %s' % (field.name, value)))
+                    checks.append(Check("%s >= %s" % (quoted_name, value)))
                 elif const == "maximum":
-                    checks.append(Check('"%s" <= %s' % (field.name, value)))
+                    checks.append(Check("%s <= %s" % (quoted_name, value)))
                 elif const == "pattern":
                     if self.__connection.engine.dialect.name == "postgresql":
-                        checks.append(Check("\"%s\" ~ '%s'" % (field.name, value)))
+                        checks.append(Check("%s ~ '%s'" % (quoted_name, value)))
                     else:
-                        check = Check("\"%s\" REGEXP '%s'" % (field.name, value))
+                        check = Check("%s REGEXP '%s'" % (quoted_name, value))
                         checks.append(check)
                 elif const == "enum":
                     enum_name = "%s_%s_enum" % (sql_name, field.name)

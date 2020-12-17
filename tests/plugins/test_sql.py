@@ -738,8 +738,6 @@ def test_mysql_storage_constraints(mysql_url):
     storage.delete_package(target.resource_names)
 
 
-# TODO: fix consratins for MySQL
-@pytest.mark.skip
 @pytest.mark.parametrize(
     "field_name, cell",
     [
@@ -760,8 +758,10 @@ def test_mysql_storage_constraints_not_valid_error(mysql_url, field_name, cell):
     for index, field in enumerate(resource.schema.fields):
         if field.name == field_name:
             resource.data[1][index] = cell
-    # TODO: should we wrap these exceptions?
-    with pytest.raises(sa.exc.IntegrityError):
+    # TODO: should we wrap these exceptions? (why other exceptions for mysql here?)
+    with pytest.raises(
+        (sa.exc.IntegrityError, sa.exc.OperationalError, sa.exc.DataError)
+    ):
         resource.to_sql(engine=engine, force=True)
 
 
