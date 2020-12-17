@@ -148,9 +148,9 @@ class RemoteLoader(Loader):
     def write_byte_stream_save(self, byte_stream):
         file = f"{self.resource.name}.{self.resource.format}"
         url = self.resource.source.replace(file, "")
-        result = requests.post(url, files={file: byte_stream})
-        result.raise_for_status()
-        return result
+        response = requests.post(url, files={file: byte_stream})
+        response.raise_for_status()
+        return response
 
 
 # Internal

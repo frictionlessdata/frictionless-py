@@ -35,6 +35,7 @@ TESTS_REQUIRE = [
     "pytest-cov",
     "pytest-vcr",
     "oauth2client",
+    "requests-mock",
     "python-dotenv",
     "docstring-parser",
 ]

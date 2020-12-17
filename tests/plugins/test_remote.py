@@ -37,16 +37,11 @@ def test_remote_loader_big_file():
 # Write
 
 
-# TODO: implement
-@pytest.mark.skip
-def test_remote_loader_write():
+# This test only checks the POST request the loader makes
+# We need fully mock a session with a server or use a real one and vcr.py
+def test_remote_loader_write(requests_mock):
     path = "https://example.com/post/table.csv"
-
-    # Write
+    requests_mock.post("https://example.com/post/")
     with Table("data/table.csv") as table:
-        table.write(path)
-
-    # Read
-    with Table(path) as table:
-        assert table.header == ["id", "name"]
-        assert table.read_data() == [["1", "english"], ["2", "中国人"]]
+        response = table.write(path)
+    assert response.status_code == 200
