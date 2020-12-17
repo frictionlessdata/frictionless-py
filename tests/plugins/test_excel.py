@@ -240,11 +240,10 @@ def test_xls_parser_with_ints_floats_dates():
         ]
 
 
-@pytest.mark.skip
 @pytest.mark.vcr
-def test_xls_parser_fix_for_2007_xls():
+def test_xlsx_parser_fix_for_2007_xls():
     source = "https://ams3.digitaloceanspaces.com/budgetkey-files/spending-reports/2018-3-משרד התרבות והספורט-לשכת הפרסום הממשלתית-2018-10-22-c457.xls"
-    with Table(source) as table:
+    with Table(source, format="xlsx") as table:
         assert len(table.read_data()) > 10
 
 
