@@ -7,7 +7,7 @@ We use Github as a code and issues hosting platform. To report a bug or propose 
 ## Docs Contribution
 
 We use a flexible documentation system as the docs are generated from:
-- markdown documents in the `docs` directory interpreted by the Jupiter Notebook runner
+- markdown documents in the `docs` directory interpreted by the Jupyter Notebook runner
 - python scripts in the `docs` directory generating references or copying documents from the root directory such as `README.md`, `CHANGELOG.md` etc
 
 To contribute to the documentation, please check to the corresponding `docs/name.md|py` file to understand the source of a document. If it's a markdown just edit it in-line if it's a script edit it or find a corresponding document in the root directory.

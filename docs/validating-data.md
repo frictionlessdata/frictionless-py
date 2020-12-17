@@ -1,6 +1,6 @@
 # Validating Data
 
-Tabular data validation is a process of identifying tabular problems that have place in your data for further correction. Let's explore how Frictionless helps to achieve these tasks using an invalid data table example:
+Tabular data validation is a process of identifying tabular problems that occur in your data for further correction. Let's explore how Frictionless helps to achieve these tasks using an invalid data table example:
 
 ```python
 ! cat data/capital-invalid.csv
@@ -19,7 +19,7 @@ The high-level interface for validating data provided by Frictionless is a set o
 - `validate_schema`: it validates a schema's metadata
 - `validate_resource`: it validates a resource's data and metadata
 - `validate_package`: it validates a package's data and metadata
-- `validate_inquiery`: it validates a special `Inquiery` object which represents a validation task instruction
+- `validate_inquiry`: it validates a special `Inquiry` object which represents a validation task instruction
 - `validate_table`: it validates a table
 
 In command-line, there is only 1 command but there is a flag to adjust the behavior:
@@ -35,7 +35,7 @@ $ frictionless validate --source-type table
 
 ### Validating Schema
 
-The `validate_schema` function is the only function validating solely metadata. Let's create a invalid table schema:
+The `validate_schema` function is the only function validating solely metadata. Let's create an invalid table schema:
 
 ```python
 from frictionless import Schema
@@ -61,7 +61,7 @@ As it was shown in the "Describing Data" guide a resource is a container having 
 ! frictionless describe data/capital-invalid.csv --json > tmp/capital.resource.json
 ```
 
-Let's now use the command-line interface to ensure that we are getting the same result as we had withouth using a resource:
+Let's now use the command-line interface to ensure that we are getting the same result as we had without using a resource:
 
 ```python
 ! frictionless validate tmp/capital.resource.json --basepath .
@@ -103,7 +103,7 @@ As we can see, the result is pretty straight-forward and expected: we have one i
 
 ### Validating Inquiry
 
-The Inquiry gives you an ability to create arbitrary validation jobs containing a set of individual validation taks. Let's create an inquiry that includes an individual file validation and a resource validation:
+The Inquiry gives you an ability to create arbitrary validation jobs containing a set of individual validation tasks. Let's create an inquiry that includes an individual file validation and a resource validation:
 
 ```python
 from frictionless import Inquiry
@@ -115,13 +115,13 @@ inquiry = Inquiry({'tasks': [
 inquiry.to_yaml('tmp/capital.inquiry.yaml')
 ```
 
-Tasks in the Inquiry accept the same arguments written in camelCase as the corresponding `validate` functions have. As usual, let' run validation:
+Tasks in the Inquiry accept the same arguments written in camelCase as the corresponding `validate` functions have. As usual, let's run validation:
 
 ```python
 ! frictionless validate tmp/capital.inquiry.yaml
 ```
 
-At first sight, it's no clear why such a construct exists but when your validation workflow gets complex, the Inquiry can provide a lot of flexibility and power. Last but not least, the Inquiry will use multiprocessing if there are more than 1 task provided.
+At first sight, it's not clear why such a construct exists but when your validation workflow gets complex, the Inquiry can provide a lot of flexibility and power. Last but not least, the Inquiry will use multiprocessing if there are more than 1 task provided.
 
 ### Validating Table
 
@@ -143,7 +143,7 @@ The `validate_schema` and `validate_inquiry` don't accept any options in additio
 
 ### Resource/Package
 
-The Resource and Package incapsulate most of information within their descriptor so the amount of additional options is really limited:
+The Resource and Package encapsulate most of information within their descriptor so the amount of additional options is really limited:
 - `basepath`: base path for a resource/package
 - `noinfer`: a flag disabling an infer function call
 
@@ -176,7 +176,7 @@ report = validate('data/capital-invalid.csv', pick_errors=['duplicate-header'])
 pprint(report)
 ```
 
-As we can see, there are a lot of information; you can find its details description in "API Reference". Errors are groupped by tables; for some validation there are can be dozens of tables. Let's use the `report.flatten` function to simplify errors representation:
+As we can see, there are a lot of information; you can find its details description in "API Reference". Errors are grouped by tables; for some validation exercises there can be dozens of tables. Let's use the `report.flatten` function to simplify errors representation:
 
 ```python
 from frictionless import validate
@@ -185,7 +185,7 @@ report = validate('data/capital-invalid.csv', pick_errors=['duplicate-header'])
 pprint(report.flatten(['rowPosition', 'fieldPosition', 'code', 'message']))
 ```
 
-In some situation, an error can't be associated with a table; then it goes to the top-level `report.errors` property:
+In some situations, an error can't be associated with a table; then it goes to the top-level `report.errors` property:
 
 ```python
 from frictionless import validate_schema
@@ -266,7 +266,7 @@ pprint(report.flatten(['rowPosition', 'fieldPosition', 'code']))
 
 ## Memory Options
 
-Frictionless is a streaming engine; usually it's possible to validate terrabytes of data with basically O(1) memory consumption. For some validation, it's not the case because Frctionless needs to buffer some cells e.g. to checks uniqueness. Here memory management can be handy.
+Frictionless is a streaming engine; usually it's possible to validate terabytes of data with basically O(1) memory consumption. For some validation, it's not the case because Frictionless needs to buffer some cells e.g. to checks uniqueness. Here memory management can be handy.
 
 ### Limit Memory
 
@@ -284,7 +284,7 @@ print(report.flatten(["code", "note"]))
 
 ## Checks Options
 
-Ther are two check options: `checksum` and `extra_checks`. The first allows to stricten a baseline validation white the latter is used to enforce additional checks.
+There are two check options: `checksum` and `extra_checks`. The first allows to stricten a baseline validation while the latter is used to enforce additional checks.
 
 ### Checksum
 
@@ -298,7 +298,7 @@ report = validate('data/capital-invalid.csv', checksum={'hash': 'bad'}, pick_err
 print(report.flatten(["code", "note"]))
 ```
 
-The same can be show for the bytes and rows:
+The same can be shown for the bytes and rows:
 
 ```python
 from frictionless import validate
@@ -313,7 +313,7 @@ It's possible to provide a list of extra checks where individual checks are in t
 - a string: `check-name`
 - a list: `['check-name', {'option1': 'value1'}]`
 
-It's also possible to use a `Check` subclass instead of name which will be shown in the "Custom Checks" section. Let's have a loot at an example:
+It's also possible to use a `Check` subclass instead of name which will be shown in the "Custom Checks" section. Let's have a look at an example:
 
 ```python
 from frictionless import validate
@@ -326,7 +326,7 @@ See the sections below for a list of available checks.
 
 ## Baseline Check
 
-By default, Frictionless runs only the Baseline Check but includes vairous smaller checks revealing a great deal of tabular errors. There is a `report.tables[].scope` property to check what exact errors it have been checked for:
+By default, Frictionless runs only the Baseline Check but includes various smaller checks revealing a great deal of tabular errors. There is a `report.tables[].scope` property to check what exact errors it have been checked for:
 
 ```python
 from frictionless import validate
@@ -337,11 +337,11 @@ pprint(report.table.scope)
 
 ## Heuristic Checks
 
-There is a group of checks that indicate probable errors. You need to use the `extra_checks` argument of the `validate` function to active one or more of these checks.
+There is a group of checks that indicate probable errors. You need to use the `extra_checks` argument of the `validate` function to activate one or more of these checks.
 
 ### Duplicate Row
 
-This check is self-explanatory. You need to take into account that checking for duplicate rows can lean to high memory consumption on big files. Here is an example:
+This check is self-explanatory. You need to take into account that checking for duplicate rows can lead to high memory consumption on big files. Here is an example:
 
 
 ```python
@@ -400,7 +400,7 @@ pprint(report.flatten(['code', 'message']))
 
 ### Sequential Value
 
-This check gives us an opportunity to validate sequential fields like primary keys or other similiar data. It doesn't need to start from 0 or 1. We're providing a field name:
+This check gives us an opportunity to validate sequential fields like primary keys or other similar data. It doesn't need to start from 0 or 1. We're providing a field name:
 
 ```python
 from pprint import pprint
@@ -414,7 +414,7 @@ pprint(report.flatten(['code', 'message']))
 
 ### Row Constraint
 
-This checks is the most powerful one as it uses the external `simpleeval` package allowing to evalute arbitrary python expressions on data rows. Let's show on an example:
+This is the most powerful check as it uses the external `simpleeval` package allowing to evaluate arbitrary python expressions on data rows. Let's show on an example:
 
 ```python
 from pprint import pprint
@@ -434,7 +434,7 @@ pprint(report.flatten(["code", "message"]))
 
 ## Custom Checks
 
-There are many cases when built-in Frictionless' checks are not enough. It can be a business logic rule or specific quality requirement to the data. With Frictionless it's very easy to use your own custom checks. Let's see on an example:
+There are many cases when Frictionless' built-in checks are not enough. It can be a business logic rule or specific quality requirement to the data. With Frictionless it's very easy to use your own custom checks. Let's see with an example:
 
 ```python
 from pprint import pprint
@@ -454,4 +454,4 @@ report = validate(source,  scheme='text', format='csv', extra_checks=extra_check
 pprint(report.flatten(["rowPosition", "fieldPosition", "code", "note"]))
 ```
 
-Usualy, it also makes sense to create a custom error for your custom check. The Check class provides other useful methods like `validate_header` etc. Please read "API Reference" to learn it in details.
+Usually, it also makes sense to create a custom error for your custom check. The Check class provides other useful methods like `validate_header` etc. Please read "API Reference" to learn it in details.

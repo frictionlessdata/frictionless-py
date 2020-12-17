@@ -433,7 +433,7 @@ There are a great deal of options available for different dialects that can be f
 
 ### Header
 
-It's a boolean flag wich deaults to `True` indicating whether the data has a header row or not. In the following example the header row will be treated as a data row:
+It's a boolean flag which deaults to `True` indicating whether the data has a header row or not. In the following example the header row will be treated as a data row:
 
 ```python
 from frictionless import Table, Dialect
@@ -525,7 +525,7 @@ print(extract('data/matrix.csv', query=Query(offset_fields=2)))
 
 ### Pick/Skip Rows
 
-It's alike the field counterparts but it will be compared to the first cell of a row. All the queries below do the same thing for this file but take into account that when picking we need to also pick a header row. In addition, there is special value `<blank>` that matches a row if it's competely blank:
+We can also select rows in a way similar to the Table's field counterpart. In the case of rows, the list of included/excluded elements will be compared to the first cell of a row. All the queries below do the same thing for this file but take into account that when providing the elements we need to also ensure a header row is delivered to the `extract` process. In addition, there is special value `<blank>` that matches a row if it's competely blank:
 
 ```python
 from frictionless import extract, Query
@@ -552,9 +552,9 @@ print(extract('data/matrix.csv', query=Query(offset_rows=2)))
 
 ## Header Options
 
-Header management is a responsibility of "Table Dialect" which will be described below but Table accept a special `headers` argument that plays a role of a high-level helper in setting different header options.
+Header management is a responsibility of "Table Dialect" which is introduced above but `Table` accepts a special `headers` argument that plays a role of a high-level helper in setting different header options.
 
-It accepts a `False` values indicating that there is no header row:
+It accepts a value of `False` indicating that there is no header row:
 
 ```python
 from frictionless import Table
@@ -584,7 +584,7 @@ with Table('data/capital-3.csv', headers=[1,2,3]) as table:
     pprint(table.read_rows())
 ```
 
-It accepts a pair containing a list of integers indicating a multiline header row numbers and a string indicating a joiner for a concatenate operation:
+It accepts a pair containing in the first position a list of integers indicating row numbers of a multiline header and in the second position a string indicating a joiner for a concatenate operation:
 
 ```python
 from frictionless import Table
@@ -716,7 +716,7 @@ The example above covers the case when a header is valid. For a header with tabu
 
 ## Row Object
 
-The `extract`, `resource.read_rows()`, `table.read_rows()`, and many other functions return or yeild row objects. It's an `OrderedDict` providing additional API shown below:
+The `extract`, `resource.read_rows()`, `table.read_rows()`, and many other functions return or yield row objects. It's an `OrderedDict` providing additional API shown below:
 
 ```python
 from frictionless import Table
