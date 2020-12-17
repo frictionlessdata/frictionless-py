@@ -423,12 +423,12 @@ def test_validate_schema_extra_headers_and_cells():
     ]
 
 
-@pytest.mark.skip
 def test_validate_schema_multiple_errors():
     source = "data/schema-errors.csv"
     schema = "data/schema-valid.json"
     report = validate(source, schema=schema, pick_errors=["#schema"], limit_errors=3)
     assert report.table.partial
+    print(report.table.flatten(["rowPosition", "fieldPosition", "code"]))
     assert report.table.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [4, 1, "type-error"],
         [4, 2, "constraint-error"],
@@ -791,7 +791,6 @@ def test_validate_limit_memory_small():
     ]
 
 
-@pytest.mark.skip
 def test_validate_extra_checks():
 
     # Create check
@@ -812,7 +811,6 @@ def test_validate_extra_checks():
     ]
 
 
-@pytest.mark.skip
 def test_validate_extra_checks_with_arguments():
 
     # Create check
@@ -855,7 +853,6 @@ def test_validate_unique_error():
     ]
 
 
-@pytest.mark.skip
 def test_validate_unique_error_and_type_error():
     source = [
         ["id", "unique_number"],
@@ -870,6 +867,7 @@ def test_validate_unique_error_and_type_error():
         ]
     }
     report = validate(source, schema=schema)
+    print(report.flatten(["rowPosition", "fieldPosition", "code"]))
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [3, 2, "type-error"],
         [4, 2, "unique-error"],

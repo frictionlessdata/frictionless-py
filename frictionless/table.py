@@ -714,8 +714,9 @@ class Table:
             field_number += 1
             field_info["names"].append(field.name)
             field_info["objects"].append(field.to_copy())
-            field_info["positions"].append(field_position)
             field_info["mapping"][field.name] = (field, field_number, field_position)
+            if field_position is not None:
+                field_info["positions"].append(field_position)
 
         # Create state
         memory_unique = {}

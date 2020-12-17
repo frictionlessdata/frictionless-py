@@ -79,18 +79,18 @@ class Row(dict):
         return key in self.__field_info["mapping"]
 
     def __reversed__(self, key):
-        return reversed(self)
+        return reversed(self.__field_info["names"])
 
     def keys(self):
-        return self.__field_info["mapping"].keys()
+        return iter(self.__field_info["names"])
 
     def values(self):
-        self.__process()
-        return super().values()
+        for name in self.__field_info["names"]:
+            yield self[name]
 
     def items(self):
-        self.__process()
-        return super().items()
+        for name in self.__field_info["names"]:
+            yield (name, self[name])
 
     def get(self, key, default=None):
         if key not in self.__field_info["names"]:
@@ -250,9 +250,6 @@ class Row(dict):
 
     # Process
 
-    # TODO: currently we duplicate data normalization for scenario:
-    # - there is random access like row[key1], row[key2]
-    # - full __process call
     def __process(self, key=None):
 
         # Exit if processed
@@ -266,8 +263,10 @@ class Row(dict):
         field_positions = self.__field_info["positions"]
         iterator = zip_longest(field_mapping.values(), cells)
         if key:
-            field, field_num, field_pos = field_mapping[key]
-            iterator = zip([(field, field_num, field_pos)], [cells[field_num - 1]])
+            # TODO: improve key error
+            field, field_number, field_position = field_mapping[key]
+            cell = cells[field_number - 1] if len(cells) >= field_number else None
+            iterator = zip([(field, field_number, field_position)], [cell])
 
         # Iterate cells
         for field_mapping, source in iterator:
@@ -276,6 +275,9 @@ class Row(dict):
             if field_mapping is None:
                 break
             field, field_number, field_position = field_mapping
+            # TODO: review performance
+            if not key and super().__contains__(field.name):
+                continue
 
             # Read cell
             target, notes = field.read_cell(source)

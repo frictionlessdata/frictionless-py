@@ -211,8 +211,9 @@ class CellError(RowError):
         """
         # This algorithm can be optimized by storing more information in a row
         # At the same time, this function should not be called very often
-        for field_number, [name, cell] in enumerate(row.items(), start=1):
+        for field_number, name in enumerate(row.field_names, start=1):
             if field_name == name:
+                cell = row[field_name]
                 field_position = row.field_positions[field_number - 1]
                 return cls(
                     note=note,

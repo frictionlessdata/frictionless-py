@@ -77,7 +77,6 @@ def test_sql_parser_write_timezone(sqlite_url):
         ]
 
 
-@pytest.mark.skip
 def test_sql_parser_write_timezone_postgresql(postgresql_url):
     source = "data/timezone.csv"
     dialect = SqlDialect(table="timezone")

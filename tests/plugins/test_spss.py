@@ -24,7 +24,6 @@ def test_spss_parser(tmpdir):
         ]
 
 
-@pytest.mark.skip
 @pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for MacOS")
 def test_spss_parser_write_timezone(tmpdir):
     target = str(tmpdir.join("table.sav"))
