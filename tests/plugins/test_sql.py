@@ -635,8 +635,6 @@ def test_mysql_storage_types(mysql_url):
     storage.delete_package(target.resource_names)
 
 
-# TODO: fix unique for MySQL
-@pytest.mark.skip
 def test_mysql_storage_integrity(mysql_url):
     engine = sa.create_engine(mysql_url)
     prefix = "prefix_"
@@ -680,13 +678,13 @@ def test_mysql_storage_integrity(mysql_url):
     }
 
     # Assert data (main)
-    assert target.get_resource("main").read_rows() == [
+    assert target.get_resource("integrity_main").read_rows() == [
         {"id": 1, "parent": None, "description": "english"},
         {"id": 2, "parent": 1, "description": "中国人"},
     ]
 
     # Assert data (link)
-    assert target.get_resource("link").read_rows() == [
+    assert target.get_resource("integrity_link").read_rows() == [
         {"main_id": 1, "some_id": 1, "description": "note1"},
         {"main_id": 2, "some_id": 2, "description": "note2"},
     ]

@@ -377,6 +377,9 @@ class SqlStorage(Storage):
             quoted_name = quote(field.name)
             column_type = self.__write_convert_type(field.type)
             unique = field.constraints.get("unique", False)
+            # https://stackoverflow.com/questions/1827063/mysql-error-key-specification-without-a-key-length
+            if self.__connection.engine.dialect.name == "mysql":
+                unique = unique and field.type != "string"
             for const, value in field.constraints.items():
                 if const == "minLength":
                     checks.append(Check("LENGTH(%s) >= %s" % (quoted_name, value)))
