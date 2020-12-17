@@ -693,8 +693,6 @@ def test_mysql_storage_integrity(mysql_url):
     storage.delete_package(target.resource_names)
 
 
-# TODO: fix enum for MySQL
-@pytest.mark.skip
 def test_mysql_storage_constraints(mysql_url):
     engine = sa.create_engine(mysql_url)
     prefix = "prefix_"
