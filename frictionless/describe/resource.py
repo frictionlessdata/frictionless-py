@@ -126,7 +126,7 @@ def describe_resource(
 
     # Create resource
     with table as table:
-        helpers.pass_through(table.data_stream)
+        helpers.pass_through(table.row_stream)
         resource = Resource(
             name=helpers.detect_name(table.path),
             path=table.path,

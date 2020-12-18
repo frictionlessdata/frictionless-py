@@ -152,7 +152,6 @@ def test_resource_source_path():
         resource.read_bytes()
         == b"id,name\n1,english\n2,\xe4\xb8\xad\xe5\x9b\xbd\xe4\xba\xba\n"
     )
-    assert resource.read_data() == [["1", "english"], ["2", "中国人"]]
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
@@ -238,7 +237,6 @@ def test_resource_source_data():
     assert resource.tabular is True
     assert resource.multipart is False
     assert resource.read_bytes() == b""
-    assert resource.read_data() == data[1:]
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},

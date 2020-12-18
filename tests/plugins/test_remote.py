@@ -11,14 +11,17 @@ BASE_URL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/m
 def test_remote_loader():
     with Table(BASE_URL % "data/table.csv") as table:
         assert table.header == ["id", "name"]
-        assert table.read_data() == [["1", "english"], ["2", "中国人"]]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 @pytest.mark.vcr
 def test_remote_loader_latin1():
     # Github returns wrong encoding `utf-8`
     with Table(BASE_URL % "data/latin1.csv") as table:
-        assert table.read_data()
+        assert table.read_rows()
 
 
 @pytest.mark.ci

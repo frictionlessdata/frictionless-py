@@ -532,23 +532,6 @@ class Resource(Metadata):
         file.open()
         return file.text_stream
 
-    def read_data(self):
-        """
-        Returns:
-            any[][]: array of data arrays
-        """
-        data = list(self.read_data_stream())
-        return data
-
-    def read_data_stream(self):
-        """
-        Returns:
-            gen<any[][]>: data stream
-        """
-        with self.to_table() as table:
-            for cells in table.data_stream:
-                yield cells
-
     def read_rows(self):
         """
         Returns
@@ -592,7 +575,7 @@ class Resource(Metadata):
         # Tabular
         if self.tabular:
             with self.to_table() as table:
-                helpers.pass_through(table.data_stream)
+                helpers.pass_through(table.row_stream)
                 return table.stats
 
         # General
@@ -908,13 +891,10 @@ class Resource(Metadata):
         # Define view
         class ResourceView(petl.Table):
             def __iter__(self):
-                stream = (
-                    map(lambda row: row.to_list(), resource.read_row_stream())
-                    if normalize
-                    else resource.read_data_stream()
-                )
+                # TODO: should we emit field_names or headers here?
                 yield resource.schema.field_names
-                yield from stream
+                for row in resource.read_row_stream():
+                    yield row.to_list() if normalize else row.cells
 
         return ResourceView()
 

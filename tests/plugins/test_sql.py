@@ -19,21 +19,30 @@ def test_sql_parser(database_url):
             "primaryKey": ["id"],
         }
         assert table.header == ["id", "name"]
-        assert table.read_data() == [[1, "english"], [2, "中国人"]]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 def test_sql_parser_order_by(database_url):
     dialect = SqlDialect(table="table", order_by="id")
     with Table(database_url, dialect=dialect) as table:
         assert table.header == ["id", "name"]
-        assert table.read_data() == [[1, "english"], [2, "中国人"]]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 def test_sql_parser_order_by_desc(database_url):
     dialect = SqlDialect(table="table", order_by="id desc")
     with Table(database_url, dialect=dialect) as table:
         assert table.header == ["id", "name"]
-        assert table.read_data() == [[2, "中国人"], [1, "english"]]
+        assert table.read_rows() == [
+            {"id": 2, "name": "中国人"},
+            {"id": 1, "name": "english"},
+        ]
 
 
 def test_sql_parser_table_is_required_error(database_url):
@@ -45,11 +54,16 @@ def test_sql_parser_table_is_required_error(database_url):
     assert error.note.count("'table' is a required property")
 
 
+# Probably it's not correct behaviour
 def test_sql_parser_headers_false(database_url):
     dialect = SqlDialect(table="table")
     with Table(database_url, dialect=dialect, headers=False) as table:
         assert table.header == []
-        assert table.read_data() == [["id", "name"], [1, "english"], [2, "中国人"]]
+        assert table.read_rows() == [
+            {"id": None, "name": "name"},
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 def test_sql_parser_write(database_url):
@@ -59,7 +73,10 @@ def test_sql_parser_write(database_url):
         table.write(database_url, dialect=dialect)
     with Table(database_url, dialect=dialect) as table:
         assert table.header == ["id", "name"]
-        assert table.read_data() == [[1, "english"], [2, "中国人"]]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 def test_sql_parser_write_timezone(sqlite_url):

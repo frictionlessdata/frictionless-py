@@ -45,9 +45,9 @@ class table_debug(Step):
         # Data
         def data():
             yield source.schema.field_names
-            for cells in source.read_data_stream():
-                self.__function(cells)
-                yield cells
+            for row in source.read_row_stream():
+                self.__function(row)
+                yield row.cells
 
         # Meta
         target.data = data

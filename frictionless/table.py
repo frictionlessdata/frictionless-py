@@ -175,7 +175,6 @@ class Table:
         self.__parser = None
         self.__sample = None
         self.__header = None
-        self.__data_stream = None
         self.__row_stream = None
         self.__row_number = None
         self.__row_position = None
@@ -365,15 +364,6 @@ class Table:
         return self.__sample
 
     @property
-    def data_stream(self):
-        """Data stream in form of a generator of data arrays
-
-        Yields:
-            any[][]?: data stream
-        """
-        return self.__data_stream
-
-    @property
     def row_stream(self):
         """Row stream in form of a generator of Row objects
 
@@ -398,7 +388,6 @@ class Table:
             self.__resource.stats = {"hash": "", "bytes": 0, "fields": 0, "rows": 0}
             self.__parser = system.create_parser(self.__resource)
             self.__parser.open()
-            self.__data_stream = self.__read_data_stream()
             self.__row_stream = self.__read_row_stream()
             self.__row_number = 0
             self.__row_position = 0
@@ -430,270 +419,29 @@ class Table:
         """
         return self.__parser is None
 
-    def read_data(self):
-        """Read data stream into memory
-
-        Returns:
-            any[][]: table data
-        """
-        self.__read_data_stream_raise_closed()
-        return list(self.__data_stream)
-
-    def __read_data_stream(self):
-        self.__read_data_stream_infer()
-        return self.__read_data_stream_create()
-
-    def __read_data_stream_create(self):
-        limit = self.__resource.query.limit_rows
-        offset = self.__resource.query.offset_rows or 0
-        sample_iterator = self.__read_data_stream_create_sample_iterator()
-        parser_iterator = self.__read_data_stream_create_parser_iterator()
-        for row_position, cells in chain(sample_iterator, parser_iterator):
-            self.__row_position = row_position
-            if offset:
-                offset -= 1
-                continue
-            self.__row_number += 1
-            self.__resource.stats["rows"] = self.__row_number
-            yield cells
-            if limit and limit <= self.__resource.stats["rows"]:
-                break
-
-    def __read_data_stream_create_sample_iterator(self):
-        return zip(self.__sample_positions, self.__sample)
-
-    def __read_data_stream_create_parser_iterator(self):
-        start = max(self.__sample_positions or [0]) + 1
-        iterator = enumerate(self.__parser.data_stream, start=start)
-        for row_position, cells in iterator:
-            if self.__read_data_stream_pick_skip_row(row_position, cells):
-                cells = self.__read_data_stream_filter_data(cells, self.__field_positions)
-                yield row_position, cells
-
-    def __read_data_stream_infer(self):
-
-        # Create state
-        sample = []
-        header = []
-        field_positions = []
-        sample_positions = []
-
-        # Prepare header
-        buffer = []
-        widths = []
-        for row_position, cells in enumerate(self.__parser.data_stream, start=1):
-            buffer.append(cells)
-            if self.__read_data_stream_pick_skip_row(row_position, cells):
-                widths.append(len(cells))
-                if len(widths) >= self.__infer_volume:
-                    break
-
-        # Infer header
-        row_number = 0
-        dialect = self.__resource.dialect
-        if dialect.get("header") is None and dialect.get("headerRows") is None and widths:
-            dialect["header"] = False
-            width = round(sum(widths) / len(widths))
-            drift = max(round(width * 0.1), 1)
-            match = list(range(width - drift, width + drift + 1))
-            for row_position, cells in enumerate(buffer, start=1):
-                if self.__read_data_stream_pick_skip_row(row_position, cells):
-                    row_number += 1
-                    if len(cells) not in match:
-                        continue
-                    if not helpers.is_only_strings(cells):
-                        continue
-                    del dialect["header"]
-                    if row_number != config.DEFAULT_HEADER_ROWS[0]:
-                        dialect["headerRows"] = [row_number]
-                    break
-
-        # Infer table
-        row_number = 0
-        header_data = []
-        header_ready = False
-        header_numbers = dialect.header_rows or config.DEFAULT_HEADER_ROWS
-        iterator = chain(buffer, self.__parser.data_stream)
-        for row_position, cells in enumerate(iterator, start=1):
-            if self.__read_data_stream_pick_skip_row(row_position, cells):
-                row_number += 1
-
-                # Header
-                if not header_ready:
-                    if row_number in header_numbers:
-                        header_data.append(helpers.stringify_header(cells))
-                    if row_number >= max(header_numbers):
-                        infer = self.__read_data_stream_infer_header
-                        header, field_positions = infer(header_data)
-                        header_ready = True
-                    if not header_ready or dialect.header:
-                        continue
-
-                # Sample
-                sample.append(self.__read_data_stream_filter_data(cells, field_positions))
-                sample_positions.append(row_position)
-                if len(sample) >= self.__infer_volume:
-                    break
-
-        # Infer schema
-        schema = self.__resource.schema
-        if not schema.fields:
-            schema.infer(
-                sample,
-                type=self.__infer_type,
-                names=self.__infer_names or header,
-                confidence=self.__infer_confidence,
-                float_numbers=self.__infer_float_numbers,
-                missing_values=self.__infer_missing_values,
-            )
-
-        # Sync schema
-        if self.__sync_schema:
-            fields = []
-            mapping = {field.get("name"): field for field in schema.fields}
-            for name in header:
-                fields.append(mapping.get(name, {"name": name, "type": "any"}))
-            schema.fields = fields
-
-        # Patch schema
-        if self.__patch_schema:
-            patch_schema = deepcopy(self.__patch_schema)
-            fields = patch_schema.pop("fields", {})
-            schema.update(patch_schema)
-            for field in schema.fields:
-                field.update((fields.get(field.get("name"), {})))
-
-        # Validate schema
-        # TODO: reconsider this - not perfect for transform
-        if len(schema.field_names) != len(set(schema.field_names)):
-            note = "Schemas with duplicate field names are not supported"
-            raise FrictionlessException(errors.SchemaError(note=note))
-
-        # Store stats
-        self.__resource.stats["fields"] = len(schema.fields)
-
-        # Store state
-        self.__sample = sample
-        self.__field_positions = field_positions
-        self.__sample_positions = sample_positions
-        self.__header = Header(
-            header,
-            schema=schema,
-            field_positions=field_positions,
-            ignore_case=not dialect.header_case,
-        )
-
-    def __read_data_stream_infer_header(self, header_data):
-        dialect = self.__resource.dialect
-
-        # No header
-        if not dialect.header:
-            return [], list(range(1, len(header_data[0]) + 1))
-
-        # Get header
-        header = []
-        prev_cells = {}
-        for cells in header_data:
-            for index, cell in enumerate(cells):
-                if prev_cells.get(index) == cell:
-                    continue
-                prev_cells[index] = cell
-                if len(header) <= index:
-                    header.append(cell)
-                    continue
-                header[index] = dialect.header_join.join([header[index], cell])
-
-        # Filter header
-        filter_header = []
-        field_positions = []
-        limit = self.__resource.query.limit_fields
-        offset = self.__resource.query.offset_fields or 0
-        for field_position, header in enumerate(header, start=1):
-            if self.__read_data_stream_pick_skip_field(field_position, header):
-                if offset:
-                    offset -= 1
-                    continue
-                filter_header.append(header)
-                field_positions.append(field_position)
-                if limit and limit <= len(filter_header):
-                    break
-
-        return filter_header, field_positions
-
-    def __read_data_stream_pick_skip_field(self, field_position, header):
-        match = True
-        for name in ["pick", "skip"]:
-            if name == "pick":
-                items = self.__resource.query.pick_fields_compiled
-            else:
-                items = self.__resource.query.skip_fields_compiled
-            if not items:
-                continue
-            match = match and name == "skip"
-            for item in items:
-                if item == "<blank>" and header == "":
-                    match = not match
-                elif isinstance(item, str) and item == header:
-                    match = not match
-                elif isinstance(item, int) and item == field_position:
-                    match = not match
-                elif isinstance(item, typing.Pattern) and item.match(header):
-                    match = not match
-        return match
-
-    def __read_data_stream_pick_skip_row(self, row_position, cells):
-        match = True
-        cell = cells[0] if cells else None
-        cell = "" if cell is None else str(cell)
-        for name in ["pick", "skip"]:
-            if name == "pick":
-                items = self.__resource.query.pick_rows_compiled
-            else:
-                items = self.__resource.query.skip_rows_compiled
-            if not items:
-                continue
-            match = match and name == "skip"
-            for item in items:
-                if item == "<blank>":
-                    if not any(cell for cell in cells if cell not in ["", None]):
-                        match = not match
-                elif isinstance(item, str):
-                    if item == cell or (item and cell.startswith(item)):
-                        match = not match
-                elif isinstance(item, int) and item == row_position:
-                    match = not match
-                elif isinstance(item, typing.Pattern) and item.match(cell):
-                    match = not match
-        return match
-
-    def __read_data_stream_filter_data(self, cells, field_positions):
-        if self.__resource.query.is_field_filtering:
-            result = []
-            for field_position, cell in enumerate(cells, start=1):
-                if field_position in field_positions:
-                    result.append(cell)
-            return result
-        return cells
-
-    def __read_data_stream_raise_closed(self):
-        if not self.__data_stream:
-            note = 'the table has not been opened by "table.open()"'
-            raise FrictionlessException(errors.Error(note=note))
+    # Read
 
     def read_rows(self):
-        """Read row stream into memory
+        """Read rows into memory
 
         Returns:
-            Row[][]: table rows
+            Row[]: table rows
         """
         self.__read_row_stream_raise_closed()
         return list(self.__row_stream)
 
     def __read_row_stream(self):
+        self.__read_row_stream_infer()
         return self.__read_row_stream_create()
 
     def __read_row_stream_create(self):
-        schema = self.schema
+
+        # Prepare context
+        schema = self.__resource.schema
+        limit = self.__resource.query.limit_rows
+        offset = self.__resource.query.offset_rows or 0
+        sample_iterator = self.__read_row_stream_create_sample_iterator()
+        parser_iterator = self.__read_row_stream_create_parser_iterator()
 
         # Handle header errors
         if not self.header.valid:
@@ -734,7 +482,17 @@ class Table:
                 foreign_groups.append(group)
 
         # Stream rows
-        for cells in self.__data_stream:
+        for row_position, cells in chain(sample_iterator, parser_iterator):
+
+            # Handle offset
+            if offset:
+                offset -= 1
+                continue
+
+            # Update state
+            self.__row_number += 1
+            self.__row_position = row_position
+            self.__resource.stats["rows"] = self.__row_number
 
             # Create row
             row = Row(
@@ -795,8 +553,226 @@ class Table:
                         raise FrictionlessException(error)
                     warnings.warn(error.message, UserWarning)
 
-            # Stream row
+            # Stream/handle limit
             yield row
+            if limit and limit <= self.__row_number:
+                break
+
+    def __read_row_stream_create_sample_iterator(self):
+        return zip(self.__sample_positions, self.__sample)
+
+    def __read_row_stream_create_parser_iterator(self):
+        start = max(self.__sample_positions or [0]) + 1
+        iterator = enumerate(self.__parser.data_stream, start=start)
+        for row_position, cells in iterator:
+            if self.__read_row_stream_pick_skip_row(row_position, cells):
+                cells = self.__read_row_stream_filter_data(cells, self.__field_positions)
+                yield row_position, cells
+
+    def __read_row_stream_infer(self):
+
+        # Create state
+        sample = []
+        header = []
+        field_positions = []
+        sample_positions = []
+
+        # Prepare header
+        buffer = []
+        widths = []
+        for row_position, cells in enumerate(self.__parser.data_stream, start=1):
+            buffer.append(cells)
+            if self.__read_row_stream_pick_skip_row(row_position, cells):
+                widths.append(len(cells))
+                if len(widths) >= self.__infer_volume:
+                    break
+
+        # Infer header
+        row_number = 0
+        dialect = self.__resource.dialect
+        if dialect.get("header") is None and dialect.get("headerRows") is None and widths:
+            dialect["header"] = False
+            width = round(sum(widths) / len(widths))
+            drift = max(round(width * 0.1), 1)
+            match = list(range(width - drift, width + drift + 1))
+            for row_position, cells in enumerate(buffer, start=1):
+                if self.__read_row_stream_pick_skip_row(row_position, cells):
+                    row_number += 1
+                    if len(cells) not in match:
+                        continue
+                    if not helpers.is_only_strings(cells):
+                        continue
+                    del dialect["header"]
+                    if row_number != config.DEFAULT_HEADER_ROWS[0]:
+                        dialect["headerRows"] = [row_number]
+                    break
+
+        # Infer table
+        row_number = 0
+        header_data = []
+        header_ready = False
+        header_numbers = dialect.header_rows or config.DEFAULT_HEADER_ROWS
+        iterator = chain(buffer, self.__parser.data_stream)
+        for row_position, cells in enumerate(iterator, start=1):
+            if self.__read_row_stream_pick_skip_row(row_position, cells):
+                row_number += 1
+
+                # Header
+                if not header_ready:
+                    if row_number in header_numbers:
+                        header_data.append(helpers.stringify_header(cells))
+                    if row_number >= max(header_numbers):
+                        infer = self.__read_row_stream_infer_header
+                        header, field_positions = infer(header_data)
+                        header_ready = True
+                    if not header_ready or dialect.header:
+                        continue
+
+                # Sample
+                sample.append(self.__read_row_stream_filter_data(cells, field_positions))
+                sample_positions.append(row_position)
+                if len(sample) >= self.__infer_volume:
+                    break
+
+        # Infer schema
+        schema = self.__resource.schema
+        if not schema.fields:
+            schema.infer(
+                sample,
+                type=self.__infer_type,
+                names=self.__infer_names or header,
+                confidence=self.__infer_confidence,
+                float_numbers=self.__infer_float_numbers,
+                missing_values=self.__infer_missing_values,
+            )
+
+        # Sync schema
+        if self.__sync_schema:
+            fields = []
+            mapping = {field.get("name"): field for field in schema.fields}
+            for name in header:
+                fields.append(mapping.get(name, {"name": name, "type": "any"}))
+            schema.fields = fields
+
+        # Patch schema
+        if self.__patch_schema:
+            patch_schema = deepcopy(self.__patch_schema)
+            fields = patch_schema.pop("fields", {})
+            schema.update(patch_schema)
+            for field in schema.fields:
+                field.update((fields.get(field.get("name"), {})))
+
+        # Validate schema
+        # TODO: reconsider this - not perfect for transform
+        if len(schema.field_names) != len(set(schema.field_names)):
+            note = "Schemas with duplicate field names are not supported"
+            raise FrictionlessException(errors.SchemaError(note=note))
+
+        # Store stats
+        self.__resource.stats["fields"] = len(schema.fields)
+
+        # Store state
+        self.__sample = sample
+        self.__field_positions = field_positions
+        self.__sample_positions = sample_positions
+        self.__header = Header(
+            header,
+            schema=schema,
+            field_positions=field_positions,
+            ignore_case=not dialect.header_case,
+        )
+
+    def __read_row_stream_infer_header(self, header_data):
+        dialect = self.__resource.dialect
+
+        # No header
+        if not dialect.header:
+            return [], list(range(1, len(header_data[0]) + 1))
+
+        # Get header
+        header = []
+        prev_cells = {}
+        for cells in header_data:
+            for index, cell in enumerate(cells):
+                if prev_cells.get(index) == cell:
+                    continue
+                prev_cells[index] = cell
+                if len(header) <= index:
+                    header.append(cell)
+                    continue
+                header[index] = dialect.header_join.join([header[index], cell])
+
+        # Filter header
+        filter_header = []
+        field_positions = []
+        limit = self.__resource.query.limit_fields
+        offset = self.__resource.query.offset_fields or 0
+        for field_position, header in enumerate(header, start=1):
+            if self.__read_row_stream_pick_skip_field(field_position, header):
+                if offset:
+                    offset -= 1
+                    continue
+                filter_header.append(header)
+                field_positions.append(field_position)
+                if limit and limit <= len(filter_header):
+                    break
+
+        return filter_header, field_positions
+
+    def __read_row_stream_pick_skip_field(self, field_position, header):
+        match = True
+        for name in ["pick", "skip"]:
+            if name == "pick":
+                items = self.__resource.query.pick_fields_compiled
+            else:
+                items = self.__resource.query.skip_fields_compiled
+            if not items:
+                continue
+            match = match and name == "skip"
+            for item in items:
+                if item == "<blank>" and header == "":
+                    match = not match
+                elif isinstance(item, str) and item == header:
+                    match = not match
+                elif isinstance(item, int) and item == field_position:
+                    match = not match
+                elif isinstance(item, typing.Pattern) and item.match(header):
+                    match = not match
+        return match
+
+    def __read_row_stream_pick_skip_row(self, row_position, cells):
+        match = True
+        cell = cells[0] if cells else None
+        cell = "" if cell is None else str(cell)
+        for name in ["pick", "skip"]:
+            if name == "pick":
+                items = self.__resource.query.pick_rows_compiled
+            else:
+                items = self.__resource.query.skip_rows_compiled
+            if not items:
+                continue
+            match = match and name == "skip"
+            for item in items:
+                if item == "<blank>":
+                    if not any(cell for cell in cells if cell not in ["", None]):
+                        match = not match
+                elif isinstance(item, str):
+                    if item == cell or (item and cell.startswith(item)):
+                        match = not match
+                elif isinstance(item, int) and item == row_position:
+                    match = not match
+                elif isinstance(item, typing.Pattern) and item.match(cell):
+                    match = not match
+        return match
+
+    def __read_row_stream_filter_data(self, cells, field_positions):
+        if self.__resource.query.is_field_filtering:
+            result = []
+            for field_position, cell in enumerate(cells, start=1):
+                if field_position in field_positions:
+                    result.append(cell)
+            return result
+        return cells
 
     def __read_row_stream_raise_closed(self):
         if not self.__row_stream:

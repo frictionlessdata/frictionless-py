@@ -25,33 +25,16 @@ def test_table():
         assert table.compression_path == ""
         assert table.header == ["id", "name"]
         assert table.sample == [["1", "english"], ["2", "中国人"]]
-        assert table.read_data() == [["1", "english"], ["2", "中国人"]]
         assert table.schema == {
             "fields": [
                 {"name": "id", "type": "integer"},
                 {"name": "name", "type": "string"},
             ]
         }
-
-
-def test_table_read_data():
-    with Table("data/table.csv") as table:
-        assert table.header == ["id", "name"]
-        assert table.read_data() == [["1", "english"], ["2", "中国人"]]
-
-
-def test_table_data_stream():
-    with Table("data/table.csv") as table:
-        assert table.header == ["id", "name"]
-        assert list(table.data_stream) == [["1", "english"], ["2", "中国人"]]
-        assert list(table.data_stream) == []
-
-
-def test_table_data_stream_iterate():
-    with Table("data/table.csv") as table:
-        assert table.header == ["id", "name"]
-        for cells in table.data_stream:
-            assert len(cells) == 2
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 def test_table_read_rows():
@@ -129,15 +112,18 @@ def test_table_empty():
     with Table("data/empty.csv") as table:
         assert table.header == []
         assert table.schema == {}
-        assert table.read_data() == []
+        assert table.read_rows() == []
 
 
 def test_table_without_rows():
     with Table("data/without-rows.csv") as table:
         assert table.header == ["id", "name"]
-        assert table.read_data() == []
+        assert table.read_rows() == []
         assert table.schema == {
-            "fields": [{"name": "id", "type": "any"}, {"name": "name", "type": "any"}]
+            "fields": [
+                {"name": "id", "type": "any"},
+                {"name": "name", "type": "any"},
+            ]
         }
 
 
@@ -150,13 +136,17 @@ def test_table_without_headers():
                 {"name": "field2", "type": "string"},
             ]
         }
-        assert table.read_data() == [["1", "english"], ["2", "中国人"], ["3", "german"]]
+        assert table.read_rows() == [
+            {"field1": 1, "field2": "english"},
+            {"field1": 2, "field2": "中国人"},
+            {"field1": 3, "field2": "german"},
+        ]
 
 
 def test_table_error_read_closed():
     table = Table("data/table.csv")
     with pytest.raises(FrictionlessException) as excinfo:
-        table.read_data()
+        table.read_rows()
     error = excinfo.value.error
     assert error.code == "error"
     assert error.note == 'the table has not been opened by "table.open()"'
@@ -302,7 +292,7 @@ def test_table_format_error_non_matching_format():
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_table_hashing():
     with Table("data/table.csv") as table:
-        table.read_data()
+        table.read_rows()
         assert table.hashing == "md5"
         assert table.stats["hash"] == "6c2c61dd9b0e9c6876139a449ed87933"
 
@@ -310,7 +300,7 @@ def test_table_hashing():
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_table_hashing_provided():
     with Table("data/table.csv", hashing="sha1") as table:
-        table.read_data()
+        table.read_rows()
         assert table.hashing == "sha1"
         assert table.stats["hash"] == "db6ea2f8ff72a9e13e1d70c28ed1c6b42af3bb0e"
 
@@ -331,21 +321,30 @@ def test_table_encoding():
     with Table("data/table.csv") as table:
         assert table.encoding == "utf-8"
         assert table.header == ["id", "name"]
-        assert table.read_data() == [["1", "english"], ["2", "中国人"]]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 def test_table_encoding_explicit_utf8():
     with Table("data/table.csv", encoding="utf-8") as table:
         assert table.encoding == "utf-8"
         assert table.header == ["id", "name"]
-        assert table.read_data() == [["1", "english"], ["2", "中国人"]]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 def test_table_encoding_explicit_latin1():
     with Table("data/latin1.csv", encoding="latin1") as table:
         assert table.encoding == "iso8859-1"
         assert table.header == ["id", "name"]
-        assert table.read_data() == [["1", "english"], ["2", "©"]]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "©"},
+        ]
 
 
 def test_table_encoding_utf_16():
@@ -353,7 +352,10 @@ def test_table_encoding_utf_16():
     bio = io.BytesIO(u"en,English\nja,日本語".encode("utf-16"))
     with Table(bio, format="csv", headers=False) as table:
         assert table.encoding == "utf-16"
-        assert table.read_data() == [[u"en", u"English"], [u"ja", u"日本語"]]
+        assert table.read_rows() == [
+            {"field1": "en", "field2": "English"},
+            {"field1": "ja", "field2": "日本語"},
+        ]
 
 
 def test_table_encoding_error_bad_encoding():
@@ -383,7 +385,10 @@ def test_table_compression_local_csv_zip():
         assert table.compression == "zip"
         assert table.compression_path == "table.csv"
         assert table.header == ["id", "name"]
-        assert table.read_data() == [["1", "english"], ["2", "中国人"]]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 def test_table_compression_local_csv_zip_multiple_files():
@@ -391,7 +396,10 @@ def test_table_compression_local_csv_zip_multiple_files():
         assert table.compression == "zip"
         assert table.compression_path == "table-reverse.csv"
         assert table.header == ["id", "name"]
-        assert table.read_data() == [["1", "中国人"], ["2", "english"]]
+        assert table.read_rows() == [
+            {"id": 1, "name": "中国人"},
+            {"id": 2, "name": "english"},
+        ]
 
 
 def test_table_compression_local_csv_zip_multiple_files_compression_path():
@@ -399,19 +407,31 @@ def test_table_compression_local_csv_zip_multiple_files_compression_path():
         assert table.compression == "zip"
         assert table.compression_path == "table.csv"
         assert table.header == ["id", "name"]
-        assert table.read_data() == [["1", "english"], ["2", "中国人"]]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 def test_table_compression_local_csv_zip_multiple_open():
-    # That's how `tableschema.iter()` acts
     table = Table("data/table.csv.zip")
+
+    # Open first time
     table.open()
     assert table.header == ["id", "name"]
-    assert table.read_data() == [["1", "english"], ["2", "中国人"]]
+    assert table.read_rows() == [
+        {"id": 1, "name": "english"},
+        {"id": 2, "name": "中国人"},
+    ]
     table.close()
+
+    # Open second time
     table.open()
     assert table.header == ["id", "name"]
-    assert table.read_data() == [["1", "english"], ["2", "中国人"]]
+    assert table.read_rows() == [
+        {"id": 1, "name": "english"},
+        {"id": 2, "name": "中国人"},
+    ]
     table.close()
 
 
@@ -420,21 +440,30 @@ def test_table_compression_local_csv_gz():
         assert table.compression == "gz"
         assert table.compression_path == ""
         assert table.header == ["id", "name"]
-        assert table.read_data() == [["1", "english"], ["2", "中国人"]]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 def test_table_compression_filelike_csv_zip():
     with open("data/table.csv.zip", "rb") as file:
         with Table(file, format="csv", compression="zip") as table:
             assert table.header == ["id", "name"]
-            assert table.read_data() == [["1", "english"], ["2", "中国人"]]
+            assert table.read_rows() == [
+                {"id": 1, "name": "english"},
+                {"id": 2, "name": "中国人"},
+            ]
 
 
 def test_table_compression_filelike_csv_gz():
     with open("data/table.csv.gz", "rb") as file:
         with Table(file, format="csv", compression="gz") as table:
             assert table.header == ["id", "name"]
-            assert table.read_data() == [["1", "english"], ["2", "中国人"]]
+            assert table.read_rows() == [
+                {"id": 1, "name": "english"},
+                {"id": 2, "name": "中国人"},
+            ]
 
 
 @pytest.mark.vcr
@@ -442,7 +471,10 @@ def test_table_compression_remote_csv_zip():
     source = "https://raw.githubusercontent.com/frictionlessdata/tabulator-py/master/data/table.csv.zip"
     with Table(source) as table:
         assert table.header == ["id", "name"]
-        assert table.read_data() == [["1", "english"], ["2", "中国人"]]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 @pytest.mark.vcr
@@ -450,7 +482,10 @@ def test_table_compression_remote_csv_gz():
     source = "https://raw.githubusercontent.com/frictionlessdata/tabulator-py/master/data/table.csv.gz"
     with Table(source) as table:
         assert table.header == ["id", "name"]
-        assert table.read_data() == [["1", "english"], ["2", "中国人"]]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 def test_table_compression_error_bad():
@@ -518,7 +553,6 @@ def test_table_control_bad_property():
 def test_table_dialect():
     with Table("data/table.csv") as table:
         assert table.header == ["id", "name"]
-        assert table.read_data() == [["1", "english"], ["2", "中国人"]]
         assert table.dialect.delimiter == ","
         assert table.dialect.line_terminator == "\r\n"
         assert table.dialect.double_quote is True
@@ -528,13 +562,20 @@ def test_table_dialect():
         assert table.dialect.header_rows == [1]
         # All the values are default
         assert table.dialect == {}
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 def test_table_dialect_csv_delimiter():
     with Table("data/delimiter.csv") as table:
         assert table.header == ["id", "name"]
-        assert table.read_data() == [["1", "english"], ["2", "中国人"]]
         assert table.dialect == {"delimiter": ";"}
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 def test_table_dialect_json_property():
@@ -542,7 +583,9 @@ def test_table_dialect_json_property():
     dialect = JsonDialect(property="root")
     with Table(source, scheme="text", format="json", dialect=dialect) as table:
         assert table.header == ["header1", "header2"]
-        assert table.read_data() == [["value1", "value2"]]
+        assert table.read_rows() == [
+            {"header1": "value1", "header2": "value2"},
+        ]
 
 
 def test_table_dialect_bad_property():
@@ -690,16 +733,16 @@ def test_table_skip_fields_keyed_source():
     source = [{"id": 1, "name": "london"}, {"id": 2, "name": "paris"}]
     with Table(source, query={"skipFields": ["id"]}) as table:
         assert table.header == ["name"]
-        assert table.read_data() == [["london"], ["paris"]]
+        assert table.read_rows() == [{"name": "london"}, {"name": "paris"}]
     with Table(source, query={"skipFields": [1]}) as table:
         assert table.header == ["name"]
-        assert table.read_data() == [["london"], ["paris"]]
+        assert table.read_rows() == [{"name": "london"}, {"name": "paris"}]
     with Table(source, query={"skipFields": ["name"]}) as table:
         assert table.header == ["id"]
-        assert table.read_data() == [[1], [2]]
+        assert table.read_rows() == [{"id": 1}, {"id": 2}]
     with Table(source, query={"skipFields": [2]}) as table:
         assert table.header == ["id"]
-        assert table.read_data() == [[1], [2]]
+        assert table.read_rows() == [{"id": 1}, {"id": 2}]
 
 
 def test_table_limit_fields():
@@ -739,14 +782,20 @@ def test_table_pick_rows():
     source = "data/skip-rows.csv"
     query = Query(pick_rows=["1", "2"])
     with Table(source, headers=False, query=query) as table:
-        assert table.read_data() == [["1", "english"], ["2", "中国人"]]
+        assert table.read_rows() == [
+            {"field1": 1, "field2": "english"},
+            {"field1": 2, "field2": "中国人"},
+        ]
 
 
 def test_table_pick_rows_number():
     source = "data/skip-rows.csv"
     query = Query(pick_rows=[3, 5])
     with Table(source, headers=False, query=query) as table:
-        assert table.read_data() == [["1", "english"], ["2", "中国人"]]
+        assert table.read_rows() == [
+            {"field1": 1, "field2": "english"},
+            {"field1": 2, "field2": "中国人"},
+        ]
 
 
 def test_table_pick_rows_regex():
@@ -761,7 +810,10 @@ def test_table_pick_rows_regex():
     query = Query(pick_rows=[r"<regex>(name|John|Alex)"])
     with Table(source, query=query) as table:
         assert table.header == ["name", "order"]
-        assert table.read_data() == [["John", 1], ["Alex", 2]]
+        assert table.read_rows() == [
+            {"name": "John", "order": 1},
+            {"name": "Alex", "order": 2},
+        ]
 
 
 def test_table_skip_rows():
@@ -769,14 +821,19 @@ def test_table_skip_rows():
     query = Query(skip_rows=["#", 5])
     with Table(source, query=query) as table:
         assert table.header == ["id", "name"]
-        assert table.read_data() == [["1", "english"]]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+        ]
 
 
 def test_table_skip_rows_excel_empty_column():
     source = "data/skip-rows.xlsx"
     query = Query(skip_rows=[""])
     with Table(source, query=query) as table:
-        assert table.read_data() == [["A", "B"], [8, 9]]
+        assert table.read_rows() == [
+            {"Table 1": "A", "field2": "B"},
+            {"Table 1": 8, "field2": 9},
+        ]
 
 
 def test_table_skip_rows_with_headers():
@@ -784,7 +841,10 @@ def test_table_skip_rows_with_headers():
     query = Query(skip_rows=["#"])
     with Table(source, query=query) as table:
         assert table.header == ["id", "name"]
-        assert table.read_data() == [["1", "english"], ["2", "中国人"]]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 def test_table_skip_rows_with_headers_example_from_readme():
@@ -792,7 +852,10 @@ def test_table_skip_rows_with_headers_example_from_readme():
     source = [["#comment"], ["name", "order"], ["John", 1], ["Alex", 2]]
     with Table(source, query=query) as table:
         assert table.header == ["name", "order"]
-        assert table.read_data() == [["John", 1], ["Alex", 2]]
+        assert table.read_rows() == [
+            {"name": "John", "order": 1},
+            {"name": "Alex", "order": 2},
+        ]
 
 
 def test_table_skip_rows_regex():
@@ -807,7 +870,10 @@ def test_table_skip_rows_regex():
     query = Query(skip_rows=["# comment", r"<regex># (cat|dog)"])
     with Table(source, query=query) as table:
         assert table.header == ["name", "order"]
-        assert table.read_data() == [["John", 1], ["Alex", 2]]
+        assert table.read_rows() == [
+            {"name": "John", "order": 1},
+            {"name": "Alex", "order": 2},
+        ]
 
 
 def test_table_skip_rows_preset():
@@ -825,12 +891,12 @@ def test_table_skip_rows_preset():
     query = Query(skip_rows=["<blank>"])
     with Table(source, query=query) as table:
         assert table.header == ["name", "order"]
-        assert table.read_data() == [
-            ["Ray", 0],
-            ["John", 1],
-            ["Alex", 2],
-            ["", 3],
-            [None, 4],
+        assert table.read_rows() == [
+            {"name": "Ray", "order": 0},
+            {"name": "John", "order": 1},
+            {"name": "Alex", "order": 2},
+            {"name": None, "order": 3},
+            {"name": None, "order": 4},
         ]
 
 
@@ -839,7 +905,9 @@ def test_table_limit_rows():
     query = Query(limit_rows=1)
     with Table(source, query=query) as table:
         assert table.header == ["id", "name"]
-        assert table.read_data() == [["1", "a"]]
+        assert table.read_rows() == [
+            {"id": 1, "name": "a"},
+        ]
 
 
 def test_table_offset_rows():
@@ -847,7 +915,9 @@ def test_table_offset_rows():
     query = Query(offset_rows=5)
     with Table(source, query=query) as table:
         assert table.header == ["id", "name"]
-        assert table.read_data() == [["6", "f"]]
+        assert table.read_rows() == [
+            {"id": 6, "name": "f"},
+        ]
 
 
 def test_table_limit_offset_rows():
@@ -855,7 +925,10 @@ def test_table_limit_offset_rows():
     query = Query(limit_rows=2, offset_rows=2)
     with Table(source, query=query) as table:
         assert table.header == ["id", "name"]
-        assert table.read_data() == [["3", "c"], ["4", "d"]]
+        assert table.read_rows() == [
+            {"id": 3, "name": "c"},
+            {"id": 4, "name": "d"},
+        ]
 
 
 def test_table_limit_fields_error_zero_issue_521():
@@ -908,82 +981,117 @@ def test_table_offset_rows_error_zero_issue_521():
 def test_table_header():
     with Table("data/table.csv") as table:
         assert table.header == ["id", "name"]
-        assert table.read_data() == [["1", "english"], ["2", "中国人"]]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 def test_table_header_unicode():
     with Table("data/table-unicode-headers.csv") as table:
         assert table.header == ["id", "国人"]
-        assert table.read_data() == [["1", "english"], ["2", "中国人"]]
+        assert table.read_rows() == [
+            {"id": 1, "国人": "english"},
+            {"id": 2, "国人": "中国人"},
+        ]
 
 
 def test_table_header_stream_context_manager():
     source = open("data/table.csv", mode="rb")
     with Table(source, format="csv") as table:
         assert table.header == ["id", "name"]
-        assert table.read_data() == [["1", "english"], ["2", "中国人"]]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 def test_table_header_inline():
     source = [[], ["id", "name"], ["1", "english"], ["2", "中国人"]]
     with Table(source, headers=2) as table:
         assert table.header == ["id", "name"]
-        assert table.read_data() == [["1", "english"], ["2", "中国人"]]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 def test_table_header_json_keyed():
     source = "text://[" '{"id": 1, "name": "english"},' '{"id": 2, "name": "中国人"}]'
     with Table(source, format="json") as table:
         assert table.header == ["id", "name"]
-        assert table.read_data() == [[1, "english"], [2, "中国人"]]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 def test_table_header_inline_keyed():
     source = [{"id": "1", "name": "english"}, {"id": "2", "name": "中国人"}]
     with Table(source) as table:
         assert table.header == ["id", "name"]
-        assert table.read_data() == [["1", "english"], ["2", "中国人"]]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 def test_table_header_inline_keyed_headers_is_none():
     source = [{"id": "1", "name": "english"}, {"id": "2", "name": "中国人"}]
     with Table(source, headers=False) as table:
         assert table.header == []
-        assert table.read_data() == [["id", "name"], ["1", "english"], ["2", "中国人"]]
+        assert table.read_rows() == [
+            {"field1": "id", "field2": "name"},
+            {"field1": "1", "field2": "english"},
+            {"field1": "2", "field2": "中国人"},
+        ]
 
 
 def test_table_header_xlsx_multiline():
     source = "data/multiline-headers.xlsx"
     dialect = ExcelDialect(fill_merged_cells=True)
     with Table(source, dialect=dialect, headers=[1, 2, 3, 4, 5]) as table:
-        assert table.header == [
+        header = table.header
+        assert header == [
             "Region",
             "Caloric contribution (%)",
             "Cumulative impact of changes on cost of food basket from previous quarter",
             "Cumulative impact of changes on cost of food basket from baseline (%)",
         ]
-        assert table.read_data() == [["A", "B", "C", "D"]]
+        assert table.read_rows() == [
+            {header[0]: "A", header[1]: "B", header[2]: "C", header[3]: "D"},
+        ]
 
 
 def test_table_header_csv_multiline_headers_join():
     source = "text://k1\nk2\nv1\nv2\nv3"
     with Table(source, format="csv", headers=[[1, 2], ":"]) as table:
         assert table.header == ["k1:k2"]
-        assert table.read_data() == [["v1"], ["v2"], ["v3"]]
+        assert table.read_rows() == [
+            {"k1:k2": "v1"},
+            {"k1:k2": "v2"},
+            {"k1:k2": "v3"},
+        ]
 
 
 def test_table_header_csv_multiline_headers_duplicates():
     source = "text://k1\nk1\nv1\nv2\nv3"
     with Table(source, format="csv", headers=[1, 2]) as table:
         assert table.header == ["k1"]
-        assert table.read_data() == [["v1"], ["v2"], ["v3"]]
+        assert table.read_rows() == [
+            {"k1": "v1"},
+            {"k1": "v2"},
+            {"k1": "v3"},
+        ]
 
 
 def test_table_header_strip_and_non_strings():
     source = [[" header ", 2, 3, None], ["value1", "value2", "value3", "value4"]]
     with Table(source, headers=1) as table:
         assert table.header == ["header", "2", "3", ""]
-        assert table.read_data() == [["value1", "value2", "value3", "value4"]]
+        assert table.read_rows() == [
+            {"header": "value1", "2": "value2", "3": "value3", "field4": "value4"},
+        ]
 
 
 # Schema
@@ -1131,7 +1239,7 @@ def test_table_schema_lookup_foreign_keys_error():
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_table_stats_hash():
     with Table("data/doublequote.csv") as table:
-        table.read_data()
+        table.read_rows()
         assert table.hashing == "md5"
         assert table.stats["hash"] == "d82306001266c4343a2af4830321ead8"
 
@@ -1139,7 +1247,7 @@ def test_table_stats_hash():
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_table_stats_hash_md5():
     with Table("data/doublequote.csv", hashing="md5") as table:
-        table.read_data()
+        table.read_rows()
         assert table.hashing == "md5"
         assert table.stats["hash"] == "d82306001266c4343a2af4830321ead8"
 
@@ -1147,7 +1255,7 @@ def test_table_stats_hash_md5():
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_table_stats_hash_sha1():
     with Table("data/doublequote.csv", hashing="sha1") as table:
-        table.read_data()
+        table.read_rows()
         assert table.hashing == "sha1"
         assert table.stats["hash"] == "2842768834a6804d8644dd689da61c7ab71cbb33"
 
@@ -1155,7 +1263,7 @@ def test_table_stats_hash_sha1():
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_table_stats_hash_sha256():
     with Table("data/doublequote.csv", hashing="sha256") as table:
-        table.read_data()
+        table.read_rows()
         assert table.hashing == "sha256"
         assert (
             table.stats["hash"]
@@ -1166,7 +1274,7 @@ def test_table_stats_hash_sha256():
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_table_stats_hash_sha512():
     with Table("data/doublequote.csv", hashing="sha512") as table:
-        table.read_data()
+        table.read_rows()
         assert table.hashing == "sha512"
         assert (
             table.stats["hash"]
@@ -1177,16 +1285,16 @@ def test_table_stats_hash_sha512():
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_table_stats_hash_compressed():
     with Table("data/doublequote.csv.zip") as table:
-        table.read_data()
+        table.read_rows()
         assert table.hashing == "md5"
         assert table.stats["hash"] == "2a72c90bd48c1fa48aec632db23ce8f7"
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 @pytest.mark.vcr
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_table_stats_hash_remote():
     with Table(BASE_URL % "data/special/doublequote.csv") as table:
-        table.read_data()
+        table.read_rows()
         assert table.hashing == "md5"
         assert table.stats["hash"] == "d82306001266c4343a2af4830321ead8"
 
@@ -1194,28 +1302,28 @@ def test_table_stats_hash_remote():
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_table_stats_bytes():
     with Table("data/doublequote.csv") as table:
-        table.read_data()
+        table.read_rows()
         assert table.stats["bytes"] == 7346
 
 
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_table_stats_bytes_compressed():
     with Table("data/doublequote.csv.zip") as table:
-        table.read_data()
+        table.read_rows()
         assert table.stats["bytes"] == 1265
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 @pytest.mark.vcr
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_table_stats_bytes_remote():
     with Table(BASE_URL % "data/special/doublequote.csv") as table:
-        table.read_data()
+        table.read_rows()
         assert table.stats["bytes"] == 7346
 
 
 def test_table_stats_fields():
     with Table("data/doublequote.csv") as table:
-        table.read_data()
+        table.read_rows()
         assert table.stats["fields"] == 17
         table.open()
         table.read_rows()
@@ -1225,13 +1333,13 @@ def test_table_stats_fields():
 @pytest.mark.vcr
 def test_table_stats_fields_remote():
     with Table(BASE_URL % "data/special/doublequote.csv") as table:
-        table.read_data()
+        table.read_rows()
         assert table.stats["fields"] == 17
 
 
 def test_table_stats_rows():
     with Table("data/doublequote.csv") as table:
-        table.read_data()
+        table.read_rows()
         assert table.stats["rows"] == 5
         table.open()
         table.read_rows()
@@ -1241,13 +1349,13 @@ def test_table_stats_rows():
 @pytest.mark.vcr
 def test_table_stats_rows_remote():
     with Table(BASE_URL % "data/special/doublequote.csv") as table:
-        table.read_data()
+        table.read_rows()
         assert table.stats["rows"] == 5
 
 
 def test_table_stats_rows_significant():
     with Table("data/table1.csv", headers=False) as table:
-        table.read_data()
+        table.read_rows()
         assert table.stats["rows"] == 10000
 
 
@@ -1256,22 +1364,28 @@ def test_table_stats_rows_significant():
 
 def test_table_reopen():
     with Table("data/table.csv") as table:
-        headers1 = table.header
-        contents1 = table.read_data()
+
+        # Open
+        assert table.header == ["id", "name"]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
+
+        # Re-open
         table.open()
-        headers2 = table.header
-        contents2 = table.read_data()
-        assert headers1 == ["id", "name"]
-        assert contents1 == [["1", "english"], ["2", "中国人"]]
-        assert headers1 == headers2
-        assert contents1 == contents2
+        assert table.header == ["id", "name"]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 def test_table_reopen_and_infer_volume():
     with Table("data/long.csv", infer_volume=3) as table:
         # Before reset
         assert table.sample == [["1", "a"], ["2", "b"], ["3", "c"]]
-        assert table.read_data() == [
+        assert list(map(lambda row: row.cells, table.read_rows())) == [
             ["1", "a"],
             ["2", "b"],
             ["3", "c"],
@@ -1279,12 +1393,12 @@ def test_table_reopen_and_infer_volume():
             ["5", "e"],
             ["6", "f"],
         ]
-        assert table.read_data() == []
+        assert table.read_rows() == []
         # Reopen table
         table.open()
         # After reopen
         assert table.sample == [["1", "a"], ["2", "b"], ["3", "c"]]
-        assert table.read_data() == [
+        assert list(map(lambda row: row.cells, table.read_rows())) == [
             ["1", "a"],
             ["2", "b"],
             ["3", "c"],
@@ -1301,11 +1415,11 @@ def test_table_reopen_generator():
 
     with Table(generator, headers=False) as table:
         # Before reopen
-        assert table.read_data() == [[1], [2]]
+        assert table.read_rows() == [{"field1": 1}, {"field1": 2}]
         # Reset table
         table.open()
         # After reopen
-        assert table.read_data() == [[1], [2]]
+        assert table.read_rows() == [{"field1": 1}, {"field1": 2}]
 
 
 # Write
@@ -1319,7 +1433,10 @@ def test_table_write(tmpdir):
         assert table.stats["rows"] == 2
     with Table(target) as table:
         assert table.header == ["id", "name"]
-        assert table.read_data() == [["1", "english"], ["2", "中国人"]]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 def test_table_write_format_error_bad_format(tmpdir):
@@ -1445,9 +1562,9 @@ def test_table_reset_on_close_issue_190():
     source = [["1", "english"], ["2", "中国人"]]
     table = Table(source, headers=False, query=query)
     table.open()
-    table.read_data() == [["1", "english"]]
+    assert table.read_rows() == [{"field1": 1, "field2": "english"}]
     table.open()
-    table.read_data() == [["1", "english"]]
+    assert table.read_rows() == [{"field1": 1, "field2": "english"}]
     table.close()
 
 
@@ -1455,8 +1572,10 @@ def test_table_skip_blank_at_the_end_issue_bco_dmo_33():
     query = Query(skip_rows=["#"])
     source = "data/skip-blank-at-the-end.csv"
     with Table(source, query=query) as table:
+        rows = table.read_rows()
         assert table.header == ["test1", "test2"]
-        assert table.read_data() == [["1", "2"], []]
+        assert rows[0].cells == ["1", "2"]
+        assert rows[1].cells == []
 
 
 def test_table_wrong_encoding_detection_issue_265():
@@ -1489,7 +1608,7 @@ def test_table_chardet_raises_remote_issue_305():
     source = "https://gist.githubusercontent.com/roll/56b91d7d998c4df2d4b4aeeefc18cab5/raw/a7a577cd30139b3396151d43ba245ac94d8ddf53/tabulator-issue-305.csv"
     with Table(source) as table:
         assert table.encoding == "utf-8"
-        assert len(table.read_data()) == 343
+        assert len(table.read_rows()) == 343
 
 
 def test_table_skip_rows_non_string_cell_issue_320():
@@ -1505,4 +1624,6 @@ def test_table_skip_rows_non_string_cell_issue_322():
     source = [["id", "name"], [1, "english"], [2, "spanish"]]
     with Table(source, query=query) as table:
         assert table.header == ["id", "name"]
-        assert table.read_data() == [[2, "spanish"]]
+        assert table.read_rows() == [
+            {"id": 2, "name": "spanish"},
+        ]

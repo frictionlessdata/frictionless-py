@@ -12,14 +12,20 @@ BASE_URL = "https://raw.githubusercontent.com/okfn/tabulator-py/master/%s"
 def test_json_parser():
     with Table("data/table.json") as table:
         assert table.header == ["id", "name"]
-        assert table.read_data() == [[1, "english"], [2, "中国人"]]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 def test_json_parser_keyed():
     with Table("data/table.keyed.json") as table:
         assert table.dialect.keyed is True
         assert table.header == ["id", "name"]
-        assert table.read_data() == [[1, "english"], [2, "中国人"]]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 def test_json_parser_keyed_with_keys_provided():
@@ -27,14 +33,20 @@ def test_json_parser_keyed_with_keys_provided():
     with Table("data/table.keyed.json", dialect=dialect) as table:
         assert table.dialect.keyed is True
         assert table.header == ["name", "id"]
-        assert table.read_data() == [["english", 1], ["中国人", 2]]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 def test_json_parser_from_text():
     source = '[["id", "name"], [1, "english"], [2, "中国人"]]'
     with Table(source, scheme="text", format="json") as table:
         assert table.header == ["id", "name"]
-        assert table.read_data() == [[1, "english"], [2, "中国人"]]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 def test_json_parser_from_text_keyed():
@@ -42,14 +54,20 @@ def test_json_parser_from_text_keyed():
     with Table(source, scheme="text", format="json") as table:
         assert table.dialect.keyed is True
         assert table.header == ["id", "name"]
-        assert table.read_data() == [[1, "english"], [2, "中国人"]]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 @pytest.mark.vcr
 def test_json_parser_from_remote():
     with Table(BASE_URL % "data/table-lists.json") as table:
         assert table.header == ["id", "name"]
-        assert table.read_data() == [[1, "english"], [2, "中国人"]]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 @pytest.mark.vcr
@@ -57,19 +75,28 @@ def test_json_parser_from_remote_keyed():
     with Table(BASE_URL % "data/table-dicts.json") as table:
         assert table.dialect.keyed is True
         assert table.header == ["id", "name"]
-        assert table.read_data() == [[1, "english"], [2, "中国人"]]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 def test_jsonl_parser():
     with Table("data/table.jsonl") as table:
         assert table.header == ["id", "name"]
-        assert table.read_data() == [[1, "english"], [2, "中国人"]]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 def test_jsonl_parser_ndjson():
     with Table("data/table.ndjson") as table:
         assert table.header == ["id", "name"]
-        assert table.read_data() == [[1, "english"], [2, "中国人"]]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 # Write
@@ -121,7 +148,10 @@ def test_jsonl_parser_write(tmpdir):
         table.write(target)
     with Table(target) as table:
         assert table.header == ["id", "name"]
-        assert table.read_data() == [[1, "english"], [2, "中国人"]]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 def test_jsonl_parser_write_keyed(tmpdir):
@@ -132,4 +162,7 @@ def test_jsonl_parser_write_keyed(tmpdir):
         table.write(target, dialect=dialect)
     with Table(target, dialect=dialect) as table:
         assert table.header == ["id", "name"]
-        assert table.read_data() == [[1, "english"], [2, "中国人"]]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]

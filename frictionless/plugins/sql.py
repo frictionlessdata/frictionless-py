@@ -138,7 +138,8 @@ class SqlParser(Parser):
         resource = storage.read_resource(dialect.table, order_by=dialect.order_by)
         self.resource.schema = resource.schema
         yield resource.schema.field_names
-        yield from resource.read_data_stream()
+        for row in resource.read_row_stream():
+            yield row.cells
 
     # Write
 
