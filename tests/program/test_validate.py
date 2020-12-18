@@ -198,7 +198,7 @@ def test_validate_limit_errors():
 def test_validate_yaml():
     result = runner.invoke(program, "validate data/table.csv --yaml")
     assert result.exit_code == 0
-    assert no_time(yaml.load(result.stdout)) == no_time(validate("data/table.csv"))
+    assert no_time(yaml.safe_load(result.stdout)) == no_time(validate("data/table.csv"))
 
 
 def test_validate_json():
