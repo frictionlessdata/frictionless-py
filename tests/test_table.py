@@ -23,6 +23,7 @@ def test_table():
         assert table.encoding == "utf-8"
         assert table.compression == "no"
         assert table.compression_path == ""
+        assert table.header.row_positions == [1]
         assert table.header == ["id", "name"]
         assert table.sample == [["1", "english"], ["2", "中国人"]]
         assert table.schema == {
@@ -141,6 +142,7 @@ def test_table_data_stream_iterate():
 
 def test_table_empty():
     with Table("data/empty.csv") as table:
+        assert table.header.missing
         assert table.header == []
         assert table.schema == {}
         assert table.read_rows() == []
@@ -160,6 +162,7 @@ def test_table_without_rows():
 
 def test_table_without_headers():
     with Table("data/without-headers.csv") as table:
+        assert table.header.missing
         assert table.header == []
         assert table.schema == {
             "fields": [
@@ -634,8 +637,8 @@ def test_table_dialect_header_case_default():
         assert table.schema.field_names == ["ID", "NAME"]
         assert table.header == ["id", "name"]
         assert table.header.valid is False
-        assert table.header.errors[0].code == "non-matching-header"
-        assert table.header.errors[1].code == "non-matching-header"
+        assert table.header.errors[0].code == "incorrect-label"
+        assert table.header.errors[1].code == "incorrect-label"
 
 
 def test_table_dialect_header_case_is_false():

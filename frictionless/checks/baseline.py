@@ -19,13 +19,14 @@ class BaselineCheck(Check):
         errors.DialectError,
         errors.SchemaError,
         errors.FieldError,
-        # head
-        errors.ExtraHeaderError,
-        errors.MissingHeaderError,
+        # header
+        errors.ExtraLabelError,
+        errors.MissingLabelError,
+        errors.BlankLabelError,
+        errors.DuplicateLabelError,
         errors.BlankHeaderError,
-        errors.DuplicateHeaderError,
-        errors.NonMatchingHeaderError,
-        # body
+        errors.IncorrectLabelError,
+        # content
         errors.ExtraCellError,
         errors.MissingCellError,
         errors.BlankRowError,

@@ -1,12 +1,14 @@
-from frictionless import Header, Field, Schema, Resource
+from frictionless import Field, Schema, Resource
 
 
 # General
 
 
 def test_basic():
-    header = create_header(["field1", "field2", "field3"])
+    resource = Resource(data=[["field1", "field2", "field3"], [1, 2, 3]])
+    header = resource.read_header()
     assert header.field_positions == [1, 2, 3]
+    assert header.row_positions == [1]
     assert header.errors == []
     assert header == ["field1", "field2", "field3"]
 
@@ -25,16 +27,3 @@ def test_missing_header():
     header = resource.read_header()
     assert header == ["id", "name"]
     assert header.valid is False
-
-
-# Helpers
-
-
-def create_header(cells, *, schema=None, field_positions=[]):
-    field_positions = field_positions or list(range(1, len(cells) + 1))
-    if not schema:
-        fields = []
-        for field_position in field_positions:
-            fields.append(Field({"name": "field%s" % field_position, "type": "any"}))
-        schema = Schema({"fields": fields})
-    return Header(cells, schema=schema, field_positions=field_positions)

@@ -189,32 +189,13 @@ class Row(dict):
 
     # Import/Export
 
-    def to_dict(self, *, json=False, types=None):
+    def to_str(self):
         """
-        Parameters:
-            json (bool): make data types compatible with JSON format
-
         Returns:
-            dict: a row as a dictionary
+            str: a row as a CSV string
         """
-
-        # Prepare
-        self.__process()
-        result = {name: self[name] for name in self.__field_info["names"]}
-        if types is None and json:
-            types = JsonParser.supported_types
-
-        # Covert
-        if types is not None:
-            for index, field in enumerate(self.__field_info["objects"]):
-                # Here we can optimize performance if we use a types mapping
-                if field.type not in types:
-                    cell = result[field.name]
-                    cell, notes = field.write_cell(cell, ignore_missing=True)
-                    result[field.name] = cell
-
-        # Return
-        return result
+        cells = self.to_list(types=CsvParser.supported_types)
+        return helpers.stringify_csv_string(cells)
 
     def to_list(self, *, json=False, types=None):
         """
@@ -244,13 +225,32 @@ class Row(dict):
         # Return
         return result
 
-    def to_str(self):
+    def to_dict(self, *, json=False, types=None):
         """
+        Parameters:
+            json (bool): make data types compatible with JSON format
+
         Returns:
-            str: a row as a CSV string
+            dict: a row as a dictionary
         """
-        cells = self.to_list(types=CsvParser.supported_types)
-        return helpers.stringify_csv_string(cells)
+
+        # Prepare
+        self.__process()
+        result = {name: self[name] for name in self.__field_info["names"]}
+        if types is None and json:
+            types = JsonParser.supported_types
+
+        # Covert
+        if types is not None:
+            for index, field in enumerate(self.__field_info["objects"]):
+                # Here we can optimize performance if we use a types mapping
+                if field.type not in types:
+                    cell = result[field.name]
+                    cell, notes = field.write_cell(cell, ignore_missing=True)
+                    result[field.name] = cell
+
+        # Return
+        return result
 
     # Process
 

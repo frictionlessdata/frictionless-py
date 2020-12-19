@@ -24,8 +24,8 @@ def test_validate_inquiry_multiple_invalid():
         nopool=True,
     )
     assert report.flatten(["tablePosition", "rowPosition", "fieldPosition", "code"]) == [
-        [2, None, 3, "blank-header"],
-        [2, None, 4, "duplicate-header"],
+        [2, None, 3, "blank-label"],
+        [2, None, 4, "duplicate-label"],
         [2, 2, 3, "missing-cell"],
         [2, 2, 4, "missing-cell"],
         [2, 3, 3, "missing-cell"],
@@ -46,11 +46,11 @@ def test_validate_inquiry_multiple_invalid_limit_errors():
         nopool=True,
     )
     assert report.flatten(["tablePosition", "code", "note"]) == [
-        [2, "blank-header", ""],
+        [2, "blank-label", ""],
     ]
     assert report.tables[0].flatten(["rowPosition", "fieldPosition", "code"]) == []
     assert report.tables[1].flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [None, 3, "blank-header"],
+        [None, 3, "blank-label"],
     ]
 
 
@@ -68,9 +68,9 @@ def test_validate_inquiry_multiple_invalid_with_schema():
         nopool=True,
     )
     assert report.flatten(["tablePosition", "rowPosition", "fieldPosition", "code"]) == [
-        [1, None, 1, "non-matching-header"],
-        [2, None, 3, "blank-header"],
-        [2, None, 4, "duplicate-header"],
+        [1, None, 1, "incorrect-label"],
+        [2, None, 3, "blank-label"],
+        [2, None, 4, "duplicate-label"],
         [2, 2, 3, "missing-cell"],
         [2, 2, 4, "missing-cell"],
         [2, 3, 3, "missing-cell"],
@@ -139,8 +139,8 @@ def test_validate_inquiry_parallel_multiple_invalid():
         {"tasks": [{"source": "data/table.csv"}, {"source": "data/invalid.csv"}]}
     )
     assert report.flatten(["tablePosition", "rowPosition", "fieldPosition", "code"]) == [
-        [2, None, 3, "blank-header"],
-        [2, None, 4, "duplicate-header"],
+        [2, None, 3, "blank-label"],
+        [2, None, 4, "duplicate-label"],
         [2, 2, 3, "missing-cell"],
         [2, 2, 4, "missing-cell"],
         [2, 3, 3, "missing-cell"],

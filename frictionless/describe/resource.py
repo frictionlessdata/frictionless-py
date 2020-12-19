@@ -15,10 +15,11 @@ def describe_resource(
     encoding=None,
     compression=None,
     compression_path=None,
-    # Control/Dialect/Query/Header
+    # Control/Dialect/Query
     control=None,
     dialect=None,
     query=None,
+    # Header
     headers=None,
     # Infer
     infer_type=None,

@@ -909,10 +909,11 @@ class Resource(Metadata):
         class ResourceView(petl.Table):
             def __iter__(self):
                 if normalize:
-                    # TODO: should we emit header?
                     yield resource.schema.field_names
                     yield from (row.to_list() for row in resource.read_row_stream())
                     return
+                if not resource.dialect.header:
+                    yield resource.schema.field_names
                 yield from resource.read_data_stream()
 
         return ResourceView()

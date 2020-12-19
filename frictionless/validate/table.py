@@ -18,15 +18,16 @@ def validate_table(
     encoding=None,
     compression=None,
     compression_path=None,
-    # Control/Dialect/Query/Header
+    # Control/Dialect/Query
     control=None,
     dialect=None,
     query=None,
-    headers=None,
     # Schema
     schema=None,
     sync_schema=False,
     patch_schema=False,
+    # Header
+    headers=None,
     # Infer
     infer_type=None,
     infer_names=None,
@@ -170,15 +171,16 @@ def validate_table(
         encoding=encoding,
         compression=compression,
         compression_path=compression_path,
-        # Control/Dialect/Query/Header
+        # Control/Dialect/Query
         control=control,
         dialect=dialect,
         query=query,
-        headers=headers,
         # Schema
         schema=schema,
         sync_schema=sync_schema,
         patch_schema=patch_schema,
+        # Header
+        headers=headers,
         # Infer
         infer_type=infer_type,
         infer_names=infer_names,

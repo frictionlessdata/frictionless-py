@@ -131,16 +131,17 @@ class Table:
         encoding=None,
         compression=None,
         compression_path=None,
-        # Control/Dialect/Query/Header
+        # Control/Dialect/Query
         control=None,
         dialect=None,
         query=None,
-        # TODO: rename to header preserving deprecated headers OR just deprecate?
-        headers=None,
         # Schema
         schema=None,
         sync_schema=False,
         patch_schema=None,
+        # Header
+        # TODO: rename to header preserving deprecated headers OR just deprecate?
+        headers=None,
         # Infer
         # TODO: group as we did for Query?
         infer_type=None,
@@ -328,22 +329,6 @@ class Table:
         return self.__resource.schema
 
     @property
-    def stats(self):
-        """Table stats
-
-        The stats object has:
-            - hash: str - hashing sum
-            - bytes: int - number of bytes
-            - fields: int - number of fields
-            - rows: int - number of rows
-
-        Returns:
-            dict?: table stats
-
-        """
-        return self.__resource.stats
-
-    @property
     def header(self):
         """
         Returns:
@@ -362,6 +347,22 @@ class Table:
             list[]?: table sample
         """
         return self.__sample
+
+    @property
+    def stats(self):
+        """Table stats
+
+        The stats object has:
+            - hash: str - hashing sum
+            - bytes: int - number of bytes
+            - fields: int - number of fields
+            - rows: int - number of rows
+
+        Returns:
+            dict?: table stats
+
+        """
+        return self.__resource.stats
 
     @property
     def row_stream(self):
@@ -397,7 +398,7 @@ class Table:
             self.__resource.stats = {"hash": "", "bytes": 0, "fields": 0, "rows": 0}
             self.__parser = system.create_parser(self.__resource)
             self.__parser.open()
-            self.__read_infer_metadata()
+            self.__read_infer_sample()
             self.__data_stream = self.__read_data_stream()
             self.__row_stream = self.__read_row_stream()
             self.__row_number = 0
@@ -445,12 +446,13 @@ class Table:
         schema = self.__resource.schema
 
         # Handle header errors
-        if not self.header.valid:
-            error = self.header.errors[0]
-            if self.__resource.onerror == "warn":
-                warnings.warn(error.message, UserWarning)
-            elif self.__resource.onerror == "raise":
-                raise FrictionlessException(error)
+        if self.header is not None:
+            if not self.header.valid:
+                error = self.header.errors[0]
+                if self.__resource.onerror == "warn":
+                    warnings.warn(error.message, UserWarning)
+                elif self.__resource.onerror == "raise":
+                    raise FrictionlessException(error)
 
         # Create field info
         # This structure is optimized and detached version of schema.fields
@@ -563,7 +565,6 @@ class Table:
         self.__read_raise_closed()
         return list(self.__data_stream)
 
-    # TODO: can we refactor/optimize it?
     def __read_data_stream(self):
 
         # Prepare context
@@ -572,10 +573,12 @@ class Table:
         parser_iterator = self.__read_iterate_parser()
         sample_iterator = zip(self.__sample_positions, self.__sample)
 
-        # Stream without filtering
+        # Stream header
+        if self.__header is not None:
+            yield self.header.to_list()
+
+        # Stream sample/parser (no filtering)
         if not self.__resource.query:
-            # TODO: rebase on NoHeader
-            yield list(self.header or self.__resource.schema.field_names)
             for row_position, cells in chain(sample_iterator, parser_iterator):
                 self.__row_position = row_position
                 self.__row_number += 1
@@ -583,11 +586,9 @@ class Table:
                 yield cells
             return
 
-        # Stream with filtering
+        # Stream sample/parser (with filtering)
         limit = self.__resource.query.limit_rows
         offset = self.__resource.query.offset_rows or 0
-        # TODO: rebase on NoHeader
-        yield list(self.header or self.__resource.schema.field_names)
         for row_position, cells in chain(sample_iterator, parser_iterator):
             if offset:
                 offset -= 1
@@ -616,11 +617,11 @@ class Table:
                 cells = self.__read_filter_cells(cells, self.__field_positions)
                 yield row_position, cells
 
-    def __read_infer_metadata(self):
+    def __read_infer_sample(self):
 
         # Create state
         sample = []
-        header = []
+        labels = []
         field_positions = []
         sample_positions = []
 
@@ -658,6 +659,7 @@ class Table:
         row_number = 0
         header_data = []
         header_ready = False
+        header_row_positions = []
         header_numbers = dialect.header_rows or config.DEFAULT_HEADER_ROWS
         iterator = chain(buffer, self.__parser.data_stream)
         for row_position, cells in enumerate(iterator, start=1):
@@ -668,9 +670,10 @@ class Table:
                 if not header_ready:
                     if row_number in header_numbers:
                         header_data.append(helpers.stringify_header(cells))
+                        if dialect.header:
+                            header_row_positions.append(row_position)
                     if row_number >= max(header_numbers):
-                        infer = self.__read_infer_header
-                        header, field_positions = infer(header_data)
+                        labels, field_positions = self.__read_infer_header(header_data)
                         header_ready = True
                     if not header_ready or dialect.header:
                         continue
@@ -687,7 +690,7 @@ class Table:
             schema.infer(
                 sample,
                 type=self.__infer_type,
-                names=self.__infer_names or header,
+                names=self.__infer_names or labels,
                 confidence=self.__infer_confidence,
                 float_numbers=self.__infer_float_numbers,
                 missing_values=self.__infer_missing_values,
@@ -697,7 +700,7 @@ class Table:
         if self.__sync_schema:
             fields = []
             mapping = {field.get("name"): field for field in schema.fields}
-            for name in header:
+            for name in labels:
                 fields.append(mapping.get(name, {"name": name, "type": "any"}))
             schema.fields = fields
 
@@ -723,9 +726,10 @@ class Table:
         self.__field_positions = field_positions
         self.__sample_positions = sample_positions
         self.__header = Header(
-            header,
-            schema=schema,
+            labels,
+            fields=schema.fields,
             field_positions=field_positions,
+            row_positions=header_row_positions,
             ignore_case=not dialect.header_case,
         )
 
@@ -736,35 +740,35 @@ class Table:
         if not dialect.header:
             return [], list(range(1, len(header_data[0]) + 1))
 
-        # Get header
-        header = []
+        # Get labels
+        labels = []
         prev_cells = {}
         for cells in header_data:
             for index, cell in enumerate(cells):
                 if prev_cells.get(index) == cell:
                     continue
                 prev_cells[index] = cell
-                if len(header) <= index:
-                    header.append(cell)
+                if len(labels) <= index:
+                    labels.append(cell)
                     continue
-                header[index] = dialect.header_join.join([header[index], cell])
+                labels[index] = dialect.header_join.join([labels[index], cell])
 
-        # Filter header
-        filter_header = []
+        # Filter labels
+        filter_labels = []
         field_positions = []
         limit = self.__resource.query.limit_fields
         offset = self.__resource.query.offset_fields or 0
-        for field_position, header in enumerate(header, start=1):
-            if self.__read_filter_fields(field_position, header):
+        for field_position, labels in enumerate(labels, start=1):
+            if self.__read_filter_fields(field_position, labels):
                 if offset:
                     offset -= 1
                     continue
-                filter_header.append(header)
+                filter_labels.append(labels)
                 field_positions.append(field_position)
-                if limit and limit <= len(filter_header):
+                if limit and limit <= len(filter_labels):
                     break
 
-        return filter_header, field_positions
+        return filter_labels, field_positions
 
     def __read_filter_fields(self, field_position, header):
         match = True

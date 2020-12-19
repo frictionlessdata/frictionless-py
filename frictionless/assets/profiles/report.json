@@ -99,8 +99,11 @@
           "encoding",
           "compression",
           "compressionPath",
+          "control",
           "dialect",
           "query",
+          "schema",
+          "header",
           "time",
           "valid",
           "scope",
@@ -144,6 +147,11 @@
             "title": "Compression path",
             "description": "The path inside the compressed source."
           },
+          "control": {
+            "type": "object",
+            "title": "Control",
+            "description": "The file control of the table."
+          },
           "dialect": {
             "type": "object",
             "title": "Dialect",
@@ -154,16 +162,16 @@
             "title": "Query",
             "description": "The tabular query of the table."
           },
+          "schema": {
+            "type": "object",
+            "title": "Schema",
+            "description": "A Table Schema Object."
+          },
           "header": {
             "type": "array",
             "title": "Header",
             "description": "Table's header.",
             "items": {"type": "string"}
-          },
-          "schema": {
-            "type": "object",
-            "title": "Schema",
-            "description": "A Table Schema Object."
           },
           "time": {
             "type": "number",

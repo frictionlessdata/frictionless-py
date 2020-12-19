@@ -22,9 +22,7 @@ def program_validate(
     encoding: str = Opt(None, help="Specify encoding  [default: inferred]"),
     compression: str = Opt(None, help="Specify compression  [default: inferred]"),
     compression_path: str = Opt(None, help="Specify in-archive path  [default: first]"),
-    # Control/Dialect/Query/Header
-    header_rows: str = Opt(None, help="Comma-separated row numbers  [default: 1]"),
-    header_join: str = Opt(None, help="A separator to join a multiline header"),
+    # Control/Dialect/Query
     pick_fields: str = Opt(None, help='Comma-separated fields to pick e.g. "1,name1"'),
     skip_fields: str = Opt(None, help='Comma-separated fields to skip e.g. "2,name2"'),
     limit_fields: int = Opt(None, help="Limit fields by this integer"),
@@ -36,6 +34,9 @@ def program_validate(
     # Schema
     schema: str = Opt(None, help="Specify a path to a schema"),
     sync_schema: bool = Opt(None, help="Sync the schema based on headers"),
+    # Header
+    header_rows: str = Opt(None, help="Comma-separated row numbers  [default: 1]"),
+    header_join: str = Opt(None, help="A separator to join a multiline header"),
     # Infer
     infer_type: str = Opt(None, help="Force all the fields to have this type"),
     infer_names: str = Opt(None, help="Comma-separated list of field names"),
@@ -125,7 +126,7 @@ def program_validate(
             encoding=encoding,
             compression=compression,
             compression_path=compression_path,
-            # Control/Dialect/Query/Header
+            # Control/Dialect/Query
             dialect=dialect,
             query=query,
             # Schema

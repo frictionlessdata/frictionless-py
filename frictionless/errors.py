@@ -2,10 +2,9 @@ from .metadata import Metadata
 from .exception import FrictionlessException
 
 
-# TODO: consider other approached for report/errors as dict is not really effective as
-# it can be very memory consumig; as an alternative - hard limit for errors
-# TODO: swith code notation to camelCase?
-# TODO: compare performance if it's Metadata and if it's just a dict (5% diff?)
+# Consider other approached for report/errors as dict is not really
+# effective as it can be very memory consumig. As an option we can store
+# raw data without rendering an error template to an error messsage
 
 
 class Error(Metadata):
@@ -62,8 +61,8 @@ class HeaderError(Error):
     Parameters:
         descriptor? (str|dict): error descriptor
         note (str): an error note
-        cells (str[]): header cells
-        cell (str): an errored cell
+        labels (str[]): header labels
+        label (str): an errored label
         field_name (str): field name
         field_number (int): field number
         field_position (int): field position
@@ -75,7 +74,7 @@ class HeaderError(Error):
 
     code = "header-error"
     name = "Header Error"
-    tags = ["#head"]
+    tags = ["#header"]
     template = "Cell Error"
     description = "Cell Error"
 
@@ -84,18 +83,59 @@ class HeaderError(Error):
         descriptor=None,
         *,
         note,
-        cells,
-        cell,
+        labels,
+        row_positions,
+    ):
+        self.setinitial("labels", labels)
+        self.setinitial("rowPositions", row_positions)
+        super().__init__(descriptor, note=note)
+
+
+class LabelError(HeaderError):
+    """Label error representation
+
+    Parameters:
+        descriptor? (str|dict): error descriptor
+        note (str): an error note
+        labels (str[]): header labels
+        label (str): an errored label
+        field_name (str): field name
+        field_number (int): field number
+        field_position (int): field position
+
+    Raises:
+        FrictionlessException: raise any error that occurs during the process
+
+    """
+
+    code = "label-error"
+    name = "Label Error"
+    tags = ["#header"]
+    template = "Label Error"
+    description = "Label Error"
+
+    def __init__(
+        self,
+        descriptor=None,
+        *,
+        note,
+        labels,
+        label,
+        row_positions,
         field_name,
         field_number,
         field_position,
     ):
-        self.setinitial("cells", cells)
-        self.setinitial("cell", cell)
+        self.setinitial("label", label)
         self.setinitial("fieldName", field_name)
         self.setinitial("fieldNumber", field_number)
         self.setinitial("fieldPosition", field_position)
-        super().__init__(descriptor, note=note)
+        super().__init__(
+            descriptor,
+            note=note,
+            labels=labels,
+            row_positions=row_positions,
+        )
 
 
 class RowError(Error):
@@ -114,7 +154,7 @@ class RowError(Error):
 
     code = "row-error"
     name = "Row Error"
-    tags = ["#body"]
+    tags = ["#content"]
     template = "Row Error"
     description = "Row Error"
 
@@ -166,7 +206,7 @@ class CellError(RowError):
 
     code = "cell-error"
     name = "Cell Error"
-    tags = ["#body"]
+    tags = ["#content"]
     template = "Cell Error"
     description = "Cell Error"
 
@@ -406,48 +446,51 @@ class ChecksumError(Error):
 # Head
 
 
-# TODO: Rename to ExtraLabelError?
-class ExtraHeaderError(HeaderError):
-    code = "extra-header"
-    name = "Extra Header"
-    tags = ["#head", "#structure"]
-    template = 'There is an extra header "{cell}" in field at position "{fieldPosition}"'
-    description = "The first row of the data source contains header that does not exist in the schema."
+class ExtraLabelError(LabelError):
+    code = "extra-label"
+    name = "Extra Label"
+    tags = ["#header", "#structure"]
+    template = 'There is an extra label "{label}" in header at position "{fieldPosition}"'
+    description = "The header of the data source contains label that does not exist in the provided schema."
 
 
-# TODO: Rename to MissingLabelError?
-class MissingHeaderError(HeaderError):
-    code = "missing-header"
-    name = "Missing Header"
-    tags = ["#head", "#structure"]
-    template = 'There is a missing header in the field "{fieldName}" at position "{fieldPosition}"'
-    description = "Based on the schema there should be a header that is missing in the first row of the data source."
+class MissingLabelError(LabelError):
+    code = "missing-label"
+    name = "Missing Label"
+    tags = ["#header", "#structure"]
+    template = 'There is a missing label in the header\'s field "{fieldName}" at position "{fieldPosition}"'
+    description = "Based on the schema there should be a label that is missing in the data's header."
 
 
-# TODO: Rename to BlankLabelError?
-class BlankHeaderError(HeaderError):
-    code = "blank-header"
-    name = "Blank Header"
-    tags = ["#head", "#structure"]
-    template = 'Header in field at position "{fieldPosition}" is blank'
-    description = "A column in the header row is missing a value. Header should be provided and not be blank."
+class BlankLabelError(LabelError):
+    code = "blank-label"
+    name = "Blank Label"
+    tags = ["#header", "#structure"]
+    template = 'Label in the header in field at position "{fieldPosition}" is blank'
+    description = "A label in the header row is missing a value. Label should be provided and not be blank."
 
 
-# TODO: Rename to DuplicateLabelError?
-class DuplicateHeaderError(HeaderError):
-    code = "duplicate-header"
-    name = "Duplicate Header"
-    tags = ["#head", "#structure"]
-    template = 'Header "{cell}" in field at position "{fieldPosition}" is duplicated to header in another field: {note}'
+class DuplicateLabelError(LabelError):
+    code = "duplicate-label"
+    name = "Duplicate Label"
+    tags = ["#header", "#structure"]
+    template = 'Header\'s label "{label}" in field at position "{fieldPosition}" is duplicated to label in another field: {note}'
     description = "Two columns in the header row have the same value. Column names should be unique."
 
 
-# TODO: Rename to IncorrectLabelError?
-class NonMatchingHeaderError(HeaderError):
-    code = "non-matching-header"
-    name = "Non-matching Header"
-    tags = ["#head", "#schema"]
-    template = 'Header "{cell}" in field {fieldName} at position "{fieldPosition}" does not match the field name in the schema'
+class BlankHeaderError(HeaderError):
+    code = "blank-header"
+    name = "Blank Header"
+    tags = ["#header", "#structure"]
+    template = "Header is completely blank"
+    description = "This header is empty. A header should contain at least one value."
+
+
+class IncorrectLabelError(LabelError):
+    code = "incorrect-label"
+    name = "Incorrect Label"
+    tags = ["#header", "#schema"]
+    template = 'Label "{label}" in field {fieldName} at position "{fieldPosition}" does not match the field name in the schema'
     description = "One of the data source header does not match the field name defined in the schema."
 
 
@@ -457,7 +500,7 @@ class NonMatchingHeaderError(HeaderError):
 class ExtraCellError(CellError):
     code = "extra-cell"
     name = "Extra Cell"
-    tags = ["#body", "#structure"]
+    tags = ["#content", "#structure"]
     template = 'Row at position "{rowPosition}" has an extra value in field at position "{fieldPosition}"'
     description = "This row has more values compared to the header row (the first row in the data source). A key concept is that all the rows in tabular data must have the same number of columns."
 
@@ -465,7 +508,7 @@ class ExtraCellError(CellError):
 class MissingCellError(CellError):
     code = "missing-cell"
     name = "Missing Cell"
-    tags = ["#body", "#structure"]
+    tags = ["#content", "#structure"]
     template = 'Row at position "{rowPosition}" has a missing cell in field "{fieldName}" at position "{fieldPosition}"'
     description = "This row has less values compared to the header row (the first row in the data source). A key concept is that all the rows in tabular data must have the same number of columns."
 
@@ -473,7 +516,7 @@ class MissingCellError(CellError):
 class BlankRowError(RowError):
     code = "blank-row"
     name = "Blank Row"
-    tags = ["#body", "#structure"]
+    tags = ["#content", "#structure"]
     template = 'Row at position "{rowPosition}" is completely blank'
     description = "This row is empty. A row should contain at least one value."
 
@@ -481,7 +524,7 @@ class BlankRowError(RowError):
 class TypeError(CellError):
     code = "type-error"
     name = "Missing Cell"
-    tags = ["#body", "#schema"]
+    tags = ["#content", "#schema"]
     template = 'The cell "{cell}" in row at position "{rowPosition}" and field "{fieldName}" at position "{fieldPosition}" has incompatible type: {note}'
     description = "The value does not match the schema type and format for this field."
 
@@ -489,7 +532,7 @@ class TypeError(CellError):
 class ConstraintError(CellError):
     code = "constraint-error"
     name = "Constraint Error"
-    tags = ["#body", "#schema"]
+    tags = ["#content", "#schema"]
     template = 'The cell "{cell}" in row at position "{rowPosition}" and field "{fieldName}" at position "{fieldPosition}" does not conform to a constraint: {note}'
     description = "A field value does not conform to a constraint."
 
@@ -497,7 +540,7 @@ class ConstraintError(CellError):
 class UniqueError(CellError):
     code = "unique-error"
     name = "Unique Error"
-    tags = ["#body", "#schema", "#integrity"]
+    tags = ["#content", "#schema", "#integrity"]
     template = 'Row at position "{rowPosition}" has unique constraint violation in field "{fieldName}" at position "{fieldPosition}": {note}'
     description = "This field is a unique field but it contains a value that has been used in another row."
 
@@ -505,7 +548,7 @@ class UniqueError(CellError):
 class PrimaryKeyError(RowError):
     code = "primary-key-error"
     name = "PrimaryKey Error"
-    tags = ["#body", "#schema", "#integrity"]
+    tags = ["#content", "#schema", "#integrity"]
     template = 'The row at position "{rowPosition}" does not conform to the primary key constraint: {note}'
     description = "Values in the primary key fields should be unique for every row"
 
@@ -513,7 +556,7 @@ class PrimaryKeyError(RowError):
 class ForeignKeyError(RowError):
     code = "foreign-key-error"
     name = "ForeignKey Error"
-    tags = ["#body", "#schema", "#integrity"]
+    tags = ["#content", "#schema", "#integrity"]
     template = 'The row at position "{rowPosition}" does not conform to the foreign key constraint: {note}'
     description = "Values in the foreign key fields should exist in the reference table"
 
@@ -524,15 +567,16 @@ class ForeignKeyError(RowError):
 class DuplicateRowError(RowError):
     code = "duplicate-row"
     name = "Duplicate Row"
-    tags = ["#body", "#heuristic"]
+    tags = ["#content", "#heuristic"]
     template = "Row at position {rowPosition} is duplicated: {note}"
     description = "The row is duplicated."
 
 
+# TODO: make cell error
 class DeviatedValueError(Error):
     code = "deviated-value"
     name = "Deviated Value"
-    tags = ["#body", "#heuristic"]
+    tags = ["#content", "#heuristic"]
     template = "There is a possible error because the value is deviated: {note}"
     description = "The value is deviated."
 
@@ -540,7 +584,7 @@ class DeviatedValueError(Error):
 class TruncatedValueError(CellError):
     code = "truncated-value"
     name = "Truncated Value"
-    tags = ["#body", "#heuristic"]
+    tags = ["#content", "#heuristic"]
     template = "The cell {cell} in row at position {rowPosition} and field {fieldName} at position {fieldPosition} has an error: {note}"
     description = "The value is possible truncated."
 
@@ -548,7 +592,7 @@ class TruncatedValueError(CellError):
 class BlacklistedValueError(CellError):
     code = "blacklisted-value"
     name = "Blacklisted Value"
-    tags = ["#body", "#regulation"]
+    tags = ["#content", "#regulation"]
     template = "The cell {cell} in row at position {rowPosition} and field {fieldName} at position {fieldPosition} has an error: {note}"
     description = "The value is blacklisted."
 
@@ -556,7 +600,7 @@ class BlacklistedValueError(CellError):
 class SequentialValueError(CellError):
     code = "sequential-value"
     name = "Sequential Value"
-    tags = ["#body", "#regulation"]
+    tags = ["#content", "#regulation"]
     template = "The cell {cell} in row at position {rowPosition} and field {fieldName} at position {fieldPosition} has an error: {note}"
     description = "The value is not sequential."
 
@@ -564,6 +608,6 @@ class SequentialValueError(CellError):
 class RowConstraintError(RowError):
     code = "row-constraint"
     name = "Row Constraint"
-    tags = ["#body", "#regulation"]
+    tags = ["#content", "#regulation"]
     template = "The row at position {rowPosition} has an error: {note}"
     description = "The value does not conform to the row constraint."

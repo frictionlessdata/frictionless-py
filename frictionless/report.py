@@ -205,10 +205,11 @@ class ReportTable(Metadata):
         self["compression"] = table.compression
         self["compressionPath"] = table.compression_path
         # Table
+        self["control"] = table.control
         self["dialect"] = table.dialect
         self["query"] = table.query
-        self.setinitial("header", table.header)
-        self.setinitial("schema", table.schema)
+        self["schema"] = table.schema
+        self["header"] = table.header
         # Validation
         self["time"] = time
         self["valid"] = not errors
