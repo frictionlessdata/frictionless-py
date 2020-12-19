@@ -440,8 +440,7 @@ class Table:
         schema = self.__resource.schema
         limit = self.__resource.query.limit_rows
         offset = self.__resource.query.offset_rows or 0
-        sample_iterator = self.__read_row_stream_create_sample_iterator()
-        parser_iterator = self.__read_row_stream_create_parser_iterator()
+        iterator = self.__read_row_stream_create_iterator()
 
         # Handle header errors
         if not self.header.valid:
@@ -470,9 +469,11 @@ class Table:
         memory_unique = {}
         memory_primary = {}
         foreign_groups = []
+        is_integrity = bool(schema.primary_key)
         for field in self.schema.fields:
             if field.constraints.get("unique"):
                 memory_unique[field.name] = {}
+                is_integrity = True
         if self.__lookup:
             for fk in self.schema.foreign_keys:
                 group = {}
@@ -480,9 +481,10 @@ class Table:
                 group["sourceKey"] = tuple(fk["reference"]["fields"])
                 group["targetKey"] = tuple(fk["fields"])
                 foreign_groups.append(group)
+                is_integrity = True
 
         # Stream rows
-        for row_position, cells in chain(sample_iterator, parser_iterator):
+        for row_position, cells in iterator:
 
             # Handle offset
             if offset:
@@ -499,11 +501,11 @@ class Table:
                 cells,
                 field_info=field_info,
                 row_position=self.__row_position,
-                row_number=self.__resource.stats["rows"],
+                row_number=self.__row_number,
             )
 
             # Unique Error
-            if memory_unique:
+            if is_integrity and memory_unique:
                 for field_name in memory_unique.keys():
                     cell = row[field_name]
                     if cell is not None:
@@ -516,7 +518,7 @@ class Table:
                             row.errors.append(error)
 
             # Primary Key Error
-            if schema.primary_key:
+            if is_integrity and schema.primary_key:
                 cells = tuple(row[field_name] for field_name in schema.primary_key)
                 if set(cells) == {None}:
                     note = 'cells composing the primary keys are all "None"'
@@ -532,7 +534,7 @@ class Table:
                             row.errors.append(error)
 
             # Foreign Key Error
-            if foreign_groups:
+            if is_integrity and foreign_groups:
                 for group in foreign_groups:
                     group_lookup = self.__lookup.get(group["sourceName"])
                     if group_lookup:
@@ -546,7 +548,7 @@ class Table:
                             row.errors.append(error)
 
             # Handle row errors
-            if self.__resource.onerror in ["warn", "raise"]:
+            if self.__resource.onerror != "ignore":
                 if not row.valid:
                     error = row.errors[0]
                     if self.__resource.onerror == "raise":
@@ -558,15 +560,22 @@ class Table:
             if limit and limit <= self.__row_number:
                 break
 
-    def __read_row_stream_create_sample_iterator(self):
-        return zip(self.__sample_positions, self.__sample)
-
-    def __read_row_stream_create_parser_iterator(self):
+    def __read_row_stream_create_iterator(self):
         start = max(self.__sample_positions or [0]) + 1
-        iterator = enumerate(self.__parser.data_stream, start=start)
-        for row_position, cells in iterator:
-            if self.__read_row_stream_pick_skip_row(row_position, cells):
-                cells = self.__read_row_stream_filter_data(cells, self.__field_positions)
+        sample_iterator = zip(self.__sample_positions, self.__sample)
+        parser_iterator = enumerate(self.__parser.data_stream, start=start)
+
+        # Witouth filtering
+        if not self.__resource.query:
+            yield from sample_iterator
+            yield from parser_iterator
+            return
+
+        # With row/cell filtering
+        yield from sample_iterator
+        for row_position, cells in parser_iterator:
+            if self.__read_row_stream_filter_rows(row_position, cells):
+                cells = self.__read_row_stream_filter_cells(cells, self.__field_positions)
                 yield row_position, cells
 
     def __read_row_stream_infer(self):
@@ -582,7 +591,7 @@ class Table:
         widths = []
         for row_position, cells in enumerate(self.__parser.data_stream, start=1):
             buffer.append(cells)
-            if self.__read_row_stream_pick_skip_row(row_position, cells):
+            if self.__read_row_stream_filter_rows(row_position, cells):
                 widths.append(len(cells))
                 if len(widths) >= self.__infer_volume:
                     break
@@ -596,7 +605,7 @@ class Table:
             drift = max(round(width * 0.1), 1)
             match = list(range(width - drift, width + drift + 1))
             for row_position, cells in enumerate(buffer, start=1):
-                if self.__read_row_stream_pick_skip_row(row_position, cells):
+                if self.__read_row_stream_filter_rows(row_position, cells):
                     row_number += 1
                     if len(cells) not in match:
                         continue
@@ -614,7 +623,7 @@ class Table:
         header_numbers = dialect.header_rows or config.DEFAULT_HEADER_ROWS
         iterator = chain(buffer, self.__parser.data_stream)
         for row_position, cells in enumerate(iterator, start=1):
-            if self.__read_row_stream_pick_skip_row(row_position, cells):
+            if self.__read_row_stream_filter_rows(row_position, cells):
                 row_number += 1
 
                 # Header
@@ -629,7 +638,7 @@ class Table:
                         continue
 
                 # Sample
-                sample.append(self.__read_row_stream_filter_data(cells, field_positions))
+                sample.append(self.__read_row_stream_filter_cells(cells, field_positions))
                 sample_positions.append(row_position)
                 if len(sample) >= self.__infer_volume:
                     break
@@ -708,7 +717,7 @@ class Table:
         limit = self.__resource.query.limit_fields
         offset = self.__resource.query.offset_fields or 0
         for field_position, header in enumerate(header, start=1):
-            if self.__read_row_stream_pick_skip_field(field_position, header):
+            if self.__read_row_stream_filter_fields(field_position, header):
                 if offset:
                     offset -= 1
                     continue
@@ -719,7 +728,7 @@ class Table:
 
         return filter_header, field_positions
 
-    def __read_row_stream_pick_skip_field(self, field_position, header):
+    def __read_row_stream_filter_fields(self, field_position, header):
         match = True
         for name in ["pick", "skip"]:
             if name == "pick":
@@ -740,7 +749,7 @@ class Table:
                     match = not match
         return match
 
-    def __read_row_stream_pick_skip_row(self, row_position, cells):
+    def __read_row_stream_filter_rows(self, row_position, cells):
         match = True
         cell = cells[0] if cells else None
         cell = "" if cell is None else str(cell)
@@ -765,7 +774,7 @@ class Table:
                     match = not match
         return match
 
-    def __read_row_stream_filter_data(self, cells, field_positions):
+    def __read_row_stream_filter_cells(self, cells, field_positions):
         if self.__resource.query.is_field_filtering:
             result = []
             for field_position, cell in enumerate(cells, start=1):
