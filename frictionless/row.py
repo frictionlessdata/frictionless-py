@@ -255,9 +255,11 @@ class Row(dict):
     # Process
 
     def __process(self, key=None):
+        # This algorithm might be improved especially for some
+        # scenarios like full processing after random access etc
 
         # Exit if processed
-        if self.__processed and not key:
+        if self.__processed:
             return
 
         # Prepare context
@@ -266,6 +268,7 @@ class Row(dict):
         field_mapping = self.__field_info["mapping"]
         field_positions = self.__field_info["positions"]
         iterator = zip_longest(field_mapping.values(), cells)
+        is_empty = not bool(super().__len__())
         if key:
             try:
                 field, field_number, field_position = self.__field_info["mapping"][key]
@@ -281,8 +284,7 @@ class Row(dict):
             if field_mapping is None:
                 break
             field, field_number, field_position = field_mapping
-            # TODO: review performance
-            if not key and super().__contains__(field.name):
+            if not is_empty and not is_empty and super().__contains__(field.name):
                 continue
 
             # Read cell
