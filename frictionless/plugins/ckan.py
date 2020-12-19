@@ -136,10 +136,7 @@ class CkanParser(Parser):
         )
         resource = storage.read_resource(dialect.resource)
         self.resource.schema = resource.schema
-        # TODO: yielding field_names or headers?
-        yield resource.schema.field_names
-        for row in resource.read_row_stream():
-            yield row.cells
+        yield from resource.read_data_stream()
 
     # Write
 

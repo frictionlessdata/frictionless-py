@@ -91,9 +91,7 @@ class PandasParser(Parser):
         storage = PandasStorage(dataframes={self.resource.name: self.resource.data})
         resource = storage.read_resource(self.resource.name)
         self.resource.schema = resource.schema
-        yield resource.schema.field_names
-        for row in resource.read_row_stream():
-            yield row.cells
+        yield from resource.read_data_stream()
 
     # Write
 

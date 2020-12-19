@@ -175,6 +175,7 @@ class Table:
         self.__parser = None
         self.__sample = None
         self.__header = None
+        self.__data_stream = None
         self.__row_stream = None
         self.__row_number = None
         self.__row_position = None
@@ -217,10 +218,9 @@ class Table:
     def __exit__(self, type, value, traceback):
         self.close()
 
-    # TODO: make compatible with petl?
     # TODO: implement the same for resource?
     def __iter__(self):
-        self.__read_row_stream_raise_closed()
+        self.__read_raise_closed()
         yield from self.__row_stream
 
     @property
@@ -372,6 +372,15 @@ class Table:
         """
         return self.__row_stream
 
+    @property
+    def data_stream(self):
+        """Data stream in form of a generator
+
+        Yields:
+            any[][]?: data stream
+        """
+        return self.__data_stream
+
     # Open/Close
 
     def open(self):
@@ -388,6 +397,8 @@ class Table:
             self.__resource.stats = {"hash": "", "bytes": 0, "fields": 0, "rows": 0}
             self.__parser = system.create_parser(self.__resource)
             self.__parser.open()
+            self.__read_infer_metadata()
+            self.__data_stream = self.__read_data_stream()
             self.__row_stream = self.__read_row_stream()
             self.__row_number = 0
             self.__row_position = 0
@@ -427,20 +438,11 @@ class Table:
         Returns:
             Row[]: table rows
         """
-        self.__read_row_stream_raise_closed()
+        self.__read_raise_closed()
         return list(self.__row_stream)
 
     def __read_row_stream(self):
-        self.__read_row_stream_infer()
-        return self.__read_row_stream_create()
-
-    def __read_row_stream_create(self):
-
-        # Prepare context
         schema = self.__resource.schema
-        limit = self.__resource.query.limit_rows
-        offset = self.__resource.query.offset_rows or 0
-        iterator = self.__read_row_stream_create_iterator()
 
         # Handle header errors
         if not self.header.valid:
@@ -470,12 +472,12 @@ class Table:
         memory_primary = {}
         foreign_groups = []
         is_integrity = bool(schema.primary_key)
-        for field in self.schema.fields:
+        for field in schema.fields:
             if field.constraints.get("unique"):
                 memory_unique[field.name] = {}
                 is_integrity = True
         if self.__lookup:
-            for fk in self.schema.foreign_keys:
+            for fk in schema.foreign_keys:
                 group = {}
                 group["sourceName"] = fk["reference"]["resource"]
                 group["sourceKey"] = tuple(fk["reference"]["fields"])
@@ -484,17 +486,11 @@ class Table:
                 is_integrity = True
 
         # Stream rows
-        for row_position, cells in iterator:
+        for cells in self.__data_stream:
 
-            # Handle offset
-            if offset:
-                offset -= 1
+            # Skip header
+            if not self.__row_number:
                 continue
-
-            # Update state
-            self.__row_number += 1
-            self.__row_position = row_position
-            self.__resource.stats["rows"] = self.__row_number
 
             # Create row
             row = Row(
@@ -555,30 +551,72 @@ class Table:
                         raise FrictionlessException(error)
                     warnings.warn(error.message, UserWarning)
 
-            # Stream/handle limit
+            # Stream rows
             yield row
+
+    def read_data(self):
+        """Read data into memory
+
+        Returns:
+            any[][]: table data
+        """
+        self.__read_raise_closed()
+        return list(self.__data_stream)
+
+    # TODO: can we refactor/optimize it?
+    def __read_data_stream(self):
+
+        # Prepare context
+        self.__row_number = 0
+        self.__row_position = 0
+        parser_iterator = self.__read_iterate_parser()
+        sample_iterator = zip(self.__sample_positions, self.__sample)
+
+        # Stream without filtering
+        if not self.__resource.query:
+            # TODO: rebase on NoHeader
+            yield list(self.header or self.__resource.schema.field_names)
+            for row_position, cells in chain(sample_iterator, parser_iterator):
+                self.__row_position = row_position
+                self.__row_number += 1
+                self.__resource.stats["rows"] = self.__row_number
+                yield cells
+            return
+
+        # Stream with filtering
+        limit = self.__resource.query.limit_rows
+        offset = self.__resource.query.offset_rows or 0
+        # TODO: rebase on NoHeader
+        yield list(self.header or self.__resource.schema.field_names)
+        for row_position, cells in chain(sample_iterator, parser_iterator):
+            if offset:
+                offset -= 1
+                continue
+            self.__row_position = row_position
+            self.__row_number += 1
+            self.__resource.stats["rows"] = self.__row_number
+            yield cells
             if limit and limit <= self.__row_number:
                 break
 
-    def __read_row_stream_create_iterator(self):
-        start = max(self.__sample_positions or [0]) + 1
-        sample_iterator = zip(self.__sample_positions, self.__sample)
-        parser_iterator = enumerate(self.__parser.data_stream, start=start)
+    def __read_iterate_parser(self):
 
-        # Witouth filtering
+        # Prepare context
+        start = max(self.__sample_positions or [0]) + 1
+        iterator = enumerate(self.__parser.data_stream, start=start)
+
+        # Stream without filtering
         if not self.__resource.query:
-            yield from sample_iterator
-            yield from parser_iterator
+            yield from iterator
             return
 
-        # With row/cell filtering
-        yield from sample_iterator
-        for row_position, cells in parser_iterator:
-            if self.__read_row_stream_filter_rows(row_position, cells):
-                cells = self.__read_row_stream_filter_cells(cells, self.__field_positions)
+        # Stream with filtering
+        for row_position, cells in iterator:
+            if self.__read_filter_rows(row_position, cells):
+                cells = self.__read_filter_cells(cells, self.__field_positions)
                 yield row_position, cells
 
-    def __read_row_stream_infer(self):
+    def __read_infer_metadata(self):
 
         # Create state
         sample = []
@@ -591,7 +629,7 @@ class Table:
         widths = []
         for row_position, cells in enumerate(self.__parser.data_stream, start=1):
             buffer.append(cells)
-            if self.__read_row_stream_filter_rows(row_position, cells):
+            if self.__read_filter_rows(row_position, cells):
                 widths.append(len(cells))
                 if len(widths) >= self.__infer_volume:
                     break
@@ -605,7 +643,7 @@ class Table:
             drift = max(round(width * 0.1), 1)
             match = list(range(width - drift, width + drift + 1))
             for row_position, cells in enumerate(buffer, start=1):
-                if self.__read_row_stream_filter_rows(row_position, cells):
+                if self.__read_filter_rows(row_position, cells):
                     row_number += 1
                     if len(cells) not in match:
                         continue
@@ -623,7 +661,7 @@ class Table:
         header_numbers = dialect.header_rows or config.DEFAULT_HEADER_ROWS
         iterator = chain(buffer, self.__parser.data_stream)
         for row_position, cells in enumerate(iterator, start=1):
-            if self.__read_row_stream_filter_rows(row_position, cells):
+            if self.__read_filter_rows(row_position, cells):
                 row_number += 1
 
                 # Header
@@ -631,14 +669,14 @@ class Table:
                     if row_number in header_numbers:
                         header_data.append(helpers.stringify_header(cells))
                     if row_number >= max(header_numbers):
-                        infer = self.__read_row_stream_infer_header
+                        infer = self.__read_infer_header
                         header, field_positions = infer(header_data)
                         header_ready = True
                     if not header_ready or dialect.header:
                         continue
 
                 # Sample
-                sample.append(self.__read_row_stream_filter_cells(cells, field_positions))
+                sample.append(self.__read_filter_cells(cells, field_positions))
                 sample_positions.append(row_position)
                 if len(sample) >= self.__infer_volume:
                     break
@@ -691,7 +729,7 @@ class Table:
             ignore_case=not dialect.header_case,
         )
 
-    def __read_row_stream_infer_header(self, header_data):
+    def __read_infer_header(self, header_data):
         dialect = self.__resource.dialect
 
         # No header
@@ -717,7 +755,7 @@ class Table:
         limit = self.__resource.query.limit_fields
         offset = self.__resource.query.offset_fields or 0
         for field_position, header in enumerate(header, start=1):
-            if self.__read_row_stream_filter_fields(field_position, header):
+            if self.__read_filter_fields(field_position, header):
                 if offset:
                     offset -= 1
                     continue
@@ -728,7 +766,7 @@ class Table:
 
         return filter_header, field_positions
 
-    def __read_row_stream_filter_fields(self, field_position, header):
+    def __read_filter_fields(self, field_position, header):
         match = True
         for name in ["pick", "skip"]:
             if name == "pick":
@@ -749,7 +787,7 @@ class Table:
                     match = not match
         return match
 
-    def __read_row_stream_filter_rows(self, row_position, cells):
+    def __read_filter_rows(self, row_position, cells):
         match = True
         cell = cells[0] if cells else None
         cell = "" if cell is None else str(cell)
@@ -774,7 +812,7 @@ class Table:
                     match = not match
         return match
 
-    def __read_row_stream_filter_cells(self, cells, field_positions):
+    def __read_filter_cells(self, cells, field_positions):
         if self.__resource.query.is_field_filtering:
             result = []
             for field_position, cell in enumerate(cells, start=1):
@@ -783,8 +821,8 @@ class Table:
             return result
         return cells
 
-    def __read_row_stream_raise_closed(self):
-        if not self.__row_stream:
+    def __read_raise_closed(self):
+        if not self.__data_stream or not self.__row_stream:
             note = 'the table has not been opened by "table.open()"'
             raise FrictionlessException(errors.Error(note=note))
 

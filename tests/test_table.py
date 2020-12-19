@@ -108,6 +108,37 @@ def test_table_row_stream_blank_cells():
         assert row2.valid is True
 
 
+def test_table_read_data():
+    with Table("data/table.csv") as table:
+        assert table.read_data() == [
+            ["id", "name"],
+            ["1", "english"],
+            ["2", "中国人"],
+        ]
+
+
+def test_table_data_stream():
+    with Table("data/table.csv") as table:
+        assert list(table.data_stream) == [
+            ["id", "name"],
+            ["1", "english"],
+            ["2", "中国人"],
+        ]
+        assert list(table.data_stream) == []
+
+
+def test_table_data_stream_iterate():
+    with Table("data/table.csv") as table:
+        for number, cells in enumerate(table.data_stream):
+            assert len(cells) == 2
+            if number == 0:
+                assert cells == ["id", "name"]
+            if number == 1:
+                assert cells == ["1", "english"]
+            if number == 2:
+                assert cells == ["2", "中国人"]
+
+
 def test_table_empty():
     with Table("data/empty.csv") as table:
         assert table.header == []
@@ -1385,7 +1416,8 @@ def test_table_reopen_and_infer_volume():
     with Table("data/long.csv", infer_volume=3) as table:
         # Before reset
         assert table.sample == [["1", "a"], ["2", "b"], ["3", "c"]]
-        assert list(map(lambda row: row.cells, table.read_rows())) == [
+        assert table.read_data() == [
+            ["id", "name"],
             ["1", "a"],
             ["2", "b"],
             ["3", "c"],
@@ -1398,7 +1430,8 @@ def test_table_reopen_and_infer_volume():
         table.open()
         # After reopen
         assert table.sample == [["1", "a"], ["2", "b"], ["3", "c"]]
-        assert list(map(lambda row: row.cells, table.read_rows())) == [
+        assert table.read_data() == [
+            ["id", "name"],
             ["1", "a"],
             ["2", "b"],
             ["3", "c"],

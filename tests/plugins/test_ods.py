@@ -84,8 +84,8 @@ def test_ods_parser_with_boolean():
 def test_ods_parser_with_ints_floats_dates():
     source = "data/table-with-ints-floats-dates.ods"
     with Table(source) as table:
-        assert table.header == ["Int", "Float", "Date", "Datetime"]
-        assert list(map(lambda row: row.cells, table.read_rows())) == [
+        assert table.read_data() == [
+            ["Int", "Float", "Date", "Datetime"],
             [2013, 3.3, datetime(2009, 8, 16).date(), datetime(2009, 8, 16, 5, 43, 21)],
             [1997, 5.6, datetime(2009, 9, 20).date(), datetime(2009, 9, 20, 15, 30, 0)],
             [1969, 11.7, datetime(2012, 8, 23).date(), datetime(2012, 8, 23, 20, 40, 59)],

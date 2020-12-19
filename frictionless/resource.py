@@ -549,6 +549,23 @@ class Resource(Metadata):
             for row in table.row_stream:
                 yield row
 
+    def read_data(self):
+        """
+        Returns:
+            any[][]: array of data arrays
+        """
+        data = list(self.read_data_stream())
+        return data
+
+    def read_data_stream(self):
+        """
+        Returns:
+            gen<any[][]>: data stream
+        """
+        with self.to_table() as table:
+            for cells in table.data_stream:
+                yield cells
+
     def read_header(self):
         """
         Returns
@@ -891,10 +908,12 @@ class Resource(Metadata):
         # Define view
         class ResourceView(petl.Table):
             def __iter__(self):
-                # TODO: should we emit field_names or headers here?
-                yield resource.schema.field_names
-                for row in resource.read_row_stream():
-                    yield row.to_list() if normalize else row.cells
+                if normalize:
+                    # TODO: should we emit header?
+                    yield resource.schema.field_names
+                    yield from (row.to_list() for row in resource.read_row_stream())
+                    return
+                yield from resource.read_data_stream()
 
         return ResourceView()
 
