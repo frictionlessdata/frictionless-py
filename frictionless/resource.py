@@ -592,7 +592,7 @@ class Resource(Metadata):
         # Tabular
         if self.tabular:
             with self.to_table() as table:
-                helpers.pass_through(table.row_stream)
+                helpers.pass_through(table.data_stream)
                 return table.stats
 
         # General
