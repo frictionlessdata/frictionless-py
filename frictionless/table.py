@@ -2,7 +2,7 @@ import typing
 import warnings
 from pathlib import Path
 from copy import deepcopy
-from itertools import chain
+from itertools import chain, zip_longest
 from .exception import FrictionlessException
 from .resource import Resource
 from .system import system
@@ -131,16 +131,17 @@ class Table:
         encoding=None,
         compression=None,
         compression_path=None,
-        # Control/Dialect/Query/Header
+        # Control/Dialect/Query
         control=None,
         dialect=None,
         query=None,
-        # TODO: rename to header preserving deprecated headers OR just deprecate?
-        headers=None,
         # Schema
         schema=None,
         sync_schema=False,
         patch_schema=None,
+        # Header
+        # TODO: rename to header preserving deprecated headers OR just deprecate?
+        headers=None,
         # Infer
         # TODO: group as we did for Query?
         infer_type=None,
@@ -218,10 +219,9 @@ class Table:
     def __exit__(self, type, value, traceback):
         self.close()
 
-    # TODO: make compatible with petl?
     # TODO: implement the same for resource?
     def __iter__(self):
-        self.__read_row_stream_raise_closed()
+        self.__read_raise_closed()
         yield from self.__row_stream
 
     @property
@@ -329,22 +329,6 @@ class Table:
         return self.__resource.schema
 
     @property
-    def stats(self):
-        """Table stats
-
-        The stats object has:
-            - hash: str - hashing sum
-            - bytes: int - number of bytes
-            - fields: int - number of fields
-            - rows: int - number of rows
-
-        Returns:
-            dict?: table stats
-
-        """
-        return self.__resource.stats
-
-    @property
     def header(self):
         """
         Returns:
@@ -365,13 +349,20 @@ class Table:
         return self.__sample
 
     @property
-    def data_stream(self):
-        """Data stream in form of a generator of data arrays
+    def stats(self):
+        """Table stats
 
-        Yields:
-            any[][]?: data stream
+        The stats object has:
+            - hash: str - hashing sum
+            - bytes: int - number of bytes
+            - fields: int - number of fields
+            - rows: int - number of rows
+
+        Returns:
+            dict?: table stats
+
         """
-        return self.__data_stream
+        return self.__resource.stats
 
     @property
     def row_stream(self):
@@ -381,6 +372,15 @@ class Table:
             Row[][]?: row stream
         """
         return self.__row_stream
+
+    @property
+    def data_stream(self):
+        """Data stream in form of a generator
+
+        Yields:
+            any[][]?: data stream
+        """
+        return self.__data_stream
 
     # Open/Close
 
@@ -398,6 +398,7 @@ class Table:
             self.__resource.stats = {"hash": "", "bytes": 0, "fields": 0, "rows": 0}
             self.__parser = system.create_parser(self.__resource)
             self.__parser.open()
+            self.__read_infer_sample()
             self.__data_stream = self.__read_data_stream()
             self.__row_stream = self.__read_row_stream()
             self.__row_number = 0
@@ -430,51 +431,197 @@ class Table:
         """
         return self.__parser is None
 
+    # Read
+
+    def read_rows(self):
+        """Read rows into memory
+
+        Returns:
+            Row[]: table rows
+        """
+        self.__read_raise_closed()
+        return list(self.__row_stream)
+
+    def __read_row_stream(self):
+        schema = self.__resource.schema
+
+        # Handle header errors
+        if self.header is not None:
+            if not self.header.valid:
+                error = self.header.errors[0]
+                if self.__resource.onerror == "warn":
+                    warnings.warn(error.message, UserWarning)
+                elif self.__resource.onerror == "raise":
+                    raise FrictionlessException(error)
+
+        # Create field info
+        # This structure is optimized and detached version of schema.fields
+        # We create all data structures in-advance to share them between rows
+        field_number = 0
+        field_info = {"names": [], "objects": [], "positions": [], "mapping": {}}
+        for field, field_position in zip_longest(schema.fields, self.__field_positions):
+            if field is None:
+                break
+            field_number += 1
+            field_info["names"].append(field.name)
+            field_info["objects"].append(field.to_copy())
+            field_info["mapping"][field.name] = (field, field_number, field_position)
+            if field_position is not None:
+                field_info["positions"].append(field_position)
+
+        # Create state
+        memory_unique = {}
+        memory_primary = {}
+        foreign_groups = []
+        is_integrity = bool(schema.primary_key)
+        for field in schema.fields:
+            if field.constraints.get("unique"):
+                memory_unique[field.name] = {}
+                is_integrity = True
+        if self.__lookup:
+            for fk in schema.foreign_keys:
+                group = {}
+                group["sourceName"] = fk["reference"]["resource"]
+                group["sourceKey"] = tuple(fk["reference"]["fields"])
+                group["targetKey"] = tuple(fk["fields"])
+                foreign_groups.append(group)
+                is_integrity = True
+
+        # Stream rows
+        for cells in self.__data_stream:
+
+            # Skip header
+            if not self.__row_number:
+                continue
+
+            # Create row
+            row = Row(
+                cells,
+                field_info=field_info,
+                row_position=self.__row_position,
+                row_number=self.__row_number,
+            )
+
+            # Unique Error
+            if is_integrity and memory_unique:
+                for field_name in memory_unique.keys():
+                    cell = row[field_name]
+                    if cell is not None:
+                        match = memory_unique[field_name].get(cell)
+                        memory_unique[field_name][cell] = row.row_position
+                        if match:
+                            Error = errors.UniqueError
+                            note = "the same as in the row at position %s" % match
+                            error = Error.from_row(row, note=note, field_name=field_name)
+                            row.errors.append(error)
+
+            # Primary Key Error
+            if is_integrity and schema.primary_key:
+                cells = tuple(row[field_name] for field_name in schema.primary_key)
+                if set(cells) == {None}:
+                    note = 'cells composing the primary keys are all "None"'
+                    error = errors.PrimaryKeyError.from_row(row, note=note)
+                    row.errors.append(error)
+                else:
+                    match = memory_primary.get(cells)
+                    memory_primary[cells] = row.row_position
+                    if match:
+                        if match:
+                            note = "the same as in the row at position %s" % match
+                            error = errors.PrimaryKeyError.from_row(row, note=note)
+                            row.errors.append(error)
+
+            # Foreign Key Error
+            if is_integrity and foreign_groups:
+                for group in foreign_groups:
+                    group_lookup = self.__lookup.get(group["sourceName"])
+                    if group_lookup:
+                        cells = tuple(row[name] for name in group["targetKey"])
+                        if set(cells) == {None}:
+                            continue
+                        match = cells in group_lookup.get(group["sourceKey"], set())
+                        if not match:
+                            note = "not found in the lookup table"
+                            error = errors.ForeignKeyError.from_row(row, note=note)
+                            row.errors.append(error)
+
+            # Handle row errors
+            if self.__resource.onerror != "ignore":
+                if not row.valid:
+                    error = row.errors[0]
+                    if self.__resource.onerror == "raise":
+                        raise FrictionlessException(error)
+                    warnings.warn(error.message, UserWarning)
+
+            # Stream rows
+            yield row
+
     def read_data(self):
-        """Read data stream into memory
+        """Read data into memory
 
         Returns:
             any[][]: table data
         """
-        self.__read_data_stream_raise_closed()
+        self.__read_raise_closed()
         return list(self.__data_stream)
 
     def __read_data_stream(self):
-        self.__read_data_stream_infer()
-        return self.__read_data_stream_create()
 
-    def __read_data_stream_create(self):
+        # Prepare context
+        self.__row_number = 0
+        self.__row_position = 0
+        parser_iterator = self.__read_iterate_parser()
+        sample_iterator = zip(self.__sample_positions, self.__sample)
+
+        # Stream header
+        if self.__header is not None:
+            yield self.header.to_list()
+
+        # Stream sample/parser (no filtering)
+        if not self.__resource.query:
+            for row_position, cells in chain(sample_iterator, parser_iterator):
+                self.__row_position = row_position
+                self.__row_number += 1
+                self.__resource.stats["rows"] = self.__row_number
+                yield cells
+            return
+
+        # Stream sample/parser (with filtering)
         limit = self.__resource.query.limit_rows
         offset = self.__resource.query.offset_rows or 0
-        sample_iterator = self.__read_data_stream_create_sample_iterator()
-        parser_iterator = self.__read_data_stream_create_parser_iterator()
         for row_position, cells in chain(sample_iterator, parser_iterator):
-            self.__row_position = row_position
             if offset:
                 offset -= 1
                 continue
+            self.__row_position = row_position
             self.__row_number += 1
             self.__resource.stats["rows"] = self.__row_number
             yield cells
-            if limit and limit <= self.__resource.stats["rows"]:
+            if limit and limit <= self.__row_number:
                 break
 
-    def __read_data_stream_create_sample_iterator(self):
-        return zip(self.__sample_positions, self.__sample)
+    def __read_iterate_parser(self):
 
-    def __read_data_stream_create_parser_iterator(self):
+        # Prepare context
         start = max(self.__sample_positions or [0]) + 1
         iterator = enumerate(self.__parser.data_stream, start=start)
+
+        # Stream without filtering
+        if not self.__resource.query:
+            yield from iterator
+            return
+
+        # Stream with filtering
         for row_position, cells in iterator:
-            if self.__read_data_stream_pick_skip_row(row_position, cells):
-                cells = self.__read_data_stream_filter_data(cells, self.__field_positions)
+            if self.__read_filter_rows(row_position, cells):
+                cells = self.__read_filter_cells(cells, self.__field_positions)
                 yield row_position, cells
 
-    def __read_data_stream_infer(self):
+    def __read_infer_sample(self):
 
         # Create state
         sample = []
-        header = []
+        labels = []
         field_positions = []
         sample_positions = []
 
@@ -483,7 +630,7 @@ class Table:
         widths = []
         for row_position, cells in enumerate(self.__parser.data_stream, start=1):
             buffer.append(cells)
-            if self.__read_data_stream_pick_skip_row(row_position, cells):
+            if self.__read_filter_rows(row_position, cells):
                 widths.append(len(cells))
                 if len(widths) >= self.__infer_volume:
                     break
@@ -497,7 +644,7 @@ class Table:
             drift = max(round(width * 0.1), 1)
             match = list(range(width - drift, width + drift + 1))
             for row_position, cells in enumerate(buffer, start=1):
-                if self.__read_data_stream_pick_skip_row(row_position, cells):
+                if self.__read_filter_rows(row_position, cells):
                     row_number += 1
                     if len(cells) not in match:
                         continue
@@ -512,25 +659,27 @@ class Table:
         row_number = 0
         header_data = []
         header_ready = False
+        header_row_positions = []
         header_numbers = dialect.header_rows or config.DEFAULT_HEADER_ROWS
         iterator = chain(buffer, self.__parser.data_stream)
         for row_position, cells in enumerate(iterator, start=1):
-            if self.__read_data_stream_pick_skip_row(row_position, cells):
+            if self.__read_filter_rows(row_position, cells):
                 row_number += 1
 
                 # Header
                 if not header_ready:
                     if row_number in header_numbers:
                         header_data.append(helpers.stringify_header(cells))
+                        if dialect.header:
+                            header_row_positions.append(row_position)
                     if row_number >= max(header_numbers):
-                        infer = self.__read_data_stream_infer_header
-                        header, field_positions = infer(header_data)
+                        labels, field_positions = self.__read_infer_header(header_data)
                         header_ready = True
                     if not header_ready or dialect.header:
                         continue
 
                 # Sample
-                sample.append(self.__read_data_stream_filter_data(cells, field_positions))
+                sample.append(self.__read_filter_cells(cells, field_positions))
                 sample_positions.append(row_position)
                 if len(sample) >= self.__infer_volume:
                     break
@@ -541,7 +690,7 @@ class Table:
             schema.infer(
                 sample,
                 type=self.__infer_type,
-                names=self.__infer_names or header,
+                names=self.__infer_names or labels,
                 confidence=self.__infer_confidence,
                 float_numbers=self.__infer_float_numbers,
                 missing_values=self.__infer_missing_values,
@@ -551,7 +700,7 @@ class Table:
         if self.__sync_schema:
             fields = []
             mapping = {field.get("name"): field for field in schema.fields}
-            for name in header:
+            for name in labels:
                 fields.append(mapping.get(name, {"name": name, "type": "any"}))
             schema.fields = fields
 
@@ -577,50 +726,51 @@ class Table:
         self.__field_positions = field_positions
         self.__sample_positions = sample_positions
         self.__header = Header(
-            header,
-            schema=schema,
+            labels,
+            fields=schema.fields,
             field_positions=field_positions,
+            row_positions=header_row_positions,
             ignore_case=not dialect.header_case,
         )
 
-    def __read_data_stream_infer_header(self, header_data):
+    def __read_infer_header(self, header_data):
         dialect = self.__resource.dialect
 
         # No header
         if not dialect.header:
             return [], list(range(1, len(header_data[0]) + 1))
 
-        # Get header
-        header = []
+        # Get labels
+        labels = []
         prev_cells = {}
         for cells in header_data:
             for index, cell in enumerate(cells):
                 if prev_cells.get(index) == cell:
                     continue
                 prev_cells[index] = cell
-                if len(header) <= index:
-                    header.append(cell)
+                if len(labels) <= index:
+                    labels.append(cell)
                     continue
-                header[index] = dialect.header_join.join([header[index], cell])
+                labels[index] = dialect.header_join.join([labels[index], cell])
 
-        # Filter header
-        filter_header = []
+        # Filter labels
+        filter_labels = []
         field_positions = []
         limit = self.__resource.query.limit_fields
         offset = self.__resource.query.offset_fields or 0
-        for field_position, header in enumerate(header, start=1):
-            if self.__read_data_stream_pick_skip_field(field_position, header):
+        for field_position, labels in enumerate(labels, start=1):
+            if self.__read_filter_fields(field_position, labels):
                 if offset:
                     offset -= 1
                     continue
-                filter_header.append(header)
+                filter_labels.append(labels)
                 field_positions.append(field_position)
-                if limit and limit <= len(filter_header):
+                if limit and limit <= len(filter_labels):
                     break
 
-        return filter_header, field_positions
+        return filter_labels, field_positions
 
-    def __read_data_stream_pick_skip_field(self, field_position, header):
+    def __read_filter_fields(self, field_position, header):
         match = True
         for name in ["pick", "skip"]:
             if name == "pick":
@@ -641,7 +791,7 @@ class Table:
                     match = not match
         return match
 
-    def __read_data_stream_pick_skip_row(self, row_position, cells):
+    def __read_filter_rows(self, row_position, cells):
         match = True
         cell = cells[0] if cells else None
         cell = "" if cell is None else str(cell)
@@ -666,7 +816,7 @@ class Table:
                     match = not match
         return match
 
-    def __read_data_stream_filter_data(self, cells, field_positions):
+    def __read_filter_cells(self, cells, field_positions):
         if self.__resource.query.is_field_filtering:
             result = []
             for field_position, cell in enumerate(cells, start=1):
@@ -675,117 +825,8 @@ class Table:
             return result
         return cells
 
-    def __read_data_stream_raise_closed(self):
-        if not self.__data_stream:
-            note = 'the table has not been opened by "table.open()"'
-            raise FrictionlessException(errors.Error(note=note))
-
-    def read_rows(self):
-        """Read row stream into memory
-
-        Returns:
-            Row[][]: table rows
-        """
-        self.__read_row_stream_raise_closed()
-        return list(self.__row_stream)
-
-    def __read_row_stream(self):
-        return self.__read_row_stream_create()
-
-    def __read_row_stream_create(self):
-        schema = self.schema
-
-        # Handle header errors
-        if not self.header.valid:
-            error = self.header.errors[0]
-            if self.__resource.onerror == "warn":
-                warnings.warn(error.message, UserWarning)
-            elif self.__resource.onerror == "raise":
-                raise FrictionlessException(error)
-
-        # Create state
-        memory_unique = {}
-        memory_primary = {}
-        foreign_groups = []
-        for field in self.schema.fields:
-            if field.constraints.get("unique"):
-                memory_unique[field.name] = {}
-        if self.__lookup:
-            for fk in self.schema.foreign_keys:
-                group = {}
-                group["sourceName"] = fk["reference"]["resource"]
-                group["sourceKey"] = tuple(fk["reference"]["fields"])
-                group["targetKey"] = tuple(fk["fields"])
-                foreign_groups.append(group)
-
-        # Stream rows
-        for cells in self.__data_stream:
-
-            # Create row
-            row = Row(
-                cells,
-                schema=self.__resource.schema,
-                field_positions=self.__field_positions,
-                row_position=self.__row_position,
-                row_number=self.__resource.stats["rows"],
-            )
-
-            # Unique Error
-            if memory_unique:
-                for field_name in memory_unique.keys():
-                    cell = row[field_name]
-                    if cell is not None:
-                        match = memory_unique[field_name].get(cell)
-                        memory_unique[field_name][cell] = row.row_position
-                        if match:
-                            Error = errors.UniqueError
-                            note = "the same as in the row at position %s" % match
-                            error = Error.from_row(row, note=note, field_name=field_name)
-                            row.errors.append(error)
-
-            # Primary Key Error
-            if schema.primary_key:
-                cells = tuple(row[field_name] for field_name in schema.primary_key)
-                if set(cells) == {None}:
-                    note = 'cells composing the primary keys are all "None"'
-                    error = errors.PrimaryKeyError.from_row(row, note=note)
-                    row.errors.append(error)
-                else:
-                    match = memory_primary.get(cells)
-                    memory_primary[cells] = row.row_position
-                    if match:
-                        if match:
-                            note = "the same as in the row at position %s" % match
-                            error = errors.PrimaryKeyError.from_row(row, note=note)
-                            row.errors.append(error)
-
-            # Foreign Key Error
-            if foreign_groups:
-                for group in foreign_groups:
-                    group_lookup = self.__lookup.get(group["sourceName"])
-                    if group_lookup:
-                        cells = tuple(row[name] for name in group["targetKey"])
-                        if set(cells) == {None}:
-                            continue
-                        match = cells in group_lookup.get(group["sourceKey"], set())
-                        if not match:
-                            note = "not found in the lookup table"
-                            error = errors.ForeignKeyError.from_row(row, note=note)
-                            row.errors.append(error)
-
-            # Handle row errors
-            if not row.valid:
-                error = row.errors[0]
-                if self.__resource.onerror == "warn":
-                    warnings.warn(error.message, UserWarning)
-                elif self.__resource.onerror == "raise":
-                    raise FrictionlessException(error)
-
-            # Stream row
-            yield row
-
-    def __read_row_stream_raise_closed(self):
-        if not self.__row_stream:
+    def __read_raise_closed(self):
+        if not self.__data_stream or not self.__row_stream:
             note = 'the table has not been opened by "table.open()"'
             raise FrictionlessException(errors.Error(note=note))
 

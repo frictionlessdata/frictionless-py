@@ -10,7 +10,10 @@ def test_inline_parser():
     source = [["id", "name"], ["1", "english"], ["2", "中国人"]]
     with Table(source) as table:
         assert table.header == ["id", "name"]
-        assert table.read_data() == [["1", "english"], ["2", "中国人"]]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 def test_inline_parser_keyed():
@@ -18,7 +21,10 @@ def test_inline_parser_keyed():
     with Table(source, format="inline") as table:
         assert table.dialect.keyed is True
         assert table.header == ["id", "name"]
-        assert table.read_data() == [["1", "english"], ["2", "中国人"]]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 def test_inline_parser_keyed_order_is_preserved():
@@ -26,7 +32,10 @@ def test_inline_parser_keyed_order_is_preserved():
     with Table(source, format="inline") as table:
         assert table.dialect.keyed is True
         assert table.header == ["name", "id"]
-        assert table.read_data() == [["english", "1"], ["中国人", "2"]]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 def test_inline_parser_keyed_with_keys_provided():
@@ -35,14 +44,20 @@ def test_inline_parser_keyed_with_keys_provided():
     with Table(source, format="inline", dialect=dialect) as table:
         assert table.dialect.keyed is True
         assert table.header == ["name", "id"]
-        assert table.read_data() == [["english", "1"], ["中国人", "2"]]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 def test_inline_parser_from_iterator():
     source = iter([["id", "name"], ["1", "english"], ["2", "中国人"]])
     with Table(source) as table:
         assert table.header == ["id", "name"]
-        assert table.read_data() == [["1", "english"], ["2", "中国人"]]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 def test_inline_parser_from_generator():
@@ -53,7 +68,10 @@ def test_inline_parser_from_generator():
 
     with Table(generator) as table:
         assert table.header == ["id", "name"]
-        assert table.read_data() == [["1", "english"], ["2", "中国人"]]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 def test_inline_parser_from_generator_not_callable():
@@ -64,7 +82,10 @@ def test_inline_parser_from_generator_not_callable():
 
     with Table(generator()) as table:
         assert table.header == ["id", "name"]
-        assert table.read_data() == [["1", "english"], ["2", "中国人"]]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 def test_inline_parser_from_ordered_dict():
@@ -73,9 +94,11 @@ def test_inline_parser_from_ordered_dict():
         OrderedDict([("name", "中国人"), ("id", "2")]),
     ]
     with Table(source) as table:
+        rows = table.read_rows()
         assert table.dialect.keyed is True
         assert table.header == ["name", "id"]
-        assert table.read_data() == [["english", "1"], ["中国人", "2"]]
+        assert rows[0].cells == ["english", "1"]
+        assert rows[1].cells == ["中国人", "2"]
 
 
 # Write

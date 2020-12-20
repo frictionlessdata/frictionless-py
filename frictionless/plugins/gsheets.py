@@ -103,7 +103,7 @@ class GsheetsParser(Parser):
 
     """
 
-    loading = False
+    needs_loader = False
 
     # Read
 
@@ -139,7 +139,7 @@ class GsheetsParser(Parser):
         data = []
         for row in read_row_stream():
             if row.row_number == 1:
-                data.append(row.schema.field_names)
+                data.append(row.field_names)
             data.append(row.to_list())
         wks.update_values("A1", data)
         return source

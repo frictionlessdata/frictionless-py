@@ -19,21 +19,30 @@ def test_sql_parser(database_url):
             "primaryKey": ["id"],
         }
         assert table.header == ["id", "name"]
-        assert table.read_data() == [[1, "english"], [2, "中国人"]]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 def test_sql_parser_order_by(database_url):
     dialect = SqlDialect(table="table", order_by="id")
     with Table(database_url, dialect=dialect) as table:
         assert table.header == ["id", "name"]
-        assert table.read_data() == [[1, "english"], [2, "中国人"]]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 def test_sql_parser_order_by_desc(database_url):
     dialect = SqlDialect(table="table", order_by="id desc")
     with Table(database_url, dialect=dialect) as table:
         assert table.header == ["id", "name"]
-        assert table.read_data() == [[2, "中国人"], [1, "english"]]
+        assert table.read_rows() == [
+            {"id": 2, "name": "中国人"},
+            {"id": 1, "name": "english"},
+        ]
 
 
 def test_sql_parser_table_is_required_error(database_url):
@@ -45,11 +54,16 @@ def test_sql_parser_table_is_required_error(database_url):
     assert error.note.count("'table' is a required property")
 
 
+# Probably it's not correct behaviour
 def test_sql_parser_headers_false(database_url):
     dialect = SqlDialect(table="table")
     with Table(database_url, dialect=dialect, headers=False) as table:
         assert table.header == []
-        assert table.read_data() == [["id", "name"], [1, "english"], [2, "中国人"]]
+        assert table.read_rows() == [
+            {"id": None, "name": "name"},
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 def test_sql_parser_write(database_url):
@@ -59,7 +73,10 @@ def test_sql_parser_write(database_url):
         table.write(database_url, dialect=dialect)
     with Table(database_url, dialect=dialect) as table:
         assert table.header == ["id", "name"]
-        assert table.read_data() == [[1, "english"], [2, "中国人"]]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 def test_sql_parser_write_timezone(sqlite_url):
@@ -491,8 +508,6 @@ def test_postgresql_storage_integrity(postgresql_url):
     storage.delete_package(target.resource_names)
 
 
-# TODO: recover enum support
-@pytest.mark.skip
 def test_postgresql_storage_constraints(postgresql_url):
     engine = sa.create_engine(postgresql_url)
     prefix = "prefix_"
@@ -637,8 +652,6 @@ def test_mysql_storage_types(mysql_url):
     storage.delete_package(target.resource_names)
 
 
-# TODO: fix unique for MySQL
-@pytest.mark.skip
 def test_mysql_storage_integrity(mysql_url):
     engine = sa.create_engine(mysql_url)
     prefix = "prefix_"
@@ -682,13 +695,13 @@ def test_mysql_storage_integrity(mysql_url):
     }
 
     # Assert data (main)
-    assert target.get_resource("main").read_rows() == [
+    assert target.get_resource("integrity_main").read_rows() == [
         {"id": 1, "parent": None, "description": "english"},
         {"id": 2, "parent": 1, "description": "中国人"},
     ]
 
     # Assert data (link)
-    assert target.get_resource("link").read_rows() == [
+    assert target.get_resource("integrity_link").read_rows() == [
         {"main_id": 1, "some_id": 1, "description": "note1"},
         {"main_id": 2, "some_id": 2, "description": "note2"},
     ]
@@ -697,8 +710,6 @@ def test_mysql_storage_integrity(mysql_url):
     storage.delete_package(target.resource_names)
 
 
-# TODO: fix enum for MySQL
-@pytest.mark.skip
 def test_mysql_storage_constraints(mysql_url):
     engine = sa.create_engine(mysql_url)
     prefix = "prefix_"
@@ -738,8 +749,6 @@ def test_mysql_storage_constraints(mysql_url):
     storage.delete_package(target.resource_names)
 
 
-# TODO: fix consratins for MySQL
-@pytest.mark.skip
 @pytest.mark.parametrize(
     "field_name, cell",
     [
@@ -760,8 +769,10 @@ def test_mysql_storage_constraints_not_valid_error(mysql_url, field_name, cell):
     for index, field in enumerate(resource.schema.fields):
         if field.name == field_name:
             resource.data[1][index] = cell
-    # TODO: should we wrap these exceptions?
-    with pytest.raises(sa.exc.IntegrityError):
+    # TODO: should we wrap these exceptions? (why other exceptions for mysql here?)
+    with pytest.raises(
+        (sa.exc.IntegrityError, sa.exc.OperationalError, sa.exc.DataError)
+    ):
         resource.to_sql(engine=engine, force=True)
 
 

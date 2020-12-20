@@ -126,7 +126,7 @@ class SqlParser(Parser):
 
     """
 
-    loading = False
+    needs_loader = False
 
     # Read
 
@@ -137,7 +137,6 @@ class SqlParser(Parser):
         storage = SqlStorage(engine=engine, namespace=dialect.namespace)
         resource = storage.read_resource(dialect.table, order_by=dialect.order_by)
         self.resource.schema = resource.schema
-        yield resource.schema.field_names
         yield from resource.read_data_stream()
 
     # Write
@@ -370,25 +369,30 @@ class SqlStorage(Storage):
 
         # Fields
         Check = sa.CheckConstraint
+        quote = self.__connection.engine.dialect.identifier_preparer.quote
         for field in resource.schema.fields:
             checks = []
             nullable = not field.required
+            quoted_name = quote(field.name)
             column_type = self.__write_convert_type(field.type)
             unique = field.constraints.get("unique", False)
+            # https://stackoverflow.com/questions/1827063/mysql-error-key-specification-without-a-key-length
+            if self.__connection.engine.dialect.name == "mysql":
+                unique = unique and field.type != "string"
             for const, value in field.constraints.items():
                 if const == "minLength":
-                    checks.append(Check('LENGTH("%s") >= %s' % (field.name, value)))
+                    checks.append(Check("LENGTH(%s) >= %s" % (quoted_name, value)))
                 elif const == "maxLength":
-                    checks.append(Check('LENGTH("%s") <= %s' % (field.name, value)))
+                    checks.append(Check("LENGTH(%s) <= %s" % (quoted_name, value)))
                 elif const == "minimum":
-                    checks.append(Check('"%s" >= %s' % (field.name, value)))
+                    checks.append(Check("%s >= %s" % (quoted_name, value)))
                 elif const == "maximum":
-                    checks.append(Check('"%s" <= %s' % (field.name, value)))
+                    checks.append(Check("%s <= %s" % (quoted_name, value)))
                 elif const == "pattern":
                     if self.__connection.engine.dialect.name == "postgresql":
-                        checks.append(Check("\"%s\" ~ '%s'" % (field.name, value)))
+                        checks.append(Check("%s ~ '%s'" % (quoted_name, value)))
                     else:
-                        check = Check("\"%s\" REGEXP '%s'" % (field.name, value))
+                        check = Check("%s REGEXP '%s'" % (quoted_name, value))
                         checks.append(check)
                 elif const == "enum":
                     enum_name = "%s_%s_enum" % (sql_name, field.name)

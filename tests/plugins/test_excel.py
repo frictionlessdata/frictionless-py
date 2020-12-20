@@ -1,5 +1,6 @@
 import io
 import pytest
+from decimal import Decimal
 from datetime import datetime
 from frictionless import Table, Query, FrictionlessException, helpers
 from frictionless.plugins.excel import ExcelDialect
@@ -14,7 +15,10 @@ def test_xlsx_parser_table():
     source = io.open("data/table.xlsx", mode="rb")
     with Table(source, format="xlsx") as table:
         assert table.header == ["id", "name"]
-        assert table.read_data() == [[1.0, "english"], [2.0, "中国人"]]
+        assert table.read_rows() == [
+            {"id": 1.0, "name": "english"},
+            {"id": 2.0, "name": "中国人"},
+        ]
 
 
 @pytest.mark.vcr
@@ -22,7 +26,10 @@ def test_xlsx_parser_remote():
     source = BASE_URL % "data/table.xlsx"
     with Table(source) as table:
         assert table.header == ["id", "name"]
-        assert table.read_data() == [[1.0, "english"], [2.0, "中国人"]]
+        assert table.read_rows() == [
+            {"id": 1.0, "name": "english"},
+            {"id": 2.0, "name": "中国人"},
+        ]
 
 
 def test_xlsx_parser_sheet_by_index():
@@ -30,7 +37,10 @@ def test_xlsx_parser_sheet_by_index():
     dialect = ExcelDialect(sheet=2)
     with Table(source, dialect=dialect) as table:
         assert table.header == ["id", "name"]
-        assert table.read_data() == [[1.0, "english"], [2.0, "中国人"]]
+        assert table.read_rows() == [
+            {"id": 1.0, "name": "english"},
+            {"id": 2.0, "name": "中国人"},
+        ]
 
 
 def test_xlsx_parser_format_error_sheet_by_index_not_existent():
@@ -49,7 +59,10 @@ def test_xlsx_parser_sheet_by_name():
     dialect = ExcelDialect(sheet="Sheet2")
     with Table(source, dialect=dialect) as table:
         assert table.header == ["id", "name"]
-        assert table.read_data() == [[1.0, "english"], [2.0, "中国人"]]
+        assert table.read_rows() == [
+            {"id": 1.0, "name": "english"},
+            {"id": 2.0, "name": "中国人"},
+        ]
 
 
 def test_xlsx_parser_format_errors_sheet_by_name_not_existent():
@@ -66,14 +79,20 @@ def test_xlsx_parser_format_errors_sheet_by_name_not_existent():
 def test_xlsx_parser_merged_cells():
     source = "data/merged-cells.xlsx"
     with Table(source, headers=False) as table:
-        assert table.read_data() == [["data", None]]
+        assert table.read_rows() == [
+            {"field1": "data", "field2": None},
+        ]
 
 
 def test_xlsx_parser_merged_cells_fill():
     source = "data/merged-cells.xlsx"
     dialect = ExcelDialect(fill_merged_cells=True)
     with Table(source, dialect=dialect, headers=False) as table:
-        assert table.read_data() == [["data", "data"], ["data", "data"], ["data", "data"]]
+        assert table.read_rows() == [
+            {"field1": "data", "field2": "data"},
+            {"field1": "data", "field2": "data"},
+            {"field1": "data", "field2": "data"},
+        ]
 
 
 def test_xlsx_parser_adjust_floating_point_error():
@@ -86,7 +105,7 @@ def test_xlsx_parser_adjust_floating_point_error():
     query = Query(skip_fields=["<blank>"])
     with pytest.warns(UserWarning):
         with Table(source, dialect=dialect, query=query) as table:
-            assert table.read_data()[1][2] == 274.66
+            assert table.read_rows()[1].cells[2] == 274.66
 
 
 def test_xlsx_parser_adjust_floating_point_error_default():
@@ -95,7 +114,7 @@ def test_xlsx_parser_adjust_floating_point_error_default():
     query = Query(skip_fields=["<blank>"])
     with pytest.warns(UserWarning):
         with Table(source, dialect=dialect, query=query) as table:
-            assert table.read_data()[1][2] == 274.65999999999997
+            assert table.read_rows()[1].cells[2] == 274.65999999999997
 
 
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
@@ -127,10 +146,10 @@ def test_xlsx_parser_preserve_formatting_percentage():
     source = "data/preserve-formatting-percentage.xlsx"
     dialect = ExcelDialect(preserve_formatting=True)
     with Table(source, dialect=dialect) as table:
-        assert table.read_data() == [
-            [123, "52.00%"],
-            [456, "30.00%"],
-            [789, "6.00%"],
+        assert table.read_rows() == [
+            {"col1": 123, "col2": "52.00%"},
+            {"col1": 456, "col2": "30.00%"},
+            {"col1": 789, "col2": "6.00%"},
         ]
 
 
@@ -139,7 +158,11 @@ def test_xlsx_parser_preserve_formatting_number_multicode():
     dialect = ExcelDialect(preserve_formatting=True)
     query = Query(skip_fields=["<blank>"])
     with Table(source, dialect=dialect, query=query) as table:
-        assert table.read_data() == [["4.5"], ["-9.032"], ["15.8"]]
+        assert table.read_rows() == [
+            {"col1": Decimal("4.5")},
+            {"col1": Decimal("-9.032")},
+            {"col1": Decimal("15.8")},
+        ]
 
 
 @pytest.mark.vcr
@@ -149,20 +172,26 @@ def test_xlsx_parser_workbook_cache():
         dialect = ExcelDialect(sheet=sheet, workbook_cache={})
         with Table(source, dialect=dialect) as table:
             assert len(dialect.workbook_cache) == 1
-            assert table.read_data()
+            assert table.read_rows()
 
 
 def test_table_local_xls():
     with Table("data/table.xls") as table:
         assert table.header == ["id", "name"]
-        assert table.read_data() == [[1, "english"], [2, "中国人"]]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 @pytest.mark.vcr
 def test_table_remote_xls():
     with Table(BASE_URL % "data/table.xls") as table:
         assert table.header == ["id", "name"]
-        assert table.read_data() == [[1, "english"], [2, "中国人"]]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 def test_xls_parser_sheet_by_index():
@@ -170,7 +199,10 @@ def test_xls_parser_sheet_by_index():
     dialect = ExcelDialect(sheet=2)
     with Table(source, dialect=dialect) as table:
         assert table.header == ["id", "name"]
-        assert table.read_data() == [[1, "english"], [2, "中国人"]]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 def test_xls_parser_sheet_by_index_not_existent():
@@ -186,7 +218,10 @@ def test_xls_parser_sheet_by_name():
     dialect = ExcelDialect(sheet="Sheet2")
     with Table(source, dialect=dialect) as table:
         assert table.header == ["id", "name"]
-        assert table.read_data() == [[1, "english"], [2, "中国人"]]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 def test_xls_parser_sheet_by_name_not_existent():
@@ -200,52 +235,70 @@ def test_xls_parser_sheet_by_name_not_existent():
 def test_xls_parser_merged_cells():
     source = "data/merged-cells.xls"
     with Table(source, headers=False) as table:
-        assert table.read_data() == [["data", ""], ["", ""], ["", ""]]
+        assert table.read_rows() == [
+            {"field1": "data", "field2": None},
+            {"field1": None, "field2": None},
+            {"field1": None, "field2": None},
+        ]
 
 
 def test_xls_parser_merged_cells_fill():
     source = "data/merged-cells.xls"
     dialect = ExcelDialect(fill_merged_cells=True)
     with Table(source, dialect=dialect, headers=False) as table:
-        assert table.read_data() == [["data", "data"], ["data", "data"], ["data", "data"]]
+        assert table.read_rows() == [
+            {"field1": "data", "field2": "data"},
+            {"field1": "data", "field2": "data"},
+            {"field1": "data", "field2": "data"},
+        ]
 
 
 def test_xls_parser_with_boolean():
     with Table("data/table-with-booleans.xls") as table:
         assert table.header == ["id", "boolean"]
-        assert table.read_data() == [[1, True], [2, False]]
+        assert table.read_rows() == [
+            {"id": 1, "boolean": True},
+            {"id": 2, "boolean": False},
+        ]
 
 
 def test_xlsx_parser_merged_cells_boolean():
     source = "data/merged-cells-boolean.xls"
     with Table(source, headers=False) as table:
-        assert table.read_data() == [[True, ""], ["", ""], ["", ""]]
+        assert table.read_rows() == [
+            {"field1": True, "field2": None},
+            {"field1": None, "field2": None},
+            {"field1": None, "field2": None},
+        ]
 
 
 def test_xlsx_parser_merged_cells_fill_boolean():
     source = "data/merged-cells-boolean.xls"
     dialect = ExcelDialect(fill_merged_cells=True)
     with Table(source, dialect=dialect, headers=False) as table:
-        assert table.read_data() == [[True, True], [True, True], [True, True]]
+        assert table.read_rows() == [
+            {"field1": True, "field2": True},
+            {"field1": True, "field2": True},
+            {"field1": True, "field2": True},
+        ]
 
 
 def test_xls_parser_with_ints_floats_dates():
     source = "data/table-with-ints-floats-dates.xls"
     with Table(source) as table:
         assert table.header == ["Int", "Float", "Date"]
-        assert table.read_data() == [
-            [2013, 3.3, datetime(2009, 8, 16)],
-            [1997, 5.6, datetime(2009, 9, 20)],
-            [1969, 11.7, datetime(2012, 8, 23)],
+        assert table.read_rows() == [
+            {"Int": 2013, "Float": Decimal("3.3"), "Date": datetime(2009, 8, 16)},
+            {"Int": 1997, "Float": Decimal("5.6"), "Date": datetime(2009, 9, 20)},
+            {"Int": 1969, "Float": Decimal("11.7"), "Date": datetime(2012, 8, 23)},
         ]
 
 
 @pytest.mark.vcr
-@pytest.mark.skip
-def test_fix_for_2007_xls():
+def test_xlsx_parser_fix_for_2007_xls():
     source = "https://ams3.digitaloceanspaces.com/budgetkey-files/spending-reports/2018-3-משרד התרבות והספורט-לשכת הפרסום הממשלתית-2018-10-22-c457.xls"
-    with Table(source) as table:
-        assert len(table.read_data()) > 10
+    with Table(source, format="xlsx") as table:
+        assert len(table.read_rows()) > 10
 
 
 # Write
@@ -259,7 +312,10 @@ def test_xlsx_parser_write(tmpdir):
         table.write(target)
     with Table(target) as table:
         assert table.header == ["id", "name"]
-        assert table.read_data() == [[1, "english"], [2, "中国人"]]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
@@ -271,7 +327,10 @@ def test_xlsx_parser_write_sheet_name(tmpdir):
         table.write(target, dialect=dialect)
     with Table(target, dialect=dialect) as table:
         assert table.header == ["id", "name"]
-        assert table.read_data() == [[1, "english"], [2, "中国人"]]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
@@ -282,7 +341,10 @@ def test_xls_parser_write(tmpdir):
         table.write(target)
     with Table(target) as table:
         assert table.header == ["id", "name"]
-        assert table.read_data() == [[1, "english"], [2, "中国人"]]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
@@ -294,4 +356,7 @@ def test_xls_parser_write_sheet_name(tmpdir):
         table.write(target, dialect=dialect)
     with Table(target, dialect=dialect) as table:
         assert table.header == ["id", "name"]
-        assert table.read_data() == [[1, "english"], [2, "中国人"]]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]

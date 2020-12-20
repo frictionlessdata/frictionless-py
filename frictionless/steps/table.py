@@ -44,10 +44,9 @@ class table_debug(Step):
 
         # Data
         def data():
-            yield source.schema.field_names
-            for cells in source.read_data_stream():
-                self.__function(cells)
-                yield cells
+            for row in source.read_row_stream():
+                self.__function(row)
+                yield row
 
         # Meta
         target.data = data
@@ -185,7 +184,17 @@ class table_merge(Step):
 
 class table_normalize(Step):
     def transform_resource(self, source, target):
-        target.data = source.read_rows
+
+        # Data
+        # Is it possible here to re-use Row?
+        # For example, implementing row.normalize() working in-place
+        def data():
+            for number, row in enumerate(source.read_row_stream(), start=1):
+                if number == 1:
+                    yield row.field_names
+                yield row.to_list()
+
+        target.data = data
 
 
 # TODO: improve this step

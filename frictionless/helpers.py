@@ -54,7 +54,7 @@ def remove_non_values(mapping):
 def rows_to_data(rows):
     if not rows:
         return []
-    return [list(rows[0].schema.field_names)] + [row.to_list() for row in rows]
+    return [list(rows[0].field_names)] + [row.to_list() for row in rows]
 
 
 def parse_csv_string(string, *, convert=str, fallback=False):

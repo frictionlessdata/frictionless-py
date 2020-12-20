@@ -11,26 +11,38 @@ BASE_URL = "https://raw.githubusercontent.com/okfn/tabulator-py/master/%s"
 def test_csv_parser():
     with Table("data/table.csv") as table:
         assert table.header == ["id", "name"]
-        assert table.read_data() == [["1", "english"], ["2", "中国人"]]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 def test_csv_parser_with_bom():
     with Table("data/bom.csv") as table:
         assert table.header == ["id", "name"]
-        assert table.read_data() == [["1", "english"], ["2", "中国人"]]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 def test_csv_parser_with_bom_with_encoding():
     with Table("data/bom.csv", encoding="utf-8") as table:
         assert table.header == ["id", "name"]
-        assert table.read_data() == [["1", "english"], ["2", "中国人"]]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 def test_csv_parser_excel():
     source = "header1,header2\nvalue1,value2\nvalue3,value4"
     with Table(source, scheme="text", format="csv") as table:
         assert table.header == ["header1", "header2"]
-        assert table.read_data() == [["value1", "value2"], ["value3", "value4"]]
+        assert table.read_rows() == [
+            {"header1": "value1", "header2": "value2"},
+            {"header1": "value3", "header2": "value4"},
+        ]
 
 
 def test_csv_parser_excel_tab():
@@ -38,24 +50,30 @@ def test_csv_parser_excel_tab():
     dialect = CsvDialect(delimiter="\t")
     with Table(source, scheme="text", format="csv", dialect=dialect) as table:
         assert table.header == ["header1", "header2"]
-        assert table.read_data() == [["value1", "value2"], ["value3", "value4"]]
+        assert table.read_rows() == [
+            {"header1": "value1", "header2": "value2"},
+            {"header1": "value3", "header2": "value4"},
+        ]
 
 
 def test_csv_parser_unix():
     source = '"header1","header2"\n"value1","value2"\n"value3","value4"'
     with Table(source, scheme="text", format="csv") as table:
         assert table.header == ["header1", "header2"]
-        assert table.read_data() == [["value1", "value2"], ["value3", "value4"]]
+        assert table.read_rows() == [
+            {"header1": "value1", "header2": "value2"},
+            {"header1": "value3", "header2": "value4"},
+        ]
 
 
 def test_csv_parser_escaping():
     dialect = CsvDialect(escape_char="\\")
     with Table("data/escaping.csv", dialect=dialect) as table:
         assert table.header == ["ID", "Test"]
-        assert table.read_data() == [
-            ["1", "Test line 1"],
-            ["2", 'Test " line 2'],
-            ["3", 'Test " line 3'],
+        assert table.read_rows() == [
+            {"ID": 1, "Test": "Test line 1"},
+            {"ID": 2, "Test": 'Test " line 2'},
+            {"ID": 3, "Test": 'Test " line 3'},
         ]
 
 
@@ -70,21 +88,30 @@ def test_csv_parser_stream():
     source = open("data/table.csv", mode="rb")
     with Table(source, format="csv") as table:
         assert table.header == ["id", "name"]
-        assert table.read_data() == [["1", "english"], ["2", "中国人"]]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 def test_csv_parser_text():
     source = "text://id,name\n1,english\n2,中国人\n"
     with Table(source, format="csv") as table:
         assert table.header == ["id", "name"]
-        assert table.read_data() == [["1", "english"], ["2", "中国人"]]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 @pytest.mark.vcr
 def test_csv_parser_remote():
     with Table(BASE_URL % "data/table.csv") as table:
         assert table.header == ["id", "name"]
-        assert table.read_data() == [["1", "english"], ["2", "中国人"]]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 @pytest.mark.vcr
@@ -105,7 +132,10 @@ def test_csv_parser_delimiter():
     dialect = CsvDialect(delimiter=";")
     with Table(source, scheme="text", format="csv", dialect=dialect) as table:
         assert table.header == ["header1", "header2"]
-        assert table.read_data() == [["value1", "value2"], ["value3", "value4"]]
+        assert table.read_rows() == [
+            {"header1": "value1", "header2": "value2"},
+            {"header1": "value3", "header2": "value4"},
+        ]
 
 
 def test_csv_parser_escapechar():
@@ -113,7 +143,10 @@ def test_csv_parser_escapechar():
     dialect = CsvDialect(escape_char="%")
     with Table(source, scheme="text", format="csv", dialect=dialect) as table:
         assert table.header == ["header1,header2"]
-        assert table.read_data() == [["value1,value2"], ["value3,value4"]]
+        assert table.read_rows() == [
+            {"header1,header2": "value1,value2"},
+            {"header1,header2": "value3,value4"},
+        ]
 
 
 def test_csv_parser_quotechar():
@@ -121,7 +154,10 @@ def test_csv_parser_quotechar():
     dialect = CsvDialect(quote_char="%")
     with Table(source, scheme="text", format="csv", dialect=dialect) as table:
         assert table.header == ["header1,header2"]
-        assert table.read_data() == [["value1,value2"], ["value3,value4"]]
+        assert table.read_rows() == [
+            {"header1,header2": "value1,value2"},
+            {"header1,header2": "value3,value4"},
+        ]
 
 
 def test_csv_parser_skipinitialspace():
@@ -129,32 +165,47 @@ def test_csv_parser_skipinitialspace():
     dialect = CsvDialect(skip_initial_space=False)
     with Table(source, scheme="text", format="csv", dialect=dialect) as table:
         assert table.header == ["header1", "header2"]
-        assert table.read_data() == [["value1", " value2"], ["value3", " value4"]]
+        assert table.read_rows() == [
+            {"header1": "value1", "header2": " value2"},
+            {"header1": "value3", "header2": " value4"},
+        ]
 
 
 def test_csv_parser_skipinitialspace_default():
     source = "header1, header2\nvalue1, value2\nvalue3, value4"
     with Table(source, scheme="text", format="csv") as table:
         assert table.header == ["header1", "header2"]
-        assert table.read_data() == [["value1", "value2"], ["value3", "value4"]]
+        assert table.read_rows() == [
+            {"header1": "value1", "header2": "value2"},
+            {"header1": "value3", "header2": "value4"},
+        ]
 
 
 def test_csv_parser_detect_delimiter_tab():
     source = "a1\tb1\tc1A,c1B\na2\tb2\tc2\n"
     with Table(source, scheme="text", format="csv", headers=False) as table:
-        assert table.read_data() == [["a1", "b1", "c1A,c1B"], ["a2", "b2", "c2"]]
+        assert table.read_rows() == [
+            {"field1": "a1", "field2": "b1", "field3": "c1A,c1B"},
+            {"field1": "a2", "field2": "b2", "field3": "c2"},
+        ]
 
 
 def test_csv_parser_detect_delimiter_semicolon():
     source = "a1;b1\na2;b2\n"
     with Table(source, scheme="text", format="csv", headers=False) as table:
-        assert table.read_data() == [["a1", "b1"], ["a2", "b2"]]
+        assert table.read_rows() == [
+            {"field1": "a1", "field2": "b1"},
+            {"field1": "a2", "field2": "b2"},
+        ]
 
 
 def test_csv_parser_detect_delimiter_pipe():
     source = "a1|b1\na2|b2\n"
     with Table(source, scheme="text", format="csv", headers=False) as table:
-        assert table.read_data() == [["a1", "b1"], ["a2", "b2"]]
+        assert table.read_rows() == [
+            {"field1": "a1", "field2": "b1"},
+            {"field1": "a2", "field2": "b2"},
+        ]
 
 
 def test_csv_parser_dialect_should_not_persist_if_sniffing_fails_issue_goodtables_228():
@@ -172,7 +223,9 @@ def test_csv_parser_quotechar_is_empty_string():
     dialect = CsvDialect(quote_char="")
     with Table(source, scheme="text", format="csv", dialect=dialect) as table:
         table.header == ["header1", 'header2"', "header3"]
-        table.read_data() == [["value1", 'value2"', "value3"]]
+        assert table.read_rows() == [
+            {"header1": "value1", 'header2"': 'value2"', "header3": "value3"},
+        ]
 
 
 def test_table_format_tsv():
@@ -196,7 +249,10 @@ def test_csv_parser_write(tmpdir):
         table.write(target)
     with Table(target) as table:
         assert table.header == ["id", "name"]
-        assert table.read_data() == [["1", "english"], ["2", "中国人"]]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 def test_csv_parser_write_delimiter(tmpdir):
@@ -207,8 +263,11 @@ def test_csv_parser_write_delimiter(tmpdir):
         table.write(target, dialect=dialect)
     with Table(target, dialect=dialect) as table:
         assert table.header == ["id", "name"]
-        assert table.read_data() == [["1", "english"], ["2", "中国人"]]
         assert table.dialect == {"delimiter": ";"}
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 def test_csv_parser_write_inline_source(tmpdir):
@@ -218,7 +277,9 @@ def test_csv_parser_write_inline_source(tmpdir):
         table.write(target)
     with Table(target) as table:
         assert table.header == ["key1", "key2"]
-        assert table.read_data() == [["value1", "value2"]]
+        assert table.read_rows() == [
+            {"key1": "value1", "key2": "value2"},
+        ]
 
 
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")

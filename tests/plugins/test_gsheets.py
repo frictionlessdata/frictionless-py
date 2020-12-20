@@ -15,7 +15,10 @@ def test_gsheets_parser():
     source = "https://docs.google.com/spreadsheets/d/1mHIWnDvW9cALRMq9OdNfRwjAthCUFUOACPp0Lkyl7b4/edit?usp=sharing"
     with Table(source) as table:
         assert table.header == ["id", "name"]
-        assert table.read_data() == [["1", "english"], ["2", "中国人"]]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 @pytest.mark.ci
@@ -23,7 +26,10 @@ def test_gsheets_parser_with_gid():
     source = "https://docs.google.com/spreadsheets/d/1mHIWnDvW9cALRMq9OdNfRwjAthCUFUOACPp0Lkyl7b4/edit#gid=960698813"
     with Table(source) as table:
         assert table.header == ["id", "name"]
-        assert table.read_data() == [["2", "中国人"], ["3", "german"]]
+        assert table.read_rows() == [
+            {"id": 2, "name": "中国人"},
+            {"id": 3, "name": "german"},
+        ]
 
 
 @pytest.mark.ci
@@ -47,4 +53,7 @@ def test_gsheets_parser_write(google_credentials_path):
     # Read
     with Table(path) as table:
         assert table.header == ["id", "name"]
-        assert table.read_data() == [["1", "english"], ["2", "中国人"]]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]

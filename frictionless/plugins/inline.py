@@ -1,4 +1,3 @@
-from itertools import chain
 from ..exception import FrictionlessException
 from ..metadata import Metadata
 from ..dialect import Dialect
@@ -121,8 +120,8 @@ class InlineParser(Parser):
 
     """
 
-    loading = False
-    native_types = [
+    needs_loader = False
+    supported_types = [
         "array",
         "boolean",
         "date",
@@ -152,29 +151,46 @@ class InlineParser(Parser):
 
         # Empty
         try:
-            cells = next(data)
+            item = next(data)
         except StopIteration:
             yield from []
             return
 
+        # Row
+        if hasattr(item, "cells"):
+            # Shall we yield field_names or header here?
+            yield item.field_names
+            yield item.cells
+            for item in data:
+                yield item.cells
+
         # Keyed
-        if isinstance(cells, dict):
+        elif isinstance(item, dict):
             dialect["keyed"] = True
-            headers = dialect.keys or list(cells.keys())
+            headers = dialect.keys or list(item.keys())
             yield headers
-            for cells in chain([cells], data):
-                if not isinstance(cells, dict):
-                    error = errors.SourceError(note="all keyed data items must be dicts")
+            yield [item.get(header) for header in headers]
+            for item in data:
+                # TODO: measure/optimize
+                if not isinstance(item, dict):
+                    error = errors.SourceError(note="unsupported inline data")
                     raise FrictionlessException(error)
-                yield [cells.get(header) for header in headers]
-            return
+                yield [item.get(header) for header in headers]
 
         # General
-        for cells in chain([cells], data):
-            if not isinstance(cells, (list, tuple)):
-                error = errors.SourceError(note="all data items must be lists")
-                raise FrictionlessException(error)
-            yield cells
+        elif isinstance(item, (list, tuple)):
+            yield item
+            for item in data:
+                # TODO: measure/optimize
+                if not isinstance(item, (list, tuple)):
+                    error = errors.SourceError(note="unsupported inline data")
+                    raise FrictionlessException(error)
+                yield item
+
+        # Unsupported
+        else:
+            error = errors.SourceError(note="unsupported inline data")
+            raise FrictionlessException(error)
 
     # Write
 
@@ -182,8 +198,8 @@ class InlineParser(Parser):
         data = []
         dialect = self.resource.dialect
         for row in read_row_stream():
-            item = row.to_dict() if dialect.keyed else list(row.values())
+            item = row.to_dict() if dialect.keyed else row.to_list()
             if not dialect.keyed and row.row_number == 1:
-                self.resource.data.append(row.schema.field_names)
+                self.resource.data.append(row.field_names)
             data.append(item)
         return data

@@ -417,7 +417,6 @@ def test_package_infer_multiple_paths():
     assert package.resources[1].path == "data2.csv"
 
 
-@pytest.mark.skip
 def test_package_infer_non_utf8_file():
     package = Package()
     package.infer("data/table-with-accents.csv")
@@ -803,11 +802,24 @@ def test_package_integrity_foreign_key():
     assert rows[0].valid
     assert rows[1].valid
     assert rows[2].valid
-    assert rows == [
-        {"id": "1", "name": "Alex", "surname": "Martin", "parent_id": None},
-        {"id": "2", "name": "John", "surname": "Dockins", "parent_id": "1"},
-        {"id": "3", "name": "Walter", "surname": "White", "parent_id": "2"},
-    ]
+    assert rows[0].to_dict() == {
+        "id": "1",
+        "name": "Alex",
+        "surname": "Martin",
+        "parent_id": None,
+    }
+    assert rows[1].to_dict() == {
+        "id": "2",
+        "name": "John",
+        "surname": "Dockins",
+        "parent_id": "1",
+    }
+    assert rows[2].to_dict() == {
+        "id": "3",
+        "name": "Walter",
+        "surname": "White",
+        "parent_id": "2",
+    }
 
 
 def test_package_integrity_foreign_key_invalid():
@@ -818,11 +830,24 @@ def test_package_integrity_foreign_key_invalid():
     assert rows[0].valid
     assert rows[1].valid
     assert rows[2].errors[0].code == "foreign-key-error"
-    assert rows == [
-        {"id": "1", "name": "Alex", "surname": "Martin", "parent_id": None},
-        {"id": "2", "name": "John", "surname": "Dockins", "parent_id": "1"},
-        {"id": "3", "name": "Walter", "surname": "White", "parent_id": "2"},
-    ]
+    assert rows[0].to_dict() == {
+        "id": "1",
+        "name": "Alex",
+        "surname": "Martin",
+        "parent_id": None,
+    }
+    assert rows[1].to_dict() == {
+        "id": "2",
+        "name": "John",
+        "surname": "Dockins",
+        "parent_id": "1",
+    }
+    assert rows[2].to_dict() == {
+        "id": "3",
+        "name": "Walter",
+        "surname": "White",
+        "parent_id": "2",
+    }
 
 
 def test_package_integrity_foreign_key_self_reference():

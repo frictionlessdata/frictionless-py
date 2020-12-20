@@ -123,7 +123,7 @@ class CkanParser(Parser):
     Public   | `from frictionless.plugins.ckan import CkanParser`
     """
 
-    loading = False
+    needs_loader = False
 
     # Read
 
@@ -136,7 +136,6 @@ class CkanParser(Parser):
         )
         resource = storage.read_resource(dialect.resource)
         self.resource.schema = resource.schema
-        yield resource.schema.field_names
         yield from resource.read_data_stream()
 
     # Write

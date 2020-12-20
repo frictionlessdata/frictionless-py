@@ -140,7 +140,7 @@ def test_extract_infer_missing_values():
 def test_extract_yaml():
     result = runner.invoke(program, "extract data/table.csv --json")
     assert result.exit_code == 0
-    assert yaml.load(result.stdout) == extract("data/table.csv")
+    assert yaml.safe_load(result.stdout) == extract("data/table.csv")
 
 
 def test_extract_json():

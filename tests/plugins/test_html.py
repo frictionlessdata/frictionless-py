@@ -20,7 +20,10 @@ def test_html_parser(source, selector):
     with Table(source, dialect=dialect) as table:
         assert table.format == "html"
         assert table.header == ["id", "name"]
-        assert table.read_data() == [["1", "english"], ["2", "中国人"]]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
@@ -31,4 +34,7 @@ def test_html_parser_write(tmpdir):
         table.write(target)
     with Table(target) as table:
         assert table.header == ["id", "name"]
-        assert table.read_data() == [["1", "english"], ["2", "中国人"]]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]

@@ -137,7 +137,7 @@ class BigqueryParser(Parser):
     Public   | `from frictionless.plugins.bigquery import BigqueryParser`
     """
 
-    loading = False
+    needs_loader = False
 
     # Read
 
@@ -150,7 +150,6 @@ class BigqueryParser(Parser):
         )
         resource = storage.read_resource(dialect.table)
         self.resource.schema = resource.schema
-        yield resource.schema.field_names
         yield from resource.read_data_stream()
 
     # Write

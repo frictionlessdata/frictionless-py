@@ -72,7 +72,7 @@ class SpssParser(Parser):
 
     """
 
-    loading = False
+    needs_loader = False
 
     # Read
 
@@ -82,7 +82,6 @@ class SpssParser(Parser):
         storage = SpssStorage(basepath=basepath)
         resource = storage.read_resource(name)
         self.resource.schema = resource.schema
-        yield resource.schema.field_names
         yield from resource.read_data_stream()
 
     # Write

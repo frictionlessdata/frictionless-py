@@ -26,7 +26,10 @@ def test_s3_loader(bucket_name):
     # Read
     with Table("s3://%s/table.csv" % bucket_name) as table:
         assert table.header == ["id", "name"]
-        assert table.read_data() == [["1", "english"], ["2", "中国人"]]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 @mock_s3
@@ -100,7 +103,10 @@ def test_s3_loader_problem_with_spaces_issue_501(bucket_name):
     # Read
     with Table("s3://%s/table with space.csv" % bucket_name) as table:
         assert table.header == ["id", "name"]
-        assert table.read_data() == [["1", "english"], ["2", "中国人"]]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 @mock_s3
@@ -115,7 +121,10 @@ def test_s3_loader_write(bucket_name):
     # Read
     with Table("s3://%s/table.csv" % bucket_name) as table:
         assert table.header == ["id", "name"]
-        assert table.read_data() == [["1", "english"], ["2", "中国人"]]
+        assert table.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 # Fixtures

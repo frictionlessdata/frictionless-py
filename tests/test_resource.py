@@ -152,7 +152,6 @@ def test_resource_source_path():
         resource.read_bytes()
         == b"id,name\n1,english\n2,\xe4\xb8\xad\xe5\x9b\xbd\xe4\xba\xba\n"
     )
-    assert resource.read_data() == [["1", "english"], ["2", "中国人"]]
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
@@ -238,7 +237,6 @@ def test_resource_source_data():
     assert resource.tabular is True
     assert resource.multipart is False
     assert resource.read_bytes() == b""
-    assert resource.read_data() == data[1:]
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
@@ -1017,12 +1015,10 @@ def test_resource_integrity_foreign_keys():
     assert rows[1].valid
     assert rows[2].valid
     assert rows[3].valid
-    assert rows == [
-        {"id": 1, "cat": None, "name": "England"},
-        {"id": 2, "cat": None, "name": "France"},
-        {"id": 3, "cat": 1, "name": "London"},
-        {"id": 4, "cat": 2, "name": "Paris"},
-    ]
+    assert rows[0].to_dict() == {"id": 1, "cat": None, "name": "England"}
+    assert rows[1].to_dict() == {"id": 2, "cat": None, "name": "France"}
+    assert rows[2].to_dict() == {"id": 3, "cat": 1, "name": "London"}
+    assert rows[3].to_dict() == {"id": 4, "cat": 2, "name": "Paris"}
 
 
 def test_resource_integrity_foreign_keys_invalid():
@@ -1033,13 +1029,11 @@ def test_resource_integrity_foreign_keys_invalid():
     assert rows[2].valid
     assert rows[3].valid
     assert rows[4].errors[0].code == "foreign-key-error"
-    assert rows == [
-        {"id": 1, "cat": None, "name": "England"},
-        {"id": 2, "cat": None, "name": "France"},
-        {"id": 3, "cat": 1, "name": "London"},
-        {"id": 4, "cat": 2, "name": "Paris"},
-        {"id": 5, "cat": 6, "name": "Rome"},
-    ]
+    assert rows[0].to_dict() == {"id": 1, "cat": None, "name": "England"}
+    assert rows[1].to_dict() == {"id": 2, "cat": None, "name": "France"}
+    assert rows[2].to_dict() == {"id": 3, "cat": 1, "name": "London"}
+    assert rows[3].to_dict() == {"id": 4, "cat": 2, "name": "Paris"}
+    assert rows[4].to_dict() == {"id": 5, "cat": 6, "name": "Rome"}
 
 
 def test_resource_integrity_read_lookup():

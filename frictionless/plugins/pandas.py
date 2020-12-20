@@ -83,7 +83,7 @@ class PandasParser(Parser):
 
     """
 
-    loading = False
+    needs_loader = False
 
     # Read
 
@@ -91,7 +91,6 @@ class PandasParser(Parser):
         storage = PandasStorage(dataframes={self.resource.name: self.resource.data})
         resource = storage.read_resource(self.resource.name)
         self.resource.schema = resource.schema
-        yield resource.schema.field_names
         yield from resource.read_data_stream()
 
     # Write

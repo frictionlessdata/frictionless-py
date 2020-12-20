@@ -2,7 +2,13 @@ from ..resource import Resource
 
 
 def extract_resource(
-    source, *, basepath=None, onerror="ignore", trusted=False, process=None, stream=False
+    source,
+    *,
+    basepath=None,
+    onerror="ignore",
+    trusted=False,
+    process=None,
+    stream=False,
 ):
     """Extract resource rows
 

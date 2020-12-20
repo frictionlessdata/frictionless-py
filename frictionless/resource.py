@@ -532,23 +532,6 @@ class Resource(Metadata):
         file.open()
         return file.text_stream
 
-    def read_data(self):
-        """
-        Returns:
-            any[][]: array of data arrays
-        """
-        data = list(self.read_data_stream())
-        return data
-
-    def read_data_stream(self):
-        """
-        Returns:
-            gen<any[][]>: data stream
-        """
-        with self.to_table() as table:
-            for cells in table.data_stream:
-                yield cells
-
     def read_rows(self):
         """
         Returns
@@ -565,6 +548,23 @@ class Resource(Metadata):
         with self.to_table() as table:
             for row in table.row_stream:
                 yield row
+
+    def read_data(self):
+        """
+        Returns:
+            any[][]: array of data arrays
+        """
+        data = list(self.read_data_stream())
+        return data
+
+    def read_data_stream(self):
+        """
+        Returns:
+            gen<any[][]>: data stream
+        """
+        with self.to_table() as table:
+            for cells in table.data_stream:
+                yield cells
 
     def read_header(self):
         """
@@ -783,7 +783,9 @@ class Resource(Metadata):
         options.setdefault("scheme", self.scheme)
         options.setdefault("format", self.format)
         options.setdefault("hashing", self.hashing)
-        options.setdefault("encoding", self.encoding)
+        # TODO: it's a quickfix; resolve fully on Resource/Table merge
+        if "encoding" in self:
+            options.setdefault("encoding", self.encoding)
         options.setdefault("compression", self.compression)
         options.setdefault("compression_path", self.compression_path)
         options.setdefault("control", self.control)
@@ -906,13 +908,13 @@ class Resource(Metadata):
         # Define view
         class ResourceView(petl.Table):
             def __iter__(self):
-                stream = (
-                    map(lambda row: row.to_list(), resource.read_row_stream())
-                    if normalize
-                    else resource.read_data_stream()
-                )
-                yield resource.schema.field_names
-                yield from stream
+                if normalize:
+                    yield resource.schema.field_names
+                    yield from (row.to_list() for row in resource.read_row_stream())
+                    return
+                if not resource.dialect.header:
+                    yield resource.schema.field_names
+                yield from resource.read_data_stream()
 
         return ResourceView()
 

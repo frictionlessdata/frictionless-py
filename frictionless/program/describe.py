@@ -21,9 +21,7 @@ def program_describe(
     encoding: str = Opt(None, help="Specify encoding  [default: inferred]"),
     compression: str = Opt(None, help="Specify compression  [default: inferred]"),
     compression_path: str = Opt(None, help="Specify in-archive path  [default: first]"),
-    # Control/Dialect/Query/Header
-    header_rows: str = Opt(None, help="Comma-separated row numbers  [default: 1]"),
-    header_join: str = Opt(None, help="A separator to join a multiline header"),
+    # Control/Dialect/Query
     pick_fields: str = Opt(None, help='Comma-separated fields to pick e.g. "1,name1"'),
     skip_fields: str = Opt(None, help='Comma-separated fields to skip e.g. "2,name2"'),
     limit_fields: int = Opt(None, help="Limit fields by this integer"),
@@ -32,6 +30,9 @@ def program_describe(
     skip_rows: str = Opt(None, help='Comma-separated rows to skip e.g. "2,3,4,5"'),
     limit_rows: int = Opt(None, help="Limit rows by this integer"),
     offset_rows: int = Opt(None, help="Offset rows by this integer"),
+    # Header
+    header_rows: str = Opt(None, help="Comma-separated row numbers  [default: 1]"),
+    header_join: str = Opt(None, help="A separator to join a multiline header"),
     # Infer
     infer_type: str = Opt(None, help="Force all the fields to have this type"),
     infer_names: str = Opt(None, help="Comma-separated list of field names"),
@@ -104,7 +105,7 @@ def program_describe(
             encoding=encoding,
             compression=compression,
             compression_path=compression_path,
-            # Control/Dialect/Query/Header
+            # Control/Dialect/Query
             dialect=dialect,
             query=query,
             # Infer

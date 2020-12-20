@@ -1,23 +1,22 @@
-# TODO: review this dependency
-from .plugins.json import JsonParser
 from itertools import zip_longest
-from collections import OrderedDict
-from decimal import Decimal
+from .plugins.csv import CsvParser
+from .plugins.json import JsonParser
 from .helpers import cached_property
 from . import helpers
 from . import errors
 
 
-# TODO: rebase on list base class for permormance?
-# TODO: if not list - drop OrderedDict? From Python3.7 order is guaranteed
-class Row(OrderedDict):
+# TODO: disable/limit dict.update/setdefault/pop/popitem/clear
+class Row(dict):
     """Row representation
 
     API      | Usage
     -------- | --------
-    Public   | `from frictionless import Table`
+    Public   | `from frictionless import Row`
 
-    This object is returned by `extract`, `table.read_rows`, and other functions.
+    > Constructor of this object is not Public API
+
+    This object is returned by `extract`, `resource.read_rows`, and other functions.
 
     ```python
     rows = extract("data/table.csv")
@@ -27,128 +26,104 @@ class Row(OrderedDict):
 
     Parameters:
         cells (any[]): array of cells
-        schema (Schema): table schema
-        field_positions (int[]): table field positions
+        field_info (dict): special field info structure
         row_position (int): row position from 1
         row_number (int): row number from 1
-
     """
 
-    def __init__(self, cells, *, schema, field_positions, row_position, row_number):
-        assert len(field_positions) in (len(cells), len(schema.fields))
-
-        # Set attributes
-        fields = schema.fields
-        self.__schema = schema
-        self.__field_positions = field_positions
+    def __init__(
+        self,
+        cells,
+        *,
+        field_info,
+        row_position,
+        row_number,
+    ):
+        self.__cells = cells
+        self.__field_info = field_info
         self.__row_position = row_position
         self.__row_number = row_number
+        self.__processed = False
         self.__blank_cells = {}
         self.__error_cells = {}
         self.__errors = []
 
-        # Extra cells
-        if len(fields) < len(cells):
-            iterator = cells[len(fields) :]
-            start = max(field_positions[: len(fields)]) + 1
-            del cells[len(fields) :]
-            for field_position, cell in enumerate(iterator, start=start):
-                self.__errors.append(
-                    errors.ExtraCellError(
-                        note="",
-                        cells=list(map(str, cells)),
-                        row_number=row_number,
-                        row_position=row_position,
-                        cell=str(cell),
-                        field_name="",
-                        field_number=len(fields) + field_position - start,
-                        field_position=field_position,
-                    )
-                )
+    def __eq__(self, other):
+        self.__process()
+        return super().__eq__(other)
 
-        # Missing cells
-        if len(fields) > len(cells):
-            start = len(cells) + 1
-            iterator = zip_longest(field_positions[len(cells) :], fields[len(cells) :])
-            for field_number, (field_position, field) in enumerate(iterator, start=start):
-                if field is not None:
-                    cells.append(None)
-                    self.__errors.append(
-                        errors.MissingCellError(
-                            note="",
-                            cells=list(map(str, cells)),
-                            row_number=row_number,
-                            row_position=row_position,
-                            cell="",
-                            field_name=field.name,
-                            field_number=field_number,
-                            field_position=field_position
-                            or max(field_positions) + field_number - start + 1,
-                        )
-                    )
+    def __str__(self):
+        self.__process()
+        return super().__str__()
 
-        # Iterate items
-        field_number = 0
-        for field_position, field, source in zip(field_positions, fields, cells):
-            field_number += 1
+    def __repr__(self):
+        self.__process()
+        return super().__repr__()
 
-            # Read cell
-            target, notes = field.read_cell(source)
-            type_note = notes.pop("type", None) if notes else None
-            if target is None and not type_note:
-                self.__blank_cells[field.name] = source
-            self[field.name] = target
+    def __setitem__(self, key, value):
+        try:
+            field, field_number, field_position = self.__field_info["mapping"][key]
+        except KeyError:
+            raise KeyError(f"Row does not have a field {key}")
+        if len(self.__cells) < field_number:
+            self.__cells.extend([None] * (field_number - len(self.__cells)))
+        self.__cells[field_number - 1] = value
+        super().__setitem__(key, value)
 
-            # Type error
-            if type_note:
-                self.__error_cells[field.name] = source
-                self.__errors.append(
-                    errors.TypeError(
-                        note=type_note,
-                        cells=list(map(str, cells)),
-                        row_number=row_number,
-                        row_position=row_position,
-                        cell=str(source),
-                        field_name=field.name,
-                        field_number=field_number,
-                        field_position=field_position,
-                    )
-                )
+    def __missing__(self, key):
+        return self.__process(key)
 
-            # Constraint errors
-            if notes:
-                for note in notes.values():
-                    self.__errors.append(
-                        errors.ConstraintError(
-                            note=note,
-                            cells=list(map(str, cells)),
-                            row_number=row_number,
-                            row_position=row_position,
-                            cell=str(source),
-                            field_name=field.name,
-                            field_number=field_number,
-                            field_position=field_position,
-                        )
-                    )
+    def __iter__(self):
+        return iter(self.__field_info["names"])
 
-        # Blank row
-        if len(self) == len(self.__blank_cells):
-            self.__errors = [
-                errors.BlankRowError(
-                    note="",
-                    cells=list(map(str, cells)),
-                    row_number=row_number,
-                    row_position=row_position,
-                )
-            ]
+    def __len__(self):
+        return len(self.__field_info["names"])
+
+    def __contains__(self, key):
+        return key in self.__field_info["mapping"]
+
+    def __reversed__(self, key):
+        return reversed(self.__field_info["names"])
+
+    def keys(self):
+        return iter(self.__field_info["names"])
+
+    def values(self):
+        for name in self.__field_info["names"]:
+            yield self[name]
+
+    def items(self):
+        for name in self.__field_info["names"]:
+            yield (name, self[name])
+
+    def get(self, key, default=None):
+        if key not in self.__field_info["names"]:
+            return default
+        return self[key]
 
     @cached_property
-    def schema(self):
+    def cells(self):
+        """
+        Returns:
+            Field[]: table schema fields
+        """
+        return self.__cells
+
+    @cached_property
+    def fields(self):
+        """
+        Returns:
+            Field[]: table schema fields
+        """
+        return self.__field_info["objects"]
+
+    @cached_property
+    def field_names(self):
         """
         Returns:
             Schema: table schema
         """
-        return self.__schema
+        return self.__field_info["names"]
 
     @cached_property
     def field_positions(self):
@@ -156,7 +131,7 @@ class Row(OrderedDict):
         Returns:
             int[]: table field positions
         """
-        return self.__field_positions
+        return self.__field_info["positions"]
 
     @cached_property
     def row_position(self):
@@ -181,6 +156,7 @@ class Row(OrderedDict):
         Returns:
             dict: row blank cells
         """
+        self.__process()
         return self.__blank_cells
 
     @cached_property
@@ -190,6 +166,7 @@ class Row(OrderedDict):
         Returns:
             dict: row error cells
         """
+        self.__process()
         return self.__error_cells
 
     @cached_property
@@ -198,6 +175,7 @@ class Row(OrderedDict):
         Returns:
             Error[]: row errors
         """
+        self.__process()
         return self.__errors
 
     @cached_property
@@ -206,6 +184,7 @@ class Row(OrderedDict):
         Returns:
             bool: if row valid
         """
+        self.__process()
         return not self.__errors
 
     # Import/Export
@@ -215,14 +194,38 @@ class Row(OrderedDict):
         Returns:
             str: a row as a CSV string
         """
-        cells = []
-        for field in self.__schema.fields:
-            if field.name in self:
-                cell, notes = field.write_cell(self[field.name])
-                cells.append(cell)
+        cells = self.to_list(types=CsvParser.supported_types)
         return helpers.stringify_csv_string(cells)
 
-    def to_dict(self, *, json=False):
+    def to_list(self, *, json=False, types=None):
+        """
+        Parameters:
+            json (bool): make data types compatible with JSON format
+            types (str[]): list of supported types
+
+        Returns:
+            dict: a row as a list
+        """
+
+        # Prepare
+        self.__process()
+        result = [self[name] for name in self.__field_info["names"]]
+        if types is None and json:
+            types = JsonParser.supported_types
+
+        # Convert
+        if types is not None:
+            for index, field in enumerate(self.__field_info["objects"]):
+                # Here we can optimize performance if we use a types mapping
+                if field.type not in types:
+                    cell = result[index]
+                    cell, notes = field.write_cell(cell, ignore_missing=True)
+                    result[index] = cell
+
+        # Return
+        return result
+
+    def to_dict(self, *, json=False, types=None):
         """
         Parameters:
             json (bool): make data types compatible with JSON format
@@ -230,36 +233,151 @@ class Row(OrderedDict):
         Returns:
             dict: a row as a dictionary
         """
-        if json:
-            result = {}
-            for field in self.__schema.fields:
-                if field.name in self:
-                    cell = self[field.name]
-                    if field.type not in JsonParser.native_types:
-                        cell, notes = field.write_cell(cell, ignore_missing=True)
-                    if isinstance(cell, Decimal):
-                        cell = float(cell)
+
+        # Prepare
+        self.__process()
+        result = {name: self[name] for name in self.__field_info["names"]}
+        if types is None and json:
+            types = JsonParser.supported_types
+
+        # Covert
+        if types is not None:
+            for index, field in enumerate(self.__field_info["objects"]):
+                # Here we can optimize performance if we use a types mapping
+                if field.type not in types:
+                    cell = result[field.name]
+                    cell, notes = field.write_cell(cell, ignore_missing=True)
                     result[field.name] = cell
-            return result
-        return dict(self)
 
-    def to_list(self, *, json=False):
-        """
-        Parameters:
-            json (bool): make data types compatible with JSON format
+        # Return
+        return result
 
-        Returns:
-            dict: a row as a list
-        """
-        if json:
-            result = []
-            for field in self.__schema.fields:
-                if field.name in self:
-                    cell = self[field.name]
-                    if field.type not in JsonParser.native_types:
-                        cell, notes = field.write_cell(cell, ignore_missing=True)
-                    if isinstance(cell, Decimal):
-                        cell = float(cell)
-                    result.append(cell)
-            return result
-        return list(self.values())
+    # Process
+
+    def __process(self, key=None):
+        # This algorithm might be improved especially for some
+        # scenarios like full processing after random access etc
+
+        # Exit if processed
+        if self.__processed:
+            return
+
+        # Prepare context
+        cells = self.__cells
+        fields = self.__field_info["objects"]
+        field_mapping = self.__field_info["mapping"]
+        field_positions = self.__field_info["positions"]
+        iterator = zip_longest(field_mapping.values(), cells)
+        is_empty = not bool(super().__len__())
+        if key:
+            try:
+                field, field_number, field_position = self.__field_info["mapping"][key]
+            except KeyError:
+                raise KeyError(f"Row does not have a field {key}")
+            cell = cells[field_number - 1] if len(cells) >= field_number else None
+            iterator = zip([(field, field_number, field_position)], [cell])
+
+        # Iterate cells
+        for field_mapping, source in iterator:
+
+            # Prepare context
+            if field_mapping is None:
+                break
+            field, field_number, field_position = field_mapping
+            if not is_empty and not is_empty and super().__contains__(field.name):
+                continue
+
+            # Read cell
+            target, notes = field.read_cell(source)
+            type_note = notes.pop("type", None) if notes else None
+            if target is None and not type_note:
+                self.__blank_cells[field.name] = source
+
+            # Type error
+            if type_note:
+                self.__error_cells[field.name] = source
+                self.__errors.append(
+                    errors.TypeError(
+                        note=type_note,
+                        cells=list(map(str, cells)),
+                        row_number=self.__row_number,
+                        row_position=self.__row_position,
+                        cell=str(source),
+                        field_name=field.name,
+                        field_number=field_number,
+                        field_position=field_position,
+                    )
+                )
+
+            # Constraint errors
+            if notes:
+                for note in notes.values():
+                    self.__errors.append(
+                        errors.ConstraintError(
+                            note=note,
+                            cells=list(map(str, cells)),
+                            row_number=self.__row_number,
+                            row_position=self.__row_position,
+                            cell=str(source),
+                            field_name=field.name,
+                            field_number=field_number,
+                            field_position=field_position,
+                        )
+                    )
+
+            # Set/return value
+            super().__setitem__(field.name, target)
+            if key:
+                return target
+
+        # Extra cells
+        if len(fields) < len(cells):
+            iterator = cells[len(fields) :]
+            start = max(field_positions[: len(fields)]) + 1
+            for field_position, cell in enumerate(iterator, start=start):
+                self.__errors.append(
+                    errors.ExtraCellError(
+                        note="",
+                        cells=list(map(str, cells)),
+                        row_number=self.__row_number,
+                        row_position=self.__row_position,
+                        cell=str(cell),
+                        field_name="",
+                        field_number=len(fields) + field_position - start,
+                        field_position=field_position,
+                    )
+                )
+
+        # Missing cells
+        if len(fields) > len(cells):
+            start = len(cells) + 1
+            iterator = zip_longest(field_positions[len(cells) :], fields[len(cells) :])
+            for field_number, (field_position, field) in enumerate(iterator, start=start):
+                if field is not None:
+                    self.__errors.append(
+                        errors.MissingCellError(
+                            note="",
+                            cells=list(map(str, cells)),
+                            row_number=self.__row_number,
+                            row_position=self.__row_position,
+                            cell="",
+                            field_name=field.name,
+                            field_number=field_number,
+                            field_position=field_position
+                            or max(field_positions) + field_number - start + 1,
+                        )
+                    )
+
+        # Blank row
+        if len(fields) == len(self.__blank_cells):
+            self.__errors = [
+                errors.BlankRowError(
+                    note="",
+                    cells=list(map(str, cells)),
+                    row_number=self.__row_number,
+                    row_position=self.__row_position,
+                )
+            ]
+
+        # Set processed
+        self.__processed = True

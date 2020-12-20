@@ -14,8 +14,8 @@ def test_validate():
 def test_validate_invalid():
     report = validate("data/invalid.csv")
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [None, 3, "blank-header"],
-        [None, 4, "duplicate-header"],
+        [None, 3, "blank-label"],
+        [None, 4, "duplicate-label"],
         [2, 3, "missing-cell"],
         [2, 4, "missing-cell"],
         [3, 3, "missing-cell"],
@@ -28,15 +28,15 @@ def test_validate_invalid():
 def test_validate_blank_headers():
     report = validate("data/blank-headers.csv")
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [None, 2, "blank-header"],
+        [None, 2, "blank-label"],
     ]
 
 
 def test_validate_duplicate_headers():
     report = validate("data/duplicate-headers.csv")
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [None, 3, "duplicate-header"],
-        [None, 5, "duplicate-header"],
+        [None, 3, "duplicate-label"],
+        [None, 5, "duplicate-label"],
     ]
 
 
@@ -128,8 +128,8 @@ def test_validate_headers_none():
 def test_validate_headers_none_extra_cell():
     report = validate("data/without-headers-extra.csv", headers=False)
     assert report.table.stats["rows"] == 3
-    assert report.table["dialect"]["header"] is False
     assert report.table["header"] == []
+    assert report.table["dialect"]["header"] is False
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [3, 3, "extra-cell"],
     ]
@@ -374,8 +374,8 @@ def test_validate_invalid_limit_rows():
     query = Query(limit_rows=2)
     report = validate("data/invalid.csv", query=query)
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [None, 3, "blank-header"],
-        [None, 4, "duplicate-header"],
+        [None, 3, "blank-label"],
+        [None, 4, "duplicate-label"],
         [2, 3, "missing-cell"],
         [2, 4, "missing-cell"],
         [3, 3, "missing-cell"],
@@ -417,7 +417,7 @@ def test_validate_schema_extra_headers_and_cells():
     schema = {"fields": [{"name": "id", "type": "integer"}]}
     report = validate("data/table.csv", schema=schema)
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [None, 2, "extra-header"],
+        [None, 2, "extra-label"],
         [2, 2, "extra-cell"],
         [3, 2, "extra-cell"],
     ]
@@ -428,6 +428,7 @@ def test_validate_schema_multiple_errors():
     schema = "data/schema-valid.json"
     report = validate(source, schema=schema, pick_errors=["#schema"], limit_errors=3)
     assert report.table.partial
+    print(report.table.flatten(["rowPosition", "fieldPosition", "code"]))
     assert report.table.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [4, 1, "type-error"],
         [4, 2, "constraint-error"],
@@ -578,7 +579,9 @@ def test_validate_infer_type_any():
 
 def test_validate_infer_names():
     report = validate(
-        "data/without-headers.csv", headers=False, infer_names=["id", "name"]
+        "data/without-headers.csv",
+        headers=False,
+        infer_names=["id", "name"],
     )
     assert report.table["header"] == []
     assert report.table["schema"]["fields"][0]["name"] == "id"
@@ -703,33 +706,34 @@ def test_validate_checksum_rows_invalid():
 
 
 def test_validate_pick_errors():
-    report = validate("data/invalid.csv", pick_errors=["blank-header", "blank-row"])
-    assert report.table.scope == ["blank-header", "blank-row"]
+    report = validate("data/invalid.csv", pick_errors=["blank-label", "blank-row"])
+    assert report.table.scope == ["blank-label", "blank-row"]
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [None, 3, "blank-header"],
+        [None, 3, "blank-label"],
         [4, None, "blank-row"],
     ]
 
 
 def test_validate_pick_errors_tags():
-    report = validate("data/invalid.csv", pick_errors=["#head"])
+    report = validate("data/invalid.csv", pick_errors=["#header"])
     assert report.table.scope == [
-        "extra-header",
-        "missing-header",
+        "extra-label",
+        "missing-label",
+        "blank-label",
+        "duplicate-label",
         "blank-header",
-        "duplicate-header",
-        "non-matching-header",
+        "incorrect-label",
     ]
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [None, 3, "blank-header"],
-        [None, 4, "duplicate-header"],
+        [None, 3, "blank-label"],
+        [None, 4, "duplicate-label"],
     ]
 
 
 def test_validate_skip_errors():
-    report = validate("data/invalid.csv", skip_errors=["blank-header", "blank-row"])
+    report = validate("data/invalid.csv", skip_errors=["blank-label", "blank-row"])
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [None, 4, "duplicate-header"],
+        [None, 4, "duplicate-label"],
         [2, 3, "missing-cell"],
         [2, 4, "missing-cell"],
         [3, 3, "missing-cell"],
@@ -739,7 +743,7 @@ def test_validate_skip_errors():
 
 
 def test_validate_skip_errors_tags():
-    report = validate("data/invalid.csv", skip_errors=["#head"])
+    report = validate("data/invalid.csv", skip_errors=["#header"])
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [2, 3, "missing-cell"],
         [2, 4, "missing-cell"],
@@ -754,8 +758,8 @@ def test_validate_invalid_limit_errors():
     report = validate("data/invalid.csv", limit_errors=3)
     assert report.table.partial
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [None, 3, "blank-header"],
-        [None, 4, "duplicate-header"],
+        [None, 3, "blank-label"],
+        [None, 4, "duplicate-label"],
         [2, 3, "missing-cell"],
     ]
 
@@ -866,6 +870,7 @@ def test_validate_unique_error_and_type_error():
         ]
     }
     report = validate(source, schema=schema)
+    print(report.flatten(["rowPosition", "fieldPosition", "code"]))
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [3, 2, "type-error"],
         [4, 2, "unique-error"],
@@ -1001,9 +1006,9 @@ def test_validate_invalid_table_schema_issue_304():
 def test_validate_table_is_invalid_issue_312():
     report = validate("data/issue-312.xlsx")
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [None, 3, "blank-header"],
-        [None, 4, "duplicate-header"],
-        [None, 5, "blank-header"],
+        [None, 3, "blank-label"],
+        [None, 4, "duplicate-label"],
+        [None, 5, "blank-label"],
         [5, None, "blank-row"],
     ]
 

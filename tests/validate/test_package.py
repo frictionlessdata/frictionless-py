@@ -104,8 +104,8 @@ def test_validate_package_invalid_package_noinfer():
 def test_validate_package_invalid_table():
     report = validate({"resources": [{"path": "data/invalid.csv"}]})
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [None, 3, "blank-header"],
-        [None, 4, "duplicate-header"],
+        [None, 3, "blank-label"],
+        [None, 4, "duplicate-label"],
         [2, 3, "missing-cell"],
         [2, 4, "missing-cell"],
         [3, 3, "missing-cell"],
@@ -431,7 +431,7 @@ def test_validate_package_with_schema_issue_348():
     }
     report = validate(descriptor)
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [None, 4, "missing-header"],
+        [None, 4, "missing-label"],
         [2, 4, "missing-cell"],
         [3, 4, "missing-cell"],
     ]
@@ -439,6 +439,7 @@ def test_validate_package_with_schema_issue_348():
 
 @pytest.mark.ci
 def test_validate_package_uppercase_format_issue_494():
-    report = validate("data/issue494.package.json", nopool=True)
-    assert report.valid
-    assert report.stats["tables"] == 1
+    with pytest.warns(UserWarning):
+        report = validate("data/issue494.package.json", nopool=True)
+        assert report.valid
+        assert report.stats["tables"] == 1
