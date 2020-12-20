@@ -2,6 +2,15 @@
 
 Here described only the breaking and most significant changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/frictionless-py/commits/master).
 
+- Optimized Row/Header/Table (#601) (BREAKING)
+    - Method `resource/table.read_data(_stream)` now includes a header row if present
+    - Renamed `errors.ExtraHeaderError->ExtraLabelError` (`extra-label-error`)
+    - Renamed `errors.MissingHeaderError->MissingLabelError` (`missing-label-error`)
+    - Renamed `errors.BlankHeaderError->BlankLabelError` (`blank-label-error`)
+    - Renamed `errors.DuplicateHeaderError->DuplicateLabelError` (`duplicate-label-error`)
+    - Renamed `errors.NonMatchingHeaderError->IncorrectLabelError` (`incorrect-label-error`)
+    - Renamed `schema.read/write_data->read/write_cells`
+
 ## v3.46
 
 - Renamed aws plugin to s3 (#594) (BREAKING)
