@@ -238,6 +238,8 @@ class SqlStorage(Storage):
             field = Field(name=column.name, type=field_type)
             if not column.nullable:
                 field.required = True
+            if column.comment:
+                field.description = column.comment
             schema.fields.append(field)
 
         # Primary key
@@ -364,7 +366,6 @@ class SqlStorage(Storage):
         # Prepare
         columns = []
         constraints = []
-        column_mapping = {}
         sql_name = self.__write_convert_name(resource.name)
 
         # Fields
@@ -398,9 +399,11 @@ class SqlStorage(Storage):
                     enum_name = "%s_%s_enum" % (sql_name, field.name)
                     column_type = sa.Enum(*value, name=enum_name)
             column_args = [field.name, column_type] + checks
-            column = sa.Column(*column_args, nullable=nullable, unique=unique)
+            column_kwargs = {"nullable": nullable, "unique": unique}
+            if field.description:
+                column_kwargs["comment"] = field.description
+            column = sa.Column(*column_args, **column_kwargs)
             columns.append(column)
-            column_mapping[field.name] = column
 
         # Primary key
         if resource.schema.primary_key is not None:
