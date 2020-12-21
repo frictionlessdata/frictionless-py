@@ -27,6 +27,7 @@ class Field(Metadata):
         format? (str): field format e.g. `default`
         missing_values? (str[]): missing values
         constraints? (dict): constraints
+        rdf_type? (str): RDF type
         schema? (Schema): parent schema object
 
     Raises:
@@ -45,6 +46,7 @@ class Field(Metadata):
         format=None,
         missing_values=None,
         constraints=None,
+        rdf_type=None,
         schema=None,
     ):
         self.setinitial("name", name)
@@ -54,6 +56,7 @@ class Field(Metadata):
         self.setinitial("format", format)
         self.setinitial("missingValues", missing_values)
         self.setinitial("constraints", constraints)
+        self.setinitial("rdfType", rdf_type)
         self.__schema = schema
         self.__type = None
         super().__init__(descriptor)
@@ -125,6 +128,14 @@ class Field(Metadata):
         """
         constraints = self.get("constraints", {})
         return self.metadata_attach("constraints", constraints)
+
+    @Metadata.property
+    def rdf_type(self):
+        """
+        Returns:
+            str?: RDF Type
+        """
+        return self.get("rdfType")
 
     @Metadata.property(
         write=lambda self, value: setitem(self.constraints, "required", value)
