@@ -4,7 +4,8 @@ import yaml
 import pytest
 import requests
 from decimal import Decimal
-from frictionless import Schema, Field, FrictionlessException, describe_schema
+from frictionless import Schema, Field, describe_schema, helpers
+from frictionless import FrictionlessException
 
 
 # General
@@ -252,6 +253,25 @@ def test_schema_metadata_error_message():
     assert "is not valid" in note
     assert "{'name': 'name', 'type': 'other'}" in note
     assert "is not valid under any of the given schema" in note
+
+
+@pytest.mark.parametrize("create_descriptor", [(False,), (True,)])
+def test_schema_standard_specs_properties(create_descriptor):
+    options = dict(
+        fields=[],
+        missing_values=[],
+        primary_key=[],
+        foreign_keys=[],
+    )
+    schema = (
+        Schema(**options)
+        if not create_descriptor
+        else Schema(helpers.create_descriptor(**options))
+    )
+    assert schema.fields == []
+    assert schema.missing_values == []
+    assert schema.primary_key == []
+    assert schema.foreign_keys == []
 
 
 # Expand
