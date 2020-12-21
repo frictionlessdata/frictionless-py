@@ -140,6 +140,7 @@ class Table:
         sync_schema=False,
         patch_schema=None,
         # Header
+        # TODO: while whole Table id going to be deprecated - decide for Resource
         # TODO: rename to header preserving deprecated headers OR just deprecate?
         headers=None,
         # Infer

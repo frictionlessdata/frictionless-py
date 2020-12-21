@@ -30,11 +30,20 @@ class Package(Metadata):
 
     Parameters:
         descriptor? (str|dict): package descriptor
+        resources? (dict|Resource[]): list of resource descriptors
         name? (str): package name (for machines)
+        id? (str): package id (for machines)
+        licenses? (dict[]): package licenses
+        profile? (str): profile name like 'data-package'
         title? (str): package title (for humans)
         description? (str): package description
-        profile? (str): profile name like 'data-package'
-        resources? (dict|Resource[]): list of resource descriptors
+        homepage? (str): package homepage
+        version? (str): package version
+        sources? (dict[]): package sources
+        contributors? (dict[]): package contributors
+        keywords? (str[]): package keywords
+        image? (str): package image
+        created? (str): package created
         hashing? (str): a hashing algorithm for resources
         basepath? (str): a basepath of the package
         onerror? (ignore|warn|raise): behaviour if there is an error
@@ -48,11 +57,24 @@ class Package(Metadata):
         self,
         descriptor=None,
         *,
+        # Required
+        resources=None,
+        # Recommended
         name=None,
+        id=None,
+        licenses=None,
+        profile=None,
+        # Optional
         title=None,
         description=None,
-        profile=None,
-        resources=None,
+        homepage=None,
+        version=None,
+        sources=None,
+        contributors=None,
+        keywords=None,
+        image=None,
+        created=None,
+        # Extra
         hashing=None,
         basepath=None,
         onerror="ignore",
@@ -64,11 +86,20 @@ class Package(Metadata):
             descriptor = helpers.unzip_descriptor(descriptor, "datapackage.json")
 
         # Set attributes
+        self.setinitial("resources", resources)
         self.setinitial("name", name)
+        self.setinitial("id", id)
+        self.setinitial("licenses", licenses)
+        self.setinitial("profile", profile)
         self.setinitial("title", title)
         self.setinitial("description", description)
-        self.setinitial("profile", profile)
-        self.setinitial("resources", resources)
+        self.setinitial("homepage", homepage)
+        self.setinitial("version", version)
+        self.setinitial("sources", sources)
+        self.setinitial("contributors", contributors)
+        self.setinitial("keywords", keywords)
+        self.setinitial("image", image)
+        self.setinitial("created", created)
         self.__hashing = hashing
         self.__basepath = basepath or helpers.detect_basepath(descriptor)
         self.__onerror = onerror
@@ -97,6 +128,30 @@ class Package(Metadata):
         return self.get("name")
 
     @Metadata.property
+    def id(self):
+        """
+        Returns:
+            str?: package id
+        """
+        return self.get("id")
+
+    @Metadata.property
+    def licenses(self):
+        """
+        Returns:
+            dict?: package licenses
+        """
+        return self.get("licenses")
+
+    @Metadata.property
+    def profile(self):
+        """
+        Returns:
+            str: package profile
+        """
+        return self.get("profile", config.DEFAULT_PACKAGE_PROFILE)
+
+    @Metadata.property
     def title(self):
         """
         Returns:
@@ -113,12 +168,60 @@ class Package(Metadata):
         return self.get("description")
 
     @Metadata.property
-    def profile(self):
+    def homepage(self):
         """
         Returns:
-            str: package profile
+            str?: package homepage
         """
-        return self.get("profile", config.DEFAULT_PACKAGE_PROFILE)
+        return self.get("homepage")
+
+    @Metadata.property
+    def version(self):
+        """
+        Returns:
+            str?: package version
+        """
+        return self.get("version")
+
+    @Metadata.property
+    def sources(self):
+        """
+        Returns:
+            dict[]?: package sources
+        """
+        return self.get("sources")
+
+    @Metadata.property
+    def contributors(self):
+        """
+        Returns:
+            dict[]?: package contributors
+        """
+        return self.get("contributors")
+
+    @Metadata.property
+    def keywords(self):
+        """
+        Returns:
+            str[]?: package keywords
+        """
+        return self.get("keywords")
+
+    @Metadata.property
+    def image(self):
+        """
+        Returns:
+            str?: package image
+        """
+        return self.get("image")
+
+    @Metadata.property
+    def created(self):
+        """
+        Returns:
+            str?: package created
+        """
+        return self.get("created")
 
     @Metadata.property(cache=False, write=False)
     def hashing(self):
