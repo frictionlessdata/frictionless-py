@@ -141,3 +141,9 @@ def test_describe_schema_proper_quote_issue_493():
     resource = describe("data/issue493.csv")
     assert resource.dialect.quote_char == '"'
     assert len(resource.schema.fields) == 126
+
+
+def test_describe_file_with_different_characters_name_issue_600():
+    assert describe("data/table_with_data.csv").name == "table_with_data"
+    assert describe("data/Table With Data.csv").name == "table-with-data"
+    assert describe("data/Таблица.csv").name == "tablitsa"
