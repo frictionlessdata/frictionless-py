@@ -20,6 +20,7 @@ from . import errors
 from . import config
 
 
+# TODO: add mediatype?
 # TODO: rework path/data/location etc
 # TODO: rework path/data updates syncing
 class Resource(Metadata):
@@ -30,10 +31,12 @@ class Resource(Metadata):
     Public   | `from frictionless import Resource`
 
     Parameters:
-        descriptor? (str|dict): report descriptor
-        name? (str): package name (for machines)
-        title? (str): package title (for humans)
-        descriptor? (str): package descriptor
+        descriptor? (str|dict): resource descriptor
+        name? (str): resource name (for machines)
+        title? (str): resource title (for humans)
+        descriptor? (str): resource descriptor
+        licenses? (dict[]): resource licenses
+        sources? (dict[]): resource sources
         path? (str): file path
         data? (any[][]): array or data arrays
         scheme? (str): file scheme
@@ -65,6 +68,8 @@ class Resource(Metadata):
         name=None,
         title=None,
         description=None,
+        licenses=None,
+        sources=None,
         path=None,
         data=None,
         # File
@@ -108,6 +113,8 @@ class Resource(Metadata):
         self.setinitial("name", name)
         self.setinitial("title", title)
         self.setinitial("description", description)
+        self.setinitial("licenses", licenses)
+        self.setinitial("sources", sources)
         self.setinitial("profile", profile)
         self.setinitial("path", path)
         self.setinitial("data", data)
@@ -191,6 +198,22 @@ class Resource(Metadata):
             str: resource description
         """
         return self.get("description")
+
+    @Metadata.property
+    def licenses(self):
+        """
+        Returns
+            dict[]: resource licenses
+        """
+        return self.get("licenses")
+
+    @Metadata.property
+    def sources(self):
+        """
+        Returns
+            dict[]: resource sources
+        """
+        return self.get("sources")
 
     @Metadata.property
     def profile(self):

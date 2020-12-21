@@ -153,7 +153,7 @@ def test_package_from_zip_no_descriptor(tmpdir):
 
 
 @pytest.mark.parametrize("create_descriptor", [(False,), (True,)])
-def test_package_standared_specs_properties(create_descriptor):
+def test_package_standard_specs_properties(create_descriptor):
     options = dict(
         resources=[],
         name="name",
