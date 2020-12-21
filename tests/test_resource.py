@@ -271,6 +271,31 @@ def test_resource_source_no_path_and_no_data():
     assert resource.read_rows() == []
 
 
+@pytest.mark.parametrize("create_descriptor", [(False,), (True,)])
+def test_resource_standard_specs_properties(create_descriptor):
+    options = dict(
+        path="path",
+        name="name",
+        profile="profile",
+        title="title",
+        description="description",
+        licenses=[],
+        sources=[],
+    )
+    resource = (
+        Resource(**options)
+        if not create_descriptor
+        else Resource(helpers.create_descriptor(**options))
+    )
+    assert resource.path == "path"
+    assert resource.name == "name"
+    assert resource.profile == "profile"
+    assert resource.title == "title"
+    assert resource.description == "description"
+    assert resource.licenses == []
+    assert resource.sources == []
+
+
 # Dialect
 
 

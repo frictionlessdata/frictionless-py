@@ -1,5 +1,5 @@
 import pytest
-from frictionless import Field
+from frictionless import Field, helpers
 
 
 # General
@@ -56,6 +56,33 @@ def test_field_read_cell_number_missingValues():
     assert field.read_cell("") == (None, None)
     assert field.read_cell("NA") == (None, None)
     assert field.read_cell("N/A") == (None, None)
+
+
+@pytest.mark.parametrize("create_descriptor", [(False,), (True,)])
+def test_field_standard_specs_properties(create_descriptor):
+    options = dict(
+        name="name",
+        title="title",
+        description="description",
+        type="type",
+        format="format",
+        missing_values="missing",
+        constraints=[],
+        rdf_type="rdf",
+    )
+    resource = (
+        Field(**options)
+        if not create_descriptor
+        else Field(helpers.create_descriptor(**options))
+    )
+    assert resource.name == "name"
+    assert resource.title == "title"
+    assert resource.description == "description"
+    assert resource.type == "type"
+    assert resource.format == "format"
+    assert resource.missing_values == "missing"
+    assert resource.constraints == []
+    assert resource.rdf_type == "rdf"
 
 
 # Constraints

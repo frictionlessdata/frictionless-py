@@ -152,6 +152,45 @@ def test_package_from_zip_no_descriptor(tmpdir):
     assert error.note.count("datapackage.json")
 
 
+@pytest.mark.parametrize("create_descriptor", [(False,), (True,)])
+def test_package_standard_specs_properties(create_descriptor):
+    options = dict(
+        resources=[],
+        name="name",
+        id="id",
+        licenses=[],
+        profile="profile",
+        title="title",
+        description="description",
+        homepage="homepage",
+        version="version",
+        sources=[],
+        contributors=[],
+        keywords=["keyword"],
+        image="image",
+        created="created",
+    )
+    package = (
+        Package(**options)
+        if not create_descriptor
+        else Package(helpers.create_descriptor(**options))
+    )
+    assert package.resources == []
+    assert package.name == "name"
+    assert package.id == "id"
+    assert package.licenses == []
+    assert package.profile == "profile"
+    assert package.title == "title"
+    assert package.description == "description"
+    assert package.homepage == "homepage"
+    assert package.version == "version"
+    assert package.sources == []
+    assert package.contributors == []
+    assert package.keywords == ["keyword"]
+    assert package.image == "image"
+    assert package.created == "created"
+
+
 # Resources
 
 
