@@ -10,7 +10,6 @@ import tempfile
 import datetime
 import platform
 import stringcase
-from slugify import slugify
 from inspect import signature
 from urllib.parse import urlparse
 from importlib import import_module
@@ -144,7 +143,7 @@ def detect_name(source):
         name = os.path.splitext(os.path.basename(source))[0]
     elif isinstance(source, list) and source and isinstance(source[0], str):
         name = os.path.splitext(os.path.basename(source[0]))[0]
-    name = slugify(name).lower()
+    name = slugify(name, regex_pattern=r"[^-a-z0-9._/]")
     return name
 
 
@@ -193,6 +192,18 @@ def is_platform(name):
     elif name == "windows":
         return current == "Windows"
     return False
+
+
+def slugify(text, **options):
+
+    # Import
+    # There is a conflict between python-slugify and awesome-slugify
+    # So we import from a properl module manually
+    from slugify.slugify import slugify
+
+    # Slugify
+    slug = slugify(text, **options)
+    return slug
 
 
 def is_remote_path(path):
