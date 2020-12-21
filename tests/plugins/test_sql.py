@@ -592,6 +592,29 @@ def test_postgresql_storage_views_support(postgresql_url):
     ]
 
 
+def test_postgresql_storage_comment_support(postgresql_url):
+
+    # Write
+    source = Resource(path="data/table.csv")
+    source.infer()
+    source.schema.get_field("id").description = "integer field"
+    source.schema.get_field("name").description = "string field"
+    source.to_sql(url=postgresql_url, force=True)
+
+    # Read
+    target = Resource.from_sql(url=postgresql_url, name="table")
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer", "description": "integer field"},
+            {"name": "name", "type": "string", "description": "string field"},
+        ]
+    }
+    assert target.read_rows() == [
+        {"id": 1, "name": "english"},
+        {"id": 2, "name": "中国人"},
+    ]
+
+
 # Storage (MySQL)
 
 
