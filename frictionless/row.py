@@ -1,6 +1,5 @@
 from itertools import zip_longest
-from .plugins.csv import CsvParser
-from .plugins.json import JsonParser
+from importlib import import_module
 from .helpers import cached_property
 from . import helpers
 from . import errors
@@ -194,7 +193,8 @@ class Row(dict):
         Returns:
             str: a row as a CSV string
         """
-        cells = self.to_list(types=CsvParser.supported_types)
+        plugin = import_module("frictionless.plugins.csv")
+        cells = self.to_list(types=plugin.CsvParser.supported_types)
         return helpers.stringify_csv_string(cells)
 
     def to_list(self, *, json=False, types=None):
@@ -209,9 +209,10 @@ class Row(dict):
 
         # Prepare
         self.__process()
+        plugin = import_module("frictionless.plugins.json")
         result = [self[name] for name in self.__field_info["names"]]
         if types is None and json:
-            types = JsonParser.supported_types
+            types = plugin.JsonParser.supported_types
 
         # Convert
         if types is not None:
@@ -236,9 +237,10 @@ class Row(dict):
 
         # Prepare
         self.__process()
+        plugin = import_module("frictionless.plugins.json")
         result = {name: self[name] for name in self.__field_info["names"]}
         if types is None and json:
-            types = JsonParser.supported_types
+            types = plugin.JsonParser.supported_types
 
         # Covert
         if types is not None:
