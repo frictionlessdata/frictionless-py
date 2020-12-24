@@ -150,7 +150,8 @@ class BigqueryParser(Parser):
         )
         resource = storage.read_resource(dialect.table)
         self.resource.schema = resource.schema
-        yield from resource.read_data_stream()
+        with resource:
+            yield from resource.data_stream
 
     # Write
 
@@ -390,18 +391,19 @@ class BigqueryStorage(Storage):
 
         # Write data
         buffer = []
-        for row in resource.read_row_stream():
-            for field in fallback_fields:
-                row[field.name], notes = field.write_cell(row[field.name])
-            for field in timezone_fields:
-                if row[field.name] is not None:
-                    row[field.name] = row[field.name].replace(tzinfo=None)
-            buffer.append(row.to_list())
-            if len(buffer) > BUFFER_SIZE:
+        with resource:
+            for row in resource.row_stream:
+                for field in fallback_fields:
+                    row[field.name], notes = field.write_cell(row[field.name])
+                for field in timezone_fields:
+                    if row[field.name] is not None:
+                        row[field.name] = row[field.name].replace(tzinfo=None)
+                buffer.append(row.to_list())
+                if len(buffer) > BUFFER_SIZE:
+                    self.__write_convert_data_start_job(resource.name, buffer)
+                    buffer = []
+            if len(buffer) > 0:
                 self.__write_convert_data_start_job(resource.name, buffer)
-                buffer = []
-        if len(buffer) > 0:
-            self.__write_convert_data_start_job(resource.name, buffer)
 
     def __write_convert_data_start_job(self, name, buffer):
         http = helpers.import_from_plugin("apiclient.http", plugin="bigquery")

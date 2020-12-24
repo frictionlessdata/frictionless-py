@@ -6,7 +6,6 @@ import zipfile
 import tempfile
 import warnings
 from copy import deepcopy
-from importlib import import_module
 from itertools import zip_longest, chain
 from .exception import FrictionlessException
 from .metadata import Metadata
@@ -104,6 +103,7 @@ class Resource(Metadata):
         onerror="ignore",
         trusted=False,
         package=None,
+        nolookup=False,
     ):
 
         # TODO: Handle stats: hash/bytes/rows
@@ -113,9 +113,13 @@ class Resource(Metadata):
             descriptor = helpers.unzip_descriptor(descriptor, "dataresource.json")
 
         # Store state
+        self.__loader = None
         self.__parser = None
         self.__sample = None
         self.__header = None
+        self.__lookup = None
+        self.__byte_stream = None
+        self.__text_stream = None
         self.__data_stream = None
         self.__row_stream = None
         self.__row_number = None
@@ -136,6 +140,7 @@ class Resource(Metadata):
         self.__onerror = onerror
         self.__trusted = trusted
         self.__package = package
+        self.__nolookup = nolookup
 
         # Set properties
         self.setinitial("name", name)
@@ -246,7 +251,10 @@ class Resource(Metadata):
         Returns
             str?: resource profile
         """
-        return self.get("profile", config.DEFAULT_RESOURCE_PROFILE)
+        default = config.DEFAULT_RESOURCE_PROFILE
+        if not self.closed and self.tabular:
+            default = "tabular-data-resource"
+        return self.get("profile", default)
 
     @Metadata.property
     def path(self):
@@ -375,12 +383,32 @@ class Resource(Metadata):
         return schema
 
     @property
+    def sample(self):
+        """Tables's rows used as sample.
+
+        These sample rows are used internally to infer characteristics of the
+        source file (e.g. schema, ...).
+
+        Returns:
+            list[]?: table sample
+        """
+        return self.__sample
+
+    @property
     def header(self):
         """
         Returns:
             str[]?: table header
         """
         return self.__header
+
+    @property
+    def lookup(self):
+        """
+        Returns:
+            any?: table lookup
+        """
+        return self.__lookup
 
     @Metadata.property
     def stats(self):
@@ -465,11 +493,50 @@ class Resource(Metadata):
         Returns
             bool: if resource is tabular
         """
-        try:
-            system.create_parser(self)
-            return True
-        except Exception:
-            return False
+        if not self.closed:
+            return bool(self.__parser)
+        else:
+            try:
+                system.create_parser(self)
+                return True
+            except Exception:
+                return False
+
+    @property
+    def byte_stream(self):
+        """Byte stream in form of a generator
+
+        Yields:
+            gen<bytes>?: byte stream
+        """
+        return self.__byte_stream
+
+    @property
+    def text_stream(self):
+        """Text stream in form of a generator
+
+        Yields:
+            gen<str[]>?: data stream
+        """
+        return self.__text_stream
+
+    @property
+    def data_stream(self):
+        """Data stream in form of a generator
+
+        Yields:
+            gen<any[][]>?: data stream
+        """
+        return self.__data_stream
+
+    @property
+    def row_stream(self):
+        """Row stream in form of a generator of Row objects
+
+        Yields:
+            gen<Row[]>?: row stream
+        """
+        return self.__row_stream
 
     # Expand
 
@@ -487,6 +554,8 @@ class Resource(Metadata):
 
     # Infer
 
+    # TODO: review the logic
+    # TODO: reimplement only_sample/stats
     # TODO: use stats=True instead of only_sample?
     # TODO: optimize this logic/don't re-open
     def infer(self, source=None, *, only_sample=False):
@@ -496,51 +565,26 @@ class Resource(Metadata):
             source (str|str[]): path, list of paths or glob pattern
             only_sample? (bool): infer whatever possible but only from the sample
         """
-        patch = {}
-
-        # From source
         if source:
             if isinstance(source, str):
                 self.path = source
             if isinstance(source, list):
                 self.data = source
-
-        # Tabular
-        if self.tabular:
-            with self.to_table() as table:
-                patch["name"] = self.name
-                patch["profile"] = "tabular-data-resource"
-                patch["scheme"] = table.scheme
-                patch["format"] = table.format
-                patch["hashing"] = table.hashing
-                patch["encoding"] = table.encoding
-                patch["compression"] = table.compression
-                patch["compressionPath"] = table.compression_path
-                patch["compressionPath"] = table.compression_path
-                patch["control"] = table.control
-                patch["dialect"] = table.dialect
-                patch["query"] = table.query
-                patch["schema"] = table.schema
-
-        # General
-        else:
-            with self.to_file() as file:
-                patch["name"] = self.name
-                patch["profile"] = "data-resource"
-                patch["scheme"] = file.scheme
-                patch["format"] = file.format
-                patch["hashing"] = file.hashing
-                patch["encoding"] = file.encoding
-                patch["compression"] = file.compression
-                patch["compressionPath"] = file.compression_path
-                patch["control"] = file.control
-
-        # Stats
-        if not only_sample:
-            patch["stats"] = self.read_stats()
-
-        # Apply/expand
-        self.update(patch)
+        with helpers.ensure_open(self):
+            stream = self.__row_stream if self.tabular else self.__text_stream
+            helpers.pass_through(stream)
+            # TODO: move this code to open for consistencly between below and schema/etc?
+            self["name"] = self.name
+            self["profile"] = self.profile
+            self["scheme"] = self.scheme
+            self["format"] = self.format
+            self["hashing"] = self.hashing
+            self["encoding"] = self.encoding
+            self["compression"] = self.compression
+            self["compressionPath"] = self.compression_path
+            self["compressionPath"] = self.compression_path
+            if self.tabular:
+                self["query"] = self.query
 
     # Open/Close
 
@@ -551,33 +595,51 @@ class Resource(Metadata):
             FrictionlessException: any exception that occurs
         """
         self.close()
-        if self.query.metadata_errors:
-            error = self.query.metadata_errors[0]
-            raise FrictionlessException(error)
+
+        # Table
         try:
+            # TODO: is it the right place for it?
+            if self.query.metadata_errors:
+                error = self.query.metadata_errors[0]
+                raise FrictionlessException(error)
             self["stats"] = {"hash": "", "bytes": 0, "fields": 0, "rows": 0}
             self.__parser = system.create_parser(self)
             self.__parser.open()
+            # TODO: make below lazy?
             self.__read_infer_sample()
+            if not self.__nolookup:
+                self.__lookup = self.__read_prepare_lookup()
+            if self.__parser.loader:
+                self.__byte_stream = self.__parser.loader.byte_stream
+            if self.__parser.loader:
+                self.__text_stream = self.__parser.loader.text_stream
             self.__data_stream = self.__read_data_stream()
             self.__row_stream = self.__read_row_stream()
             self.__row_number = 0
             self.__row_position = 0
             return self
+
+        # File
         except FrictionlessException as exception:
-            self.close()
-            # Ensure not found file is a scheme error
-            if exception.error.code == "format-error":
-                loader = system.create_loader(self)
-                loader.open()
-                loader.close()
-            raise
+            if exception.error.code != "format-error":
+                self.close()
+                raise
+            self.__loader = system.create_loader(self)
+            self.__loader.open()
+            self.__byte_stream = self.__loader.byte_stream
+            self.__text_stream = self.__loader.text_stream
+            return self
+
+        # Error
         except Exception:
             self.close()
             raise
 
     def close(self):
         """Close the table as "filelike.close" does"""
+        if self.__loader:
+            self.__loader.close()
+            self.__loader = None
         if self.__parser:
             self.__parser.close()
             self.__parser = None
@@ -593,146 +655,41 @@ class Resource(Metadata):
 
     # Read
 
-    #  def read_bytes(self):
-    #  """
-    #  Returns:
-    #  bytes: resource bytes
-    #  """
-    #  byte_stream = self.read_byte_stream()
-    #  bytes = byte_stream.read1(io.DEFAULT_BUFFER_SIZE)
-    #  byte_stream.close()
-    #  return bytes
+    def read_bytes(self):
+        """Read data into memory
 
-    #  def read_byte_stream(self):
-    #  """
-    #  Returns:
-    #  io.ByteStream: resource byte stream
-    #  """
-    #  if self.inline:
-    #  return io.BytesIO(b"")
-    #  file = self.to_file()
-    #  file.open()
-    #  return file.byte_stream
-
-    #  def read_text(self):
-    #  """
-    #  Returns:
-    #  str: resource text
-    #  """
-    #  text = ""
-    #  text_stream = self.read_text_stream()
-    #  for line in text_stream:
-    #  text += line
-    #  text_stream.close()
-    #  return text
-
-    #  def read_text_stream(self):
-    #  """
-    #  Returns:
-    #  io.TextStream: resource text stream
-    #  """
-    #  if self.inline:
-    #  return io.StringIO("")
-    #  file = self.to_file()
-    #  file.open()
-    #  return file.text_stream
-
-    #  def read_rows(self):
-    #  """
-    #  Returns
-    #  Row[]: resource rows
-    #  """
-    #  rows = list(self.read_row_stream())
-    #  return rows
-
-    #  def read_row_stream(self):
-    #  """
-    #  Returns
-    #  gen<Row[]>: row stream
-    #  """
-    #  with self.to_table() as table:
-    #  for row in table.row_stream:
-    #  yield row
-
-    #  def read_data(self):
-    #  """
-    #  Returns:
-    #  any[][]: array of data arrays
-    #  """
-    #  data = list(self.read_data_stream())
-    #  return data
-
-    #  def read_data_stream(self):
-    #  """
-    #  Returns:
-    #  gen<any[][]>: data stream
-    #  """
-    #  with self.to_table() as table:
-    #  for cells in table.data_stream:
-    #  yield cells
-
-    #  def read_header(self):
-    #  """
-    #  Returns
-    #  Header: resource header
-    #  """
-    #  with self.to_table() as table:
-    #  return table.header
-
-    #  def read_sample(self):
-    #  """
-    #  Returns
-    #  any[][]: resource sample
-    #  """
-    #  with self.to_table() as table:
-    #  return table.sample
-
-    #  # TODO: optimize this logic/don't re-open
-    #  def read_stats(self):
-    #  """
-    #  Returns
-    #  dict: resource stats
-    #  """
-
-    #  # Tabular
-    #  if self.tabular:
-    #  with self.to_table() as table:
-    #  helpers.pass_through(table.data_stream)
-    #  return table.stats
-
-    #  # General
-    #  # TODO: make loader.ByteStreamWithStatsHandling iterable / rebase on pass_through?
-    #  with self.to_file() as file:
-    #  bytes = True
-    #  while bytes:
-    #  bytes = file.byte_stream.read1(io.DEFAULT_BUFFER_SIZE)
-    #  return file.stats
-
-    def read_lookup(self):
+        Returns:
+            any[][]: table data
         """
-        Returns
-            dict: resource lookup structure
+        with helpers.ensure_open(self):
+            if self.__byte_stream:
+                return self.__byte_stream.read1()
+            return b""
+
+    def read_text(self):
+        """Read text into memory
+
+        Returns:
+            str: table data
         """
-        lookup = {}
-        for fk in self.schema.foreign_keys:
-            source_name = fk["reference"]["resource"]
-            source_key = tuple(fk["reference"]["fields"])
-            if source_name != "" and not self.__package:
-                continue
-            source_res = self.__package.get_resource(source_name) if source_name else self
-            lookup.setdefault(source_name, {})
-            if source_key in lookup[source_name]:
-                continue
-            lookup[source_name][source_key] = set()
-            if not source_res:
-                continue
-            with source_res.to_table(lookup=None) as table:
-                for row in table.row_stream:
-                    cells = tuple(row.get(field_name) for field_name in source_key)
-                    if set(cells) == {None}:
-                        continue
-                    lookup[source_name][source_key].add(cells)
-        return lookup
+        with helpers.ensure_open(self):
+            if self.__text_stream:
+                result = ""
+                for line in self.__loader.text_stream:
+                    result += line
+                return result
+            return ""
+
+    def read_data(self):
+        """Read data into memory
+
+        Returns:
+            any[][]: table data
+        """
+        with helpers.ensure_open(self):
+            if self.__data_stream:
+                return list(self.__data_stream)
+            return []
 
     def read_rows(self):
         """Read rows into memory
@@ -740,8 +697,10 @@ class Resource(Metadata):
         Returns:
             Row[]: table rows
         """
-        self.__read_raise_closed()
-        return list(self.__row_stream)
+        with helpers.ensure_open(self):
+            if self.__row_stream:
+                return list(self.__row_stream)
+            return []
 
     def __read_row_stream(self):
         schema = self.schema
@@ -771,23 +730,22 @@ class Resource(Metadata):
                 field_info["positions"].append(field_position)
 
         # Create state
-        # TODO: recover
         memory_unique = {}
         memory_primary = {}
         foreign_groups = []
         is_integrity = bool(schema.primary_key)
-        #  for field in schema.fields:
-        #  if field.constraints.get("unique"):
-        #  memory_unique[field.name] = {}
-        #  is_integrity = True
-        #  if self.__lookup:
-        #  for fk in schema.foreign_keys:
-        #  group = {}
-        #  group["sourceName"] = fk["reference"]["resource"]
-        #  group["sourceKey"] = tuple(fk["reference"]["fields"])
-        #  group["targetKey"] = tuple(fk["fields"])
-        #  foreign_groups.append(group)
-        #  is_integrity = True
+        for field in schema.fields:
+            if field.constraints.get("unique"):
+                memory_unique[field.name] = {}
+                is_integrity = True
+        if self.__lookup:
+            for fk in schema.foreign_keys:
+                group = {}
+                group["sourceName"] = fk["reference"]["resource"]
+                group["sourceKey"] = tuple(fk["reference"]["fields"])
+                group["targetKey"] = tuple(fk["fields"])
+                foreign_groups.append(group)
+                is_integrity = True
 
         # Stream rows
         for cells in self.__data_stream:
@@ -857,15 +815,6 @@ class Resource(Metadata):
 
             # Stream rows
             yield row
-
-    def read_data(self):
-        """Read data into memory
-
-        Returns:
-            any[][]: table data
-        """
-        self.__read_raise_closed()
-        return list(self.__data_stream)
 
     def __read_data_stream(self):
 
@@ -1127,22 +1076,90 @@ class Resource(Metadata):
             return result
         return cells
 
+    def __read_prepare_lookup(self):
+        """
+        Returns
+            dict: resource lookup structure
+        """
+        lookup = {}
+        for fk in self.schema.foreign_keys:
+            source_name = fk["reference"]["resource"]
+            source_key = tuple(fk["reference"]["fields"])
+            if source_name != "" and not self.__package:
+                continue
+            source_res = (
+                self.__package.get_resource(source_name)
+                if source_name
+                else self.to_copy(nolookup=True)
+            )
+            lookup.setdefault(source_name, {})
+            if source_key in lookup[source_name]:
+                continue
+            lookup[source_name][source_key] = set()
+            if not source_res:
+                continue
+            with source_res:
+                for row in source_res.row_stream:
+                    cells = tuple(row.get(field_name) for field_name in source_key)
+                    if set(cells) == {None}:
+                        continue
+                    lookup[source_name][source_key].add(cells)
+        return lookup
+
     def __read_raise_closed(self):
         if not self.__data_stream or not self.__row_stream:
-            note = 'the table has not been opened by "table.open()"'
+            note = 'the resource has not been opened by "resource.open()"'
             raise FrictionlessException(errors.Error(note=note))
 
     # Write
 
-    def write(self, target=None, **options):
-        """Write the resource to the target
+    # TODO: can we rebase on source/target resources instead of read_row_stream?
+    def write(
+        self,
+        target=None,
+        *,
+        scheme=None,
+        format=None,
+        hashing=None,
+        encoding=None,
+        compression=None,
+        compression_path=None,
+        control=None,
+        dialect=None,
+    ):
+        """Write the table to the target
 
         Parameters:
             target (str): target path
-            **options: subset of Resource's constructor options
+            **options: subset of Table's constructor options
         """
-        with self.to_table() as table:
-            return table.write(target, **options)
+
+        # Create resource
+        resource = Resource.from_source(
+            target,
+            scheme=scheme,
+            format=format,
+            hashing=hashing,
+            encoding=encoding,
+            compression=compression,
+            compression_path=compression_path,
+            control=control,
+            dialect=dialect,
+            schema=self.schema,
+            trusted=True,
+        )
+
+        # Write resource
+        # TODO: use contextlib.closing?
+        parser = system.create_parser(resource)
+        read_row_stream = self.__write_row_stream_create
+        result = parser.write_row_stream(read_row_stream)
+        return result
+
+    def __write_row_stream_create(self):
+        if self.closed or self.__row_position:
+            self.open()
+        return self.row_stream
 
     # Import/Export
 
@@ -1257,7 +1274,7 @@ class Resource(Metadata):
             name=name,
         )
 
-    def to_copy(self):
+    def to_copy(self, **options):
         """Create a copy of the resource"""
         descriptor = self.to_dict()
         # Data can be not serializable (generators/functions)
@@ -1269,64 +1286,8 @@ class Resource(Metadata):
             onerror=self.__onerror,
             trusted=self.__trusted,
             package=self.__package,
+            **options,
         )
-
-    # TODO: cache lookup?
-    def to_table(self, **options):
-        """Convert resource to Table
-
-        Parameters:
-            **options (dict): table options
-
-        Returns:
-            Table: data table
-        """
-        module = import_module("frictionless.table")
-        options.setdefault("source", self.source)
-        options.setdefault("scheme", self.scheme)
-        options.setdefault("format", self.format)
-        options.setdefault("hashing", self.hashing)
-        # TODO: it's a quickfix; resolve fully on Resource/Table merge
-        if "encoding" in self:
-            options.setdefault("encoding", self.encoding)
-        options.setdefault("compression", self.compression)
-        options.setdefault("compression_path", self.compression_path)
-        options.setdefault("control", self.control)
-        options.setdefault("dialect", self.dialect)
-        options.setdefault("query", self.query)
-        options.setdefault("schema", self.schema)
-        options.setdefault("sync_schema", self.__sync_schema)
-        options.setdefault("patch_schema", self.__patch_schema)
-        options.setdefault("infer_type", self.__infer_type)
-        options.setdefault("infer_names", self.__infer_names)
-        options.setdefault("infer_volume", self.__infer_volume)
-        options.setdefault("infer_confidence", self.__infer_confidence)
-        options.setdefault("infer_float_numbers", self.__infer_float_numbers)
-        options.setdefault("infer_missing_values", self.__infer_missing_values)
-        options.setdefault("onerror", self.__onerror)
-        if "lookup" not in options:
-            options["lookup"] = self.read_lookup()
-        return module.Table(**options)
-
-    def to_file(self, **options):
-        """Convert resource to File
-
-        Parameters:
-            **options (dict): file options
-
-        Returns:
-            File: data file
-        """
-        module = import_module("frictionless.file")
-        options.setdefault("source", self.source)
-        options.setdefault("scheme", self.scheme)
-        options.setdefault("format", self.format)
-        options.setdefault("hashing", self.hashing)
-        options.setdefault("encoding", self.encoding)
-        options.setdefault("compression", self.compression)
-        options.setdefault("compression_path", self.compression_path)
-        options.setdefault("control", self.control)
-        return module.File(**options)
 
     # TODO: support multipart
     # TODO: there is 100% duplication with package.to_zip
@@ -1411,13 +1372,14 @@ class Resource(Metadata):
         # Define view
         class ResourceView(petl.Table):
             def __iter__(self):
-                if normalize:
-                    yield resource.schema.field_names
-                    yield from (row.to_list() for row in resource.read_row_stream())
-                    return
-                if not resource.dialect.header:
-                    yield resource.schema.field_names
-                yield from resource.read_data_stream()
+                with helpers.ensure_open(resource):
+                    if normalize:
+                        yield resource.schema.field_names
+                        yield from (row.to_list() for row in resource.row_stream)
+                        return
+                    if not resource.dialect.header:
+                        yield resource.schema.field_names
+                    yield from resource.data_stream
 
         return ResourceView()
 

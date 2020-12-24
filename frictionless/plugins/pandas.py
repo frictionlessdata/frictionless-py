@@ -91,7 +91,8 @@ class PandasParser(Parser):
         storage = PandasStorage(dataframes={self.resource.name: self.resource.data})
         resource = storage.read_resource(self.resource.name)
         self.resource.schema = resource.schema
-        yield from resource.read_data_stream()
+        with resource:
+            yield from resource.data_stream
 
     # Write
 
@@ -261,28 +262,29 @@ class PandasStorage(Storage):
         data_rows = []
         index_rows = []
         fixed_types = {}
-        for row in resource.read_row_stream():
-            data_values = []
-            index_values = []
-            for field in resource.schema.fields:
-                value = row[field.name]
-                if isinstance(value, float) and np.isnan(value):
-                    value = None
-                # http://pandas.pydata.org/pandas-docs/stable/gotchas.html#support-for-integer-na
-                if value is None and field.type in ("number", "integer"):
-                    fixed_types[field.name] = "number"
-                    value = np.NaN
-                if field.type in ["datetime", "time"] and value is not None:
-                    value = value.replace(tzinfo=None)
-                if field.name in resource.schema.primary_key:
-                    index_values.append(value)
-                else:
-                    data_values.append(value)
-            if len(resource.schema.primary_key) == 1:
-                index_rows.append(index_values[0])
-            elif len(resource.schema.primary_key) > 1:
-                index_rows.append(tuple(index_values))
-            data_rows.append(tuple(data_values))
+        with resource:
+            for row in resource.row_stream:
+                data_values = []
+                index_values = []
+                for field in resource.schema.fields:
+                    value = row[field.name]
+                    if isinstance(value, float) and np.isnan(value):
+                        value = None
+                    # http://pandas.pydata.org/pandas-docs/stable/gotchas.html#support-for-integer-na
+                    if value is None and field.type in ("number", "integer"):
+                        fixed_types[field.name] = "number"
+                        value = np.NaN
+                    if field.type in ["datetime", "time"] and value is not None:
+                        value = value.replace(tzinfo=None)
+                    if field.name in resource.schema.primary_key:
+                        index_values.append(value)
+                    else:
+                        data_values.append(value)
+                if len(resource.schema.primary_key) == 1:
+                    index_rows.append(index_values[0])
+                elif len(resource.schema.primary_key) > 1:
+                    index_rows.append(tuple(index_values))
+                data_rows.append(tuple(data_values))
 
         # Create index
         index = None

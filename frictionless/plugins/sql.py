@@ -137,7 +137,8 @@ class SqlParser(Parser):
         storage = SqlStorage(engine=engine, namespace=dialect.namespace)
         resource = storage.read_resource(dialect.table, order_by=dialect.order_by)
         self.resource.schema = resource.schema
-        yield from resource.read_data_stream()
+        with resource:
+            yield from resource.data_stream
 
     # Write
 
@@ -446,18 +447,19 @@ class SqlStorage(Storage):
         buffer = []
         buffer_size = 1000
         sql_table = self.__read_sql_table(resource.name)
-        for row in resource.read_row_stream():
-            for field in fallback_fields:
-                row[field.name], notes = field.write_cell(row[field.name])
-            for field in timezone_fields:
-                if row[field.name] is not None:
-                    row[field.name] = row[field.name].replace(tzinfo=None)
-            buffer.append(row)
-            if len(buffer) > buffer_size:
+        with resource:
+            for row in resource.row_stream:
+                for field in fallback_fields:
+                    row[field.name], notes = field.write_cell(row[field.name])
+                for field in timezone_fields:
+                    if row[field.name] is not None:
+                        row[field.name] = row[field.name].replace(tzinfo=None)
+                buffer.append(row)
+                if len(buffer) > buffer_size:
+                    self.__connection.execute(sql_table.insert().values(buffer))
+                    buffer = []
+            if len(buffer):
                 self.__connection.execute(sql_table.insert().values(buffer))
-                buffer = []
-        if len(buffer):
-            self.__connection.execute(sql_table.insert().values(buffer))
 
     def __write_convert_type(self, type=None):
         sa = helpers.import_from_plugin("sqlalchemy", plugin="sql")

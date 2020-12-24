@@ -2,6 +2,7 @@ import petl
 from ..step import Step
 from ..field import Field
 from ..exception import FrictionlessException
+from .. import helpers
 
 
 # TODO: implement table_preload/cache step
@@ -189,10 +190,11 @@ class table_normalize(Step):
         # Is it possible here to re-use Row?
         # For example, implementing row.normalize() working in-place
         def data():
-            for number, row in enumerate(source.read_row_stream(), start=1):
-                if number == 1:
-                    yield row.field_names
-                yield row.to_list()
+            with helpers.ensure_open(source):
+                for number, row in enumerate(source.row_stream, start=1):
+                    if number == 1:
+                        yield row.field_names
+                    yield row.to_list()
 
         target.data = data
 
@@ -247,10 +249,10 @@ class table_validate(Step):
         # Data
         def data():
             yield source.schema.field_names
-            with source.to_table() as table:
-                if not table.header.valid:
-                    raise FrictionlessException(error=table.header.errors[0])
-                for row in table.row_stream:
+            with helpers.ensure_open(source):
+                if not source.header.valid:
+                    raise FrictionlessException(error=source.header.errors[0])
+                for row in source.row_stream:
                     if not row.valid:
                         raise FrictionlessException(error=row.errors[0])
                     yield row
@@ -266,5 +268,4 @@ class table_write(Step):
         self.__options = options
 
     def transform_resource(self, source, target):
-        with target.to_table() as table:
-            table.write(self.__path, **self.__options)
+        target.write(self.__path, **self.__options)
