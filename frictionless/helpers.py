@@ -13,6 +13,7 @@ import stringcase
 from inspect import signature
 from urllib.parse import urlparse
 from importlib import import_module
+from contextlib import contextmanager
 from _thread import RLock  # type: ignore
 from . import config
 
@@ -111,6 +112,19 @@ def import_from_plugin(name, *, plugin):
         errors = import_module("frictionless.errors")
         error = errors.Error(note=f'Please install "frictionless[{plugin}]"')
         raise module.FrictionlessException(error)
+
+
+# TODO: move to Resource?
+@contextmanager
+def ensure_open(thing):
+    if not thing.closed:
+        yield thing
+    else:
+        try:
+            thing.open()
+            yield thing
+        finally:
+            thing.close()
 
 
 def copy_merge(source, patch):

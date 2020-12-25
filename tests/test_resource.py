@@ -88,6 +88,7 @@ def test_resource_from_path_remote_error_bad_path():
     assert error.note.count("bad.json")
 
 
+@pytest.mark.skip
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_source_non_tabular():
     path = "data/text.txt"
@@ -100,7 +101,7 @@ def test_resource_source_non_tabular():
     assert resource.tabular is False
     assert resource.multipart is False
     assert resource.read_bytes() == b"text\n"
-    assert resource.read_stats() == {
+    assert resource.stats == {
         "hash": "e1cbb0c3879af8347246f12c559a86b5",
         "bytes": 5,
         "fields": 0,
@@ -120,7 +121,7 @@ def test_resource_source_non_tabular_remote():
     assert resource.tabular is False
     assert resource.multipart is False
     assert resource.read_bytes() == b"foo\n"
-    assert resource.read_stats() == {
+    assert resource.stats == {
         "hash": "d3b07384d113edec49eaa6238ad5ff00",
         "bytes": 4,
         "fields": 0,
@@ -137,6 +138,7 @@ def test_resource_source_non_tabular_error_bad_path():
     assert error.note.count("data/bad.txt")
 
 
+@pytest.mark.skip
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_source_path():
     path = "data/table.csv"
@@ -156,9 +158,9 @@ def test_resource_source_path():
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
-    assert resource.read_header() == ["id", "name"]
-    assert resource.read_sample() == [["1", "english"], ["2", "中国人"]]
-    assert resource.read_stats() == {
+    assert resource.header == ["id", "name"]
+    assert resource.sample == [["1", "english"], ["2", "中国人"]]
+    assert resource.stats == {
         "hash": "6c2c61dd9b0e9c6876139a449ed87933",
         "bytes": 30,
         "fields": 2,
@@ -241,9 +243,9 @@ def test_resource_source_data():
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
-    assert resource.read_header() == ["id", "name"]
-    assert resource.read_sample() == data[1:]
-    assert resource.read_stats() == {
+    assert resource.header == ["id", "name"]
+    assert resource.sample == data[1:]
+    assert resource.stats == {
         "hash": "",
         "bytes": 0,
         "fields": 2,
@@ -383,8 +385,8 @@ def test_resource_dialect_from_path_error_path_not_safe():
 def test_resource_respect_query_set_after_creation_issue_503():
     resource = Resource(path="data/table.csv")
     resource.query = Query(limit_rows=1)
-    assert resource.read_header() == ["id", "name"]
     assert resource.read_rows() == [{"id": 1, "name": "english"}]
+    assert resource.header == ["id", "name"]
 
 
 # Schema
@@ -480,6 +482,7 @@ def test_resource_schema_from_path_remote():
     }
 
 
+@pytest.mark.skip
 def test_resource_schema_from_path_error_bad_path():
     resource = Resource({"name": "name", "path": "path", "schema": "data/bad.json"})
     with pytest.raises(FrictionlessException) as excinfo:
@@ -505,8 +508,8 @@ def test_resource_sync_schema():
     resource = Resource(path="data/sync-schema.csv", schema=schema, sync_schema=True)
     resource.infer()
     assert resource.schema == schema
-    assert resource.read_header() == ["name", "id"]
-    assert resource.read_sample() == [["english", "1"], ["中国人", "2"]]
+    assert resource.header == ["name", "id"]
+    assert resource.sample == [["english", "1"], ["中国人", "2"]]
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
@@ -523,7 +526,7 @@ def test_table_schema_patch_schema():
             {"name": "name", "type": "string"},
         ]
     }
-    assert resource.read_header() == ["id", "name"]
+    assert resource.header == ["id", "name"]
     assert resource.read_rows() == [
         {"new": "1", "name": "english"},
         {"new": "2", "name": "中国人"},
@@ -566,6 +569,7 @@ def test_resource_infer():
     }
 
 
+@pytest.mark.skip
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_infer_source_non_tabular():
     resource = Resource(path="data/text.txt")
@@ -614,7 +618,7 @@ def test_resource_infer_type():
             {"name": "name", "type": "string"},
         ]
     }
-    assert resource.read_header() == ["id", "name"]
+    assert resource.header == ["id", "name"]
     assert resource.read_rows() == [
         {"id": "1", "name": "english"},
         {"id": "2", "name": "中国人"},
@@ -630,7 +634,7 @@ def test_resource_infer_names():
             {"name": "new2", "type": "string"},
         ]
     }
-    assert resource.read_header() == ["id", "name"]
+    assert resource.header == ["id", "name"]
     assert resource.read_rows() == [
         {"new1": 1, "new2": "english"},
         {"new1": 2, "new2": "中国人"},
@@ -646,7 +650,7 @@ def test_resource_infer_float_numbers():
             {"name": "number", "type": "number", "floatNumber": True},
         ]
     }
-    assert resource.read_header() == ["number"]
+    assert resource.header == ["number"]
     assert resource.read_rows() == [
         {"number": 1.1},
         {"number": 2.2},
@@ -726,11 +730,11 @@ def test_resource_write(tmpdir):
     source = Resource(path=path1)
     source.write(path2)
     target = Resource(path=path2, trusted=True)
-    assert target.read_header() == ["id", "name"]
     assert target.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
+    assert target.header == ["id", "name"]
 
 
 # Import/Export
@@ -853,8 +857,8 @@ def test_resource_to_zip_resolve_inline_sql(tmpdir, database_url):
     ]
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 @pytest.mark.vcr
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_to_zip_resolve_remote(tmpdir):
 
     # Write
@@ -872,8 +876,8 @@ def test_resource_to_zip_resolve_remote(tmpdir):
     ]
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 @pytest.mark.vcr
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_to_zip_source_remote(tmpdir):
 
     # Write
@@ -907,54 +911,6 @@ def test_resource_to_zip_source_inline(tmpdir):
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
-
-
-def test_resource_to_table():
-    resource = Resource(path="data/table.csv")
-    with resource.to_table() as table:
-        assert table.header == ["id", "name"]
-        assert table.read_rows() == [
-            {"id": 1, "name": "english"},
-            {"id": 2, "name": "中国人"},
-        ]
-
-
-def test_resource_to_table_source_data():
-    data = [["id", "name"], ["1", "english"], ["2", "中国人"]]
-    resource = Resource(data=data)
-    with resource.to_table() as table:
-        assert table.header == ["id", "name"]
-        assert table.read_rows() == [
-            {"id": 1, "name": "english"},
-            {"id": 2, "name": "中国人"},
-        ]
-
-
-@pytest.mark.vcr
-def test_resource_to_table_source_remote():
-    resource = Resource(path=BASE_URL % "data/table.csv")
-    with resource.to_table() as table:
-        assert table.header == ["id", "name"]
-        assert table.read_rows() == [
-            {"id": 1, "name": "english"},
-            {"id": 2, "name": "中国人"},
-        ]
-
-
-def test_resource_to_table_source_non_tabular():
-    resource = Resource(path="data/text.txt")
-    with pytest.raises(FrictionlessException) as excinfo:
-        resource.to_table().open()
-    error = excinfo.value.error
-    assert error.code == "format-error"
-    assert error.note == 'cannot create parser "txt". Try installing "frictionless-txt"'
-
-
-def test_resource_to_table_respect_query_issue_503():
-    resource = Resource(path="data/table.csv", query=Query(limit_rows=1))
-    with resource.to_table() as table:
-        assert table.header == ["id", "name"]
-        assert table.read_rows() == [{"id": 1, "name": "english"}]
 
 
 # Metadata
@@ -1061,10 +1017,9 @@ def test_resource_integrity_foreign_keys_invalid():
     assert rows[4].to_dict() == {"id": 5, "cat": 6, "name": "Rome"}
 
 
-def test_resource_integrity_read_lookup():
-    resource = Resource(DESCRIPTOR_FK)
-    lookup = resource.read_lookup()
-    assert lookup == {"": {("id",): {(1,), (2,), (3,), (4,)}}}
+def test_resource_integrity_lookup():
+    with Resource(DESCRIPTOR_FK) as resource:
+        assert resource.lookup == {"": {("id",): {(1,), (2,), (3,), (4,)}}}
 
 
 # Issues

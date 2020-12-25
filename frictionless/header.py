@@ -1,5 +1,5 @@
 from itertools import zip_longest
-from .plugins.csv import CsvParser
+from importlib import import_module
 from .helpers import cached_property
 from . import helpers
 from . import errors
@@ -104,7 +104,9 @@ class Header(list):
         Returns:
             str: a row as a CSV string
         """
-        cells = self.to_list(types=CsvParser.supported_types)
+
+        plugin = import_module("frictionless.plugins.csv")
+        cells = self.to_list(types=plugin.CsvParser.supported_types)
         return helpers.stringify_csv_string(cells)
 
     def to_list(self):

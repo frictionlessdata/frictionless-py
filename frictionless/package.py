@@ -532,13 +532,14 @@ class Package(Metadata):
                             path = f"{resource.name}.{resource.format}"
                             descriptor["path"] = path
                             with tempfile.NamedTemporaryFile() as file:
-                                byte_stream = resource.read_byte_stream()
-                                while True:
-                                    chunk = byte_stream.read(1024)
-                                    if not chunk:
-                                        break
-                                    file.write(chunk)
-                                file.flush()
+                                # TODO: rebase on resource here?
+                                with system.create_loader(resource) as loader:
+                                    while True:
+                                        chunk = loader.byte_stream.read(1024)
+                                        if not chunk:
+                                            break
+                                        file.write(chunk)
+                                    file.flush()
                                 zip.write(file.name, path)
 
                     # Local Data

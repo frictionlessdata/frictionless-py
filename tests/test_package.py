@@ -288,8 +288,8 @@ def test_package_resources_respect_query_set_after_creation_issue_503():
     package = Package(resources=[Resource(path="data/table.csv")])
     resource = package.get_resource("table")
     resource.query = Query(limit_rows=1)
-    assert resource.read_header() == ["id", "name"]
     assert resource.read_rows() == [{"id": 1, "name": "english"}]
+    assert resource.header == ["id", "name"]
 
 
 # Expand
@@ -945,11 +945,12 @@ def test_package_integrity_foreign_key_multifield_invalid():
     assert rows[2].errors[0].code == "foreign-key-error"
 
 
-def test_package_integrity_read_lookup():
+def test_package_integrity_lookup():
     package = Package(DESCRIPTOR_FK)
-    resource = package.get_resource("main")
-    lookup = resource.read_lookup()
-    assert lookup == {"people": {("firstname",): {("Walter",), ("Alex",), ("John",)}}}
+    with package.get_resource("main") as resource:
+        assert resource.lookup == {
+            "people": {("firstname",): {("Walter",), ("Alex",), ("John",)}}
+        }
 
 
 # Issues

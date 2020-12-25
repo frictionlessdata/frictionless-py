@@ -136,7 +136,8 @@ class CkanParser(Parser):
         )
         resource = storage.read_resource(dialect.resource)
         self.resource.schema = resource.schema
-        yield from resource.read_data_stream()
+        with resource:
+            yield from resource.data_stream
 
     # Write
 
@@ -325,7 +326,8 @@ class CkanStorage(Storage):
     def __write_convert_data(self, resource):
         ckan_table = self.__read_ckan_table(resource.name)
         endpoint = f"{self.__endpoint}/datastore_upsert"
-        records = [row.to_dict(json=True) for row in resource.read_row_stream()]
+        with resource:
+            records = [row.to_dict(json=True) for row in resource.row_stream]
         self.__make_ckan_request(
             endpoint,
             method="POST",

@@ -37,7 +37,16 @@ def extract_package(
     result = OrderedDict()
     for number, resource in enumerate(package.resources, start=1):
         key = resource.fullpath if not resource.inline else f"memory{number}"
-        data = resource.read_row_stream()
+        data = read_row_stream(resource)
         data = (process(row) for row in data) if process else data
         result[key] = data if stream else list(data)
     return result
+
+
+# Internal
+
+
+def read_row_stream(resource):
+    with resource:
+        for row in resource.row_stream:
+            yield row

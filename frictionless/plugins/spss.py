@@ -82,7 +82,8 @@ class SpssParser(Parser):
         storage = SpssStorage(basepath=basepath)
         resource = storage.read_resource(name)
         self.resource.schema = resource.schema
-        yield from resource.read_data_stream()
+        with resource:
+            yield from resource.data_stream
 
     # Write
 
@@ -263,16 +264,17 @@ class SpssStorage(Storage):
                 sizes[field.name] = 0
 
         # Set string sizes
-        for row in resource.read_row_stream():
-            for name in sizes.keys():
-                cell = row[name]
-                field = resource.schema.get_field(name)
-                cell, notes = field.write_cell(cell)
-                size = len(cell.encode("utf-8"))
-                if size > sizes[name]:
-                    sizes[name] = size
-        for name, size in sizes.items():
-            spss_schema["varTypes"][name] = size
+        with resource:
+            for row in resource.row_stream:
+                for name in sizes.keys():
+                    cell = row[name]
+                    field = resource.schema.get_field(name)
+                    cell, notes = field.write_cell(cell)
+                    size = len(cell.encode("utf-8"))
+                    if size > sizes[name]:
+                        sizes[name] = size
+            for name, size in sizes.items():
+                spss_schema["varTypes"][name] = size
 
         return spss_schema
 
@@ -282,18 +284,20 @@ class SpssStorage(Storage):
         path = self.__write_convert_name(resource.name)
         spss_schema = self.__write_convert_schema(resource)
         with sav.SavWriter(path, ioUtf8=True, **spss_schema) as writer:
-            for row in resource.read_row_stream():
-                result = []
-                for field in resource.schema.fields:
-                    cell = row[field.name]
-                    if field.type in ["datetime", "date", "time"]:
-                        format = FORMAT_WRITE[field.type]
-                        cell = writer.spssDateTime(cell.strftime(format).encode(), format)
-                    elif field.type not in mapping:
-                        cell, notes = field.write_cell(cell)
-                        cell = cell.encode("utf-8")
-                    result.append(cell)
-                writer.writerow(result)
+            with resource:
+                for row in resource.row_stream:
+                    result = []
+                    for field in resource.schema.fields:
+                        cell = row[field.name]
+                        if field.type in ["datetime", "date", "time"]:
+                            format = FORMAT_WRITE[field.type]
+                            cell = cell.strftime(format).encode()
+                            cell = writer.spssDateTime(cell, format)
+                        elif field.type not in mapping:
+                            cell, notes = field.write_cell(cell)
+                            cell = cell.encode("utf-8")
+                        result.append(cell)
+                    writer.writerow(result)
 
     def __write_convert_type(self, type=None):
 
