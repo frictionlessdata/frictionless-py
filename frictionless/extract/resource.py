@@ -32,6 +32,15 @@ def extract_resource(
     resource = Resource(source, basepath=basepath, onerror=onerror, trusted=trusted)
 
     # Extract resource
-    data = resource.read_row_stream()
+    data = read_row_stream(resource)
     data = (process(row) for row in data) if process else data
     return data if stream else list(data)
+
+
+# Internal
+
+
+def read_row_stream(resource):
+    with resource:
+        for row in resource.row_stream:
+            yield row

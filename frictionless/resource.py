@@ -572,7 +572,8 @@ class Resource(Metadata):
                 self.data = source
         with helpers.ensure_open(self):
             stream = self.__row_stream if self.tabular else self.__text_stream
-            helpers.pass_through(stream)
+            if not only_sample:
+                helpers.pass_through(stream)
             # TODO: move this code to open for consistencly between below and schema/etc?
             self["name"] = self.name
             self["profile"] = self.profile

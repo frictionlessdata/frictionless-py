@@ -44,8 +44,10 @@ def validate_resource(
         return Report(time=timer.time, errors=resource.metadata_errors, tables=[])
 
     # Prepare table
+    # TODO: review lookup preparation
     if lookup is None:
-        lookup = resource.read_lookup()
+        with resource.to_copy() as rescopy:
+            lookup = rescopy.lookup
 
     # Validate table
     report = validate_table(
@@ -59,6 +61,7 @@ def validate_resource(
         dialect=resource.dialect,
         schema=resource.schema,
         lookup=lookup,
+        # TODO: review
         checksum=resource.stats,
         **options,
     )
