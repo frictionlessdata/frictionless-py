@@ -169,7 +169,6 @@ def test_multipart_loader_resource_write_file(tmpdir):
 # Validate
 
 
-@pytest.mark.skip
 def test_multipart_loader_resource_validate():
     report = validate({"path": ["data/chunk1.csv", "data/chunk2.csv"]})
     assert report.valid

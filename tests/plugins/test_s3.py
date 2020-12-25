@@ -59,7 +59,6 @@ def test_s3_loader_big_file(bucket_name):
         }
 
 
-@pytest.mark.skip
 @mock_s3
 def test_s3_loader_multiprocessing_problem_issue_496(bucket_name):
 
