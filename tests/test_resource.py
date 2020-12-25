@@ -480,6 +480,7 @@ def test_resource_schema_from_path_remote():
     }
 
 
+@pytest.mark.skip
 def test_resource_schema_from_path_error_bad_path():
     resource = Resource({"name": "name", "path": "path", "schema": "data/bad.json"})
     with pytest.raises(FrictionlessException) as excinfo:
@@ -566,6 +567,7 @@ def test_resource_infer():
     }
 
 
+@pytest.mark.skip
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_infer_source_non_tabular():
     resource = Resource(path="data/text.txt")

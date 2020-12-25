@@ -565,6 +565,7 @@ class Resource(Metadata):
             source (str|str[]): path, list of paths or glob pattern
             only_sample? (bool): infer whatever possible but only from the sample
         """
+        stats = self.stats
         if source:
             if isinstance(source, str):
                 self.path = source
@@ -586,6 +587,9 @@ class Resource(Metadata):
             self["compressionPath"] = self.compression_path
             if self.tabular:
                 self["query"] = self.query
+            # TODO: review it's a hack for checksum validation
+            if only_sample:
+                self["stats"] = stats
 
     # Open/Close
 
@@ -662,10 +666,12 @@ class Resource(Metadata):
         Returns:
             any[][]: table data
         """
-        with helpers.ensure_open(self):
-            if self.__byte_stream:
-                return self.__byte_stream.read1()
+        # TODO: rework when there is proper sample caching
+        if self.inline:
             return b""
+        self["stats"] = {"hash": "", "bytes": 0, "fields": 0, "rows": 0}
+        with system.create_loader(self) as loader:
+            return loader.byte_stream.read1()
 
     def read_text(self):
         """Read text into memory
@@ -673,13 +679,15 @@ class Resource(Metadata):
         Returns:
             str: table data
         """
-        with helpers.ensure_open(self):
-            if self.__text_stream:
-                result = ""
-                for line in self.__loader.text_stream:
-                    result += line
-                return result
+        # TODO: rework when there is proper sample caching
+        if self.inline:
             return ""
+        self["stats"] = {"hash": "", "bytes": 0, "fields": 0, "rows": 0}
+        with system.create_loader(self) as loader:
+            result = ""
+            for line in loader.text_stream:
+                result += line
+            return result
 
     def read_data(self):
         """Read data into memory
