@@ -3,14 +3,14 @@ import warnings
 from pathlib import Path
 from copy import deepcopy
 from itertools import chain, zip_longest
-from .exception import FrictionlessException
-from .resource import Resource
-from .system import system
-from .header import Header
-from .row import Row
-from . import helpers
-from . import errors
-from . import config
+from ..exception import FrictionlessException
+from ..resource import Resource
+from ..system import system
+from ..header import Header
+from ..row import Row
+from .. import helpers
+from .. import errors
+from .. import config
 
 
 class Table:

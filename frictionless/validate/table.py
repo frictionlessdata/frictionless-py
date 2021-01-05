@@ -1,4 +1,4 @@
-from ..table import Table
+from ..legacy.table import Table
 from ..system import system
 from ..exception import FrictionlessException
 from ..report import Report, ReportTable

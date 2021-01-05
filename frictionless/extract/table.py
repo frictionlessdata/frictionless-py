@@ -1,4 +1,4 @@
-from ..table import Table
+from ..legacy.table import Table
 from .. import config
 
 

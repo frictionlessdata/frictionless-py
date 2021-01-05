@@ -1,4 +1,4 @@
-# TODO: remove legacy
+# TODO: remove/replace legacy
 from .check import Check
 from .config import VERSION as __version__
 from .control import Control
@@ -27,7 +27,7 @@ from .server import Server
 from .step import Step
 from .storage import Storage
 from .system import system
-from .table import Table
+from .legacy.table import Table
 from .transform import *
 from .type import Type
 from .validate import *

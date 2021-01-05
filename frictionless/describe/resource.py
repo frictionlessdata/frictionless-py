@@ -1,5 +1,5 @@
 from ..resource import Resource
-from ..table import Table
+from ..legacy.table import Table
 from .. import helpers
 from .. import config
 
