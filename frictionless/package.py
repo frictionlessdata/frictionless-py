@@ -81,10 +81,6 @@ class Package(Metadata):
         trusted=False,
     ):
 
-        # Handle zip
-        if helpers.is_zip_descriptor(descriptor):
-            descriptor = helpers.unzip_descriptor(descriptor, "datapackage.json")
-
         # Set attributes
         self.setinitial("resources", resources)
         self.setinitial("name", name)
@@ -386,6 +382,12 @@ class Package(Metadata):
                 seen_names.append(name)
 
     # Import/Export
+
+    @staticmethod
+    def from_zip(path, **options):
+        """Create a package from ZIP"""
+        descriptor = helpers.unzip_descriptor(path, "datapackage.json")
+        return Package(descriptor=descriptor, **options)
 
     @staticmethod
     def from_storage(storage):

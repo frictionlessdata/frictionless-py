@@ -117,7 +117,7 @@ def test_package_from_invalid_descriptor_type():
 
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_package_from_zip():
-    package = Package("data/package.zip")
+    package = Package.from_zip("data/package.zip")
     assert package.name == "testing"
     assert len(package.resources) == 2
     assert package.get_resource("data2").read_rows() == [
@@ -130,7 +130,7 @@ def test_package_from_zip():
 @pytest.mark.vcr
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_package_from_zip_remote():
-    package = Package(BASE_URL % "data/package.zip")
+    package = Package.from_zip(BASE_URL % "data/package.zip")
     assert package.name == "testing"
     assert len(package.resources) == 2
     assert package.get_resource("data2").read_rows() == [
@@ -146,7 +146,7 @@ def test_package_from_zip_no_descriptor(tmpdir):
     with zipfile.ZipFile(descriptor, "w") as zip:
         zip.writestr("data.txt", "foobar")
     with pytest.raises(FrictionlessException) as excinfo:
-        Package(descriptor)
+        Package.from_zip(descriptor)
     error = excinfo.value.error
     assert error.code == "package-error"
     assert error.note.count("datapackage.json")
@@ -529,7 +529,7 @@ def test_package_to_zip(tmpdir):
     package.to_zip(target)
 
     # Read
-    package = Package(target)
+    package = Package.from_zip(target)
     assert package.name == "name"
     assert package.get_resource("name").name == "name"
     assert package.get_resource("name").path == "table.csv"
@@ -549,7 +549,7 @@ def test_package_to_zip_withdir_path(tmpdir):
     package.to_zip(target)
 
     # Read
-    package = Package(target)
+    package = Package.from_zip(target)
     assert package.get_resource("table").path == "data/table.csv"
     assert package.get_resource("table").read_rows() == [
         {"id": 1, "name": "english"},
@@ -567,7 +567,7 @@ def test_package_to_zip_absolute_path(tmpdir):
     package.to_zip(target)
 
     # Read
-    package = Package(target)
+    package = Package.from_zip(target)
     assert package.get_resource("table").path == "table.csv"
     assert package.get_resource("table").read_rows() == [
         {"id": 1, "name": "english"},
@@ -586,7 +586,7 @@ def test_package_to_zip_resolve_inline(tmpdir):
     package.to_zip(target, resolve=["inline"])
 
     # Read
-    package = Package(target)
+    package = Package.from_zip(target)
     assert package.get_resource("table").path == "table.csv"
     assert package.get_resource("table").read_rows() == [
         {"id": 1, "name": "english"},
@@ -605,7 +605,7 @@ def test_package_to_zip_resolve_inline_sql(tmpdir, database_url):
     package.to_zip(target, resolve=["inline"])
 
     # Read
-    package = Package(target)
+    package = Package.from_zip(target)
     assert package.get_resource("table").path == "table.csv"
     assert package.get_resource("table").read_rows() == [
         {"id": 1, "name": "english"},
@@ -625,7 +625,7 @@ def test_package_to_zip_resolve_remote(tmpdir):
     package.to_zip(target, resolve=["remote"])
 
     # Read
-    package = Package(target)
+    package = Package.from_zip(target)
     assert package.get_resource("table").path == "table.csv"
     assert package.get_resource("table").read_rows() == [
         {"id": 1, "name": "english"},
@@ -646,7 +646,7 @@ def test_package_to_zip_resolve_inline_and_remote(tmpdir):
     package.to_zip(target, resolve=["inline", "remote"])
 
     # Read
-    package = Package(target)
+    package = Package.from_zip(target)
     assert package.get_resource("name1").path == "name1.csv"
     assert package.get_resource("name1").read_rows() == [
         {"id": 1, "name": "english"},
@@ -670,7 +670,7 @@ def test_package_to_zip_source_remote(tmpdir):
     package.to_zip(target)
 
     # Read
-    package = Package(target)
+    package = Package.from_zip(target)
     assert package == {
         "name": "name",
         "resources": [{"name": "name", "path": path}],
@@ -691,7 +691,7 @@ def test_package_to_zip_source_inline(tmpdir):
     package.to_zip(target)
 
     # Write
-    package = Package(target)
+    package = Package.from_zip(target)
     assert package == {
         "name": "name",
         "resources": [{"name": "name", "data": data}],

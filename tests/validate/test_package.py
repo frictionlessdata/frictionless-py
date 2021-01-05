@@ -45,6 +45,7 @@ def test_validate_package_from_path_invalid():
     ]
 
 
+@pytest.mark.skip
 @pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_validate_package_from_zip():
@@ -52,6 +53,7 @@ def test_validate_package_from_zip():
     assert report.valid
 
 
+@pytest.mark.skip
 @pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_validate_package_from_zip_invalid():

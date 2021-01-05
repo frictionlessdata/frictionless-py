@@ -1181,7 +1181,7 @@ class Resource(Metadata):
 
     @staticmethod
     def from_zip(path, **options):
-        """Create a resource from PETL container"""
+        """Create a resource from ZIP"""
         descriptor = helpers.unzip_descriptor(path, "dataresource.json")
         return Resource(descriptor=descriptor, **options)
 
