@@ -56,7 +56,7 @@ class File:
         self.__loader = None
 
         # Create resource
-        self.__resource = Resource.from_source(
+        self.__resource = Resource(
             source,
             scheme=scheme,
             format=format,

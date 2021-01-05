@@ -22,7 +22,9 @@ from . import errors
 from . import config
 
 
-# TODO: add mediatype?
+# TODO: Add mediatype from the specs?
+# TODO: Remove support for deprecated "url"?
+# TODO: Support hash/bytes/rows from the specs?
 class Resource(Metadata):
     """Resource representation.
 
@@ -63,8 +65,10 @@ class Resource(Metadata):
 
     def __init__(
         self,
-        descriptor=None,
+        source=None,
         *,
+        descriptor=None,
+        # Spec
         name=None,
         title=None,
         description=None,
@@ -104,11 +108,16 @@ class Resource(Metadata):
         nolookup=False,
     ):
 
-        # TODO: Handle stats: hash/bytes/rows
-
-        # Handle zip
-        if helpers.is_zip_descriptor(descriptor):
-            descriptor = helpers.unzip_descriptor(descriptor, "dataresource.json")
+        # Handle source
+        if source is not None:
+            file = File(source)
+            if file.type == "table":
+                if path is None:
+                    path = file.path
+                if data is None:
+                    data = file.data
+            elif descriptor is None:
+                descriptor = source
 
         # Store state
         self.__loader = None
@@ -1129,9 +1138,21 @@ class Resource(Metadata):
             **options: subset of Table's constructor options
         """
 
+        # Detect path/data
+        # TODO: remove when we have rebased on resource.write(other_resource)
+        path = None
+        data = target
+        if isinstance(target, str):
+            path = target
+            data = None
+        elif isinstance(target, list) and target and isinstance(target[0], str):
+            path = target
+            data = None
+
         # Create resource
-        resource = Resource.from_source(
-            target,
+        resource = Resource(
+            path=path,
+            data=data,
             scheme=scheme,
             format=format,
             hashing=hashing,
@@ -1159,15 +1180,10 @@ class Resource(Metadata):
     # Import/Export
 
     @staticmethod
-    def from_source(source, **options):
-        """Create a resource from path OR data"""
-        if source is None:
-            return Resource(data=[], **options)
-        elif isinstance(source, str):
-            return Resource(path=source, **options)
-        elif isinstance(source, list) and source and isinstance(source[0], str):
-            return Resource(path=source, **options)
-        return Resource(data=source, **options)
+    def from_zip(path, **options):
+        """Create a resource from PETL container"""
+        descriptor = helpers.unzip_descriptor(path, "dataresource.json")
+        return Resource(descriptor=descriptor, **options)
 
     @staticmethod
     def from_petl(storage, *, view, **options):
@@ -1477,11 +1493,10 @@ class Resource(Metadata):
     def metadata_process(self):
 
         # File
-        source = self.get("data", self.get("path", []))
         self.__file = File(
-            source,
-            basepath=self.__basepath,
+            self.get("data", self.get("path", [])),
             compression_path=self.get("compressionPath"),
+            basepath=self.__basepath,
         )
 
         # Control

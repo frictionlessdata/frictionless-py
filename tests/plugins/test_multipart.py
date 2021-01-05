@@ -149,6 +149,7 @@ def test_multipart_loader_resource_infer():
 
 # We're better implement here a round-robin testing including
 # reading using Resource as we do for other tests
+@pytest.mark.skip
 def test_multipart_loader_resource_write_file(tmpdir):
     target = str(tmpdir.join("table{number}.json"))
     target1 = str(tmpdir.join("table1.json"))

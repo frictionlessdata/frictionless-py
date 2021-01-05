@@ -71,7 +71,7 @@ def test_resource_from_path_remote():
 @pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_from_zip():
-    resource = Resource("data/resource.zip")
+    resource = Resource.from_zip("data/resource.zip")
     assert resource.path == "table.csv"
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
@@ -779,7 +779,7 @@ def test_resource_to_zip(tmpdir):
     resource.to_zip(target)
 
     # Read
-    resource = Resource(target)
+    resource = Resource.from_zip(target)
     assert resource == {"name": "name", "path": "table.csv"}
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
@@ -796,7 +796,7 @@ def test_resource_to_zip_withdir_path(tmpdir):
     resource.to_zip(target)
 
     # Read
-    resource = Resource(target)
+    resource = Resource.from_zip(target)
     assert resource == {"path": "data/table.csv"}
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
@@ -813,7 +813,7 @@ def test_resource_to_zip_absolute_path(tmpdir):
     resource.to_zip(target)
 
     # Read
-    resource = Resource(target)
+    resource = Resource.from_zip(target)
     assert resource == {"path": "table.csv"}
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
@@ -830,7 +830,7 @@ def test_resource_to_zip_resolve_inline(tmpdir):
     resource.to_zip(target, resolve=["inline"])
 
     # Read
-    resource = Resource(target)
+    resource = Resource.from_zip(target)
     assert resource.name == "table"
     assert resource.path == "table.csv"
     assert resource.read_rows() == [
@@ -848,7 +848,7 @@ def test_resource_to_zip_resolve_inline_sql(tmpdir, database_url):
     resource.to_zip(target, resolve=["inline"])
 
     # Read
-    resource = Resource(target)
+    resource = Resource.from_zip(target)
     assert resource.name == "table"
     assert resource.path == "table.csv"
     assert resource.read_rows() == [
@@ -867,7 +867,7 @@ def test_resource_to_zip_resolve_remote(tmpdir):
     resource.to_zip(target, resolve=["remote"])
 
     # Read
-    resource = Resource(target)
+    resource = Resource.from_zip(target)
     assert resource.name == "table"
     assert resource.path == "table.csv"
     assert resource.read_rows() == [
@@ -887,7 +887,7 @@ def test_resource_to_zip_source_remote(tmpdir):
     resource.to_zip(target)
 
     # Read
-    resource = Resource(target)
+    resource = Resource.from_zip(target)
     assert resource == {"name": "name", "path": path}
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
@@ -905,7 +905,7 @@ def test_resource_to_zip_source_inline(tmpdir):
     resource.to_zip(target)
 
     # Read
-    resource = Resource(target)
+    resource = Resource.from_zip(target)
     assert resource == {"name": "name", "data": data}
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},

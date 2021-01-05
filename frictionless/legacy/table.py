@@ -195,9 +195,21 @@ class Table:
         self.__infer_missing_values = infer_missing_values
         self.__lookup = lookup
 
+        # Detect path/data
+        # It's a hack while we support Table
+        path = None
+        data = source
+        if isinstance(source, str):
+            path = source
+            data = None
+        elif isinstance(source, list) and source and isinstance(source[0], str):
+            path = source
+            data = None
+
         # Create resource
-        self.__resource = Resource.from_source(
-            source,
+        self.__resource = Resource(
+            path=path,
+            data=data,
             scheme=scheme,
             format=format,
             hashing=hashing,
@@ -854,9 +866,21 @@ class Table:
             **options: subset of Table's constructor options
         """
 
+        # Detect path/data
+        # It's a hack while we support Table
+        path = None
+        data = target
+        if isinstance(target, str):
+            path = target
+            data = None
+        elif isinstance(target, list) and target and isinstance(target[0], str):
+            path = target
+            data = None
+
         # Create resource
-        resource = Resource.from_source(
-            target,
+        resource = Resource(
+            path=path,
+            data=data,
             scheme=scheme,
             format=format,
             hashing=hashing,

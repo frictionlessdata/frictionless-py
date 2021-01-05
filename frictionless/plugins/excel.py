@@ -198,7 +198,7 @@ class XlsxParser(Parser):
 
             # Cached
             if dialect.workbook_cache is not None and fullpath in dialect.workbook_cache:
-                resource = Resource.from_source(fullpath, stats=self.resource.stats)
+                resource = Resource(path=fullpath, stats=self.resource.stats)
                 loader = system.create_loader(resource)
                 return loader.open()
 
@@ -210,7 +210,7 @@ class XlsxParser(Parser):
             if not target.delete:
                 dialect.workbook_cache[fullpath] = target.name
                 atexit.register(os.remove, target.name)
-            resource = Resource.from_source(target)
+            resource = Resource(path=target)
             loader = system.create_loader(resource)
             return loader.open()
 
