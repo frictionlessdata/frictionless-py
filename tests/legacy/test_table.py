@@ -426,7 +426,7 @@ def test_table_compression_local_csv_zip():
 
 
 def test_table_compression_local_csv_zip_multiple_files():
-    with Table("data/table-multiple-files.zip") as table:
+    with Table("data/table-multiple-files.zip", format="csv") as table:
         assert table.compression == "zip"
         assert table.compression_path == "table-reverse.csv"
         assert table.header == ["id", "name"]

@@ -211,7 +211,7 @@ def test_package_resources_inline():
     assert len(package.resources) == 1
     assert resource.path is None
     assert resource.data == data
-    assert resource.source == data
+    assert resource.fullpath is None
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},

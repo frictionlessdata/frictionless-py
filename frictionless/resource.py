@@ -9,13 +9,13 @@ from copy import deepcopy
 from itertools import zip_longest, chain
 from .exception import FrictionlessException
 from .metadata import Metadata
-from .location import Location
 from .control import Control
 from .dialect import Dialect
 from .schema import Schema
 from .header import Header
 from .system import system
 from .query import Query
+from .file import File
 from .row import Row
 from . import helpers
 from . import errors
@@ -23,8 +23,6 @@ from . import config
 
 
 # TODO: add mediatype?
-# TODO: rework path/data/location etc
-# TODO: rework path/data updates syncing
 class Resource(Metadata):
     """Resource representation.
 
@@ -197,21 +195,13 @@ class Resource(Metadata):
         self.__read_raise_closed()
         yield from self.__row_stream
 
-    @Metadata.property(write=False)
-    def source(self):
-        """
-        Returns
-            any: data source
-        """
-        return self.__location.source
-
     @Metadata.property
     def name(self):
         """
         Returns
             str: resource name
         """
-        return self.get("name", self.__location.name)
+        return self.get("name", self.__file.name)
 
     @Metadata.property
     def title(self):
@@ -262,7 +252,7 @@ class Resource(Metadata):
         Returns
             str?: resource path
         """
-        return self.get("path")
+        return self.get("path", self.__file.path)
 
     @Metadata.property
     def data(self):
@@ -270,7 +260,7 @@ class Resource(Metadata):
         Returns
             any[][]?: resource data
         """
-        return self.get("data")
+        return self.get("data", self.__file.data)
 
     @Metadata.property
     def scheme(self):
@@ -278,7 +268,7 @@ class Resource(Metadata):
         Returns
             str?: resource scheme
         """
-        return self.get("scheme", self.__location.scheme).lower()
+        return self.get("scheme", self.__file.scheme).lower()
 
     @Metadata.property
     def format(self):
@@ -286,7 +276,7 @@ class Resource(Metadata):
         Returns
             str?: resource format
         """
-        return self.get("format", self.__location.format).lower()
+        return self.get("format", self.__file.format).lower()
 
     @Metadata.property
     def hashing(self):
@@ -310,7 +300,7 @@ class Resource(Metadata):
         Returns
             str?: resource compression
         """
-        return self.get("compression", self.__location.compression).lower()
+        return self.get("compression", self.__file.compression).lower()
 
     @Metadata.property
     def compression_path(self):
@@ -318,7 +308,7 @@ class Resource(Metadata):
         Returns
             str?: resource compression path
         """
-        return self.get("compressionPath", self.__location.compression_path)
+        return self.get("compressionPath", self.__file.compression_path)
 
     @Metadata.property
     def control(self):
@@ -425,7 +415,7 @@ class Resource(Metadata):
         Returns
             str: resource basepath
         """
-        return self.__basepath
+        return self.__file.basepath
 
     @Metadata.property(cache=False, write=False)
     def fullpath(self):
@@ -433,11 +423,7 @@ class Resource(Metadata):
         Returns
             str: resource fullpath
         """
-        if self.inline:
-            return "memory"
-        if self.multipart:
-            return "multipart"
-        return self.source
+        return self.__file.fullpath
 
     @Metadata.property(cache=False, write=False)
     def onerror(self):
@@ -469,15 +455,7 @@ class Resource(Metadata):
         Returns
             bool: if resource is inline
         """
-        return self.__location.inline
-
-    @Metadata.property(write=False)
-    def multipart(self):
-        """
-        Returns
-            bool: if resource is multipart
-        """
-        return self.__location.multipart
+        return self.__file.inline
 
     @Metadata.property(write=False)
     def remote(self):
@@ -485,7 +463,15 @@ class Resource(Metadata):
         Returns
             bool: if resource is remote
         """
-        return self.__location.remote
+        return self.__file.remote
+
+    @Metadata.property(write=False)
+    def multipart(self):
+        """
+        Returns
+            bool: if resource is multipart
+        """
+        return self.__file.multipart
 
     @Metadata.property(write=False)
     def tabular(self):
@@ -1359,7 +1345,7 @@ class Resource(Metadata):
                         if not helpers.is_safe_path(path):
                             path = f"{resource.name}.{resource.format}"
                             descriptor["path"] = path
-                        zip.write(resource.source, path)
+                        zip.write(resource.fullpath, path)
 
                     # Metadata
                     zip.writestr(
@@ -1490,8 +1476,13 @@ class Resource(Metadata):
 
     def metadata_process(self):
 
-        # Location
-        self.__location = Location(self)
+        # File
+        source = self.get("data", self.get("path", []))
+        self.__file = File(
+            source,
+            basepath=self.__basepath,
+            compression_path=self.get("compressionPath"),
+        )
 
         # Control
         control = self.get("control")

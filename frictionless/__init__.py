@@ -11,7 +11,6 @@ from .legacy.file import File
 from .header import Header
 from .inquiry import Inquiry
 from .loader import Loader
-from .location import Location
 from .metadata import Metadata
 from .package import Package
 from .plugin import Plugin

@@ -94,7 +94,7 @@ class File:
         Returns:
             any: file source
         """
-        return self.__resource.source
+        return self.__resource.fullpath
 
     @property
     def scheme(self):

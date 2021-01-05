@@ -144,7 +144,7 @@ class InlineParser(Parser):
         dialect = self.resource.dialect
 
         # Iter
-        data = self.resource.source
+        data = self.resource.data
         if not hasattr(data, "__iter__"):
             data = data()
         data = iter(data)

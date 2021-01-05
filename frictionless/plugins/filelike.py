@@ -62,11 +62,11 @@ class FilelikeLoader(Loader):
     # Read
 
     def read_byte_stream_create(self):
-        source = self.resource.source
-        if hasattr(source, "encoding"):
+        data = self.resource.data
+        if hasattr(data, "encoding"):
             error = errors.SchemeError(note="only byte streams are supported")
             raise FrictionlessException(error)
-        return source
+        return data
 
     # Write
 

@@ -140,7 +140,7 @@ class OdsParser(Parser):
                 sheet = book.sheets[dialect.sheet - 1]
         except (KeyError, IndexError):
             note = 'OpenOffice document "%s" does not have a sheet "%s"'
-            note = note % (self.resource.source, dialect.sheet)
+            note = note % (self.resource.fullpath, dialect.sheet)
             raise FrictionlessException(errors.FormatError(note=note))
 
         # Type cells
@@ -173,7 +173,6 @@ class OdsParser(Parser):
     def write_row_stream_save(self, read_row_stream):
         ezodf = helpers.import_from_plugin("ezodf", plugin="ods")
         dialect = self.resource.dialect
-        helpers.ensure_dir(self.resource.source)
         file = tempfile.NamedTemporaryFile(delete=False)
         book = ezodf.newdoc(doctype="ods", filename=file.name)
         title = f"Sheet {dialect.sheet}"

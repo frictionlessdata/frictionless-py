@@ -231,7 +231,7 @@ class Table:
         Returns:
             any: file source
         """
-        return self.__resource.source
+        return self.__resource.fullpath
 
     @property
     def path(self):

@@ -548,7 +548,7 @@ class Package(Metadata):
                         if not helpers.is_safe_path(path):
                             path = f"{resource.name}.{resource.format}"
                             descriptor["path"] = path
-                        zip.write(resource.source, path)
+                        zip.write(resource.fullpath, path)
 
                 # Metadata
                 zip.writestr(

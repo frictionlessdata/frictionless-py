@@ -164,7 +164,7 @@ class JsonParser(Parser):
             try:
                 yield next(parser.data_stream)
             except StopIteration:
-                note = f'cannot extract JSON tabular data from "{self.resource.source}"'
+                note = f'cannot extract JSON tabular data from "{self.resource.fullpath}"'
                 raise FrictionlessException(errors.SourceError(note=note))
             if parser.resource.dialect.keyed:
                 dialect["keyed"] = True

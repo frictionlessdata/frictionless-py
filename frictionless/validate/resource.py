@@ -51,7 +51,7 @@ def validate_resource(
 
     # Validate table
     report = validate_table(
-        source=resource.source,
+        source=resource.data if resource.inline else resource.fullpath,
         scheme=resource.scheme,
         format=resource.format,
         hashing=resource.hashing,

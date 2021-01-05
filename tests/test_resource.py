@@ -17,8 +17,8 @@ def test_resource():
     resource = Resource("data/resource.json")
     assert resource.name == "name"
     assert resource.path == "table.csv"
-    assert resource.source == "data/table.csv"
     assert resource.basepath == "data"
+    assert resource.fullpath == "data/table.csv"
     assert resource.profile == "data-resource"
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
@@ -60,8 +60,8 @@ def test_resource_from_path_error_bad_path():
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_from_path_remote():
     resource = Resource(BASE_URL % "data/resource.json")
-    assert resource.source == BASE_URL % "data/table.csv"
     assert resource.path == "table.csv"
+    assert resource.fullpath == BASE_URL % "data/table.csv"
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
@@ -95,11 +95,11 @@ def test_resource_source_non_tabular():
     resource = Resource(path=path)
     assert resource.path == path
     assert resource.data is None
-    assert resource.source == path
     assert resource.basepath == ""
     assert resource.inline is False
     assert resource.tabular is False
     assert resource.multipart is False
+    assert resource.fullpath == path
     assert resource.read_bytes() == b"text\n"
     assert resource.stats == {
         "hash": "e1cbb0c3879af8347246f12c559a86b5",
@@ -115,11 +115,11 @@ def test_resource_source_non_tabular_remote():
     resource = Resource(path=path)
     assert resource.path == path
     assert resource.data is None
-    assert resource.source == path
-    assert resource.basepath == ""
     assert resource.inline is False
     assert resource.tabular is False
     assert resource.multipart is False
+    assert resource.basepath == ""
+    assert resource.fullpath == path
     assert resource.read_bytes() == b"foo\n"
     assert resource.stats == {
         "hash": "d3b07384d113edec49eaa6238ad5ff00",
@@ -145,11 +145,11 @@ def test_resource_source_path():
     resource = Resource({"path": path})
     assert resource.path == path
     assert resource.data is None
-    assert resource.source == path
-    assert resource.basepath == ""
     assert resource.inline is False
     assert resource.tabular is True
     assert resource.multipart is False
+    assert resource.basepath == ""
+    assert resource.fullpath == path
     assert (
         resource.read_bytes()
         == b"id,name\n1,english\n2,\xe4\xb8\xad\xe5\x9b\xbd\xe4\xba\xba\n"
@@ -172,8 +172,8 @@ def test_resource_source_path():
 def test_resource_source_path_and_basepath():
     resource = Resource(path="table.csv", basepath="data")
     assert resource.path == "table.csv"
-    assert resource.source == "data/table.csv"
     assert resource.basepath == "data"
+    assert resource.fullpath == "data/table.csv"
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
@@ -184,7 +184,7 @@ def test_resource_source_path_and_basepath():
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_source_path_and_basepath_remote():
     resource = Resource(path="table.csv", basepath=BASE_URL % "data")
-    assert resource.source == BASE_URL % "data/table.csv"
+    assert resource.fullpath == BASE_URL % "data/table.csv"
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
@@ -194,7 +194,7 @@ def test_resource_source_path_and_basepath_remote():
 @pytest.mark.vcr
 def test_resource_source_path_remote_and_basepath_remote():
     resource = Resource(path=BASE_URL % "data/table.csv", basepath=BASE_URL % "data")
-    assert resource.source == BASE_URL % "data/table.csv"
+    assert resource.fullpath == BASE_URL % "data/table.csv"
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
@@ -233,11 +233,11 @@ def test_resource_source_data():
     resource = Resource({"data": data})
     assert resource.path is None
     assert resource.data == data
-    assert resource.source == data
-    assert resource.basepath == ""
     assert resource.inline is True
     assert resource.tabular is True
     assert resource.multipart is False
+    assert resource.basepath == ""
+    assert resource.fullpath is None
     assert resource.read_bytes() == b""
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
@@ -258,7 +258,7 @@ def test_resource_source_path_and_data():
     resource = Resource({"data": data, "path": "path"})
     assert resource.path == "path"
     assert resource.data == data
-    assert resource.source == data
+    assert resource.fullpath is None
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
@@ -268,8 +268,8 @@ def test_resource_source_path_and_data():
 def test_resource_source_no_path_and_no_data():
     resource = Resource({})
     assert resource.path is None
-    assert resource.data is None
-    assert resource.source == []
+    assert resource.data == []
+    assert resource.fullpath is None
     assert resource.read_rows() == []
 
 

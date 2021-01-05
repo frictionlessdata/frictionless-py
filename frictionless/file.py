@@ -13,7 +13,7 @@ class File:
         self,
         source,
         *,
-        basepath=None,
+        basepath="",
         compression_path=None,
         allow_contents_reading=False,
     ):
@@ -26,10 +26,6 @@ class File:
 
         # Detect attributes
         self.__detect()
-
-    @cached_property
-    def source(self):
-        return self.__source
 
     @cached_property
     def path(self):
@@ -75,22 +71,45 @@ class File:
     def multipart(self):
         return self.__multipart
 
+    @cached_property
+    def basepath(self):
+        return self.__basepath
+
+    @cached_property
+    def fullpath(self):
+        return self.__fullpath
+
     # Detect
 
     def __detect(self):
         source = self.__source
 
         # Detect path/data
-        path = source
-        data = None
-        if isinstance(source, list) and (source and not isinstance(source[0], str)):
-            path = None
-            data = source
+        path = None
+        data = source
+        if isinstance(source, str):
+            path = source
+            data = None
+        elif isinstance(source, list) and source and isinstance(source[0], str):
+            path = source
+            data = None
 
         # Detect inline/remote/multipart
         inline = path is None
         remote = helpers.is_remote_path(self.__basepath or path)
         multipart = not inline and isinstance(path, list)
+
+        # Detect fullpath
+        fullpath = path
+        if not inline and self.__basepath:
+            if not multipart and not helpers.is_remote_path(path):
+                fullpath = os.path.join(self.__basepath, path)
+            elif multipart:
+                fullpath = []
+                for part in path:
+                    if not helpers.is_remote_path(part):
+                        part = os.path.join(self.__basepath, part)
+                    fullpath.append(part)
 
         # Detect name
         name = "inline"
@@ -101,7 +120,7 @@ class File:
             name = helpers.slugify(name, regex_pattern=r"[^-a-z0-9._/]")
 
         # Detect type
-        type = "general"
+        type = "table"
         if not multipart:
             if inline and isinstance(data, dict):
                 type = "resource"
@@ -119,28 +138,32 @@ class File:
                     # TODO: implement
                     pass
 
-        # Detect scheme/format/compression/compression_path
-        detect = self.__detect_scheme_and_format(source)
-        compression = config.DEFAULT_COMPRESSION
-        compression_path = config.DEFAULT_COMPRESSION_PATH
-        if detect[1] in config.COMPRESSION_FORMATS:
-            if isinstance(source, list):
-                newsource = []
-                for path in source:
-                    newsource.append(path[: -len(detect[1]) - 1])
-                detect = self.__detect_scheme_and_format(newsource)
-            else:
-                compression = detect[1]
-                newsource = source[: -len(detect[1]) - 1]
-                if self.__compression_path:
-                    newsource = os.path.join(newsource, self.__compression_path)
-                detect = self.__detect_scheme_and_format(newsource)
-        # TODO: review; do we need defaults?
-        scheme = detect[0] or config.DEFAULT_SCHEME
-        # TODO: review; do we need defaults?
-        format = detect[1] or config.DEFAULT_FORMAT
-        if scheme == "text" and source.endswith(f".{format}"):
-            source = source[: -(len(format) + 1)]
+        # Detect scheme/format
+        scheme = ""
+        format = "inline"
+        compression = "no"
+        compression_path = ""
+        detection_path = fullpath[0] if multipart else fullpath
+        if not inline:
+            scheme, format = self.__detect_scheme_and_format(detection_path)
+
+        # Detect compression/compression_path
+        if format in config.COMPRESSION_FORMATS:
+            if not multipart:
+                compression = format
+            detection_path = detection_path[: -len(format) - 1]
+            if self.__compression_path:
+                detection_path = os.path.join(detection_path, self.__compression_path)
+            scheme, format = self.__detect_scheme_and_format(detection_path)
+
+        # TODO: move to filelike plugin?
+        if hasattr(data, "read"):
+            scheme = "filelike"
+            format = ""
+
+        # TODO: move to multipart plugin?
+        if multipart:
+            scheme = "multipart"
 
         # Set attributes
         self.__path = path
@@ -154,21 +177,17 @@ class File:
         self.__inline = inline
         self.__remote = remote
         self.__multipart = multipart
+        self.__fullpath = fullpath
 
-    # TODO: move some parts to plugins
+    # TODO: move to helpers when it's only url parsing
     def __detect_scheme_and_format(self, source):
-        if isinstance(source, list) and source and isinstance(source[0], str):
-            scheme, format = self.__detect_scheme_and_format(source[0])
-            return ("multipart", format)
-        if hasattr(source, "read"):
-            return ("filelike", None)
-        if not isinstance(source, str):
-            return (None, "inline")
+        # TODO: move to gsheets plugin
         if "docs.google.com/spreadsheets" in source:
             if "export" not in source and "pub" not in source:
-                return (None, "gsheets")
+                return ("", "gsheets")
             elif "csv" in source:
                 return ("https", "csv")
+        # TODO: move to sql plugin
         # Fix for sources like: db2+ibm_db://username:password@host:port/database
         if re.search(r"\+.*://", source):
             scheme, source = source.split("://", maxsplit=1)
@@ -185,4 +204,4 @@ class File:
             query_string_format = query_string.get("format")
             if query_string_format is not None and len(query_string_format) == 1:
                 format = query_string_format[0]
-        return (scheme, format)
+        return (scheme or "", format or "")

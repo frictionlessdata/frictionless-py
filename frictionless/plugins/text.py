@@ -63,11 +63,13 @@ class TextLoader(Loader):
 
     def read_byte_stream_create(self):
         scheme = "text://"
-        source = self.resource.source
-        if source.startswith(scheme):
-            source = source.replace(scheme, "", 1)
+        text = self.resource.fullpath
+        if text.startswith(scheme):
+            text = text.replace(scheme, "", 1)
+        if text.endswith(f".{self.resource.format}"):
+            text = text[: -(len(self.resource.format) + 1)]
         byte_stream = io.BufferedRandom(io.BytesIO())
-        byte_stream.write(source.encode(config.DEFAULT_ENCODING))
+        byte_stream.write(text.encode(config.DEFAULT_ENCODING))
         byte_stream.seek(0)
         return byte_stream
 
