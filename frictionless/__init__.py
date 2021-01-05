@@ -1,3 +1,4 @@
+# TODO: remove legacy
 from .check import Check
 from .config import VERSION as __version__
 from .control import Control
@@ -6,7 +7,7 @@ from .dialect import Dialect
 from .extract import *
 from .exception import FrictionlessException
 from .field import Field
-from .file import File
+from .legacy.file import File
 from .header import Header
 from .inquiry import Inquiry
 from .loader import Loader

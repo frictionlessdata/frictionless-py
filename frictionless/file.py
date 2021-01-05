@@ -1,266 +1,188 @@
-import shutil
-import tempfile
-from .system import system
-from .resource import Resource
-from .exception import FrictionlessException
+import os
+import re
+from urllib.parse import urlparse, parse_qs
+from .helpers import cached_property
 from . import helpers
-from . import errors
+from . import config
 
 
+# TODO: export in __init__.py
+# TODO: rename module to file.py
 class File:
-    """File representation
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless import File`
-
-    Under the hood, File uses available loaders so it can open from local, remote,
-    and any other supported schemes
-
-    ```python
-    from frictionless import File
-
-    with File('data/text.txt') as file:
-        file.read_text()
-    ```
-
-    Parameters:
-        source (any): file source
-        scheme? (str): file scheme
-        format? (str): file format
-        hashing? (str): file hashing
-        encoding? (str): file encoding
-        compression? (str): file compression
-        compression_path? (str): file compression path
-        control? (dict): file control
-
-    Raises:
-        FrictionlessException: if there is a metadata validation error
-
-    """
-
     def __init__(
         self,
         source,
         *,
-        scheme=None,
-        format=None,
-        hashing=None,
-        encoding=None,
-        compression=None,
+        basepath=None,
         compression_path=None,
-        control=None,
+        allow_contents_reading=False,
     ):
 
-        # Store state
-        self.__loader = None
+        # Set attributes
+        self.__source = source
+        self.__basepath = basepath
+        self.__compression_path = compression_path
+        self.__allow_contents_reading = allow_contents_reading
 
-        # Create resource
-        self.__resource = Resource.from_source(
-            source,
-            scheme=scheme,
-            format=format,
-            hashing=hashing,
-            encoding=encoding,
-            compression=compression,
-            compression_path=compression_path,
-            control=control,
-            trusted=True,
-        )
+        # Detect attributes
+        self.__detect()
 
-    def __enter__(self):
-        if self.closed:
-            self.open()
-        return self
-
-    def __exit__(self, type, value, traceback):
-        self.close()
-
-    def __iter__(self):
-        self.__read_raise_closed()
-        return iter(self.__loader.__text_stream)
-
-    @property
-    def path(self):
-        """
-        Returns:
-            str: file path
-        """
-        return self.__resource.path
-
-    @property
+    @cached_property
     def source(self):
-        """
-        Returns:
-            any: file source
-        """
-        return self.__resource.source
+        return self.__source
 
-    @property
+    @cached_property
+    def path(self):
+        return self.__path
+
+    @cached_property
+    def data(self):
+        return self.__data
+
+    @cached_property
+    def type(self):
+        return self.__type
+
+    @cached_property
+    def name(self):
+        return self.__name
+
+    @cached_property
     def scheme(self):
-        """
-        Returns:
-            str?: file scheme
-        """
-        return self.__resource.scheme
+        return self.__scheme
 
-    @property
+    @cached_property
     def format(self):
-        """
-        Returns:
-            str?: file format
-        """
-        return self.__resource.format
+        return self.__format
 
-    @property
-    def hashing(self):
-        """
-        Returns:
-            str?: file hashing
-        """
-        return self.__resource.hashing
-
-    @property
-    def encoding(self):
-        """
-        Returns:
-            str?: file encoding
-        """
-        return self.__resource.encoding
-
-    @property
+    @cached_property
     def compression(self):
-        """
-        Returns:
-            str?: file compression
-        """
-        return self.__resource.compression
+        return self.__compression
 
-    @property
+    @cached_property
     def compression_path(self):
-        """
-        Returns:
-            str?: file compression path
-        """
-        return self.__resource.compression_path
+        return self.__compression_path
 
-    @property
-    def control(self):
-        """
-        Returns:
-            Control?: file control
-        """
-        return self.__resource.control
+    @cached_property
+    def inline(self):
+        return self.__inline
 
-    @property
-    def stats(self):
-        """
-        Returns:
-            dict: file stats
-        """
-        return self.__resource.stats
+    @cached_property
+    def remote(self):
+        return self.__remote
 
-    @property
-    def byte_stream(self):
-        """File byte stream
+    @cached_property
+    def multipart(self):
+        return self.__multipart
 
-        The stream is available after opening the file
+    # Detect
 
-        Returns:
-            io.ByteStream: file byte stream
-        """
-        if self.__loader:
-            return self.__loader.byte_stream
+    def __detect(self):
+        source = self.__source
 
-    @property
-    def text_stream(self):
-        """File text stream
+        # Detect path/data
+        path = source
+        data = None
+        if isinstance(source, list) and (source and not isinstance(source[0], str)):
+            path = None
+            data = source
 
-        The stream is available after opening the file
+        # Detect inline/remote/multipart
+        inline = path is None
+        remote = helpers.is_remote_path(self.__basepath or path)
+        multipart = not inline and isinstance(path, list)
 
-        Returns:
-            io.TextStream: file text stream
-        """
-        if self.__loader:
-            return self.__loader.text_stream
+        # Detect name
+        name = "inline"
+        if not inline:
+            # Path can have a text scheme like "text://row1\nrow2"
+            name = path[0] if multipart else path.split("\n")[0]
+            name = os.path.splitext(os.path.basename(name))[0]
+            name = helpers.slugify(name, regex_pattern=r"[^-a-z0-9._/]")
 
-    # Expand
+        # Detect type
+        type = "general"
+        if not multipart:
+            if inline and isinstance(data, dict):
+                type = "resource"
+                if data.get("fields") is not None:
+                    type = "schema"
+                elif data.get("resources") is not None:
+                    type = "package"
+            elif not inline and path.endswith((".json", ".yaml")):
+                type = "resource"
+                if path.endswith(("schema.json", "schema.yaml")):
+                    type = "schema"
+                elif path.endswith(("package.json", "package.yaml")):
+                    type = "package"
+                elif self.__allow_contents_reading:
+                    # TODO: implement
+                    pass
 
-    def expand(self):
-        """Expand metadata"""
-        self.setdefault("scheme", self.scheme)
-        self.setdefault("format", self.format)
-        self.setdefault("hashing", self.hashing)
-        self.setdefault("encoding", self.encoding)
-        self.setdefault("compression", self.compression)
-        self.setdefault("compressionPath", self.compression_path)
+        # Detect scheme/format/compression/compression_path
+        detect = self.__detect_scheme_and_format(source)
+        compression = config.DEFAULT_COMPRESSION
+        compression_path = config.DEFAULT_COMPRESSION_PATH
+        if detect[1] in config.COMPRESSION_FORMATS:
+            if isinstance(source, list):
+                newsource = []
+                for path in source:
+                    newsource.append(path[: -len(detect[1]) - 1])
+                detect = self.__detect_scheme_and_format(newsource)
+            else:
+                compression = detect[1]
+                newsource = source[: -len(detect[1]) - 1]
+                if self.__compression_path:
+                    newsource = os.path.join(newsource, self.__compression_path)
+                detect = self.__detect_scheme_and_format(newsource)
+        # TODO: review; do we need defaults?
+        scheme = detect[0] or config.DEFAULT_SCHEME
+        # TODO: review; do we need defaults?
+        format = detect[1] or config.DEFAULT_FORMAT
+        if scheme == "text" and source.endswith(f".{format}"):
+            source = source[: -(len(format) + 1)]
 
-    # Open/close
+        # Set attributes
+        self.__path = path
+        self.__data = data
+        self.__name = name
+        self.__type = type
+        self.__scheme = scheme
+        self.__format = format
+        self.__compression = compression
+        self.__compression_path = compression_path
+        self.__inline = inline
+        self.__remote = remote
+        self.__multipart = multipart
 
-    def open(self):
-        """Open the file as "io.open" does"""
-        self.close()
-        try:
-            self.__resource.stats = {"hash": "", "bytes": 0, "fields": 0, "rows": 0}
-            # TODO: handle cases like Inline/SQL/etc
-            self.__loader = system.create_loader(self.__resource)
-            self.__loader.open()
-            return self
-        except Exception:
-            self.close()
-            raise
-
-    def close(self):
-        """Close the file as "filelike.close" does"""
-        if self.__loader:
-            self.__loader.close()
-        self.__loader = None
-
-    @property
-    def closed(self):
-        """Whether the file is closed
-
-        Returns:
-            bool: if closed
-        """
-        return self.__loader is None
-
-    # Read
-
-    def read_bytes(self):
-        """Read bytes from the file
-
-        Returns:
-            bytes: file bytes
-        """
-        self.__read_raise_closed()
-        return self.__loader.byte_stream.read1()
-
-    def read_text(self):
-        """Read bytes from the file
-
-        Returns:
-            str: file text
-        """
-        result = ""
-        self.__read_raise_closed()
-        for line in self.__loader.text_stream:
-            result += line
-        return result
-
-    def __read_raise_closed(self):
-        if not self.__loader:
-            note = 'the file has not been opened by "file.open()"'
-            raise FrictionlessException(errors.Error(note=note))
-
-    # Write
-
-    def write(self, target):
-        """Write the file to the target
-
-        Parameters:
-            target (str): target path
-        """
-        with tempfile.NamedTemporaryFile(delete=False) as file:
-            shutil.copyfileobj(self.byte_stream, file)
-        helpers.move_file(file.name, target)
+    # TODO: move some parts to plugins
+    def __detect_scheme_and_format(self, source):
+        if isinstance(source, list) and source and isinstance(source[0], str):
+            scheme, format = self.__detect_scheme_and_format(source[0])
+            return ("multipart", format)
+        if hasattr(source, "read"):
+            return ("filelike", None)
+        if not isinstance(source, str):
+            return (None, "inline")
+        if "docs.google.com/spreadsheets" in source:
+            if "export" not in source and "pub" not in source:
+                return (None, "gsheets")
+            elif "csv" in source:
+                return ("https", "csv")
+        # Fix for sources like: db2+ibm_db://username:password@host:port/database
+        if re.search(r"\+.*://", source):
+            scheme, source = source.split("://", maxsplit=1)
+            parsed = urlparse(f"//{source}", scheme=scheme)
+        else:
+            parsed = urlparse(source)
+        scheme = parsed.scheme.lower()
+        if len(scheme) < 2:
+            scheme = config.DEFAULT_SCHEME
+        format = os.path.splitext(parsed.path or parsed.netloc)[1][1:].lower() or None
+        if format is None:
+            # Test if query string contains a "format=" parameter.
+            query_string = parse_qs(parsed.query)
+            query_string_format = query_string.get("format")
+            if query_string_format is not None and len(query_string_format) == 1:
+                format = query_string_format[0]
+        return (scheme, format)
