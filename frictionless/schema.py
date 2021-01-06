@@ -174,92 +174,6 @@ class Schema(Metadata):
         for field in self.fields:
             field.expand()
 
-    # Infer
-
-    def infer(
-        self,
-        sample,
-        *,
-        type=None,
-        names=None,
-        confidence=config.DEFAULT_INFER_CONFIDENCE,
-        float_numbers=config.DEFAULT_FLOAT_NUMBER,
-        missing_values=config.DEFAULT_MISSING_VALUES,
-    ):
-        """Infer schema
-
-        Parameters:
-            sample (any[][]): data sample
-            type? (str): enforce all the field to be the given type
-            names (str[]): enforce field names
-            confidence (float): infer confidence from 0 to 1
-            float_numbers (bool): infer numbers as `float` instead of `Decimal`
-            missing_values (str[]): provide custom missing values
-        """
-
-        # Missing values
-        if missing_values != config.DEFAULT_MISSING_VALUES:
-            self.missing_values = missing_values
-
-        # Prepare names
-        if not names:
-            if not sample:
-                return
-            names = [f"field{number}" for number in range(1, len(sample[0]) + 1)]
-
-        # Handle name/empty
-        names = copy(names)
-        for index, name in enumerate(names):
-            names[index] = name or f"field{index+1}"
-
-        # Deduplicate names
-        if len(names) != len(set(names)):
-            seen_names = []
-            names = names.copy()
-            for index, name in enumerate(names):
-                count = seen_names.count(name) + 1
-                names[index] = "%s%s" % (name, count) if count > 1 else name
-                seen_names.append(name)
-
-        # Handle type/empty
-        if type or not sample:
-            self.fields = [{"name": name, "type": type or "any"} for name in names]
-            return
-
-        # Prepare fields
-        fields = []
-        candidates = []
-        max_score = [len(sample)] * len(names)
-        for index, name in enumerate(names):
-            candidates.append([])
-            for type in INFER_TYPES:
-                field = Field(name=name, type=type, schema=self)
-                if type == "number" and float_numbers:
-                    field.float_number = True
-                candidates[index].append({"field": field, "score": 0})
-            fields.append(Field(name=name, type="any", schema=self))
-
-        # Infer fields
-        for cells in sample:
-            for index, name in enumerate(names):
-                if fields[index].type != "any":
-                    continue
-                source = cells[index] if len(cells) > index else None
-                if source in missing_values:
-                    max_score[index] -= 1
-                    continue
-                for candidate in candidates[index]:
-                    if candidate["score"] < len(sample) * (confidence - 1):
-                        continue
-                    target, notes = candidate["field"].read_cell(source)
-                    candidate["score"] += 1 if not notes else -1
-                    if candidate["score"] >= max_score[index] * confidence:
-                        fields[index] = candidate["field"]
-                        break
-
-        # Apply fields
-        self.fields = fields
-
     # Read
 
     def read_cells(self, cells):
@@ -311,6 +225,7 @@ class Schema(Metadata):
         type=None,
         names=None,
         confidence=config.DEFAULT_INFER_CONFIDENCE,
+        float_numbers=config.DEFAULT_FLOAT_NUMBER,
         missing_values=config.DEFAULT_MISSING_VALUES,
     ):
         """Infer schema from sample
@@ -320,19 +235,78 @@ class Schema(Metadata):
             type? (str): enforce all the field to be the given type
             names (str[]): enforce field names
             confidence (float): infer confidence from 0 to 1
+            float_numbers (bool): infer numbers as `float` instead of `Decimal`
             missing_values (str[]): provide custom missing values
 
         Returns:
             Schema: schema
         """
+
+        # Init schema
         schema = Schema()
-        schema.infer(
-            sample,
-            type=type,
-            names=names,
-            confidence=confidence,
-            missing_values=missing_values,
-        )
+
+        # Missing values
+        if missing_values != config.DEFAULT_MISSING_VALUES:
+            schema.missing_values = missing_values
+
+        # Prepare names
+        if not names:
+            if not sample:
+                return schema
+            names = [f"field{number}" for number in range(1, len(sample[0]) + 1)]
+
+        # Handle name/empty
+        names = copy(names)
+        for index, name in enumerate(names):
+            names[index] = name or f"field{index+1}"
+
+        # Deduplicate names
+        if len(names) != len(set(names)):
+            seen_names = []
+            names = names.copy()
+            for index, name in enumerate(names):
+                count = seen_names.count(name) + 1
+                names[index] = "%s%s" % (name, count) if count > 1 else name
+                seen_names.append(name)
+
+        # Handle type/empty
+        if type or not sample:
+            schema.fields = [{"name": name, "type": type or "any"} for name in names]
+            return schema
+
+        # Prepare fields
+        fields = []
+        candidates = []
+        max_score = [len(sample)] * len(names)
+        for index, name in enumerate(names):
+            candidates.append([])
+            for type in INFER_TYPES:
+                field = Field(name=name, type=type, schema=schema)
+                if type == "number" and float_numbers:
+                    field.float_number = True
+                candidates[index].append({"field": field, "score": 0})
+            fields.append(Field(name=name, type="any", schema=schema))
+
+        # Infer fields
+        for cells in sample:
+            for index, name in enumerate(names):
+                if fields[index].type != "any":
+                    continue
+                source = cells[index] if len(cells) > index else None
+                if source in missing_values:
+                    max_score[index] -= 1
+                    continue
+                for candidate in candidates[index]:
+                    if candidate["score"] < len(sample) * (confidence - 1):
+                        continue
+                    target, notes = candidate["field"].read_cell(source)
+                    candidate["score"] += 1 if not notes else -1
+                    if candidate["score"] >= max_score[index] * confidence:
+                        fields[index] = candidate["field"]
+                        break
+
+        # Apply fields
+        schema.fields = fields
         return schema
 
     # Metadata

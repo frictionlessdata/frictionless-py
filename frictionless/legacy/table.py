@@ -5,6 +5,7 @@ from copy import deepcopy
 from itertools import chain, zip_longest
 from ..exception import FrictionlessException
 from ..resource import Resource
+from ..schema import Schema
 from ..system import system
 from ..header import Header
 from ..row import Row
@@ -698,9 +699,8 @@ class Table:
                     break
 
         # Infer schema
-        schema = self.__resource.schema
-        if not schema.fields:
-            schema.infer(
+        if not self.__resource.schema.fields:
+            self.__resource.schema = Schema.from_sample(
                 sample,
                 type=self.__infer_type,
                 names=self.__infer_names or labels,
@@ -710,6 +710,7 @@ class Table:
             )
 
         # Sync schema
+        schema = self.__resource.schema
         if self.__sync_schema:
             fields = []
             mapping = {field.get("name"): field for field in schema.fields}

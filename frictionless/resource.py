@@ -928,9 +928,8 @@ class Resource(Metadata):
                     break
 
         # Infer schema
-        schema = self.schema
-        if not schema.fields:
-            schema.infer(
+        if not self.schema.fields:
+            self.schema = Schema.from_sample(
                 sample,
                 type=self.__infer_type,
                 names=self.__infer_names or labels,
@@ -942,27 +941,27 @@ class Resource(Metadata):
         # Sync schema
         if self.__sync_schema:
             fields = []
-            mapping = {field.get("name"): field for field in schema.fields}
+            mapping = {field.get("name"): field for field in self.schema.fields}
             for name in labels:
                 fields.append(mapping.get(name, {"name": name, "type": "any"}))
-            schema.fields = fields
+            self.schema.fields = fields
 
         # Patch schema
         if self.__patch_schema:
             patch_schema = deepcopy(self.__patch_schema)
             fields = patch_schema.pop("fields", {})
-            schema.update(patch_schema)
-            for field in schema.fields:
+            self.schema.update(patch_schema)
+            for field in self.schema.fields:
                 field.update((fields.get(field.get("name"), {})))
 
         # Validate schema
         # TODO: reconsider this - not perfect for transform
-        if len(schema.field_names) != len(set(schema.field_names)):
+        if len(self.schema.field_names) != len(set(self.schema.field_names)):
             note = "Schemas with duplicate field names are not supported"
             raise FrictionlessException(errors.SchemaError(note=note))
 
         # Store stats
-        self.stats["fields"] = len(schema.fields)
+        self.stats["fields"] = len(self.schema.fields)
 
         # Store state
         self.__sample = sample
@@ -970,7 +969,7 @@ class Resource(Metadata):
         self.__sample_positions = sample_positions
         self.__header = Header(
             labels,
-            fields=schema.fields,
+            fields=self.schema.fields,
             field_positions=field_positions,
             row_positions=header_row_positions,
             ignore_case=not dialect.header_case,
