@@ -552,7 +552,7 @@ class Resource(Metadata):
         Parameters:
             stats? (bool): stream file completely and infer stats
         """
-        current_stats = self.stats
+        current_stats = self.get("stats")
         with helpers.ensure_open(self):
             stream = self.__row_stream if self.tabular else self.__text_stream
             if stats:
@@ -571,7 +571,10 @@ class Resource(Metadata):
                 self["query"] = self.query
             # TODO: review it's a hack for checksum validation
             if not stats:
-                self["stats"] = current_stats
+                if current_stats:
+                    self["stats"] = current_stats
+                else:
+                    self.pop("stats")
 
     # Open/Close
 

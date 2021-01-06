@@ -1,8 +1,8 @@
-from .resource import describe_resource
+from ..resource import Resource
 
 
-def describe_schema(source, **options):
-    """Describe schema of the given source
+def describe_schema(source, *, expand=False, **options):
+    """Describe the given source as a schema
 
     API      | Usage
     -------- | --------
@@ -10,11 +10,15 @@ def describe_schema(source, **options):
 
     Parameters:
         source (any): data source
-        **options (dict): see `describe_resource` options
+        expand? (bool): if `True` it will expand the metadata
+        **options (dict): Resource constructor options
 
     Returns:
         Schema: table schema
     """
-    resource = describe_resource(source, **options)
+    resource = Resource(source, **options)
+    resource.infer()
     schema = resource.schema
+    if expand:
+        schema.expand()
     return schema

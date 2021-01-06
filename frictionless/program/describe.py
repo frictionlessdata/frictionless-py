@@ -43,6 +43,7 @@ def program_describe(
     basepath: str = Opt(None, help="Basepath of the resource/package"),
     # Description
     expand: bool = Opt(None, help="Expand default values"),
+    nostats: bool = Opt(None, help="Do not infer stats"),
     # Output
     yaml: bool = Opt(False, help="Return in pure YAML format"),
     json: bool = Opt(False, help="Return in JSON format"),
@@ -116,6 +117,7 @@ def program_describe(
             infer_missing_values=infer_missing_values,
             # Description
             expand=expand,
+            nostats=nostats,
         )
     )
 
