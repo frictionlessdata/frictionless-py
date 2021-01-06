@@ -90,7 +90,7 @@ class Package(Metadata):
                     descriptor = {"resources": []}
                     for part in file.normpath:
                         descriptor["resources"].append({"path": part})
-                elif file.type == "table" and file.compression == "no":
+                elif file.type == "table" and not file.compression:
                     descriptor = {"resources": [{"path": file.normpath}]}
 
         # Handle zip

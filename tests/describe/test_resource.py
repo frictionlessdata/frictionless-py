@@ -17,7 +17,7 @@ def test_describe_resource():
         "format": "csv",
         "hashing": "md5",
         "encoding": "utf-8",
-        "compression": "no",
+        "compression": "",
         "compressionPath": "",
         "control": {"newline": ""},
         "dialect": {},

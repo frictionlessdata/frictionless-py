@@ -178,7 +178,7 @@ class Loader:
         if self.resource.compression == "gz":
             byte_stream = gzip.open(byte_stream)
             return byte_stream
-        if self.resource.compression == "no":
+        if not self.resource.compression:
             return byte_stream
         note = f'compression "{self.resource.compression}" is not supported'
         raise FrictionlessException(errors.CompressionError(note=note))

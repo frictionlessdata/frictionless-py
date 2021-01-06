@@ -170,7 +170,7 @@ class File:
         scheme = ""
         # TODO: move to inline plugin?
         format = "inline"
-        compression = "no"
+        compression = ""
         compression_path = ""
         detection_path = fullpath[0] if multipart else fullpath
         if not inline:

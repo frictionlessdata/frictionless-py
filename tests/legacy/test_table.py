@@ -21,7 +21,7 @@ def test_table():
         assert table.scheme == "file"
         assert table.format == "csv"
         assert table.encoding == "utf-8"
-        assert table.compression == "no"
+        assert table.compression == ""
         assert table.compression_path == ""
         assert table.header.row_positions == [1]
         assert table.header == ["id", "name"]

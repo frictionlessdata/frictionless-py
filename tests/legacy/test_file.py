@@ -16,7 +16,7 @@ def test_file():
         assert file.scheme == "file"
         assert file.format == "csv"
         assert file.encoding == "utf-8"
-        assert file.compression == "no"
+        assert file.compression == ""
         assert file.compression_path == ""
         assert file.read_text() == "id,name\n1,english\n2,中国人\n"
         assert file.stats == {
