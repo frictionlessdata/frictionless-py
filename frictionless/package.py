@@ -1,6 +1,4 @@
-import os
 import json
-import glob
 import zipfile
 import tempfile
 from copy import deepcopy
@@ -88,10 +86,12 @@ class Package(Metadata):
             if descriptor is None:
                 descriptor = source
                 file = File(source, basepath=basepath)
-                if file.expandable:
+                if file.multipart:
                     descriptor = {"resources": []}
                     for part in file.normpath:
                         descriptor["resources"].append({"path": part})
+                elif file.type == "table" and file.compression == "no":
+                    descriptor = {"resources": [{"path": file.normpath}]}
 
         # Handle zip
         if helpers.is_zip_descriptor(descriptor):
@@ -362,29 +362,15 @@ class Package(Metadata):
     # Infer
 
     # TODO: use stats=True instead of only_sample?
-    def infer(self, source=None, *, only_sample=False):
+    def infer(self, *, only_sample=False):
         """Infer package's attributes
 
         Parameters:
-            source (str|str[]): path, list of paths or glob pattern
             only_sample? (bool): infer whatever possible but only from the sample
         """
-        self.setdefault("profile", config.DEFAULT_PACKAGE_PROFILE)
-
-        # From source
-        if source:
-            self.resources.clear()
-            if isinstance(source, str) and os.path.isdir(source):
-                source = f"{source}/*"
-            for pattern in source if isinstance(source, list) else [source]:
-                options = {"recursive": True} if "**" in pattern else {}
-                pattern = os.path.join(self.basepath, pattern)
-                for path in sorted(glob.glob(pattern, **options)):
-                    if path.endswith("package.json"):
-                        continue
-                    self.resources.append({"path": os.path.relpath(path, self.basepath)})
 
         # General
+        self.setdefault("profile", config.DEFAULT_PACKAGE_PROFILE)
         for resource in self.resources:
             resource.infer(only_sample=only_sample)
 

@@ -51,7 +51,7 @@ def test_package_from_path_error_bad_path():
 
 def test_package_from_path_error_non_json():
     with pytest.raises(FrictionlessException) as excinfo:
-        Package("data/table.csv")
+        Package(descriptor="data/table.csv")
     error = excinfo.value.error
     assert error.code == "package-error"
     assert error.note.count("table.csv")
@@ -109,7 +109,7 @@ def test_package_from_path_remote_error_bad_json_not_dict():
 
 def test_package_from_invalid_descriptor_type():
     with pytest.raises(FrictionlessException) as excinfo:
-        Package(51)
+        Package(descriptor=51)
     error = excinfo.value.error
     assert error.code == "package-error"
     assert error.note.count("51")
@@ -374,8 +374,8 @@ def test_package_expand_resource_dialect():
 
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_package_infer():
-    package = Package()
-    package.infer("data/infer/*.csv")
+    package = Package("data/infer/*.csv")
+    package.infer()
     assert package.metadata_valid
     assert package == {
         "profile": "data-package",
@@ -439,8 +439,8 @@ def test_package_infer():
 
 
 def test_package_infer_with_basepath():
-    package = Package(basepath="data/infer")
-    package.infer("*.csv")
+    package = Package("*.csv", basepath="data/infer")
+    package.infer()
     assert package.metadata_valid
     assert len(package.resources) == 2
     assert package.resources[0].path == "data.csv"
@@ -448,8 +448,8 @@ def test_package_infer_with_basepath():
 
 
 def test_package_infer_multiple_paths():
-    package = Package(basepath="data/infer")
-    package.infer(["data.csv", "data2.csv"])
+    package = Package(["data.csv", "data2.csv"], basepath="data/infer")
+    package.infer()
     assert package.metadata_valid
     assert len(package.resources) == 2
     assert package.resources[0].path == "data.csv"
@@ -457,16 +457,16 @@ def test_package_infer_multiple_paths():
 
 
 def test_package_infer_non_utf8_file():
-    package = Package()
-    package.infer("data/table-with-accents.csv")
+    package = Package("data/table-with-accents.csv")
+    package.infer()
     assert package.metadata_valid
     assert len(package.resources) == 1
     assert package.resources[0].encoding == "iso8859-1"
 
 
 def test_package_infer_empty_file():
-    package = Package()
-    package.infer("data/empty.csv")
+    package = Package("data/empty.csv")
+    package.infer()
     assert package.metadata_valid
     assert len(package.resources) == 1
     assert package.resources[0].stats["bytes"] == 0
