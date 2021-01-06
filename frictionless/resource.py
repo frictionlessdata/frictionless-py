@@ -546,23 +546,14 @@ class Resource(Metadata):
 
     # Infer
 
-    # TODO: review the logic
-    # TODO: reimplement only_sample/stats
     # TODO: use stats=True instead of only_sample?
-    # TODO: optimize this logic/don't re-open
-    def infer(self, source=None, *, only_sample=False):
+    def infer(self, *, only_sample=False):
         """Infer metadata
 
         Parameters:
-            source (str|str[]): path, list of paths or glob pattern
             only_sample? (bool): infer whatever possible but only from the sample
         """
         stats = self.stats
-        if source:
-            if isinstance(source, str):
-                self.path = source
-            if isinstance(source, list):
-                self.data = source
         with helpers.ensure_open(self):
             stream = self.__row_stream if self.tabular else self.__text_stream
             if not only_sample:

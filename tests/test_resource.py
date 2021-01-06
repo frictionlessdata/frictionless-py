@@ -585,15 +585,15 @@ def test_resource_infer_source_non_tabular():
 
 
 def test_resource_infer_from_path():
-    resource = Resource()
-    resource.infer("data/table.csv")
+    resource = Resource("data/table.csv")
+    resource.infer()
     assert resource.metadata_valid
     assert resource.path == "data/table.csv"
 
 
 def test_resource_infer_not_slugified_name_issue_531():
-    resource = Resource()
-    resource.infer("data/Table With Data.csv")
+    resource = Resource("data/Table With Data.csv")
+    resource.infer()
     assert resource.metadata_valid
     assert resource.name == "table-with-data"
 
