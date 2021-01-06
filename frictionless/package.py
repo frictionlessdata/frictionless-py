@@ -489,7 +489,6 @@ class Package(Metadata):
         )
 
     # TODO: support multipart
-    # TODO: there is 100% duplication with resource.to_zip
     def to_zip(self, target, *, resolve=[], encoder_class=None):
         """Save package to a zip
 

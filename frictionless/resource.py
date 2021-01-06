@@ -1,9 +1,6 @@
 import os
-import json
 import petl
 import typing
-import zipfile
-import tempfile
 import warnings
 from copy import deepcopy
 from itertools import zip_longest, chain
@@ -1180,12 +1177,6 @@ class Resource(Metadata):
     # Import/Export
 
     @staticmethod
-    def from_zip(path, **options):
-        """Create a resource from ZIP"""
-        descriptor = helpers.unzip_descriptor(path, "dataresource.json")
-        return Resource(descriptor=descriptor, **options)
-
-    @staticmethod
     def from_petl(storage, *, view, **options):
         """Create a resource from PETL container"""
         return Resource(data=view, **options)
@@ -1299,84 +1290,6 @@ class Resource(Metadata):
             package=self.__package,
             **options,
         )
-
-    # TODO: support multipart
-    # TODO: there is 100% duplication with package.to_zip
-    def to_zip(self, target, *, resolve=[], encoder_class=None):
-        """Save resource to a zip
-
-        Parameters:
-            target (str): target path
-            resolve (str[]): Data sources to resolve.
-                For "inline" data it means saving them as CSV and including into ZIP.
-                For "remote" data it means downloading them and including into ZIP.
-                For example, `resolve=["inline", "remote"]`
-            encoder_class (object): json encoder class
-
-        Raises:
-            FrictionlessException: on any error
-        """
-        try:
-            with zipfile.ZipFile(target, "w") as zip:
-                for resource in [self]:
-                    descriptor = self.to_dict()
-
-                    # Multipart data
-                    if resource.multipart:
-                        note = "Zipping multipart resource is not yet supported"
-                        raise FrictionlessException(errors.ResourceError(note=note))
-
-                    # Inline data
-                    elif resource.inline:
-                        if "inline" in resolve:
-                            path = f"{resource.name}.csv"
-                            descriptor["path"] = path
-                            del descriptor["data"]
-                            with tempfile.NamedTemporaryFile() as file:
-                                resource.write(file.name, format="csv")
-                                zip.write(file.name, path)
-                        elif not isinstance(resource.data, list):
-                            note = f"Use resolve argument to zip {resource.data}"
-                            raise FrictionlessException(errors.ResourceError(note=note))
-
-                    # Remote data
-                    elif resource.remote:
-                        if "remote" in resolve:
-                            path = f"{resource.name}.{resource.format}"
-                            descriptor["path"] = path
-                            with tempfile.NamedTemporaryFile() as file:
-                                # TODO: rebase on resource here?
-                                with system.create_loader(resource) as loader:
-                                    while True:
-                                        chunk = loader.byte_stream.read(1024)
-                                        if not chunk:
-                                            break
-                                        file.write(chunk)
-                                    file.flush()
-                                zip.write(file.name, path)
-
-                    # Local Data
-                    else:
-                        path = resource.path
-                        if not helpers.is_safe_path(path):
-                            path = f"{resource.name}.{resource.format}"
-                            descriptor["path"] = path
-                        zip.write(resource.fullpath, path)
-
-                    # Metadata
-                    zip.writestr(
-                        "dataresource.json",
-                        json.dumps(
-                            descriptor,
-                            indent=2,
-                            ensure_ascii=False,
-                            cls=encoder_class,
-                        ),
-                    )
-
-        except (IOError, zipfile.BadZipfile, zipfile.LargeZipFile) as exception:
-            error = errors.ResourceError(note=str(exception))
-            raise FrictionlessException(error) from exception
 
     def to_petl(self, *, normalize=False):
         resource = self
