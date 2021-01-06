@@ -98,7 +98,7 @@ class Resource(Metadata):
         # Misc
         stats=None,
         profile=None,
-        basepath=None,
+        basepath="",
         onerror="ignore",
         trusted=False,
         package=None,
@@ -107,7 +107,7 @@ class Resource(Metadata):
 
         # Handle source
         if source is not None:
-            file = File(source)
+            file = File(source, basepath=basepath)
             if file.type == "table":
                 if path is None:
                     path = file.path

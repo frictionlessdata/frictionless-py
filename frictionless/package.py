@@ -8,6 +8,7 @@ from .exception import FrictionlessException
 from .metadata import Metadata
 from .resource import Resource
 from .system import system
+from .file import File
 from . import helpers
 from . import errors
 from . import config
@@ -55,8 +56,9 @@ class Package(Metadata):
 
     def __init__(
         self,
-        descriptor=None,
+        source=None,
         *,
+        descriptor=None,
         # Required
         resources=None,
         # Recommended
@@ -76,10 +78,24 @@ class Package(Metadata):
         created=None,
         # Extra
         hashing=None,
-        basepath=None,
+        basepath="",
         onerror="ignore",
         trusted=False,
     ):
+
+        # Handle source
+        if source is not None:
+            if descriptor is None:
+                descriptor = source
+                file = File(source, basepath=basepath)
+                if file.expandable:
+                    descriptor = {"resources": []}
+                    for part in file.normpath:
+                        descriptor["resources"].append({"path": part})
+
+        # Handle zip
+        if helpers.is_zip_descriptor(descriptor):
+            descriptor = helpers.unzip_descriptor(descriptor, "datapackage.json")
 
         # Set attributes
         self.setinitial("resources", resources)
@@ -386,8 +402,7 @@ class Package(Metadata):
     @staticmethod
     def from_zip(path, **options):
         """Create a package from ZIP"""
-        descriptor = helpers.unzip_descriptor(path, "datapackage.json")
-        return Package(descriptor=descriptor, **options)
+        return Package(descriptor=path, **options)
 
     @staticmethod
     def from_storage(storage):

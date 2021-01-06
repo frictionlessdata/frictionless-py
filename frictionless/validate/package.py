@@ -9,7 +9,7 @@ from .inquiry import validate_inquiry
 @Report.from_validate
 def validate_package(
     source,
-    basepath=None,
+    basepath="",
     trusted=False,
     noinfer=False,
     nolookup=False,

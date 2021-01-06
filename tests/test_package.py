@@ -117,7 +117,7 @@ def test_package_from_invalid_descriptor_type():
 
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_package_from_zip():
-    package = Package.from_zip("data/package.zip")
+    package = Package("data/package.zip")
     assert package.name == "testing"
     assert len(package.resources) == 2
     assert package.get_resource("data2").read_rows() == [
@@ -130,7 +130,7 @@ def test_package_from_zip():
 @pytest.mark.vcr
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_package_from_zip_remote():
-    package = Package.from_zip(BASE_URL % "data/package.zip")
+    package = Package(BASE_URL % "data/package.zip")
     assert package.name == "testing"
     assert len(package.resources) == 2
     assert package.get_resource("data2").read_rows() == [
@@ -146,7 +146,7 @@ def test_package_from_zip_no_descriptor(tmpdir):
     with zipfile.ZipFile(descriptor, "w") as zip:
         zip.writestr("data.txt", "foobar")
     with pytest.raises(FrictionlessException) as excinfo:
-        Package.from_zip(descriptor)
+        Package(descriptor)
     error = excinfo.value.error
     assert error.code == "package-error"
     assert error.note.count("datapackage.json")

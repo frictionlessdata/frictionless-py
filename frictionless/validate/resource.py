@@ -7,7 +7,7 @@ from .table import validate_table
 
 @Report.from_validate
 def validate_resource(
-    source, basepath=None, trusted=False, noinfer=False, lookup=None, **options
+    source, basepath="", trusted=False, noinfer=False, lookup=None, **options
 ):
     """Validate resource
 

@@ -81,6 +81,10 @@ class File:
         return self.__basepath
 
     @cached_property
+    def normpath(self):
+        return self.__normpath
+
+    @cached_property
     def fullpath(self):
         return self.__fullpath
 
@@ -106,14 +110,17 @@ class File:
         multipart = not inline and (isinstance(path, list) or expandable)
 
         # Detect fullpath
+        normpath = path
         fullpath = path
         if not inline:
             if expandable:
+                normpath = []
                 fullpath = []
                 pattern = os.path.join(self.__basepath, path)
                 pattern = f"{pattern}/*" if os.path.isdir(pattern) else pattern
                 options = {"recursive": True} if "**" in pattern else {}
                 for part in sorted(glob.glob(pattern, **options)):
+                    normpath.append(os.path.relpath(part, self.__basepath))
                     fullpath.append(os.path.relpath(part, ""))
                 if not fullpath:
                     expandable = False
@@ -198,6 +205,7 @@ class File:
         self.__remote = remote
         self.__multipart = multipart
         self.__expandable = expandable
+        self.__normpath = normpath
         self.__fullpath = fullpath
 
     # TODO: move to helpers when it's only url parsing

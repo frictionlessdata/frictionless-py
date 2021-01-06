@@ -5,7 +5,7 @@ from ..package import Package
 def extract_package(
     source,
     *,
-    basepath=None,
+    basepath="",
     onerror="ignore",
     trusted=False,
     process=None,

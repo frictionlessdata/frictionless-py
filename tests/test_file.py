@@ -131,6 +131,7 @@ def test_file_type_general_multipart_from_glob():
     assert file.multipart is True
     assert file.expandable is True
     assert file.basepath == ""
+    assert file.normpath == ["data/chunk1.csv", "data/chunk2.csv"]
     assert file.fullpath == ["data/chunk1.csv", "data/chunk2.csv"]
 
 
@@ -150,6 +151,7 @@ def test_file_type_general_multipart_from_glob_with_basepath():
     assert file.multipart is True
     assert file.expandable is True
     assert file.basepath == "data"
+    assert file.normpath == ["chunk1.csv", "chunk2.csv"]
     assert file.fullpath == ["data/chunk1.csv", "data/chunk2.csv"]
 
 
@@ -169,6 +171,7 @@ def test_file_type_general_multipart_from_dir():
     assert file.multipart is True
     assert file.expandable is True
     assert file.basepath == ""
+    assert file.normpath == ["data/tables/chunk1.csv", "data/tables/chunk2.csv"]
     assert file.fullpath == ["data/tables/chunk1.csv", "data/tables/chunk2.csv"]
 
 
@@ -188,6 +191,7 @@ def test_file_type_general_multipart_from_dir_with_basepath():
     assert file.multipart is True
     assert file.expandable is True
     assert file.basepath == "data"
+    assert file.normpath == ["tables/chunk1.csv", "tables/chunk2.csv"]
     assert file.fullpath == ["data/tables/chunk1.csv", "data/tables/chunk2.csv"]
 
 

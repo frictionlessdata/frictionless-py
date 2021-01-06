@@ -4,7 +4,7 @@ from ..resource import Resource
 def extract_resource(
     source,
     *,
-    basepath=None,
+    basepath="",
     onerror="ignore",
     trusted=False,
     process=None,
