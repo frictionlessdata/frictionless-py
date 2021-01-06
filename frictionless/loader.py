@@ -167,13 +167,13 @@ class Loader:
                 byte_stream.seek(0)
             # Unzip
             with zipfile.ZipFile(byte_stream) as archive:
-                name = self.resource.compression_path or archive.namelist()[0]
+                name = self.resource.innerpath or archive.namelist()[0]
                 with archive.open(name) as file:
                     target = tempfile.NamedTemporaryFile()
                     shutil.copyfileobj(file, target)
                     target.seek(0)
                 byte_stream = target
-                self.resource.compression_path = name
+                self.resource.innerpath = name
             return byte_stream
         if self.resource.compression == "gz":
             byte_stream = gzip.open(byte_stream)

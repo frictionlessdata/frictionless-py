@@ -273,9 +273,9 @@ def is_only_strings(cells):
     return True
 
 
-def unzip_descriptor(descriptor, compression_path):
+def unzip_descriptor(path, innerpath):
     frictionless = import_module("frictionless")
-    resource = frictionless.Resource(path=descriptor, compression="", trusted=True)
+    resource = frictionless.Resource(path=path, compression="", trusted=True)
     with frictionless.system.create_loader(resource) as loader:
         byte_stream = loader.byte_stream
         if loader.remote:
@@ -286,7 +286,7 @@ def unzip_descriptor(descriptor, compression_path):
             tempdir = tempfile.mkdtemp()
             zip.extractall(tempdir)
             atexit.register(shutil.rmtree, tempdir)
-            descriptor = os.path.join(tempdir, compression_path)
+            descriptor = os.path.join(tempdir, innerpath)
     return descriptor
 
 

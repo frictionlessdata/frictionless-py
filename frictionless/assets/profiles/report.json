@@ -97,8 +97,8 @@
           "format",
           "hashing",
           "encoding",
+          "innerpath",
           "compression",
-          "compressionPath",
           "control",
           "dialect",
           "query",
@@ -137,15 +137,15 @@
             "title": "Encoding",
             "description": "The encoding of the table."
           },
+          "innerpath": {
+            "type": "string",
+            "title": "Compression path",
+            "description": "The path inside the compressed source."
+          },
           "compression": {
             "type": "string",
             "title": "Compression",
             "description": "The compression of the table."
-          },
-          "compressionPath": {
-            "type": "string",
-            "title": "Compression path",
-            "description": "The path inside the compressed source."
           },
           "control": {
             "type": "object",

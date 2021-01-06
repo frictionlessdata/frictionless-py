@@ -16,8 +16,8 @@ def test_file_type_table():
     assert file.type == "table"
     assert file.scheme == "file"
     assert file.format == "csv"
+    assert file.innerpath == ""
     assert file.compression == ""
-    assert file.compression_path == ""
     assert file.inline is False
     assert file.remote is False
     assert file.multipart is False
@@ -34,8 +34,8 @@ def test_file_type_general_inline():
     assert file.type == "table"
     assert file.scheme == ""
     assert file.format == "inline"
+    assert file.innerpath == ""
     assert file.compression == ""
-    assert file.compression_path == ""
     assert file.inline is True
     assert file.remote is False
     assert file.multipart is False
@@ -52,8 +52,8 @@ def test_file_type_general_remote():
     assert file.type == "table"
     assert file.scheme == "https"
     assert file.format == "csv"
+    assert file.innerpath == ""
     assert file.compression == ""
-    assert file.compression_path == ""
     assert file.inline is False
     assert file.remote is True
     assert file.multipart is False
@@ -70,8 +70,8 @@ def test_file_type_general_remote_with_basepath():
     assert file.type == "table"
     assert file.scheme == "https"
     assert file.format == "csv"
+    assert file.innerpath == ""
     assert file.compression == ""
-    assert file.compression_path == ""
     assert file.inline is False
     assert file.remote is True
     assert file.multipart is False
@@ -88,8 +88,8 @@ def test_file_type_general_multipart():
     assert file.type == "table"
     assert file.scheme == "multipart"
     assert file.format == "csv"
+    assert file.innerpath == ""
     assert file.compression == ""
-    assert file.compression_path == ""
     assert file.inline is False
     assert file.remote is False
     assert file.multipart is True
@@ -106,8 +106,8 @@ def test_file_type_general_multipart_with_basepath():
     assert file.type == "table"
     assert file.scheme == "multipart"
     assert file.format == "csv"
+    assert file.innerpath == ""
     assert file.compression == ""
-    assert file.compression_path == ""
     assert file.inline is False
     assert file.remote is False
     assert file.multipart is True
@@ -124,8 +124,8 @@ def test_file_type_general_multipart_from_glob():
     assert file.type == "table"
     assert file.scheme == "multipart"
     assert file.format == "csv"
+    assert file.innerpath == ""
     assert file.compression == ""
-    assert file.compression_path == ""
     assert file.inline is False
     assert file.remote is False
     assert file.multipart is True
@@ -144,8 +144,8 @@ def test_file_type_general_multipart_from_glob_with_basepath():
     assert file.type == "table"
     assert file.scheme == "multipart"
     assert file.format == "csv"
+    assert file.innerpath == ""
     assert file.compression == ""
-    assert file.compression_path == ""
     assert file.inline is False
     assert file.remote is False
     assert file.multipart is True
@@ -164,8 +164,8 @@ def test_file_type_general_multipart_from_dir():
     assert file.type == "table"
     assert file.scheme == "multipart"
     assert file.format == "csv"
+    assert file.innerpath == ""
     assert file.compression == ""
-    assert file.compression_path == ""
     assert file.inline is False
     assert file.remote is False
     assert file.multipart is True
@@ -184,8 +184,8 @@ def test_file_type_general_multipart_from_dir_with_basepath():
     assert file.type == "table"
     assert file.scheme == "multipart"
     assert file.format == "csv"
+    assert file.innerpath == ""
     assert file.compression == ""
-    assert file.compression_path == ""
     assert file.inline is False
     assert file.remote is False
     assert file.multipart is True
@@ -204,8 +204,8 @@ def test_file_type_schema():
     assert file.type == "schema"
     assert file.scheme == "file"
     assert file.format == "json"
+    assert file.innerpath == ""
     assert file.compression == ""
-    assert file.compression_path == ""
     assert file.inline is False
     assert file.remote is False
     assert file.multipart is False
@@ -222,8 +222,8 @@ def test_file_type_resource():
     assert file.type == "resource"
     assert file.scheme == "file"
     assert file.format == "json"
+    assert file.innerpath == ""
     assert file.compression == ""
-    assert file.compression_path == ""
     assert file.inline is False
     assert file.remote is False
     assert file.multipart is False
@@ -240,8 +240,8 @@ def test_file_type_package():
     assert file.type == "package"
     assert file.scheme == "file"
     assert file.format == "json"
+    assert file.innerpath == ""
     assert file.compression == ""
-    assert file.compression_path == ""
     assert file.inline is False
     assert file.remote is False
     assert file.multipart is False

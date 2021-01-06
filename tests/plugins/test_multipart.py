@@ -22,8 +22,8 @@ def test_multipart_loader():
 
 def test_multipart_loader_with_compressed_parts():
     with Table(["data/chunk1.csv.zip", "data/chunk2.csv.zip"]) as table:
+        assert table.innerpath == ""
         assert table.compression == ""
-        assert table.compression_path == ""
         assert table.header == ["id", "name"]
         assert table.read_rows() == [
             {"id": 1, "name": "english"},
@@ -127,8 +127,8 @@ def test_multipart_loader_resource_infer():
         "format": "csv",
         "hashing": "md5",
         "encoding": "utf-8",
+        "innerpath": "",
         "compression": "",
-        "compressionPath": "",
         "control": {"newline": ""},
         "dialect": {},
         "query": {},

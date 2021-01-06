@@ -42,8 +42,8 @@ class Resource(Metadata):
         format? (str): file format
         hashing? (str): file hashing
         encoding? (str): file encoding
+        innerpath? (str): file compression path
         compression? (str): file compression
-        compression_path? (str): file compression path
         control? (dict): file control
         dialect? (dict): table dialect
         query? (dict): table query
@@ -78,8 +78,8 @@ class Resource(Metadata):
         format=None,
         hashing=None,
         encoding=None,
+        innerpath=None,
         compression=None,
-        compression_path=None,
         # Control/Dialect/Query
         control=None,
         dialect=None,
@@ -160,7 +160,7 @@ class Resource(Metadata):
         self.setinitial("hashing", hashing)
         self.setinitial("encoding", encoding)
         self.setinitial("compression", compression)
-        self.setinitial("compressionPath", compression_path)
+        self.setinitial("innerpath", innerpath)
         self.setinitial("control", control)
         self.setinitial("dialect", dialect)
         self.setinitial("query", query)
@@ -301,20 +301,20 @@ class Resource(Metadata):
         return self.get("encoding", config.DEFAULT_ENCODING).lower()
 
     @Metadata.property
+    def innerpath(self):
+        """
+        Returns
+            str?: resource compression path
+        """
+        return self.get("innerpath", self.__file.innerpath)
+
+    @Metadata.property
     def compression(self):
         """
         Returns
             str?: resource compression
         """
         return self.get("compression", self.__file.compression).lower()
-
-    @Metadata.property
-    def compression_path(self):
-        """
-        Returns
-            str?: resource compression path
-        """
-        return self.get("compressionPath", self.__file.compression_path)
 
     @Metadata.property
     def control(self):
@@ -564,9 +564,8 @@ class Resource(Metadata):
             self["format"] = self.format
             self["hashing"] = self.hashing
             self["encoding"] = self.encoding
+            self["innerpath"] = self.innerpath
             self["compression"] = self.compression
-            self["compressionPath"] = self.compression_path
-            self["compressionPath"] = self.compression_path
             if self.tabular:
                 self["query"] = self.query
             # TODO: review it's a hack for checksum validation
@@ -1115,8 +1114,8 @@ class Resource(Metadata):
         format=None,
         hashing=None,
         encoding=None,
+        innerpath=None,
         compression=None,
-        compression_path=None,
         control=None,
         dialect=None,
     ):
@@ -1146,8 +1145,8 @@ class Resource(Metadata):
             format=format,
             hashing=hashing,
             encoding=encoding,
+            innerpath=innerpath,
             compression=compression,
-            compression_path=compression_path,
             control=control,
             dialect=dialect,
             schema=self.schema,
@@ -1400,7 +1399,7 @@ class Resource(Metadata):
         # File
         self.__file = File(
             self.get("data", self.get("path", [])),
-            compression_path=self.get("compressionPath"),
+            innerpath=self.get("innerpath"),
             basepath=self.__basepath,
         )
 

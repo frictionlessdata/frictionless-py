@@ -10,20 +10,13 @@ from . import config
 # TODO: export in __init__.py
 # TODO: rename module to file.py
 class File:
-    def __init__(
-        self,
-        source,
-        *,
-        basepath="",
-        compression_path=None,
-        allow_contents_reading=False,
-    ):
+    def __init__(self, source, *, basepath="", innerpath=None, allow_reading=False):
 
         # Set attributes
         self.__source = source
         self.__basepath = basepath
-        self.__compression_path = compression_path
-        self.__allow_contents_reading = allow_contents_reading
+        self.__innerpath = innerpath
+        self.__allow_reading = allow_reading
 
         # Detect attributes
         self.__detect()
@@ -53,12 +46,12 @@ class File:
         return self.__format
 
     @cached_property
-    def compression(self):
-        return self.__compression
+    def innerpath(self):
+        return self.__innerpath
 
     @cached_property
-    def compression_path(self):
-        return self.__compression_path
+    def compression(self):
+        return self.__compression
 
     @cached_property
     def inline(self):
@@ -162,16 +155,16 @@ class File:
                     type = "schema"
                 elif path.endswith(("package.json", "package.yaml")):
                     type = "package"
-                elif self.__allow_contents_reading:
+                elif self.__allow_reading:
                     # TODO: implement
                     pass
 
-        # Detect scheme/format/compression/compression_path
+        # Detect scheme/format/innerpath/compression
         scheme = ""
         # TODO: move to inline plugin?
         format = "inline"
         compression = ""
-        compression_path = ""
+        innerpath = ""
         detection_path = fullpath[0] if multipart else fullpath
         if not inline:
             scheme, format = self.__detect_scheme_and_format(detection_path)
@@ -179,8 +172,8 @@ class File:
                 if not multipart:
                     compression = format
                 detection_path = detection_path[: -len(format) - 1]
-                if self.__compression_path:
-                    detection_path = os.path.join(detection_path, self.__compression_path)
+                if self.__innerpath:
+                    detection_path = os.path.join(detection_path, self.__innerpath)
                 scheme, format = self.__detect_scheme_and_format(detection_path)
 
         # TODO: move to filelike plugin?
@@ -199,8 +192,8 @@ class File:
         self.__type = type
         self.__scheme = scheme
         self.__format = format
+        self.__innerpath = innerpath
         self.__compression = compression
-        self.__compression_path = compression_path
         self.__inline = inline
         self.__remote = remote
         self.__multipart = multipart

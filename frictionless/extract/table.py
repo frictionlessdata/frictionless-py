@@ -10,8 +10,8 @@ def extract_table(
     format=None,
     hashing=None,
     encoding=None,
+    innerpath=None,
     compression=None,
-    compression_path=None,
     # Control/Dialect/Query
     control=None,
     dialect=None,
@@ -61,11 +61,11 @@ def extract_table(
         encoding? (str): Source encoding.
             If not set, it'll be inferred from `source`.
 
+        innerpath? (str): A path within the compressed file.
+            It defaults to the first file in the archive.
+
         compression? (str): Source file compression (zip, ...).
             If not set, it'll be inferred from `source`.
-
-        compression_path? (str): A path within the compressed file.
-            It defaults to the first file in the archive.
 
         control? (dict|Control): File control.
             For more infromation, please check the Control documentation.
@@ -142,8 +142,8 @@ def extract_table(
         format=format,
         hashing=hashing,
         encoding=encoding,
+        innerpath=innerpath,
         compression=compression,
-        compression_path=compression_path,
         # Control/Dialect/Query
         control=control,
         dialect=dialect,

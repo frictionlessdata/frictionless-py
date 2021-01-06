@@ -30,8 +30,8 @@ class File:
         format? (str): file format
         hashing? (str): file hashing
         encoding? (str): file encoding
+        innerpath? (str): file compression path
         compression? (str): file compression
-        compression_path? (str): file compression path
         control? (dict): file control
 
     Raises:
@@ -47,8 +47,8 @@ class File:
         format=None,
         hashing=None,
         encoding=None,
+        innerpath=None,
         compression=None,
-        compression_path=None,
         control=None,
     ):
 
@@ -62,8 +62,8 @@ class File:
             format=format,
             hashing=hashing,
             encoding=encoding,
+            innerpath=innerpath,
             compression=compression,
-            compression_path=compression_path,
             control=control,
             trusted=True,
         )
@@ -129,20 +129,20 @@ class File:
         return self.__resource.encoding
 
     @property
+    def innerpath(self):
+        """
+        Returns:
+            str?: file compression path
+        """
+        return self.__resource.innerpath
+
+    @property
     def compression(self):
         """
         Returns:
             str?: file compression
         """
         return self.__resource.compression
-
-    @property
-    def compression_path(self):
-        """
-        Returns:
-            str?: file compression path
-        """
-        return self.__resource.compression_path
 
     @property
     def control(self):
@@ -192,8 +192,8 @@ class File:
         self.setdefault("format", self.format)
         self.setdefault("hashing", self.hashing)
         self.setdefault("encoding", self.encoding)
+        self.setdefault("innerpath", self.innerpath)
         self.setdefault("compression", self.compression)
-        self.setdefault("compressionPath", self.compression_path)
 
     # Open/close
 

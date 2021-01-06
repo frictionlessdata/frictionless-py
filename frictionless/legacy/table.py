@@ -51,11 +51,11 @@ class Table:
         encoding? (str): Source encoding.
             If not set, it'll be inferred from `source`.
 
+        innerpath? (str): A path within the compressed file.
+            It defaults to the first file in the archive.
+
         compression? (str): Source file compression (zip, ...).
             If not set, it'll be inferred from `source`.
-
-        compression_path? (str): A path within the compressed file.
-            It defaults to the first file in the archive.
 
         control? (dict|Control): File control.
             For more infromation, please check the Control documentation.
@@ -130,8 +130,8 @@ class Table:
         format=None,
         hashing=None,
         encoding=None,
+        innerpath=None,
         compression=None,
-        compression_path=None,
         # Control/Dialect/Query
         control=None,
         dialect=None,
@@ -215,8 +215,8 @@ class Table:
             format=format,
             hashing=hashing,
             encoding=encoding,
+            innerpath=innerpath,
             compression=compression,
-            compression_path=compression_path,
             control=control,
             dialect=dialect,
             query=query,
@@ -295,20 +295,20 @@ class Table:
         return self.__resource.encoding
 
     @property
+    def innerpath(self):
+        """
+        Returns:
+            str?: file compression path
+        """
+        return self.__resource.innerpath
+
+    @property
     def compression(self):
         """
         Returns:
             str?: file compression
         """
         return self.__resource.compression
-
-    @property
-    def compression_path(self):
-        """
-        Returns:
-            str?: file compression path
-        """
-        return self.__resource.compression_path
 
     @property
     def control(self):
@@ -855,8 +855,8 @@ class Table:
         format=None,
         hashing=None,
         encoding=None,
+        innerpath=None,
         compression=None,
-        compression_path=None,
         control=None,
         dialect=None,
     ):
@@ -886,8 +886,8 @@ class Table:
             format=format,
             hashing=hashing,
             encoding=encoding,
+            innerpath=innerpath,
             compression=compression,
-            compression_path=compression_path,
             control=control,
             dialect=dialect,
             schema=self.schema,
