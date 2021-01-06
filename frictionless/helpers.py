@@ -2,6 +2,7 @@ import io
 import re
 import os
 import csv
+import glob
 import atexit
 import shutil
 import zipfile
@@ -152,6 +153,15 @@ def compile_regex(items):
                 item = re.compile(item.replace("<regex>", ""))
             result.append(item)
         return result
+
+
+def is_expandable(path, basepath):
+    if not isinstance(path, str):
+        return False
+    if is_remote_path(path):
+        return False
+    fullpath = os.path.join(basepath, path)
+    return glob.has_magic(fullpath) or os.path.isdir(fullpath)
 
 
 def detect_name(source):

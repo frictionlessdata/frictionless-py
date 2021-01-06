@@ -1,5 +1,6 @@
 import os
 import re
+import glob
 from urllib.parse import urlparse, parse_qs
 from .helpers import cached_property
 from . import helpers
@@ -72,6 +73,10 @@ class File:
         return self.__multipart
 
     @cached_property
+    def expandable(self):
+        return self.__expandable
+
+    @cached_property
     def basepath(self):
         return self.__basepath
 
@@ -94,29 +99,45 @@ class File:
             path = source
             data = None
 
-        # Detect inline/remote/multipart
+        # Detect inline/remote/expandable/multipart
         inline = path is None
         remote = helpers.is_remote_path(self.__basepath or path)
-        multipart = not inline and isinstance(path, list)
+        expandable = not inline and helpers.is_expandable(path, self.__basepath)
+        multipart = not inline and (isinstance(path, list) or expandable)
 
         # Detect fullpath
         fullpath = path
-        if not inline and self.__basepath:
-            if not multipart and not helpers.is_remote_path(path):
-                fullpath = os.path.join(self.__basepath, path)
+        if not inline:
+            if expandable:
+                fullpath = []
+                pattern = os.path.join(self.__basepath, path)
+                pattern = f"{pattern}/*" if os.path.isdir(pattern) else pattern
+                options = {"recursive": True} if "**" in pattern else {}
+                for part in sorted(glob.glob(pattern, **options)):
+                    fullpath.append(os.path.relpath(part, ""))
+                if not fullpath:
+                    expandable = False
+                    multipart = False
+                    fullpath = path
             elif multipart:
                 fullpath = []
                 for part in path:
                     if not helpers.is_remote_path(part):
                         part = os.path.join(self.__basepath, part)
                     fullpath.append(part)
+            else:  # for string paths
+                if not helpers.is_remote_path(path):
+                    fullpath = os.path.join(self.__basepath, path)
 
         # Detect name
         name = "inline"
         if not inline:
+            names = []
             # Path can have a text scheme like "text://row1\nrow2"
-            name = path[0] if multipart else path.split("\n")[0]
-            name = os.path.splitext(os.path.basename(name))[0]
+            for part in fullpath if multipart else [fullpath.split("\n")[0]]:
+                name = os.path.splitext(os.path.basename(part))[0]
+                names.append(name)
+            name = os.path.commonprefix(names)
             name = helpers.slugify(name, regex_pattern=r"[^-a-z0-9._/]")
 
         # Detect type
@@ -138,23 +159,22 @@ class File:
                     # TODO: implement
                     pass
 
-        # Detect scheme/format
+        # Detect scheme/format/compression/compression_path
         scheme = ""
+        # TODO: move to inline plugin?
         format = "inline"
         compression = "no"
         compression_path = ""
         detection_path = fullpath[0] if multipart else fullpath
         if not inline:
             scheme, format = self.__detect_scheme_and_format(detection_path)
-
-        # Detect compression/compression_path
-        if format in config.COMPRESSION_FORMATS:
-            if not multipart:
-                compression = format
-            detection_path = detection_path[: -len(format) - 1]
-            if self.__compression_path:
-                detection_path = os.path.join(detection_path, self.__compression_path)
-            scheme, format = self.__detect_scheme_and_format(detection_path)
+            if format in config.COMPRESSION_FORMATS:
+                if not multipart:
+                    compression = format
+                detection_path = detection_path[: -len(format) - 1]
+                if self.__compression_path:
+                    detection_path = os.path.join(detection_path, self.__compression_path)
+                scheme, format = self.__detect_scheme_and_format(detection_path)
 
         # TODO: move to filelike plugin?
         if hasattr(data, "read"):
@@ -177,6 +197,7 @@ class File:
         self.__inline = inline
         self.__remote = remote
         self.__multipart = multipart
+        self.__expandable = expandable
         self.__fullpath = fullpath
 
     # TODO: move to helpers when it's only url parsing

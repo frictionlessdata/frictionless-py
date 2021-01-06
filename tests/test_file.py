@@ -84,7 +84,7 @@ def test_file_type_general_multipart():
     file = File(path)
     assert file.path == path
     assert file.data is None
-    assert file.name == "chunk1"
+    assert file.name == "chunk"
     assert file.type == "table"
     assert file.scheme == "multipart"
     assert file.format == "csv"
@@ -102,7 +102,7 @@ def test_file_type_general_multipart_with_basepath():
     file = File(path, basepath="base")
     assert file.path == path
     assert file.data is None
-    assert file.name == "chunk1"
+    assert file.name == "chunk"
     assert file.type == "table"
     assert file.scheme == "multipart"
     assert file.format == "csv"
@@ -113,6 +113,82 @@ def test_file_type_general_multipart_with_basepath():
     assert file.multipart is True
     assert file.basepath == "base"
     assert file.fullpath == ["base/data/chunk1.csv", "base/data/chunk2.csv"]
+
+
+def test_file_type_general_multipart_from_glob():
+    path = "data/chunk*.csv"
+    file = File(path)
+    assert file.path == path
+    assert file.data is None
+    assert file.name == "chunk"
+    assert file.type == "table"
+    assert file.scheme == "multipart"
+    assert file.format == "csv"
+    assert file.compression == "no"
+    assert file.compression_path == ""
+    assert file.inline is False
+    assert file.remote is False
+    assert file.multipart is True
+    assert file.expandable is True
+    assert file.basepath == ""
+    assert file.fullpath == ["data/chunk1.csv", "data/chunk2.csv"]
+
+
+def test_file_type_general_multipart_from_glob_with_basepath():
+    path = "chunk*.csv"
+    file = File(path, basepath="data")
+    assert file.path == path
+    assert file.data is None
+    assert file.name == "chunk"
+    assert file.type == "table"
+    assert file.scheme == "multipart"
+    assert file.format == "csv"
+    assert file.compression == "no"
+    assert file.compression_path == ""
+    assert file.inline is False
+    assert file.remote is False
+    assert file.multipart is True
+    assert file.expandable is True
+    assert file.basepath == "data"
+    assert file.fullpath == ["data/chunk1.csv", "data/chunk2.csv"]
+
+
+def test_file_type_general_multipart_from_dir():
+    path = "data/tables"
+    file = File(path)
+    assert file.path == path
+    assert file.data is None
+    assert file.name == "chunk"
+    assert file.type == "table"
+    assert file.scheme == "multipart"
+    assert file.format == "csv"
+    assert file.compression == "no"
+    assert file.compression_path == ""
+    assert file.inline is False
+    assert file.remote is False
+    assert file.multipart is True
+    assert file.expandable is True
+    assert file.basepath == ""
+    assert file.fullpath == ["data/tables/chunk1.csv", "data/tables/chunk2.csv"]
+
+
+def test_file_type_general_multipart_from_dir_with_basepath():
+    path = "tables"
+    file = File(path, basepath="data")
+    assert file.path == path
+    assert file.data is None
+    assert file.name == "chunk"
+    assert file.type == "table"
+    assert file.scheme == "multipart"
+    assert file.format == "csv"
+    assert file.compression == "no"
+    assert file.compression_path == ""
+    assert file.inline is False
+    assert file.remote is False
+    assert file.multipart is True
+    assert file.expandable is True
+    assert file.basepath == "data"
+    assert file.fullpath == ["data/tables/chunk1.csv", "data/tables/chunk2.csv"]
 
 
 def test_file_type_schema():
