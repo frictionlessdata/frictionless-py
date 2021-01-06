@@ -12,7 +12,7 @@ class resource_add(Step):
 
     def transform_package(self, source, target):
         resource = Resource(name=self.__name, basepath=target.basepath, **self.__options)
-        resource.infer(only_sample=True)
+        resource.infer()
         target.add_resource(resource)
 
 

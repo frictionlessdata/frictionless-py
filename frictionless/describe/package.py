@@ -1,7 +1,6 @@
 from ..package import Package
 
 
-# TODO: support only_sample
 def describe_package(source, *, hashing=None, basepath="", expand=False):
     """Describe the given source as a package
 
@@ -22,7 +21,7 @@ def describe_package(source, *, hashing=None, basepath="", expand=False):
 
     # Infer package
     package = Package(source, hashing=hashing, basepath=basepath, trusted=True)
-    package.infer()
+    package.infer(stats=True)
 
     # Expand package
     if expand:

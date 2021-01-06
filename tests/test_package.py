@@ -375,7 +375,7 @@ def test_package_expand_resource_dialect():
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_package_infer():
     package = Package("data/infer/*.csv")
-    package.infer()
+    package.infer(stats=True)
     assert package.metadata_valid
     assert package == {
         "profile": "data-package",

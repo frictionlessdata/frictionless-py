@@ -6,7 +6,7 @@ from frictionless import Resource, transform, steps
 
 def test_transform_resource():
     source = Resource(path="data/transform.csv")
-    source.infer(only_sample=True)
+    source.infer()
     target = transform(
         source,
         steps=[

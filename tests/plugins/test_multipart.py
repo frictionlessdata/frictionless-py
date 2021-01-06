@@ -118,7 +118,7 @@ def test_multipart_loader_resource_error_bad_path_not_safe_traversing():
 def test_multipart_loader_resource_infer():
     descriptor = {"path": ["data/chunk1.csv", "data/chunk2.csv"]}
     resource = Resource(descriptor)
-    resource.infer()
+    resource.infer(stats=True)
     assert resource == {
         "path": ["data/chunk1.csv", "data/chunk2.csv"],
         "profile": "tabular-data-resource",

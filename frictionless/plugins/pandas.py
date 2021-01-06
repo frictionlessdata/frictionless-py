@@ -251,7 +251,7 @@ class PandasStorage(Storage):
         # Write resources
         for resource in package.resources:
             if not resource.schema:
-                resource.infer(only_sample=True)
+                resource.infer()
             self.__dataframes[resource.name] = self.__write_convert_resource(resource)
 
     def __write_convert_resource(self, resource):

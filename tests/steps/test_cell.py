@@ -6,7 +6,7 @@ from frictionless import Resource, transform, steps
 
 def test_step_cell_convert():
     source = Resource(path="data/transform.csv")
-    source.infer(only_sample=True)
+    source.infer()
     source.schema.get_field("id").type = "string"
     source.schema.get_field("population").type = "string"
     target = transform(
@@ -25,7 +25,7 @@ def test_step_cell_convert():
 
 def test_step_cell_convert_with_field_name():
     source = Resource(path="data/transform.csv")
-    source.infer(only_sample=True)
+    source.infer()
     target = transform(
         source,
         steps=[
@@ -45,7 +45,7 @@ def test_step_cell_convert_with_field_name():
 
 def test_step_cell_fill():
     source = Resource(path="data/transform.csv")
-    source.infer(only_sample=True)
+    source.infer()
     target = transform(
         source,
         steps=[
@@ -63,7 +63,7 @@ def test_step_cell_fill():
 
 def test_step_cell_fill_direction_down():
     source = Resource(path="data/transform.csv")
-    source.infer(only_sample=True)
+    source.infer()
     target = transform(
         source,
         steps=[
@@ -81,7 +81,7 @@ def test_step_cell_fill_direction_down():
 
 def test_step_cell_fill_direction_right():
     source = Resource(path="data/transform.csv")
-    source.infer(only_sample=True)
+    source.infer()
     source.schema.get_field("id").type = "string"
     source.schema.get_field("population").type = "string"
     target = transform(
@@ -101,7 +101,7 @@ def test_step_cell_fill_direction_right():
 
 def test_step_cell_fill_direction_left():
     source = Resource(path="data/transform.csv")
-    source.infer(only_sample=True)
+    source.infer()
     source.schema.get_field("id").type = "string"
     source.schema.get_field("population").type = "string"
     target = transform(
@@ -124,7 +124,7 @@ def test_step_cell_fill_direction_left():
 
 def test_step_cell_format():
     source = Resource(path="data/transform.csv")
-    source.infer(only_sample=True)
+    source.infer()
     source.schema.get_field("id").type = "string"
     source.schema.get_field("population").type = "string"
     target = transform(
@@ -143,7 +143,7 @@ def test_step_cell_format():
 
 def test_step_cell_format_with_name():
     source = Resource(path="data/transform.csv")
-    source.infer(only_sample=True)
+    source.infer()
     target = transform(
         source,
         steps=[
@@ -163,7 +163,7 @@ def test_step_cell_format_with_name():
 
 def test_step_cell_interpolate():
     source = Resource(path="data/transform.csv")
-    source.infer(only_sample=True)
+    source.infer()
     source.schema.get_field("id").type = "string"
     source.schema.get_field("population").type = "string"
     target = transform(
@@ -182,7 +182,7 @@ def test_step_cell_interpolate():
 
 def test_step_cell_interpolate_with_name():
     source = Resource(path="data/transform.csv")
-    source.infer(only_sample=True)
+    source.infer()
     target = transform(
         source,
         steps=[
@@ -202,7 +202,7 @@ def test_step_cell_interpolate_with_name():
 
 def test_step_cell_replace():
     source = Resource(path="data/transform.csv")
-    source.infer(only_sample=True)
+    source.infer()
     target = transform(
         source,
         steps=[
@@ -219,7 +219,7 @@ def test_step_cell_replace():
 
 def test_step_cell_replace_with_field_name():
     source = Resource(path="data/transform.csv")
-    source.infer(only_sample=True)
+    source.infer()
     target = transform(
         source,
         steps=[
@@ -236,7 +236,7 @@ def test_step_cell_replace_with_field_name():
 
 def test_step_cell_replace_using_regex():
     source = Resource(path="data/transform.csv")
-    source.infer(only_sample=True)
+    source.infer()
     target = transform(
         source,
         steps=[
@@ -258,7 +258,7 @@ def test_step_cell_replace_using_regex():
 
 def test_step_cell_set():
     source = Resource(path="data/transform.csv")
-    source.infer(only_sample=True)
+    source.infer()
     target = transform(
         source,
         steps=[

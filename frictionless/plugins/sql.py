@@ -349,7 +349,7 @@ class SqlStorage(Storage):
             self.delete_package(delete_names)
             for resource in package.resources:
                 if not resource.schema:
-                    resource.infer(only_sample=True)
+                    resource.infer()
                 sql_table = self.__write_convert_schema(resource)
                 sql_tables.append(sql_table)
             self.__metadata.create_all(tables=sql_tables)

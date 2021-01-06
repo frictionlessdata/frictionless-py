@@ -361,18 +361,17 @@ class Package(Metadata):
 
     # Infer
 
-    # TODO: use stats=True instead of only_sample?
-    def infer(self, *, only_sample=False):
+    def infer(self, *, stats=False):
         """Infer package's attributes
 
         Parameters:
-            only_sample? (bool): infer whatever possible but only from the sample
+            stats? (bool): stream files completely and infer stats
         """
 
         # General
         self.setdefault("profile", config.DEFAULT_PACKAGE_PROFILE)
         for resource in self.resources:
-            resource.infer(only_sample=only_sample)
+            resource.infer(stats=stats)
 
         # Deduplicate names
         if len(self.resource_names) != len(set(self.resource_names)):

@@ -4,7 +4,6 @@ from pathlib import Path
 from importlib import import_module
 
 
-# TODO: support only_sample
 def describe(source, *, source_type=None, **options):
     """Describe the data source
 

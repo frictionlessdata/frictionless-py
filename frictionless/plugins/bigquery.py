@@ -331,7 +331,7 @@ class BigqueryStorage(Storage):
         # Write resource
         for resource in package.resources:
             if not resource.schema:
-                resource.infer(only_sample=True)
+                resource.infer()
 
             # Write metadata
             bq_name = self.__write_convert_name(resource.name)

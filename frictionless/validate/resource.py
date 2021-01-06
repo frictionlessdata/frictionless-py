@@ -39,7 +39,7 @@ def validate_resource(
 
     # Prepare resource
     if not noinfer:
-        resource.infer(only_sample=True)
+        resource.infer()
     if resource.metadata_errors:
         return Report(time=timer.time, errors=resource.metadata_errors, tables=[])
 

@@ -546,17 +546,16 @@ class Resource(Metadata):
 
     # Infer
 
-    # TODO: use stats=True instead of only_sample?
-    def infer(self, *, only_sample=False):
+    def infer(self, *, stats=False):
         """Infer metadata
 
         Parameters:
-            only_sample? (bool): infer whatever possible but only from the sample
+            stats? (bool): stream file completely and infer stats
         """
-        stats = self.stats
+        current_stats = self.stats
         with helpers.ensure_open(self):
             stream = self.__row_stream if self.tabular else self.__text_stream
-            if not only_sample:
+            if stats:
                 helpers.pass_through(stream)
             # TODO: move this code to open for consistencly between below and schema/etc?
             self["name"] = self.name
@@ -571,8 +570,8 @@ class Resource(Metadata):
             if self.tabular:
                 self["query"] = self.query
             # TODO: review it's a hack for checksum validation
-            if only_sample:
-                self["stats"] = stats
+            if not stats:
+                self["stats"] = current_stats
 
     # Open/Close
 

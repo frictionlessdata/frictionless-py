@@ -29,7 +29,7 @@ class table_attach(Step):
     def transform_resource(self, source, target):
         if isinstance(self.__resource, str):
             self.__resource = source.package.get_resource(self.__resource)
-        self.__resource.infer(only_sample=True)
+        self.__resource.infer()
         view1 = source.to_petl()
         view2 = self.__resource.to_petl()
         target.data = petl.annex(view1, view2)
@@ -62,7 +62,7 @@ class table_diff(Step):
     def transform_resource(self, source, target):
         if isinstance(self.__resource, str):
             self.__resource = source.package.get_resource(self.__resource)
-        self.__resource.infer(only_sample=True)
+        self.__resource.infer()
         view1 = source.to_petl()
         view2 = self.__resource.to_petl()
         function = petl.recordcomplement if self.__ignore_order else petl.complement
@@ -80,7 +80,7 @@ class table_intersect(Step):
     def transform_resource(self, source, target):
         if isinstance(self.__resource, str):
             self.__resource = source.package.get_resource(self.__resource)
-        self.__resource.infer(only_sample=True)
+        self.__resource.infer()
         view1 = source.to_petl()
         view2 = self.__resource.to_petl()
         function = petl.hashintersection if self.__use_hash else petl.intersection
@@ -98,7 +98,7 @@ class table_join(Step):
     def transform_resource(self, source, target):
         if isinstance(self.__resource, str):
             self.__resource = source.package.get_resource(self.__resource)
-        self.__resource.infer(only_sample=True)
+        self.__resource.infer()
         view1 = source.to_petl()
         view2 = self.__resource.to_petl()
         if self.__mode == "inner":
@@ -156,7 +156,7 @@ class table_merge(Step):
     def transform_resource(self, source, target):
         if isinstance(self.__resource, str):
             self.__resource = source.package.get_resource(self.__resource)
-        self.__resource.infer(only_sample=True)
+        self.__resource.infer()
         view1 = source.to_petl()
         view2 = self.__resource.to_petl()
 
@@ -208,7 +208,7 @@ class table_pivot(Step):
         target.data = source.to_petl().pivot(**self.__options)
         # TODO: review this approach
         target.schema.fields.clear()
-        target.infer(only_sample=True)
+        target.infer()
 
 
 class table_print(Step):
@@ -230,7 +230,7 @@ class table_recast(Step):
         )
         # TODO: review this approach
         target.schema.fields.clear()
-        target.infer(only_sample=True)
+        target.infer()
 
 
 # TODO: fix this step - see tests
@@ -239,7 +239,7 @@ class table_transpose(Step):
         target.data = source.to_petl().transpose()
         # TODO: review this approach
         target.schema.fields.clear()
-        target.infer(only_sample=True)
+        target.infer()
 
 
 # TODO: improve this step (add an ability to get a report instead of raising?)
