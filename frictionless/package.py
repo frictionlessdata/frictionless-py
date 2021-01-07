@@ -1,6 +1,7 @@
 import json
 import zipfile
 import tempfile
+from pathlib import Path
 from copy import deepcopy
 from .exception import FrictionlessException
 from .metadata import Metadata
@@ -92,6 +93,10 @@ class Package(Metadata):
                         descriptor["resources"].append({"path": part})
                 elif file.type == "table" and not file.compression:
                     descriptor = {"resources": [{"path": file.normpath}]}
+
+        # Handle pathlib
+        if isinstance(descriptor, Path):
+            descriptor = str(descriptor)
 
         # Handle zip
         if helpers.is_zip_descriptor(descriptor):

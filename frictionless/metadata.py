@@ -5,6 +5,7 @@ import tempfile
 import requests
 import jsonschema
 import stringcase
+from pathlib import Path
 from operator import setitem
 from functools import partial
 from importlib import import_module
@@ -198,7 +199,9 @@ class Metadata(helpers.ControlledDict):
                     note = "descriptor is not serializable"
                     errors = import_module("frictionless.errors")
                     raise FrictionlessException(errors.Error(note=note))
-            if isinstance(descriptor, str):
+            if isinstance(descriptor, (str, Path)):
+                if isinstance(descriptor, Path):
+                    descriptor = str(descriptor)
                 if helpers.is_remote_path(descriptor):
                     response = requests.get(descriptor)
                     response.raise_for_status()

@@ -1,6 +1,7 @@
 import os
 import re
 import glob
+from pathlib import Path
 from urllib.parse import urlparse, parse_qs
 from .helpers import cached_property
 from . import helpers
@@ -11,6 +12,10 @@ from . import config
 # TODO: rename module to file.py
 class File:
     def __init__(self, source, *, basepath="", innerpath=None, allow_reading=False):
+
+        # Handle pathlib
+        if isinstance(source, Path):
+            source = str(source)
 
         # Set attributes
         self.__source = source
@@ -150,12 +155,16 @@ class File:
                     type = "schema"
                 elif data.get("resources") is not None:
                     type = "package"
+                elif data.get("tasks") is not None:
+                    type = "inquiry"
             elif not inline and path.endswith((".json", ".yaml")):
                 type = "resource"
                 if path.endswith(("schema.json", "schema.yaml")):
                     type = "schema"
                 elif path.endswith(("package.json", "package.yaml")):
                     type = "package"
+                elif path.endswith(("inquiry.json", "inquiry.yaml")):
+                    type = "inquiry"
                 elif self.__allow_reading:
                     # TODO: implement
                     pass

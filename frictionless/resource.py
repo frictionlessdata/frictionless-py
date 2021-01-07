@@ -2,6 +2,7 @@ import os
 import petl
 import typing
 import warnings
+from pathlib import Path
 from copy import deepcopy
 from itertools import zip_longest, chain
 from .exception import FrictionlessException
@@ -115,6 +116,10 @@ class Resource(Metadata):
                     data = file.data
             elif descriptor is None:
                 descriptor = source
+
+        # Handle pathlib
+        if isinstance(descriptor, Path):
+            descriptor = str(descriptor)
 
         # Store state
         self.__loader = None

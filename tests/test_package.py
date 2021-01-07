@@ -1,8 +1,9 @@
 import os
 import json
 import yaml
-import zipfile
 import pytest
+import zipfile
+from pathlib import Path
 from frictionless import Package, Resource, Query, describe_package, helpers
 from frictionless import FrictionlessException
 
@@ -39,6 +40,11 @@ def test_package_from_path():
     assert package.resources == [
         {"name": "name", "path": "table.csv"},
     ]
+
+
+def test_package_from_pathlib():
+    package = Package(Path("data/package/datapackage.json"))
+    assert len(package.get_resource("data").read_rows()) == 2
 
 
 def test_package_from_path_error_bad_path():

@@ -1,3 +1,4 @@
+from pathlib import Path
 from frictionless.file import File
 
 
@@ -235,6 +236,24 @@ def test_file_type_package():
     path = "data/package.json"
     file = File(path)
     assert file.path == path
+    assert file.data is None
+    assert file.name == "package"
+    assert file.type == "package"
+    assert file.scheme == "file"
+    assert file.format == "json"
+    assert file.innerpath == ""
+    assert file.compression == ""
+    assert file.inline is False
+    assert file.remote is False
+    assert file.multipart is False
+    assert file.basepath == ""
+    assert file.fullpath == "data/package.json"
+
+
+def test_file_type_package_from_pathlib():
+    path = Path("data/package.json")
+    file = File(path)
+    assert file.path == str(path)
     assert file.data is None
     assert file.name == "package"
     assert file.type == "package"
