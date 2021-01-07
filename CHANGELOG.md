@@ -2,6 +2,21 @@
 
 Here described only the breaking and most significant changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/frictionless-py/commits/master).
 
+## v4.01a1
+
+- Initial internal/external improvements for v4 (BREAKING)
+    - Allow `Package/Resource(source)` notation (guess descriptor/path/etc)
+    - Renamed `schema.infer` -> `Schema.from_sample`
+    - Renamed `resource.inline` -> `resource.memory`
+    - Renamed `compression_path` -> `innerpath`
+    - Renamed `compression: no` -> `compression: ""`
+    - Updated `Package/Resource.infer` not to infer stats (use `stats=True`)
+    - Removed `Package/Resource.infer(only_sample)` argument
+    - Removed `Resouce.from/to_zip` (use `Package.from/to_zip`)
+    - Removed `Resouce.source` (use `Resource.data` or `Resource.fullpath`)
+    - Removed `package/resource.infer(source)` argument (use constructors)
+    - Added some new API (will be covered in the updated docs after the v4 release)
+
 ## v3.48
 
 - Make Resource independent from Table/File (#607) (BREAKING)

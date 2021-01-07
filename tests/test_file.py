@@ -1,5 +1,6 @@
+import pytest
 from pathlib import Path
-from frictionless import system
+from frictionless import system, helpers
 
 
 # General
@@ -80,6 +81,7 @@ def test_file_remote():
     assert file.fullpath == path
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_file_remote_with_basepath():
     path = "data/table.csv"
     file = system.create_file(path, basepath=BASEURL)
@@ -116,6 +118,7 @@ def test_file_multipart():
     assert file.fullpath == path
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_file_multipart_with_basepath():
     path = ["data/chunk1.csv", "data/chunk2.csv"]
     file = system.create_file(path, basepath="base")
@@ -134,6 +137,7 @@ def test_file_multipart_with_basepath():
     assert file.fullpath == ["base/data/chunk1.csv", "base/data/chunk2.csv"]
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_file_multipart_from_glob():
     path = "data/chunk*.csv"
     file = system.create_file(path)
@@ -154,6 +158,7 @@ def test_file_multipart_from_glob():
     assert file.fullpath == ["data/chunk1.csv", "data/chunk2.csv"]
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_file_multipart_from_glob_with_basepath():
     path = "chunk*.csv"
     file = system.create_file(path, basepath="data")
@@ -174,6 +179,7 @@ def test_file_multipart_from_glob_with_basepath():
     assert file.fullpath == ["data/chunk1.csv", "data/chunk2.csv"]
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_file_multipart_from_dir():
     path = "data/tables"
     file = system.create_file(path)
@@ -194,6 +200,7 @@ def test_file_multipart_from_dir():
     assert file.fullpath == ["data/tables/chunk1.csv", "data/tables/chunk2.csv"]
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_file_multipart_from_dir_with_basepath():
     path = "tables"
     file = system.create_file(path, basepath="data")
@@ -268,6 +275,7 @@ def test_file_package():
     assert file.fullpath == "data/package.json"
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_file_package_from_pathlib():
     path = Path("data/package.json")
     file = system.create_file(path)
