@@ -17,7 +17,7 @@ def transform_package(package, *, steps):
 
     # Prepare
     target = package.to_copy()
-    target.infer(only_sample=True)
+    target.infer()
 
     # Run transforms
     for step in steps:

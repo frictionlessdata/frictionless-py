@@ -202,8 +202,8 @@ class ReportTable(Metadata):
         self["format"] = table.format
         self["hashing"] = table.hashing
         self["encoding"] = table.encoding
+        self["innerpath"] = table.innerpath
         self["compression"] = table.compression
-        self["compressionPath"] = table.compression_path
         # Table
         self["control"] = table.control
         self["dialect"] = table.dialect
@@ -260,20 +260,20 @@ class ReportTable(Metadata):
         return self["encoding"]
 
     @property
+    def innerpath(self):
+        """
+        Returns:
+            str: compression path
+        """
+        return self["innerpath"]
+
+    @property
     def compression(self):
         """
         Returns:
             str: compression
         """
         return self["compression"]
-
-    @property
-    def compression_path(self):
-        """
-        Returns:
-            str: compression path
-        """
-        return self["compressionPath"]
 
     @property
     def dialect(self):

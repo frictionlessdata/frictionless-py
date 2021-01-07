@@ -1,3 +1,4 @@
+import typing
 from ..exception import FrictionlessException
 from ..metadata import Metadata
 from ..dialect import Dialect
@@ -17,6 +18,14 @@ class InlinePlugin(Plugin):
     Public   | `from frictionless.plugins.inline import InlinePlugin`
 
     """
+
+    def create_file(self, file):
+        if not file.scheme and not file.format and file.memory:
+            types = (list, typing.Iterator, typing.Generator)
+            if callable(file.data) or isinstance(file.data, types):
+                file.scheme = ""
+                file.format = "inline"
+                return file
 
     def create_dialect(self, resource, *, descriptor):
         # TODO: remove this hack; resolve problem with Inline/Pandas/PETL collision
@@ -144,7 +153,7 @@ class InlineParser(Parser):
         dialect = self.resource.dialect
 
         # Iter
-        data = self.resource.source
+        data = self.resource.data
         if not hasattr(data, "__iter__"):
             data = data()
         data = iter(data)

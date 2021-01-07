@@ -1,10 +1,9 @@
-import os
-import glob
-from pathlib import Path
 from importlib import import_module
+from ..system import system
 
 
-# TODO: support only_sample
+# TODO: rename source_type -> type?
+# TODO: handle source_type not found error
 def describe(source, *, source_type=None, **options):
     """Describe the data source
 
@@ -20,27 +19,9 @@ def describe(source, *, source_type=None, **options):
     Returns:
         Package|Resource|Schema: metadata
     """
-    module = import_module("frictionless.describe")
-
-    # Normalize source
-    # TODO: move to lower-levels
-    if isinstance(source, Path):
-        source = str(source)
-
-    # Detect source type
-    # TODO: move to helpers
     if not source_type:
-        source_type = "resource"
-        if isinstance(source, list):
-            if source and isinstance(source[0], str):
-                source_type = "package"
-        elif hasattr(source, "read"):
-            source_type = "resource"
-        elif glob.has_magic(source):
-            source_type = "package"
-        elif os.path.isdir(source):
-            source_type = "package"
-
-    # Describe source
+        file = system.create_file(source, basepath=options.get("basepath", ""))
+        source_type = "package" if file.multipart else "resource"
+    module = import_module("frictionless.describe")
     describe = getattr(module, "describe_%s" % source_type)
     return describe(source, **options)

@@ -1,15 +1,12 @@
 import os
-import json
 import petl
 import typing
-import zipfile
-import tempfile
 import warnings
+from pathlib import Path
 from copy import deepcopy
 from itertools import zip_longest, chain
 from .exception import FrictionlessException
 from .metadata import Metadata
-from .location import Location
 from .control import Control
 from .dialect import Dialect
 from .schema import Schema
@@ -22,9 +19,9 @@ from . import errors
 from . import config
 
 
-# TODO: add mediatype?
-# TODO: rework path/data/location etc
-# TODO: rework path/data updates syncing
+# TODO: Add mediatype from the specs?
+# TODO: Remove support for deprecated "url"?
+# TODO: Support hash/bytes/rows from the specs?
 class Resource(Metadata):
     """Resource representation.
 
@@ -45,8 +42,8 @@ class Resource(Metadata):
         format? (str): file format
         hashing? (str): file hashing
         encoding? (str): file encoding
+        innerpath? (str): file compression path
         compression? (str): file compression
-        compression_path? (str): file compression path
         control? (dict): file control
         dialect? (dict): table dialect
         query? (dict): table query
@@ -65,8 +62,10 @@ class Resource(Metadata):
 
     def __init__(
         self,
-        descriptor=None,
+        source=None,
         *,
+        descriptor=None,
+        # Spec
         name=None,
         title=None,
         description=None,
@@ -79,8 +78,8 @@ class Resource(Metadata):
         format=None,
         hashing=None,
         encoding=None,
+        innerpath=None,
         compression=None,
-        compression_path=None,
         # Control/Dialect/Query
         control=None,
         dialect=None,
@@ -99,18 +98,27 @@ class Resource(Metadata):
         # Misc
         stats=None,
         profile=None,
-        basepath=None,
+        basepath="",
         onerror="ignore",
         trusted=False,
         package=None,
         nolookup=False,
     ):
 
-        # TODO: Handle stats: hash/bytes/rows
+        # Handle source
+        if source is not None:
+            file = system.create_file(source, basepath=basepath)
+            if file.type == "table":
+                if path is None:
+                    path = file.path
+                if data is None:
+                    data = file.data
+            elif descriptor is None:
+                descriptor = source
 
-        # Handle zip
-        if helpers.is_zip_descriptor(descriptor):
-            descriptor = helpers.unzip_descriptor(descriptor, "dataresource.json")
+        # Handle pathlib
+        if isinstance(descriptor, Path):
+            descriptor = str(descriptor)
 
         # Store state
         self.__loader = None
@@ -156,7 +164,7 @@ class Resource(Metadata):
         self.setinitial("hashing", hashing)
         self.setinitial("encoding", encoding)
         self.setinitial("compression", compression)
-        self.setinitial("compressionPath", compression_path)
+        self.setinitial("innerpath", innerpath)
         self.setinitial("control", control)
         self.setinitial("dialect", dialect)
         self.setinitial("query", query)
@@ -197,21 +205,13 @@ class Resource(Metadata):
         self.__read_raise_closed()
         yield from self.__row_stream
 
-    @Metadata.property(write=False)
-    def source(self):
-        """
-        Returns
-            any: data source
-        """
-        return self.__location.source
-
     @Metadata.property
     def name(self):
         """
         Returns
             str: resource name
         """
-        return self.get("name", self.__location.name)
+        return self.get("name", self.__file.name)
 
     @Metadata.property
     def title(self):
@@ -262,7 +262,7 @@ class Resource(Metadata):
         Returns
             str?: resource path
         """
-        return self.get("path")
+        return self.get("path", self.__file.path)
 
     @Metadata.property
     def data(self):
@@ -270,7 +270,7 @@ class Resource(Metadata):
         Returns
             any[][]?: resource data
         """
-        return self.get("data")
+        return self.get("data", self.__file.data)
 
     @Metadata.property
     def scheme(self):
@@ -278,7 +278,7 @@ class Resource(Metadata):
         Returns
             str?: resource scheme
         """
-        return self.get("scheme", self.__location.scheme).lower()
+        return self.get("scheme", self.__file.scheme).lower()
 
     @Metadata.property
     def format(self):
@@ -286,7 +286,7 @@ class Resource(Metadata):
         Returns
             str?: resource format
         """
-        return self.get("format", self.__location.format).lower()
+        return self.get("format", self.__file.format).lower()
 
     @Metadata.property
     def hashing(self):
@@ -305,20 +305,20 @@ class Resource(Metadata):
         return self.get("encoding", config.DEFAULT_ENCODING).lower()
 
     @Metadata.property
+    def innerpath(self):
+        """
+        Returns
+            str?: resource compression path
+        """
+        return self.get("innerpath", self.__file.innerpath)
+
+    @Metadata.property
     def compression(self):
         """
         Returns
             str?: resource compression
         """
-        return self.get("compression", self.__location.compression).lower()
-
-    @Metadata.property
-    def compression_path(self):
-        """
-        Returns
-            str?: resource compression path
-        """
-        return self.get("compressionPath", self.__location.compression_path)
+        return self.get("compression", self.__file.compression).lower()
 
     @Metadata.property
     def control(self):
@@ -425,7 +425,7 @@ class Resource(Metadata):
         Returns
             str: resource basepath
         """
-        return self.__basepath
+        return self.__file.basepath
 
     @Metadata.property(cache=False, write=False)
     def fullpath(self):
@@ -433,11 +433,7 @@ class Resource(Metadata):
         Returns
             str: resource fullpath
         """
-        if self.inline:
-            return "memory"
-        if self.multipart:
-            return "multipart"
-        return self.source
+        return self.__file.fullpath
 
     @Metadata.property(cache=False, write=False)
     def onerror(self):
@@ -464,20 +460,12 @@ class Resource(Metadata):
         return self.__package
 
     @Metadata.property(write=False)
-    def inline(self):
+    def memory(self):
         """
         Returns
-            bool: if resource is inline
+            bool: if resource is memory
         """
-        return self.__location.inline
-
-    @Metadata.property(write=False)
-    def multipart(self):
-        """
-        Returns
-            bool: if resource is multipart
-        """
-        return self.__location.multipart
+        return self.__file.memory
 
     @Metadata.property(write=False)
     def remote(self):
@@ -485,7 +473,15 @@ class Resource(Metadata):
         Returns
             bool: if resource is remote
         """
-        return self.__location.remote
+        return self.__file.remote
+
+    @Metadata.property(write=False)
+    def multipart(self):
+        """
+        Returns
+            bool: if resource is multipart
+        """
+        return self.__file.multipart
 
     @Metadata.property(write=False)
     def tabular(self):
@@ -554,26 +550,16 @@ class Resource(Metadata):
 
     # Infer
 
-    # TODO: review the logic
-    # TODO: reimplement only_sample/stats
-    # TODO: use stats=True instead of only_sample?
-    # TODO: optimize this logic/don't re-open
-    def infer(self, source=None, *, only_sample=False):
+    def infer(self, *, stats=False):
         """Infer metadata
 
         Parameters:
-            source (str|str[]): path, list of paths or glob pattern
-            only_sample? (bool): infer whatever possible but only from the sample
+            stats? (bool): stream file completely and infer stats
         """
-        stats = self.stats
-        if source:
-            if isinstance(source, str):
-                self.path = source
-            if isinstance(source, list):
-                self.data = source
+        current_stats = self.get("stats")
         with helpers.ensure_open(self):
             stream = self.__row_stream if self.tabular else self.__text_stream
-            if not only_sample:
+            if stats:
                 helpers.pass_through(stream)
             # TODO: move this code to open for consistencly between below and schema/etc?
             self["name"] = self.name
@@ -582,14 +568,16 @@ class Resource(Metadata):
             self["format"] = self.format
             self["hashing"] = self.hashing
             self["encoding"] = self.encoding
+            self["innerpath"] = self.innerpath
             self["compression"] = self.compression
-            self["compressionPath"] = self.compression_path
-            self["compressionPath"] = self.compression_path
             if self.tabular:
                 self["query"] = self.query
             # TODO: review it's a hack for checksum validation
-            if only_sample:
-                self["stats"] = stats
+            if not stats:
+                if current_stats:
+                    self["stats"] = current_stats
+                else:
+                    self.pop("stats")
 
     # Open/Close
 
@@ -667,7 +655,7 @@ class Resource(Metadata):
             any[][]: table data
         """
         # TODO: rework when there is proper sample caching
-        if self.inline:
+        if self.memory:
             return b""
         self["stats"] = {"hash": "", "bytes": 0, "fields": 0, "rows": 0}
         with system.create_loader(self) as loader:
@@ -680,7 +668,7 @@ class Resource(Metadata):
             str: table data
         """
         # TODO: rework when there is proper sample caching
-        if self.inline:
+        if self.memory:
             return ""
         self["stats"] = {"hash": "", "bytes": 0, "fields": 0, "rows": 0}
         with system.create_loader(self) as loader:
@@ -929,7 +917,7 @@ class Resource(Metadata):
                 # Header
                 if not header_ready:
                     if row_number in header_numbers:
-                        header_data.append(helpers.stringify_header(cells))
+                        header_data.append(helpers.stringify_label(cells))
                         if dialect.header:
                             header_row_positions.append(row_position)
                     if row_number >= max(header_numbers):
@@ -945,9 +933,8 @@ class Resource(Metadata):
                     break
 
         # Infer schema
-        schema = self.schema
-        if not schema.fields:
-            schema.infer(
+        if not self.schema.fields:
+            self.schema = Schema.from_sample(
                 sample,
                 type=self.__infer_type,
                 names=self.__infer_names or labels,
@@ -959,27 +946,27 @@ class Resource(Metadata):
         # Sync schema
         if self.__sync_schema:
             fields = []
-            mapping = {field.get("name"): field for field in schema.fields}
+            mapping = {field.get("name"): field for field in self.schema.fields}
             for name in labels:
                 fields.append(mapping.get(name, {"name": name, "type": "any"}))
-            schema.fields = fields
+            self.schema.fields = fields
 
         # Patch schema
         if self.__patch_schema:
             patch_schema = deepcopy(self.__patch_schema)
             fields = patch_schema.pop("fields", {})
-            schema.update(patch_schema)
-            for field in schema.fields:
+            self.schema.update(patch_schema)
+            for field in self.schema.fields:
                 field.update((fields.get(field.get("name"), {})))
 
         # Validate schema
         # TODO: reconsider this - not perfect for transform
-        if len(schema.field_names) != len(set(schema.field_names)):
+        if len(self.schema.field_names) != len(set(self.schema.field_names)):
             note = "Schemas with duplicate field names are not supported"
             raise FrictionlessException(errors.SchemaError(note=note))
 
         # Store stats
-        self.stats["fields"] = len(schema.fields)
+        self.stats["fields"] = len(self.schema.fields)
 
         # Store state
         self.__sample = sample
@@ -987,7 +974,7 @@ class Resource(Metadata):
         self.__sample_positions = sample_positions
         self.__header = Header(
             labels,
-            fields=schema.fields,
+            fields=self.schema.fields,
             field_positions=field_positions,
             row_positions=header_row_positions,
             ignore_case=not dialect.header_case,
@@ -1122,45 +1109,16 @@ class Resource(Metadata):
 
     # Write
 
-    # TODO: can we rebase on source/target resources instead of read_row_stream?
-    def write(
-        self,
-        target=None,
-        *,
-        scheme=None,
-        format=None,
-        hashing=None,
-        encoding=None,
-        compression=None,
-        compression_path=None,
-        control=None,
-        dialect=None,
-    ):
-        """Write the table to the target
+    # TODO: what we should return?
+    # TODO: use contextlib.closing?
+    # TODO: should we set target.data?
+    def write(self, target):
+        """Write this resource to the target resource
 
         Parameters:
-            target (str): target path
-            **options: subset of Table's constructor options
+            target (Resource): target Resource
         """
-
-        # Create resource
-        resource = Resource.from_source(
-            target,
-            scheme=scheme,
-            format=format,
-            hashing=hashing,
-            encoding=encoding,
-            compression=compression,
-            compression_path=compression_path,
-            control=control,
-            dialect=dialect,
-            schema=self.schema,
-            trusted=True,
-        )
-
-        # Write resource
-        # TODO: use contextlib.closing?
-        parser = system.create_parser(resource)
+        parser = system.create_parser(target)
         read_row_stream = self.__write_row_stream_create
         result = parser.write_row_stream(read_row_stream)
         return result
@@ -1171,17 +1129,6 @@ class Resource(Metadata):
         return self.row_stream
 
     # Import/Export
-
-    @staticmethod
-    def from_source(source, **options):
-        """Create a resource from path OR data"""
-        if source is None:
-            return Resource(data=[], **options)
-        elif isinstance(source, str):
-            return Resource(path=source, **options)
-        elif isinstance(source, list) and source and isinstance(source[0], str):
-            return Resource(path=source, **options)
-        return Resource(data=source, **options)
 
     @staticmethod
     def from_petl(storage, *, view, **options):
@@ -1298,84 +1245,6 @@ class Resource(Metadata):
             **options,
         )
 
-    # TODO: support multipart
-    # TODO: there is 100% duplication with package.to_zip
-    def to_zip(self, target, *, resolve=[], encoder_class=None):
-        """Save resource to a zip
-
-        Parameters:
-            target (str): target path
-            resolve (str[]): Data sources to resolve.
-                For "inline" data it means saving them as CSV and including into ZIP.
-                For "remote" data it means downloading them and including into ZIP.
-                For example, `resolve=["inline", "remote"]`
-            encoder_class (object): json encoder class
-
-        Raises:
-            FrictionlessException: on any error
-        """
-        try:
-            with zipfile.ZipFile(target, "w") as zip:
-                for resource in [self]:
-                    descriptor = self.to_dict()
-
-                    # Multipart data
-                    if resource.multipart:
-                        note = "Zipping multipart resource is not yet supported"
-                        raise FrictionlessException(errors.ResourceError(note=note))
-
-                    # Inline data
-                    elif resource.inline:
-                        if "inline" in resolve:
-                            path = f"{resource.name}.csv"
-                            descriptor["path"] = path
-                            del descriptor["data"]
-                            with tempfile.NamedTemporaryFile() as file:
-                                resource.write(file.name, format="csv")
-                                zip.write(file.name, path)
-                        elif not isinstance(resource.data, list):
-                            note = f"Use resolve argument to zip {resource.data}"
-                            raise FrictionlessException(errors.ResourceError(note=note))
-
-                    # Remote data
-                    elif resource.remote:
-                        if "remote" in resolve:
-                            path = f"{resource.name}.{resource.format}"
-                            descriptor["path"] = path
-                            with tempfile.NamedTemporaryFile() as file:
-                                # TODO: rebase on resource here?
-                                with system.create_loader(resource) as loader:
-                                    while True:
-                                        chunk = loader.byte_stream.read(1024)
-                                        if not chunk:
-                                            break
-                                        file.write(chunk)
-                                    file.flush()
-                                zip.write(file.name, path)
-
-                    # Local Data
-                    else:
-                        path = resource.path
-                        if not helpers.is_safe_path(path):
-                            path = f"{resource.name}.{resource.format}"
-                            descriptor["path"] = path
-                        zip.write(resource.source, path)
-
-                    # Metadata
-                    zip.writestr(
-                        "dataresource.json",
-                        json.dumps(
-                            descriptor,
-                            indent=2,
-                            ensure_ascii=False,
-                            cls=encoder_class,
-                        ),
-                    )
-
-        except (IOError, zipfile.BadZipfile, zipfile.LargeZipFile) as exception:
-            error = errors.ResourceError(note=str(exception))
-            raise FrictionlessException(error) from exception
-
     def to_petl(self, *, normalize=False):
         resource = self
 
@@ -1490,8 +1359,12 @@ class Resource(Metadata):
 
     def metadata_process(self):
 
-        # Location
-        self.__location = Location(self)
+        # File
+        self.__file = system.create_file(
+            self.get("data", self.get("path", [])),
+            innerpath=self.get("innerpath"),
+            basepath=self.__basepath,
+        )
 
         # Control
         control = self.get("control")

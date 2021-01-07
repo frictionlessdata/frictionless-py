@@ -1,266 +1,201 @@
-import shutil
-import tempfile
-from .system import system
-from .resource import Resource
-from .exception import FrictionlessException
+import os
+import glob
+from pathlib import Path
+from .helpers import cached_property
 from . import helpers
-from . import errors
+from . import config
 
 
+# TODO: export in __init__.py
 class File:
-    """File representation
+    def __init__(self, source, *, basepath="", innerpath=None, allow_reading=False):
 
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless import File`
+        # Handle pathlib
+        if isinstance(source, Path):
+            source = str(source)
 
-    Under the hood, File uses available loaders so it can open from local, remote,
-    and any other supported schemes
+        # Set attributes
+        self.__source = source
+        self.__basepath = basepath
+        self.__innerpath = innerpath
+        self.__allow_reading = allow_reading
 
-    ```python
-    from frictionless import File
+        # Detect attributes
+        self.__detect()
 
-    with File('data/text.txt') as file:
-        file.read_text()
-    ```
-
-    Parameters:
-        source (any): file source
-        scheme? (str): file scheme
-        format? (str): file format
-        hashing? (str): file hashing
-        encoding? (str): file encoding
-        compression? (str): file compression
-        compression_path? (str): file compression path
-        control? (dict): file control
-
-    Raises:
-        FrictionlessException: if there is a metadata validation error
-
-    """
-
-    def __init__(
-        self,
-        source,
-        *,
-        scheme=None,
-        format=None,
-        hashing=None,
-        encoding=None,
-        compression=None,
-        compression_path=None,
-        control=None,
-    ):
-
-        # Store state
-        self.__loader = None
-
-        # Create resource
-        self.__resource = Resource.from_source(
-            source,
-            scheme=scheme,
-            format=format,
-            hashing=hashing,
-            encoding=encoding,
-            compression=compression,
-            compression_path=compression_path,
-            control=control,
-            trusted=True,
-        )
-
-    def __enter__(self):
-        if self.closed:
-            self.open()
-        return self
-
-    def __exit__(self, type, value, traceback):
-        self.close()
-
-    def __iter__(self):
-        self.__read_raise_closed()
-        return iter(self.__loader.__text_stream)
-
-    @property
+    @cached_property
     def path(self):
-        """
-        Returns:
-            str: file path
-        """
-        return self.__resource.path
+        return self.__path
 
-    @property
-    def source(self):
-        """
-        Returns:
-            any: file source
-        """
-        return self.__resource.source
+    @cached_property
+    def data(self):
+        return self.__data
 
-    @property
+    # TODO: review possible values
+    @cached_property
+    def type(self):
+        return self.__type
+
+    @cached_property
+    def name(self):
+        return self.__name
+
+    @cached_property
     def scheme(self):
-        """
-        Returns:
-            str?: file scheme
-        """
-        return self.__resource.scheme
+        return self.__scheme
 
-    @property
+    @cached_property
     def format(self):
-        """
-        Returns:
-            str?: file format
-        """
-        return self.__resource.format
+        return self.__format
 
-    @property
-    def hashing(self):
-        """
-        Returns:
-            str?: file hashing
-        """
-        return self.__resource.hashing
+    @cached_property
+    def innerpath(self):
+        return self.__innerpath
 
-    @property
-    def encoding(self):
-        """
-        Returns:
-            str?: file encoding
-        """
-        return self.__resource.encoding
-
-    @property
+    @cached_property
     def compression(self):
-        """
-        Returns:
-            str?: file compression
-        """
-        return self.__resource.compression
+        return self.__compression
 
-    @property
-    def compression_path(self):
-        """
-        Returns:
-            str?: file compression path
-        """
-        return self.__resource.compression_path
+    @cached_property
+    def memory(self):
+        return self.__memory
 
-    @property
-    def control(self):
-        """
-        Returns:
-            Control?: file control
-        """
-        return self.__resource.control
+    @cached_property
+    def remote(self):
+        return self.__remote
 
-    @property
-    def stats(self):
-        """
-        Returns:
-            dict: file stats
-        """
-        return self.__resource.stats
+    @cached_property
+    def multipart(self):
+        return self.__multipart
 
-    @property
-    def byte_stream(self):
-        """File byte stream
+    @cached_property
+    def expandable(self):
+        return self.__expandable
 
-        The stream is available after opening the file
+    @cached_property
+    def basepath(self):
+        return self.__basepath
 
-        Returns:
-            io.ByteStream: file byte stream
-        """
-        if self.__loader:
-            return self.__loader.byte_stream
+    @cached_property
+    def normpath(self):
+        return self.__normpath
 
-    @property
-    def text_stream(self):
-        """File text stream
+    @cached_property
+    def fullpath(self):
+        return self.__fullpath
 
-        The stream is available after opening the file
+    # Detect
 
-        Returns:
-            io.TextStream: file text stream
-        """
-        if self.__loader:
-            return self.__loader.text_stream
+    def __detect(self):
+        source = self.__source
 
-    # Expand
+        # Detect path/data
+        path = None
+        data = source
+        if isinstance(source, str):
+            path = source
+            data = None
+        elif isinstance(source, list) and source and isinstance(source[0], str):
+            path = source
+            data = None
 
-    def expand(self):
-        """Expand metadata"""
-        self.setdefault("scheme", self.scheme)
-        self.setdefault("format", self.format)
-        self.setdefault("hashing", self.hashing)
-        self.setdefault("encoding", self.encoding)
-        self.setdefault("compression", self.compression)
-        self.setdefault("compressionPath", self.compression_path)
+        # Detect memory/remote/expandable/multipart
+        memory = path is None
+        remote = helpers.is_remote_path(self.__basepath or path)
+        expandable = not memory and helpers.is_expandable_path(path, self.__basepath)
+        multipart = not memory and (isinstance(path, list) or expandable)
 
-    # Open/close
+        # Detect fullpath
+        normpath = path
+        fullpath = path
+        if not memory:
+            if expandable:
+                normpath = []
+                fullpath = []
+                pattern = os.path.join(self.__basepath, path)
+                pattern = f"{pattern}/*" if os.path.isdir(pattern) else pattern
+                options = {"recursive": True} if "**" in pattern else {}
+                for part in sorted(glob.glob(pattern, **options)):
+                    normpath.append(os.path.relpath(part, self.__basepath))
+                    fullpath.append(os.path.relpath(part, ""))
+                if not fullpath:
+                    expandable = False
+                    multipart = False
+                    fullpath = path
+            elif multipart:
+                fullpath = []
+                for part in path:
+                    if not helpers.is_remote_path(part):
+                        part = os.path.join(self.__basepath, part)
+                    fullpath.append(part)
+            else:  # for string paths
+                if not helpers.is_remote_path(path):
+                    fullpath = os.path.join(self.__basepath, path)
 
-    def open(self):
-        """Open the file as "io.open" does"""
-        self.close()
-        try:
-            self.__resource.stats = {"hash": "", "bytes": 0, "fields": 0, "rows": 0}
-            # TODO: handle cases like Inline/SQL/etc
-            self.__loader = system.create_loader(self.__resource)
-            self.__loader.open()
-            return self
-        except Exception:
-            self.close()
-            raise
+        # Detect name
+        name = "memory"
+        if not memory:
+            names = []
+            # Path can have a text scheme like "text://row1\nrow2"
+            for part in fullpath if multipart else [fullpath.split("\n")[0]]:
+                name = os.path.splitext(os.path.basename(part))[0]
+                names.append(name)
+            name = os.path.commonprefix(names)
+            name = helpers.slugify(name, regex_pattern=r"[^-a-z0-9._/]")
 
-    def close(self):
-        """Close the file as "filelike.close" does"""
-        if self.__loader:
-            self.__loader.close()
-        self.__loader = None
+        # Detect type
+        type = "table"
+        if not multipart:
+            if memory and isinstance(data, dict):
+                type = "resource"
+                if data.get("fields") is not None:
+                    type = "schema"
+                elif data.get("resources") is not None:
+                    type = "package"
+                elif data.get("tasks") is not None:
+                    type = "inquiry"
+            elif not memory and path.endswith((".json", ".yaml")):
+                type = "resource"
+                if path.endswith(("schema.json", "schema.yaml")):
+                    type = "schema"
+                elif path.endswith(("package.json", "package.yaml")):
+                    type = "package"
+                elif path.endswith(("inquiry.json", "inquiry.yaml")):
+                    type = "inquiry"
+                elif self.__allow_reading:
+                    # TODO: implement
+                    pass
 
-    @property
-    def closed(self):
-        """Whether the file is closed
+        # Detect scheme/format/innerpath/compression
+        scheme = ""
+        format = ""
+        compression = ""
+        innerpath = ""
+        detection_path = fullpath[0] if multipart else fullpath
+        if not memory:
+            scheme, format = helpers.detect_scheme_and_format(detection_path)
+            if format in config.COMPRESSION_FORMATS:
+                if not multipart:
+                    compression = format
+                detection_path = detection_path[: -len(format) - 1]
+                if self.__innerpath:
+                    detection_path = os.path.join(detection_path, self.__innerpath)
+                scheme, format = helpers.detect_scheme_and_format(detection_path)
+                if format:
+                    name = os.path.splitext(name)[0]
 
-        Returns:
-            bool: if closed
-        """
-        return self.__loader is None
-
-    # Read
-
-    def read_bytes(self):
-        """Read bytes from the file
-
-        Returns:
-            bytes: file bytes
-        """
-        self.__read_raise_closed()
-        return self.__loader.byte_stream.read1()
-
-    def read_text(self):
-        """Read bytes from the file
-
-        Returns:
-            str: file text
-        """
-        result = ""
-        self.__read_raise_closed()
-        for line in self.__loader.text_stream:
-            result += line
-        return result
-
-    def __read_raise_closed(self):
-        if not self.__loader:
-            note = 'the file has not been opened by "file.open()"'
-            raise FrictionlessException(errors.Error(note=note))
-
-    # Write
-
-    def write(self, target):
-        """Write the file to the target
-
-        Parameters:
-            target (str): target path
-        """
-        with tempfile.NamedTemporaryFile(delete=False) as file:
-            shutil.copyfileobj(self.byte_stream, file)
-        helpers.move_file(file.name, target)
+        # Set attributes
+        self.__path = path
+        self.__data = data
+        self.__name = name
+        self.__type = type
+        self.__scheme = scheme
+        self.__format = format
+        self.__innerpath = innerpath
+        self.__compression = compression
+        self.__memory = memory
+        self.__remote = remote
+        self.__multipart = multipart
+        self.__expandable = expandable
+        self.__normpath = normpath
+        self.__fullpath = fullpath

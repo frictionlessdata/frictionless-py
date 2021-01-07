@@ -132,7 +132,7 @@ class SqlParser(Parser):
 
     def read_data_stream_create(self):
         sa = helpers.import_from_plugin("sqlalchemy", plugin="sql")
-        engine = sa.create_engine(self.resource.source)
+        engine = sa.create_engine(self.resource.fullpath)
         dialect = self.resource.dialect
         storage = SqlStorage(engine=engine, namespace=dialect.namespace)
         resource = storage.read_resource(dialect.table, order_by=dialect.order_by)
@@ -144,13 +144,13 @@ class SqlParser(Parser):
 
     def write_row_stream_save(self, read_row_stream):
         sa = helpers.import_from_plugin("sqlalchemy", plugin="sql")
-        engine = sa.create_engine(self.resource.source)
+        engine = sa.create_engine(self.resource.fullpath)
         dialect = self.resource.dialect
         schema = self.resource.schema
         storage = SqlStorage(engine=engine, namespace=dialect.namespace)
         resource = Resource(name=dialect.table, data=read_row_stream, schema=schema)
         storage.write_resource(resource, force=True)
-        return self.resource.source
+        return self.resource.fullpath
 
 
 # Storage
@@ -349,7 +349,7 @@ class SqlStorage(Storage):
             self.delete_package(delete_names)
             for resource in package.resources:
                 if not resource.schema:
-                    resource.infer(only_sample=True)
+                    resource.infer()
                 sql_table = self.__write_convert_schema(resource)
                 sql_tables.append(sql_table)
             self.__metadata.create_all(tables=sql_tables)

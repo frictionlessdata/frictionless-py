@@ -5,6 +5,7 @@ import tempfile
 import requests
 import jsonschema
 import stringcase
+from pathlib import Path
 from operator import setitem
 from functools import partial
 from importlib import import_module
@@ -99,16 +100,16 @@ class Metadata(helpers.ControlledDict):
         return helpers.deepfork(self)
 
     # TODO: improve this code
-    def to_json(self, target=None, encoder_class=None):
+    def to_json(self, path=None, encoder_class=None):
         """Save metadata as a json
 
         Parameters:
-            target (str): target path
+            path (str): target path
 
         Raises:
             FrictionlessException: on any error
         """
-        if not target:
+        if not path:
             return json.dumps(
                 self.to_dict(), indent=2, ensure_ascii=False, cls=encoder_class
             )
@@ -119,28 +120,28 @@ class Metadata(helpers.ControlledDict):
                 json.dump(
                     self.to_dict(), file, indent=2, ensure_ascii=False, cls=encoder_class
                 )
-            helpers.move_file(file.name, target)
+            helpers.move_file(file.name, path)
         except Exception as exc:
             raise FrictionlessException(self.__Error(note=str(exc))) from exc
 
     # TODO: improve this code
-    def to_yaml(self, target=None):
+    def to_yaml(self, path=None):
         """Save metadata as a yaml
 
         Parameters:
-            target (str): target path
+            path (str): target path
 
         Raises:
             FrictionlessException: on any error
         """
-        if not target:
+        if not path:
             return yaml.dump(helpers.deepsafe(self.to_dict()), Dumper=IndentDumper)
         try:
             with tempfile.NamedTemporaryFile(
                 "wt", delete=False, encoding="utf-8"
             ) as file:
                 yaml.dump(helpers.deepsafe(self.to_dict()), file, Dumper=IndentDumper)
-            helpers.move_file(file.name, target)
+            helpers.move_file(file.name, path)
         except Exception as exc:
             raise FrictionlessException(self.__Error(note=str(exc))) from exc
 
@@ -198,7 +199,9 @@ class Metadata(helpers.ControlledDict):
                     note = "descriptor is not serializable"
                     errors = import_module("frictionless.errors")
                     raise FrictionlessException(errors.Error(note=note))
-            if isinstance(descriptor, str):
+            if isinstance(descriptor, (str, Path)):
+                if isinstance(descriptor, Path):
+                    descriptor = str(descriptor)
                 if helpers.is_remote_path(descriptor):
                     response = requests.get(descriptor)
                     response.raise_for_status()

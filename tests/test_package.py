@@ -1,8 +1,9 @@
 import os
 import json
 import yaml
-import zipfile
 import pytest
+import zipfile
+from pathlib import Path
 from frictionless import Package, Resource, Query, describe_package, helpers
 from frictionless import FrictionlessException
 
@@ -41,6 +42,11 @@ def test_package_from_path():
     ]
 
 
+def test_package_from_pathlib():
+    package = Package(Path("data/package/datapackage.json"))
+    assert len(package.get_resource("data").read_rows()) == 2
+
+
 def test_package_from_path_error_bad_path():
     with pytest.raises(FrictionlessException) as excinfo:
         Package("data/bad.json")
@@ -51,7 +57,7 @@ def test_package_from_path_error_bad_path():
 
 def test_package_from_path_error_non_json():
     with pytest.raises(FrictionlessException) as excinfo:
-        Package("data/table.csv")
+        Package(descriptor="data/table.csv")
     error = excinfo.value.error
     assert error.code == "package-error"
     assert error.note.count("table.csv")
@@ -109,7 +115,7 @@ def test_package_from_path_remote_error_bad_json_not_dict():
 
 def test_package_from_invalid_descriptor_type():
     with pytest.raises(FrictionlessException) as excinfo:
-        Package(51)
+        Package(descriptor=51)
     error = excinfo.value.error
     assert error.code == "package-error"
     assert error.note.count("51")
@@ -211,7 +217,7 @@ def test_package_resources_inline():
     assert len(package.resources) == 1
     assert resource.path is None
     assert resource.data == data
-    assert resource.source == data
+    assert resource.fullpath is None
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
@@ -374,8 +380,8 @@ def test_package_expand_resource_dialect():
 
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_package_infer():
-    package = Package()
-    package.infer("data/infer/*.csv")
+    package = Package("data/infer/*.csv")
+    package.infer(stats=True)
     assert package.metadata_valid
     assert package == {
         "profile": "data-package",
@@ -388,8 +394,8 @@ def test_package_infer():
                 "format": "csv",
                 "hashing": "md5",
                 "encoding": "utf-8",
-                "compression": "no",
-                "compressionPath": "",
+                "innerpath": "",
+                "compression": "",
                 "control": {"newline": ""},
                 "dialect": {},
                 "query": {},
@@ -416,8 +422,8 @@ def test_package_infer():
                 "format": "csv",
                 "hashing": "md5",
                 "encoding": "utf-8",
-                "compression": "no",
-                "compressionPath": "",
+                "innerpath": "",
+                "compression": "",
                 "control": {"newline": ""},
                 "dialect": {},
                 "query": {},
@@ -439,8 +445,8 @@ def test_package_infer():
 
 
 def test_package_infer_with_basepath():
-    package = Package(basepath="data/infer")
-    package.infer("*.csv")
+    package = Package("*.csv", basepath="data/infer")
+    package.infer()
     assert package.metadata_valid
     assert len(package.resources) == 2
     assert package.resources[0].path == "data.csv"
@@ -448,8 +454,8 @@ def test_package_infer_with_basepath():
 
 
 def test_package_infer_multiple_paths():
-    package = Package(basepath="data/infer")
-    package.infer(["data.csv", "data2.csv"])
+    package = Package(["data.csv", "data2.csv"], basepath="data/infer")
+    package.infer()
     assert package.metadata_valid
     assert len(package.resources) == 2
     assert package.resources[0].path == "data.csv"
@@ -457,16 +463,16 @@ def test_package_infer_multiple_paths():
 
 
 def test_package_infer_non_utf8_file():
-    package = Package()
-    package.infer("data/table-with-accents.csv")
+    package = Package("data/table-with-accents.csv")
+    package.infer()
     assert package.metadata_valid
     assert len(package.resources) == 1
     assert package.resources[0].encoding == "iso8859-1"
 
 
 def test_package_infer_empty_file():
-    package = Package()
-    package.infer("data/empty.csv")
+    package = Package("data/empty.csv")
+    package.infer()
     assert package.metadata_valid
     assert len(package.resources) == 1
     assert package.resources[0].stats["bytes"] == 0
@@ -529,7 +535,7 @@ def test_package_to_zip(tmpdir):
     package.to_zip(target)
 
     # Read
-    package = Package(target)
+    package = Package.from_zip(target)
     assert package.name == "name"
     assert package.get_resource("name").name == "name"
     assert package.get_resource("name").path == "table.csv"
@@ -549,7 +555,7 @@ def test_package_to_zip_withdir_path(tmpdir):
     package.to_zip(target)
 
     # Read
-    package = Package(target)
+    package = Package.from_zip(target)
     assert package.get_resource("table").path == "data/table.csv"
     assert package.get_resource("table").read_rows() == [
         {"id": 1, "name": "english"},
@@ -567,7 +573,7 @@ def test_package_to_zip_absolute_path(tmpdir):
     package.to_zip(target)
 
     # Read
-    package = Package(target)
+    package = Package.from_zip(target)
     assert package.get_resource("table").path == "table.csv"
     assert package.get_resource("table").read_rows() == [
         {"id": 1, "name": "english"},
@@ -577,16 +583,16 @@ def test_package_to_zip_absolute_path(tmpdir):
 
 @pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-def test_package_to_zip_resolve_inline(tmpdir):
+def test_package_to_zip_resolve_memory(tmpdir):
 
     # Write
     target = os.path.join(tmpdir, "package.zip")
     resource = Resource(name="table", data=[["id", "name"], [1, "english"], [2, "中国人"]])
     package = Package(resources=[resource])
-    package.to_zip(target, resolve=["inline"])
+    package.to_zip(target, resolve=["memory"])
 
     # Read
-    package = Package(target)
+    package = Package.from_zip(target)
     assert package.get_resource("table").path == "table.csv"
     assert package.get_resource("table").read_rows() == [
         {"id": 1, "name": "english"},
@@ -596,16 +602,16 @@ def test_package_to_zip_resolve_inline(tmpdir):
 
 @pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-def test_package_to_zip_resolve_inline_sql(tmpdir, database_url):
+def test_package_to_zip_resolve_memory_sql(tmpdir, database_url):
 
     # Write
     target = os.path.join(tmpdir, "package.zip")
     resource = Resource.from_sql(name="table", url=database_url)
     package = Package(resources=[resource])
-    package.to_zip(target, resolve=["inline"])
+    package.to_zip(target, resolve=["memory"])
 
     # Read
-    package = Package(target)
+    package = Package.from_zip(target)
     assert package.get_resource("table").path == "table.csv"
     assert package.get_resource("table").read_rows() == [
         {"id": 1, "name": "english"},
@@ -625,7 +631,7 @@ def test_package_to_zip_resolve_remote(tmpdir):
     package.to_zip(target, resolve=["remote"])
 
     # Read
-    package = Package(target)
+    package = Package.from_zip(target)
     assert package.get_resource("table").path == "table.csv"
     assert package.get_resource("table").read_rows() == [
         {"id": 1, "name": "english"},
@@ -636,17 +642,17 @@ def test_package_to_zip_resolve_remote(tmpdir):
 @pytest.mark.vcr
 @pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-def test_package_to_zip_resolve_inline_and_remote(tmpdir):
+def test_package_to_zip_resolve_memory_and_remote(tmpdir):
 
     # Write
     target = os.path.join(tmpdir, "package.zip")
     resource1 = Resource(name="name1", data=[["id", "name"], [1, "english"], [2, "中国人"]])
     resource2 = Resource(name="name2", path=BASE_URL % "data/table.csv")
     package = Package(resources=[resource1, resource2])
-    package.to_zip(target, resolve=["inline", "remote"])
+    package.to_zip(target, resolve=["memory", "remote"])
 
     # Read
-    package = Package(target)
+    package = Package.from_zip(target)
     assert package.get_resource("name1").path == "name1.csv"
     assert package.get_resource("name1").read_rows() == [
         {"id": 1, "name": "english"},
@@ -670,7 +676,7 @@ def test_package_to_zip_source_remote(tmpdir):
     package.to_zip(target)
 
     # Read
-    package = Package(target)
+    package = Package.from_zip(target)
     assert package == {
         "name": "name",
         "resources": [{"name": "name", "path": path}],
@@ -691,7 +697,7 @@ def test_package_to_zip_source_inline(tmpdir):
     package.to_zip(target)
 
     # Write
-    package = Package(target)
+    package = Package.from_zip(target)
     assert package == {
         "name": "name",
         "resources": [{"name": "name", "data": data}],

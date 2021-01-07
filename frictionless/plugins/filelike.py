@@ -17,6 +17,13 @@ class FilelikePlugin(Plugin):
 
     """
 
+    def create_file(self, file):
+        if not file.scheme and not file.format:
+            if hasattr(file.data, "read"):
+                file.scheme = "filelike"
+                file.format = ""
+                return file
+
     def create_control(self, resource, *, descriptor):
         if resource.scheme == "filelike":
             return FilelikeControl(descriptor)
@@ -62,11 +69,11 @@ class FilelikeLoader(Loader):
     # Read
 
     def read_byte_stream_create(self):
-        source = self.resource.source
-        if hasattr(source, "encoding"):
+        data = self.resource.data
+        if hasattr(data, "encoding"):
             error = errors.SchemeError(note="only byte streams are supported")
             raise FrictionlessException(error)
-        return source
+        return data
 
     # Write
 

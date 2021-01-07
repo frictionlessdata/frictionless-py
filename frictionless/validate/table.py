@@ -1,4 +1,4 @@
-from ..table import Table
+from ..legacy.table import Table
 from ..system import system
 from ..exception import FrictionlessException
 from ..report import Report, ReportTable
@@ -16,8 +16,8 @@ def validate_table(
     format=None,
     hashing=None,
     encoding=None,
+    innerpath=None,
     compression=None,
-    compression_path=None,
     # Control/Dialect/Query
     control=None,
     dialect=None,
@@ -69,11 +69,11 @@ def validate_table(
         encoding? (str): Source encoding.
             If not set, it'll be inferred from `source`.
 
+        innerpath? (str): A path within the compressed file.
+            It defaults to the first file in the archive.
+
         compression? (str): Source file compression (zip, ...).
             If not set, it'll be inferred from `source`.
-
-        compression_path? (str): A path within the compressed file.
-            It defaults to the first file in the archive.
 
         control? (dict|Control): File control.
             For more infromation, please check the Control documentation.
@@ -169,8 +169,8 @@ def validate_table(
         format=format,
         hashing=hashing,
         encoding=encoding,
+        innerpath=innerpath,
         compression=compression,
-        compression_path=compression_path,
         # Control/Dialect/Query
         control=control,
         dialect=dialect,

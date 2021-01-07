@@ -34,7 +34,7 @@ class BigqueryPlugin(Plugin):
         try:
             # TODO: cannot be loaded with plugins; improve this solution
             d = helpers.import_from_plugin("googleapiclient.discovery", plugin="bigquery")
-            if isinstance(resource.source, d.Resource):
+            if isinstance(resource.data, d.Resource):
                 return BigqueryDialect(descriptor)
         except Exception:
             pass
@@ -43,7 +43,7 @@ class BigqueryPlugin(Plugin):
         try:
             # TODO: cannot be loaded with plugins; improve this solution
             d = helpers.import_from_plugin("googleapiclient.discovery", plugin="bigquery")
-            if isinstance(resource.source, d.Resource):
+            if isinstance(resource.data, d.Resource):
                 return BigqueryParser(resource)
         except Exception:
             pass
@@ -144,7 +144,7 @@ class BigqueryParser(Parser):
     def read_data_stream_create(self):
         dialect = self.resource.dialect
         storage = BigqueryStorage(
-            service=self.resource.source,
+            service=self.resource.data,
             project=dialect.project,
             dataset=dialect.dataset,
         )
@@ -159,13 +159,13 @@ class BigqueryParser(Parser):
         dialect = self.resource.dialect
         schema = self.resource.schema
         storage = BigqueryStorage(
-            service=self.resource.source,
+            service=self.resource.data,
             project=dialect.project,
             dataset=dialect.dataset,
         )
         resource = Resource(name=dialect.table, data=read_row_stream, schema=schema)
         storage.write_resource(resource, force=True)
-        return self.resource.source
+        return self.resource.data
 
 
 # Storage
@@ -331,7 +331,7 @@ class BigqueryStorage(Storage):
         # Write resource
         for resource in package.resources:
             if not resource.schema:
-                resource.infer(only_sample=True)
+                resource.infer()
 
             # Write metadata
             bq_name = self.__write_convert_name(resource.name)
@@ -531,6 +531,7 @@ def _slugify_name(name):
 
 
 def _uncast_value(value, field):
+    # TODO:
     # Eventially should be moved to:
     # https://github.com/frictionlessdata/tableschema-py/issues/161
     if isinstance(value, (list, dict)):

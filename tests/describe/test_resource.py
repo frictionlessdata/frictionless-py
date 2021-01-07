@@ -17,8 +17,8 @@ def test_describe_resource():
         "format": "csv",
         "hashing": "md5",
         "encoding": "utf-8",
-        "compression": "no",
-        "compressionPath": "",
+        "innerpath": "",
+        "compression": "",
         "control": {"newline": ""},
         "dialect": {},
         "query": {},
@@ -105,6 +105,7 @@ def test_describe_resource_schema_with_missing_values_using_the_argument():
     }
 
 
+@pytest.mark.skip
 def test_describe_resource_schema_check_type_boolean_string_tie():
     resource = describe([["f"], ["stringish"]], headers=False, infer_names=["field"])
     assert resource.schema.get_field("field").type == "string"
@@ -147,3 +148,10 @@ def test_describe_file_with_different_characters_name_issue_600():
     assert describe("data/table_with_data.csv").name == "table_with_data"
     assert describe("data/Table With Data.csv").name == "table-with-data"
     assert describe("data/Таблица.csv").name == "tablitsa"
+
+
+def test_describe_resource_compression_gzip_issue_606():
+    resource = describe("data/table.csv.gz")
+    assert resource.name == "table"
+    assert resource.stats["hash"] == "edf56ce48e402d83eb08d5dac6aa2ad9"
+    assert resource.stats["bytes"] == 61

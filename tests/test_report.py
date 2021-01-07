@@ -20,8 +20,8 @@ def test_report():
     assert report.table.format == "csv"
     assert report.table.hashing == "md5"
     assert report.table.encoding == "utf-8"
-    assert report.table.compression == "no"
-    assert report.table.compression_path == ""
+    assert report.table.innerpath == ""
+    assert report.table.compression == ""
     assert report.table.dialect == {}
     assert report.table.query == {}
     assert report.table.header == ["id", "name"]

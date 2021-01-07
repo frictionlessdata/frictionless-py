@@ -22,8 +22,8 @@ def test_multipart_loader():
 
 def test_multipart_loader_with_compressed_parts():
     with Table(["data/chunk1.csv.zip", "data/chunk2.csv.zip"]) as table:
-        assert table.compression == "no"
-        assert table.compression_path == ""
+        assert table.innerpath == ""
+        assert table.compression == ""
         assert table.header == ["id", "name"]
         assert table.read_rows() == [
             {"id": 1, "name": "english"},
@@ -40,7 +40,7 @@ def test_multipart_loader_resource():
         "schema": "resource-schema.json",
     }
     resource = Resource(descriptor, basepath="data")
-    assert resource.inline is False
+    assert resource.memory is False
     assert resource.multipart is True
     assert resource.tabular is True
     assert resource.read_rows() == [
@@ -59,7 +59,7 @@ def test_multipart_loader_resource_remote():
         "schema": "resource_schema.json",
     }
     resource = Resource(descriptor, basepath=BASE_URL % "data")
-    assert resource.inline is False
+    assert resource.memory is False
     assert resource.multipart is True
     assert resource.tabular is True
     assert resource.read_rows() == [
@@ -78,7 +78,7 @@ def test_multipart_loader_resource_remote_both_path_and_basepath():
         "schema": "resource_schema.json",
     }
     resource = Resource(descriptor, basepath=BASE_URL % "data")
-    assert resource.inline is False
+    assert resource.memory is False
     assert resource.multipart is True
     assert resource.tabular is True
     assert resource.read_rows() == [
@@ -118,17 +118,17 @@ def test_multipart_loader_resource_error_bad_path_not_safe_traversing():
 def test_multipart_loader_resource_infer():
     descriptor = {"path": ["data/chunk1.csv", "data/chunk2.csv"]}
     resource = Resource(descriptor)
-    resource.infer()
+    resource.infer(stats=True)
     assert resource == {
         "path": ["data/chunk1.csv", "data/chunk2.csv"],
         "profile": "tabular-data-resource",
-        "name": "chunk1",
+        "name": "chunk",
         "scheme": "multipart",
         "format": "csv",
         "hashing": "md5",
         "encoding": "utf-8",
-        "compression": "no",
-        "compressionPath": "",
+        "innerpath": "",
+        "compression": "",
         "control": {"newline": ""},
         "dialect": {},
         "query": {},
@@ -149,6 +149,7 @@ def test_multipart_loader_resource_infer():
 
 # We're better implement here a round-robin testing including
 # reading using Resource as we do for other tests
+@pytest.mark.skip
 def test_multipart_loader_resource_write_file(tmpdir):
     target = str(tmpdir.join("table{number}.json"))
     target1 = str(tmpdir.join("table1.json"))

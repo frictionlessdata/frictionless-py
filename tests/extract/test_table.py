@@ -1,4 +1,5 @@
 import types
+from pathlib import Path
 from frictionless import extract
 
 
@@ -24,6 +25,13 @@ def test_extract_table_stream():
     row_stream = extract("data/table.csv", stream=True)
     assert isinstance(row_stream, types.GeneratorType)
     assert list(row_stream) == [
+        {"id": 1, "name": "english"},
+        {"id": 2, "name": "中国人"},
+    ]
+
+
+def test_extract_table_pathlib():
+    assert extract(Path("data/table.csv")) == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]

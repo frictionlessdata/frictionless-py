@@ -22,8 +22,8 @@ def program_extract(
     format: str = Opt(None, help="Specify format  [default: inferred]"),
     hashing: str = Opt(None, help="Specify hashing algorithm  [default: inferred]"),
     encoding: str = Opt(None, help="Specify encoding  [default: inferred]"),
+    innerpath: str = Opt(None, help="Specify in-archive path  [default: first]"),
     compression: str = Opt(None, help="Specify compression  [default: inferred]"),
-    compression_path: str = Opt(None, help="Specify in-archive path  [default: first]"),
     # Control/Dialect/Query
     pick_fields: str = Opt(None, help='Comma-separated fields to pick e.g. "1,name1"'),
     skip_fields: str = Opt(None, help='Comma-separated fields to skip e.g. "2,name2"'),
@@ -108,8 +108,8 @@ def program_extract(
             format=format,
             hashing=hashing,
             encoding=encoding,
+            innerpath=innerpath,
             compression=compression,
-            compression_path=compression_path,
             # Control/Dialect/Query
             dialect=dialect,
             query=query,

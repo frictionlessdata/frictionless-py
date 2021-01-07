@@ -9,7 +9,7 @@ from .inquiry import validate_inquiry
 @Report.from_validate
 def validate_package(
     source,
-    basepath=None,
+    basepath="",
     trusted=False,
     noinfer=False,
     nolookup=False,
@@ -47,7 +47,7 @@ def validate_package(
 
     # Prepare package
     if not noinfer:
-        package.infer(only_sample=True)
+        package.infer()
 
     if package.metadata_errors:
         return Report(time=timer.time, errors=package.metadata_errors, tables=[])

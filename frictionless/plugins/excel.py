@@ -184,7 +184,7 @@ class XlsxParser(Parser):
     # Read
 
     def read_loader(self):
-        source = self.resource.source
+        fullpath = self.resource.fullpath
         dialect = self.resource.dialect
         loader = system.create_loader(self.resource)
         if not loader.remote:
@@ -197,8 +197,8 @@ class XlsxParser(Parser):
         if loader.remote:
 
             # Cached
-            if dialect.workbook_cache is not None and source in dialect.workbook_cache:
-                resource = Resource.from_source(source, stats=self.resource.stats)
+            if dialect.workbook_cache is not None and fullpath in dialect.workbook_cache:
+                resource = Resource(path=fullpath, stats=self.resource.stats)
                 loader = system.create_loader(resource)
                 return loader.open()
 
@@ -208,9 +208,9 @@ class XlsxParser(Parser):
                 shutil.copyfileobj(loader.byte_stream, target)
                 target.seek(0)
             if not target.delete:
-                dialect.workbook_cache[source] = target.name
+                dialect.workbook_cache[fullpath] = target.name
                 atexit.register(os.remove, target.name)
-            resource = Resource.from_source(target)
+            resource = Resource(path=target)
             loader = system.create_loader(resource)
             return loader.open()
 
@@ -239,13 +239,16 @@ class XlsxParser(Parser):
                 sheet = book.worksheets[dialect.sheet - 1]
         except (KeyError, IndexError):
             note = 'Excel document "%s" does not have a sheet "%s"'
-            error = errors.FormatError(note=note % (self.resource.source, dialect.sheet))
+            error = errors.FormatError(
+                note=note % (self.resource.fullpath, dialect.sheet)
+            )
             raise FrictionlessException(error)
 
         # Fill merged cells
-        # We can try using an algorithm similiar to what XlsParser has
-        # to support mergin cells in the read-only mode (now we need the write mode)
         if dialect.fill_merged_cells:
+            # TODO:
+            # We can try using an algorithm similiar to what XlsParser has
+            # to support mergin cells in the read-only mode (now we need the write mode)
             for merged_cell_range in list(sheet.merged_cells.ranges):
                 merged_cell_range = str(merged_cell_range)
                 sheet.unmerge_cells(merged_cell_range)
@@ -267,7 +270,6 @@ class XlsxParser(Parser):
     def write_row_stream_save(self, read_row_stream):
         openpyxl = helpers.import_from_plugin("openpyxl", plugin="excel")
         dialect = self.resource.dialect
-        helpers.ensure_dir(self.resource.source)
         book = openpyxl.Workbook(write_only=True)
         title = dialect.sheet
         if isinstance(title, int):
@@ -337,7 +339,9 @@ class XlsParser(Parser):
                 sheet = book.sheet_by_index(dialect.sheet - 1)
         except (xlrd.XLRDError, IndexError):
             note = 'Excel document "%s" does not have a sheet "%s"'
-            error = errors.FormatError(note=note % (self.resource.source, dialect.sheet))
+            error = errors.FormatError(
+                note=note % (self.resource.fullpath, dialect.sheet)
+            )
             raise FrictionlessException(error)
 
         def type_value(ctype, value):
@@ -378,7 +382,6 @@ class XlsParser(Parser):
     def write_row_stream_save(self, read_row_stream):
         xlwt = helpers.import_from_plugin("xlwt", plugin="excel")
         dialect = self.resource.dialect
-        helpers.ensure_dir(self.resource.source)
         book = xlwt.Workbook()
         title = dialect.sheet
         if isinstance(title, int):

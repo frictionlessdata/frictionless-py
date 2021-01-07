@@ -3,14 +3,15 @@ import warnings
 from pathlib import Path
 from copy import deepcopy
 from itertools import chain, zip_longest
-from .exception import FrictionlessException
-from .resource import Resource
-from .system import system
-from .header import Header
-from .row import Row
-from . import helpers
-from . import errors
-from . import config
+from ..exception import FrictionlessException
+from ..resource import Resource
+from ..schema import Schema
+from ..system import system
+from ..header import Header
+from ..row import Row
+from .. import helpers
+from .. import errors
+from .. import config
 
 
 class Table:
@@ -50,11 +51,11 @@ class Table:
         encoding? (str): Source encoding.
             If not set, it'll be inferred from `source`.
 
+        innerpath? (str): A path within the compressed file.
+            It defaults to the first file in the archive.
+
         compression? (str): Source file compression (zip, ...).
             If not set, it'll be inferred from `source`.
-
-        compression_path? (str): A path within the compressed file.
-            It defaults to the first file in the archive.
 
         control? (dict|Control): File control.
             For more infromation, please check the Control documentation.
@@ -129,8 +130,8 @@ class Table:
         format=None,
         hashing=None,
         encoding=None,
+        innerpath=None,
         compression=None,
-        compression_path=None,
         # Control/Dialect/Query
         control=None,
         dialect=None,
@@ -195,15 +196,27 @@ class Table:
         self.__infer_missing_values = infer_missing_values
         self.__lookup = lookup
 
+        # Detect path/data
+        # It's a hack while we support Table
+        path = None
+        data = source
+        if isinstance(source, str):
+            path = source
+            data = None
+        elif isinstance(source, list) and source and isinstance(source[0], str):
+            path = source
+            data = None
+
         # Create resource
-        self.__resource = Resource.from_source(
-            source,
+        self.__resource = Resource(
+            path=path,
+            data=data,
             scheme=scheme,
             format=format,
             hashing=hashing,
             encoding=encoding,
+            innerpath=innerpath,
             compression=compression,
-            compression_path=compression_path,
             control=control,
             dialect=dialect,
             query=query,
@@ -231,7 +244,7 @@ class Table:
         Returns:
             any: file source
         """
-        return self.__resource.source
+        return self.__resource.fullpath
 
     @property
     def path(self):
@@ -282,20 +295,20 @@ class Table:
         return self.__resource.encoding
 
     @property
+    def innerpath(self):
+        """
+        Returns:
+            str?: file compression path
+        """
+        return self.__resource.innerpath
+
+    @property
     def compression(self):
         """
         Returns:
             str?: file compression
         """
         return self.__resource.compression
-
-    @property
-    def compression_path(self):
-        """
-        Returns:
-            str?: file compression path
-        """
-        return self.__resource.compression_path
 
     @property
     def control(self):
@@ -670,7 +683,7 @@ class Table:
                 # Header
                 if not header_ready:
                     if row_number in header_numbers:
-                        header_data.append(helpers.stringify_header(cells))
+                        header_data.append(helpers.stringify_label(cells))
                         if dialect.header:
                             header_row_positions.append(row_position)
                     if row_number >= max(header_numbers):
@@ -686,9 +699,8 @@ class Table:
                     break
 
         # Infer schema
-        schema = self.__resource.schema
-        if not schema.fields:
-            schema.infer(
+        if not self.__resource.schema.fields:
+            self.__resource.schema = Schema.from_sample(
                 sample,
                 type=self.__infer_type,
                 names=self.__infer_names or labels,
@@ -698,6 +710,7 @@ class Table:
             )
 
         # Sync schema
+        schema = self.__resource.schema
         if self.__sync_schema:
             fields = []
             mapping = {field.get("name"): field for field in schema.fields}
@@ -842,8 +855,8 @@ class Table:
         format=None,
         hashing=None,
         encoding=None,
+        innerpath=None,
         compression=None,
-        compression_path=None,
         control=None,
         dialect=None,
     ):
@@ -854,15 +867,27 @@ class Table:
             **options: subset of Table's constructor options
         """
 
+        # Detect path/data
+        # It's a hack while we support Table
+        path = None
+        data = target
+        if isinstance(target, str):
+            path = target
+            data = None
+        elif isinstance(target, list) and target and isinstance(target[0], str):
+            path = target
+            data = None
+
         # Create resource
-        resource = Resource.from_source(
-            target,
+        resource = Resource(
+            path=path,
+            data=data,
             scheme=scheme,
             format=format,
             hashing=hashing,
             encoding=encoding,
+            innerpath=innerpath,
             compression=compression,
-            compression_path=compression_path,
             control=control,
             dialect=dialect,
             schema=self.schema,

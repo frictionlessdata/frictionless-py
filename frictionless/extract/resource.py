@@ -4,11 +4,9 @@ from ..resource import Resource
 def extract_resource(
     source,
     *,
-    basepath=None,
-    onerror="ignore",
-    trusted=False,
     process=None,
     stream=False,
+    **options,
 ):
     """Extract resource rows
 
@@ -18,20 +16,14 @@ def extract_resource(
 
     Parameters:
         source (dict|str): data resource descriptor
-        basepath? (str): package basepath
-        onerror? (ignore|warn|raise): behaviour on errors
-        trusted? (bool): don't raise an exception on unsafe paths
         process? (func): a row processor function
+        **options (dict): Resource constructor options
 
     Returns:
         Row[]: an array/stream of rows
 
     """
-
-    # Create resource
-    resource = Resource(source, basepath=basepath, onerror=onerror, trusted=trusted)
-
-    # Extract resource
+    resource = Resource(source, **options)
     data = read_row_stream(resource)
     data = (process(row) for row in data) if process else data
     return data if stream else list(data)

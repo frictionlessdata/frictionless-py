@@ -31,7 +31,7 @@ class PandasPlugin(Plugin):
         try:
             # TODO: cannot be loaded with plugins; improve this solution
             pd = helpers.import_from_plugin("pandas", plugin="pandas")
-            if resource.format == "pandas" or isinstance(resource.source, pd.DataFrame):
+            if resource.format == "pandas" or isinstance(resource.data, pd.DataFrame):
                 return PandasDialect(descriptor)
         except Exception:
             pass
@@ -40,7 +40,7 @@ class PandasPlugin(Plugin):
         try:
             # TODO: cannot be loaded with plugins; improve this solution
             pd = helpers.import_from_plugin("pandas", plugin="pandas")
-            if resource.format == "pandas" or isinstance(resource.source, pd.DataFrame):
+            if resource.format == "pandas" or isinstance(resource.data, pd.DataFrame):
                 return PandasParser(resource)
         except Exception:
             pass
@@ -251,7 +251,7 @@ class PandasStorage(Storage):
         # Write resources
         for resource in package.resources:
             if not resource.schema:
-                resource.infer(only_sample=True)
+                resource.infer()
             self.__dataframes[resource.name] = self.__write_convert_resource(resource)
 
     def __write_convert_resource(self, resource):

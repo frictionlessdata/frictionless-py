@@ -130,7 +130,7 @@ class CkanParser(Parser):
     def read_data_stream_create(self):
         dialect = self.resource.dialect
         storage = CkanStorage(
-            url=self.resource.source,
+            url=self.resource.fullpath,
             dataset=dialect.dataset,
             apikey=dialect.apikey,
         )
@@ -145,13 +145,13 @@ class CkanParser(Parser):
         dialect = self.resource.dialect
         schema = self.resource.schema
         storage = CkanStorage(
-            url=self.resource.source,
+            url=self.resource.fullpath,
             dataset=dialect.dataset,
             apikey=dialect.apikey,
         )
         resource = Resource(name=dialect.resource, data=read_row_stream, schema=schema)
         storage.write_resource(resource, force=True)
-        return self.resource.source
+        return self.resource.fullpath
 
 
 # Storage
@@ -299,7 +299,7 @@ class CkanStorage(Storage):
         # Write resources
         for resource in package.resources:
             if not resource.schema:
-                resource.infer(only_sample=True)
+                resource.infer()
             endpoint = f"{self.__endpoint}/datastore_create"
             ckan_table = self.__write_convert_schema(resource)
             self.__make_ckan_request(endpoint, method="POST", json=ckan_table)

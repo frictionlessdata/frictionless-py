@@ -142,6 +142,7 @@ class HtmlParser(Parser):
 
     # Write
 
+    # TODO:
     # We can rebase on pyquery for writing this html
     # It will give us an ability to support HtmlDialect
     def write_row_stream_save(self, read_row_stream):

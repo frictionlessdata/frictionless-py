@@ -159,12 +159,12 @@ class JsonParser(Parser):
             path = "%s.item" % self.resource.dialect.property
         source = ijson.items(self.loader.byte_stream, path)
         inline_dialect = InlineDialect(keys=dialect.keys)
-        resource = Resource.from_source(source, dialect=inline_dialect)
+        resource = Resource(data=source, dialect=inline_dialect)
         with system.create_parser(resource) as parser:
             try:
                 yield next(parser.data_stream)
             except StopIteration:
-                note = f'cannot extract JSON tabular data from "{self.resource.source}"'
+                note = f'cannot extract JSON tabular data from "{self.resource.fullpath}"'
                 raise FrictionlessException(errors.SourceError(note=note))
             if parser.resource.dialect.keyed:
                 dialect["keyed"] = True
@@ -215,7 +215,7 @@ class JsonlParser(Parser):
         dialect = self.resource.dialect
         source = iter(jsonlines.Reader(self.loader.text_stream))
         dialect = InlineDialect(keys=dialect.keys)
-        resource = Resource.from_source(source, dialect=dialect)
+        resource = Resource(data=source, dialect=dialect)
         with system.create_parser(resource) as parser:
             yield next(parser.data_stream)
             if parser.resource.dialect.keyed:

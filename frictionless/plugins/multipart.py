@@ -20,6 +20,11 @@ class MultipartPlugin(Plugin):
 
     """
 
+    def create_file(self, file):
+        if file.multipart:
+            file.scheme = "multipart"
+            return file
+
     def create_control(self, resource, *, descriptor):
         if resource.scheme == "multipart":
             return MultipartControl(descriptor)
@@ -48,7 +53,11 @@ class MultipartControl(Control):
     """
 
     def __init__(
-        self, descriptor=None, chunk_size=None, newline=None, detect_encoding=None
+        self,
+        descriptor=None,
+        chunk_size=None,
+        newline=None,
+        detect_encoding=None,
     ):
         self.setinitial("chunkSize", chunk_size)
         super().__init__(descriptor, newline=newline, detect_encoding=detect_encoding)
@@ -91,12 +100,12 @@ class MultipartLoader(Loader):
     # Read
 
     def read_byte_stream_create(self):
-        source = self.resource.source
+        fullpath = self.resource.fullpath
         remote = self.resource.remote
         # TODO: review
         headless = self.resource.get("dialect", {}).get("header") is False
         headless = headless or self.resource.format != "csv"
-        byte_stream = MultipartByteStream(source, remote=remote, headless=headless)
+        byte_stream = MultipartByteStream(fullpath, remote=remote, headless=headless)
         return byte_stream
 
     # Write
@@ -109,10 +118,10 @@ class MultipartLoader(Loader):
             if not bytes:
                 break
             number += 1
-            path = self.resource.source.format(number=number)
+            fullpath = self.resource.fullpath.format(number=number)
             with tempfile.NamedTemporaryFile(delete=False) as file:
                 file.write(bytes)
-            helpers.move_file(file.name, path)
+            helpers.move_file(file.name, fullpath)
 
 
 # Internal

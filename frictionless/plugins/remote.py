@@ -132,10 +132,10 @@ class RemoteLoader(Loader):
     # Read
 
     def read_byte_stream_create(self):
-        source = requests.utils.requote_uri(self.resource.source)
+        fullpath = requests.utils.requote_uri(self.resource.fullpath)
         session = self.resource.control.http_session
         timeout = self.resource.control.http_timeout
-        byte_stream = RemoteByteStream(source, session=session, timeout=timeout).open()
+        byte_stream = RemoteByteStream(fullpath, session=session, timeout=timeout).open()
         if self.resource.control.http_preload:
             buffer = io.BufferedRandom(io.BytesIO())
             buffer.write(byte_stream.read())
@@ -147,7 +147,7 @@ class RemoteLoader(Loader):
 
     def write_byte_stream_save(self, byte_stream):
         file = f"{self.resource.name}.{self.resource.format}"
-        url = self.resource.source.replace(file, "")
+        url = self.resource.fullpath.replace(file, "")
         response = requests.post(url, files={file: byte_stream})
         response.raise_for_status()
         return response

@@ -22,6 +22,17 @@ class GsheetsPlugin(Plugin):
 
     """
 
+    def create_file(self, file):
+        if not file.memory:
+            if "docs.google.com/spreadsheets" in file.path:
+                if "export" not in file.path and "pub" not in file.path:
+                    file.scheme = ""
+                    file.format = "gsheets"
+                elif "csv" in file.path:
+                    file.scheme = "https"
+                    file.format = "csv"
+                return file
+
     def create_dialect(self, resource, *, descriptor):
         if resource.format == "gsheets":
             return GsheetsDialect(descriptor)
@@ -108,17 +119,17 @@ class GsheetsParser(Parser):
     # Read
 
     def read_data_stream_create(self):
-        source = self.resource.source
-        match = re.search(r".*/d/(?P<key>[^/]+)/.*?(?:gid=(?P<gid>\d+))?$", source)
-        source = "https://docs.google.com/spreadsheets/d/%s/export?format=csv&id=%s"
+        fullpath = self.resource.fullpath
+        match = re.search(r".*/d/(?P<key>[^/]+)/.*?(?:gid=(?P<gid>\d+))?$", fullpath)
+        fullpath = "https://docs.google.com/spreadsheets/d/%s/export?format=csv&id=%s"
         key, gid = "", ""
         if match:
             key = match.group("key")
             gid = match.group("gid")
-        source = source % (key, key)
+        fullpath = fullpath % (key, key)
         if gid:
-            source = "%s&gid=%s" % (source, gid)
-        resource = Resource.from_source(source, stats=self.resource.stats)
+            fullpath = "%s&gid=%s" % (fullpath, gid)
+        resource = Resource(path=fullpath, stats=self.resource.stats)
         with system.create_parser(resource) as parser:
             yield from parser.data_stream
 
@@ -126,10 +137,10 @@ class GsheetsParser(Parser):
 
     def write_row_stream_save(self, read_row_stream):
         pygsheets = helpers.import_from_plugin("pygsheets", plugin="gsheets")
-        source = self.resource.source
-        match = re.search(r".*/d/(?P<key>[^/]+)/.*?(?:gid=(?P<gid>\d+))?$", source)
+        fullpath = self.resource.fullpath
+        match = re.search(r".*/d/(?P<key>[^/]+)/.*?(?:gid=(?P<gid>\d+))?$", fullpath)
         if not match:
-            error = errors.FormatError(note=f"Cannot save {source}")
+            error = errors.FormatError(note=f"Cannot save {fullpath}")
             raise FrictionlessException(error)
         key = match.group("key")
         gid = match.group("gid")
@@ -142,4 +153,4 @@ class GsheetsParser(Parser):
                 data.append(row.field_names)
             data.append(row.to_list())
         wks.update_values("A1", data)
-        return source
+        return fullpath

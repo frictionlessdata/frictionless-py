@@ -289,10 +289,10 @@ def test_schema_descriptor_expand():
     }
 
 
-# Infer
+# Import/export
 
 
-def test_schema_infer():
+def test_schema_from_sample():
     sample = [
         ["1", "39", "Paul"],
         ["2", "23", "Jimmy"],
@@ -300,8 +300,7 @@ def test_schema_infer():
         ["4", "N/A", "Judy"],
     ]
     names = ["id", "age", "name"]
-    schema = Schema()
-    schema.infer(sample, names=names)
+    schema = Schema.from_sample(sample, names=names)
     assert schema == {
         "fields": [
             {"name": "id", "type": "integer"},
@@ -311,7 +310,7 @@ def test_schema_infer():
     }
 
 
-def test_schema_infer_confidence_less():
+def test_schema_from_sample_confidence_less():
     sample = [
         ["1", "39", "Paul"],
         ["2", "23", "Jimmy"],
@@ -319,8 +318,7 @@ def test_schema_infer_confidence_less():
         ["4", "N/A", "Judy"],
     ]
     names = ["id", "age", "name"]
-    schema = Schema()
-    schema.infer(sample, names=names, confidence=0.75)
+    schema = Schema.from_sample(sample, names=names, confidence=0.75)
     assert schema == {
         "fields": [
             {"name": "id", "type": "integer"},
@@ -330,7 +328,7 @@ def test_schema_infer_confidence_less():
     }
 
 
-def test_schema_infer_confidence_full():
+def test_schema_from_sample_confidence_full():
     sample = [
         ["1", "39", "Paul"],
         ["2", "23", "Jimmy"],
@@ -338,8 +336,7 @@ def test_schema_infer_confidence_full():
         ["4", "N/A", "Judy"],
     ]
     names = ["id", "age", "name"]
-    schema = Schema()
-    schema.infer(sample, names=names, confidence=1)
+    schema = Schema.from_sample(sample, names=names, confidence=1)
     assert schema == {
         "fields": [
             {"name": "id", "type": "integer"},
@@ -351,14 +348,10 @@ def test_schema_infer_confidence_full():
 
 def test_schema_infer_no_names():
     sample = [[1], [2], [3]]
-    schema = Schema()
-    schema.infer(sample)
+    schema = Schema.from_sample(sample)
     assert schema == {
         "fields": [{"name": "field1", "type": "integer"}],
     }
-
-
-# Import/export
 
 
 def test_schema_to_copy():

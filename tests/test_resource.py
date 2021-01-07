@@ -17,8 +17,8 @@ def test_resource():
     resource = Resource("data/resource.json")
     assert resource.name == "name"
     assert resource.path == "table.csv"
-    assert resource.source == "data/table.csv"
     assert resource.basepath == "data"
+    assert resource.fullpath == "data/table.csv"
     assert resource.profile == "data-resource"
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
@@ -60,19 +60,8 @@ def test_resource_from_path_error_bad_path():
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_from_path_remote():
     resource = Resource(BASE_URL % "data/resource.json")
-    assert resource.source == BASE_URL % "data/table.csv"
     assert resource.path == "table.csv"
-    assert resource.read_rows() == [
-        {"id": 1, "name": "english"},
-        {"id": 2, "name": "中国人"},
-    ]
-
-
-@pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-def test_resource_from_zip():
-    resource = Resource("data/resource.zip")
-    assert resource.path == "table.csv"
+    assert resource.fullpath == BASE_URL % "data/table.csv"
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
@@ -95,11 +84,11 @@ def test_resource_source_non_tabular():
     resource = Resource(path=path)
     assert resource.path == path
     assert resource.data is None
-    assert resource.source == path
     assert resource.basepath == ""
-    assert resource.inline is False
+    assert resource.memory is False
     assert resource.tabular is False
     assert resource.multipart is False
+    assert resource.fullpath == path
     assert resource.read_bytes() == b"text\n"
     assert resource.stats == {
         "hash": "e1cbb0c3879af8347246f12c559a86b5",
@@ -115,11 +104,11 @@ def test_resource_source_non_tabular_remote():
     resource = Resource(path=path)
     assert resource.path == path
     assert resource.data is None
-    assert resource.source == path
-    assert resource.basepath == ""
-    assert resource.inline is False
+    assert resource.memory is False
     assert resource.tabular is False
     assert resource.multipart is False
+    assert resource.basepath == ""
+    assert resource.fullpath == path
     assert resource.read_bytes() == b"foo\n"
     assert resource.stats == {
         "hash": "d3b07384d113edec49eaa6238ad5ff00",
@@ -145,11 +134,11 @@ def test_resource_source_path():
     resource = Resource({"path": path})
     assert resource.path == path
     assert resource.data is None
-    assert resource.source == path
-    assert resource.basepath == ""
-    assert resource.inline is False
+    assert resource.memory is False
     assert resource.tabular is True
     assert resource.multipart is False
+    assert resource.basepath == ""
+    assert resource.fullpath == path
     assert (
         resource.read_bytes()
         == b"id,name\n1,english\n2,\xe4\xb8\xad\xe5\x9b\xbd\xe4\xba\xba\n"
@@ -172,8 +161,8 @@ def test_resource_source_path():
 def test_resource_source_path_and_basepath():
     resource = Resource(path="table.csv", basepath="data")
     assert resource.path == "table.csv"
-    assert resource.source == "data/table.csv"
     assert resource.basepath == "data"
+    assert resource.fullpath == "data/table.csv"
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
@@ -184,7 +173,7 @@ def test_resource_source_path_and_basepath():
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_source_path_and_basepath_remote():
     resource = Resource(path="table.csv", basepath=BASE_URL % "data")
-    assert resource.source == BASE_URL % "data/table.csv"
+    assert resource.fullpath == BASE_URL % "data/table.csv"
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
@@ -194,7 +183,7 @@ def test_resource_source_path_and_basepath_remote():
 @pytest.mark.vcr
 def test_resource_source_path_remote_and_basepath_remote():
     resource = Resource(path=BASE_URL % "data/table.csv", basepath=BASE_URL % "data")
-    assert resource.source == BASE_URL % "data/table.csv"
+    assert resource.fullpath == BASE_URL % "data/table.csv"
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
@@ -233,11 +222,11 @@ def test_resource_source_data():
     resource = Resource({"data": data})
     assert resource.path is None
     assert resource.data == data
-    assert resource.source == data
-    assert resource.basepath == ""
-    assert resource.inline is True
+    assert resource.memory is True
     assert resource.tabular is True
     assert resource.multipart is False
+    assert resource.basepath == ""
+    assert resource.fullpath is None
     assert resource.read_bytes() == b""
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
@@ -258,7 +247,7 @@ def test_resource_source_path_and_data():
     resource = Resource({"data": data, "path": "path"})
     assert resource.path == "path"
     assert resource.data == data
-    assert resource.source == data
+    assert resource.fullpath is None
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
@@ -268,8 +257,8 @@ def test_resource_source_path_and_data():
 def test_resource_source_no_path_and_no_data():
     resource = Resource({})
     assert resource.path is None
-    assert resource.data is None
-    assert resource.source == []
+    assert resource.data == []
+    assert resource.fullpath is None
     assert resource.read_rows() == []
 
 
@@ -506,7 +495,7 @@ def test_resource_sync_schema():
         "fields": [{"name": "name", "type": "string"}, {"name": "id", "type": "integer"}]
     }
     resource = Resource(path="data/sync-schema.csv", schema=schema, sync_schema=True)
-    resource.infer()
+    resource.infer(stats=True)
     assert resource.schema == schema
     assert resource.header == ["name", "id"]
     assert resource.sample == [["english", "1"], ["中国人", "2"]]
@@ -519,7 +508,7 @@ def test_resource_sync_schema():
 def test_table_schema_patch_schema():
     patch_schema = {"fields": {"id": {"name": "new", "type": "string"}}}
     resource = Resource(path="data/table.csv", patch_schema=patch_schema)
-    resource.infer()
+    resource.infer(stats=True)
     assert resource.schema == {
         "fields": [
             {"name": "new", "type": "string"},
@@ -539,7 +528,7 @@ def test_table_schema_patch_schema():
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_infer():
     resource = Resource(path="data/table.csv")
-    resource.infer()
+    resource.infer(stats=True)
     assert resource.metadata_valid
     assert resource == {
         "path": "data/table.csv",
@@ -549,8 +538,8 @@ def test_resource_infer():
         "format": "csv",
         "hashing": "md5",
         "encoding": "utf-8",
-        "compression": "no",
-        "compressionPath": "",
+        "innerpath": "",
+        "compression": "",
         "control": {"newline": ""},
         "dialect": {},
         "query": {},
@@ -573,7 +562,7 @@ def test_resource_infer():
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_infer_source_non_tabular():
     resource = Resource(path="data/text.txt")
-    resource.infer()
+    resource.infer(stats=True)
     assert resource.metadata_valid
     assert resource == {
         "name": "text",
@@ -583,8 +572,8 @@ def test_resource_infer_source_non_tabular():
         "format": "txt",
         "hashing": "md5",
         "encoding": "utf-8",
-        "compression": "no",
-        "compressionPath": "",
+        "innerpath": "",
+        "compression": "",
         "control": {},
         "stats": {
             "hash": "e1cbb0c3879af8347246f12c559a86b5",
@@ -596,22 +585,22 @@ def test_resource_infer_source_non_tabular():
 
 
 def test_resource_infer_from_path():
-    resource = Resource()
-    resource.infer("data/table.csv")
+    resource = Resource("data/table.csv")
+    resource.infer(stats=True)
     assert resource.metadata_valid
     assert resource.path == "data/table.csv"
 
 
 def test_resource_infer_not_slugified_name_issue_531():
-    resource = Resource()
-    resource.infer("data/Table With Data.csv")
+    resource = Resource("data/Table With Data.csv")
+    resource.infer(stats=True)
     assert resource.metadata_valid
     assert resource.name == "table-with-data"
 
 
 def test_resource_infer_type():
     resource = Resource(path="data/table.csv", infer_type="string")
-    resource.infer()
+    resource.infer(stats=True)
     assert resource.schema == {
         "fields": [
             {"name": "id", "type": "string"},
@@ -627,7 +616,7 @@ def test_resource_infer_type():
 
 def test_resource_infer_names():
     resource = Resource(path="data/table.csv", infer_names=["new1", "new2"])
-    resource.infer()
+    resource.infer(stats=True)
     assert resource.schema == {
         "fields": [
             {"name": "new1", "type": "integer"},
@@ -644,7 +633,7 @@ def test_resource_infer_names():
 def test_resource_infer_float_numbers():
     data = [["number"], ["1.1"], ["2.2"], ["3.3"]]
     resource = Resource(data=data, infer_float_numbers=True)
-    resource.infer()
+    resource.infer(stats=True)
     assert resource.schema == {
         "fields": [
             {"name": "number", "type": "number", "floatNumber": True},
@@ -728,8 +717,8 @@ def test_resource_write(tmpdir):
     path1 = "data/table.csv"
     path2 = str(tmpdir.join("table.csv"))
     source = Resource(path=path1)
-    source.write(path2)
     target = Resource(path=path2, trusted=True)
+    source.write(target)
     assert target.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
@@ -768,149 +757,6 @@ def test_resource_to_yaml(tmpdir):
     # Read
     with open(target, encoding="utf-8") as file:
         assert resource == yaml.safe_load(file)
-
-
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-def test_resource_to_zip(tmpdir):
-
-    # Write
-    target = os.path.join(tmpdir, "resource.zip")
-    resource = Resource("data/resource.json")
-    resource.to_zip(target)
-
-    # Read
-    resource = Resource(target)
-    assert resource == {"name": "name", "path": "table.csv"}
-    assert resource.read_rows() == [
-        {"id": 1, "name": "english"},
-        {"id": 2, "name": "中国人"},
-    ]
-
-
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-def test_resource_to_zip_withdir_path(tmpdir):
-
-    # Write
-    target = os.path.join(tmpdir, "resource.zip")
-    resource = Resource(path="data/table.csv")
-    resource.to_zip(target)
-
-    # Read
-    resource = Resource(target)
-    assert resource == {"path": "data/table.csv"}
-    assert resource.read_rows() == [
-        {"id": 1, "name": "english"},
-        {"id": 2, "name": "中国人"},
-    ]
-
-
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-def test_resource_to_zip_absolute_path(tmpdir):
-
-    # Write
-    target = os.path.join(tmpdir, "resource.zip")
-    resource = Resource(path=os.path.abspath("data/table.csv"), trusted=True)
-    resource.to_zip(target)
-
-    # Read
-    resource = Resource(target)
-    assert resource == {"path": "table.csv"}
-    assert resource.read_rows() == [
-        {"id": 1, "name": "english"},
-        {"id": 2, "name": "中国人"},
-    ]
-
-
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-def test_resource_to_zip_resolve_inline(tmpdir):
-
-    # Write
-    target = os.path.join(tmpdir, "resource.zip")
-    resource = Resource(name="table", data=[["id", "name"], [1, "english"], [2, "中国人"]])
-    resource.to_zip(target, resolve=["inline"])
-
-    # Read
-    resource = Resource(target)
-    assert resource.name == "table"
-    assert resource.path == "table.csv"
-    assert resource.read_rows() == [
-        {"id": 1, "name": "english"},
-        {"id": 2, "name": "中国人"},
-    ]
-
-
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-def test_resource_to_zip_resolve_inline_sql(tmpdir, database_url):
-
-    # Write
-    target = os.path.join(tmpdir, "resource.zip")
-    resource = Resource.from_sql(name="table", url=database_url)
-    resource.to_zip(target, resolve=["inline"])
-
-    # Read
-    resource = Resource(target)
-    assert resource.name == "table"
-    assert resource.path == "table.csv"
-    assert resource.read_rows() == [
-        {"id": 1, "name": "english"},
-        {"id": 2, "name": "中国人"},
-    ]
-
-
-@pytest.mark.vcr
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-def test_resource_to_zip_resolve_remote(tmpdir):
-
-    # Write
-    target = os.path.join(tmpdir, "resource.zip")
-    resource = Resource(path=BASE_URL % "data/table.csv")
-    resource.to_zip(target, resolve=["remote"])
-
-    # Read
-    resource = Resource(target)
-    assert resource.name == "table"
-    assert resource.path == "table.csv"
-    assert resource.read_rows() == [
-        {"id": 1, "name": "english"},
-        {"id": 2, "name": "中国人"},
-    ]
-
-
-@pytest.mark.vcr
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-def test_resource_to_zip_source_remote(tmpdir):
-
-    # Write
-    path = BASE_URL % "data/table.csv"
-    target = os.path.join(tmpdir, "resource.zip")
-    resource = Resource(name="name", path=path)
-    resource.to_zip(target)
-
-    # Read
-    resource = Resource(target)
-    assert resource == {"name": "name", "path": path}
-    assert resource.read_rows() == [
-        {"id": 1, "name": "english"},
-        {"id": 2, "name": "中国人"},
-    ]
-
-
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-def test_resource_to_zip_source_inline(tmpdir):
-
-    # Write
-    target = os.path.join(tmpdir, "resource.zip")
-    data = [["id", "name"], ["1", "english"], ["2", "中国人"]]
-    resource = Resource(name="name", data=data)
-    resource.to_zip(target)
-
-    # Read
-    resource = Resource(target)
-    assert resource == {"name": "name", "data": data}
-    assert resource.read_rows() == [
-        {"id": 1, "name": "english"},
-        {"id": 2, "name": "中国人"},
-    ]
 
 
 # Metadata
@@ -1044,7 +890,7 @@ def test_resource_relative_parent_path_with_trusted_option_issue_171():
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_preserve_format_from_descriptor_on_infer_issue_188():
     resource = Resource({"path": "data/table.csvformat", "format": "csv"})
-    resource.infer()
+    resource.infer(stats=True)
     assert resource == {
         "path": "data/table.csvformat",
         "format": "csv",
@@ -1053,8 +899,8 @@ def test_resource_preserve_format_from_descriptor_on_infer_issue_188():
         "scheme": "file",
         "hashing": "md5",
         "encoding": "utf-8",
-        "compression": "no",
-        "compressionPath": "",
+        "innerpath": "",
+        "compression": "",
         "control": {"newline": ""},
         "dialect": {},
         "query": {},

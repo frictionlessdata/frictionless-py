@@ -7,7 +7,7 @@ from .table import validate_table
 
 @Report.from_validate
 def validate_resource(
-    source, basepath=None, trusted=False, noinfer=False, lookup=None, **options
+    source, basepath="", trusted=False, noinfer=False, lookup=None, **options
 ):
     """Validate resource
 
@@ -39,7 +39,7 @@ def validate_resource(
 
     # Prepare resource
     if not noinfer:
-        resource.infer(only_sample=True)
+        resource.infer()
     if resource.metadata_errors:
         return Report(time=timer.time, errors=resource.metadata_errors, tables=[])
 
@@ -51,13 +51,13 @@ def validate_resource(
 
     # Validate table
     report = validate_table(
-        source=resource.source,
+        source=resource.data if resource.memory else resource.fullpath,
         scheme=resource.scheme,
         format=resource.format,
         hashing=resource.hashing,
         encoding=resource.encoding,
+        innerpath=resource.innerpath,
         compression=resource.compression,
-        compression_path=resource.compression_path,
         dialect=resource.dialect,
         schema=resource.schema,
         lookup=lookup,

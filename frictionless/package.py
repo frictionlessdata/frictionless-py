@@ -1,8 +1,7 @@
-import os
 import json
-import glob
 import zipfile
 import tempfile
+from pathlib import Path
 from copy import deepcopy
 from .exception import FrictionlessException
 from .metadata import Metadata
@@ -55,8 +54,9 @@ class Package(Metadata):
 
     def __init__(
         self,
-        descriptor=None,
+        source=None,
         *,
+        descriptor=None,
         # Required
         resources=None,
         # Recommended
@@ -76,10 +76,26 @@ class Package(Metadata):
         created=None,
         # Extra
         hashing=None,
-        basepath=None,
+        basepath="",
         onerror="ignore",
         trusted=False,
     ):
+
+        # Handle source
+        if source is not None:
+            if descriptor is None:
+                descriptor = source
+                file = system.create_file(source, basepath=basepath)
+                if file.multipart:
+                    descriptor = {"resources": []}
+                    for part in file.normpath:
+                        descriptor["resources"].append({"path": part})
+                elif file.type == "table" and not file.compression:
+                    descriptor = {"resources": [{"path": file.normpath}]}
+
+        # Handle pathlib
+        if isinstance(descriptor, Path):
+            descriptor = str(descriptor)
 
         # Handle zip
         if helpers.is_zip_descriptor(descriptor):
@@ -349,32 +365,17 @@ class Package(Metadata):
 
     # Infer
 
-    # TODO: use stats=True instead of only_sample?
-    def infer(self, source=None, *, only_sample=False):
+    def infer(self, *, stats=False):
         """Infer package's attributes
 
         Parameters:
-            source (str|str[]): path, list of paths or glob pattern
-            only_sample? (bool): infer whatever possible but only from the sample
+            stats? (bool): stream files completely and infer stats
         """
-        self.setdefault("profile", config.DEFAULT_PACKAGE_PROFILE)
-
-        # From source
-        if source:
-            self.resources.clear()
-            if isinstance(source, str) and os.path.isdir(source):
-                source = f"{source}/*"
-            for pattern in source if isinstance(source, list) else [source]:
-                options = {"recursive": True} if "**" in pattern else {}
-                pattern = os.path.join(self.basepath, pattern)
-                for path in sorted(glob.glob(pattern, **options)):
-                    if path.endswith("package.json"):
-                        continue
-                    self.resources.append({"path": os.path.relpath(path, self.basepath)})
 
         # General
+        self.setdefault("profile", config.DEFAULT_PACKAGE_PROFILE)
         for resource in self.resources:
-            resource.infer(only_sample=only_sample)
+            resource.infer(stats=stats)
 
         # Deduplicate names
         if len(self.resource_names) != len(set(self.resource_names)):
@@ -386,6 +387,11 @@ class Package(Metadata):
                 seen_names.append(name)
 
     # Import/Export
+
+    @staticmethod
+    def from_zip(path, **options):
+        """Create a package from ZIP"""
+        return Package(descriptor=path, **options)
 
     @staticmethod
     def from_storage(storage):
@@ -487,23 +493,22 @@ class Package(Metadata):
         )
 
     # TODO: support multipart
-    # TODO: there is 100% duplication with resource.to_zip
-    def to_zip(self, target, *, resolve=[], encoder_class=None):
+    def to_zip(self, path, *, resolve=[], encoder_class=None):
         """Save package to a zip
 
         Parameters:
-            target (str): target path
+            path (str): target path
             resolve (str[]): Data sources to resolve.
-                For "inline" data it means saving them as CSV and including into ZIP.
+                For "memory" data it means saving them as CSV and including into ZIP.
                 For "remote" data it means downloading them and including into ZIP.
-                For example, `resolve=["inline", "remote"]`
+                For example, `resolve=["memory", "remote"]`
             encoder_class (object): json encoder class
 
         Raises:
             FrictionlessException: on any error
         """
         try:
-            with zipfile.ZipFile(target, "w") as zip:
+            with zipfile.ZipFile(path, "w") as zip:
                 package_descriptor = self.to_dict()
                 for index, resource in enumerate(self.resources):
                     descriptor = package_descriptor["resources"][index]
@@ -513,14 +518,15 @@ class Package(Metadata):
                         note = "Zipping multipart resource is not yet supported"
                         raise FrictionlessException(errors.ResourceError(note=note))
 
-                    # Inline data
-                    elif resource.inline:
-                        if "inline" in resolve:
+                    # Memory data
+                    elif resource.memory:
+                        if "memory" in resolve:
                             path = f"{resource.name}.csv"
                             descriptor["path"] = path
                             del descriptor["data"]
                             with tempfile.NamedTemporaryFile() as file:
-                                resource.write(file.name, format="csv")
+                                tgt = Resource(path=file.name, format="csv", trusted=True)
+                                resource.write(tgt)
                                 zip.write(file.name, path)
                         elif not isinstance(resource.data, list):
                             note = f"Use resolve argument to zip {resource.data}"
@@ -548,7 +554,7 @@ class Package(Metadata):
                         if not helpers.is_safe_path(path):
                             path = f"{resource.name}.{resource.format}"
                             descriptor["path"] = path
-                        zip.write(resource.source, path)
+                        zip.write(resource.fullpath, path)
 
                 # Metadata
                 zip.writestr(

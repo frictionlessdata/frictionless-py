@@ -17,7 +17,7 @@ def transform_resource(resource, *, steps):
 
     # Prepare
     target = resource.to_copy()
-    target.infer(only_sample=True)
+    target.infer()
 
     # Run transforms
     for step in steps:

@@ -236,7 +236,7 @@ class SpssStorage(Storage):
         # Save resources
         for resource in package.resources:
             if not resource.schema:
-                resource.infer(only_sample=True)
+                resource.infer()
             self.__write_convert_data(resource)
 
     def __write_convert_name(self, name):
