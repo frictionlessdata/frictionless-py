@@ -12,9 +12,9 @@ import datetime
 import platform
 import stringcase
 from inspect import signature
-from urllib.parse import urlparse
 from importlib import import_module
 from contextlib import contextmanager
+from urllib.parse import urlparse, parse_qs
 from _thread import RLock  # type: ignore
 from . import config
 
@@ -133,6 +133,25 @@ def detect_basepath(descriptor):
         if basepath and not is_remote_path(basepath):
             basepath = os.path.relpath(basepath, start=os.getcwd())
     return basepath
+
+
+def detect_scheme_and_format(source):
+    parsed = urlparse(source)
+    if re.search(r"\+.*://", source):
+        # For sources like: db2+ibm_db://username:password@host:port/database
+        scheme, source = source.split("://", maxsplit=1)
+        parsed = urlparse(f"//{source}", scheme=scheme)
+    scheme = parsed.scheme.lower()
+    if len(scheme) < 2:
+        scheme = config.DEFAULT_SCHEME
+    format = os.path.splitext(parsed.path or parsed.netloc)[1][1:].lower()
+    if not format:
+        # Test if query string contains a "format=" parameter.
+        query_string = parse_qs(parsed.query)
+        query_string_format = query_string.get("format")
+        if query_string_format is not None and len(query_string_format) == 1:
+            format = query_string_format[0]
+    return scheme, format
 
 
 def ensure_dir(path):

@@ -20,6 +20,11 @@ class MultipartPlugin(Plugin):
 
     """
 
+    def create_file(self, file):
+        if file.multipart:
+            file.scheme = "multipart"
+            return file
+
     def create_control(self, resource, *, descriptor):
         if resource.scheme == "multipart":
             return MultipartControl(descriptor)

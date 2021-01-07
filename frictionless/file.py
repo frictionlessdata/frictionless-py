@@ -1,15 +1,12 @@
 import os
-import re
 import glob
 from pathlib import Path
-from urllib.parse import urlparse, parse_qs
 from .helpers import cached_property
 from . import helpers
 from . import config
 
 
 # TODO: export in __init__.py
-# TODO: rename module to file.py
 class File:
     def __init__(self, source, *, basepath="", innerpath=None, allow_reading=False):
 
@@ -171,29 +168,19 @@ class File:
 
         # Detect scheme/format/innerpath/compression
         scheme = ""
-        # TODO: move to inline plugin?
-        format = "inline"
+        format = ""
         compression = ""
         innerpath = ""
         detection_path = fullpath[0] if multipart else fullpath
         if not memory:
-            scheme, format = self.__detect_scheme_and_format(detection_path)
+            scheme, format = helpers.detect_scheme_and_format(detection_path)
             if format in config.COMPRESSION_FORMATS:
                 if not multipart:
                     compression = format
                 detection_path = detection_path[: -len(format) - 1]
                 if self.__innerpath:
                     detection_path = os.path.join(detection_path, self.__innerpath)
-                scheme, format = self.__detect_scheme_and_format(detection_path)
-
-        # TODO: move to filelike plugin?
-        if hasattr(data, "read"):
-            scheme = "filelike"
-            format = ""
-
-        # TODO: move to multipart plugin?
-        if multipart:
-            scheme = "multipart"
+                scheme, format = helpers.detect_scheme_and_format(detection_path)
 
         # Set attributes
         self.__path = path
@@ -210,30 +197,3 @@ class File:
         self.__expandable = expandable
         self.__normpath = normpath
         self.__fullpath = fullpath
-
-    # TODO: move to helpers when it's only url parsing
-    def __detect_scheme_and_format(self, source):
-        # TODO: move to gsheets plugin
-        if "docs.google.com/spreadsheets" in source:
-            if "export" not in source and "pub" not in source:
-                return ("", "gsheets")
-            elif "csv" in source:
-                return ("https", "csv")
-        # TODO: move to sql plugin
-        # Fix for sources like: db2+ibm_db://username:password@host:port/database
-        if re.search(r"\+.*://", source):
-            scheme, source = source.split("://", maxsplit=1)
-            parsed = urlparse(f"//{source}", scheme=scheme)
-        else:
-            parsed = urlparse(source)
-        scheme = parsed.scheme.lower()
-        if len(scheme) < 2:
-            scheme = config.DEFAULT_SCHEME
-        format = os.path.splitext(parsed.path or parsed.netloc)[1][1:].lower() or None
-        if format is None:
-            # Test if query string contains a "format=" parameter.
-            query_string = parse_qs(parsed.query)
-            query_string_format = query_string.get("format")
-            if query_string_format is not None and len(query_string_format) == 1:
-                format = query_string_format[0]
-        return (scheme or "", format or "")

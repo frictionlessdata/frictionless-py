@@ -1,5 +1,5 @@
 from pathlib import Path
-from frictionless.file import File
+from frictionless import system
 
 
 # General
@@ -10,7 +10,7 @@ BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/ma
 
 def test_file_type_table():
     path = "data/table.csv"
-    file = File(path)
+    file = system.create_file(path)
     assert file.path == path
     assert file.data is None
     assert file.name == "table"
@@ -28,7 +28,7 @@ def test_file_type_table():
 
 def test_file_type_general_memory():
     data = [["id", "name"], [1, "english"], [2, "german"]]
-    file = File(data)
+    file = system.create_file(data)
     assert file.path is None
     assert file.data == data
     assert file.name == "memory"
@@ -46,7 +46,7 @@ def test_file_type_general_memory():
 
 def test_file_type_general_remote():
     path = f"{BASEURL}/data/table.csv"
-    file = File(path)
+    file = system.create_file(path)
     assert file.path == path
     assert file.data is None
     assert file.name == "table"
@@ -64,7 +64,7 @@ def test_file_type_general_remote():
 
 def test_file_type_general_remote_with_basepath():
     path = "data/table.csv"
-    file = File(path, basepath=BASEURL)
+    file = system.create_file(path, basepath=BASEURL)
     assert file.path == path
     assert file.data is None
     assert file.name == "table"
@@ -82,7 +82,7 @@ def test_file_type_general_remote_with_basepath():
 
 def test_file_type_general_multipart():
     path = ["data/chunk1.csv", "data/chunk2.csv"]
-    file = File(path)
+    file = system.create_file(path)
     assert file.path == path
     assert file.data is None
     assert file.name == "chunk"
@@ -100,7 +100,7 @@ def test_file_type_general_multipart():
 
 def test_file_type_general_multipart_with_basepath():
     path = ["data/chunk1.csv", "data/chunk2.csv"]
-    file = File(path, basepath="base")
+    file = system.create_file(path, basepath="base")
     assert file.path == path
     assert file.data is None
     assert file.name == "chunk"
@@ -118,7 +118,7 @@ def test_file_type_general_multipart_with_basepath():
 
 def test_file_type_general_multipart_from_glob():
     path = "data/chunk*.csv"
-    file = File(path)
+    file = system.create_file(path)
     assert file.path == path
     assert file.data is None
     assert file.name == "chunk"
@@ -138,7 +138,7 @@ def test_file_type_general_multipart_from_glob():
 
 def test_file_type_general_multipart_from_glob_with_basepath():
     path = "chunk*.csv"
-    file = File(path, basepath="data")
+    file = system.create_file(path, basepath="data")
     assert file.path == path
     assert file.data is None
     assert file.name == "chunk"
@@ -158,7 +158,7 @@ def test_file_type_general_multipart_from_glob_with_basepath():
 
 def test_file_type_general_multipart_from_dir():
     path = "data/tables"
-    file = File(path)
+    file = system.create_file(path)
     assert file.path == path
     assert file.data is None
     assert file.name == "chunk"
@@ -178,7 +178,7 @@ def test_file_type_general_multipart_from_dir():
 
 def test_file_type_general_multipart_from_dir_with_basepath():
     path = "tables"
-    file = File(path, basepath="data")
+    file = system.create_file(path, basepath="data")
     assert file.path == path
     assert file.data is None
     assert file.name == "chunk"
@@ -198,7 +198,7 @@ def test_file_type_general_multipart_from_dir_with_basepath():
 
 def test_file_type_schema():
     path = "data/schema.json"
-    file = File(path)
+    file = system.create_file(path)
     assert file.path == path
     assert file.data is None
     assert file.name == "schema"
@@ -216,7 +216,7 @@ def test_file_type_schema():
 
 def test_file_type_resource():
     path = "data/resource.json"
-    file = File(path)
+    file = system.create_file(path)
     assert file.path == path
     assert file.data is None
     assert file.name == "resource"
@@ -234,7 +234,7 @@ def test_file_type_resource():
 
 def test_file_type_package():
     path = "data/package.json"
-    file = File(path)
+    file = system.create_file(path)
     assert file.path == path
     assert file.data is None
     assert file.name == "package"
@@ -252,7 +252,7 @@ def test_file_type_package():
 
 def test_file_type_package_from_pathlib():
     path = Path("data/package.json")
-    file = File(path)
+    file = system.create_file(path)
     assert file.path == str(path)
     assert file.data is None
     assert file.name == "package"

@@ -22,6 +22,17 @@ class GsheetsPlugin(Plugin):
 
     """
 
+    def create_file(self, file):
+        if not file.memory:
+            if "docs.google.com/spreadsheets" in file.path:
+                if "export" not in file.path and "pub" not in file.path:
+                    file.scheme = ""
+                    file.format = "gsheets"
+                elif "csv" in file.path:
+                    file.scheme = "https"
+                    file.format = "csv"
+                return file
+
     def create_dialect(self, resource, *, descriptor):
         if resource.format == "gsheets":
             return GsheetsDialect(descriptor)

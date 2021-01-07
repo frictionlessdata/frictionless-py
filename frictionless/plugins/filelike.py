@@ -17,6 +17,13 @@ class FilelikePlugin(Plugin):
 
     """
 
+    def create_file(self, file):
+        if not file.scheme and not file.format:
+            if hasattr(file.data, "read"):
+                file.scheme = "filelike"
+                file.format = ""
+                return file
+
     def create_control(self, resource, *, descriptor):
         if resource.scheme == "filelike":
             return FilelikeControl(descriptor)
