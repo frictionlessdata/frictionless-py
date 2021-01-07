@@ -4,7 +4,7 @@ Here described only the breaking and most significant changes. The full changelo
 
 ## v4.01a1
 
-- Initial internal/external improvements for v4 (BREAKING)
+- Initial API/codebase improvements for v4 (BREAKING)
     - Allow `Package/Resource(source)` notation (guess descriptor/path/etc)
     - Renamed `schema.infer` -> `Schema.from_sample`
     - Renamed `resource.inline` -> `resource.memory`
