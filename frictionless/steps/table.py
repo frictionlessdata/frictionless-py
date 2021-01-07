@@ -1,6 +1,7 @@
 import petl
 from ..step import Step
 from ..field import Field
+from ..resource import Resource
 from ..exception import FrictionlessException
 from .. import helpers
 
@@ -268,4 +269,4 @@ class table_write(Step):
         self.__options = options
 
     def transform_resource(self, source, target):
-        target.write(self.__path, **self.__options)
+        target.write(Resource(path=self.__path, **self.__options))

@@ -493,11 +493,11 @@ class Package(Metadata):
         )
 
     # TODO: support multipart
-    def to_zip(self, target, *, resolve=[], encoder_class=None):
+    def to_zip(self, path, *, resolve=[], encoder_class=None):
         """Save package to a zip
 
         Parameters:
-            target (str): target path
+            path (str): target path
             resolve (str[]): Data sources to resolve.
                 For "memory" data it means saving them as CSV and including into ZIP.
                 For "remote" data it means downloading them and including into ZIP.
@@ -508,7 +508,7 @@ class Package(Metadata):
             FrictionlessException: on any error
         """
         try:
-            with zipfile.ZipFile(target, "w") as zip:
+            with zipfile.ZipFile(path, "w") as zip:
                 package_descriptor = self.to_dict()
                 for index, resource in enumerate(self.resources):
                     descriptor = package_descriptor["resources"][index]
@@ -525,7 +525,8 @@ class Package(Metadata):
                             descriptor["path"] = path
                             del descriptor["data"]
                             with tempfile.NamedTemporaryFile() as file:
-                                resource.write(file.name, format="csv")
+                                tgt = Resource(path=file.name, format="csv", trusted=True)
+                                resource.write(tgt)
                                 zip.write(file.name, path)
                         elif not isinstance(resource.data, list):
                             note = f"Use resolve argument to zip {resource.data}"

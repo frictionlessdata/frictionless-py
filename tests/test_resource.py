@@ -717,8 +717,8 @@ def test_resource_write(tmpdir):
     path1 = "data/table.csv"
     path2 = str(tmpdir.join("table.csv"))
     source = Resource(path=path1)
-    source.write(path2)
     target = Resource(path=path2, trusted=True)
+    source.write(target)
     assert target.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},

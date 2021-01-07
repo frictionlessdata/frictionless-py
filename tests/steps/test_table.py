@@ -734,7 +734,7 @@ def test_step_table_write(tmpdir):
         source,
         steps=[
             steps.cell_set(field_name="population", value=100),
-            steps.table_write(path=path),
+            steps.table_write(path=path, trusted=True),
         ],
     )
 

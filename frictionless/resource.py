@@ -1109,57 +1109,16 @@ class Resource(Metadata):
 
     # Write
 
-    # TODO: can we rebase on source/target resources instead of read_row_stream?
-    def write(
-        self,
-        target=None,
-        *,
-        scheme=None,
-        format=None,
-        hashing=None,
-        encoding=None,
-        innerpath=None,
-        compression=None,
-        control=None,
-        dialect=None,
-    ):
-        """Write the table to the target
+    # TODO: what we should return?
+    # TODO: use contextlib.closing?
+    # TODO: should we set target.data?
+    def write(self, target):
+        """Write this resource to the target resource
 
         Parameters:
-            target (str): target path
-            **options: subset of Table's constructor options
+            target (Resource): target Resource
         """
-
-        # Detect path/data
-        # TODO: remove when we have rebased on resource.write(other_resource)
-        path = None
-        data = target
-        if isinstance(target, str):
-            path = target
-            data = None
-        elif isinstance(target, list) and target and isinstance(target[0], str):
-            path = target
-            data = None
-
-        # Create resource
-        resource = Resource(
-            path=path,
-            data=data,
-            scheme=scheme,
-            format=format,
-            hashing=hashing,
-            encoding=encoding,
-            innerpath=innerpath,
-            compression=compression,
-            control=control,
-            dialect=dialect,
-            schema=self.schema,
-            trusted=True,
-        )
-
-        # Write resource
-        # TODO: use contextlib.closing?
-        parser = system.create_parser(resource)
+        parser = system.create_parser(target)
         read_row_stream = self.__write_row_stream_create
         result = parser.write_row_stream(read_row_stream)
         return result
