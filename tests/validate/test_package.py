@@ -151,6 +151,13 @@ def test_validate_package_with_nopool():
     ]
 
 
+def test_validate_package_with_schema_as_string():
+    report = validate(
+        {"resources": [{"path": "data/table.csv", "schema": "data/schema.json"}]}
+    )
+    assert report.valid
+
+
 # Checksum
 
 DESCRIPTOR_SH = {

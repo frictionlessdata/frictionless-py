@@ -53,6 +53,11 @@ def test_validate_invalid_table():
     ]
 
 
+def test_validate_resource_with_schema_as_string():
+    report = validate({"path": "data/table.csv", "schema": "data/schema.json"})
+    assert report.valid
+
+
 # Integrity
 
 

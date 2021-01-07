@@ -1485,8 +1485,8 @@ class Resource(Metadata):
     metadata_duplicate = True
     metadata_Error = errors.ResourceError
     metadata_profile = deepcopy(config.RESOURCE_PROFILE)
-    metadata_profile["properties"]["dialect"] = {"type": "object"}
-    metadata_profile["properties"]["schema"] = {"type": "object"}
+    metadata_profile["properties"]["dialect"] = {"type": ["string", "object"]}
+    metadata_profile["properties"]["schema"] = {"type": ["string", "object"]}
 
     def metadata_process(self):
 
