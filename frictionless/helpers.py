@@ -76,7 +76,7 @@ def deepsafe(value):
     elif isinstance(value, set):
         value = {deepsafe(value) for value in value}
     elif isinstance(value, io.BufferedRandom):
-        value = "inline"
+        value = "memory"
     return value
 
 

@@ -499,9 +499,9 @@ class Package(Metadata):
         Parameters:
             target (str): target path
             resolve (str[]): Data sources to resolve.
-                For "inline" data it means saving them as CSV and including into ZIP.
+                For "memory" data it means saving them as CSV and including into ZIP.
                 For "remote" data it means downloading them and including into ZIP.
-                For example, `resolve=["inline", "remote"]`
+                For example, `resolve=["memory", "remote"]`
             encoder_class (object): json encoder class
 
         Raises:
@@ -518,9 +518,9 @@ class Package(Metadata):
                         note = "Zipping multipart resource is not yet supported"
                         raise FrictionlessException(errors.ResourceError(note=note))
 
-                    # Inline data
-                    elif resource.inline:
-                        if "inline" in resolve:
+                    # Memory data
+                    elif resource.memory:
+                        if "memory" in resolve:
                             path = f"{resource.name}.csv"
                             descriptor["path"] = path
                             del descriptor["data"]

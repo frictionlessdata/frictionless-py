@@ -40,7 +40,7 @@ def test_multipart_loader_resource():
         "schema": "resource-schema.json",
     }
     resource = Resource(descriptor, basepath="data")
-    assert resource.inline is False
+    assert resource.memory is False
     assert resource.multipart is True
     assert resource.tabular is True
     assert resource.read_rows() == [
@@ -59,7 +59,7 @@ def test_multipart_loader_resource_remote():
         "schema": "resource_schema.json",
     }
     resource = Resource(descriptor, basepath=BASE_URL % "data")
-    assert resource.inline is False
+    assert resource.memory is False
     assert resource.multipart is True
     assert resource.tabular is True
     assert resource.read_rows() == [
@@ -78,7 +78,7 @@ def test_multipart_loader_resource_remote_both_path_and_basepath():
         "schema": "resource_schema.json",
     }
     resource = Resource(descriptor, basepath=BASE_URL % "data")
-    assert resource.inline is False
+    assert resource.memory is False
     assert resource.multipart is True
     assert resource.tabular is True
     assert resource.read_rows() == [

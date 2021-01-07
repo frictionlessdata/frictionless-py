@@ -60,8 +60,8 @@ class File:
         return self.__compression
 
     @cached_property
-    def inline(self):
-        return self.__inline
+    def memory(self):
+        return self.__memory
 
     @cached_property
     def remote(self):
@@ -102,16 +102,16 @@ class File:
             path = source
             data = None
 
-        # Detect inline/remote/expandable/multipart
-        inline = path is None
+        # Detect memory/remote/expandable/multipart
+        memory = path is None
         remote = helpers.is_remote_path(self.__basepath or path)
-        expandable = not inline and helpers.is_expandable_path(path, self.__basepath)
-        multipart = not inline and (isinstance(path, list) or expandable)
+        expandable = not memory and helpers.is_expandable_path(path, self.__basepath)
+        multipart = not memory and (isinstance(path, list) or expandable)
 
         # Detect fullpath
         normpath = path
         fullpath = path
-        if not inline:
+        if not memory:
             if expandable:
                 normpath = []
                 fullpath = []
@@ -136,8 +136,8 @@ class File:
                     fullpath = os.path.join(self.__basepath, path)
 
         # Detect name
-        name = "inline"
-        if not inline:
+        name = "memory"
+        if not memory:
             names = []
             # Path can have a text scheme like "text://row1\nrow2"
             for part in fullpath if multipart else [fullpath.split("\n")[0]]:
@@ -149,7 +149,7 @@ class File:
         # Detect type
         type = "table"
         if not multipart:
-            if inline and isinstance(data, dict):
+            if memory and isinstance(data, dict):
                 type = "resource"
                 if data.get("fields") is not None:
                     type = "schema"
@@ -157,7 +157,7 @@ class File:
                     type = "package"
                 elif data.get("tasks") is not None:
                     type = "inquiry"
-            elif not inline and path.endswith((".json", ".yaml")):
+            elif not memory and path.endswith((".json", ".yaml")):
                 type = "resource"
                 if path.endswith(("schema.json", "schema.yaml")):
                     type = "schema"
@@ -176,7 +176,7 @@ class File:
         compression = ""
         innerpath = ""
         detection_path = fullpath[0] if multipart else fullpath
-        if not inline:
+        if not memory:
             scheme, format = self.__detect_scheme_and_format(detection_path)
             if format in config.COMPRESSION_FORMATS:
                 if not multipart:
@@ -204,7 +204,7 @@ class File:
         self.__format = format
         self.__innerpath = innerpath
         self.__compression = compression
-        self.__inline = inline
+        self.__memory = memory
         self.__remote = remote
         self.__multipart = multipart
         self.__expandable = expandable

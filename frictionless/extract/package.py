@@ -27,7 +27,7 @@ def extract_package(
     result = {}
     package = Package(source, **options)
     for number, resource in enumerate(package.resources, start=1):
-        key = resource.fullpath if not resource.inline else f"memory{number}"
+        key = resource.fullpath if not resource.memory else f"memory{number}"
         data = read_row_stream(resource)
         data = (process(row) for row in data) if process else data
         result[key] = data if stream else list(data)

@@ -85,7 +85,7 @@ def test_resource_source_non_tabular():
     assert resource.path == path
     assert resource.data is None
     assert resource.basepath == ""
-    assert resource.inline is False
+    assert resource.memory is False
     assert resource.tabular is False
     assert resource.multipart is False
     assert resource.fullpath == path
@@ -104,7 +104,7 @@ def test_resource_source_non_tabular_remote():
     resource = Resource(path=path)
     assert resource.path == path
     assert resource.data is None
-    assert resource.inline is False
+    assert resource.memory is False
     assert resource.tabular is False
     assert resource.multipart is False
     assert resource.basepath == ""
@@ -134,7 +134,7 @@ def test_resource_source_path():
     resource = Resource({"path": path})
     assert resource.path == path
     assert resource.data is None
-    assert resource.inline is False
+    assert resource.memory is False
     assert resource.tabular is True
     assert resource.multipart is False
     assert resource.basepath == ""
@@ -222,7 +222,7 @@ def test_resource_source_data():
     resource = Resource({"data": data})
     assert resource.path is None
     assert resource.data == data
-    assert resource.inline is True
+    assert resource.memory is True
     assert resource.tabular is True
     assert resource.multipart is False
     assert resource.basepath == ""

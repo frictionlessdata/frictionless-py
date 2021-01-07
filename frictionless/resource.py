@@ -460,12 +460,12 @@ class Resource(Metadata):
         return self.__package
 
     @Metadata.property(write=False)
-    def inline(self):
+    def memory(self):
         """
         Returns
-            bool: if resource is inline
+            bool: if resource is memory
         """
-        return self.__file.inline
+        return self.__file.memory
 
     @Metadata.property(write=False)
     def remote(self):
@@ -655,7 +655,7 @@ class Resource(Metadata):
             any[][]: table data
         """
         # TODO: rework when there is proper sample caching
-        if self.inline:
+        if self.memory:
             return b""
         self["stats"] = {"hash": "", "bytes": 0, "fields": 0, "rows": 0}
         with system.create_loader(self) as loader:
@@ -668,7 +668,7 @@ class Resource(Metadata):
             str: table data
         """
         # TODO: rework when there is proper sample caching
-        if self.inline:
+        if self.memory:
             return ""
         self["stats"] = {"hash": "", "bytes": 0, "fields": 0, "rows": 0}
         with system.create_loader(self) as loader:

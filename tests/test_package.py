@@ -583,13 +583,13 @@ def test_package_to_zip_absolute_path(tmpdir):
 
 @pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-def test_package_to_zip_resolve_inline(tmpdir):
+def test_package_to_zip_resolve_memory(tmpdir):
 
     # Write
     target = os.path.join(tmpdir, "package.zip")
     resource = Resource(name="table", data=[["id", "name"], [1, "english"], [2, "中国人"]])
     package = Package(resources=[resource])
-    package.to_zip(target, resolve=["inline"])
+    package.to_zip(target, resolve=["memory"])
 
     # Read
     package = Package.from_zip(target)
@@ -602,13 +602,13 @@ def test_package_to_zip_resolve_inline(tmpdir):
 
 @pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-def test_package_to_zip_resolve_inline_sql(tmpdir, database_url):
+def test_package_to_zip_resolve_memory_sql(tmpdir, database_url):
 
     # Write
     target = os.path.join(tmpdir, "package.zip")
     resource = Resource.from_sql(name="table", url=database_url)
     package = Package(resources=[resource])
-    package.to_zip(target, resolve=["inline"])
+    package.to_zip(target, resolve=["memory"])
 
     # Read
     package = Package.from_zip(target)
@@ -642,14 +642,14 @@ def test_package_to_zip_resolve_remote(tmpdir):
 @pytest.mark.vcr
 @pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-def test_package_to_zip_resolve_inline_and_remote(tmpdir):
+def test_package_to_zip_resolve_memory_and_remote(tmpdir):
 
     # Write
     target = os.path.join(tmpdir, "package.zip")
     resource1 = Resource(name="name1", data=[["id", "name"], [1, "english"], [2, "中国人"]])
     resource2 = Resource(name="name2", path=BASE_URL % "data/table.csv")
     package = Package(resources=[resource1, resource2])
-    package.to_zip(target, resolve=["inline", "remote"])
+    package.to_zip(target, resolve=["memory", "remote"])
 
     # Read
     package = Package.from_zip(target)
