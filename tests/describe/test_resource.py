@@ -153,4 +153,5 @@ def test_describe_file_with_different_characters_name_issue_600():
 def test_describe_resource_compression_gzip_issue_606():
     resource = describe("data/table.csv.gz")
     assert resource.name == "table"
-    print(resource)
+    assert resource.stats["hash"] == "edf56ce48e402d83eb08d5dac6aa2ad9"
+    assert resource.stats["bytes"] == 61

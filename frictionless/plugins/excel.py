@@ -245,9 +245,10 @@ class XlsxParser(Parser):
             raise FrictionlessException(error)
 
         # Fill merged cells
-        # We can try using an algorithm similiar to what XlsParser has
-        # to support mergin cells in the read-only mode (now we need the write mode)
         if dialect.fill_merged_cells:
+            # TODO:
+            # We can try using an algorithm similiar to what XlsParser has
+            # to support mergin cells in the read-only mode (now we need the write mode)
             for merged_cell_range in list(sheet.merged_cells.ranges):
                 merged_cell_range = str(merged_cell_range)
                 sheet.unmerge_cells(merged_cell_range)

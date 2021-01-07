@@ -12,6 +12,12 @@ from . import errors
 from . import config
 
 
+# TODO
+# Probably we need to rework the way we calculate stats
+# First of all, it's not really reliable as read/read1(size) can be called many times
+# Secondly, for now, we stream compressed files twice (see loader.read_byte_stream_decompress)
+
+
 class Loader:
     """Loader representation
 
@@ -151,6 +157,8 @@ class Loader:
         Returns:
             io.ByteStream: resource byte stream
         """
+
+        # ZIP compression
         if self.resource.compression == "zip":
             # Remote
             if self.remote:
@@ -175,11 +183,23 @@ class Loader:
                 byte_stream = target
                 self.resource.innerpath = name
             return byte_stream
+
+        # GZip compression
         if self.resource.compression == "gz":
+            # Stats
+            if not self.remote:
+                bytes = True
+                while bytes:
+                    bytes = byte_stream.read1(io.DEFAULT_BUFFER_SIZE)
+                byte_stream.seek(0)
             byte_stream = gzip.open(byte_stream)
             return byte_stream
+
+        # No compression
         if not self.resource.compression:
             return byte_stream
+
+        # Not supported compression
         note = f'compression "{self.resource.compression}" is not supported'
         raise FrictionlessException(errors.CompressionError(note=note))
 
@@ -211,7 +231,7 @@ class Loader:
         if encoding is None:
             encoding = control.detect_encoding(sample)
         encoding = codecs.lookup(encoding).name
-        # Work around  for incorrect inferion of utf-8-sig encoding
+        # Work around for incorrect inferion of utf-8-sig encoding
         if encoding == "utf-8":
             if sample.startswith(codecs.BOM_UTF8):
                 encoding = "utf-8-sig"
@@ -273,10 +293,12 @@ class Loader:
 # Internal
 
 
-# We can try buffering byte sample especially for remote
-# Also, currently read/read1/item implementation is not complete
-# As an option, we can thing of subclassing some io.* class
 class ByteStreamWithStatsHandling:
+    # TODO
+    # We can try buffering byte sample especially for remote
+    # Also, currently read/read1/item implementation is not complete
+    # As an option, we can think of subclassing some io.* class
+
     def __init__(self, byte_stream, *, resource):
         try:
             self.__hasher = hashlib.new(resource.hashing) if resource.hashing else None

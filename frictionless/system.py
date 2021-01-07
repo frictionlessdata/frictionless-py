@@ -256,6 +256,7 @@ class System:
             if type is not None:
                 return type
         Class = getattr(types, f"{name.capitalize()}Type", getattr(types, "AnyType"))
+        # TODO: review
         #  if Class is None:
         #  note = f'cannot create type "{name}". Try installing "frictionless-{name}"'
         #  raise FrictionlessException(errors.FieldError(note=note))

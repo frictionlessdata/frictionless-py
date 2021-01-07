@@ -39,6 +39,7 @@ def validate_inquiry(source, *, nopool=False):
             error = Error(note="Inquiry cannot contain nested inquiries")
             raise FrictionlessException(error)
         if source_type == "package":
+            # TODO:
             # For now, we don't flatten inquiry completely and for the case
             # of a list of packages with one resource we don't get proper multiprocessing
             report = validate(**helpers.create_options(task))

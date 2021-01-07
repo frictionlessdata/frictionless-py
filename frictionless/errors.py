@@ -2,6 +2,7 @@ from .metadata import Metadata
 from .exception import FrictionlessException
 
 
+# TODO:
 # Consider other approached for report/errors as dict is not really
 # effective as it can be very memory consumig. As an option we can store
 # raw data without rendering an error template to an error messsage

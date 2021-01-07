@@ -156,6 +156,7 @@ class Parser:
 # Internal
 
 
+# TODO:
 # Here we catch some Loader related errors
 # We can consider moving it to Loader if it's possible
 class DataStreamWithErrorHandling:
