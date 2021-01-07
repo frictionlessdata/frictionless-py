@@ -1,9 +1,5 @@
-import os
-import glob
-from pathlib import Path
 from importlib import import_module
-from ..package import Package
-from .. import helpers
+from ..file import File
 
 
 def extract(source, *, source_type=None, process=None, stream=False, **options):
@@ -23,29 +19,10 @@ def extract(source, *, source_type=None, process=None, stream=False, **options):
     Returns:
         Row[]|{path: Row[]}: rows in a form depending on the source type
     """
-    module = import_module("frictionless.extract")
-
-    # Normalize source
-    # TODO: move to lower-levels
-    if isinstance(source, Path):
-        source = str(source)
-
-    # Detect source type
-    # TODO: move to helpers
     if not source_type:
-        if not callable(source):
-            if hasattr(source, "read"):
-                source_type = "resource"
-            elif isinstance(source, list) or glob.has_magic(source):
-                package = Package()
-                package.infer(source)
-                source = package
-            elif os.path.isdir(source):
-                package = Package()
-                package.infer(f"{source}/*")
-                source = package
-        source_type = helpers.detect_source_type(source)
-
-    # Extract source
+        file = File(source, basepath=options.get("basepath", ""))
+        if file.type in ["table", "resource", "package"]:
+            source_type = file.type
+    module = import_module("frictionless.extract")
     extract = getattr(module, "extract_%s" % source_type)
     return extract(source, process=process, stream=stream, **options)

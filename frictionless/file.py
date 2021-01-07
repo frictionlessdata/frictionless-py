@@ -29,6 +29,7 @@ class File:
     def data(self):
         return self.__data
 
+    # TODO: review possible values
     @cached_property
     def type(self):
         return self.__type
