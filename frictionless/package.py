@@ -7,7 +7,6 @@ from .exception import FrictionlessException
 from .metadata import Metadata
 from .resource import Resource
 from .system import system
-from .file import File
 from . import helpers
 from . import errors
 from . import config
@@ -86,7 +85,7 @@ class Package(Metadata):
         if source is not None:
             if descriptor is None:
                 descriptor = source
-                file = File(source, basepath=basepath)
+                file = system.create_file(source, basepath=basepath)
                 if file.multipart:
                     descriptor = {"resources": []}
                     for part in file.normpath:

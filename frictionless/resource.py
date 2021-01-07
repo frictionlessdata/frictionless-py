@@ -13,7 +13,6 @@ from .schema import Schema
 from .header import Header
 from .system import system
 from .query import Query
-from .file import File
 from .row import Row
 from . import helpers
 from . import errors
@@ -108,7 +107,7 @@ class Resource(Metadata):
 
         # Handle source
         if source is not None:
-            file = File(source, basepath=basepath)
+            file = system.create_file(source, basepath=basepath)
             if file.type == "table":
                 if path is None:
                     path = file.path
@@ -1402,7 +1401,7 @@ class Resource(Metadata):
     def metadata_process(self):
 
         # File
-        self.__file = File(
+        self.__file = system.create_file(
             self.get("data", self.get("path", [])),
             innerpath=self.get("innerpath"),
             basepath=self.__basepath,

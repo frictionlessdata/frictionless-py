@@ -6,6 +6,7 @@ from .exception import FrictionlessException
 from .helpers import cached_property
 from .control import Control
 from .dialect import Dialect
+from .file import File
 from . import errors
 
 
@@ -47,6 +48,7 @@ class System:
         "create_check",
         "create_control",
         "create_dialect",
+        "create_file",
         "create_loader",
         "create_parser",
         "create_pipeline",
@@ -123,6 +125,23 @@ class System:
             if dialect is not None:
                 return dialect
         return Dialect(descriptor)
+
+    def create_file(self, source, **options):
+        """Create file
+
+        Parameters:
+            source (any): file source
+            options (dict): file options
+
+        Returns:
+            File: file
+        """
+        file = File(source, **options)
+        for func in self.methods["create_file"].values():
+            plugin_file = func(file)
+            if plugin_file is not None:
+                return plugin_file
+        return file
 
     def create_loader(self, resource):
         """Create loader

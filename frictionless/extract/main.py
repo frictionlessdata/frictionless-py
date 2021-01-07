@@ -1,7 +1,9 @@
 from importlib import import_module
-from ..file import File
+from ..system import system
 
 
+# TODO: rename source_type -> type?
+# TODO: handle source_type not found error
 def extract(source, *, source_type=None, process=None, stream=False, **options):
     """Extract resource rows
 
@@ -20,7 +22,7 @@ def extract(source, *, source_type=None, process=None, stream=False, **options):
         Row[]|{path: Row[]}: rows in a form depending on the source type
     """
     if not source_type:
-        file = File(source, basepath=options.get("basepath", ""))
+        file = system.create_file(source, basepath=options.get("basepath", ""))
         if file.type in ["table", "resource", "package"]:
             source_type = file.type
     module = import_module("frictionless.extract")

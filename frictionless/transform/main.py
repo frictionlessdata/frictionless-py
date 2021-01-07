@@ -5,6 +5,10 @@ from .resource import transform_resource
 from .pipeline import transform_pipeline
 
 
+# TODO: sync with DEVT
+# TODO: add source_type
+# TODO: rename source_type -> type?
+# TODO: handle source_type not found error
 def transform(source, **options):
     """Transform resource
 
