@@ -918,7 +918,7 @@ class Resource(Metadata):
                 # Header
                 if not header_ready:
                     if row_number in header_numbers:
-                        header_data.append(helpers.stringify_header(cells))
+                        header_data.append(helpers.stringify_label(cells))
                         if dialect.header:
                             header_row_positions.append(row_position)
                     if row_number >= max(header_numbers):

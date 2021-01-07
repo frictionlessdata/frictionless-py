@@ -4,6 +4,7 @@ from ..exception import FrictionlessException
 from ..inquiry import Inquiry
 from ..report import Report
 from ..errors import Error
+from ..file import File
 from .main import validate
 from .. import helpers
 
@@ -33,7 +34,7 @@ def validate_inquiry(source, *, nopool=False):
     tasks = []
     reports = []
     for task in inquiry.tasks:
-        source_type = task.get("sourceType") or helpers.detect_source_type(task["source"])
+        source_type = task.get("sourceType", File(task["source"]).type)
         if source_type == "inquiry":
             error = Error(note="Inquiry cannot contain nested inquiries")
             raise FrictionlessException(error)

@@ -105,7 +105,7 @@ class File:
         # Detect inline/remote/expandable/multipart
         inline = path is None
         remote = helpers.is_remote_path(self.__basepath or path)
-        expandable = not inline and helpers.is_expandable(path, self.__basepath)
+        expandable = not inline and helpers.is_expandable_path(path, self.__basepath)
         multipart = not inline and (isinstance(path, list) or expandable)
 
         # Detect fullpath

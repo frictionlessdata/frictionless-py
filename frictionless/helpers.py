@@ -19,9 +19,6 @@ from _thread import RLock  # type: ignore
 from . import config
 
 
-# TODO: remove unused
-
-
 # General
 
 
@@ -38,7 +35,7 @@ def create_descriptor(**options):
     return {stringcase.camelcase(key): value for key, value in options.items()}
 
 
-def stringify_header(cells):
+def stringify_label(cells):
     return ["" if cell is None else str(cell).strip() for cell in cells]
 
 
@@ -59,31 +56,6 @@ def rows_to_data(rows):
     if not rows:
         return []
     return [list(rows[0].field_names)] + [row.to_list() for row in rows]
-
-
-def parse_csv_string(string, *, convert=str, fallback=False):
-    if string is None:
-        return None
-    reader = csv.reader(io.StringIO(string), delimiter=",")
-    result = []
-    for row in reader:
-        for cell in row:
-            try:
-                cell = convert(cell)
-            except ValueError:
-                if not fallback:
-                    raise
-                pass
-            result.append(cell)
-        return result
-
-
-def stringify_csv_string(cells):
-    stream = io.StringIO()
-    writer = csv.writer(stream)
-    writer.writerow(cells)
-    result = stream.getvalue().rstrip("\r\n")
-    return result
 
 
 def deepfork(value):
@@ -118,7 +90,6 @@ def import_from_plugin(name, *, plugin):
         raise module.FrictionlessException(error)
 
 
-# TODO: move to Resource?
 @contextmanager
 def ensure_open(thing):
     if not thing.closed:
@@ -153,25 +124,6 @@ def compile_regex(items):
                 item = re.compile(item.replace("<regex>", ""))
             result.append(item)
         return result
-
-
-def is_expandable(path, basepath):
-    if not isinstance(path, str):
-        return False
-    if is_remote_path(path):
-        return False
-    fullpath = os.path.join(basepath, path)
-    return glob.has_magic(fullpath) or os.path.isdir(fullpath)
-
-
-def detect_name(source):
-    name = "memory"
-    if isinstance(source, str) and "\n" not in source:
-        name = os.path.splitext(os.path.basename(source))[0]
-    elif isinstance(source, list) and source and isinstance(source[0], str):
-        name = os.path.splitext(os.path.basename(source[0]))[0]
-    name = slugify(name, regex_pattern=r"[^-a-z0-9._/]")
-    return name
 
 
 def detect_basepath(descriptor):
@@ -210,29 +162,6 @@ def create_byte_stream(bytes):
     return stream
 
 
-def is_platform(name):
-    current = platform.system()
-    if name == "linux":
-        return current == "Linux"
-    elif name == "macos":
-        return current == "Darwin"
-    elif name == "windows":
-        return current == "Windows"
-    return False
-
-
-def slugify(text, **options):
-
-    # Import
-    # There is a conflict between python-slugify and awesome-slugify
-    # So we import from a properl module manually
-    from slugify.slugify import slugify
-
-    # Slugify
-    slug = slugify(text, **options)
-    return slug
-
-
 def is_remote_path(path):
     path = path[0] if path and isinstance(path, list) else path
     return urlparse(path).scheme in config.REMOTE_SCHEMES
@@ -250,6 +179,15 @@ def is_safe_path(path):
         contains_posix_var(path),
     ]
     return not any(unsafeness_conditions)
+
+
+def is_expandable_path(path, basepath):
+    if not isinstance(path, str):
+        return False
+    if is_remote_path(path):
+        return False
+    fullpath = os.path.join(basepath, path)
+    return glob.has_magic(fullpath) or os.path.isdir(fullpath)
 
 
 def is_zip_descriptor(descriptor):
@@ -271,6 +209,42 @@ def is_only_strings(cells):
         except Exception:
             pass
     return True
+
+
+def is_platform(name):
+    current = platform.system()
+    if name == "linux":
+        return current == "Linux"
+    elif name == "macos":
+        return current == "Darwin"
+    elif name == "windows":
+        return current == "Windows"
+    return False
+
+
+def parse_csv_string(string, *, convert=str, fallback=False):
+    if string is None:
+        return None
+    reader = csv.reader(io.StringIO(string), delimiter=",")
+    result = []
+    for row in reader:
+        for cell in row:
+            try:
+                cell = convert(cell)
+            except ValueError:
+                if not fallback:
+                    raise
+                pass
+            result.append(cell)
+        return result
+
+
+def stringify_csv_string(cells):
+    stream = io.StringIO()
+    writer = csv.writer(stream)
+    writer.writerow(cells)
+    result = stream.getvalue().rstrip("\r\n")
+    return result
 
 
 def unzip_descriptor(path, innerpath):
@@ -310,26 +284,34 @@ def detect_encoding(sample):
     return encoding
 
 
-def detect_source_type(source):
-    source_type = "table"
-    if isinstance(source, dict):
-        source_type = "resource"
-        if source.get("fields") is not None:
-            source_type = "schema"
-        elif source.get("resources") is not None:
-            source_type = "package"
-        elif source.get("tasks") is not None:
-            source_type = "inquiry"
-    # TODO: we need to open it to improve detection
-    elif isinstance(source, str) and source.endswith((".json", ".yaml")):
-        source_type = "resource"
-        if source.endswith(("schema.json", "schema.yaml")):
-            source_type = "schema"
-        if source.endswith(("package.json", "package.yaml")):
-            source_type = "package"
-        if source.endswith(("inquiry.json", "inquiry.yaml")):
-            source_type = "inquiry"
-    return source_type
+# Measurements
+
+
+class Timer:
+    def __init__(self):
+        self.__start = datetime.datetime.now()
+        self.__stop = None
+
+    @property
+    def time(self):
+        if not self.__stop:
+            self.__stop = datetime.datetime.now()
+        return round((self.__stop - self.__start).total_seconds(), 3)
+
+
+def get_current_memory_usage():
+    # Current memory usage of the current process in MB
+    # This will only work on systems with a /proc file system (like Linux)
+    # https://stackoverflow.com/questions/897941/python-equivalent-of-phps-memory-get-usage
+    try:
+        with open("/proc/self/status") as status:
+            for line in status:
+                parts = line.split()
+                key = parts[0][2:-1].lower()
+                if key == "rss":
+                    return int(parts[1]) / 1000
+    except Exception:
+        pass
 
 
 # Collections
@@ -430,41 +412,24 @@ class ControlledList(list):
         return result
 
 
-# Measurements
-
-
-class Timer:
-    def __init__(self):
-        self.__start = datetime.datetime.now()
-        self.__stop = None
-
-    @property
-    def time(self):
-        if not self.__stop:
-            self.__stop = datetime.datetime.now()
-        return round((self.__stop - self.__start).total_seconds(), 3)
-
-
-def get_current_memory_usage():
-    # Current memory usage of the current process in MB
-    # This will only work on systems with a /proc file system (like Linux)
-    # https://stackoverflow.com/questions/897941/python-equivalent-of-phps-memory-get-usage
-    try:
-        with open("/proc/self/status") as status:
-            for line in status:
-                parts = line.split()
-                key = parts[0][2:-1].lower()
-                if key == "rss":
-                    return int(parts[1]) / 1000
-    except Exception:
-        pass
-
-
 # Backports
 
 
-# It can be removed after dropping support for Python 3.6 and Python 3.7
+def slugify(text, **options):
+    # There is a conflict between python-slugify and awesome-slugify
+    # So we import from a proper module manually
+
+    # Import
+    from slugify.slugify import slugify
+
+    # Slugify
+    slug = slugify(text, **options)
+    return slug
+
+
 class cached_property:
+    # It can be removed after dropping support for Python 3.6 and Python 3.7
+
     def __init__(self, func):
         self.func = func
         self.attrname = None
