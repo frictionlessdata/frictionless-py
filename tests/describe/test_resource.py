@@ -148,3 +148,9 @@ def test_describe_file_with_different_characters_name_issue_600():
     assert describe("data/table_with_data.csv").name == "table_with_data"
     assert describe("data/Table With Data.csv").name == "table-with-data"
     assert describe("data/Таблица.csv").name == "tablitsa"
+
+
+def test_describe_resource_compression_gzip_issue_606():
+    resource = describe("data/table.csv.gz")
+    assert resource.name == "table"
+    print(resource)

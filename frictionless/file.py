@@ -181,6 +181,8 @@ class File:
                 if self.__innerpath:
                     detection_path = os.path.join(detection_path, self.__innerpath)
                 scheme, format = helpers.detect_scheme_and_format(detection_path)
+                if format:
+                    name = os.path.splitext(name)[0]
 
         # Set attributes
         self.__path = path
