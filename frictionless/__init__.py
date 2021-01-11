@@ -1,4 +1,5 @@
 # TODO: remove/replace legacy
+# TODO: remove legacy from MANIFEST.in
 from .check import Check
 from .config import VERSION as __version__
 from .control import Control
