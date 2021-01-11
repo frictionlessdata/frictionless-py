@@ -1083,11 +1083,13 @@ class Resource(Metadata):
             source_key = tuple(fk["reference"]["fields"])
             if source_name != "" and not self.__package:
                 continue
-            source_res = (
-                self.__package.get_resource(source_name)
-                if source_name
-                else self.to_copy(nolookup=True)
-            )
+            if source_name:
+                if not self.__package.has_resource(source_name):
+                    note = f'Failed to handle a foreign key for resource "{self.name}" as resource "{source_name}" does not exist'
+                    raise FrictionlessException(errors.ResourceError(note=note))
+                source_res = self.__package.get_resource(source_name)
+            else:
+                source_res = self.to_copy(nolookup=True)
             lookup.setdefault(source_name, {})
             if source_key in lookup[source_name]:
                 continue
