@@ -59,7 +59,8 @@ def validate_resource(
         innerpath=resource.innerpath,
         compression=resource.compression,
         dialect=resource.dialect,
-        schema=resource.schema,
+        # TODO: review (see issue 615)
+        schema=resource.schema.to_dict(),
         lookup=lookup,
         # TODO: review
         checksum=resource.stats,
