@@ -13,7 +13,7 @@ from .. import helpers
 @program.command(name="describe")
 def program_describe(
     source: List[str] = Arg(None, help="Data source to describe [default: stdin]"),
-    source_type: str = Opt(None, help='Specify source type e.g. "package"'),
+    type: str = Opt(None, help='Specify source type e.g. "package"'),
     # File
     scheme: str = Opt(None, help="Specify schema  [default: inferred]"),
     format: str = Opt(None, help="Specify format  [default: inferred]"),
@@ -98,7 +98,7 @@ def program_describe(
     # Prepare options
     options = helpers.remove_non_values(
         dict(
-            source_type=source_type,
+            type=type,
             # File
             scheme=scheme,
             format=format,

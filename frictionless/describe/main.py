@@ -1,10 +1,10 @@
 from importlib import import_module
+from ..exception import FrictionlessException
 from ..system import system
+from .. import errors
 
 
-# TODO: rename source_type -> type?
-# TODO: handle source_type not found error
-def describe(source, *, source_type=None, **options):
+def describe(source, *, type=None, **options):
     """Describe the data source
 
     API      | Usage
@@ -13,15 +13,18 @@ def describe(source, *, source_type=None, **options):
 
     Parameters:
         source (any): data source
-        source_type (str): source type - `schema`, `resource` or `package`
+        type (str): source type - `schema`, `resource` or `package` (default: infer)
         **options (dict): options for the underlaying describe function
 
     Returns:
         Package|Resource|Schema: metadata
     """
-    if not source_type:
+    if not type:
         file = system.create_file(source, basepath=options.get("basepath", ""))
-        source_type = "package" if file.multipart else "resource"
+        type = "package" if file.multipart else "resource"
     module = import_module("frictionless.describe")
-    describe = getattr(module, "describe_%s" % source_type)
+    describe = getattr(module, "describe_%s" % type, None)
+    if describe is None:
+        note = f"Not supported describe type: ${type}"
+        raise FrictionlessException(errors.Error(note=note))
     return describe(source, **options)

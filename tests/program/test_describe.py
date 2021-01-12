@@ -18,10 +18,10 @@ def test_describe():
     assert result.stdout.count("hash: 6c2c61dd9b0e9c6876139a449ed87933")
 
 
-def test_describe_source_type():
-    result = runner.invoke(program, "describe data/table.csv --json --source-type schema")
+def test_describe_type_schema():
+    result = runner.invoke(program, "describe data/table.csv --json --type schema")
     assert result.exit_code == 0
-    assert json.loads(result.stdout) == describe("data/table.csv", source_type="schema")
+    assert json.loads(result.stdout) == describe("data/table.csv", type="schema")
 
 
 def test_describe_header_rows():

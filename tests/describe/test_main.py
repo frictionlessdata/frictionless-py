@@ -53,8 +53,8 @@ def test_describe_package_pattern():
     assert isinstance(resource, Package)
 
 
-def test_describe_package_source_type():
-    resource = describe("data/table.csv", source_type="package")
+def test_describe_package_type_package():
+    resource = describe("data/table.csv", type="package")
     assert isinstance(resource, Package)
 
 
