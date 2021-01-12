@@ -1,10 +1,11 @@
 from ..step import Step
+from ..package import Package
 from ..helpers import get_name
 from ..exception import FrictionlessException
 from .. import errors
 
 
-def transform_package(package, *, steps):
+def transform_package(source, *, steps, **options):
     """Transform package
 
     API      | Usage
@@ -13,10 +14,16 @@ def transform_package(package, *, steps):
 
     Parameters:
         source (any): data source
+        steps (Step[]): transform steps
+        **options (dict): Package constructor options
+
+    Returns:
+        Package: the transform result
     """
 
     # Prepare
-    target = package.to_copy()
+    native = isinstance(source, Package)
+    target = source.to_copy() if native else Package(source, **options)
     target.infer()
 
     # Run transforms

@@ -27,6 +27,6 @@ def extract(source, *, type=None, process=None, stream=False, **options):
     module = import_module("frictionless.extract")
     extract = getattr(module, "extract_%s" % type, None)
     if extract is None:
-        note = f"Not supported extract type: ${type}"
+        note = f"Not supported extract type: {type}"
         raise FrictionlessException(errors.Error(note=note))
     return extract(source, process=process, stream=stream, **options)

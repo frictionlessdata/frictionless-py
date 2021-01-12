@@ -1,7 +1,8 @@
+from ..pipeline import Pipeline
 from ..system import system
 
 
-def transform_pipeline(source):
+def transform_pipeline(source, **options):
     """Transform package
 
     API      | Usage
@@ -10,9 +11,11 @@ def transform_pipeline(source):
 
     Parameters:
         source (any): a pipeline descriptor
+        **options (dict): Pipeline constructor options
 
+    Returns:
+        any: the pipeline output
     """
-
-    # Run pipeline
-    pipeline = system.create_pipeline(source)
+    native = isinstance(source, Pipeline)
+    pipeline = source if native else system.create_pipeline(source)
     return pipeline.run()

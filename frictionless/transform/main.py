@@ -1,15 +1,10 @@
-from ..package import Package
-from ..resource import Resource
-from .package import transform_package
-from .resource import transform_resource
-from .pipeline import transform_pipeline
+from importlib import import_module
+from ..exception import FrictionlessException
+from ..system import system
+from .. import errors
 
 
-# TODO: sync with DEVT
-# TODO: add source_type
-# TODO: rename source_type -> type?
-# TODO: handle source_type not found error
-def transform(source, **options):
+def transform(source, type=None, **options):
     """Transform resource
 
     API      | Usage
@@ -18,9 +13,22 @@ def transform(source, **options):
 
     Parameters:
         source (any): data source
+        type (str): source type - package, resource or pipeline (default: infer)
+        **options (dict): options for the underlaying function
+
+    Returns:
+        any: the transform result
     """
-    if isinstance(source, Resource):
-        return transform_resource(source, **options)
-    elif isinstance(source, Package):
-        return transform_package(source, **options)
-    return transform_pipeline(source)
+    if not type:
+        type = "pipeline"
+        file = system.create_file(source, basepath=options.get("basepath", ""))
+        if file.type in ["table", "resource"]:
+            type = "resource"
+        elif file.type == "package":
+            type = "package"
+    module = import_module("frictionless.transform")
+    transform = getattr(module, "transform_%s" % type, None)
+    if transform is None:
+        note = f"Not supported transform type: {type}"
+        raise FrictionlessException(errors.Error(note=note))
+    return transform(source, **options)

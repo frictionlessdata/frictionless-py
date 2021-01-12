@@ -25,6 +25,6 @@ def describe(source, *, type=None, **options):
     module = import_module("frictionless.describe")
     describe = getattr(module, "describe_%s" % type, None)
     if describe is None:
-        note = f"Not supported describe type: ${type}"
+        note = f"Not supported describe type: {type}"
         raise FrictionlessException(errors.Error(note=note))
     return describe(source, **options)

@@ -17,7 +17,8 @@ def extract_resource(source, *, process=None, stream=False, **options):
         Row[]: an array/stream of rows
 
     """
-    resource = Resource(source, **options)
+    native = isinstance(source, Resource)
+    resource = source.to_copy() if native else Resource(source, **options)
     data = read_row_stream(resource)
     data = (process(row) for row in data) if process else data
     return data if stream else list(data)

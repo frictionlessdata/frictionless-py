@@ -36,7 +36,6 @@ class resource_transform(Step):
         self.__steps = steps
 
     def transform_package(self, source, target):
-        # TODO: this method should raise instead of returning None?
         resource = target.get_resource(self.__name)
         index = target.resources.index(resource)
         if not resource:
@@ -53,7 +52,6 @@ class resource_update(Step):
         self.__options = options
 
     def transform_package(self, source, target):
-        # TODO: this method should raise instead of returning None?
         resource = target.get_resource(self.__name)
         if not resource:
             error = errors.ResourceError(note=f'No resource "{self.__name}"')

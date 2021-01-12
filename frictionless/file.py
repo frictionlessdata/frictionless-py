@@ -154,6 +154,8 @@ class File:
                     type = "package"
                 elif data.get("tasks") is not None:
                     type = "inquiry"
+                elif data.get("steps") is not None:
+                    type = "pipeline"
             elif not memory and path.endswith((".json", ".yaml")):
                 type = "resource"
                 if path.endswith(("schema.json", "schema.yaml")):
@@ -162,6 +164,8 @@ class File:
                     type = "package"
                 elif path.endswith(("inquiry.json", "inquiry.yaml")):
                     type = "inquiry"
+                elif path.endswith(("pipeline.json", "pipeline.yaml")):
+                    type = "pipeline"
                 elif self.__allow_reading:
                     # TODO: implement
                     pass

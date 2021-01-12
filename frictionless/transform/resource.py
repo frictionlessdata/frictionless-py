@@ -1,10 +1,11 @@
 from ..step import Step
+from ..resource import Resource
 from ..helpers import get_name
 from ..exception import FrictionlessException
 from .. import errors
 
 
-def transform_resource(resource, *, steps):
+def transform_resource(source, *, steps, **options):
     """Transform resource
 
     API      | Usage
@@ -13,10 +14,16 @@ def transform_resource(resource, *, steps):
 
     Parameters:
         source (any): data source
+        steps (Step[]): transform steps
+        **options (dict): Package constructor options
+
+    Returns:
+        Resource: the transform result
     """
 
     # Prepare
-    target = resource.to_copy()
+    native = isinstance(source, Resource)
+    target = source.to_copy() if native else Resource(source, **options)
     target.infer()
 
     # Run transforms

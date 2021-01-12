@@ -19,7 +19,8 @@ def extract_package(source, *, process=None, stream=False, **options):
 
     """
     result = {}
-    package = Package(source, **options)
+    native = isinstance(source, Package)
+    package = source.to_copy() if native else Package(source, **options)
     for number, resource in enumerate(package.resources, start=1):
         key = resource.fullpath if not resource.memory else f"memory{number}"
         data = read_row_stream(resource)
