@@ -103,7 +103,7 @@ class MultipartLoader(Loader):
         fullpath = self.resource.fullpath
         remote = self.resource.remote
         # TODO: review
-        headless = self.resource.get("dialect", {}).get("header") is False
+        headless = self.resource.get("layout", {}).get("header") is False
         headless = headless or self.resource.format != "csv"
         byte_stream = MultipartByteStream(fullpath, remote=remote, headless=headless)
         return byte_stream

@@ -121,7 +121,7 @@ def test_validate_headers_none():
     report = validate("data/without-headers.csv", headers=False)
     assert report.valid
     assert report.table.stats["rows"] == 3
-    assert report.table["dialect"]["header"] is False
+    assert report.table["layout"]["header"] is False
     assert report.table["header"] == []
 
 
@@ -129,7 +129,7 @@ def test_validate_headers_none_extra_cell():
     report = validate("data/without-headers-extra.csv", headers=False)
     assert report.table.stats["rows"] == 3
     assert report.table["header"] == []
-    assert report.table["dialect"]["header"] is False
+    assert report.table["layout"]["header"] is False
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [3, 3, "extra-cell"],
     ]

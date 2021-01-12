@@ -58,26 +58,10 @@ class InlineDialect(Dialect):
 
     """
 
-    def __init__(
-        self,
-        descriptor=None,
-        *,
-        keys=None,
-        keyed=None,
-        header=None,
-        header_rows=None,
-        header_join=None,
-        header_case=None,
-    ):
+    def __init__(self, descriptor=None, *, keys=None, keyed=None):
         self.setinitial("keys", keys)
         self.setinitial("keyed", keyed)
-        super().__init__(
-            descriptor=descriptor,
-            header=header,
-            header_rows=header_rows,
-            header_join=header_join,
-            header_case=header_case,
-        )
+        super().__init__(descriptor)
 
     @Metadata.property
     def keys(self):
@@ -109,10 +93,6 @@ class InlineDialect(Dialect):
         "properties": {
             "keys": {"type": "array"},
             "keyed": {"type": "boolean"},
-            "header": {"type": "boolean"},
-            "headerRows": {"type": "array", "items": {"type": "number"}},
-            "headerJoin": {"type": "string"},
-            "headerCase": {"type": "boolean"},
         },
     }
 

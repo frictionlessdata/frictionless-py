@@ -1,5 +1,5 @@
 import pytest
-from frictionless import Resource, helpers
+from frictionless import Resource, Layout, helpers
 from frictionless.plugins.csv import CsvDialect
 
 BASE_URL = "https://raw.githubusercontent.com/okfn/tabulator-py/master/%s"
@@ -184,8 +184,8 @@ def test_csv_parser_skipinitialspace_default():
 
 def test_csv_parser_detect_delimiter_tab():
     source = "a1\tb1\tc1A,c1B\na2\tb2\tc2\n"
-    dialect = CsvDialect(header=False)
-    with Resource(source, scheme="text", format="csv", dialect=dialect) as resource:
+    layout = Layout(header=False)
+    with Resource(source, scheme="text", format="csv", layout=layout) as resource:
         assert resource.read_rows() == [
             {"field1": "a1", "field2": "b1", "field3": "c1A,c1B"},
             {"field1": "a2", "field2": "b2", "field3": "c2"},
@@ -194,8 +194,8 @@ def test_csv_parser_detect_delimiter_tab():
 
 def test_csv_parser_detect_delimiter_semicolon():
     source = "a1;b1\na2;b2\n"
-    dialect = CsvDialect(header=False)
-    with Resource(source, scheme="text", format="csv", dialect=dialect) as resource:
+    layout = Layout(header=False)
+    with Resource(source, scheme="text", format="csv", layout=layout) as resource:
         assert resource.read_rows() == [
             {"field1": "a1", "field2": "b1"},
             {"field1": "a2", "field2": "b2"},
@@ -204,8 +204,8 @@ def test_csv_parser_detect_delimiter_semicolon():
 
 def test_csv_parser_detect_delimiter_pipe():
     source = "a1|b1\na2|b2\n"
-    dialect = CsvDialect(header=False)
-    with Resource(source, scheme="text", format="csv", dialect=dialect) as resource:
+    layout = Layout(header=False)
+    with Resource(source, scheme="text", format="csv", layout=layout) as resource:
         assert resource.read_rows() == [
             {"field1": "a1", "field2": "b1"},
             {"field1": "a2", "field2": "b2"},

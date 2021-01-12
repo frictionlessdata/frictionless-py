@@ -47,24 +47,9 @@ class HtmlDialect(Dialect):
 
     """
 
-    def __init__(
-        self,
-        descriptor=None,
-        *,
-        selector=None,
-        header=None,
-        header_rows=None,
-        header_join=None,
-        header_case=None,
-    ):
+    def __init__(self, descriptor=None, *, selector=None):
         self.setinitial("selector", selector)
-        super().__init__(
-            descriptor=descriptor,
-            header=header,
-            header_rows=header_rows,
-            header_join=header_join,
-            header_case=header_case,
-        )
+        super().__init__(descriptor)
 
     @Metadata.property
     def selector(self):
@@ -78,7 +63,6 @@ class HtmlDialect(Dialect):
 
     def expand(self):
         """Expand metadata"""
-        super().expand()
         self.setdefault("selector", self.selector)
 
     # Metadata
@@ -88,10 +72,6 @@ class HtmlDialect(Dialect):
         "additionalProperties": False,
         "properties": {
             "selector": {"type": "string"},
-            "header": {"type": "boolean"},
-            "headerRows": {"type": "array", "items": {"type": "number"}},
-            "headerJoin": {"type": "string"},
-            "headerCase": {"type": "boolean"},
         },
     }
 

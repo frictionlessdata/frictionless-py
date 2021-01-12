@@ -61,28 +61,11 @@ class SqlDialect(Dialect):
 
     """
 
-    def __init__(
-        self,
-        descriptor=None,
-        *,
-        table=None,
-        order_by=None,
-        namespace=None,
-        header=None,
-        header_rows=None,
-        header_join=None,
-        header_case=None,
-    ):
+    def __init__(self, descriptor=None, *, table=None, order_by=None, namespace=None):
         self.setinitial("table", table)
         self.setinitial("order_by", order_by)
         self.setinitial("namespace", namespace)
-        super().__init__(
-            descriptor=descriptor,
-            header=header,
-            header_rows=header_rows,
-            header_join=header_join,
-            header_case=header_case,
-        )
+        super().__init__(descriptor)
 
     @Metadata.property
     def table(self):
@@ -106,10 +89,6 @@ class SqlDialect(Dialect):
             "table": {"type": "string"},
             "order_by": {"type": "string"},
             "namespace": {"type": "string"},
-            "header": {"type": "boolean"},
-            "headerRows": {"type": "array", "items": {"type": "number"}},
-            "headerJoin": {"type": "string"},
-            "headerCase": {"type": "boolean"},
         },
     }
 

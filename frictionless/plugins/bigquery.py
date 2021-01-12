@@ -73,28 +73,11 @@ class BigqueryDialect(Dialect):
         FrictionlessException: raise any error that occurs during the process
     """
 
-    def __init__(
-        self,
-        descriptor=None,
-        *,
-        project=None,
-        dataset=None,
-        table=None,
-        header=None,
-        header_rows=None,
-        header_join=None,
-        header_case=None,
-    ):
+    def __init__(self, descriptor=None, *, project=None, dataset=None, table=None):
         self.setinitial("project", project)
         self.setinitial("dataset", dataset)
         self.setinitial("table", table)
-        super().__init__(
-            descriptor=descriptor,
-            header=header,
-            header_rows=header_rows,
-            header_join=header_join,
-            header_case=header_case,
-        )
+        super().__init__(descriptor)
 
     @Metadata.property
     def project(self):
@@ -118,10 +101,6 @@ class BigqueryDialect(Dialect):
             "project": {"type": "string"},
             "dataset": {"type": "string"},
             "table": {"type": "string"},
-            "header": {"type": "boolean"},
-            "headerRows": {"type": "array", "items": {"type": "number"}},
-            "headerJoin": {"type": "string"},
-            "headerCase": {"type": "boolean"},
         },
     }
 

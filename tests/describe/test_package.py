@@ -93,5 +93,5 @@ def test_describe_package_hashing():
 
 def test_describe_package_expand():
     package = describe("data/chunk*.csv", expand=True)
-    assert package.get_resource("chunk1").dialect.header is True
+    assert package.get_resource("chunk1").layout.header is True
     assert package.get_resource("chunk1").schema.missing_values == [""]

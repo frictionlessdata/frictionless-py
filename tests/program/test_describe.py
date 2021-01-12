@@ -28,7 +28,7 @@ def test_describe_header_rows():
     result = runner.invoke(program, "describe data/table.csv --json --header-rows '1,2'")
     assert result.exit_code == 0
     assert json.loads(result.stdout) == describe(
-        "data/table.csv", dialect={"headerRows": [1, 2]}
+        "data/table.csv", layout={"headerRows": [1, 2]}
     )
 
 
@@ -38,7 +38,7 @@ def test_describe_header_join():
     )
     assert result.exit_code == 0
     assert json.loads(result.stdout) == describe(
-        "data/table.csv", dialect={"headerRows": [1, 2], "headerJoin": ":"}
+        "data/table.csv", layout={"headerRows": [1, 2], "headerJoin": ":"}
     )
 
 

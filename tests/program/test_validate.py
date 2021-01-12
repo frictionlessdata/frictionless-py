@@ -25,7 +25,7 @@ def test_validate_header_rows():
     result = runner.invoke(program, "validate data/table.csv --json --header-rows '1,2'")
     assert result.exit_code == 0
     assert no_time(json.loads(result.stdout)) == no_time(
-        validate("data/table.csv", dialect={"headerRows": [1, 2]})
+        validate("data/table.csv", layout={"headerRows": [1, 2]})
     )
 
 
@@ -35,7 +35,7 @@ def test_validate_header_join():
     )
     assert result.exit_code == 0
     assert no_time(json.loads(result.stdout)) == no_time(
-        validate("data/table.csv", dialect={"headerRows": [1, 2], "headerJoin": ":"})
+        validate("data/table.csv", layout={"headerRows": [1, 2], "headerJoin": ":"})
     )
 
 

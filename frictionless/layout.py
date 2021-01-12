@@ -1,6 +1,7 @@
 from .metadata import Metadata
 from . import helpers
 from . import errors
+from . import config
 
 
 class Layout(Metadata):
@@ -27,6 +28,10 @@ class Layout(Metadata):
         self,
         descriptor=None,
         *,
+        header=None,
+        header_rows=None,
+        header_join=None,
+        header_case=None,
         pick_fields=None,
         skip_fields=None,
         limit_fields=None,
@@ -36,6 +41,10 @@ class Layout(Metadata):
         limit_rows=None,
         offset_rows=None,
     ):
+        self.setinitial("header", header)
+        self.setinitial("headerRows", header_rows)
+        self.setinitial("headerJoin", header_join)
+        self.setinitial("headerCase", header_case)
         self.setinitial("pickFields", pick_fields)
         self.setinitial("skipFields", skip_fields)
         self.setinitial("limitFields", limit_fields)
@@ -45,6 +54,38 @@ class Layout(Metadata):
         self.setinitial("limitRows", limit_rows)
         self.setinitial("offsetRows", offset_rows)
         super().__init__(descriptor)
+
+    @Metadata.property
+    def header(self):
+        """
+        Returns:
+            bool: if there is a header row
+        """
+        return self.get("header", config.DEFAULT_HEADER)
+
+    @Metadata.property
+    def header_rows(self):
+        """
+        Returns:
+            int[]: header rows
+        """
+        return self.get("headerRows", config.DEFAULT_HEADER_ROWS)
+
+    @Metadata.property
+    def header_join(self):
+        """
+        Returns:
+            str: header joiner
+        """
+        return self.get("headerJoin", config.DEFAULT_HEADER_JOIN)
+
+    @Metadata.property
+    def header_case(self):
+        """
+        Returns:
+            str: header case sensitive
+        """
+        return self.get("headerCase", config.DEFAULT_HEADER_CASE)
 
     @Metadata.property
     def pick_fields(self):
@@ -159,7 +200,10 @@ class Layout(Metadata):
 
     def expand(self):
         """Expand metadata"""
-        pass
+        self.setdefault("header", self.header)
+        self.setdefault("headerRows", self.header_rows)
+        self.setdefault("headerJoin", self.header_join)
+        self.setdefault("headerCase", self.header_case)
 
     # Metadata
 
@@ -168,6 +212,10 @@ class Layout(Metadata):
         "type": "object",
         "additionalProperties": False,
         "properties": {
+            "header": {"type": "boolean"},
+            "headerRows": {"type": "array", "items": {"type": "number"}},
+            "headerJoin": {"type": "string"},
+            "headerCase": {"type": "boolean"},
             "pickFields": {"type": "array"},
             "skipFields": {"type": "array"},
             "limitFields": {"type": "number", "minimum": 1},

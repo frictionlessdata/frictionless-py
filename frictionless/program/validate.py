@@ -5,7 +5,6 @@ from typing import List
 from typer import Option as Opt
 from typer import Argument as Arg
 from ..validate import validate
-from ..dialect import Dialect
 from ..layout import Layout
 from .main import program
 from .. import helpers
@@ -22,7 +21,9 @@ def program_validate(
     encoding: str = Opt(None, help="Specify encoding  [default: inferred]"),
     innerpath: str = Opt(None, help="Specify in-archive path  [default: first]"),
     compression: str = Opt(None, help="Specify compression  [default: inferred]"),
-    # Layout/Schema
+    # Layout
+    header_rows: str = Opt(None, help="Comma-separated row numbers  [default: 1]"),
+    header_join: str = Opt(None, help="A separator to join a multiline header"),
     pick_fields: str = Opt(None, help='Comma-separated fields to pick e.g. "1,name1"'),
     skip_fields: str = Opt(None, help='Comma-separated fields to skip e.g. "2,name2"'),
     limit_fields: int = Opt(None, help="Limit fields by this integer"),
@@ -31,11 +32,9 @@ def program_validate(
     skip_rows: str = Opt(None, help='Comma-separated rows to skip e.g. "2,3,4,5"'),
     limit_rows: int = Opt(None, help="Limit rows by this integer"),
     offset_rows: int = Opt(None, help="Offset rows by this integer"),
+    # Schema
     schema: str = Opt(None, help="Specify a path to a schema"),
     sync_schema: bool = Opt(None, help="Sync the schema based on headers"),
-    # Header
-    header_rows: str = Opt(None, help="Comma-separated row numbers  [default: 1]"),
-    header_join: str = Opt(None, help="A separator to join a multiline header"),
     # Infer
     infer_type: str = Opt(None, help="Force all the fields to have this type"),
     infer_names: str = Opt(None, help="Comma-separated list of field names"),
@@ -82,18 +81,11 @@ def program_validate(
     pick_errors = helpers.parse_csv_string(pick_errors)
     skip_errors = helpers.parse_csv_string(skip_errors)
 
-    # Prepare dialect
-    dialect = (
-        Dialect(
-            header_rows=header_rows,
-            header_join=header_join,
-        )
-        or None
-    )
-
     # Prepare layout
     layout = (
         Layout(
+            header_rows=header_rows,
+            header_join=header_join,
             pick_fields=pick_fields,
             skip_fields=skip_fields,
             limit_fields=limit_fields,
@@ -125,10 +117,9 @@ def program_validate(
             encoding=encoding,
             innerpath=innerpath,
             compression=compression,
-            # Control/Dialect
-            dialect=dialect,
-            # Layout/Schema
+            # Layout
             layout=layout,
+            # Schema
             schema=schema,
             sync_schema=sync_schema,
             # Infer

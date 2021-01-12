@@ -1,7 +1,7 @@
 import pytest
 import datetime
 import sqlalchemy as sa
-from frictionless import Package, Resource, FrictionlessException
+from frictionless import Package, Resource, Layout, FrictionlessException
 from frictionless.plugins.sql import SqlDialect, SqlStorage
 
 
@@ -56,8 +56,9 @@ def test_sql_parser_table_is_required_error(database_url):
 
 # Probably it's not correct behaviour
 def test_sql_parser_headers_false(database_url):
-    dialect = SqlDialect(header=False, table="table")
-    with Resource(database_url, dialect=dialect) as resource:
+    dialect = SqlDialect(table="table")
+    layout = Layout(header=False)
+    with Resource(database_url, dialect=dialect, layout=layout) as resource:
         assert resource.header == []
         assert resource.read_rows() == [
             {"id": None, "name": "name"},

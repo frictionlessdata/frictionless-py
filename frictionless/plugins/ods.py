@@ -51,24 +51,9 @@ class OdsDialect(Dialect):
 
     """
 
-    def __init__(
-        self,
-        descriptor=None,
-        *,
-        sheet=None,
-        header=None,
-        header_rows=None,
-        header_join=None,
-        header_case=None,
-    ):
+    def __init__(self, descriptor=None, *, sheet=None):
         self.setinitial("sheet", sheet)
-        super().__init__(
-            descriptor=descriptor,
-            header=header,
-            header_rows=header_rows,
-            header_join=header_join,
-            header_case=header_case,
-        )
+        super().__init__(descriptor)
 
     @Metadata.property
     def sheet(self):
@@ -82,7 +67,6 @@ class OdsDialect(Dialect):
 
     def expand(self):
         """Expand metadata"""
-        super().expand()
         self.setdefault("sheet", self.sheet)
 
     # Metadata
@@ -92,10 +76,6 @@ class OdsDialect(Dialect):
         "additionalProperties": False,
         "properties": {
             "sheet": {"type": ["number", "string"]},
-            "header": {"type": "boolean"},
-            "headerRows": {"type": "array", "items": {"type": "number"}},
-            "headerJoin": {"type": "string"},
-            "headerCase": {"type": "boolean"},
         },
     }
 

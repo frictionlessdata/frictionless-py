@@ -63,21 +63,11 @@ class JsonDialect(Dialect):
         keys=None,
         keyed=None,
         property=None,
-        header=None,
-        header_rows=None,
-        header_join=None,
-        header_case=None,
     ):
         self.setinitial("keys", keys)
         self.setinitial("keyed", keyed)
         self.setinitial("property", property)
-        super().__init__(
-            descriptor=descriptor,
-            header=header,
-            header_rows=header_rows,
-            header_join=header_join,
-            header_case=header_case,
-        )
+        super().__init__(descriptor)
 
     @Metadata.property
     def keys(self):
@@ -107,7 +97,6 @@ class JsonDialect(Dialect):
 
     def expand(self):
         """Expand metadata"""
-        super().expand()
         self.setdefault("keyed", self.keyed)
 
     # Metadata
@@ -119,10 +108,6 @@ class JsonDialect(Dialect):
             "keys": {"type": "array"},
             "keyed": {"type": "boolean"},
             "property": {"type": "string"},
-            "header": {"type": "boolean"},
-            "headerRows": {"type": "array", "items": {"type": "number"}},
-            "headerJoin": {"type": "string"},
-            "headerCase": {"type": "boolean"},
         },
     }
 

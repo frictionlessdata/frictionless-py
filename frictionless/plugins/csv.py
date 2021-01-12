@@ -78,10 +78,6 @@ class CsvDialect(Dialect):
         null_sequence=None,
         skip_initial_space=None,
         comment_char=None,
-        header=None,
-        header_rows=None,
-        header_join=None,
-        header_case=None,
     ):
         self.setinitial("delimiter", delimiter)
         self.setinitial("lineTerminator", line_terminator)
@@ -91,13 +87,7 @@ class CsvDialect(Dialect):
         self.setinitial("nullSequence", null_sequence)
         self.setinitial("skipInitialSpace", skip_initial_space)
         self.setinitial("commentChar", comment_char)
-        super().__init__(
-            descriptor=descriptor,
-            header=header,
-            header_rows=header_rows,
-            header_join=header_join,
-            header_case=header_case,
-        )
+        super().__init__(descriptor)
 
     @Metadata.property
     def delimiter(self):
@@ -167,7 +157,6 @@ class CsvDialect(Dialect):
 
     def expand(self):
         """Expand metadata"""
-        super().expand()
         self.setdefault("delimiter", self.delimiter)
         self.setdefault("lineTerminator", self.line_terminator)
         self.setdefault("quoteChar", self.quote_char)
@@ -203,10 +192,6 @@ class CsvDialect(Dialect):
             "skipInitialSpace": {"type": "boolean"},
             "commentChar": {"type": "string"},
             "caseSensitiveHeader": {"type": "boolean"},
-            "header": {"type": "boolean"},
-            "headerRows": {"type": "array", "items": {"type": "number"}},
-            "headerJoin": {"type": "string"},
-            "headerCase": {"type": "boolean"},
         },
     }
 

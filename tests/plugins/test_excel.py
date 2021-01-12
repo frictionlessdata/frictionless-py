@@ -80,8 +80,8 @@ def test_xlsx_parser_format_errors_sheet_by_name_not_existent():
 
 def test_xlsx_parser_merged_cells():
     source = "data/merged-cells.xlsx"
-    dialect = ExcelDialect(header=False)
-    with Resource(source, dialect=dialect) as resource:
+    layout = Layout(header=False)
+    with Resource(source, layout=layout) as resource:
         assert resource.read_rows() == [
             {"field1": "data", "field2": None},
         ]
@@ -89,8 +89,9 @@ def test_xlsx_parser_merged_cells():
 
 def test_xlsx_parser_merged_cells_fill():
     source = "data/merged-cells.xlsx"
-    dialect = ExcelDialect(header=False, fill_merged_cells=True)
-    with Resource(source, dialect=dialect) as resource:
+    dialect = ExcelDialect(fill_merged_cells=True)
+    layout = Layout(header=False)
+    with Resource(source, dialect=dialect, layout=layout) as resource:
         assert resource.read_rows() == [
             {"field1": "data", "field2": "data"},
             {"field1": "data", "field2": "data"},
@@ -123,8 +124,9 @@ def test_xlsx_parser_adjust_floating_point_error_default():
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_xlsx_parser_preserve_formatting():
     source = "data/preserve-formatting.xlsx"
-    dialect = ExcelDialect(header_rows=[1], preserve_formatting=True)
-    with Resource(source, dialect=dialect, infer_type="any") as resource:
+    dialect = ExcelDialect(preserve_formatting=True)
+    layout = Layout(header_rows=[1])
+    with Resource(source, dialect=dialect, layout=layout, infer_type="any") as resource:
         assert resource.read_rows() == [
             {
                 # general
@@ -239,8 +241,8 @@ def test_xls_parser_sheet_by_name_not_existent():
 
 def test_xls_parser_merged_cells():
     source = "data/merged-cells.xls"
-    dialect = ExcelDialect(header=False)
-    with Resource(source, dialect=dialect) as resource:
+    layout = Layout(header=False)
+    with Resource(source, layout=layout) as resource:
         assert resource.read_rows() == [
             {"field1": "data", "field2": None},
             {"field1": None, "field2": None},
@@ -250,8 +252,9 @@ def test_xls_parser_merged_cells():
 
 def test_xls_parser_merged_cells_fill():
     source = "data/merged-cells.xls"
-    dialect = ExcelDialect(header=False, fill_merged_cells=True)
-    with Resource(source, dialect=dialect) as resource:
+    dialect = ExcelDialect(fill_merged_cells=True)
+    layout = Layout(header=False)
+    with Resource(source, dialect=dialect, layout=layout) as resource:
         assert resource.read_rows() == [
             {"field1": "data", "field2": "data"},
             {"field1": "data", "field2": "data"},
@@ -270,8 +273,8 @@ def test_xls_parser_with_boolean():
 
 def test_xlsx_parser_merged_cells_boolean():
     source = "data/merged-cells-boolean.xls"
-    dialect = ExcelDialect(header=False)
-    with Resource(source, dialect=dialect) as resource:
+    layout = Layout(header=False)
+    with Resource(source, layout=layout) as resource:
         assert resource.read_rows() == [
             {"field1": True, "field2": None},
             {"field1": None, "field2": None},
@@ -281,8 +284,9 @@ def test_xlsx_parser_merged_cells_boolean():
 
 def test_xlsx_parser_merged_cells_fill_boolean():
     source = "data/merged-cells-boolean.xls"
-    dialect = ExcelDialect(header=False, fill_merged_cells=True)
-    with Resource(source, dialect=dialect) as resource:
+    dialect = ExcelDialect(fill_merged_cells=True)
+    layout = Layout(header=False)
+    with Resource(source, dialect=dialect, layout=layout) as resource:
         assert resource.read_rows() == [
             {"field1": True, "field2": True},
             {"field1": True, "field2": True},

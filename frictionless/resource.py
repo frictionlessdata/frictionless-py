@@ -573,7 +573,9 @@ class Resource(Metadata):
             self["innerpath"] = self.innerpath
             self["compression"] = self.compression
             if self.tabular:
+                self["dialect"] = self.dialect
                 self["layout"] = self.layout
+                # TODO: where is control/schema?
             # TODO: review it's a hack for checksum validation
             if not stats:
                 if current_stats:
@@ -887,9 +889,9 @@ class Resource(Metadata):
 
         # Infer header
         row_number = 0
-        dialect = self.dialect
-        if dialect.get("header") is None and dialect.get("headerRows") is None and widths:
-            dialect["header"] = False
+        layout = self.layout
+        if layout.get("header") is None and layout.get("headerRows") is None and widths:
+            layout["header"] = False
             width = round(sum(widths) / len(widths))
             drift = max(round(width * 0.1), 1)
             match = list(range(width - drift, width + drift + 1))
@@ -900,9 +902,9 @@ class Resource(Metadata):
                         continue
                     if not helpers.is_only_strings(cells):
                         continue
-                    del dialect["header"]
+                    del layout["header"]
                     if row_number != config.DEFAULT_HEADER_ROWS[0]:
-                        dialect["headerRows"] = [row_number]
+                        layout["headerRows"] = [row_number]
                     break
 
         # Infer table
@@ -910,7 +912,7 @@ class Resource(Metadata):
         header_data = []
         header_ready = False
         header_row_positions = []
-        header_numbers = dialect.header_rows or config.DEFAULT_HEADER_ROWS
+        header_numbers = layout.header_rows or config.DEFAULT_HEADER_ROWS
         iterator = chain(buffer, self.__parser.data_stream)
         for row_position, cells in enumerate(iterator, start=1):
             if self.__read_filter_rows(row_position, cells):
@@ -920,12 +922,12 @@ class Resource(Metadata):
                 if not header_ready:
                     if row_number in header_numbers:
                         header_data.append(helpers.stringify_label(cells))
-                        if dialect.header:
+                        if layout.header:
                             header_row_positions.append(row_position)
                     if row_number >= max(header_numbers):
                         labels, field_positions = self.__read_infer_header(header_data)
                         header_ready = True
-                    if not header_ready or dialect.header:
+                    if not header_ready or layout.header:
                         continue
 
                 # Sample
@@ -979,14 +981,14 @@ class Resource(Metadata):
             fields=self.schema.fields,
             field_positions=field_positions,
             row_positions=header_row_positions,
-            ignore_case=not dialect.header_case,
+            ignore_case=not layout.header_case,
         )
 
     def __read_infer_header(self, header_data):
-        dialect = self.dialect
+        layout = self.layout
 
         # No header
-        if not dialect.header:
+        if not layout.header:
             return [], list(range(1, len(header_data[0]) + 1))
 
         # Get labels
@@ -1000,7 +1002,7 @@ class Resource(Metadata):
                 if len(labels) <= index:
                     labels.append(cell)
                     continue
-                labels[index] = dialect.header_join.join([labels[index], cell])
+                labels[index] = layout.header_join.join([labels[index], cell])
 
         # Filter labels
         filter_labels = []
@@ -1261,7 +1263,7 @@ class Resource(Metadata):
                         yield resource.schema.field_names
                         yield from (row.to_list() for row in resource.row_stream)
                         return
-                    if not resource.dialect.header:
+                    if not resource.layout.header:
                         yield resource.schema.field_names
                     yield from resource.data_stream
 
@@ -1359,7 +1361,9 @@ class Resource(Metadata):
     metadata_duplicate = True
     metadata_Error = errors.ResourceError
     metadata_profile = deepcopy(config.RESOURCE_PROFILE)
+    metadata_profile["properties"]["control"] = {"type": ["string", "object"]}
     metadata_profile["properties"]["dialect"] = {"type": ["string", "object"]}
+    metadata_profile["properties"]["layout"] = {"type": ["string", "object"]}
     metadata_profile["properties"]["schema"] = {"type": ["string", "object"]}
 
     def metadata_process(self):
@@ -1410,9 +1414,17 @@ class Resource(Metadata):
     def metadata_validate(self):
         yield from super().metadata_validate()
 
+        # Control
+        if self.control:
+            yield from self.control.metadata_errors
+
         # Dialect
         if self.dialect:
             yield from self.dialect.metadata_errors
+
+        # Layout
+        if self.layout:
+            yield from self.layout.metadata_errors
 
         # Schema
         if self.schema:

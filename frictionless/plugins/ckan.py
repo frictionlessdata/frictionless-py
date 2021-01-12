@@ -59,28 +59,11 @@ class CkanDialect(Dialect):
         FrictionlessException: raise any error that occurs during the process
     """
 
-    def __init__(
-        self,
-        descriptor=None,
-        *,
-        dataset=None,
-        resource=None,
-        apikey=None,
-        header=None,
-        header_rows=None,
-        header_join=None,
-        header_case=None,
-    ):
+    def __init__(self, descriptor=None, *, dataset=None, resource=None, apikey=None):
         self.setinitial("resource", resource)
         self.setinitial("dataset", dataset)
         self.setinitial("apikey", apikey)
-        super().__init__(
-            descriptor=descriptor,
-            header=header,
-            header_rows=header_rows,
-            header_join=header_join,
-            header_case=header_case,
-        )
+        super().__init__(descriptor)
 
     @Metadata.property
     def resource(self):
@@ -104,10 +87,6 @@ class CkanDialect(Dialect):
             "resource": {"type": "string"},
             "dataset": {"type": "string"},
             "apikey": {"type": "string"},
-            "header": {"type": "boolean"},
-            "headerRows": {"type": "array", "items": {"type": "number"}},
-            "headerJoin": {"type": "string"},
-            "headerCase": {"type": "boolean"},
         },
     }
 

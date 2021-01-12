@@ -4,7 +4,7 @@ import sys
 import json
 import yaml
 import pytest
-from frictionless import Resource, Schema, Field, Layout, Control, Dialect, helpers
+from frictionless import Resource, Schema, Field, Layout, Control, helpers
 from frictionless import FrictionlessException, describe_resource
 from frictionless.plugins.remote import RemoteControl
 from frictionless.plugins.excel import ExcelDialect
@@ -483,7 +483,7 @@ def test_resource_encoding_explicit_latin1():
 def test_resource_encoding_utf_16():
     # Bytes encoded as UTF-16 with BOM in platform order is detected
     bio = io.BytesIO(u"en,English\nja,日本語".encode("utf-16"))
-    with Resource(bio, format="csv", dialect={"header": False}) as resource:
+    with Resource(bio, format="csv", layout={"header": False}) as resource:
         assert resource.encoding == "utf-16"
         assert resource.read_rows() == [
             {"field1": "en", "field2": "English"},
@@ -732,16 +732,16 @@ def test_resource_dialect():
 
 
 def test_resource_dialect_header_false():
-    dialect = {"header": False}
+    layout = {"header": False}
     descriptor = {
         "name": "name",
         "profile": "tabular-data-resource",
         "path": "without-headers.csv",
-        "dialect": dialect,
+        "layout": layout,
         "schema": "resource-schema.json",
     }
     resource = Resource(descriptor, basepath="data")
-    assert resource.dialect == dialect
+    assert resource.layout == layout
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
@@ -794,10 +794,11 @@ def test_resource_dialect_csv_default():
         assert resource.dialect.double_quote is True
         assert resource.dialect.quote_char == '"'
         assert resource.dialect.skip_initial_space is False
-        assert resource.dialect.header is True
-        assert resource.dialect.header_rows == [1]
+        assert resource.layout.header is True
+        assert resource.layout.header_rows == [1]
         # All the values are default
         assert resource.dialect == {}
+        assert resource.layout == {}
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
@@ -844,9 +845,9 @@ def test_resource_dialect_header_case_default():
 
 
 def test_resource_dialect_header_case_is_false():
-    dialect = Dialect(header_case=False)
+    layout = Layout(header_case=False)
     schema = Schema(fields=[Field(name="ID"), Field(name="NAME")])
-    with Resource("data/table.csv", dialect=dialect, schema=schema) as resource:
+    with Resource("data/table.csv", layout=layout, schema=schema) as resource:
         assert resource.schema.field_names == ["ID", "NAME"]
         assert resource.header == ["id", "name"]
         assert resource.header.valid is True
@@ -885,8 +886,8 @@ def test_resource_layout_header_stream_context_manager():
 
 def test_resource_layout_header_inline():
     source = [[], ["id", "name"], ["1", "english"], ["2", "中国人"]]
-    dialect = Dialect(header_rows=[2])
-    with Resource(source, dialect=dialect) as resource:
+    layout = Layout(header_rows=[2])
+    with Resource(source, layout=layout) as resource:
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
@@ -916,8 +917,8 @@ def test_resource_layout_header_inline_keyed():
 
 def test_resource_layout_header_inline_keyed_headers_is_none():
     source = [{"id": "1", "name": "english"}, {"id": "2", "name": "中国人"}]
-    dialect = Dialect(header=False)
-    with Resource(source, dialect=dialect) as resource:
+    layout = Layout(header=False)
+    with Resource(source, layout=layout) as resource:
         assert resource.header == []
         assert resource.read_rows() == [
             {"field1": "id", "field2": "name"},
@@ -928,8 +929,9 @@ def test_resource_layout_header_inline_keyed_headers_is_none():
 
 def test_resource_layout_header_xlsx_multiline():
     source = "data/multiline-headers.xlsx"
-    dialect = ExcelDialect(header_rows=[1, 2, 3, 4, 5], fill_merged_cells=True)
-    with Resource(source, dialect=dialect) as resource:
+    dialect = ExcelDialect(fill_merged_cells=True)
+    layout = Layout(header_rows=[1, 2, 3, 4, 5])
+    with Resource(source, dialect=dialect, layout=layout) as resource:
         header = resource.header
         assert header == [
             "Region",
@@ -944,8 +946,8 @@ def test_resource_layout_header_xlsx_multiline():
 
 def test_resource_layout_header_csv_multiline_headers_join():
     source = "text://k1\nk2\nv1\nv2\nv3"
-    dialect = Dialect(header_rows=[1, 2], header_join=":")
-    with Resource(source, format="csv", dialect=dialect) as resource:
+    layout = Layout(header_rows=[1, 2], header_join=":")
+    with Resource(source, format="csv", layout=layout) as resource:
         assert resource.header == ["k1:k2"]
         assert resource.read_rows() == [
             {"k1:k2": "v1"},
@@ -956,8 +958,8 @@ def test_resource_layout_header_csv_multiline_headers_join():
 
 def test_resource_layout_header_csv_multiline_headers_duplicates():
     source = "text://k1\nk1\nv1\nv2\nv3"
-    dialect = Dialect(header_rows=[1, 2])
-    with Resource(source, format="csv", dialect=dialect) as resource:
+    layout = Layout(header_rows=[1, 2])
+    with Resource(source, format="csv", layout=layout) as resource:
         assert resource.header == ["k1"]
         assert resource.read_rows() == [
             {"k1": "v1"},
@@ -968,8 +970,8 @@ def test_resource_layout_header_csv_multiline_headers_duplicates():
 
 def test_resource_layout_header_strip_and_non_strings():
     source = [[" header ", 2, 3, None], ["value1", "value2", "value3", "value4"]]
-    dialect = Dialect(header_rows=[1])
-    with Resource(source, dialect=dialect) as resource:
+    layout = Layout(header_rows=[1])
+    with Resource(source, layout=layout) as resource:
         assert resource.header == ["header", "2", "3", ""]
         assert resource.read_rows() == [
             {"header": "value1", "2": "value2", "3": "value3", "field4": "value4"},
@@ -1137,9 +1139,8 @@ def test_resource_limit_offset_fields():
 
 def test_resource_pick_rows():
     source = "data/skip-rows.csv"
-    dialect = Dialect(header=False)
-    layout = Layout(pick_rows=["1", "2"])
-    with Resource(source, dialect=dialect, layout=layout) as resource:
+    layout = Layout(header=False, pick_rows=["1", "2"])
+    with Resource(source, layout=layout) as resource:
         assert resource.read_rows() == [
             {"field1": 1, "field2": "english"},
             {"field1": 2, "field2": "中国人"},
@@ -1148,9 +1149,8 @@ def test_resource_pick_rows():
 
 def test_resource_pick_rows_number():
     source = "data/skip-rows.csv"
-    dialect = Dialect(header=False)
-    layout = Layout(pick_rows=[3, 5])
-    with Resource(source, dialect=dialect, layout=layout) as resource:
+    layout = Layout(header=False, pick_rows=[3, 5])
+    with Resource(source, layout=layout) as resource:
         assert resource.read_rows() == [
             {"field1": 1, "field2": "english"},
             {"field1": 2, "field2": "中国人"},
@@ -1952,8 +1952,8 @@ def test_resource_reopen_generator():
         yield [1]
         yield [2]
 
-    dialect = Dialect(header=False)
-    with Resource(generator, dialect=dialect) as resource:
+    layout = Layout(header=False)
+    with Resource(generator, layout=layout) as resource:
         # Before reopen
         assert resource.read_rows() == [{"field1": 1}, {"field1": 2}]
         # Reset resource
@@ -1984,10 +1984,6 @@ def test_resource_expand_with_dialect():
         "path": "data/table.csv",
         "profile": "data-resource",
         "dialect": {
-            "header": True,
-            "headerRows": [1],
-            "headerJoin": " ",
-            "headerCase": True,
             "delimiter": "custom",
             "lineTerminator": "\r\n",
             "doubleQuote": True,
@@ -2384,8 +2380,8 @@ def test_resource_stats_rows_remote():
 
 
 def test_resource_stats_rows_significant():
-    dialect = Dialect(header=False)
-    with Resource("data/table1.csv", dialect=dialect) as resource:
+    layout = Layout(header=False)
+    with Resource("data/table1.csv", layout=layout) as resource:
         resource.read_rows()
         assert resource.stats["rows"] == 10000
 
@@ -2394,10 +2390,9 @@ def test_resource_stats_rows_significant():
 
 
 def test_resource_reset_on_close_issue_190():
-    layout = Layout(limit_rows=1)
+    layout = Layout(header=False, limit_rows=1)
     source = [["1", "english"], ["2", "中国人"]]
-    dialect = Dialect(header=False)
-    resource = Resource(source, dialect=dialect, layout=layout)
+    resource = Resource(source, layout=layout)
     resource.open()
     assert resource.read_rows() == [{"field1": 1, "field2": "english"}]
     resource.open()
@@ -2450,9 +2445,10 @@ def test_resource_chardet_raises_remote_issue_305():
 
 def test_resource_skip_rows_non_string_cell_issue_320():
     source = "data/issue320.xlsx"
-    dialect = ExcelDialect(header_rows=[10, 11, 12], fill_merged_cells=True)
+    dialect = ExcelDialect(fill_merged_cells=True)
+    layout = Layout(header_rows=[10, 11, 12])
     with pytest.warns(UserWarning):
-        with Resource(source, dialect=dialect) as resource:
+        with Resource(source, dialect=dialect, layout=layout) as resource:
             assert (
                 resource.header[7] == "Current Population Analysed % of total county Pop"
             )

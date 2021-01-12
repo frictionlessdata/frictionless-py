@@ -71,23 +71,13 @@ class ExcelDialect(Dialect):
         fill_merged_cells=None,
         preserve_formatting=None,
         adjust_floating_point_error=None,
-        header=None,
-        header_rows=None,
-        header_join=None,
-        header_case=None,
     ):
         self.setinitial("sheet", sheet)
         self.setinitial("workbookCache", workbook_cache)
         self.setinitial("fillMergedCells", fill_merged_cells)
         self.setinitial("preserveFormatting", preserve_formatting)
         self.setinitial("adjustFloatingPointError", adjust_floating_point_error)
-        super().__init__(
-            descriptor=descriptor,
-            header=header,
-            header_rows=header_rows,
-            header_join=header_join,
-            header_case=header_case,
-        )
+        super().__init__(descriptor)
 
     @Metadata.property
     def sheet(self):
@@ -133,7 +123,6 @@ class ExcelDialect(Dialect):
 
     def expand(self):
         """Expand metadata"""
-        super().expand()
         self.setdefault("sheet", self.sheet)
         self.setdefault("fillMergedCells", self.fill_merged_cells)
         self.setdefault("preserveFormatting", self.preserve_formatting)
@@ -150,10 +139,6 @@ class ExcelDialect(Dialect):
             "fillMergedCells": {"type": "boolean"},
             "preserveFormatting": {"type": "boolean"},
             "adjustFloatingPointError": {"type": "boolean"},
-            "header": {"type": "boolean"},
-            "headerRows": {"type": "array", "items": {"type": "number"}},
-            "headerJoin": {"type": "string"},
-            "headerCase": {"type": "boolean"},
         },
     }
 

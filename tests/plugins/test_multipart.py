@@ -52,7 +52,7 @@ def test_multipart_loader_resource_remote():
     descriptor = {
         "name": "name",
         "path": ["chunk2.csv", "chunk3.csv"],
-        "dialect": {"header": False},
+        "layout": {"header": False},
         "schema": "resource_schema.json",
     }
     resource = Resource(descriptor, basepath=BASE_URL % "data")
@@ -71,7 +71,7 @@ def test_multipart_loader_resource_remote_both_path_and_basepath():
     descriptor = {
         "name": "name",
         "path": ["chunk2.csv", BASE_URL % "data/chunk3.csv"],
-        "dialect": {"header": False},
+        "layout": {"header": False},
         "schema": "resource_schema.json",
     }
     resource = Resource(descriptor, basepath=BASE_URL % "data")

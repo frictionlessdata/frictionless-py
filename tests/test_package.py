@@ -359,10 +359,6 @@ def test_package_expand_resource_dialect():
                 "path": "data/table.csv",
                 "dialect": {
                     "delimiter": ";",
-                    "header": True,
-                    "headerRows": [1],
-                    "headerJoin": " ",
-                    "headerCase": True,
                     "lineTerminator": "\r\n",
                     "quoteChar": '"',
                     "doubleQuote": True,
