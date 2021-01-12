@@ -30,7 +30,7 @@ def test_extract_resource_stream():
     ]
 
 
-def test_extract_resource_from_file_process_and_stream():
+def test_extract_resource_process_and_stream():
     process = lambda row: row.to_list()
     data_stream = extract("data/resource.json", process=process, stream=True)
     assert isinstance(data_stream, types.GeneratorType)

@@ -2453,7 +2453,9 @@ def test_resource_skip_rows_non_string_cell_issue_320():
     dialect = ExcelDialect(header_rows=[10, 11, 12], fill_merged_cells=True)
     with pytest.warns(UserWarning):
         with Resource(source, dialect=dialect) as resource:
-            assert resource.header[7] == "Current Population Analysed % of total county Pop"
+            assert (
+                resource.header[7] == "Current Population Analysed % of total county Pop"
+            )
 
 
 def test_resource_skip_rows_non_string_cell_issue_322():

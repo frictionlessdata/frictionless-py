@@ -2,6 +2,12 @@
 
 Here described only the breaking and most significant changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/frictionless-py/commits/master).
 
+## v4.01a3
+
+- Updated extract API (BREAKING)
+    - Removed `extract_table` (use `extract_resource` with the same API)
+    - Renamed `extract(source_type)` argument to `type`
+
 ## v4.01a1
 
 - Initial API/codebase improvements for v4 (BREAKING)
