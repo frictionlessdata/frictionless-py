@@ -2,6 +2,11 @@
 
 Here described only the breaking and most significant changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/frictionless-py/commits/master).
 
+## v4.01a5
+
+- Updated transform API
+    - Added `transform(type)` argument
+
 ## v4.01a4
 
 - Updated describe API (BREAKING)
