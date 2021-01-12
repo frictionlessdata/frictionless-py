@@ -1,0 +1,73 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/54.0.2840.87 Safari/537.36
+    method: GET
+    uri: https://raw.githubusercontent.com/frictionlessdata/tabulator-py/master/data/table.csv.zip
+  response:
+    body:
+      string: !!binary |
+        UEsDBAoAAAAAAPJQZUkBbkCNHgAAAB4AAAAJABwAdGFibGUuY3N2VVQJAAM3hR1Y0J/oWXV4CwAB
+        BOgDAAAE6AMAAGlkLG5hbWUKMSxlbmdsaXNoCjIs5Lit5Zu95Lq6ClBLAQIeAwoAAAAAAPJQZUkB
+        bkCNHgAAAB4AAAAJABgAAAAAAAEAAAC0gQAAAAB0YWJsZS5jc3ZVVAUAAzeFHVh1eAsAAQToAwAA
+        BOgDAABQSwUGAAAAAAEAAQBPAAAAYQAAAAAA
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - max-age=300
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '198'
+      Content-Security-Policy:
+      - default-src 'none'; style-src 'unsafe-inline'; sandbox
+      Content-Type:
+      - application/zip
+      Date:
+      - Tue, 12 Jan 2021 06:37:04 GMT
+      ETag:
+      - W/"8d94a272dee43d9209f7ec9e49b9e266c6e6f474c2c796c7faa4b068ecad96be"
+      Expires:
+      - Tue, 12 Jan 2021 06:42:04 GMT
+      Source-Age:
+      - '0'
+      Strict-Transport-Security:
+      - max-age=31536000
+      Vary:
+      - Authorization,Accept-Encoding, Accept-Encoding
+      X-Cache:
+      - MISS, MISS
+      X-Cache-Hits:
+      - 0, 0
+      X-Content-Type-Options:
+      - nosniff
+      X-Fastly-Request-ID:
+      - 1677f529763120814ff4ffe691a70c5502ead2b9
+      X-Frame-Options:
+      - deny
+      X-GitHub-Request-Id:
+      - D198:78E3:33B188:35D964:5FFD4390
+      X-Served-By:
+      - cache-fra19136-FRA
+      X-Timer:
+      - S1610433425.676699,VS0,VE197
+      X-XSS-Protection:
+      - 1; mode=block
+      via:
+      - 1.1 varnish (Varnish/6.0), 1.1 varnish
+    status:
+      code: 200
+      message: OK
+version: 1

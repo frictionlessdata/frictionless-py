@@ -19,6 +19,7 @@ from . import errors
 from . import config
 
 
+# TODO: merge docstrings from Table
 # TODO: Add mediatype from the specs?
 # TODO: Remove support for deprecated "url"?
 # TODO: Support hash/bytes/rows from the specs?
@@ -71,6 +72,7 @@ class Resource(Metadata):
         description=None,
         licenses=None,
         sources=None,
+        profile=None,
         path=None,
         data=None,
         # File
@@ -80,11 +82,11 @@ class Resource(Metadata):
         encoding=None,
         innerpath=None,
         compression=None,
-        # Control/Dialect/Query
+        # Control/Dialect
         control=None,
         dialect=None,
+        # Layout/Schema
         query=None,
-        # Schema
         schema=None,
         sync_schema=False,
         patch_schema=None,
@@ -97,7 +99,6 @@ class Resource(Metadata):
         infer_missing_values=config.DEFAULT_MISSING_VALUES,
         # Misc
         stats=None,
-        profile=None,
         basepath="",
         onerror="ignore",
         trusted=False,
