@@ -1,13 +1,7 @@
 from ..package import Package
 
 
-def extract_package(
-    source,
-    *,
-    process=None,
-    stream=False,
-    **options,
-):
+def extract_package(source, *, process=None, stream=False, **options):
     """Extract package rows
 
     API      | Usage
