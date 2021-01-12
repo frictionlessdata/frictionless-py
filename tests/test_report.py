@@ -23,7 +23,7 @@ def test_report():
     assert report.table.innerpath == ""
     assert report.table.compression == ""
     assert report.table.dialect == {}
-    assert report.table.query == {}
+    assert report.table.layout == {}
     assert report.table.header == ["id", "name"]
     assert report.table.schema == {
         "fields": [

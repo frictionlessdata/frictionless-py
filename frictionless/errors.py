@@ -412,6 +412,14 @@ class DialectError(Error):
     description = "Provided dialect is not valid."
 
 
+class LayoutError(Error):
+    code = "layout-error"
+    name = "Layout Error"
+    tags = ["#table", "#layout"]
+    template = "The data source could not be successfully described by the invalid Table Layout: {note}"
+    description = "Provided layout is not valid."
+
+
 class SchemaError(Error):
     code = "schema-error"
     name = "Schema Error"
@@ -426,14 +434,6 @@ class FieldError(Error):
     tags = ["#table", "schema", "#field"]
     template = "The data source could not be successfully described by the invalid Table Schema: {note}"
     description = "Provided field is not valid."
-
-
-class QueryError(Error):
-    code = "query-error"
-    name = "Query Error"
-    tags = ["#table", "#query"]
-    template = "The data source could not be successfully described by the invalid Table Query: {note}"
-    description = "Provided query is not valid."
 
 
 class ChecksumError(Error):

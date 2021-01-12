@@ -3,15 +3,15 @@ from . import helpers
 from . import errors
 
 
-class Query(Metadata):
-    """Query representation
+class Layout(Metadata):
+    """Layout representation
 
     API      | Usage
     -------- | --------
-    Public   | `from frictionless import Query`
+    Public   | `from frictionless import Layout`
 
     Parameters:
-        descriptor? (str|dict): query descriptor
+        descriptor? (str|dict): layout descriptor
         pick_fields? ((str|int)[]): what fields to pick
         skip_fields? ((str|int)[]): what fields to skip
         limit_fields? (int): amount of fields
@@ -163,7 +163,7 @@ class Query(Metadata):
 
     # Metadata
 
-    metadata_Error = errors.QueryError
+    metadata_Error = errors.LayoutError
     metadata_profile = {  # type: ignore
         "type": "object",
         "additionalProperties": False,

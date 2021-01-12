@@ -42,7 +42,7 @@ def test_extract_pick_fields():
     result = runner.invoke(program, "extract data/table.csv --json --pick-fields 'id'")
     assert result.exit_code == 0
     assert json.loads(result.stdout) == extract(
-        "data/table.csv", query={"pickFields": ["id"]}
+        "data/table.csv", layout={"pickFields": ["id"]}
     )
 
 
@@ -50,7 +50,7 @@ def test_extract_skip_fields():
     result = runner.invoke(program, "extract data/table.csv --json --skip-fields 'id'")
     assert result.exit_code == 0
     assert json.loads(result.stdout) == extract(
-        "data/table.csv", query={"skipFields": ["id"]}
+        "data/table.csv", layout={"skipFields": ["id"]}
     )
 
 
@@ -58,7 +58,7 @@ def test_extract_limit_fields():
     result = runner.invoke(program, "extract data/table.csv --json --limit-fields 1")
     assert result.exit_code == 0
     assert json.loads(result.stdout) == extract(
-        "data/table.csv", query={"limitFields": 1}
+        "data/table.csv", layout={"limitFields": 1}
     )
 
 
@@ -66,32 +66,38 @@ def test_extract_offset_fields():
     result = runner.invoke(program, "extract data/table.csv --json --offset-fields 1")
     assert result.exit_code == 0
     assert json.loads(result.stdout) == extract(
-        "data/table.csv", query={"offsetFields": 1}
+        "data/table.csv", layout={"offsetFields": 1}
     )
 
 
 def test_extract_pick_rows():
     result = runner.invoke(program, "extract data/table.csv --json --pick-rows 1")
     assert result.exit_code == 0
-    assert json.loads(result.stdout) == extract("data/table.csv", query={"pickRows": [1]})
+    assert json.loads(result.stdout) == extract(
+        "data/table.csv", layout={"pickRows": [1]}
+    )
 
 
 def test_extract_skip_rows():
     result = runner.invoke(program, "extract data/table.csv --json --skip-rows 1")
     assert result.exit_code == 0
-    assert json.loads(result.stdout) == extract("data/table.csv", query={"skipRows": [1]})
+    assert json.loads(result.stdout) == extract(
+        "data/table.csv", layout={"skipRows": [1]}
+    )
 
 
 def test_extract_limit_rows():
     result = runner.invoke(program, "extract data/table.csv --json --limit-rows 1")
     assert result.exit_code == 0
-    assert json.loads(result.stdout) == extract("data/table.csv", query={"limitRows": 1})
+    assert json.loads(result.stdout) == extract("data/table.csv", layout={"limitRows": 1})
 
 
 def test_extract_offset_rows():
     result = runner.invoke(program, "extract data/table.csv --json --offset-rows 1")
     assert result.exit_code == 0
-    assert json.loads(result.stdout) == extract("data/table.csv", query={"offsetRows": 1})
+    assert json.loads(result.stdout) == extract(
+        "data/table.csv", layout={"offsetRows": 1}
+    )
 
 
 def test_extract_schema():

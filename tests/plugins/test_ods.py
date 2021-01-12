@@ -1,6 +1,6 @@
 import pytest
 from datetime import datetime
-from frictionless import Resource, Query, FrictionlessException, helpers
+from frictionless import Resource, Layout, FrictionlessException, helpers
 from frictionless.plugins.ods import OdsDialect
 
 BASE_URL = "https://raw.githubusercontent.com/okfn/tabulator-py/master/%s"
@@ -100,8 +100,8 @@ def test_table_write_ods(tmpdir):
     target = Resource(str(tmpdir.join("table.ods")), trusted=True)
     source.write(target)
     # TODO: fix ezodf writer creates more cells than we ask (remove limits)
-    query = Query(limit_fields=2, limit_rows=2)
-    with Resource(target, query=query, trusted=True) as resource:
+    layout = Layout(limit_fields=2, limit_rows=2)
+    with Resource(target, layout=layout, trusted=True) as resource:
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},

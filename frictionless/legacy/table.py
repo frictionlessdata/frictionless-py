@@ -63,8 +63,8 @@ class Table:
         dialect? (dict|Dialect): Table dialect.
             For more infromation, please check the Dialect documentation.
 
-        query? (dict|Query): Table query.
-            For more infromation, please check the Query documentation.
+        layout? (dict|Layout): Table layout.
+            For more infromation, please check the Layout documentation.
 
         headers? (int|int[]|[int[], str]): Either a row
             number or list of row numbers (in case of multi-line headers) to be
@@ -132,11 +132,11 @@ class Table:
         encoding=None,
         innerpath=None,
         compression=None,
-        # Control/Dialect/Query
+        # Control/Dialect
         control=None,
         dialect=None,
-        query=None,
-        # Schema
+        # Layout/Schema
+        layout=None,
         schema=None,
         sync_schema=False,
         patch_schema=None,
@@ -145,7 +145,7 @@ class Table:
         # TODO: rename to header preserving deprecated headers OR just deprecate?
         headers=None,
         # Infer
-        # TODO: group as we did for Query?
+        # TODO: group as we did for Layout?
         infer_type=None,
         infer_names=None,
         infer_volume=config.DEFAULT_INFER_VOLUME,
@@ -219,7 +219,7 @@ class Table:
             compression=compression,
             control=control,
             dialect=dialect,
-            query=query,
+            layout=layout,
             schema=schema,
             onerror=onerror,
             trusted=True,
@@ -319,12 +319,12 @@ class Table:
         return self.__resource.control
 
     @property
-    def query(self):
+    def layout(self):
         """
         Returns:
-            Query?: table query
+            Layout?: table layout
         """
-        return self.__resource.query
+        return self.__resource.layout
 
     @property
     def dialect(self):
@@ -405,8 +405,8 @@ class Table:
             FrictionlessException: any exception that occurs
         """
         self.close()
-        if self.__resource.query.metadata_errors:
-            error = self.__resource.query.metadata_errors[0]
+        if self.__resource.layout.metadata_errors:
+            error = self.__resource.layout.metadata_errors[0]
             raise FrictionlessException(error)
         try:
             self.__resource.stats = {"hash": "", "bytes": 0, "fields": 0, "rows": 0}
@@ -592,7 +592,7 @@ class Table:
             yield self.header.to_list()
 
         # Stream sample/parser (no filtering)
-        if not self.__resource.query:
+        if not self.__resource.layout:
             for row_position, cells in chain(sample_iterator, parser_iterator):
                 self.__row_position = row_position
                 self.__row_number += 1
@@ -601,8 +601,8 @@ class Table:
             return
 
         # Stream sample/parser (with filtering)
-        limit = self.__resource.query.limit_rows
-        offset = self.__resource.query.offset_rows or 0
+        limit = self.__resource.layout.limit_rows
+        offset = self.__resource.layout.offset_rows or 0
         for row_position, cells in chain(sample_iterator, parser_iterator):
             if offset:
                 offset -= 1
@@ -621,7 +621,7 @@ class Table:
         iterator = enumerate(self.__parser.data_stream, start=start)
 
         # Stream without filtering
-        if not self.__resource.query:
+        if not self.__resource.layout:
             yield from iterator
             return
 
@@ -770,8 +770,8 @@ class Table:
         # Filter labels
         filter_labels = []
         field_positions = []
-        limit = self.__resource.query.limit_fields
-        offset = self.__resource.query.offset_fields or 0
+        limit = self.__resource.layout.limit_fields
+        offset = self.__resource.layout.offset_fields or 0
         for field_position, labels in enumerate(labels, start=1):
             if self.__read_filter_fields(field_position, labels):
                 if offset:
@@ -788,9 +788,9 @@ class Table:
         match = True
         for name in ["pick", "skip"]:
             if name == "pick":
-                items = self.__resource.query.pick_fields_compiled
+                items = self.__resource.layout.pick_fields_compiled
             else:
-                items = self.__resource.query.skip_fields_compiled
+                items = self.__resource.layout.skip_fields_compiled
             if not items:
                 continue
             match = match and name == "skip"
@@ -811,9 +811,9 @@ class Table:
         cell = "" if cell is None else str(cell)
         for name in ["pick", "skip"]:
             if name == "pick":
-                items = self.__resource.query.pick_rows_compiled
+                items = self.__resource.layout.pick_rows_compiled
             else:
-                items = self.__resource.query.skip_rows_compiled
+                items = self.__resource.layout.skip_rows_compiled
             if not items:
                 continue
             match = match and name == "skip"
@@ -831,7 +831,7 @@ class Table:
         return match
 
     def __read_filter_cells(self, cells, field_positions):
-        if self.__resource.query.is_field_filtering:
+        if self.__resource.layout.is_field_filtering:
             result = []
             for field_position, cell in enumerate(cells, start=1):
                 if field_position in field_positions:

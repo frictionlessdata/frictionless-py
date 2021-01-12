@@ -2,7 +2,7 @@ import io
 import pytest
 from decimal import Decimal
 from datetime import datetime
-from frictionless import Resource, Query, FrictionlessException, helpers
+from frictionless import Resource, Layout, FrictionlessException, helpers
 from frictionless.plugins.excel import ExcelDialect
 
 BASE_URL = "https://raw.githubusercontent.com/frictionlessdata/tabulator-py/master/%s"
@@ -105,18 +105,18 @@ def test_xlsx_parser_adjust_floating_point_error():
         preserve_formatting=True,
         adjust_floating_point_error=True,
     )
-    query = Query(skip_fields=["<blank>"])
+    layout = Layout(skip_fields=["<blank>"])
     with pytest.warns(UserWarning):
-        with Resource(source, dialect=dialect, query=query) as resource:
+        with Resource(source, dialect=dialect, layout=layout) as resource:
             assert resource.read_rows()[1].cells[2] == 274.66
 
 
 def test_xlsx_parser_adjust_floating_point_error_default():
     source = "data/adjust-floating-point-error.xlsx"
     dialect = ExcelDialect(preserve_formatting=True)
-    query = Query(skip_fields=["<blank>"])
+    layout = Layout(skip_fields=["<blank>"])
     with pytest.warns(UserWarning):
-        with Resource(source, dialect=dialect, query=query) as resource:
+        with Resource(source, dialect=dialect, layout=layout) as resource:
             assert resource.read_rows()[1].cells[2] == 274.65999999999997
 
 
@@ -159,8 +159,8 @@ def test_xlsx_parser_preserve_formatting_percentage():
 def test_xlsx_parser_preserve_formatting_number_multicode():
     source = "data/number-format-multicode.xlsx"
     dialect = ExcelDialect(preserve_formatting=True)
-    query = Query(skip_fields=["<blank>"])
-    with Resource(source, dialect=dialect, query=query) as resource:
+    layout = Layout(skip_fields=["<blank>"])
+    with Resource(source, dialect=dialect, layout=layout) as resource:
         assert resource.read_rows() == [
             {"col1": Decimal("4.5")},
             {"col1": Decimal("-9.032")},

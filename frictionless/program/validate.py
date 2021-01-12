@@ -6,7 +6,7 @@ from typer import Option as Opt
 from typer import Argument as Arg
 from ..validate import validate
 from ..dialect import Dialect
-from ..query import Query
+from ..layout import Layout
 from .main import program
 from .. import helpers
 
@@ -22,7 +22,7 @@ def program_validate(
     encoding: str = Opt(None, help="Specify encoding  [default: inferred]"),
     innerpath: str = Opt(None, help="Specify in-archive path  [default: first]"),
     compression: str = Opt(None, help="Specify compression  [default: inferred]"),
-    # Control/Dialect/Query
+    # Layout/Schema
     pick_fields: str = Opt(None, help='Comma-separated fields to pick e.g. "1,name1"'),
     skip_fields: str = Opt(None, help='Comma-separated fields to skip e.g. "2,name2"'),
     limit_fields: int = Opt(None, help="Limit fields by this integer"),
@@ -31,7 +31,6 @@ def program_validate(
     skip_rows: str = Opt(None, help='Comma-separated rows to skip e.g. "2,3,4,5"'),
     limit_rows: int = Opt(None, help="Limit rows by this integer"),
     offset_rows: int = Opt(None, help="Offset rows by this integer"),
-    # Schema
     schema: str = Opt(None, help="Specify a path to a schema"),
     sync_schema: bool = Opt(None, help="Sync the schema based on headers"),
     # Header
@@ -92,9 +91,9 @@ def program_validate(
         or None
     )
 
-    # Prepare query
-    query = (
-        Query(
+    # Prepare layout
+    layout = (
+        Layout(
             pick_fields=pick_fields,
             skip_fields=skip_fields,
             limit_fields=limit_fields,
@@ -126,10 +125,10 @@ def program_validate(
             encoding=encoding,
             innerpath=innerpath,
             compression=compression,
-            # Control/Dialect/Query
+            # Control/Dialect
             dialect=dialect,
-            query=query,
-            # Schema
+            # Layout/Schema
+            layout=layout,
             schema=schema,
             sync_schema=sync_schema,
             # Infer

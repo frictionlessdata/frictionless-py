@@ -207,7 +207,7 @@ class ReportTable(Metadata):
         # Table
         self["control"] = table.control
         self["dialect"] = table.dialect
-        self["query"] = table.query
+        self["layout"] = table.layout
         self["schema"] = table.schema
         self["header"] = table.header
         # Validation
@@ -276,6 +276,14 @@ class ReportTable(Metadata):
         return self["compression"]
 
     @property
+    def control(self):
+        """
+        Returns:
+            Control: control
+        """
+        return self["control"]
+
+    @property
     def dialect(self):
         """
         Returns:
@@ -284,20 +292,12 @@ class ReportTable(Metadata):
         return self["dialect"]
 
     @property
-    def query(self):
+    def layout(self):
         """
         Returns:
-            Query: query
+            Layout: layout
         """
-        return self["query"]
-
-    @property
-    def header(self):
-        """
-        Returns:
-            Header: header
-        """
-        return self["header"]
+        return self["layout"]
 
     @property
     def schema(self):
@@ -306,6 +306,14 @@ class ReportTable(Metadata):
             Schema: schema
         """
         return self["schema"]
+
+    @property
+    def header(self):
+        """
+        Returns:
+            Header: header
+        """
+        return self["header"]
 
     @property
     def time(self):

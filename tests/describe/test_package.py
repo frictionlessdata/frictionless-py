@@ -24,7 +24,7 @@ def test_describe_package():
                 "compression": "",
                 "control": {"newline": ""},
                 "dialect": {},
-                "query": {},
+                "layout": {},
                 "schema": {
                     "fields": [
                         {"name": "id", "type": "integer"},
@@ -50,7 +50,7 @@ def test_describe_package():
                 "compression": "",
                 "control": {"newline": ""},
                 "dialect": {},
-                "query": {},
+                "layout": {},
                 "schema": {
                     "fields": [
                         {"name": "id", "type": "integer"},

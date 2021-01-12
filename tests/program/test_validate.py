@@ -43,7 +43,7 @@ def test_validate_pick_fields():
     result = runner.invoke(program, "validate data/table.csv --json --pick-fields 'id'")
     assert result.exit_code == 0
     assert no_time(json.loads(result.stdout)) == no_time(
-        validate("data/table.csv", query={"pickFields": ["id"]})
+        validate("data/table.csv", layout={"pickFields": ["id"]})
     )
 
 
@@ -51,7 +51,7 @@ def test_validate_skip_fields():
     result = runner.invoke(program, "validate data/table.csv --json --skip-fields 'id'")
     assert result.exit_code == 0
     assert no_time(json.loads(result.stdout)) == no_time(
-        validate("data/table.csv", query={"skipFields": ["id"]})
+        validate("data/table.csv", layout={"skipFields": ["id"]})
     )
 
 
@@ -59,7 +59,7 @@ def test_validate_limit_fields():
     result = runner.invoke(program, "validate data/table.csv --json --limit-fields 1")
     assert result.exit_code == 0
     assert no_time(json.loads(result.stdout)) == no_time(
-        validate("data/table.csv", query={"limitFields": 1})
+        validate("data/table.csv", layout={"limitFields": 1})
     )
 
 
@@ -67,7 +67,7 @@ def test_validate_offset_fields():
     result = runner.invoke(program, "validate data/table.csv --json --offset-fields 1")
     assert result.exit_code == 0
     assert no_time(json.loads(result.stdout)) == no_time(
-        validate("data/table.csv", query={"offsetFields": 1})
+        validate("data/table.csv", layout={"offsetFields": 1})
     )
 
 
@@ -75,7 +75,7 @@ def test_validate_pick_rows():
     result = runner.invoke(program, "validate data/table.csv --json --pick-rows 1")
     assert result.exit_code == 0
     assert no_time(json.loads(result.stdout)) == no_time(
-        validate("data/table.csv", query={"pickRows": [1]})
+        validate("data/table.csv", layout={"pickRows": [1]})
     )
 
 
@@ -83,7 +83,7 @@ def test_validate_skip_rows():
     result = runner.invoke(program, "validate data/table.csv --json --skip-rows 1")
     assert result.exit_code == 0
     assert no_time(json.loads(result.stdout)) == no_time(
-        validate("data/table.csv", query={"skipRows": [1]})
+        validate("data/table.csv", layout={"skipRows": [1]})
     )
 
 
@@ -91,7 +91,7 @@ def test_validate_limit_rows():
     result = runner.invoke(program, "validate data/table.csv --json --limit-rows 1")
     assert result.exit_code == 0
     assert no_time(json.loads(result.stdout)) == no_time(
-        validate("data/table.csv", query={"limitRows": 1})
+        validate("data/table.csv", layout={"limitRows": 1})
     )
 
 
@@ -99,7 +99,7 @@ def test_validate_offset_rows():
     result = runner.invoke(program, "validate data/table.csv --json --offset-rows 1")
     assert result.exit_code == 0
     assert no_time(json.loads(result.stdout)) == no_time(
-        validate("data/table.csv", query={"offsetRows": 1})
+        validate("data/table.csv", layout={"offsetRows": 1})
     )
 
 

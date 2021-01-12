@@ -9,10 +9,10 @@ from .exception import FrictionlessException
 from .metadata import Metadata
 from .control import Control
 from .dialect import Dialect
+from .layout import Layout
 from .schema import Schema
 from .header import Header
 from .system import system
-from .query import Query
 from .row import Row
 from . import helpers
 from . import errors
@@ -48,7 +48,7 @@ class Resource(Metadata):
         compression? (str): file compression
         control? (dict): file control
         dialect? (dict): table dialect
-        query? (dict): table query
+        layout? (dict): table layout
         schema? (dict): table schema
         stats? (dict): table stats
         profile? (str): resource profile
@@ -87,7 +87,7 @@ class Resource(Metadata):
         control=None,
         dialect=None,
         # Layout/Schema
-        query=None,
+        layout=None,
         schema=None,
         sync_schema=False,
         patch_schema=None,
@@ -169,7 +169,7 @@ class Resource(Metadata):
         self.setinitial("innerpath", innerpath)
         self.setinitial("control", control)
         self.setinitial("dialect", dialect)
-        self.setinitial("query", query)
+        self.setinitial("layout", layout)
         self.setinitial("schema", schema)
         self.setinitial("stats", stats)
         super().__init__(descriptor)
@@ -355,19 +355,19 @@ class Resource(Metadata):
         return dialect
 
     @Metadata.property
-    def query(self):
+    def layout(self):
         """
         Returns:
-            Query?: table query
+            Layout?: table layout
         """
-        query = self.get("query")
-        if query is None:
-            query = Query()
-            query = self.metadata_attach("query", query)
-        elif isinstance(query, str):
-            query = Query(os.path.join(self.basepath, query))
-            query = self.metadata_attach("query", query)
-        return query
+        layout = self.get("layout")
+        if layout is None:
+            layout = Layout()
+            layout = self.metadata_attach("layout", layout)
+        elif isinstance(layout, str):
+            layout = Layout(os.path.join(self.basepath, layout))
+            layout = self.metadata_attach("layout", layout)
+        return layout
 
     @Metadata.property
     def schema(self):
@@ -545,8 +545,8 @@ class Resource(Metadata):
             self.control.expand()
         if isinstance(self.get("dialect"), Dialect):
             self.dialect.expand()
-        if isinstance(self.get("query"), Query):
-            self.query.expand()
+        if isinstance(self.get("layout"), Layout):
+            self.layout.expand()
         if isinstance(self.get("schema"), Schema):
             self.schema.expand()
 
@@ -573,7 +573,7 @@ class Resource(Metadata):
             self["innerpath"] = self.innerpath
             self["compression"] = self.compression
             if self.tabular:
-                self["query"] = self.query
+                self["layout"] = self.layout
             # TODO: review it's a hack for checksum validation
             if not stats:
                 if current_stats:
@@ -594,8 +594,8 @@ class Resource(Metadata):
         # Table
         try:
             # TODO: is it the right place for it?
-            if self.query.metadata_errors:
-                error = self.query.metadata_errors[0]
+            if self.layout.metadata_errors:
+                error = self.layout.metadata_errors[0]
                 raise FrictionlessException(error)
             self["stats"] = {"hash": "", "bytes": 0, "fields": 0, "rows": 0}
             self.__parser = system.create_parser(self)
@@ -828,7 +828,7 @@ class Resource(Metadata):
             yield self.header.to_list()
 
         # Stream sample/parser (no filtering)
-        if not self.query:
+        if not self.layout:
             for row_position, cells in chain(sample_iterator, parser_iterator):
                 self.__row_position = row_position
                 self.__row_number += 1
@@ -837,8 +837,8 @@ class Resource(Metadata):
             return
 
         # Stream sample/parser (with filtering)
-        limit = self.query.limit_rows
-        offset = self.query.offset_rows or 0
+        limit = self.layout.limit_rows
+        offset = self.layout.offset_rows or 0
         for row_position, cells in chain(sample_iterator, parser_iterator):
             if offset:
                 offset -= 1
@@ -857,7 +857,7 @@ class Resource(Metadata):
         iterator = enumerate(self.__parser.data_stream, start=start)
 
         # Stream without filtering
-        if not self.query:
+        if not self.layout:
             yield from iterator
             return
 
@@ -1005,8 +1005,8 @@ class Resource(Metadata):
         # Filter labels
         filter_labels = []
         field_positions = []
-        limit = self.query.limit_fields
-        offset = self.query.offset_fields or 0
+        limit = self.layout.limit_fields
+        offset = self.layout.offset_fields or 0
         for field_position, labels in enumerate(labels, start=1):
             if self.__read_filter_fields(field_position, labels):
                 if offset:
@@ -1023,9 +1023,9 @@ class Resource(Metadata):
         match = True
         for name in ["pick", "skip"]:
             if name == "pick":
-                items = self.query.pick_fields_compiled
+                items = self.layout.pick_fields_compiled
             else:
-                items = self.query.skip_fields_compiled
+                items = self.layout.skip_fields_compiled
             if not items:
                 continue
             match = match and name == "skip"
@@ -1046,9 +1046,9 @@ class Resource(Metadata):
         cell = "" if cell is None else str(cell)
         for name in ["pick", "skip"]:
             if name == "pick":
-                items = self.query.pick_rows_compiled
+                items = self.layout.pick_rows_compiled
             else:
-                items = self.query.skip_rows_compiled
+                items = self.layout.skip_rows_compiled
             if not items:
                 continue
             match = match and name == "skip"
@@ -1066,7 +1066,7 @@ class Resource(Metadata):
         return match
 
     def __read_filter_cells(self, cells, field_positions):
-        if self.query.is_field_filtering:
+        if self.layout.is_field_filtering:
             result = []
             for field_position, cell in enumerate(cells, start=1):
                 if field_position in field_positions:
@@ -1383,11 +1383,11 @@ class Resource(Metadata):
             dialect = system.create_dialect(self, descriptor=dialect)
             dict.__setitem__(self, "dialect", dialect)
 
-        # Query
-        query = self.get("query")
-        if not isinstance(query, (str, type(None), Query)):
-            query = Query(query)
-            dict.__setitem__(self, "query", query)
+        # Layout
+        layout = self.get("layout")
+        if not isinstance(layout, (str, type(None), Layout)):
+            layout = Layout(layout)
+            dict.__setitem__(self, "layout", layout)
 
         # Schema
         schema = self.get("schema")

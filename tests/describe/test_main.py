@@ -22,7 +22,7 @@ def test_describe():
         "compression": "",
         "control": {"newline": ""},
         "dialect": {},
-        "query": {},
+        "layout": {},
         "schema": {
             "fields": [
                 {"name": "id", "type": "integer"},

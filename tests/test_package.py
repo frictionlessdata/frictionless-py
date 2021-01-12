@@ -4,7 +4,7 @@ import yaml
 import pytest
 import zipfile
 from pathlib import Path
-from frictionless import Package, Resource, Query, describe_package, helpers
+from frictionless import Package, Resource, Layout, describe_package, helpers
 from frictionless import FrictionlessException
 
 
@@ -290,10 +290,10 @@ def test_package_resources_remove_in_place():
     assert package == {"resources": []}
 
 
-def test_package_resources_respect_query_set_after_creation_issue_503():
+def test_package_resources_respect_layout_set_after_creation_issue_503():
     package = Package(resources=[Resource(path="data/table.csv")])
     resource = package.get_resource("table")
-    resource.query = Query(limit_rows=1)
+    resource.layout = Layout(limit_rows=1)
     assert resource.read_rows() == [{"id": 1, "name": "english"}]
     assert resource.header == ["id", "name"]
 
@@ -398,7 +398,7 @@ def test_package_infer():
                 "compression": "",
                 "control": {"newline": ""},
                 "dialect": {},
-                "query": {},
+                "layout": {},
                 "schema": {
                     "fields": [
                         {"name": "id", "type": "string"},
@@ -426,7 +426,7 @@ def test_package_infer():
                 "compression": "",
                 "control": {"newline": ""},
                 "dialect": {},
-                "query": {},
+                "layout": {},
                 "schema": {
                     "fields": [
                         {"name": "parent", "type": "string"},

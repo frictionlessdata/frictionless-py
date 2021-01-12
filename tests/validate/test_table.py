@@ -1,6 +1,6 @@
 import pytest
 import pathlib
-from frictionless import validate, Check, Query, errors, helpers
+from frictionless import validate, Check, Layout, errors, helpers
 
 
 # General
@@ -231,148 +231,148 @@ def test_validate_dialect_delimiter():
     assert report.table.stats["rows"] == 2
 
 
-# Query
+# Layout
 
 
 def test_validate_pick_fields():
-    query = Query(pick_fields=[2, "f3"])
-    report = validate("data/matrix.csv", query=query)
+    layout = Layout(pick_fields=[2, "f3"])
+    report = validate("data/matrix.csv", layout=layout)
     assert report.table["header"] == ["f2", "f3"]
     assert report.table.stats["rows"] == 4
     assert report.table.valid
 
 
 def test_validate_pick_fields_regex():
-    query = Query(pick_fields=["<regex>f[23]"])
-    report = validate("data/matrix.csv", query=query)
+    layout = Layout(pick_fields=["<regex>f[23]"])
+    report = validate("data/matrix.csv", layout=layout)
     assert report.table["header"] == ["f2", "f3"]
     assert report.table.stats["rows"] == 4
     assert report.table.valid
 
 
 def test_validate_skip_fields():
-    query = Query(skip_fields=[1, "f4"])
-    report = validate("data/matrix.csv", query=query)
+    layout = Layout(skip_fields=[1, "f4"])
+    report = validate("data/matrix.csv", layout=layout)
     assert report.table["header"] == ["f2", "f3"]
     assert report.table.stats["rows"] == 4
     assert report.table.valid
 
 
 def test_validate_skip_fields_regex():
-    query = Query(skip_fields=["<regex>f[14]"])
-    report = validate("data/matrix.csv", query=query)
+    layout = Layout(skip_fields=["<regex>f[14]"])
+    report = validate("data/matrix.csv", layout=layout)
     assert report.table["header"] == ["f2", "f3"]
     assert report.table.stats["rows"] == 4
     assert report.table.valid
 
 
 def test_validate_limit_fields():
-    query = Query(limit_fields=1)
-    report = validate("data/matrix.csv", query=query)
+    layout = Layout(limit_fields=1)
+    report = validate("data/matrix.csv", layout=layout)
     assert report.table["header"] == ["f1"]
     assert report.table.stats["rows"] == 4
     assert report.table.valid
 
 
 def test_validate_offset_fields():
-    query = Query(offset_fields=3)
-    report = validate("data/matrix.csv", query=query)
+    layout = Layout(offset_fields=3)
+    report = validate("data/matrix.csv", layout=layout)
     assert report.table["header"] == ["f4"]
     assert report.table.stats["rows"] == 4
     assert report.table.valid
 
 
 def test_validate_limit_and_offset_fields():
-    query = Query(limit_fields=2, offset_fields=1)
-    report = validate("data/matrix.csv", query=query)
+    layout = Layout(limit_fields=2, offset_fields=1)
+    report = validate("data/matrix.csv", layout=layout)
     assert report.table["header"] == ["f2", "f3"]
     assert report.table.stats["rows"] == 4
     assert report.table.valid
 
 
 def test_validate_pick_rows():
-    query = Query(pick_rows=[1, 3, "31"])
-    report = validate("data/matrix.csv", query=query)
+    layout = Layout(pick_rows=[1, 3, "31"])
+    report = validate("data/matrix.csv", layout=layout)
     assert report.table["header"] == ["f1", "f2", "f3", "f4"]
     assert report.table.stats["rows"] == 2
     assert report.table.valid
 
 
 def test_validate_pick_rows_regex():
-    query = Query(pick_rows=["<regex>[f23]1"])
-    report = validate("data/matrix.csv", query=query)
+    layout = Layout(pick_rows=["<regex>[f23]1"])
+    report = validate("data/matrix.csv", layout=layout)
     assert report.table["header"] == ["f1", "f2", "f3", "f4"]
     assert report.table.stats["rows"] == 2
     assert report.table.valid
 
 
 def test_validate_skip_rows():
-    query = Query(skip_rows=[2, "41"])
-    report = validate("data/matrix.csv", query=query)
+    layout = Layout(skip_rows=[2, "41"])
+    report = validate("data/matrix.csv", layout=layout)
     assert report.table["header"] == ["f1", "f2", "f3", "f4"]
     assert report.table.stats["rows"] == 2
     assert report.table.valid
 
 
 def test_validate_skip_rows_regex():
-    query = Query(skip_rows=["<regex>[14]1"])
-    report = validate("data/matrix.csv", query=query)
+    layout = Layout(skip_rows=["<regex>[14]1"])
+    report = validate("data/matrix.csv", layout=layout)
     assert report.table["header"] == ["f1", "f2", "f3", "f4"]
     assert report.table.stats["rows"] == 2
     assert report.table.valid
 
 
 def test_validate_skip_rows_blank():
-    query = Query(skip_rows=["<blank>"])
-    report = validate("data/blank-rows.csv", query=query)
+    layout = Layout(skip_rows=["<blank>"])
+    report = validate("data/blank-rows.csv", layout=layout)
     assert report.table["header"] == ["id", "name", "age"]
     assert report.table.stats["rows"] == 2
     assert report.table.valid
 
 
 def test_validate_pick_rows_and_fields():
-    query = Query(pick_rows=[1, 3, "31"], pick_fields=[2, "f3"])
-    report = validate("data/matrix.csv", query=query)
+    layout = Layout(pick_rows=[1, 3, "31"], pick_fields=[2, "f3"])
+    report = validate("data/matrix.csv", layout=layout)
     assert report.table["header"] == ["f2", "f3"]
     assert report.table.stats["rows"] == 2
     assert report.table.valid
 
 
 def test_validate_skip_rows_and_fields():
-    query = Query(skip_rows=[2, "41"], skip_fields=[1, "f4"])
-    report = validate("data/matrix.csv", query=query)
+    layout = Layout(skip_rows=[2, "41"], skip_fields=[1, "f4"])
+    report = validate("data/matrix.csv", layout=layout)
     assert report.table["header"] == ["f2", "f3"]
     assert report.table.stats["rows"] == 2
     assert report.table.valid
 
 
 def test_validate_limit_rows():
-    query = Query(limit_rows=1)
-    report = validate("data/matrix.csv", query=query)
+    layout = Layout(limit_rows=1)
+    report = validate("data/matrix.csv", layout=layout)
     assert report.table["header"] == ["f1", "f2", "f3", "f4"]
     assert report.table.stats["rows"] == 1
     assert report.table.valid
 
 
 def test_validate_offset_rows():
-    query = Query(offset_rows=3)
-    report = validate("data/matrix.csv", query=query)
+    layout = Layout(offset_rows=3)
+    report = validate("data/matrix.csv", layout=layout)
     assert report.table["header"] == ["f1", "f2", "f3", "f4"]
     assert report.table.stats["rows"] == 1
     assert report.table.valid
 
 
 def test_validate_limit_and_offset_rows():
-    query = Query(limit_rows=2, offset_rows=1)
-    report = validate("data/matrix.csv", query=query)
+    layout = Layout(limit_rows=2, offset_rows=1)
+    report = validate("data/matrix.csv", layout=layout)
     assert report.table["header"] == ["f1", "f2", "f3", "f4"]
     assert report.table.stats["rows"] == 2
     assert report.table.valid
 
 
 def test_validate_invalid_limit_rows():
-    query = Query(limit_rows=2)
-    report = validate("data/invalid.csv", query=query)
+    layout = Layout(limit_rows=2)
+    report = validate("data/invalid.csv", layout=layout)
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [None, 3, "blank-label"],
         [None, 4, "duplicate-label"],
@@ -384,8 +384,8 @@ def test_validate_invalid_limit_rows():
 
 
 def test_validate_structure_errors_with_limit_rows():
-    query = Query(limit_rows=3)
-    report = validate("data/structure-errors.csv", query=query)
+    layout = Layout(limit_rows=3)
+    report = validate("data/structure-errors.csv", layout=layout)
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [4, None, "blank-row"],
     ]
@@ -1015,7 +1015,7 @@ def test_validate_table_is_invalid_issue_312():
 
 def test_validate_order_fields_issue_313():
     source = "data/issue-313.xlsx"
-    query = Query(pick_fields=[1, 2, 3, 4, 5])
+    layout = Layout(pick_fields=[1, 2, 3, 4, 5])
     schema = {
         "fields": [
             {"name": "Column_1", "type": "string"},
@@ -1025,7 +1025,7 @@ def test_validate_order_fields_issue_313():
             {"name": "Column_5", "type": "string"},
         ]
     }
-    report = validate(source, query=query, schema=schema, sync_schema=True)
+    report = validate(source, layout=layout, schema=schema, sync_schema=True)
     assert report.valid
 
 

@@ -11,11 +11,11 @@ from .field import Field
 from .legacy.file import File
 from .header import Header
 from .inquiry import Inquiry
+from .layout import Layout
 from .loader import Loader
 from .metadata import Metadata
 from .package import Package
 from .plugin import Plugin
-from .query import Query
 from .parser import Parser
 from .pipeline import Pipeline
 from .program import program

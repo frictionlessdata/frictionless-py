@@ -18,11 +18,11 @@ def validate_table(
     encoding=None,
     innerpath=None,
     compression=None,
-    # Control/Dialect/Query
+    # Control/Dialect
     control=None,
     dialect=None,
-    query=None,
-    # Schema
+    # Layout/Schema
+    layout=None,
     schema=None,
     sync_schema=False,
     patch_schema=False,
@@ -81,8 +81,8 @@ def validate_table(
         dialect? (dict|Dialect): Table dialect.
             For more infromation, please check the Dialect documentation.
 
-        query? (dict|Query): Table query.
-            For more infromation, please check the Query documentation.
+        layout? (dict|Layout): Table layout.
+            For more infromation, please check the Layout documentation.
 
         headers? (int|int[]|[int[], str]): Either a row
             number or list of row numbers (in case of multi-line headers) to be
@@ -171,11 +171,11 @@ def validate_table(
         encoding=encoding,
         innerpath=innerpath,
         compression=compression,
-        # Control/Dialect/Query
+        # Control/Dialect
         control=control,
         dialect=dialect,
-        query=query,
-        # Schema
+        # Layout/Schema
+        layout=layout,
         schema=schema,
         sync_schema=sync_schema,
         patch_schema=patch_schema,

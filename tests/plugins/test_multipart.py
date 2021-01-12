@@ -128,7 +128,7 @@ def test_multipart_loader_resource_infer():
         "compression": "",
         "control": {"newline": ""},
         "dialect": {},
-        "query": {},
+        "layout": {},
         "schema": {
             "fields": [
                 {"name": "id", "type": "integer"},

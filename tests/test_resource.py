@@ -4,7 +4,7 @@ import sys
 import json
 import yaml
 import pytest
-from frictionless import Resource, Schema, Field, Query, Control, Dialect, helpers
+from frictionless import Resource, Schema, Field, Layout, Control, Dialect, helpers
 from frictionless import FrictionlessException, describe_resource
 from frictionless.plugins.remote import RemoteControl
 from frictionless.plugins.excel import ExcelDialect
@@ -852,10 +852,10 @@ def test_resource_dialect_header_case_is_false():
         assert resource.header.valid is True
 
 
-# Query
+# Layout
 
 
-def test_resource_query_header():
+def test_resource_layout_header():
     with Resource("data/table.csv") as resource:
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
@@ -864,7 +864,7 @@ def test_resource_query_header():
         ]
 
 
-def test_resource_query_header_unicode():
+def test_resource_layout_header_unicode():
     with Resource("data/table-unicode-headers.csv") as resource:
         assert resource.header == ["id", "国人"]
         assert resource.read_rows() == [
@@ -873,7 +873,7 @@ def test_resource_query_header_unicode():
         ]
 
 
-def test_resource_query_header_stream_context_manager():
+def test_resource_layout_header_stream_context_manager():
     source = open("data/table.csv", mode="rb")
     with Resource(source, format="csv") as resource:
         assert resource.header == ["id", "name"]
@@ -883,7 +883,7 @@ def test_resource_query_header_stream_context_manager():
         ]
 
 
-def test_resource_query_header_inline():
+def test_resource_layout_header_inline():
     source = [[], ["id", "name"], ["1", "english"], ["2", "中国人"]]
     dialect = Dialect(header_rows=[2])
     with Resource(source, dialect=dialect) as resource:
@@ -894,7 +894,7 @@ def test_resource_query_header_inline():
         ]
 
 
-def test_resource_query_header_json_keyed():
+def test_resource_layout_header_json_keyed():
     source = "text://[" '{"id": 1, "name": "english"},' '{"id": 2, "name": "中国人"}]'
     with Resource(source, format="json") as resource:
         assert resource.header == ["id", "name"]
@@ -904,7 +904,7 @@ def test_resource_query_header_json_keyed():
         ]
 
 
-def test_resource_query_header_inline_keyed():
+def test_resource_layout_header_inline_keyed():
     source = [{"id": "1", "name": "english"}, {"id": "2", "name": "中国人"}]
     with Resource(source) as resource:
         assert resource.header == ["id", "name"]
@@ -914,7 +914,7 @@ def test_resource_query_header_inline_keyed():
         ]
 
 
-def test_resource_query_header_inline_keyed_headers_is_none():
+def test_resource_layout_header_inline_keyed_headers_is_none():
     source = [{"id": "1", "name": "english"}, {"id": "2", "name": "中国人"}]
     dialect = Dialect(header=False)
     with Resource(source, dialect=dialect) as resource:
@@ -926,7 +926,7 @@ def test_resource_query_header_inline_keyed_headers_is_none():
         ]
 
 
-def test_resource_query_header_xlsx_multiline():
+def test_resource_layout_header_xlsx_multiline():
     source = "data/multiline-headers.xlsx"
     dialect = ExcelDialect(header_rows=[1, 2, 3, 4, 5], fill_merged_cells=True)
     with Resource(source, dialect=dialect) as resource:
@@ -942,7 +942,7 @@ def test_resource_query_header_xlsx_multiline():
         ]
 
 
-def test_resource_query_header_csv_multiline_headers_join():
+def test_resource_layout_header_csv_multiline_headers_join():
     source = "text://k1\nk2\nv1\nv2\nv3"
     dialect = Dialect(header_rows=[1, 2], header_join=":")
     with Resource(source, format="csv", dialect=dialect) as resource:
@@ -954,7 +954,7 @@ def test_resource_query_header_csv_multiline_headers_join():
         ]
 
 
-def test_resource_query_header_csv_multiline_headers_duplicates():
+def test_resource_layout_header_csv_multiline_headers_duplicates():
     source = "text://k1\nk1\nv1\nv2\nv3"
     dialect = Dialect(header_rows=[1, 2])
     with Resource(source, format="csv", dialect=dialect) as resource:
@@ -966,7 +966,7 @@ def test_resource_query_header_csv_multiline_headers_duplicates():
         ]
 
 
-def test_resource_query_header_strip_and_non_strings():
+def test_resource_layout_header_strip_and_non_strings():
     source = [[" header ", 2, 3, None], ["value1", "value2", "value3", "value4"]]
     dialect = Dialect(header_rows=[1])
     with Resource(source, dialect=dialect) as resource:
@@ -977,9 +977,9 @@ def test_resource_query_header_strip_and_non_strings():
 
 
 def test_resource_pick_fields():
-    query = Query(pick_fields=["header2"])
+    layout = Layout(pick_fields=["header2"])
     source = "text://header1,header2,header3\nvalue1,value2,value3"
-    with Resource(source, format="csv", query=query) as resource:
+    with Resource(source, format="csv", layout=layout) as resource:
         assert resource.header == ["header2"]
         assert resource.header.field_positions == [2]
         assert resource.read_rows() == [
@@ -988,9 +988,9 @@ def test_resource_pick_fields():
 
 
 def test_resource_pick_fields_position():
-    query = Query(pick_fields=[2])
+    layout = Layout(pick_fields=[2])
     source = "text://header1,header2,header3\nvalue1,value2,value3"
-    with Resource(source, format="csv", query=query) as resource:
+    with Resource(source, format="csv", layout=layout) as resource:
         assert resource.header == ["header2"]
         assert resource.header.field_positions == [2]
         assert resource.read_rows() == [
@@ -999,9 +999,9 @@ def test_resource_pick_fields_position():
 
 
 def test_resource_pick_fields_regex():
-    query = Query(pick_fields=["<regex>header(2)"])
+    layout = Layout(pick_fields=["<regex>header(2)"])
     source = "text://header1,header2,header3\nvalue1,value2,value3"
-    with Resource(source, format="csv", query=query) as resource:
+    with Resource(source, format="csv", layout=layout) as resource:
         assert resource.header == ["header2"]
         assert resource.header.field_positions == [2]
         assert resource.read_rows() == [
@@ -1010,9 +1010,9 @@ def test_resource_pick_fields_regex():
 
 
 def test_resource_pick_fields_position_and_prefix():
-    query = Query(pick_fields=[2, "header3"])
+    layout = Layout(pick_fields=[2, "header3"])
     source = "text://header1,header2,header3\nvalue1,value2,value3"
-    with Resource(source, format="csv", query=query) as resource:
+    with Resource(source, format="csv", layout=layout) as resource:
         assert resource.header == ["header2", "header3"]
         assert resource.header.field_positions == [2, 3]
         assert resource.read_rows() == [
@@ -1021,9 +1021,9 @@ def test_resource_pick_fields_position_and_prefix():
 
 
 def test_resource_skip_fields():
-    query = Query(skip_fields=["header2"])
+    layout = Layout(skip_fields=["header2"])
     source = "text://header1,header2,header3\nvalue1,value2,value3"
-    with Resource(source, format="csv", query=query) as resource:
+    with Resource(source, format="csv", layout=layout) as resource:
         assert resource.header == ["header1", "header3"]
         assert resource.header.field_positions == [1, 3]
         assert resource.read_rows() == [
@@ -1032,9 +1032,9 @@ def test_resource_skip_fields():
 
 
 def test_resource_skip_fields_position():
-    query = Query(skip_fields=[2])
+    layout = Layout(skip_fields=[2])
     source = "text://header1,header2,header3\nvalue1,value2,value3"
-    with Resource(source, format="csv", query=query) as resource:
+    with Resource(source, format="csv", layout=layout) as resource:
         assert resource.header == ["header1", "header3"]
         assert resource.header.field_positions == [1, 3]
         assert resource.read_rows() == [
@@ -1043,9 +1043,9 @@ def test_resource_skip_fields_position():
 
 
 def test_resource_skip_fields_regex():
-    query = Query(skip_fields=["<regex>header(1|3)"])
+    layout = Layout(skip_fields=["<regex>header(1|3)"])
     source = "text://header1,header2,header3\nvalue1,value2,value3"
-    with Resource(source, format="csv", query=query) as resource:
+    with Resource(source, format="csv", layout=layout) as resource:
         assert resource.header == ["header2"]
         assert resource.header.field_positions == [2]
         assert resource.read_rows() == [
@@ -1054,9 +1054,9 @@ def test_resource_skip_fields_regex():
 
 
 def test_resource_skip_fields_position_and_prefix():
-    query = Query(skip_fields=[2, "header3"])
+    layout = Layout(skip_fields=[2, "header3"])
     source = "text://header1,header2,header3\nvalue1,value2,value3"
-    with Resource(source, format="csv", query=query) as resource:
+    with Resource(source, format="csv", layout=layout) as resource:
         assert resource.header == ["header1"]
         assert resource.header.field_positions == [1]
         assert resource.read_rows() == [
@@ -1065,9 +1065,9 @@ def test_resource_skip_fields_position_and_prefix():
 
 
 def test_resource_skip_fields_blank_header():
-    query = Query(skip_fields=[""])
+    layout = Layout(skip_fields=[""])
     source = "text://header1,,header3\nvalue1,value2,value3"
-    with Resource(source, format="csv", query=query) as resource:
+    with Resource(source, format="csv", layout=layout) as resource:
         assert resource.header == ["header1", "header3"]
         assert resource.header.field_positions == [1, 3]
         assert resource.read_rows() == [
@@ -1076,9 +1076,9 @@ def test_resource_skip_fields_blank_header():
 
 
 def test_resource_skip_fields_blank_header_notation():
-    query = Query(skip_fields=["<blank>"])
+    layout = Layout(skip_fields=["<blank>"])
     source = "text://header1,,header3\nvalue1,value2,value3"
-    with Resource(source, format="csv", query=query) as resource:
+    with Resource(source, format="csv", layout=layout) as resource:
         assert resource.header == ["header1", "header3"]
         assert resource.header.field_positions == [1, 3]
         assert resource.read_rows() == [
@@ -1088,24 +1088,24 @@ def test_resource_skip_fields_blank_header_notation():
 
 def test_resource_skip_fields_keyed_source():
     source = [{"id": 1, "name": "london"}, {"id": 2, "name": "paris"}]
-    with Resource(source, query={"skipFields": ["id"]}) as resource:
+    with Resource(source, layout={"skipFields": ["id"]}) as resource:
         assert resource.header == ["name"]
         assert resource.read_rows() == [{"name": "london"}, {"name": "paris"}]
-    with Resource(source, query={"skipFields": [1]}) as resource:
+    with Resource(source, layout={"skipFields": [1]}) as resource:
         assert resource.header == ["name"]
         assert resource.read_rows() == [{"name": "london"}, {"name": "paris"}]
-    with Resource(source, query={"skipFields": ["name"]}) as resource:
+    with Resource(source, layout={"skipFields": ["name"]}) as resource:
         assert resource.header == ["id"]
         assert resource.read_rows() == [{"id": 1}, {"id": 2}]
-    with Resource(source, query={"skipFields": [2]}) as resource:
+    with Resource(source, layout={"skipFields": [2]}) as resource:
         assert resource.header == ["id"]
         assert resource.read_rows() == [{"id": 1}, {"id": 2}]
 
 
 def test_resource_limit_fields():
-    query = Query(limit_fields=1)
+    layout = Layout(limit_fields=1)
     source = "text://header1,header2,header3\nvalue1,value2,value3"
-    with Resource(source, format="csv", query=query) as resource:
+    with Resource(source, format="csv", layout=layout) as resource:
         assert resource.header == ["header1"]
         assert resource.header.field_positions == [1]
         assert resource.read_rows() == [
@@ -1114,9 +1114,9 @@ def test_resource_limit_fields():
 
 
 def test_resource_offset_fields():
-    query = Query(offset_fields=1)
+    layout = Layout(offset_fields=1)
     source = "text://header1,header2,header3\nvalue1,value2,value3"
-    with Resource(source, format="csv", query=query) as resource:
+    with Resource(source, format="csv", layout=layout) as resource:
         assert resource.header == ["header2", "header3"]
         assert resource.header.field_positions == [2, 3]
         assert resource.read_rows() == [
@@ -1125,9 +1125,9 @@ def test_resource_offset_fields():
 
 
 def test_resource_limit_offset_fields():
-    query = Query(limit_fields=1, offset_fields=1)
+    layout = Layout(limit_fields=1, offset_fields=1)
     source = "text://header1,header2,header3\nvalue1,value2,value3"
-    with Resource(source, format="csv", query=query) as resource:
+    with Resource(source, format="csv", layout=layout) as resource:
         assert resource.header == ["header2"]
         assert resource.header.field_positions == [2]
         assert resource.read_rows() == [
@@ -1138,8 +1138,8 @@ def test_resource_limit_offset_fields():
 def test_resource_pick_rows():
     source = "data/skip-rows.csv"
     dialect = Dialect(header=False)
-    query = Query(pick_rows=["1", "2"])
-    with Resource(source, dialect=dialect, query=query) as resource:
+    layout = Layout(pick_rows=["1", "2"])
+    with Resource(source, dialect=dialect, layout=layout) as resource:
         assert resource.read_rows() == [
             {"field1": 1, "field2": "english"},
             {"field1": 2, "field2": "中国人"},
@@ -1149,8 +1149,8 @@ def test_resource_pick_rows():
 def test_resource_pick_rows_number():
     source = "data/skip-rows.csv"
     dialect = Dialect(header=False)
-    query = Query(pick_rows=[3, 5])
-    with Resource(source, dialect=dialect, query=query) as resource:
+    layout = Layout(pick_rows=[3, 5])
+    with Resource(source, dialect=dialect, layout=layout) as resource:
         assert resource.read_rows() == [
             {"field1": 1, "field2": "english"},
             {"field1": 2, "field2": "中国人"},
@@ -1166,8 +1166,8 @@ def test_resource_pick_rows_regex():
         ["John", 1],
         ["Alex", 2],
     ]
-    query = Query(pick_rows=[r"<regex>(name|John|Alex)"])
-    with Resource(source, query=query) as resource:
+    layout = Layout(pick_rows=[r"<regex>(name|John|Alex)"])
+    with Resource(source, layout=layout) as resource:
         assert resource.header == ["name", "order"]
         assert resource.read_rows() == [
             {"name": "John", "order": 1},
@@ -1177,8 +1177,8 @@ def test_resource_pick_rows_regex():
 
 def test_resource_skip_rows():
     source = "data/skip-rows.csv"
-    query = Query(skip_rows=["#", 5])
-    with Resource(source, query=query) as resource:
+    layout = Layout(skip_rows=["#", 5])
+    with Resource(source, layout=layout) as resource:
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
@@ -1187,8 +1187,8 @@ def test_resource_skip_rows():
 
 def test_resource_skip_rows_excel_empty_column():
     source = "data/skip-rows.xlsx"
-    query = Query(skip_rows=[""])
-    with Resource(source, query=query) as resource:
+    layout = Layout(skip_rows=[""])
+    with Resource(source, layout=layout) as resource:
         assert resource.read_rows() == [
             {"Table 1": "A", "field2": "B"},
             {"Table 1": 8, "field2": 9},
@@ -1197,8 +1197,8 @@ def test_resource_skip_rows_excel_empty_column():
 
 def test_resource_skip_rows_with_headers():
     source = "data/skip-rows.csv"
-    query = Query(skip_rows=["#"])
-    with Resource(source, query=query) as resource:
+    layout = Layout(skip_rows=["#"])
+    with Resource(source, layout=layout) as resource:
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
@@ -1207,9 +1207,9 @@ def test_resource_skip_rows_with_headers():
 
 
 def test_resource_skip_rows_with_headers_example_from_readme():
-    query = Query(skip_rows=["#"])
+    layout = Layout(skip_rows=["#"])
     source = [["#comment"], ["name", "order"], ["John", 1], ["Alex", 2]]
-    with Resource(source, query=query) as resource:
+    with Resource(source, layout=layout) as resource:
         assert resource.header == ["name", "order"]
         assert resource.read_rows() == [
             {"name": "John", "order": 1},
@@ -1226,8 +1226,8 @@ def test_resource_skip_rows_regex():
         ["John", 1],
         ["Alex", 2],
     ]
-    query = Query(skip_rows=["# comment", r"<regex># (cat|dog)"])
-    with Resource(source, query=query) as resource:
+    layout = Layout(skip_rows=["# comment", r"<regex># (cat|dog)"])
+    with Resource(source, layout=layout) as resource:
         assert resource.header == ["name", "order"]
         assert resource.read_rows() == [
             {"name": "John", "order": 1},
@@ -1247,8 +1247,8 @@ def test_resource_skip_rows_preset():
         [None, 4],
         ["", None],
     ]
-    query = Query(skip_rows=["<blank>"])
-    with Resource(source, query=query) as resource:
+    layout = Layout(skip_rows=["<blank>"])
+    with Resource(source, layout=layout) as resource:
         assert resource.header == ["name", "order"]
         assert resource.read_rows() == [
             {"name": "Ray", "order": 0},
@@ -1261,8 +1261,8 @@ def test_resource_skip_rows_preset():
 
 def test_resource_limit_rows():
     source = "data/long.csv"
-    query = Query(limit_rows=1)
-    with Resource(source, query=query) as resource:
+    layout = Layout(limit_rows=1)
+    with Resource(source, layout=layout) as resource:
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "a"},
@@ -1271,8 +1271,8 @@ def test_resource_limit_rows():
 
 def test_resource_offset_rows():
     source = "data/long.csv"
-    query = Query(offset_rows=5)
-    with Resource(source, query=query) as resource:
+    layout = Layout(offset_rows=5)
+    with Resource(source, layout=layout) as resource:
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 6, "name": "f"},
@@ -1281,8 +1281,8 @@ def test_resource_offset_rows():
 
 def test_resource_limit_offset_rows():
     source = "data/long.csv"
-    query = Query(limit_rows=2, offset_rows=2)
-    with Resource(source, query=query) as resource:
+    layout = Layout(limit_rows=2, offset_rows=2)
+    with Resource(source, layout=layout) as resource:
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 3, "name": "c"},
@@ -1292,51 +1292,51 @@ def test_resource_limit_offset_rows():
 
 def test_resource_limit_fields_error_zero_issue_521():
     source = "data/long.csv"
-    query = Query(limit_fields=0)
-    resource = Resource(source, query=query)
+    layout = Layout(limit_fields=0)
+    resource = Resource(source, layout=layout)
     with pytest.raises(FrictionlessException) as excinfo:
         resource.open()
     error = excinfo.value.error
-    assert error.code == "query-error"
+    assert error.code == "layout-error"
     assert error.note.count('minimum of 1" at "limitFields')
 
 
 def test_resource_offset_fields_error_zero_issue_521():
     source = "data/long.csv"
-    query = Query(offset_fields=0)
-    resource = Resource(source, query=query)
+    layout = Layout(offset_fields=0)
+    resource = Resource(source, layout=layout)
     with pytest.raises(FrictionlessException) as excinfo:
         resource.open()
     error = excinfo.value.error
-    assert error.code == "query-error"
+    assert error.code == "layout-error"
     assert error.note.count('minimum of 1" at "offsetFields')
 
 
 def test_resource_limit_rows_error_zero_issue_521():
     source = "data/long.csv"
-    query = Query(limit_rows=0)
-    resource = Resource(source, query=query)
+    layout = Layout(limit_rows=0)
+    resource = Resource(source, layout=layout)
     with pytest.raises(FrictionlessException) as excinfo:
         resource.open()
     error = excinfo.value.error
-    assert error.code == "query-error"
+    assert error.code == "layout-error"
     assert error.note.count('minimum of 1" at "limitRows')
 
 
 def test_resource_offset_rows_error_zero_issue_521():
     source = "data/long.csv"
-    query = Query(offset_rows=0)
-    resource = Resource(source, query=query)
+    layout = Layout(offset_rows=0)
+    resource = Resource(source, layout=layout)
     with pytest.raises(FrictionlessException) as excinfo:
         resource.open()
     error = excinfo.value.error
-    assert error.code == "query-error"
+    assert error.code == "layout-error"
     assert error.note.count('minimum of 1" at "offsetRows')
 
 
-def test_resource_respect_query_set_after_creation_issue_503():
+def test_resource_respect_layout_set_after_creation_issue_503():
     resource = Resource(path="data/table.csv")
-    resource.query = Query(limit_rows=1)
+    resource.layout = Layout(limit_rows=1)
     assert resource.read_rows() == [{"id": 1, "name": "english"}]
     assert resource.header == ["id", "name"]
 
@@ -1589,7 +1589,7 @@ def test_resource_infer():
         "compression": "",
         "control": {"newline": ""},
         "dialect": {},
-        "query": {},
+        "layout": {},
         "schema": {
             "fields": [
                 {"name": "id", "type": "integer"},
@@ -2394,10 +2394,10 @@ def test_resource_stats_rows_significant():
 
 
 def test_resource_reset_on_close_issue_190():
-    query = Query(limit_rows=1)
+    layout = Layout(limit_rows=1)
     source = [["1", "english"], ["2", "中国人"]]
     dialect = Dialect(header=False)
-    resource = Resource(source, dialect=dialect, query=query)
+    resource = Resource(source, dialect=dialect, layout=layout)
     resource.open()
     assert resource.read_rows() == [{"field1": 1, "field2": "english"}]
     resource.open()
@@ -2406,9 +2406,9 @@ def test_resource_reset_on_close_issue_190():
 
 
 def test_resource_skip_blank_at_the_end_issue_bco_dmo_33():
-    query = Query(skip_rows=["#"])
+    layout = Layout(skip_rows=["#"])
     source = "data/skip-blank-at-the-end.csv"
-    with Resource(source, query=query) as resource:
+    with Resource(source, layout=layout) as resource:
         rows = resource.read_rows()
         assert resource.header == ["test1", "test2"]
         assert rows[0].cells == ["1", "2"]
@@ -2459,9 +2459,9 @@ def test_resource_skip_rows_non_string_cell_issue_320():
 
 
 def test_resource_skip_rows_non_string_cell_issue_322():
-    query = Query(skip_rows=["1"])
+    layout = Layout(skip_rows=["1"])
     source = [["id", "name"], [1, "english"], [2, "spanish"]]
-    with Resource(source, query=query) as resource:
+    with Resource(source, layout=layout) as resource:
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 2, "name": "spanish"},
@@ -2500,7 +2500,7 @@ def test_resource_preserve_format_from_descriptor_on_infer_issue_188():
         "compression": "",
         "control": {"newline": ""},
         "dialect": {},
-        "query": {},
+        "layout": {},
         "schema": {
             "fields": [
                 {"name": "city", "type": "string"},

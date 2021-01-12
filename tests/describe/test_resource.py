@@ -21,7 +21,7 @@ def test_describe_resource():
         "compression": "",
         "control": {"newline": ""},
         "dialect": {},
-        "query": {},
+        "layout": {},
         "schema": {
             "fields": [
                 {"name": "id", "type": "integer"},

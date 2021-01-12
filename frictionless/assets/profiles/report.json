@@ -101,7 +101,7 @@
           "compression",
           "control",
           "dialect",
-          "query",
+          "layout",
           "schema",
           "header",
           "time",
@@ -157,10 +157,10 @@
             "title": "Dialect",
             "description": "The tabular dialect of the table."
           },
-          "query": {
+          "layout": {
             "type": "object",
-            "title": "Query",
-            "description": "The tabular query of the table."
+            "title": "Layout",
+            "description": "The tabular layout of the table."
           },
           "schema": {
             "type": "object",
