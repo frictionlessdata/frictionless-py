@@ -1,6 +1,6 @@
 import pytest
 import datetime
-from frictionless import Table, Package, Resource, FrictionlessException
+from frictionless import Package, Resource, FrictionlessException
 from frictionless.plugins.ckan import CkanStorage, CkanDialect
 
 
@@ -13,14 +13,15 @@ def test_ckan_parser(options):
     dialect = CkanDialect(resource="table", **options)
 
     # Write
-    with Table("data/table.csv") as table:
-        # TODO: detect format by dialect if provided in plugins.ckan.CkanPlugin
-        table.write(url, format="ckan", dialect=dialect)
+    # TODO: detect format by dialect if provided in plugins.ckan.CkanPlugin
+    source = Resource("data/timezone.csv")
+    target = Resource(url, format="ckan", dialect=dialect)
+    source.write(target)
 
     # Read
-    with Table(url, format="ckan", dialect=dialect) as table:
-        assert table.header == ["id", "name"]
-        assert table.read_rows() == [
+    with target:
+        assert target.header == ["id", "name"]
+        assert target.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
         ]
@@ -30,10 +31,15 @@ def test_ckan_parser(options):
 def test_ckan_parser_timezone(options):
     url = options.pop("url")
     dialect = CkanDialect(resource="timezone", **options)
-    with Table("data/timezone.csv") as table:
-        table.write(url, format="ckan", dialect=dialect)
-    with Table(url, format="ckan", dialect=dialect) as table:
-        assert table.read_rows() == [
+
+    # Write
+    source = Resource("data/timezone.csv")
+    target = Resource(url, format="ckan", dialect=dialect)
+    source.write(target)
+
+    # Read
+    with target:
+        assert target.read_rows() == [
             {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
             {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
             {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},

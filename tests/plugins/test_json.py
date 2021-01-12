@@ -1,6 +1,6 @@
 import json
 import pytest
-from frictionless import Table
+from frictionless import Resource
 from frictionless.plugins.json import JsonDialect
 
 BASE_URL = "https://raw.githubusercontent.com/okfn/tabulator-py/master/%s"
@@ -10,19 +10,19 @@ BASE_URL = "https://raw.githubusercontent.com/okfn/tabulator-py/master/%s"
 
 
 def test_json_parser():
-    with Table("data/table.json") as table:
-        assert table.header == ["id", "name"]
-        assert table.read_rows() == [
+    with Resource(path="data/table.json") as resource:
+        assert resource.header == ["id", "name"]
+        assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
         ]
 
 
 def test_json_parser_keyed():
-    with Table("data/table.keyed.json") as table:
-        assert table.dialect.keyed is True
-        assert table.header == ["id", "name"]
-        assert table.read_rows() == [
+    with Resource(path="data/table.keyed.json") as resource:
+        assert resource.dialect.keyed is True
+        assert resource.header == ["id", "name"]
+        assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
         ]
@@ -30,10 +30,10 @@ def test_json_parser_keyed():
 
 def test_json_parser_keyed_with_keys_provided():
     dialect = JsonDialect(keys=["name", "id"])
-    with Table("data/table.keyed.json", dialect=dialect) as table:
-        assert table.dialect.keyed is True
-        assert table.header == ["name", "id"]
-        assert table.read_rows() == [
+    with Resource(path="data/table.keyed.json", dialect=dialect) as resource:
+        assert resource.dialect.keyed is True
+        assert resource.header == ["name", "id"]
+        assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
         ]
@@ -41,9 +41,9 @@ def test_json_parser_keyed_with_keys_provided():
 
 def test_json_parser_from_text():
     source = '[["id", "name"], [1, "english"], [2, "中国人"]]'
-    with Table(source, scheme="text", format="json") as table:
-        assert table.header == ["id", "name"]
-        assert table.read_rows() == [
+    with Resource(source, scheme="text", format="json") as resource:
+        assert resource.header == ["id", "name"]
+        assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
         ]
@@ -51,10 +51,10 @@ def test_json_parser_from_text():
 
 def test_json_parser_from_text_keyed():
     source = '[{"id": 1, "name": "english" }, {"id": 2, "name": "中国人" }]'
-    with Table(source, scheme="text", format="json") as table:
-        assert table.dialect.keyed is True
-        assert table.header == ["id", "name"]
-        assert table.read_rows() == [
+    with Resource(source, scheme="text", format="json") as resource:
+        assert resource.dialect.keyed is True
+        assert resource.header == ["id", "name"]
+        assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
         ]
@@ -62,9 +62,9 @@ def test_json_parser_from_text_keyed():
 
 @pytest.mark.vcr
 def test_json_parser_from_remote():
-    with Table(BASE_URL % "data/table-lists.json") as table:
-        assert table.header == ["id", "name"]
-        assert table.read_rows() == [
+    with Resource(path=BASE_URL % "data/table-lists.json") as resource:
+        assert resource.header == ["id", "name"]
+        assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
         ]
@@ -72,28 +72,28 @@ def test_json_parser_from_remote():
 
 @pytest.mark.vcr
 def test_json_parser_from_remote_keyed():
-    with Table(BASE_URL % "data/table-dicts.json") as table:
-        assert table.dialect.keyed is True
-        assert table.header == ["id", "name"]
-        assert table.read_rows() == [
+    with Resource(path=BASE_URL % "data/table-dicts.json") as resource:
+        assert resource.dialect.keyed is True
+        assert resource.header == ["id", "name"]
+        assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
         ]
 
 
 def test_jsonl_parser():
-    with Table("data/table.jsonl") as table:
-        assert table.header == ["id", "name"]
-        assert table.read_rows() == [
+    with Resource("data/table.jsonl") as resource:
+        assert resource.header == ["id", "name"]
+        assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
         ]
 
 
 def test_jsonl_parser_ndjson():
-    with Table("data/table.ndjson") as table:
-        assert table.header == ["id", "name"]
-        assert table.read_rows() == [
+    with Resource("data/table.ndjson") as resource:
+        assert resource.header == ["id", "name"]
+        assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
         ]
@@ -103,11 +103,10 @@ def test_jsonl_parser_ndjson():
 
 
 def test_json_parser_write(tmpdir):
-    source = "data/table.csv"
-    target = str(tmpdir.join("table.json"))
-    with Table(source) as table:
-        table.write(target)
-    with open(target) as file:
+    source = Resource("data/table.csv")
+    target = Resource(path=str(tmpdir.join("table.json")), trusted=True)
+    source.write(target)
+    with open(target.fullpath) as file:
         assert json.load(file) == [
             ["id", "name"],
             [1, "english"],
@@ -116,12 +115,11 @@ def test_json_parser_write(tmpdir):
 
 
 def test_json_parser_write_decimal(tmpdir):
-    source = [["id", "name"], [1.5, "english"], [2.5, "german"]]
-    target = str(tmpdir.join("table.json"))
     dialect = JsonDialect(keyed=True)
-    with Table(source) as table:
-        table.write(target, dialect=dialect)
-    with open(target) as file:
+    source = Resource([["id", "name"], [1.5, "english"], [2.5, "german"]])
+    target = Resource(path=str(tmpdir.join("table.json")), dialect=dialect, trusted=True)
+    source.write(target)
+    with open(target.fullpath) as file:
         assert json.load(file) == [
             {"id": "1.5", "name": "english"},
             {"id": "2.5", "name": "german"},
@@ -129,12 +127,11 @@ def test_json_parser_write_decimal(tmpdir):
 
 
 def test_json_parser_write_keyed(tmpdir):
-    source = "data/table.csv"
-    target = str(tmpdir.join("table.json"))
     dialect = JsonDialect(keyed=True)
-    with Table(source) as table:
-        table.write(target, dialect=dialect)
-    with open(target) as file:
+    source = Resource("data/table.csv")
+    target = Resource(path=str(tmpdir.join("table.json")), dialect=dialect, trusted=True)
+    source.write(target)
+    with open(target.fullpath) as file:
         assert json.load(file) == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
@@ -142,27 +139,25 @@ def test_json_parser_write_keyed(tmpdir):
 
 
 def test_jsonl_parser_write(tmpdir):
-    source = "data/table.csv"
-    target = str(tmpdir.join("table.jsonl"))
-    with Table(source) as table:
-        table.write(target)
-    with Table(target) as table:
-        assert table.header == ["id", "name"]
-        assert table.read_rows() == [
+    source = Resource("data/table.csv")
+    target = Resource(str(tmpdir.join("table.jsonl")), trusted=True)
+    source.write(target)
+    with target:
+        assert target.header == ["id", "name"]
+        assert target.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
         ]
 
 
 def test_jsonl_parser_write_keyed(tmpdir):
-    source = "data/table.csv"
-    target = str(tmpdir.join("table.jsonl"))
     dialect = JsonDialect(keyed=True)
-    with Table(source) as table:
-        table.write(target, dialect=dialect)
-    with Table(target, dialect=dialect) as table:
-        assert table.header == ["id", "name"]
-        assert table.read_rows() == [
+    source = Resource("data/table.csv")
+    target = Resource(str(tmpdir.join("table.jsonl")), dialect=dialect, trusted=True)
+    source.write(target)
+    with target:
+        assert target.header == ["id", "name"]
+        assert target.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
         ]

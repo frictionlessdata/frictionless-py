@@ -4,7 +4,7 @@ import isodate
 import datetime
 import pandas as pd
 from decimal import Decimal
-from frictionless import Table, Package, Resource, FrictionlessException
+from frictionless import Package, Resource, FrictionlessException
 from frictionless.plugins.pandas import PandasStorage
 
 
@@ -13,17 +13,17 @@ from frictionless.plugins.pandas import PandasStorage
 
 def test_pandas_parser():
     dataframe = pd.DataFrame(data={"id": [1, 2], "name": ["english", "中国人"]})
-    with Table(dataframe) as table:
-        assert table.header == ["id", "name"]
-        assert table.read_rows() == [
+    with Resource(dataframe) as resource:
+        assert resource.header == ["id", "name"]
+        assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
         ]
 
 
 def test_pandas_parser_write():
-    with Table("data/table.csv") as table:
-        dataframe = table.write(format="pandas")
+    with Resource("data/table.csv") as resource:
+        dataframe = resource.write(Resource(format="pandas"))
         assert dataframe.to_dict("records") == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
@@ -31,10 +31,10 @@ def test_pandas_parser_write():
 
 
 def test_pandas_parser_write_timezone():
-    with Table("data/timezone.csv") as table:
-        dataframe = table.write(format="pandas")
-    with Table(dataframe) as table:
-        assert table.read_rows() == [
+    with Resource("data/timezone.csv") as resource:
+        dataframe = resource.write(Resource(format="pandas"))
+    with Resource(dataframe) as resource:
+        assert resource.read_rows() == [
             {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
             {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
             {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},

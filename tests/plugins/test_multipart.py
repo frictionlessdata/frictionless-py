@@ -1,37 +1,34 @@
 import os
 import json
 import pytest
-from frictionless import Table, Resource, validate, helpers
+from frictionless import Resource, validate, helpers
 from frictionless import FrictionlessException
 
 
 BASE_URL = "https://raw.githubusercontent.com/frictionlessdata/datapackage-py/master/%s"
 
 
-# Table
+# Read
 
 
 def test_multipart_loader():
-    with Table(["data/chunk1.csv", "data/chunk2.csv"]) as table:
-        assert table.header == ["id", "name"]
-        assert table.read_rows() == [
+    with Resource(["data/chunk1.csv", "data/chunk2.csv"]) as resource:
+        assert resource.header == ["id", "name"]
+        assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
         ]
 
 
 def test_multipart_loader_with_compressed_parts():
-    with Table(["data/chunk1.csv.zip", "data/chunk2.csv.zip"]) as table:
-        assert table.innerpath == ""
-        assert table.compression == ""
-        assert table.header == ["id", "name"]
-        assert table.read_rows() == [
+    with Resource(["data/chunk1.csv.zip", "data/chunk2.csv.zip"]) as resource:
+        assert resource.innerpath == ""
+        assert resource.compression == ""
+        assert resource.header == ["id", "name"]
+        assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
         ]
-
-
-# Resource
 
 
 def test_multipart_loader_resource():
@@ -147,6 +144,14 @@ def test_multipart_loader_resource_infer():
     }
 
 
+def test_multipart_loader_resource_validate():
+    report = validate({"path": ["data/chunk1.csv", "data/chunk2.csv"]})
+    assert report.valid
+    assert report.table.stats["rows"] == 2
+
+
+# Write
+
 # We're better implement here a round-robin testing including
 # reading using Resource as we do for other tests
 @pytest.mark.skip
@@ -165,12 +170,3 @@ def test_multipart_loader_resource_write_file(tmpdir):
         with open(path) as file:
             text += file.read()
     assert json.loads(text) == [["id", "name"], [1, "english"], [2, "german"]]
-
-
-# Validate
-
-
-def test_multipart_loader_resource_validate():
-    report = validate({"path": ["data/chunk1.csv", "data/chunk2.csv"]})
-    assert report.valid
-    assert report.table.stats["rows"] == 2

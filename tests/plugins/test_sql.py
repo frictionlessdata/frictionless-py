@@ -1,7 +1,7 @@
 import pytest
 import datetime
 import sqlalchemy as sa
-from frictionless import Table, Package, Resource, FrictionlessException
+from frictionless import Package, Resource, FrictionlessException
 from frictionless.plugins.sql import SqlDialect, SqlStorage
 
 
@@ -10,16 +10,16 @@ from frictionless.plugins.sql import SqlDialect, SqlStorage
 
 def test_sql_parser(database_url):
     dialect = SqlDialect(table="table")
-    with Table(database_url, dialect=dialect) as table:
-        assert table.schema == {
+    with Resource(database_url, dialect=dialect) as resource:
+        assert resource.schema == {
             "fields": [
                 {"constraints": {"required": True}, "name": "id", "type": "integer"},
                 {"name": "name", "type": "string"},
             ],
             "primaryKey": ["id"],
         }
-        assert table.header == ["id", "name"]
-        assert table.read_rows() == [
+        assert resource.header == ["id", "name"]
+        assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
         ]
@@ -27,9 +27,9 @@ def test_sql_parser(database_url):
 
 def test_sql_parser_order_by(database_url):
     dialect = SqlDialect(table="table", order_by="id")
-    with Table(database_url, dialect=dialect) as table:
-        assert table.header == ["id", "name"]
-        assert table.read_rows() == [
+    with Resource(database_url, dialect=dialect) as resource:
+        assert resource.header == ["id", "name"]
+        assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
         ]
@@ -37,18 +37,18 @@ def test_sql_parser_order_by(database_url):
 
 def test_sql_parser_order_by_desc(database_url):
     dialect = SqlDialect(table="table", order_by="id desc")
-    with Table(database_url, dialect=dialect) as table:
-        assert table.header == ["id", "name"]
-        assert table.read_rows() == [
+    with Resource(database_url, dialect=dialect) as resource:
+        assert resource.header == ["id", "name"]
+        assert resource.read_rows() == [
             {"id": 2, "name": "中国人"},
             {"id": 1, "name": "english"},
         ]
 
 
 def test_sql_parser_table_is_required_error(database_url):
-    table = Table(database_url)
+    resource = Resource(database_url)
     with pytest.raises(FrictionlessException) as excinfo:
-        table.open()
+        resource.open()
     error = excinfo.value.error
     assert error.code == "dialect-error"
     assert error.note.count("'table' is a required property")
@@ -56,10 +56,10 @@ def test_sql_parser_table_is_required_error(database_url):
 
 # Probably it's not correct behaviour
 def test_sql_parser_headers_false(database_url):
-    dialect = SqlDialect(table="table")
-    with Table(database_url, dialect=dialect, headers=False) as table:
-        assert table.header == []
-        assert table.read_rows() == [
+    dialect = SqlDialect(header=False, table="table")
+    with Resource(database_url, dialect=dialect) as resource:
+        assert resource.header == []
+        assert resource.read_rows() == [
             {"id": None, "name": "name"},
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
@@ -67,26 +67,24 @@ def test_sql_parser_headers_false(database_url):
 
 
 def test_sql_parser_write(database_url):
-    source = "data/table.csv"
-    dialect = SqlDialect(table="name", order_by="id")
-    with Table(source) as table:
-        table.write(database_url, dialect=dialect)
-    with Table(database_url, dialect=dialect) as table:
-        assert table.header == ["id", "name"]
-        assert table.read_rows() == [
+    source = Resource("data/table.csv")
+    target = Resource(database_url, dialect=SqlDialect(table="name", order_by="id"))
+    source.write(target)
+    with target:
+        assert target.header == ["id", "name"]
+        assert target.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
         ]
 
 
 def test_sql_parser_write_timezone(sqlite_url):
-    source = "data/timezone.csv"
-    dialect = SqlDialect(table="timezone")
-    with Table(source) as table:
-        table.write(sqlite_url, dialect=dialect)
-    with Table(sqlite_url, dialect=dialect) as table:
-        assert table.header == ["datetime", "time"]
-        assert table.read_rows() == [
+    source = Resource("data/timezone.csv")
+    target = Resource(sqlite_url, dialect=SqlDialect(table="timezone"))
+    source.write(target)
+    with target:
+        assert target.header == ["datetime", "time"]
+        assert target.read_rows() == [
             {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
             {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
             {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
@@ -95,13 +93,12 @@ def test_sql_parser_write_timezone(sqlite_url):
 
 
 def test_sql_parser_write_timezone_postgresql(postgresql_url):
-    source = "data/timezone.csv"
-    dialect = SqlDialect(table="timezone")
-    with Table(source) as table:
-        table.write(postgresql_url, dialect=dialect)
-    with Table(postgresql_url, dialect=dialect) as table:
-        assert table.header == ["datetime", "time"]
-        assert table.read_rows() == [
+    source = Resource("data/timezone.csv")
+    target = Resource(postgresql_url, dialect=SqlDialect(table="timezone"))
+    source.write(target)
+    with target:
+        assert target.header == ["datetime", "time"]
+        assert target.read_rows() == [
             {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
             {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
             {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
@@ -110,13 +107,12 @@ def test_sql_parser_write_timezone_postgresql(postgresql_url):
 
 
 def test_sql_parser_write_timezone_mysql(mysql_url):
-    source = "data/timezone.csv"
-    dialect = SqlDialect(table="timezone")
-    with Table(source) as table:
-        table.write(mysql_url, dialect=dialect)
-    with Table(mysql_url, dialect=dialect) as table:
-        assert table.header == ["datetime", "time"]
-        assert table.read_rows() == [
+    source = Resource("data/timezone.csv")
+    target = Resource(mysql_url, dialect=SqlDialect(table="timezone"))
+    source.write(target)
+    with target:
+        assert target.header == ["datetime", "time"]
+        assert target.read_rows() == [
             {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
             {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
             {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},

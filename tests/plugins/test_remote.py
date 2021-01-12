@@ -1,5 +1,5 @@
 import pytest
-from frictionless import Table
+from frictionless import Resource
 
 BASE_URL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
 
@@ -9,9 +9,9 @@ BASE_URL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/m
 
 @pytest.mark.vcr
 def test_remote_loader():
-    with Table(BASE_URL % "data/table.csv") as table:
-        assert table.header == ["id", "name"]
-        assert table.read_rows() == [
+    with Resource(BASE_URL % "data/table.csv") as resource:
+        assert resource.header == ["id", "name"]
+        assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
         ]
@@ -20,16 +20,16 @@ def test_remote_loader():
 @pytest.mark.vcr
 def test_remote_loader_latin1():
     # Github returns wrong encoding `utf-8`
-    with Table(BASE_URL % "data/latin1.csv") as table:
-        assert table.read_rows()
+    with Resource(BASE_URL % "data/latin1.csv") as resource:
+        assert resource.read_rows()
 
 
 @pytest.mark.ci
 @pytest.mark.vcr
 def test_remote_loader_big_file():
-    with Table(BASE_URL % "data/table1.csv") as table:
-        assert table.read_rows()
-        assert table.stats == {
+    with Resource(BASE_URL % "data/table1.csv") as resource:
+        assert resource.read_rows()
+        assert resource.stats == {
             "hash": "78ea269458be04a0e02816c56fc684ef",
             "bytes": 1000000,
             "fields": 10,
@@ -45,6 +45,6 @@ def test_remote_loader_big_file():
 def test_remote_loader_write(requests_mock):
     path = "https://example.com/post/table.csv"
     requests_mock.post("https://example.com/post/")
-    with Table("data/table.csv") as table:
-        response = table.write(path)
+    with Resource("data/table.csv") as resource:
+        response = resource.write(Resource(path))
     assert response.status_code == 200

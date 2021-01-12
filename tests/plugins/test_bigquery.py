@@ -5,7 +5,7 @@ import pytest
 import datetime
 from apiclient.discovery import build
 from oauth2client.client import GoogleCredentials
-from frictionless import Table, Package, Resource, FrictionlessException
+from frictionless import Package, Resource, FrictionlessException
 from frictionless.plugins.bigquery import BigqueryDialect, BigqueryStorage
 
 
@@ -24,13 +24,14 @@ def test_bigquery_parser(options):
     dialect = BigqueryDialect(table=prefix, **options)
 
     # Write
-    with Table("data/table.csv") as table:
-        table.write(service, dialect=dialect)
+    source = Resource("data/table.csv")
+    target = Resource(service, dialect=dialect)
+    source.write(target)
 
     # Read
-    with Table(service, dialect=dialect) as table:
-        assert table.header == ["id", "name"]
-        assert table.read_rows() == [
+    with target:
+        assert target.header == ["id", "name"]
+        assert target.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
         ]
@@ -41,10 +42,15 @@ def test_bigquery_parser_write_timezone(options):
     prefix = options.pop("prefix")
     service = options.pop("service")
     dialect = BigqueryDialect(table=prefix, **options)
-    with Table("data/timezone.csv") as table:
-        table.write(service, format="ckan", dialect=dialect)
-    with Table(service, format="ckan", dialect=dialect) as table:
-        assert table.read_rows() == [
+
+    # Write
+    source = Resource("data/timezone.csv")
+    target = Resource(service, dialect=dialect)
+    source.write(target)
+
+    # Read
+    with target:
+        assert target.read_rows() == [
             {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
             {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
             {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},

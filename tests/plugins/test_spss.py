@@ -1,6 +1,6 @@
 import pytest
 import datetime
-from frictionless import Package, Resource, Table, FrictionlessException, helpers
+from frictionless import Package, Resource, FrictionlessException, helpers
 from frictionless.plugins.spss import SpssStorage
 
 
@@ -9,16 +9,16 @@ from frictionless.plugins.spss import SpssStorage
 
 @pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for MacOS")
 def test_spss_parser(tmpdir):
-    target = str(tmpdir.join("table.sav"))
 
     # Write
-    with Table("data/table.csv") as table:
-        table.write(target)
+    source = Resource("data/table.csv")
+    target = Resource(str(tmpdir.join("table.sav")), trusted=True)
+    source.write(target)
 
     # Read
-    with Table(target) as table:
-        assert table.header == ["id", "name"]
-        assert table.read_rows() == [
+    with target:
+        assert target.header == ["id", "name"]
+        assert target.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
         ]
@@ -26,11 +26,15 @@ def test_spss_parser(tmpdir):
 
 @pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for MacOS")
 def test_spss_parser_write_timezone(tmpdir):
-    target = str(tmpdir.join("table.sav"))
-    with Table("data/timezone.csv") as table:
-        table.write(target)
-    with Table(target) as table:
-        assert table.read_rows() == [
+
+    # Write
+    source = Resource("data/timezone.csv")
+    target = Resource(str(tmpdir.join("table.sav")), trusted=True)
+    source.write(target)
+
+    # Read
+    with target:
+        assert target.read_rows() == [
             {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
             {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
             {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},

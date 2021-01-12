@@ -1,4 +1,5 @@
-from frictionless import Table, Resource
+import pytest
+from frictionless import Resource
 
 
 # Read
@@ -6,15 +7,15 @@ from frictionless import Table, Resource
 
 def test_filelike_loader():
     with open("data/table.csv", mode="rb") as file:
-        with Table(file, format="csv") as table:
-            assert table.header == ["id", "name"]
-            assert table.read_rows() == [
+        with Resource(file, format="csv") as resource:
+            assert resource.header == ["id", "name"]
+            assert resource.read_rows() == [
                 {"id": 1, "name": "english"},
                 {"id": 2, "name": "中国人"},
             ]
 
 
-def test_filelike_loader_resource():
+def test_filelike_loader_without_open():
     with open("data/table.csv", mode="rb") as file:
         resource = Resource(path=file, format="csv")
         assert resource.read_rows() == [
@@ -26,11 +27,12 @@ def test_filelike_loader_resource():
 # Write
 
 
+@pytest.mark.skip
 def test_filelike_loader_write():
-    source = "data/table.csv"
-    with Table(source) as table:
-        byte_stream = table.write(scheme="filelike", format="csv")
+    source = Resource("data/table.csv")
+    target = Resource(scheme="filelike", format="csv")
+    source.write(target)
     assert (
-        byte_stream.read()
+        target.read_bytes()
         == b"id,name\r\n1,english\r\n2,\xe4\xb8\xad\xe5\x9b\xbd\xe4\xba\xba\r\n"
     )

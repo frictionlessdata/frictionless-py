@@ -19,6 +19,7 @@ from . import errors
 from . import config
 
 
+# TODO: make automatically trusted if path is passed not from descriptor
 # TODO: merge docstrings from Table
 # TODO: Add mediatype from the specs?
 # TODO: Remove support for deprecated "url"?
@@ -1112,6 +1113,7 @@ class Resource(Metadata):
 
     # Write
 
+    # TODO: allow passing source, **options and return Resource?
     # TODO: what we should return?
     # TODO: use contextlib.closing?
     # TODO: should we set target.data?

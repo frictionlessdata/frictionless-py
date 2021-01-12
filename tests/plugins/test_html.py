@@ -1,5 +1,5 @@
 import pytest
-from frictionless import Table, helpers
+from frictionless import Resource, helpers
 from frictionless.plugins.html import HtmlDialect
 
 
@@ -17,10 +17,10 @@ from frictionless.plugins.html import HtmlDialect
 )
 def test_html_parser(source, selector):
     dialect = HtmlDialect(selector=selector)
-    with Table(source, dialect=dialect) as table:
-        assert table.format == "html"
-        assert table.header == ["id", "name"]
-        assert table.read_rows() == [
+    with Resource(source, dialect=dialect) as resource:
+        assert resource.format == "html"
+        assert resource.header == ["id", "name"]
+        assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
         ]
@@ -28,13 +28,12 @@ def test_html_parser(source, selector):
 
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_html_parser_write(tmpdir):
-    source = "data/table.csv"
-    target = str(tmpdir.join("table.html"))
-    with Table(source) as table:
-        table.write(target)
-    with Table(target) as table:
-        assert table.header == ["id", "name"]
-        assert table.read_rows() == [
+    source = Resource("data/table.csv")
+    target = Resource(str(tmpdir.join("table.html")), trusted=True)
+    source.write(target)
+    with target:
+        assert target.header == ["id", "name"]
+        assert target.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
         ]

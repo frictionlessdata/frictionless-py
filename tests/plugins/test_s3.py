@@ -3,7 +3,7 @@ import pytest
 import string
 import random
 from moto import mock_s3
-from frictionless import Table, validate, helpers
+from frictionless import Resource, validate, helpers
 
 
 # Loader
@@ -24,9 +24,9 @@ def test_s3_loader(bucket_name):
     )
 
     # Read
-    with Table("s3://%s/table.csv" % bucket_name) as table:
-        assert table.header == ["id", "name"]
-        assert table.read_rows() == [
+    with Resource("s3://%s/table.csv" % bucket_name) as resource:
+        assert resource.header == ["id", "name"]
+        assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
         ]
@@ -49,9 +49,9 @@ def test_s3_loader_big_file(bucket_name):
     )
 
     # Read
-    with Table("s3://%s/table1.csv" % bucket_name) as table:
-        assert table.read_rows()
-        assert table.stats == {
+    with Resource("s3://%s/table1.csv" % bucket_name) as resource:
+        assert resource.read_rows()
+        assert resource.stats == {
             "hash": "78ea269458be04a0e02816c56fc684ef",
             "bytes": 1000000,
             "fields": 10,
@@ -101,9 +101,9 @@ def test_s3_loader_problem_with_spaces_issue_501(bucket_name):
     )
 
     # Read
-    with Table("s3://%s/table with space.csv" % bucket_name) as table:
-        assert table.header == ["id", "name"]
-        assert table.read_rows() == [
+    with Resource("s3://%s/table with space.csv" % bucket_name) as resource:
+        assert resource.header == ["id", "name"]
+        assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
         ]
@@ -115,13 +115,13 @@ def test_s3_loader_write(bucket_name):
     client.create_bucket(Bucket=bucket_name, ACL="public-read")
 
     # Write
-    with Table("data/table.csv") as table:
-        table.write("s3://%s/table.csv" % bucket_name)
+    with Resource("data/table.csv") as resource:
+        resource.write(Resource("s3://%s/table.csv" % bucket_name))
 
     # Read
-    with Table("s3://%s/table.csv" % bucket_name) as table:
-        assert table.header == ["id", "name"]
-        assert table.read_rows() == [
+    with Resource("s3://%s/table.csv" % bucket_name) as resource:
+        assert resource.header == ["id", "name"]
+        assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
         ]
