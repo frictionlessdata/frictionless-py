@@ -56,11 +56,6 @@ def validate_package(
     descriptor = {"tasks": []}
     for resource in package.resources:
         if resource.profile == "tabular-data-resource":
-            # TODO: review lookup preparation
-            lookup = None
-            if not nolookup:
-                with resource.to_copy() as rescopy:
-                    lookup = rescopy.lookup
             descriptor["tasks"].append(
                 helpers.create_descriptor(
                     **options,
@@ -68,7 +63,6 @@ def validate_package(
                     source=resource.to_dict(),
                     basepath=resource.basepath,
                     noinfer=noinfer,
-                    lookup=lookup,
                 )
             )
 
