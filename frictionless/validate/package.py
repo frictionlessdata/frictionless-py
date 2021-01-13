@@ -7,15 +7,7 @@ from .inquiry import validate_inquiry
 
 
 @Report.from_validate
-def validate_package(
-    source,
-    basepath="",
-    trusted=False,
-    noinfer=False,
-    nolookup=False,
-    nopool=False,
-    **options
-):
+def validate_package(source, noinfer=False, nolookup=False, nopool=False, **options):
     """Validate package
 
     API      | Usage
@@ -29,7 +21,7 @@ def validate_package(
         noinfer? (bool): don't call `package.infer`
         nolookup? (bool): don't read lookup tables skipping integrity checks
         nopool? (bool): disable multiprocessing
-        **options (dict): options for every extracted table
+        **options (dict): Package constructor options
 
     Returns:
         Report: validation report
@@ -41,7 +33,8 @@ def validate_package(
 
     # Create package
     try:
-        package = Package(source, basepath=basepath, trusted=trusted)
+        native = isinstance(source, Package)
+        package = source.to_copy() if native else Package(source, **options)
     except FrictionlessException as exception:
         return Report(time=timer.time, errors=[exception.error], tables=[])
 
@@ -58,7 +51,6 @@ def validate_package(
         if resource.profile == "tabular-data-resource":
             descriptor["tasks"].append(
                 helpers.create_descriptor(
-                    **options,
                     # TODO: review
                     source=resource.to_dict(),
                     basepath=resource.basepath,

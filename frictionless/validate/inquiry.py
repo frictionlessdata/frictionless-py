@@ -10,7 +10,7 @@ from .. import helpers
 
 
 @Report.from_validate
-def validate_inquiry(source, *, nopool=False):
+def validate_inquiry(source, *, nopool=False, **options):
     """Validate inquiry
 
     API      | Usage
@@ -28,17 +28,18 @@ def validate_inquiry(source, *, nopool=False):
 
     # Create state
     timer = helpers.Timer()
-    inquiry = Inquiry(source)
+    native = isinstance(source, Inquiry)
+    inquiry = source.to_copy() if native else Inquiry(source, **options)
 
     # Create tasks
     tasks = []
     reports = []
     for task in inquiry.tasks:
-        source_type = task.get("sourceType", system.create_file(task["source"]).type)
-        if source_type == "inquiry":
+        type = task.get("type", system.create_file(task["source"]).type)
+        if type == "inquiry":
             error = Error(note="Inquiry cannot contain nested inquiries")
             raise FrictionlessException(error)
-        if source_type == "package":
+        if type == "package":
             # TODO:
             # For now, we don't flatten inquiry completely and for the case
             # of a list of packages with one resource we don't get proper multiprocessing

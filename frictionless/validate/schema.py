@@ -5,7 +5,7 @@ from ..schema import Schema
 
 
 @Report.from_validate
-def validate_schema(source):
+def validate_schema(source, **options):
     """Validate schema
 
     API      | Usage
@@ -25,7 +25,8 @@ def validate_schema(source):
 
     # Create schema
     try:
-        schema = Schema(source)
+        native = isinstance(source, Schema)
+        schema = source.to_copy() if native else Schema(source, **options)
     except FrictionlessException as exception:
         return Report(time=timer.time, errors=[exception.error], tables=[])
 

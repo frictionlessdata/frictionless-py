@@ -12,7 +12,7 @@ def test_validate():
 
 
 def test_validate_invalid_source():
-    report = validate("bad.json", source_type="resource")
+    report = validate("bad.json", type="resource")
     assert report.flatten(["code", "note"]) == [
         [
             "resource-error",

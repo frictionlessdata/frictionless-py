@@ -1,4 +1,4 @@
-from frictionless import validate
+from frictionless import Resource, validate
 
 
 # Table
@@ -21,3 +21,9 @@ def test_validate_invalid():
         [4, None, "blank-row"],
         [5, 5, "extra-cell"],
     ]
+
+
+def test_validate_from_resource_instance():
+    resource = Resource("data/table.csv")
+    report = validate(resource)
+    assert report.valid

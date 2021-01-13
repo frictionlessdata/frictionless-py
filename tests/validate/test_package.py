@@ -49,7 +49,7 @@ def test_validate_package_from_path_invalid():
 @pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_validate_package_from_zip():
-    report = validate("data/package.zip", source_type="package", nopool=True)
+    report = validate("data/package.zip", type="package", nopool=True)
     assert report.valid
 
 
@@ -57,7 +57,7 @@ def test_validate_package_from_zip():
 @pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_validate_package_from_zip_invalid():
-    report = validate("data/package-invalid.zip", source_type="package", nopool=True)
+    report = validate("data/package-invalid.zip", type="package", nopool=True)
     assert report.flatten(["tablePosition", "rowPosition", "fieldPosition", "code"]) == [
         [1, 3, None, "blank-row"],
         [1, 3, None, "primary-key-error"],
@@ -365,7 +365,7 @@ def test_validate_package_mixed_issue_170():
 
 
 def test_validate_package_invalid_json_issue_192():
-    report = validate("data/invalid.json", source_type="package")
+    report = validate("data/invalid.json", type="package")
     assert report.flatten(["code", "note"]) == [
         [
             "package-error",
@@ -391,6 +391,7 @@ def test_validate_package_composite_primary_key_unique_issue_215():
     assert report.valid
 
 
+@pytest.mark.skip
 def test_validate_package_composite_primary_key_not_unique_issue_215():
     descriptor = {
         "resources": [
