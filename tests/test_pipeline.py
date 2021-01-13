@@ -10,7 +10,7 @@ def test_pipeline_resource():
             "type": "resource",
             "source": {"path": "data/transform.csv"},
             "steps": [
-                {"type": "cellSet", "spec": {"fieldName": "population", "value": 100}},
+                {"step": "cell-set", "fieldName": "population", "value": 100},
             ],
         }
     )
@@ -35,7 +35,7 @@ def test_pipeline_package():
             "type": "package",
             "source": "data/package/datapackage.json",
             "steps": [
-                {"type": "resourceRemove", "spec": {"name": "data2"}},
+                {"step": "resource-remove", "name": "data2"},
             ],
         }
     )

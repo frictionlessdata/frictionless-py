@@ -1,5 +1,7 @@
 import stringcase
+from copy import deepcopy
 from importlib import import_module
+from .exception import FrictionlessException
 from .metadata import Metadata
 from .resource import Resource
 from .package import Package
@@ -24,9 +26,9 @@ class Pipeline(Metadata):
         {
             "type": "package",
             "steps": [
-                {"type": "load", "spec": {"loadSource": "data/table.csv"}},
-                {"type": "set_type", "spec": {"name": "id", "type": "string"}},
-                {"type": "dump_to_path", "spec": {"outPath": tmpdir}},
+                {"step": "load", "loadSource": "data/table.csv"},
+                {"step": "set-type", "name": "id", "type": "string"},
+                {"step": "dump-to-path", "outPath": tmpdir},
             ],
         }
     )
@@ -84,20 +86,24 @@ class Pipeline(Metadata):
 
     def run(self):
         """Run the pipeline"""
-        steps = import_module("frictionless.steps")
+        module = import_module("frictionless.steps")
         transforms = import_module("frictionless.transform")
-        # TODO: it will not work for nested steps like steps.resource_transform
-        items = []
+        steps = []
         for step in self.steps:
-            # TODO: remove nested naming just use "step" prop
-            func = getattr(steps, stringcase.snakecase(step["type"]))
-            items.append(func(**helpers.create_options(step["spec"])))
+            desc = deepcopy(step)
+            # TODO: we need the same for nested steps like steps.resource_transform
+            name = stringcase.snakecase(desc.pop("step", ""))
+            func = getattr(module, name, None)
+            if func is None:
+                note = f"Not supported step type: {name}"
+                raise FrictionlessException(errors.Error(note=note))
+            steps.append(func(**helpers.create_options(desc)))
         if self.type == "resource":
             source = Resource(self.source)
-            return transforms.transform_resource(source, steps=items)
+            return transforms.transform_resource(source, steps=steps)
         else:
             source = Package(self.source)
-            return transforms.transform_package(source, steps=items)
+            return transforms.transform_package(source, steps=steps)
 
     # Metadata
 
