@@ -19,7 +19,7 @@
       "items": {
         "title": "Task",
         "type": "object",
-        "required": ["type", "steps"]
+        "required": ["source", "type", "steps"]
       }
     }
   }

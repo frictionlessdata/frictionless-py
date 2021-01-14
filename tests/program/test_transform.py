@@ -8,6 +8,7 @@ runner = CliRunner()
 # General
 
 
+@pytest.mark.skip
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_transform():
     result = runner.invoke(program, "transform data/pipeline.yaml")

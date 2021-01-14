@@ -51,7 +51,6 @@ class System:
         "create_file",
         "create_loader",
         "create_parser",
-        "create_pipeline",
         "create_server",
         "create_storage",
         "create_type",
@@ -177,27 +176,6 @@ class System:
             if parser is not None:
                 return parser
         note = f'cannot create parser "{name}". Try installing "frictionless-{name}"'
-        raise FrictionlessException(errors.FormatError(note=note))
-
-    def create_pipeline(self, descriptor):
-        """Create parser
-
-        Parameters:
-            descriptor (str|dict): pipeline descriptor
-
-        Returns:
-            Pipeline: pipeline
-        """
-        Metadata = import_module("frictionless.metadata").Metadata
-        Pipeline = import_module("frictionless.pipeline").Pipeline
-        type = Metadata(descriptor).get("type", "resource")
-        for func in self.methods["create_pipeline"].values():
-            pipeline = func(type, descriptor=descriptor)
-            if pipeline is not None:
-                return pipeline
-        if type in ["resource", "package"]:
-            return Pipeline(descriptor)
-        note = f'cannot create pipeline "{type}". Try installing "frictionless-{type}"'
         raise FrictionlessException(errors.FormatError(note=note))
 
     def create_server(self, name, **options):

@@ -42,7 +42,6 @@ TESTS_REQUIRE = [
 EXTRAS_REQUIRE = {
     "bigquery": ["google-api-python-client>=1.12.1"],
     "ckan": ["ckanapi>=4.3"],
-    "dataflows": ["dataflows>=0.1"],
     "excel": ["openpyxl>=3.0", "xlrd>=1.2", "xlwt>=1.2"],
     "gsheets": ["pygsheets>=2.0"],
     "html": ["pyquery>=1.4"],

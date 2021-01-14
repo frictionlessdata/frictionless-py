@@ -1,5 +1,4 @@
 from ..pipeline import Pipeline
-from ..system import system
 
 
 def transform_pipeline(source, **options):
@@ -17,5 +16,5 @@ def transform_pipeline(source, **options):
         any: the pipeline output
     """
     native = isinstance(source, Pipeline)
-    pipeline = source if native else system.create_pipeline(source)
+    pipeline = source if native else Pipeline(source)
     return pipeline.run()
