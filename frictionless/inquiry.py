@@ -3,6 +3,9 @@ from . import errors
 from . import config
 
 
+# TODO: Add InquiryTask class?
+# TODO: migrate run from validate_inquiry to here (sync with Pipeline)
+# TODO: add system create_inquiry?
 class Inquiry(Metadata):
     """Inquiry representation.
 
@@ -13,9 +16,6 @@ class Inquiry(Metadata):
         FrictionlessException: raise any error that occurs during the process
 
     """
-
-    def __init__(self, descriptor):
-        super().__init__(descriptor)
 
     @property
     def tasks(self):

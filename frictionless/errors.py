@@ -1,6 +1,9 @@
 from .metadata import Metadata
 from .exception import FrictionlessException
 
+# TODO:
+# Review tags hierarchy
+
 
 # TODO:
 # Consider other approached for report/errors as dict is not really
@@ -289,6 +292,14 @@ class ResourceError(Error):
     description = "A validation cannot be processed."
 
 
+class PipelineError(Error):
+    code = "pipeline-error"
+    name = "Pipeline Error"
+    tags = ["#general"]
+    template = "The pipeline is not valid: {note}"
+    description = "Provided pipeline is not valid."
+
+
 class InquiryError(Error):
     code = "inquiry-error"
     name = "Inquiry Error"
@@ -305,19 +316,19 @@ class ReportError(Error):
     description = "A validation cannot be presented."
 
 
-class PipelineError(Error):
-    code = "pipeline-error"
-    name = "Pipeline Error"
+class StatusError(Error):
+    code = "status-error"
+    name = "Status Error"
     tags = ["#general"]
-    template = "The pipeline is not valid: {note}"
-    description = "Provided pipeline is not valid."
+    template = "The status is not valid: {note}"
+    description = "Provided status is not valid."
 
 
 class TaskError(Error):
     code = "task-error"
     name = "Task Error"
     tags = ["#general"]
-    template = "The validation task has an error: {note}"
+    template = "The task has an error: {note}"
     description = "General task-level error."
 
 

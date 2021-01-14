@@ -1,11 +1,13 @@
 name: pipeline
 type: dataflows
-steps:
-  - step: load
-    loadSource: 'data/table.csv'
-  - step: set-type
-    name: id
-    type: string
-  - step: dump-to-path
-    outPath: 'tmp/pipeline'
-    prettyDescriptor: true
+tasks:
+  - type: package
+    steps:
+      - step: load
+        loadSource: data/table.csv
+      - step: set-type
+        name: id
+        type: string
+      - step: dump-to-path
+        outPath: tmp/pipeline
+        prettyDescriptor: true

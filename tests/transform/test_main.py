@@ -1,27 +1,23 @@
-from frictionless import transform
+from frictionless import Resource, transform, steps
 
 
 # General
 
 
 def test_transform():
-    source = {
-        "type": "resource",
-        "source": {"path": "data/transform.csv"},
-        "steps": [
-            {"step": "cell-set", "fieldName": "population", "value": 100},
+    source = Resource(path="data/transform.csv")
+    source.infer()
+    target = transform(
+        source,
+        steps=[
+            steps.table_normalize(),
+            steps.table_melt(field_name="id"),
+            steps.table_recast(field_name="id"),
         ],
-    }
-    target = transform(source)
-    assert target.schema == {
-        "fields": [
-            {"name": "id", "type": "integer"},
-            {"name": "name", "type": "string"},
-            {"name": "population", "type": "integer"},
-        ]
-    }
+    )
+    assert target.schema == source.schema
     assert target.read_rows() == [
-        {"id": 1, "name": "germany", "population": 100},
-        {"id": 2, "name": "france", "population": 100},
-        {"id": 3, "name": "spain", "population": 100},
+        {"id": 1, "name": "germany", "population": 83},
+        {"id": 2, "name": "france", "population": 66},
+        {"id": 3, "name": "spain", "population": 47},
     ]
