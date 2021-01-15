@@ -15,7 +15,7 @@ You can read SQL database:
 ```py
 from frictionless import Package
 
-package = Package.from_pandas(url='postgresql://mydatabase')
+package = Package.from_sql(url='postgresql://mydatabase')
 print(package)
 for resource in package.resources:
   print(resource.read_rows())
@@ -31,7 +31,7 @@ You can write SQL databases:
 from frictionless import Package
 
 package = Package('path/to/datapackage.json')
-package.to_spss(utl='postgresql://mydatabase')
+package.to_sql(utl='postgresql://mydatabase')
 ```
 
 ## Configuring SQL
