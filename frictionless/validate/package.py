@@ -36,14 +36,14 @@ def validate_package(source, noinfer=False, nolookup=False, nopool=False, **opti
         native = isinstance(source, Package)
         package = source.to_copy() if native else Package(source, **options)
     except FrictionlessException as exception:
-        return Report(time=timer.time, errors=[exception.error], tables=[])
+        return Report(time=timer.time, errors=[exception.error], tasks=[])
 
     # Prepare package
     if not noinfer:
         package.infer()
 
     if package.metadata_errors:
-        return Report(time=timer.time, errors=package.metadata_errors, tables=[])
+        return Report(time=timer.time, errors=package.metadata_errors, tasks=[])
 
     # Prepare inquiry
     descriptor = {"tasks": []}
@@ -51,8 +51,7 @@ def validate_package(source, noinfer=False, nolookup=False, nopool=False, **opti
         if resource.profile == "tabular-data-resource":
             descriptor["tasks"].append(
                 helpers.create_descriptor(
-                    # TODO: review
-                    source=resource.to_dict(),
+                    source=resource,
                     basepath=resource.basepath,
                     noinfer=noinfer,
                 )
@@ -63,4 +62,4 @@ def validate_package(source, noinfer=False, nolookup=False, nopool=False, **opti
     report = validate_inquiry(inquiry, nopool=nopool)
 
     # Return report
-    return Report(time=timer.time, errors=report["errors"], tables=report["tables"])
+    return Report(time=timer.time, errors=report["errors"], tasks=report["tasks"])

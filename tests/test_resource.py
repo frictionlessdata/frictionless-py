@@ -676,6 +676,18 @@ def test_resource_compression_error_invalid_gz():
     assert error.note == "Not a gzipped file (b'id')"
 
 
+def test_resource_legacy_no_compression_issue_616():
+    with pytest.warns(UserWarning):
+        with Resource("data/table.csv", compression="no") as resource:
+            assert resource.innerpath == ""
+            assert resource.compression == ""
+            assert resource.header == ["id", "name"]
+            assert resource.read_rows() == [
+                {"id": 1, "name": "english"},
+                {"id": 2, "name": "中国人"},
+            ]
+
+
 # Control
 
 

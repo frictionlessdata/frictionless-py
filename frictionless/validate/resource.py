@@ -1,7 +1,7 @@
 from ..system import system
 from ..resource import Resource
 from ..exception import FrictionlessException
-from ..report import Report, ReportTable
+from ..report import Report, ReportTask
 from .. import config
 from .. import errors
 from .. import helpers
@@ -65,13 +65,13 @@ def validate_resource(
         native = isinstance(source, Resource)
         resource = source.to_copy() if native else Resource(source, **options)
     except FrictionlessException as exception:
-        return Report(time=timer.time, errors=[exception.error], tables=[])
+        return Report(time=timer.time, errors=[exception.error], tasks=[])
 
     # Prepare resource
     if not noinfer:
         resource.infer()
     if resource.metadata_errors:
-        return Report(time=timer.time, errors=resource.metadata_errors, tables=[])
+        return Report(time=timer.time, errors=resource.metadata_errors, tasks=[])
 
     # Open resource
     try:
@@ -140,13 +140,13 @@ def validate_resource(
     return Report(
         time=timer.time,
         errors=task_errors,
-        tables=[
-            ReportTable(
+        tasks=[
+            ReportTask(
                 time=timer.time,
                 scope=table_errors.scope,
                 partial=partial,
                 errors=table_errors,
-                table=resource,
+                resource=resource,
             )
         ],
     )

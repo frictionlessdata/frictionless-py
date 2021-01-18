@@ -219,7 +219,7 @@ def test_validate_error_not_found():
 def no_time(descriptor):
     if isinstance(descriptor, Metadata):
         descriptor = descriptor.to_dict()
-    for table in descriptor.get("tables", []):
-        table.pop("time", None)
+    for task in descriptor.get("tasks", []):
+        task.pop("time", None)
     descriptor.pop("time", None)
     return descriptor

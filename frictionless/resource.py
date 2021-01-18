@@ -174,13 +174,20 @@ class Resource(Metadata):
         self.setinitial("stats", stats)
         super().__init__(descriptor)
 
-        # Replace deprecated "url"
+        # Handle deprecated url
         url = self.get("url")
         path = self.get("path")
         if url and not path:
             message = 'Property "url" is deprecated. Please use "path" instead.'
             warnings.warn(message, UserWarning)
             self["path"] = self.pop("url")
+
+        # Handle deprecated compression
+        compression = self.get("compression")
+        if compression == "no":
+            message = 'Compression "no" is deprecated. Please use "" compression.'
+            warnings.warn(message, UserWarning)
+            self["compression"] = ""
 
     def __setattr__(self, name, value):
         if name == "basepath":

@@ -12,28 +12,34 @@ def test_report():
     assert report.version.startswith("3") or report.version.startswith("4")
     assert report.time
     assert report.valid is True
-    assert report.stats == {"errors": 0, "tables": 1}
+    assert report.stats == {"errors": 0, "tasks": 1}
     assert report.errors == []
-    # Table
-    assert report.table.path == "data/table.csv"
-    assert report.table.scheme == "file"
-    assert report.table.format == "csv"
-    assert report.table.hashing == "md5"
-    assert report.table.encoding == "utf-8"
-    assert report.table.innerpath == ""
-    assert report.table.compression == ""
-    assert report.table.dialect == {}
-    assert report.table.layout == {}
-    assert report.table.header == ["id", "name"]
-    assert report.table.schema == {
+    # Task
+    assert report.task.resource.path == "data/table.csv"
+    assert report.task.resource.scheme == "file"
+    assert report.task.resource.format == "csv"
+    assert report.task.resource.hashing == "md5"
+    assert report.task.resource.encoding == "utf-8"
+    assert report.task.resource.innerpath == ""
+    assert report.task.resource.compression == ""
+    assert report.task.resource.dialect == {}
+    assert report.task.resource.layout == {}
+    assert report.task.resource.header == ["id", "name"]
+    assert report.task.resource.schema == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},
         ],
     }
-    assert report.table.time
-    assert report.table.valid is True
-    assert report.table.scope == [
+    assert report.task.resource.stats == {
+        "hash": "6c2c61dd9b0e9c6876139a449ed87933",
+        "bytes": 30,
+        "fields": 2,
+        "rows": 2,
+    }
+    assert report.task.time
+    assert report.task.valid is True
+    assert report.task.scope == [
         "dialect-error",
         "schema-error",
         "field-error",
@@ -53,11 +59,7 @@ def test_report():
         "foreign-key-error",
         "checksum-error",
     ]
-    assert report.table.stats == {
-        "hash": "6c2c61dd9b0e9c6876139a449ed87933",
-        "bytes": 30,
-        "fields": 2,
-        "rows": 2,
+    assert report.task.stats == {
         "errors": 0,
     }
     assert report.errors == []
@@ -66,7 +68,7 @@ def test_report():
 def test_report_expand():
     report = validate("data/table.csv")
     report.expand()
-    assert report.table.schema == {
+    assert report.task.resource.schema == {
         "fields": [
             {"name": "id", "type": "integer", "format": "default", "bareNumber": True},
             {"name": "name", "type": "string", "format": "default"},

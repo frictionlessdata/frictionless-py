@@ -61,8 +61,8 @@ def validate_inquiry(source, *, nopool=False, **options):
 
     # Return report
     errors = []
-    tables = []
+    tasks = []
     for report in reports:
         errors.extend(report["errors"])
-        tables.extend(report["tables"])
-    return Report(time=timer.time, errors=errors, tables=tables)
+        tasks.extend(report["tasks"])
+    return Report(time=timer.time, errors=errors, tasks=tasks)

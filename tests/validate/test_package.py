@@ -23,7 +23,7 @@ def test_validate_package_from_dict_invalid():
     with open("data/invalid/datapackage.json") as file:
         report = validate(json.load(file), basepath="data/invalid", nopool=True)
         assert report.flatten(
-            ["tablePosition", "rowPosition", "fieldPosition", "code"]
+            ["taskPosition", "rowPosition", "fieldPosition", "code"]
         ) == [
             [1, 3, None, "blank-row"],
             [1, 3, None, "primary-key-error"],
@@ -38,7 +38,7 @@ def test_validate_package_from_path():
 
 def test_validate_package_from_path_invalid():
     report = validate("data/invalid/datapackage.json", nopool=True)
-    assert report.flatten(["tablePosition", "rowPosition", "fieldPosition", "code"]) == [
+    assert report.flatten(["taskPosition", "rowPosition", "fieldPosition", "code"]) == [
         [1, 3, None, "blank-row"],
         [1, 3, None, "primary-key-error"],
         [2, 4, None, "blank-row"],
@@ -58,7 +58,7 @@ def test_validate_package_from_zip():
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_validate_package_from_zip_invalid():
     report = validate("data/package-invalid.zip", type="package", nopool=True)
-    assert report.flatten(["tablePosition", "rowPosition", "fieldPosition", "code"]) == [
+    assert report.flatten(["taskPosition", "rowPosition", "fieldPosition", "code"]) == [
         [1, 3, None, "blank-row"],
         [1, 3, None, "primary-key-error"],
         [2, 4, None, "blank-row"],
@@ -146,7 +146,7 @@ def test_validate_package_dialect_header_false():
 
 def test_validate_package_with_nopool():
     report = validate("data/invalid/datapackage.json", nopool=True)
-    assert report.flatten(["tablePosition", "rowPosition", "fieldPosition", "code"]) == [
+    assert report.flatten(["taskPosition", "rowPosition", "fieldPosition", "code"]) == [
         [1, 3, None, "blank-row"],
         [1, 3, None, "primary-key-error"],
         [2, 4, None, "blank-row"],
@@ -348,7 +348,7 @@ def test_validate_package_parallel_from_dict_invalid():
     with open("data/invalid/datapackage.json") as file:
         report = validate(json.load(file), basepath="data/invalid")
         assert report.flatten(
-            ["tablePosition", "rowPosition", "fieldPosition", "code"]
+            ["taskPosition", "rowPosition", "fieldPosition", "code"]
         ) == [
             [1, 3, None, "blank-row"],
             [1, 3, None, "primary-key-error"],
@@ -457,4 +457,4 @@ def test_validate_package_uppercase_format_issue_494():
     with pytest.warns(UserWarning):
         report = validate("data/issue494.package.json", nopool=True)
         assert report.valid
-        assert report.stats["tables"] == 1
+        assert report.stats["tasks"] == 1

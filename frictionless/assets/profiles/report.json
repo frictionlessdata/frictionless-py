@@ -9,7 +9,7 @@
     "valid",
     "stats",
     "errors",
-    "tables"
+    "tasks"
   ],
   "properties": {
     "version": {
@@ -25,7 +25,7 @@
     "valid": {
       "type": "boolean",
       "title": "Valid",
-      "description": "Whether all the inspected tables valid or not"
+      "description": "Whether all the inspected tasks valid or not"
     },
     "stats": {
       "type": "object",
@@ -33,7 +33,7 @@
       "description": "Validation stats",
       "properties": {
         "errors": {"type": "number"},
-        "tables": {"type": "number"}
+        "tasks": {"type": "number"}
       }
     },
     "errors": {
@@ -85,93 +85,26 @@
         }
       }
     },
-    "tables": {
+    "tasks": {
       "type": "array",
-      "title": "Tables",
-      "description": "The validation results for each of the tables.",
+      "title": "Tasks",
+      "description": "The validation results for each of the tasks.",
       "items": {
         "type": "object",
         "required": [
-          "path",
-          "scheme",
-          "format",
-          "hashing",
-          "encoding",
-          "innerpath",
-          "compression",
-          "control",
-          "dialect",
-          "layout",
-          "schema",
-          "header",
+          "resource",
           "time",
           "valid",
           "scope",
-          "stats",
           "partial",
+          "stats",
           "errors"
         ],
         "properties": {
-          "path": {
-            "type": "string",
-            "title": "Path",
-            "description": "Path or URI where this table was loaded from."
-          },
-          "scheme": {
-            "type": "string",
-            "title": "Scheme",
-            "description": "The scheme used to load the data."
-          },
-          "format": {
-            "type": "string",
-            "title": "Format",
-            "description": "The data format."
-          },
-          "hashing": {
-            "type": "string",
-            "title": "Hashing",
-            "description": "The hashing algorithm."
-          },
-          "encoding": {
-            "type": "string",
-            "title": "Encoding",
-            "description": "The encoding of the table."
-          },
-          "innerpath": {
-            "type": "string",
-            "title": "Compression path",
-            "description": "The path inside the compressed source."
-          },
-          "compression": {
-            "type": "string",
-            "title": "Compression",
-            "description": "The compression of the table."
-          },
-          "control": {
+          "resource": {
             "type": "object",
-            "title": "Control",
-            "description": "The file control of the table."
-          },
-          "dialect": {
-            "type": "object",
-            "title": "Dialect",
-            "description": "The tabular dialect of the table."
-          },
-          "layout": {
-            "type": "object",
-            "title": "Layout",
-            "description": "The tabular layout of the table."
-          },
-          "schema": {
-            "type": "object",
-            "title": "Schema",
-            "description": "A Table Schema Object."
-          },
-          "header": {
-            "type": "array",
-            "title": "Header",
-            "description": "Table's header.",
-            "items": {"type": "string"}
+            "title": "Resource",
+            "description": "Validated resource."
           },
           "time": {
             "type": "number",
@@ -190,21 +123,18 @@
             "description": "List of errors codes the table has been checked for.",
             "items": {"type": "string"}
           },
-          "stats": {
-            "type": "object",
-            "title": "Stats",
-            "description": "Validation stats",
-            "properties": {
-              "hash": {"type": "string"},
-              "bytes": {"type": "number"},
-              "rows": {"type": "number"},
-              "errors": {"type": "number"}
-            }
-          },
           "partial": {
             "type": "boolean",
             "title": "Partial",
             "description": "Whether the validation was stopped because of an error limit."
+          },
+          "stats": {
+            "type": "object",
+            "title": "Stats",
+            "description": "Validation task stats",
+            "properties": {
+              "errors": {"type": "number"}
+            }
           },
           "errors": {
             "type": "array",

@@ -18,23 +18,21 @@ class Report(Metadata):
         descriptor? (str|dict): report descriptor
         time (float): validation time
         errors (Error[]): validation errors
-        tables (ReportTable[]): validation tables
+        tasks (ReportTask[]): validation tasks
 
     Raises:
         FrictionlessException: raise any error that occurs during the process
 
     """
 
-    def __init__(self, descriptor=None, *, time, errors, tables):
-        self["version"] = config.VERSION
-        self["time"] = time
-        self["valid"] = not errors and all(tab["valid"] for tab in tables)
-        self["stats"] = {
-            "errors": len(errors) + sum(tab["stats"]["errors"] for tab in tables),
-            "tables": len(tables),
-        }
-        self["errors"] = errors
-        self["tables"] = tables
+    def __init__(self, descriptor=None, *, time, errors, tasks):
+        error_count = len(errors) + sum(tab["stats"]["errors"] for tab in tasks)
+        self.setinitial("version", config.VERSION)
+        self.setinitial("time", time)
+        self.setinitial("valid", not errors and all(task["valid"] for task in tasks))
+        self.setinitial("stats", {"errors": error_count, "tasks": len(tasks)})
+        self.setinitial("errors", errors)
+        self.setinitial("tasks", tasks)
         super().__init__(descriptor)
 
     @property
@@ -78,33 +76,33 @@ class Report(Metadata):
         return self["errors"]
 
     @property
-    def tables(self):
+    def tasks(self):
         """
         Returns:
-            ReportTable[]: validation tables
+            ReportTask[]: validation tasks
         """
-        return self["tables"]
+        return self["tasks"]
 
     @property
-    def table(self):
+    def task(self):
         """
         Returns:
-            ReportTable: validation table (if there is only one)
+            ReportTask: validation task (if there is only one)
 
         Raises:
-            FrictionlessException: if there are more that 1 table
+            FrictionlessException: if there are more that 1 task
         """
-        if len(self.tables) != 1:
-            error = Error(note='The "report.table" is available for single table reports')
+        if len(self.tasks) != 1:
+            error = Error(note='The "report.task" is available for single task reports')
             raise FrictionlessException(error)
-        return self.tables[0]
+        return self.tasks[0]
 
     # Expand
 
     def expand(self):
         """Expand metadata"""
-        for table in self.tables:
-            table.expand()
+        for task in self.tasks:
+            task.expand()
 
     # Flatten
 
@@ -122,9 +120,9 @@ class Report(Metadata):
             context = {}
             context.update(error)
             result.append([context.get(prop) for prop in spec])
-        for count, table in enumerate(self.tables, start=1):
-            for error in table.errors:
-                context = {"tableNumber": count, "tablePosition": count}
+        for count, task in enumerate(self.tasks, start=1):
+            for error in task.errors:
+                context = {"taskNumber": count, "taskPosition": count}
                 context.update(error)
                 result.append([context.get(prop) for prop in spec])
         return result
@@ -151,7 +149,7 @@ class Report(Metadata):
                 error = TaskError(note=str(exception))
                 if isinstance(exception, FrictionlessException):
                     error = exception.error
-                return Report(time=timer.time, errors=[error], tables=[])
+                return Report(time=timer.time, errors=[error], tasks=[])
 
         return wrapper
 
@@ -161,7 +159,7 @@ class Report(Metadata):
     #  metadata_strict = True
     metadata_Error = ReportError
     metadata_profile = deepcopy(config.REPORT_PROFILE)
-    metadata_profile["properties"]["tables"] = {
+    metadata_profile["properties"]["tasks"] = {
         "type": "array",
         "items": {"type": "object"},
     }
@@ -169,17 +167,17 @@ class Report(Metadata):
     def metadata_validate(self):
         yield from super().metadata_validate()
 
-        # Tables
-        for table in self.tables:
-            yield from table.metadata_errors
+        # Tasks
+        for task in self.tasks:
+            yield from task.metadata_errors
 
 
-class ReportTable(Metadata):
-    """Report table representation.
+class ReportTask(Metadata):
+    """Report task representation.
 
     API      | Usage
     -------- | --------
-    Public   | `from frictionless import ReportTable`
+    Public   | `from frictionless import ReportTask`
 
     Parameters:
         descriptor? (str|dict): schema descriptor
@@ -187,133 +185,30 @@ class ReportTable(Metadata):
         scope (str[]): validation scope
         partial (bool): wehter validation was partial
         errors (Error[]): validation errors
-        table (Table): validation table
+        task (Task): validation task
 
     # Raises
         FrictionlessException: raise any error that occurs during the process
 
     """
 
-    def __init__(self, descriptor=None, *, time, scope, partial, errors, table):
-        # File
-        # TODO: review path/data/source logic
-        self["path"] = table.path or "memory"
-        self["scheme"] = table.scheme
-        self["format"] = table.format
-        self["hashing"] = table.hashing
-        self["encoding"] = table.encoding
-        self["innerpath"] = table.innerpath
-        self["compression"] = table.compression
-        # Table
-        self["control"] = table.control
-        self["dialect"] = table.dialect
-        self["layout"] = table.layout
-        self["schema"] = table.schema
-        self["header"] = table.header
-        # Validation
-        self["time"] = time
-        self["valid"] = not errors
-        self["scope"] = scope
-        self["stats"] = helpers.copy_merge(table.stats, {"errors": len(errors)})
-        self["partial"] = partial
-        self["errors"] = errors
+    def __init__(self, descriptor=None, *, resource, time, scope, partial, errors):
+        self.setinitial("resource", resource)
+        self.setinitial("time", time)
+        self.setinitial("valid", not errors)
+        self.setinitial("scope", scope)
+        self.setinitial("partial", partial)
+        self.setinitial("stats", {"errors": len(errors)})
+        self.setinitial("errors", errors)
         super().__init__(descriptor)
 
     @property
-    def path(self):
+    def resource(self):
         """
         Returns:
-            str: path
+            Resource: resource
         """
-        return self["path"]
-
-    @property
-    def scheme(self):
-        """
-        Returns:
-            str: scheme
-        """
-        return self["scheme"]
-
-    @property
-    def format(self):
-        """
-        Returns:
-            str: format
-        """
-        return self["format"]
-
-    @property
-    def hashing(self):
-        """
-        Returns:
-            str: hashing
-        """
-        return self["hashing"]
-
-    @property
-    def encoding(self):
-        """
-        Returns:
-            str: encoding
-        """
-        return self["encoding"]
-
-    @property
-    def innerpath(self):
-        """
-        Returns:
-            str: compression path
-        """
-        return self["innerpath"]
-
-    @property
-    def compression(self):
-        """
-        Returns:
-            str: compression
-        """
-        return self["compression"]
-
-    @property
-    def control(self):
-        """
-        Returns:
-            Control: control
-        """
-        return self["control"]
-
-    @property
-    def dialect(self):
-        """
-        Returns:
-            Dialect: dialect
-        """
-        return self["dialect"]
-
-    @property
-    def layout(self):
-        """
-        Returns:
-            Layout: layout
-        """
-        return self["layout"]
-
-    @property
-    def schema(self):
-        """
-        Returns:
-            Schema: schema
-        """
-        return self["schema"]
-
-    @property
-    def header(self):
-        """
-        Returns:
-            Header: header
-        """
-        return self["header"]
+        return self["resource"]
 
     @property
     def time(self):
@@ -340,20 +235,20 @@ class ReportTable(Metadata):
         return self["scope"]
 
     @property
-    def stats(self):
-        """
-        Returns:
-            dict: validation stats
-        """
-        return self["stats"]
-
-    @property
     def partial(self):
         """
         Returns:
             bool: if validation partial
         """
         return self["partial"]
+
+    @property
+    def stats(self):
+        """
+        Returns:
+            dict: validation stats
+        """
+        return self["stats"]
 
     @property
     def errors(self):
@@ -373,7 +268,7 @@ class ReportTable(Metadata):
             FrictionlessException: if more than one errors
         """
         if len(self.errors) != 1:
-            error = Error(note='The "table.error" is available for single error tables')
+            error = Error(note='The "task.error" is available for single error tasks')
             raise FrictionlessException(error)
         return self.errors[0]
 
@@ -381,9 +276,7 @@ class ReportTable(Metadata):
 
     def expand(self):
         """Expand metadata"""
-        self.dialect.expand()
-        if self.schema is not None:
-            self.schema.expand()
+        self.resource.expand()
 
     # Flatten
 
@@ -394,7 +287,7 @@ class ReportTable(Metadata):
             spec (any[]): flatten specification
 
         Returns:
-            any[]: flatten table report
+            any[]: flatten task report
         """
         result = []
         for error in self.errors:
@@ -408,6 +301,6 @@ class ReportTable(Metadata):
     # TODO: review
     #  metadata_strict = True
     metadata_Error = ReportError
-    metadata_profile = config.REPORT_PROFILE["properties"]["tables"]["items"]
+    metadata_profile = config.REPORT_PROFILE["properties"]["tasks"]["items"]
     # TODO: review: should we validate errors for performance reasons
     #  del metadata_profile["properties"]["errors"]

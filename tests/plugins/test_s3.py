@@ -83,7 +83,7 @@ def test_s3_loader_multiprocessing_problem_issue_496(bucket_name):
     }
     report = validate(descriptor, nopool=True)
     assert report.valid
-    assert report.stats["tables"] == 2
+    assert report.stats["tasks"] == 2
 
 
 @mock_s3

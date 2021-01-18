@@ -261,17 +261,17 @@ def test_validate_headers_none():
     layout = Layout(header=False)
     report = validate("data/without-headers.csv", layout=layout)
     assert report.valid
-    assert report.table.stats["rows"] == 3
-    assert report.table["layout"]["header"] is False
-    assert report.table["header"] == []
+    assert report.task.resource.stats["rows"] == 3
+    assert report.task.resource.layout.header is False
+    assert report.task.resource.header == []
 
 
 def test_validate_headers_none_extra_cell():
     layout = Layout(header=False)
     report = validate("data/without-headers-extra.csv", layout=layout)
-    assert report.table.stats["rows"] == 3
-    assert report.table["header"] == []
-    assert report.table["layout"]["header"] is False
+    assert report.task.resource.stats["rows"] == 3
+    assert report.task.resource.header == []
+    assert report.task.resource.layout.header is False
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [3, 3, "extra-cell"],
     ]
@@ -280,21 +280,21 @@ def test_validate_headers_none_extra_cell():
 def test_validate_headers_number():
     layout = Layout(header_rows=[2])
     report = validate("data/matrix.csv", layout=layout)
-    assert report.table["header"] == ["11", "12", "13", "14"]
+    assert report.task.resource.header == ["11", "12", "13", "14"]
     assert report.valid
 
 
 def test_validate_headers_list_of_numbers():
     layout = Layout(header_rows=[2, 3, 4])
     report = validate("data/matrix.csv", layout=layout)
-    assert report.table["header"] == ["11 21 31", "12 22 32", "13 23 33", "14 24 34"]
+    assert report.task.resource.header == ["11 21 31", "12 22 32", "13 23 33", "14 24 34"]
     assert report.valid
 
 
 def test_validate_headers_list_of_numbers_and_headers_join():
     layout = Layout(header_rows=[2, 3, 4], header_join=".")
     report = validate("data/matrix.csv", layout=layout)
-    assert report.table["header"] == ["11.21.31", "12.22.32", "13.23.33", "14.24.34"]
+    assert report.task.resource.header == ["11.21.31", "12.22.32", "13.23.33", "14.24.34"]
     assert report.valid
 
 
@@ -374,7 +374,7 @@ def test_validate_compression_invalid():
 def test_validate_dialect_delimiter():
     report = validate("data/delimiter.csv", dialect={"delimiter": ";"})
     assert report.valid
-    assert report.table.stats["rows"] == 2
+    assert report.task.resource.stats["rows"] == 2
 
 
 # Layout
@@ -383,137 +383,137 @@ def test_validate_dialect_delimiter():
 def test_validate_pick_fields():
     layout = Layout(pick_fields=[2, "f3"])
     report = validate("data/matrix.csv", layout=layout)
-    assert report.table["header"] == ["f2", "f3"]
-    assert report.table.stats["rows"] == 4
-    assert report.table.valid
+    assert report.task.resource.header == ["f2", "f3"]
+    assert report.task.resource.stats["rows"] == 4
+    assert report.task.valid
 
 
 def test_validate_pick_fields_regex():
     layout = Layout(pick_fields=["<regex>f[23]"])
     report = validate("data/matrix.csv", layout=layout)
-    assert report.table["header"] == ["f2", "f3"]
-    assert report.table.stats["rows"] == 4
-    assert report.table.valid
+    assert report.task.resource.header == ["f2", "f3"]
+    assert report.task.resource.stats["rows"] == 4
+    assert report.task.valid
 
 
 def test_validate_skip_fields():
     layout = Layout(skip_fields=[1, "f4"])
     report = validate("data/matrix.csv", layout=layout)
-    assert report.table["header"] == ["f2", "f3"]
-    assert report.table.stats["rows"] == 4
-    assert report.table.valid
+    assert report.task.resource.header == ["f2", "f3"]
+    assert report.task.resource.stats["rows"] == 4
+    assert report.task.valid
 
 
 def test_validate_skip_fields_regex():
     layout = Layout(skip_fields=["<regex>f[14]"])
     report = validate("data/matrix.csv", layout=layout)
-    assert report.table["header"] == ["f2", "f3"]
-    assert report.table.stats["rows"] == 4
-    assert report.table.valid
+    assert report.task.resource.header == ["f2", "f3"]
+    assert report.task.resource.stats["rows"] == 4
+    assert report.task.valid
 
 
 def test_validate_limit_fields():
     layout = Layout(limit_fields=1)
     report = validate("data/matrix.csv", layout=layout)
-    assert report.table["header"] == ["f1"]
-    assert report.table.stats["rows"] == 4
-    assert report.table.valid
+    assert report.task.resource.header == ["f1"]
+    assert report.task.resource.stats["rows"] == 4
+    assert report.task.valid
 
 
 def test_validate_offset_fields():
     layout = Layout(offset_fields=3)
     report = validate("data/matrix.csv", layout=layout)
-    assert report.table["header"] == ["f4"]
-    assert report.table.stats["rows"] == 4
-    assert report.table.valid
+    assert report.task.resource.header == ["f4"]
+    assert report.task.resource.stats["rows"] == 4
+    assert report.task.valid
 
 
 def test_validate_limit_and_offset_fields():
     layout = Layout(limit_fields=2, offset_fields=1)
     report = validate("data/matrix.csv", layout=layout)
-    assert report.table["header"] == ["f2", "f3"]
-    assert report.table.stats["rows"] == 4
-    assert report.table.valid
+    assert report.task.resource.header == ["f2", "f3"]
+    assert report.task.resource.stats["rows"] == 4
+    assert report.task.valid
 
 
 def test_validate_pick_rows():
     layout = Layout(pick_rows=[1, 3, "31"])
     report = validate("data/matrix.csv", layout=layout)
-    assert report.table["header"] == ["f1", "f2", "f3", "f4"]
-    assert report.table.stats["rows"] == 2
-    assert report.table.valid
+    assert report.task.resource.header == ["f1", "f2", "f3", "f4"]
+    assert report.task.resource.stats["rows"] == 2
+    assert report.task.valid
 
 
 def test_validate_pick_rows_regex():
     layout = Layout(pick_rows=["<regex>[f23]1"])
     report = validate("data/matrix.csv", layout=layout)
-    assert report.table["header"] == ["f1", "f2", "f3", "f4"]
-    assert report.table.stats["rows"] == 2
-    assert report.table.valid
+    assert report.task.resource.header == ["f1", "f2", "f3", "f4"]
+    assert report.task.resource.stats["rows"] == 2
+    assert report.task.valid
 
 
 def test_validate_skip_rows():
     layout = Layout(skip_rows=[2, "41"])
     report = validate("data/matrix.csv", layout=layout)
-    assert report.table["header"] == ["f1", "f2", "f3", "f4"]
-    assert report.table.stats["rows"] == 2
-    assert report.table.valid
+    assert report.task.resource.header == ["f1", "f2", "f3", "f4"]
+    assert report.task.resource.stats["rows"] == 2
+    assert report.task.valid
 
 
 def test_validate_skip_rows_regex():
     layout = Layout(skip_rows=["<regex>[14]1"])
     report = validate("data/matrix.csv", layout=layout)
-    assert report.table["header"] == ["f1", "f2", "f3", "f4"]
-    assert report.table.stats["rows"] == 2
-    assert report.table.valid
+    assert report.task.resource.header == ["f1", "f2", "f3", "f4"]
+    assert report.task.resource.stats["rows"] == 2
+    assert report.task.valid
 
 
 def test_validate_skip_rows_blank():
     layout = Layout(skip_rows=["<blank>"])
     report = validate("data/blank-rows.csv", layout=layout)
-    assert report.table["header"] == ["id", "name", "age"]
-    assert report.table.stats["rows"] == 2
-    assert report.table.valid
+    assert report.task.resource.header == ["id", "name", "age"]
+    assert report.task.resource.stats["rows"] == 2
+    assert report.task.valid
 
 
 def test_validate_pick_rows_and_fields():
     layout = Layout(pick_rows=[1, 3, "31"], pick_fields=[2, "f3"])
     report = validate("data/matrix.csv", layout=layout)
-    assert report.table["header"] == ["f2", "f3"]
-    assert report.table.stats["rows"] == 2
-    assert report.table.valid
+    assert report.task.resource.header == ["f2", "f3"]
+    assert report.task.resource.stats["rows"] == 2
+    assert report.task.valid
 
 
 def test_validate_skip_rows_and_fields():
     layout = Layout(skip_rows=[2, "41"], skip_fields=[1, "f4"])
     report = validate("data/matrix.csv", layout=layout)
-    assert report.table["header"] == ["f2", "f3"]
-    assert report.table.stats["rows"] == 2
-    assert report.table.valid
+    assert report.task.resource.header == ["f2", "f3"]
+    assert report.task.resource.stats["rows"] == 2
+    assert report.task.valid
 
 
 def test_validate_limit_rows():
     layout = Layout(limit_rows=1)
     report = validate("data/matrix.csv", layout=layout)
-    assert report.table["header"] == ["f1", "f2", "f3", "f4"]
-    assert report.table.stats["rows"] == 1
-    assert report.table.valid
+    assert report.task.resource.header == ["f1", "f2", "f3", "f4"]
+    assert report.task.resource.stats["rows"] == 1
+    assert report.task.valid
 
 
 def test_validate_offset_rows():
     layout = Layout(offset_rows=3)
     report = validate("data/matrix.csv", layout=layout)
-    assert report.table["header"] == ["f1", "f2", "f3", "f4"]
-    assert report.table.stats["rows"] == 1
-    assert report.table.valid
+    assert report.task.resource.header == ["f1", "f2", "f3", "f4"]
+    assert report.task.resource.stats["rows"] == 1
+    assert report.task.valid
 
 
 def test_validate_limit_and_offset_rows():
     layout = Layout(limit_rows=2, offset_rows=1)
     report = validate("data/matrix.csv", layout=layout)
-    assert report.table["header"] == ["f1", "f2", "f3", "f4"]
-    assert report.table.stats["rows"] == 2
-    assert report.table.valid
+    assert report.task.resource.header == ["f1", "f2", "f3", "f4"]
+    assert report.task.resource.stats["rows"] == 2
+    assert report.task.valid
 
 
 def test_validate_invalid_limit_rows():
@@ -573,9 +573,9 @@ def test_validate_schema_multiple_errors():
     source = "data/schema-errors.csv"
     schema = "data/schema-valid.json"
     report = validate(source, schema=schema, pick_errors=["#schema"], limit_errors=3)
-    assert report.table.partial
-    print(report.table.flatten(["rowPosition", "fieldPosition", "code"]))
-    assert report.table.flatten(["rowPosition", "fieldPosition", "code"]) == [
+    assert report.task.partial
+    print(report.task.flatten(["rowPosition", "fieldPosition", "code"]))
+    assert report.task.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [4, 1, "type-error"],
         [4, 2, "constraint-error"],
         [4, 3, "constraint-error"],
@@ -649,7 +649,7 @@ def test_validate_sync_schema():
     }
     report = validate("data/sync-schema.csv", schema=schema, sync_schema=True)
     assert report.valid
-    assert report.table["schema"] == {
+    assert report.task.resource.schema == {
         "fields": [
             {"name": "name", "type": "string"},
             {"name": "id", "type": "integer"},
@@ -688,7 +688,7 @@ def test_validate_patch_schema():
     patch_schema = {"missingValues": ["-"]}
     report = validate("data/table.csv", patch_schema=patch_schema)
     assert report.valid
-    assert report.table["schema"] == {
+    assert report.task.resource.schema == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},
@@ -701,7 +701,7 @@ def test_validate_patch_schema_fields():
     patch_schema = {"fields": {"id": {"type": "string"}}, "missingValues": ["-"]}
     report = validate("data/table.csv", patch_schema=patch_schema)
     assert report.valid
-    assert report.table["schema"] == {
+    assert report.task.resource.schema == {
         "fields": [{"name": "id", "type": "string"}, {"name": "name", "type": "string"}],
         "missingValues": ["-"],
     }
@@ -710,7 +710,7 @@ def test_validate_patch_schema_fields():
 def test_validate_infer_type_string():
     report = validate("data/table.csv", infer_type="string")
     assert report.valid
-    assert report.table["schema"] == {
+    assert report.task.resource.schema == {
         "fields": [{"name": "id", "type": "string"}, {"name": "name", "type": "string"}],
     }
 
@@ -718,7 +718,7 @@ def test_validate_infer_type_string():
 def test_validate_infer_type_any():
     report = validate("data/table.csv", infer_type="any")
     assert report.valid
-    assert report.table["schema"] == {
+    assert report.task.resource.schema == {
         "fields": [{"name": "id", "type": "any"}, {"name": "name", "type": "any"}],
     }
 
@@ -729,10 +729,10 @@ def test_validate_infer_names():
         layout={"header": False},
         infer_names=["id", "name"],
     )
-    assert report.table["header"] == []
-    assert report.table["schema"]["fields"][0]["name"] == "id"
-    assert report.table["schema"]["fields"][1]["name"] == "name"
-    assert report.table.stats["rows"] == 3
+    assert report.task.resource.header == []
+    assert report.task.resource.schema["fields"][0]["name"] == "id"
+    assert report.task.resource.schema["fields"][1]["name"] == "name"
+    assert report.task.resource.stats["rows"] == 3
     assert report.valid
 
 
@@ -743,7 +743,7 @@ def test_validate_infer_names():
 def test_validate_checksum_hash():
     hash = "6c2c61dd9b0e9c6876139a449ed87933"
     report = validate("data/table.csv", checksum={"hash": hash})
-    assert report.table.valid
+    assert report.task.valid
 
 
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
@@ -759,7 +759,7 @@ def test_validate_checksum_hash_invalid():
 def test_validate_checksum_hash_md5():
     hash = "6c2c61dd9b0e9c6876139a449ed87933"
     report = validate("data/table.csv", checksum={"hash": hash})
-    assert report.table.valid
+    assert report.task.valid
 
 
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
@@ -775,7 +775,7 @@ def test_validate_checksum_hash_md5_invalid():
 def test_validate_checksum_hash_sha1():
     hash = "db6ea2f8ff72a9e13e1d70c28ed1c6b42af3bb0e"
     report = validate("data/table.csv", hashing="sha1", checksum={"hash": hash})
-    assert report.table.valid
+    assert report.task.valid
 
 
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
@@ -791,7 +791,7 @@ def test_validate_checksum_hash_sha1_invalid():
 def test_validate_checksum_hash_sha256():
     hash = "a1fd6c5ff3494f697874deeb07f69f8667e903dd94a7bc062dd57550cea26da8"
     report = validate("data/table.csv", hashing="sha256", checksum={"hash": hash})
-    assert report.table.valid
+    assert report.task.valid
 
 
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
@@ -807,7 +807,7 @@ def test_validate_checksum_hash_sha256_invalid():
 def test_validate_checksum_hash_sha512():
     hash = "d52e3f5f5693894282f023b9985967007d7984292e9abd29dca64454500f27fa45b980132d7b496bc84d336af33aeba6caf7730ec1075d6418d74fb8260de4fd"
     report = validate("data/table.csv", hashing="sha512", checksum={"hash": hash})
-    assert report.table.valid
+    assert report.task.valid
 
 
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
@@ -822,14 +822,14 @@ def test_validate_checksum_hash_sha512_invalid():
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_validate_checksum_bytes():
     report = validate("data/table.csv", checksum={"bytes": 30})
-    assert report.table.valid
+    assert report.task.valid
 
 
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_validate_checksum_bytes_invalid():
     report = validate("data/table.csv", checksum={"bytes": 40})
-    assert report.table.error.get("rowPosition") is None
-    assert report.table.error.get("fieldPosition") is None
+    assert report.task.error.get("rowPosition") is None
+    assert report.task.error.get("fieldPosition") is None
     assert report.flatten(["code", "note"]) == [
         ["checksum-error", 'expected bytes count is "40" and actual is "30"'],
     ]
@@ -838,14 +838,14 @@ def test_validate_checksum_bytes_invalid():
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_validate_checksum_rows():
     report = validate("data/table.csv", checksum={"rows": 2})
-    assert report.table.valid
+    assert report.task.valid
 
 
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_validate_checksum_rows_invalid():
     report = validate("data/table.csv", checksum={"rows": 3})
-    assert report.table.error.get("rowPosition") is None
-    assert report.table.error.get("fieldPosition") is None
+    assert report.task.error.get("rowPosition") is None
+    assert report.task.error.get("fieldPosition") is None
     assert report.flatten(["code", "note"]) == [
         ["checksum-error", 'expected rows count is "3" and actual is "2"'],
     ]
@@ -853,7 +853,7 @@ def test_validate_checksum_rows_invalid():
 
 def test_validate_pick_errors():
     report = validate("data/invalid.csv", pick_errors=["blank-label", "blank-row"])
-    assert report.table.scope == ["blank-label", "blank-row"]
+    assert report.task.scope == ["blank-label", "blank-row"]
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [None, 3, "blank-label"],
         [4, None, "blank-row"],
@@ -862,7 +862,7 @@ def test_validate_pick_errors():
 
 def test_validate_pick_errors_tags():
     report = validate("data/invalid.csv", pick_errors=["#header"])
-    assert report.table.scope == [
+    assert report.task.scope == [
         "extra-label",
         "missing-label",
         "blank-label",
@@ -902,7 +902,7 @@ def test_validate_skip_errors_tags():
 
 def test_validate_invalid_limit_errors():
     report = validate("data/invalid.csv", limit_errors=3)
-    assert report.table.partial
+    assert report.task.partial
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [None, 3, "blank-label"],
         [None, 4, "duplicate-label"],
@@ -912,7 +912,7 @@ def test_validate_invalid_limit_errors():
 
 def test_validate_structure_errors_with_limit_errors():
     report = validate("data/structure-errors.csv", limit_errors=3)
-    assert report.table.partial
+    assert report.task.partial
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [4, None, "blank-row"],
         [5, 4, "extra-cell"],
@@ -1016,7 +1016,6 @@ def test_validate_unique_error_and_type_error():
         ]
     }
     report = validate(source, schema=schema)
-    print(report.flatten(["rowPosition", "fieldPosition", "code"]))
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [3, 2, "type-error"],
         [4, 2, "unique-error"],

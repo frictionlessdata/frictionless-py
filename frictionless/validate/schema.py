@@ -28,7 +28,7 @@ def validate_schema(source, **options):
         native = isinstance(source, Schema)
         schema = source.to_copy() if native else Schema(source, **options)
     except FrictionlessException as exception:
-        return Report(time=timer.time, errors=[exception.error], tables=[])
+        return Report(time=timer.time, errors=[exception.error], tasks=[])
 
     # Return report
-    return Report(time=timer.time, errors=schema.metadata_errors, tables=[])
+    return Report(time=timer.time, errors=schema.metadata_errors, tasks=[])

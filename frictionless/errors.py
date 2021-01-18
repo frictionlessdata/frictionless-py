@@ -486,7 +486,7 @@ class DuplicateLabelError(LabelError):
     code = "duplicate-label"
     name = "Duplicate Label"
     tags = ["#header", "#structure"]
-    template = 'Header\'s label "{label}" in field at position "{fieldPosition}" is duplicated to label in another field: {note}'
+    template = 'Label "{label}" in the header at position "{fieldPosition}" is duplicated to a label: {note}'
     description = "Two columns in the header row have the same value. Column names should be unique."
 
 

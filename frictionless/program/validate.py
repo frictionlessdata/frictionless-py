@@ -179,21 +179,21 @@ def program_validate(
 
     # Return tables
     prev_invalid = False
-    for number, table in enumerate(report.tables, start=1):
+    for number, task in enumerate(report.tasks, start=1):
         if number != 1 and prev_invalid:
             typer.secho("")
-        prefix = "valid" if table.valid else "invalid"
-        source = table.path
+        prefix = "valid" if task.valid else "invalid"
+        source = task.resource.path
         if is_stdin:
             source = "stdin"
         typer.secho("---")
         typer.secho(f"{prefix}: {source}", bold=True)
         typer.secho("---")
-        if table.errors:
+        if task.errors:
             prev_invalid = True
             typer.secho("")
             content = []
-            for error in table.errors:
+            for error in task.errors:
                 content.append(
                     [
                         error.get("rowPosition"),
