@@ -1,11 +1,17 @@
 import stringcase
+from functools import partial
+from multiprocessing import Pool
+from importlib import import_module
 from .metadata import Metadata
+from .exception import FrictionlessException
+from .errors import InquiryError
+from .system import system
+from .report import Report
 from . import helpers
-from . import errors
 from . import config
 
 
-# TODO: migrate run from validate_inquiry to here (sync with Pipeline)
+# TODO: move validation logic to validate_inquiry?
 class Inquiry(Metadata):
     """Inquiry representation.
 
@@ -29,10 +35,53 @@ class Inquiry(Metadata):
         """
         return self["tasks"]
 
+    # Run
+
+    def run(self, *, parallel=False):
+        validate = import_module("frictionless").validate
+
+        # Create state
+        tasks = []
+        reports = []
+        timer = helpers.Timer()
+
+        # Prepare tasks
+        for task in self.tasks:
+            if task.type == "inquiry":
+                note = "Inquiry cannot contain nested inquiries"
+                raise FrictionlessException(InquiryError(note=note))
+            if task.type == "package":
+                # TODO:
+                # For now, we don't flatten inquiry completely and for the case
+                # of a list of packages with one resource we don't get proper multiprocessing
+                report = validate(**helpers.create_options(task))
+                reports.append(report)
+                continue
+            tasks.append(task)
+
+        # Validate sequentially
+        if len(tasks) == 1 or not parallel:
+            for task in tasks:
+                report = validate(**helpers.create_options(task))
+                reports.append(report)
+
+        # Validate in-parallel
+        else:
+            with Pool() as pool:
+                reports.extend(pool.map(partial(helpers.apply_function, validate), tasks))
+
+        # Return report
+        errors = []
+        tasks = []
+        for report in reports:
+            errors.extend(report["errors"])
+            tasks.extend(report["tasks"])
+        return Report(time=timer.time, errors=errors, tasks=tasks)
+
     # Metadata
 
     metadata_strict = True
-    metadata_Error = errors.InquiryError
+    metadata_Error = InquiryError
     metadata_profile = config.INQUIRY_PROFILE
 
     def metadata_process(self):
@@ -83,10 +132,10 @@ class InquiryTask(Metadata):
         Returns:
             string?: type
         """
-        return self.get("type")
+        return self.get("type") or system.create_file(self.source).type
 
     # Metadata
 
     metadata_strict = True
-    metadata_Error = errors.InquiryError
+    metadata_Error = InquiryError
     metadata_profile = config.INQUIRY_PROFILE["properties"]["tasks"]["items"]

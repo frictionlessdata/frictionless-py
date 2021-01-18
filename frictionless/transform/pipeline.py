@@ -1,7 +1,7 @@
 from ..pipeline import Pipeline
 
 
-def transform_pipeline(source, **options):
+def transform_pipeline(source, *, parallel=False, **options):
     """Transform package
 
     API      | Usage
@@ -17,4 +17,4 @@ def transform_pipeline(source, **options):
     """
     native = isinstance(source, Pipeline)
     pipeline = source if native else Pipeline(source)
-    return pipeline.run()
+    return pipeline.run(parallel=parallel)

@@ -11,7 +11,7 @@ from . import helpers
 from . import config
 
 
-# TODO: allow to be created from a descriptor!
+# TODO: move validation logic to validate_inquiry?
 class Pipeline(Metadata):
     """Pipeline representation.
 
@@ -39,7 +39,7 @@ class Pipeline(Metadata):
     # Run
 
     # TODO: support parallel runner
-    def run(self):
+    def run(self, *, parallel=False):
         """Run the pipeline"""
         tasks = []
         timer = helpers.Timer()
