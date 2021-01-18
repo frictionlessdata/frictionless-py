@@ -326,6 +326,7 @@ def test_validate_package_integrity_foreign_key_internal_resource_violation_with
 # Parallel
 
 
+@pytest.mark.skip
 @pytest.mark.ci
 def test_validate_package_parallel_from_dict():
     with open("data/package/datapackage.json") as file:
@@ -333,6 +334,7 @@ def test_validate_package_parallel_from_dict():
         assert report.valid
 
 
+@pytest.mark.skip
 @pytest.mark.ci
 def test_validate_package_parallel_from_dict_invalid():
     with open("data/invalid/datapackage.json") as file:

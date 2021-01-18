@@ -924,7 +924,8 @@ def test_validate_structure_errors_with_limit_errors():
 def test_validate_limit_memory():
     source = lambda: ([integer] for integer in range(1, 100000000))
     schema = {"fields": [{"name": "integer", "type": "integer"}], "primaryKey": "integer"}
-    report = validate(source, headers=False, schema=schema, limit_memory=50)
+    layout = Layout(header=False)
+    report = validate(source, schema=schema, layout=layout, limit_memory=50)
     assert report.flatten(["code", "note"]) == [
         ["task-error", 'exceeded memory limit "50MB"']
     ]
@@ -934,7 +935,8 @@ def test_validate_limit_memory():
 def test_validate_limit_memory_small():
     source = lambda: ([integer] for integer in range(1, 100000000))
     schema = {"fields": [{"name": "integer", "type": "integer"}], "primaryKey": "integer"}
-    report = validate(source, headers=False, schema=schema, limit_memory=1)
+    layout = Layout(header=False)
+    report = validate(source, schema=schema, layout=layout, limit_memory=1)
     assert report.flatten(["code", "note"]) == [
         ["task-error", 'exceeded memory limit "1MB"']
     ]
