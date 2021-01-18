@@ -15,7 +15,7 @@ from .metadata import Metadata
 from .package import Package
 from .plugin import Plugin
 from .parser import Parser
-from .pipeline import Pipeline
+from .pipeline import Pipeline, PipelineTask
 from .program import program
 from .report import Report, ReportTask
 from .resource import Resource

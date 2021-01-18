@@ -25,6 +25,7 @@ class Report(Metadata):
 
     """
 
+    # TODO: allow kwargs to be None
     def __init__(self, descriptor=None, *, time, errors, tasks):
         error_count = len(errors) + sum(tab["stats"]["errors"] for tab in tasks)
         self.setinitial("version", config.VERSION)
@@ -192,6 +193,7 @@ class ReportTask(Metadata):
 
     """
 
+    # TODO: allow kwargs to be None
     def __init__(self, descriptor=None, *, resource, time, scope, partial, errors):
         self.setinitial("resource", resource)
         self.setinitial("time", time)

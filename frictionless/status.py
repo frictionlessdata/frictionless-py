@@ -4,6 +4,7 @@ from .metadata import Metadata
 from . import config
 
 
+# TODO: add descriptor support
 class Status(Metadata):
     """Status representation.
 
@@ -93,6 +94,7 @@ class Status(Metadata):
     metadata_profile = config.STATUS_PROFILE
 
 
+# TODO: add descriptor support
 class StatusTask(Metadata):
     """ Status Task representation"""
 
