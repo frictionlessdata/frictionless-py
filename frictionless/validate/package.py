@@ -7,7 +7,7 @@ from .inquiry import validate_inquiry
 
 
 @Report.from_validate
-def validate_package(source, noinfer=False, nolookup=False, nopool=False, **options):
+def validate_package(source, noinfer=False, nolookup=False, parallel=False, **options):
     """Validate package
 
     API      | Usage
@@ -20,7 +20,7 @@ def validate_package(source, noinfer=False, nolookup=False, nopool=False, **opti
         trusted? (bool): don't raise an exception on unsafe paths
         noinfer? (bool): don't call `package.infer`
         nolookup? (bool): don't read lookup tables skipping integrity checks
-        nopool? (bool): disable multiprocessing
+        parallel? (bool): enable multiprocessing
         **options (dict): Package constructor options
 
     Returns:
@@ -59,7 +59,7 @@ def validate_package(source, noinfer=False, nolookup=False, nopool=False, **opti
             )
 
     # Validate inquiry
-    report = validate_inquiry(inquiry, nopool=nopool)
+    report = validate_inquiry(inquiry, parallel=parallel)
 
     # Return report
     return Report(time=timer.time, errors=report["errors"], tasks=report["tasks"])

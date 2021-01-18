@@ -10,7 +10,7 @@ from .. import helpers
 
 
 @Report.from_validate
-def validate_inquiry(source, *, nopool=False, **options):
+def validate_inquiry(source, *, parallel=False, **options):
     """Validate inquiry
 
     API      | Usage
@@ -19,7 +19,7 @@ def validate_inquiry(source, *, nopool=False, **options):
 
     Parameters:
         source (dict|str): an inquiry descriptor
-        nopool? (bool): disable multiprocessing
+        parallel? (bool): enable multiprocessing
 
     Returns:
         Report: validation report
@@ -49,7 +49,7 @@ def validate_inquiry(source, *, nopool=False, **options):
         tasks.append(task)
 
     # Validate sequentially
-    if len(tasks) == 1 or nopool:
+    if len(tasks) == 1 or not parallel:
         for task in tasks:
             report = validate(**helpers.create_options(task))
             reports.append(report)

@@ -15,13 +15,13 @@ def test_validate_package():
 
 def test_validate_package_from_dict():
     with open("data/package/datapackage.json") as file:
-        report = validate(json.load(file), basepath="data/package", nopool=True)
+        report = validate(json.load(file), basepath="data/package")
         assert report.valid
 
 
 def test_validate_package_from_dict_invalid():
     with open("data/invalid/datapackage.json") as file:
-        report = validate(json.load(file), basepath="data/invalid", nopool=True)
+        report = validate(json.load(file), basepath="data/invalid")
         assert report.flatten(
             ["taskPosition", "rowPosition", "fieldPosition", "code"]
         ) == [
@@ -32,12 +32,12 @@ def test_validate_package_from_dict_invalid():
 
 
 def test_validate_package_from_path():
-    report = validate("data/package/datapackage.json", nopool=True)
+    report = validate("data/package/datapackage.json")
     assert report.valid
 
 
 def test_validate_package_from_path_invalid():
-    report = validate("data/invalid/datapackage.json", nopool=True)
+    report = validate("data/invalid/datapackage.json")
     assert report.flatten(["taskPosition", "rowPosition", "fieldPosition", "code"]) == [
         [1, 3, None, "blank-row"],
         [1, 3, None, "primary-key-error"],
@@ -49,7 +49,7 @@ def test_validate_package_from_path_invalid():
 @pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_validate_package_from_zip():
-    report = validate("data/package.zip", type="package", nopool=True)
+    report = validate("data/package.zip", type="package")
     assert report.valid
 
 
@@ -57,7 +57,7 @@ def test_validate_package_from_zip():
 @pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_validate_package_from_zip_invalid():
-    report = validate("data/package-invalid.zip", type="package", nopool=True)
+    report = validate("data/package-invalid.zip", type="package")
     assert report.flatten(["taskPosition", "rowPosition", "fieldPosition", "code"]) == [
         [1, 3, None, "blank-row"],
         [1, 3, None, "primary-key-error"],
@@ -68,7 +68,6 @@ def test_validate_package_from_zip_invalid():
 def test_validate_package_with_non_tabular():
     report = validate(
         {"resources": [{"path": "data/table.csv"}, {"path": "data/file.txt"}]},
-        nopool=True,
     )
     assert report.valid
 
@@ -118,12 +117,12 @@ def test_validate_package_invalid_table():
 
 
 def test_validate_package_pathlib_source():
-    report = validate(pathlib.Path("data/package/datapackage.json"), nopool=True)
+    report = validate(pathlib.Path("data/package/datapackage.json"))
     assert report.valid
 
 
 def test_validate_package_infer():
-    report = validate("data/infer/datapackage.json", nopool=True)
+    report = validate("data/infer/datapackage.json")
     assert report.valid
 
 
@@ -140,17 +139,8 @@ def test_validate_package_dialect_header_false():
             }
         ]
     }
-    report = validate(descriptor, nopool=True)
+    report = validate(descriptor)
     assert report.valid
-
-
-def test_validate_package_with_nopool():
-    report = validate("data/invalid/datapackage.json", nopool=True)
-    assert report.flatten(["taskPosition", "rowPosition", "fieldPosition", "code"]) == [
-        [1, 3, None, "blank-row"],
-        [1, 3, None, "primary-key-error"],
-        [2, 4, None, "blank-row"],
-    ]
 
 
 def test_validate_package_with_schema_as_string():
@@ -283,21 +273,21 @@ DESCRIPTOR_FK = {
 
 def test_validate_package_integrity_foreign_key_error():
     descriptor = deepcopy(DESCRIPTOR_FK)
-    report = validate(descriptor, nopool=True)
+    report = validate(descriptor)
     assert report.valid
 
 
 def test_validate_package_integrity_foreign_key_not_defined():
     descriptor = deepcopy(DESCRIPTOR_FK)
     del descriptor["resources"][0]["schema"]["foreignKeys"]
-    report = validate(descriptor, nopool=True)
+    report = validate(descriptor)
     assert report.valid
 
 
 def test_validate_package_integrity_foreign_key_self_referenced_resource_violation():
     descriptor = deepcopy(DESCRIPTOR_FK)
     del descriptor["resources"][0]["data"][4]
-    report = validate(descriptor, nopool=True)
+    report = validate(descriptor)
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [4, None, "foreign-key-error"],
     ]
@@ -307,7 +297,7 @@ def test_validate_package_integrity_foreign_key_self_referenced_resource_violati
 def test_validate_package_integrity_foreign_key_internal_resource_violation():
     descriptor = deepcopy(DESCRIPTOR_FK)
     del descriptor["resources"][1]["data"][4]
-    report = validate(descriptor, nopool=True)
+    report = validate(descriptor)
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [5, None, "foreign-key-error"],
     ]
@@ -317,7 +307,7 @@ def test_validate_package_integrity_foreign_key_internal_resource_violation():
 def test_validate_package_integrity_foreign_key_internal_resource_violation_non_existent():
     descriptor = deepcopy(DESCRIPTOR_FK)
     descriptor["resources"][1]["data"] = [["label", "population"], [10, 10]]
-    report = validate(descriptor, nopool=True)
+    report = validate(descriptor)
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [2, None, "foreign-key-error"],
         [3, None, "foreign-key-error"],
@@ -329,7 +319,7 @@ def test_validate_package_integrity_foreign_key_internal_resource_violation_non_
 def test_validate_package_integrity_foreign_key_internal_resource_violation_with_nolookup():
     descriptor = deepcopy(DESCRIPTOR_FK)
     del descriptor["resources"][1]["data"][4]
-    report = validate(descriptor, nolookup=True, nopool=True)
+    report = validate(descriptor, nolookup=True)
     assert report.valid
 
 
@@ -339,14 +329,14 @@ def test_validate_package_integrity_foreign_key_internal_resource_violation_with
 @pytest.mark.ci
 def test_validate_package_parallel_from_dict():
     with open("data/package/datapackage.json") as file:
-        report = validate(json.load(file), basepath="data/package")
+        report = validate(json.load(file), basepath="data/package", parallel=True)
         assert report.valid
 
 
 @pytest.mark.ci
 def test_validate_package_parallel_from_dict_invalid():
     with open("data/invalid/datapackage.json") as file:
-        report = validate(json.load(file), basepath="data/invalid")
+        report = validate(json.load(file), basepath="data/invalid", parallel=True)
         assert report.flatten(
             ["taskPosition", "rowPosition", "fieldPosition", "code"]
         ) == [
@@ -356,11 +346,22 @@ def test_validate_package_parallel_from_dict_invalid():
         ]
 
 
+@pytest.mark.skip
+@pytest.mark.ci
+def test_validate_package_with_parallel():
+    report = validate("data/invalid/datapackage.json", parallel=True)
+    assert report.flatten(["taskPosition", "rowPosition", "fieldPosition", "code"]) == [
+        [1, 3, None, "blank-row"],
+        [1, 3, None, "primary-key-error"],
+        [2, 4, None, "blank-row"],
+    ]
+
+
 # Issues
 
 
 def test_validate_package_mixed_issue_170():
-    report = validate("data/infer/datapackage.json", nopool=True)
+    report = validate("data/infer/datapackage.json")
     assert report.valid
 
 
@@ -455,6 +456,6 @@ def test_validate_package_with_schema_issue_348():
 @pytest.mark.ci
 def test_validate_package_uppercase_format_issue_494():
     with pytest.warns(UserWarning):
-        report = validate("data/issue494.package.json", nopool=True)
+        report = validate("data/issue494.package.json")
         assert report.valid
         assert report.stats["tasks"] == 1
