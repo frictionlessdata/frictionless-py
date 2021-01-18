@@ -4,7 +4,14 @@ Here described only the breaking and most significant changes. The full changelo
 
 ## v4.0.0a7
 
-- Introduced Layout class (BREAKING)
+- Updated describe/extract/transform/validate APIs (BREAKING)
+    - Removed `validate_table` (use `validate_resource`)
+    - Removed legacy `Table` and `File` classes
+    - Removed `dataflows` plugin
+    - Replaced `nopool` by `parallel` (not parallel by default)
+    - Renamed `report.tables` to `report.tasks`
+    - Rebased on `report.tasks[].resource` (instead of plain path/scheme/format/etc)
+    - Flatten Pipeline steps signature
 
 ## v4.0.0a6
 
