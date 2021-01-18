@@ -1,7 +1,7 @@
 from .. import helpers
 from ..report import Report
 from ..package import Package
-from ..inquiry import Inquiry
+from ..inquiry import Inquiry, InquiryTask
 from ..exception import FrictionlessException
 from .inquiry import validate_inquiry
 
@@ -46,11 +46,12 @@ def validate_package(source, noinfer=False, nolookup=False, nopool=False, **opti
         return Report(time=timer.time, errors=package.metadata_errors, tasks=[])
 
     # Prepare inquiry
-    descriptor = {"tasks": []}
+    inquiry = Inquiry(tasks=[])
     for resource in package.resources:
+        # TODO: shall we also validate non-tabular files?
         if resource.profile == "tabular-data-resource":
-            descriptor["tasks"].append(
-                helpers.create_descriptor(
+            inquiry.tasks.append(
+                InquiryTask(
                     source=resource,
                     basepath=resource.basepath,
                     noinfer=noinfer,
@@ -58,7 +59,6 @@ def validate_package(source, noinfer=False, nolookup=False, nopool=False, **opti
             )
 
     # Validate inquiry
-    inquiry = Inquiry(descriptor)
     report = validate_inquiry(inquiry, nopool=nopool)
 
     # Return report

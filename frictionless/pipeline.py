@@ -74,6 +74,7 @@ class Pipeline(Metadata):
                 dict.__setitem__(self, "tasks", tasks)
 
 
+# TODO: should we metadata_process task.source -> Resource/Package?
 class PipelineTask(Metadata):
     """Pipeline task representation.
 
@@ -105,7 +106,7 @@ class PipelineTask(Metadata):
 
     def run(self):
         """Run the task"""
-        transsteps = import_module("frictionless.steps")
+        stepslib = import_module("frictionless.steps")
         transforms = import_module("frictionless.transform")
 
         # Prepare steps
@@ -114,7 +115,7 @@ class PipelineTask(Metadata):
             desc = deepcopy(step)
             # TODO: we need the same for nested steps like steps.resource_transform
             name = stringcase.snakecase(desc.pop("step", ""))
-            func = getattr(transsteps, name, None)
+            func = getattr(stepslib, name, None)
             if func is None:
                 note = f"Not supported step type: {name}"
                 raise FrictionlessException(TaskError(note=note))
