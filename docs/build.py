@@ -13,13 +13,22 @@ from frictionless import plugins, errors
 
 # API Reference
 
+sys.stdout.write("---\n")
+sys.stdout.write("title: API Referene\n")
+sys.stdout.write("---\n")
 content = check_output("pydoc-markdown -p frictionless", shell=True).decode()
-for line in content.splitlines(keepends=True):
+for number, line in enumerate(content.splitlines(keepends=True), start=1):
     line = re.sub(r"^## ", "### ", line)
     line = re.sub(r"^# ", "## ", line)
-    line = re.sub(r"^## frictionless$", "# API Reference", line)
     line = re.sub(r" Objects$", "", line)
-    line = re.sub(r"^#### (.*)$", "#### <big>\\1</big>", line)
+    line = re.sub(r"\*\*Arguments\*\*", "Arguments", line)
+    line = re.sub(r"\*\*Raises\*\*", "Raises", line)
+    line = re.sub(r"\*\*Returns\*\*", "Returns", line)
+    line = re.sub(r"^#### (.*)$", "**\\1**", line)
+    if number < 3:
+        continue
+    if line.startswith("<a"):
+        continue
     sys.stdout.write(line)
 
 
