@@ -2,7 +2,7 @@
 title: Server Tutorial
 ---
 
-:::caution Stability
+:::caution Status
 Plugin: **EXPERIMENTAL**
 :::
 

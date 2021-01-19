@@ -2,7 +2,7 @@
 title: SQL Tutorial
 ---
 
-:::caution Stability
+:::caution Status
 Plugin: **EXPERIMENTAL**
 :::
 

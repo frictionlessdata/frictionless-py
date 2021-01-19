@@ -2,7 +2,7 @@
 title: Text Data Tutorial
 ---
 
-:::tip Stability
+:::tip Status
 Plugin: **STABLE**
 :::
 

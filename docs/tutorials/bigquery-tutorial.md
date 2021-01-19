@@ -2,7 +2,7 @@
 title: BugQuery Tutorial
 ---
 
-:::caution Stability
+:::caution Status
 Plugin: **EXPERIMENTAL**
 :::
 

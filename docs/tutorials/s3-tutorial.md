@@ -2,7 +2,7 @@
 title: S3 Tutorial
 ---
 
-:::caution Stability
+:::caution Status
 Plugin: **EXPERIMENTAL**
 :::
 

@@ -2,7 +2,7 @@
 title: HTML Tutorial
 ---
 
-:::caution Stability
+:::caution Status
 Plugin: **EXPERIMENTAL**
 :::
 

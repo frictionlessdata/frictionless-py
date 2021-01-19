@@ -2,7 +2,7 @@
 title: CKAN Tutorial
 ---
 
-:::caution Stability
+:::caution Status
 Plugin: **EXPERIMENTAL**
 :::
 

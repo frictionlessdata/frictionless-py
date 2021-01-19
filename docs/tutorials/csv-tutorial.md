@@ -2,7 +2,7 @@
 title: CSV Tutorial
 ---
 
-:::tip Stability
+:::tip Status
 Plugin: **STABLE**
 :::
 

@@ -2,7 +2,7 @@
 title: SPSS Tutorial
 ---
 
-:::caution Stability
+:::caution Status
 Plugin: **EXPERIMENTAL**
 :::
 

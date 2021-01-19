@@ -2,7 +2,7 @@
 title: ODS Tutorial
 ---
 
-:::tip Stability
+:::tip Status
 Plugin: **STABLE**
 :::
 

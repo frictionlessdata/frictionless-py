@@ -18,7 +18,7 @@ module.exports = {
       "Frictionless is a framework to describe, extract, validate, and transform tabular data.",
   },
   themes: ["@docusaurus/theme-live-codeblock"],
-  stylesheets: ["https://fonts.googleapis.com/css?family=Roboto&display=swap"],
+  // stylesheets: ["https://fonts.googleapis.com/css?family=Roboto&display=swap"],
   plugins: [
     [
       "@docusaurus/plugin-ideal-image",
@@ -49,8 +49,12 @@ module.exports = {
     ],
   ],
   themeConfig: {
-    sidebarCollapsible: false,
+    sidebarCollapsible: true,
     image: "img/docusaurus.png",
+    prism: {
+      theme: require("prism-react-renderer/themes/github"),
+      darkTheme: require("prism-react-renderer/themes/dracula"),
+    },
     gtag: {
       trackingID: "UA-141789564-1",
     },
@@ -73,7 +77,7 @@ module.exports = {
       },
       items: [
         {
-          to: "docs/guides/introduction-guide",
+          to: "docs/guides/project-overview",
           label: "Guides",
           position: "left",
         },
@@ -91,6 +95,12 @@ module.exports = {
           to: "docs/development/contributing",
           label: "Development",
           position: "left",
+        },
+        {
+          href: "https://github.com/frictionlessdata/frictionless-py",
+          position: "right",
+          className: "header-github-link",
+          "aria-label": "GitHub repository",
         },
       ],
     },

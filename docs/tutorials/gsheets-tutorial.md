@@ -2,7 +2,7 @@
 title: Google Sheets Tutorial
 ---
 
-:::caution Stability
+:::caution Status
 Plugin: **EXPERIMENTAL**
 :::
 

@@ -2,7 +2,7 @@
 title: Local Data Tutorial
 ---
 
-:::tip Stability
+:::tip Status
 Plugin: **STABLE**
 :::
 

@@ -2,7 +2,7 @@
 title: Pandas Tutorial
 ---
 
-:::caution Stability
+:::caution Status
 Plugin: **EXPERIMENTAL**
 :::
 
