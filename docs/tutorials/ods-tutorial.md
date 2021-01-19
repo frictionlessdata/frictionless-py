@@ -2,8 +2,8 @@
 title: ODS Tutorial
 ---
 
-:::tip Status
-Plugin: **STABLE**
+:::tip Plugin
+Status: **STABLE**
 :::
 
 Frictionless supports ODS parsing.

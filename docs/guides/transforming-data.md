@@ -2,8 +2,6 @@
 title: Transforming Data
 ---
 
-> **Both the transform functionality and this document are in the draft state. It's under active development and will be stabilized by the end of 2020.**
-
 Transforming data in Frictionless means modifying a data + metadata from the state A to the state B. For example, it can be a dirty Excel file we need to transform to a cleaned CSV file or a folder of data files we want to update and save as a data package.
 
 For the core transform functions Frictionless uses amazing [PETL](https://petl.readthedocs.io/en/stable/) project under the hood. This library provides lazy-loading functinality in running data pipelines. On top of it Frictionless adds metadata management and a bridge between already familiar concepts like Pacakge/Resource and PETL's processors.

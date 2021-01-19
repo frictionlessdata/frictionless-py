@@ -2,8 +2,8 @@
 title: CSV Tutorial
 ---
 
-:::tip Status
-Plugin: **STABLE**
+:::tip Plugin
+Status: **STABLE**
 :::
 
 CSV is a file format which you can you in Frictionless for reading and writing. Arguable it's the main Open Data format so it's supported very well in Frictionless.

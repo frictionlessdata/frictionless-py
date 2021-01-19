@@ -2,8 +2,8 @@
 title: SQL Tutorial
 ---
 
-:::caution Status
-Plugin: **EXPERIMENTAL**
+:::caution Plugin
+Status: **EXPERIMENTAL**
 :::
 
 Frictionless supports reading and writing SQL databases.

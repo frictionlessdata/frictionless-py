@@ -60,48 +60,56 @@ function Home() {
         <div className="container text--center">
           <div className="row">
             <div className="col">
-              <img
-                className={styles.featureImage}
-                alt="Specifications"
-                src={useBaseUrl("img/describe.png")}
-              />
-              <h3 className="padding-top--md">Describe Data</h3>
+              <a href="docs/guides/describing-data">
+                <img
+                  className={styles.featureImage}
+                  alt="Specifications"
+                  src={useBaseUrl("img/describe.png")}
+                />
+                <h3 className="padding-top--md">Describe Data</h3>
+              </a>
               <p className="padding-horiz--md">
                 You can infer, edit and save metadata of your data tables. It's
                 a first step for ensuring data quality and usability.
               </p>
             </div>
             <div className="col">
-              <img
-                className={styles.featureImage}
-                alt="Specifications"
-                src={useBaseUrl("img/extract.png")}
-              />
-              <h3 className="padding-top--md">Extract Data</h3>
+              <a href="docs/guides/extracting-data">
+                <img
+                  className={styles.featureImage}
+                  alt="Specifications"
+                  src={useBaseUrl("img/extract.png")}
+                />
+                <h3 className="padding-top--md">Extract Data</h3>
+              </a>
               <p className="padding-horiz--md">
                 You can read your data using a unified tabular interface. Data
                 quality and consistency are guaranteed by a schema.
               </p>
             </div>
             <div className="col">
-              <img
-                alt="Software"
-                className={styles.featureImage}
-                src={useBaseUrl("img/validate.png")}
-              />
-              <h3 className="padding-top--md">Validate Data</h3>
+              <a href="docs/guides/validating-data">
+                <img
+                  alt="Software"
+                  className={styles.featureImage}
+                  src={useBaseUrl("img/validate.png")}
+                />
+                <h3 className="padding-top--md">Validate Data</h3>
+              </a>
               <p className="padding-horiz--md">
                 You can validate data tables, resources, and datasets.
                 Frictionless generates a unified validation report.
               </p>
             </div>
             <div className="col">
-              <img
-                alt="Community"
-                className={styles.featureImage}
-                src={useBaseUrl("img/transform.png")}
-              />
-              <h3 className="padding-top--md">Transform Data</h3>
+              <a href="docs/guides/transforming-data">
+                <img
+                  alt="Community"
+                  className={styles.featureImage}
+                  src={useBaseUrl("img/transform.png")}
+                />
+                <h3 className="padding-top--md">Transform Data</h3>
+              </a>
               <p className="padding-horiz--md">
                 You can clean, reshape, and transfer your data tables and
                 datasets. Frictionless provides a pipeline capability.

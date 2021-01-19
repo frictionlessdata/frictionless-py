@@ -2,8 +2,8 @@
 title: JSON Tutorial
 ---
 
-:::tip Status
-Plugin: **STABLE**
+:::tip Plugin
+Status: **STABLE**
 :::
 
 Frictionless supports parsing JSON tables (json and jsonl/ndjson).

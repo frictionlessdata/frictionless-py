@@ -2,11 +2,7 @@
 title: API Reference
 ---
 
-<a name="frictionless.file"></a>
-## frictionless.file
-
-<a name="frictionless.file.File"></a>
-### File
+## file.File
 
 ```python
 class File()
@@ -45,8 +41,7 @@ with File('data/text.txt') as file:
 
 - `FrictionlessException` - if there is a metadata validation error
 
-<a name="frictionless.file.File.path"></a>
-#### <big>path</big>
+### frictionless.file.File.path
 
 ```python
  | @property
@@ -57,8 +52,7 @@ with File('data/text.txt') as file:
 
 - `str` - file path
 
-<a name="frictionless.file.File.source"></a>
-#### <big>source</big>
+#### frictionless.file.File.source
 
 ```python
  | @property

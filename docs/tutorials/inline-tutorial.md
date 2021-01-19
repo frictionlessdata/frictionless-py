@@ -2,8 +2,8 @@
 title: Inline Data Tutorial
 ---
 
-:::tip Status
-Plugin: **STABLE**
+:::tip Plugin
+Status: **STABLE**
 :::
 
 Frictionless supports parsing Inline Data.

@@ -2,8 +2,8 @@
 title: Remote Data Tutorial
 ---
 
-:::tip Status
-Plugin: **STABLE**
+:::tip Plugin
+Status: **STABLE**
 :::
 
 You can read files remotely with Frictionless. It's basic functionality.

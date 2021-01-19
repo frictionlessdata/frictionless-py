@@ -2,8 +2,8 @@
 title: HTML Tutorial
 ---
 
-:::caution Status
-Plugin: **EXPERIMENTAL**
+:::caution Plugin
+Status: **EXPERIMENTAL**
 :::
 
 Frictionless supports parsing HTML format

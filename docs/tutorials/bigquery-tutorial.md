@@ -2,8 +2,8 @@
 title: BugQuery Tutorial
 ---
 
-:::caution Status
-Plugin: **EXPERIMENTAL**
+:::caution Plugin
+Status: **EXPERIMENTAL**
 :::
 
 Frictionless supports both reading tables from BigQuery source and treating a BigQuery dataset as a tabular data storage.

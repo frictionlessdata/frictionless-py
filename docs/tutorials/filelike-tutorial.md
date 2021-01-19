@@ -2,8 +2,8 @@
 title: Filelike Data Tutorial
 ---
 
-:::tip Status
-Plugin: **STABLE**
+:::tip Plugin
+Status: **STABLE**
 :::
 
 Frictionless supports loading Filelike data.
