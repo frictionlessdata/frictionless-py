@@ -5,63 +5,18 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import React from 'react';
-import Link from '@docusaurus/Link';
-import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
-import useBaseUrl from '@docusaurus/useBaseUrl';
-
-import Image from '@theme/IdealImage';
-import Layout from '@theme/Layout';
-
-import classnames from 'classnames';
-
-import styles from './styles.module.css';
-
-const QUOTES = [
-  {
-    thumbnail: require('../data/quotes/christopher-chedeau.jpg'),
-    name: 'Christopher "vjeux" Chedeau',
-    title: 'Lead Prettier Developer',
-    text: (
-      <>
-        I&apos;ve helped open source many projects at Facebook and every one
-        needed a website. They all had very similar constraints: the
-        documentation should be written in markdown and be deployed via GitHub
-        pages. I’m so glad that Docusaurus now exists so that I don’t have to
-        spend a week each time spinning up a new one.
-      </>
-    ),
-  },
-  {
-    thumbnail: require('../data/quotes/hector-ramos.jpg'),
-    name: 'Hector Ramos',
-    title: 'Lead React Native Advocate',
-    text: (
-      <>
-        Open source contributions to the React Native docs have skyrocketed
-        after our move to Docusaurus. The docs are now hosted on a small repo in
-        plain markdown, with none of the clutter that a typical static site
-        generator would require. Thanks Slash!
-      </>
-    ),
-  },
-  {
-    thumbnail: require('../data/quotes/ricky-vetter.jpg'),
-    name: 'Ricky Vetter',
-    title: 'ReasonReact Developer',
-    text: (
-      <>
-        Docusaurus has been a great choice for the ReasonML family of projects.
-        It makes our documentation consistent, i18n-friendly, easy to maintain,
-        and friendly for new contributors.
-      </>
-    ),
-  },
-];
+import React from "react";
+import Link from "@docusaurus/Link";
+import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
+import useBaseUrl from "@docusaurus/useBaseUrl";
+import Image from "@theme/IdealImage";
+import Layout from "@theme/Layout";
+import classnames from "classnames";
+import styles from "./styles.module.css";
 
 function Home() {
   const context = useDocusaurusContext();
-  const {siteConfig: {customFields = {}} = {}} = context;
+  const { siteConfig: { customFields = {} } = {} } = context;
 
   return (
     <Layout permalink="/" description={customFields.description}>
@@ -71,21 +26,22 @@ function Home() {
             <img
               alt="Docusaurus with Keytar"
               className={styles.heroLogo}
-              src={useBaseUrl('img/rufus.png')}
+              src={useBaseUrl("img/example.png")}
             />
-            The <span className={styles.heroProjectKeywords}>future</span> of <span className={styles.heroProjectKeywords}>data</span>{' '}
-            <div>is <span className={styles.heroProjectKeywords}>frictionless</span></div>
+            Data <span className={styles.heroProjectKeywords}>framework</span>{" "}
+            for Python
           </h1>
           <div className={styles.indexCtas}>
             <Link
               className={styles.indexCtasGetStartedButton}
-              to={useBaseUrl('docs/intro/home')}>
+              to={useBaseUrl("docs/guides/project-overview")}
+            >
               Get Started
             </Link>
             <span className={styles.indexCtasGitHubButtonWrapper}>
               <iframe
                 className={styles.indexCtasGitHubButton}
-                src="https://ghbtns.com/github-btn.html?user=frictionlessdata&amp;repo=specs&amp;type=star&amp;count=true&amp;size=large"
+                src="https://ghbtns.com/github-btn.html?user=frictionlessdata&amp;repo=frictionless-py&amp;type=star&amp;count=true&amp;size=large"
                 width={160}
                 height={30}
                 title="GitHub Stars"
@@ -96,7 +52,8 @@ function Home() {
       </div>
       <div className={classnames(styles.announcement, styles.announcementDark)}>
         <div className={styles.announcementInner}>
-          Specifications and software for the publication, transport, and consumption of data.
+          Frictionless is a framework to describe, extract, validate, and
+          transform tabular data in Python.
         </div>
       </div>
       <div className={styles.section}>
@@ -106,77 +63,50 @@ function Home() {
               <img
                 className={styles.featureImage}
                 alt="Specifications"
-                src={useBaseUrl('img/standard.png')}
+                src={useBaseUrl("img/describe.png")}
               />
-              <h3 className="padding-top--md">Specifications</h3>
+              <h3 className="padding-top--md">Describe Data</h3>
               <p className="padding-horiz--md">
-                Lightweight containerisation formats for data that provide a
-                minimal yet powerful foundation for data publication, transport,
-                and consumption.
+                You can infer, edit and save metadata of your data tables. It's
+                a first step for ensuring data quality and usability.
+              </p>
+            </div>
+            <div className="col">
+              <img
+                className={styles.featureImage}
+                alt="Specifications"
+                src={useBaseUrl("img/extract.png")}
+              />
+              <h3 className="padding-top--md">Extract Data</h3>
+              <p className="padding-horiz--md">
+                You can read your data using a unified tabular interface. Data
+                quality and consistency are guaranteed by a schema.
               </p>
             </div>
             <div className="col">
               <img
                 alt="Software"
                 className={styles.featureImage}
-                src={useBaseUrl('img/software.png')}
+                src={useBaseUrl("img/validate.png")}
               />
-              <h3 className="padding-top--md">Software</h3>
+              <h3 className="padding-top--md">Validate Data</h3>
               <p className="padding-horiz--md">
-                Apps and integrations that make it easy to integrate Frictionless Data
-                specifications into your data publication, access, and analysis workflows.
+                You can validate data tables, resources, and datasets.
+                Frictionless generates a unified validation report.
               </p>
             </div>
             <div className="col">
               <img
                 alt="Community"
                 className={styles.featureImage}
-                src={useBaseUrl('img/community3.png')}
+                src={useBaseUrl("img/transform.png")}
               />
-              <h3 className="padding-top--md">Community</h3>
+              <h3 className="padding-top--md">Transform Data</h3>
               <p className="padding-horiz--md">
-                Labs, libraries, governments, and companies are using Frictionless Data
-                in their data workflows to reduce grunt work and move faster to insight.
+                You can clean, reshape, and transfer your data tables and
+                datasets. Frictionless provides a pipeline capability.
               </p>
             </div>
-          </div>
-        </div>
-      </div>
-
-      <div className={classnames(styles.section, 'section-users')}>
-        <div className="container text--center">
-          <h2>Who is using Frictionless Data</h2>
-          <img src="/img/users2.png" alt="" />
-        </div>
-      </div>
-
-      <div
-        className={classnames(
-          styles.section,
-          styles.sectionAlt,
-          styles.quotes,
-        )}>
-        <div className="container">
-          <div className="row">
-            {QUOTES.map(quote => (
-              <div className="col" key={quote.name}>
-                <div className="avatar avatar--vertical margin-bottom--sm">
-                  <Image
-                    alt={quote.name}
-                    className="avatar__photo avatar__photo--xl"
-                    img={quote.thumbnail}
-                    style={{overflow: 'hidden'}}
-                  />
-                  <div className="avatar__intro padding-top--sm">
-                    <h4 className="avatar__name">{quote.name}</h4>
-                    <small className="avatar__subtitle">{quote.title}</small>
-                  </div>
-                </div>
-                <p className="text--center text--italic padding-horiz--md">
-                  {quote.text}
-                </p>
-              </div>
-            ))}
           </div>
         </div>
       </div>

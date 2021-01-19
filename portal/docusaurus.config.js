@@ -6,16 +6,16 @@
  */
 
 module.exports = {
-  title: "Frictionless Data",
-  tagline: "The future of data is frictionless",
-  organizationName: "facebook",
-  projectName: "docusaurus",
+  title: "Frictionless Framework",
+  tagline: "Describe, extract, validate, and fransform data in Python",
+  organizationName: "Frictionless Data",
+  projectName: "frictionless",
   baseUrl: "/",
-  url: "https://v2.frictionlessdata.io",
-  favicon: "img/fd-blue.png",
+  url: "https://framework.frictionlessdata.io",
+  favicon: "img/logo.png",
   customFields: {
     description:
-      "An optimized site generator in React. Docusaurus helps you to move fast and write content. Build documentation websites, blogs, marketing pages, and more.",
+      "Frictionless is a framework to describe, extract, validate, and transform tabular data.",
   },
   themes: ["@docusaurus/theme-live-codeblock"],
   stylesheets: ["https://fonts.googleapis.com/css?family=Roboto&display=swap"],
@@ -66,10 +66,10 @@ module.exports = {
     },
     navbar: {
       hideOnScroll: true,
-      title: "Frictionless Data",
+      title: "Frictionless Framework",
       logo: {
-        alt: "Frictionless Data Logo",
-        src: "img/fd-blue.png",
+        alt: "Frictionless Framework Logo",
+        src: "img/logo.png",
       },
       items: [
         {
@@ -101,16 +101,20 @@ module.exports = {
           title: "Docs",
           items: [
             {
-              label: "Intro",
-              to: "docs/intro/home",
+              label: "Guides",
+              to: "docs/guides/project-overview",
             },
             {
-              label: "Specs",
-              to: "docs/specs/home",
+              label: "Tutorials",
+              to: "docs/tutorials/filelike-tutorial",
             },
             {
-              label: "Software",
-              to: "docs/software/home",
+              label: "References",
+              to: "docs/references/schemes-reference",
+            },
+            {
+              label: "Development",
+              to: "docs/development/contributing",
             },
           ],
         },
@@ -119,15 +123,15 @@ module.exports = {
           items: [
             {
               label: "Blog",
-              href: "https://stackoverflow.com/questions/tagged/docusaurus",
+              href: "https://frictionlessdata.io/blog/",
             },
             {
               label: "Forum",
-              to: "feedback",
+              to: "https://github.com/frictionlessdata/project/discussions",
             },
             {
               label: "Chat",
-              href: "https://gitter.im/frictionlessdata/chat",
+              href: "https://discordapp.com/invite/Sewv6av",
             },
           ],
         },
@@ -136,15 +140,11 @@ module.exports = {
           items: [
             {
               label: "GitHub",
-              to: "https://github.com/frictionlessdata/frictionlessdata.io",
-            },
-            {
-              label: "Facebook",
-              href: "https://github.com/facebook/docusaurus",
+              to: "https://github.com/frictionlessdata/frictionless-py",
             },
             {
               label: "Twitter",
-              href: "https://twitter.com/docusaurus",
+              href: "https://twitter.com/frictionlessd8a",
             },
           ],
         },
