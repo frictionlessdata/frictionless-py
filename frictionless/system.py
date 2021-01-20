@@ -73,21 +73,21 @@ class System:
             if check is not None:
                 return check
         if name == "baseline":
-            return checks.BaselineCheck(descriptor)
+            return checks.baseline(descriptor)
         elif name == "checksum":
-            return checks.ChecksumCheck(descriptor)
+            return checks.checksum(descriptor)
         elif name == "duplicate-row":
-            return checks.DuplicateRowCheck(descriptor)
+            return checks.duplicate_row(descriptor)
         elif name == "deviated-value":
-            return checks.DeviatedValueCheck(descriptor)
+            return checks.deviated_value(descriptor)
         elif name == "truncated-value":
-            return checks.TruncatedValueCheck(descriptor)
-        elif name == "blacklisted-value":
-            return checks.BlacklistedValueCheck(descriptor)
+            return checks.truncated_value(descriptor)
+        elif name == "forbidden-value":
+            return checks.forbidden_value(descriptor)
         elif name == "sequential-value":
-            return checks.SequentialValueCheck(descriptor)
+            return checks.sequential_value(descriptor)
         elif name == "row-constraint":
-            return checks.RowConstraintCheck(descriptor)
+            return checks.row_constraint(descriptor)
         note = f'cannot create check "{name}". Try installing "frictionless-{name}"'
         raise FrictionlessException(errors.CheckError(note=note))
 

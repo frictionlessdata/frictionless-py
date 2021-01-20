@@ -601,12 +601,12 @@ class TruncatedValueError(CellError):
     description = "The value is possible truncated."
 
 
-class BlacklistedValueError(CellError):
-    code = "blacklisted-value"
-    name = "Blacklisted Value"
+class ForbiddenValueError(CellError):
+    code = "forbidden-value"
+    name = "Forbidden Value"
     tags = ["#content", "#regulation"]
     template = "The cell {cell} in row at position {rowPosition} and field {fieldName} at position {fieldPosition} has an error: {note}"
-    description = "The value is blacklisted."
+    description = "The value is forbidden."
 
 
 class SequentialValueError(CellError):

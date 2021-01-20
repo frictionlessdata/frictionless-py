@@ -3,8 +3,8 @@ from .. import errors
 from ..check import Check
 
 
-class BlacklistedValueCheck(Check):
-    """Check for blacklisted values in a field
+class forbidden_value(Check):
+    """Check for forbidden values in a field
 
     API      | Usage
     -------- | --------
@@ -16,30 +16,36 @@ class BlacklistedValueCheck(Check):
 
     Parameters:
        descriptor (dict): check's descriptor
-       descriptor.fieldName (str): a field name to look into
-       descriptor.blacklist (any[]): a list of forbidden values
+       field_name (str): a field name to look into
+       forbidden (any[]): a list of forbidden values
 
     """
 
-    possible_Errors = [errors.BlacklistedValueError]  # type: ignore
+    code = "forbidden-value"
+    Errors = [errors.ForbiddenValueError]
+
+    def __init__(self, descriptor=None, *, field_name=None, forbidden=None):
+        self.setinitial("fieldName", field_name)
+        self.setinitial("forbidden", forbidden)
+        super().__init__(descriptor)
 
     def prepare(self):
         self.__field_name = self["fieldName"]
-        self.__blacklist = self["blacklist"]
+        self.__forbidden = self["forbidden"]
 
     # Validate
 
     def validate_task(self):
         if self.__field_name not in self.table.schema.field_names:
-            note = 'blacklisted value check requires field "%s"' % self.__field_name
+            note = 'forbidden value check requires field "%s"' % self.__field_name
             yield errors.TaskError(note=note)
 
     def validate_row(self, row):
         cell = row[self.__field_name]
-        if cell in self.__blacklist:
-            yield errors.BlacklistedValueError.from_row(
+        if cell in self.__forbidden:
+            yield errors.ForbiddenValueError.from_row(
                 row,
-                note='blacklisted values are "%s"' % self.__blacklist,
+                note='forbiddened values are "%s"' % self.__forbidden,
                 field_name=self.__field_name,
             )
 
@@ -47,12 +53,15 @@ class BlacklistedValueCheck(Check):
 
     metadata_profile = {  # type: ignore
         "type": "object",
-        "requred": ["fieldName", "blacklist"],
-        "properties": {"fieldName": {"type": "string"}, "blacklist": {"type": "array"}},
+        "requred": ["fieldName", "forbidden"],
+        "properties": {
+            "fieldName": {"type": "string"},
+            "forbidden": {"type": "array"},
+        },
     }
 
 
-class SequentialValueCheck(Check):
+class sequential_value(Check):
     """Check that a column having sequential values
 
     API      | Usage
@@ -65,11 +74,16 @@ class SequentialValueCheck(Check):
 
     Parameters:
        descriptor (dict): check's descriptor
-       descriptor.fieldName (str): a field name to check
+       field_name (str): a field name to check
 
     """
 
-    possible_Errors = [errors.SequentialValueError]  # type: ignore
+    code = "sequential-value"
+    Errors = [errors.SequentialValueError]
+
+    def __init__(self, descriptor=None, *, field_name=None):
+        self.setinitial("fieldName", field_name)
+        super().__init__(descriptor)
 
     def prepare(self):
         self.__cursor = None
@@ -107,7 +121,7 @@ class SequentialValueCheck(Check):
     }
 
 
-class RowConstraintCheck(Check):
+class row_constraint(Check):
     """Check that every row satisfies a provided Python expression
 
     API      | Usage
@@ -121,11 +135,16 @@ class RowConstraintCheck(Check):
 
     Parameters:
        descriptor (dict): check's descriptor
-       descriptor.constraint (str): a python expression to evaluate against a row
+       constraint (str): a python expression to evaluate against a row
 
     """
 
-    possible_Errors = [errors.RowConstraintError]  # type: ignore
+    code = "row-constraint"
+    Errors = [errors.RowConstraintError]
+
+    def __init__(self, descriptor=None, *, constraint=None):
+        self.setinitial("constraint", constraint)
+        super().__init__(descriptor)
 
     def prepare(self):
         self.__constraint = self["constraint"]

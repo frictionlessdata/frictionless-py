@@ -20,8 +20,8 @@ class Check(Metadata):
 
     """
 
-    def __init__(self, descriptor=None):
-        super().__init__(descriptor)
+    code = "check"
+    Errors = []  # type: ignore
 
     @property
     def table(self):
@@ -100,4 +100,3 @@ class Check(Metadata):
 
     metadata_strict = True
     metadata_Error = errors.CheckError
-    possible_Errors = []  # type: ignore

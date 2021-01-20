@@ -1,30 +1,30 @@
 from frictionless import validate
 
 
-# Blacklisted Value
+# Forbidden Value
 
 
-def test_validate_blacklisted_value():
+def test_validate_forbidden_value():
     report = validate(
         "data/table.csv",
-        extra_checks=[("blacklisted-value", {"fieldName": "id", "blacklist": [2]})],
+        extra_checks=[("forbidden-value", {"fieldName": "id", "forbidden": [2]})],
     )
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [3, 1, "blacklisted-value"],
+        [3, 1, "forbidden-value"],
     ]
 
 
-def test_validate_blacklisted_value_task_error():
+def test_validate_forbidden_value_task_error():
     report = validate(
         "data/table.csv",
-        extra_checks=[("blacklisted-value", {"fieldName": "bad", "blacklist": [2]})],
+        extra_checks=[("forbidden-value", {"fieldName": "bad", "forbidden": [2]})],
     )
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [None, None, "task-error"],
     ]
 
 
-def test_validate_blacklisted_value_many_rules():
+def test_validate_forbidden_value_many_rules():
     source = [
         ["row", "name"],
         [2, "Alex"],
@@ -36,20 +36,20 @@ def test_validate_blacklisted_value_many_rules():
     report = validate(
         source,
         extra_checks=[
-            ("blacklisted-value", {"fieldName": "row", "blacklist": [10]}),
-            ("blacklisted-value", {"fieldName": "name", "blacklist": ["mistake"]}),
-            ("blacklisted-value", {"fieldName": "row", "blacklist": [10]}),
-            ("blacklisted-value", {"fieldName": "name", "blacklist": ["error"]}),
+            ("forbidden-value", {"fieldName": "row", "forbidden": [10]}),
+            ("forbidden-value", {"fieldName": "name", "forbidden": ["mistake"]}),
+            ("forbidden-value", {"fieldName": "row", "forbidden": [10]}),
+            ("forbidden-value", {"fieldName": "name", "forbidden": ["error"]}),
         ],
     )
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [4, 2, "blacklisted-value"],
-        [5, 2, "blacklisted-value"],
+        [4, 2, "forbidden-value"],
+        [5, 2, "forbidden-value"],
         [6, 2, "missing-cell"],
     ]
 
 
-def test_validate_blacklisted_value_many_rules_with_non_existent_field():
+def test_validate_forbidden_value_many_rules_with_non_existent_field():
     source = [
         ["row", "name"],
         [2, "Alex"],
@@ -57,10 +57,10 @@ def test_validate_blacklisted_value_many_rules_with_non_existent_field():
     report = validate(
         source,
         extra_checks=[
-            ("blacklisted-value", {"fieldName": "row", "blacklist": [10]}),
+            ("forbidden-value", {"fieldName": "row", "forbidden": [10]}),
             (
-                "blacklisted-value",
-                {"fieldName": "bad", "blacklist": ["mistake"]},
+                "forbidden-value",
+                {"fieldName": "bad", "forbidden": ["mistake"]},
             ),
         ],
     )

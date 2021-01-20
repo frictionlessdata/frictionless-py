@@ -4,7 +4,7 @@ from .. import errors
 from ..check import Check
 
 
-class DuplicateRowCheck(Check):
+class duplicate_row(Check):
     """Check for duplicate rows
 
     API      | Usage
@@ -17,7 +17,8 @@ class DuplicateRowCheck(Check):
 
     """
 
-    possible_Errors = [errors.DuplicateRowError]  # type: ignore
+    code = "duplicate-row"
+    Errors = [errors.DuplicateRowError]
 
     def prepare(self):
         self.__memory = {}
@@ -39,7 +40,7 @@ class DuplicateRowCheck(Check):
     }
 
 
-class DeviatedValueCheck(Check):
+class deviated_value(Check):
     """Check for deviated values in a field
 
     API      | Usage
@@ -52,13 +53,20 @@ class DeviatedValueCheck(Check):
 
     Parameters:
        descriptor (dict): check's descriptor
-       descriptor.fieldName (str): a field name to check
-       descriptor.average? (str): one of "mean", "median" or "mode" (default: "mean")
-       descriptor.interval? (str): statistical interval (default: 3)
+       field_name (str): a field name to check
+       average? (str): one of "mean", "median" or "mode" (default: "mean")
+       interval? (str): statistical interval (default: 3)
 
     """
 
-    possible_Errors = [errors.DeviatedValueError]  # type: ignore
+    code = "deviated-value"
+    Errors = [errors.DeviatedValueError]
+
+    def __init__(self, descriptor=None, *, field_name=None, average=None, interval=None):
+        self.setinitial("fieldName", field_name)
+        self.setinitial("average", average)
+        self.setinitial("interval", interval)
+        super().__init__(descriptor)
 
     def prepare(self):
         self.__exited = False
@@ -125,7 +133,7 @@ class DeviatedValueCheck(Check):
     }
 
 
-class TruncatedValueCheck(Check):
+class truncated_value(Check):
     """Check for possible truncated values
 
     API      | Usage
@@ -138,7 +146,8 @@ class TruncatedValueCheck(Check):
 
     """
 
-    possible_Errors = [errors.TruncatedValueError]  # type: ignore
+    code = "truncated-value"
+    Errors = [errors.TruncatedValueError]
 
     def validate_row(self, row):
         for field_name, cell in row.items():

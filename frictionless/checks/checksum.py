@@ -2,7 +2,7 @@ from .. import errors
 from ..check import Check
 
 
-class ChecksumCheck(Check):
+class checksum(Check):
     """Check a table's checksum
 
     API      | Usage
@@ -15,16 +15,22 @@ class ChecksumCheck(Check):
 
     Parameters:
        descriptor (dict): check's descriptor
-       descriptor.hash? (str): a hash sum of the table's bytes
-       descriptor.bytes? (int): number of bytes
-       descriptor.fields? (int): number of fields
-       descriptor.rows? (int): number of rows
+       hash? (str): a hash sum of the table's bytes
+       bytes? (int): number of bytes
+       fields? (int): number of fields
+       rows? (int): number of rows
 
     """
 
-    possible_Errors = [  # type: ignore
-        errors.ChecksumError,
-    ]
+    code = "checksum"
+    Errors = [errors.ChecksumError]
+
+    def __init__(self, descriptor=None, *, hash=None, bytes=None, fields=None, rows=None):
+        self.setinitial("hash", hash)
+        self.setinitial("bytes", bytes)
+        self.setinitial("fields", fields)
+        self.setinitial("rows", rows)
+        super().__init__(descriptor)
 
     # Validate
 

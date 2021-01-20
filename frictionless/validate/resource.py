@@ -192,9 +192,9 @@ class TableErrors(list):
         return match
 
     def register(self, check):
-        for error in check.possible_Errors:
-            if not self.match(error):
+        for Error in check.Errors:
+            if not self.match(Error):
                 continue
-            if error.code in self.__scope:
+            if Error.code in self.__scope:
                 continue
-            self.__scope.append(error.code)
+            self.__scope.append(Error.code)

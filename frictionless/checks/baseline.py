@@ -2,7 +2,7 @@ from ..check import Check
 from .. import errors
 
 
-class BaselineCheck(Check):
+class baseline(Check):
     """Check a table for basic errors
 
     API      | Usage
@@ -14,7 +14,8 @@ class BaselineCheck(Check):
 
     """
 
-    possible_Errors = [  # type: ignore
+    code = "baseline"
+    Errors = [
         # table
         errors.DialectError,
         errors.SchemaError,
