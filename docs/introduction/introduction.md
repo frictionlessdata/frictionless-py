@@ -1,6 +1,5 @@
 ---
-title: Project Overview
-source: /README.md
+title: Introduction
 ---
 
 [![Build](https://img.shields.io/github/workflow/status/frictionlessdata/frictionless-py/general/master)](https://github.com/frictionlessdata/frictionless-py/actions)

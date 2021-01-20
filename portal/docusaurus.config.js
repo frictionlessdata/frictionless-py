@@ -78,22 +78,27 @@ module.exports = {
       },
       items: [
         {
-          to: "docs/guides/project-overview",
+          to: "docs/introduction/introduction",
+          label: "Introduction",
+          position: "left",
+        },
+        {
+          to: "docs/guides/guides-overview",
           label: "Guides",
           position: "left",
         },
         {
-          to: "docs/tutorials/filelike-tutorial",
+          to: "docs/tutorials/tutorials-overview",
           label: "Tutorials",
           position: "left",
         },
         {
-          to: "docs/references/schemes-reference",
+          to: "docs/references/references-overview",
           label: "References",
           position: "left",
         },
         {
-          to: "docs/development/contributing",
+          to: "docs/development/development",
           label: "Development",
           position: "left",
         },
@@ -113,19 +118,19 @@ module.exports = {
           items: [
             {
               label: "Guides",
-              to: "docs/guides/project-overview",
+              to: "docs/guides/guides-overview",
             },
             {
               label: "Tutorials",
-              to: "docs/tutorials/filelike-tutorial",
+              to: "docs/tutorials/tutorials-overview",
             },
             {
               label: "References",
-              to: "docs/references/schemes-reference",
+              to: "docs/references/references-overview",
             },
             {
               label: "Development",
-              to: "docs/development/contributing",
+              to: "docs/development/development",
             },
           ],
         },
