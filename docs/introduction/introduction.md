@@ -47,7 +47,3 @@ $ frictionless validate data/invalid.csv
     5        5  extra-cell        Row "5" has an extra value in field  "5"
 ```
 
-## Documentation
-
-Please visit our documentation portal:
-  - https://frictionlessdata.io/tooling/python/

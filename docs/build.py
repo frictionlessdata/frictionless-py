@@ -37,6 +37,7 @@ def main():
 def build_introduction():
     document = read_file("README.md")
     document = re.sub(r"^# (.*)", "---\ntitle: Introduction\n---", document)
+    document = re.sub(r"## Documentation.*", "", document, flags=re.DOTALL)
     write_file(os.path.join("docs", "introduction", "introduction.md"), document)
     print("Built: Introduction")
 
