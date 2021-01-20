@@ -1,5 +1,6 @@
 ---
-title: Text Data Tutorial
+title: Text Tutorial
+sidebar_label: Text
 ---
 
 :::tip Plugin

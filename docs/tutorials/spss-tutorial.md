@@ -1,5 +1,6 @@
 ---
 title: SPSS Tutorial
+sidebar_label: SPSS
 ---
 
 :::caution Plugin

@@ -1,5 +1,6 @@
 ---
 title: BugQuery Tutorial
+sidebar_label: BigQuery
 ---
 
 :::caution Plugin

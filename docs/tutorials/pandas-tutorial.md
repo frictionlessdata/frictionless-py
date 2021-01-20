@@ -1,5 +1,6 @@
 ---
 title: Pandas Tutorial
+sidebar_label: Pandas
 ---
 
 :::caution Plugin

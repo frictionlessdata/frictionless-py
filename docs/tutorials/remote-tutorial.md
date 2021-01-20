@@ -1,5 +1,6 @@
 ---
-title: Remote Data Tutorial
+title: Remote Tutorial
+sidebar_label: Remote
 ---
 
 :::tip Plugin

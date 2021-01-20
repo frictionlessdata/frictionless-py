@@ -1,5 +1,6 @@
 ---
 title: CSV Tutorial
+sidebar_label: CSV
 ---
 
 :::tip Plugin

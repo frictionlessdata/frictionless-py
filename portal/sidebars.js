@@ -21,7 +21,7 @@ module.exports = {
   tutorials: [
     "tutorials/tutorials-overview",
     {
-      "Data Schemes": [
+      "Schemes Tutorials": [
         "tutorials/filelike-tutorial",
         "tutorials/local-tutorial",
         "tutorials/multipart-tutorial",
@@ -29,7 +29,7 @@ module.exports = {
         "tutorials/s3-tutorial",
         "tutorials/text-tutorial",
       ],
-      "Data Formats": [
+      "Formats Tutorials": [
         "tutorials/bigquery-tutorial",
         "tutorials/ckan-tutorial",
         "tutorials/csv-tutorial",
@@ -43,7 +43,7 @@ module.exports = {
         "tutorials/spss-tutorial",
         "tutorials/sql-tutorial",
       ],
-      Advanced: ["tutorials/server-tutorial"],
+      "Server Tutorials": ["tutorials/api-tutorial"],
     },
   ],
   references: [

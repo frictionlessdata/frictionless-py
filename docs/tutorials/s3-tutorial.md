@@ -1,5 +1,6 @@
 ---
 title: S3 Tutorial
+sidebar_label: S3
 ---
 
 :::caution Plugin

@@ -1,5 +1,6 @@
 ---
 title: CKAN Tutorial
+sidebar_label: CKAN
 ---
 
 :::caution Plugin

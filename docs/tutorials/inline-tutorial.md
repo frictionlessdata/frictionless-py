@@ -1,5 +1,6 @@
 ---
-title: Inline Data Tutorial
+title: Inline Tutorial
+sidebar_label: Inline
 ---
 
 :::tip Plugin

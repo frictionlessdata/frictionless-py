@@ -1,5 +1,6 @@
 ---
-title: Filelike Data Tutorial
+title: Filelike Tutorial
+sidebar_label: Filelike
 ---
 
 :::tip Plugin

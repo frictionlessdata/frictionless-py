@@ -1,5 +1,6 @@
 ---
-title: Multipart Data Tutorial
+title: Multipart Tutorial
+sidebar_label: Multipart
 ---
 
 :::tip Plugin

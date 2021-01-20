@@ -1,5 +1,6 @@
 ---
 title: SQL Tutorial
+sidebar_label: SQL
 ---
 
 :::caution Plugin

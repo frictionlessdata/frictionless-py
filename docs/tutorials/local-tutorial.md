@@ -1,5 +1,6 @@
 ---
-title: Local Data Tutorial
+title: Local Tutorial
+sidebar_label: Local
 ---
 
 :::tip Plugin

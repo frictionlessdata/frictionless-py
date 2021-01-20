@@ -1,5 +1,6 @@
 ---
 title: Google Sheets Tutorial
+sidebar_label: Google Sheets
 ---
 
 :::caution Plugin

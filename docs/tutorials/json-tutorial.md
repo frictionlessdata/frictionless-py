@@ -1,5 +1,6 @@
 ---
 title: JSON Tutorial
+sidebar_label: JSON
 ---
 
 :::tip Plugin

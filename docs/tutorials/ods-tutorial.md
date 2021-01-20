@@ -1,5 +1,6 @@
 ---
 title: ODS Tutorial
+sidebar_label: ODS
 ---
 
 :::tip Plugin

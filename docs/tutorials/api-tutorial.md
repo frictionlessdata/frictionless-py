@@ -1,5 +1,6 @@
 ---
-title: Server Tutorial
+title: API Tutorial
+sidebar_label: API
 ---
 
 :::caution Plugin

@@ -1,5 +1,6 @@
 ---
 title: HTML Tutorial
+sidebar_label: HTML
 ---
 
 :::caution Plugin
