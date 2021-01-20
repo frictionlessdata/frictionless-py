@@ -106,11 +106,19 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+      - name: Install Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Install and build docs
+        run: |
+          make install
+          make docs
       - name: Install Node
         uses: actions/setup-node@v1
         with:
           node-version: 14
-      - name: Install and build
+      - name: Install and build portal
         run: |
           cd portal
           npm install

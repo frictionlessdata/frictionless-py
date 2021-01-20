@@ -48,4 +48,4 @@ $ frictionless validate data/invalid.csv
 ## Documentation
 
 Please visit our documentation portal:
-  - https://frictionlessdata.io/tooling/python/
+  - http://frictionlessdata.github.io/frictionless-py/
