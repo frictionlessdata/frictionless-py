@@ -4,7 +4,7 @@ sidebar_label: CKAN
 ---
 
 :::caution
-It uses an experimental `ckan` plugin. [Read More](../references/plugins-reference.md)
+This functionality requires an experimental `ckan` plugin. [Read More](../references/plugins-reference.md)
 :::
 
 Frictionless supports reading and writing CKAN datasets.

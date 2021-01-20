@@ -4,7 +4,7 @@ sidebar_label: HTML
 ---
 
 :::caution
-It uses an experimental `html` plugin. [Read More](../references/plugins-reference.md)
+This functionality requires an experimental `html` plugin. [Read More](../references/plugins-reference.md)
 :::
 
 Frictionless supports parsing HTML format

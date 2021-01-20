@@ -18,4 +18,5 @@ Based on your data source path:
 
 ## Server Tutorial
 
-Frictionless Framework can be used as a server.
+Frictionless Framework can be used as a server:
+- [Server Tutorial](server-tutorial.md)

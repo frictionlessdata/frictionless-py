@@ -4,7 +4,7 @@ sidebar_label: Pandas
 ---
 
 :::caution
-It uses an experimental `pandas` plugin. [Read More](../references/plugins-reference.md)
+This functionality requires an experimental `pandas` plugin. [Read More](../references/plugins-reference.md)
 :::
 
 Frictionless supports reading and writing Pandas dataframes.

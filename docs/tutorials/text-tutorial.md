@@ -3,10 +3,6 @@ title: Text Tutorial
 sidebar_label: Text
 ---
 
-:::tip Plugin
-Status: **STABLE**
-:::
-
 Frictionless supports loading textual data
 
 ## Reading Text Data

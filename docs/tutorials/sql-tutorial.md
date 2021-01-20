@@ -4,7 +4,7 @@ sidebar_label: SQL
 ---
 
 :::caution
-It uses an experimental `sql` plugin. [Read More](../references/plugins-reference.md)
+This functionality requires an experimental `sql` plugin. [Read More](../references/plugins-reference.md)
 :::
 
 Frictionless supports reading and writing SQL databases.
