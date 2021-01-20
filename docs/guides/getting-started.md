@@ -8,9 +8,9 @@ Let's get started with Frictionless! We will learn how to install and use the fr
 
 > Versioning follows the [SemVer Standard](https://semver.org/)
 
-```
-! pip install frictionless
-# pip install frictionless[sql] - to install a core plugin
+```bash
+$ pip install frictionless
+$ pip install frictionless[sql] - to install a core plugin
 ```
 
 
@@ -43,7 +43,7 @@ Arguments follow this naming rule:
 
 To get documentation for a command-line interface just use the `--help` flag:
 
-```
+```bash
 $ frictionless --help
 $ frictionless describe --help
 $ frictionless extract --help
@@ -59,8 +59,8 @@ $ frictionless transform --help
 We will take a very dirty data file:
 
 
-```python
-! cat data/invalid.csv
+```bash
+$ cat data/invalid.csv
 ```
 
     id,name,,name
@@ -75,8 +75,8 @@ First of all, let's infer the metadata. We can save and edit it to provide usefu
 > This output is in [YAML](https://yaml.org/), it is a default Frictionless output format.
 
 
-```python
-! frictionless describe data/invalid.csv
+```bash
+$ frictionless describe data/invalid.csv
 ```
 
     ---
@@ -117,8 +117,8 @@ First of all, let's infer the metadata. We can save and edit it to provide usefu
 Secondly, we can extract a normalized data. It conforms to the inferred schema from above e.g., the dimension is fixed, and bad cells are omitted:
 
 
-```python
-! frictionless extract data/invalid.csv
+```bash
+$ frictionless extract data/invalid.csv
 ```
 
     ---
@@ -139,8 +139,8 @@ Secondly, we can extract a normalized data. It conforms to the inferred schema f
 Last but not least, let's get a validation report. This report will help us to fix all these errors as comprehensive information is provided for every tabular problem:
 
 
-```python
-! frictionless validate data/invalid.csv
+```bash
+$ frictionless validate data/invalid.csv
 ```
 
     ---
