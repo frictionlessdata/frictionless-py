@@ -3,8 +3,8 @@ title: S3 Tutorial
 sidebar_label: S3
 ---
 
-:::caution Plugin
-Status: **EXPERIMENTAL**
+:::caution
+It uses an experimental `s3` plugin. [Read More](../references/plugins-reference.md)
 :::
 
 Frictionless supports reading data from S3 cloud source. You can read file in any format that is available in your bucket.

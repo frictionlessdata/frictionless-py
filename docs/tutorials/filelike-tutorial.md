@@ -3,10 +3,6 @@ title: Filelike Tutorial
 sidebar_label: Filelike
 ---
 
-:::tip Plugin
-Status: **STABLE**
-:::
-
 Frictionless supports loading Filelike data.
 
 ## Reading Filelike Data

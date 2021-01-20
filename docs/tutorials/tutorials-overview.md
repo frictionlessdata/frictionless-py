@@ -16,6 +16,6 @@ Based on your data source path:
 - [CSV Format](csv-tutorial.md) (`http://example.com/table.CSV`)
 - Explore other formats in the menu and select similarly
 
-## Server Tutorials
+## Server Tutorial
 
 Frictionless Framework can be used as a server.

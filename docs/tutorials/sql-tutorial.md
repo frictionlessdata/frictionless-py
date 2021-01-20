@@ -3,8 +3,8 @@ title: SQL Tutorial
 sidebar_label: SQL
 ---
 
-:::caution Plugin
-Status: **EXPERIMENTAL**
+:::caution
+It uses an experimental `sql` plugin. [Read More](../references/plugins-reference.md)
 :::
 
 Frictionless supports reading and writing SQL databases.

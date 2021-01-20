@@ -3,8 +3,8 @@ title: Google Sheets Tutorial
 sidebar_label: Google Sheets
 ---
 
-:::caution Plugin
-Status: **EXPERIMENTAL**
+:::caution
+It uses an experimental `gsheets` plugin. [Read More](../references/plugins-reference.md)
 :::
 
 Frictionless supports parsing Google Sheets data as a file format.

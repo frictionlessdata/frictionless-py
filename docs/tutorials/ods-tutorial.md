@@ -3,10 +3,6 @@ title: ODS Tutorial
 sidebar_label: ODS
 ---
 
-:::tip Plugin
-Status: **STABLE**
-:::
-
 Frictionless supports ODS parsing.
 
 ```bash

@@ -3,8 +3,8 @@ title: SPSS Tutorial
 sidebar_label: SPSS
 ---
 
-:::caution Plugin
-Status: **EXPERIMENTAL**
+:::caution
+It uses an experimental `spss` plugin. [Read More](../references/plugins-reference.md)
 :::
 
 Frictionless supports reading and writing SPSS files.

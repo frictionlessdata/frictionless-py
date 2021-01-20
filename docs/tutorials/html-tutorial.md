@@ -3,8 +3,8 @@ title: HTML Tutorial
 sidebar_label: HTML
 ---
 
-:::caution Plugin
-Status: **EXPERIMENTAL**
+:::caution
+It uses an experimental `html` plugin. [Read More](../references/plugins-reference.md)
 :::
 
 Frictionless supports parsing HTML format

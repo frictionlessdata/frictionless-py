@@ -3,10 +3,6 @@ title: Inline Tutorial
 sidebar_label: Inline
 ---
 
-:::tip Plugin
-Status: **STABLE**
-:::
-
 Frictionless supports parsing Inline Data.
 
 ```bash

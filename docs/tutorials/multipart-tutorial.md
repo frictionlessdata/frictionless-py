@@ -3,10 +3,6 @@ title: Multipart Tutorial
 sidebar_label: Multipart
 ---
 
-:::tip Plugin
-Status: **STABLE**
-:::
-
 You can read and write files split into chunks with Frictionless.
 
 ## Reading Multipart Data

@@ -3,10 +3,6 @@ title: Local Tutorial
 sidebar_label: Local
 ---
 
-:::tip Plugin
-Status: **STABLE**
-:::
-
 You can read and write files locally with Frictionless. It's basic functionality.
 
 ## Reading Local Data

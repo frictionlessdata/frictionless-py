@@ -3,10 +3,6 @@ title: JSON Tutorial
 sidebar_label: JSON
 ---
 
-:::tip Plugin
-Status: **STABLE**
-:::
-
 Frictionless supports parsing JSON tables (json and jsonl/ndjson).
 
 ```bash
