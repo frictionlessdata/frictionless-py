@@ -28,7 +28,7 @@ for resource in package.resources:
 ```
 
 
-## Wriring to SPSS
+## Writing to SPSS
 
 > **[NOTE]** Timezone information is ignored for `datetime` and `time` types.
 

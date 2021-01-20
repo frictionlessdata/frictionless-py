@@ -70,7 +70,7 @@ We will take a very dirty data file:
     2,german,1,2,3
 
 
-Firt of all, let's infer the metadata. We can save and edit it to provide useful information about the table:
+First of all, let's infer the metadata. We can save and edit it to provide useful information about the table:
 
 > This output is in [YAML](https://yaml.org/), it is a default Frictionless output format.
 

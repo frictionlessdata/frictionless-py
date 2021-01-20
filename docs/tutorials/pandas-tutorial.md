@@ -28,7 +28,7 @@ for resource in package.resources:
 ```
 
 
-## Wriring to Pandas
+## Writing to Pandas
 
 > **[NOTE]** Timezone information is ignored for `datetime` and `time` types.
 

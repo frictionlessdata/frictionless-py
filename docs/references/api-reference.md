@@ -177,7 +177,7 @@ Cell error representation
   # Raises
 - `FrictionlessException` - raise any error that occurs during the process
 
-### cellerror.from\_row
+### cellError.from\_row
 
 ```python
  | @classmethod
@@ -491,7 +491,7 @@ Public   | `from frictionless.plugins.csv import CsvDialect`
 
 - `FrictionlessException` - raise any error that occurs during the process
 
-### csvdialect.delimiter
+### csvDialect.delimiter
 
 ```python
  | @Metadata.property
@@ -502,7 +502,7 @@ Public   | `from frictionless.plugins.csv import CsvDialect`
 
 - `str` - delimiter
 
-### csvdialect.line\_terminator
+### csvDialect.line\_terminator
 
 ```python
  | @Metadata.property
@@ -513,7 +513,7 @@ Public   | `from frictionless.plugins.csv import CsvDialect`
 
 - `str` - line terminator
 
-### csvdialect.quote\_char
+### csvDialect.quote\_char
 
 ```python
  | @Metadata.property
@@ -524,7 +524,7 @@ Public   | `from frictionless.plugins.csv import CsvDialect`
 
 - `str` - quote char
 
-### csvdialect.double\_quote
+### csvDialect.double\_quote
 
 ```python
  | @Metadata.property
@@ -535,7 +535,7 @@ Public   | `from frictionless.plugins.csv import CsvDialect`
 
 - `bool` - double quote
 
-### csvdialect.escape\_char
+### csvDialect.escape\_char
 
 ```python
  | @Metadata.property
@@ -546,7 +546,7 @@ Public   | `from frictionless.plugins.csv import CsvDialect`
 
 - `str?` - escape char
 
-### csvdialect.null\_sequence
+### csvDialect.null\_sequence
 
 ```python
  | @Metadata.property
@@ -557,7 +557,7 @@ Public   | `from frictionless.plugins.csv import CsvDialect`
 
 - `str?` - null sequence
 
-### csvdialect.skip\_initial\_space
+### csvDialect.skip\_initial\_space
 
 ```python
  | @Metadata.property
@@ -568,7 +568,7 @@ Public   | `from frictionless.plugins.csv import CsvDialect`
 
 - `bool` - if skipping initial space
 
-### csvdialect.comment\_char
+### csvDialect.comment\_char
 
 ```python
  | @Metadata.property
@@ -579,7 +579,7 @@ Public   | `from frictionless.plugins.csv import CsvDialect`
 
 - `str?` - comment char
 
-### csvdialect.expand
+### csvDialect.expand
 
 ```python
  | expand()
@@ -587,7 +587,7 @@ Public   | `from frictionless.plugins.csv import CsvDialect`
 
 Expand metadata
 
-### csvdialect.to\_python
+### csvDialect.to\_python
 
 ```python
  | to_python()
@@ -764,7 +764,7 @@ Public   | `from frictionless.plugins.excel import ExcelDialect`
 
 - `FrictionlessException` - raise any error that occurs during the process
 
-### exceldialect.sheet
+### excelDialect.sheet
 
 ```python
  | @Metadata.property
@@ -775,7 +775,7 @@ Public   | `from frictionless.plugins.excel import ExcelDialect`
 
 - `str|int` - sheet
 
-### exceldialect.workbook\_cache
+### excelDialect.workbook\_cache
 
 ```python
  | @Metadata.property
@@ -786,7 +786,7 @@ Public   | `from frictionless.plugins.excel import ExcelDialect`
 
 - `dict` - workbook cache
 
-### exceldialect.fill\_merged\_cells
+### excelDialect.fill\_merged\_cells
 
 ```python
  | @Metadata.property
@@ -797,7 +797,7 @@ Public   | `from frictionless.plugins.excel import ExcelDialect`
 
 - `bool` - fill merged cells
 
-### exceldialect.preserve\_formatting
+### excelDialect.preserve\_formatting
 
 ```python
  | @Metadata.property
@@ -808,7 +808,7 @@ Public   | `from frictionless.plugins.excel import ExcelDialect`
 
 - `bool` - preserve formatting
 
-### exceldialect.adjust\_floating\_point\_error
+### excelDialect.adjust\_floating\_point\_error
 
 ```python
  | @Metadata.property
@@ -819,7 +819,7 @@ Public   | `from frictionless.plugins.excel import ExcelDialect`
 
 - `bool` - adjust floating point error
 
-### exceldialect.expand
+### excelDialect.expand
 
 ```python
  | expand()
@@ -1219,7 +1219,7 @@ Public   | `from frictionless import FrictionlessException`
 
 - `error` _Error_ - an underlaying error
 
-### frictionlessexception.error
+### frictionlessException.error
 
 ```python
  | @property
@@ -1275,7 +1275,7 @@ Public   | `from frictionless.plugins.gsheets import GsheetsDialect`
 
 - `FrictionlessException` - raise any error that occurs during the process
 
-### gsheetsdialect.credentials
+### gsheetsDialect.credentials
 
 ```python
  | @Metadata.property
@@ -1472,7 +1472,7 @@ Public   | `from frictionless.plugins.html import HtmlDialect`
 
 - `FrictionlessException` - raise any error that occurs during the process
 
-### htmldialect.selector
+### htmlDialect.selector
 
 ```python
  | @Metadata.property
@@ -1483,7 +1483,7 @@ Public   | `from frictionless.plugins.html import HtmlDialect`
 
 - `str` - selector
 
-### htmldialect.expand
+### htmlDialect.expand
 
 ```python
  | expand()
@@ -1538,7 +1538,7 @@ Public   | `from frictionless.plugins.inline import InlineDialect`
 
 - `FrictionlessException` - raise any error that occurs during the process
 
-### inlinedialect.keys
+### inlineDialect.keys
 
 ```python
  | @Metadata.property
@@ -1549,7 +1549,7 @@ Public   | `from frictionless.plugins.inline import InlineDialect`
 
 - `str[]?` - keys
 
-### inlinedialect.keyed
+### inlineDialect.keyed
 
 ```python
  | @Metadata.property
@@ -1560,7 +1560,7 @@ Public   | `from frictionless.plugins.inline import InlineDialect`
 
 - `bool` - keyed
 
-### inlinedialect.expand
+### inlineDialect.expand
 
 ```python
  | expand()
@@ -1637,7 +1637,7 @@ Inquiry task representation.
 
 - `FrictionlessException` - raise any error that occurs during the process
 
-### inquirytask.source
+### inquiryTask.source
 
 ```python
  | @property
@@ -1648,7 +1648,7 @@ Inquiry task representation.
 
 - `any` - source
 
-### inquirytask.type
+### inquiryTask.type
 
 ```python
  | @property
@@ -1695,7 +1695,7 @@ Public   | `from frictionless.plugins.json import JsonDialect`
 
 - `FrictionlessException` - raise any error that occurs during the process
 
-### jsondialect.keys
+### jsonDialect.keys
 
 ```python
  | @Metadata.property
@@ -1706,7 +1706,7 @@ Public   | `from frictionless.plugins.json import JsonDialect`
 
 - `str[]?` - keys
 
-### jsondialect.keyed
+### jsonDialect.keyed
 
 ```python
  | @Metadata.property
@@ -1717,7 +1717,7 @@ Public   | `from frictionless.plugins.json import JsonDialect`
 
 - `bool` - keyed
 
-### jsondialect.property
+### jsonDialect.property
 
 ```python
  | @Metadata.property
@@ -1728,7 +1728,7 @@ Public   | `from frictionless.plugins.json import JsonDialect`
 
 - `str?` - property
 
-### jsondialect.expand
+### jsonDialect.expand
 
 ```python
  | expand()
@@ -2482,7 +2482,7 @@ Public   | `from frictionless.plugins.multipart import MultipartControl`
 
 - `FrictionlessException` - raise any error that occurs during the process
 
-### multipartcontrol.expand
+### multipartControl.expand
 
 ```python
  | expand()
@@ -2560,7 +2560,7 @@ Public   | `from frictionless.plugins.ods import OdsDialect`
 
 - `FrictionlessException` - raise any error that occurs during the process
 
-### odsdialect.sheet
+### odsDialect.sheet
 
 ```python
  | @Metadata.property
@@ -2571,7 +2571,7 @@ Public   | `from frictionless.plugins.ods import OdsDialect`
 
 - `int|str` - sheet
 
-### odsdialect.expand
+### odsDialect.expand
 
 ```python
  | expand()
@@ -3428,7 +3428,7 @@ Pipeline task representation.
 
 - `FrictionlessException` - raise any error that occurs during the process
 
-### pipelinetask.run
+### pipelineTask.run
 
 ```python
  | run()
@@ -3580,7 +3580,7 @@ Public   | `from frictionless.plugins.remote import RemoteControl`
 
 - `FrictionlessException` - raise any error that occurs during the process
 
-### remotecontrol.http\_session
+### remoteControl.http\_session
 
 ```python
  | @Metadata.property
@@ -3591,7 +3591,7 @@ Public   | `from frictionless.plugins.remote import RemoteControl`
 
 - `requests.Session` - HTTP session
 
-### remotecontrol.http\_preload
+### remoteControl.http\_preload
 
 ```python
  | @Metadata.property
@@ -3602,7 +3602,7 @@ Public   | `from frictionless.plugins.remote import RemoteControl`
 
 - `bool` - if not streaming
 
-### remotecontrol.http\_timeout
+### remoteControl.http\_timeout
 
 ```python
  | @Metadata.property
@@ -3613,7 +3613,7 @@ Public   | `from frictionless.plugins.remote import RemoteControl`
 
 - `int` - HTTP timeout in minutes
 
-### remotecontrol.expand
+### remoteControl.expand
 
 ```python
  | expand()
@@ -3816,7 +3816,7 @@ Public   | `from frictionless import ReportTask`
   # Raises
 - `FrictionlessException` - raise any error that occurs during the process
 
-### reporttask.resource
+### reportTask.resource
 
 ```python
  | @property
@@ -3827,7 +3827,7 @@ Public   | `from frictionless import ReportTask`
 
 - `Resource` - resource
 
-### reporttask.time
+### reportTask.time
 
 ```python
  | @property
@@ -3838,7 +3838,7 @@ Public   | `from frictionless import ReportTask`
 
 - `float` - validation time
 
-### reporttask.valid
+### reportTask.valid
 
 ```python
  | @property
@@ -3849,7 +3849,7 @@ Public   | `from frictionless import ReportTask`
 
 - `bool` - validation result
 
-### reporttask.scope
+### reportTask.scope
 
 ```python
  | @property
@@ -3860,7 +3860,7 @@ Public   | `from frictionless import ReportTask`
 
 - `str[]` - validation scope
 
-### reporttask.partial
+### reportTask.partial
 
 ```python
  | @property
@@ -3871,7 +3871,7 @@ Public   | `from frictionless import ReportTask`
 
 - `bool` - if validation partial
 
-### reporttask.stats
+### reportTask.stats
 
 ```python
  | @property
@@ -3882,7 +3882,7 @@ Public   | `from frictionless import ReportTask`
 
 - `dict` - validation stats
 
-### reporttask.errors
+### reportTask.errors
 
 ```python
  | @property
@@ -3893,7 +3893,7 @@ Public   | `from frictionless import ReportTask`
 
 - `Error[]` - validation errors
 
-### reporttask.error
+### reportTask.error
 
 ```python
  | @property
@@ -3909,7 +3909,7 @@ Public   | `from frictionless import ReportTask`
 
 - `FrictionlessException` - if more than one errors
 
-### reporttask.expand
+### reportTask.expand
 
 ```python
  | expand()
@@ -3917,7 +3917,7 @@ Public   | `from frictionless import ReportTask`
 
 Expand metadata
 
-### reporttask.flatten
+### reportTask.flatten
 
 ```python
  | flatten(spec)
@@ -4884,7 +4884,7 @@ Row error representation
 
 - `FrictionlessException` - raise any error that occurs during the process
 
-### rowerror.from\_row
+### rowError.from\_row
 
 ```python
  | @classmethod
@@ -4925,7 +4925,7 @@ Public   | `from frictionless.plugins.s3 import S3Control`
 
 - `FrictionlessException` - raise any error that occurs during the process
 
-### s3control.expand
+### s3Control.expand
 
 ```python
  | expand()
@@ -5484,7 +5484,7 @@ class StatusTask(Metadata)
 
 Status Task representation
 
-### statustask.valid
+### statusTask.valid
 
 ```python
  | @property
@@ -5495,7 +5495,7 @@ Status Task representation
 
 - `bool` - validation result
 
-### statustask.errors
+### statusTask.errors
 
 ```python
  | @property
@@ -5506,7 +5506,7 @@ Status Task representation
 
 - `Error[]` - validation errors
 
-### statustask.target
+### statusTask.target
 
 ```python
  | @property
@@ -5517,7 +5517,7 @@ Status Task representation
 
 - `any` - validation target
 
-### statustask.type
+### statusTask.type
 
 ```python
  | @property

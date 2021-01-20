@@ -61,7 +61,7 @@ Then you can run various make commands:
 - `make lint` - lint the project
 - `make release` - release a new version
 - `make test` - run the tests
-- `make test-ci` - run the tests (including integrational)
+- `make test-ci` - run the tests (including integration)
 
 Of course, it's possible and recommended to run underlying commands like `pytest` or `pylama` to speed up the development process.
 

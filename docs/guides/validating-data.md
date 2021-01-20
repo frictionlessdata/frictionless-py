@@ -110,7 +110,7 @@ As it was shown in the "Describing Data" guide a resource is a container having 
 ! frictionless describe data/capital-invalid.csv --json > tmp/capital.resource.json
 ```
 
-Let's now use the command-line interface to ensure that we are getting the same result as we had withouth using a resource:
+Let's now use the command-line interface to ensure that we are getting the same result as we had without using a resource:
 
 
 ```python
@@ -217,7 +217,7 @@ As we can see, the result is pretty straight-forward and expected: we have one i
 
 ### Validating Inquiry
 
-The Inquiry gives you an ability to create arbitrary validation jobs containing a set of individual validation taks. Let's create an inquiry that includes an individual file validation and a resource validation:
+The Inquiry gives you an ability to create arbitrary validation jobs containing a set of individual validation tasks. Let's create an inquiry that includes an individual file validation and a resource validation:
 
 
 ```python
@@ -368,7 +368,7 @@ pprint(report)
      'version': '3.38.1'}
 
 
-As we can see, there are a lot of information; you can find its details description in "API Reference". Errors are groupped by tables; for some validation there are can be dozens of tables. Let's use the `report.flatten` function to simplify errors representation:
+As we can see, there are a lot of information; you can find its details description in "API Reference". Errors are grouped by tables; for some validation there are can be dozens of tables. Let's use the `report.flatten` function to simplify errors representation:
 
 
 ```python
@@ -468,7 +468,7 @@ Please explore "Errors Reference" to learn about all the available errors and th
 
 ## Errors Options
 
-We have already seen a few mentions of error options like `pick_errors`. Let's take a look at all of them. These options are similiar to the `extract`'s counterparts for fields and rows.
+We have already seen a few mentions of error options like `pick_errors`. Let's take a look at all of them. These options are similar to the `extract`'s counterparts for fields and rows.
 
 ### Pick/Skip Errors
 
@@ -543,7 +543,7 @@ print(report.flatten(["code", "note"]))
 
 ## Checks Options
 
-Ther are two check options: `checksum` and `extra_checks`. The first allows to stricten a baseline validation white the latter is used to enforce additional checks.
+There are two check options: `checksum` and `extra_checks`. The first allows to make stricter a baseline validation white the latter is used to enforce additional checks.
 
 ### Checksum
 
@@ -602,7 +602,7 @@ See the sections below for a list of available checks.
 
 ## Baseline Check
 
-By default, Frictionless runs only the Baseline Check but includes vairous smaller checks revealing a great deal of tabular errors. There is a `report.tables[].scope` property to check what exact errors it have been checked for:
+By default, Frictionless runs only the Baseline Check but includes various smaller checks revealing a great deal of tabular errors. There is a `report.tables[].scope` property to check what exact errors it have been checked for:
 
 
 ```python
@@ -676,7 +676,7 @@ This check uses the Python's builtin `statistics` module to check a field's data
 
 ### Truncated Value
 
-Sometime during the explort from a database or another storage, data values can be truncated. This check tries to detect it. Let's explore some trunctation indicators:
+Sometime during the export from a database or another storage, data values can be truncated. This check tries to detect it. Let's explore some truncation indicators:
 
 
 ```python
@@ -703,7 +703,7 @@ pprint(report.flatten(["code", "message"]))
 
 ## Regulation Checks
 
-In countrary to heuristic checks, regulation checks gives you an ability to provide additional rules for your data. Use the `extra_checks` argument of the `validate` function to active one or more of these checks.
+In the contrary to heuristic checks, regulation checks gives you an ability to provide additional rules for your data. Use the `extra_checks` argument of the `validate` function to active one or more of these checks.
 
 ### Blacklisted Value
 
@@ -727,7 +727,7 @@ pprint(report.flatten(['code', 'message']))
 
 ### Sequential Value
 
-This check gives us an opportunity to validate sequential fields like primary keys or other similiar data. It doesn't need to start from 0 or 1. We're providing a field name:
+This check gives us an opportunity to validate sequential fields like primary keys or other similar data. It doesn't need to start from 0 or 1. We're providing a field name:
 
 
 ```python
@@ -747,7 +747,7 @@ pprint(report.flatten(['code', 'message']))
 
 ### Row Constraint
 
-This checks is the most powerful one as it uses the external `simpleeval` package allowing to evalute arbitrary python expressions on data rows. Let's show on an example:
+This checks is the most powerful one as it uses the external `simpleeval` package allowing to evaluate arbitrary python expressions on data rows. Let's show on an example:
 
 
 ```python
@@ -797,4 +797,4 @@ pprint(report.flatten(["rowPosition", "fieldPosition", "code", "note"]))
     [[3, 1, 'cell-error', 'number 2 is forbidden!']]
 
 
-Usualy, it also makes sense to create a custom error for your custom check. The Check class provides other useful methods like `validate_header` etc. Please read "API Reference" to learn it in details.
+Usually, it also makes sense to create a custom error for your custom check. The Check class provides other useful methods like `validate_header` etc. Please read "API Reference" to learn it in details.

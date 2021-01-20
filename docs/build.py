@@ -200,7 +200,8 @@ def build_api_reference():
             if not element or element.islower():
                 element = re.search(r"^#### (.*)$", line).group(1)
                 continue
-            line = re.sub(r"^#### (.*)$", f"### {element.lower()}.\\1", line)
+            prefix = element[0].lower() + element[1:]
+            line = re.sub(r"^#### (.*)$", f"### {prefix}.\\1", line)
         if element:
             blocks.setdefault(element, "")
             blocks[element] += line

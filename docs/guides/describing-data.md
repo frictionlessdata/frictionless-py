@@ -452,7 +452,7 @@ First of all, let's describe our package using the command-line interface. We di
 
 We have already learned about many concepts that are reflected in this metadata. We can see resources, schemas, fields, and other familiar entities. The difference is that this descriptor has information about multiple files which is the most popular way of sharing data - in datasets. Very often you have not only one data file but also additional data files, some textual documents e.g. PDF, and others. To package all of these files with the corresponding metadata we use data packages.
 
-Following the already familiar to the guide's reader pattern, we add some additional metadata:
+Following the already familiar to the guide reader pattern, we add some additional metadata:
 
 
 ```python
@@ -937,7 +937,7 @@ Let's explore some handy options to customize the infer process. All of them are
 
 ### Infer Type
 
-This option allows manually setting all the field types to a given type. It's useful when you need to skip datacasting (setting `any` type) or have everything as a string (setting `string` type):
+This option allows manually setting all the field types to a given type. It's useful when you need to skip data casting (setting `any` type) or have everything as a string (setting `string` type):
 
 
 ```python

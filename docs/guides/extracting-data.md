@@ -234,8 +234,8 @@ We got an identical result but it's important to understand that on the table le
 
 ## Extraction Options
 
-All the `extract` fuctions accept those common argument:
-- `process`: it's a function getting a row object and returning whatever is needed as an ouput of the data extraction e.g. `lambda row: row.to_dict()`
+All the `extract` functions accept those common argument:
+- `process`: it's a function getting a row object and returning whatever is needed as an output of the data extraction e.g. `lambda row: row.to_dict()`
 - `stream`: instead of reading all the data into memory it will return row stream(s)
 
 ### Package/Resource
@@ -325,7 +325,7 @@ pprint(resource.read_stats())
 
 ### Reading Data
 
-The `extract` functions always read rows into memory; Resource can do the same but it also gives a choice regarding ouput data. It can be `rows`, `data`, `text`, or `bytes`. Let's try reading all of them:
+The `extract` functions always read rows into memory; Resource can do the same but it also gives a choice regarding output data. It can be `rows`, `data`, `text`, or `bytes`. Let's try reading all of them:
 
 
 ```python
@@ -461,7 +461,7 @@ with Table('data/capital-3.csv', scheme='file', format='csv') as table:
 
 ### Reading Data
 
-There are 2 different types of ouput that Table can produce:
+There are 2 different types of output that Table can produce:
 
 
 ```python
@@ -485,7 +485,7 @@ with Table('data/capital-3.csv') as table:
      Row([('id', 5), ('name', 'Rome')])]
 
 
-The `data` format is just a raw array of arrays similiar to JSON while the `row` format is a rich object with all the cells normalized and converted to proper types. We will explore the Row class later.
+The `data` format is just a raw array of arrays similar to JSON while the `row` format is a rich object with all the cells normalized and converted to proper types. We will explore the Row class later.
 
 ### Streaming Data
 
@@ -609,7 +609,7 @@ with Table('data/country-3.csv', hashing='sha256') as table:
 
 ### Encoding
 
-Frictionless automatically detects encoding of files but sometimes it can be innacurate. It's possible to provide an encoding manually:
+Frictionless automatically detects encoding of files but sometimes it can be inaccurate. It's possible to provide an encoding manually:
 
 
 ```python
@@ -709,7 +709,7 @@ Further reading:
 
 ## Table Dialect
 
-The Dialect adjusts the way tabular parsers work. The concept is similiar to the Control above. Let's use the CSV Dialect to adjust the delimiter configuration:
+The Dialect adjusts the way tabular parsers work. The concept is similar to the Control above. Let's use the CSV Dialect to adjust the delimiter configuration:
 
 
 ```python
@@ -731,7 +731,7 @@ There are a great deal of options available for different dialects that can be f
 
 ### Header
 
-It's a boolean flag wich deaults to `True` indicating whether the data has a header row or not. In the following example the header row will be treated as a data row:
+It's a boolean flag which defaults to `True` indicating whether the data has a header row or not. In the following example the header row will be treated as a data row:
 
 
 ```python
@@ -858,7 +858,7 @@ print(extract('data/matrix.csv', query=Query(skip_fields=['<regex>f[14]'])))
 
 ### Limit/Offset Fields
 
-There are two options that provide an ability to limit amount of fields similiar to SQL's directives:
+There are two options that provide an ability to limit amount of fields similar to SQL's directives:
 
 
 ```python
@@ -874,7 +874,7 @@ print(extract('data/matrix.csv', query=Query(offset_fields=2)))
 
 ### Pick/Skip Rows
 
-It's alike the field counterparts but it will be compared to the first cell of a row. All the queries below do the same thing for this file but take into account that when picking we need to also pick a header row. In addition, there is special value `<blank>` that matches a row if it's competely blank:
+It's alike the field counterparts but it will be compared to the first cell of a row. All the queries below do the same thing for this file but take into account that when picking we need to also pick a header row. In addition, there is special value `<blank>` that matches a row if it's completely blank:
 
 
 ```python
@@ -1065,7 +1065,7 @@ with Table('data/capital-3.csv', patch_schema={'fields': {'id': {'type': 'string
 
 ## Integrity Options
 
-Exctraction function and classes accepts a few options that are needed to manage integrity behaviour:
+Extraction function and classes accepts a few options that are needed to manage integrity behaviour:
 
 ### On Error
 
@@ -1165,7 +1165,7 @@ The example above covers the case when a header is valid. For a header with tabu
 
 ## Row Object
 
-The `extract`, `resource.read_rows()`, `table.read_rows()`, and many other functions return or yeild row objects. It's an `OrderedDict` providing additional API shown below:
+The `extract`, `resource.read_rows()`, `table.read_rows()`, and many other functions return or yield row objects. It's an `OrderedDict` providing additional API shown below:
 
 
 ```python
@@ -1200,4 +1200,4 @@ with Table('data/capital-3.csv', patch_schema={'missingValues': ['1']}) as table
     As List: [None, 'London']
 
 
-As we can see, it provides a lot of information which is especially useful when a row is not valid. Our row is valid but we demostrated how it can preserve data about raw missing values. It also preserves data about all errored cells. Please read "API Reference" for more details.
+As we can see, it provides a lot of information which is especially useful when a row is not valid. Our row is valid but we demonstrated how it can preserve data about raw missing values. It also preserves data about all errored cells. Please read "API Reference" for more details.

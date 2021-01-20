@@ -4,7 +4,7 @@ title: Transforming Data
 
 Transforming data in Frictionless means modifying a data + metadata from the state A to the state B. For example, it can be a dirty Excel file we need to transform to a cleaned CSV file or a folder of data files we want to update and save as a data package.
 
-For the core transform functions Frictionless uses amazing [PETL](https://petl.readthedocs.io/en/stable/) project under the hood. This library provides lazy-loading functinality in running data pipelines. On top of it Frictionless adds metadata management and a bridge between already familiar concepts like Pacakge/Resource and PETL's processors.
+For the core transform functions Frictionless uses amazing [PETL](https://petl.readthedocs.io/en/stable/) project under the hood. This library provides lazy-loading functionality in running data pipelines. On top of it Frictionless adds metadata management and a bridge between already familiar concepts like Pacakge/Resource and PETL's processors.
 
 Frictionless supports a few different kinds of data and metadata transformations:
 - resource and package transforms
@@ -97,11 +97,11 @@ pprint(target.read_rows())
      Row([('name', 'spain'), ('variable', 'population'), ('value', 47)])]
 
 
-Let's break the transorming steps we applied down:
+Let's break the transforming steps we applied down:
 1. `steps.table_normalize` - cast data types and shape the table according to the schema, inferred or provided
 2. `steps.table_melt` - melt the table as it's done in R-Language or in other scientific libraries like `pandas`
 
-Thare are dozens of other available steps that will be covered below.
+There are dozens of other available steps that will be covered below.
 
 ### Transforming Package
 
@@ -141,7 +141,7 @@ pprint(target.get_resource('main').read_rows())
      Row([('id', 3), ('name', 'spain'), ('population', 47)])]
 
 
-The exact tranformation we have applied actually doesn't make any sense as we just duplicted every row of the `main` resource. But it must have provided basic undetstanding of how simple and at the same time flexible package transformations can be.
+The exact transformation we have applied actually doesn't make any sense as we just duplicated every row of the `main` resource. But it must have provided basic understanding of how simple and at the same time flexible package transformations can be.
 
 ### Transforming Pipeline
 
@@ -210,11 +210,11 @@ Frictionless Transforms bases on a few core principles which is shared with othe
 
 ### Conceptual Simplicity
 
-Frictionless Transforms is not more than a list of functions that accept a source resource/package object and return a target resource/package object. Every function just updates the input's metadata and data and that's it. Thanks to this simplicity even a non-techical user can read the [source code](https://github.com/frictionlessdata/frictionless-py/blob/7ad8e692ad00131cdc9fa51258d8b860c62e77bc/frictionless/transform/resource.py#L7) of the transform function and understand how it works. And understanding the tools you use can be really important for mastering them.
+Frictionless Transforms is not more than a list of functions that accept a source resource/package object and return a target resource/package object. Every function just updates the input's metadata and data and that's it. Thanks to this simplicity even a non-technical user can read the [source code](https://github.com/frictionlessdata/frictionless-py/blob/7ad8e692ad00131cdc9fa51258d8b860c62e77bc/frictionless/transform/resource.py#L7) of the transform function and understand how it works. And understanding the tools you use can be really important for mastering them.
 
 ### Metadata Matters
 
-There is plenty of great ETL-frameworks written in Python and other languages. As said, we use one of them (PETL) under the hood. The core difference between Frictionless and others that we treat metadata as a first-class citizien. It means that you don't loose type and other important information during the pipeline evaluation.
+There is plenty of great ETL-frameworks written in Python and other languages. As said, we use one of them (PETL) under the hood. The core difference between Frictionless and others that we treat metadata as a first-class citizen. It means that you don't loose type and other important information during the pipeline evaluation.
 
 ### Data Streaming
 
@@ -222,15 +222,15 @@ Whenever it's possible Frictionless streams the data instead of reading it into 
 
 ### Lazy Evaluation
 
-Unlike to systems like `Data Package Pipelines` core Frictionless Transforms doesn't have a back-pressured flow as all data manupulation happen on-demand. For example, if you transform a data package containing 10 big csv files but you only need to reshape one table Frictionless will not even read other tables. Actually, when you call `target = transform(source)` it does almost nothing untill the data reading call like `target.read_rows()` is made.
+Unlike to systems like `Data Package Pipelines` core Frictionless Transforms doesn't have a back-pressured flow as all data manipulation happen on-demand. For example, if you transform a data package containing 10 big csv files but you only need to reshape one table Frictionless will not even read other tables. Actually, when you call `target = transform(source)` it does almost nothing until the data reading call like `target.read_rows()` is made.
 
 ### Lean Processing
 
-Similiar to the section above, Frictionless tries to be as much explicit as possible regarding actions taken. For example, it will not use CPU resources to cast data unless a user adds a "normalize", "validate" or similiar steps. So it's possible to transform rather big file without even casting types, for example, if you just need to reshape it.
+Similar to the section above, Frictionless tries to be as much explicit as possible regarding actions taken. For example, it will not use CPU resources to cast data unless a user adds a "normalize", "validate" or similar steps. So it's possible to transform rather big file without even casting types, for example, if you just need to reshape it.
 
 ## Transform Steps
 
-Frictionless includes more than 40+ builtin transform steps. They are groupped by the object so you can find them easily if you have code autocomplition. Start typing, for example, `steps.table...` and you will see all the available steps. The groups are listed below and you will find every group described in more detail in the next sections. It's also possible to write custom transform steps. Please read the section below to learn more about it.
+Frictionless includes more than 40+ builtin transform steps. They are grouped by the object so you can find them easily if you have code auto completion. Start typing, for example, `steps.table...` and you will see all the available steps. The groups are listed below and you will find every group described in more detail in the next sections. It's also possible to write custom transform steps. Please read the section below to learn more about it.
 
 - resource
 - table
@@ -1372,11 +1372,3 @@ print(petl_table)
     +---+---------+----+
     | 3 | spain   | 47 |
     +---+---------+----+
-
-
-
-## Working with DataFlows
-
-DataFlows is a powerful framework you can also use for transforms. Please read more about it:
-- [DataFlows Tutorial](https://github.com/datahq/dataflows/blob/master/TUTORIAL.md)
-- [DataFlows Processors](https://github.com/datahq/dataflows/blob/master/PROCESSORS.md)
