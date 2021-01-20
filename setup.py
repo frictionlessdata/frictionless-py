@@ -29,14 +29,12 @@ TESTS_REQUIRE = [
     "ipython",
     "pymysql",
     "psycopg2",
-    "notedown",
-    "ipykernel",
-    "nbconvert",
     "pytest-cov",
     "pytest-vcr",
     "oauth2client",
     "requests-mock",
     "python-dotenv",
+    "pydoc-markdown",
     "docstring-parser",
 ]
 EXTRAS_REQUIRE = {

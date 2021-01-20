@@ -114,6 +114,7 @@ class Metadata(helpers.ControlledDict):
                 self.to_dict(), indent=2, ensure_ascii=False, cls=encoder_class
             )
         try:
+            # TODO: move to helpers.write_file
             with tempfile.NamedTemporaryFile(
                 "wt", delete=False, encoding="utf-8"
             ) as file:

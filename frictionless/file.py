@@ -6,8 +6,9 @@ from . import helpers
 from . import config
 
 
-# TODO: export in __init__.py
 class File:
+    """File representation"""
+
     def __init__(self, source, *, basepath="", innerpath=None, allow_reading=False):
 
         # Handle pathlib

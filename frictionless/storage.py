@@ -1,4 +1,6 @@
 class Storage:
+    """Storage representation"""
+
     def __init__(self, **options):
         raise NotImplementedError()
 

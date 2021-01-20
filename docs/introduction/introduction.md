@@ -1,4 +1,6 @@
-# Frictionless Framework
+---
+title: Introduction
+---
 
 [![Build](https://img.shields.io/github/workflow/status/frictionlessdata/frictionless-py/general/master)](https://github.com/frictionlessdata/frictionless-py/actions)
 [![Coverage](https://img.shields.io/codecov/c/github/frictionlessdata/frictionless-py/master)](https://codecov.io/gh/frictionlessdata/frictionless-py)
@@ -45,7 +47,3 @@ $ frictionless validate data/invalid.csv
     5        5  extra-cell        Row "5" has an extra value in field  "5"
 ```
 
-## Documentation
-
-Please visit our documentation portal:
-  - https://frictionlessdata.io/tooling/python/
