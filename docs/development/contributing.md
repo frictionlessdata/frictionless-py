@@ -1,6 +1,5 @@
 ---
 title: Contributing
-source: /CONTRIBUTING.md
 ---
 
 ## General Guideline

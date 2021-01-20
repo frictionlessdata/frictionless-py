@@ -1,6 +1,5 @@
 ---
 title: Authors
-source: /AUTHORS.md
 ---
 
 > This page is powered by [contributors-img](https://contributors-img.web.app)
