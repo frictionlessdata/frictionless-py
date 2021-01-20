@@ -4,7 +4,10 @@ title: Formats Reference
 
 It's a formats reference supported by the main Frictionless package. If you have installed external plugins, there can be more formats available. Below we're listing a format group name (or a parser name) like Excel, which is used, for example, for `xlsx`, `xls` etc formats. Options can be used for creating dialects, for example, `dialect = ExcelDialect(sheet=1)`.
 
+
 ## Bigquery
+
+
 
 ### Project
 
@@ -24,7 +27,11 @@ Dataset
 
 Table
 
+
+
 ## Ckan
+
+
 
 ### Resource
 
@@ -44,7 +51,11 @@ Dataset
 
 Apikey
 
+
+
 ## Csv
+
+
 
 ### Delimiter
 
@@ -94,7 +105,11 @@ Csv skip initial space
 
 Csv comment char
 
+
+
 ## Excel
+
+
 
 ### Sheet
 
@@ -126,11 +141,17 @@ Whither to preserve formatting
 
 Whether to adjust floating point error
 
-## Gsheet
+
+
+## Gsheets
+
 
 There are no options available.
 
+
 ## Html
+
+
 
 ### Selector
 
@@ -138,7 +159,11 @@ There are no options available.
 
 Html selector
 
+
+
 ## Inline
+
+
 
 ### Keys
 
@@ -152,7 +177,11 @@ A list of strings to use as data keys
 
 Whether data rows are keyed
 
+
+
 ## Inline
+
+
 
 ### Keys
 
@@ -165,8 +194,12 @@ A list of strings to use as data keys
 > Type: bool
 
 Whether data rows are keyed
+
+
 
 ## Json
+
+
 
 ### Keys
 
@@ -186,7 +219,11 @@ Whether data rows are keyed
 
 A path within json to the data
 
+
+
 ## Ods
+
+
 
 ### Sheet
 
@@ -194,15 +231,23 @@ A path within json to the data
 
 Sheet
 
+
+
 ## Pandas
 
+
 There are no options available.
+
 
 ## Spss
 
+
 There are no options available.
 
+
 ## Sql
+
+
 
 ### Table
 

@@ -10,7 +10,7 @@ all:
 	@grep '^\.PHONY' Makefile | cut -d' ' -f2- | tr ' ' '\n'
 
 docs:
-	python docs/docs.py
+	python docs/build.py
 
 format:
 	black $(PACKAGE) tests
