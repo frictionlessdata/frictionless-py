@@ -11,7 +11,8 @@ class BooleanType(Type):
 
     """
 
-    supported_constraints = [
+    code = "boolean"
+    constraints = [
         "required",
         "enum",
     ]

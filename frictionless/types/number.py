@@ -13,7 +13,8 @@ class NumberType(Type):
 
     """
 
-    supported_constraints = [
+    code = "number"
+    constraints = [
         "required",
         "minimum",
         "maximum",

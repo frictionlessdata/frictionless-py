@@ -11,7 +11,8 @@ class YearmonthType(Type):
 
     """
 
-    supported_constraints = [
+    code = "yearmonth"
+    constraints = [
         "required",
         "minimum",
         "maximum",

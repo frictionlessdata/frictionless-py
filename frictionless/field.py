@@ -277,7 +277,7 @@ class Field(Metadata):
 
         """
         checks = OrderedDict()
-        for name in self.__type.supported_constraints:
+        for name in self.__type.constraints:
             constraint = self.constraints.get(name)
             if constraint is not None:
                 if name in ["minimum", "maximum"]:
@@ -346,7 +346,7 @@ class Field(Metadata):
 
         # Constraints
         for name in self.constraints.keys():
-            if name not in self.__type.supported_constraints + ["unique"]:
+            if name not in self.__type.constraints + ["unique"]:
                 note = f'constraint "{name}" is not supported by type "{self.type}"'
                 yield errors.SchemaError(note=note)
 

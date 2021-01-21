@@ -6,4 +6,4 @@ class Step(Metadata):
 
     def __init__(self, descriptor=None):
         super().__init__(descriptor)
-        self.setinitial("step", self.step)
+        self.setinitial("code", self.code)

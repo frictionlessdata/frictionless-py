@@ -13,7 +13,8 @@ class IntegerType(Type):
 
     """
 
-    supported_constraints = [
+    code = "integer"
+    constraints = [
         "required",
         "minimum",
         "maximum",

@@ -14,7 +14,8 @@ class Type:
         field (Field): field
     """
 
-    supported_constraints = []
+    code = "type"
+    constraints = []
     """
     Returns:
         str[]: a list of supported constraints

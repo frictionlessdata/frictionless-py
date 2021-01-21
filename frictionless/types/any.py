@@ -10,7 +10,8 @@ class AnyType(Type):
 
     """
 
-    supported_constraints = [
+    code = "any"
+    constraints = [
         "required",
         "enum",
     ]

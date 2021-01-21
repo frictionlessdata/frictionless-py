@@ -12,7 +12,8 @@ class DurationType(Type):
 
     """
 
-    supported_constraints = [
+    code = "duration"
+    constraints = [
         "required",
         "enum",
     ]
