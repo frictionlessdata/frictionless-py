@@ -60,5 +60,4 @@ class baseline(Check):
     metadata_profile = {  # type: ignore
         "type": "object",
         "properties": {},
-        "additionalProperties": False,
     }

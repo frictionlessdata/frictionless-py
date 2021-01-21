@@ -34,13 +34,13 @@ class Error(Metadata):
     description = "Error"
 
     def __init__(self, descriptor=None, *, note):
+        super().__init__(descriptor)
         self.setinitial("code", self.code)
         self.setinitial("name", self.name)
         self.setinitial("tags", self.tags)
         self.setinitial("note", note)
         self.setinitial("message", self.template.format(**self))
         self.setinitial("description", self.description)
-        super().__init__(descriptor)
 
     @property
     def note(self):

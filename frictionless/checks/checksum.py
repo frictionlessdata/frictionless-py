@@ -69,7 +69,6 @@ class checksum(Check):
 
     metadata_profile = {  # type: ignore
         "type": "object",
-        "additionalProperties": False,
         "properties": {
             "hash": {"type": "string"},
             "bytes": {"type": "number"},

@@ -10,9 +10,9 @@ class duplicate_row(Check):
     API      | Usage
     -------- | --------
     Public   | `from frictionless import checks`
-    Implicit | `validate(extra_checks=['duplicate-row'])`
+    Implicit | `validate(checks=[{"code": "duplicate-row"}])`
 
-    This check can be enabled using the `extra_checks` parameter
+    This check can be enabled using the `checks` parameter
     for the `validate` function.
 
     """
@@ -46,9 +46,9 @@ class deviated_value(Check):
     API      | Usage
     -------- | --------
     Public   | `from frictionless import checks`
-    Implicit | `validate(extra_checks=(['deviated-values', {...})])`
+    Implicit | `validate(checks=([{"code": "deviated-value", **descriptor}])`
 
-    This check can be enabled using the `extra_checks` parameter
+    This check can be enabled using the `checks` parameter
     for the `validate` function.
 
     Parameters:
@@ -139,9 +139,9 @@ class truncated_value(Check):
     API      | Usage
     -------- | --------
     Public   | `from frictionless import checks`
-    Implicit | `validate(extra_checks=(['truncated-value', {...})])`
+    Implicit | `validate(checks=([{"code": "truncated-value"}])`
 
-    This check can be enabled using the `extra_checks` parameter
+    This check can be enabled using the `checks` parameter
     for the `validate` function.
 
     """

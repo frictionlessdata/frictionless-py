@@ -1,5 +1,6 @@
 import os
 import pkgutil
+import stringcase
 from collections import OrderedDict
 from importlib import import_module
 from .exception import FrictionlessException
@@ -52,43 +53,30 @@ class System:
         "create_loader",
         "create_parser",
         "create_server",
+        "create_step",
         "create_storage",
         "create_type",
     ]
 
-    def create_check(self, name, *, descriptor=None):
+    def create_check(self, descriptor):
         """Create checks
 
         Parameters:
-            name (str): check name
             descriptor (dict): check descriptor
 
         Returns:
             Check: check
         """
-        check = None
-        checks = import_module("frictionless.checks")
+        code = descriptor.get("code", "")
+        name = stringcase.snakecase(code)
+        Class = getattr(import_module("frictionless.checks"), name, None)
         for func in self.methods["create_check"].values():
-            check = func(name, descriptor=descriptor)
+            check = func(descriptor)
             if check is not None:
                 return check
-        if name == "baseline":
-            return checks.baseline(descriptor)
-        elif name == "checksum":
-            return checks.checksum(descriptor)
-        elif name == "duplicate-row":
-            return checks.duplicate_row(descriptor)
-        elif name == "deviated-value":
-            return checks.deviated_value(descriptor)
-        elif name == "truncated-value":
-            return checks.truncated_value(descriptor)
-        elif name == "forbidden-value":
-            return checks.forbidden_value(descriptor)
-        elif name == "sequential-value":
-            return checks.sequential_value(descriptor)
-        elif name == "row-constraint":
-            return checks.row_constraint(descriptor)
-        note = f'cannot create check "{name}". Try installing "frictionless-{name}"'
+        if Class:
+            return Class(descriptor)
+        note = f'cannot create check "{code}". Try installing "frictionless-{code}"'
         raise FrictionlessException(errors.CheckError(note=note))
 
     def create_control(self, resource, *, descriptor):
@@ -125,6 +113,7 @@ class System:
                 return dialect
         return Dialect(descriptor)
 
+    # TODO: remove
     def create_file(self, source, **options):
         """Create file
 
@@ -193,10 +182,31 @@ class System:
             server = func(name, **options)
             if server is not None:
                 break
-        if server is None:
-            note = f'cannot create server "{name}". Try installing "frictionless-{name}"'
-            raise FrictionlessException(errors.Error(note=note))
-        return server
+        if server:
+            return server
+        note = f'cannot create server "{name}". Try installing "frictionless-{name}"'
+        raise FrictionlessException(errors.Error(note=note))
+
+    def create_step(self, descriptor):
+        """Create steps
+
+        Parameters:
+            descriptor (dict): step descriptor
+
+        Returns:
+            Step: step
+        """
+        code = descriptor.get("code", "")
+        name = stringcase.snakecase(code)
+        Class = getattr(import_module("frictionless.steps"), name, None)
+        for func in self.methods["create_step"].values():
+            step = func(descriptor)
+            if step is not None:
+                return step
+        if Class:
+            return Class(descriptor)
+        note = f'cannot create check "{code}". Try installing "frictionless-{code}"'
+        raise FrictionlessException(errors.StepError(note=note))
 
     def create_storage(self, name, **options):
         """Create storage
@@ -213,10 +223,10 @@ class System:
             storage = func(name, **options)
             if storage is not None:
                 break
-        if storage is None:
-            note = f'cannot create storage "{name}". Try installing "frictionless-{name}"'
-            raise FrictionlessException(errors.Error(note=note))
-        return storage
+        if storage:
+            return storage
+        note = f'cannot create storage "{name}". Try installing "frictionless-{name}"'
+        raise FrictionlessException(errors.Error(note=note))
 
     def create_type(self, field):
         """Create checks
@@ -235,7 +245,8 @@ class System:
                 return type
         Class = getattr(types, f"{name.capitalize()}Type", getattr(types, "AnyType"))
         # TODO: review
-        #  if Class is None:
+        #  if Class:
+        #      return Class(field)
         #  note = f'cannot create type "{name}". Try installing "frictionless-{name}"'
         #  raise FrictionlessException(errors.FieldError(note=note))
         return Class(field)

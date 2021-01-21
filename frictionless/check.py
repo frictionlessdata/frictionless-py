@@ -2,7 +2,6 @@ from .metadata import Metadata
 from . import errors
 
 
-# TODO: sync naming/etc with steps
 class Check(Metadata):
     """Check representation.
 
@@ -22,6 +21,10 @@ class Check(Metadata):
 
     code = "check"
     Errors = []  # type: ignore
+
+    def __init__(self, descriptor=None):
+        super().__init__(descriptor)
+        self.setinitial("code", self.code)
 
     @property
     def table(self):

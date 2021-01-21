@@ -9,9 +9,9 @@ class forbidden_value(Check):
     API      | Usage
     -------- | --------
     Public   | `from frictionless import checks`
-    Implicit | `validate(extra_checks=[('backlisted-value', {...})])`
+    Implicit | `validate(checks=[{"code": "backlisted-value", **descriptor}])`
 
-    This check can be enabled using the `extra_checks` parameter
+    This check can be enabled using the `checks` parameter
     for the `validate` function.
 
     Parameters:
@@ -24,14 +24,14 @@ class forbidden_value(Check):
     code = "forbidden-value"
     Errors = [errors.ForbiddenValueError]
 
-    def __init__(self, descriptor=None, *, field_name=None, forbidden=None):
+    def __init__(self, descriptor=None, *, field_name=None, values=None):
         self.setinitial("fieldName", field_name)
-        self.setinitial("forbidden", forbidden)
+        self.setinitial("values", values)
         super().__init__(descriptor)
 
     def prepare(self):
         self.__field_name = self["fieldName"]
-        self.__forbidden = self["forbidden"]
+        self.__values = self["values"]
 
     # Validate
 
@@ -42,10 +42,10 @@ class forbidden_value(Check):
 
     def validate_row(self, row):
         cell = row[self.__field_name]
-        if cell in self.__forbidden:
+        if cell in self.__values:
             yield errors.ForbiddenValueError.from_row(
                 row,
-                note='forbiddened values are "%s"' % self.__forbidden,
+                note='forbiddened values are "%s"' % self.__values,
                 field_name=self.__field_name,
             )
 
@@ -56,7 +56,7 @@ class forbidden_value(Check):
         "requred": ["fieldName", "forbidden"],
         "properties": {
             "fieldName": {"type": "string"},
-            "forbidden": {"type": "array"},
+            "values": {"type": "array"},
         },
     }
 
@@ -67,9 +67,9 @@ class sequential_value(Check):
     API      | Usage
     -------- | --------
     Public   | `from frictionless import checks`
-    Implicit | `validate(extra_checks=[('sequential-value', {...})])`
+    Implicit | `validate(checks=[{"code": "sequential-value", **descriptor}])`
 
-    This check can be enabled using the `extra_checks` parameter
+    This check can be enabled using the `checks` parameter
     for the `validate` function.
 
     Parameters:
@@ -127,27 +127,27 @@ class row_constraint(Check):
     API      | Usage
     -------- | --------
     Public   | `from frictionless import checks`
-    Implicit | `validate(extra_checks=(['row-constraint', {...})])`
+    Implicit | `validate(checks=([{"code": "row-constraint", **descriptor}])`
 
-    This check can be enabled using the `extra_checks` parameter
+    This check can be enabled using the `checks` parameter
     for the `validate` function. The syntax for the row constraint
     check can be found here - https://github.com/danthedeckie/simpleeval
 
     Parameters:
        descriptor (dict): check's descriptor
-       constraint (str): a python expression to evaluate against a row
+       formula (str): a python expression to evaluate against a row
 
     """
 
     code = "row-constraint"
     Errors = [errors.RowConstraintError]
 
-    def __init__(self, descriptor=None, *, constraint=None):
-        self.setinitial("constraint", constraint)
+    def __init__(self, descriptor=None, *, formula=None):
+        self.setinitial("formula", formula)
         super().__init__(descriptor)
 
     def prepare(self):
-        self.__constraint = self["constraint"]
+        self.__formula = self["formula"]
 
     # Validate
 
@@ -155,17 +155,17 @@ class row_constraint(Check):
         try:
             # This call should be considered as a safe expression evaluation
             # https://github.com/danthedeckie/simpleeval
-            assert simpleeval.simple_eval(self.__constraint, names=row)
+            assert simpleeval.simple_eval(self.__formula, names=row)
         except Exception:
             yield errors.RowConstraintError.from_row(
                 row,
-                note='the row constraint to conform is "%s"' % self.__constraint,
+                note='the row constraint to conform is "%s"' % self.__formula,
             )
 
     # Metadata
 
     metadata_profile = {  # type: ignore
         "type": "object",
-        "requred": ["constraint"],
-        "properties": {"constraint": {"type": "string"}},
+        "requred": ["formula"],
+        "properties": {"formula": {"type": "string"}},
     }

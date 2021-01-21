@@ -1,4 +1,4 @@
-from frictionless import validate
+from frictionless import validate, checks
 
 
 # Forbidden Value
@@ -7,7 +7,7 @@ from frictionless import validate
 def test_validate_forbidden_value():
     report = validate(
         "data/table.csv",
-        extra_checks=[("forbidden-value", {"fieldName": "id", "forbidden": [2]})],
+        checks=[checks.forbidden_value(field_name="id", values=[2])],
     )
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [3, 1, "forbidden-value"],
@@ -17,7 +17,7 @@ def test_validate_forbidden_value():
 def test_validate_forbidden_value_task_error():
     report = validate(
         "data/table.csv",
-        extra_checks=[("forbidden-value", {"fieldName": "bad", "forbidden": [2]})],
+        checks=[{"code": "forbidden-value", "fieldName": "bad", "forbidden": [2]}],
     )
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [None, None, "task-error"],
@@ -35,11 +35,11 @@ def test_validate_forbidden_value_many_rules():
     ]
     report = validate(
         source,
-        extra_checks=[
-            ("forbidden-value", {"fieldName": "row", "forbidden": [10]}),
-            ("forbidden-value", {"fieldName": "name", "forbidden": ["mistake"]}),
-            ("forbidden-value", {"fieldName": "row", "forbidden": [10]}),
-            ("forbidden-value", {"fieldName": "name", "forbidden": ["error"]}),
+        checks=[
+            {"code": "forbidden-value", "fieldName": "row", "values": [10]},
+            {"code": "forbidden-value", "fieldName": "name", "values": ["mistake"]},
+            {"code": "forbidden-value", "fieldName": "row", "values": [10]},
+            {"code": "forbidden-value", "fieldName": "name", "values": ["error"]},
         ],
     )
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
@@ -56,12 +56,9 @@ def test_validate_forbidden_value_many_rules_with_non_existent_field():
     ]
     report = validate(
         source,
-        extra_checks=[
-            ("forbidden-value", {"fieldName": "row", "forbidden": [10]}),
-            (
-                "forbidden-value",
-                {"fieldName": "bad", "forbidden": ["mistake"]},
-            ),
+        checks=[
+            {"code": "forbidden-value", "fieldName": "row", "values": [10]},
+            {"code": "forbidden-value", "fieldName": "bad", "values": ["mistake"]},
         ],
     )
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
@@ -83,9 +80,9 @@ def test_validate_sequential_value():
     ]
     report = validate(
         source,
-        extra_checks=[
-            ("sequential-value", {"fieldName": "index2"}),
-            ("sequential-value", {"fieldName": "index3"}),
+        checks=[
+            checks.sequential_value(field_name="index2"),
+            checks.sequential_value(field_name="index3"),
         ],
     )
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
@@ -104,9 +101,9 @@ def test_validate_sequential_value_non_existent_field():
     ]
     report = validate(
         source,
-        extra_checks=[
-            ("sequential-value", {"fieldName": "row"}),
-            ("sequential-value", {"fieldName": "bad"}),
+        checks=[
+            {"code": "sequential-value", "fieldName": "row"},
+            {"code": "sequential-value", "fieldName": "bad"},
         ],
     )
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
@@ -127,8 +124,7 @@ def test_validate_row_constraint():
         [6],
     ]
     report = validate(
-        source,
-        extra_checks=[("row-constraint", {"constraint": "salary == bonus * 5"})],
+        source, checks=[checks.row_constraint(formula="salary == bonus * 5")]
     )
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [4, None, "row-constraint"],
@@ -145,10 +141,10 @@ def test_validate_row_constraint_incorrect_constraint():
     ]
     report = validate(
         source,
-        extra_checks=[
-            ("row-constraint", {"constraint": "vars()"}),
-            ("row-constraint", {"constraint": "import(os)"}),
-            ("row-constraint", {"constraint": "non_existent > 0"}),
+        checks=[
+            {"code": "row-constraint", "formula": "vars()"},
+            {"code": "row-constraint", "formula": "import(os)"},
+            {"code": "row-constraint", "formula": "non_existent > 0"},
         ],
     )
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
