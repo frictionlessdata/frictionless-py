@@ -1,6 +1,5 @@
 import os
 import pkgutil
-import stringcase
 from collections import OrderedDict
 from importlib import import_module
 from .exception import FrictionlessException
@@ -68,14 +67,13 @@ class System:
             Check: check
         """
         code = descriptor.get("code", "")
-        name = stringcase.snakecase(code)
-        Class = getattr(import_module("frictionless.checks"), name, None)
         for func in self.methods["create_check"].values():
             check = func(descriptor)
             if check is not None:
                 return check
-        if Class:
-            return Class(descriptor)
+        for Class in vars(import_module("frictionless.checks")).values():
+            if getattr(Class, "code", None) == code:
+                return Class(descriptor)
         note = f'cannot create check "{code}". Try installing "frictionless-{code}"'
         raise FrictionlessException(errors.CheckError(note=note))
 
@@ -182,9 +180,7 @@ class System:
         for func in self.methods["create_server"].values():
             server = func(name, **options)
             if server is not None:
-                break
-        if server:
-            return server
+                return server
         note = f'cannot create server "{name}". Try installing "frictionless-{name}"'
         raise FrictionlessException(errors.Error(note=note))
 
@@ -198,14 +194,13 @@ class System:
             Step: step
         """
         code = descriptor.get("code", "")
-        name = stringcase.snakecase(code)
-        Class = getattr(import_module("frictionless.steps"), name, None)
         for func in self.methods["create_step"].values():
             step = func(descriptor)
             if step is not None:
                 return step
-        if Class:
-            return Class(descriptor)
+        for Class in vars(import_module("frictionless.steps")).values():
+            if getattr(Class, "code", None) == code:
+                return Class(descriptor)
         note = f'cannot create check "{code}". Try installing "frictionless-{code}"'
         raise FrictionlessException(errors.StepError(note=note))
 
@@ -220,13 +215,10 @@ class System:
         Returns:
             Storage: storage
         """
-        storage = None
         for func in self.methods["create_storage"].values():
             storage = func(name, **options)
             if storage is not None:
-                break
-        if storage:
-            return storage
+                return storage
         note = f'cannot create storage "{name}". Try installing "frictionless-{name}"'
         raise FrictionlessException(errors.Error(note=note))
 
@@ -239,19 +231,16 @@ class System:
         Returns:
             Type: type
         """
-        name = field.type
-        types = import_module("frictionless.types")
+        code = field.type
         for func in self.methods["create_type"].values():
             type = func(field)
             if type is not None:
                 return type
-        Class = getattr(types, f"{name.capitalize()}Type", getattr(types, "AnyType"))
-        # TODO: review
-        #  if Class:
-        #      return Class(field)
-        #  note = f'cannot create type "{name}". Try installing "frictionless-{name}"'
-        #  raise FrictionlessException(errors.FieldError(note=note))
-        return Class(field)
+        for Class in vars(import_module("frictionless.types")).values():
+            if getattr(Class, "code", None) == code:
+                return Class(field)
+        note = f'cannot create type "{code}". Try installing "frictionless-{code}"'
+        raise FrictionlessException(errors.FieldError(note=note))
 
     # Methods
 

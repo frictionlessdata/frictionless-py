@@ -5,10 +5,12 @@ from copy import copy
 from operator import setitem
 from functools import partial
 from collections import OrderedDict
+from .exception import FrictionlessException
 from .metadata import Metadata
 from .system import system
 from . import errors
 from . import config
+from . import types
 
 
 class Field(Metadata):
@@ -339,7 +341,10 @@ class Field(Metadata):
     def metadata_process(self):
 
         # Type
-        self.__type = system.create_type(self)
+        try:
+            self.__type = system.create_type(self)
+        except FrictionlessException:
+            self.__type = types.AnyType(self)
 
     def metadata_validate(self):
         yield from super().metadata_validate()

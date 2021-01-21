@@ -64,7 +64,7 @@ def test_field_standard_specs_properties(create_descriptor):
         name="name",
         title="title",
         description="description",
-        type="type",
+        type="string",
         format="format",
         missing_values="missing",
         constraints=[],
@@ -78,7 +78,7 @@ def test_field_standard_specs_properties(create_descriptor):
     assert resource.name == "name"
     assert resource.title == "title"
     assert resource.description == "description"
-    assert resource.type == "type"
+    assert resource.type == "string"
     assert resource.format == "format"
     assert resource.missing_values == "missing"
     assert resource.constraints == []
