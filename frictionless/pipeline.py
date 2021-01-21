@@ -1,5 +1,3 @@
-import stringcase
-from copy import deepcopy
 from importlib import import_module
 from .exception import FrictionlessException
 from .errors import PipelineError, TaskError
@@ -106,30 +104,17 @@ class PipelineTask(Metadata):
 
     def run(self):
         """Run the task"""
-        stepslib = import_module("frictionless.steps")
         transforms = import_module("frictionless.transform")
-
-        # Prepare steps
-        steps = []
-        for step in self.steps:
-            desc = deepcopy(step)
-            # TODO: we need the same for nested steps like steps.resource_transform
-            name = stringcase.snakecase(desc.pop("step", ""))
-            func = getattr(stepslib, name, None)
-            if func is None:
-                note = f"Not supported step type: {name}"
-                raise FrictionlessException(TaskError(note=note))
-            steps.append(func(**helpers.create_options(desc)))
 
         # Resource transform
         if self.type == "resource":
             source = Resource(self.source)
-            return transforms.transform_resource(source, steps=steps)
+            return transforms.transform_resource(source, steps=self.steps)
 
         # Package transform
         elif self.type == "package":
             source = Package(self.source)
-            return transforms.transform_package(source, steps=steps)
+            return transforms.transform_package(source, steps=self.steps)
 
         # Not supported transform
         note = f'Transform type "{self.type}" is not supported'

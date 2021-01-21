@@ -1,4 +1,4 @@
-from .baseline import BaselineCheck
-from .checksum import ChecksumCheck
-from .heuristic import DuplicateRowCheck, DeviatedValueCheck, TruncatedValueCheck
-from .regulation import BlacklistedValueCheck, SequentialValueCheck, RowConstraintCheck
+from .baseline import baseline
+from .checksum import checksum
+from .heuristic import duplicate_row, deviated_value, truncated_value
+from .regulation import forbidden_value, sequential_value, row_constraint

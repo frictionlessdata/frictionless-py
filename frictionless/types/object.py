@@ -11,7 +11,8 @@ class ObjectType(Type):
 
     """
 
-    supported_constraints = [
+    code = "object"
+    constraints = [
         "required",
         "minLength",
         "maxLength",

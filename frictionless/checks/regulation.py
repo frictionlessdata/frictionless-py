@@ -3,43 +3,49 @@ from .. import errors
 from ..check import Check
 
 
-class BlacklistedValueCheck(Check):
-    """Check for blacklisted values in a field
+class forbidden_value(Check):
+    """Check for forbidden values in a field
 
     API      | Usage
     -------- | --------
     Public   | `from frictionless import checks`
-    Implicit | `validate(extra_checks=[('backlisted-value', {...})])`
+    Implicit | `validate(checks=[{"code": "backlisted-value", **descriptor}])`
 
-    This check can be enabled using the `extra_checks` parameter
+    This check can be enabled using the `checks` parameter
     for the `validate` function.
 
     Parameters:
        descriptor (dict): check's descriptor
-       descriptor.fieldName (str): a field name to look into
-       descriptor.blacklist (any[]): a list of forbidden values
+       field_name (str): a field name to look into
+       forbidden (any[]): a list of forbidden values
 
     """
 
-    possible_Errors = [errors.BlacklistedValueError]  # type: ignore
+    code = "forbidden-value"
+    Errors = [errors.ForbiddenValueError]
+
+    def __init__(self, descriptor=None, *, field_name=None, values=None):
+        self.setinitial("fieldName", field_name)
+        self.setinitial("values", values)
+        super().__init__(descriptor)
 
     def prepare(self):
         self.__field_name = self["fieldName"]
-        self.__blacklist = self["blacklist"]
+        self.__values = self["values"]
 
     # Validate
 
     def validate_task(self):
         if self.__field_name not in self.table.schema.field_names:
-            note = 'blacklisted value check requires field "%s"' % self.__field_name
+            note = 'forbidden value check requires field "%s"' % self.__field_name
             yield errors.TaskError(note=note)
 
     def validate_row(self, row):
         cell = row[self.__field_name]
-        if cell in self.__blacklist:
-            yield errors.BlacklistedValueError.from_row(
+        if cell in self.__values:
+            yield errors.ForbiddenValueError.from_row(
                 row,
-                note='blacklisted values are "%s"' % self.__blacklist,
+                note='forbiddened values are "%s"' % self.__values,
                 field_name=self.__field_name,
             )
 
@@ -47,29 +53,37 @@ class BlacklistedValueCheck(Check):
 
     metadata_profile = {  # type: ignore
         "type": "object",
-        "requred": ["fieldName", "blacklist"],
-        "properties": {"fieldName": {"type": "string"}, "blacklist": {"type": "array"}},
+        "requred": ["fieldName", "forbidden"],
+        "properties": {
+            "fieldName": {"type": "string"},
+            "values": {"type": "array"},
+        },
     }
 
 
-class SequentialValueCheck(Check):
+class sequential_value(Check):
     """Check that a column having sequential values
 
     API      | Usage
     -------- | --------
     Public   | `from frictionless import checks`
-    Implicit | `validate(extra_checks=[('sequential-value', {...})])`
+    Implicit | `validate(checks=[{"code": "sequential-value", **descriptor}])`
 
-    This check can be enabled using the `extra_checks` parameter
+    This check can be enabled using the `checks` parameter
     for the `validate` function.
 
     Parameters:
        descriptor (dict): check's descriptor
-       descriptor.fieldName (str): a field name to check
+       field_name (str): a field name to check
 
     """
 
-    possible_Errors = [errors.SequentialValueError]  # type: ignore
+    code = "sequential-value"
+    Errors = [errors.SequentialValueError]
+
+    def __init__(self, descriptor=None, *, field_name=None):
+        self.setinitial("fieldName", field_name)
+        super().__init__(descriptor)
 
     def prepare(self):
         self.__cursor = None
@@ -107,28 +121,33 @@ class SequentialValueCheck(Check):
     }
 
 
-class RowConstraintCheck(Check):
+class row_constraint(Check):
     """Check that every row satisfies a provided Python expression
 
     API      | Usage
     -------- | --------
     Public   | `from frictionless import checks`
-    Implicit | `validate(extra_checks=(['row-constraint', {...})])`
+    Implicit | `validate(checks=([{"code": "row-constraint", **descriptor}])`
 
-    This check can be enabled using the `extra_checks` parameter
+    This check can be enabled using the `checks` parameter
     for the `validate` function. The syntax for the row constraint
     check can be found here - https://github.com/danthedeckie/simpleeval
 
     Parameters:
        descriptor (dict): check's descriptor
-       descriptor.constraint (str): a python expression to evaluate against a row
+       formula (str): a python expression to evaluate against a row
 
     """
 
-    possible_Errors = [errors.RowConstraintError]  # type: ignore
+    code = "row-constraint"
+    Errors = [errors.RowConstraintError]
+
+    def __init__(self, descriptor=None, *, formula=None):
+        self.setinitial("formula", formula)
+        super().__init__(descriptor)
 
     def prepare(self):
-        self.__constraint = self["constraint"]
+        self.__formula = self["formula"]
 
     # Validate
 
@@ -136,17 +155,17 @@ class RowConstraintCheck(Check):
         try:
             # This call should be considered as a safe expression evaluation
             # https://github.com/danthedeckie/simpleeval
-            assert simpleeval.simple_eval(self.__constraint, names=row)
+            assert simpleeval.simple_eval(self.__formula, names=row)
         except Exception:
             yield errors.RowConstraintError.from_row(
                 row,
-                note='the row constraint to conform is "%s"' % self.__constraint,
+                note='the row constraint to conform is "%s"' % self.__formula,
             )
 
     # Metadata
 
     metadata_profile = {  # type: ignore
         "type": "object",
-        "requred": ["constraint"],
-        "properties": {"constraint": {"type": "string"}},
+        "requred": ["formula"],
+        "properties": {"formula": {"type": "string"}},
     }

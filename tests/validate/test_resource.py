@@ -942,10 +942,10 @@ def test_validate_limit_memory_small():
     ]
 
 
-def test_validate_extra_checks():
+def test_validate_custom_checks():
 
     # Create check
-    class ExtraCheck(Check):
+    class custom(Check):
         def validate_row(self, row):
             yield errors.BlankRowError(
                 note="",
@@ -955,17 +955,21 @@ def test_validate_extra_checks():
             )
 
     # Validate table
-    report = validate("data/table.csv", extra_checks=[ExtraCheck])
+    report = validate("data/table.csv", checks=[custom()])
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [2, None, "blank-row"],
         [3, None, "blank-row"],
     ]
 
 
-def test_validate_extra_checks_with_arguments():
+def test_validate_custom_checks_with_arguments():
 
     # Create check
-    class ExtraCheck(Check):
+    class custom(Check):
+        def __init__(self, descriptor=None, *, row_position=None):
+            self.setinitial("rowPosition", row_position)
+            super().__init__(descriptor)
+
         def validate_row(self, row):
             yield errors.BlankRowError(
                 note="",
@@ -975,16 +979,15 @@ def test_validate_extra_checks_with_arguments():
             )
 
     # Validate table
-    extra_checks = [(ExtraCheck, {"rowPosition": 1})]
-    report = validate("data/table.csv", extra_checks=extra_checks)
+    report = validate("data/table.csv", checks=[custom(row_position=1)])
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [1, None, "blank-row"],
         [1, None, "blank-row"],
     ]
 
 
-def test_validate_extra_checks_bad_name():
-    report = validate("data/table.csv", extra_checks=["bad"])
+def test_validate_custom_checks_bad_name():
+    report = validate("data/table.csv", checks=[{"code": "bad"}])
     assert report.flatten(["code", "note"]) == [
         ["check-error", 'cannot create check "bad". Try installing "frictionless-bad"'],
     ]

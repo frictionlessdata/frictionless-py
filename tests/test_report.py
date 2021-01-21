@@ -57,7 +57,6 @@ def test_report():
         "unique-error",
         "primary-key-error",
         "foreign-key-error",
-        "checksum-error",
     ]
     assert report.task.stats == {
         "errors": 0,

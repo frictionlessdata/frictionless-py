@@ -10,9 +10,17 @@ from .. import helpers
 
 
 class table_aggregate(Step):
-    def __init__(self, *, group_name, aggregation):
+    code = "table-aggregate"
+
+    def __init__(self, descriptor=None, *, group_name=None, aggregation=None):
+        self.setinitial("groupName", group_name)
+        self.setinitial("aggregation", aggregation)
+        super().__init__(descriptor)
+        # TODO: reimplement
         self.__group_name = group_name
         self.__aggregation = aggregation
+
+    # Transform
 
     def transform_resource(self, source, target):
         target.data = source.to_petl().aggregate(self.__group_name, self.__aggregation)
@@ -22,10 +30,28 @@ class table_aggregate(Step):
         for name in self.__aggregation.keys():
             target.schema.add_field(Field(name=name))
 
+    # Metadata
+
+    metadata_profile = {  # type: ignore
+        "type": "object",
+        "required": ["groupName", "aggregation"],
+        "properties": {
+            "groupName": {"type": "string"},
+            "aggregation": {},
+        },
+    }
+
 
 class table_attach(Step):
-    def __init__(self, *, resource):
+    code = "table-attach"
+
+    def __init__(self, descriptor=None, *, resource=None):
+        self.setinitial("resource", resource)
+        super().__init__(descriptor)
+        # TODO: reimplement
         self.__resource = resource
+
+    # Transform
 
     def transform_resource(self, source, target):
         if isinstance(self.__resource, str):
@@ -37,10 +63,27 @@ class table_attach(Step):
         for field in self.__resource.schema.fields:
             target.schema.fields.append(field.to_copy())
 
+    # Metadata
+
+    metadata_profile = {  # type: ignore
+        "type": "object",
+        "required": ["resource"],
+        "properties": {
+            "resource": {},
+        },
+    }
+
 
 class table_debug(Step):
-    def __init__(self, *, function):
+    code = "table-debug"
+
+    def __init__(self, descriptor=None, *, function=None):
+        self.setinitial("function", function)
+        super().__init__(descriptor)
+        # TODO: reimplement
         self.__function = function
+
+    # Transform
 
     def transform_resource(self, source, target):
 
@@ -53,12 +96,38 @@ class table_debug(Step):
         # Meta
         target.data = data
 
+    # Metadata
+
+    metadata_profile = {  # type: ignore
+        "type": "object",
+        "required": ["function"],
+        "properties": {
+            "function": {},
+        },
+    }
+
 
 class table_diff(Step):
-    def __init__(self, *, resource, ignore_order=False, use_hash=False):
+    code = "table-diff"
+
+    def __init__(
+        self,
+        descriptor=None,
+        *,
+        resource=None,
+        ignore_order=False,
+        use_hash=False,
+    ):
+        self.setinitial("resource", resource)
+        self.setinitial("ignoreOrder", ignore_order)
+        self.setinitial("useHash", use_hash)
+        super().__init__(descriptor)
+        # TODO: reimplement
         self.__resource = resource
         self.__ignore_order = ignore_order
         self.__use_hash = use_hash
+
+    # Transform
 
     def transform_resource(self, source, target):
         if isinstance(self.__resource, str):
@@ -72,11 +141,31 @@ class table_diff(Step):
             function = petl.hashcomplement
         target.data = function(view1, view2)
 
+    # Metadata
+
+    metadata_profile = {  # type: ignore
+        "type": "object",
+        "required": ["resource"],
+        "properties": {
+            "resource": {},
+            "ignoreOrder": {},
+            "useHash": {},
+        },
+    }
+
 
 class table_intersect(Step):
-    def __init__(self, *, resource, use_hash=False):
+    code = "table-intersect"
+
+    def __init__(self, descriptor=None, *, resource=None, use_hash=False):
+        self.setinitial("resource", resource)
+        self.setinitial("useHash", use_hash)
+        super().__init__(descriptor)
+        # TODO: reimplement
         self.__resource = resource
         self.__use_hash = use_hash
+
+    # Transform
 
     def transform_resource(self, source, target):
         if isinstance(self.__resource, str):
@@ -87,14 +176,43 @@ class table_intersect(Step):
         function = petl.hashintersection if self.__use_hash else petl.intersection
         target.data = function(view1, view2)
 
+    # Metadata
+
+    metadata_profile = {  # type: ignore
+        "type": "object",
+        "required": ["resource"],
+        "properties": {
+            "resource": {},
+            "useHash": {},
+        },
+    }
+
 
 class table_join(Step):
-    def __init__(self, *, resource, field_name=None, mode="inner", hash=False):
+    code = "table-join"
+
+    def __init__(
+        self,
+        descriptor=None,
+        *,
+        resource=None,
+        field_name=None,
+        mode="inner",
+        hash=False,
+    ):
         assert mode in ["inner", "left", "right", "outer", "cross", "anti"]
+        self.setinitial("resource", resource)
+        self.setinitial("fieldName", field_name)
+        self.setinitial("mode", mode)
+        self.setinitial("hash", hash)
+        super().__init__(descriptor)
+        # TODO: reimplement
         self.__resource = resource
         self.__field_name = field_name
         self.__mode = mode
         self.__hash = hash
+
+    # Transform
 
     def transform_resource(self, source, target):
         if isinstance(self.__resource, str):
@@ -123,15 +241,42 @@ class table_join(Step):
                 if field.name != self.__field_name:
                     target.schema.fields.append(field.to_copy())
 
+    # Metadata
+
+    metadata_profile = {  # type: ignore
+        "type": "object",
+        "required": ["resource"],
+        "properties": {
+            "resource": {},
+            "fieldName": {"type": "string"},
+            "mode": {"type": "string"},
+            "hash": {},
+        },
+    }
+
 
 class table_melt(Step):
+    code = "table-melt"
+
     def __init__(
-        self, *, field_name, variables=None, to_field_names=["variable", "value"]
+        self,
+        descriptor=None,
+        *,
+        field_name=None,
+        variables=None,
+        to_field_names=["variable", "value"],
     ):
         assert len(to_field_names) == 2
+        self.setinitial("fieldName", field_name)
+        self.setinitial("variables", variables)
+        self.setinitial("toFieldNames", to_field_names)
+        super().__init__(descriptor)
+        # TODO: reimplement
         self.__field_name = field_name
         self.__variables = variables
         self.__to_field_names = to_field_names
+
+    # Transform
 
     def transform_resource(self, source, target):
         target.data = source.to_petl().melt(
@@ -146,13 +291,43 @@ class table_melt(Step):
         for name in self.__to_field_names:
             target.schema.add_field(Field(name=name))
 
+    # Metadata
+
+    metadata_profile = {  # type: ignore
+        "type": "object",
+        "required": ["fieldName"],
+        "properties": {
+            "fieldName": {"type": "string"},
+            "variables": {"type": "array"},
+            "toFieldNames": {},
+        },
+    }
+
 
 class table_merge(Step):
-    def __init__(self, *, resource, field_names=None, ignore_fields=False, sort=False):
+    code = "table-merge"
+
+    def __init__(
+        self,
+        descriptor=None,
+        *,
+        resource=None,
+        field_names=None,
+        ignore_fields=False,
+        sort=False,
+    ):
+        self.setinitial("resource", resource)
+        self.setinitial("fieldNames", field_names)
+        self.setinitial("ignoreFields", ignore_fields)
+        self.setinitial("sort", sort)
+        super().__init__(descriptor)
+        # TODO: reimplement
         self.__resource = resource
         self.__field_names = field_names
         self.__ignore_fields = ignore_fields
         self.__sort = sort
+
+    # Transform
 
     def transform_resource(self, source, target):
         if isinstance(self.__resource, str):
@@ -183,8 +358,25 @@ class table_merge(Step):
                     if field.name not in self.__field_names:
                         target.schema.remove_field(field.name)
 
+    # Metadata
+
+    metadata_profile = {  # type: ignore
+        "type": "object",
+        "required": ["resource"],
+        "properties": {
+            "resource": {},
+            "fieldNames": {"type": "array"},
+            "ignoreFields": {},
+            "sort": {},
+        },
+    }
+
 
 class table_normalize(Step):
+    code = "table-normalize"
+
+    # Transform
+
     def transform_resource(self, source, target):
 
         # Data
@@ -199,11 +391,26 @@ class table_normalize(Step):
 
         target.data = data
 
+    # Metadata
+
+    metadata_profile = {  # type: ignore
+        "type": "object",
+        "required": [],
+        "properties": {},
+    }
+
 
 # TODO: improve this step
 class table_pivot(Step):
-    def __init__(self, **options):
+    code = "table-pivot"
+
+    def __init__(self, descriptor=None, **options):
+        # TODO: handle options
+        super().__init__(descriptor)
+        # TODO: reimplement
         self.__options = options
+
+    # Transform
 
     def transform_resource(self, source, target):
         target.data = source.to_petl().pivot(**self.__options)
@@ -211,17 +418,51 @@ class table_pivot(Step):
         target.schema.fields.clear()
         target.infer()
 
+    # Metadata
+
+    metadata_profile = {  # type: ignore
+        "type": "object",
+        "required": [],
+        "properties": {},
+    }
+
 
 class table_print(Step):
+    code = "table-print"
+
+    # Transform
+
     def transform_resource(self, source, target):
         print(source.to_petl().look(vrepr=str, style="simple"))
 
+    # Metadata
+
+    metadata_profile = {  # type: ignore
+        "type": "object",
+        "required": [],
+        "properties": {},
+    }
+
 
 class table_recast(Step):
-    def __init__(self, *, field_name, from_field_names=["variable", "value"]):
+    code = "table-recast"
+
+    def __init__(
+        self,
+        descriptor=None,
+        *,
+        field_name,
+        from_field_names=["variable", "value"],
+    ):
         assert len(from_field_names) == 2
+        self.setinitial("fieldName", field_name)
+        self.setinitial("fromFieldName", from_field_names)
+        super().__init__(descriptor)
+        # TODO: reimplement
         self.__field_name = field_name
         self.__from_field_names = from_field_names
+
+    # Transform
 
     def transform_resource(self, source, target):
         target.data = source.to_petl().recast(
@@ -233,18 +474,45 @@ class table_recast(Step):
         target.schema.fields.clear()
         target.infer()
 
+    # Metadata
+
+    metadata_profile = {  # type: ignore
+        "type": "object",
+        "required": ["fieldName"],
+        "properties": {
+            "fieldName": {"type": "string"},
+            "fromFieldNames": {},
+        },
+    }
+
 
 # TODO: fix this step - see tests
 class table_transpose(Step):
+    code = "table-transpose"
+
+    # Transform
+
     def transform_resource(self, source, target):
         target.data = source.to_petl().transpose()
         # TODO: review this approach
         target.schema.fields.clear()
         target.infer()
 
+    # Metadata
+
+    metadata_profile = {  # type: ignore
+        "type": "object",
+        "required": [],
+        "properties": {},
+    }
+
 
 # TODO: improve this step (add an ability to get a report instead of raising?)
 class table_validate(Step):
+    code = "table-validate"
+
+    # Transform
+
     def transform_resource(self, source, target):
 
         # Data
@@ -261,12 +529,38 @@ class table_validate(Step):
         # Meta
         target.data = data
 
+    # Metadata
+
+    metadata_profile = {  # type: ignore
+        "type": "object",
+        "required": [],
+        "properties": {},
+    }
+
 
 # TODO: review this step
 class table_write(Step):
-    def __init__(self, *, path, **options):
+    code = "table-write"
+
+    def __init__(self, descriptor=None, *, path=None, **options):
+        self.setinitial("path", path)
+        # TODO: handle options
+        super().__init__(descriptor)
+        # TODO: reimplement
         self.__path = path
         self.__options = options
 
+    # Transform
+
     def transform_resource(self, source, target):
         target.write(Resource(path=self.__path, **self.__options))
+
+    # Metadata
+
+    metadata_profile = {  # type: ignore
+        "type": "object",
+        "required": ["path"],
+        "properties": {
+            "path": {"type": "string"},
+        },
+    }

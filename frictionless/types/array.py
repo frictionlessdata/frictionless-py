@@ -11,7 +11,8 @@ class ArrayType(Type):
 
     """
 
-    supported_constraints = [
+    code = "array"
+    constraints = [
         "required",
         "minLength",
         "maxLength",

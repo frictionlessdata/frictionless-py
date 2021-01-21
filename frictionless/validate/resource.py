@@ -1,3 +1,4 @@
+from ..check import Check
 from ..system import system
 from ..resource import Resource
 from ..exception import FrictionlessException
@@ -12,8 +13,8 @@ def validate_resource(
     source,
     *,
     # Validation
+    checks=None,
     checksum=None,
-    extra_checks=None,
     pick_errors=None,
     skip_errors=None,
     limit_errors=config.DEFAULT_LIMIT_ERRORS,
@@ -29,8 +30,8 @@ def validate_resource(
 
     Parameters:
         source (any): the source of the resource
+        checks? (list): a list of checks
         checksum? (dict): a checksum dictionary
-        extra_checks? (list): a list of extra checks
         pick_errors? ((str|int)[]): pick errors
         skip_errors? ((str|int)[]): skip errors
         limit_errors? (int): limit errors
@@ -43,22 +44,10 @@ def validate_resource(
     """
 
     # Create state
-    checks = []
     partial = False
     task_errors = []
     table_errors = TableErrors(pick_errors, skip_errors, limit_errors)
     timer = helpers.Timer()
-
-    # Create checks
-    items = []
-    items.append("baseline")
-    items.append(("checksum", checksum))
-    items.extend(extra_checks or [])
-    create = system.create_check
-    for item in items:
-        p1, p2 = item if isinstance(item, (tuple, list)) else (item, None)
-        check = p1(p2) if isinstance(p1, type) else create(p1, descriptor=p2)
-        checks.append(check)
 
     # Create resource
     try:
@@ -66,6 +55,10 @@ def validate_resource(
         resource = source.to_copy() if native else Resource(source, **options)
     except FrictionlessException as exception:
         return Report(time=timer.time, errors=[exception.error], tasks=[])
+
+    # Prepare checksum
+    if not checksum:
+        checksum = {key: value for key, value in resource.stats.items() if value}
 
     # Prepare resource
     if not noinfer:
@@ -79,6 +72,15 @@ def validate_resource(
     except FrictionlessException as exception:
         table_errors.append(exception.error, force=True)
         resource.close()
+
+    # Prepare checks
+    checks = checks or []
+    checks.insert(0, {"code": "baseline"})
+    if checksum:
+        checks.insert(1, {"code": "checksum", **checksum})
+    for index, check in enumerate(checks):
+        if not isinstance(check, Check):
+            checks[index] = system.create_check(check)
 
     # Enter table
     if not table_errors:
@@ -192,9 +194,9 @@ class TableErrors(list):
         return match
 
     def register(self, check):
-        for error in check.possible_Errors:
-            if not self.match(error):
+        for Error in check.Errors:
+            if not self.match(Error):
                 continue
-            if error.code in self.__scope:
+            if Error.code in self.__scope:
                 continue
-            self.__scope.append(error.code)
+            self.__scope.append(Error.code)

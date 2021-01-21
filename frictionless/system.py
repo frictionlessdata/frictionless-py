@@ -14,7 +14,7 @@ from . import errors
 # TODO: Rework system.register
 # TODO: Consider plugins priority
 # TODO: Use lists instead of ordered dicts?
-# TODO: Implement hard errors/memory limit setting
+# TODO: Implement hard errors/memory limit setting?
 class System:
     """System representation
 
@@ -52,43 +52,29 @@ class System:
         "create_loader",
         "create_parser",
         "create_server",
+        "create_step",
         "create_storage",
         "create_type",
     ]
 
-    def create_check(self, name, *, descriptor=None):
+    def create_check(self, descriptor):
         """Create checks
 
         Parameters:
-            name (str): check name
             descriptor (dict): check descriptor
 
         Returns:
             Check: check
         """
-        check = None
-        checks = import_module("frictionless.checks")
+        code = descriptor.get("code", "")
         for func in self.methods["create_check"].values():
-            check = func(name, descriptor=descriptor)
+            check = func(descriptor)
             if check is not None:
                 return check
-        if name == "baseline":
-            return checks.BaselineCheck(descriptor)
-        elif name == "checksum":
-            return checks.ChecksumCheck(descriptor)
-        elif name == "duplicate-row":
-            return checks.DuplicateRowCheck(descriptor)
-        elif name == "deviated-value":
-            return checks.DeviatedValueCheck(descriptor)
-        elif name == "truncated-value":
-            return checks.TruncatedValueCheck(descriptor)
-        elif name == "blacklisted-value":
-            return checks.BlacklistedValueCheck(descriptor)
-        elif name == "sequential-value":
-            return checks.SequentialValueCheck(descriptor)
-        elif name == "row-constraint":
-            return checks.RowConstraintCheck(descriptor)
-        note = f'cannot create check "{name}". Try installing "frictionless-{name}"'
+        for Class in vars(import_module("frictionless.checks")).values():
+            if getattr(Class, "code", None) == code:
+                return Class(descriptor)
+        note = f'cannot create check "{code}". Try installing "frictionless-{code}"'
         raise FrictionlessException(errors.CheckError(note=note))
 
     def create_control(self, resource, *, descriptor):
@@ -125,6 +111,7 @@ class System:
                 return dialect
         return Dialect(descriptor)
 
+    # TODO: remove?
     def create_file(self, source, **options):
         """Create file
 
@@ -178,6 +165,7 @@ class System:
         note = f'cannot create parser "{name}". Try installing "frictionless-{name}"'
         raise FrictionlessException(errors.FormatError(note=note))
 
+    # TODO: rename name to code?
     def create_server(self, name, **options):
         """Create server
 
@@ -192,12 +180,31 @@ class System:
         for func in self.methods["create_server"].values():
             server = func(name, **options)
             if server is not None:
-                break
-        if server is None:
-            note = f'cannot create server "{name}". Try installing "frictionless-{name}"'
-            raise FrictionlessException(errors.Error(note=note))
-        return server
+                return server
+        note = f'cannot create server "{name}". Try installing "frictionless-{name}"'
+        raise FrictionlessException(errors.Error(note=note))
 
+    def create_step(self, descriptor):
+        """Create steps
+
+        Parameters:
+            descriptor (dict): step descriptor
+
+        Returns:
+            Step: step
+        """
+        code = descriptor.get("code", "")
+        for func in self.methods["create_step"].values():
+            step = func(descriptor)
+            if step is not None:
+                return step
+        for Class in vars(import_module("frictionless.steps")).values():
+            if getattr(Class, "code", None) == code:
+                return Class(descriptor)
+        note = f'cannot create check "{code}". Try installing "frictionless-{code}"'
+        raise FrictionlessException(errors.StepError(note=note))
+
+    # TODO: rename name to code?
     def create_storage(self, name, **options):
         """Create storage
 
@@ -208,15 +215,12 @@ class System:
         Returns:
             Storage: storage
         """
-        storage = None
         for func in self.methods["create_storage"].values():
             storage = func(name, **options)
             if storage is not None:
-                break
-        if storage is None:
-            note = f'cannot create storage "{name}". Try installing "frictionless-{name}"'
-            raise FrictionlessException(errors.Error(note=note))
-        return storage
+                return storage
+        note = f'cannot create storage "{name}". Try installing "frictionless-{name}"'
+        raise FrictionlessException(errors.Error(note=note))
 
     def create_type(self, field):
         """Create checks
@@ -227,18 +231,16 @@ class System:
         Returns:
             Type: type
         """
-        name = field.type
-        types = import_module("frictionless.types")
+        code = field.type
         for func in self.methods["create_type"].values():
             type = func(field)
             if type is not None:
                 return type
-        Class = getattr(types, f"{name.capitalize()}Type", getattr(types, "AnyType"))
-        # TODO: review
-        #  if Class is None:
-        #  note = f'cannot create type "{name}". Try installing "frictionless-{name}"'
-        #  raise FrictionlessException(errors.FieldError(note=note))
-        return Class(field)
+        for Class in vars(import_module("frictionless.types")).values():
+            if getattr(Class, "code", None) == code:
+                return Class(field)
+        note = f'cannot create type "{code}". Try installing "frictionless-{code}"'
+        raise FrictionlessException(errors.FieldError(note=note))
 
     # Methods
 

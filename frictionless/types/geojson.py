@@ -13,7 +13,8 @@ class GeojsonType(Type):
 
     """
 
-    supported_constraints = [
+    code = "geojson"
+    constraints = [
         "required",
         "enum",
     ]

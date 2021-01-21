@@ -12,7 +12,8 @@ class StringType(Type):
 
     """
 
-    supported_constraints = [
+    code = "string"
+    constraints = [
         "required",
         "minLength",
         "maxLength",

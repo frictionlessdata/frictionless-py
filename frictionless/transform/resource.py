@@ -1,6 +1,7 @@
 from ..step import Step
-from ..resource import Resource
+from ..system import system
 from ..helpers import get_name
+from ..resource import Resource
 from ..exception import FrictionlessException
 from .. import errors
 
@@ -21,10 +22,15 @@ def transform_resource(source, *, steps, **options):
         Resource: the transform result
     """
 
-    # Prepare
+    # Prepare resource
     native = isinstance(source, Resource)
     target = source.to_copy() if native else Resource(source, **options)
     target.infer()
+
+    # Prepare steps
+    for index, step in enumerate(steps):
+        if not isinstance(step, Step):
+            steps[index] = system.create_step(step)
 
     # Run transforms
     for step in steps:
@@ -35,8 +41,7 @@ def transform_resource(source, *, steps, **options):
 
         # Transform
         try:
-            transform = step.transform_resource if isinstance(step, Step) else step
-            transform(source, target)
+            step.transform_resource(source, target)
         except Exception as exception:
             error = errors.StepError(note=f'"{get_name(step)}" raises "{exception}"')
             raise FrictionlessException(error) from exception

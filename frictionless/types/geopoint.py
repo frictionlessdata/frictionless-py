@@ -13,7 +13,8 @@ class GeopointType(Type):
 
     """
 
-    supported_constraints = [
+    code = "geopoint"
+    constraints = [
         "required",
         "enum",
     ]

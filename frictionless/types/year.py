@@ -10,7 +10,8 @@ class YearType(Type):
 
     """
 
-    supported_constraints = [
+    code = "year"
+    constraints = [
         "required",
         "minimum",
         "maximum",

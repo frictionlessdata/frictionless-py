@@ -1,18 +1,18 @@
-from frictionless import validate
+from frictionless import validate, checks
 
 
 # Duplicate Row
 
 
 def test_validate_duplicate_row():
-    report = validate("data/duplicate-rows.csv", extra_checks=["duplicate-row"])
+    report = validate("data/duplicate-rows.csv", checks=[checks.duplicate_row()])
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [4, None, "duplicate-row"],
     ]
 
 
 def test_validate_duplicate_row_valid():
-    report = validate("data/table.csv", extra_checks=["duplicate-row"])
+    report = validate("data/table.csv", checks=[{"code": "duplicate-row"}])
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == []
 
 
@@ -20,27 +20,15 @@ def test_validate_duplicate_row_valid():
 
 
 def test_validate_deviated_value():
-    source = [
-        ["temperature"],
-        [1],
-        [-2],
-        [7],
-        [0],
-        [1],
-        [2],
-        [5],
-        [-4],
-        [100],
-        [8],
-        [3],
-    ]
+    source = [["temperature"], [1], [-2], [7], [0], [1], [2], [5], [-4], [100], [8], [3]]
     report = validate(
         source,
-        extra_checks=[
-            (
-                "deviated-value",
-                {"fieldName": "temperature", "average": "median", "interval": 3},
-            ),
+        checks=[
+            checks.deviated_value(
+                field_name="temperature",
+                average="median",
+                interval=3,
+            )
         ],
     )
     assert report.flatten(["code", "note"]) == [
@@ -57,7 +45,8 @@ def test_value_deviated_value_not_enough_data():
         [1],
     ]
     report = validate(
-        source, extra_checks=[("deviated-value", {"fieldName": "temperature"})]
+        source,
+        checks=[{"code": "deviated-value", "fieldName": "temperature"}],
     )
     assert report.flatten(["code", "note"]) == []
 
@@ -67,7 +56,7 @@ def test_validate_deviated_value_not_a_number():
         ["row", "name"],
         [2, "Alex"],
     ]
-    report = validate(source, extra_checks=[("deviated-value", {"fieldName": "name"})])
+    report = validate(source, checks=[{"code": "deviated-value", "fieldName": "name"}])
     assert report.flatten(["code", "note"]) == [
         ["task-error", 'deviated value check requires field "name" to be numiric'],
     ]
@@ -80,7 +69,7 @@ def test_validate_deviated_value_non_existent_field():
     ]
     report = validate(
         source,
-        extra_checks=[("deviated-value", {"fieldName": "bad"})],
+        checks=[{"code": "deviated-value", "fieldName": "bad"}],
     )
     assert report.flatten(["code", "note"]) == [
         ["task-error", 'deviated value check requires field "bad" to exist'],
@@ -94,7 +83,7 @@ def test_validate_deviated_value_incorrect_average():
     ]
     report = validate(
         source,
-        extra_checks=[("deviated-value", {"fieldName": "row", "average": "bad"})],
+        checks=[{"code": "deviated-value", "fieldName": "row", "average": "bad"}],
     )
     assert report.flatten(["code", "note"]) == [
         [
@@ -113,10 +102,7 @@ def test_validate_truncated_values():
         ["a" * 255, 32767],
         ["good", 2147483647],
     ]
-    report = validate(
-        source,
-        extra_checks=["truncated-value"],
-    )
+    report = validate(source, checks=[checks.truncated_value()])
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [2, 1, "truncated-value"],
         [2, 2, "truncated-value"],
@@ -130,8 +116,5 @@ def test_validate_truncated_values_close_to_errors():
         ["a" * 254, 32766],
         ["good", 2147483646],
     ]
-    report = validate(
-        source,
-        extra_checks=["truncated-value"],
-    )
+    report = validate(source, checks=[{"code": "truncated-value"}])
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == []

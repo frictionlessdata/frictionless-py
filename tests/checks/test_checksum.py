@@ -1,5 +1,5 @@
 import pytest
-from frictionless import validate, helpers
+from frictionless import validate, helpers, checks
 
 
 # General
@@ -16,6 +16,24 @@ def test_validate_checksum_hash():
 def test_validate_checksum_hash_invalid():
     hash = "6c2c61dd9b0e9c6876139a449ed87933"
     report = validate("data/table.csv", checksum={"hash": "bad"})
+    assert report.flatten(["code", "note"]) == [
+        ["checksum-error", 'expected hash in md5 is "bad" and actual is "%s"' % hash],
+    ]
+
+
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
+def test_validate_checksum_hash_invalid_as_descriptor():
+    hash = "6c2c61dd9b0e9c6876139a449ed87933"
+    report = validate("data/table.csv", checks=[{"code": "checksum", "hash": "bad"}])
+    assert report.flatten(["code", "note"]) == [
+        ["checksum-error", 'expected hash in md5 is "bad" and actual is "%s"' % hash],
+    ]
+
+
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
+def test_validate_checksum_hash_invalid_as_instance():
+    hash = "6c2c61dd9b0e9c6876139a449ed87933"
+    report = validate("data/table.csv", checks=[checks.checksum(hash="bad")])
     assert report.flatten(["code", "note"]) == [
         ["checksum-error", 'expected hash in md5 is "bad" and actual is "%s"' % hash],
     ]

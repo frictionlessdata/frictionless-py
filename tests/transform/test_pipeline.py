@@ -11,7 +11,7 @@ def test_transform_pipeline():
                 "type": "resource",
                 "source": {"path": "data/transform.csv"},
                 "steps": [
-                    {"step": "cell-set", "fieldName": "population", "value": 100},
+                    {"code": "cell-set", "fieldName": "population", "value": 100},
                 ],
             }
         ]

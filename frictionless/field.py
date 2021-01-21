@@ -5,10 +5,12 @@ from copy import copy
 from operator import setitem
 from functools import partial
 from collections import OrderedDict
+from .exception import FrictionlessException
 from .metadata import Metadata
 from .system import system
 from . import errors
 from . import config
+from . import types
 
 
 class Field(Metadata):
@@ -277,7 +279,7 @@ class Field(Metadata):
 
         """
         checks = OrderedDict()
-        for name in self.__type.supported_constraints:
+        for name in self.__type.constraints:
             constraint = self.constraints.get(name)
             if constraint is not None:
                 if name in ["minimum", "maximum"]:
@@ -339,14 +341,17 @@ class Field(Metadata):
     def metadata_process(self):
 
         # Type
-        self.__type = system.create_type(self)
+        try:
+            self.__type = system.create_type(self)
+        except FrictionlessException:
+            self.__type = types.AnyType(self)
 
     def metadata_validate(self):
         yield from super().metadata_validate()
 
         # Constraints
         for name in self.constraints.keys():
-            if name not in self.__type.supported_constraints + ["unique"]:
+            if name not in self.__type.constraints + ["unique"]:
                 note = f'constraint "{name}" is not supported by type "{self.type}"'
                 yield errors.SchemaError(note=note)
 

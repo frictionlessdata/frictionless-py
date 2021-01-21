@@ -13,7 +13,8 @@ class TimeType(Type):
 
     """
 
-    supported_constraints = [
+    code = "time"
+    constraints = [
         "required",
         "minimum",
         "maximum",

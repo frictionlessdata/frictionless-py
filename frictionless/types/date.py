@@ -13,7 +13,8 @@ class DateType(Type):
 
     """
 
-    supported_constraints = [
+    code = "date"
+    constraints = [
         "required",
         "minimum",
         "maximum",
