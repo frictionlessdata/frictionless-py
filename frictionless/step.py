@@ -1,4 +1,5 @@
 from .metadata import Metadata
+from . import errors
 
 
 # TODO: finalize
@@ -14,3 +15,8 @@ class Step(Metadata):
 
     def transorm_package(self, source, target):
         pass
+
+    # Metadata
+
+    metadata_strict = True
+    metadata_Error = errors.StepError
