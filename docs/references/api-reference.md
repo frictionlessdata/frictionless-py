@@ -38,21 +38,6 @@ API      | Usage
 -------- | --------
 Public   | `from frictionless import types`
 
-## BaselineCheck
-
-```python
-class BaselineCheck(Check)
-```
-
-Check a table for basic errors
-
-API      | Usage
--------- | --------
-Public   | `from frictionless import checks`
-Implicit | `validate(...)`
-
-Ths check is enabled by default for any `validate` function run.
-
 ## BigqueryDialect
 
 ```python
@@ -119,28 +104,6 @@ Public   | `from frictionless.plugins.bigquery import BigqueryStorage`
 - `project` _str_ - BigQuery project name
 - `dataset` _str_ - BigQuery dataset name
 - `prefix?` _str_ - prefix for all names
-
-## BlacklistedValueCheck
-
-```python
-class BlacklistedValueCheck(Check)
-```
-
-Check for blacklisted values in a field
-
-API      | Usage
--------- | --------
-Public   | `from frictionless import checks`
-Implicit | `validate(extra_checks=[('backlisted-value', {...})])`
-
-This check can be enabled using the `extra_checks` parameter
-for the `validate` function.
-
-**Arguments**:
-
-- `descriptor` _dict_ - check's descriptor
-- `descriptor.fieldName` _str_ - a field name to look into
-- `descriptor.blacklist` _any[]_ - a list of forbidden values
 
 ## BooleanType
 
@@ -325,30 +288,6 @@ Called to validate the table (after no rows left)
 **Yields**:
 
 - `Error` - found errors
-
-## ChecksumCheck
-
-```python
-class ChecksumCheck(Check)
-```
-
-Check a table's checksum
-
-API      | Usage
--------- | --------
-Public   | `from frictionless import checks`
-Implicit | `validate(checksum={...})`
-
-Ths check is enabled by default if the `checksum` argument
-is provided for the `validate` function.
-
-**Arguments**:
-
-- `descriptor` _dict_ - check's descriptor
-- `descriptor.hash?` _str_ - a hash sum of the table's bytes
-- `descriptor.bytes?` _int_ - number of bytes
-- `descriptor.fields?` _int_ - number of fields
-- `descriptor.rows?` _int_ - number of rows
 
 ## CkanDialect
 
@@ -642,45 +581,6 @@ Datetime type implementation.
 API      | Usage
 -------- | --------
 Public   | `from frictionless import types`
-
-## DeviatedValueCheck
-
-```python
-class DeviatedValueCheck(Check)
-```
-
-Check for deviated values in a field
-
-API      | Usage
--------- | --------
-Public   | `from frictionless import checks`
-Implicit | `validate(extra_checks=(['deviated-values', {...})])`
-
-This check can be enabled using the `extra_checks` parameter
-for the `validate` function.
-
-**Arguments**:
-
-- `descriptor` _dict_ - check's descriptor
-- `descriptor.fieldName` _str_ - a field name to check
-- `descriptor.average?` _str_ - one of "mean", "median" or "mode" (default: "mean")
-- `descriptor.interval?` _str_ - statistical interval (default: 3)
-
-## DuplicateRowCheck
-
-```python
-class DuplicateRowCheck(Check)
-```
-
-Check for duplicate rows
-
-API      | Usage
--------- | --------
-Public   | `from frictionless import checks`
-Implicit | `validate(extra_checks=['duplicate-row'])`
-
-This check can be enabled using the `extra_checks` parameter
-for the `validate` function.
 
 ## DurationType
 
@@ -4842,28 +4742,6 @@ A mapping indexed by a field name with error cells before parsing
 
 - `dict` - a row as a dictionary
 
-## RowConstraintCheck
-
-```python
-class RowConstraintCheck(Check)
-```
-
-Check that every row satisfies a provided Python expression
-
-API      | Usage
--------- | --------
-Public   | `from frictionless import checks`
-Implicit | `validate(extra_checks=(['row-constraint', {...})])`
-
-This check can be enabled using the `extra_checks` parameter
-for the `validate` function. The syntax for the row constraint
-check can be found here - https://github.com/danthedeckie/simpleeval
-
-**Arguments**:
-
-- `descriptor` _dict_ - check's descriptor
-- `descriptor.constraint` _str_ - a python expression to evaluate against a row
-
 ## RowError
 
 ```python
@@ -5183,27 +5061,6 @@ Infer schema from sample
 **Returns**:
 
 - `Schema` - schema
-
-## SequentialValueCheck
-
-```python
-class SequentialValueCheck(Check)
-```
-
-Check that a column having sequential values
-
-API      | Usage
--------- | --------
-Public   | `from frictionless import checks`
-Implicit | `validate(extra_checks=[('sequential-value', {...})])`
-
-This check can be enabled using the `extra_checks` parameter
-for the `validate` function.
-
-**Arguments**:
-
-- `descriptor` _dict_ - check's descriptor
-- `descriptor.fieldName` _str_ - a field name to check
 
 ## Server
 
@@ -5579,14 +5436,13 @@ Register a plugin
 ### system.create\_check
 
 ```python
- | create_check(name, *, descriptor=None)
+ | create_check(descriptor)
 ```
 
 Create checks
 
 **Arguments**:
 
-- `name` _str_ - check name
 - `descriptor` _dict_ - check descriptor
   
 
@@ -5700,6 +5556,23 @@ Create server
 
 - `Server` - server
 
+### system.create\_step
+
+```python
+ | create_step(descriptor)
+```
+
+Create steps
+
+**Arguments**:
+
+- `descriptor` _dict_ - step descriptor
+  
+
+**Returns**:
+
+- `Step` - step
+
 ### system.create\_storage
 
 ```python
@@ -5792,22 +5665,6 @@ API      | Usage
 -------- | --------
 Public   | `from frictionless import types`
 
-## TruncatedValueCheck
-
-```python
-class TruncatedValueCheck(Check)
-```
-
-Check for possible truncated values
-
-API      | Usage
--------- | --------
-Public   | `from frictionless import checks`
-Implicit | `validate(extra_checks=(['truncated-value', {...})])`
-
-This check can be enabled using the `extra_checks` parameter
-for the `validate` function.
-
 ## Type
 
 ```python
@@ -5826,7 +5683,7 @@ This class is for subclassing.
 
 - `field` _Field_ - field
 
-### type.supported\_constraints
+### type.constraints
 
 **Returns**:
 
@@ -5925,6 +5782,45 @@ API      | Usage
 -------- | --------
 Public   | `from frictionless import types`
 
+## baseline
+
+```python
+class baseline(Check)
+```
+
+Check a table for basic errors
+
+API      | Usage
+-------- | --------
+Public   | `from frictionless import checks`
+Implicit | `validate(...)`
+
+Ths check is enabled by default for any `validate` function run.
+
+## checksum
+
+```python
+class checksum(Check)
+```
+
+Check a table's checksum
+
+API      | Usage
+-------- | --------
+Public   | `from frictionless import checks`
+Implicit | `validate(checksum={...})`
+
+Ths check is enabled by default if the `checksum` argument
+is provided for the `validate` function.
+
+**Arguments**:
+
+- `descriptor` _dict_ - check's descriptor
+- `hash?` _str_ - a hash sum of the table's bytes
+- `bytes?` _int_ - number of bytes
+- `fields?` _int_ - number of fields
+- `rows?` _int_ - number of rows
+
 ## describe
 
 ```python
@@ -6019,6 +5915,45 @@ Public   | `from frictionless import describe_schema`
 
 - `Schema` - table schema
 
+## deviated\_value
+
+```python
+class deviated_value(Check)
+```
+
+Check for deviated values in a field
+
+API      | Usage
+-------- | --------
+Public   | `from frictionless import checks`
+Implicit | `validate(checks=([{"code": "deviated-value", **descriptor}])`
+
+This check can be enabled using the `checks` parameter
+for the `validate` function.
+
+**Arguments**:
+
+- `descriptor` _dict_ - check's descriptor
+- `field_name` _str_ - a field name to check
+- `average?` _str_ - one of "mean", "median" or "mode" (default: "mean")
+- `interval?` _str_ - statistical interval (default: 3)
+
+## duplicate\_row
+
+```python
+class duplicate_row(Check)
+```
+
+Check for duplicate rows
+
+API      | Usage
+-------- | --------
+Public   | `from frictionless import checks`
+Implicit | `validate(checks=[{"code": "duplicate-row"}])`
+
+This check can be enabled using the `checks` parameter
+for the `validate` function.
+
 ## extract
 
 ```python
@@ -6090,6 +6025,71 @@ Public   | `from frictionless import extract_resource`
 **Returns**:
 
 - `Row[]` - an array/stream of rows
+
+## forbidden\_value
+
+```python
+class forbidden_value(Check)
+```
+
+Check for forbidden values in a field
+
+API      | Usage
+-------- | --------
+Public   | `from frictionless import checks`
+Implicit | `validate(checks=[{"code": "backlisted-value", **descriptor}])`
+
+This check can be enabled using the `checks` parameter
+for the `validate` function.
+
+**Arguments**:
+
+- `descriptor` _dict_ - check's descriptor
+- `field_name` _str_ - a field name to look into
+- `forbidden` _any[]_ - a list of forbidden values
+
+## row\_constraint
+
+```python
+class row_constraint(Check)
+```
+
+Check that every row satisfies a provided Python expression
+
+API      | Usage
+-------- | --------
+Public   | `from frictionless import checks`
+Implicit | `validate(checks=([{"code": "row-constraint", **descriptor}])`
+
+This check can be enabled using the `checks` parameter
+for the `validate` function. The syntax for the row constraint
+check can be found here - https://github.com/danthedeckie/simpleeval
+
+**Arguments**:
+
+- `descriptor` _dict_ - check's descriptor
+- `formula` _str_ - a python expression to evaluate against a row
+
+## sequential\_value
+
+```python
+class sequential_value(Check)
+```
+
+Check that a column having sequential values
+
+API      | Usage
+-------- | --------
+Public   | `from frictionless import checks`
+Implicit | `validate(checks=[{"code": "sequential-value", **descriptor}])`
+
+This check can be enabled using the `checks` parameter
+for the `validate` function.
+
+**Arguments**:
+
+- `descriptor` _dict_ - check's descriptor
+- `field_name` _str_ - a field name to check
 
 ## transform
 
@@ -6182,6 +6182,22 @@ Public   | `from frictionless import transform_resource`
 
 - `Resource` - the transform result
 
+## truncated\_value
+
+```python
+class truncated_value(Check)
+```
+
+Check for possible truncated values
+
+API      | Usage
+-------- | --------
+Public   | `from frictionless import checks`
+Implicit | `validate(checks=([{"code": "truncated-value"}])`
+
+This check can be enabled using the `checks` parameter
+for the `validate` function.
+
 ## validate
 
 ```python
@@ -6261,7 +6277,7 @@ Public   | `from frictionless import validate_package`
 
 ```python
 @Report.from_validate
-validate_resource(source, *, checksum=None, extra_checks=None, pick_errors=None, skip_errors=None, limit_errors=config.DEFAULT_LIMIT_ERRORS, limit_memory=config.DEFAULT_LIMIT_MEMORY, noinfer=False, **options, ,)
+validate_resource(source, *, checks=None, checksum=None, pick_errors=None, skip_errors=None, limit_errors=config.DEFAULT_LIMIT_ERRORS, limit_memory=config.DEFAULT_LIMIT_MEMORY, noinfer=False, **options, ,)
 ```
 
 Validate table
@@ -6273,8 +6289,8 @@ Public   | `from frictionless import validate_table`
 **Arguments**:
 
 - `source` _any_ - the source of the resource
+- `checks?` _list_ - a list of checks
 - `checksum?` _dict_ - a checksum dictionary
-- `extra_checks?` _list_ - a list of extra checks
   pick_errors? ((str|int)[]): pick errors
   skip_errors? ((str|int)[]): skip errors
 - `limit_errors?` _int_ - limit errors

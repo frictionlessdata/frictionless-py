@@ -358,12 +358,12 @@ Template: `The cell {cell} in row at position {rowPosition} and field {fieldName
 Description: `The value is possible truncated.` <br/>
 
 
-## Blacklisted Value
+## Forbidden Value
 
-Code: `blacklisted-value` <br/>
+Code: `forbidden-value` <br/>
 Tags: `#content #regulation` <br/>
 Template: `The cell {cell} in row at position {rowPosition} and field {fieldName} at position {fieldPosition} has an error: {note}` <br/>
-Description: `The value is blacklisted.` <br/>
+Description: `The value is forbidden.` <br/>
 
 
 ## Sequential Value
