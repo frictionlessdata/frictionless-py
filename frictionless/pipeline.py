@@ -1,5 +1,3 @@
-import stringcase
-from copy import deepcopy
 from importlib import import_module
 from .exception import FrictionlessException
 from .errors import PipelineError, TaskError
