@@ -10,6 +10,8 @@ from .. import helpers
 
 
 class table_aggregate(Step):
+    code = "table-aggregate"
+
     def __init__(self, *, group_name, aggregation):
         self.__group_name = group_name
         self.__aggregation = aggregation
@@ -24,6 +26,8 @@ class table_aggregate(Step):
 
 
 class table_attach(Step):
+    code = "table-attach"
+
     def __init__(self, *, resource):
         self.__resource = resource
 
@@ -39,6 +43,8 @@ class table_attach(Step):
 
 
 class table_debug(Step):
+    code = "table-debug"
+
     def __init__(self, *, function):
         self.__function = function
 
@@ -55,6 +61,8 @@ class table_debug(Step):
 
 
 class table_diff(Step):
+    code = "table-diff"
+
     def __init__(self, *, resource, ignore_order=False, use_hash=False):
         self.__resource = resource
         self.__ignore_order = ignore_order
@@ -74,6 +82,8 @@ class table_diff(Step):
 
 
 class table_intersect(Step):
+    code = "table-intersect"
+
     def __init__(self, *, resource, use_hash=False):
         self.__resource = resource
         self.__use_hash = use_hash
@@ -89,6 +99,8 @@ class table_intersect(Step):
 
 
 class table_join(Step):
+    code = "table-join"
+
     def __init__(self, *, resource, field_name=None, mode="inner", hash=False):
         assert mode in ["inner", "left", "right", "outer", "cross", "anti"]
         self.__resource = resource
@@ -125,6 +137,8 @@ class table_join(Step):
 
 
 class table_melt(Step):
+    code = "table-melt"
+
     def __init__(
         self, *, field_name, variables=None, to_field_names=["variable", "value"]
     ):
@@ -148,6 +162,8 @@ class table_melt(Step):
 
 
 class table_merge(Step):
+    code = "table-merge"
+
     def __init__(self, *, resource, field_names=None, ignore_fields=False, sort=False):
         self.__resource = resource
         self.__field_names = field_names
@@ -185,6 +201,8 @@ class table_merge(Step):
 
 
 class table_normalize(Step):
+    code = "table-normalize"
+
     def transform_resource(self, source, target):
 
         # Data
@@ -202,6 +220,8 @@ class table_normalize(Step):
 
 # TODO: improve this step
 class table_pivot(Step):
+    code = "table-pivot"
+
     def __init__(self, **options):
         self.__options = options
 
@@ -213,11 +233,15 @@ class table_pivot(Step):
 
 
 class table_print(Step):
+    code = "table-print"
+
     def transform_resource(self, source, target):
         print(source.to_petl().look(vrepr=str, style="simple"))
 
 
 class table_recast(Step):
+    code = "table-recast"
+
     def __init__(self, *, field_name, from_field_names=["variable", "value"]):
         assert len(from_field_names) == 2
         self.__field_name = field_name
@@ -236,6 +260,8 @@ class table_recast(Step):
 
 # TODO: fix this step - see tests
 class table_transpose(Step):
+    code = "table-transpose"
+
     def transform_resource(self, source, target):
         target.data = source.to_petl().transpose()
         # TODO: review this approach
@@ -245,6 +271,8 @@ class table_transpose(Step):
 
 # TODO: improve this step (add an ability to get a report instead of raising?)
 class table_validate(Step):
+    code = "table-validate"
+
     def transform_resource(self, source, target):
 
         # Data
@@ -264,6 +292,8 @@ class table_validate(Step):
 
 # TODO: review this step
 class table_write(Step):
+    code = "table-write"
+
     def __init__(self, *, path, **options):
         self.__path = path
         self.__options = options

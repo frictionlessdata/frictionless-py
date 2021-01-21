@@ -4,6 +4,8 @@ from ..step import Step
 
 # TODO: accept WHERE/PREDICAT clause
 class cell_convert(Step):
+    code = "cell-convert"
+
     def __init__(self, *, value, field_name=None):
         self.__value = value
         self.__field_name = field_name
@@ -22,6 +24,8 @@ class cell_convert(Step):
 
 
 class cell_fill(Step):
+    code = "cell-fill"
+
     def __init__(self, *, field_name=None, value=None, direction=None):
         assert direction in [None, "down", "right", "left"]
         self.__field_name = field_name
@@ -46,6 +50,8 @@ class cell_fill(Step):
 
 # TODO: accept WHERE/PREDICAT clause
 class cell_format(Step):
+    code = "cell-format"
+
     def __init__(self, *, template, field_name=None):
         self.__template = template
         self.__field_name = field_name
@@ -59,6 +65,8 @@ class cell_format(Step):
 
 # TODO: accept WHERE/PREDICAT clause
 class cell_interpolate(Step):
+    code = "cell-interpolate"
+
     def __init__(self, *, template, field_name=None):
         self.__template = template
         self.__field_name = field_name
@@ -72,6 +80,8 @@ class cell_interpolate(Step):
 
 # TODO: accept WHERE/PREDICAT clause
 class cell_replace(Step):
+    code = "cell-replace"
+
     def __init__(self, *, pattern, replace, field_name=None):
         self.__pattern = pattern
         self.__replace = replace
@@ -92,6 +102,8 @@ class cell_replace(Step):
 
 
 class cell_set(Step):
+    code = "cell-set"
+
     def __init__(self, *, field_name=None, value=None):
         self.__field_name = field_name
         self.__value = value

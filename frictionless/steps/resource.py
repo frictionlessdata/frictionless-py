@@ -6,6 +6,8 @@ from .. import errors
 
 
 class resource_add(Step):
+    code = "resource-add"
+
     def __init__(self, *, name, **options):
         self.__name = name
         self.__options = options
@@ -17,6 +19,8 @@ class resource_add(Step):
 
 
 class resource_remove(Step):
+    code = "resource-remove"
+
     def __init__(self, *, name):
         self.__name = name
 
@@ -31,6 +35,8 @@ class resource_remove(Step):
 
 
 class resource_transform(Step):
+    code = "resource-transform"
+
     def __init__(self, *, name, steps):
         self.__name = name
         self.__steps = steps
@@ -46,6 +52,8 @@ class resource_transform(Step):
 
 # TODO: add patch_schema param?
 class resource_update(Step):
+    code = "resource-update"
+
     def __init__(self, *, name, steps=None, **options):
         self.__name = name
         self.__steps = steps

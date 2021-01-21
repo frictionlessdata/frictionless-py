@@ -6,6 +6,8 @@ from ..step import Step
 # TODO: review simpleeval perfomance for this transform
 # TODO: provide formula/regex helper constructors on the lib level?
 class row_filter(Step):
+    code = "row-filter"
+
     def __init__(self, *, predicat=None):
         self.__predicat = predicat
 
@@ -20,6 +22,8 @@ class row_filter(Step):
 
 
 class row_search(Step):
+    code = "row-search"
+
     def __init__(self, *, regex, field_name=None, anti=False):
         self.__regex = regex
         self.__field_name = field_name
@@ -34,6 +38,8 @@ class row_search(Step):
 
 
 class row_slice(Step):
+    code = "row-slice"
+
     def __init__(self, *, start=None, stop=None, step=None, head=None, tail=None):
         self.__start = start
         self.__stop = stop
@@ -53,6 +59,8 @@ class row_slice(Step):
 
 
 class row_sort(Step):
+    code = "row-sort"
+
     def __init__(self, *, field_names, reverse=False):
         self.__field_names = field_names
         self.__reverse = reverse
@@ -62,6 +70,8 @@ class row_sort(Step):
 
 
 class row_split(Step):
+    code = "row-add"
+
     def __init__(self, *, field_name, pattern):
         self.__field_name = field_name
         self.__pattern = pattern
@@ -71,6 +81,8 @@ class row_split(Step):
 
 
 class row_subset(Step):
+    code = "row-subset"
+
     def __init__(self, subset, *, field_name=None):
         assert subset in ["conflicts", "distinct", "duplicates", "unique"]
         self.__subset = subset
@@ -88,6 +100,8 @@ class row_subset(Step):
 
 
 class row_ungroup(Step):
+    code = "row-ungroup"
+
     def __init__(self, *, group_name, selection, value_name=None):
         assert selection in ["first", "last", "min", "max"]
         self.__group_name = group_name

@@ -5,6 +5,8 @@ from ..field import Field
 
 
 class field_add(Step):
+    code = "field-add"
+
     def __init__(self, *, name, value=None, position=None, incremental=False, **options):
         self.__name = name
         self.__value = value
@@ -30,6 +32,8 @@ class field_add(Step):
 
 
 class field_filter(Step):
+    code = "field-filter"
+
     def __init__(self, *, names):
         self.__names = names
 
@@ -41,6 +45,8 @@ class field_filter(Step):
 
 
 class field_move(Step):
+    code = "field-move"
+
     def __init__(self, *, name, position):
         self.__name = name
         self.__position = position
@@ -52,6 +58,8 @@ class field_move(Step):
 
 
 class field_remove(Step):
+    code = "field-remove"
+
     def __init__(self, *, names):
         self.__names = names
 
@@ -62,6 +70,8 @@ class field_remove(Step):
 
 
 class field_split(Step):
+    code = "field-split"
+
     def __init__(self, *, name, to_names, pattern, preserve=False):
         self.__name = name
         self.__to_names = to_names
@@ -88,6 +98,8 @@ class field_split(Step):
 
 
 class field_unpack(Step):
+    code = "field-unpack"
+
     def __init__(self, *, name, to_names, preserve=False):
         self.__name = name
         self.__to_names = to_names
@@ -111,6 +123,8 @@ class field_unpack(Step):
 
 # TODO: accept WHERE/PREDICAT clause
 class field_update(Step):
+    code = "field-update"
+
     def __init__(self, *, name, value=None, **options):
         self.__name = name
         self.__value = value
