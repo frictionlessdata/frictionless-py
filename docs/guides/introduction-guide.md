@@ -85,6 +85,7 @@ Let's update our metadata and save it to the disc:
 from frictionless import describe
 
 resource = describe("data/countries.csv", infer_missing_values=["", "n/a"])
+resource.compression = 'no'
 resource.schema.get_field("neighbor_id").type = "integer"
 resource.schema.foreign_keys.append(
     {"fields": ["neighbor_id"], "reference": {"resource": "", "fields": ["id"]}}
