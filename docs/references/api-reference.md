@@ -1,5 +1,5 @@
 ---
-title: API Referene
+title: API Reference
 ---
 
 ## AnyType
