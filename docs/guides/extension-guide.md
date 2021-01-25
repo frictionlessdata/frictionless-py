@@ -52,4 +52,4 @@ print(rows)
 ```
 
 
-This example is over-simplified to show the high-level mechanics but writing Frictionless Plugins is designed to be easy. For inspiration, you can checks the `frictionless/plugins` directory and learn from real-life examples. Also, in the Frictionless codebase there are many `Check`, `Control`, `Dialect`, `Loader`, `Parser`, and `Server` implementations - you can read their code for better understanding of how to write your own subclass or reach out to us for support.
+This example is over-simplified to show the high-level mechanics but writing Frictionless Plugins is designed to be easy. For inspiration, you can check the `frictionless/plugins` directory and learn from real-life examples. Also, in the Frictionless codebase there are many `Check`, `Control`, `Dialect`, `Loader`, `Parser`, and `Server` implementations - you can read their code for better understanding of how to write your own subclass or reach out to us for support.
