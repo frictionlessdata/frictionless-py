@@ -56,7 +56,7 @@ $ frictionless transform --help
 
 ## Example
 
-> All the examples use the data folder from this repository
+> All the examples use the data folder from [this](https://github.com/frictionlessdata/frictionless-py/) repository
 
 We will take a very dirty data file:
 
