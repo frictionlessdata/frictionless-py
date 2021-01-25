@@ -266,7 +266,7 @@ from frictionless import Resource, Table
 
 def source():
     resource = Resource("tmp/countries.resource.yaml", basepath='.')
-    for row in resource.read_row_stream():
+    for row in resource.read_rows():
         if row["name"] == "France":
             row["population"] = 67
         if row["name"] == "Germany":
