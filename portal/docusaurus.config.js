@@ -10,7 +10,7 @@ module.exports = {
   tagline: "Describe, extract, validate, and fransform data in Python",
   organizationName: "Frictionless Data",
   projectName: "frictionless",
-  baseUrl: "/frictionless-py/",
+  baseUrl: "/",
   url: "https://framework.frictionlessdata.io",
   favicon: "img/logo.png",
   customFields: {

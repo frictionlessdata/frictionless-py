@@ -48,4 +48,4 @@ $ frictionless validate data/invalid.csv
 ## Documentation
 
 Please visit our documentation portal:
-  - https://frictionlessdata.github.io/frictionless-py/
+  - https://framework.frictionlessdata.io/docs/guides/getting-starged/
