@@ -209,7 +209,7 @@ def build_api_reference():
     # Ouput
     document = ""
     document += "---\n"
-    document += "title: API Referene\n"
+    document += "title: API Reference\n"
     document += "---\n\n"
     for element in sorted(blocks):
         if element.startswith("program"):
