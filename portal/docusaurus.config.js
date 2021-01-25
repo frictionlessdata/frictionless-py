@@ -103,6 +103,12 @@ module.exports = {
           position: "left",
         },
         {
+          href: "https://frictionlessdata.io/",
+          label: "Back to the main site",
+          position: "right",
+          className: "header-mainsite-link",
+        },
+        {
           href: "https://github.com/frictionlessdata/frictionless-py",
           position: "right",
           className: "header-github-link",
