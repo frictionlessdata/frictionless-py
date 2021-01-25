@@ -18,7 +18,7 @@ $ cat data/countries.csv
     5
 
 
-As we can see, it's a data containing information about European countries and their populations. Also, it's easy to notice that there are two fields having a relationship based on a country's identifier.
+As we can see, it's a data containing information about European countries and their populations. Also, it's easy to notice that there are two fields having a relationship based on a country's identifier: neighbor_id is a Foreign Key to id.
 
 ## Describing Data
 
