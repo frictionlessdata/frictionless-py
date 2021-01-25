@@ -10,7 +10,9 @@ Let's get started with Frictionless! We will learn how to install and use the fr
 
 ```bash
 $ pip install frictionless
-$ pip install frictionless[sql] - to install a core plugin
+$ pip install frictionless[sql] # to install a core plugin
+$ frictionless --version
+3.48.0
 ```
 
 
