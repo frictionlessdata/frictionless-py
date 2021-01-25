@@ -48,4 +48,4 @@ $ frictionless validate data/invalid.csv
 ## Documentation
 
 Please visit our documentation portal:
-  - https://framework.frictionlessdata.io/docs/guides/getting-starged/
+- https://framework.frictionlessdata.io/docs/guides/getting-started
