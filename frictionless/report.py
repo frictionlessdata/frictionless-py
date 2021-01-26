@@ -107,7 +107,7 @@ class Report(Metadata):
 
     # Flatten
 
-    def flatten(self, spec):
+    def flatten(self, spec=["taskPosition", "rowPosition", "fieldPosition", "code"]):
         """Flatten the report
 
         Parameters
@@ -282,7 +282,7 @@ class ReportTask(Metadata):
 
     # Flatten
 
-    def flatten(self, spec):
+    def flatten(self, spec=["rowPosition", "fieldPosition", "code"]):
         """Flatten the report
 
         Parameters
