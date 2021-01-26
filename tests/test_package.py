@@ -390,10 +390,6 @@ def test_package_infer():
                 "format": "csv",
                 "hashing": "md5",
                 "encoding": "utf-8",
-                "innerpath": "",
-                "compression": "",
-                "dialect": {},
-                "layout": {},
                 "schema": {
                     "fields": [
                         {"name": "id", "type": "string"},
@@ -417,10 +413,6 @@ def test_package_infer():
                 "format": "csv",
                 "hashing": "md5",
                 "encoding": "utf-8",
-                "innerpath": "",
-                "compression": "",
-                "dialect": {},
-                "layout": {},
                 "schema": {
                     "fields": [
                         {"name": "parent", "type": "string"},

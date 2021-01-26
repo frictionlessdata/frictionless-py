@@ -124,10 +124,6 @@ def test_multipart_loader_resource_infer():
         "format": "csv",
         "hashing": "md5",
         "encoding": "utf-8",
-        "innerpath": "",
-        "compression": "",
-        "dialect": {},
-        "layout": {},
         "schema": {
             "fields": [
                 {"name": "id", "type": "integer"},

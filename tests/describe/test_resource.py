@@ -17,10 +17,6 @@ def test_describe_resource():
         "format": "csv",
         "hashing": "md5",
         "encoding": "utf-8",
-        "innerpath": "",
-        "compression": "",
-        "dialect": {},
-        "layout": {},
         "schema": {
             "fields": [
                 {"name": "id", "type": "integer"},

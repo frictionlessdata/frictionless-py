@@ -568,12 +568,19 @@ class Resource(Metadata):
             self["format"] = self.format
             self["hashing"] = self.hashing
             self["encoding"] = self.encoding
-            self["innerpath"] = self.innerpath
-            self["compression"] = self.compression
-            if self.tabular:
+            # TODO: review this code
+            if self.innerpath:
+                self["innerpath"] = self.innerpath
+            if self.compression:
+                self["compression"] = self.compression
+            if self.control:
+                self["control"] = self.control
+            if self.dialect:
                 self["dialect"] = self.dialect
+            if self.layout:
                 self["layout"] = self.layout
-                # TODO: where is control/schema?
+            if self.schema:
+                self["schema"] = self.schema
             # TODO: review it's a hack for checksum validation
             if not stats:
                 if current_stats:
@@ -904,6 +911,9 @@ class Resource(Metadata):
                     if row_number != config.DEFAULT_HEADER_ROWS[0]:
                         layout["headerRows"] = [row_number]
                     break
+            # TODO: remove this hack (stop editing default layout above)
+            if not layout:
+                self.pop("layout", None)
 
         # Infer layout
         row_number = 0

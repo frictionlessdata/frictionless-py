@@ -1600,10 +1600,6 @@ def test_resource_infer():
         "format": "csv",
         "hashing": "md5",
         "encoding": "utf-8",
-        "innerpath": "",
-        "compression": "",
-        "dialect": {},
-        "layout": {},
         "schema": {
             "fields": [
                 {"name": "id", "type": "integer"},
@@ -2517,10 +2513,6 @@ def test_resource_preserve_format_from_descriptor_on_infer_issue_188():
         "scheme": "file",
         "hashing": "md5",
         "encoding": "utf-8",
-        "innerpath": "",
-        "compression": "",
-        "dialect": {},
-        "layout": {},
         "schema": {
             "fields": [
                 {"name": "city", "type": "string"},

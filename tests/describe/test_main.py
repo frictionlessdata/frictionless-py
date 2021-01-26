@@ -18,10 +18,6 @@ def test_describe():
         "format": "csv",
         "hashing": "md5",
         "encoding": "utf-8",
-        "innerpath": "",
-        "compression": "",
-        "dialect": {},
-        "layout": {},
         "schema": {
             "fields": [
                 {"name": "id", "type": "integer"},

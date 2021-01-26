@@ -20,10 +20,6 @@ def test_describe_package():
                 "format": "csv",
                 "hashing": "md5",
                 "encoding": "utf-8",
-                "innerpath": "",
-                "compression": "",
-                "dialect": {},
-                "layout": {},
                 "schema": {
                     "fields": [
                         {"name": "id", "type": "integer"},
@@ -45,10 +41,6 @@ def test_describe_package():
                 "format": "csv",
                 "hashing": "md5",
                 "encoding": "utf-8",
-                "innerpath": "",
-                "compression": "",
-                "dialect": {},
-                "layout": {},
                 "schema": {
                     "fields": [
                         {"name": "id", "type": "integer"},
