@@ -152,8 +152,9 @@ def test_resource_source_path():
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
-    assert resource.header == ["id", "name"]
     assert resource.sample == [["1", "english"], ["2", "中国人"]]
+    assert resource.labels == ["id", "name"]
+    assert resource.header == ["id", "name"]
     assert resource.stats == {
         "hash": "6c2c61dd9b0e9c6876139a449ed87933",
         "bytes": 30,
@@ -237,8 +238,9 @@ def test_resource_source_data():
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
-    assert resource.header == ["id", "name"]
     assert resource.sample == data[1:]
+    assert resource.labels == ["id", "name"]
+    assert resource.header == ["id", "name"]
     assert resource.stats == {
         "hash": "",
         "bytes": 0,
@@ -695,17 +697,17 @@ def test_resource_control():
     detector = Detector(encoding_function=lambda sample: "utf-8")
     with Resource("data/table.csv", detector=detector) as resource:
         assert resource.encoding == "utf-8"
-        assert resource.header == ["id", "name"]
         assert resource.sample == [["1", "english"], ["2", "中国人"]]
+        assert resource.header == ["id", "name"]
 
 
 @pytest.mark.vcr
 def test_resource_control_http_preload():
     control = RemoteControl(http_preload=True)
     with Resource(BASE_URL % "data/table.csv", control=control) as resource:
-        assert resource.header == ["id", "name"]
-        assert resource.sample == [["1", "english"], ["2", "中国人"]]
         assert resource.control == {"httpPreload": True}
+        assert resource.sample == [["1", "english"], ["2", "中国人"]]
+        assert resource.header == ["id", "name"]
 
 
 @pytest.mark.skip
@@ -1507,8 +1509,8 @@ def test_resource_sync_schema():
     detector = Detector(schema_sync=True)
     with Resource("data/sync-schema.csv", schema=schema, detector=detector) as resource:
         assert resource.schema == schema
-        assert resource.header == ["name", "id"]
         assert resource.sample == [["english", "1"], ["中国人", "2"]]
+        assert resource.header == ["name", "id"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
@@ -1526,8 +1528,8 @@ def test_resource_sync_schema_with_infer():
     resource = Resource(path="data/sync-schema.csv", schema=schema, detector=detector)
     resource.infer(stats=True)
     assert resource.schema == schema
-    assert resource.header == ["name", "id"]
     assert resource.sample == [["english", "1"], ["中国人", "2"]]
+    assert resource.header == ["name", "id"]
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},

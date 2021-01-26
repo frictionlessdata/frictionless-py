@@ -116,6 +116,7 @@ class Resource(Metadata):
         self.__loader = None
         self.__parser = None
         self.__sample = None
+        self.__labels = None
         self.__header = None
         self.__lookup = None
         self.__byte_stream = None
@@ -374,6 +375,11 @@ class Resource(Metadata):
             schema = self.metadata_attach("schema", schema)
         return schema
 
+    # TODO: implement
+    @property
+    def buffer(self):
+        pass
+
     @property
     def sample(self):
         """Tables's rows used as sample.
@@ -385,6 +391,14 @@ class Resource(Metadata):
             list[]?: table sample
         """
         return self.__sample
+
+    @property
+    def labels(self):
+        """
+        Returns:
+            str[]?: table labels
+        """
+        return self.__labels
 
     @property
     def header(self):
@@ -955,6 +969,7 @@ class Resource(Metadata):
         self.stats["fields"] = len(self.schema.fields)
 
         # Store state
+        self.__labels = labels
         self.__sample = sample
         self.__field_positions = field_positions
         self.__sample_positions = sample_positions
