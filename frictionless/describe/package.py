@@ -18,6 +18,7 @@ def describe_package(source, *, expand=False, nostats=False, **options):
         Package: data package
 
     """
+    # TODO: move trusted to be autodetected inside resource
     package = Package(source, trusted=True, **options)
     package.infer(stats=not nostats)
     if expand:
