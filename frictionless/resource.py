@@ -428,6 +428,14 @@ class Resource(Metadata):
         return self.__file.fullpath
 
     @Metadata.property(cache=False, write=False)
+    def detector(self):
+        """
+        Returns
+            str: resource detector
+        """
+        return self.__detector
+
+    @Metadata.property(cache=False, write=False)
     def onerror(self):
         """
         Returns:

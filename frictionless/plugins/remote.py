@@ -56,13 +56,11 @@ class RemoteControl(Control):
         http_session=None,
         http_preload=None,
         http_timeout=None,
-        newline=None,
-        detect_encoding=None,
     ):
         self.setinitial("httpSession", http_session)
         self.setinitial("httpPreload", http_preload)
         self.setinitial("httpTimeout", http_timeout)
-        super().__init__(descriptor, newline=newline, detect_encoding=detect_encoding)
+        super().__init__(descriptor)
 
     @Metadata.property
     def http_session(self):
@@ -96,7 +94,6 @@ class RemoteControl(Control):
 
     def expand(self):
         """Expand metadata"""
-        super().expand()
         self.setdefault("httpPreload", self.http_preload)
         self.setdefault("httpTimeout", self.http_timeout)
 
@@ -109,8 +106,6 @@ class RemoteControl(Control):
             "httpSession": {},
             "httpPreload": {"type": "boolean"},
             "httpTimeout": {"type": "number"},
-            "newline": {"type": "string"},
-            "detectEncoding": {},
         },
     }
 

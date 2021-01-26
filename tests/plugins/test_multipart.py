@@ -126,7 +126,6 @@ def test_multipart_loader_resource_infer():
         "encoding": "utf-8",
         "innerpath": "",
         "compression": "",
-        "control": {"newline": ""},
         "dialect": {},
         "layout": {},
         "schema": {

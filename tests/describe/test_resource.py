@@ -19,7 +19,6 @@ def test_describe_resource():
         "encoding": "utf-8",
         "innerpath": "",
         "compression": "",
-        "control": {"newline": ""},
         "dialect": {},
         "layout": {},
         "schema": {

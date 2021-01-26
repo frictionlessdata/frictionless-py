@@ -8,11 +8,18 @@ from . import config
 
 
 class Detector:
+    """Detector representation
+
+    API      | Usage
+    -------- | --------
+    Public   | `from frictionless import Detector`
+    """
+
     def __init__(
         self,
         byte_volume=config.DEFAULT_BYTE_VOLUME,
         data_volume=config.DEFAULT_DATA_VOLUME,
-        encoding_guesser=None,
+        encoding_function=None,
         encoding_confidence=config.DEFAULT_ENCODING_CONFIDENCE,
         field_type=None,
         field_names=None,
@@ -24,7 +31,7 @@ class Detector:
     ):
         self.__byte_volume = byte_volume
         self.__data_volume = data_volume
-        self.__encoding_guesser = encoding_guesser
+        self.__encoding_function = encoding_function
         self.__encoding_confidence = encoding_confidence
         self.__field_type = field_type
         self.__field_names = field_names
@@ -53,8 +60,8 @@ class Detector:
         Returns:
             str: encoding
         """
-        if self.__encoding_guesser:
-            return self.__encoding_guesser(sample)
+        if self.__encoding_function:
+            return self.__encoding_function(sample)
         return helpers.detect_encoding(sample)
 
     # TODO: implement

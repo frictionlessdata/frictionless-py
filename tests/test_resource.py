@@ -4,7 +4,7 @@ import sys
 import json
 import yaml
 import pytest
-from frictionless import Resource, Schema, Field, Layout, Control, Detector, helpers
+from frictionless import Resource, Schema, Field, Layout, Detector, helpers
 from frictionless import FrictionlessException, describe_resource
 from frictionless.plugins.remote import RemoteControl
 from frictionless.plugins.excel import ExcelDialect
@@ -692,8 +692,8 @@ def test_resource_legacy_no_compression_issue_616():
 
 
 def test_resource_control():
-    control = Control(detect_encoding=lambda sample: "utf-8")
-    with Resource("data/table.csv", control=control) as resource:
+    detector = Detector(encoding_function=lambda sample: "utf-8")
+    with Resource("data/table.csv", detector=detector) as resource:
         assert resource.encoding == "utf-8"
         assert resource.header == ["id", "name"]
         assert resource.sample == [["1", "english"], ["2", "中国人"]]
@@ -705,9 +705,10 @@ def test_resource_control_http_preload():
     with Resource(BASE_URL % "data/table.csv", control=control) as resource:
         assert resource.header == ["id", "name"]
         assert resource.sample == [["1", "english"], ["2", "中国人"]]
-        assert resource.control == {"newline": "", "httpPreload": True}
+        assert resource.control == {"httpPreload": True}
 
 
+@pytest.mark.skip
 def test_resource_control_bad_property():
     resource = Resource("data/table.csv", control={"bad": True})
     with pytest.raises(FrictionlessException) as excinfo:
@@ -1601,7 +1602,6 @@ def test_resource_infer():
         "encoding": "utf-8",
         "innerpath": "",
         "compression": "",
-        "control": {"newline": ""},
         "dialect": {},
         "layout": {},
         "schema": {
@@ -2519,7 +2519,6 @@ def test_resource_preserve_format_from_descriptor_on_infer_issue_188():
         "encoding": "utf-8",
         "innerpath": "",
         "compression": "",
-        "control": {"newline": ""},
         "dialect": {},
         "layout": {},
         "schema": {

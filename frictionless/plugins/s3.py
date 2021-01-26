@@ -47,11 +47,9 @@ class S3Control(Control):
 
     """
 
-    def __init__(
-        self, descriptor=None, endpoint_url=None, newline=None, detect_encoding=None
-    ):
+    def __init__(self, descriptor=None, endpoint_url=None):
         self.setinitial("endpointUrl", endpoint_url)
-        super().__init__(descriptor, newline=newline, detect_encoding=detect_encoding)
+        super().__init__(descriptor)
 
     @property
     def endpoint_url(self):
@@ -65,7 +63,6 @@ class S3Control(Control):
 
     def expand(self):
         """Expand metadata"""
-        super().expand()
         self.setdefault("endpointUrl", self.endpoint_url)
 
     # Metadata
@@ -74,8 +71,6 @@ class S3Control(Control):
         "type": "object",
         "properties": {
             "endpointUrl": {"type": "string"},
-            "newline": {"type": "string"},
-            "detectEncoding": {},
         },
     }
 

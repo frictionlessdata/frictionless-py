@@ -16,8 +16,7 @@ class Parser:
 
     """
 
-    # TODO: can we get rid of newline and needs_loader?
-    newline = None
+    # TODO: remove needs_loader?
     needs_loader = True
     supported_types = []
 
@@ -25,8 +24,6 @@ class Parser:
         self.__resource = resource
         self.__loader = None
         self.__data_stream = None
-        if self.newline is not None:
-            self.__resource.control.newline = self.newline
 
     def __enter__(self):
         if self.closed:

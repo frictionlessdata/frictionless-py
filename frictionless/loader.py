@@ -222,14 +222,13 @@ class Loader:
         Parameters:
             byte_stream (io.ByteStream): resource byte stream
         """
-        control = self.resource.control
-        # We don't need a detected encoding
+        # We don't need a default encoding
         encoding = self.resource.get("encoding")
         sample = byte_stream.read(config.DEFAULT_INFER_ENCODING_VOLUME)
         sample = sample[: config.DEFAULT_INFER_ENCODING_VOLUME]
         byte_stream.seek(0)
         if encoding is None:
-            encoding = control.detect_encoding(sample)
+            encoding = self.resource.detector.detect_encoding(sample)
         encoding = codecs.lookup(encoding).name
         # Work around for incorrect inferion of utf-8-sig encoding
         if encoding == "utf-8":
@@ -253,9 +252,9 @@ class Loader:
         Returns:
             text_stream (io.TextStream): resource text stream
         """
-        return io.TextIOWrapper(
-            byte_stream, self.resource.encoding, newline=self.resource.control.newline
-        )
+        # TODO: improve this solution
+        newline = "" if self.resource.format == "csv" else None
+        return io.TextIOWrapper(byte_stream, self.resource.encoding, newline=newline)
 
     # Write
 

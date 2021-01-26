@@ -208,7 +208,6 @@ class CsvParser(Parser):
 
     """
 
-    newline = ""
     supported_types = [
         "string",
     ]

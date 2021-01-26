@@ -22,7 +22,6 @@ def test_describe_package():
                 "encoding": "utf-8",
                 "innerpath": "",
                 "compression": "",
-                "control": {"newline": ""},
                 "dialect": {},
                 "layout": {},
                 "schema": {
@@ -48,7 +47,6 @@ def test_describe_package():
                 "encoding": "utf-8",
                 "innerpath": "",
                 "compression": "",
-                "control": {"newline": ""},
                 "dialect": {},
                 "layout": {},
                 "schema": {

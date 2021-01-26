@@ -392,7 +392,6 @@ def test_package_infer():
                 "encoding": "utf-8",
                 "innerpath": "",
                 "compression": "",
-                "control": {"newline": ""},
                 "dialect": {},
                 "layout": {},
                 "schema": {
@@ -420,7 +419,6 @@ def test_package_infer():
                 "encoding": "utf-8",
                 "innerpath": "",
                 "compression": "",
-                "control": {"newline": ""},
                 "dialect": {},
                 "layout": {},
                 "schema": {

@@ -20,7 +20,6 @@ def test_describe():
         "encoding": "utf-8",
         "innerpath": "",
         "compression": "",
-        "control": {"newline": ""},
         "dialect": {},
         "layout": {},
         "schema": {

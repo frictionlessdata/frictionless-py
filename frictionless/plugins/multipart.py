@@ -52,15 +52,9 @@ class MultipartControl(Control):
 
     """
 
-    def __init__(
-        self,
-        descriptor=None,
-        chunk_size=None,
-        newline=None,
-        detect_encoding=None,
-    ):
+    def __init__(self, descriptor=None, chunk_size=None):
         self.setinitial("chunkSize", chunk_size)
-        super().__init__(descriptor, newline=newline, detect_encoding=detect_encoding)
+        super().__init__(descriptor)
 
     @property
     def chunk_size(self):
@@ -70,7 +64,6 @@ class MultipartControl(Control):
 
     def expand(self):
         """Expand metadata"""
-        super().expand()
         self.setdefault("chunkSize", self.chunk_size)
 
     # Metadata
@@ -79,8 +72,6 @@ class MultipartControl(Control):
         "type": "object",
         "properties": {
             "chunkSize": {"type": "number"},
-            "newline": {"type": "string"},
-            "detectEncoding": {},
         },
     }
 
