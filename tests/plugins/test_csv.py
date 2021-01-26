@@ -1,5 +1,5 @@
 import pytest
-from frictionless import Resource, Layout, helpers
+from frictionless import Resource, Layout, Detector, helpers
 from frictionless.plugins.csv import CsvDialect
 
 BASE_URL = "https://raw.githubusercontent.com/okfn/tabulator-py/master/%s"
@@ -233,7 +233,8 @@ def test_csv_parser_quotechar_is_empty_string():
 
 
 def test_table_format_tsv():
-    with Resource("data/table.tsv", patch_schema={"missingValues": ["\\N"]}) as resource:
+    detector = Detector(schema_patch={"missingValues": ["\\N"]})
+    with Resource("data/table.tsv", detector=detector) as resource:
         assert resource.dialect == {"delimiter": "\t"}
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [

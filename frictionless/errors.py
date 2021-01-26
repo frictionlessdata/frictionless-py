@@ -356,6 +356,14 @@ class StorageError(Error):
     description = "A storage's operation cannot be performed"
 
 
+class DetectorError(Error):
+    code = "detector-error"
+    name = "Detector Error"
+    tags = ["#general"]
+    template = "The detectro has an error: {note}"
+    description = "Invalid detector"
+
+
 # Table
 
 

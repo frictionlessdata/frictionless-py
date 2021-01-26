@@ -2,7 +2,7 @@ import io
 import pytest
 from decimal import Decimal
 from datetime import datetime
-from frictionless import Resource, Layout, FrictionlessException, helpers
+from frictionless import Resource, Layout, Detector, FrictionlessException, helpers
 from frictionless.plugins.excel import ExcelDialect
 
 BASE_URL = "https://raw.githubusercontent.com/frictionlessdata/tabulator-py/master/%s"
@@ -126,7 +126,8 @@ def test_xlsx_parser_preserve_formatting():
     source = "data/preserve-formatting.xlsx"
     dialect = ExcelDialect(preserve_formatting=True)
     layout = Layout(header_rows=[1])
-    with Resource(source, dialect=dialect, layout=layout, infer_type="any") as resource:
+    detector = Detector(field_type="any")
+    with Resource(source, dialect=dialect, layout=layout, detector=detector) as resource:
         assert resource.read_rows() == [
             {
                 # general

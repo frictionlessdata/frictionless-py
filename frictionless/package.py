@@ -57,14 +57,12 @@ class Package(Metadata):
         source=None,
         *,
         descriptor=None,
-        # Required
+        # Spec
         resources=None,
-        # Recommended
         name=None,
         id=None,
         licenses=None,
         profile=None,
-        # Optional
         title=None,
         description=None,
         homepage=None,

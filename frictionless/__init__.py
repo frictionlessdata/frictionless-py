@@ -2,6 +2,7 @@ from .check import Check
 from .config import VERSION as __version__
 from .control import Control
 from .describe import *
+from .detector import Detector
 from .dialect import Dialect
 from .extract import *
 from .exception import FrictionlessException

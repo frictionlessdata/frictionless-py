@@ -4,6 +4,7 @@ from typing import List
 from typer import Option as Opt
 from typer import Argument as Arg
 from ..describe import describe
+from ..detector import Detector
 from ..layout import Layout
 from .main import program
 from .. import helpers
@@ -31,18 +32,17 @@ def program_describe(
     skip_rows: str = Opt(None, help='Comma-separated rows to skip e.g. "2,3,4,5"'),
     limit_rows: int = Opt(None, help="Limit rows by this integer"),
     offset_rows: int = Opt(None, help="Offset rows by this integer"),
-    # Infer
-    infer_type: str = Opt(None, help="Force all the fields to have this type"),
-    infer_names: str = Opt(None, help="Comma-separated list of field names"),
-    infer_volume: int = Opt(None, help="Limit data sample size by this integer"),
-    infer_confidence: float = Opt(None, help="A float from 0 to 1"),
-    infer_missing_values: str = Opt(None, help="Comma-separated list of missing values"),
-    # Package/Resource
+    # Detector
+    data_volume: int = Opt(None, help="Limit data sample size by this integer"),
+    field_type: str = Opt(None, help="Force all the fields to have this type"),
+    field_names: str = Opt(None, help="Comma-separated list of field names"),
+    field_confidence: float = Opt(None, help="A float from 0 to 1"),
+    field_float_numbers: bool = Opt(None, help="Make number floats instead of decimals"),
+    field_missing_values: str = Opt(None, help="Comma-separated list of missing values"),
+    # Misc
     basepath: str = Opt(None, help="Basepath of the resource/package"),
-    # Description
     expand: bool = Opt(None, help="Expand default values"),
     nostats: bool = Opt(None, help="Do not infer stats"),
-    # Output
     yaml: bool = Opt(False, help="Return in pure YAML format"),
     json: bool = Opt(False, help="Return in JSON format"),
 ):
@@ -66,8 +66,8 @@ def program_describe(
     skip_fields = helpers.parse_csv_string(skip_fields, convert=int, fallback=True)
     pick_rows = helpers.parse_csv_string(pick_rows, convert=int, fallback=True)
     skip_rows = helpers.parse_csv_string(skip_rows, convert=int, fallback=True)
-    infer_names = helpers.parse_csv_string(infer_names)
-    infer_missing_values = helpers.parse_csv_string(infer_missing_values)
+    field_names = helpers.parse_csv_string(field_names)
+    field_missing_values = helpers.parse_csv_string(field_missing_values)
 
     # Prepare layout
     layout = (
@@ -86,26 +86,34 @@ def program_describe(
         or None
     )
 
+    # Prepare detector
+    detector = Detector(
+        **helpers.remove_non_values(
+            dict(
+                data_volume=data_volume,
+                field_type=field_type,
+                field_names=field_names,
+                field_confidence=field_confidence,
+                field_float_numbers=field_float_numbers,
+                field_missing_values=field_missing_values,
+            )
+        )
+    )
+
     # Prepare options
     options = helpers.remove_non_values(
         dict(
             type=type,
-            # File
+            # Spec
             scheme=scheme,
             format=format,
             hashing=hashing,
             encoding=encoding,
             innerpath=innerpath,
             compression=compression,
-            # Layout
             layout=layout,
-            # Infer
-            infer_type=infer_type,
-            infer_names=infer_names,
-            infer_volume=infer_volume,
-            infer_confidence=infer_confidence,
-            infer_missing_values=infer_missing_values,
-            # Description
+            # Extra
+            detector=detector,
             expand=expand,
             nostats=nostats,
         )

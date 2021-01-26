@@ -41,6 +41,7 @@ class Field(Metadata):
         self,
         descriptor=None,
         *,
+        # Spec
         name=None,
         title=None,
         description=None,
@@ -49,6 +50,7 @@ class Field(Metadata):
         missing_values=None,
         constraints=None,
         rdf_type=None,
+        # Extra
         schema=None,
     ):
         self.setinitial("name", name)

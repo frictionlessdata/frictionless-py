@@ -1,5 +1,5 @@
 import pytest
-from frictionless import describe, helpers
+from frictionless import describe, Detector, helpers
 
 
 # General
@@ -72,7 +72,8 @@ def test_describe_resource_schema_expand():
 
 
 def test_describe_resource_schema_infer_volume():
-    resource = describe("data/table-infer-row-limit.csv", infer_volume=4)
+    detector = Detector(data_volume=4)
+    resource = describe("data/table-infer-row-limit.csv", detector=detector)
     assert resource.schema == {
         "fields": [
             {"name": "id", "type": "integer"},
@@ -94,7 +95,8 @@ def test_describe_resource_schema_with_missing_values_default():
 
 
 def test_describe_resource_schema_with_missing_values_using_the_argument():
-    resource = describe("data/table-infer-missing-values.csv", infer_missing_values=["-"])
+    detector = Detector(field_missing_values=["-"])
+    resource = describe("data/table-infer-missing-values.csv", detector=detector)
     assert resource.schema == {
         "fields": [
             {"name": "id", "type": "integer"},
@@ -126,7 +128,8 @@ def test_describe_resource_schema_xlsx_file_with_boolean_column_issue_203():
 
 
 def test_describe_resource_schema_increase_limit_issue_212():
-    resource = describe("data/table-infer-increase-limit.csv", infer_volume=200)
+    detector = Detector(data_volume=200)
+    resource = describe("data/table-infer-increase-limit.csv", detector=detector)
     assert resource.schema == {
         "fields": [{"name": "a", "type": "integer"}, {"name": "b", "type": "number"}],
     }

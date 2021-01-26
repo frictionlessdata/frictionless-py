@@ -6,6 +6,7 @@ from pathlib import Path
 from copy import deepcopy
 from itertools import zip_longest, chain
 from .exception import FrictionlessException
+from .detector import Detector
 from .metadata import Metadata
 from .control import Control
 from .dialect import Dialect
@@ -76,31 +77,20 @@ class Resource(Metadata):
         profile=None,
         path=None,
         data=None,
-        # File
         scheme=None,
         format=None,
         hashing=None,
         encoding=None,
         innerpath=None,
         compression=None,
-        # Control/Dialect
         control=None,
         dialect=None,
-        # Layout/Schema
         layout=None,
         schema=None,
-        sync_schema=False,
-        patch_schema=None,
-        # Infer
-        infer_type=None,
-        infer_names=None,
-        infer_volume=config.DEFAULT_INFER_VOLUME,
-        infer_confidence=config.DEFAULT_INFER_CONFIDENCE,
-        infer_float_numbers=config.DEFAULT_FLOAT_NUMBER,
-        infer_missing_values=config.DEFAULT_MISSING_VALUES,
-        # Misc
         stats=None,
+        # Extra
         basepath="",
+        detector=None,
         onerror="ignore",
         trusted=False,
         package=None,
@@ -137,22 +127,15 @@ class Resource(Metadata):
         self.__field_positions = None
         self.__sample_positions = None
 
-        # Store params
-        self.__sync_schema = sync_schema
-        self.__patch_schema = patch_schema
-        self.__infer_type = infer_type
-        self.__infer_names = infer_names
-        self.__infer_volume = infer_volume
-        self.__infer_confidence = infer_confidence
-        self.__infer_float_numbers = infer_float_numbers
-        self.__infer_missing_values = infer_missing_values
+        # Store extra
         self.__basepath = basepath or helpers.detect_basepath(descriptor)
+        self.__detector = detector or Detector()
         self.__onerror = onerror
         self.__trusted = trusted
         self.__package = package
         self.__nolookup = nolookup
 
-        # Set properties
+        # Set specs
         self.setinitial("name", name)
         self.setinitial("title", title)
         self.setinitial("description", description)
@@ -891,7 +874,7 @@ class Resource(Metadata):
             buffer.append(cells)
             if self.__read_filter_rows(row_position, cells):
                 widths.append(len(cells))
-                if len(widths) >= self.__infer_volume:
+                if len(widths) >= self.__detector.data_volume:
                     break
 
         # Infer header
@@ -914,7 +897,7 @@ class Resource(Metadata):
                         layout["headerRows"] = [row_number]
                     break
 
-        # Infer table
+        # Infer layout
         row_number = 0
         header_data = []
         header_ready = False
@@ -940,41 +923,15 @@ class Resource(Metadata):
                 # Sample
                 sample.append(self.__read_filter_cells(cells, field_positions))
                 sample_positions.append(row_position)
-                if len(sample) >= self.__infer_volume:
+                if len(sample) >= self.__detector.data_volume:
                     break
 
-        # Infer schema
-        if not self.schema.fields:
-            self.schema = Schema.from_sample(
-                sample,
-                type=self.__infer_type,
-                names=self.__infer_names or labels,
-                confidence=self.__infer_confidence,
-                float_numbers=self.__infer_float_numbers,
-                missing_values=self.__infer_missing_values,
-            )
-
-        # Sync schema
-        if self.__sync_schema:
-            fields = []
-            mapping = {field.get("name"): field for field in self.schema.fields}
-            for name in labels:
-                fields.append(mapping.get(name, {"name": name, "type": "any"}))
-            self.schema.fields = fields
-
-        # Patch schema
-        if self.__patch_schema:
-            patch_schema = deepcopy(self.__patch_schema)
-            fields = patch_schema.pop("fields", {})
-            self.schema.update(patch_schema)
-            for field in self.schema.fields:
-                field.update((fields.get(field.get("name"), {})))
-
-        # Validate schema
-        # TODO: reconsider this - not perfect for transform
-        if len(self.schema.field_names) != len(set(self.schema.field_names)):
-            note = "Schemas with duplicate field names are not supported"
-            raise FrictionlessException(errors.SchemaError(note=note))
+        # Detect schema
+        self.schema = self.__detector.detect_schema(
+            sample,
+            labels=labels,
+            schema=self.schema,
+        )
 
         # Store stats
         self.stats["fields"] = len(self.schema.fields)

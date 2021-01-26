@@ -2,7 +2,7 @@ import json
 import yaml
 import pytest
 from typer.testing import CliRunner
-from frictionless import program, describe, helpers
+from frictionless import program, describe, Detector, helpers
 
 runner = CliRunner()
 
@@ -107,24 +107,28 @@ def test_describe_offset_rows():
 
 
 def test_describe_infer_type():
-    result = runner.invoke(program, "describe data/table.csv --json --infer-type string")
+    result = runner.invoke(program, "describe data/table.csv --json --field-type string")
     assert result.exit_code == 0
-    assert json.loads(result.stdout) == describe("data/table.csv", infer_type="string")
+    assert json.loads(result.stdout) == describe(
+        "data/table.csv", detector=Detector(field_type="string")
+    )
 
 
 def test_describe_infer_names():
-    result = runner.invoke(program, "describe data/table.csv --json --infer-names 'a,b'")
+    result = runner.invoke(program, "describe data/table.csv --json --field-names 'a,b'")
     assert result.exit_code == 0
-    assert json.loads(result.stdout) == describe("data/table.csv", infer_names=["a", "b"])
+    assert json.loads(result.stdout) == describe(
+        "data/table.csv", detector=Detector(field_names=["a", "b"])
+    )
 
 
 def test_describe_infer_missing_values():
     result = runner.invoke(
-        program, "describe data/table.csv --json --infer-missing-values 1"
+        program, "describe data/table.csv --json --field-missing-values 1"
     )
     assert result.exit_code == 0
     assert json.loads(result.stdout) == describe(
-        "data/table.csv", infer_missing_values=["1"]
+        "data/table.csv", detector=Detector(field_missing_values=["1"])
     )
 
 

@@ -2,7 +2,7 @@ import json
 import yaml
 import pytest
 from typer.testing import CliRunner
-from frictionless import program, extract, helpers
+from frictionless import program, extract, Detector, helpers
 
 runner = CliRunner()
 
@@ -113,33 +113,37 @@ def test_extract_schema():
 def test_extract_sync_schema():
     result = runner.invoke(
         program,
-        "extract data/table.csv --json --schema data/schema-reverse.json --sync-schema",
+        "extract data/table.csv --json --schema data/schema-reverse.json --schema-sync",
     )
     assert result.exit_code == 0
     assert json.loads(result.stdout) == extract(
-        "data/table.csv", schema="data/schema.json", sync_schema=True
+        "data/table.csv", schema="data/schema.json", detector=Detector(schema_sync=True)
     )
 
 
-def test_extract_infer_type():
-    result = runner.invoke(program, "extract data/table.csv --json --infer-type string")
+def test_extract_field_type():
+    result = runner.invoke(program, "extract data/table.csv --json --field-type string")
     assert result.exit_code == 0
-    assert json.loads(result.stdout) == extract("data/table.csv", infer_type="string")
+    assert json.loads(result.stdout) == extract(
+        "data/table.csv", detector=Detector(field_type="string")
+    )
 
 
-def test_extract_infer_names():
-    result = runner.invoke(program, "extract data/table.csv --json --infer-names 'a,b'")
+def test_extract_field_names():
+    result = runner.invoke(program, "extract data/table.csv --json --field-names 'a,b'")
     assert result.exit_code == 0
-    assert json.loads(result.stdout) == extract("data/table.csv", infer_names=["a", "b"])
+    assert json.loads(result.stdout) == extract(
+        "data/table.csv", detector=Detector(field_names=["a", "b"])
+    )
 
 
-def test_extract_infer_missing_values():
+def test_extract_field_missing_values():
     result = runner.invoke(
-        program, "extract data/table.csv --json --infer-missing-values 1"
+        program, "extract data/table.csv --json --field-missing-values 1"
     )
     assert result.exit_code == 0
     assert json.loads(result.stdout) == extract(
-        "data/table.csv", infer_missing_values=["1"]
+        "data/table.csv", detector=Detector(field_missing_values=["1"])
     )
 
 

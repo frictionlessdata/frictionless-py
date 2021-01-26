@@ -5,6 +5,7 @@ from typing import List
 from typer import Option as Opt
 from typer import Argument as Arg
 from ..validate import validate
+from ..detector import Detector
 from ..layout import Layout
 from .main import program
 from .. import helpers
@@ -34,17 +35,17 @@ def program_validate(
     offset_rows: int = Opt(None, help="Offset rows by this integer"),
     # Schema
     schema: str = Opt(None, help="Specify a path to a schema"),
-    sync_schema: bool = Opt(None, help="Sync the schema based on headers"),
-    # Infer
-    infer_type: str = Opt(None, help="Force all the fields to have this type"),
-    infer_names: str = Opt(None, help="Comma-separated list of field names"),
-    infer_volume: int = Opt(None, help="Limit data sample size by this integer"),
-    infer_confidence: float = Opt(None, help="A float from 0 to 1"),
-    infer_missing_values: str = Opt(None, help="Comma-separated list of missing values"),
-    # Package/Resource
+    # Detector
+    data_volume: int = Opt(None, help="Limit data sample size by this integer"),
+    field_type: str = Opt(None, help="Force all the fields to have this type"),
+    field_names: str = Opt(None, help="Comma-separated list of field names"),
+    field_confidence: float = Opt(None, help="A float from 0 to 1"),
+    field_float_numbers: bool = Opt(None, help="Make number floats instead of decimals"),
+    field_missing_values: str = Opt(None, help="Comma-separated list of missing values"),
+    schema_sync: bool = Opt(None, help="Sync the schema based on headers"),
+    # Misc
     basepath: str = Opt(None, help="Basepath of the resource/package"),
     parallel: bool = Opt(None, help="Enable multiprocessing"),
-    # Validation
     checksum_hash: str = Opt(None, help="Expected hash based on hashing option"),
     checksum_bytes: int = Opt(None, help="Expected size in bytes"),
     checksum_rows: int = Opt(None, help="Expected amoutn of rows"),
@@ -52,7 +53,6 @@ def program_validate(
     skip_errors: str = Opt(None, help='Comma-separated errors to skip e.g. "blank-row"'),
     limit_errors: int = Opt(None, help="Limit errors by this integer"),
     limit_memory: int = Opt(None, help="Limit memory by this integer in MB"),
-    # Output
     yaml: bool = Opt(False, help="Return in pure YAML format"),
     json: bool = Opt(False, help="Return in JSON format"),
 ):
@@ -76,8 +76,8 @@ def program_validate(
     skip_fields = helpers.parse_csv_string(skip_fields, convert=int, fallback=True)
     pick_rows = helpers.parse_csv_string(pick_rows, convert=int, fallback=True)
     skip_rows = helpers.parse_csv_string(skip_rows, convert=int, fallback=True)
-    infer_names = helpers.parse_csv_string(infer_names)
-    infer_missing_values = helpers.parse_csv_string(infer_missing_values)
+    field_names = helpers.parse_csv_string(field_names)
+    field_missing_values = helpers.parse_csv_string(field_missing_values)
     pick_errors = helpers.parse_csv_string(pick_errors)
     skip_errors = helpers.parse_csv_string(skip_errors)
 
@@ -98,6 +98,21 @@ def program_validate(
         or None
     )
 
+    # Prepare detector
+    detector = Detector(
+        **helpers.remove_non_values(
+            dict(
+                data_volume=data_volume,
+                field_type=field_type,
+                field_names=field_names,
+                field_confidence=field_confidence,
+                field_float_numbers=field_float_numbers,
+                field_missing_values=field_missing_values,
+                schema_sync=schema_sync,
+            )
+        )
+    )
+
     # Prepare checksum
     checksum = (
         helpers.remove_non_values(
@@ -110,28 +125,19 @@ def program_validate(
     options = helpers.remove_non_values(
         dict(
             type=type,
-            # File
+            # Spec
             scheme=scheme,
             format=format,
             hashing=hashing,
             encoding=encoding,
             innerpath=innerpath,
             compression=compression,
-            # Layout
             layout=layout,
-            # Schema
             schema=schema,
-            sync_schema=sync_schema,
-            # Infer
-            infer_type=infer_type,
-            infer_names=infer_names,
-            infer_volume=infer_volume,
-            infer_confidence=infer_confidence,
-            infer_missing_values=infer_missing_values,
-            # Package/Resource
+            # Extra
             basepath=basepath,
+            detector=detector,
             parallel=parallel,
-            # Validation
             checksum=checksum,
             pick_errors=pick_errors,
             skip_errors=skip_errors,

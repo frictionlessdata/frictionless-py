@@ -4,7 +4,7 @@ import sys
 import json
 import yaml
 import pytest
-from frictionless import Resource, Schema, Field, Layout, Control, helpers
+from frictionless import Resource, Schema, Field, Layout, Control, Detector, helpers
 from frictionless import FrictionlessException, describe_resource
 from frictionless.plugins.remote import RemoteControl
 from frictionless.plugins.excel import ExcelDialect
@@ -1503,7 +1503,8 @@ def test_resource_sync_schema():
             {"name": "id", "type": "integer"},
         ]
     }
-    with Resource("data/sync-schema.csv", schema=schema, sync_schema=True) as resource:
+    detector = Detector(schema_sync=True)
+    with Resource("data/sync-schema.csv", schema=schema, detector=detector) as resource:
         assert resource.schema == schema
         assert resource.header == ["name", "id"]
         assert resource.sample == [["english", "1"], ["中国人", "2"]]
@@ -1520,7 +1521,8 @@ def test_resource_sync_schema_with_infer():
             {"name": "id", "type": "integer"},
         ]
     }
-    resource = Resource(path="data/sync-schema.csv", schema=schema, sync_schema=True)
+    detector = Detector(schema_sync=True)
+    resource = Resource(path="data/sync-schema.csv", schema=schema, detector=detector)
     resource.infer(stats=True)
     assert resource.schema == schema
     assert resource.header == ["name", "id"]
@@ -1532,24 +1534,24 @@ def test_resource_sync_schema_with_infer():
 
 
 def test_resource_schema_patch_schema():
-    patch_schema = {"fields": {"id": {"name": "new", "type": "string"}}}
-    with Resource("data/table.csv", patch_schema=patch_schema) as resource:
+    detector = Detector(schema_patch={"fields": {"id": {"name": "ID", "type": "string"}}})
+    with Resource("data/table.csv", detector=detector) as resource:
         assert resource.header == ["id", "name"]
         assert resource.schema == {
             "fields": [
-                {"name": "new", "type": "string"},
+                {"name": "ID", "type": "string"},
                 {"name": "name", "type": "string"},
             ]
         }
         assert resource.read_rows() == [
-            {"new": "1", "name": "english"},
-            {"new": "2", "name": "中国人"},
+            {"ID": "1", "name": "english"},
+            {"ID": "2", "name": "中国人"},
         ]
 
 
 def test_resource_schema_patch_schema_missing_values():
-    patch_schema = {"missingValues": ["1", "2"]}
-    with Resource("data/table.csv", patch_schema=patch_schema) as resource:
+    detector = Detector(schema_patch={"missingValues": ["1", "2"]})
+    with Resource("data/table.csv", detector=detector) as resource:
         assert resource.header == ["id", "name"]
         assert resource.schema == {
             "fields": [
@@ -1565,19 +1567,19 @@ def test_resource_schema_patch_schema_missing_values():
 
 
 def test_resource_schema_patch_schema_with_infer():
-    patch_schema = {"fields": {"id": {"name": "new", "type": "string"}}}
-    resource = Resource(path="data/table.csv", patch_schema=patch_schema)
+    detector = Detector(schema_patch={"fields": {"id": {"name": "ID", "type": "string"}}})
+    resource = Resource(path="data/table.csv", detector=detector)
     resource.infer(stats=True)
     assert resource.schema == {
         "fields": [
-            {"name": "new", "type": "string"},
+            {"name": "ID", "type": "string"},
             {"name": "name", "type": "string"},
         ]
     }
     assert resource.header == ["id", "name"]
     assert resource.read_rows() == [
-        {"new": "1", "name": "english"},
-        {"new": "2", "name": "中国人"},
+        {"ID": "1", "name": "english"},
+        {"ID": "2", "name": "中国人"},
     ]
 
 
@@ -1658,7 +1660,8 @@ def test_resource_infer_not_slugified_name_issue_531():
 
 
 def test_resource_infer_type():
-    resource = Resource(path="data/table.csv", infer_type="string")
+    detector = Detector(field_type="string")
+    resource = Resource(path="data/table.csv", detector=detector)
     resource.infer(stats=True)
     assert resource.schema == {
         "fields": [
@@ -1674,7 +1677,8 @@ def test_resource_infer_type():
 
 
 def test_resource_infer_names():
-    resource = Resource(path="data/table.csv", infer_names=["new1", "new2"])
+    detector = Detector(field_names=["new1", "new2"])
+    resource = Resource(path="data/table.csv", detector=detector)
     resource.infer(stats=True)
     assert resource.schema == {
         "fields": [
@@ -1691,7 +1695,8 @@ def test_resource_infer_names():
 
 def test_resource_infer_float_numbers():
     data = [["number"], ["1.1"], ["2.2"], ["3.3"]]
-    resource = Resource(data=data, infer_float_numbers=True)
+    detector = Detector(field_float_numbers=True)
+    resource = Resource(data=data, detector=detector)
     resource.infer(stats=True)
     assert resource.schema == {
         "fields": [
@@ -1707,7 +1712,8 @@ def test_resource_infer_float_numbers():
 
 
 def test_resource_infer_type_with_open():
-    with Resource("data/table.csv", infer_type="string") as resource:
+    detector = Detector(field_type="string")
+    with Resource("data/table.csv", detector=detector) as resource:
         assert resource.header == ["id", "name"]
         assert resource.schema == {
             "fields": [
@@ -1722,7 +1728,8 @@ def test_resource_infer_type_with_open():
 
 
 def test_resource_infer_names_with_open():
-    with Resource("data/table.csv", infer_names=["new1", "new2"]) as resource:
+    detector = Detector(field_names=["new1", "new2"])
+    with Resource("data/table.csv", detector=detector) as resource:
         assert resource.header == ["id", "name"]
         assert resource.schema == {
             "fields": [
@@ -1808,7 +1815,8 @@ def test_resource_open_row_stream_iterate():
 
 
 def test_resource_open_row_stream_error_cells():
-    with Resource("data/table.csv", infer_type="integer") as resource:
+    detector = Detector(field_type="integer")
+    with Resource("data/table.csv", detector=detector) as resource:
         row1, row2 = resource.read_rows()
         assert resource.header == ["id", "name"]
         assert row1.errors[0].code == "type-error"
@@ -1822,8 +1830,8 @@ def test_resource_open_row_stream_error_cells():
 
 
 def test_resource_open_row_stream_blank_cells():
-    patch_schema = {"missingValues": ["1", "2"]}
-    with Resource("data/table.csv", patch_schema=patch_schema) as resource:
+    detector = Detector(schema_patch={"missingValues": ["1", "2"]})
+    with Resource("data/table.csv", detector=detector) as resource:
         row1, row2 = resource.read_rows()
         assert resource.header == ["id", "name"]
         assert row1.blank_cells == {"id": "1"}
@@ -1931,7 +1939,8 @@ def test_resource_reopen():
 
 
 def test_resource_reopen_and_infer_volume():
-    with Resource("data/long.csv", infer_volume=3) as resource:
+    detector = Detector(data_volume=3)
+    with Resource("data/long.csv", detector=detector) as resource:
         # Before reset
         assert resource.sample == [["1", "a"], ["2", "b"], ["3", "c"]]
         assert resource.read_data() == [
@@ -2159,16 +2168,20 @@ def test_resource_integrity_onerror_row_raise():
 
 def test_resource_integrity_unique():
     source = [["name"], [1], [2], [3]]
-    patch_schema = {"fields": {"name": {"constraints": {"unique": True}}}}
-    with Resource(source, patch_schema=patch_schema) as resource:
+    detector = Detector(
+        schema_patch={"fields": {"name": {"constraints": {"unique": True}}}}
+    )
+    with Resource(source, detector=detector) as resource:
         for row in resource:
             assert row.valid
 
 
 def test_resource_integrity_unique_error():
     source = [["name"], [1], [2], [2]]
-    patch_schema = {"fields": {"name": {"constraints": {"unique": True}}}}
-    with Resource(source, patch_schema=patch_schema) as resource:
+    detector = Detector(
+        schema_patch={"fields": {"name": {"constraints": {"unique": True}}}}
+    )
+    with Resource(source, detector=detector) as resource:
         for row in resource:
             if row.row_number == 3:
                 assert row.valid is False
@@ -2179,16 +2192,16 @@ def test_resource_integrity_unique_error():
 
 def test_resource_integrity_primary_key():
     source = [["name"], [1], [2], [3]]
-    patch_schema = {"primaryKey": ["name"]}
-    with Resource(source, patch_schema=patch_schema) as resource:
+    detector = Detector(schema_patch={"primaryKey": ["name"]})
+    with Resource(source, detector=detector) as resource:
         for row in resource:
             assert row.valid
 
 
 def test_resource_integrity_primary_key_error():
     source = [["name"], [1], [2], [2]]
-    patch_schema = {"primaryKey": ["name"]}
-    with Resource(source, patch_schema=patch_schema) as resource:
+    detector = Detector(schema_patch={"primaryKey": ["name"]})
+    with Resource(source, detector=detector) as resource:
         for row in resource:
             if row.row_number == 3:
                 assert row.valid is False

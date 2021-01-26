@@ -33,6 +33,15 @@ TOPOJSON_PROFILE = json.loads(read_asset("profiles", "geojson", "topojson.json")
 UNDEFINED = object()
 
 
+# Defaults (detector)
+DEFAULT_BYTE_VOLUME = 10000
+DEFAULT_DATA_VOLUME = 100
+DEFAULT_ENCODING_CONFIDENCE = 0.5
+DEFAULT_FIELD_CONFIDENCE = 0.9
+DEFAULT_FLOAT_NUMBERS = False
+DEFAULT_MISSING_VALUES = [""]
+
+
 # Defaults
 
 

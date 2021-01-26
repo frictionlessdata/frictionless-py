@@ -1,7 +1,7 @@
 import json
 import yaml
 from typer.testing import CliRunner
-from frictionless import Metadata, program, validate
+from frictionless import Metadata, Detector, program, validate
 
 runner = CliRunner()
 
@@ -104,28 +104,28 @@ def test_validate_offset_rows():
 
 
 def test_validate_infer_type():
-    result = runner.invoke(program, "validate data/table.csv --json --infer-type string")
+    result = runner.invoke(program, "validate data/table.csv --json --field-type string")
     assert result.exit_code == 0
     assert no_time(json.loads(result.stdout)) == no_time(
-        validate("data/table.csv", infer_type="string")
+        validate("data/table.csv", detector=Detector(field_type="string"))
     )
 
 
-def test_validate_infer_names():
-    result = runner.invoke(program, "validate data/table.csv --json --infer-names 'a,b'")
+def test_validate_field_names():
+    result = runner.invoke(program, "validate data/table.csv --json --field-names 'a,b'")
     assert result.exit_code == 0
     assert no_time(json.loads(result.stdout)) == no_time(
-        validate("data/table.csv", infer_names=["a", "b"])
+        validate("data/table.csv", detector=Detector(field_names=["a", "b"]))
     )
 
 
-def test_validate_infer_missing_values():
+def test_validate_field_missing_values():
     result = runner.invoke(
-        program, "validate data/table.csv --json --infer-missing-values 1"
+        program, "validate data/table.csv --json --field-missing-values 1"
     )
     assert result.exit_code == 0
     assert no_time(json.loads(result.stdout)) == no_time(
-        validate("data/table.csv", infer_missing_values=["1"])
+        validate("data/table.csv", detector=Detector(field_missing_values=["1"]))
     )
 
 
