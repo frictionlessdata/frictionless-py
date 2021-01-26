@@ -671,7 +671,7 @@ class Resource(Metadata):
 
     # Read
 
-    def read_bytes(self):
+    def read_bytes(self, *, size=None):
         """Read data into memory
 
         Returns:
@@ -682,9 +682,9 @@ class Resource(Metadata):
             return b""
         self["stats"] = {"hash": "", "bytes": 0, "fields": 0, "rows": 0}
         with system.create_loader(self) as loader:
-            return loader.byte_stream.read1()
+            return loader.byte_stream.read1(size)
 
-    def read_text(self):
+    def read_text(self, *, size=None):
         """Read text into memory
 
         Returns:
@@ -698,29 +698,39 @@ class Resource(Metadata):
             result = ""
             for line in loader.text_stream:
                 result += line
+                if size and len(result) >= size:
+                    # TODO: it's not good; can we read using text_stream.read()?
+                    result = result[:size]
+                    break
             return result
 
-    def read_data(self):
+    def read_data(self, *, size=None):
         """Read data into memory
 
         Returns:
             any[][]: table data
         """
         with helpers.ensure_open(self):
-            if self.__data_stream:
-                return list(self.__data_stream)
-            return []
+            data = []
+            for cells in self.__data_stream:
+                data.append(cells)
+                if size and len(data) >= size:
+                    break
+            return data
 
-    def read_rows(self):
+    def read_rows(self, *, size=None):
         """Read rows into memory
 
         Returns:
             Row[]: table rows
         """
         with helpers.ensure_open(self):
-            if self.__row_stream:
-                return list(self.__row_stream)
-            return []
+            rows = []
+            for row in self.__row_stream:
+                rows.append(row)
+                if size and len(rows) >= size:
+                    break
+            return rows
 
     def __read_row_stream(self):
         schema = self.schema
