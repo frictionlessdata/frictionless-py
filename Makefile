@@ -30,7 +30,7 @@ lint:
 
 release:
 	git checkout master && git pull origin && git fetch -p
-	@make docs && echo 'We are including a docs update to the commit'
+	@make docs && echo '\nWe are including a docs update to the commit\n'
 	@git log --pretty=format:"%C(yellow)%h%Creset %s%Cgreen%d" --reverse -20
 	@echo "\nReleasing v$(VERSION) in 10 seconds. Press <CTRL+C> to abort\n" && sleep 10
 	git commit -a -m 'v$(VERSION)' && git tag -a v$(VERSION) -m 'v$(VERSION)'

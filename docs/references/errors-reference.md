@@ -126,6 +126,14 @@ Template: `The storage has an error: {note}` <br/>
 Description: `A storage's operation cannot be performed` <br/>
 
 
+## Detector Error
+
+Code: `detector-error` <br/>
+Tags: `#general` <br/>
+Template: `The detectro has an error: {note}` <br/>
+Description: `Invalid detector` <br/>
+
+
 ## Source Error
 
 Code: `source-error` <br/>

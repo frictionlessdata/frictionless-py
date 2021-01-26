@@ -4,6 +4,14 @@ title: Changelog
 
 Here described only the breaking and most significant changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/frictionless-py/commits/master).
 
+## v4.0.0a9
+
+- Rebased on `Detector` class (BREAKING)
+    - Migrated all infer_*, sync/patch_schema and detect_encoding parameters to `Detector`
+    - Made `resource.infer` omit empty objects
+    - Added `resource.read_*(size)` argument
+    - Added `resource.labels` property
+
 ## v4.0.0a8
 
 - Improved checks/steps API (#621) (BREAKING)

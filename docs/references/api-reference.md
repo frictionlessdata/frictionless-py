@@ -371,35 +371,11 @@ Public   | `from frictionless import Control`
 **Arguments**:
 
 - `descriptor?` _str|dict_ - descriptor
-- `newline?` _str_ - a string to be used for `io.open(..., newline=newline)`
-- `detectEncoding?` _func_ - a function to detect encoding `(sample) -> encoding`
   
 
 **Raises**:
 
 - `FrictionlessException` - raise any error that occurs during the process
-
-### control.newline
-
-```python
- | @Metadata.property
- | newline()
-```
-
-**Returns**:
-
-- `str` - a string to be used for `io.open(..., newline=newline)`
-
-### control.detect\_encoding
-
-```python
- | @Metadata.property
- | detect_encoding()
-```
-
-**Returns**:
-
-- `func` - detect encoding function
 
 ## CsvDialect
 
@@ -581,6 +557,92 @@ Datetime type implementation.
 API      | Usage
 -------- | --------
 Public   | `from frictionless import types`
+
+## Detector
+
+```python
+class Detector()
+```
+
+Detector representation
+
+API      | Usage
+-------- | --------
+Public   | `from frictionless import Detector`
+
+### detector.detect\_encoding
+
+```python
+ | detect_encoding(sample)
+```
+
+Detect encoding from sample
+
+**Arguments**:
+
+- `sample` _byte_ - byte sample
+  
+
+**Returns**:
+
+- `str` - encoding
+
+### detector.detect\_layout
+
+```python
+ | detect_layout(sample)
+```
+
+Detect layout from sample
+
+**Arguments**:
+
+- `sample` _any[][]_ - data sample
+  
+
+**Returns**:
+
+- `Layout` - layout
+
+### detector.detect\_schema
+
+```python
+ | detect_schema(sample, *, labels=None, schema=None)
+```
+
+Detect schema from sample
+
+**Arguments**:
+
+- `sample` _any[][]_ - data sample
+- `labels?` _str[]_ - data labels
+- `schema?` _Schema_ - data schema
+  
+
+**Returns**:
+
+- `Schema` - schema
+
+## Dialect
+
+```python
+class Dialect(Metadata)
+```
+
+Dialect representation
+
+API      | Usage
+-------- | --------
+Public   | `from frictionless import Dialect`
+
+**Arguments**:
+
+- `descriptor?` _str|dict_ - descriptor
+  
+
+**Raises**:
+
+- `FrictionlessException` - raise any error that occurs during the process
 
 ## DurationType
 
@@ -3662,7 +3724,7 @@ Expand metadata
 ### report.flatten
 
 ```python
- | flatten(spec)
+ | flatten(spec=["taskPosition", "rowPosition", "fieldPosition", "code"])
 ```
 
 Flatten the report
@@ -3820,7 +3882,7 @@ Expand metadata
 ### reportTask.flatten
 
 ```python
- | flatten(spec)
+ | flatten(spec=["rowPosition", "fieldPosition", "code"])
 ```
 
 Flatten the report
@@ -4073,6 +4135,17 @@ source file (e.g. schema, ...).
 
 - `list[]?` - table sample
 
+### resource.labels
+
+```python
+ | @property
+ | labels()
+```
+
+**Returns**:
+
+- `str[]?` - table labels
+
 ### resource.header
 
 ```python
@@ -4124,6 +4197,16 @@ Returns
 
 Returns
     str: resource fullpath
+
+### resource.detector
+
+```python
+ | @Metadata.property(cache=False, write=False)
+ | detector()
+```
+
+Returns
+    str: resource detector
 
 ### resource.onerror
 
@@ -4306,7 +4389,7 @@ Whether the table is closed
 ### resource.read\_bytes
 
 ```python
- | read_bytes()
+ | read_bytes(*, size=None)
 ```
 
 Read data into memory
@@ -4318,7 +4401,7 @@ Read data into memory
 ### resource.read\_text
 
 ```python
- | read_text()
+ | read_text(*, size=None)
 ```
 
 Read text into memory
@@ -4330,7 +4413,7 @@ Read text into memory
 ### resource.read\_data
 
 ```python
- | read_data()
+ | read_data(*, size=None)
 ```
 
 Read data into memory
@@ -4342,7 +4425,7 @@ Read data into memory
 ### resource.read\_rows
 
 ```python
- | read_rows()
+ | read_rows(*, size=None)
 ```
 
 Read rows into memory
@@ -5038,29 +5121,6 @@ Write a list of cells (normalize/uncast)
 **Returns**:
 
 - `any[]` - list of processed cells
-
-### schema.from\_sample
-
-```python
- | @staticmethod
- | from_sample(sample, *, type=None, names=None, confidence=config.DEFAULT_INFER_CONFIDENCE, float_numbers=config.DEFAULT_FLOAT_NUMBER, missing_values=config.DEFAULT_MISSING_VALUES)
-```
-
-Infer schema from sample
-
-**Arguments**:
-
-- `sample` _any[][]_ - data sample
-- `type?` _str_ - enforce all the field to be the given type
-- `names` _str[]_ - enforce field names
-- `confidence` _float_ - infer confidence from 0 to 1
-- `float_numbers` _bool_ - infer numbers as `float` instead of `Decimal`
-- `missing_values` _str[]_ - provide custom missing values
-  
-
-**Returns**:
-
-- `Schema` - schema
 
 ## Server
 
@@ -5895,7 +5955,7 @@ Public   | `from frictionless import describe_resource`
 ## describe\_schema
 
 ```python
-describe_schema(source, *, expand=False, **options)
+describe_schema(source, **options)
 ```
 
 Describe the given source as a schema
@@ -5907,8 +5967,7 @@ Public   | `from frictionless import describe_schema`
 **Arguments**:
 
 - `source` _any_ - data source
-- `expand?` _bool_ - if `True` it will expand the metadata
-- `**options` _dict_ - Resource constructor options
+- `**options` _dict_ - describe resource options
   
 
 **Returns**:
