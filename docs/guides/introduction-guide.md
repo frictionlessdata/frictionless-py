@@ -351,11 +351,11 @@ Basically, that's it; now, we have a valid data file and a corresponding metadat
 
 
 ```bash
-$ ls -la tmp/countries-cleaned.csv tmp/country.resource.yaml
+$ ls -la tmp/countries-cleaned.csv tmp/countries-cleaned.resource.yaml
 ```
 
     -rw------- 1 roll roll  91 дек  2 11:42 tmp/countries-cleaned.csv
-    -rw------- 1 roll roll 926 дек  2 11:41 tmp/country.resource.yaml
+    -rw------- 1 roll roll 926 дек  2 11:41 tmp/countries-cleaned.resource.yaml
 
 
 In the next articles, we will explore more advanced Frictionless' functionality.
