@@ -292,11 +292,11 @@ def parse_resource_hash(hash):
     return parts
 
 
-def detect_encoding(sample):
+def detect_encoding(sample, *, confidence):
     result = chardet.detect(sample)
-    confidence = result["confidence"] or 0
+    rescon = result["confidence"] or 0
     encoding = result["encoding"] or config.DEFAULT_ENCODING
-    if confidence < config.DEFAULT_INFER_ENCODING_CONFIDENCE:
+    if rescon < confidence:
         encoding = config.DEFAULT_ENCODING
     if encoding == "ascii":
         encoding = config.DEFAULT_ENCODING

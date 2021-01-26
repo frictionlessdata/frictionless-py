@@ -1937,7 +1937,7 @@ def test_resource_reopen():
 
 
 def test_resource_reopen_and_infer_volume():
-    detector = Detector(data_volume=3)
+    detector = Detector(sample_size=3)
     with Resource("data/long.csv", detector=detector) as resource:
         # Before reset
         assert resource.sample == [["1", "a"], ["2", "b"], ["3", "c"]]

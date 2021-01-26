@@ -38,7 +38,8 @@ def program_extract(
     # Schema
     schema: str = Opt(None, help="Specify a path to a schema"),
     # Detector
-    data_volume: int = Opt(None, help="Limit data sample size by this integer"),
+    buffer_size: int = Opt(None, help="Limit byte buffer size by this integer"),
+    sample_size: int = Opt(None, help="Limit data sample size by this integer"),
     field_type: str = Opt(None, help="Force all the fields to have this type"),
     field_names: str = Opt(None, help="Comma-separated list of field names"),
     field_confidence: float = Opt(None, help="A float from 0 to 1"),
@@ -95,7 +96,8 @@ def program_extract(
     detector = Detector(
         **helpers.remove_non_values(
             dict(
-                data_volume=data_volume,
+                buffer_size=buffer_size,
+                sample_size=sample_size,
                 field_type=field_type,
                 field_names=field_names,
                 field_confidence=field_confidence,

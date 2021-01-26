@@ -224,8 +224,8 @@ class Loader:
         """
         # We don't need a default encoding
         encoding = self.resource.get("encoding")
-        sample = byte_stream.read(config.DEFAULT_INFER_ENCODING_VOLUME)
-        sample = sample[: config.DEFAULT_INFER_ENCODING_VOLUME]
+        sample = byte_stream.read(self.resource.detector.buffer_size)
+        sample = sample[: self.resource.detector.buffer_size]
         byte_stream.seek(0)
         if encoding is None:
             encoding = self.resource.detector.detect_encoding(sample)

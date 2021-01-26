@@ -67,7 +67,7 @@ def test_describe_resource_schema_expand():
 
 
 def test_describe_resource_schema_infer_volume():
-    detector = Detector(data_volume=4)
+    detector = Detector(sample_size=4)
     resource = describe("data/table-infer-row-limit.csv", detector=detector)
     assert resource.schema == {
         "fields": [
@@ -123,7 +123,7 @@ def test_describe_resource_schema_xlsx_file_with_boolean_column_issue_203():
 
 
 def test_describe_resource_schema_increase_limit_issue_212():
-    detector = Detector(data_volume=200)
+    detector = Detector(sample_size=200)
     resource = describe("data/table-infer-increase-limit.csv", detector=detector)
     assert resource.schema == {
         "fields": [{"name": "a", "type": "integer"}, {"name": "b", "type": "number"}],

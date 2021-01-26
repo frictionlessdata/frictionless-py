@@ -903,7 +903,7 @@ class Resource(Metadata):
             buffer.append(cells)
             if self.__read_filter_rows(row_position, cells):
                 widths.append(len(cells))
-                if len(widths) >= self.__detector.data_volume:
+                if len(widths) >= self.__detector.sample_size:
                     break
 
         # Infer header
@@ -955,7 +955,7 @@ class Resource(Metadata):
                 # Sample
                 sample.append(self.__read_filter_cells(cells, field_positions))
                 sample_positions.append(row_position)
-                if len(sample) >= self.__detector.data_volume:
+                if len(sample) >= self.__detector.sample_size:
                     break
 
         # Detect schema

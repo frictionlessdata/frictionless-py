@@ -17,10 +17,10 @@ class Detector:
 
     def __init__(
         self,
-        byte_volume=config.DEFAULT_BYTE_VOLUME,
-        data_volume=config.DEFAULT_DATA_VOLUME,
+        buffer_size=config.DEFAULT_BUFFER_SIZE,
         encoding_function=None,
         encoding_confidence=config.DEFAULT_ENCODING_CONFIDENCE,
+        sample_size=config.DEFAULT_SAMPLE_SIZE,
         field_type=None,
         field_names=None,
         field_confidence=config.DEFAULT_FIELD_CONFIDENCE,
@@ -29,10 +29,10 @@ class Detector:
         schema_sync=False,
         schema_patch=None,
     ):
-        self.__byte_volume = byte_volume
-        self.__data_volume = data_volume
+        self.__buffer_size = buffer_size
         self.__encoding_function = encoding_function
         self.__encoding_confidence = encoding_confidence
+        self.__sample_size = sample_size
         self.__field_type = field_type
         self.__field_names = field_names
         self.__field_confidence = field_confidence
@@ -42,12 +42,12 @@ class Detector:
         self.__schema_patch = schema_patch
 
     @property
-    def byte_volume(self):
-        return self.__byte_volume
+    def buffer_size(self):
+        return self.__buffer_size
 
     @property
-    def data_volume(self):
-        return self.__data_volume
+    def sample_size(self):
+        return self.__sample_size
 
     # Detect
 
@@ -62,7 +62,7 @@ class Detector:
         """
         if self.__encoding_function:
             return self.__encoding_function(sample)
-        return helpers.detect_encoding(sample)
+        return helpers.detect_encoding(sample, confidence=self.__encoding_confidence)
 
     # TODO: implement
     def detect_layout(self, sample):

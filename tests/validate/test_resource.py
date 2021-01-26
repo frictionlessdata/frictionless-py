@@ -243,7 +243,7 @@ def test_validate_task_error():
 
 def test_validate_source_invalid():
     # Reducing sample size to get raise on iter, not on open
-    detector = Detector(data_volume=1)
+    detector = Detector(sample_size=1)
     report = validate([["h"], [1], "bad"], detector=detector)
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [None, None, "source-error"],
