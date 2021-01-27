@@ -2,7 +2,7 @@
 title: Introduction Guide
 ---
 
-Let's say we have a few raw data files. It's been just collected by the data researchers, and the quality of data is still far from perfect. In fact, they haven't even removed the comments from the first row!
+Let's say we have a few raw data files. It's been just collected by the data researchers, and the quality of data is not yet perfect. To tell you more, they haven't even removed the comments from the first row!
 
 
 ```bash
@@ -18,7 +18,7 @@ $ cat data/countries.csv
     5
 
 
-As we can see, it's a data containing information about European countries and their populations. Also, it's easy to notice that there are two fields having a relationship based on a country's identifier: neighbor_id is a Foreign Key to id.
+As we can see, it's data containing information about European countries and their populations. Also, it's easy to notice that there are two fields having a relationship based on a country's identifier.
 
 ## Describing Data
 
