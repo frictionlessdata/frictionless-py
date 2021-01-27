@@ -67,6 +67,7 @@ class Resource(Metadata):
         name=None,
         title=None,
         description=None,
+        mediatype=None,
         licenses=None,
         sources=None,
         profile=None,
@@ -139,6 +140,7 @@ class Resource(Metadata):
         self.setinitial("name", name)
         self.setinitial("title", title)
         self.setinitial("description", description)
+        self.setinitial("mediatype", mediatype)
         self.setinitial("licenses", licenses)
         self.setinitial("sources", sources)
         self.setinitial("profile", profile)
@@ -229,6 +231,14 @@ class Resource(Metadata):
             str: resource description
         """
         return self.get("description")
+
+    @Metadata.property
+    def mediatype(self):
+        """
+        Returns
+            str: resource mediatype
+        """
+        return self.get("mediatype")
 
     @Metadata.property
     def licenses(self):
@@ -603,6 +613,7 @@ class Resource(Metadata):
                 self["layout"] = self.layout
             if self.schema:
                 self["schema"] = self.schema
+            # TODO: infer mediatype (needed parser support)?
             # TODO: review it's a hack for checksum validation
             if not stats:
                 if current_stats:
