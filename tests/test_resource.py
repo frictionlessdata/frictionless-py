@@ -764,6 +764,22 @@ def test_resource_dialect_header_false():
     ]
 
 
+def test_resource_dialect_header_false_official():
+    descriptor = {
+        "name": "name",
+        "profile": "tabular-data-resource",
+        "path": "without-headers.csv",
+        "dialect": {"header": False},
+        "schema": "resource-schema.json",
+    }
+    resource = Resource(descriptor, basepath="data")
+    assert resource.read_rows() == [
+        {"id": 1, "name": "english"},
+        {"id": 2, "name": "中国人"},
+        {"id": 3, "name": "german"},
+    ]
+
+
 def test_resource_dialect_from_path():
     resource = Resource("data/resource-with-dereferencing.json")
     assert resource == {

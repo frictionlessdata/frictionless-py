@@ -20,11 +20,6 @@ from . import errors
 from . import config
 
 
-# TODO: make automatically trusted if path is passed not from descriptor
-# TODO: merge docstrings from Table
-# TODO: Add mediatype from the specs?
-# TODO: Remove support for deprecated "url"?
-# TODO: Support hash/bytes/rows from the specs?
 class Resource(Metadata):
     """Resource representation.
 
@@ -161,6 +156,15 @@ class Resource(Metadata):
         self.setinitial("schema", schema)
         self.setinitial("stats", stats)
         super().__init__(descriptor)
+
+        # NOTE: it will not work if dialect is a path
+        # Handle official dialect.header
+        dialect = self.get("dialect")
+        if isinstance(dialect, dict):
+            header = dialect.pop("header", None)
+            if header is False:
+                self.setdefault("layout", {})
+                self["layout"]["header"] = False
 
         # Handle deprecated url
         url = self.get("url")
