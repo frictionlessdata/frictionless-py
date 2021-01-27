@@ -35,7 +35,7 @@ class Pipeline(Metadata):
 
     # Run
 
-    # TODO: support parallel runner
+    # TODO: we need to support parallel runner and add tests for it
     def run(self, *, parallel=False):
         """Run the pipeline"""
         tasks = []
@@ -71,7 +71,7 @@ class Pipeline(Metadata):
                 dict.__setitem__(self, "tasks", tasks)
 
 
-# TODO: should we metadata_process task.source -> Resource/Package?
+# NOTE: we can use metadata_process to task.source -> Resource/Package?
 class PipelineTask(Metadata):
     """Pipeline task representation.
 

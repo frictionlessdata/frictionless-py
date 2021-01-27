@@ -703,7 +703,7 @@ def test_resource_compression_error_invalid_gz():
     assert error.note == "Not a gzipped file (b'id')"
 
 
-def test_resource_legacy_no_compression_issue_616():
+def test_resource_compression_legacy_no_value_issue_616():
     with pytest.warns(UserWarning):
         with Resource("data/table.csv", compression="no") as resource:
             assert resource.innerpath == ""
@@ -768,40 +768,6 @@ def test_resource_dialect():
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": " |##"},
-    ]
-
-
-def test_resource_dialect_header_false():
-    layout = {"header": False}
-    descriptor = {
-        "name": "name",
-        "profile": "tabular-data-resource",
-        "path": "without-headers.csv",
-        "layout": layout,
-        "schema": "resource-schema.json",
-    }
-    resource = Resource(descriptor, basepath="data")
-    assert resource.layout == layout
-    assert resource.read_rows() == [
-        {"id": 1, "name": "english"},
-        {"id": 2, "name": "中国人"},
-        {"id": 3, "name": "german"},
-    ]
-
-
-def test_resource_dialect_header_false_official():
-    descriptor = {
-        "name": "name",
-        "profile": "tabular-data-resource",
-        "path": "without-headers.csv",
-        "dialect": {"header": False},
-        "schema": "resource-schema.json",
-    }
-    resource = Resource(descriptor, basepath="data")
-    assert resource.read_rows() == [
-        {"id": 1, "name": "english"},
-        {"id": 2, "name": "中国人"},
-        {"id": 3, "name": "german"},
     ]
 
 
@@ -890,25 +856,20 @@ def test_resource_dialect_bad_property():
     assert error.note.count("bad")
 
 
-def test_resource_dialect_header_case_default():
-    schema = Schema(fields=[Field(name="ID"), Field(name="NAME")])
-    with Resource("data/table.csv", schema=schema) as resource:
-        assert resource.schema.field_names == ["ID", "NAME"]
-        assert resource.labels == ["id", "name"]
-        assert resource.header == ["ID", "NAME"]
-        assert resource.header.valid is False
-        assert resource.header.errors[0].code == "incorrect-label"
-        assert resource.header.errors[1].code == "incorrect-label"
-
-
-def test_resource_dialect_header_case_is_false():
-    layout = Layout(header_case=False)
-    schema = Schema(fields=[Field(name="ID"), Field(name="NAME")])
-    with Resource("data/table.csv", layout=layout, schema=schema) as resource:
-        assert resource.schema.field_names == ["ID", "NAME"]
-        assert resource.labels == ["id", "name"]
-        assert resource.header == ["ID", "NAME"]
-        assert resource.header.valid is True
+def test_resource_dialect_header_false_official():
+    descriptor = {
+        "name": "name",
+        "profile": "tabular-data-resource",
+        "path": "without-headers.csv",
+        "dialect": {"header": False},
+        "schema": "resource-schema.json",
+    }
+    resource = Resource(descriptor, basepath="data")
+    assert resource.read_rows() == [
+        {"id": 1, "name": "english"},
+        {"id": 2, "name": "中国人"},
+        {"id": 3, "name": "german"},
+    ]
 
 
 # Layout
@@ -921,6 +882,24 @@ def test_resource_layout_header():
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
         ]
+
+
+def test_resource_layout_header_false():
+    layout = {"header": False}
+    descriptor = {
+        "name": "name",
+        "profile": "tabular-data-resource",
+        "path": "without-headers.csv",
+        "layout": layout,
+        "schema": "resource-schema.json",
+    }
+    resource = Resource(descriptor, basepath="data")
+    assert resource.layout == layout
+    assert resource.read_rows() == [
+        {"id": 1, "name": "english"},
+        {"id": 2, "name": "中国人"},
+        {"id": 3, "name": "german"},
+    ]
 
 
 def test_resource_layout_header_unicode():
@@ -1038,7 +1017,28 @@ def test_resource_layout_header_strip_and_non_strings():
         ]
 
 
-def test_resource_pick_fields():
+def test_resource_layout_header_case_default():
+    schema = Schema(fields=[Field(name="ID"), Field(name="NAME")])
+    with Resource("data/table.csv", schema=schema) as resource:
+        assert resource.schema.field_names == ["ID", "NAME"]
+        assert resource.labels == ["id", "name"]
+        assert resource.header == ["ID", "NAME"]
+        assert resource.header.valid is False
+        assert resource.header.errors[0].code == "incorrect-label"
+        assert resource.header.errors[1].code == "incorrect-label"
+
+
+def test_resource_layout_header_case_is_false():
+    layout = Layout(header_case=False)
+    schema = Schema(fields=[Field(name="ID"), Field(name="NAME")])
+    with Resource("data/table.csv", layout=layout, schema=schema) as resource:
+        assert resource.schema.field_names == ["ID", "NAME"]
+        assert resource.labels == ["id", "name"]
+        assert resource.header == ["ID", "NAME"]
+        assert resource.header.valid is True
+
+
+def test_resource_layout_pick_fields():
     layout = Layout(pick_fields=["header2"])
     source = "text://header1,header2,header3\nvalue1,value2,value3"
     with Resource(source, format="csv", layout=layout) as resource:
@@ -1049,7 +1049,7 @@ def test_resource_pick_fields():
         ]
 
 
-def test_resource_pick_fields_position():
+def test_resource_layout_pick_fields_position():
     layout = Layout(pick_fields=[2])
     source = "text://header1,header2,header3\nvalue1,value2,value3"
     with Resource(source, format="csv", layout=layout) as resource:
@@ -1060,7 +1060,7 @@ def test_resource_pick_fields_position():
         ]
 
 
-def test_resource_pick_fields_regex():
+def test_resource_layout_pick_fields_regex():
     layout = Layout(pick_fields=["<regex>header(2)"])
     source = "text://header1,header2,header3\nvalue1,value2,value3"
     with Resource(source, format="csv", layout=layout) as resource:
@@ -1071,7 +1071,7 @@ def test_resource_pick_fields_regex():
         ]
 
 
-def test_resource_pick_fields_position_and_prefix():
+def test_resource_layout_pick_fields_position_and_prefix():
     layout = Layout(pick_fields=[2, "header3"])
     source = "text://header1,header2,header3\nvalue1,value2,value3"
     with Resource(source, format="csv", layout=layout) as resource:
@@ -1082,7 +1082,7 @@ def test_resource_pick_fields_position_and_prefix():
         ]
 
 
-def test_resource_skip_fields():
+def test_resource_layout_skip_fields():
     layout = Layout(skip_fields=["header2"])
     source = "text://header1,header2,header3\nvalue1,value2,value3"
     with Resource(source, format="csv", layout=layout) as resource:
@@ -1093,7 +1093,7 @@ def test_resource_skip_fields():
         ]
 
 
-def test_resource_skip_fields_position():
+def test_resource_layout_skip_fields_position():
     layout = Layout(skip_fields=[2])
     source = "text://header1,header2,header3\nvalue1,value2,value3"
     with Resource(source, format="csv", layout=layout) as resource:
@@ -1104,7 +1104,7 @@ def test_resource_skip_fields_position():
         ]
 
 
-def test_resource_skip_fields_regex():
+def test_resource_layout_skip_fields_regex():
     layout = Layout(skip_fields=["<regex>header(1|3)"])
     source = "text://header1,header2,header3\nvalue1,value2,value3"
     with Resource(source, format="csv", layout=layout) as resource:
@@ -1115,7 +1115,7 @@ def test_resource_skip_fields_regex():
         ]
 
 
-def test_resource_skip_fields_position_and_prefix():
+def test_resource_layout_skip_fields_position_and_prefix():
     layout = Layout(skip_fields=[2, "header3"])
     source = "text://header1,header2,header3\nvalue1,value2,value3"
     with Resource(source, format="csv", layout=layout) as resource:
@@ -1126,7 +1126,7 @@ def test_resource_skip_fields_position_and_prefix():
         ]
 
 
-def test_resource_skip_fields_blank_header():
+def test_resource_layout_skip_fields_blank_header():
     layout = Layout(skip_fields=[""])
     source = "text://header1,,header3\nvalue1,value2,value3"
     with Resource(source, format="csv", layout=layout) as resource:
@@ -1137,7 +1137,7 @@ def test_resource_skip_fields_blank_header():
         ]
 
 
-def test_resource_skip_fields_blank_header_notation():
+def test_resource_layout_skip_fields_blank_header_notation():
     layout = Layout(skip_fields=["<blank>"])
     source = "text://header1,,header3\nvalue1,value2,value3"
     with Resource(source, format="csv", layout=layout) as resource:
@@ -1148,7 +1148,7 @@ def test_resource_skip_fields_blank_header_notation():
         ]
 
 
-def test_resource_skip_fields_keyed_source():
+def test_resource_layout_skip_fields_keyed_source():
     source = [{"id": 1, "name": "london"}, {"id": 2, "name": "paris"}]
     with Resource(source, layout={"skipFields": ["id"]}) as resource:
         assert resource.header == ["name"]
@@ -1164,7 +1164,7 @@ def test_resource_skip_fields_keyed_source():
         assert resource.read_rows() == [{"id": 1}, {"id": 2}]
 
 
-def test_resource_limit_fields():
+def test_resource_layout_limit_fields():
     layout = Layout(limit_fields=1)
     source = "text://header1,header2,header3\nvalue1,value2,value3"
     with Resource(source, format="csv", layout=layout) as resource:
@@ -1175,7 +1175,7 @@ def test_resource_limit_fields():
         ]
 
 
-def test_resource_offset_fields():
+def test_resource_layout_offset_fields():
     layout = Layout(offset_fields=1)
     source = "text://header1,header2,header3\nvalue1,value2,value3"
     with Resource(source, format="csv", layout=layout) as resource:
@@ -1186,7 +1186,7 @@ def test_resource_offset_fields():
         ]
 
 
-def test_resource_limit_offset_fields():
+def test_resource_layout_limit_offset_fields():
     layout = Layout(limit_fields=1, offset_fields=1)
     source = "text://header1,header2,header3\nvalue1,value2,value3"
     with Resource(source, format="csv", layout=layout) as resource:
@@ -1197,7 +1197,7 @@ def test_resource_limit_offset_fields():
         ]
 
 
-def test_resource_pick_rows():
+def test_resource_layout_pick_rows():
     source = "data/skip-rows.csv"
     layout = Layout(header=False, pick_rows=["1", "2"])
     with Resource(source, layout=layout) as resource:
@@ -1207,7 +1207,7 @@ def test_resource_pick_rows():
         ]
 
 
-def test_resource_pick_rows_number():
+def test_resource_layout_pick_rows_number():
     source = "data/skip-rows.csv"
     layout = Layout(header=False, pick_rows=[3, 5])
     with Resource(source, layout=layout) as resource:
@@ -1217,7 +1217,7 @@ def test_resource_pick_rows_number():
         ]
 
 
-def test_resource_pick_rows_regex():
+def test_resource_layout_pick_rows_regex():
     source = [
         ["# comment"],
         ["name", "order"],
@@ -1235,7 +1235,7 @@ def test_resource_pick_rows_regex():
         ]
 
 
-def test_resource_skip_rows():
+def test_resource_layout_skip_rows():
     source = "data/skip-rows.csv"
     layout = Layout(skip_rows=["#", 5])
     with Resource(source, layout=layout) as resource:
@@ -1245,7 +1245,7 @@ def test_resource_skip_rows():
         ]
 
 
-def test_resource_skip_rows_excel_empty_column():
+def test_resource_layout_skip_rows_excel_empty_column():
     source = "data/skip-rows.xlsx"
     layout = Layout(skip_rows=[""])
     with Resource(source, layout=layout) as resource:
@@ -1255,7 +1255,7 @@ def test_resource_skip_rows_excel_empty_column():
         ]
 
 
-def test_resource_skip_rows_with_headers():
+def test_resource_layout_skip_rows_with_headers():
     source = "data/skip-rows.csv"
     layout = Layout(skip_rows=["#"])
     with Resource(source, layout=layout) as resource:
@@ -1266,7 +1266,7 @@ def test_resource_skip_rows_with_headers():
         ]
 
 
-def test_resource_skip_rows_with_headers_example_from_readme():
+def test_resource_layout_skip_rows_with_headers_example_from_readme():
     layout = Layout(skip_rows=["#"])
     source = [["#comment"], ["name", "order"], ["John", 1], ["Alex", 2]]
     with Resource(source, layout=layout) as resource:
@@ -1277,7 +1277,7 @@ def test_resource_skip_rows_with_headers_example_from_readme():
         ]
 
 
-def test_resource_skip_rows_regex():
+def test_resource_layout_skip_rows_regex():
     source = [
         ["# comment"],
         ["name", "order"],
@@ -1295,7 +1295,7 @@ def test_resource_skip_rows_regex():
         ]
 
 
-def test_resource_skip_rows_preset():
+def test_resource_layout_skip_rows_preset():
     source = [
         ["name", "order"],
         ["", ""],
@@ -1319,7 +1319,7 @@ def test_resource_skip_rows_preset():
         ]
 
 
-def test_resource_limit_rows():
+def test_resource_layout_limit_rows():
     source = "data/long.csv"
     layout = Layout(limit_rows=1)
     with Resource(source, layout=layout) as resource:
@@ -1329,7 +1329,7 @@ def test_resource_limit_rows():
         ]
 
 
-def test_resource_offset_rows():
+def test_resource_layout_offset_rows():
     source = "data/long.csv"
     layout = Layout(offset_rows=5)
     with Resource(source, layout=layout) as resource:
@@ -1339,7 +1339,7 @@ def test_resource_offset_rows():
         ]
 
 
-def test_resource_limit_offset_rows():
+def test_resource_layout_limit_offset_rows():
     source = "data/long.csv"
     layout = Layout(limit_rows=2, offset_rows=2)
     with Resource(source, layout=layout) as resource:
@@ -1350,7 +1350,7 @@ def test_resource_limit_offset_rows():
         ]
 
 
-def test_resource_limit_fields_error_zero_issue_521():
+def test_resource_layout_limit_fields_error_zero_issue_521():
     source = "data/long.csv"
     layout = Layout(limit_fields=0)
     resource = Resource(source, layout=layout)
@@ -1361,7 +1361,7 @@ def test_resource_limit_fields_error_zero_issue_521():
     assert error.note.count('minimum of 1" at "limitFields')
 
 
-def test_resource_offset_fields_error_zero_issue_521():
+def test_resource_layout_offset_fields_error_zero_issue_521():
     source = "data/long.csv"
     layout = Layout(offset_fields=0)
     resource = Resource(source, layout=layout)
@@ -1372,7 +1372,7 @@ def test_resource_offset_fields_error_zero_issue_521():
     assert error.note.count('minimum of 1" at "offsetFields')
 
 
-def test_resource_limit_rows_error_zero_issue_521():
+def test_resource_layout_limit_rows_error_zero_issue_521():
     source = "data/long.csv"
     layout = Layout(limit_rows=0)
     resource = Resource(source, layout=layout)
@@ -1383,7 +1383,7 @@ def test_resource_limit_rows_error_zero_issue_521():
     assert error.note.count('minimum of 1" at "limitRows')
 
 
-def test_resource_offset_rows_error_zero_issue_521():
+def test_resource_layout_offset_rows_error_zero_issue_521():
     source = "data/long.csv"
     layout = Layout(offset_rows=0)
     resource = Resource(source, layout=layout)
@@ -1394,7 +1394,7 @@ def test_resource_offset_rows_error_zero_issue_521():
     assert error.note.count('minimum of 1" at "offsetRows')
 
 
-def test_resource_respect_layout_set_after_creation_issue_503():
+def test_resource_layout_respect_set_after_creation_issue_503():
     resource = Resource(path="data/table.csv")
     resource.layout = Layout(limit_rows=1)
     assert resource.read_rows() == [{"id": 1, "name": "english"}]
@@ -1545,7 +1545,96 @@ def test_resource_schema_provided():
         ]
 
 
-def test_resource_sync_schema():
+# Detector
+
+
+def test_resource_detector_field_type():
+    detector = Detector(field_type="string")
+    resource = Resource(path="data/table.csv", detector=detector)
+    resource.infer(stats=True)
+    assert resource.schema == {
+        "fields": [
+            {"name": "id", "type": "string"},
+            {"name": "name", "type": "string"},
+        ]
+    }
+    assert resource.header == ["id", "name"]
+    assert resource.read_rows() == [
+        {"id": "1", "name": "english"},
+        {"id": "2", "name": "中国人"},
+    ]
+
+
+def test_resource_detector_field_names():
+    detector = Detector(field_names=["new1", "new2"])
+    resource = Resource(path="data/table.csv", detector=detector)
+    resource.infer(stats=True)
+    assert resource.schema == {
+        "fields": [
+            {"name": "new1", "type": "integer"},
+            {"name": "new2", "type": "string"},
+        ]
+    }
+    assert resource.labels == ["id", "name"]
+    assert resource.header == ["new1", "new2"]
+    assert resource.read_rows() == [
+        {"new1": 1, "new2": "english"},
+        {"new1": 2, "new2": "中国人"},
+    ]
+
+
+def test_resource_detector_field_float_numbers():
+    data = [["number"], ["1.1"], ["2.2"], ["3.3"]]
+    detector = Detector(field_float_numbers=True)
+    resource = Resource(data=data, detector=detector)
+    resource.infer(stats=True)
+    assert resource.schema == {
+        "fields": [
+            {"name": "number", "type": "number", "floatNumber": True},
+        ]
+    }
+    assert resource.header == ["number"]
+    assert resource.read_rows() == [
+        {"number": 1.1},
+        {"number": 2.2},
+        {"number": 3.3},
+    ]
+
+
+def test_resource_detector_field_type_with_open():
+    detector = Detector(field_type="string")
+    with Resource("data/table.csv", detector=detector) as resource:
+        assert resource.header == ["id", "name"]
+        assert resource.schema == {
+            "fields": [
+                {"name": "id", "type": "string"},
+                {"name": "name", "type": "string"},
+            ]
+        }
+        assert resource.read_rows() == [
+            {"id": "1", "name": "english"},
+            {"id": "2", "name": "中国人"},
+        ]
+
+
+def test_resource_detector_field_names_with_open():
+    detector = Detector(field_names=["new1", "new2"])
+    with Resource("data/table.csv", detector=detector) as resource:
+        assert resource.schema == {
+            "fields": [
+                {"name": "new1", "type": "integer"},
+                {"name": "new2", "type": "string"},
+            ]
+        }
+        assert resource.labels == ["id", "name"]
+        assert resource.header == ["new1", "new2"]
+        assert resource.read_rows() == [
+            {"new1": 1, "new2": "english"},
+            {"new1": 2, "new2": "中国人"},
+        ]
+
+
+def test_resource_detector_schema_sync():
     schema = {
         "fields": [
             {"name": "name", "type": "string"},
@@ -1563,7 +1652,7 @@ def test_resource_sync_schema():
         ]
 
 
-def test_resource_sync_schema_with_infer():
+def test_resource_detector_schema_sync_with_infer():
     schema = {
         "fields": [
             {"name": "name", "type": "string"},
@@ -1582,7 +1671,7 @@ def test_resource_sync_schema_with_infer():
     ]
 
 
-def test_resource_schema_patch_schema():
+def test_resource_detector_schema_patch():
     detector = Detector(schema_patch={"fields": {"id": {"name": "ID", "type": "string"}}})
     with Resource("data/table.csv", detector=detector) as resource:
         assert resource.schema == {
@@ -1599,7 +1688,7 @@ def test_resource_schema_patch_schema():
         ]
 
 
-def test_resource_schema_patch_schema_missing_values():
+def test_resource_detector_schema_patch_missing_values():
     detector = Detector(schema_patch={"missingValues": ["1", "2"]})
     with Resource("data/table.csv", detector=detector) as resource:
         assert resource.header == ["id", "name"]
@@ -1616,7 +1705,7 @@ def test_resource_schema_patch_schema_missing_values():
         ]
 
 
-def test_resource_schema_patch_schema_with_infer():
+def test_resource_detector_schema_patch_with_infer():
     detector = Detector(schema_patch={"fields": {"id": {"name": "ID", "type": "string"}}})
     resource = Resource(path="data/table.csv", detector=detector)
     resource.infer(stats=True)
@@ -1632,6 +1721,65 @@ def test_resource_schema_patch_schema_with_infer():
         {"ID": "1", "name": "english"},
         {"ID": "2", "name": "中国人"},
     ]
+
+
+# Expand
+
+
+def test_resource_expand():
+    resource = Resource({"name": "name", "path": "data/table.csv"})
+    resource.expand()
+    assert resource == {
+        "name": "name",
+        "path": "data/table.csv",
+        "profile": "data-resource",
+    }
+
+
+def test_resource_expand_with_dialect():
+    dialect = {"delimiter": "custom"}
+    resource = Resource({"name": "name", "path": "data/table.csv", "dialect": dialect})
+    resource.expand()
+    assert resource == {
+        "name": "name",
+        "path": "data/table.csv",
+        "profile": "data-resource",
+        "dialect": {
+            "delimiter": "custom",
+            "lineTerminator": "\r\n",
+            "doubleQuote": True,
+            "quoteChar": '"',
+            "skipInitialSpace": False,
+        },
+    }
+
+
+def test_resource_expand_with_schema():
+    schema = {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+        ],
+    }
+    resource = Resource({"name": "name", "path": "data/table.csv", "schema": schema})
+    resource.expand()
+    assert resource == {
+        "name": "name",
+        "path": "data/table.csv",
+        "profile": "data-resource",
+        "schema": {
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "integer",
+                    "format": "default",
+                    "bareNumber": True,
+                },
+                {"name": "name", "type": "string", "format": "default"},
+            ],
+            "missingValues": [""],
+        },
+    }
 
 
 # Infer
@@ -1703,92 +1851,6 @@ def test_resource_infer_not_slugified_name_issue_531():
     resource.infer(stats=True)
     assert resource.metadata_valid
     assert resource.name == "table-with-data"
-
-
-def test_resource_infer_type():
-    detector = Detector(field_type="string")
-    resource = Resource(path="data/table.csv", detector=detector)
-    resource.infer(stats=True)
-    assert resource.schema == {
-        "fields": [
-            {"name": "id", "type": "string"},
-            {"name": "name", "type": "string"},
-        ]
-    }
-    assert resource.header == ["id", "name"]
-    assert resource.read_rows() == [
-        {"id": "1", "name": "english"},
-        {"id": "2", "name": "中国人"},
-    ]
-
-
-def test_resource_infer_names():
-    detector = Detector(field_names=["new1", "new2"])
-    resource = Resource(path="data/table.csv", detector=detector)
-    resource.infer(stats=True)
-    assert resource.schema == {
-        "fields": [
-            {"name": "new1", "type": "integer"},
-            {"name": "new2", "type": "string"},
-        ]
-    }
-    assert resource.labels == ["id", "name"]
-    assert resource.header == ["new1", "new2"]
-    assert resource.read_rows() == [
-        {"new1": 1, "new2": "english"},
-        {"new1": 2, "new2": "中国人"},
-    ]
-
-
-def test_resource_infer_float_numbers():
-    data = [["number"], ["1.1"], ["2.2"], ["3.3"]]
-    detector = Detector(field_float_numbers=True)
-    resource = Resource(data=data, detector=detector)
-    resource.infer(stats=True)
-    assert resource.schema == {
-        "fields": [
-            {"name": "number", "type": "number", "floatNumber": True},
-        ]
-    }
-    assert resource.header == ["number"]
-    assert resource.read_rows() == [
-        {"number": 1.1},
-        {"number": 2.2},
-        {"number": 3.3},
-    ]
-
-
-def test_resource_infer_type_with_open():
-    detector = Detector(field_type="string")
-    with Resource("data/table.csv", detector=detector) as resource:
-        assert resource.header == ["id", "name"]
-        assert resource.schema == {
-            "fields": [
-                {"name": "id", "type": "string"},
-                {"name": "name", "type": "string"},
-            ]
-        }
-        assert resource.read_rows() == [
-            {"id": "1", "name": "english"},
-            {"id": "2", "name": "中国人"},
-        ]
-
-
-def test_resource_infer_names_with_open():
-    detector = Detector(field_names=["new1", "new2"])
-    with Resource("data/table.csv", detector=detector) as resource:
-        assert resource.schema == {
-            "fields": [
-                {"name": "new1", "type": "integer"},
-                {"name": "new2", "type": "string"},
-            ]
-        }
-        assert resource.labels == ["id", "name"]
-        assert resource.header == ["new1", "new2"]
-        assert resource.read_rows() == [
-            {"new1": 1, "new2": "english"},
-            {"new1": 2, "new2": "中国人"},
-        ]
 
 
 # Open/Close
@@ -2032,65 +2094,6 @@ def test_resource_reopen_generator():
         assert resource.read_rows() == [{"field1": 1}, {"field1": 2}]
 
 
-# Expand
-
-
-def test_resource_expand():
-    resource = Resource({"name": "name", "path": "data/table.csv"})
-    resource.expand()
-    assert resource == {
-        "name": "name",
-        "path": "data/table.csv",
-        "profile": "data-resource",
-    }
-
-
-def test_resource_expand_with_dialect():
-    dialect = {"delimiter": "custom"}
-    resource = Resource({"name": "name", "path": "data/table.csv", "dialect": dialect})
-    resource.expand()
-    assert resource == {
-        "name": "name",
-        "path": "data/table.csv",
-        "profile": "data-resource",
-        "dialect": {
-            "delimiter": "custom",
-            "lineTerminator": "\r\n",
-            "doubleQuote": True,
-            "quoteChar": '"',
-            "skipInitialSpace": False,
-        },
-    }
-
-
-def test_resource_expand_with_schema():
-    schema = {
-        "fields": [
-            {"name": "id", "type": "integer"},
-            {"name": "name", "type": "string"},
-        ],
-    }
-    resource = Resource({"name": "name", "path": "data/table.csv", "schema": schema})
-    resource.expand()
-    assert resource == {
-        "name": "name",
-        "path": "data/table.csv",
-        "profile": "data-resource",
-        "schema": {
-            "fields": [
-                {
-                    "name": "id",
-                    "type": "integer",
-                    "format": "default",
-                    "bareNumber": True,
-                },
-                {"name": "name", "type": "string", "format": "default"},
-            ],
-            "missingValues": [""],
-        },
-    }
-
-
 # Write
 
 
@@ -2310,7 +2313,7 @@ def test_resource_schema_lookup_foreign_keys():
     source = [["name"], [1], [2], [3]]
     lookup = {"other": {("name",): {(1,), (2,), (3,)}}}
     fk = {"fields": ["name"], "reference": {"fields": ["name"], "resource": "other"}}
-    with Resource(source, lookup=lookup, patch_schema={"foreignKeys": [fk]}) as resource:
+    with Resource(source, lookup=lookup, schema_patch={"foreignKeys": [fk]}) as resource:
         for row in resource:
             assert row.valid
 
@@ -2320,7 +2323,7 @@ def test_resource_schema_lookup_foreign_keys_error():
     source = [["name"], [1], [2], [4]]
     lookup = {"other": {("name",): {(1,), (2,), (3,)}}}
     fk = {"fields": ["name"], "reference": {"fields": ["name"], "resource": "other"}}
-    with Resource(source, lookup=lookup, patch_schema={"foreignKeys": [fk]}) as resource:
+    with Resource(source, lookup=lookup, schema_patch={"foreignKeys": [fk]}) as resource:
         for row in resource:
             if row.row_number == 3:
                 assert row.valid is False

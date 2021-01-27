@@ -60,92 +60,6 @@ def test_validate_resource_with_schema_as_string():
     assert report.valid
 
 
-# Integrity
-
-
-# TODO: merge
-@pytest.mark.skip
-def test_validate_foreign_key_error():
-    source = {
-        "path": "data/table.csv",
-        "schema": {
-            "fields": [
-                {"name": "id", "type": "integer"},
-                {"name": "name", "type": "string"},
-            ],
-            "foreignKeys": [
-                {"fields": "id", "reference": {"resource": "ids", "fields": "id"}}
-            ],
-        },
-    }
-    lookup = {"ids": {("id",): set([(1,), (2,)])}}
-    report = validate(source, lookup=lookup)
-    assert report.valid
-
-
-# TODO: merge
-@pytest.mark.skip
-def test_validate_foreign_key_error_invalid():
-    source = {
-        "path": "data/table.csv",
-        "schema": {
-            "fields": [
-                {"name": "id", "type": "integer"},
-                {"name": "name", "type": "string"},
-            ],
-            "foreignKeys": [
-                {"fields": "id", "reference": {"resource": "ids", "fields": "id"}}
-            ],
-        },
-    }
-    lookup = {"ids": {("id",): set([(1,)])}}
-    report = validate(source, lookup=lookup)
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [3, None, "foreign-key-error"],
-    ]
-
-
-def test_validate_foreign_key_error_self_referencing():
-    source = {
-        "path": "data/nested.csv",
-        "schema": {
-            "fields": [
-                {"name": "id", "type": "integer"},
-                {"name": "cat", "type": "integer"},
-                {"name": "name", "type": "string"},
-            ],
-            "foreignKeys": [
-                {"fields": "cat", "reference": {"resource": "", "fields": "id"}}
-            ],
-        },
-    }
-    report = validate(source)
-    assert report.valid
-
-
-def test_validate_foreign_key_error_self_referencing_invalid():
-    source = {
-        "path": "data/nested-invalid.csv",
-        "schema": {
-            "fields": [
-                {"name": "id", "type": "integer"},
-                {"name": "cat", "type": "integer"},
-                {"name": "name", "type": "string"},
-            ],
-            "foreignKeys": [
-                {"fields": "cat", "reference": {"resource": "", "fields": "id"}}
-            ],
-        },
-    }
-    report = validate(source)
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [6, None, "foreign-key-error"],
-    ]
-
-
-# General
-
-
 def test_validate_from_path():
     report = validate("data/table.csv")
     assert report.valid
@@ -255,52 +169,6 @@ def test_validate_source_pathlib_path_table():
     assert report.valid
 
 
-# Headers
-
-
-def test_validate_headers_none():
-    layout = Layout(header=False)
-    report = validate("data/without-headers.csv", layout=layout)
-    assert report.valid
-    assert report.task.resource.stats["rows"] == 3
-    assert report.task.resource.layout.header is False
-    assert report.task.resource.labels == []
-    assert report.task.resource.header == ["field1", "field2"]
-
-
-def test_validate_headers_none_extra_cell():
-    layout = Layout(header=False)
-    report = validate("data/without-headers-extra.csv", layout=layout)
-    assert report.task.resource.stats["rows"] == 3
-    assert report.task.resource.layout.header is False
-    assert report.task.resource.labels == []
-    assert report.task.resource.header == ["field1", "field2"]
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [3, 3, "extra-cell"],
-    ]
-
-
-def test_validate_headers_number():
-    layout = Layout(header_rows=[2])
-    report = validate("data/matrix.csv", layout=layout)
-    assert report.task.resource.header == ["11", "12", "13", "14"]
-    assert report.valid
-
-
-def test_validate_headers_list_of_numbers():
-    layout = Layout(header_rows=[2, 3, 4])
-    report = validate("data/matrix.csv", layout=layout)
-    assert report.task.resource.header == ["11 21 31", "12 22 32", "13 23 33", "14 24 34"]
-    assert report.valid
-
-
-def test_validate_headers_list_of_numbers_and_headers_join():
-    layout = Layout(header_rows=[2, 3, 4], header_join=".")
-    report = validate("data/matrix.csv", layout=layout)
-    assert report.task.resource.header == ["11.21.31", "12.22.32", "13.23.33", "14.24.34"]
-    assert report.valid
-
-
 # Scheme
 
 
@@ -383,7 +251,50 @@ def test_validate_dialect_delimiter():
 # Layout
 
 
-def test_validate_pick_fields():
+def test_validate_layout_none():
+    layout = Layout(header=False)
+    report = validate("data/without-headers.csv", layout=layout)
+    assert report.valid
+    assert report.task.resource.stats["rows"] == 3
+    assert report.task.resource.layout.header is False
+    assert report.task.resource.labels == []
+    assert report.task.resource.header == ["field1", "field2"]
+
+
+def test_validate_layout_none_extra_cell():
+    layout = Layout(header=False)
+    report = validate("data/without-headers-extra.csv", layout=layout)
+    assert report.task.resource.stats["rows"] == 3
+    assert report.task.resource.layout.header is False
+    assert report.task.resource.labels == []
+    assert report.task.resource.header == ["field1", "field2"]
+    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
+        [3, 3, "extra-cell"],
+    ]
+
+
+def test_validate_layout_number():
+    layout = Layout(header_rows=[2])
+    report = validate("data/matrix.csv", layout=layout)
+    assert report.task.resource.header == ["11", "12", "13", "14"]
+    assert report.valid
+
+
+def test_validate_layout_list_of_numbers():
+    layout = Layout(header_rows=[2, 3, 4])
+    report = validate("data/matrix.csv", layout=layout)
+    assert report.task.resource.header == ["11 21 31", "12 22 32", "13 23 33", "14 24 34"]
+    assert report.valid
+
+
+def test_validate_layout_list_of_numbers_and_headers_join():
+    layout = Layout(header_rows=[2, 3, 4], header_join=".")
+    report = validate("data/matrix.csv", layout=layout)
+    assert report.task.resource.header == ["11.21.31", "12.22.32", "13.23.33", "14.24.34"]
+    assert report.valid
+
+
+def test_validate_layout_pick_fields():
     layout = Layout(pick_fields=[2, "f3"])
     report = validate("data/matrix.csv", layout=layout)
     assert report.task.resource.header == ["f2", "f3"]
@@ -391,7 +302,7 @@ def test_validate_pick_fields():
     assert report.task.valid
 
 
-def test_validate_pick_fields_regex():
+def test_validate_layout_pick_fields_regex():
     layout = Layout(pick_fields=["<regex>f[23]"])
     report = validate("data/matrix.csv", layout=layout)
     assert report.task.resource.header == ["f2", "f3"]
@@ -399,7 +310,7 @@ def test_validate_pick_fields_regex():
     assert report.task.valid
 
 
-def test_validate_skip_fields():
+def test_validate_layout_skip_fields():
     layout = Layout(skip_fields=[1, "f4"])
     report = validate("data/matrix.csv", layout=layout)
     assert report.task.resource.header == ["f2", "f3"]
@@ -407,7 +318,7 @@ def test_validate_skip_fields():
     assert report.task.valid
 
 
-def test_validate_skip_fields_regex():
+def test_validate_layout_skip_fields_regex():
     layout = Layout(skip_fields=["<regex>f[14]"])
     report = validate("data/matrix.csv", layout=layout)
     assert report.task.resource.header == ["f2", "f3"]
@@ -415,7 +326,7 @@ def test_validate_skip_fields_regex():
     assert report.task.valid
 
 
-def test_validate_limit_fields():
+def test_validate_layout_limit_fields():
     layout = Layout(limit_fields=1)
     report = validate("data/matrix.csv", layout=layout)
     assert report.task.resource.header == ["f1"]
@@ -423,7 +334,7 @@ def test_validate_limit_fields():
     assert report.task.valid
 
 
-def test_validate_offset_fields():
+def test_validate_layout_offset_fields():
     layout = Layout(offset_fields=3)
     report = validate("data/matrix.csv", layout=layout)
     assert report.task.resource.header == ["f4"]
@@ -431,7 +342,7 @@ def test_validate_offset_fields():
     assert report.task.valid
 
 
-def test_validate_limit_and_offset_fields():
+def test_validate_layout_limit_and_offset_fields():
     layout = Layout(limit_fields=2, offset_fields=1)
     report = validate("data/matrix.csv", layout=layout)
     assert report.task.resource.header == ["f2", "f3"]
@@ -439,7 +350,7 @@ def test_validate_limit_and_offset_fields():
     assert report.task.valid
 
 
-def test_validate_pick_rows():
+def test_validate_layout_pick_rows():
     layout = Layout(pick_rows=[1, 3, "31"])
     report = validate("data/matrix.csv", layout=layout)
     assert report.task.resource.header == ["f1", "f2", "f3", "f4"]
@@ -447,7 +358,7 @@ def test_validate_pick_rows():
     assert report.task.valid
 
 
-def test_validate_pick_rows_regex():
+def test_validate_layout_pick_rows_regex():
     layout = Layout(pick_rows=["<regex>[f23]1"])
     report = validate("data/matrix.csv", layout=layout)
     assert report.task.resource.header == ["f1", "f2", "f3", "f4"]
@@ -455,7 +366,7 @@ def test_validate_pick_rows_regex():
     assert report.task.valid
 
 
-def test_validate_skip_rows():
+def test_validate_layout_skip_rows():
     layout = Layout(skip_rows=[2, "41"])
     report = validate("data/matrix.csv", layout=layout)
     assert report.task.resource.header == ["f1", "f2", "f3", "f4"]
@@ -463,7 +374,7 @@ def test_validate_skip_rows():
     assert report.task.valid
 
 
-def test_validate_skip_rows_regex():
+def test_validate_layout_skip_rows_regex():
     layout = Layout(skip_rows=["<regex>[14]1"])
     report = validate("data/matrix.csv", layout=layout)
     assert report.task.resource.header == ["f1", "f2", "f3", "f4"]
@@ -471,7 +382,7 @@ def test_validate_skip_rows_regex():
     assert report.task.valid
 
 
-def test_validate_skip_rows_blank():
+def test_validate_layout_skip_rows_blank():
     layout = Layout(skip_rows=["<blank>"])
     report = validate("data/blank-rows.csv", layout=layout)
     assert report.task.resource.header == ["id", "name", "age"]
@@ -479,7 +390,7 @@ def test_validate_skip_rows_blank():
     assert report.task.valid
 
 
-def test_validate_pick_rows_and_fields():
+def test_validate_layout_pick_rows_and_fields():
     layout = Layout(pick_rows=[1, 3, "31"], pick_fields=[2, "f3"])
     report = validate("data/matrix.csv", layout=layout)
     assert report.task.resource.header == ["f2", "f3"]
@@ -487,7 +398,7 @@ def test_validate_pick_rows_and_fields():
     assert report.task.valid
 
 
-def test_validate_skip_rows_and_fields():
+def test_validate_layout_skip_rows_and_fields():
     layout = Layout(skip_rows=[2, "41"], skip_fields=[1, "f4"])
     report = validate("data/matrix.csv", layout=layout)
     assert report.task.resource.header == ["f2", "f3"]
@@ -495,7 +406,7 @@ def test_validate_skip_rows_and_fields():
     assert report.task.valid
 
 
-def test_validate_limit_rows():
+def test_validate_layout_limit_rows():
     layout = Layout(limit_rows=1)
     report = validate("data/matrix.csv", layout=layout)
     assert report.task.resource.header == ["f1", "f2", "f3", "f4"]
@@ -503,7 +414,7 @@ def test_validate_limit_rows():
     assert report.task.valid
 
 
-def test_validate_offset_rows():
+def test_validate_layout_offset_rows():
     layout = Layout(offset_rows=3)
     report = validate("data/matrix.csv", layout=layout)
     assert report.task.resource.header == ["f1", "f2", "f3", "f4"]
@@ -511,7 +422,7 @@ def test_validate_offset_rows():
     assert report.task.valid
 
 
-def test_validate_limit_and_offset_rows():
+def test_validate_layout_limit_and_offset_rows():
     layout = Layout(limit_rows=2, offset_rows=1)
     report = validate("data/matrix.csv", layout=layout)
     assert report.task.resource.header == ["f1", "f2", "f3", "f4"]
@@ -519,7 +430,7 @@ def test_validate_limit_and_offset_rows():
     assert report.task.valid
 
 
-def test_validate_invalid_limit_rows():
+def test_validate_layout_invalid_limit_rows():
     layout = Layout(limit_rows=2)
     report = validate("data/invalid.csv", layout=layout)
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
@@ -532,7 +443,7 @@ def test_validate_invalid_limit_rows():
     ]
 
 
-def test_validate_structure_errors_with_limit_rows():
+def test_validate_layout_structure_errors_with_limit_rows():
     layout = Layout(limit_rows=3)
     report = validate("data/structure-errors.csv", layout=layout)
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
@@ -747,6 +658,201 @@ def test_validate_infer_names():
     assert report.task.resource.labels == []
     assert report.task.resource.header == ["id", "name"]
     assert report.valid
+
+
+# Integrity
+
+# TODO: merge
+@pytest.mark.skip
+def test_validate_foreign_key_error():
+    source = {
+        "path": "data/table.csv",
+        "schema": {
+            "fields": [
+                {"name": "id", "type": "integer"},
+                {"name": "name", "type": "string"},
+            ],
+            "foreignKeys": [
+                {"fields": "id", "reference": {"resource": "ids", "fields": "id"}}
+            ],
+        },
+    }
+    lookup = {"ids": {("id",): set([(1,), (2,)])}}
+    report = validate(source, lookup=lookup)
+    assert report.valid
+
+
+# TODO: merge
+@pytest.mark.skip
+def test_validate_foreign_key_error_invalid():
+    source = {
+        "path": "data/table.csv",
+        "schema": {
+            "fields": [
+                {"name": "id", "type": "integer"},
+                {"name": "name", "type": "string"},
+            ],
+            "foreignKeys": [
+                {"fields": "id", "reference": {"resource": "ids", "fields": "id"}}
+            ],
+        },
+    }
+    lookup = {"ids": {("id",): set([(1,)])}}
+    report = validate(source, lookup=lookup)
+    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
+        [3, None, "foreign-key-error"],
+    ]
+
+
+def test_validate_foreign_key_error_self_referencing():
+    source = {
+        "path": "data/nested.csv",
+        "schema": {
+            "fields": [
+                {"name": "id", "type": "integer"},
+                {"name": "cat", "type": "integer"},
+                {"name": "name", "type": "string"},
+            ],
+            "foreignKeys": [
+                {"fields": "cat", "reference": {"resource": "", "fields": "id"}}
+            ],
+        },
+    }
+    report = validate(source)
+    assert report.valid
+
+
+def test_validate_foreign_key_error_self_referencing_invalid():
+    source = {
+        "path": "data/nested-invalid.csv",
+        "schema": {
+            "fields": [
+                {"name": "id", "type": "integer"},
+                {"name": "cat", "type": "integer"},
+                {"name": "name", "type": "string"},
+            ],
+            "foreignKeys": [
+                {"fields": "cat", "reference": {"resource": "", "fields": "id"}}
+            ],
+        },
+    }
+    report = validate(source)
+    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
+        [6, None, "foreign-key-error"],
+    ]
+
+
+def test_validate_unique_error():
+    report = validate(
+        "data/unique-field.csv",
+        schema="data/unique-field.json",
+        pick_errors=["unique-error"],
+    )
+    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
+        [10, 1, "unique-error"],
+    ]
+
+
+def test_validate_unique_error_and_type_error():
+    source = [
+        ["id", "unique_number"],
+        ["a1", 100],
+        ["a2", "bad"],
+        ["a3", 100],
+    ]
+    schema = {
+        "fields": [
+            {"name": "id"},
+            {"name": "unique_number", "type": "number", "constraints": {"unique": True}},
+        ]
+    }
+    report = validate(source, schema=schema)
+    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
+        [3, 2, "type-error"],
+        [4, 2, "unique-error"],
+    ]
+
+
+def test_validate_primary_key_error():
+    report = validate(
+        "data/unique-field.csv",
+        schema="data/unique-field.json",
+        pick_errors=["primary-key-error"],
+    )
+    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
+        [10, None, "primary-key-error"],
+    ]
+
+
+def test_validate_primary_key_and_unique_error():
+    report = validate(
+        "data/unique-field.csv",
+        schema="data/unique-field.json",
+    )
+    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
+        [10, 1, "unique-error"],
+        [10, None, "primary-key-error"],
+    ]
+
+
+def test_validate_primary_key_error_composite():
+    source = [
+        ["id", "name"],
+        [1, "Alex"],
+        [1, "John"],
+        ["", "Paul"],
+        [1, "John"],
+        ["", None],
+    ]
+    schema = {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+        ],
+        "primaryKey": ["id", "name"],
+    }
+    report = validate(source, schema=schema)
+    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
+        [5, None, "primary-key-error"],
+        [6, None, "blank-row"],
+        [6, None, "primary-key-error"],
+    ]
+
+
+# TODO: merge
+@pytest.mark.skip
+def test_validate_foreign_key_error_copy():
+    schema = {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+        ],
+        "foreignKeys": [
+            {"fields": "id", "reference": {"resource": "ids", "fields": "id"}}
+        ],
+    }
+    lookup = {"ids": {("id",): set([(1,), (2,)])}}
+    report = validate("data/table.csv", schema=schema, lookup=lookup)
+    assert report.valid
+
+
+# TODO: merge
+@pytest.mark.skip
+def test_validate_foreign_key_error_invalid_copy():
+    schema = {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+        ],
+        "foreignKeys": [
+            {"fields": "id", "reference": {"resource": "ids", "fields": "id"}}
+        ],
+    }
+    lookup = {"ids": {("id",): set([(1,)])}}
+    report = validate("data/table.csv", schema=schema, lookup=lookup)
+    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
+        [3, None, "foreign-key-error"],
+    ]
 
 
 # Validation
@@ -1003,122 +1109,6 @@ def test_validate_custom_checks_bad_name():
     report = validate("data/table.csv", checks=[{"code": "bad"}])
     assert report.flatten(["code", "note"]) == [
         ["check-error", 'cannot create check "bad". Try installing "frictionless-bad"'],
-    ]
-
-
-# Integrity
-
-
-def test_validate_unique_error():
-    report = validate(
-        "data/unique-field.csv",
-        schema="data/unique-field.json",
-        pick_errors=["unique-error"],
-    )
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [10, 1, "unique-error"],
-    ]
-
-
-def test_validate_unique_error_and_type_error():
-    source = [
-        ["id", "unique_number"],
-        ["a1", 100],
-        ["a2", "bad"],
-        ["a3", 100],
-    ]
-    schema = {
-        "fields": [
-            {"name": "id"},
-            {"name": "unique_number", "type": "number", "constraints": {"unique": True}},
-        ]
-    }
-    report = validate(source, schema=schema)
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [3, 2, "type-error"],
-        [4, 2, "unique-error"],
-    ]
-
-
-def test_validate_primary_key_error():
-    report = validate(
-        "data/unique-field.csv",
-        schema="data/unique-field.json",
-        pick_errors=["primary-key-error"],
-    )
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [10, None, "primary-key-error"],
-    ]
-
-
-def test_validate_primary_key_and_unique_error():
-    report = validate(
-        "data/unique-field.csv",
-        schema="data/unique-field.json",
-    )
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [10, 1, "unique-error"],
-        [10, None, "primary-key-error"],
-    ]
-
-
-def test_validate_primary_key_error_composite():
-    source = [
-        ["id", "name"],
-        [1, "Alex"],
-        [1, "John"],
-        ["", "Paul"],
-        [1, "John"],
-        ["", None],
-    ]
-    schema = {
-        "fields": [
-            {"name": "id", "type": "integer"},
-            {"name": "name", "type": "string"},
-        ],
-        "primaryKey": ["id", "name"],
-    }
-    report = validate(source, schema=schema)
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [5, None, "primary-key-error"],
-        [6, None, "blank-row"],
-        [6, None, "primary-key-error"],
-    ]
-
-
-# TODO: merge
-@pytest.mark.skip
-def test_validate_foreign_key_error_copy():
-    schema = {
-        "fields": [
-            {"name": "id", "type": "integer"},
-            {"name": "name", "type": "string"},
-        ],
-        "foreignKeys": [
-            {"fields": "id", "reference": {"resource": "ids", "fields": "id"}}
-        ],
-    }
-    lookup = {"ids": {("id",): set([(1,), (2,)])}}
-    report = validate("data/table.csv", schema=schema, lookup=lookup)
-    assert report.valid
-
-
-# TODO: merge
-@pytest.mark.skip
-def test_validate_foreign_key_error_invalid_copy():
-    schema = {
-        "fields": [
-            {"name": "id", "type": "integer"},
-            {"name": "name", "type": "string"},
-        ],
-        "foreignKeys": [
-            {"fields": "id", "reference": {"resource": "ids", "fields": "id"}}
-        ],
-    }
-    lookup = {"ids": {("id",): set([(1,)])}}
-    report = validate("data/table.csv", schema=schema, lookup=lookup)
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [3, None, "foreign-key-error"],
     ]
 
 
