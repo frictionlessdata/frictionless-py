@@ -14,6 +14,12 @@ from .helpers import cached_property
 from . import helpers
 
 
+# NOTE:
+# In general, it will be better to simplify magic used in Metadata
+# For exmple, we can make default values (like empty list) immutable
+# to get rid of metadata_attach and related complexity
+
+
 class Metadata(helpers.ControlledDict):
     """Metadata representation
 
@@ -31,7 +37,6 @@ class Metadata(helpers.ControlledDict):
 
     metadata_Error = None
     metadata_profile = None
-    # TODO: review this flag and classes using it
     metadata_strict = False
     metadata_duplicate = False
 

@@ -11,7 +11,6 @@ from . import helpers
 from . import config
 
 
-# TODO: move validation logic to validate_inquiry?
 class Inquiry(Metadata):
     """Inquiry representation.
 
@@ -51,7 +50,7 @@ class Inquiry(Metadata):
                 note = "Inquiry cannot contain nested inquiries"
                 raise FrictionlessException(InquiryError(note=note))
             if task.type == "package":
-                # TODO:
+                # NOTE:
                 # For now, we don't flatten inquiry completely and for the case
                 # of a list of packages with one resource we don't get proper multiprocessing
                 report = validate(**helpers.create_options(task))
@@ -68,6 +67,9 @@ class Inquiry(Metadata):
         # Validate in-parallel
         else:
             with Pool() as pool:
+                # NOTE:
+                # We need more tests to guarantee proper serialization
+                # In general, we need to send plain object and get plain objects back
                 reports.extend(pool.map(partial(helpers.apply_function, validate), tasks))
 
         # Return report
@@ -114,7 +116,6 @@ class InquiryTask(Metadata):
         self.setinitial("source", source)
         self.setinitial("type", type)
         for key, value in options.items():
-            # TODO: review
             self.setinitial(stringcase.camelcase(key), value)
         super().__init__(descriptor)
 

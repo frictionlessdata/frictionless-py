@@ -9,7 +9,6 @@ from . import helpers
 from . import config
 
 
-# TODO: move validation logic to validate_inquiry?
 class Pipeline(Metadata):
     """Pipeline representation.
 
