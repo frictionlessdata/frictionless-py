@@ -623,6 +623,7 @@ class Resource(Metadata):
             self.__parser.open()
             # TODO: make below lazy?
             self.__read_infer_sample()
+            self.__header = self.__read_header()
             if not self.__nolookup:
                 self.__lookup = self.__read_prepare_lookup()
             if self.__parser.loader:
@@ -735,15 +736,6 @@ class Resource(Metadata):
     def __read_row_stream(self):
         schema = self.schema
 
-        # Handle header errors
-        if self.header is not None:
-            if not self.header.valid:
-                error = self.header.errors[0]
-                if self.onerror == "warn":
-                    warnings.warn(error.message, UserWarning)
-                elif self.onerror == "raise":
-                    raise FrictionlessException(error)
-
         # Create field info
         # This structure is optimized and detached version of schema.fields
         # We create all data structures in-advance to share them between rows
@@ -835,7 +827,7 @@ class Resource(Metadata):
                             error = errors.ForeignKeyError.from_row(row, note=note)
                             row.errors.append(error)
 
-            # Handle row errors
+            # Handle errors
             if self.onerror != "ignore":
                 if not row.valid:
                     error = row.errors[0]
@@ -845,6 +837,27 @@ class Resource(Metadata):
 
             # Stream rows
             yield row
+
+    def __read_header(self):
+
+        # Create header
+        header = Header(
+            self.__labels,
+            fields=self.schema.fields,
+            field_positions=self.__field_positions,
+            row_positions=self.layout.header_rows,
+            ignore_case=not self.layout.header_case,
+        )
+
+        # Handle errors
+        if not header.valid:
+            error = header.errors[0]
+            if self.onerror == "warn":
+                warnings.warn(error.message, UserWarning)
+            elif self.onerror == "raise":
+                raise FrictionlessException(error)
+
+        return header
 
     def __read_data_stream(self):
 
@@ -975,21 +988,14 @@ class Resource(Metadata):
             schema=self.schema,
         )
 
-        # Store stats
-        self.stats["fields"] = len(self.schema.fields)
-
         # Store state
         self.__labels = labels
         self.__sample = sample
         self.__field_positions = field_positions
         self.__sample_positions = sample_positions
-        self.__header = Header(
-            labels,
-            fields=self.schema.fields,
-            field_positions=field_positions,
-            row_positions=header_row_positions,
-            ignore_case=not layout.header_case,
-        )
+
+        # Store stats
+        self.stats["fields"] = len(self.schema.fields)
 
     def __read_infer_header(self, header_data):
         layout = self.layout

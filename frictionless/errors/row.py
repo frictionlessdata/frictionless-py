@@ -1,7 +1,7 @@
-from ..error import Error
+from .table import TableError
 
 
-class RowError(Error):
+class RowError(TableError):
     """Row error representation
 
     Parameters:
@@ -17,7 +17,7 @@ class RowError(Error):
 
     code = "row-error"
     name = "Row Error"
-    tags = ["#row"]
+    tags = ["#table", "#row"]
     template = "Row Error"
     description = "Row Error"
 
@@ -51,7 +51,7 @@ class RowError(Error):
 class BlankRowError(RowError):
     code = "blank-row"
     name = "Blank Row"
-    tags = ["#row"]
+    tags = ["#table", "#row"]
     template = 'Row at position "{rowPosition}" is completely blank'
     description = "This row is empty. A row should contain at least one value."
 
@@ -59,7 +59,7 @@ class BlankRowError(RowError):
 class PrimaryKeyError(RowError):
     code = "primary-key-error"
     name = "PrimaryKey Error"
-    tags = ["#row"]
+    tags = ["#table", "#row"]
     template = 'The row at position "{rowPosition}" does not conform to the primary key constraint: {note}'
     description = "Values in the primary key fields should be unique for every row"
 
@@ -67,7 +67,7 @@ class PrimaryKeyError(RowError):
 class ForeignKeyError(RowError):
     code = "foreign-key-error"
     name = "ForeignKey Error"
-    tags = ["#row"]
+    tags = ["#table", "#row"]
     template = 'The row at position "{rowPosition}" does not conform to the foreign key constraint: {note}'
     description = "Values in the foreign key fields should exist in the reference table"
 
@@ -75,7 +75,7 @@ class ForeignKeyError(RowError):
 class DuplicateRowError(RowError):
     code = "duplicate-row"
     name = "Duplicate Row"
-    tags = ["#row"]
+    tags = ["#table", "#row"]
     template = "Row at position {rowPosition} is duplicated: {note}"
     description = "The row is duplicated."
 
@@ -83,6 +83,6 @@ class DuplicateRowError(RowError):
 class RowConstraintError(RowError):
     code = "row-constraint"
     name = "Row Constraint"
-    tags = ["#row"]
+    tags = ["#table", "#row"]
     template = "The row at position {rowPosition} has an error: {note}"
     description = "The value does not conform to the row constraint."

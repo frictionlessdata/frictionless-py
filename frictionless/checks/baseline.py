@@ -16,41 +16,38 @@ class baseline(Check):
 
     code = "baseline"
     Errors = [
-        # table
-        errors.DialectError,
-        errors.SchemaError,
-        errors.FieldError,
-        # header
+        # Header
+        errors.BlankHeaderError,
+        # Label
         errors.ExtraLabelError,
         errors.MissingLabelError,
         errors.BlankLabelError,
         errors.DuplicateLabelError,
-        errors.BlankHeaderError,
         errors.IncorrectLabelError,
-        # content
+        # Row
+        errors.BlankRowError,
+        errors.PrimaryKeyError,
+        errors.ForeignKeyError,
+        # Cell
         errors.ExtraCellError,
         errors.MissingCellError,
-        errors.BlankRowError,
         errors.TypeError,
         errors.ConstraintError,
         errors.UniqueError,
-        errors.PrimaryKeyError,
-        errors.ForeignKeyError,
     ]
 
     # Validate
 
-    # TODO: use something like table.empty here?
-    # TODO: move source error to validate_source?
-    def validate_schema(self, schema):
-        yield from (
-            schema.metadata_errors
-            if self.table.header or self.table.sample
-            else [errors.SourceError(note="the source is empty")]
-        )
+    def validate_source(self):
+        empty = not (self.resource.sample or self.resource.labels)
+        yield from [errors.SourceError(note="the source is empty")] if empty else []
 
-    def validate_header(self, header):
-        yield from header.errors
+    def validate_schema(self):
+        empty = not (self.resource.sample or self.resource.labels)
+        yield from self.resource.schema.metadata_errors if not empty else []
+
+    def validate_header(self):
+        yield from self.resource.header.errors
 
     def validate_row(self, row):
         yield from row.errors

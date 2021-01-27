@@ -10,6 +10,8 @@ class Step(Metadata):
         super().__init__(descriptor)
         self.setinitial("code", self.code)
 
+    # Transform
+
     def transorm_resource(self, source, target):
         pass
 

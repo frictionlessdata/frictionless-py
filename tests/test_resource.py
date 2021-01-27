@@ -853,7 +853,8 @@ def test_resource_dialect_header_case_default():
     schema = Schema(fields=[Field(name="ID"), Field(name="NAME")])
     with Resource("data/table.csv", schema=schema) as resource:
         assert resource.schema.field_names == ["ID", "NAME"]
-        assert resource.header == ["id", "name"]
+        assert resource.labels == ["id", "name"]
+        assert resource.header == ["ID", "NAME"]
         assert resource.header.valid is False
         assert resource.header.errors[0].code == "incorrect-label"
         assert resource.header.errors[1].code == "incorrect-label"
@@ -864,7 +865,8 @@ def test_resource_dialect_header_case_is_false():
     schema = Schema(fields=[Field(name="ID"), Field(name="NAME")])
     with Resource("data/table.csv", layout=layout, schema=schema) as resource:
         assert resource.schema.field_names == ["ID", "NAME"]
-        assert resource.header == ["id", "name"]
+        assert resource.labels == ["id", "name"]
+        assert resource.header == ["ID", "NAME"]
         assert resource.header.valid is True
 
 
@@ -934,7 +936,8 @@ def test_resource_layout_header_inline_keyed_headers_is_none():
     source = [{"id": "1", "name": "english"}, {"id": "2", "name": "中国人"}]
     layout = Layout(header=False)
     with Resource(source, layout=layout) as resource:
-        assert resource.header == []
+        assert resource.labels == []
+        assert resource.header == ["field1", "field2"]
         assert resource.read_rows() == [
             {"field1": "id", "field2": "name"},
             {"field1": "1", "field2": "english"},
@@ -987,7 +990,8 @@ def test_resource_layout_header_strip_and_non_strings():
     source = [[" header ", 2, 3, None], ["value1", "value2", "value3", "value4"]]
     layout = Layout(header_rows=[1])
     with Resource(source, layout=layout) as resource:
-        assert resource.header == ["header", "2", "3", ""]
+        assert resource.labels == ["header", "2", "3", ""]
+        assert resource.header == ["header", "2", "3", "field4"]
         assert resource.read_rows() == [
             {"header": "value1", "2": "value2", "3": "value3", "field4": "value4"},
         ]
@@ -1491,8 +1495,9 @@ def test_resource_schema_provided():
         ]
     }
     with Resource("data/table.csv", schema=schema) as resource:
-        assert resource.header == ["id", "name"]
         assert resource.schema == schema
+        assert resource.labels == ["id", "name"]
+        assert resource.header == ["new1", "new2"]
         assert resource.read_rows() == [
             {"new1": "1", "new2": "english"},
             {"new1": "2", "new2": "中国人"},
@@ -1539,13 +1544,14 @@ def test_resource_sync_schema_with_infer():
 def test_resource_schema_patch_schema():
     detector = Detector(schema_patch={"fields": {"id": {"name": "ID", "type": "string"}}})
     with Resource("data/table.csv", detector=detector) as resource:
-        assert resource.header == ["id", "name"]
         assert resource.schema == {
             "fields": [
                 {"name": "ID", "type": "string"},
                 {"name": "name", "type": "string"},
             ]
         }
+        assert resource.labels == ["id", "name"]
+        assert resource.header == ["ID", "name"]
         assert resource.read_rows() == [
             {"ID": "1", "name": "english"},
             {"ID": "2", "name": "中国人"},
@@ -1579,7 +1585,8 @@ def test_resource_schema_patch_schema_with_infer():
             {"name": "name", "type": "string"},
         ]
     }
-    assert resource.header == ["id", "name"]
+    assert resource.labels == ["id", "name"]
+    assert resource.header == ["ID", "name"]
     assert resource.read_rows() == [
         {"ID": "1", "name": "english"},
         {"ID": "2", "name": "中国人"},
@@ -1684,7 +1691,8 @@ def test_resource_infer_names():
             {"name": "new2", "type": "string"},
         ]
     }
-    assert resource.header == ["id", "name"]
+    assert resource.labels == ["id", "name"]
+    assert resource.header == ["new1", "new2"]
     assert resource.read_rows() == [
         {"new1": 1, "new2": "english"},
         {"new1": 2, "new2": "中国人"},
@@ -1728,13 +1736,14 @@ def test_resource_infer_type_with_open():
 def test_resource_infer_names_with_open():
     detector = Detector(field_names=["new1", "new2"])
     with Resource("data/table.csv", detector=detector) as resource:
-        assert resource.header == ["id", "name"]
         assert resource.schema == {
             "fields": [
                 {"name": "new1", "type": "integer"},
                 {"name": "new2", "type": "string"},
             ]
         }
+        assert resource.labels == ["id", "name"]
+        assert resource.header == ["new1", "new2"]
         assert resource.read_rows() == [
             {"new1": 1, "new2": "english"},
             {"new1": 2, "new2": "中国人"},
@@ -1893,8 +1902,9 @@ def test_resource_open_without_rows():
 
 def test_resource_open_without_headers():
     with Resource("data/without-headers.csv") as resource:
+        assert resource.labels == []
         assert resource.header.missing
-        assert resource.header == []
+        assert resource.header == ["field1", "field2"]
         assert resource.schema == {
             "fields": [
                 {"name": "field1", "type": "integer"},

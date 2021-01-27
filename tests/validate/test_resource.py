@@ -264,15 +264,17 @@ def test_validate_headers_none():
     assert report.valid
     assert report.task.resource.stats["rows"] == 3
     assert report.task.resource.layout.header is False
-    assert report.task.resource.header == []
+    assert report.task.resource.labels == []
+    assert report.task.resource.header == ["field1", "field2"]
 
 
 def test_validate_headers_none_extra_cell():
     layout = Layout(header=False)
     report = validate("data/without-headers-extra.csv", layout=layout)
     assert report.task.resource.stats["rows"] == 3
-    assert report.task.resource.header == []
     assert report.task.resource.layout.header is False
+    assert report.task.resource.labels == []
+    assert report.task.resource.header == ["field1", "field2"]
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [3, 3, "extra-cell"],
     ]
@@ -739,10 +741,11 @@ def test_validate_infer_names():
         layout={"header": False},
         detector=detector,
     )
-    assert report.task.resource.header == []
     assert report.task.resource.schema["fields"][0]["name"] == "id"
     assert report.task.resource.schema["fields"][1]["name"] == "name"
     assert report.task.resource.stats["rows"] == 3
+    assert report.task.resource.labels == []
+    assert report.task.resource.header == ["id", "name"]
     assert report.valid
 
 
@@ -873,11 +876,11 @@ def test_validate_pick_errors():
 def test_validate_pick_errors_tags():
     report = validate("data/invalid.csv", pick_errors=["#header"])
     assert report.task.scope == [
+        "blank-header",
         "extra-label",
         "missing-label",
         "blank-label",
         "duplicate-label",
-        "blank-header",
         "incorrect-label",
     ]
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [

@@ -59,7 +59,7 @@ def test_sql_parser_headers_false(database_url):
     dialect = SqlDialect(table="table")
     layout = Layout(header=False)
     with Resource(database_url, dialect=dialect, layout=layout) as resource:
-        assert resource.header == []
+        assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
             {"id": None, "name": "name"},
             {"id": 1, "name": "english"},

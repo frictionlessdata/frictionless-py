@@ -1,7 +1,7 @@
-from ..error import Error
+from .table import TableError
 
 
-class HeaderError(Error):
+class HeaderError(TableError):
     """Header error representation
 
     Parameters:
@@ -20,7 +20,7 @@ class HeaderError(Error):
 
     code = "header-error"
     name = "Header Error"
-    tags = ["#header"]
+    tags = ["table", "#header"]
     template = "Cell Error"
     description = "Cell Error"
 
@@ -40,6 +40,6 @@ class HeaderError(Error):
 class BlankHeaderError(HeaderError):
     code = "blank-header"
     name = "Blank Header"
-    tags = ["#header"]
+    tags = ["table", "#header"]
     template = "Header is completely blank"
     description = "This header is empty. A header should contain at least one value."

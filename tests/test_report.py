@@ -40,23 +40,20 @@ def test_report():
     assert report.task.time
     assert report.task.valid is True
     assert report.task.scope == [
-        "dialect-error",
-        "schema-error",
-        "field-error",
+        "blank-header",
         "extra-label",
         "missing-label",
         "blank-label",
         "duplicate-label",
-        "blank-header",
         "incorrect-label",
+        "blank-row",
+        "primary-key-error",
+        "foreign-key-error",
         "extra-cell",
         "missing-cell",
-        "blank-row",
         "type-error",
         "constraint-error",
         "unique-error",
-        "primary-key-error",
-        "foreign-key-error",
     ]
     assert report.task.stats == {
         "errors": 0,

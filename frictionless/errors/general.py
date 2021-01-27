@@ -161,22 +161,6 @@ class CompressionError(GeneralError):
     description = "Data reading error because of a decompression problem."
 
 
-class ChecksumError(GeneralError):
-    code = "checksum-error"
-    name = "Checksum Error"
-    tags = ["#general"]
-    template = "The data source does not match the expected checksum: {note}"
-    description = "This error can happen if the data is corrupted."
-
-
-class TaskError(GeneralError):
-    code = "task-error"
-    name = "Task Error"
-    tags = ["#general"]
-    template = "The task has an error: {note}"
-    description = "General task-level error."
-
-
 class StorageError(GeneralError):
     code = "storage-error"
     name = "Storage Error"
@@ -185,10 +169,9 @@ class StorageError(GeneralError):
     description = "A storage's operation cannot be performed"
 
 
-# NOTE: we need to try to find a way to make it CellError if possible
-class DeviatedValueError(GeneralError):
-    code = "deviated-value"
-    name = "Deviated Value"
+class TaskError(GeneralError):
+    code = "task-error"
+    name = "Task Error"
     tags = ["#general"]
-    template = "There is a possible error because the value is deviated: {note}"
-    description = "The value is deviated."
+    template = "The task has an error: {note}"
+    description = "General task-level error."
