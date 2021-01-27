@@ -7,6 +7,11 @@ from . import errors
 from . import config
 
 
+# NOTE:
+# We might consider making this class instalce of Metadata
+# It will alow providing detector options declaratively e.g. in validation Inquiry
+
+
 class Detector:
     """Detector representation
 
@@ -104,7 +109,7 @@ class Detector:
             return self.__encoding_function(sample)
         return helpers.detect_encoding(sample, confidence=self.__encoding_confidence)
 
-    # TODO: implement
+    # NOTE: we need to move the logic from the Resource class
     def detect_layout(self, sample):
         """Detect layout from sample
 
@@ -210,7 +215,7 @@ class Detector:
                 field.update((fields.get(field.get("name"), {})))
 
         # Validate schema
-        # TODO: reconsider this - not perfect for transform
+        # NOTE: at some point we might need to remove it for transform needs
         if len(schema.field_names) != len(set(schema.field_names)):
             note = "Schemas with duplicate field names are not supported"
             raise FrictionlessException(errors.SchemaError(note=note))
