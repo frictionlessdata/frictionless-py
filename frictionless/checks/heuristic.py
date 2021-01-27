@@ -116,9 +116,9 @@ class deviated_value(Check):
         # Check values
         for row_position, cell in zip(self.__row_positions, self.__cells):
             if not (minimum <= cell <= maximum):
-                dtl = 'value "%s" in row at position "%s" and field "%s" is deviated "[%.2f, %.2f]"'
-                dtl = dtl % (cell, row_position, self.__field_name, minimum, maximum)
-                yield errors.DeviatedValueError(note=dtl)
+                note = 'value "%s" in row at position "%s" and field "%s" is deviated "[%.2f, %.2f]"'
+                note = note % (cell, row_position, self.__field_name, minimum, maximum)
+                yield errors.DeviatedValueError(note=note)
 
     # Metadata
 

@@ -26,5 +26,5 @@ def describe(source, *, type=None, **options):
     describe = getattr(module, "describe_%s" % type, None)
     if describe is None:
         note = f"Not supported describe type: {type}"
-        raise FrictionlessException(errors.Error(note=note))
+        raise FrictionlessException(errors.GeneralError(note=note))
     return describe(source, **options)

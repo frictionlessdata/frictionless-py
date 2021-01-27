@@ -182,7 +182,7 @@ class System:
             if server is not None:
                 return server
         note = f'cannot create server "{name}". Try installing "frictionless-{name}"'
-        raise FrictionlessException(errors.Error(note=note))
+        raise FrictionlessException(errors.GeneralError(note=note))
 
     def create_step(self, descriptor):
         """Create steps
@@ -220,7 +220,7 @@ class System:
             if storage is not None:
                 return storage
         note = f'cannot create storage "{name}". Try installing "frictionless-{name}"'
-        raise FrictionlessException(errors.Error(note=note))
+        raise FrictionlessException(errors.GeneralError(note=note))
 
     def create_type(self, field):
         """Create checks

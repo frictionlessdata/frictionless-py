@@ -86,7 +86,7 @@ def import_from_plugin(name, *, plugin):
     except ImportError:
         module = import_module("frictionless.exception")
         errors = import_module("frictionless.errors")
-        error = errors.Error(note=f'Please install "frictionless[{plugin}]"')
+        error = errors.GeneralError(note=f'Please install "frictionless[{plugin}]"')
         raise module.FrictionlessException(error)
 
 

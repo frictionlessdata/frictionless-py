@@ -199,7 +199,7 @@ class Metadata(helpers.ControlledDict):
                 except Exception:
                     note = "descriptor is not serializable"
                     errors = import_module("frictionless.errors")
-                    raise FrictionlessException(errors.Error(note=note))
+                    raise FrictionlessException(errors.GeneralError(note=note))
             if isinstance(descriptor, (str, Path)):
                 if isinstance(descriptor, Path):
                     descriptor = str(descriptor)

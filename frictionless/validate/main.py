@@ -29,5 +29,5 @@ def validate(source, type=None, **options):
     validate = getattr(module, "validate_%s" % type, None)
     if validate is None:
         note = f"Not supported validate type: {type}"
-        raise FrictionlessException(errors.Error(note=note))
+        raise FrictionlessException(errors.GeneralError(note=note))
     return validate(source, **options)

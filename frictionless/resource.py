@@ -1118,7 +1118,7 @@ class Resource(Metadata):
     def __read_raise_closed(self):
         if not self.__data_stream or not self.__row_stream:
             note = 'the resource has not been opened by "resource.open()"'
-            raise FrictionlessException(errors.Error(note=note))
+            raise FrictionlessException(errors.ResourceError(note=note))
 
     # Write
 
