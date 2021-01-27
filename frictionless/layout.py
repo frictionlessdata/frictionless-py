@@ -21,7 +21,6 @@ class Layout(Metadata):
         skip_rows? ((str|int)[]): what rows to skip
         limit_rows? (int): amount of rows
         offset_rows? (int): from what row to start
-
     """
 
     def __init__(

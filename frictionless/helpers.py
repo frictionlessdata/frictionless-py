@@ -186,6 +186,9 @@ def is_remote_path(path):
     return urlparse(path).scheme in config.REMOTE_SCHEMES
 
 
+# NOTE:
+# We need to rebase this function on checking actual path
+# being withing a basepath directory (it's a safer approach)
 def is_safe_path(path):
     contains_windows_var = lambda val: re.match(r"%.+%", val)
     contains_posix_var = lambda val: re.match(r"\$.+", val)

@@ -27,35 +27,110 @@ class Resource(Metadata):
     -------- | --------
     Public   | `from frictionless import Resource`
 
+    This class is one of the cornerstones of of Frictionless framework.
+    It loads a data source, and allows you to stream its parsed contents.
+    At the same time, it's a metadata class data description.
+
+    ```python
+    with Resource("data/table.csv") as resource:
+        resource.header == ["id", "name"]
+        resource.read_rows() == [
+            {'id': 1, 'name': 'english'},
+            {'id': 2, 'name': '中国人'},
+        ]
+    ```
+
     Parameters:
-        descriptor? (str|dict): resource descriptor
-        name? (str): resource name (for machines)
-        title? (str): resource title (for humans)
-        descriptor? (str): resource descriptor
-        licenses? (dict[]): resource licenses
-        sources? (dict[]): resource sources
-        path? (str): file path
-        data? (any[][]): array or data arrays
-        scheme? (str): file scheme
-        format? (str): file format
-        hashing? (str): file hashing
-        encoding? (str): file encoding
-        innerpath? (str): file compression path
-        compression? (str): file compression
-        control? (dict): file control
-        dialect? (dict): table dialect
-        layout? (dict): table layout
-        schema? (dict): table schema
-        stats? (dict): table stats
-        profile? (str): resource profile
-        basepath? (str): resource basepath
-        onerror? (ignore|warn|raise): behaviour if there is an error
-        trusted? (bool): don't raise an exception on unsafe paths
-        package? (Package): resource package
+
+        source (any): Source of the resource; can be in various forms.
+            Usually, it's a string as `<scheme>://path/to/file.<format>`.
+            It also can be, for example, an array of data arrays/dictionaries.
+            Or it can be a resource descriptor dict or path.
+
+        descriptor (dict|str): A resource descriptor provided explicitly.
+            Keyword arguments will patch this descriptor if provided.
+
+        name? (str): A Resource name according to the specs.
+            It should be a slugified name of the resource.
+
+        title? (str): A Resource title according to the specs
+           It should a human-oriented title of the resource.
+
+        description? (str): A Resource description according to the specs
+           It should a human-oriented description of the resource.
+
+        mediatype? (str): A mediatype/mimetype of the resource e.g. “text/csv”,
+            or “application/vnd.ms-excel”.  Mediatypes are maintained by the
+            Internet Assigned Numbers Authority (IANA) in a media type registry.
+
+        licenses? (dict[]): The license(s) under which the resource is provided.
+            If omitted it's considered the same as the package's licenses.
+
+        sources? (dict[]): The raw sources for this data resource.
+            It MUST be an array of Source objects.
+            Each Source object MUST have a title and
+            MAY have path and/or email properties.
+
+        profile? (str): A string identifying the profile of this descriptor.
+            For example, `tabular-data-resource`.
+
+        scheme? (str): Scheme for loading the file (file, http, ...).
+            If not set, it'll be inferred from `source`.
+
+        format? (str): File source's format (csv, xls, ...).
+            If not set, it'll be inferred from `source`.
+
+        hashing? (str): An algorithm to hash data.
+            It defaults to 'md5'.
+
+        encoding? (str): Source encoding.
+            If not set, it'll be inferred from `source`.
+
+        innerpath? (str): A path within the compressed file.
+            It defaults to the first file in the archive.
+
+        compression? (str): Source file compression (zip, ...).
+            If not set, it'll be inferred from `source`.
+
+        control? (dict|Control): File control.
+            For more information, please check the Control documentation.
+
+        dialect? (dict|Dialect): Table dialect.
+            For more information, please check the Dialect documentation.
+
+        layout? (dict|Layout): Table layout.
+            For more information, please check the Layout documentation.
+
+        schema? (dict|Schema): Table schema.
+            For more information, please check the Schema documentation.
+
+        stats? (dict): File/table stats.
+            A dict with the following possible properties: hash, bytes, fields, rows.
+
+        basepath? (str): A basepath of the resource
+            The fullpath of the resource is joined `basepath` and /path`
+
+        detector? (Detector): File/table detector.
+            For more information, please check the Detector documentation.
+
+        onerror? (ignore|warn|raise): Behaviour if there is an error.
+            It defaults to 'ignore'. The default mode will ignore all errors
+            on resource level and they should be handled by the user
+            being available in Header and Row objects.
+
+        trusted? (bool): Don't raise an exception on unsafe paths.
+            A path provided as a part of the descriptor considered unsafe
+            if there are path traversing or the path is absolute.
+            A path provided as `source` or `path` is alway trusted.
+
+        nolookup? (bool): Don't create a lookup table.
+            A lookup table can be required by foreign keys.
+
+        package? (Package): A owning this resource package.
+            It's actual if the resource is part of some data package.
 
     Raises:
         FrictionlessException: raise any error that occurs during the process
-
     """
 
     def __init__(
@@ -89,8 +164,8 @@ class Resource(Metadata):
         detector=None,
         onerror="ignore",
         trusted=False,
-        package=None,
         nolookup=False,
+        package=None,
     ):
 
         # Handle source
@@ -133,8 +208,8 @@ class Resource(Metadata):
         self.__detector = detector or Detector()
         self.__onerror = onerror
         self.__trusted = trusted
-        self.__package = package
         self.__nolookup = nolookup
+        self.__package = package
 
         # Set specs
         self.setinitial("name", name)

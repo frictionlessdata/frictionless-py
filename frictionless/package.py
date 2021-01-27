@@ -5,6 +5,7 @@ from pathlib import Path
 from copy import deepcopy
 from .exception import FrictionlessException
 from .metadata import Metadata
+from .detector import Detector
 from .resource import Resource
 from .system import system
 from . import helpers
@@ -19,6 +20,9 @@ class Package(Metadata):
     -------- | --------
     Public   | `from frictionless import Package`
 
+    This class is one of the cornerstones of of Frictionless framework.
+    It manages underlaying resource and provides an ability to describe a package.
+
     ```python
     package = Package(resources=[Resource(path="data/table.csv")])
     package.get_resoure('table').read_rows() == [
@@ -28,25 +32,80 @@ class Package(Metadata):
     ```
 
     Parameters:
-        descriptor? (str|dict): package descriptor
-        resources? (dict|Resource[]): list of resource descriptors
-        name? (str): package name (for machines)
-        id? (str): package id (for machines)
-        licenses? (dict[]): package licenses
-        profile? (str): profile name like 'data-package'
-        title? (str): package title (for humans)
-        description? (str): package description
-        homepage? (str): package homepage
-        version? (str): package version
-        sources? (dict[]): package sources
-        contributors? (dict[]): package contributors
-        keywords? (str[]): package keywords
-        image? (str): package image
-        created? (str): package created
+
+        source (any): Source of the package; can be in various forms.
+            Usually, it's a package descriptor in a form of dict or path
+            Also, it can be a glob pattern or a resource path
+
+        descriptor (dict|str): A resource descriptor provided explicitly.
+            Keyword arguments will patch this descriptor if provided.
+
+        resources? (dict|Resource[]): A list of resource descriptors.
+            It can be dicts or Resource instances.
+
+        id? (str): A property reserved for globally unique identifiers.
+            Examples of identifiers that are unique include UUIDs and DOIs.
+
+        name? (str): A short url-usable (and preferably human-readable) name.
+            This MUST be lower-case and contain only alphanumeric characters
+            along with “.”, “_” or “-” characters.
+
+        title? (str): A Package title according to the specs
+           It should a human-oriented title of the resource.
+
+        description? (str): A Package description according to the specs
+           It should a human-oriented description of the resource.
+
+        licenses? (dict[]): The license(s) under which the package is provided.
+            If omitted it's considered the same as the package's licenses.
+
+        sources? (dict[]): The raw sources for this data package.
+            It MUST be an array of Source objects.
+            Each Source object MUST have a title and
+            MAY have path and/or email properties.
+
+        profile? (str): A string identifying the profile of this descriptor.
+            For example, `fiscal-data-package`.
+
+        homepage? (str): A URL for the home on the web that is related to this package.
+            For example, github repository or ckan dataset address.
+
+        version? (str): A version string identifying the version of the package.
+            It should conform to the Semantic Versioning requirements and
+            should follow the Data Package Version pattern.
+
+        contributors? (dict[]): The people or organizations who contributed to this package.
+            It MUST be an array. Each entry is a Contributor and MUST be an object.
+            A Contributor MUST have a title property and MAY contain
+            path, email, role and organization properties.
+
+        keywords? (str[]): An Array of string keywords to assist users searching.
+            For example, ['data', 'fiscal']
+
+        image? (str): An image to use for this data package.
+            For example, when showing the package in a listing.
+
+        created? (str): The datetime on which this was created.
+            The datetime must conform to the string formats for RFC3339 datetime,
+
+        basepath? (str): A basepath of the resource
+            The fullpath of the resource is joined `basepath` and /path`
+
+        detector? (Detector): File/table detector.
+            For more information, please check the Detector documentation.
+
+        onerror? (ignore|warn|raise): Behaviour if there is an error.
+            It defaults to 'ignore'. The default mode will ignore all errors
+            on resource level and they should be handled by the user
+            being available in Header and Row objects.
+
+        trusted? (bool): Don't raise an exception on unsafe paths.
+            A path provided as a part of the descriptor considered unsafe
+            if there are path traversing or the path is absolute.
+            A path provided as `source` or `path` is alway trusted.
+
         hashing? (str): a hashing algorithm for resources
-        basepath? (str): a basepath of the package
-        onerror? (ignore|warn|raise): behaviour if there is an error
-        trusted? (bool): don't raise an exception on unsafe paths
+            It defaults to 'md5'.
 
     Raises:
         FrictionlessException: raise any error that occurs during the process
@@ -59,24 +118,25 @@ class Package(Metadata):
         descriptor=None,
         # Spec
         resources=None,
-        name=None,
         id=None,
-        licenses=None,
-        profile=None,
+        name=None,
         title=None,
         description=None,
+        licenses=None,
+        sources=None,
+        profile=None,
         homepage=None,
         version=None,
-        sources=None,
         contributors=None,
         keywords=None,
         image=None,
         created=None,
         # Extra
-        hashing=None,
         basepath="",
+        detector=None,
         onerror="ignore",
         trusted=False,
+        hashing=None,
     ):
 
         # Handle source
@@ -118,10 +178,11 @@ class Package(Metadata):
         self.setinitial("keywords", keywords)
         self.setinitial("image", image)
         self.setinitial("created", created)
-        self.__hashing = hashing
         self.__basepath = basepath or helpers.detect_basepath(descriptor)
+        self.__detector = detector or Detector()
         self.__onerror = onerror
         self.__trusted = trusted
+        self.__hashing = hashing
         super().__init__(descriptor)
 
     def __setattr__(self, name, value):
@@ -676,8 +737,9 @@ class Package(Metadata):
                         resource = {"name": f"resource{index+1}"}
                     resource = Resource(
                         resource,
-                        hashing=self.__hashing,
                         basepath=self.__basepath,
+                        detector=self.__detector,
+                        hashing=self.__hashing,
                     )
                     list.__setitem__(resources, index, resource)
                 resource.onerror = self.__onerror

@@ -13,6 +13,46 @@ class Detector:
     API      | Usage
     -------- | --------
     Public   | `from frictionless import Detector`
+
+    Parameters:
+
+        buffer_size? (int): The amount of bytes to be extracted as a buffer.
+            It defaults to 10000
+
+        sample_size? (int): The amount of rows to be extracted as a samle.
+            It defaults to 100
+
+        field_type? (str): Enforce all the inferred types to be this type.
+            For more information, please check "Describing  Data" guide.
+
+        field_names? (str[]): Enforce all the inferred fields to have provided names.
+            For more information, please check "Describing  Data" guide.
+
+        field_confidence? (float): A number from 0 to 1 setting the infer confidence.
+            If  1 the data is guaranteed to be valid against the inferred schema.
+            For more information, please check "Describing  Data" guide.
+            It defaults to 0.9
+
+        field_float_numbers? (bool): Flag to indicate desired number type.
+            By default numbers will be `Decimal`; if `True` - `float`.
+            For more information, please check "Describing  Data" guide.
+            It defaults to `False`
+
+        field_missing_values? (str[]): String to be considered as missing values.
+            For more information, please check "Describing  Data" guide.
+            It defaults to `['']`
+
+        schema_sync? (bool): Whether to sync the schema.
+            If it sets to `True` the provided schema will be mapped to
+            the inferred schema. It means that, for example, you can
+            provide a subset of fileds to be applied on top of the inferred
+            fields or the provided schema can have different order of fields.
+
+        schema_patch? (dict): A dictionary to be used as an inferred schema patch.
+            The form of this dictionary should follow the Schema descriptor form
+            except for the `fields` property which should be a mapping with the
+            key named after a field name and the values being a field patch.
+            For more information, please check "Extracting Data" guide.
     """
 
     def __init__(
