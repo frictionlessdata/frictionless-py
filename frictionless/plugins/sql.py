@@ -26,15 +26,20 @@ class SqlPlugin(Plugin):
 
     """
 
-    def create_dialect(self, resource, *, descriptor):
+    def create_file(self, file):
         for prefix in SCHEME_PREFIXES:
-            if resource.scheme.startswith(prefix):
-                return SqlDialect(descriptor)
+            if file.scheme.startswith(prefix):
+                file.scheme = ""
+                file.format = "sql"
+                return file
+
+    def create_dialect(self, resource, *, descriptor):
+        if resource.format == "sql":
+            return SqlDialect(descriptor)
 
     def create_parser(self, resource):
-        for prefix in SCHEME_PREFIXES:
-            if resource.scheme.startswith(prefix):
-                return SqlParser(resource)
+        if resource.format == "sql":
+            return SqlParser(resource)
 
     def create_storage(self, name, **options):
         if name == "sql":

@@ -8,6 +8,11 @@ from .. import helpers
 from .. import config
 
 
+# NOTE:
+# Curretnly the situation with header/no-header concatenation is complicated
+# We need to review it and add more tests for general/tabular edge cases
+
+
 # Plugin
 
 
@@ -93,7 +98,6 @@ class MultipartLoader(Loader):
     def read_byte_stream_create(self):
         fullpath = self.resource.fullpath
         remote = self.resource.remote
-        # TODO: review
         headless = self.resource.get("layout", {}).get("header") is False
         headless = headless or self.resource.format != "csv"
         byte_stream = MultipartByteStream(fullpath, remote=remote, headless=headless)
@@ -101,7 +105,6 @@ class MultipartLoader(Loader):
 
     # Write
 
-    # TODO: raise an exception for csv/header situation?
     def write_byte_stream_save(self, byte_stream):
         number = 0
         while True:
@@ -161,7 +164,6 @@ class MultipartByteStream:
         assert offset == 0
         self.__line_stream = self.read_line_stream()
 
-    # TODO: review
     def read(self, size):
         res = b""
         while True:
@@ -173,7 +175,6 @@ class MultipartByteStream:
                 break
         return res
 
-    # TODO: review (this situation with header/no-header/skipping like is not yet clear)
     def read_line_stream(self):
         for number, path in enumerate(self.__path, start=1):
             with system.create_loader(Resource(path=path)) as loader:

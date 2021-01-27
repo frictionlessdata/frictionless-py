@@ -233,6 +233,10 @@ def is_only_strings(cells):
     return True
 
 
+def is_type(object, name):
+    return type(object).__name__ == name
+
+
 def is_platform(name):
     current = platform.system()
     if name == "linux":

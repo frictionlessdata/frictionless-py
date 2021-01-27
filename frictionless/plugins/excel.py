@@ -231,7 +231,7 @@ class XlsxParser(Parser):
 
         # Fill merged cells
         if dialect.fill_merged_cells:
-            # TODO:
+            # NOTE:
             # We can try using an algorithm similiar to what XlsParser has
             # to support mergin cells in the read-only mode (now we need the write mode)
             for merged_cell_range in list(sheet.merged_cells.ranges):
