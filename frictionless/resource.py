@@ -168,6 +168,17 @@ class Resource(Metadata):
                 self.setdefault("layout", {})
                 self["layout"]["header"] = False
 
+        # Handle official hash/bytes/rows
+        for name in ["hash", "bytes", "rows"]:
+            value = self.pop(name, None)
+            if value:
+                if name == "hash":
+                    hashing, value = helpers.parse_resource_hash(value)
+                    if hashing != config.DEFAULT_HASHING:
+                        self["hashing"] = hashing
+                self.setdefault("stats", {})
+                self["stats"][name] = value
+
         # Handle deprecated url
         url = self.get("url")
         path = self.get("path")

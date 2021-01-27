@@ -294,6 +294,31 @@ def test_resource_standard_specs_properties(create_descriptor):
     assert resource.sources == []
 
 
+def test_resource_official_hash_bytes_rows():
+    resource = Resource({"path": "path", "hash": "hash", "bytes": 1, "rows": 1})
+    assert resource == {
+        "path": "path",
+        "stats": {
+            "hash": "hash",
+            "bytes": 1,
+            "rows": 1,
+        },
+    }
+
+
+def test_resource_official_hash_bytes_rows_with_hashing_algorithm():
+    resource = Resource({"path": "path", "hash": "sha256:hash", "bytes": 1, "rows": 1})
+    assert resource == {
+        "path": "path",
+        "hashing": "sha256",
+        "stats": {
+            "hash": "hash",
+            "bytes": 1,
+            "rows": 1,
+        },
+    }
+
+
 # Scheme
 
 
