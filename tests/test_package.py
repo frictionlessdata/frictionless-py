@@ -554,8 +554,8 @@ def test_package_to_zip_absolute_path(tmpdir):
 
     # Write
     target = os.path.join(tmpdir, "package.zip")
-    resource = Resource(path=os.path.abspath("data/table.csv"), trusted=True)
-    package = Package(resources=[resource], trusted=True)
+    resource = Resource(path=os.path.abspath("data/table.csv"))
+    package = Package(resources=[resource])
     package.to_zip(target)
 
     # Read

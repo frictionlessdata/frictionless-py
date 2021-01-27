@@ -49,7 +49,7 @@ def transform_resource(source, *, steps, **options):
         # Postprocess
         if source.data is not target.data:
             target.data = DataWithErrorHandling(target.data, step=step)
-            # TODO: can be removed when path/data updates is implemented for resource
+            # NOTE: it will be much better to get it updated on the resource level
             target.format = "inline"
 
     return target

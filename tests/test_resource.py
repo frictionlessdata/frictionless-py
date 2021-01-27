@@ -208,7 +208,7 @@ def test_resource_source_path_error_bad_path():
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_source_path_error_bad_path_not_safe_absolute():
     with pytest.raises(FrictionlessException) as excinfo:
-        Resource(path=os.path.abspath("data/table.csv"))
+        Resource({"path": os.path.abspath("data/table.csv")})
     error = excinfo.value.error
     assert error.code == "resource-error"
     assert error.note.count("data/table.csv")
@@ -217,7 +217,7 @@ def test_resource_source_path_error_bad_path_not_safe_absolute():
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_source_path_error_bad_path_not_safe_traversing():
     with pytest.raises(FrictionlessException) as excinfo:
-        Resource(path="data/../data/table.csv")
+        Resource({"path": "data/../data/table.csv"})
     error = excinfo.value.error
     assert error.code == "resource-error"
     assert error.note.count("data/table.csv")
@@ -2057,7 +2057,7 @@ def test_resource_write(tmpdir):
     path1 = "data/table.csv"
     path2 = str(tmpdir.join("table.csv"))
     source = Resource(path=path1)
-    target = Resource(path=path2, trusted=True)
+    target = Resource(path=path2)
     source.write(target)
     assert target.read_rows() == [
         {"id": 1, "name": "english"},
@@ -2070,7 +2070,7 @@ def test_resource_write_format_error_bad_format(tmpdir):
     path1 = "data/resource.csv"
     path2 = str(tmpdir.join("resource.bad"))
     source = Resource(path=path1)
-    target = Resource(path=path2, trusted=True)
+    target = Resource(path=path2)
     with pytest.raises(FrictionlessException) as excinfo:
         source.write(target)
     error = excinfo.value.error
@@ -2501,12 +2501,12 @@ def test_resource_skip_rows_non_string_cell_issue_322():
 def test_resource_relative_parent_path_with_trusted_option_issue_171():
     # trusted=false (default)
     with pytest.raises(FrictionlessException) as excinfo:
-        Resource(path="data/../data/table.csv")
+        Resource({"path": "data/../data/table.csv"})
     error = excinfo.value.error
     assert error.code == "resource-error"
     assert error.note.count("data/table.csv")
     # trusted=true
-    resource = Resource(path="data/../data/table.csv", trusted=True)
+    resource = Resource({"path": "data/../data/table.csv"}, trusted=True)
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},

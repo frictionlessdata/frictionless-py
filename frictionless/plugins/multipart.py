@@ -176,7 +176,7 @@ class MultipartByteStream:
     # TODO: review (this situation with header/no-header/skipping like is not yet clear)
     def read_line_stream(self):
         for number, path in enumerate(self.__path, start=1):
-            with system.create_loader(Resource(path=path, trusted=True)) as loader:
+            with system.create_loader(Resource(path=path)) as loader:
                 for line_number, line in enumerate(loader.byte_stream, start=1):
                     if not self.__headless and number > 1 and line_number == 1:
                         continue

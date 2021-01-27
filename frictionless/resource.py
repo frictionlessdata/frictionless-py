@@ -112,6 +112,10 @@ class Resource(Metadata):
         if isinstance(descriptor, Path):
             descriptor = str(descriptor)
 
+        # Handle trusted
+        if descriptor is None:
+            trusted = True
+
         # Store state
         self.__loader = None
         self.__parser = None

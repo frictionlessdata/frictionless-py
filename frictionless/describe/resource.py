@@ -18,8 +18,7 @@ def describe_resource(source, *, expand=False, nostats=False, **options):
         Resource: data resource
 
     """
-    # TODO: move trusted to be autodetected inside resource
-    resource = Resource(source, trusted=True, **options)
+    resource = Resource(source, **options)
     resource.infer(stats=not nostats)
     if expand:
         resource.expand()

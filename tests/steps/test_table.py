@@ -734,12 +734,12 @@ def test_step_table_write(tmpdir):
         source,
         steps=[
             steps.cell_set(field_name="population", value=100),
-            steps.table_write(path=path, trusted=True),
+            steps.table_write(path=path),
         ],
     )
 
     # Read
-    resource = Resource(path=path, trusted=True)
+    resource = Resource(path=path)
     assert resource.read_rows() == [
         {"id": 1, "name": "germany", "population": 100},
         {"id": 2, "name": "france", "population": 100},

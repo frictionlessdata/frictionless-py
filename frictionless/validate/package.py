@@ -48,7 +48,7 @@ def validate_package(source, noinfer=False, nolookup=False, parallel=False, **op
     # Prepare inquiry
     inquiry = Inquiry(tasks=[])
     for resource in package.resources:
-        # TODO: shall we also validate non-tabular files?
+        # NOTE: we should consider validating non tabular resources either
         if resource.profile == "tabular-data-resource":
             inquiry.tasks.append(
                 InquiryTask(

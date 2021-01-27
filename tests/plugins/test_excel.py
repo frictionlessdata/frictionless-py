@@ -319,7 +319,7 @@ def test_xlsx_parser_fix_for_2007_xls():
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_xlsx_parser_write(tmpdir):
     source = Resource("data/table.csv")
-    target = Resource(str(tmpdir.join("table.xlsx")), trusted=True)
+    target = Resource(str(tmpdir.join("table.xlsx")))
     source.write(target)
     with target:
         assert target.header == ["id", "name"]
@@ -333,7 +333,7 @@ def test_xlsx_parser_write(tmpdir):
 def test_xlsx_parser_write_sheet_name(tmpdir):
     dialect = ExcelDialect(sheet="sheet")
     source = Resource("data/table.csv")
-    target = Resource(str(tmpdir.join("table.xlsx")), dialect=dialect, trusted=True)
+    target = Resource(str(tmpdir.join("table.xlsx")), dialect=dialect)
     source.write(target)
     with target:
         assert target.header == ["id", "name"]
@@ -346,7 +346,7 @@ def test_xlsx_parser_write_sheet_name(tmpdir):
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_xls_parser_write(tmpdir):
     source = Resource("data/table.csv")
-    target = Resource(str(tmpdir.join("table.xls")), trusted=True)
+    target = Resource(str(tmpdir.join("table.xls")))
     source.write(target)
     with target:
         assert target.header == ["id", "name"]
@@ -360,7 +360,7 @@ def test_xls_parser_write(tmpdir):
 def test_xls_parser_write_sheet_name(tmpdir):
     dialect = ExcelDialect(sheet="sheet")
     source = Resource("data/table.csv")
-    target = Resource(str(tmpdir.join("table.xls")), dialect=dialect, trusted=True)
+    target = Resource(str(tmpdir.join("table.xls")), dialect=dialect)
     source.write(target)
     with target:
         assert target.header == ["id", "name"]

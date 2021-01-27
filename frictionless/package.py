@@ -95,6 +95,10 @@ class Package(Metadata):
         if isinstance(descriptor, Path):
             descriptor = str(descriptor)
 
+        # Handle trusted
+        if descriptor is None:
+            trusted = True
+
         # Handle zip
         if helpers.is_zip_descriptor(descriptor):
             descriptor = helpers.unzip_descriptor(descriptor, "datapackage.json")

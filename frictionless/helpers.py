@@ -268,7 +268,7 @@ def stringify_csv_string(cells):
 
 def unzip_descriptor(path, innerpath):
     frictionless = import_module("frictionless")
-    resource = frictionless.Resource(path=path, compression="", trusted=True)
+    resource = frictionless.Resource(path=path, compression="")
     with frictionless.system.create_loader(resource) as loader:
         byte_stream = loader.byte_stream
         if loader.remote:

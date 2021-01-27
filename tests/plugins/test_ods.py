@@ -97,13 +97,13 @@ def test_ods_parser_with_ints_floats_dates():
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_table_write_ods(tmpdir):
     source = Resource("data/table.csv")
-    target = Resource(str(tmpdir.join("table.ods")), trusted=True)
-    source.write(target)
     # TODO: fix ezodf writer creates more cells than we ask (remove limits)
     layout = Layout(limit_fields=2, limit_rows=2)
-    with Resource(target, layout=layout, trusted=True) as resource:
-        assert resource.header == ["id", "name"]
-        assert resource.read_rows() == [
+    target = Resource(str(tmpdir.join("table.ods")), layout=layout)
+    source.write(target)
+    with target:
+        assert target.header == ["id", "name"]
+        assert target.read_rows() == [
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
         ]
