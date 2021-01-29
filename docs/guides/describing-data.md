@@ -4,14 +4,15 @@ title: Describing Data
 
 What does "describing data" mean?
 
-Frictionless is a project based on the [Frictionless Data Specifications](https://specs.frictionlessdata.io/). It's a set of patterns for creating metadata, including Data Package (for datasets), Data Resource (for files), and Table Schema (for tables).
+Frictionless is a project based on the [Frictionless Data Specifications](https://specs.frictionlessdata.io/). It's a set of patterns for creating metadata: Data Package (for datasets), Data Resource (for files), and Table Schema (for tables).
 
-In other words, "describing data" means creating metadata for your data files. The reason for having metadata is simple: usually, data files themselves are not capable of providing enough information. For example, if you have a data table in a CSV format, it misses a few critical pieces of information:
-- meaning of the fields e.g., what the `size` field means; is it clothes size or file size
-- data types information e.g., is this field a string or an integer
-- data constraints e.g., the minimum temperature for your measurements
-- data relations e.g., identifiers connection
-- and others
+The reason for having metadata is simple: it's a way of describing your data in a way that makes it easier for other people (or maybe your future self) to reuse it. Usually, data files themselves are not capable of providing enough information to be usable on their own. For example, if you have a data table in a CSV format, it will be missing a few critical pieces of information:
+
+- meaning of the fields e.g., what does the `size` field mean? Does it refer to clothes size or file size?
+- data type information e.g., is this field a string or an integer?
+- data constraints e.g., the minimum valid temperature for your measurements
+- data relations e.g., how records are connected by identifiers
+- ... and others ...
 
 ```
 ! pip install frictionless
