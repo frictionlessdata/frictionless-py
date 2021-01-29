@@ -107,6 +107,7 @@ class Detector:
         """
         if self.__encoding_function:
             return self.__encoding_function(sample)
+        # TODO: move detection logic to this class?
         return helpers.detect_encoding(sample, confidence=self.__encoding_confidence)
 
     # NOTE: we need to move the logic from the Resource class
