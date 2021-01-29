@@ -63,9 +63,9 @@ class Detector:
     def __init__(
         self,
         buffer_size=config.DEFAULT_BUFFER_SIZE,
+        sample_size=config.DEFAULT_SAMPLE_SIZE,
         encoding_function=None,
         encoding_confidence=config.DEFAULT_ENCODING_CONFIDENCE,
-        sample_size=config.DEFAULT_SAMPLE_SIZE,
         field_type=None,
         field_names=None,
         field_confidence=config.DEFAULT_FIELD_CONFIDENCE,
@@ -75,9 +75,9 @@ class Detector:
         schema_patch=None,
     ):
         self.__buffer_size = buffer_size
+        self.__sample_size = sample_size
         self.__encoding_function = encoding_function
         self.__encoding_confidence = encoding_confidence
-        self.__sample_size = sample_size
         self.__field_type = field_type
         self.__field_names = field_names
         self.__field_confidence = field_confidence
