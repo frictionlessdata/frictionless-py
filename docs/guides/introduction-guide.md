@@ -2,7 +2,7 @@
 title: Introduction Guide
 ---
 
-Let's say we have a few raw data files. It's been just collected by the data researchers, and the quality of data is still far from perfect. In fact, they haven't even removed the comments from the first row!
+Let's say we have a few raw data files. It's just been collected by the data researchers, and the quality of the data is still far from perfect. In fact, they haven't even removed their comments from the first row!
 
 
 ```bash
@@ -18,11 +18,11 @@ $ cat data/countries.csv
     5
 
 
-As we can see, it's a data containing information about European countries and their populations. Also, it's easy to notice that there are two fields having a relationship based on a country's identifier: neighbor_id is a Foreign Key to id.
+As we can see, this is a data file containing information about European countries and their populations. Also, note that two fields are related to each other, based on the country identifiers: `neighbor_id` is a Foreign Key to `id`.
 
 ## Describing Data
 
-First of all, we're going to describe our dataset. Frictionless uses powerful [Frictionless Data Specifications](https://specs.frictionlessdata.io/). They are very handy to describe:
+First of all, we're going to describe our dataset. Frictionless uses powerful [Frictionless Data Specifications](https://specs.frictionlessdata.io/). They are very handy for describing:
 - a data table - [Table Schema](https://specs.frictionlessdata.io/table-schema/)
 - a data resource - [Data Resource](https://specs.frictionlessdata.io/data-resource/)
 - a data package - [Data Package](https://specs.frictionlessdata.io/data-package/)
