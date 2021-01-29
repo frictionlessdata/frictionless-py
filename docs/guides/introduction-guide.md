@@ -2,7 +2,7 @@
 title: Introduction Guide
 ---
 
-Let's say we have a few raw data files. It's just been collected by the data researchers, and the quality of the data is still far from perfect. In fact, they haven't even removed their comments from the first row!
+Let's say we have a few raw data files. This data has just been collected by the data researchers, and the quality of the data is still far from perfect. In fact, they haven't even removed their comments from the first row!
 
 
 ```bash
@@ -18,11 +18,11 @@ $ cat data/countries.csv
     5
 
 
-As we can see, this is a data file containing information about European countries and their populations. Also, note that two fields are related to each other, based on the country identifiers: `neighbor_id` is a Foreign Key to `id`.
+As we can see, the data file contains information about European countries and their populations. Also, note that two fields are related to each other, based on the country identifiers: `neighbor_id` is a Foreign Key to `id`.
 
 ## Describing Data
 
-First of all, we're going to describe our dataset. Frictionless uses powerful [Frictionless Data Specifications](https://specs.frictionlessdata.io/). They are very handy for describing:
+First, we're going to describe our dataset. Frictionless uses powerful [Frictionless Data Specifications](https://specs.frictionlessdata.io/). They are very handy for describing:
 - a data table - [Table Schema](https://specs.frictionlessdata.io/table-schema/)
 - a data resource - [Data Resource](https://specs.frictionlessdata.io/data-resource/)
 - a data package - [Data Package](https://specs.frictionlessdata.io/data-package/)
@@ -78,7 +78,7 @@ As we can see, Frictionless was smart enough to understand that the first row co
 - `population` must be numerical: setting proper missing values will solve it
 - there is a relation between the `id` and `neighbor_id` fields
 
-Let's update our metadata and save it to the disc:
+Let's update our metadata and save it to disc:
 
 
 ```python
@@ -141,7 +141,7 @@ $ cat tmp/countries.resource.yaml
       rows: 5
 
 
-It has the same metadata as we saw above but also includes our editing related to missing values and data types. We didn't change all the wrong data types manually because providing proper missing values had fixed it automatically. Now we have a resource descriptor. In the next section, we will show why metadata matters and how to use it.
+It has the same metadata as we saw above but also includes our editing related to missing values and data types. We didn't change all the wrong data types manually because providing proper missing values has fixed it automatically. Now we have a resource descriptor. In the next section, we will show why metadata matters and how to use it.
 
 ## Extracting Data
 
@@ -167,13 +167,12 @@ $ frictionless extract data/countries.csv
     ==  ===========  =======  ==========
 
 
-
-Actually, it doesn't look terrible, but in reality, data like this is not quite useful:
-- it's not possible to export this data e.g., to SQL because integers are mixed with strings
+It doesn't look terrible. But in reality, this data still isn't as usable as it should be:
+- it's not possible to export it e.g., to SQL because integers are mixed with strings
 - there is still a basically empty row we don't want to have
 - there is a clear mistake in Germany's neighborhood!
 
-Let's use the metadata we save to try extracting data with the help of Frictionless Data specifications:
+Let's use the metadata we saved to try extracting data with the help of Frictionless Data specifications:
 
 
 ```bash
@@ -196,7 +195,9 @@ $ frictionless extract tmp/countries.resource.yaml --basepath .
 
 
 
-It's now much better! Numerical fields are numerical fields, and there are no more textual missing values markers. We can't see in the command-line, but missing values are now `None` values in Python, and the data can be e.g., exported to SQL. Although, it's still not ready for being published. In the next section, we will validate it!
+It's now much better! Numerical fields are now numerically typed, and there are no more textual missing values markers. We can't see it in the command-line, but missing values are now `None` values in Python, and the data can be e.g., exported to SQL. 
+
+However, the data still isn't quite ready for publishing. In the next section, we will validate it!
 
 ## Validating Data
 
@@ -222,7 +223,7 @@ $ frictionless validate data/countries.csv
 
 
 
-Ahh, we had seen that coming. The data is not valid; there are some missing and extra cells. But wait a minute, in the first step, we created the metadata file with more information about our table. We have to use it.
+We anticipated this: the data is not valid; there are some missing and extra cells. But wait a minute – earlier, we created the metadata file with further information about our table. We'll need to use it, if we want more useful output.
 
 
 ```bash
@@ -246,7 +247,7 @@ $ frictionless validate tmp/countries.resource.yaml --basepath .
 
 
 
-Now it's even worse, but regarding data validation errors, the more, the better, actually. Thanks to the metadata, we were able to reveal some critical errors:
+Now it looks even worse – but with data validation errors, more can actually be better. Thanks to the metadata, we've been able to reveal some critical errors:
 - the bad data types, i.e. `Ireland` instead of an id
 - the bad relation between `id` and `neighbor_id`: we don't have a country with id 22
 
@@ -254,9 +255,9 @@ In the next section, we will clean up the data.
 
 ## Transforming Data
 
-> Currently, the pipeline capabilities are under construction. It's already possible to run `dataflows` spec as a pipeline, and more is coming but, for now, we will use Python programming for data cleaning.
+> Pipeline-based data-cleaning capabilities for Frictionless are currently under construction. It's already possible to run the `dataflows` spec as a pipeline, and more is coming. But for now, we will use Python programming for data cleaning.
 
-We will use metadata to fix all the data type problems automatically. The only two things we need to handle manually:
+We will use metadata to fix all the data type problems automatically. The only two things we need to handle manually are:
 - France's population
 - Germany's neighborhood
 
@@ -278,7 +279,7 @@ with Table(source) as table:
     table.write("tmp/countries-cleaned.csv")
 ```
 
-Finally, we've got the cleaned version of our data, which can be exported to a database or published. We have used a CSV as an output format but could have used Excel, JSON, SQL, and others.
+Now at last we've got the cleaned version of our data, which can be exported to a database or published. We've used CSV as our output format – but we could have used Excel, JSON, SQL, and others.
 
 
 ```bash
@@ -347,7 +348,7 @@ $ cat tmp/countries-cleaned.resource.yaml
       rows: 4
 
 
-Basically, that's it; now, we have a valid data file and a corresponding metadata file. It can be shared with other people or stored without fear of type errors or other problems making data research not reproducible.
+Basically, that's it; we now have a valid data file and a corresponding metadata file. It can be shared with other people or stored without fear of type errors or other problems making our data research not reproducible.
 
 
 ```bash
@@ -358,4 +359,4 @@ $ ls -la tmp/countries-cleaned.csv tmp/countries-cleaned.resource.yaml
     -rw------- 1 roll roll 926 дек  2 11:41 tmp/countries-cleaned.resource.yaml
 
 
-In the next articles, we will explore more advanced Frictionless' functionality.
+In the next articles, we will explore more advanced Frictionless functionality.
