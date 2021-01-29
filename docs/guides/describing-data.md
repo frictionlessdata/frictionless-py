@@ -6,7 +6,7 @@ What does "describing data" mean?
 
 Frictionless is a project based on the [Frictionless Data Specifications](https://specs.frictionlessdata.io/). It provides a set of patterns for creating metadata: Data Package (for datasets), Data Resource (for files), and Table Schema (for tables).
 
-The reason we need metadata is simple: it's a way of describing your data in a way that makes it easier for other people (or maybe your future self) to reuse it. Usually, data files themselves are not capable of providing enough information to be usable on their own. For example, if you have a data table in a CSV format, it will be missing a few critical pieces of information:
+The reason we need metadata is simple: it's a way of describing your data in a way that makes it easier for other people (or maybe even your future self) to reuse and verify. Usually, data files themselves are not capable of providing enough information to be usable on their own. For example, if you have a data table in a CSV format, it will be missing a few critical pieces of information:
 
 - meaning of the fields e.g., what does the `size` field mean? Does it refer to clothes size or file size?
 - data type information e.g., is this field a string or an integer?
@@ -14,22 +14,17 @@ The reason we need metadata is simple: it's a way of describing your data in a w
 - data relations e.g., how records are connected by identifiers
 - ... and others ...
 
-```
-! pip install frictionless
-```
+In addition, contextual information can also be provided, such as general dataset purpose, information about data sources, a list of authors, and so forth. When there are many tabular files, relational rules can also be very important. Usually, foreign keys are used to help ensure the integrity of the dataset; for example, there will be a table containing country names, which other tables use as a reference for these values. Data in this "keyed" form is called "normalized data", and is found very often in scientific and other kinds of research.
 
-
-For a dataset, there is even more information that can be provided like general dataset purpose, information about data sources, list of authors, and many more. Of course, when there are many tabular files, relational rules can be very important. Usually, there are foreign keys ensuring the integrity of the dataset; for example, there is some reference table containing country names and other tables using it as a reference. Data in this form is called "normalized data" and it occurs very often in scientific and another kind of research.
-
-Having a general understanding of what is "data describing", we can now articulate why it's important:
+Providing contextual, relational, and other kinds of metadata is important for many reasons, for instance
 - **data validation**; metadata helps to reveal problems in your data on the early stages of your workflow
 - **data publication**; metadata provides additional information that your data can't include
 
-There are not the only two pros of having metadata but they are two the most important. Please continue reading to learn how Frictionless helps to achieve these advantages describing your data.
+There are not the only advantages of having metadata but they are two of the most important. Please continue reading to learn how Frictionless helps to achieve them when describing your data.
 
 ## Describe Functions
 
-The `describe` functions are the main tool for data describing. In many cases, this high-level interface is enough for data exploration and other needs.
+The `describe` functions are the main tool for data description. In many cases, this high-level interface is enough for data exploration and other needs.
 
 The frictionless framework provides 4 different `describe` functions in Python:
 - `describe`: it will detect the source type and return Data Resource or Data Package metadata
