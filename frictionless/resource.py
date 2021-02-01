@@ -1026,7 +1026,7 @@ class Resource(Metadata):
         # Stream with filtering
         for row_position, cells in iterator:
             if self.__read_filter_rows(row_position, cells):
-                cells = self.__read_filter_cells(cells, self.__field_positions)
+                cells = self.layout.read_filter_cells(cells, self.__field_positions)
                 yield row_position, cells
 
     def __read_infer_sample(self):
@@ -1094,7 +1094,7 @@ class Resource(Metadata):
                         continue
 
                 # Sample
-                sample.append(self.__read_filter_cells(cells, field_positions))
+                sample.append(self.layout.read_filter_cells(cells, field_positions))
                 sample_positions.append(row_position)
                 if len(sample) >= self.__detector.sample_size:
                     break
@@ -1197,15 +1197,6 @@ class Resource(Metadata):
                 elif isinstance(item, typing.Pattern) and item.match(cell):
                     match = not match
         return match
-
-    def __read_filter_cells(self, cells, field_positions):
-        if self.layout.is_field_filtering:
-            result = []
-            for field_position, cell in enumerate(cells, start=1):
-                if field_position in field_positions:
-                    result.append(cell)
-            return result
-        return cells
 
     def __read_prepare_lookup(self):
         """

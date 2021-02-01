@@ -225,3 +225,14 @@ class Layout(Metadata):
             "offsetRows": {"type": "number", "minimum": 1},
         },
     }
+
+    # Read
+
+    def read_filter_cells(self, cells, field_positions):
+        if self.is_field_filtering:
+            result = []
+            for field_position, cell in enumerate(cells, start=1):
+                if field_position in field_positions:
+                    result.append(cell)
+            return result
+        return cells
