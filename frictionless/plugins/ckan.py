@@ -106,7 +106,7 @@ class CkanParser(Parser):
 
     # Read
 
-    def read_data_stream_create(self):
+    def read_list_stream_create(self):
         dialect = self.resource.dialect
         storage = CkanStorage(
             url=self.resource.fullpath,
@@ -116,7 +116,7 @@ class CkanParser(Parser):
         resource = storage.read_resource(dialect.resource)
         self.resource.schema = resource.schema
         with resource:
-            yield from resource.data_stream
+            yield from resource.list_stream
 
     # Write
 

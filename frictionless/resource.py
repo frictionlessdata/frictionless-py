@@ -1,4 +1,5 @@
 import os
+import json
 import petl
 import typing
 import warnings
@@ -196,7 +197,7 @@ class Resource(Metadata):
         self.__lookup = None
         self.__byte_stream = None
         self.__text_stream = None
-        self.__data_stream = None
+        self.__list_stream = None
         self.__row_stream = None
         self.__row_number = None
         self.__row_position = None
@@ -630,18 +631,18 @@ class Resource(Metadata):
         """Text stream in form of a generator
 
         Yields:
-            gen<str[]>?: data stream
+            gen<str[]>?: text stream
         """
         return self.__text_stream
 
     @property
-    def data_stream(self):
-        """Data stream in form of a generator
+    def list_stream(self):
+        """List stream in form of a generator
 
         Yields:
-            gen<any[][]>?: data stream
+            gen<any[][]>?: list stream
         """
-        return self.__data_stream
+        return self.__list_stream
 
     @property
     def row_stream(self):
@@ -735,7 +736,7 @@ class Resource(Metadata):
                 self.__byte_stream = self.__parser.loader.byte_stream
             if self.__parser.loader:
                 self.__text_stream = self.__parser.loader.text_stream
-            self.__data_stream = self.__read_data_stream()
+            self.__list_stream = self.__read_list_stream()
             self.__row_stream = self.__read_row_stream()
             self.__row_number = 0
             self.__row_position = 0
@@ -778,10 +779,10 @@ class Resource(Metadata):
     # Read
 
     def read_bytes(self, *, size=None):
-        """Read data into memory
+        """Read bytes into memory
 
         Returns:
-            any[][]: table data
+            any[][]: resource bytes
         """
         # TODO: rework when there is proper sample caching
         if self.memory:
@@ -794,7 +795,7 @@ class Resource(Metadata):
         """Read text into memory
 
         Returns:
-            str: table data
+            str: resource text
         """
         # TODO: rework when there is proper sample caching
         if self.memory:
@@ -814,15 +815,27 @@ class Resource(Metadata):
         """Read data into memory
 
         Returns:
-            any[][]: table data
+            any: resource data
+        """
+        if self.data:
+            return self.data
+        text = self.read_text()
+        data = json.loads(text)
+        return data
+
+    def read_lists(self, *, size=None):
+        """Read lists into memory
+
+        Returns:
+            any[][]: table lists
         """
         with helpers.ensure_open(self):
-            data = []
-            for cells in self.__data_stream:
-                data.append(cells)
-                if size and len(data) >= size:
+            lists = []
+            for cells in self.__list_stream:
+                lists.append(cells)
+                if size and len(lists) >= size:
                     break
-            return data
+            return lists
 
     def read_rows(self, *, size=None):
         """Read rows into memory
@@ -875,7 +888,7 @@ class Resource(Metadata):
                 is_integrity = True
 
         # Stream rows
-        for cells in self.__data_stream:
+        for cells in self.__list_stream:
 
             # Skip header
             if not self.__row_number:
@@ -964,7 +977,7 @@ class Resource(Metadata):
 
         return header
 
-    def __read_data_stream(self):
+    def __read_list_stream(self):
 
         # Prepare context
         self.__row_number = 0
@@ -1003,7 +1016,7 @@ class Resource(Metadata):
 
         # Prepare context
         start = max(self.__sample_positions or [0]) + 1
-        iterator = enumerate(self.__parser.data_stream, start=start)
+        iterator = enumerate(self.__parser.list_stream, start=start)
 
         # Stream without filtering
         if not self.layout:
@@ -1027,7 +1040,7 @@ class Resource(Metadata):
         # Prepare header
         buffer = []
         widths = []
-        for row_position, cells in enumerate(self.__parser.data_stream, start=1):
+        for row_position, cells in enumerate(self.__parser.list_stream, start=1):
             buffer.append(cells)
             if self.__read_filter_rows(row_position, cells):
                 widths.append(len(cells))
@@ -1063,7 +1076,7 @@ class Resource(Metadata):
         header_ready = False
         header_row_positions = []
         header_numbers = layout.header_rows or config.DEFAULT_HEADER_ROWS
-        iterator = chain(buffer, self.__parser.data_stream)
+        iterator = chain(buffer, self.__parser.list_stream)
         for row_position, cells in enumerate(iterator, start=1):
             if self.__read_filter_rows(row_position, cells):
                 row_number += 1
@@ -1227,7 +1240,7 @@ class Resource(Metadata):
         return lookup
 
     def __read_raise_closed(self):
-        if not self.__data_stream or not self.__row_stream:
+        if not self.__list_stream or not self.__row_stream:
             note = 'the resource has not been opened by "resource.open()"'
             raise FrictionlessException(errors.ResourceError(note=note))
 
@@ -1383,7 +1396,7 @@ class Resource(Metadata):
                         return
                     if not resource.layout.header:
                         yield resource.schema.field_names
-                    yield from resource.data_stream
+                    yield from resource.list_stream
 
         return ResourceView()
 

@@ -206,13 +206,13 @@ class CsvParser(Parser):
 
     # Read
 
-    def read_data_stream_create(self):
-        sample = self.read_data_stream_infer_dialect()
+    def read_list_stream_create(self):
+        sample = self.read_list_stream_infer_dialect()
         source = chain(sample, self.loader.text_stream)
         data = csv.reader(source, dialect=self.resource.dialect.to_python())
         yield from data
 
-    def read_data_stream_infer_dialect(self):
+    def read_list_stream_infer_dialect(self):
         sample = extract_samle(self.loader.text_stream)
         delimiter = self.resource.dialect.get("delimiter", ",\t;|")
         try:

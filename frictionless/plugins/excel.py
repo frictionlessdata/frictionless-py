@@ -199,7 +199,7 @@ class XlsxParser(Parser):
             loader = system.create_loader(resource)
             return loader.open()
 
-    def read_data_stream_create(self):
+    def read_list_stream_create(self):
         openpyxl = helpers.import_from_plugin("openpyxl", plugin="excel")
         dialect = self.resource.dialect
 
@@ -295,7 +295,7 @@ class XlsParser(Parser):
 
     # Read
 
-    def read_data_stream_create(self):
+    def read_list_stream_create(self):
         xlrd = helpers.import_from_plugin("xlrd", plugin="excel")
         dialect = self.resource.dialect
 

@@ -136,7 +136,7 @@ class JsonParser(Parser):
 
     # Read
 
-    def read_data_stream_create(self, dialect=None):
+    def read_list_stream_create(self, dialect=None):
         ijson = helpers.import_from_plugin("ijson", plugin="json")
         path = "item"
         dialect = self.resource.dialect
@@ -147,13 +147,13 @@ class JsonParser(Parser):
         resource = Resource(data=source, dialect=inline_dialect)
         with system.create_parser(resource) as parser:
             try:
-                yield next(parser.data_stream)
+                yield next(parser.list_stream)
             except StopIteration:
                 note = f'cannot extract JSON tabular data from "{self.resource.fullpath}"'
                 raise FrictionlessException(errors.SourceError(note=note))
             if parser.resource.dialect.keyed:
                 dialect["keyed"] = True
-            yield from parser.data_stream
+            yield from parser.list_stream
 
     # Write
 
@@ -195,17 +195,17 @@ class JsonlParser(Parser):
 
     # Read
 
-    def read_data_stream_create(self, dialect=None):
+    def read_list_stream_create(self, dialect=None):
         jsonlines = helpers.import_from_plugin("jsonlines", plugin="json")
         dialect = self.resource.dialect
         source = iter(jsonlines.Reader(self.loader.text_stream))
         dialect = InlineDialect(keys=dialect.keys)
         resource = Resource(data=source, dialect=dialect)
         with system.create_parser(resource) as parser:
-            yield next(parser.data_stream)
+            yield next(parser.list_stream)
             if parser.resource.dialect.keyed:
                 dialect["keyed"] = True
-            yield from parser.data_stream
+            yield from parser.list_stream
 
     # Write
 

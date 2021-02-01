@@ -114,7 +114,7 @@ class SqlParser(Parser):
 
     # Read
 
-    def read_data_stream_create(self):
+    def read_list_stream_create(self):
         sa = helpers.import_from_plugin("sqlalchemy", plugin="sql")
         engine = sa.create_engine(self.resource.fullpath)
         dialect = self.resource.dialect
@@ -122,7 +122,7 @@ class SqlParser(Parser):
         resource = storage.read_resource(dialect.table, order_by=dialect.order_by)
         self.resource.schema = resource.schema
         with resource:
-            yield from resource.data_stream
+            yield from resource.list_stream
 
     # Write
 

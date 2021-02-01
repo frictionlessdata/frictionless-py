@@ -105,7 +105,7 @@ class OdsParser(Parser):
 
     # Read
 
-    def read_data_stream_create(self):
+    def read_list_stream_create(self):
         ezodf = helpers.import_from_plugin("ezodf", plugin="ods")
         dialect = self.resource.dialect
 

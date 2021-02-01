@@ -1952,28 +1952,28 @@ def test_resource_open_row_stream_blank_cells():
         assert row2.valid is True
 
 
-def test_resource_open_read_data():
+def test_resource_open_read_lists():
     with Resource("data/table.csv") as resource:
-        assert resource.read_data() == [
+        assert resource.read_lists() == [
             ["id", "name"],
             ["1", "english"],
             ["2", "中国人"],
         ]
 
 
-def test_resource_open_data_stream():
+def test_resource_open_list_stream():
     with Resource("data/table.csv") as resource:
-        assert list(resource.data_stream) == [
+        assert list(resource.list_stream) == [
             ["id", "name"],
             ["1", "english"],
             ["2", "中国人"],
         ]
-        assert list(resource.data_stream) == []
+        assert list(resource.list_stream) == []
 
 
-def test_resource_open_data_stream_iterate():
+def test_resource_open_list_stream_iterate():
     with Resource("data/table.csv") as resource:
-        for number, cells in enumerate(resource.data_stream):
+        for number, cells in enumerate(resource.list_stream):
             assert len(cells) == 2
             if number == 0:
                 assert cells == ["id", "name"]
@@ -2054,7 +2054,7 @@ def test_resource_reopen_and_infer_volume():
     with Resource("data/long.csv", detector=detector) as resource:
         # Before reset
         assert resource.sample == [["1", "a"], ["2", "b"], ["3", "c"]]
-        assert resource.read_data() == [
+        assert resource.read_lists() == [
             ["id", "name"],
             ["1", "a"],
             ["2", "b"],
@@ -2068,7 +2068,7 @@ def test_resource_reopen_and_infer_volume():
         resource.open()
         # After reopen
         assert resource.sample == [["1", "a"], ["2", "b"], ["3", "c"]]
-        assert resource.read_data() == [
+        assert resource.read_lists() == [
             ["id", "name"],
             ["1", "a"],
             ["2", "b"],
@@ -2092,6 +2092,50 @@ def test_resource_reopen_generator():
         resource.open()
         # After reopen
         assert resource.read_rows() == [{"field1": 1}, {"field1": 2}]
+
+
+# Read
+
+
+def test_resource_read_bytes():
+    resource = Resource(path="data/text.txt")
+    bytes = resource.read_bytes()
+    assert bytes == b"text\n"
+
+
+def test_resource_read_text():
+    resource = Resource(path="data/text.txt")
+    text = resource.read_text()
+    assert text == "text\n"
+
+
+def test_resource_read_data():
+    resource = Resource(path="data/table.json")
+    data = resource.read_data()
+    assert data == [
+        ["id", "name"],
+        [1, "english"],
+        [2, "中国人"],
+    ]
+
+
+def test_resource_read_lists():
+    resource = Resource(path="data/table.json")
+    lists = resource.read_lists()
+    assert lists == [
+        ["id", "name"],
+        [1, "english"],
+        [2, "中国人"],
+    ]
+
+
+def test_resource_read_rows():
+    resource = Resource(path="data/table.json")
+    rows = resource.read_rows()
+    assert rows == [
+        {"id": 1, "name": "english"},
+        {"id": 2, "name": "中国人"},
+    ]
 
 
 # Write

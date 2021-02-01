@@ -89,12 +89,12 @@ class PandasParser(Parser):
 
     # Read
 
-    def read_data_stream_create(self):
+    def read_list_stream_create(self):
         storage = PandasStorage(dataframes={self.resource.name: self.resource.data})
         resource = storage.read_resource(self.resource.name)
         self.resource.schema = resource.schema
         with resource:
-            yield from resource.data_stream
+            yield from resource.list_stream
 
     # Write
 
