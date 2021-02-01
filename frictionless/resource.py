@@ -1050,45 +1050,23 @@ class Resource(Metadata):
         field_positions = []
         fragment_positions = []
 
-        # Prepare header
-        widths = []
+        # Detect sample
         for row_position, cells in enumerate(self.__parser.list_stream, start=1):
             sample.append(cells)
-            widths.append(len(cells))
-            if len(widths) >= self.__detector.sample_size:
+            if len(sample) >= self.__detector.sample_size:
                 break
 
-        # Infer header
-        row_number = 0
-        layout = self.layout
-        if layout.get("header") is None and layout.get("headerRows") is None and widths:
-            layout["header"] = False
-            width = round(sum(widths) / len(widths))
-            drift = max(round(width * 0.1), 1)
-            match = list(range(width - drift, width + drift + 1))
-            for row_position, cells in enumerate(sample, start=1):
-                if self.layout.read_filter_rows(cells, row_position):
-                    row_number += 1
-                    if len(cells) not in match:
-                        continue
-                    if not helpers.is_only_strings(cells):
-                        continue
-                    del layout["header"]
-                    if row_number != config.DEFAULT_HEADER_ROWS[0]:
-                        layout["headerRows"] = [row_number]
-                    break
-            # TODO: remove this hack (stop editing default layout above)
-            if not layout:
-                self.pop("layout", None)
+        # Detect layout
+        layout = self.__detector.detect_layout(sample, layout=self.layout)
 
-        # Infer layout
+        # Detect labels/fragment
         row_number = 0
         header_data = []
         header_ready = False
         header_row_positions = []
         header_numbers = layout.header_rows or config.DEFAULT_HEADER_ROWS
         for row_position, cells in enumerate(sample, start=1):
-            if self.layout.read_filter_rows(cells, row_position):
+            if layout.read_filter_rows(cells, row_position):
                 row_number += 1
 
                 # Labels
@@ -1104,17 +1082,21 @@ class Resource(Metadata):
                         continue
 
                 # Fragment
-                fragment.append(self.layout.read_filter_cells(cells, field_positions))
+                fragment.append(layout.read_filter_cells(cells, field_positions))
                 fragment_positions.append(row_position)
 
         # Detect schema
-        self.schema = self.__detector.detect_schema(
+        schema = self.__detector.detect_schema(
             fragment,
             labels=labels,
             schema=self.schema,
         )
 
-        # Store state
+        # Save state
+        if layout:
+            self.layout = layout
+        if schema:
+            self.schema = schema
         self.__sample = sample
         self.__fragment = fragment
         self.__labels = labels

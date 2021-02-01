@@ -1,8 +1,10 @@
 import chardet
 from copy import copy, deepcopy
 from .exception import FrictionlessException
+from .layout import Layout
 from .schema import Schema
 from .field import Field
+from . import helpers
 from . import errors
 from . import config
 
@@ -116,17 +118,39 @@ class Detector:
             encoding = config.DEFAULT_ENCODING
         return encoding
 
-    # NOTE: we need to move the logic from the Resource class
-    def detect_layout(self, sample):
+    def detect_layout(self, sample, *, layout=None):
         """Detect layout from sample
 
         Parameters:
             sample (any[][]): data sample
+            layout? (Layout): data layout
 
         Returns:
             Layout: layout
         """
-        pass
+        layout = layout or Layout()
+
+        # Infer header
+        row_number = 0
+        widths = [len(cells) for cells in sample]
+        if layout.get("header") is None and layout.get("headerRows") is None and widths:
+            layout["header"] = False
+            width = round(sum(widths) / len(widths))
+            drift = max(round(width * 0.1), 1)
+            match = list(range(width - drift, width + drift + 1))
+            for row_position, cells in enumerate(sample, start=1):
+                if layout.read_filter_rows(cells, row_position):
+                    row_number += 1
+                    if len(cells) not in match:
+                        continue
+                    if not helpers.is_only_strings(cells):
+                        continue
+                    del layout["header"]
+                    if row_number != config.DEFAULT_HEADER_ROWS[0]:
+                        layout["headerRows"] = [row_number]
+                    break
+
+        return layout
 
     def detect_schema(self, fragment, *, labels=None, schema=None):
         """Detect schema from fragment
