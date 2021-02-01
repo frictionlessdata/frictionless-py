@@ -1,3 +1,4 @@
+from itertools import chain
 from .exception import FrictionlessException
 from .system import system
 from . import errors
@@ -23,6 +24,7 @@ class Parser:
     def __init__(self, resource):
         self.__resource = resource
         self.__loader = None
+        self.__sample = []
         self.__list_stream = None
 
     def __enter__(self):
@@ -48,6 +50,14 @@ class Parser:
             Loader: loader
         """
         return self.__loader
+
+    @property
+    def sample(self):
+        """
+        Returns:
+            Loader: sample
+        """
+        return self.__sample
 
     @property
     def list_stream(self):
@@ -105,8 +115,14 @@ class Parser:
         Returns:
             gen<any[][]>: list stream
         """
+        self.__sample = []
         list_stream = self.read_list_stream_create()
         list_stream = self.read_list_stream_handle_errors(list_stream)
+        for cells in list_stream:
+            if len(self.__sample) >= self.resource.detector.sample_size - 1:
+                break
+            self.__sample.append(cells)
+        list_stream = chain(self.__sample, list_stream)
         return list_stream
 
     def read_list_stream_create(self, loader):

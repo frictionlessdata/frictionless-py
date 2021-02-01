@@ -292,8 +292,8 @@ class Resource(Metadata):
         self.close()
 
     def __iter__(self):
-        self.__read_raise_closed()
-        yield from self.__row_stream
+        with helpers.ensure_open(self):
+            yield from self.__row_stream
 
     @Metadata.property
     def name(self):
@@ -636,7 +636,9 @@ class Resource(Metadata):
         Yields:
             gen<bytes>?: byte stream
         """
-        return self.__byte_stream
+        # TODO: rebase on parallel loader
+        if self.__parser and self.__parser.loader:
+            return self.__parser.loader.byte_stream
 
     @property
     def text_stream(self):
@@ -645,7 +647,9 @@ class Resource(Metadata):
         Yields:
             gen<str[]>?: text stream
         """
-        return self.__text_stream
+        # TODO: rebase on parallel loader
+        if self.__parser and self.__parser.loader:
+            return self.__parser.loader.text_stream
 
     @property
     def list_stream(self):
@@ -654,7 +658,8 @@ class Resource(Metadata):
         Yields:
             gen<any[][]>?: list stream
         """
-        return self.__list_stream
+        if self.__parser:
+            return self.__parser.list_stream
 
     @property
     def row_stream(self):
@@ -732,10 +737,6 @@ class Resource(Metadata):
 
         # Table
         try:
-            # TODO: is it the right place for it?
-            if self.layout.metadata_errors:
-                error = self.layout.metadata_errors[0]
-                raise FrictionlessException(error)
             self["stats"] = {"hash": "", "bytes": 0, "fields": 0, "rows": 0}
             self.__parser = system.create_parser(self)
             self.__parser.open()
@@ -744,14 +745,9 @@ class Resource(Metadata):
             self.__header = self.__read_header()
             if not self.__nolookup:
                 self.__lookup = self.__read_detect_lookup()
-            if self.__parser.loader:
-                self.__byte_stream = self.__parser.loader.byte_stream
-            if self.__parser.loader:
-                self.__text_stream = self.__parser.loader.text_stream
-            self.__list_stream = self.__read_list_stream()
             self.__row_stream = self.__read_row_stream()
-            self.__row_number = 0
             self.__row_position = 0
+            self.__row_number = 0
             return self
 
         # File
@@ -899,11 +895,23 @@ class Resource(Metadata):
                 foreign_groups.append(group)
                 is_integrity = True
 
-        # Stream rows
-        for cells in self.__list_stream:
+        # Prepare iterator
+        iterator = chain(
+            zip(self.__fragment_positions, self.__fragment),
+            self.__read_iterate_parser(),
+        )
 
-            # Skip header
-            if not self.__row_number:
+        # Stream rows
+        limit = self.layout.limit_rows
+        offset = self.layout.offset_rows or 0
+        for row_position, cells in iterator:
+            self.__row_position = row_position
+            self.__row_number += 1
+            self.stats["rows"] = self.__row_number
+
+            # Offset rows
+            if offset:
+                offset -= 1
                 continue
 
             # Create row
@@ -968,6 +976,10 @@ class Resource(Metadata):
             # Stream rows
             yield row
 
+            # Limit rows
+            if limit and limit <= self.__row_number:
+                break
+
     def __read_header(self):
 
         # Create header
@@ -989,46 +1001,14 @@ class Resource(Metadata):
 
         return header
 
-    def __read_list_stream(self):
-
-        # Prepare context
-        self.__row_number = 0
-        self.__row_position = 0
-        parser_iterator = self.__read_iterate_parser()
-        fragment_iterator = zip(self.__fragment_positions, self.__fragment)
-
-        # Stream header
-        if self.__header is not None:
-            yield self.header.to_list()
-
-        # Stream fragment/parser (no filtering)
-        if not self.layout:
-            for row_position, cells in chain(fragment_iterator, parser_iterator):
-                self.__row_position = row_position
-                self.__row_number += 1
-                self.stats["rows"] = self.__row_number
-                yield cells
-            return
-
-        # Stream fragment/parser (with filtering)
-        limit = self.layout.limit_rows
-        offset = self.layout.offset_rows or 0
-        for row_position, cells in chain(fragment_iterator, parser_iterator):
-            if offset:
-                offset -= 1
-                continue
-            self.__row_position = row_position
-            self.__row_number += 1
-            self.stats["rows"] = self.__row_number
-            yield cells
-            if limit and limit <= self.__row_number:
-                break
-
     def __read_iterate_parser(self):
 
-        # Prepare context
-        start = max(self.__fragment_positions or [0]) + 1
-        iterator = enumerate(self.__parser.list_stream, start=start)
+        # Prepare iterator
+        iterator = (
+            (position, cells)
+            for position, cells in enumerate(self.__parser.list_stream)
+            if position > len(self.__parser.sample)
+        )
 
         # Stream without filtering
         if not self.layout:
@@ -1042,25 +1022,22 @@ class Resource(Metadata):
                     cells, field_positions=self.__field_positions
                 )
 
-    # TODO: split into layout/schema
     def __read_detect_sample(self):
 
-        # Detect sample
-        sample = []
-        for row_position, cells in enumerate(self.__parser.list_stream, start=1):
-            sample.append(cells)
-            if len(sample) >= self.__detector.sample_size:
-                break
-
-        # Detect params
+        # Detect layout
+        sample = self.__parser.sample
         layout = self.detector.detect_layout(sample, layout=self.layout)
+        if layout:
+            self.layout = layout
+
+        # Detect schema
         labels, field_positions = layout.read_labels(sample)
         fragment, fragment_positions = layout.read_fragment(sample)
         schema = self.detector.detect_schema(fragment, labels=labels, schema=self.schema)
-        if layout:
-            self.layout = layout
         if schema:
             self.schema = schema
+
+        # Store state/stats
         self.__sample = sample
         self.__labels = labels
         self.__fragment = fragment
@@ -1069,10 +1046,6 @@ class Resource(Metadata):
         self.stats["fields"] = len(self.schema.fields)
 
     def __read_detect_lookup(self):
-        """
-        Returns
-            dict: resource lookup structure
-        """
         lookup = {}
         for fk in self.schema.foreign_keys:
             source_name = fk["reference"]["resource"]
@@ -1099,11 +1072,6 @@ class Resource(Metadata):
                         continue
                     lookup[source_name][source_key].add(cells)
         return lookup
-
-    def __read_raise_closed(self):
-        if not self.__list_stream or not self.__row_stream:
-            note = 'the resource has not been opened by "resource.open()"'
-            raise FrictionlessException(errors.ResourceError(note=note))
 
     # Write
 
