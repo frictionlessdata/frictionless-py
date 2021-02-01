@@ -1045,8 +1045,8 @@ class Resource(Metadata):
 
         # Create state
         sample = []
-        fragment = []
         labels = []
+        fragment = []
         field_positions = []
         fragment_positions = []
 
@@ -1085,6 +1085,9 @@ class Resource(Metadata):
                 fragment.append(layout.read_filter_cells(cells, field_positions))
                 fragment_positions.append(row_position)
 
+        # Detect labels/fragment
+        labels, field_positions = layout.read_labels(sample)
+
         # Detect schema
         schema = self.__detector.detect_schema(
             fragment,
@@ -1098,8 +1101,8 @@ class Resource(Metadata):
         if schema:
             self.schema = schema
         self.__sample = sample
-        self.__fragment = fragment
         self.__labels = labels
+        self.__fragment = fragment
         self.__field_positions = field_positions
         self.__fragment_positions = fragment_positions
 

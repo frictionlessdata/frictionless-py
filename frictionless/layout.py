@@ -207,7 +207,55 @@ class Layout(Metadata):
 
     # Read
 
-    def read_filter_fields(self, labels, field_position):
+    def read_labels(self, sample):
+
+        # Prepare
+        lists = []
+        row_number = 0
+        header_rows = self.header_rows or config.DEFAULT_HEADER_ROWS
+        for row_position, cells in enumerate(sample, start=1):
+            if self.read_filter_rows(cells, row_position):
+                row_number += 1
+                if row_number in header_rows:
+                    lists.append(helpers.stringify_label(cells))
+                if row_number >= max(header_rows):
+                    break
+
+        # No header
+        if not self.header:
+            return [], list(range(1, len(lists[0]) + 1))
+
+        # Get labels
+        raw_labels = []
+        prev_cells = {}
+        for cells in lists:
+            for index, cell in enumerate(cells):
+                if prev_cells.get(index) == cell:
+                    continue
+                prev_cells[index] = cell
+                if len(raw_labels) <= index:
+                    raw_labels.append(cell)
+                    continue
+                raw_labels[index] = self.header_join.join([raw_labels[index], cell])
+
+        # Filter labels
+        labels = []
+        field_positions = []
+        limit = self.limit_fields
+        offset = self.offset_fields or 0
+        for field_position, label in enumerate(raw_labels, start=1):
+            if self.read_filter_fields(label, field_position):
+                if offset:
+                    offset -= 1
+                    continue
+                labels.append(label)
+                field_positions.append(field_position)
+                if limit and limit <= len(labels):
+                    break
+
+        return labels, field_positions
+
+    def read_filter_fields(self, label, field_position):
         match = True
         for name in ["pick", "skip"]:
             if name == "pick":
@@ -218,13 +266,13 @@ class Layout(Metadata):
                 continue
             match = match and name == "skip"
             for item in items:
-                if item == "<blank>" and labels == "":
+                if item == "<blank>" and label == "":
                     match = not match
-                elif isinstance(item, str) and item == labels:
+                elif isinstance(item, str) and item == label:
                     match = not match
                 elif isinstance(item, int) and item == field_position:
                     match = not match
-                elif isinstance(item, typing.Pattern) and item.match(labels):
+                elif isinstance(item, typing.Pattern) and item.match(label):
                     match = not match
         return match
 
