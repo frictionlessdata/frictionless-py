@@ -1025,7 +1025,7 @@ class Resource(Metadata):
 
         # Stream with filtering
         for row_position, cells in iterator:
-            if self.__read_filter_rows(row_position, cells):
+            if self.layout.read_filter_rows(cells, row_position):
                 cells = self.layout.read_filter_cells(cells, self.__field_positions)
                 yield row_position, cells
 
@@ -1042,7 +1042,7 @@ class Resource(Metadata):
         widths = []
         for row_position, cells in enumerate(self.__parser.list_stream, start=1):
             buffer.append(cells)
-            if self.__read_filter_rows(row_position, cells):
+            if self.layout.read_filter_rows(cells, row_position):
                 widths.append(len(cells))
                 if len(widths) >= self.__detector.sample_size:
                     break
@@ -1056,7 +1056,7 @@ class Resource(Metadata):
             drift = max(round(width * 0.1), 1)
             match = list(range(width - drift, width + drift + 1))
             for row_position, cells in enumerate(buffer, start=1):
-                if self.__read_filter_rows(row_position, cells):
+                if self.layout.read_filter_rows(cells, row_position):
                     row_number += 1
                     if len(cells) not in match:
                         continue
@@ -1078,7 +1078,7 @@ class Resource(Metadata):
         header_numbers = layout.header_rows or config.DEFAULT_HEADER_ROWS
         iterator = chain(buffer, self.__parser.list_stream)
         for row_position, cells in enumerate(iterator, start=1):
-            if self.__read_filter_rows(row_position, cells):
+            if self.layout.read_filter_rows(cells, row_position):
                 row_number += 1
 
                 # Header
@@ -1170,31 +1170,6 @@ class Resource(Metadata):
                 elif isinstance(item, int) and item == field_position:
                     match = not match
                 elif isinstance(item, typing.Pattern) and item.match(header):
-                    match = not match
-        return match
-
-    def __read_filter_rows(self, row_position, cells):
-        match = True
-        cell = cells[0] if cells else None
-        cell = "" if cell is None else str(cell)
-        for name in ["pick", "skip"]:
-            if name == "pick":
-                items = self.layout.pick_rows_compiled
-            else:
-                items = self.layout.skip_rows_compiled
-            if not items:
-                continue
-            match = match and name == "skip"
-            for item in items:
-                if item == "<blank>":
-                    if not any(cell for cell in cells if cell not in ["", None]):
-                        match = not match
-                elif isinstance(item, str):
-                    if item == cell or (item and cell.startswith(item)):
-                        match = not match
-                elif isinstance(item, int) and item == row_position:
-                    match = not match
-                elif isinstance(item, typing.Pattern) and item.match(cell):
                     match = not match
         return match
 

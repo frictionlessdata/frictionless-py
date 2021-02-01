@@ -1,3 +1,4 @@
+import typing
 from .metadata import Metadata
 from . import helpers
 from . import errors
@@ -227,6 +228,31 @@ class Layout(Metadata):
     }
 
     # Read
+
+    def read_filter_rows(self, cells, row_position):
+        match = True
+        cell = cells[0] if cells else None
+        cell = "" if cell is None else str(cell)
+        for name in ["pick", "skip"]:
+            if name == "pick":
+                items = self.pick_rows_compiled
+            else:
+                items = self.skip_rows_compiled
+            if not items:
+                continue
+            match = match and name == "skip"
+            for item in items:
+                if item == "<blank>":
+                    if not any(cell for cell in cells if cell not in ["", None]):
+                        match = not match
+                elif isinstance(item, str):
+                    if item == cell or (item and cell.startswith(item)):
+                        match = not match
+                elif isinstance(item, int) and item == row_position:
+                    match = not match
+                elif isinstance(item, typing.Pattern) and item.match(cell):
+                    match = not match
+        return match
 
     def read_filter_cells(self, cells, field_positions):
         if self.is_field_filtering:
