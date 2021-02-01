@@ -1,7 +1,6 @@
 import os
 import json
 import petl
-import typing
 import warnings
 from pathlib import Path
 from copy import deepcopy
@@ -1141,7 +1140,7 @@ class Resource(Metadata):
         limit = self.layout.limit_fields
         offset = self.layout.offset_fields or 0
         for field_position, labels in enumerate(labels, start=1):
-            if self.__read_filter_fields(field_position, labels):
+            if self.layout.read_filter_fields(labels, field_position):
                 if offset:
                     offset -= 1
                     continue
@@ -1151,27 +1150,6 @@ class Resource(Metadata):
                     break
 
         return filter_labels, field_positions
-
-    def __read_filter_fields(self, field_position, header):
-        match = True
-        for name in ["pick", "skip"]:
-            if name == "pick":
-                items = self.layout.pick_fields_compiled
-            else:
-                items = self.layout.skip_fields_compiled
-            if not items:
-                continue
-            match = match and name == "skip"
-            for item in items:
-                if item == "<blank>" and header == "":
-                    match = not match
-                elif isinstance(item, str) and item == header:
-                    match = not match
-                elif isinstance(item, int) and item == field_position:
-                    match = not match
-                elif isinstance(item, typing.Pattern) and item.match(header):
-                    match = not match
-        return match
 
     def __read_prepare_lookup(self):
         """

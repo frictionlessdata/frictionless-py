@@ -205,29 +205,28 @@ class Layout(Metadata):
         self.setdefault("headerJoin", self.header_join)
         self.setdefault("headerCase", self.header_case)
 
-    # Metadata
-
-    metadata_Error = errors.LayoutError
-    metadata_profile = {  # type: ignore
-        "type": "object",
-        "additionalProperties": False,
-        "properties": {
-            "header": {"type": "boolean"},
-            "headerRows": {"type": "array", "items": {"type": "number"}},
-            "headerJoin": {"type": "string"},
-            "headerCase": {"type": "boolean"},
-            "pickFields": {"type": "array"},
-            "skipFields": {"type": "array"},
-            "limitFields": {"type": "number", "minimum": 1},
-            "offsetFields": {"type": "number", "minimum": 1},
-            "pickRows": {"type": "array"},
-            "skipRows": {"type": "array"},
-            "limitRows": {"type": "number", "minimum": 1},
-            "offsetRows": {"type": "number", "minimum": 1},
-        },
-    }
-
     # Read
+
+    def read_filter_fields(self, labels, field_position):
+        match = True
+        for name in ["pick", "skip"]:
+            if name == "pick":
+                items = self.pick_fields_compiled
+            else:
+                items = self.skip_fields_compiled
+            if not items:
+                continue
+            match = match and name == "skip"
+            for item in items:
+                if item == "<blank>" and labels == "":
+                    match = not match
+                elif isinstance(item, str) and item == labels:
+                    match = not match
+                elif isinstance(item, int) and item == field_position:
+                    match = not match
+                elif isinstance(item, typing.Pattern) and item.match(labels):
+                    match = not match
+        return match
 
     def read_filter_rows(self, cells, row_position):
         match = True
@@ -262,3 +261,25 @@ class Layout(Metadata):
                     result.append(cell)
             return result
         return cells
+
+    # Metadata
+
+    metadata_Error = errors.LayoutError
+    metadata_profile = {  # type: ignore
+        "type": "object",
+        "additionalProperties": False,
+        "properties": {
+            "header": {"type": "boolean"},
+            "headerRows": {"type": "array", "items": {"type": "number"}},
+            "headerJoin": {"type": "string"},
+            "headerCase": {"type": "boolean"},
+            "pickFields": {"type": "array"},
+            "skipFields": {"type": "array"},
+            "limitFields": {"type": "number", "minimum": 1},
+            "offsetFields": {"type": "number", "minimum": 1},
+            "pickRows": {"type": "array"},
+            "skipRows": {"type": "array"},
+            "limitRows": {"type": "number", "minimum": 1},
+            "offsetRows": {"type": "number", "minimum": 1},
+        },
+    }
