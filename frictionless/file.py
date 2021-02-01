@@ -178,14 +178,14 @@ class File:
         innerpath = ""
         detection_path = fullpath[0] if multipart else fullpath
         if not memory:
-            scheme, format = helpers.detect_scheme_and_format(detection_path)
+            scheme, format = helpers.parse_scheme_and_format(detection_path)
             if format in config.COMPRESSION_FORMATS:
                 if not multipart:
                     compression = format
                 detection_path = detection_path[: -len(format) - 1]
                 if self.__innerpath:
                     detection_path = os.path.join(detection_path, self.__innerpath)
-                scheme, format = helpers.detect_scheme_and_format(detection_path)
+                scheme, format = helpers.parse_scheme_and_format(detection_path)
                 if format:
                     name = os.path.splitext(name)[0]
 

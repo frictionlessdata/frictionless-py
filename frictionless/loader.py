@@ -224,22 +224,22 @@ class Loader:
         """
         # We don't need a default encoding
         encoding = self.resource.get("encoding")
-        sample = byte_stream.read(self.resource.detector.buffer_size)
-        sample = sample[: self.resource.detector.buffer_size]
+        buffer = byte_stream.read(self.resource.detector.buffer_size)
+        buffer = buffer[: self.resource.detector.buffer_size]
         byte_stream.seek(0)
         if encoding is None:
-            encoding = self.resource.detector.detect_encoding(sample)
+            encoding = self.resource.detector.detect_encoding(buffer)
         encoding = codecs.lookup(encoding).name
         # Work around for incorrect inferion of utf-8-sig encoding
         if encoding == "utf-8":
-            if sample.startswith(codecs.BOM_UTF8):
+            if buffer.startswith(codecs.BOM_UTF8):
                 encoding = "utf-8-sig"
         # Use the BOM stripping name (without byte-order) for UTF-16 encodings
         elif encoding == "utf-16-be":
-            if sample.startswith(codecs.BOM_UTF16_BE):
+            if buffer.startswith(codecs.BOM_UTF16_BE):
                 encoding = "utf-16"
         elif encoding == "utf-16-le":
-            if sample.startswith(codecs.BOM_UTF16_LE):
+            if buffer.startswith(codecs.BOM_UTF16_LE):
                 encoding = "utf-16"
         self.resource.encoding = encoding
 
@@ -294,7 +294,7 @@ class Loader:
 
 class ByteStreamWithStatsHandling:
     # TODO
-    # We can try buffering byte sample especially for remote
+    # We can try buffering byte buffer especially for remote
     # Also, currently read/read1/item implementation is not complete
     # As an option, we can think of subclassing some io.* class
 

@@ -152,7 +152,8 @@ def test_resource_source_path():
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
-    assert resource.sample == [["1", "english"], ["2", "中国人"]]
+    assert resource.sample == [["id", "name"], ["1", "english"], ["2", "中国人"]]
+    assert resource.fragment == [["1", "english"], ["2", "中国人"]]
     assert resource.labels == ["id", "name"]
     assert resource.header == ["id", "name"]
     assert resource.stats == {
@@ -238,7 +239,8 @@ def test_resource_source_data():
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
-    assert resource.sample == data[1:]
+    assert resource.sample == data
+    assert resource.fragment == data[1:]
     assert resource.labels == ["id", "name"]
     assert resource.header == ["id", "name"]
     assert resource.stats == {
@@ -722,7 +724,8 @@ def test_resource_control():
     detector = Detector(encoding_function=lambda sample: "utf-8")
     with Resource("data/table.csv", detector=detector) as resource:
         assert resource.encoding == "utf-8"
-        assert resource.sample == [["1", "english"], ["2", "中国人"]]
+        assert resource.sample == [["id", "name"], ["1", "english"], ["2", "中国人"]]
+        assert resource.fragment == [["1", "english"], ["2", "中国人"]]
         assert resource.header == ["id", "name"]
 
 
@@ -731,7 +734,8 @@ def test_resource_control_http_preload():
     control = RemoteControl(http_preload=True)
     with Resource(BASE_URL % "data/table.csv", control=control) as resource:
         assert resource.control == {"httpPreload": True}
-        assert resource.sample == [["1", "english"], ["2", "中国人"]]
+        assert resource.sample == [["id", "name"], ["1", "english"], ["2", "中国人"]]
+        assert resource.fragment == [["1", "english"], ["2", "中国人"]]
         assert resource.header == ["id", "name"]
 
 
@@ -1644,7 +1648,8 @@ def test_resource_detector_schema_sync():
     detector = Detector(schema_sync=True)
     with Resource("data/sync-schema.csv", schema=schema, detector=detector) as resource:
         assert resource.schema == schema
-        assert resource.sample == [["english", "1"], ["中国人", "2"]]
+        assert resource.sample == [["name", "id"], ["english", "1"], ["中国人", "2"]]
+        assert resource.fragment == [["english", "1"], ["中国人", "2"]]
         assert resource.header == ["name", "id"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
@@ -1663,7 +1668,8 @@ def test_resource_detector_schema_sync_with_infer():
     resource = Resource(path="data/sync-schema.csv", schema=schema, detector=detector)
     resource.infer(stats=True)
     assert resource.schema == schema
-    assert resource.sample == [["english", "1"], ["中国人", "2"]]
+    assert resource.sample == [["name", "id"], ["english", "1"], ["中国人", "2"]]
+    assert resource.fragment == [["english", "1"], ["中国人", "2"]]
     assert resource.header == ["name", "id"]
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
@@ -1865,9 +1871,10 @@ def test_resource_open():
         assert resource.innerpath == ""
         assert resource.compression == ""
         assert resource.fullpath == "data/table.csv"
-        assert resource.header.row_positions == [1]
+        assert resource.sample == [["id", "name"], ["1", "english"], ["2", "中国人"]]
+        assert resource.fragment == [["1", "english"], ["2", "中国人"]]
         assert resource.header == ["id", "name"]
-        assert resource.sample == [["1", "english"], ["2", "中国人"]]
+        assert resource.header.row_positions == [1]
         assert resource.schema == {
             "fields": [
                 {"name": "id", "type": "integer"},
@@ -2053,7 +2060,8 @@ def test_resource_reopen_and_infer_volume():
     detector = Detector(sample_size=3)
     with Resource("data/long.csv", detector=detector) as resource:
         # Before reset
-        assert resource.sample == [["1", "a"], ["2", "b"], ["3", "c"]]
+        assert resource.sample == [["id", "name"], ["1", "a"], ["2", "b"]]
+        assert resource.fragment == [["1", "a"], ["2", "b"]]
         assert resource.read_lists() == [
             ["id", "name"],
             ["1", "a"],
@@ -2067,7 +2075,8 @@ def test_resource_reopen_and_infer_volume():
         # Re-open
         resource.open()
         # After reopen
-        assert resource.sample == [["1", "a"], ["2", "b"], ["3", "c"]]
+        assert resource.sample == [["id", "name"], ["1", "a"], ["2", "b"]]
+        assert resource.fragment == [["1", "a"], ["2", "b"]]
         assert resource.read_lists() == [
             ["id", "name"],
             ["1", "a"],

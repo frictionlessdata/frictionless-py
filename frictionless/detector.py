@@ -1,8 +1,8 @@
+import chardet
 from copy import copy, deepcopy
 from .exception import FrictionlessException
 from .schema import Schema
 from .field import Field
-from . import helpers
 from . import errors
 from . import config
 
@@ -96,19 +96,25 @@ class Detector:
 
     # Detect
 
-    def detect_encoding(self, sample):
-        """Detect encoding from sample
+    def detect_encoding(self, buffer):
+        """Detect encoding from buffer
 
         Parameters:
-            sample (byte): byte sample
+            buffer (byte): byte buffer
 
         Returns:
             str: encoding
         """
         if self.__encoding_function:
-            return self.__encoding_function(sample)
-        # TODO: move detection logic to this class?
-        return helpers.detect_encoding(sample, confidence=self.__encoding_confidence)
+            return self.__encoding_function(buffer)
+        result = chardet.detect(buffer)
+        rescon = result["confidence"] or 0
+        encoding = result["encoding"] or config.DEFAULT_ENCODING
+        if rescon < self.__encoding_confidence:
+            encoding = config.DEFAULT_ENCODING
+        if encoding == "ascii":
+            encoding = config.DEFAULT_ENCODING
+        return encoding
 
     # NOTE: we need to move the logic from the Resource class
     def detect_layout(self, sample):
@@ -122,11 +128,11 @@ class Detector:
         """
         pass
 
-    def detect_schema(self, sample, *, labels=None, schema=None):
-        """Detect schema from sample
+    def detect_schema(self, fragment, *, labels=None, schema=None):
+        """Detect schema from fragment
 
         Parameters:
-            sample (any[][]): data sample
+            fragment (any[][]): data fragment
             labels? (str[]): data labels
             schema? (Schema): data schema
 
@@ -145,9 +151,9 @@ class Detector:
             # Prepare names
             names = copy(self.__field_names or labels or [])
             if not names:
-                if not sample:
+                if not fragment:
                     return schema
-                names = [f"field{number}" for number in range(1, len(sample[0]) + 1)]
+                names = [f"field{number}" for number in range(1, len(fragment[0]) + 1)]
 
             # Handle name/empty
             for index, name in enumerate(names):
@@ -163,14 +169,14 @@ class Detector:
                     seen_names.append(name)
 
             # Handle type/empty
-            if self.__field_type or not sample:
+            if self.__field_type or not fragment:
                 type = self.__field_type
                 schema.fields = [{"name": name, "type": type or "any"} for name in names]
                 return schema
 
             # Prepare fields
             runners = []
-            max_score = [len(sample)] * len(names)
+            max_score = [len(fragment)] * len(names)
             for index, name in enumerate(names):
                 runners.append([])
                 for type in FIELD_TYPES:
@@ -181,7 +187,8 @@ class Detector:
                 schema.fields.append(Field(name=name, type="any", schema=schema))
 
             # Infer fields
-            for cells in sample:
+            treshold = len(fragment) * (self.__field_confidence - 1)
+            for cells in fragment:
                 for index, name in enumerate(names):
                     if schema.fields[index].type != "any":
                         continue
@@ -190,7 +197,7 @@ class Detector:
                         max_score[index] -= 1
                         continue
                     for runner in runners[index]:
-                        if runner["score"] < len(sample) * (self.__field_confidence - 1):
+                        if runner["score"] < treshold:
                             continue
                         target, notes = runner["field"].read_cell(source)
                         runner["score"] += 1 if not notes else -1

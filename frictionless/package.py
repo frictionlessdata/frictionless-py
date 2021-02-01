@@ -178,7 +178,7 @@ class Package(Metadata):
         self.setinitial("keywords", keywords)
         self.setinitial("image", image)
         self.setinitial("created", created)
-        self.__basepath = basepath or helpers.detect_basepath(descriptor)
+        self.__basepath = basepath or helpers.parse_basepath(descriptor)
         self.__detector = detector or Detector()
         self.__onerror = onerror
         self.__trusted = trusted

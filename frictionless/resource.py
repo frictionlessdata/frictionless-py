@@ -191,6 +191,7 @@ class Resource(Metadata):
         self.__loader = None
         self.__parser = None
         self.__sample = None
+        self.__fragment = None
         self.__labels = None
         self.__header = None
         self.__lookup = None
@@ -201,10 +202,10 @@ class Resource(Metadata):
         self.__row_number = None
         self.__row_position = None
         self.__field_positions = None
-        self.__sample_positions = None
+        self.__fragment_positions = None
 
         # Store extra
-        self.__basepath = basepath or helpers.detect_basepath(descriptor)
+        self.__basepath = basepath or helpers.parse_basepath(descriptor)
         self.__detector = detector or Detector()
         self.__onerror = onerror
         self.__trusted = trusted
@@ -486,7 +487,7 @@ class Resource(Metadata):
 
     @property
     def sample(self):
-        """Tables's rows used as sample.
+        """Table's lists used as sample.
 
         These sample rows are used internally to infer characteristics of the
         source file (e.g. schema, ...).
@@ -495,6 +496,18 @@ class Resource(Metadata):
             list[]?: table sample
         """
         return self.__sample
+
+    @property
+    def fragment(self):
+        """Table's lists used as fragment.
+
+        These fragment rows are used internally to infer characteristics of the
+        source file (e.g. schema, ...).
+
+        Returns:
+            list[]?: table fragment
+        """
+        return self.__fragment
 
     @property
     def labels(self):
@@ -982,25 +995,25 @@ class Resource(Metadata):
         self.__row_number = 0
         self.__row_position = 0
         parser_iterator = self.__read_iterate_parser()
-        sample_iterator = zip(self.__sample_positions, self.__sample)
+        fragment_iterator = zip(self.__fragment_positions, self.__fragment)
 
         # Stream header
         if self.__header is not None:
             yield self.header.to_list()
 
-        # Stream sample/parser (no filtering)
+        # Stream fragment/parser (no filtering)
         if not self.layout:
-            for row_position, cells in chain(sample_iterator, parser_iterator):
+            for row_position, cells in chain(fragment_iterator, parser_iterator):
                 self.__row_position = row_position
                 self.__row_number += 1
                 self.stats["rows"] = self.__row_number
                 yield cells
             return
 
-        # Stream sample/parser (with filtering)
+        # Stream fragment/parser (with filtering)
         limit = self.layout.limit_rows
         offset = self.layout.offset_rows or 0
-        for row_position, cells in chain(sample_iterator, parser_iterator):
+        for row_position, cells in chain(fragment_iterator, parser_iterator):
             if offset:
                 offset -= 1
                 continue
@@ -1014,7 +1027,7 @@ class Resource(Metadata):
     def __read_iterate_parser(self):
 
         # Prepare context
-        start = max(self.__sample_positions or [0]) + 1
+        start = max(self.__fragment_positions or [0]) + 1
         iterator = enumerate(self.__parser.list_stream, start=start)
 
         # Stream without filtering
@@ -1032,19 +1045,18 @@ class Resource(Metadata):
 
         # Create state
         sample = []
+        fragment = []
         labels = []
         field_positions = []
-        sample_positions = []
+        fragment_positions = []
 
         # Prepare header
-        buffer = []
         widths = []
         for row_position, cells in enumerate(self.__parser.list_stream, start=1):
-            buffer.append(cells)
-            if self.layout.read_filter_rows(cells, row_position):
-                widths.append(len(cells))
-                if len(widths) >= self.__detector.sample_size:
-                    break
+            sample.append(cells)
+            widths.append(len(cells))
+            if len(widths) >= self.__detector.sample_size:
+                break
 
         # Infer header
         row_number = 0
@@ -1054,7 +1066,7 @@ class Resource(Metadata):
             width = round(sum(widths) / len(widths))
             drift = max(round(width * 0.1), 1)
             match = list(range(width - drift, width + drift + 1))
-            for row_position, cells in enumerate(buffer, start=1):
+            for row_position, cells in enumerate(sample, start=1):
                 if self.layout.read_filter_rows(cells, row_position):
                     row_number += 1
                     if len(cells) not in match:
@@ -1075,12 +1087,11 @@ class Resource(Metadata):
         header_ready = False
         header_row_positions = []
         header_numbers = layout.header_rows or config.DEFAULT_HEADER_ROWS
-        iterator = chain(buffer, self.__parser.list_stream)
-        for row_position, cells in enumerate(iterator, start=1):
+        for row_position, cells in enumerate(sample, start=1):
             if self.layout.read_filter_rows(cells, row_position):
                 row_number += 1
 
-                # Header
+                # Labels
                 if not header_ready:
                     if row_number in header_numbers:
                         header_data.append(helpers.stringify_label(cells))
@@ -1092,24 +1103,23 @@ class Resource(Metadata):
                     if not header_ready or layout.header:
                         continue
 
-                # Sample
-                sample.append(self.layout.read_filter_cells(cells, field_positions))
-                sample_positions.append(row_position)
-                if len(sample) >= self.__detector.sample_size:
-                    break
+                # Fragment
+                fragment.append(self.layout.read_filter_cells(cells, field_positions))
+                fragment_positions.append(row_position)
 
         # Detect schema
         self.schema = self.__detector.detect_schema(
-            sample,
+            fragment,
             labels=labels,
             schema=self.schema,
         )
 
         # Store state
-        self.__labels = labels
         self.__sample = sample
+        self.__fragment = fragment
+        self.__labels = labels
         self.__field_positions = field_positions
-        self.__sample_positions = sample_positions
+        self.__fragment_positions = fragment_positions
 
         # Store stats
         self.stats["fields"] = len(self.schema.fields)
