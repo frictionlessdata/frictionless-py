@@ -69,6 +69,8 @@ class Layout(Metadata):
         Returns:
             int[]: header rows
         """
+        if not self.header:
+            return []
         return self.get("headerRows", config.DEFAULT_HEADER_ROWS)
 
     @Metadata.property
@@ -209,21 +211,20 @@ class Layout(Metadata):
 
     def read_labels(self, sample):
 
-        # Prepare
+        # Collect lists
         lists = []
         row_number = 0
-        header_rows = self.header_rows or config.DEFAULT_HEADER_ROWS
         for row_position, cells in enumerate(sample, start=1):
-            if self.read_filter_rows(cells, row_position):
+            if self.read_filter_rows(cells, row_position=row_position):
                 row_number += 1
-                if row_number in header_rows:
+                if row_number in self.header_rows:
                     lists.append(helpers.stringify_label(cells))
-                if row_number >= max(header_rows):
+                if row_number >= max(self.header_rows, default=0):
                     break
 
         # No header
         if not self.header:
-            return [], list(range(1, len(lists[0]) + 1))
+            return [], list(range(1, len(sample[0]) + 1))
 
         # Get labels
         raw_labels = []
@@ -244,7 +245,7 @@ class Layout(Metadata):
         limit = self.limit_fields
         offset = self.offset_fields or 0
         for field_position, label in enumerate(raw_labels, start=1):
-            if self.read_filter_fields(label, field_position):
+            if self.read_filter_fields(label, field_position=field_position):
                 if offset:
                     offset -= 1
                     continue
@@ -255,7 +256,27 @@ class Layout(Metadata):
 
         return labels, field_positions
 
-    def read_filter_fields(self, label, field_position):
+    def read_fragment(self, sample):
+
+        # Collect fragment
+        fragment = []
+        row_number = 0
+        fragment_positions = []
+        field_positions = self.read_labels(sample)[1]
+        for row_position, cells in enumerate(sample, start=1):
+            if self.read_filter_rows(cells, row_position=row_position):
+                row_number += 1
+                if self.header_rows and row_number < self.header_rows[0]:
+                    continue
+                if row_number in self.header_rows:
+                    continue
+                cells = self.read_filter_cells(cells, field_positions=field_positions)
+                fragment_positions.append(row_position)
+                fragment.append(cells)
+
+        return fragment, fragment_positions
+
+    def read_filter_fields(self, label, *, field_position):
         match = True
         for name in ["pick", "skip"]:
             if name == "pick":
@@ -276,7 +297,7 @@ class Layout(Metadata):
                     match = not match
         return match
 
-    def read_filter_rows(self, cells, row_position):
+    def read_filter_rows(self, cells, *, row_position):
         match = True
         cell = cells[0] if cells else None
         cell = "" if cell is None else str(cell)
@@ -301,7 +322,7 @@ class Layout(Metadata):
                     match = not match
         return match
 
-    def read_filter_cells(self, cells, field_positions):
+    def read_filter_cells(self, cells, *, field_positions):
         if self.is_field_filtering:
             result = []
             for field_position, cell in enumerate(cells, start=1):

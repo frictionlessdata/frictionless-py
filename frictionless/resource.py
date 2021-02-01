@@ -191,8 +191,8 @@ class Resource(Metadata):
         self.__loader = None
         self.__parser = None
         self.__sample = None
-        self.__fragment = None
         self.__labels = None
+        self.__fragment = None
         self.__header = None
         self.__lookup = None
         self.__byte_stream = None
@@ -498,6 +498,14 @@ class Resource(Metadata):
         return self.__sample
 
     @property
+    def labels(self):
+        """
+        Returns:
+            str[]?: table labels
+        """
+        return self.__labels
+
+    @property
     def fragment(self):
         """Table's lists used as fragment.
 
@@ -508,14 +516,6 @@ class Resource(Metadata):
             list[]?: table fragment
         """
         return self.__fragment
-
-    @property
-    def labels(self):
-        """
-        Returns:
-            str[]?: table labels
-        """
-        return self.__labels
 
     @property
     def header(self):
@@ -740,10 +740,10 @@ class Resource(Metadata):
             self.__parser = system.create_parser(self)
             self.__parser.open()
             # TODO: make below lazy?
-            self.__read_infer_sample()
+            self.__read_detect_sample()
             self.__header = self.__read_header()
             if not self.__nolookup:
-                self.__lookup = self.__read_prepare_lookup()
+                self.__lookup = self.__read_detect_lookup()
             if self.__parser.loader:
                 self.__byte_stream = self.__parser.loader.byte_stream
             if self.__parser.loader:
@@ -1037,65 +1037,26 @@ class Resource(Metadata):
 
         # Stream with filtering
         for row_position, cells in iterator:
-            if self.layout.read_filter_rows(cells, row_position):
-                cells = self.layout.read_filter_cells(cells, self.__field_positions)
-                yield row_position, cells
+            if self.layout.read_filter_rows(cells, row_position=row_position):
+                yield row_position, self.layout.read_filter_cells(
+                    cells, field_positions=self.__field_positions
+                )
 
-    def __read_infer_sample(self):
-
-        # Create state
-        sample = []
-        labels = []
-        fragment = []
-        field_positions = []
-        fragment_positions = []
+    # TODO: split into layout/schema
+    def __read_detect_sample(self):
 
         # Detect sample
+        sample = []
         for row_position, cells in enumerate(self.__parser.list_stream, start=1):
             sample.append(cells)
             if len(sample) >= self.__detector.sample_size:
                 break
 
-        # Detect layout
-        layout = self.__detector.detect_layout(sample, layout=self.layout)
-
-        # Detect labels/fragment
-        row_number = 0
-        header_data = []
-        header_ready = False
-        header_row_positions = []
-        header_numbers = layout.header_rows or config.DEFAULT_HEADER_ROWS
-        for row_position, cells in enumerate(sample, start=1):
-            if layout.read_filter_rows(cells, row_position):
-                row_number += 1
-
-                # Labels
-                if not header_ready:
-                    if row_number in header_numbers:
-                        header_data.append(helpers.stringify_label(cells))
-                        if layout.header:
-                            header_row_positions.append(row_position)
-                    if row_number >= max(header_numbers):
-                        labels, field_positions = self.__read_infer_header(header_data)
-                        header_ready = True
-                    if not header_ready or layout.header:
-                        continue
-
-                # Fragment
-                fragment.append(layout.read_filter_cells(cells, field_positions))
-                fragment_positions.append(row_position)
-
-        # Detect labels/fragment
+        # Detect params
+        layout = self.detector.detect_layout(sample, layout=self.layout)
         labels, field_positions = layout.read_labels(sample)
-
-        # Detect schema
-        schema = self.__detector.detect_schema(
-            fragment,
-            labels=labels,
-            schema=self.schema,
-        )
-
-        # Save state
+        fragment, fragment_positions = layout.read_fragment(sample)
+        schema = self.detector.detect_schema(fragment, labels=labels, schema=self.schema)
         if layout:
             self.layout = layout
         if schema:
@@ -1105,48 +1066,9 @@ class Resource(Metadata):
         self.__fragment = fragment
         self.__field_positions = field_positions
         self.__fragment_positions = fragment_positions
-
-        # Store stats
         self.stats["fields"] = len(self.schema.fields)
 
-    def __read_infer_header(self, header_data):
-        layout = self.layout
-
-        # No header
-        if not layout.header:
-            return [], list(range(1, len(header_data[0]) + 1))
-
-        # Get labels
-        labels = []
-        prev_cells = {}
-        for cells in header_data:
-            for index, cell in enumerate(cells):
-                if prev_cells.get(index) == cell:
-                    continue
-                prev_cells[index] = cell
-                if len(labels) <= index:
-                    labels.append(cell)
-                    continue
-                labels[index] = layout.header_join.join([labels[index], cell])
-
-        # Filter labels
-        filter_labels = []
-        field_positions = []
-        limit = self.layout.limit_fields
-        offset = self.layout.offset_fields or 0
-        for field_position, labels in enumerate(labels, start=1):
-            if self.layout.read_filter_fields(labels, field_position):
-                if offset:
-                    offset -= 1
-                    continue
-                filter_labels.append(labels)
-                field_positions.append(field_position)
-                if limit and limit <= len(filter_labels):
-                    break
-
-        return filter_labels, field_positions
-
-    def __read_prepare_lookup(self):
+    def __read_detect_lookup(self):
         """
         Returns
             dict: resource lookup structure
