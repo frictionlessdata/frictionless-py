@@ -6,10 +6,15 @@ from . import helpers
 from . import config
 
 
+# NOTE:
+# For better detection we can add an argument allowing metadata reading
+# Exact set of file types needs to be reviewed
+
+
 class File:
     """File representation"""
 
-    def __init__(self, source, *, basepath="", innerpath=None, allow_reading=False):
+    def __init__(self, source, *, basepath="", innerpath=None):
 
         # Handle pathlib
         if isinstance(source, Path):
@@ -19,7 +24,6 @@ class File:
         self.__source = source
         self.__basepath = basepath
         self.__innerpath = innerpath
-        self.__allow_reading = allow_reading
 
         # Detect attributes
         self.__detect()
@@ -168,9 +172,6 @@ class File:
                     type = "inquiry"
                 elif path.endswith(("pipeline.json", "pipeline.yaml")):
                     type = "pipeline"
-                elif self.__allow_reading:
-                    # TODO: implement
-                    pass
 
         # Detect scheme/format/innerpath/compression
         scheme = ""
