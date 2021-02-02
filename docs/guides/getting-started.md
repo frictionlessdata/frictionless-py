@@ -16,7 +16,7 @@ $ frictionless --version
 ```
 
 
-By default, the framework comes with the support of CSV, Excel, and JSON formats. Please use the command above to add support for SQL, Pandas, Html, and others. Usually, you don't need to think about it in advance - frictionless will show a useful error on a missing plugin with installation instruction.
+The framework supports CSV, Excel, and JSON formats by default. Please use the command above to install a core plugin and add support for SQL, Pandas, HTML, and others (check the [list of Frictionless Framework plugins and their status](https://framework.frictionlessdata.io/docs/references/plugins-reference)). Usually, you don't need to think about it in advance–frictionless will display a useful error message about a missing plugin with installation instructions.
 
 ## Usage
 
@@ -25,25 +25,30 @@ The framework can be used:
 - as a command-line interface
 - as a restful API server
 
-For example, all the examples below do the same thing:
+For instance, all the examples below do the same thing:
 
 
 ```python
+# Python:
 from frictionless import extract
 
 rows = extract('data/table.csv')
-# CLI: $ frictionless extract data/table.csv
-# API: [POST] /extract {"source': 'data/table.csv"}
+
+# CLI:
+$ frictionless extract data/table.csv
+
+# API:
+[POST] /extract {"source': 'data/table.csv"}
 ```
 
-All these interfaces are close as much as possible regarding naming and the way you interact with them. Usually, it's straightforward to translate e.g., Python code to a command-line call. Frictionless provides code completion for Python and command-line, which should help to get useful hints in real-time.
+All these interfaces are as much alike as possible regarding naming conventions and the way you interact with them. Usually, it's straightforward to translate, for instance, Python code to a command-line call. Frictionless provides code completion for Python and the command-line, which should help to get useful hints in real time.
 
-Arguments follow this naming rule:
-- for Python interfaces, they are lowercased, e.g. `missing_values`
-- within dictionaries or JSON objects they are camel-cased, e.g. `missingValues`
-- in a command line they use dashes, e.g. `--missing-values`
+Arguments conform to the following naming convention:
+- for Python interfaces, they are snake_cased, e.g. `missing_values`
+- within dictionaries or JSON objects, they are camelCased, e.g. `missingValues`
+- in the command line, they use dashes, e.g. `--missing-values`
 
-To get documentation for a command-line interface just use the `--help` flag:
+To get the documentation for a command-line interface just use the `--help` flag:
 
 ```bash
 $ frictionless --help
@@ -58,7 +63,7 @@ $ frictionless transform --help
 
 > All the examples use the data folder from [this](https://github.com/frictionlessdata/frictionless-py/) repository
 
-We will take a very dirty data file:
+We will take a very messy data file:
 
 
 ```bash
@@ -72,7 +77,7 @@ $ cat data/invalid.csv
     2,german,1,2,3
 
 
-First of all, let's infer the metadata. We can save and edit it to provide useful information about the table:
+First of all, let's use `describe` to infer the metadata directly from the tabular data. We can then edit and save it to provide others with useful information about the data:
 
 > This output is in [YAML](https://yaml.org/), it is a default Frictionless output format.
 
@@ -116,7 +121,7 @@ $ frictionless describe data/invalid.csv
 
 
 
-Secondly, we can extract a normalized data. It conforms to the inferred schema from above e.g., the dimension is fixed, and bad cells are omitted:
+Now that we have inferred a table schema from the data file (e.g., expected format of the table, expected type of each value in a column, etc.), we can use `extract` to read the normalized tabular data from the source CSV file:
 
 
 ```bash
@@ -138,7 +143,7 @@ $ frictionless extract data/invalid.csv
 
 
 
-Last but not least, let's get a validation report. This report will help us to fix all these errors as comprehensive information is provided for every tabular problem:
+Last but not least, let's get a validation report. This report will help us to identify and fix all the errors present in the tabular data, as comprehensive information is provided for every problem:
 
 
 ```bash
@@ -164,8 +169,8 @@ $ frictionless validate data/invalid.csv
 
 
 
-Now having all this information:
+Now that we have all this information:
 - we can clean up the table to ensure the data quality
 - we can use the metadata to describe and share the dataset
 - we can include the validation into our workflow to guarantee the validity
-- and much more: don't hesitate and read the following documentation!
+- and much more: don't hesitate and read the following sections of the documentation!
