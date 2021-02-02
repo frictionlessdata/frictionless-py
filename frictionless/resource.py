@@ -1202,13 +1202,15 @@ class Resource(Metadata):
         class ResourceView(petl.Table):
             def __iter__(self):
                 with helpers.ensure_open(resource):
+                    # Normalized
                     if normalize:
                         yield resource.schema.field_names
                         yield from (row.to_list() for row in resource.row_stream)
                         return
-                    if not resource.layout.header:
-                        yield resource.schema.field_names
-                    yield from resource.list_stream
+                    # Default
+                    if not resource.header.missing:
+                        yield resource.header.labels
+                    yield from (row.cells for row in resource.row_stream)
 
         return ResourceView()
 
