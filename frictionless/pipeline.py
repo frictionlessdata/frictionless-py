@@ -35,7 +35,6 @@ class Pipeline(Metadata):
 
     # Run
 
-    # TODO: we need to support parallel runner and add tests for it
     def run(self, *, parallel=False):
         """Run the pipeline"""
         tasks = []
