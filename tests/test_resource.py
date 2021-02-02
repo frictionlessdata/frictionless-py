@@ -103,6 +103,7 @@ def test_resource_source_non_tabular():
     }
 
 
+@pytest.mark.skip
 @pytest.mark.vcr
 def test_resource_source_non_tabular_remote():
     path = BASE_URL % "data/foo.txt"
@@ -2121,6 +2122,7 @@ def test_resource_read_text():
     assert text == "text\n"
 
 
+@pytest.mark.skip
 def test_resource_read_data():
     resource = Resource(path="data/table.json")
     data = resource.read_data()

@@ -636,9 +636,9 @@ class Resource(Metadata):
         Yields:
             gen<bytes>?: byte stream
         """
-        # TODO: rebase on parallel loader
-        if self.__parser and self.__parser.loader:
-            return self.__parser.loader.byte_stream
+        if not self.closed:
+            loader = self.__loader or system.create_loader(self)
+            return loader.byte_stream
 
     @property
     def text_stream(self):
@@ -647,9 +647,9 @@ class Resource(Metadata):
         Yields:
             gen<str[]>?: text stream
         """
-        # TODO: rebase on parallel loader
-        if self.__parser and self.__parser.loader:
-            return self.__parser.loader.text_stream
+        if not self.closed:
+            loader = self.__loader or system.create_loader(self)
+            return loader.text_stream
 
     @property
     def list_stream(self):
@@ -686,6 +686,7 @@ class Resource(Metadata):
 
     # Infer
 
+    # TODO: review this method (remove stats hacks)
     def infer(self, *, stats=False):
         """Infer metadata
 
@@ -697,7 +698,6 @@ class Resource(Metadata):
             stream = self.__row_stream if self.tabular else self.__text_stream
             if stats:
                 helpers.pass_through(stream)
-            # TODO: review it's a hack for checksum validation
             if not stats:
                 if current_stats:
                     self["stats"] = current_stats
@@ -788,12 +788,10 @@ class Resource(Metadata):
         Returns:
             any[][]: resource bytes
         """
-        # TODO: rework when there is proper sample caching
         if self.memory:
             return b""
-        self["stats"] = {"hash": "", "bytes": 0, "fields": 0, "rows": 0}
-        with system.create_loader(self) as loader:
-            return loader.byte_stream.read1(size)
+        with helpers.ensure_open(self):
+            return self.byte_stream.read(size)
 
     def read_text(self, *, size=None):
         """Read text into memory
@@ -801,19 +799,10 @@ class Resource(Metadata):
         Returns:
             str: resource text
         """
-        # TODO: rework when there is proper sample caching
         if self.memory:
             return ""
-        self["stats"] = {"hash": "", "bytes": 0, "fields": 0, "rows": 0}
-        with system.create_loader(self) as loader:
-            result = ""
-            for line in loader.text_stream:
-                result += line
-                if size and len(result) >= size:
-                    # TODO: it's not good; can we read using text_stream.read()?
-                    result = result[:size]
-                    break
-            return result
+        with helpers.ensure_open(self):
+            return self.text_stream.read(size)
 
     def read_data(self, *, size=None):
         """Read data into memory
@@ -823,9 +812,10 @@ class Resource(Metadata):
         """
         if self.data:
             return self.data
-        text = self.read_text()
-        data = json.loads(text)
-        return data
+        with helpers.ensure_open(self):
+            text = self.read_text()
+            data = json.loads(text)
+            return data
 
     def read_lists(self, *, size=None):
         """Read lists into memory
