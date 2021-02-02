@@ -472,7 +472,6 @@ class Package(Metadata):
         """Create a package from ZIP"""
         return Package(descriptor=path, **options)
 
-    # TODO: support multipart
     def to_zip(self, path, *, resolve=[], encoder_class=None):
         """Save package to a zip
 
@@ -518,7 +517,7 @@ class Package(Metadata):
                             path = f"{resource.name}.{resource.format}"
                             descriptor["path"] = path
                             with tempfile.NamedTemporaryFile() as file:
-                                # TODO: rebase on resource here?
+                                # NOTE: we might rebase on using resource here
                                 with system.create_loader(resource) as loader:
                                     while True:
                                         chunk = loader.byte_stream.read(1024)
