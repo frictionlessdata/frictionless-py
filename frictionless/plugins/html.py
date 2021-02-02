@@ -88,9 +88,14 @@ class HtmlParser(Parser):
 
     """
 
+    requires_loader = True
+    supported_types = [
+        "string",
+    ]
+
     # Read
 
-    def read_data_stream_create(self):
+    def read_list_stream_create(self):
         pq = helpers.import_from_plugin("pyquery", plugin="html").PyQuery
         dialect = self.resource.dialect
 

@@ -6,7 +6,6 @@ import glob
 import atexit
 import shutil
 import zipfile
-import chardet
 import tempfile
 import datetime
 import platform
@@ -126,7 +125,7 @@ def compile_regex(items):
         return result
 
 
-def detect_basepath(descriptor):
+def parse_basepath(descriptor):
     basepath = ""
     if isinstance(descriptor, str):
         basepath = os.path.dirname(descriptor)
@@ -135,7 +134,7 @@ def detect_basepath(descriptor):
     return basepath
 
 
-def detect_scheme_and_format(source):
+def parse_scheme_and_format(source):
     parsed = urlparse(source)
     if re.search(r"\+.*://", source):
         # For sources like: db2+ibm_db://username:password@host:port/database
@@ -297,17 +296,6 @@ def parse_resource_hash(hash):
     if len(parts) == 1:
         return (config.DEFAULT_HASHING, parts[0])
     return parts
-
-
-def detect_encoding(sample, *, confidence):
-    result = chardet.detect(sample)
-    rescon = result["confidence"] or 0
-    encoding = result["encoding"] or config.DEFAULT_ENCODING
-    if rescon < confidence:
-        encoding = config.DEFAULT_ENCODING
-    if encoding == "ascii":
-        encoding = config.DEFAULT_ENCODING
-    return encoding
 
 
 # Measurements

@@ -178,7 +178,7 @@ class Package(Metadata):
         self.setinitial("keywords", keywords)
         self.setinitial("image", image)
         self.setinitial("created", created)
-        self.__basepath = basepath or helpers.detect_basepath(descriptor)
+        self.__basepath = basepath or helpers.parse_basepath(descriptor)
         self.__detector = detector or Detector()
         self.__onerror = onerror
         self.__trusted = trusted
@@ -451,94 +451,6 @@ class Package(Metadata):
 
     # Import/Export
 
-    @staticmethod
-    def from_zip(path, **options):
-        """Create a package from ZIP"""
-        return Package(descriptor=path, **options)
-
-    @staticmethod
-    def from_storage(storage):
-        """Import package from storage
-
-        Parameters:
-            storage (Storage): storage instance
-        """
-        return storage.read_package()
-
-    @staticmethod
-    def from_ckan(*, url, dataset, apikey=None):
-        """Import package from CKAN
-
-        Parameters:
-            url (string): CKAN instance url e.g. "https://demo.ckan.org"
-            dataset (string): dataset id in CKAN e.g. "my-dataset"
-            apikey? (str): API key for CKAN e.g. "51912f57-a657-4caa-b2a7-0a1c16821f4b"
-        """
-        return Package.from_storage(
-            system.create_storage(
-                "ckan",
-                url=url,
-                dataset=dataset,
-                apikey=apikey,
-            )
-        )
-
-    @staticmethod
-    def from_sql(*, url=None, engine=None, prefix="", namespace=None):
-        """Import package from SQL
-
-        Parameters:
-            url? (string): SQL connection string
-            engine? (object): `sqlalchemy` engine
-            prefix? (str): prefix for all tables
-            namespace? (str): SQL scheme
-        """
-        return Package.from_storage(
-            system.create_storage(
-                "sql", url=url, engine=engine, prefix=prefix, namespace=namespace
-            )
-        )
-
-    @staticmethod
-    def from_pandas(*, dataframes):
-        """Import package from Pandas dataframes
-
-        Parameters:
-            dataframes (dict): mapping of Pandas dataframes
-        """
-        return Package.from_storage(
-            system.create_storage("pandas", dataframes=dataframes)
-        )
-
-    @staticmethod
-    def from_spss(*, basepath):
-        """Import package from SPSS directory
-
-        Parameters:
-            basepath (str): SPSS dir path
-        """
-        return Package.from_storage(system.create_storage("spss", basepath=basepath))
-
-    @staticmethod
-    def from_bigquery(*, service, project, dataset, prefix=""):
-        """Import package from Bigquery
-
-        Parameters:
-            service (object): BigQuery `Service` object
-            project (str): BigQuery project name
-            dataset (str): BigQuery dataset name
-            prefix? (str): prefix for all names
-        """
-        return Package.from_storage(
-            system.create_storage(
-                "bigquery",
-                service=service,
-                project=project,
-                dataset=dataset,
-                prefix=prefix,
-            ),
-        )
-
     def to_copy(self):
         """Create a copy of the package"""
         descriptor = self.to_dict()
@@ -554,6 +466,11 @@ class Package(Metadata):
             onerror=self.__onerror,
             trusted=self.__trusted,
         )
+
+    @staticmethod
+    def from_zip(path, **options):
+        """Create a package from ZIP"""
+        return Package(descriptor=path, **options)
 
     # TODO: support multipart
     def to_zip(self, path, *, resolve=[], encoder_class=None):
@@ -634,6 +551,15 @@ class Package(Metadata):
             error = errors.PackageError(note=str(exception))
             raise FrictionlessException(error) from exception
 
+    @staticmethod
+    def from_storage(storage):
+        """Import package from storage
+
+        Parameters:
+            storage (Storage): storage instance
+        """
+        return storage.read_package()
+
     def to_storage(self, storage, *, force=False):
         """Export package to storage
 
@@ -643,6 +569,65 @@ class Package(Metadata):
         """
         storage.write_package(self.to_copy(), force=force)
         return storage
+
+    @staticmethod
+    def from_bigquery(*, service, project, dataset, prefix=""):
+        """Import package from Bigquery
+
+        Parameters:
+            service (object): BigQuery `Service` object
+            project (str): BigQuery project name
+            dataset (str): BigQuery dataset name
+            prefix? (str): prefix for all names
+        """
+        return Package.from_storage(
+            system.create_storage(
+                "bigquery",
+                service=service,
+                project=project,
+                dataset=dataset,
+                prefix=prefix,
+            ),
+        )
+
+    def to_bigquery(self, *, service, project, dataset, prefix="", force=False):
+        """Export package to Bigquery
+
+        Parameters:
+            service (object): BigQuery `Service` object
+            project (str): BigQuery project name
+            dataset (str): BigQuery dataset name
+            prefix? (str): prefix for all names
+            force (bool): overwrite existent
+        """
+        return self.to_storage(
+            system.create_storage(
+                "bigquery",
+                service=service,
+                project=project,
+                dataset=dataset,
+                prefix=prefix,
+            ),
+            force=force,
+        )
+
+    @staticmethod
+    def from_ckan(*, url, dataset, apikey=None):
+        """Import package from CKAN
+
+        Parameters:
+            url (string): CKAN instance url e.g. "https://demo.ckan.org"
+            dataset (string): dataset id in CKAN e.g. "my-dataset"
+            apikey? (str): API key for CKAN e.g. "51912f57-a657-4caa-b2a7-0a1c16821f4b"
+        """
+        return Package.from_storage(
+            system.create_storage(
+                "ckan",
+                url=url,
+                dataset=dataset,
+                apikey=apikey,
+            )
+        )
 
     def to_ckan(self, *, url, dataset, apikey=None, force=False):
         """Export package to CKAN
@@ -663,6 +648,57 @@ class Package(Metadata):
             force=force,
         )
 
+    @staticmethod
+    def from_pandas(*, dataframes):
+        """Import package from Pandas dataframes
+
+        Parameters:
+            dataframes (dict): mapping of Pandas dataframes
+        """
+        return Package.from_storage(
+            system.create_storage("pandas", dataframes=dataframes)
+        )
+
+    def to_pandas(self):
+        """Export package to Pandas dataframes"""
+        return self.to_storage(system.create_storage("pandas"))
+
+    @staticmethod
+    def from_spss(*, basepath):
+        """Import package from SPSS directory
+
+        Parameters:
+            basepath (str): SPSS dir path
+        """
+        return Package.from_storage(system.create_storage("spss", basepath=basepath))
+
+    def to_spss(self, *, basepath, force=False):
+        """Export package to SPSS directory
+
+        Parameters:
+            basepath (str): SPSS dir path
+            force (bool): overwrite existent
+        """
+        return self.to_storage(
+            system.create_storage("spss", basepath=basepath), force=force
+        )
+
+    @staticmethod
+    def from_sql(*, url=None, engine=None, prefix="", namespace=None):
+        """Import package from SQL
+
+        Parameters:
+            url? (string): SQL connection string
+            engine? (object): `sqlalchemy` engine
+            prefix? (str): prefix for all tables
+            namespace? (str): SQL scheme
+        """
+        return Package.from_storage(
+            system.create_storage(
+                "sql", url=url, engine=engine, prefix=prefix, namespace=namespace
+            )
+        )
+
     def to_sql(self, *, url=None, engine=None, prefix="", namespace=None, force=False):
         """Export package to SQL
 
@@ -676,42 +712,6 @@ class Package(Metadata):
         return self.to_storage(
             system.create_storage(
                 "sql", url=url, engine=engine, prefix=prefix, namespace=namespace
-            ),
-            force=force,
-        )
-
-    def to_pandas(self):
-        """Export package to Pandas dataframes"""
-        return self.to_storage(system.create_storage("pandas"))
-
-    def to_spss(self, *, basepath, force=False):
-        """Export package to SPSS directory
-
-        Parameters:
-            basepath (str): SPSS dir path
-            force (bool): overwrite existent
-        """
-        return self.to_storage(
-            system.create_storage("spss", basepath=basepath), force=force
-        )
-
-    def to_bigquery(self, *, service, project, dataset, prefix="", force=False):
-        """Export package to Bigquery
-
-        Parameters:
-            service (object): BigQuery `Service` object
-            project (str): BigQuery project name
-            dataset (str): BigQuery dataset name
-            prefix? (str): prefix for all names
-            force (bool): overwrite existent
-        """
-        return self.to_storage(
-            system.create_storage(
-                "bigquery",
-                service=service,
-                project=project,
-                dataset=dataset,
-                prefix=prefix,
             ),
             force=force,
         )

@@ -72,18 +72,20 @@ class SpssParser(Parser):
 
     """
 
-    needs_loader = False
+    supported_types = [
+        "string",
+    ]
 
     # Read
 
-    def read_data_stream_create(self):
+    def read_list_stream_create(self):
         name = os.path.basename(self.resource.path)
         basepath = os.path.dirname(self.resource.path)
         storage = SpssStorage(basepath=basepath)
         resource = storage.read_resource(name)
         self.resource.schema = resource.schema
         with resource:
-            yield from resource.data_stream
+            yield from resource.list_stream
 
     # Write
 

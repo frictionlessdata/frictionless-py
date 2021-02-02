@@ -89,9 +89,10 @@ class table_debug(Step):
 
         # Data
         def data():
-            for row in source.read_row_stream():
-                self.__function(row)
-                yield row
+            with source:
+                for row in source.row_stream:
+                    self.__function(row)
+                    yield row
 
         # Meta
         target.data = data

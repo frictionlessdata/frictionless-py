@@ -12,10 +12,11 @@ from . import errors
 from . import config
 
 
-# TODO
+# NOTE:
 # Probably we need to rework the way we calculate stats
 # First of all, it's not really reliable as read/read1(size) can be called many times
 # Secondly, for now, we stream compressed files twice (see loader.read_byte_stream_decompress)
+# Although, we need to reviw how we collect buffer - cab it be less IO operations?
 
 
 class Loader:
@@ -34,6 +35,7 @@ class Loader:
 
     def __init__(self, resource):
         self.__resource = resource
+        self.__buffer = None
         self.__byte_stream = None
         self.__text_stream = None
 
@@ -52,6 +54,14 @@ class Loader:
             resource (Resource): resource
         """
         return self.__resource
+
+    @property
+    def buffer(self):
+        """
+        Returns:
+            Loader: buffer
+        """
+        return self.__buffer
 
     @property
     def byte_stream(self):
@@ -73,8 +83,6 @@ class Loader:
         Returns:
             io.TextStream: resource text stream
         """
-        if not self.__text_stream:
-            self.__text_stream = self.read_text_stream()
         return self.__text_stream
 
     # Open/Close
@@ -82,11 +90,9 @@ class Loader:
     def open(self):
         """Open the loader as "io.open" does"""
         self.close()
-        if self.__resource.control.metadata_errors:
-            error = self.__resource.control.metadata_errors[0]
-            raise FrictionlessException(error)
         try:
             self.__byte_stream = self.read_byte_stream()
+            self.__text_stream = self.read_text_stream()
             return self
         except Exception:
             self.close()
@@ -224,24 +230,25 @@ class Loader:
         """
         # We don't need a default encoding
         encoding = self.resource.get("encoding")
-        sample = byte_stream.read(self.resource.detector.buffer_size)
-        sample = sample[: self.resource.detector.buffer_size]
+        buffer = byte_stream.read(self.resource.detector.buffer_size)
+        buffer = buffer[: self.resource.detector.buffer_size]
         byte_stream.seek(0)
         if encoding is None:
-            encoding = self.resource.detector.detect_encoding(sample)
+            encoding = self.resource.detector.detect_encoding(buffer)
         encoding = codecs.lookup(encoding).name
         # Work around for incorrect inferion of utf-8-sig encoding
         if encoding == "utf-8":
-            if sample.startswith(codecs.BOM_UTF8):
+            if buffer.startswith(codecs.BOM_UTF8):
                 encoding = "utf-8-sig"
         # Use the BOM stripping name (without byte-order) for UTF-16 encodings
         elif encoding == "utf-16-be":
-            if sample.startswith(codecs.BOM_UTF16_BE):
+            if buffer.startswith(codecs.BOM_UTF16_BE):
                 encoding = "utf-16"
         elif encoding == "utf-16-le":
-            if sample.startswith(codecs.BOM_UTF16_LE):
+            if buffer.startswith(codecs.BOM_UTF16_LE):
                 encoding = "utf-16"
         self.resource.encoding = encoding
+        self.__buffer = buffer
 
     def read_text_stream_decode(self, byte_stream):
         """Decode text stream
@@ -292,12 +299,13 @@ class Loader:
 # Internal
 
 
-class ByteStreamWithStatsHandling:
-    # TODO
-    # We can try buffering byte sample especially for remote
-    # Also, currently read/read1/item implementation is not complete
-    # As an option, we can think of subclassing some io.* class
+# NOTE:
+# We can try buffering byte buffer especially for remote
+# Also, currently read/read1/item implementation is not complete
+# As an option, we can think of subclassing some io.* class
 
+
+class ByteStreamWithStatsHandling:
     def __init__(self, byte_stream, *, resource):
         try:
             self.__hasher = hashlib.new(resource.hashing) if resource.hashing else None
@@ -316,7 +324,7 @@ class ByteStreamWithStatsHandling:
         return self.__byte_stream.closed
 
     def read1(self, size=-1):
-        chunk = self.__byte_stream.read1(size)
+        chunk = self.__byte_stream.read1(size or -1)
         self.__stats["bytes"] += len(chunk)
         if self.__hasher:
             self.__hasher.update(chunk)

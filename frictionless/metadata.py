@@ -241,6 +241,9 @@ class Metadata(helpers.ControlledDict):
             validator_class = jsonschema.validators.validator_for(profile)
             validator = validator_class(profile)
             for error in validator.iter_errors(self):
+                # Withouth this resource with both path/data is invalid
+                if "is valid under each of" in error.message:
+                    continue
                 metadata_path = "/".join(map(str, error.path))
                 profile_path = "/".join(map(str, error.schema_path))
                 note = '"%s" at "%s" in metadata and at "%s" in profile'

@@ -114,6 +114,8 @@ def test_csv_parser_remote():
         ]
 
 
+# TODO: enable when loader.buffer is implemented
+@pytest.mark.skip
 @pytest.mark.vcr
 def test_csv_parser_remote_non_ascii_url():
     source = "http://data.defra.gov.uk/ops/government_procurement_card/over_£500_GPC_apr_2013.csv"

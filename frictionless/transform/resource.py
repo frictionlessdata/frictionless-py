@@ -1,3 +1,4 @@
+import types
 from ..step import Step
 from ..system import system
 from ..helpers import get_name
@@ -30,7 +31,11 @@ def transform_resource(source, *, steps, **options):
     # Prepare steps
     for index, step in enumerate(steps):
         if not isinstance(step, Step):
-            steps[index] = system.create_step(step)
+            steps[index] = (
+                Step(function=step)
+                if isinstance(step, types.FunctionType)
+                else system.create_step(step)
+            )
 
     # Run transforms
     for step in steps:

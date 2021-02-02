@@ -17,6 +17,8 @@ def test_remote_loader():
         ]
 
 
+# TODO: enable when loader.buffer is implemented
+@pytest.mark.skip
 @pytest.mark.vcr
 def test_remote_loader_latin1():
     # Github returns wrong encoding `utf-8`

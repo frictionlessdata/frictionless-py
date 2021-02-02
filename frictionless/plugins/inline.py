@@ -107,7 +107,6 @@ class InlineParser(Parser):
 
     """
 
-    needs_loader = False
     supported_types = [
         "array",
         "boolean",
@@ -127,7 +126,7 @@ class InlineParser(Parser):
 
     # Read
 
-    def read_data_stream_create(self):
+    def read_list_stream_create(self):
         dialect = self.resource.dialect
 
         # Iter

@@ -118,11 +118,14 @@ class BigqueryParser(Parser):
     Public   | `from frictionless.plugins.bigquery import BigqueryParser`
     """
 
-    needs_loader = False
+    supported_types = [
+        "string",
+        "number",
+    ]
 
     # Read
 
-    def read_data_stream_create(self):
+    def read_list_stream_create(self):
         dialect = self.resource.dialect
         storage = BigqueryStorage(
             service=self.resource.data,
@@ -132,7 +135,7 @@ class BigqueryParser(Parser):
         resource = storage.read_resource(dialect.table)
         self.resource.schema = resource.schema
         with resource:
-            yield from resource.data_stream
+            yield from resource.list_stream
 
     # Write
 

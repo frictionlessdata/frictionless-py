@@ -5,6 +5,7 @@ from . import helpers
 from . import errors
 
 
+# TODO: accept header?
 # TODO: disable/limit dict.update/setdefault/pop/popitem/clear
 class Row(dict):
     """Row representation
