@@ -2,31 +2,34 @@ import petl
 from ..step import Step
 
 
-# TODO: accept WHERE/PREDICAT clause
+# NOTE:
+# Some of the following step can support WHERE/PREDICAT arguments (see petl)
+# Currently, metadata profiles are not fully finished; will require improvements
+
+
 class cell_convert(Step):
     code = "cell-convert"
 
-    def __init__(self, descriptor=None, *, value=None, field_name=None):
+    def __init__(self, descriptor=None, *, value=None, function=None, field_name=None):
         self.setinitial("value", value)
+        self.setinitial("function", function)
         self.setinitial("fieldName", field_name)
         super().__init__(descriptor)
-        # TODO: reimplement
-        self.__value = value
-        self.__field_name = field_name
 
     # Transform
 
     def transform_resource(self, source, target):
-        value = self["value"]
-        if not self.__field_name:
-            if not callable(value):
-                value = lambda val: self.__value
-            target.data = source.to_petl().convertall(value)
+        field_name = self.get("fieldName")
+        function = self.get("function")
+        value = self.get("value")
+        if not field_name:
+            if not function:
+                function = lambda input: value
+            target.data = source.to_petl().convertall(function)
+        elif function:
+            target.data = source.to_petl().convert(field_name, function)
         else:
-            if not callable(value):
-                target.data = source.to_petl().update(self.__field_name, value)
-            else:
-                target.data = source.to_petl().convert(self.__field_name, value)
+            target.data = source.to_petl().update(field_name, value)
 
     # Metadata
 
@@ -43,32 +46,29 @@ class cell_convert(Step):
 class cell_fill(Step):
     code = "cell-fill"
 
-    def __init__(self, descriptor=None, *, field_name=None, value=None, direction=None):
+    def __init__(self, descriptor=None, *, value=None, field_name=None, direction=None):
         assert direction in [None, "down", "right", "left"]
-        self.setinitial("fieldName", field_name)
         self.setinitial("value", value)
+        self.setinitial("fieldName", field_name)
         self.setinitial("direction", direction)
         super().__init__(descriptor)
-        # TODO: reimplement
-        self.__field_name = field_name
-        self.__value = value
-        self.__direction = direction
 
     # Transform
 
     def transform_resource(self, source, target):
-        if self.__value:
-            target.data = source.to_petl().convert(
-                self.__field_name, {None: self.__value}
-            )
-        elif self.__direction == "down":
-            if self.__field_name:
-                target.data = source.to_petl().filldown(self.__field_name)
+        value = self.get("value")
+        field_name = self.get("fieldName")
+        direction = self.get("direction")
+        if value:
+            target.data = source.to_petl().convert(field_name, {None: value})
+        elif direction == "down":
+            if field_name:
+                target.data = source.to_petl().filldown(field_name)
             else:
                 target.data = source.to_petl().filldown()
-        elif self.__direction == "right":
+        elif direction == "right":
             target.data = source.to_petl().fillright()
-        elif self.__direction == "left":
+        elif direction == "left":
             target.data = source.to_petl().fillleft()
 
     # Metadata
@@ -84,7 +84,6 @@ class cell_fill(Step):
     }
 
 
-# TODO: accept WHERE/PREDICAT clause
 class cell_format(Step):
     code = "cell-format"
 
@@ -92,17 +91,16 @@ class cell_format(Step):
         self.setinitial("template", template)
         self.setinitial("fieldName", field_name)
         super().__init__(descriptor)
-        # TODO: reimplement
-        self.__template = template
-        self.__field_name = field_name
 
     # Transform
 
     def transform_resource(self, source, target):
-        if not self.__field_name:
-            target.data = source.to_petl().formatall(self.__template)
+        field_name = self.get("fieldName")
+        template = self.get("template")
+        if not field_name:
+            target.data = source.to_petl().formatall(template)
         else:
-            target.data = source.to_petl().format(self.__field_name, self.__template)
+            target.data = source.to_petl().format(field_name, template)
 
     # Metadata
 
@@ -116,7 +114,6 @@ class cell_format(Step):
     }
 
 
-# TODO: accept WHERE/PREDICAT clause
 class cell_interpolate(Step):
     code = "cell-interpolate"
 
@@ -124,17 +121,16 @@ class cell_interpolate(Step):
         self.setinitial("template", template)
         self.setinitial("fieldName", field_name)
         super().__init__(descriptor)
-        # TODO: reimplement
-        self.__template = template
-        self.__field_name = field_name
 
     # Transform
 
     def transform_resource(self, source, target):
-        if not self.__field_name:
-            target.data = source.to_petl().interpolateall(self.__template)
+        template = self.get("template")
+        field_name = self.get("fieldName")
+        if not field_name:
+            target.data = source.to_petl().interpolateall(template)
         else:
-            target.data = source.to_petl().interpolate(self.__field_name, self.__template)
+            target.data = source.to_petl().interpolate(field_name, template)
 
     # Metadata
 
@@ -148,7 +144,6 @@ class cell_interpolate(Step):
     }
 
 
-# TODO: accept WHERE/PREDICAT clause
 class cell_replace(Step):
     code = "cell-replace"
 
@@ -157,25 +152,22 @@ class cell_replace(Step):
         self.setinitial("replace", replace)
         self.setinitial("fieldName", field_name)
         super().__init__(descriptor)
-        # TODO: reimplement
-        self.__pattern = pattern
-        self.__replace = replace
-        self.__field_name = field_name
 
     # Transform
 
     def transform_resource(self, source, target):
-        if not self.__field_name:
-            target.data = source.to_petl().replaceall(self.__pattern, self.__replace)
+        pattern = self.get("pattern")
+        replace = self.get("replace")
+        field_name = self.get("fieldName")
+        if not field_name:
+            target.data = source.to_petl().replaceall(pattern, replace)
         else:
-            pattern = self.__pattern
+            pattern = pattern
             function = petl.replace
-            if self.__pattern.startswith("<regex>"):
+            if pattern.startswith("<regex>"):
                 pattern = pattern.replace("<regex>", "")
                 function = petl.sub
-            target.data = function(
-                source.to_petl(), self.__field_name, pattern, self.__replace
-            )
+            target.data = function(source.to_petl(), field_name, pattern, replace)
 
     # Metadata
 
@@ -193,16 +185,15 @@ class cell_replace(Step):
 class cell_set(Step):
     code = "cell-set"
 
-    def __init__(self, descriptor=None, *, field_name=None, value=None):
-        self.setinitial("fieldName", field_name)
+    def __init__(self, descriptor=None, *, value=None, field_name=None):
         self.setinitial("value", value)
+        self.setinitial("fieldName", field_name)
         super().__init__(descriptor)
-        # TODO: reimplement
-        self.__field_name = self.get("fieldName")
-        self.__value = self.get("value")
 
     def transform_resource(self, source, target):
-        target.data = source.to_petl().update(self.__field_name, self.__value)
+        value = self.get("value")
+        field_name = self.get("fieldName")
+        target.data = source.to_petl().update(field_name, value)
 
     # Metadata
 
