@@ -6,7 +6,14 @@ from ..exception import FrictionlessException
 from .. import helpers
 
 
-# TODO: implement table_preload/cache step
+# NOTE:
+# We might consider implementing table_preload/cache step
+# Some of the following step use **options - we need to review/fix it
+# Currently, metadata profiles are not fully finished; will require improvements
+# We need to review table_pivot step as it's not fully implemented/tested
+# We need to review table_validate step as it's not fully implemented/tested
+# We need to review table_write step as it's not fully implemented/tested
+# We need to review how we use "target.schema.fields.clear()"
 
 
 class table_aggregate(Step):
@@ -16,18 +23,17 @@ class table_aggregate(Step):
         self.setinitial("groupName", group_name)
         self.setinitial("aggregation", aggregation)
         super().__init__(descriptor)
-        # TODO: reimplement
-        self.__group_name = group_name
-        self.__aggregation = aggregation
 
     # Transform
 
     def transform_resource(self, source, target):
-        target.data = source.to_petl().aggregate(self.__group_name, self.__aggregation)
-        field = target.schema.get_field(self.__group_name)
+        group_name = self.get("groupName")
+        aggregation = self.get("aggregation")
+        target.data = source.to_petl().aggregate(group_name, aggregation)
+        field = target.schema.get_field(group_name)
         target.schema.fields.clear()
         target.schema.add_field(field)
-        for name in self.__aggregation.keys():
+        for name in aggregation.keys():
             target.schema.add_field(Field(name=name))
 
     # Metadata
@@ -48,19 +54,18 @@ class table_attach(Step):
     def __init__(self, descriptor=None, *, resource=None):
         self.setinitial("resource", resource)
         super().__init__(descriptor)
-        # TODO: reimplement
-        self.__resource = resource
 
     # Transform
 
     def transform_resource(self, source, target):
-        if isinstance(self.__resource, str):
-            self.__resource = source.package.get_resource(self.__resource)
-        self.__resource.infer()
+        resource = self.get("resource")
+        if isinstance(resource, str):
+            resource = source.package.get_resource(resource)
+        resource.infer()
         view1 = source.to_petl()
-        view2 = self.__resource.to_petl()
+        view2 = resource.to_petl()
         target.data = petl.annex(view1, view2)
-        for field in self.__resource.schema.fields:
+        for field in resource.schema.fields:
             target.schema.fields.append(field.to_copy())
 
     # Metadata
@@ -80,18 +85,18 @@ class table_debug(Step):
     def __init__(self, descriptor=None, *, function=None):
         self.setinitial("function", function)
         super().__init__(descriptor)
-        # TODO: reimplement
-        self.__function = function
 
     # Transform
 
     def transform_resource(self, source, target):
+        function = self.get("function")
 
         # Data
         def data():
-            for row in source.read_row_stream():
-                self.__function(row)
-                yield row
+            with source:
+                for row in source.row_stream:
+                    function(row)
+                    yield row
 
         # Meta
         target.data = data
@@ -122,22 +127,21 @@ class table_diff(Step):
         self.setinitial("ignoreOrder", ignore_order)
         self.setinitial("useHash", use_hash)
         super().__init__(descriptor)
-        # TODO: reimplement
-        self.__resource = resource
-        self.__ignore_order = ignore_order
-        self.__use_hash = use_hash
 
     # Transform
 
     def transform_resource(self, source, target):
-        if isinstance(self.__resource, str):
-            self.__resource = source.package.get_resource(self.__resource)
-        self.__resource.infer()
+        resource = self.get("resource")
+        ignore_order = self.get("ignoreOrder")
+        use_hash = self.get("useHash")
+        if isinstance(resource, str):
+            resource = source.package.get_resource(resource)
+        resource.infer()
         view1 = source.to_petl()
-        view2 = self.__resource.to_petl()
-        function = petl.recordcomplement if self.__ignore_order else petl.complement
-        # TODO: raise an error for ignore/hash
-        if self.__use_hash and not self.__ignore_order:
+        view2 = resource.to_petl()
+        function = petl.recordcomplement if ignore_order else petl.complement
+        # NOTE: we might raise an error for ignore/hash
+        if use_hash and not ignore_order:
             function = petl.hashcomplement
         target.data = function(view1, view2)
 
@@ -161,19 +165,18 @@ class table_intersect(Step):
         self.setinitial("resource", resource)
         self.setinitial("useHash", use_hash)
         super().__init__(descriptor)
-        # TODO: reimplement
-        self.__resource = resource
-        self.__use_hash = use_hash
 
     # Transform
 
     def transform_resource(self, source, target):
-        if isinstance(self.__resource, str):
-            self.__resource = source.package.get_resource(self.__resource)
-        self.__resource.infer()
+        resource = self.get("resource")
+        use_hash = self.get("useHash")
+        if isinstance(resource, str):
+            resource = source.package.get_resource(resource)
+        resource.infer()
         view1 = source.to_petl()
-        view2 = self.__resource.to_petl()
-        function = petl.hashintersection if self.__use_hash else petl.intersection
+        view2 = resource.to_petl()
+        function = petl.hashintersection if use_hash else petl.intersection
         target.data = function(view1, view2)
 
     # Metadata
@@ -197,48 +200,47 @@ class table_join(Step):
         *,
         resource=None,
         field_name=None,
+        use_hash=False,
         mode="inner",
-        hash=False,
     ):
-        assert mode in ["inner", "left", "right", "outer", "cross", "anti"]
+        assert mode in ["inner", "left", "right", "outer", "cross", "negate"]
         self.setinitial("resource", resource)
         self.setinitial("fieldName", field_name)
+        self.setinitial("useHash", use_hash)
         self.setinitial("mode", mode)
-        self.setinitial("hash", hash)
         super().__init__(descriptor)
-        # TODO: reimplement
-        self.__resource = resource
-        self.__field_name = field_name
-        self.__mode = mode
-        self.__hash = hash
 
     # Transform
 
     def transform_resource(self, source, target):
-        if isinstance(self.__resource, str):
-            self.__resource = source.package.get_resource(self.__resource)
-        self.__resource.infer()
+        resource = self.get("resource")
+        field_name = self.get("fieldName")
+        use_hash = self.get("useHash")
+        mode = self.get("mode")
+        if isinstance(resource, str):
+            resource = source.package.get_resource(resource)
+        resource.infer()
         view1 = source.to_petl()
-        view2 = self.__resource.to_petl()
-        if self.__mode == "inner":
-            join = petl.hashjoin if self.__hash else petl.join
-            target.data = join(view1, view2, self.__field_name)
-        elif self.__mode == "left":
-            leftjoin = petl.hashleftjoin if self.__hash else petl.leftjoin
-            target.data = leftjoin(view1, view2, self.__field_name)
-        elif self.__mode == "right":
-            rightjoin = petl.hashrightjoin if self.__hash else petl.rightjoin
-            target.data = rightjoin(view1, view2, self.__field_name)
-        elif self.__mode == "outer":
-            target.data = petl.outerjoin(view1, view2, self.__field_name)
-        elif self.__mode == "cross":
+        view2 = resource.to_petl()
+        if mode == "inner":
+            join = petl.hashjoin if use_hash else petl.join
+            target.data = join(view1, view2, field_name)
+        elif mode == "left":
+            leftjoin = petl.hashleftjoin if use_hash else petl.leftjoin
+            target.data = leftjoin(view1, view2, field_name)
+        elif mode == "right":
+            rightjoin = petl.hashrightjoin if use_hash else petl.rightjoin
+            target.data = rightjoin(view1, view2, field_name)
+        elif mode == "outer":
+            target.data = petl.outerjoin(view1, view2, field_name)
+        elif mode == "cross":
             target.data = petl.crossjoin(view1, view2)
-        elif self.__mode == "anti":
-            antijoin = petl.hashantijoin if self.__hash else petl.antijoin
-            target.data = antijoin(view1, view2, self.__field_name)
-        if self.__mode not in ["anti"]:
-            for field in self.__resource.schema.fields:
-                if field.name != self.__field_name:
+        elif mode == "negate":
+            antijoin = petl.hashantijoin if use_hash else petl.antijoin
+            target.data = antijoin(view1, view2, field_name)
+        if mode not in ["negate"]:
+            for field in resource.schema.fields:
+                if field.name != field_name:
                     target.schema.fields.append(field.to_copy())
 
     # Metadata
@@ -262,33 +264,32 @@ class table_melt(Step):
         self,
         descriptor=None,
         *,
-        field_name=None,
         variables=None,
+        field_name=None,
         to_field_names=["variable", "value"],
     ):
         assert len(to_field_names) == 2
-        self.setinitial("fieldName", field_name)
         self.setinitial("variables", variables)
+        self.setinitial("fieldName", field_name)
         self.setinitial("toFieldNames", to_field_names)
         super().__init__(descriptor)
-        # TODO: reimplement
-        self.__field_name = field_name
-        self.__variables = variables
-        self.__to_field_names = to_field_names
 
     # Transform
 
     def transform_resource(self, source, target):
+        variables = self.get("variables")
+        field_name = self.get("fieldName")
+        to_field_names = self.get("toFieldNames")
         target.data = source.to_petl().melt(
-            key=self.__field_name,
-            variables=self.__variables,
-            variablefield=self.__to_field_names[0],
-            valuefield=self.__to_field_names[1],
+            key=field_name,
+            variables=variables,
+            variablefield=to_field_names[0],
+            valuefield=to_field_names[1],
         )
-        field = target.schema.get_field(self.__field_name)
+        field = target.schema.get_field(field_name)
         target.schema.fields.clear()
         target.schema.add_field(field)
-        for name in self.__to_field_names:
+        for name in to_field_names:
             target.schema.add_field(Field(name=name))
 
     # Metadata
@@ -314,48 +315,46 @@ class table_merge(Step):
         resource=None,
         field_names=None,
         ignore_fields=False,
-        sort=False,
+        sort_by_field=False,
     ):
         self.setinitial("resource", resource)
         self.setinitial("fieldNames", field_names)
         self.setinitial("ignoreFields", ignore_fields)
-        self.setinitial("sort", sort)
+        self.setinitial("sortByField", sort_by_field)
         super().__init__(descriptor)
-        # TODO: reimplement
-        self.__resource = resource
-        self.__field_names = field_names
-        self.__ignore_fields = ignore_fields
-        self.__sort = sort
 
     # Transform
 
     def transform_resource(self, source, target):
-        if isinstance(self.__resource, str):
-            self.__resource = source.package.get_resource(self.__resource)
-        self.__resource.infer()
+        resource = self.get("resource")
+        field_names = self.get("fieldNames")
+        ignore_fields = self.get("ignoreFields")
+        sort_by_field = self.get("sortByField")
+        if isinstance(resource, str):
+            resource = source.package.get_resource(resource)
+        resource.infer()
         view1 = source.to_petl()
-        view2 = self.__resource.to_petl()
+        view2 = resource.to_petl()
 
         # Ignore fields
-        if self.__ignore_fields:
+        if ignore_fields:
             target.data = petl.stack(view1, view2)
-            for field in self.__resource.schema.fields[len(target.schema.fields) :]:
+            for field in resource.schema.fields[len(target.schema.fields) :]:
                 target.schema.add_field(field)
 
         # Default
         else:
-            if self.__sort:
-                target.data = petl.mergesort(
-                    view1, view2, key=self.__sort, header=self.__field_names
-                )
+            if sort_by_field:
+                key = sort_by_field
+                target.data = petl.mergesort(view1, view2, key=key, header=field_names)
             else:
-                target.data = petl.cat(view1, view2, header=self.__field_names)
-            for field in self.__resource.schema.fields:
+                target.data = petl.cat(view1, view2, header=field_names)
+            for field in resource.schema.fields:
                 if field.name not in target.schema.field_names:
                     target.schema.add_field(field)
-            if self.__field_names:
+            if field_names:
                 for field in list(target.schema.fields):
-                    if field.name not in self.__field_names:
+                    if field.name not in field_names:
                         target.schema.remove_field(field.name)
 
     # Metadata
@@ -367,7 +366,7 @@ class table_merge(Step):
             "resource": {},
             "fieldNames": {"type": "array"},
             "ignoreFields": {},
-            "sort": {},
+            "sortByField": {},
         },
     }
 
@@ -400,21 +399,18 @@ class table_normalize(Step):
     }
 
 
-# TODO: improve this step
 class table_pivot(Step):
     code = "table-pivot"
 
     def __init__(self, descriptor=None, **options):
-        # TODO: handle options
+        self.setinitial("options", options)
         super().__init__(descriptor)
-        # TODO: reimplement
-        self.__options = options
 
     # Transform
 
     def transform_resource(self, source, target):
-        target.data = source.to_petl().pivot(**self.__options)
-        # TODO: review this approach
+        options = self.get("options")
+        target.data = source.to_petl().pivot(**options)
         target.schema.fields.clear()
         target.infer()
 
@@ -456,21 +452,19 @@ class table_recast(Step):
     ):
         assert len(from_field_names) == 2
         self.setinitial("fieldName", field_name)
-        self.setinitial("fromFieldName", from_field_names)
+        self.setinitial("fromFieldNames", from_field_names)
         super().__init__(descriptor)
-        # TODO: reimplement
-        self.__field_name = field_name
-        self.__from_field_names = from_field_names
 
     # Transform
 
     def transform_resource(self, source, target):
+        field_name = self.get("fieldName")
+        from_field_names = self.get("fromFieldNames")
         target.data = source.to_petl().recast(
-            key=self.__field_name,
-            variablefield=self.__from_field_names[0],
-            valuefield=self.__from_field_names[1],
+            key=field_name,
+            variablefield=from_field_names[0],
+            valuefield=from_field_names[1],
         )
-        # TODO: review this approach
         target.schema.fields.clear()
         target.infer()
 
@@ -486,7 +480,6 @@ class table_recast(Step):
     }
 
 
-# TODO: fix this step - see tests
 class table_transpose(Step):
     code = "table-transpose"
 
@@ -494,7 +487,6 @@ class table_transpose(Step):
 
     def transform_resource(self, source, target):
         target.data = source.to_petl().transpose()
-        # TODO: review this approach
         target.schema.fields.clear()
         target.infer()
 
@@ -507,7 +499,6 @@ class table_transpose(Step):
     }
 
 
-# TODO: improve this step (add an ability to get a report instead of raising?)
 class table_validate(Step):
     code = "table-validate"
 
@@ -538,22 +529,20 @@ class table_validate(Step):
     }
 
 
-# TODO: review this step
 class table_write(Step):
     code = "table-write"
 
     def __init__(self, descriptor=None, *, path=None, **options):
         self.setinitial("path", path)
-        # TODO: handle options
+        self.setinitial("options", options)
         super().__init__(descriptor)
-        # TODO: reimplement
-        self.__path = path
-        self.__options = options
 
     # Transform
 
     def transform_resource(self, source, target):
-        target.write(Resource(path=self.__path, **self.__options))
+        path = self.get("path")
+        options = self.get("options")
+        target.write(Resource(path=path, **options))
 
     # Metadata
 

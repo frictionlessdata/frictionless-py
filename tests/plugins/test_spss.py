@@ -12,7 +12,7 @@ def test_spss_parser(tmpdir):
 
     # Write
     source = Resource("data/table.csv")
-    target = Resource(str(tmpdir.join("table.sav")), trusted=True)
+    target = Resource(str(tmpdir.join("table.sav")))
     source.write(target)
 
     # Read
@@ -29,7 +29,7 @@ def test_spss_parser_write_timezone(tmpdir):
 
     # Write
     source = Resource("data/timezone.csv")
-    target = Resource(str(tmpdir.join("table.sav")), trusted=True)
+    target = Resource(str(tmpdir.join("table.sav")))
     source.write(target)
 
     # Read

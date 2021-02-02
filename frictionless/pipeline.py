@@ -9,7 +9,6 @@ from . import helpers
 from . import config
 
 
-# TODO: move validation logic to validate_inquiry?
 class Pipeline(Metadata):
     """Pipeline representation.
 
@@ -36,7 +35,6 @@ class Pipeline(Metadata):
 
     # Run
 
-    # TODO: support parallel runner
     def run(self, *, parallel=False):
         """Run the pipeline"""
         tasks = []
@@ -72,7 +70,7 @@ class Pipeline(Metadata):
                 dict.__setitem__(self, "tasks", tasks)
 
 
-# TODO: should we metadata_process task.source -> Resource/Package?
+# NOTE: we can use metadata_process to task.source -> Resource/Package?
 class PipelineTask(Metadata):
     """Pipeline task representation.
 

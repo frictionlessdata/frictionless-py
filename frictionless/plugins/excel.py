@@ -155,6 +155,7 @@ class XlsxParser(Parser):
 
     """
 
+    requires_loader = True
     supported_types = [
         "boolean",
         "date",
@@ -199,7 +200,7 @@ class XlsxParser(Parser):
             loader = system.create_loader(resource)
             return loader.open()
 
-    def read_data_stream_create(self):
+    def read_list_stream_create(self):
         openpyxl = helpers.import_from_plugin("openpyxl", plugin="excel")
         dialect = self.resource.dialect
 
@@ -231,7 +232,7 @@ class XlsxParser(Parser):
 
         # Fill merged cells
         if dialect.fill_merged_cells:
-            # TODO:
+            # NOTE:
             # We can try using an algorithm similiar to what XlsParser has
             # to support mergin cells in the read-only mode (now we need the write mode)
             for merged_cell_range in list(sheet.merged_cells.ranges):
@@ -282,6 +283,7 @@ class XlsParser(Parser):
 
     """
 
+    requires_loader = True
     supported_types = [
         "boolean",
         "date",
@@ -295,7 +297,7 @@ class XlsParser(Parser):
 
     # Read
 
-    def read_data_stream_create(self):
+    def read_list_stream_create(self):
         xlrd = helpers.import_from_plugin("xlrd", plugin="excel")
         dialect = self.resource.dialect
 

@@ -392,7 +392,7 @@ def test_step_table_join_mode_cross():
     ]
 
 
-def test_step_table_join_mode_anti():
+def test_step_table_join_mode_negate():
     source = Resource(path="data/transform.csv")
     target = transform(
         source,
@@ -400,7 +400,7 @@ def test_step_table_join_mode_anti():
             steps.table_normalize(),
             steps.table_join(
                 resource=Resource(data=[["id", "note"], [1, "beer"], [4, "rum"]]),
-                mode="anti",
+                mode="negate",
             ),
         ],
     )
@@ -426,7 +426,7 @@ def test_step_table_join_hash_is_true():
             steps.table_join(
                 resource=Resource(data=[["id", "note"], [1, "beer"], [2, "vine"]]),
                 field_name="id",
-                hash=True,
+                use_hash=True,
             ),
         ],
     )
@@ -609,7 +609,7 @@ def test_step_table_merge_with_sort():
         steps=[
             steps.table_merge(
                 resource=Resource(data=[["id", "name", "population"], [4, "malta", 1]]),
-                sort=["population"],
+                sort_by_field=["population"],
             ),
         ],
     )
@@ -734,12 +734,12 @@ def test_step_table_write(tmpdir):
         source,
         steps=[
             steps.cell_set(field_name="population", value=100),
-            steps.table_write(path=path, trusted=True),
+            steps.table_write(path=path),
         ],
     )
 
     # Read
-    resource = Resource(path=path, trusted=True)
+    resource = Resource(path=path)
     assert resource.read_rows() == [
         {"id": 1, "name": "germany", "population": 100},
         {"id": 2, "name": "france", "population": 100},

@@ -1,3 +1,4 @@
+import types
 from ..step import Step
 from ..system import system
 from ..helpers import get_name
@@ -30,7 +31,11 @@ def transform_resource(source, *, steps, **options):
     # Prepare steps
     for index, step in enumerate(steps):
         if not isinstance(step, Step):
-            steps[index] = system.create_step(step)
+            steps[index] = (
+                Step(function=step)
+                if isinstance(step, types.FunctionType)
+                else system.create_step(step)
+            )
 
     # Run transforms
     for step in steps:
@@ -49,7 +54,7 @@ def transform_resource(source, *, steps, **options):
         # Postprocess
         if source.data is not target.data:
             target.data = DataWithErrorHandling(target.data, step=step)
-            # TODO: can be removed when path/data updates is implemented for resource
+            # NOTE: it will be much better to get it updated on the resource level
             target.format = "inline"
 
     return target

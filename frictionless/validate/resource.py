@@ -1,3 +1,4 @@
+import types
 from ..check import Check
 from ..system import system
 from ..resource import Resource
@@ -80,7 +81,11 @@ def validate_resource(
         checks.insert(1, {"code": "checksum", **checksum})
     for index, check in enumerate(checks):
         if not isinstance(check, Check):
-            checks[index] = system.create_check(check)
+            checks[index] = (
+                Check(function=check)
+                if isinstance(check, types.FunctionType)
+                else system.create_check(check)
+            )
 
     # Enter table
     if not table_errors:
@@ -92,22 +97,27 @@ def validate_resource(
                 check.connect(resource)
                 check.prepare()
 
-            # Validate task
+            # Validate checks
             for check in checks.copy():
-                for error in check.validate_task():
+                for error in check.validate_check():
                     task_errors.append(error)
                     if check in checks:
                         checks.remove(check)
 
+            # Validate source
+            for check in checks:
+                for error in check.validate_source():
+                    table_errors.append(error, force=True)
+
             # Validate schema
             for check in checks:
-                for error in check.validate_schema(resource.schema):
-                    table_errors.append(error)
+                for error in check.validate_schema():
+                    table_errors.append(error, force=True)
 
             # Validate header
             if resource.header:
                 for check in checks:
-                    for error in check.validate_header(resource.header):
+                    for error in check.validate_header():
                         table_errors.append(error)
 
             # Validate rows

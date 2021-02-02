@@ -10,11 +10,11 @@ from .file import File
 from . import errors
 
 
-# TODO: Add plugin.name?
-# TODO: Rework system.register
-# TODO: Consider plugins priority
-# TODO: Use lists instead of ordered dicts?
-# TODO: Implement hard errors/memory limit setting?
+# NOTE:
+# On the next iteration we can improve the plugin system to provide prioritization
+# Also, we might cosider having plugin.name although module based naming might be enough
+
+
 class System:
     """System representation
 
@@ -111,7 +111,6 @@ class System:
                 return dialect
         return Dialect(descriptor)
 
-    # TODO: remove?
     def create_file(self, source, **options):
         """Create file
 
@@ -165,7 +164,6 @@ class System:
         note = f'cannot create parser "{name}". Try installing "frictionless-{name}"'
         raise FrictionlessException(errors.FormatError(note=note))
 
-    # TODO: rename name to code?
     def create_server(self, name, **options):
         """Create server
 
@@ -182,7 +180,7 @@ class System:
             if server is not None:
                 return server
         note = f'cannot create server "{name}". Try installing "frictionless-{name}"'
-        raise FrictionlessException(errors.Error(note=note))
+        raise FrictionlessException(errors.GeneralError(note=note))
 
     def create_step(self, descriptor):
         """Create steps
@@ -204,7 +202,6 @@ class System:
         note = f'cannot create check "{code}". Try installing "frictionless-{code}"'
         raise FrictionlessException(errors.StepError(note=note))
 
-    # TODO: rename name to code?
     def create_storage(self, name, **options):
         """Create storage
 
@@ -220,7 +217,7 @@ class System:
             if storage is not None:
                 return storage
         note = f'cannot create storage "{name}". Try installing "frictionless-{name}"'
-        raise FrictionlessException(errors.Error(note=note))
+        raise FrictionlessException(errors.GeneralError(note=note))
 
     def create_type(self, field):
         """Create checks

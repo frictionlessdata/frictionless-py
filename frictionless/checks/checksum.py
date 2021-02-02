@@ -38,31 +38,31 @@ class checksum(Check):
 
         # Hash
         if self.get("hash"):
-            hashing = self.table.hashing
-            if self["hash"] != self.table.stats["hash"]:
+            hashing = self.resource.hashing
+            if self["hash"] != self.resource.stats["hash"]:
                 note = 'expected hash in %s is "%s" and actual is "%s"'
-                note = note % (hashing, self["hash"], self.table.stats["hash"])
+                note = note % (hashing, self["hash"], self.resource.stats["hash"])
                 yield errors.ChecksumError(note=note)
 
         # Bytes
         if self.get("bytes"):
-            if self["bytes"] != self.table.stats["bytes"]:
+            if self["bytes"] != self.resource.stats["bytes"]:
                 note = 'expected bytes count is "%s" and actual is "%s"'
-                note = note % (self["bytes"], self.table.stats["bytes"])
+                note = note % (self["bytes"], self.resource.stats["bytes"])
                 yield errors.ChecksumError(note=note)
 
         # Fields
         if self.get("fields"):
-            if self["fields"] != self.table.stats["fields"]:
+            if self["fields"] != self.resource.stats["fields"]:
                 note = 'expected fields count is "%s" and actual is "%s"'
-                note = note % (self["fields"], self.table.stats["fields"])
+                note = note % (self["fields"], self.resource.stats["fields"])
                 yield errors.ChecksumError(note=note)
 
         # Rows
         if self.get("rows"):
-            if self["rows"] != self.table.stats["rows"]:
+            if self["rows"] != self.resource.stats["rows"]:
                 note = 'expected rows count is "%s" and actual is "%s"'
-                note = note % (self["rows"], self.table.stats["rows"])
+                note = note % (self["rows"], self.resource.stats["rows"])
                 yield errors.ChecksumError(note=note)
 
     # Metadata

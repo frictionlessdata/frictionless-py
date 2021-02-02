@@ -2,6 +2,28 @@
 
 Here described only the breaking and most significant changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/frictionless-py/commits/master).
 
+## v4.0.0a12
+
+- Improved transformation steps (#650) (BREAKING)
+    - Split value/formula/function concepts
+    - Renamed a few minor step arguments
+
+## v4.0.0a11
+
+- Improved layout and data streams concepts (#648) (BREAKING)
+    - Renamed `data_stream` to `list_stream`
+    - Renamed `readData` to `readLists`
+    - Renamed `sample` to `fragment` (`sample` now is raw lists)
+    - Implemented loader.buffer
+    - Implemented parser.sample
+    - Added support for function based checks
+    - Added support for function based steps
+
+## v4.0.0a10
+
+- Reworked Error.tags (BREAKING)
+- Reworked Check API and split labels/header (BREAKING)
+
 ## v4.0.0a9
 
 - Rebased on `Detector` class (BREAKING)

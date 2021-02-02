@@ -4,7 +4,6 @@ from .metadata import Metadata
 from . import config
 
 
-# TODO: add descriptor support
 class Status(Metadata):
     """Status representation.
 
@@ -16,7 +15,7 @@ class Status(Metadata):
 
     """
 
-    def __init__(self, *, time, errors, tasks):
+    def __init__(self, descriptor=None, *, time, errors, tasks):
         stats_errors = len(errors) + sum(task["stats"]["errors"] for task in tasks)
         self.setinitial("version", config.VERSION)
         self.setinitial("time", time)
@@ -24,6 +23,7 @@ class Status(Metadata):
         self.setinitial("stats", {"errors": stats_errors, "tasks": len(tasks)})
         self.setinitial("errors", errors)
         self.setinitial("tasks", tasks)
+        super().__init__(descriptor)
 
     @property
     def version(self):
@@ -94,16 +94,16 @@ class Status(Metadata):
     metadata_profile = config.STATUS_PROFILE
 
 
-# TODO: add descriptor support
 class StatusTask(Metadata):
     """ Status Task representation"""
 
-    def __init__(self, *, errors, target, type):
+    def __init__(self, descriptor=None, *, errors, target, type):
         self.setinitial("valid", not errors)
         self.setinitial("errors", errors)
         self.setinitial("target", target)
         self.setinitial("type", type)
         self.setinitial("stats", {"errors": len(errors)})
+        super().__init__(descriptor)
 
     @property
     def valid(self):

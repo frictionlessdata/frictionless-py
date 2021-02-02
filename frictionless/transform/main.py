@@ -30,5 +30,5 @@ def transform(source, type=None, **options):
     transform = getattr(module, "transform_%s" % type, None)
     if transform is None:
         note = f"Not supported transform type: {type}"
-        raise FrictionlessException(errors.Error(note=note))
+        raise FrictionlessException(errors.GeneralError(note=note))
     return transform(source, **options)

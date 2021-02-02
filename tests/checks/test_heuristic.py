@@ -58,7 +58,7 @@ def test_validate_deviated_value_not_a_number():
     ]
     report = validate(source, checks=[{"code": "deviated-value", "fieldName": "name"}])
     assert report.flatten(["code", "note"]) == [
-        ["task-error", 'deviated value check requires field "name" to be numiric'],
+        ["check-error", 'deviated value check requires field "name" to be numiric'],
     ]
 
 
@@ -72,7 +72,7 @@ def test_validate_deviated_value_non_existent_field():
         checks=[{"code": "deviated-value", "fieldName": "bad"}],
     )
     assert report.flatten(["code", "note"]) == [
-        ["task-error", 'deviated value check requires field "bad" to exist'],
+        ["check-error", 'deviated value check requires field "bad" to exist'],
     ]
 
 
@@ -87,7 +87,7 @@ def test_validate_deviated_value_incorrect_average():
     )
     assert report.flatten(["code", "note"]) == [
         [
-            "task-error",
+            "check-error",
             'deviated value check supports only average functions "mean, median, mode"',
         ],
     ]

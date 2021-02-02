@@ -7,7 +7,6 @@ from ..dialect import Dialect
 from ..plugin import Plugin
 from ..parser import Parser
 from ..system import system
-from .sql import SCHEME_PREFIXES
 
 
 # Plugin
@@ -23,19 +22,12 @@ class CsvPlugin(Plugin):
     """
 
     def create_dialect(self, resource, *, descriptor):
-        # TODO: remove when plugin order is implemented
-        for prefix in SCHEME_PREFIXES:
-            if resource.scheme.startswith(prefix):
-                return
         if resource.format == "csv":
             return CsvDialect(descriptor)
         elif resource.format == "tsv":
             return CsvDialect(descriptor, delimiter="\t")
 
     def create_parser(self, resource):
-        for prefix in SCHEME_PREFIXES:
-            if resource.scheme.startswith(prefix):
-                return
         if resource.format in ["csv", "tsv"]:
             return CsvParser(resource)
 
@@ -208,19 +200,20 @@ class CsvParser(Parser):
 
     """
 
+    requires_loader = True
     supported_types = [
         "string",
     ]
 
     # Read
 
-    def read_data_stream_create(self):
-        sample = self.read_data_stream_infer_dialect()
+    def read_list_stream_create(self):
+        sample = self.read_list_stream_infer_dialect()
         source = chain(sample, self.loader.text_stream)
         data = csv.reader(source, dialect=self.resource.dialect.to_python())
         yield from data
 
-    def read_data_stream_infer_dialect(self):
+    def read_list_stream_infer_dialect(self):
         sample = extract_samle(self.loader.text_stream)
         delimiter = self.resource.dialect.get("delimiter", ",\t;|")
         try:

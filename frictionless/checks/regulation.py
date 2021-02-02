@@ -35,10 +35,10 @@ class forbidden_value(Check):
 
     # Validate
 
-    def validate_task(self):
-        if self.__field_name not in self.table.schema.field_names:
+    def validate_check(self):
+        if self.__field_name not in self.resource.schema.field_names:
             note = 'forbidden value check requires field "%s"' % self.__field_name
-            yield errors.TaskError(note=note)
+            yield errors.CheckError(note=note)
 
     def validate_row(self, row):
         cell = row[self.__field_name]
@@ -92,10 +92,10 @@ class sequential_value(Check):
 
     # Validate
 
-    def validate_task(self):
-        if self.__field_name not in self.table.schema.field_names:
+    def validate_check(self):
+        if self.__field_name not in self.resource.schema.field_names:
             note = 'sequential value check requires field "%s"' % self.__field_name
-            yield errors.TaskError(note=note)
+            yield errors.CheckError(note=note)
 
     def validate_row(self, row):
         if not self.__exited:

@@ -104,7 +104,7 @@ def test_jsonl_parser_ndjson():
 
 def test_json_parser_write(tmpdir):
     source = Resource("data/table.csv")
-    target = Resource(path=str(tmpdir.join("table.json")), trusted=True)
+    target = Resource(path=str(tmpdir.join("table.json")))
     source.write(target)
     with open(target.fullpath) as file:
         assert json.load(file) == [
@@ -117,7 +117,7 @@ def test_json_parser_write(tmpdir):
 def test_json_parser_write_decimal(tmpdir):
     dialect = JsonDialect(keyed=True)
     source = Resource([["id", "name"], [1.5, "english"], [2.5, "german"]])
-    target = Resource(path=str(tmpdir.join("table.json")), dialect=dialect, trusted=True)
+    target = Resource(path=str(tmpdir.join("table.json")), dialect=dialect)
     source.write(target)
     with open(target.fullpath) as file:
         assert json.load(file) == [
@@ -129,7 +129,7 @@ def test_json_parser_write_decimal(tmpdir):
 def test_json_parser_write_keyed(tmpdir):
     dialect = JsonDialect(keyed=True)
     source = Resource("data/table.csv")
-    target = Resource(path=str(tmpdir.join("table.json")), dialect=dialect, trusted=True)
+    target = Resource(path=str(tmpdir.join("table.json")), dialect=dialect)
     source.write(target)
     with open(target.fullpath) as file:
         assert json.load(file) == [
@@ -140,7 +140,7 @@ def test_json_parser_write_keyed(tmpdir):
 
 def test_jsonl_parser_write(tmpdir):
     source = Resource("data/table.csv")
-    target = Resource(str(tmpdir.join("table.jsonl")), trusted=True)
+    target = Resource(str(tmpdir.join("table.jsonl")))
     source.write(target)
     with target:
         assert target.header == ["id", "name"]
@@ -153,7 +153,7 @@ def test_jsonl_parser_write(tmpdir):
 def test_jsonl_parser_write_keyed(tmpdir):
     dialect = JsonDialect(keyed=True)
     source = Resource("data/table.csv")
-    target = Resource(str(tmpdir.join("table.jsonl")), dialect=dialect, trusted=True)
+    target = Resource(str(tmpdir.join("table.jsonl")), dialect=dialect)
     source.write(target)
     with target:
         assert target.header == ["id", "name"]

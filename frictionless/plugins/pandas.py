@@ -15,6 +15,11 @@ from .. import helpers
 from .. import errors
 
 
+# NOTE:
+# We need to ensure that the way we detect pandas dataframe is good enough.
+# We don't want to be importing pandas and checking the type without a good reason
+
+
 # Plugin
 
 
@@ -27,23 +32,20 @@ class PandasPlugin(Plugin):
 
     """
 
+    def create_file(self, file):
+        if not file.scheme and not file.format and file.memory:
+            if helpers.is_type(file.data, "DataFrame"):
+                file.scheme = ""
+                file.format = "pandas"
+                return file
+
     def create_dialect(self, resource, *, descriptor):
-        try:
-            # TODO: cannot be loaded with plugins; improve this solution
-            pd = helpers.import_from_plugin("pandas", plugin="pandas")
-            if resource.format == "pandas" or isinstance(resource.data, pd.DataFrame):
-                return PandasDialect(descriptor)
-        except Exception:
-            pass
+        if resource.format == "pandas":
+            return PandasDialect(descriptor)
 
     def create_parser(self, resource):
-        try:
-            # TODO: cannot be loaded with plugins; improve this solution
-            pd = helpers.import_from_plugin("pandas", plugin="pandas")
-            if resource.format == "pandas" or isinstance(resource.data, pd.DataFrame):
-                return PandasParser(resource)
-        except Exception:
-            pass
+        if resource.format == "pandas":
+            return PandasParser(resource)
 
     def create_storage(self, name, **options):
         if name == "pandas":
@@ -83,16 +85,18 @@ class PandasParser(Parser):
 
     """
 
-    needs_loader = False
+    supported_types = [
+        "string",
+    ]
 
     # Read
 
-    def read_data_stream_create(self):
+    def read_list_stream_create(self):
         storage = PandasStorage(dataframes={self.resource.name: self.resource.data})
         resource = storage.read_resource(self.resource.name)
         self.resource.schema = resource.schema
         with resource:
-            yield from resource.data_stream
+            yield from resource.list_stream
 
     # Write
 
