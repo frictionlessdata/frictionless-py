@@ -7,6 +7,11 @@ from . import config
 from . import helpers
 
 
+# NOTE:
+# We can allow some Report/ReportTask constructor kwargs be None
+# We need to review how we validate Report/ReportTask (strict mode is disabled)
+
+
 class Report(Metadata):
     """Report representation.
 
@@ -25,7 +30,6 @@ class Report(Metadata):
 
     """
 
-    # TODO: allow kwargs to be None
     def __init__(self, descriptor=None, *, time, errors, tasks):
         error_count = len(errors) + sum(tab["stats"]["errors"] for tab in tasks)
         self.setinitial("version", config.VERSION)
@@ -156,7 +160,6 @@ class Report(Metadata):
 
     # Metadata
 
-    # TODO: review
     #  metadata_strict = True
     metadata_Error = ReportError
     metadata_profile = deepcopy(config.REPORT_PROFILE)
@@ -193,7 +196,6 @@ class ReportTask(Metadata):
 
     """
 
-    # TODO: allow kwargs to be None
     def __init__(self, descriptor=None, *, resource, time, scope, partial, errors):
         self.setinitial("resource", resource)
         self.setinitial("time", time)
@@ -300,9 +302,7 @@ class ReportTask(Metadata):
 
     # Metadata
 
-    # TODO: review
     #  metadata_strict = True
     metadata_Error = ReportError
     metadata_profile = config.REPORT_PROFILE["properties"]["tasks"]["items"]
-    # TODO: review: should we validate errors for performance reasons
     #  del metadata_profile["properties"]["errors"]
