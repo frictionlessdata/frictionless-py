@@ -2111,12 +2111,14 @@ def test_resource_reopen_generator():
 # Read
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_read_bytes():
     resource = Resource(path="data/text.txt")
     bytes = resource.read_bytes()
     assert bytes == b"text\n"
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_read_text():
     resource = Resource(path="data/text.txt")
     text = resource.read_text()
