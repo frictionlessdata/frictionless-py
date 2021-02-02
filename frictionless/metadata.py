@@ -1,7 +1,6 @@
 import io
 import json
 import yaml
-import tempfile
 import requests
 import jsonschema
 import stringcase
