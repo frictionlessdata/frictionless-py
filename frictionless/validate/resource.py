@@ -1,3 +1,4 @@
+import types
 from ..check import Check
 from ..system import system
 from ..resource import Resource
@@ -80,7 +81,11 @@ def validate_resource(
         checks.insert(1, {"code": "checksum", **checksum})
     for index, check in enumerate(checks):
         if not isinstance(check, Check):
-            checks[index] = system.create_check(check)
+            checks[index] = (
+                Check(function=check)
+                if isinstance(check, types.FunctionType)
+                else system.create_check(check)
+            )
 
     # Enter table
     if not table_errors:

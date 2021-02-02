@@ -1061,7 +1061,7 @@ def test_validate_limit_memory_small():
     ]
 
 
-def test_validate_custom_checks():
+def test_validate_custom_check():
 
     # Create check
     class custom(Check):
@@ -1081,7 +1081,7 @@ def test_validate_custom_checks():
     ]
 
 
-def test_validate_custom_checks_with_arguments():
+def test_validate_custom_check_with_arguments():
 
     # Create check
     class custom(Check):
@@ -1105,7 +1105,26 @@ def test_validate_custom_checks_with_arguments():
     ]
 
 
-def test_validate_custom_checks_bad_name():
+def test_validate_custom_check_function_based():
+
+    # Create check
+    def custom(row):
+        yield errors.BlankRowError(
+            note="",
+            cells=list(map(str, row.values())),
+            row_number=row.row_number,
+            row_position=row.row_position,
+        )
+
+    # Validate table
+    report = validate("data/table.csv", checks=[custom])
+    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
+        [2, None, "blank-row"],
+        [3, None, "blank-row"],
+    ]
+
+
+def test_validate_custom_check_bad_name():
     report = validate("data/table.csv", checks=[{"code": "bad"}])
     assert report.flatten(["code", "note"]) == [
         ["check-error", 'cannot create check "bad". Try installing "frictionless-bad"'],

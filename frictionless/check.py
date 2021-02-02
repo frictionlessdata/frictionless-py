@@ -22,9 +22,10 @@ class Check(Metadata):
     code = "check"
     Errors = []  # type: ignore
 
-    def __init__(self, descriptor=None):
+    def __init__(self, descriptor=None, *, function=None):
         super().__init__(descriptor)
         self.setinitial("code", self.code)
+        self.__function = function
 
     @property
     def resource(self):
@@ -95,6 +96,9 @@ class Check(Metadata):
         Yields:
             Error: found errors
         """
+        if self.__function:
+            yield from self.__function(row)
+            return
         yield from []
 
     def validate_table(self):
