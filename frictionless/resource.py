@@ -696,7 +696,6 @@ class Resource(Metadata):
 
     # Infer
 
-    # TODO: review this method (remove stats hacks)
     def infer(self, *, stats=False):
         """Infer metadata
 
@@ -1068,10 +1067,6 @@ class Resource(Metadata):
 
     # Write
 
-    # TODO: allow passing source, **options and return Resource?
-    # TODO: what we should return?
-    # TODO: use contextlib.closing?
-    # TODO: should we set target.data?
     def write(self, target):
         """Write this resource to the target resource
 

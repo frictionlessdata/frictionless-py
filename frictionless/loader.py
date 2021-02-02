@@ -259,7 +259,7 @@ class Loader:
         Returns:
             text_stream (io.TextStream): resource text stream
         """
-        # TODO: improve this solution
+        # NOTE: this solution might be improved using parser properties
         newline = "" if self.resource.format == "csv" else None
         return io.TextIOWrapper(byte_stream, self.resource.encoding, newline=newline)
 
@@ -312,9 +312,8 @@ class ByteStreamWithStatsHandling:
         except Exception as exception:
             error = errors.HashingError(note=str(exception))
             raise FrictionlessException(error)
-        # TODO: document why we ignore stats if there is hash
-        self.__stats = resource.stats if not resource.stats["hash"] else {}
         self.__byte_stream = byte_stream
+        self.__stats = resource.stats
 
     def __getattr__(self, name):
         return getattr(self.__byte_stream, name)

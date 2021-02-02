@@ -5,8 +5,11 @@ from . import helpers
 from . import errors
 
 
-# TODO: accept header?
-# TODO: disable/limit dict.update/setdefault/pop/popitem/clear
+# NOTE:
+# Currently dict.update/setdefault/pop/popitem/clear is not disabled (can be confusing)
+# We can consider adding row.header property to provide more comprehensive API
+
+
 class Row(dict):
     """Row representation
 
@@ -258,7 +261,8 @@ class Row(dict):
     # Process
 
     def __process(self, key=None):
-        # TODO:
+
+        # NOTE:
         # This algorithm might be improved especially for some
         # scenarios like full processing after random access etc
 

@@ -173,6 +173,13 @@ def copy_file(source, target):
     shutil.copy(source, target)
 
 
+def write_file(path, text):
+    with tempfile.NamedTemporaryFile("wt", delete=False, encoding="utf-8") as file:
+        file.write(text)
+        file.flush()
+    move_file(file.name, path)
+
+
 def create_byte_stream(bytes):
     stream = io.BufferedRandom(io.BytesIO())
     stream.write(bytes)

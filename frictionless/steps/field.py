@@ -4,6 +4,11 @@ from ..step import Step
 from ..field import Field
 
 
+# NOTE:
+# Some of the following step can support WHERE/PREDICAT arguments (see petl)
+# Some of the following step use **options - we need to review/fix it
+
+
 class field_add(Step):
     code = "field-add"
 
@@ -13,36 +18,40 @@ class field_add(Step):
         *,
         name=None,
         value=None,
+        formula=None,
+        function=None,
         position=None,
         incremental=False,
         **options,
     ):
         self.setinitial("name", name)
         self.setinitial("value", value)
-        self.setinitial("position", position)
+        self.setinitial("formula", formula)
+        self.setinitial("function", function)
+        self.setinitial("position", position if not incremental else 1)
         self.setinitial("incremental", incremental)
-        # TODO: add options
+        self.setinitial("options", options)
         super().__init__(descriptor)
-        # TODO: reimplement
-        self.__name = name
-        self.__value = value
-        self.__position = position if not incremental else 1
-        self.__incremental = incremental
-        self.__options = options
 
     # Transform
 
     def transform_resource(self, source, target):
-        index = self.__position - 1 if self.__position else None
-        if self.__incremental:
-            target.data = source.to_petl().addrownumbers(field=self.__name)
+        name = self.get("name")
+        value = self.get("value")
+        formula = self.get("formula")
+        function = self.get("function")
+        position = self.get("position")
+        incremental = self.get("incremental")
+        options = self.get("options")
+        index = position - 1 if position else None
+        if incremental:
+            target.data = source.to_petl().addrownumbers(field=name)
         else:
-            value = self.__value
-            if isinstance(value, str) and value.startswith("<formula>"):
-                formula = value.replace("<formula>", "")
-                value = lambda row: simpleeval.simple_eval(formula, names=row)
-            target.data = source.to_petl().addfield(self.__name, value=value, index=index)
-        field = Field(name=self.__name, **self.__options)
+            if formula:
+                function = lambda row: simpleeval.simple_eval(formula, names=row)
+            value = value or function
+            target.data = source.to_petl().addfield(name, value=value, index=index)
+        field = Field(name=name, **options)
         if index is None:
             target.schema.add_field(field)
         else:
@@ -68,15 +77,14 @@ class field_filter(Step):
     def __init__(self, descriptor=None, *, names=None):
         self.setinitial("names", names)
         super().__init__(descriptor)
-        # TODO: reimplement
-        self.__names = names
 
     # Transform
 
     def transform_resource(self, source, target):
-        target.data = source.to_petl().cut(*self.__names)
+        names = self.get("names")
+        target.data = source.to_petl().cut(*names)
         for name in target.schema.field_names:
-            if name not in self.__names:
+            if name not in names:
                 target.schema.remove_field(name)
 
     # Metadata
@@ -97,16 +105,15 @@ class field_move(Step):
         self.setinitial("name", name)
         self.setinitial("position", position)
         super().__init__(descriptor)
-        # TODO: reimplement
-        self.__name = name
-        self.__position = position
 
     # Transform
 
     def transform_resource(self, source, target):
-        target.data = source.to_petl().movefield(self.__name, self.__position - 1)
-        field = target.schema.remove_field(self.__name)
-        target.schema.fields.insert(self.__position - 1, field)
+        name = self.get("name")
+        position = self.get("position")
+        target.data = source.to_petl().movefield(name, position - 1)
+        field = target.schema.remove_field(name)
+        target.schema.fields.insert(position - 1, field)
 
     # Metadata
 
@@ -126,14 +133,13 @@ class field_remove(Step):
     def __init__(self, descriptor=None, *, names=None):
         self.setinitial("names", names)
         super().__init__(descriptor)
-        # TODO: reimplement
-        self.__names = names
 
     # Transform
 
     def transform_resource(self, source, target):
-        target.data = source.to_petl().cutout(*self.__names)
-        for name in self.__names:
+        names = self.get("names")
+        target.data = source.to_petl().cutout(*names)
+        for name in names:
             target.schema.remove_field(name)
 
     # Metadata
@@ -164,29 +170,28 @@ class field_split(Step):
         self.setinitial("pattern", pattern)
         self.setinitial("preserve", preserve)
         super().__init__(descriptor)
-        # TODO: reimplement
-        self.__name = name
-        self.__to_names = to_names
-        self.__pattern = pattern
-        self.__preserve = preserve
 
     # Transform
 
     def transform_resource(self, source, target):
+        name = self.get("name")
+        to_names = self.get("toNames")
+        pattern = self.get("pattern")
+        preserve = self.get("preserve")
         processor = petl.split
-        # TODO: implement this check properly
-        if "(" in self.__pattern:
+        # NOTE: this condition needs to be improved
+        if "(" in pattern:
             processor = petl.capture
         target.data = processor(
             source.to_petl(),
-            self.__name,
-            self.__pattern,
-            self.__to_names,
-            include_original=self.__preserve,
+            name,
+            pattern,
+            to_names,
+            include_original=preserve,
         )
-        if not self.__preserve:
-            target.schema.remove_field(self.__name)
-        for name in self.__to_names:
+        if not preserve:
+            target.schema.remove_field(name)
+        for name in to_names:
             field = Field(name=name, type="string")
             target.schema.add_field(field)
 
@@ -212,25 +217,22 @@ class field_unpack(Step):
         self.setinitial("toNames", to_names)
         self.setinitial("preserve", preserve)
         super().__init__(descriptor)
-        # TODO: reimplement
-        self.__name = name
-        self.__to_names = to_names
-        self.__preserve = preserve
 
     # Transform
 
     def transform_resource(self, source, target):
-        if target.schema.get_field(self.__name).type == "object":
-            target.data = source.to_petl().unpackdict(
-                self.__name, self.__to_names, includeoriginal=self.__preserve
-            )
+        name = self.get("name")
+        to_names = self.get("toNames")
+        preserve = self.get("preserve")
+        if target.schema.get_field(name).type == "object":
+            processor = source.to_petl().unpackdict
+            target.data = processor(name, to_names, includeoriginal=preserve)
         else:
-            target.data = source.to_petl().unpack(
-                self.__name, self.__to_names, include_original=self.__preserve
-            )
-        if not self.__preserve:
-            target.schema.remove_field(self.__name)
-        for name in self.__to_names:
+            processor = source.to_petl().unpack
+            target.data = processor(name, to_names, include_original=preserve)
+        if not preserve:
+            target.schema.remove_field(name)
+        for name in to_names:
             field = Field(name=name)
             target.schema.add_field(field)
 
@@ -247,33 +249,42 @@ class field_unpack(Step):
     }
 
 
-# TODO: accept WHERE/PREDICAT clause
 class field_update(Step):
     code = "field-update"
 
-    def __init__(self, descriptor=None, *, name=None, value=None, **options):
+    def __init__(
+        self,
+        descriptor=None,
+        *,
+        name=None,
+        value=None,
+        formula=None,
+        function=None,
+        **options,
+    ):
         self.setinitial("name", name)
         self.setinitial("value", value)
-        # TODO: handle options
+        self.setinitial("formula", formula)
+        self.setinitial("function", function)
+        self.setinitial("options", options)
         super().__init__(descriptor)
-        # TODO: reimplement
-        self.__name = name
-        self.__value = value
-        self.__options = options
 
     # Transform
 
     def transform_resource(self, source, target):
-        value = self.__value
-        if isinstance(value, str) and value.startswith("<formula>"):
-            formula = value.replace("<formula>", "")
-            value = lambda val, row: simpleeval.simple_eval(formula, names=row)
-        if not callable(value):
-            target.data = source.to_petl().update(self.__name, value)
+        name = self.get("name")
+        value = self.get("value")
+        formula = self.get("formula")
+        function = self.get("function")
+        options = self.get("options")
+        if formula:
+            function = lambda val, row: simpleeval.simple_eval(formula, names=row)
+        if function:
+            target.data = source.to_petl().convert(name, function)
         else:
-            target.data = source.to_petl().convert(self.__name, value)
-        field = target.schema.get_field(self.__name)
-        for name, value in self.__options.items():
+            target.data = source.to_petl().update(name, value)
+        field = target.schema.get_field(name)
+        for name, value in options.items():
             setattr(field, name, value)
 
     # Metadata

@@ -1,7 +1,6 @@
 import io
 import json
 import yaml
-import tempfile
 import requests
 import jsonschema
 import stringcase
@@ -104,7 +103,6 @@ class Metadata(helpers.ControlledDict):
         """
         return helpers.deepfork(self)
 
-    # TODO: improve this code
     def to_json(self, path=None, encoder_class=None):
         """Save metadata as a json
 
@@ -114,23 +112,14 @@ class Metadata(helpers.ControlledDict):
         Raises:
             FrictionlessException: on any error
         """
-        if not path:
-            return json.dumps(
-                self.to_dict(), indent=2, ensure_ascii=False, cls=encoder_class
-            )
-        try:
-            # TODO: move to helpers.write_file
-            with tempfile.NamedTemporaryFile(
-                "wt", delete=False, encoding="utf-8"
-            ) as file:
-                json.dump(
-                    self.to_dict(), file, indent=2, ensure_ascii=False, cls=encoder_class
-                )
-            helpers.move_file(file.name, path)
-        except Exception as exc:
-            raise FrictionlessException(self.__Error(note=str(exc))) from exc
+        text = json.dumps(self.to_dict(), indent=2, ensure_ascii=False, cls=encoder_class)
+        if path:
+            try:
+                helpers.write_file(path, text)
+            except Exception as exc:
+                raise FrictionlessException(self.__Error(note=str(exc))) from exc
+        return text
 
-    # TODO: improve this code
     def to_yaml(self, path=None):
         """Save metadata as a yaml
 
@@ -140,16 +129,13 @@ class Metadata(helpers.ControlledDict):
         Raises:
             FrictionlessException: on any error
         """
-        if not path:
-            return yaml.dump(helpers.deepsafe(self.to_dict()), Dumper=IndentDumper)
-        try:
-            with tempfile.NamedTemporaryFile(
-                "wt", delete=False, encoding="utf-8"
-            ) as file:
-                yaml.dump(helpers.deepsafe(self.to_dict()), file, Dumper=IndentDumper)
-            helpers.move_file(file.name, path)
-        except Exception as exc:
-            raise FrictionlessException(self.__Error(note=str(exc))) from exc
+        text = yaml.dump(helpers.deepsafe(self.to_dict()), Dumper=IndentDumper)
+        if path:
+            try:
+                helpers.write_file(path, text)
+            except Exception as exc:
+                raise FrictionlessException(self.__Error(note=str(exc))) from exc
+        return text
 
     # Metadata
 

@@ -11,7 +11,7 @@ def test_step_row_filter():
         source,
         steps=[
             steps.table_normalize(),
-            steps.row_filter(predicat="<formula>id > 1"),
+            steps.row_filter(formula="id > 1"),
         ],
     )
     assert target.schema == source.schema
@@ -21,14 +21,14 @@ def test_step_row_filter():
     ]
 
 
-def test_step_row_filter_with_callable_predicat():
+def test_step_row_filter_with_function():
     source = Resource(path="data/transform.csv")
     source.infer()
     target = transform(
         source,
         steps=[
             steps.table_normalize(),
-            steps.row_filter(predicat=lambda row: row["id"] > 1),
+            steps.row_filter(function=lambda row: row["id"] > 1),
         ],
     )
     assert target.schema == source.schema
@@ -45,7 +45,7 @@ def test_step_row_filter_petl_selectop():
         source,
         steps=[
             steps.table_normalize(),
-            steps.row_filter(predicat="<formula>id == 1"),
+            steps.row_filter(formula="id == 1"),
         ],
     )
     assert target.schema == source.schema
@@ -61,7 +61,7 @@ def test_step_row_filter_petl_selecteq():
         source,
         steps=[
             steps.table_normalize(),
-            steps.row_filter(predicat="<formula>id == 1"),
+            steps.row_filter(formula="id == 1"),
         ],
     )
     assert target.schema == source.schema
@@ -77,7 +77,7 @@ def test_step_row_filter_petl_selectne():
         source,
         steps=[
             steps.table_normalize(),
-            steps.row_filter(predicat="<formula>id != 1"),
+            steps.row_filter(formula="id != 1"),
         ],
     )
     assert target.schema == source.schema
@@ -94,7 +94,7 @@ def test_step_row_filter_petl_selectlt():
         source,
         steps=[
             steps.table_normalize(),
-            steps.row_filter(predicat="<formula>id < 2"),
+            steps.row_filter(formula="id < 2"),
         ],
     )
     assert target.schema == source.schema
@@ -110,7 +110,7 @@ def test_step_row_filter_petl_selectle():
         source,
         steps=[
             steps.table_normalize(),
-            steps.row_filter(predicat="<formula>id <= 2"),
+            steps.row_filter(formula="id <= 2"),
         ],
     )
     assert target.schema == source.schema
@@ -127,7 +127,7 @@ def test_step_row_filter_petl_selectgt():
         source,
         steps=[
             steps.table_normalize(),
-            steps.row_filter(predicat="<formula>id > 2"),
+            steps.row_filter(formula="id > 2"),
         ],
     )
     assert target.schema == source.schema
@@ -143,7 +143,7 @@ def test_step_row_filter_petl_selectge():
         source,
         steps=[
             steps.table_normalize(),
-            steps.row_filter(predicat="<formula>id >= 2"),
+            steps.row_filter(formula="id >= 2"),
         ],
     )
     assert target.schema == source.schema
@@ -160,7 +160,7 @@ def test_step_row_filter_petl_selectrangeopen():
         source,
         steps=[
             steps.table_normalize(),
-            steps.row_filter(predicat="<formula>1 <= id <= 3"),
+            steps.row_filter(formula="1 <= id <= 3"),
         ],
     )
     assert target.schema == source.schema
@@ -178,7 +178,7 @@ def test_step_row_filter_petl_selectrangeopenleft():
         source,
         steps=[
             steps.table_normalize(),
-            steps.row_filter(predicat="<formula>1 <= id < 3"),
+            steps.row_filter(formula="1 <= id < 3"),
         ],
     )
     assert target.schema == source.schema
@@ -195,7 +195,7 @@ def test_step_row_filter_petl_selectrangeopenright():
         source,
         steps=[
             steps.table_normalize(),
-            steps.row_filter(predicat="<formula>1 < id <= 3"),
+            steps.row_filter(formula="1 < id <= 3"),
         ],
     )
     assert target.schema == source.schema
@@ -212,7 +212,7 @@ def test_step_row_filter_petl_selectrangeclosed():
         source,
         steps=[
             steps.table_normalize(),
-            steps.row_filter(predicat="<formula>1 < id < 3"),
+            steps.row_filter(formula="1 < id < 3"),
         ],
     )
     assert target.schema == source.schema
@@ -227,7 +227,7 @@ def test_step_row_filter_petl_selectcontains():
     target = transform(
         source,
         steps=[
-            steps.row_filter(predicat="<formula>'er' in name"),
+            steps.row_filter(formula="'er' in name"),
         ],
     )
     assert target.schema == source.schema
@@ -243,7 +243,7 @@ def test_step_row_filter_petl_selectin():
         source,
         steps=[
             steps.table_normalize(),
-            steps.row_filter(predicat="<formula>id in [1]"),
+            steps.row_filter(formula="id in [1]"),
         ],
     )
     assert target.schema == source.schema
@@ -259,7 +259,7 @@ def test_step_row_filter_petl_selectnoin():
         source,
         steps=[
             steps.table_normalize(),
-            steps.row_filter(predicat="<formula>id not in [2, 3]"),
+            steps.row_filter(formula="id not in [2, 3]"),
         ],
     )
     assert target.schema == source.schema
@@ -275,7 +275,7 @@ def test_step_row_filter_petl_selectis():
         source,
         steps=[
             steps.table_normalize(),
-            steps.row_filter(predicat="<formula>id is 1"),
+            steps.row_filter(formula="id is 1"),
         ],
     )
     assert target.schema == source.schema
@@ -291,7 +291,7 @@ def test_step_row_filter_petl_selectisnot():
         source,
         steps=[
             steps.table_normalize(),
-            steps.row_filter(predicat="<formula>id is not 1"),
+            steps.row_filter(formula="id is not 1"),
         ],
     )
     assert target.schema == source.schema
@@ -308,7 +308,7 @@ def test_step_row_filter_petl_selectisinstance():
         source,
         steps=[
             steps.table_normalize(),
-            steps.row_filter(predicat=lambda row: isinstance(row["id"], int)),
+            steps.row_filter(function=lambda row: isinstance(row["id"], int)),
         ],
     )
     assert target.schema == source.schema
@@ -325,7 +325,7 @@ def test_step_row_filter_petl_selectistrue():
     target = transform(
         source,
         steps=[
-            steps.row_filter(predicat=lambda row: bool(row["id"])),
+            steps.row_filter(function=lambda row: bool(row["id"])),
         ],
     )
     assert target.schema == source.schema
@@ -342,7 +342,7 @@ def test_step_row_filter_petl_selectisfalse():
     target = transform(
         source,
         steps=[
-            steps.row_filter(predicat=lambda row: not bool(row["id"])),
+            steps.row_filter(function=lambda row: not bool(row["id"])),
         ],
     )
     assert target.schema == source.schema
@@ -355,7 +355,7 @@ def test_step_row_filter_petl_selectnone():
     target = transform(
         source,
         steps=[
-            steps.row_filter(predicat="<formula>id is None"),
+            steps.row_filter(formula="id is None"),
         ],
     )
     assert target.schema == source.schema
@@ -368,7 +368,7 @@ def test_step_row_filter_petl_selectisnone():
     target = transform(
         source,
         steps=[
-            steps.row_filter(predicat="<formula>id is not None"),
+            steps.row_filter(formula="id is not None"),
         ],
     )
     assert target.schema == source.schema
@@ -385,7 +385,7 @@ def test_step_row_filter_petl_rowlenselect():
     target = transform(
         source,
         steps=[
-            steps.row_filter(predicat=lambda row: len(row) == 3),
+            steps.row_filter(function=lambda row: len(row) == 3),
         ],
     )
     assert target.schema == source.schema
@@ -429,13 +429,13 @@ def test_step_row_search_with_name():
     ]
 
 
-def test_step_row_search_with_anti():
+def test_step_row_search_with_negate():
     source = Resource(path="data/transform.csv")
     source.infer()
     target = transform(
         source,
         steps=[
-            steps.row_search(regex=r"^f.*", anti=True),
+            steps.row_search(regex=r"^f.*", negate=True),
         ],
     )
     assert target.schema == source.schema

@@ -5,21 +5,26 @@ from ..exception import FrictionlessException
 from .. import errors
 
 
+# NOTE:
+# Some of the following step use **options - we need to review/fix it
+# The step updating resource might benefit from having schema_patch argument
+
+
 class resource_add(Step):
     code = "resource-add"
 
     def __init__(self, descriptor=None, *, name=None, **options):
         self.setinitial("name", name)
-        # TODO: handle options
+        self.setinitial("options", options)
         super().__init__(descriptor)
-        # TODO: reimplement
-        self.__name = name
         self.__options = options
 
     # Transform
 
     def transform_package(self, source, target):
-        resource = Resource(name=self.__name, basepath=target.basepath, **self.__options)
+        name = self.get("name")
+        options = self.get("options")
+        resource = Resource(name=name, basepath=target.basepath, **options)
         resource.infer()
         target.add_resource(resource)
 
@@ -40,19 +45,16 @@ class resource_remove(Step):
     def __init__(self, descriptor=None, *, name=None):
         self.setinitial("name", name)
         super().__init__(descriptor)
-        # TODO: reimplement
-        self.__name = self.get("name")
 
     # Transform
 
     def transform_package(self, source, target):
-        # TODO: this method should raise instead of returning None?
-        resource = target.get_resource(self.__name)
+        name = self.get("name")
+        resource = target.get_resource(name)
         if not resource:
-            error = errors.ResourceError(note=f'No resource "{self.__name}"')
+            error = errors.ResourceError(note=f'No resource "{name}"')
             raise FrictionlessException(error=error)
-        # TODO: this method should raise instead of ignoring?
-        target.remove_resource(self.__name)
+        target.remove_resource(name)
 
     # Metadata
 
@@ -72,19 +74,18 @@ class resource_transform(Step):
         self.setinitial("name", name)
         self.setinitial("steps", steps)
         super().__init__(descriptor)
-        # TODO: reimplement
-        self.__name = name
-        self.__steps = steps
 
     # Transform
 
     def transform_package(self, source, target):
-        resource = target.get_resource(self.__name)
+        name = self.get("name")
+        steps = self.get("steps")
+        resource = target.get_resource(name)
         index = target.resources.index(resource)
         if not resource:
-            error = errors.ResourceError(note=f'No resource "{self.__name}"')
+            error = errors.ResourceError(note=f'No resource "{name}"')
             raise FrictionlessException(error=error)
-        target.resources[index] = transform_resource(resource, steps=self.__steps)
+        target.resources[index] = transform_resource(resource, steps=steps)
 
     # Metadata
 
@@ -98,26 +99,24 @@ class resource_transform(Step):
     }
 
 
-# TODO: add patch_schema param?
 class resource_update(Step):
     code = "resource-update"
 
     def __init__(self, descriptor=None, *, name=None, **options):
         self.setinitial("name", name)
-        # TODO: handle options
+        self.setinitial("options", options)
         super().__init__(descriptor)
-        # TODO: reimplement
-        self.__name = name
-        self.__options = options
 
     # Transform
 
     def transform_package(self, source, target):
-        resource = target.get_resource(self.__name)
+        name = self.get("name")
+        options = self.get("options")
+        resource = target.get_resource(name)
         if not resource:
-            error = errors.ResourceError(note=f'No resource "{self.__name}"')
+            error = errors.ResourceError(note=f'No resource "{name}"')
             raise FrictionlessException(error=error)
-        for name, value in self.__options.items():
+        for name, value in options.items():
             setattr(resource, name, value)
 
     # Metadata
