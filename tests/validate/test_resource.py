@@ -1073,7 +1073,7 @@ def test_validate_custom_check():
                 row_position=row.row_position,
             )
 
-    # Validate table
+    # Validate resource
     report = validate("data/table.csv", checks=[custom()])
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [2, None, "blank-row"],
@@ -1097,7 +1097,7 @@ def test_validate_custom_check_with_arguments():
                 row_position=self.get("rowPosition") or row.row_position,
             )
 
-    # Validate table
+    # Validate resource
     report = validate("data/table.csv", checks=[custom(row_position=1)])
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [1, None, "blank-row"],
@@ -1116,7 +1116,7 @@ def test_validate_custom_check_function_based():
             row_position=row.row_position,
         )
 
-    # Validate table
+    # Validate resource
     report = validate("data/table.csv", checks=[custom])
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [2, None, "blank-row"],
