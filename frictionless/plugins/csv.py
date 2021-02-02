@@ -200,6 +200,7 @@ class CsvParser(Parser):
 
     """
 
+    requires_loader = True
     supported_types = [
         "string",
     ]

@@ -118,7 +118,10 @@ class BigqueryParser(Parser):
     Public   | `from frictionless.plugins.bigquery import BigqueryParser`
     """
 
-    needs_loader = False
+    supported_types = [
+        "string",
+        "number",
+    ]
 
     # Read
 

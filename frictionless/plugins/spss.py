@@ -72,7 +72,9 @@ class SpssParser(Parser):
 
     """
 
-    needs_loader = False
+    supported_types = [
+        "string",
+    ]
 
     # Read
 

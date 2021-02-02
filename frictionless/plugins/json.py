@@ -124,6 +124,7 @@ class JsonParser(Parser):
 
     """
 
+    requires_loader = True
     supported_types = [
         "array",
         "boolean",
@@ -182,6 +183,7 @@ class JsonlParser(Parser):
 
     """
 
+    requires_loader = True
     supported_types = [
         "array",
         "boolean",

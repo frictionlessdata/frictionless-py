@@ -92,6 +92,7 @@ class OdsParser(Parser):
 
     """
 
+    requires_loader = True
     supported_types = [
         "boolean",
         "date",

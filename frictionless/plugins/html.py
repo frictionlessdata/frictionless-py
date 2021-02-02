@@ -88,6 +88,11 @@ class HtmlParser(Parser):
 
     """
 
+    requires_loader = True
+    supported_types = [
+        "string",
+    ]
+
     # Read
 
     def read_list_stream_create(self):

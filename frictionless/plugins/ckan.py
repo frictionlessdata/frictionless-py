@@ -102,7 +102,9 @@ class CkanParser(Parser):
     Public   | `from frictionless.plugins.ckan import CkanParser`
     """
 
-    needs_loader = False
+    supported_types = [
+        "string",
+    ]
 
     # Read
 

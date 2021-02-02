@@ -700,6 +700,7 @@ def test_resource_compression_error_invalid_zip():
     assert error.note == "File is not a zip file"
 
 
+@pytest.mark.skip
 @pytest.mark.skipif(sys.version_info < (3, 8), reason="Requires Python3.8+")
 def test_resource_compression_error_invalid_gz():
     source = "id,filename\n\1,dump.tar.gz"

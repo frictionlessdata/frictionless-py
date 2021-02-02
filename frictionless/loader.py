@@ -16,6 +16,7 @@ from . import config
 # Probably we need to rework the way we calculate stats
 # First of all, it's not really reliable as read/read1(size) can be called many times
 # Secondly, for now, we stream compressed files twice (see loader.read_byte_stream_decompress)
+# Although, we need to reviw how we collect buffer - cab it be less IO operations?
 
 
 class Loader:
@@ -34,6 +35,7 @@ class Loader:
 
     def __init__(self, resource):
         self.__resource = resource
+        self.__buffer = None
         self.__byte_stream = None
         self.__text_stream = None
 
@@ -52,6 +54,14 @@ class Loader:
             resource (Resource): resource
         """
         return self.__resource
+
+    @property
+    def buffer(self):
+        """
+        Returns:
+            Loader: buffer
+        """
+        return self.__buffer
 
     @property
     def byte_stream(self):
@@ -73,8 +83,6 @@ class Loader:
         Returns:
             io.TextStream: resource text stream
         """
-        if not self.__text_stream:
-            self.__text_stream = self.read_text_stream()
         return self.__text_stream
 
     # Open/Close
@@ -84,6 +92,7 @@ class Loader:
         self.close()
         try:
             self.__byte_stream = self.read_byte_stream()
+            self.__text_stream = self.read_text_stream()
             return self
         except Exception:
             self.close()
@@ -239,6 +248,7 @@ class Loader:
             if buffer.startswith(codecs.BOM_UTF16_LE):
                 encoding = "utf-16"
         self.resource.encoding = encoding
+        self.__buffer = buffer
 
     def read_text_stream_decode(self, byte_stream):
         """Decode text stream
@@ -289,12 +299,13 @@ class Loader:
 # Internal
 
 
-class ByteStreamWithStatsHandling:
-    # TODO
-    # We can try buffering byte buffer especially for remote
-    # Also, currently read/read1/item implementation is not complete
-    # As an option, we can think of subclassing some io.* class
+# NOTE:
+# We can try buffering byte buffer especially for remote
+# Also, currently read/read1/item implementation is not complete
+# As an option, we can think of subclassing some io.* class
 
+
+class ByteStreamWithStatsHandling:
     def __init__(self, byte_stream, *, resource):
         try:
             self.__hasher = hashlib.new(resource.hashing) if resource.hashing else None

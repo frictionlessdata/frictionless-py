@@ -107,7 +107,6 @@ class InlineParser(Parser):
 
     """
 
-    needs_loader = False
     supported_types = [
         "array",
         "boolean",

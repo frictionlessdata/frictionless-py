@@ -480,16 +480,26 @@ class Resource(Metadata):
             schema = self.metadata_attach("schema", schema)
         return schema
 
-    # TODO: implement
     @property
     def buffer(self):
-        pass
+        """File's bytes used as a sample
+
+        These buffer bytes are used to infer characteristics of the
+        source file (e.g. encoding, ...).
+
+        Returns:
+            bytes?: file buffer
+        """
+        if self.__parser and self.__parser.loader:
+            return self.__parser.loader.buffer
+        if self.__loader:
+            return self.__loader.buffer
 
     @property
     def sample(self):
         """Table's lists used as sample.
 
-        These sample rows are used internally to infer characteristics of the
+        These sample rows are used to infer characteristics of the
         source file (e.g. schema, ...).
 
         Returns:

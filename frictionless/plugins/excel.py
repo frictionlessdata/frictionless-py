@@ -155,6 +155,7 @@ class XlsxParser(Parser):
 
     """
 
+    requires_loader = True
     supported_types = [
         "boolean",
         "date",
@@ -282,6 +283,7 @@ class XlsParser(Parser):
 
     """
 
+    requires_loader = True
     supported_types = [
         "boolean",
         "date",

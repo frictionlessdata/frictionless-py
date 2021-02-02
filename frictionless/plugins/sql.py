@@ -110,7 +110,15 @@ class SqlParser(Parser):
 
     """
 
-    needs_loader = False
+    supported_types = [
+        "boolean",
+        "date",
+        "datetime",
+        "integer",
+        "number",
+        "string",
+        "time",
+    ]
 
     # Read
 

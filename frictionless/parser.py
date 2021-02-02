@@ -17,14 +17,13 @@ class Parser:
 
     """
 
-    # TODO: remove needs_loader?
-    needs_loader = True
+    requires_loader = False
     supported_types = []
 
     def __init__(self, resource):
         self.__resource = resource
         self.__loader = None
-        self.__sample = []
+        self.__sample = None
         self.__list_stream = None
 
     def __enter__(self):
@@ -102,7 +101,7 @@ class Parser:
         Returns:
             Loader: loader
         """
-        if self.needs_loader:
+        if self.requires_loader:
             loader = system.create_loader(self.resource)
             return loader.open()
 
@@ -166,9 +165,11 @@ class Parser:
 # Internal
 
 
-# TODO:
+# NOTE:
 # Here we catch some Loader related errors
 # We can consider moving it to Loader if it's possible
+
+
 class ListStreamWithErrorHandling:
     def __init__(self, list_stream):
         self.list_stream = list_stream
