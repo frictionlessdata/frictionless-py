@@ -626,14 +626,14 @@ Public   | `from frictionless import Detector`
 ### detector.detect\_encoding
 
 ```python
- | detect_encoding(sample)
+ | detect_encoding(buffer)
 ```
 
-Detect encoding from sample
+Detect encoding from buffer
 
 **Arguments**:
 
-- `sample` _byte_ - byte sample
+- `buffer` _byte_ - byte buffer
   
 
 **Returns**:
@@ -643,7 +643,7 @@ Detect encoding from sample
 ### detector.detect\_layout
 
 ```python
- | detect_layout(sample)
+ | detect_layout(sample, *, layout=None)
 ```
 
 Detect layout from sample
@@ -651,6 +651,7 @@ Detect layout from sample
 **Arguments**:
 
 - `sample` _any[][]_ - data sample
+- `layout?` _Layout_ - data layout
   
 
 **Returns**:
@@ -660,14 +661,14 @@ Detect layout from sample
 ### detector.detect\_schema
 
 ```python
- | detect_schema(sample, *, labels=None, schema=None)
+ | detect_schema(fragment, *, labels=None, schema=None)
 ```
 
-Detect schema from sample
+Detect schema from fragment
 
 **Arguments**:
 
-- `sample` _any[][]_ - data sample
+- `fragment` _any[][]_ - data fragment
 - `labels?` _str[]_ - data labels
 - `schema?` _Schema_ - data schema
   
@@ -2067,6 +2068,17 @@ Public   | `from frictionless import Loader`
 
 - `resource` _Resource_ - resource
 
+### loader.buffer
+
+```python
+ | @property
+ | buffer()
+```
+
+**Returns**:
+
+- `Loader` - buffer
+
 ### loader.byte\_stream
 
 ```python
@@ -3044,6 +3056,14 @@ Infer package's attributes
 
 - `stats?` _bool_ - stream files completely and infer stats
 
+### package.to\_copy
+
+```python
+ | to_copy()
+```
+
+Create a copy of the package
+
 ### package.from\_zip
 
 ```python
@@ -3052,100 +3072,6 @@ Infer package's attributes
 ```
 
 Create a package from ZIP
-
-### package.from\_storage
-
-```python
- | @staticmethod
- | from_storage(storage)
-```
-
-Import package from storage
-
-**Arguments**:
-
-- `storage` _Storage_ - storage instance
-
-### package.from\_ckan
-
-```python
- | @staticmethod
- | from_ckan(*, url, dataset, apikey=None)
-```
-
-Import package from CKAN
-
-**Arguments**:
-
-- `url` _string_ - CKAN instance url e.g. "https://demo.ckan.org"
-- `dataset` _string_ - dataset id in CKAN e.g. "my-dataset"
-- `apikey?` _str_ - API key for CKAN e.g. "51912f57-a657-4caa-b2a7-0a1c16821f4b"
-
-### package.from\_sql
-
-```python
- | @staticmethod
- | from_sql(*, url=None, engine=None, prefix="", namespace=None)
-```
-
-Import package from SQL
-
-**Arguments**:
-
-- `url?` _string_ - SQL connection string
-- `engine?` _object_ - `sqlalchemy` engine
-- `prefix?` _str_ - prefix for all tables
-- `namespace?` _str_ - SQL scheme
-
-### package.from\_pandas
-
-```python
- | @staticmethod
- | from_pandas(*, dataframes)
-```
-
-Import package from Pandas dataframes
-
-**Arguments**:
-
-- `dataframes` _dict_ - mapping of Pandas dataframes
-
-### package.from\_spss
-
-```python
- | @staticmethod
- | from_spss(*, basepath)
-```
-
-Import package from SPSS directory
-
-**Arguments**:
-
-- `basepath` _str_ - SPSS dir path
-
-### package.from\_bigquery
-
-```python
- | @staticmethod
- | from_bigquery(*, service, project, dataset, prefix="")
-```
-
-Import package from Bigquery
-
-**Arguments**:
-
-- `service` _object_ - BigQuery `Service` object
-- `project` _str_ - BigQuery project name
-- `dataset` _str_ - BigQuery dataset name
-- `prefix?` _str_ - prefix for all names
-
-### package.to\_copy
-
-```python
- | to_copy()
-```
-
-Create a copy of the package
 
 ### package.to\_zip
 
@@ -3169,6 +3095,19 @@ Save package to a zip
 
 - `FrictionlessException` - on any error
 
+### package.from\_storage
+
+```python
+ | @staticmethod
+ | from_storage(storage)
+```
+
+Import package from storage
+
+**Arguments**:
+
+- `storage` _Storage_ - storage instance
+
 ### package.to\_storage
 
 ```python
@@ -3181,6 +3120,53 @@ Export package to storage
 
 - `storage` _Storage_ - storage instance
 - `force` _bool_ - overwrite existent
+
+### package.from\_bigquery
+
+```python
+ | @staticmethod
+ | from_bigquery(*, service, project, dataset, prefix="")
+```
+
+Import package from Bigquery
+
+**Arguments**:
+
+- `service` _object_ - BigQuery `Service` object
+- `project` _str_ - BigQuery project name
+- `dataset` _str_ - BigQuery dataset name
+- `prefix?` _str_ - prefix for all names
+
+### package.to\_bigquery
+
+```python
+ | to_bigquery(*, service, project, dataset, prefix="", force=False)
+```
+
+Export package to Bigquery
+
+**Arguments**:
+
+- `service` _object_ - BigQuery `Service` object
+- `project` _str_ - BigQuery project name
+- `dataset` _str_ - BigQuery dataset name
+- `prefix?` _str_ - prefix for all names
+- `force` _bool_ - overwrite existent
+
+### package.from\_ckan
+
+```python
+ | @staticmethod
+ | from_ckan(*, url, dataset, apikey=None)
+```
+
+Import package from CKAN
+
+**Arguments**:
+
+- `url` _string_ - CKAN instance url e.g. "https://demo.ckan.org"
+- `dataset` _string_ - dataset id in CKAN e.g. "my-dataset"
+- `apikey?` _str_ - API key for CKAN e.g. "51912f57-a657-4caa-b2a7-0a1c16821f4b"
 
 ### package.to\_ckan
 
@@ -3197,21 +3183,18 @@ Export package to CKAN
 - `apikey?` _str_ - API key for CKAN e.g. "51912f57-a657-4caa-b2a7-0a1c16821f4b"
 - `force` _bool_ - (optional) overwrite existing data
 
-### package.to\_sql
+### package.from\_pandas
 
 ```python
- | to_sql(*, url=None, engine=None, prefix="", namespace=None, force=False)
+ | @staticmethod
+ | from_pandas(*, dataframes)
 ```
 
-Export package to SQL
+Import package from Pandas dataframes
 
 **Arguments**:
 
-- `url?` _string_ - SQL connection string
-- `engine?` _object_ - `sqlalchemy` engine
-- `prefix?` _str_ - prefix for all tables
-- `namespace?` _str_ - SQL scheme
-- `force` _bool_ - overwrite existent
+- `dataframes` _dict_ - mapping of Pandas dataframes
 
 ### package.to\_pandas
 
@@ -3220,6 +3203,19 @@ Export package to SQL
 ```
 
 Export package to Pandas dataframes
+
+### package.from\_spss
+
+```python
+ | @staticmethod
+ | from_spss(*, basepath)
+```
+
+Import package from SPSS directory
+
+**Arguments**:
+
+- `basepath` _str_ - SPSS dir path
 
 ### package.to\_spss
 
@@ -3234,20 +3230,36 @@ Export package to SPSS directory
 - `basepath` _str_ - SPSS dir path
 - `force` _bool_ - overwrite existent
 
-### package.to\_bigquery
+### package.from\_sql
 
 ```python
- | to_bigquery(*, service, project, dataset, prefix="", force=False)
+ | @staticmethod
+ | from_sql(*, url=None, engine=None, prefix="", namespace=None)
 ```
 
-Export package to Bigquery
+Import package from SQL
 
 **Arguments**:
 
-- `service` _object_ - BigQuery `Service` object
-- `project` _str_ - BigQuery project name
-- `dataset` _str_ - BigQuery dataset name
-- `prefix?` _str_ - prefix for all names
+- `url?` _string_ - SQL connection string
+- `engine?` _object_ - `sqlalchemy` engine
+- `prefix?` _str_ - prefix for all tables
+- `namespace?` _str_ - SQL scheme
+
+### package.to\_sql
+
+```python
+ | to_sql(*, url=None, engine=None, prefix="", namespace=None, force=False)
+```
+
+Export package to SQL
+
+**Arguments**:
+
+- `url?` _string_ - SQL connection string
+- `engine?` _object_ - `sqlalchemy` engine
+- `prefix?` _str_ - prefix for all tables
+- `namespace?` _str_ - SQL scheme
 - `force` _bool_ - overwrite existent
 
 ## PandasDialect
@@ -3349,16 +3361,27 @@ Public   | `from frictionless import Parser`
 
 - `Loader` - loader
 
-### parser.data\_stream
+### parser.sample
 
 ```python
  | @property
- | data_stream()
+ | sample()
+```
+
+**Returns**:
+
+- `Loader` - sample
+
+### parser.list\_stream
+
+```python
+ | @property
+ | list_stream()
 ```
 
 **Yields**:
 
-- `any[][]` - data stream
+- `any[][]` - list stream
 
 ### parser.open
 
@@ -3401,25 +3424,25 @@ Create and open loader
 
 - `Loader` - loader
 
-### parser.read\_data\_stream
+### parser.read\_list\_stream
 
 ```python
- | read_data_stream()
+ | read_list_stream()
 ```
 
-Read data stream
+Read list stream
 
 **Returns**:
 
-- `gen<any[][]>` - data stream
+- `gen<any[][]>` - list stream
 
-### parser.read\_data\_stream\_create
+### parser.read\_list\_stream\_create
 
 ```python
- | read_data_stream_create(loader)
+ | read_list_stream_create(loader)
 ```
 
-Create data stream from loader
+Create list stream from loader
 
 **Arguments**:
 
@@ -3428,24 +3451,24 @@ Create data stream from loader
 
 **Returns**:
 
-- `gen<any[][]>` - data stream
+- `gen<any[][]>` - list stream
 
-### parser.read\_data\_stream\_handle\_errors
+### parser.read\_list\_stream\_handle\_errors
 
 ```python
- | read_data_stream_handle_errors(data_stream)
+ | read_list_stream_handle_errors(list_stream)
 ```
 
-Wrap data stream into error handler
+Wrap list stream into error handler
 
 **Arguments**:
 
-- `gen<any[][]>` - data stream
+- `gen<any[][]>` - list stream
   
 
 **Returns**:
 
-- `gen<any[][]>` - data stream
+- `gen<any[][]>` - list stream
 
 ### parser.write\_row\_stream
 
@@ -4328,6 +4351,22 @@ Returns
 Returns
     Schema: resource schema
 
+### resource.buffer
+
+```python
+ | @property
+ | buffer()
+```
+
+File's bytes used as a sample
+
+These buffer bytes are used to infer characteristics of the
+source file (e.g. encoding, ...).
+
+**Returns**:
+
+- `bytes?` - file buffer
+
 ### resource.sample
 
 ```python
@@ -4335,9 +4374,9 @@ Returns
  | sample()
 ```
 
-Tables's rows used as sample.
+Table's lists used as sample.
 
-These sample rows are used internally to infer characteristics of the
+These sample rows are used to infer characteristics of the
 source file (e.g. schema, ...).
 
 **Returns**:
@@ -4354,6 +4393,22 @@ source file (e.g. schema, ...).
 **Returns**:
 
 - `str[]?` - table labels
+
+### resource.fragment
+
+```python
+ | @property
+ | fragment()
+```
+
+Table's lists used as fragment.
+
+These fragment rows are used internally to infer characteristics of the
+source file (e.g. schema, ...).
+
+**Returns**:
+
+- `list[]?` - table fragment
 
 ### resource.header
 
@@ -4514,20 +4569,20 @@ Text stream in form of a generator
 
 **Yields**:
 
-- `gen<str[]>?` - data stream
+- `gen<str[]>?` - text stream
 
-### resource.data\_stream
+### resource.list\_stream
 
 ```python
  | @property
- | data_stream()
+ | list_stream()
 ```
 
-Data stream in form of a generator
+List stream in form of a generator
 
 **Yields**:
 
-- `gen<any[][]>?` - data stream
+- `gen<any[][]>?` - list stream
 
 ### resource.row\_stream
 
@@ -4601,11 +4656,11 @@ Whether the table is closed
  | read_bytes(*, size=None)
 ```
 
-Read data into memory
+Read bytes into memory
 
 **Returns**:
 
-- `any[][]` - table data
+- `any[][]` - resource bytes
 
 ### resource.read\_text
 
@@ -4617,7 +4672,7 @@ Read text into memory
 
 **Returns**:
 
-- `str` - table data
+- `str` - resource text
 
 ### resource.read\_data
 
@@ -4629,7 +4684,19 @@ Read data into memory
 
 **Returns**:
 
-- `any[][]` - table data
+- `any` - resource data
+
+### resource.read\_lists
+
+```python
+ | read_lists(*, size=None)
+```
+
+Read lists into memory
+
+**Returns**:
+
+- `any[][]` - table lists
 
 ### resource.read\_rows
 
@@ -4655,6 +4722,14 @@ Write this resource to the target resource
 
 - `target` _Resource_ - target Resource
 
+### resource.to\_copy
+
+```python
+ | to_copy(**options)
+```
+
+Create a copy of the resource
+
 ### resource.from\_petl
 
 ```python
@@ -4678,65 +4753,18 @@ Import resource from storage
 - `storage` _Storage_ - storage instance
 - `name` _str_ - resource name
 
-### resource.from\_ckan
+### resource.to\_storage
 
 ```python
- | @staticmethod
- | from_ckan(*, name, url, dataset, apikey=None)
+ | to_storage(storage, *, force=False)
 ```
 
-Import resource from CKAN
+Export resource to storage
 
 **Arguments**:
 
-- `name` _string_ - resource name
-- `url` _string_ - CKAN instance url e.g. "https://demo.ckan.org"
-- `dataset` _string_ - dataset id in CKAN e.g. "my-dataset"
-- `apikey?` _str_ - API key for CKAN e.g. "51912f57-a657-4caa-b2a7-0a1c16821f4b"
-
-### resource.from\_sql
-
-```python
- | @staticmethod
- | from_sql(*, name, url=None, engine=None, prefix="", namespace=None)
-```
-
-Import resource from SQL table
-
-**Arguments**:
-
-- `name` _str_ - resource name
-- `url?` _string_ - SQL connection string
-- `engine?` _object_ - `sqlalchemy` engine
-- `prefix?` _str_ - prefix for all tables
-- `namespace?` _str_ - SQL scheme
-
-### resource.from\_pandas
-
-```python
- | @staticmethod
- | from_pandas(dataframe)
-```
-
-Import resource from Pandas dataframe
-
-**Arguments**:
-
-- `dataframe` _str_ - padas dataframe
-
-### resource.from\_spss
-
-```python
- | @staticmethod
- | from_spss(*, name, basepath)
-```
-
-Import resource from SPSS file
-
-**Arguments**:
-
-- `name` _str_ - resource name
-- `basepath` _str_ - SPSS dir path
+- `storage` _Storage_ - storage instance
+- `force` _bool_ - overwrite existent
 
 ### resource.from\_bigquery
 
@@ -4755,26 +4783,37 @@ Import resource from BigQuery table
 - `dataset` _str_ - BigQuery dataset name
 - `prefix?` _str_ - prefix for all names
 
-### resource.to\_copy
+### resource.to\_bigquery
 
 ```python
- | to_copy(**options)
+ | to_bigquery(*, service, project, dataset, prefix="", force=False)
 ```
 
-Create a copy of the resource
-
-### resource.to\_storage
-
-```python
- | to_storage(storage, *, force=False)
-```
-
-Export resource to storage
+Export resource to Bigquery table
 
 **Arguments**:
 
-- `storage` _Storage_ - storage instance
+- `service` _object_ - BigQuery `Service` object
+- `project` _str_ - BigQuery project name
+- `dataset` _str_ - BigQuery dataset name
+- `prefix?` _str_ - prefix for all names
 - `force` _bool_ - overwrite existent
+
+### resource.from\_ckan
+
+```python
+ | @staticmethod
+ | from_ckan(*, name, url, dataset, apikey=None)
+```
+
+Import resource from CKAN
+
+**Arguments**:
+
+- `name` _string_ - resource name
+- `url` _string_ - CKAN instance url e.g. "https://demo.ckan.org"
+- `dataset` _string_ - dataset id in CKAN e.g. "my-dataset"
+- `apikey?` _str_ - API key for CKAN e.g. "51912f57-a657-4caa-b2a7-0a1c16821f4b"
 
 ### resource.to\_ckan
 
@@ -4791,6 +4830,76 @@ Export resource to CKAN
 - `apikey?` _str_ - API key for CKAN e.g. "51912f57-a657-4caa-b2a7-0a1c16821f4b"
 - `force` _bool_ - (optional) overwrite existing data
 
+### resource.from\_pandas
+
+```python
+ | @staticmethod
+ | from_pandas(dataframe)
+```
+
+Import resource from Pandas dataframe
+
+**Arguments**:
+
+- `dataframe` _str_ - padas dataframe
+
+### resource.to\_pandas
+
+```python
+ | to_pandas()
+```
+
+Export resource to Pandas dataframe
+
+**Arguments**:
+
+- `dataframes` _dict_ - pandas dataframes
+- `force` _bool_ - overwrite existent
+
+### resource.from\_spss
+
+```python
+ | @staticmethod
+ | from_spss(*, name, basepath)
+```
+
+Import resource from SPSS file
+
+**Arguments**:
+
+- `name` _str_ - resource name
+- `basepath` _str_ - SPSS dir path
+
+### resource.to\_spss
+
+```python
+ | to_spss(*, basepath, force=False)
+```
+
+Export resource to SPSS file
+
+**Arguments**:
+
+- `basepath` _str_ - SPSS dir path
+- `force` _bool_ - overwrite existent
+
+### resource.from\_sql
+
+```python
+ | @staticmethod
+ | from_sql(*, name, url=None, engine=None, prefix="", namespace=None)
+```
+
+Import resource from SQL table
+
+**Arguments**:
+
+- `name` _str_ - resource name
+- `url?` _string_ - SQL connection string
+- `engine?` _object_ - `sqlalchemy` engine
+- `prefix?` _str_ - prefix for all tables
+- `namespace?` _str_ - SQL scheme
+
 ### resource.to\_sql
 
 ```python
@@ -4806,48 +4915,6 @@ Export resource to SQL table
 - `prefix?` _str_ - prefix for all tables
 - `namespace?` _str_ - SQL scheme
 - `force?` _bool_ - overwrite existent
-
-### resource.to\_pandas
-
-```python
- | to_pandas()
-```
-
-Export resource to Pandas dataframe
-
-**Arguments**:
-
-- `dataframes` _dict_ - pandas dataframes
-- `force` _bool_ - overwrite existent
-
-### resource.to\_spss
-
-```python
- | to_spss(*, basepath, force=False)
-```
-
-Export resource to SPSS file
-
-**Arguments**:
-
-- `basepath` _str_ - SPSS dir path
-- `force` _bool_ - overwrite existent
-
-### resource.to\_bigquery
-
-```python
- | to_bigquery(*, service, project, dataset, prefix="", force=False)
-```
-
-Export resource to Bigquery table
-
-**Arguments**:
-
-- `service` _object_ - BigQuery `Service` object
-- `project` _str_ - BigQuery project name
-- `dataset` _str_ - BigQuery dataset name
-- `prefix?` _str_ - prefix for all names
-- `force` _bool_ - overwrite existent
 
 ## Row
 
