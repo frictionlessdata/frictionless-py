@@ -4,6 +4,12 @@ title: Changelog
 
 Here described only the breaking and most significant changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/frictionless-py/commits/master).
 
+## v4.0.0a12
+
+- Improved transformation steps (#650) (BREAKING)
+    - Split value/formula/function concepts
+    - Renamed a few minor step arguments
+
 ## v4.0.0a11
 
 - Improved layout and data streams concepts (#648) (BREAKING)
