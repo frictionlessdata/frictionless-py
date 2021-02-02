@@ -110,9 +110,9 @@ class Detector:
         if self.__encoding_function:
             return self.__encoding_function(buffer)
         result = chardet.detect(buffer)
-        rescon = result["confidence"] or 0
         encoding = result["encoding"] or config.DEFAULT_ENCODING
-        if rescon < self.__encoding_confidence:
+        confidence = result["confidence"] or 0
+        if confidence < self.__encoding_confidence:
             encoding = config.DEFAULT_ENCODING
         if encoding == "ascii":
             encoding = config.DEFAULT_ENCODING

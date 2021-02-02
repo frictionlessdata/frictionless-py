@@ -350,8 +350,8 @@ class Resource(Metadata):
             str?: resource profile
         """
         default = config.DEFAULT_RESOURCE_PROFILE
-        if not self.closed and self.tabular:
-            default = "tabular-data-resource"
+        if self.tabular:
+            default = config.DEFAULT_TABULAR_RESOURCE_PROFILE
         return self.get("profile", default)
 
     @Metadata.property
@@ -697,27 +697,6 @@ class Resource(Metadata):
             stream = self.__row_stream if self.tabular else self.__text_stream
             if stats:
                 helpers.pass_through(stream)
-            # TODO: move this code to open for consistencly between below and schema/etc?
-            self["name"] = self.name
-            self["profile"] = self.profile
-            self["scheme"] = self.scheme
-            self["format"] = self.format
-            self["hashing"] = self.hashing
-            self["encoding"] = self.encoding
-            # TODO: review this code
-            if self.innerpath:
-                self["innerpath"] = self.innerpath
-            if self.compression:
-                self["compression"] = self.compression
-            if self.control:
-                self["control"] = self.control
-            if self.dialect:
-                self["dialect"] = self.dialect
-            if self.layout:
-                self["layout"] = self.layout
-            if self.schema:
-                self["schema"] = self.schema
-            # TODO: infer mediatype (needed parser support)?
             # TODO: review it's a hack for checksum validation
             if not stats:
                 if current_stats:
@@ -735,31 +714,48 @@ class Resource(Metadata):
         """
         self.close()
 
-        # Table
-        try:
-            self["stats"] = {"hash": "", "bytes": 0, "fields": 0, "rows": 0}
-            self.__parser = system.create_parser(self)
-            self.__parser.open()
-            # TODO: make below lazy?
-            self.__read_detect_sample()
-            self.__header = self.__read_header()
-            if not self.__nolookup:
-                self.__lookup = self.__read_detect_lookup()
-            self.__row_stream = self.__read_row_stream()
-            self.__row_position = 0
-            self.__row_number = 0
-            return self
+        # Infer
+        self["name"] = self.name
+        self["profile"] = self.profile
+        self["scheme"] = self.scheme
+        self["format"] = self.format
+        self["hashing"] = self.hashing
+        self["encoding"] = self.encoding
+        if self.innerpath:
+            self["innerpath"] = self.innerpath
+        if self.compression:
+            self["compression"] = self.compression
+        if self.control:
+            self["control"] = self.control
+        if self.dialect:
+            self["dialect"] = self.dialect
+        self["stats"] = {"hash": "", "bytes": 0, "fields": 0, "rows": 0}
 
-        # File
-        except FrictionlessException as exception:
-            if exception.error.code != "format-error":
-                self.close()
-                raise
-            self.__loader = system.create_loader(self)
-            self.__loader.open()
-            self.__byte_stream = self.__loader.byte_stream
-            self.__text_stream = self.__loader.text_stream
-            return self
+        # Validate
+        if self.metadata_errors:
+            error = self.metadata_errors[0]
+            raise FrictionlessException(error)
+
+        # Open
+        try:
+
+            # Table
+            if self.tabular:
+                self.__parser = system.create_parser(self)
+                self.__parser.open()
+                self.__read_detect_layout()
+                self.__read_detect_schema()
+                if not self.__nolookup:
+                    self.__lookup = self.__read_detect_lookup()
+                self.__header = self.__read_header()
+                self.__row_stream = self.__read_row_stream()
+                return self
+
+            # File
+            else:
+                self.__loader = system.create_loader(self)
+                self.__loader.open()
+                return self
 
         # Error
         except Exception:
@@ -768,12 +764,12 @@ class Resource(Metadata):
 
     def close(self):
         """Close the table as "filelike.close" does"""
-        if self.__loader:
-            self.__loader.close()
-            self.__loader = None
         if self.__parser:
             self.__parser.close()
             self.__parser = None
+        if self.__loader:
+            self.__loader.close()
+            self.__loader = None
 
     @property
     def closed(self):
@@ -782,7 +778,7 @@ class Resource(Metadata):
         Returns:
             bool: if closed
         """
-        return self.__parser is None
+        return self.__parser is None and self.__loader is None
 
     # Read
 
@@ -839,7 +835,7 @@ class Resource(Metadata):
         """
         with helpers.ensure_open(self):
             lists = []
-            for cells in self.__list_stream:
+            for cells in self.list_stream:
                 lists.append(cells)
                 if size and len(lists) >= size:
                     break
@@ -853,21 +849,23 @@ class Resource(Metadata):
         """
         with helpers.ensure_open(self):
             rows = []
-            for row in self.__row_stream:
+            for row in self.row_stream:
                 rows.append(row)
                 if size and len(rows) >= size:
                     break
             return rows
 
     def __read_row_stream(self):
-        schema = self.schema
 
-        # Create field info
+        # During row streaming we crate a field inf structure
         # This structure is optimized and detached version of schema.fields
         # We create all data structures in-advance to share them between rows
+
+        # Create field info
         field_number = 0
         field_info = {"names": [], "objects": [], "positions": [], "mapping": {}}
-        for field, field_position in zip_longest(schema.fields, self.__field_positions):
+        iterator = zip_longest(self.schema.fields, self.__field_positions)
+        for field, field_position in iterator:
             if field is None:
                 break
             field_number += 1
@@ -881,13 +879,13 @@ class Resource(Metadata):
         memory_unique = {}
         memory_primary = {}
         foreign_groups = []
-        is_integrity = bool(schema.primary_key)
-        for field in schema.fields:
+        is_integrity = bool(self.schema.primary_key)
+        for field in self.schema.fields:
             if field.constraints.get("unique"):
                 memory_unique[field.name] = {}
                 is_integrity = True
         if self.__lookup:
-            for fk in schema.foreign_keys:
+            for fk in self.schema.foreign_keys:
                 group = {}
                 group["sourceName"] = fk["reference"]["resource"]
                 group["sourceKey"] = tuple(fk["reference"]["fields"])
@@ -898,23 +896,26 @@ class Resource(Metadata):
         # Prepare iterator
         iterator = chain(
             zip(self.__fragment_positions, self.__fragment),
-            self.__read_iterate_parser(),
+            self.__read_list_stream(),
         )
 
         # Stream rows
+        self.__row_number = 0
         limit = self.layout.limit_rows
         offset = self.layout.offset_rows or 0
         for row_position, cells in iterator:
             self.__row_position = row_position
-            self.__row_number += 1
-            self.stats["rows"] = self.__row_number
 
-            # Offset rows
+            # Offset/offset rows
             if offset:
                 offset -= 1
                 continue
+            if limit and limit <= self.__row_number:
+                break
 
             # Create row
+            self.__row_number += 1
+            self.stats["rows"] = self.__row_number
             row = Row(
                 cells,
                 field_info=field_info,
@@ -936,8 +937,8 @@ class Resource(Metadata):
                             row.errors.append(error)
 
             # Primary Key Error
-            if is_integrity and schema.primary_key:
-                cells = tuple(row[field_name] for field_name in schema.primary_key)
+            if is_integrity and self.schema.primary_key:
+                cells = tuple(row[field_name] for field_name in self.schema.primary_key)
                 if set(cells) == {None}:
                     note = 'cells composing the primary keys are all "None"'
                     error = errors.PrimaryKeyError.from_row(row, note=note)
@@ -973,12 +974,8 @@ class Resource(Metadata):
                         raise FrictionlessException(error)
                     warnings.warn(error.message, UserWarning)
 
-            # Stream rows
+            # Yield row
             yield row
-
-            # Limit rows
-            if limit and limit <= self.__row_number:
-                break
 
     def __read_header(self):
 
@@ -1001,12 +998,12 @@ class Resource(Metadata):
 
         return header
 
-    def __read_iterate_parser(self):
+    def __read_list_stream(self):
 
         # Prepare iterator
         iterator = (
             (position, cells)
-            for position, cells in enumerate(self.__parser.list_stream)
+            for position, cells in enumerate(self.__parser.list_stream, start=1)
             if position > len(self.__parser.sample)
         )
 
@@ -1022,23 +1019,19 @@ class Resource(Metadata):
                     cells, field_positions=self.__field_positions
                 )
 
-    def __read_detect_sample(self):
-
-        # Detect layout
+    def __read_detect_layout(self):
         sample = self.__parser.sample
         layout = self.detector.detect_layout(sample, layout=self.layout)
         if layout:
             self.layout = layout
+        self.__sample = sample
 
-        # Detect schema
-        labels, field_positions = layout.read_labels(sample)
-        fragment, fragment_positions = layout.read_fragment(sample)
+    def __read_detect_schema(self):
+        labels, field_positions = self.layout.read_labels(self.sample)
+        fragment, fragment_positions = self.layout.read_fragment(self.sample)
         schema = self.detector.detect_schema(fragment, labels=labels, schema=self.schema)
         if schema:
             self.schema = schema
-
-        # Store state/stats
-        self.__sample = sample
         self.__labels = labels
         self.__fragment = fragment
         self.__field_positions = field_positions

@@ -12,7 +12,7 @@ from . import errors
 from . import config
 
 
-# TODO
+# NOTE:
 # Probably we need to rework the way we calculate stats
 # First of all, it's not really reliable as read/read1(size) can be called many times
 # Secondly, for now, we stream compressed files twice (see loader.read_byte_stream_decompress)
@@ -82,9 +82,6 @@ class Loader:
     def open(self):
         """Open the loader as "io.open" does"""
         self.close()
-        if self.__resource.control.metadata_errors:
-            error = self.__resource.control.metadata_errors[0]
-            raise FrictionlessException(error)
         try:
             self.__byte_stream = self.read_byte_stream()
             return self

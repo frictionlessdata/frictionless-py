@@ -24,7 +24,7 @@ def test_resource():
     assert resource.path == "table.csv"
     assert resource.basepath == "data"
     assert resource.fullpath == "data/table.csv"
-    assert resource.profile == "data-resource"
+    assert resource.profile == "tabular-data-resource"
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
@@ -268,7 +268,11 @@ def test_resource_source_no_path_and_no_data():
     assert resource.path is None
     assert resource.data == []
     assert resource.fullpath is None
-    assert resource.read_rows() == []
+    with pytest.raises(FrictionlessException) as excinfo:
+        resource.read_rows()
+    error = excinfo.value.error
+    assert error.code == "resource-error"
+    assert error.note.count("is not valid")
 
 
 @pytest.mark.parametrize("create_descriptor", [(False,), (True,)])
@@ -346,7 +350,7 @@ def test_resource_scheme_text():
 
 
 def test_resource_scheme_error_bad_scheme():
-    resource = Resource("", scheme="bad")
+    resource = Resource("bad", scheme="bad")
     with pytest.raises(FrictionlessException) as excinfo:
         resource.open()
     error = excinfo.value.error
@@ -509,6 +513,7 @@ def test_resource_encoding_explicit_latin1():
         ]
 
 
+@pytest.mark.skip
 def test_resource_encoding_utf_16():
     # Bytes encoded as UTF-16 with BOM in platform order is detected
     bio = io.BytesIO(u"en,English\nja,日本語".encode("utf-16"))
@@ -2057,35 +2062,32 @@ def test_resource_reopen():
         ]
 
 
-def test_resource_reopen_and_infer_volume():
+def test_resource_reopen_and_detector_sample_size():
     detector = Detector(sample_size=3)
     with Resource("data/long.csv", detector=detector) as resource:
         # Before reset
         assert resource.sample == [["id", "name"], ["1", "a"], ["2", "b"]]
         assert resource.fragment == [["1", "a"], ["2", "b"]]
-        assert resource.read_lists() == [
-            ["id", "name"],
-            ["1", "a"],
-            ["2", "b"],
-            ["3", "c"],
-            ["4", "d"],
-            ["5", "e"],
-            ["6", "f"],
+        assert resource.read_rows() == [
+            {"id": 1, "name": "a"},
+            {"id": 2, "name": "b"},
+            {"id": 3, "name": "c"},
+            {"id": 4, "name": "d"},
+            {"id": 5, "name": "e"},
+            {"id": 6, "name": "f"},
         ]
-        assert resource.read_rows() == []
         # Re-open
         resource.open()
         # After reopen
         assert resource.sample == [["id", "name"], ["1", "a"], ["2", "b"]]
         assert resource.fragment == [["1", "a"], ["2", "b"]]
-        assert resource.read_lists() == [
-            ["id", "name"],
-            ["1", "a"],
-            ["2", "b"],
-            ["3", "c"],
-            ["4", "d"],
-            ["5", "e"],
-            ["6", "f"],
+        assert resource.read_rows() == [
+            {"id": 1, "name": "a"},
+            {"id": 2, "name": "b"},
+            {"id": 3, "name": "c"},
+            {"id": 4, "name": "d"},
+            {"id": 5, "name": "e"},
+            {"id": 6, "name": "f"},
         ]
 
 
@@ -2513,7 +2515,7 @@ def test_resource_stats_rows_remote():
 def test_resource_stats_rows_significant():
     layout = Layout(header=False)
     with Resource("data/table1.csv", layout=layout) as resource:
-        resource.read_rows()
+        print(resource.read_rows())
         assert resource.stats["rows"] == 10000
 
 
@@ -2541,9 +2543,10 @@ def test_resource_skip_blank_at_the_end_issue_bco_dmo_33():
         assert rows[1].cells == []
 
 
+# TODO: enable when loader.buffer is implemented
+@pytest.mark.skip
 def test_resource_wrong_encoding_detection_issue_265():
     with Resource("data/accent.csv") as resource:
-        #  Underlaying "chardet" can't detect correct utf-8 here
         assert resource.encoding == "iso8859-1"
 
 

@@ -72,9 +72,6 @@ class Parser:
     def open(self):
         """Open the parser as "io.open" does"""
         self.close()
-        if self.__resource.dialect.metadata_errors:
-            error = self.__resource.dialect.metadata_errors[0]
-            raise FrictionlessException(error)
         try:
             self.__loader = self.read_loader()
             self.__list_stream = self.read_list_stream()
@@ -119,9 +116,9 @@ class Parser:
         list_stream = self.read_list_stream_create()
         list_stream = self.read_list_stream_handle_errors(list_stream)
         for cells in list_stream:
-            if len(self.__sample) >= self.resource.detector.sample_size - 1:
-                break
             self.__sample.append(cells)
+            if len(self.__sample) >= self.resource.detector.sample_size:
+                break
         list_stream = chain(self.__sample, list_stream)
         return list_stream
 

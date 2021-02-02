@@ -143,6 +143,7 @@ class File:
                 names.append(name)
             name = os.path.commonprefix(names)
             name = helpers.slugify(name, regex_pattern=r"[^-a-z0-9._/]")
+            name = name or "name"
 
         # Detect type
         type = "table"

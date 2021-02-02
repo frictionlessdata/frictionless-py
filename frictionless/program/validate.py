@@ -22,7 +22,7 @@ def program_validate(
     encoding: str = Opt(None, help="Specify encoding  [default: inferred]"),
     innerpath: str = Opt(None, help="Specify in-archive path  [default: first]"),
     compression: str = Opt(None, help="Specify compression  [default: inferred]"),
-    # Layout
+    # Table
     header_rows: str = Opt(None, help="Comma-separated row numbers  [default: 1]"),
     header_join: str = Opt(None, help="A separator to join a multiline header"),
     pick_fields: str = Opt(None, help='Comma-separated fields to pick e.g. "1,name1"'),
@@ -33,7 +33,6 @@ def program_validate(
     skip_rows: str = Opt(None, help='Comma-separated rows to skip e.g. "2,3,4,5"'),
     limit_rows: int = Opt(None, help="Limit rows by this integer"),
     offset_rows: int = Opt(None, help="Offset rows by this integer"),
-    # Schema
     schema: str = Opt(None, help="Specify a path to a schema"),
     # Detector
     buffer_size: int = Opt(None, help="Limit byte buffer size by this integer"),
