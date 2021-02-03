@@ -511,6 +511,9 @@ class Package(Metadata):
         Parameters:
             source (string): CKAN instance url e.g. "https://demo.ckan.org"
             dialect (dict): CKAN dialect
+
+        Returns:
+            Package: package
         """
         storage = system.create_storage("ckan", source, dialect=dialect)
         return storage.read_package()
@@ -521,51 +524,50 @@ class Package(Metadata):
         Parameters:
             source (string): CKAN instance url e.g. "https://demo.ckan.org"
             dialect (dict): CKAN dialect
+
+        Returns:
+            CkanStorage: storage
         """
         storage = system.create_storage("ckan", target, dialect=dialect)
         storage.write_package(self.to_copy(), force=True)
         return storage
 
     @staticmethod
-    def from_sql(*, url=None, engine=None, prefix="", namespace=None):
+    def from_sql(source, *, dialect=None):
         """Import package from SQL
 
         Parameters:
-            url? (string): SQL connection string
-            engine? (object): `sqlalchemy` engine
-            prefix? (str): prefix for all tables
-            namespace? (str): SQL scheme
-        """
-        system.create_storage(
-            "sql",
-            url=url,
-            engine=engine,
-            prefix=prefix,
-            namespace=namespace,
-        ).read_package()
+            source (any): SQL connection string of engine
+            dialect (dict): SQL dialect
 
-    def to_sql(self, *, url=None, engine=None, prefix="", namespace=None):
+        Returns:
+            Package: package
+        """
+        storage = system.create_storage("sql", source, dialect=dialect)
+        return storage.read_package()
+
+    def to_sql(self, target, *, dialect=None):
         """Export package to SQL
 
         Parameters:
-            url? (string): SQL connection string
-            engine? (object): `sqlalchemy` engine
-            prefix? (str): prefix for all tables
-            namespace? (str): SQL scheme
-            force (bool): overwrite existent
+            source (any): SQL connection string of engine
+            dialect (dict): SQL dialect
+
+        Returns:
+            SqlStorage: storage
         """
-        storage = system.create_storage(
-            "sql",
-            url=url,
-            engine=engine,
-            prefix=prefix,
-            namespace=namespace,
-        )
+        storage = system.create_storage("sql", target, dialect=dialect)
         storage.write_package(self.to_copy(), force=True)
+        return storage
 
     @staticmethod
     def from_zip(path, **options):
-        """Create a package from ZIP"""
+        """Create a package from ZIP
+
+        Parameters:
+            path(str): file path
+            **options(dict): resouce options
+        """
         return Package(descriptor=path, **options)
 
     def to_zip(self, path, *, resolve=[], encoder_class=None):

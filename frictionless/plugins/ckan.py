@@ -141,7 +141,8 @@ class CkanStorage(Storage):
     Public   | `from frictionless.plugins.ckan import CkanStorage`
     """
 
-    def __init__(self, source, *, dialect):
+    def __init__(self, source, *, dialect=None):
+        dialect = dialect or CkanDialect()
         self.__url = source.rstrip("/")
         self.__endpoint = f"{self.__url}/api/3/action"
         self.__dataset = dialect.dataset
