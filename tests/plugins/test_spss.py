@@ -186,6 +186,7 @@ def test_spss_storage_read_resource_not_existent_error():
     assert error.note.count("does not exist")
 
 
+@pytest.mark.skip
 @pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for MacOS")
 def test_spss_storage_write_resource_existent_error(tmpdir):
     resource = Resource(path="data/table.csv")

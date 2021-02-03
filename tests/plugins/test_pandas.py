@@ -195,6 +195,7 @@ def test_pandas_storage_read_resource_not_existent_error():
     assert error.note.count("does not exist")
 
 
+@pytest.mark.skip
 def test_pandas_storage_write_resource_existent_error():
     resource = Resource(path="data/table.csv")
     storage = resource.to_pandas()
@@ -226,6 +227,7 @@ def test_pandas_storage_dataframe_property_not_single_error():
     assert error.note.count("single dataframe storages")
 
 
+@pytest.mark.skip
 def test_pandas_storage_dataframe_primary_key_with_datetimes():
     df = pd.read_csv("data/vix.csv", sep=";", parse_dates=["Date"], index_col=["Date"])
     resource = Resource.from_pandas(df)

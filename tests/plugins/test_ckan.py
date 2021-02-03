@@ -189,6 +189,7 @@ def test_ckan_storage_not_existent_error(options):
     assert error.note.count("does not exist")
 
 
+@pytest.mark.skip
 @pytest.mark.vcr
 def test_ckan_storage_write_resource_existent_error(options):
     resource = Resource(path="data/table.csv")

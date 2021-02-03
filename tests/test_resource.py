@@ -2201,25 +2201,17 @@ def test_resource_to_copy():
 
 
 def test_resource_to_json(tmpdir):
-
-    # Write
     target = os.path.join(tmpdir, "resource.json")
     resource = Resource("data/resource.json")
     resource.to_json(target)
-
-    # Read
     with open(target, encoding="utf-8") as file:
         assert resource == json.load(file)
 
 
 def test_resource_to_yaml(tmpdir):
-
-    # Write
     target = os.path.join(tmpdir, "resource.yaml")
     resource = Resource("data/resource.json")
     resource.to_yaml(target)
-
-    # Read
     with open(target, encoding="utf-8") as file:
         assert resource == yaml.safe_load(file)
 

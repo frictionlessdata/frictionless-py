@@ -276,6 +276,7 @@ def test_sql_storage_constraints(sqlite_url):
     storage.delete_package(target.resource_names)
 
 
+@pytest.mark.skip
 @pytest.mark.parametrize(
     "field_name, cell",
     [
@@ -311,6 +312,7 @@ def test_sql_storage_read_resource_not_existent_error(sqlite_url):
     assert error.note.count("does not exist")
 
 
+@pytest.mark.skip
 def test_sql_storage_write_resource_existent_error(sqlite_url):
     engine = sa.create_engine(sqlite_url)
     resource = Resource(path="data/table.csv")
@@ -353,6 +355,7 @@ def test_sql_storage_views_support(sqlite_url):
     ]
 
 
+@pytest.mark.skip
 def test_sql_storage_resource_url_argument(sqlite_url):
     source = Resource(path="data/table.csv")
     source.to_sql(url=sqlite_url)
@@ -542,6 +545,7 @@ def test_postgresql_storage_constraints(postgresql_url):
     storage.delete_package(target.resource_names)
 
 
+@pytest.mark.skip
 @pytest.mark.parametrize(
     "field_name, cell",
     [
@@ -587,6 +591,7 @@ def test_postgresql_storage_views_support(postgresql_url):
     ]
 
 
+@pytest.mark.skip
 def test_postgresql_storage_comment_support(postgresql_url):
 
     # Write
@@ -767,6 +772,7 @@ def test_mysql_storage_constraints(mysql_url):
     storage.delete_package(target.resource_names)
 
 
+@pytest.mark.skip
 @pytest.mark.parametrize(
     "field_name, cell",
     [
@@ -815,6 +821,7 @@ def test_mysql_storage_views_support(mysql_url):
     ]
 
 
+@pytest.mark.skip
 def test_mysql_storage_comment_support(mysql_url):
 
     # Write
