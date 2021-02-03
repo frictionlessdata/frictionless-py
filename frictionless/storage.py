@@ -1,6 +1,8 @@
 # NOTE:
 # We might need to reconsider the whole storage concept as it doesn't play nice
 # with the well-established and working good loader/parser concepts
+# At least, we need to reverse BigQuery/CKAN/SQL logic where the storage
+# depends on the parser although it should be the opposite (rework it)
 
 
 class Storage:

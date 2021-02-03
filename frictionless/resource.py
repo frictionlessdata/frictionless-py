@@ -1091,12 +1091,23 @@ class Resource(Metadata):
             **options,
         )
 
+    def to_inline(self, *, dialect=None):
+        """Helper to export resource as an inline data"""
+        target = self.write(Resource(format="inline", dialect=dialect))
+        return target.data
+
+    def to_pandas(self, *, dialect=None):
+        """Helper to export resource as an Pandas dataframe"""
+        target = self.write(Resource(format="pandas", dialect=dialect))
+        return target.data
+
     @staticmethod
-    def from_petl(storage, *, view, **options):
-        """Create a resource from PETL container"""
+    def from_petl(view, **options):
+        """Create a resource from PETL view"""
         return Resource(data=view, **options)
 
     def to_petl(self, *, normalize=False):
+        """Export resource as a PETL view"""
         resource = self
 
         # Define view
