@@ -589,13 +589,14 @@ def test_package_to_zip_resolve_memory(tmpdir):
     ]
 
 
+@pytest.mark.skip
 @pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_package_to_zip_resolve_memory_sql(tmpdir, database_url):
 
     # Write
     target = os.path.join(tmpdir, "package.zip")
-    resource = Resource.from_sql(name="table", url=database_url)
+    resource = Resource(database_url, dialect={"table": "table"})
     package = Package(resources=[resource])
     package.to_zip(target, resolve=["memory"])
 

@@ -11,10 +11,10 @@ from frictionless.plugins.excel import ExcelDialect
 from frictionless.plugins.json import JsonDialect
 
 
-# General
-
-
 BASE_URL = "https://raw.githubusercontent.com/frictionlessdata/datapackage-py/master/%s"
+
+
+# General
 
 
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
@@ -2159,23 +2159,31 @@ def test_resource_read_rows():
 
 
 def test_resource_write(tmpdir):
-    path1 = "data/table.csv"
-    path2 = str(tmpdir.join("table.csv"))
-    source = Resource(path=path1)
-    target = Resource(path=path2)
+    source = Resource("data/table.csv")
+    target = Resource(str(tmpdir.join("table.csv")))
     source.write(target)
-    assert target.read_rows() == [
-        {"id": 1, "name": "english"},
-        {"id": 2, "name": "中国人"},
-    ]
-    assert target.header == ["id", "name"]
+    with target:
+        assert target.header == ["id", "name"]
+        assert target.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
+
+
+def test_resource_write_to_path(tmpdir):
+    source = Resource("data/table.csv")
+    target = source.write(str(tmpdir.join("table.csv")))
+    with target:
+        assert target.header == ["id", "name"]
+        assert target.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 def test_resource_write_format_error_bad_format(tmpdir):
-    path1 = "data/resource.csv"
-    path2 = str(tmpdir.join("resource.bad"))
-    source = Resource(path=path1)
-    target = Resource(path=path2)
+    source = Resource("data/resource.csv")
+    target = Resource(str(tmpdir.join("resource.bad")))
     with pytest.raises(FrictionlessException) as excinfo:
         source.write(target)
     error = excinfo.value.error
@@ -2193,25 +2201,17 @@ def test_resource_to_copy():
 
 
 def test_resource_to_json(tmpdir):
-
-    # Write
     target = os.path.join(tmpdir, "resource.json")
     resource = Resource("data/resource.json")
     resource.to_json(target)
-
-    # Read
     with open(target, encoding="utf-8") as file:
         assert resource == json.load(file)
 
 
 def test_resource_to_yaml(tmpdir):
-
-    # Write
     target = os.path.join(tmpdir, "resource.yaml")
     resource = Resource("data/resource.json")
     resource.to_yaml(target)
-
-    # Read
     with open(target, encoding="utf-8") as file:
         assert resource == yaml.safe_load(file)
 

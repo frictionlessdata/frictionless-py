@@ -78,4 +78,4 @@ class TextLoader(Loader):
     def write_byte_stream_save(self, byte_stream):
         bytes = byte_stream.read()
         text = bytes.decode(self.resource.encoding)
-        return text
+        self.resource.path = text

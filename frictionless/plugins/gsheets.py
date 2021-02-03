@@ -118,7 +118,7 @@ class GsheetsParser(Parser):
 
     # Write
 
-    def write_row_stream_save(self, read_row_stream):
+    def write_row_stream(self, source):
         pygsheets = helpers.import_from_plugin("pygsheets", plugin="gsheets")
         fullpath = self.resource.fullpath
         match = re.search(r".*/d/(?P<key>[^/]+)/.*?(?:gid=(?P<gid>\d+))?$", fullpath)
@@ -131,9 +131,10 @@ class GsheetsParser(Parser):
         sh = gc.open_by_key(key)
         wks = sh.worksheet_by_id(gid) if gid else sh[0]
         data = []
-        for row in read_row_stream():
-            if row.row_number == 1:
-                data.append(row.field_names)
-            data.append(row.to_list())
+        with source:
+            for row in source.row_stream:
+                if row.row_number == 1:
+                    data.append(row.field_names)
+                data.append(row.to_list())
         wks.update_values("A1", data)
         return fullpath

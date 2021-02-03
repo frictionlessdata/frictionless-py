@@ -1,18 +1,11 @@
 import isodate
 import datetime
-import collections
-from functools import partial
-from ..exception import FrictionlessException
-from ..resource import Resource
 from ..dialect import Dialect
-from ..package import Package
-from ..storage import Storage
 from ..plugin import Plugin
 from ..parser import Parser
 from ..schema import Schema
 from ..field import Field
 from .. import helpers
-from .. import errors
 
 
 # NOTE:
@@ -46,10 +39,6 @@ class PandasPlugin(Plugin):
     def create_parser(self, resource):
         if resource.format == "pandas":
             return PandasParser(resource)
-
-    def create_storage(self, name, **options):
-        if name == "pandas":
-            return PandasStorage(**options)
 
 
 # Dialect
@@ -92,74 +81,33 @@ class PandasParser(Parser):
     # Read
 
     def read_list_stream_create(self):
-        storage = PandasStorage(dataframes={self.resource.name: self.resource.data})
-        resource = storage.read_resource(self.resource.name)
-        self.resource.schema = resource.schema
-        with resource:
-            yield from resource.list_stream
+        np = helpers.import_from_plugin("numpy", plugin="pandas")
+        dataframe = self.resource.data
 
-    # Write
+        # Schema
+        schema = self.__read_convert_schema()
+        if not self.resource.schema:
+            self.resource.schema = schema
 
-    def write_row_stream_save(self, read_row_stream):
-        schema = self.resource.schema
-        storage = PandasStorage()
-        resource = Resource(name=self.resource.name, data=read_row_stream, schema=schema)
-        storage.write_resource(resource)
-        return storage.dataframe
+        # Lists
+        yield schema.field_names
+        for pk, item in dataframe.iterrows():
+            cells = []
+            for field in schema.fields:
+                if field.name in schema.primary_key:
+                    pk = pk if isinstance(pk, tuple) else [pk]
+                    value = pk[schema.primary_key.index(field.name)]
+                else:
+                    value = item[field.name]
+                if field.type == "number" and np.isnan(value):
+                    value = None
+                elif field.type == "datetime":
+                    value = value.to_pydatetime()
+                cells.append(value)
+            yield cells
 
-
-# Storage
-
-
-class PandasStorage(Storage):
-    """Pandas storage implementation
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless.plugins.pandas import PandasStorage`
-
-    Parameters:
-        dataframes? (dict): dictionary of Pandas dataframes
-
-    """
-
-    def __init__(self, *, dataframes=None):
-        self.__dataframes = dataframes or collections.OrderedDict()
-
-    def __iter__(self):
-        return iter(sorted(self.__dataframes.keys()))
-
-    @property
-    def dataframes(self):
-        return self.__dataframes
-
-    @property
-    def dataframe(self):
-        if len(self.__dataframes) != 1:
-            note = 'The "storage.dataframe" is available for single dataframe storages'
-            raise FrictionlessException(errors.StorageError(note=note))
-        return list(self.__dataframes.values())[0]
-
-    # Read
-
-    def read_resource(self, name):
-        dataframe = self.__read_pandas_dataframe(name)
-        if dataframe is None:
-            note = f'Resource "{name}" does not exist'
-            raise FrictionlessException(errors.StorageError(note=note))
-        schema = self.__read_convert_schema(dataframe)
-        data = partial(self.__read_convert_data, name, schema)
-        resource = Resource(name=name, schema=schema, data=data)
-        return resource
-
-    def read_package(self):
-        package = Package()
-        for name in self:
-            resource = self.read_resource(name)
-            package.resources.append(resource)
-        return package
-
-    def __read_convert_schema(self, dataframe):
+    def __read_convert_schema(self):
+        dataframe = self.resource.data
         schema = Schema()
 
         # Primary key
@@ -181,25 +129,6 @@ class PandasStorage(Storage):
 
         # Return schema
         return schema
-
-    def __read_convert_data(self, name, schema):
-        np = helpers.import_from_plugin("numpy", plugin="pandas")
-        dataframe = self.__read_pandas_dataframe(name)
-        yield schema.field_names
-        for pk, item in dataframe.iterrows():
-            cells = []
-            for field in schema.fields:
-                if field.name in schema.primary_key:
-                    pk = pk if isinstance(pk, tuple) else [pk]
-                    value = pk[schema.primary_key.index(field.name)]
-                else:
-                    value = item[field.name]
-                if field.type == "number" and np.isnan(value):
-                    value = None
-                elif field.type == "datetime":
-                    value = value.to_pydatetime()
-                cells.append(value)
-            yield cells
 
     def __read_convert_type(self, dtype, sample=None):
         pdc = helpers.import_from_plugin("pandas.core.dtypes.api", plugin="pandas")
@@ -232,33 +161,9 @@ class PandasStorage(Storage):
         # Default
         return "string"
 
-    def __read_pandas_dataframe(self, name):
-        return self.__dataframes.get(name)
-
     # Write
 
-    def write_resource(self, resource, *, force=False):
-        package = Package(resources=[resource])
-        return self.write_package(package, force=force)
-
-    def write_package(self, package, *, force=False):
-        existent_names = list(self)
-
-        # Check existent
-        for resource in package.resources:
-            if resource.name in existent_names:
-                if not force:
-                    note = f'Table "{resource.name}" already exists'
-                    raise FrictionlessException(errors.StorageError(note=note))
-                self.delete_resource(resource.name)
-
-        # Write resources
-        for resource in package.resources:
-            if not resource.schema:
-                resource.infer()
-            self.__dataframes[resource.name] = self.__write_convert_resource(resource)
-
-    def __write_convert_resource(self, resource):
+    def write_row_stream(self, source):
         np = helpers.import_from_plugin("numpy", plugin="pandas")
         pd = helpers.import_from_plugin("pandas", plugin="pandas")
 
@@ -266,11 +171,11 @@ class PandasStorage(Storage):
         data_rows = []
         index_rows = []
         fixed_types = {}
-        with resource:
-            for row in resource.row_stream:
+        with source:
+            for row in source.row_stream:
                 data_values = []
                 index_values = []
-                for field in resource.schema.fields:
+                for field in source.schema.fields:
                     value = row[field.name]
                     if isinstance(value, float) and np.isnan(value):
                         value = None
@@ -280,45 +185,44 @@ class PandasStorage(Storage):
                         value = np.NaN
                     if field.type in ["datetime", "time"] and value is not None:
                         value = value.replace(tzinfo=None)
-                    if field.name in resource.schema.primary_key:
+                    if field.name in source.schema.primary_key:
                         index_values.append(value)
                     else:
                         data_values.append(value)
-                if len(resource.schema.primary_key) == 1:
+                if len(source.schema.primary_key) == 1:
                     index_rows.append(index_values[0])
-                elif len(resource.schema.primary_key) > 1:
+                elif len(source.schema.primary_key) > 1:
                     index_rows.append(tuple(index_values))
                 data_rows.append(tuple(data_values))
 
         # Create index
         index = None
-        if resource.schema.primary_key:
-            if len(resource.schema.primary_key) == 1:
+        if source.schema.primary_key:
+            if len(source.schema.primary_key) == 1:
                 index_class = pd.Index
-                index_field = resource.schema.get_field(resource.schema.primary_key[0])
+                index_field = source.schema.get_field(source.schema.primary_key[0])
                 index_dtype = self.__write_convert_type(index_field.type)
                 if field.type in ["datetime", "date"]:
                     index_class = pd.DatetimeIndex
                 index = index_class(index_rows, name=index_field.name, dtype=index_dtype)
-            elif len(resource.schema.primary_key) > 1:
+            elif len(source.schema.primary_key) > 1:
                 index = pd.MultiIndex.from_tuples(
-                    index_rows, names=resource.schema.primary_key
+                    index_rows, names=source.schema.primary_key
                 )
 
         # Create dtypes/columns
         dtypes = []
         columns = []
-        for field in resource.schema.fields:
-            if field.name not in resource.schema.primary_key:
+        for field in source.schema.fields:
+            if field.name not in source.schema.primary_key:
                 dtype = self.__write_convert_type(fixed_types.get(field.name, field.type))
                 dtypes.append((field.name, dtype))
                 columns.append(field.name)
 
-        # Create dataframe
+        # Create/set dataframe
         array = np.array(data_rows, dtype=dtypes)
         dataframe = pd.DataFrame(array, index=index, columns=columns)
-
-        return dataframe
+        self.resource.data = dataframe
 
     def __write_convert_type(self, type=None):
         np = helpers.import_from_plugin("numpy", plugin="pandas")
@@ -340,24 +244,3 @@ class PandasStorage(Storage):
 
         # Return mapping
         return mapping
-
-    # Delete
-
-    def delete_resource(self, name, *, ignore=False):
-        return self.delete_package([name], ignore=ignore)
-
-    def delete_package(self, names, *, ignore=False):
-        existent_names = list(self)
-
-        # Remove dataframes
-        for name in names:
-
-            # Check existent
-            if name not in existent_names:
-                if not ignore:
-                    note = f'Resource "{name}" does not exist'
-                    raise FrictionlessException(errors.StorageError(note=note))
-                return
-
-            # Remove resource
-            self.__dataframes.pop(name)

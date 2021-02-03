@@ -5,7 +5,7 @@ from frictionless.plugins.csv import CsvDialect
 BASE_URL = "https://raw.githubusercontent.com/okfn/tabulator-py/master/%s"
 
 
-# Read
+# Parser
 
 
 def test_csv_parser():
@@ -234,7 +234,7 @@ def test_csv_parser_quotechar_is_empty_string():
         ]
 
 
-def test_table_format_tsv():
+def test_csv_parser_format_tsv():
     detector = Detector(schema_patch={"missingValues": ["\\N"]})
     with Resource("data/table.tsv", detector=detector) as resource:
         assert resource.dialect == {"delimiter": "\t"}
@@ -244,9 +244,6 @@ def test_table_format_tsv():
             {"id": 2, "name": "中国人"},
             {"id": 3, "name": None},
         ]
-
-
-# Write
 
 
 def test_csv_parser_write(tmpdir):
@@ -287,7 +284,7 @@ def test_csv_parser_write_inline_source(tmpdir):
 
 
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-def test_table_tsv_write(tmpdir):
+def test_csv_parser_tsv_write(tmpdir):
     source = Resource("data/table.csv")
     target = Resource(str(tmpdir.join("table.tsv")))
     source.write(target)

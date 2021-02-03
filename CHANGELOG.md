@@ -2,6 +2,17 @@
 
 Here described only the breaking and most significant changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/frictionless-py/commits/master).
 
+## v4.0.0a13
+
+- Improved resource/package import/export (#655) (BREAKING)
+    - Reworked `parser.write_row_stream` API
+    - Reworked `resource.from/to` API
+    - Reworked `package.from/to` API
+    - Reworked `Storage` API
+    - Reworked `system.create_storage` API
+    - Merged `PandasStorage` into `PandasParser`
+    - Merged `SpssStorage` into `SpssParser`
+
 ## v4.0.0a12
 
 - Improved transformation steps (#650) (BREAKING)

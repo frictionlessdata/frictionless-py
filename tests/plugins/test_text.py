@@ -1,7 +1,7 @@
 from frictionless import Resource
 
 
-# Read
+# Loader
 
 
 def test_text_loader():
@@ -24,11 +24,7 @@ def test_text_loader_format_in_path():
         ]
 
 
-# Write
-
-
 def test_text_loader_write():
-    source = "data/table.csv"
-    with Resource(source) as resource:
-        text = resource.write(Resource(scheme="text", format="csv"))
-    assert text == "id,name\r\n1,english\r\n2,中国人\r\n"
+    source = Resource("data/table.csv")
+    target = source.write(Resource(scheme="text", format="csv"))
+    assert target.path == "id,name\r\n1,english\r\n2,中国人\r\n"

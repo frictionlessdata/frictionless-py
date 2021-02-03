@@ -50,9 +50,9 @@ class BigqueryPlugin(Plugin):
         if resource.format == "bigquery":
             return BigqueryParser(resource)
 
-    def create_storage(self, name, **options):
+    def create_storage(self, name, source, **options):
         if name == "bigquery":
-            return BigqueryStorage(**options)
+            return BigqueryStorage(source, **options)
 
 
 # Dialect
@@ -75,9 +75,18 @@ class BigqueryDialect(Dialect):
         FrictionlessException: raise any error that occurs during the process
     """
 
-    def __init__(self, descriptor=None, *, project=None, dataset=None, table=None):
+    def __init__(
+        self,
+        descriptor=None,
+        *,
+        project=None,
+        dataset=None,
+        prefix=None,
+        table=None,
+    ):
         self.setinitial("project", project)
         self.setinitial("dataset", dataset)
+        self.setinitial("prefix", prefix)
         self.setinitial("table", table)
         super().__init__(descriptor)
 
@@ -88,6 +97,10 @@ class BigqueryDialect(Dialect):
     @Metadata.property
     def dataset(self):
         return self.get("dataset")
+
+    @Metadata.property
+    def prefix(self):
+        return self.get("prefix") or ""
 
     @Metadata.property
     def table(self):
@@ -102,6 +115,7 @@ class BigqueryDialect(Dialect):
         "properties": {
             "project": {"type": "string"},
             "dataset": {"type": "string"},
+            "prefix": {"type": "string"},
             "table": {"type": "string"},
         },
     }
@@ -127,11 +141,7 @@ class BigqueryParser(Parser):
 
     def read_list_stream_create(self):
         dialect = self.resource.dialect
-        storage = BigqueryStorage(
-            service=self.resource.data,
-            project=dialect.project,
-            dataset=dialect.dataset,
-        )
+        storage = BigqueryStorage(self.resource.data, dialect=dialect)
         resource = storage.read_resource(dialect.table)
         self.resource.schema = resource.schema
         with resource:
@@ -139,17 +149,12 @@ class BigqueryParser(Parser):
 
     # Write
 
-    def write_row_stream_save(self, read_row_stream):
+    def write_row_stream(self, source):
         dialect = self.resource.dialect
-        schema = self.resource.schema
-        storage = BigqueryStorage(
-            service=self.resource.data,
-            project=dialect.project,
-            dataset=dialect.dataset,
-        )
-        resource = Resource(name=dialect.table, data=read_row_stream, schema=schema)
-        storage.write_resource(resource, force=True)
-        return self.resource.data
+        storage = BigqueryStorage(self.resource.data, dialect=dialect)
+        # NOTE: this approach is questionable
+        source.name = dialect.table
+        storage.write_resource(source)
 
 
 # Storage
@@ -170,11 +175,12 @@ class BigqueryStorage(Storage):
 
     """
 
-    def __init__(self, service, project, dataset, prefix=""):
-        self.__service = service
-        self.__project = project
-        self.__dataset = dataset
-        self.__prefix = prefix
+    def __init__(self, source, *, dialect=None):
+        dialect = dialect or BigqueryDialect()
+        self.__service = source
+        self.__project = dialect.project
+        self.__dataset = dialect.dataset
+        self.__prefix = dialect.prefix
 
     def __iter__(self):
         names = []
@@ -299,7 +305,7 @@ class BigqueryStorage(Storage):
 
     def write_resource(self, resource, *, force=False):
         package = Package(resources=[resource])
-        return self.write_package(package, force=force)
+        self.write_package(package, force=force)
 
     def write_package(self, package, *, force=False):
         existent_names = list(self)

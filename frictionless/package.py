@@ -468,8 +468,97 @@ class Package(Metadata):
         )
 
     @staticmethod
+    def from_bigquery(source, *, dialect=None):
+        """Import package from Bigquery
+
+        Parameters:
+            source (string): BigQuery `Service` object
+            dialect (dict): BigQuery dialect
+
+        Returns:
+            Package: package
+        """
+        storage = system.create_storage("bigquery", source, dialect=dialect)
+        return storage.read_package()
+
+    def to_bigquery(self, target, *, dialect=None):
+        """Export package to Bigquery
+
+        Parameters:
+            target (string): BigQuery `Service` object
+            dialect (dict): BigQuery dialect
+
+        Returns:
+            BigqueryStorage: storage
+        """
+        storage = system.create_storage("bigquery", target, dialect=dialect)
+        storage.write_package(self.to_copy(), force=True)
+        return storage
+
+    @staticmethod
+    def from_ckan(source, *, dialect=None):
+        """Import package from CKAN
+
+        Parameters:
+            source (string): CKAN instance url e.g. "https://demo.ckan.org"
+            dialect (dict): CKAN dialect
+
+        Returns:
+            Package: package
+        """
+        storage = system.create_storage("ckan", source, dialect=dialect)
+        return storage.read_package()
+
+    def to_ckan(self, target, *, dialect=None):
+        """Export package to CKAN
+
+        Parameters:
+            target (string): CKAN instance url e.g. "https://demo.ckan.org"
+            dialect (dict): CKAN dialect
+
+        Returns:
+            CkanStorage: storage
+        """
+        storage = system.create_storage("ckan", target, dialect=dialect)
+        storage.write_package(self.to_copy(), force=True)
+        return storage
+
+    @staticmethod
+    def from_sql(source, *, dialect=None):
+        """Import package from SQL
+
+        Parameters:
+            source (any): SQL connection string of engine
+            dialect (dict): SQL dialect
+
+        Returns:
+            Package: package
+        """
+        storage = system.create_storage("sql", source, dialect=dialect)
+        return storage.read_package()
+
+    def to_sql(self, target, *, dialect=None):
+        """Export package to SQL
+
+        Parameters:
+            target (any): SQL connection string of engine
+            dialect (dict): SQL dialect
+
+        Returns:
+            SqlStorage: storage
+        """
+        storage = system.create_storage("sql", target, dialect=dialect)
+        storage.write_package(self.to_copy(), force=True)
+        return storage
+
+    @staticmethod
     def from_zip(path, **options):
-        """Create a package from ZIP"""
+        """Create a package from ZIP
+
+        Parameters:
+            path(str): file path
+            **options(dict): resouce options
+        """
         return Package(descriptor=path, **options)
 
     def to_zip(self, path, *, resolve=[], encoder_class=None):
@@ -549,171 +638,6 @@ class Package(Metadata):
         except Exception as exception:
             error = errors.PackageError(note=str(exception))
             raise FrictionlessException(error) from exception
-
-    @staticmethod
-    def from_storage(storage):
-        """Import package from storage
-
-        Parameters:
-            storage (Storage): storage instance
-        """
-        return storage.read_package()
-
-    def to_storage(self, storage, *, force=False):
-        """Export package to storage
-
-        Parameters:
-            storage (Storage): storage instance
-            force (bool): overwrite existent
-        """
-        storage.write_package(self.to_copy(), force=force)
-        return storage
-
-    @staticmethod
-    def from_bigquery(*, service, project, dataset, prefix=""):
-        """Import package from Bigquery
-
-        Parameters:
-            service (object): BigQuery `Service` object
-            project (str): BigQuery project name
-            dataset (str): BigQuery dataset name
-            prefix? (str): prefix for all names
-        """
-        return Package.from_storage(
-            system.create_storage(
-                "bigquery",
-                service=service,
-                project=project,
-                dataset=dataset,
-                prefix=prefix,
-            ),
-        )
-
-    def to_bigquery(self, *, service, project, dataset, prefix="", force=False):
-        """Export package to Bigquery
-
-        Parameters:
-            service (object): BigQuery `Service` object
-            project (str): BigQuery project name
-            dataset (str): BigQuery dataset name
-            prefix? (str): prefix for all names
-            force (bool): overwrite existent
-        """
-        return self.to_storage(
-            system.create_storage(
-                "bigquery",
-                service=service,
-                project=project,
-                dataset=dataset,
-                prefix=prefix,
-            ),
-            force=force,
-        )
-
-    @staticmethod
-    def from_ckan(*, url, dataset, apikey=None):
-        """Import package from CKAN
-
-        Parameters:
-            url (string): CKAN instance url e.g. "https://demo.ckan.org"
-            dataset (string): dataset id in CKAN e.g. "my-dataset"
-            apikey? (str): API key for CKAN e.g. "51912f57-a657-4caa-b2a7-0a1c16821f4b"
-        """
-        return Package.from_storage(
-            system.create_storage(
-                "ckan",
-                url=url,
-                dataset=dataset,
-                apikey=apikey,
-            )
-        )
-
-    def to_ckan(self, *, url, dataset, apikey=None, force=False):
-        """Export package to CKAN
-
-        Parameters:
-            url (string): CKAN instance url e.g. "https://demo.ckan.org"
-            dataset (string): dataset id in CKAN e.g. "my-dataset"
-            apikey? (str): API key for CKAN e.g. "51912f57-a657-4caa-b2a7-0a1c16821f4b"
-            force (bool): (optional) overwrite existing data
-        """
-        return self.to_storage(
-            system.create_storage(
-                "ckan",
-                url=url,
-                dataset=dataset,
-                apikey=apikey,
-            ),
-            force=force,
-        )
-
-    @staticmethod
-    def from_pandas(*, dataframes):
-        """Import package from Pandas dataframes
-
-        Parameters:
-            dataframes (dict): mapping of Pandas dataframes
-        """
-        return Package.from_storage(
-            system.create_storage("pandas", dataframes=dataframes)
-        )
-
-    def to_pandas(self):
-        """Export package to Pandas dataframes"""
-        return self.to_storage(system.create_storage("pandas"))
-
-    @staticmethod
-    def from_spss(*, basepath):
-        """Import package from SPSS directory
-
-        Parameters:
-            basepath (str): SPSS dir path
-        """
-        return Package.from_storage(system.create_storage("spss", basepath=basepath))
-
-    def to_spss(self, *, basepath, force=False):
-        """Export package to SPSS directory
-
-        Parameters:
-            basepath (str): SPSS dir path
-            force (bool): overwrite existent
-        """
-        return self.to_storage(
-            system.create_storage("spss", basepath=basepath), force=force
-        )
-
-    @staticmethod
-    def from_sql(*, url=None, engine=None, prefix="", namespace=None):
-        """Import package from SQL
-
-        Parameters:
-            url? (string): SQL connection string
-            engine? (object): `sqlalchemy` engine
-            prefix? (str): prefix for all tables
-            namespace? (str): SQL scheme
-        """
-        return Package.from_storage(
-            system.create_storage(
-                "sql", url=url, engine=engine, prefix=prefix, namespace=namespace
-            )
-        )
-
-    def to_sql(self, *, url=None, engine=None, prefix="", namespace=None, force=False):
-        """Export package to SQL
-
-        Parameters:
-            url? (string): SQL connection string
-            engine? (object): `sqlalchemy` engine
-            prefix? (str): prefix for all tables
-            namespace? (str): SQL scheme
-            force (bool): overwrite existent
-        """
-        return self.to_storage(
-            system.create_storage(
-                "sql", url=url, engine=engine, prefix=prefix, namespace=namespace
-            ),
-            force=force,
-        )
 
     # Metadata
 

@@ -702,16 +702,10 @@ class Resource(Metadata):
         Parameters:
             stats? (bool): stream file completely and infer stats
         """
-        current_stats = self.get("stats")
         with helpers.ensure_open(self):
-            stream = self.__row_stream if self.tabular else self.__text_stream
             if stats:
+                stream = self.row_stream or self.byte_stream
                 helpers.pass_through(stream)
-            if not stats:
-                if current_stats:
-                    self["stats"] = current_stats
-                else:
-                    self.pop("stats")
 
     # Open/Close
 
@@ -1067,21 +1061,18 @@ class Resource(Metadata):
 
     # Write
 
-    def write(self, target):
+    def write(self, target=None, **options):
         """Write this resource to the target resource
 
         Parameters:
-            target (Resource): target Resource
+            target (any|Resource): target or target resource instance
+            **options (dict): Resource constructor options
         """
+        native = isinstance(target, Resource)
+        target = target.to_copy() if native else Resource(target, **options)
         parser = system.create_parser(target)
-        read_row_stream = self.__write_row_stream_create
-        result = parser.write_row_stream(read_row_stream)
-        return result
-
-    def __write_row_stream_create(self):
-        if self.closed or self.__row_position:
-            self.open()
-        return self.row_stream
+        parser.write_row_stream(self.to_copy())
+        return target
 
     # Import/Export
 
@@ -1100,12 +1091,23 @@ class Resource(Metadata):
             **options,
         )
 
+    def to_inline(self, *, dialect=None):
+        """Helper to export resource as an inline data"""
+        target = self.write(Resource(format="inline", dialect=dialect))
+        return target.data
+
+    def to_pandas(self, *, dialect=None):
+        """Helper to export resource as an Pandas dataframe"""
+        target = self.write(Resource(format="pandas", dialect=dialect))
+        return target.data
+
     @staticmethod
-    def from_petl(storage, *, view, **options):
-        """Create a resource from PETL container"""
+    def from_petl(view, **options):
+        """Create a resource from PETL view"""
         return Resource(data=view, **options)
 
     def to_petl(self, *, normalize=False):
+        """Export resource as a PETL view"""
         resource = self
 
         # Define view
@@ -1123,188 +1125,6 @@ class Resource(Metadata):
                     yield from (row.cells for row in resource.row_stream)
 
         return ResourceView()
-
-    @staticmethod
-    def from_storage(storage, *, name):
-        """Import resource from storage
-
-        Parameters:
-            storage (Storage): storage instance
-            name (str): resource name
-        """
-        return storage.read_resource(name)
-
-    def to_storage(self, storage, *, force=False):
-        """Export resource to storage
-
-        Parameters:
-            storage (Storage): storage instance
-            force (bool): overwrite existent
-        """
-        storage.write_resource(self.to_copy(), force=force)
-        return storage
-
-    @staticmethod
-    def from_bigquery(*, name, service, project, dataset, prefix=""):
-        """Import resource from BigQuery table
-
-        Parameters:
-            name (str): resource name
-            service (object): BigQuery `Service` object
-            project (str): BigQuery project name
-            dataset (str): BigQuery dataset name
-            prefix? (str): prefix for all names
-        """
-        return Resource.from_storage(
-            system.create_storage(
-                "bigquery",
-                service=service,
-                project=project,
-                dataset=dataset,
-                prefix=prefix,
-            ),
-            name=name,
-        )
-
-    def to_bigquery(self, *, service, project, dataset, prefix="", force=False):
-        """Export resource to Bigquery table
-
-        Parameters:
-            service (object): BigQuery `Service` object
-            project (str): BigQuery project name
-            dataset (str): BigQuery dataset name
-            prefix? (str): prefix for all names
-            force (bool): overwrite existent
-        """
-        return self.to_storage(
-            system.create_storage(
-                "bigquery",
-                service=service,
-                project=project,
-                dataset=dataset,
-                prefix=prefix,
-            ),
-            force=force,
-        )
-
-    @staticmethod
-    def from_ckan(*, name, url, dataset, apikey=None):
-        """Import resource from CKAN
-
-        Parameters:
-            name (string): resource name
-            url (string): CKAN instance url e.g. "https://demo.ckan.org"
-            dataset (string): dataset id in CKAN e.g. "my-dataset"
-            apikey? (str): API key for CKAN e.g. "51912f57-a657-4caa-b2a7-0a1c16821f4b"
-        """
-        return Resource.from_storage(
-            system.create_storage(
-                "ckan",
-                url=url,
-                dataset=dataset,
-                apikey=apikey,
-            ),
-            name=name,
-        )
-
-    def to_ckan(self, *, url, dataset, apikey=None, force=False):
-        """Export resource to CKAN
-
-        Parameters:
-            url (string): CKAN instance url e.g. "https://demo.ckan.org"
-            dataset (string): dataset id in CKAN e.g. "my-dataset"
-            apikey? (str): API key for CKAN e.g. "51912f57-a657-4caa-b2a7-0a1c16821f4b"
-            force (bool): (optional) overwrite existing data
-        """
-        return self.to_storage(
-            system.create_storage(
-                "ckan",
-                url=url,
-                dataset=dataset,
-                apikey=apikey,
-            ),
-            force=force,
-        )
-
-    @staticmethod
-    def from_pandas(dataframe):
-        """Import resource from Pandas dataframe
-
-        Parameters:
-            dataframe (str): padas dataframe
-        """
-        return Resource.from_storage(
-            system.create_storage("pandas", dataframes={"name": dataframe}),
-            name="name",
-        )
-
-    def to_pandas(self):
-        """Export resource to Pandas dataframe
-
-        Parameters:
-            dataframes (dict): pandas dataframes
-            force (bool): overwrite existent
-        """
-        return self.to_storage(system.create_storage("pandas"))
-
-    @staticmethod
-    def from_spss(*, name, basepath):
-        """Import resource from SPSS file
-
-        Parameters:
-            name (str): resource name
-            basepath (str): SPSS dir path
-        """
-        return Resource.from_storage(
-            system.create_storage("spss", basepath=basepath),
-            name=name,
-        )
-
-    def to_spss(self, *, basepath, force=False):
-        """Export resource to SPSS file
-
-        Parameters:
-            basepath (str): SPSS dir path
-            force (bool): overwrite existent
-        """
-        return self.to_storage(
-            system.create_storage("spss", basepath=basepath), force=force
-        )
-
-    @staticmethod
-    def from_sql(*, name, url=None, engine=None, prefix="", namespace=None):
-        """Import resource from SQL table
-
-        Parameters:
-            name (str): resource name
-            url? (string): SQL connection string
-            engine? (object): `sqlalchemy` engine
-            prefix? (str): prefix for all tables
-            namespace? (str): SQL scheme
-        """
-        return Resource.from_storage(
-            system.create_storage(
-                "sql", url=url, engine=engine, prefix=prefix, namespace=namespace
-            ),
-            name=name,
-        )
-
-    def to_sql(self, *, url=None, engine=None, prefix="", namespace=None, force=False):
-        """Export resource to SQL table
-
-        Parameters:
-            url? (string): SQL connection string
-            engine? (object): `sqlalchemy` engine
-            prefix? (str): prefix for all tables
-            namespace? (str): SQL scheme
-            force? (bool): overwrite existent
-        """
-        return self.to_storage(
-            system.create_storage(
-                "sql", url=url, engine=engine, prefix=prefix, namespace=namespace
-            ),
-            force=force,
-        )
 
     # Metadata
 

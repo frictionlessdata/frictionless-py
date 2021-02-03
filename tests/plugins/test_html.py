@@ -29,8 +29,7 @@ def test_html_parser(source, selector):
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_html_parser_write(tmpdir):
     source = Resource("data/table.csv")
-    target = Resource(str(tmpdir.join("table.html")))
-    source.write(target)
+    target = source.write(str(tmpdir.join("table.html")))
     with target:
         assert target.header == ["id", "name"]
         assert target.read_rows() == [

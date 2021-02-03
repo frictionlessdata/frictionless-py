@@ -3,7 +3,7 @@ from frictionless import Resource
 from frictionless.plugins.inline import InlineDialect
 
 
-# Read
+# Parser
 
 
 def test_inline_parser():
@@ -91,26 +91,20 @@ def test_inline_parser_from_ordered_dict():
         assert rows[1].cells == ["中国人", "2"]
 
 
-# Write
-
-
-# TODO: should return with resource.data?
 def test_inline_parser_write(tmpdir):
     source = Resource("data/table.csv")
-    with Resource(source) as resource:
-        resource.write(Resource(format="inline")) == [
-            ["id", "name"],
-            [1, "english"],
-            [2, "中国人"],
-        ]
+    target = source.write(format="inline")
+    assert target.data == [
+        ["id", "name"],
+        [1, "english"],
+        [2, "中国人"],
+    ]
 
 
-# TODO: should return with resource.data?
 def test_inline_parser_write_keyed(tmpdir):
-    source = "data/table.csv"
-    dialect = InlineDialect(keyed=True)
-    with Resource(source) as resource:
-        resource.write(Resource(format="inline", dialect=dialect)) == [
-            {"id": 1, "name": "english"},
-            {"id": 2, "name": "中国人"},
-        ]
+    source = Resource("data/table.csv")
+    target = source.write(format="inline", dialect=InlineDialect(keyed=True))
+    assert target.data == [
+        {"id": 1, "name": "english"},
+        {"id": 2, "name": "中国人"},
+    ]

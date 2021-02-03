@@ -237,7 +237,7 @@ class CsvParser(Parser):
 
     # Write
 
-    def write_row_stream_save(self, read_row_stream):
+    def write_row_stream(self, source):
         options = {}
         for name in vars(self.resource.dialect.to_python()):
             value = getattr(self.resource.dialect, name, None)
@@ -247,13 +247,13 @@ class CsvParser(Parser):
             "wt", delete=False, encoding=self.resource.encoding, newline=""
         ) as file:
             writer = csv.writer(file, **options)
-            for row in read_row_stream():
-                if row.row_number == 1:
-                    writer.writerow(row.field_names)
-                writer.writerow(row.to_list(types=self.supported_types))
+            with source:
+                for row in source.row_stream:
+                    if row.row_number == 1:
+                        writer.writerow(row.field_names)
+                    writer.writerow(row.to_list(types=self.supported_types))
         loader = system.create_loader(self.resource)
-        result = loader.write_byte_stream(file.name)
-        return result
+        loader.write_byte_stream(file.name)
 
 
 # Internal

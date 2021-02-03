@@ -2,7 +2,7 @@ import pytest
 from frictionless import Resource
 
 
-# Read
+# Loader
 
 
 def test_filelike_loader():
@@ -24,9 +24,6 @@ def test_filelike_loader_without_open():
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
         ]
-
-
-# Write
 
 
 @pytest.mark.skip
