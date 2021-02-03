@@ -9,7 +9,7 @@ def extract_resource(source, *, process=None, stream=False, **options):
     Public   | `from frictionless import extract_resource`
 
     Parameters:
-        source (dict|str): data resource descriptor
+        source (any|Resource): data resource
         process? (func): a row processor function
         **options (dict): Resource constructor options
 

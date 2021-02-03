@@ -2159,23 +2159,31 @@ def test_resource_read_rows():
 
 
 def test_resource_write(tmpdir):
-    path1 = "data/table.csv"
-    path2 = str(tmpdir.join("table.csv"))
-    source = Resource(path=path1)
-    target = Resource(path=path2)
+    source = Resource("data/table.csv")
+    target = Resource(str(tmpdir.join("table.csv")))
     source.write(target)
-    assert target.read_rows() == [
-        {"id": 1, "name": "english"},
-        {"id": 2, "name": "中国人"},
-    ]
-    assert target.header == ["id", "name"]
+    with target:
+        assert target.header == ["id", "name"]
+        assert target.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
+
+
+def test_resource_write_to_path(tmpdir):
+    source = Resource("data/table.csv")
+    target = source.write(str(tmpdir.join("table.csv")))
+    with target:
+        assert target.header == ["id", "name"]
+        assert target.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 def test_resource_write_format_error_bad_format(tmpdir):
-    path1 = "data/resource.csv"
-    path2 = str(tmpdir.join("resource.bad"))
-    source = Resource(path=path1)
-    target = Resource(path=path2)
+    source = Resource("data/resource.csv")
+    target = Resource(str(tmpdir.join("resource.bad")))
     with pytest.raises(FrictionlessException) as excinfo:
         source.write(target)
     error = excinfo.value.error
