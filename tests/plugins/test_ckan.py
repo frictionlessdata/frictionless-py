@@ -41,11 +41,11 @@ def test_ckan_parser_timezone(options):
 
 @pytest.mark.vcr
 def test_ckan_storage_types(options):
-
-    # Export/Import
+    url = options.pop("url")
+    dialect = CkanDialect(**options)
     source = Package("data/storage/types.json")
-    storage = source.to_ckan(force=True, **options)
-    target = Package.from_ckan(**options)
+    storage = source.to_ckan(url, dialect=dialect)
+    target = Package.from_ckan(url, dialect=dialect)
 
     # Assert metadata
     assert target.get_resource("types").schema == {
@@ -97,11 +97,11 @@ def test_ckan_storage_types(options):
 
 @pytest.mark.vcr
 def test_ckan_storage_integrity(options):
-
-    # Export/Import
+    url = options.pop("url")
+    dialect = CkanDialect(**options)
     source = Package("data/storage/integrity.json")
-    storage = source.to_ckan(force=True, **options)
-    target = Package.from_ckan(**options)
+    storage = source.to_ckan(url, dialect=dialect)
+    target = Package.from_ckan(url, dialect=dialect)
 
     # Assert metadata (main)
     assert target.get_resource("integrity_main").schema == {
@@ -143,11 +143,11 @@ def test_ckan_storage_integrity(options):
 
 @pytest.mark.vcr
 def test_ckan_storage_constraints(options):
-
-    # Export/Import
+    url = options.pop("url")
+    dialect = CkanDialect(**options)
     source = Package("data/storage/constraints.json")
-    storage = source.to_ckan(force=True, **options)
-    target = Package.from_ckan(**options)
+    storage = source.to_ckan(url, dialect=dialect)
+    target = Package.from_ckan(url, dialect=dialect)
 
     # Assert metadata
     assert target.get_resource("constraints").schema == {
@@ -181,7 +181,9 @@ def test_ckan_storage_constraints(options):
 
 @pytest.mark.vcr
 def test_ckan_storage_not_existent_error(options):
-    storage = CkanStorage(**options)
+    url = options.pop("url")
+    dialect = CkanDialect(resource="table", **options)
+    storage = CkanStorage(url, dialect=dialect)
     with pytest.raises(FrictionlessException) as excinfo:
         storage.read_resource("bad")
     error = excinfo.value.error
@@ -205,12 +207,17 @@ def test_ckan_storage_write_resource_existent_error(options):
 
 @pytest.mark.vcr
 def test_ckan_storage_delete_resource_not_existent_error(options):
-    storage = CkanStorage(**options)
+    url = options.pop("url")
+    dialect = CkanDialect(resource="table", **options)
+    storage = CkanStorage(url, dialect=dialect)
     with pytest.raises(FrictionlessException) as excinfo:
         storage.delete_resource("bad")
     error = excinfo.value.error
     assert error.code == "storage-error"
     assert error.note.count("does not exist")
+
+
+# Fixtures
 
 
 @pytest.fixture

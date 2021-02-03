@@ -505,37 +505,26 @@ class Package(Metadata):
         storage.write_package(self.to_copy(), force=True)
 
     @staticmethod
-    def from_ckan(*, url, dataset, apikey=None):
+    def from_ckan(source, *, dialect=None):
         """Import package from CKAN
 
         Parameters:
-            url (string): CKAN instance url e.g. "https://demo.ckan.org"
-            dataset (string): dataset id in CKAN e.g. "my-dataset"
-            apikey? (str): API key for CKAN e.g. "51912f57-a657-4caa-b2a7-0a1c16821f4b"
+            source (string): CKAN instance url e.g. "https://demo.ckan.org"
+            dialect (dict): CKAN dialect
         """
-        system.create_storage(
-            "ckan",
-            url=url,
-            dataset=dataset,
-            apikey=apikey,
-        ).read_package()
+        storage = system.create_storage("ckan", source, dialect=dialect)
+        return storage.read_package()
 
-    def to_ckan(self, *, url, dataset, apikey=None):
+    def to_ckan(self, target, *, dialect=None):
         """Export package to CKAN
 
         Parameters:
-            url (string): CKAN instance url e.g. "https://demo.ckan.org"
-            dataset (string): dataset id in CKAN e.g. "my-dataset"
-            apikey? (str): API key for CKAN e.g. "51912f57-a657-4caa-b2a7-0a1c16821f4b"
-            force (bool): (optional) overwrite existing data
+            source (string): CKAN instance url e.g. "https://demo.ckan.org"
+            dialect (dict): CKAN dialect
         """
-        storage = system.create_storage(
-            "ckan",
-            url=url,
-            dataset=dataset,
-            apikey=apikey,
-        )
+        storage = system.create_storage("ckan", target, dialect=dialect)
         storage.write_package(self.to_copy(), force=True)
+        return storage
 
     @staticmethod
     def from_sql(*, url=None, engine=None, prefix="", namespace=None):

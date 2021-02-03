@@ -50,9 +50,9 @@ class BigqueryPlugin(Plugin):
         if resource.format == "bigquery":
             return BigqueryParser(resource)
 
-    def create_storage(self, name, **options):
+    def create_storage(self, name, source, **options):
         if name == "bigquery":
-            return BigqueryStorage(**options)
+            return BigqueryStorage(source, **options)
 
 
 # Dialect

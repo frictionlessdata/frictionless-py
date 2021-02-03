@@ -202,7 +202,7 @@ class System:
         note = f'cannot create check "{code}". Try installing "frictionless-{code}"'
         raise FrictionlessException(errors.StepError(note=note))
 
-    def create_storage(self, name, **options):
+    def create_storage(self, name, source, **options):
         """Create storage
 
         Parameters:
@@ -213,7 +213,7 @@ class System:
             Storage: storage
         """
         for func in self.methods["create_storage"].values():
-            storage = func(name, **options)
+            storage = func(name, source, **options)
             if storage is not None:
                 return storage
         note = f'cannot create storage "{name}". Try installing "frictionless-{name}"'

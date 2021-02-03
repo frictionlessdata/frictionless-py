@@ -34,9 +34,9 @@ class CkanPlugin(Plugin):
         if resource.format == "ckan":
             return CkanParser(resource)
 
-    def create_storage(self, name, **options):
+    def create_storage(self, name, source, **options):
         if name == "ckan":
-            return CkanStorage(**options)
+            return CkanStorage(source, **options)
 
 
 # Dialect
@@ -109,13 +109,8 @@ class CkanParser(Parser):
     # Read
 
     def read_list_stream_create(self):
-        dialect = self.resource.dialect
-        storage = CkanStorage(
-            url=self.resource.fullpath,
-            dataset=dialect.dataset,
-            apikey=dialect.apikey,
-        )
-        resource = storage.read_resource(dialect.resource)
+        storage = CkanStorage(self.resource.fullpath, dialect=self.resource.dialect)
+        resource = storage.read_resource(self.resource.dialect.resource)
         self.resource.schema = resource.schema
         with resource:
             yield from resource.list_stream
@@ -123,11 +118,7 @@ class CkanParser(Parser):
     # Write
 
     def write_row_stream(self, source):
-        storage = CkanStorage(
-            url=self.resource.fullpath,
-            dataset=self.resource.dialect.dataset,
-            apikey=self.resource.dialect.apikey,
-        )
+        storage = CkanStorage(self.resource.fullpath, dialect=self.resource.dialect)
         # NOTE: this approach is questionable
         source.name = self.resource.dialect.resource
         storage.write_resource(source, force=True)
@@ -150,11 +141,11 @@ class CkanStorage(Storage):
     Public   | `from frictionless.plugins.ckan import CkanStorage`
     """
 
-    def __init__(self, *, url, dataset, apikey=None):
-        self.__url = url.rstrip("/")
+    def __init__(self, source, *, dialect):
+        self.__url = source.rstrip("/")
         self.__endpoint = f"{self.__url}/api/3/action"
-        self.__dataset = dataset
-        self.__apikey = apikey
+        self.__dataset = dialect.dataset
+        self.__apikey = dialect.apikey
 
     def __iter__(self):
         names = []

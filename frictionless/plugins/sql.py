@@ -41,9 +41,9 @@ class SqlPlugin(Plugin):
         if resource.format == "sql":
             return SqlParser(resource)
 
-    def create_storage(self, name, **options):
+    def create_storage(self, name, source, **options):
         if name == "sql":
-            return SqlStorage(**options)
+            return SqlStorage(source, **options)
 
 
 # Dialect
