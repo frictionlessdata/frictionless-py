@@ -5,7 +5,7 @@ from frictionless import Resource
 BASE_URL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
 
 
-# Read
+# Loader
 
 
 @pytest.mark.vcr
@@ -38,9 +38,6 @@ def test_remote_loader_big_file():
             "fields": 10,
             "rows": 10000,
         }
-
-
-# Write
 
 
 # NOTE:

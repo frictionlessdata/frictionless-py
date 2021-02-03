@@ -3,7 +3,7 @@ from frictionless import Resource, helpers
 from frictionless.plugins.html import HtmlDialect
 
 
-# Read
+# Parser
 
 
 @pytest.mark.parametrize(
@@ -24,9 +24,6 @@ def test_html_parser(source, selector):
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
         ]
-
-
-# Write
 
 
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")

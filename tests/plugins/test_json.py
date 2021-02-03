@@ -6,7 +6,7 @@ from frictionless.plugins.json import JsonDialect
 BASE_URL = "https://raw.githubusercontent.com/okfn/tabulator-py/master/%s"
 
 
-# Read
+# Loader
 
 
 def test_json_parser():
@@ -97,9 +97,6 @@ def test_jsonl_parser_ndjson():
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
         ]
-
-
-# Write
 
 
 def test_json_parser_write(tmpdir):

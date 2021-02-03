@@ -119,10 +119,10 @@ def test_sql_parser_write_timezone_mysql(mysql_url):
         ]
 
 
-# Storage
+# Storage (Sqlite)
 
 
-def test_sql_storage_types(sqlite_url):
+def test_sql_storage_sqlite_types(sqlite_url):
     engine = sa.create_engine(sqlite_url)
     prefix = "prefix_"
 
@@ -179,7 +179,7 @@ def test_sql_storage_types(sqlite_url):
     storage.delete_package(target.resource_names)
 
 
-def test_sql_storage_integrity(sqlite_url):
+def test_sql_storage_sqlite_integrity(sqlite_url):
     engine = sa.create_engine(sqlite_url)
     prefix = "prefix_"
 
@@ -237,7 +237,7 @@ def test_sql_storage_integrity(sqlite_url):
     storage.delete_package(target.resource_names)
 
 
-def test_sql_storage_constraints(sqlite_url):
+def test_sql_storage_sqlite_constraints(sqlite_url):
     engine = sa.create_engine(sqlite_url)
     prefix = "prefix_"
 
@@ -289,7 +289,7 @@ def test_sql_storage_constraints(sqlite_url):
         ("maximum", 9),
     ],
 )
-def test_sql_storage_constraints_not_valid_error(sqlite_url, field_name, cell):
+def test_sql_storage_sqlite_constraints_not_valid_error(sqlite_url, field_name, cell):
     engine = sa.create_engine(sqlite_url)
     package = Package("data/storage/constraints.json")
     resource = package.get_resource("constraints")
@@ -302,7 +302,7 @@ def test_sql_storage_constraints_not_valid_error(sqlite_url, field_name, cell):
         resource.to_sql(engine=engine, force=True)
 
 
-def test_sql_storage_read_resource_not_existent_error(sqlite_url):
+def test_sql_storage_sqlite_read_resource_not_existent_error(sqlite_url):
     engine = sa.create_engine(sqlite_url)
     storage = SqlStorage(engine=engine)
     with pytest.raises(FrictionlessException) as excinfo:
@@ -313,7 +313,7 @@ def test_sql_storage_read_resource_not_existent_error(sqlite_url):
 
 
 @pytest.mark.skip
-def test_sql_storage_write_resource_existent_error(sqlite_url):
+def test_sql_storage_sqlite_write_resource_existent_error(sqlite_url):
     engine = sa.create_engine(sqlite_url)
     resource = Resource(path="data/table.csv")
     storage = resource.to_sql(engine=engine)
@@ -326,7 +326,7 @@ def test_sql_storage_write_resource_existent_error(sqlite_url):
     storage.delete_package(list(storage))
 
 
-def test_sql_storage_delete_resource_not_existent_error(sqlite_url):
+def test_sql_storage_sqlite_delete_resource_not_existent_error(sqlite_url):
     engine = sa.create_engine(sqlite_url)
     storage = SqlStorage(engine=engine)
     with pytest.raises(FrictionlessException) as excinfo:
@@ -336,7 +336,7 @@ def test_sql_storage_delete_resource_not_existent_error(sqlite_url):
     assert error.note.count("does not exist")
 
 
-def test_sql_storage_views_support(sqlite_url):
+def test_sql_storage_sqlite_views_support(sqlite_url):
     engine = sa.create_engine(sqlite_url)
     engine.execute("CREATE TABLE 'table' (id INTEGER PRIMARY KEY, name TEXT)")
     engine.execute("INSERT INTO 'table' VALUES (1, 'english'), (2, '中国人')")
@@ -356,7 +356,7 @@ def test_sql_storage_views_support(sqlite_url):
 
 
 @pytest.mark.skip
-def test_sql_storage_resource_url_argument(sqlite_url):
+def test_sql_storage_sqlite_resource_url_argument(sqlite_url):
     source = Resource(path="data/table.csv")
     source.to_sql(url=sqlite_url)
     target = Resource.from_sql(name="table", url=sqlite_url)
@@ -372,7 +372,7 @@ def test_sql_storage_resource_url_argument(sqlite_url):
     ]
 
 
-def test_sql_storage_package_url_argument(sqlite_url):
+def test_sql_storage_sqlite_package_url_argument(sqlite_url):
     source = Package(resources=[Resource(path="data/table.csv")])
     source.to_sql(url=sqlite_url)
     target = Package.from_sql(url=sqlite_url)
@@ -391,7 +391,7 @@ def test_sql_storage_package_url_argument(sqlite_url):
 # Storage (PostgreSQL)
 
 
-def test_postgresql_storage_types(postgresql_url):
+def test_sql_storage_postgresql_types(postgresql_url):
     engine = sa.create_engine(postgresql_url)
     prefix = "prefix_"
 
@@ -448,7 +448,7 @@ def test_postgresql_storage_types(postgresql_url):
     storage.delete_package(target.resource_names)
 
 
-def test_postgresql_storage_integrity(postgresql_url):
+def test_sql_storage_postgresql_integrity(postgresql_url):
     engine = sa.create_engine(postgresql_url)
     prefix = "prefix_"
 
@@ -506,7 +506,7 @@ def test_postgresql_storage_integrity(postgresql_url):
     storage.delete_package(target.resource_names)
 
 
-def test_postgresql_storage_constraints(postgresql_url):
+def test_sql_storage_postgresql_constraints(postgresql_url):
     engine = sa.create_engine(postgresql_url)
     prefix = "prefix_"
 
@@ -547,7 +547,7 @@ def test_postgresql_storage_constraints(postgresql_url):
 
 @pytest.mark.skip
 @pytest.mark.parametrize(
-    "field_name, cell",
+    "name, cell",
     [
         ("required", ""),
         ("minLength", "bad"),
@@ -558,19 +558,19 @@ def test_postgresql_storage_constraints(postgresql_url):
         ("maximum", 9),
     ],
 )
-def test_postgresql_storage_constraints_not_valid_error(postgresql_url, field_name, cell):
+def test_sql_storage_postgresql_constraints_not_valid_error(postgresql_url, name, cell):
     engine = sa.create_engine(postgresql_url)
     package = Package("data/storage/constraints.json")
     resource = package.get_resource("constraints")
     # We set an invalid cell to the data property
     for index, field in enumerate(resource.schema.fields):
-        if field.name == field_name:
+        if field.name == name:
             resource.data[1][index] = cell
     with pytest.raises((sa.exc.IntegrityError, sa.exc.DataError)):
         resource.to_sql(engine=engine, force=True)
 
 
-def test_postgresql_storage_views_support(postgresql_url):
+def test_sql_storage_postgresql_views_support(postgresql_url):
     engine = sa.create_engine(postgresql_url)
     engine.execute("DROP VIEW IF EXISTS data_view")
     engine.execute("DROP TABLE IF EXISTS data")
@@ -592,7 +592,7 @@ def test_postgresql_storage_views_support(postgresql_url):
 
 
 @pytest.mark.skip
-def test_postgresql_storage_comment_support(postgresql_url):
+def test_sql_storage_postgresql_comment_support(postgresql_url):
 
     # Write
     source = Resource(path="data/table.csv")
@@ -618,7 +618,7 @@ def test_postgresql_storage_comment_support(postgresql_url):
 # Storage (MySQL)
 
 
-def test_mysql_storage_types(mysql_url):
+def test_sql_storage_mysql_types(mysql_url):
     engine = sa.create_engine(mysql_url)
     prefix = "prefix_"
 
@@ -675,7 +675,7 @@ def test_mysql_storage_types(mysql_url):
     storage.delete_package(target.resource_names)
 
 
-def test_mysql_storage_integrity(mysql_url):
+def test_sql_storage_mysql_integrity(mysql_url):
     engine = sa.create_engine(mysql_url)
     prefix = "prefix_"
 
@@ -733,7 +733,7 @@ def test_mysql_storage_integrity(mysql_url):
     storage.delete_package(target.resource_names)
 
 
-def test_mysql_storage_constraints(mysql_url):
+def test_sql_storage_mysql_constraints(mysql_url):
     engine = sa.create_engine(mysql_url)
     prefix = "prefix_"
 
@@ -785,7 +785,7 @@ def test_mysql_storage_constraints(mysql_url):
         ("maximum", 9),
     ],
 )
-def test_mysql_storage_constraints_not_valid_error(mysql_url, field_name, cell):
+def test_sql_storage_mysql_constraints_not_valid_error(mysql_url, field_name, cell):
     engine = sa.create_engine(mysql_url)
     package = Package("data/storage/constraints.json")
     resource = package.get_resource("constraints")
@@ -800,7 +800,7 @@ def test_mysql_storage_constraints_not_valid_error(mysql_url, field_name, cell):
         resource.to_sql(engine=engine, force=True)
 
 
-def test_mysql_storage_views_support(mysql_url):
+def test_sql_storage_mysql_views_support(mysql_url):
     engine = sa.create_engine(mysql_url)
     engine.execute("DROP VIEW IF EXISTS data_view")
     engine.execute("DROP TABLE IF EXISTS data")
@@ -822,7 +822,7 @@ def test_mysql_storage_views_support(mysql_url):
 
 
 @pytest.mark.skip
-def test_mysql_storage_comment_support(mysql_url):
+def test_sql_storage_mysql_comment_support(mysql_url):
 
     # Write
     source = Resource(path="data/table.csv")

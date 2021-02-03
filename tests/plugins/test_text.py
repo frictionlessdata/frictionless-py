@@ -1,7 +1,7 @@
 from frictionless import Resource
 
 
-# Read
+# Loader
 
 
 def test_text_loader():
@@ -22,9 +22,6 @@ def test_text_loader_format_in_path():
             {"header1": "value1", "header2": "value2"},
             {"header1": "value3", "header2": "value4"},
         ]
-
-
-# Write
 
 
 def test_text_loader_write():

@@ -1061,7 +1061,7 @@ class Resource(Metadata):
 
     # Write
 
-    def write(self, target, **options):
+    def write(self, target=None, **options):
         """Write this resource to the target resource
 
         Parameters:
