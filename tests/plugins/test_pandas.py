@@ -19,41 +19,6 @@ def test_pandas_parser():
         ]
 
 
-def test_pandas_parser_from_dataframe_with_primary_key_having_datetime():
-    df = pd.read_csv("data/vix.csv", sep=";", parse_dates=["Date"], index_col=["Date"])
-    with Resource(df) as resource:
-
-        # Assert meta
-        assert resource.schema == {
-            "fields": [
-                {"name": "Date", "type": "datetime", "constraints": {"required": True}},
-                {"name": "VIXClose", "type": "number"},
-                {"name": "VIXHigh", "type": "number"},
-                {"name": "VIXLow", "type": "number"},
-                {"name": "VIXOpen", "type": "number"},
-            ],
-            "primaryKey": ["Date"],
-        }
-
-        # Assert rows
-        assert resource.read_rows() == [
-            {
-                "Date": datetime.datetime(2004, 1, 5, tzinfo=pytz.utc),
-                "VIXClose": Decimal("17.49"),
-                "VIXHigh": Decimal("18.49"),
-                "VIXLow": Decimal("17.44"),
-                "VIXOpen": Decimal("18.45"),
-            },
-            {
-                "Date": datetime.datetime(2004, 1, 6, tzinfo=pytz.utc),
-                "VIXClose": Decimal("16.73"),
-                "VIXHigh": Decimal("17.67"),
-                "VIXLow": Decimal("16.19"),
-                "VIXOpen": Decimal("17.66"),
-            },
-        ]
-
-
 def test_pandas_parser_write():
     source = Resource("data/table.csv")
     target = source.write(format="pandas")
@@ -150,7 +115,7 @@ def test_pandas_parser_write_timezone():
     target = source.write(format="pandas")
     with target:
 
-        # Assert schmea
+        # Assert schema
         assert target.schema == {
             "fields": [
                 {"name": "datetime", "type": "datetime"},
@@ -164,4 +129,39 @@ def test_pandas_parser_write_timezone():
             {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
             {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
             {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
+        ]
+
+
+def test_pandas_parser_from_dataframe_with_primary_key_having_datetime():
+    df = pd.read_csv("data/vix.csv", sep=";", parse_dates=["Date"], index_col=["Date"])
+    with Resource(df) as resource:
+
+        # Assert meta
+        assert resource.schema == {
+            "fields": [
+                {"name": "Date", "type": "datetime", "constraints": {"required": True}},
+                {"name": "VIXClose", "type": "number"},
+                {"name": "VIXHigh", "type": "number"},
+                {"name": "VIXLow", "type": "number"},
+                {"name": "VIXOpen", "type": "number"},
+            ],
+            "primaryKey": ["Date"],
+        }
+
+        # Assert rows
+        assert resource.read_rows() == [
+            {
+                "Date": datetime.datetime(2004, 1, 5, tzinfo=pytz.utc),
+                "VIXClose": Decimal("17.49"),
+                "VIXHigh": Decimal("18.49"),
+                "VIXLow": Decimal("17.44"),
+                "VIXOpen": Decimal("18.45"),
+            },
+            {
+                "Date": datetime.datetime(2004, 1, 6, tzinfo=pytz.utc),
+                "VIXClose": Decimal("16.73"),
+                "VIXHigh": Decimal("17.67"),
+                "VIXLow": Decimal("16.19"),
+                "VIXOpen": Decimal("17.66"),
+            },
         ]

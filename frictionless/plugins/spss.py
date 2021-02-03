@@ -1,18 +1,11 @@
 import re
-import os
 import warnings
-from functools import partial
-from ..exception import FrictionlessException
-from ..resource import Resource
 from ..dialect import Dialect
-from ..package import Package
-from ..storage import Storage
 from ..parser import Parser
 from ..plugin import Plugin
 from ..schema import Schema
 from ..field import Field
 from .. import helpers
-from .. import errors
 
 
 # Plugin
@@ -33,10 +26,6 @@ class SpssPlugin(Plugin):
     def create_parser(self, resource):
         if resource.format in ["sav", "zsav"]:
             return SpssParser(resource)
-
-    def create_storage(self, name, **options):
-        if name == "spss":
-            return SpssStorage(**options)
 
 
 # Dialect
@@ -79,101 +68,18 @@ class SpssParser(Parser):
     # Read
 
     def read_list_stream_create(self):
-        name = os.path.basename(self.resource.path)
-        basepath = os.path.dirname(self.resource.path)
-        storage = SpssStorage(basepath=basepath)
-        resource = storage.read_resource(name)
-        self.resource.schema = resource.schema
-        with resource:
-            yield from resource.list_stream
-
-    # Write
-
-    def write_row_stream(self, source):
-        # NOTE: this approach is questionable
-        source.name = os.path.basename(self.resource.path)
-        storage = SpssStorage(basepath=os.path.dirname(self.resource.path))
-        storage.write_resource(source, force=True)
-
-
-# Storage
-
-
-class SpssStorage(Storage):
-    """SPSS storage implementation
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless.plugins.spss import SpssStorage`
-
-    Parameters:
-        basepath? (str): A path to a dir for reading/writing SAV files.
-            Defaults to current dir.
-    """
-
-    def __init__(self, *, basepath=None):
-
-        # Set attributes
-        basepath = basepath or os.getcwd()
-        if not os.path.isdir(basepath):
-            note = f'Path "{basepath}" is not a directory, or doesn\'t exist'
-            raise FrictionlessException(errors.StorageError(note=note))
-        self.__basepath = basepath
-
-        # Silent warnings
         sav = helpers.import_from_plugin("savReaderWriter", plugin="spss")
         warnings.filterwarnings("ignore", category=sav.SPSSIOWarning)
 
-    def __iter__(self):
-        names = []
-        for path in os.listdir(self.__basepath):
-            name = self.__read_convert_name(path)
-            if name is not None:
-                names.append(name)
-        return iter(names)
-
-    # Read
-
-    def read_resource(self, name):
-        sav = helpers.import_from_plugin("savReaderWriter", plugin="spss")
-        path = self.__write_convert_name(name)
-        if not os.path.isfile(path):
-            note = f'Resource "{name}" does not exist'
-            raise FrictionlessException(errors.StorageError(note=note))
-        with sav.SavHeaderReader(path, ioUtf8=True) as reader:
+        # Schema
+        with sav.SavHeaderReader(self.resource.fullpath, ioUtf8=True) as reader:
             spss_schema = reader.all()
-            schema = self.__read_convert_schema(spss_schema)
-            data = partial(self.__read_convert_data, name, schema)
-            resource = Resource(name=name, schema=schema, data=data)
-            return resource
+        schema = self.__read_convert_schema(spss_schema)
+        self.resource.schema = schema
 
-    def read_package(self):
-        package = Package()
-        for name in self:
-            resource = self.read_resource(name)
-            package.resources.append(resource)
-        return package
-
-    def __read_convert_name(self, path):
-        if path.endswith((".sav", ".zsav")):
-            return os.path.splitext(path)[0]
-
-    def __read_convert_schema(self, spss_schema):
-        schema = Schema()
-        for name in spss_schema.varNames:
-            type = self.__read_convert_type(spss_schema.formats[name])
-            field = Field(name=name, type=type)
-            title = spss_schema.varLabels[name]
-            if title:
-                field.title = title
-            schema.fields.append(field)
-        return schema
-
-    def __read_convert_data(self, name, schema):
-        sav = helpers.import_from_plugin("savReaderWriter", plugin="spss")
-        path = self.__write_convert_name(name)
+        # Lists
         yield schema.field_names
-        with sav.SavReader(path, ioUtf8=True) as reader:
+        with sav.SavReader(self.resource.fullpath, ioUtf8=True) as reader:
             for item in reader:
                 cells = []
                 for index, field in enumerate(schema.fields):
@@ -186,6 +92,17 @@ class SpssStorage(Storage):
                             value = reader.spss2strDate(value, format, None)
                     cells.append(value)
                 yield cells
+
+    def __read_convert_schema(self, spss_schema):
+        schema = Schema()
+        for name in spss_schema.varNames:
+            type = self.__read_convert_type(spss_schema.formats[name])
+            field = Field(name=name, type=type)
+            title = spss_schema.varLabels[name]
+            if title:
+                field.title = title
+            schema.fields.append(field)
+        return schema
 
     def __read_convert_type(self, spss_type=None):
 
@@ -217,76 +134,20 @@ class SpssStorage(Storage):
 
     # Write
 
-    def write_resource(self, resource, *, force=False):
-        package = Package(resources=[resource])
-        self.write_package(package, force=force)
-
-    def write_package(self, package, *, force=False):
-        existent_names = list(self)
-
-        # Check existence
-        for resource in package.resources:
-            if resource.name in existent_names:
-                if not force:
-                    note = f'Resource "{resource.name}" already exists'
-                    raise FrictionlessException(errors.StorageError(note=note))
-                self.delete_resource(resource.name)
-
-        # Save resources
-        for resource in package.resources:
-            if not resource.schema:
-                resource.infer()
-            self.__write_convert_data(resource)
-
-    def __write_convert_name(self, name):
-        path = os.path.normpath(os.path.join(self.__basepath, f"{name}.sav"))
-        if not path.startswith(os.path.normpath(self.__basepath)):
-            note = f'Resource name "{name}" is not valid.'
-            raise FrictionlessException(errors.StorageError(note=note))
-        return path
-
-    def __write_convert_schema(self, resource):
-        spss_schema = {"varNames": [], "varLabels": {}, "varTypes": {}, "formats": {}}
-        mapping = self.__write_convert_type()
-
-        # Add fields
-        sizes = {}
-        for field in resource.schema.fields:
-            spss_schema["varNames"].append(field.name)
-            if field.title:
-                spss_schema["varLabels"][field.name] = field.title
-            spss_type = mapping.get(field.type)
-            if spss_type:
-                spss_schema["varTypes"][field.name] = spss_type[0]
-                spss_schema["formats"][field.name] = spss_type[1]
-            else:
-                sizes[field.name] = 0
-
-        # Set string sizes
-        with resource:
-            for row in resource.row_stream:
-                for name in sizes.keys():
-                    cell = row[name]
-                    field = resource.schema.get_field(name)
-                    cell, notes = field.write_cell(cell)
-                    size = len(cell.encode("utf-8"))
-                    if size > sizes[name]:
-                        sizes[name] = size
-            for name, size in sizes.items():
-                spss_schema["varTypes"][name] = size
-
-        return spss_schema
-
-    def __write_convert_data(self, resource):
-        mapping = self.__write_convert_type()
+    def write_row_stream(self, source):
         sav = helpers.import_from_plugin("savReaderWriter", plugin="spss")
-        path = self.__write_convert_name(resource.name)
-        spss_schema = self.__write_convert_schema(resource)
-        with sav.SavWriter(path, ioUtf8=True, **spss_schema) as writer:
-            with resource:
-                for row in resource.row_stream:
-                    result = []
-                    for field in resource.schema.fields:
+        warnings.filterwarnings("ignore", category=sav.SPSSIOWarning)
+
+        # Convert schema
+        mapping = self.__write_convert_type()
+        spss_schema = self.__write_convert_schema(source)
+
+        # Write rows
+        with sav.SavWriter(self.resource.fullpath, ioUtf8=True, **spss_schema) as writer:
+            with source:
+                for row in source.row_stream:
+                    cells = []
+                    for field in source.schema.fields:
                         cell = row[field.name]
                         if field.type in ["datetime", "date", "time"]:
                             format = FORMAT_WRITE[field.type]
@@ -295,8 +156,40 @@ class SpssStorage(Storage):
                         elif field.type not in mapping:
                             cell, notes = field.write_cell(cell)
                             cell = cell.encode("utf-8")
-                        result.append(cell)
-                    writer.writerow(result)
+                        cells.append(cell)
+                    writer.writerow(cells)
+
+    def __write_convert_schema(self, source):
+        spss_schema = {"varNames": [], "varLabels": {}, "varTypes": {}, "formats": {}}
+        with source:
+
+            # Add fields
+            sizes = {}
+            mapping = self.__write_convert_type()
+            for field in source.schema.fields:
+                spss_schema["varNames"].append(field.name)
+                if field.title:
+                    spss_schema["varLabels"][field.name] = field.title
+                spss_type = mapping.get(field.type)
+                if spss_type:
+                    spss_schema["varTypes"][field.name] = spss_type[0]
+                    spss_schema["formats"][field.name] = spss_type[1]
+                else:
+                    sizes[field.name] = 0
+
+            # Set string sizes
+            for row in source.row_stream:
+                for name in sizes.keys():
+                    cell = row[name]
+                    field = source.schema.get_field(name)
+                    cell, notes = field.write_cell(cell)
+                    size = len(cell.encode("utf-8"))
+                    if size > sizes[name]:
+                        sizes[name] = size
+            for name, size in sizes.items():
+                spss_schema["varTypes"][name] = size
+
+        return spss_schema
 
     def __write_convert_type(self, type=None):
 
@@ -316,25 +209,6 @@ class SpssStorage(Storage):
 
         # Return mapping
         return mapping
-
-    # Delete
-
-    def delete_resource(self, name, *, ignore=False):
-        return self.delete_package([name], ignore=ignore)
-
-    def delete_package(self, names, *, ignore=False):
-        for name in names:
-
-            # Check existent
-            if name not in self:
-                if not ignore:
-                    note = f'Resource "{name}" does not exist'
-                    raise FrictionlessException(errors.StorageError(note=note))
-                continue
-
-            # Delete file
-            path = self.__write_convert_name(name)
-            os.remove(path)
 
 
 # Internal
