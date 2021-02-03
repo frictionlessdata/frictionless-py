@@ -130,19 +130,20 @@ class HtmlParser(Parser):
     # NOTE:
     # We can rebase on pyquery for writing this html
     # It will give us an ability to support HtmlDialect
-    def write_row_stream_save(self, read_row_stream):
+    def write_row_stream(self, source):
         html = "<html><body><table>\n"
-        for row in read_row_stream():
-            if row.row_number == 1:
+        with source:
+            for row in source.row_stream:
+                if row.row_number == 1:
+                    html += "<tr>"
+                    for name in row.field_names:
+                        html += f"<td>{name}</td>"
+                    html += "</tr>\n"
+                cells = row.to_list(types=self.supported_types)
                 html += "<tr>"
-                for name in row.field_names:
-                    html += f"<td>{name}</td>"
+                for cell in cells:
+                    html += f"<td>{cell}</td>"
                 html += "</tr>\n"
-            cells = row.to_list(types=self.supported_types)
-            html += "<tr>"
-            for cell in cells:
-                html += f"<td>{cell}</td>"
-            html += "</tr>\n"
         html += "</table></body></html>"
         with tempfile.NamedTemporaryFile("wt", delete=False) as file:
             file.write(html)

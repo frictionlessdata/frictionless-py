@@ -7,7 +7,7 @@ from frictionless import Resource, FrictionlessException
 # https://vcrpy.readthedocs.io/en/latest/advanced.html#filter-sensitive-data-from-the-request
 
 
-# Parser
+# Read
 
 
 @pytest.mark.ci
@@ -42,12 +42,14 @@ def test_gsheets_parser_bad_url():
     assert error.note.count("404 Client Error: Not Found for url")
 
 
+# Write
+
+
 @pytest.mark.ci
 def test_gsheets_parser_write(google_credentials_path):
     path = "https://docs.google.com/spreadsheets/d/1F2OiYmaf8e3x7jSc95_uNgfUyBlSXrcRg-4K_MFNZQI/edit"
     source = Resource("data/table.csv")
-    target = Resource(path, dialect={"credentials": google_credentials_path})
-    source.write(target)
+    target = source.write(path, dialect={"credentials": google_credentials_path})
     with target:
         assert target.header == ["id", "name"]
         assert target.read_rows() == [

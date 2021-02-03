@@ -253,7 +253,7 @@ class XlsxParser(Parser):
 
     # Write
 
-    def write_row_stream_save(self, read_row_stream):
+    def write_row_stream(self, source):
         openpyxl = helpers.import_from_plugin("openpyxl", plugin="excel")
         dialect = self.resource.dialect
         book = openpyxl.Workbook(write_only=True)
@@ -261,17 +261,17 @@ class XlsxParser(Parser):
         if isinstance(title, int):
             title = f"Sheet {dialect.sheet}"
         sheet = book.create_sheet(title)
-        for row in read_row_stream():
-            cells = []
-            if row.row_number == 1:
-                sheet.append(row.field_names)
-            cells = row.to_list(types=self.supported_types)
-            sheet.append(cells)
+        with source:
+            for row in source.row_stream:
+                cells = []
+                if row.row_number == 1:
+                    sheet.append(row.field_names)
+                cells = row.to_list(types=self.supported_types)
+                sheet.append(cells)
         file = tempfile.NamedTemporaryFile(delete=False)
         book.save(file.name)
         loader = system.create_loader(self.resource)
-        result = loader.write_byte_stream(file.name)
-        return result
+        loader.write_byte_stream(file.name)
 
 
 class XlsParser(Parser):
@@ -366,7 +366,7 @@ class XlsParser(Parser):
 
     # Write
 
-    def write_row_stream_save(self, read_row_stream):
+    def write_row_stream(self, source):
         xlwt = helpers.import_from_plugin("xlwt", plugin="excel")
         dialect = self.resource.dialect
         book = xlwt.Workbook()
@@ -374,18 +374,18 @@ class XlsParser(Parser):
         if isinstance(title, int):
             title = f"Sheet {dialect.sheet}"
         sheet = book.add_sheet(title)
-        for row_index, row in enumerate(read_row_stream()):
-            if row.row_number == 1:
-                for field_index, name in enumerate(row.field_names):
-                    sheet.write(0, field_index, name)
-            cells = row.to_list(types=self.supported_types)
-            for field_index, cell in enumerate(cells):
-                sheet.write(row_index + 1, field_index, cell)
+        with source:
+            for row_index, row in enumerate(source.row_stream):
+                if row.row_number == 1:
+                    for field_index, name in enumerate(row.field_names):
+                        sheet.write(0, field_index, name)
+                cells = row.to_list(types=self.supported_types)
+                for field_index, cell in enumerate(cells):
+                    sheet.write(row_index + 1, field_index, cell)
         file = tempfile.NamedTemporaryFile(delete=False)
         book.save(file.name)
         loader = system.create_loader(self.resource)
-        result = loader.write_byte_stream(file.name)
-        return result
+        loader.write_byte_stream(file.name)
 
 
 # Internal

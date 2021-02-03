@@ -122,17 +122,15 @@ class CkanParser(Parser):
 
     # Write
 
-    def write_row_stream_save(self, read_row_stream):
-        dialect = self.resource.dialect
-        schema = self.resource.schema
+    def write_row_stream(self, source):
         storage = CkanStorage(
             url=self.resource.fullpath,
-            dataset=dialect.dataset,
-            apikey=dialect.apikey,
+            dataset=self.resource.dialect.dataset,
+            apikey=self.resource.dialect.apikey,
         )
-        resource = Resource(name=dialect.resource, data=read_row_stream, schema=schema)
-        storage.write_resource(resource, force=True)
-        return self.resource.fullpath
+        # NOTE: this approach is questionable
+        source.name = self.resource.dialect.resource
+        storage.write_resource(source, force=True)
 
 
 # Storage
@@ -264,7 +262,7 @@ class CkanStorage(Storage):
 
     def write_resource(self, resource, *, force=False):
         package = Package(resources=[resource])
-        return self.write_package(package, force=force)
+        self.write_package(package, force=force)
 
     def write_package(self, package, *, force=False):
         existent_names = list(self)

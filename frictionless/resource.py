@@ -1077,14 +1077,8 @@ class Resource(Metadata):
         native = isinstance(target, Resource)
         target = target.to_copy() if native else Resource(target, **options)
         parser = system.create_parser(target)
-        read_row_stream = self.__write_row_stream_create
-        parser.write_row_stream(read_row_stream)
+        parser.write_row_stream(self.to_copy())
         return target
-
-    def __write_row_stream_create(self):
-        if self.closed or self.__row_position:
-            self.open()
-        return self.row_stream
 
     # Import/Export
 

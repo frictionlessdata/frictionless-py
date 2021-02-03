@@ -71,8 +71,7 @@ def test_sql_parser_headers_false(database_url):
 
 def test_sql_parser_write(database_url):
     source = Resource("data/table.csv")
-    target = Resource(database_url, dialect=SqlDialect(table="name", order_by="id"))
-    source.write(target)
+    target = source.write(database_url, dialect=SqlDialect(table="name", order_by="id"))
     with target:
         assert target.header == ["id", "name"]
         assert target.read_rows() == [
@@ -83,8 +82,7 @@ def test_sql_parser_write(database_url):
 
 def test_sql_parser_write_timezone(sqlite_url):
     source = Resource("data/timezone.csv")
-    target = Resource(sqlite_url, dialect=SqlDialect(table="timezone"))
-    source.write(target)
+    target = source.write(sqlite_url, dialect=SqlDialect(table="timezone"))
     with target:
         assert target.header == ["datetime", "time"]
         assert target.read_rows() == [
@@ -97,8 +95,7 @@ def test_sql_parser_write_timezone(sqlite_url):
 
 def test_sql_parser_write_timezone_postgresql(postgresql_url):
     source = Resource("data/timezone.csv")
-    target = Resource(postgresql_url, dialect=SqlDialect(table="timezone"))
-    source.write(target)
+    target = source.write(postgresql_url, dialect=SqlDialect(table="timezone"))
     with target:
         assert target.header == ["datetime", "time"]
         assert target.read_rows() == [
@@ -111,8 +108,7 @@ def test_sql_parser_write_timezone_postgresql(postgresql_url):
 
 def test_sql_parser_write_timezone_mysql(mysql_url):
     source = Resource("data/timezone.csv")
-    target = Resource(mysql_url, dialect=SqlDialect(table="timezone"))
-    source.write(target)
+    target = source.write(mysql_url, dialect=SqlDialect(table="timezone"))
     with target:
         assert target.header == ["datetime", "time"]
         assert target.read_rows() == [

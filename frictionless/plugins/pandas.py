@@ -100,12 +100,10 @@ class PandasParser(Parser):
 
     # Write
 
-    def write_row_stream_save(self, read_row_stream):
-        schema = self.resource.schema
+    def write_row_stream(self, source):
         storage = PandasStorage()
-        resource = Resource(name=self.resource.name, data=read_row_stream, schema=schema)
-        storage.write_resource(resource)
-        return storage.dataframe
+        storage.write_resource(source, force=True)
+        self.resource.data = storage.dataframe
 
 
 # Storage
@@ -239,7 +237,7 @@ class PandasStorage(Storage):
 
     def write_resource(self, resource, *, force=False):
         package = Package(resources=[resource])
-        return self.write_package(package, force=force)
+        self.write_package(package, force=force)
 
     def write_package(self, package, *, force=False):
         existent_names = list(self)

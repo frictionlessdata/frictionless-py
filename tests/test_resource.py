@@ -11,10 +11,10 @@ from frictionless.plugins.excel import ExcelDialect
 from frictionless.plugins.json import JsonDialect
 
 
-# General
-
-
 BASE_URL = "https://raw.githubusercontent.com/frictionlessdata/datapackage-py/master/%s"
+
+
+# General
 
 
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")

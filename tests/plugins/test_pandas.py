@@ -22,19 +22,19 @@ def test_pandas_parser():
 
 
 def test_pandas_parser_write():
-    with Resource("data/table.csv") as resource:
-        dataframe = resource.write(Resource(format="pandas"))
-        assert dataframe.to_dict("records") == [
-            {"id": 1, "name": "english"},
-            {"id": 2, "name": "中国人"},
-        ]
+    source = Resource("data/table.csv")
+    target = source.write(Resource(format="pandas"))
+    assert target.data.to_dict("records") == [
+        {"id": 1, "name": "english"},
+        {"id": 2, "name": "中国人"},
+    ]
 
 
 def test_pandas_parser_write_timezone():
-    with Resource("data/timezone.csv") as resource:
-        dataframe = resource.write(Resource(format="pandas"))
-    with Resource(dataframe) as resource:
-        assert resource.read_rows() == [
+    source = Resource("data/timezone.csv")
+    target = source.write(Resource(format="pandas"))
+    with target:
+        assert target.read_rows() == [
             {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
             {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
             {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},

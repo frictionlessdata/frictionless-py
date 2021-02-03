@@ -1,6 +1,7 @@
 import pytest
 from frictionless import Resource
 
+
 BASE_URL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
 
 
@@ -42,11 +43,12 @@ def test_remote_loader_big_file():
 # Write
 
 
+# NOTE:
 # This test only checks the POST request the loader makes
 # We need fully mock a session with a server or use a real one and vcr.py
 def test_remote_loader_write(requests_mock):
     path = "https://example.com/post/table.csv"
     requests_mock.post("https://example.com/post/")
-    with Resource("data/table.csv") as resource:
-        response = resource.write(Resource(path))
-    assert response.status_code == 200
+    source = Resource("data/table.csv")
+    target = source.write(path)
+    assert target

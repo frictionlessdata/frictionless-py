@@ -18,17 +18,12 @@ from frictionless.plugins.bigquery import BigqueryDialect, BigqueryStorage
 
 
 @pytest.mark.ci
-def test_bigquery_parser(options):
+def test_bigquery_parser_write(options):
     prefix = options.pop("prefix")
     service = options.pop("service")
     dialect = BigqueryDialect(table=prefix, **options)
-
-    # Write
     source = Resource("data/table.csv")
-    target = Resource(service, dialect=dialect)
-    source.write(target)
-
-    # Read
+    target = source.write(service, dialect=dialect)
     with target:
         assert target.header == ["id", "name"]
         assert target.read_rows() == [
@@ -42,13 +37,8 @@ def test_bigquery_parser_write_timezone(options):
     prefix = options.pop("prefix")
     service = options.pop("service")
     dialect = BigqueryDialect(table=prefix, **options)
-
-    # Write
     source = Resource("data/timezone.csv")
-    target = Resource(service, dialect=dialect)
-    source.write(target)
-
-    # Read
+    target = source.write(service, dialect=dialect)
     with target:
         assert target.read_rows() == [
             {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},

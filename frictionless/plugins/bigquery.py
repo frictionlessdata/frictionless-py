@@ -139,17 +139,15 @@ class BigqueryParser(Parser):
 
     # Write
 
-    def write_row_stream_save(self, read_row_stream):
-        dialect = self.resource.dialect
-        schema = self.resource.schema
+    def write_row_stream(self, source):
         storage = BigqueryStorage(
             service=self.resource.data,
-            project=dialect.project,
-            dataset=dialect.dataset,
+            project=self.resource.dialect.project,
+            dataset=self.resource.dialect.dataset,
         )
-        resource = Resource(name=dialect.table, data=read_row_stream, schema=schema)
-        storage.write_resource(resource, force=True)
-        return self.resource.data
+        # NOTE: this approach is questionable
+        source.name = self.resource.dialect.table
+        storage.write_resource(source, force=True)
 
 
 # Storage
@@ -299,7 +297,7 @@ class BigqueryStorage(Storage):
 
     def write_resource(self, resource, *, force=False):
         package = Package(resources=[resource])
-        return self.write_package(package, force=force)
+        self.write_package(package, force=force)
 
     def write_package(self, package, *, force=False):
         existent_names = list(self)

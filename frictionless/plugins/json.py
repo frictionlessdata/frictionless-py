@@ -137,7 +137,7 @@ class JsonParser(Parser):
 
     # Read
 
-    def read_list_stream_create(self, dialect=None):
+    def read_list_stream_create(self):
         ijson = helpers.import_from_plugin("ijson", plugin="json")
         path = "item"
         dialect = self.resource.dialect
@@ -158,20 +158,20 @@ class JsonParser(Parser):
 
     # Write
 
-    def write_row_stream_save(self, read_row_stream):
+    def write_row_stream(self, source):
         data = []
         dialect = self.resource.dialect
-        for row in read_row_stream():
-            cells = row.to_list(json=True)
-            item = dict(zip(row.field_names, cells)) if dialect.keyed else cells
-            if not dialect.keyed and row.row_number == 1:
-                data.append(row.field_names)
-            data.append(item)
+        with source:
+            for row in source.row_stream:
+                cells = row.to_list(json=True)
+                item = dict(zip(row.field_names, cells)) if dialect.keyed else cells
+                if not dialect.keyed and row.row_number == 1:
+                    data.append(row.field_names)
+                data.append(item)
         with tempfile.NamedTemporaryFile("wt", delete=False) as file:
             json.dump(data, file, indent=2)
         loader = system.create_loader(self.resource)
-        result = loader.write_byte_stream(file.name)
-        return result
+        loader.write_byte_stream(file.name)
 
 
 class JsonlParser(Parser):
@@ -197,7 +197,7 @@ class JsonlParser(Parser):
 
     # Read
 
-    def read_list_stream_create(self, dialect=None):
+    def read_list_stream_create(self):
         jsonlines = helpers.import_from_plugin("jsonlines", plugin="json")
         dialect = self.resource.dialect
         source = iter(jsonlines.Reader(self.loader.text_stream))
@@ -211,17 +211,17 @@ class JsonlParser(Parser):
 
     # Write
 
-    def write_row_stream_save(self, read_row_stream):
+    def write_row_stream(self, source):
         jsonlines = helpers.import_from_plugin("jsonlines", plugin="json")
         dialect = self.resource.dialect
         with tempfile.NamedTemporaryFile(delete=False) as file:
             writer = jsonlines.Writer(file)
-            for row in read_row_stream():
-                cells = row.to_list(json=True)
-                item = dict(zip(row.field_names, cells)) if dialect.keyed else cells
-                if not dialect.keyed and row.row_number == 1:
-                    writer.write(row.field_names)
-                writer.write(item)
+            with source:
+                for row in source.row_stream:
+                    cells = row.to_list(json=True)
+                    item = dict(zip(row.field_names, cells)) if dialect.keyed else cells
+                    if not dialect.keyed and row.row_number == 1:
+                        writer.write(row.field_names)
+                    writer.write(item)
         loader = system.create_loader(self.resource)
-        result = loader.write_byte_stream(file.name)
-        return result
+        loader.write_byte_stream(file.name)

@@ -9,13 +9,8 @@ from frictionless.plugins.spss import SpssStorage
 
 @pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for MacOS")
 def test_spss_parser(tmpdir):
-
-    # Write
     source = Resource("data/table.csv")
-    target = Resource(str(tmpdir.join("table.sav")))
-    source.write(target)
-
-    # Read
+    target = source.write(Resource(str(tmpdir.join("table.sav"))))
     with target:
         assert target.header == ["id", "name"]
         assert target.read_rows() == [
@@ -26,13 +21,8 @@ def test_spss_parser(tmpdir):
 
 @pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for MacOS")
 def test_spss_parser_write_timezone(tmpdir):
-
-    # Write
     source = Resource("data/timezone.csv")
-    target = Resource(str(tmpdir.join("table.sav")))
-    source.write(target)
-
-    # Read
+    target = source.write(Resource(str(tmpdir.join("table.sav"))))
     with target:
         assert target.read_rows() == [
             {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},

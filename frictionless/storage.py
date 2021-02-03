@@ -1,3 +1,8 @@
+# NOTE:
+# We might need to reconsider the whole storage concept as it doesn't play nice
+# with the well-established and working good loader/parser concepts
+
+
 class Storage:
     """Storage representation"""
 

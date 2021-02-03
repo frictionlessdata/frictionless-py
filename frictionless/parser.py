@@ -121,7 +121,7 @@ class Parser:
         list_stream = chain(self.__sample, list_stream)
         return list_stream
 
-    def read_list_stream_create(self, loader):
+    def read_list_stream_create(self):
         """Create list stream from loader
 
         Parameters:
@@ -145,20 +145,12 @@ class Parser:
 
     # Write
 
-    def write_row_stream(self, read_row_stream):
-        """Write row stream into the resource
+    def write_row_stream(self, source):
+        """Write row stream from the source resource
 
         Parameters:
-            read_row_stream (gen<Row[]>): row stream factory
+            source (Resource): source resource
         """
-        read_row_stream = self.write_row_stream_create(read_row_stream)
-        result = self.write_row_stream_save(read_row_stream)
-        return result
-
-    def write_row_stream_create(self, read_row_stream):
-        return read_row_stream
-
-    def write_row_stream_save(self, read_row_stream):
         raise NotImplementedError()
 
 
