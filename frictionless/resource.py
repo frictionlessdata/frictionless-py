@@ -702,16 +702,10 @@ class Resource(Metadata):
         Parameters:
             stats? (bool): stream file completely and infer stats
         """
-        current_stats = self.get("stats")
         with helpers.ensure_open(self):
-            stream = self.__row_stream if self.tabular else self.__text_stream
             if stats:
+                stream = self.row_stream or self.byte_stream
                 helpers.pass_through(stream)
-            if not stats:
-                if current_stats:
-                    self["stats"] = current_stats
-                else:
-                    self.pop("stats")
 
     # Open/Close
 
