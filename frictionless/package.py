@@ -468,41 +468,32 @@ class Package(Metadata):
         )
 
     @staticmethod
-    def from_bigquery(*, service, project, dataset, prefix=""):
+    def from_bigquery(source, *, dialect=None):
         """Import package from Bigquery
 
         Parameters:
-            service (object): BigQuery `Service` object
-            project (str): BigQuery project name
-            dataset (str): BigQuery dataset name
-            prefix? (str): prefix for all names
-        """
-        system.create_storage(
-            "bigquery",
-            service=service,
-            project=project,
-            dataset=dataset,
-            prefix=prefix,
-        ).read_package()
+            source (string): BigQuery `Service` object
+            dialect (dict): BigQuery dialect
 
-    def to_bigquery(self, *, service, project, dataset, prefix=""):
+        Returns:
+            Package: package
+        """
+        storage = system.create_storage("bigquery", source, dialect=dialect)
+        return storage.read_package()
+
+    def to_bigquery(self, target, *, dialect=None):
         """Export package to Bigquery
 
         Parameters:
-            service (object): BigQuery `Service` object
-            project (str): BigQuery project name
-            dataset (str): BigQuery dataset name
-            prefix? (str): prefix for all names
-            force (bool): overwrite existent
+            target (string): BigQuery `Service` object
+            dialect (dict): BigQuery dialect
+
+        Returns:
+            BigqueryStorage: storage
         """
-        storage = system.create_storage(
-            "bigquery",
-            service=service,
-            project=project,
-            dataset=dataset,
-            prefix=prefix,
-        )
+        storage = system.create_storage("bigquery", target, dialect=dialect)
         storage.write_package(self.to_copy(), force=True)
+        return storage
 
     @staticmethod
     def from_ckan(source, *, dialect=None):
@@ -522,7 +513,7 @@ class Package(Metadata):
         """Export package to CKAN
 
         Parameters:
-            source (string): CKAN instance url e.g. "https://demo.ckan.org"
+            target (string): CKAN instance url e.g. "https://demo.ckan.org"
             dialect (dict): CKAN dialect
 
         Returns:
@@ -550,7 +541,7 @@ class Package(Metadata):
         """Export package to SQL
 
         Parameters:
-            source (any): SQL connection string of engine
+            target (any): SQL connection string of engine
             dialect (dict): SQL dialect
 
         Returns:

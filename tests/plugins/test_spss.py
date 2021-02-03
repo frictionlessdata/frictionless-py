@@ -1,6 +1,6 @@
 import pytest
 import datetime
-from frictionless import Package, Resource, FrictionlessException, helpers
+from frictionless import Package, Resource, helpers
 
 
 # Parser

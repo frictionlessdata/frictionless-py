@@ -149,7 +149,7 @@ class SqlParser(Parser):
     def write_row_stream(self, source):
         dialect = self.resource.dialect
         # NOTE: this approach is questionable
-        source.name = self.resource.dialect.table
+        source.name = dialect.table
         storage = SqlStorage(self.resource.fullpath, dialect=dialect)
         storage.write_resource(source, force=True)
 
