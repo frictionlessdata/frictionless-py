@@ -57,15 +57,15 @@ class table_attach(Step):
     # Transform
 
     def transform_resource(self, resource):
-        resource1 = resource
-        resource2 = self.get("resource")
-        if isinstance(resource2, str):
-            resource2 = resource1.package.get_resource(resource2)
-        resource2.infer()
-        for field in resource2.schema.fields:
-            resource1.schema.fields.append(field.to_copy())
-        view1 = resource1.to_petl()
-        view2 = resource2.to_petl()
+        target = resource
+        source = self.get("resource")
+        if isinstance(source, str):
+            source = target.package.get_resource(source)
+        source.infer()
+        for field in source.schema.fields:
+            target.schema.fields.append(field.to_copy())
+        view1 = target.to_petl()
+        view2 = source.to_petl()
         yield from petl.annex(view1, view2)
 
     # Metadata
@@ -125,15 +125,15 @@ class table_diff(Step):
     # Transform
 
     def transform_resource(self, resource):
-        resource1 = resource
-        resource2 = self.get("resource")
+        target = resource
+        source = self.get("resource")
         ignore_order = self.get("ignoreOrder")
         use_hash = self.get("useHash")
-        if isinstance(resource2, str):
-            resource2 = resource1.package.get_resource(resource2)
-        resource2.infer()
-        view1 = resource1.to_petl()
-        view2 = resource2.to_petl()
+        if isinstance(source, str):
+            source = target.package.get_resource(source)
+        source.infer()
+        view1 = target.to_petl()
+        view2 = source.to_petl()
         function = petl.recordcomplement if ignore_order else petl.complement
         # NOTE: we might raise an error for ignore/hash
         if use_hash and not ignore_order:
@@ -164,14 +164,14 @@ class table_intersect(Step):
     # Transform
 
     def transform_resource(self, resource):
-        resource1 = resource
-        resource2 = self.get("resource")
+        target = resource
+        source = self.get("resource")
         use_hash = self.get("useHash")
-        if isinstance(resource2, str):
-            resource2 = resource1.package.get_resource(resource2)
-        resource2.infer()
-        view1 = resource1.to_petl()
-        view2 = resource2.to_petl()
+        if isinstance(source, str):
+            source = target.package.get_resource(source)
+        source.infer()
+        view1 = target.to_petl()
+        view2 = source.to_petl()
         function = petl.hashintersection if use_hash else petl.intersection
         yield from function(view1, view2)
 
@@ -209,20 +209,20 @@ class table_join(Step):
     # Transform
 
     def transform_resource(self, resource):
-        resource1 = resource
-        resource2 = self.get("resource")
+        target = resource
+        source = self.get("resource")
         field_name = self.get("fieldName")
         use_hash = self.get("useHash")
         mode = self.get("mode")
-        if isinstance(resource2, str):
-            resource2 = resource1.package.get_resource(resource2)
-        resource2.infer()
-        view1 = resource1.to_petl()
-        view2 = resource2.to_petl()
+        if isinstance(source, str):
+            source = target.package.get_resource(source)
+        source.infer()
+        view1 = target.to_petl()
+        view2 = source.to_petl()
         if mode not in ["negate"]:
-            for field in resource2.schema.fields:
+            for field in source.schema.fields:
                 if field.name != field_name:
-                    resource1.schema.fields.append(field.to_copy())
+                    target.schema.fields.append(field.to_copy())
         if mode == "inner":
             join = petl.hashjoin if use_hash else petl.join
             yield from join(view1, view2, field_name)
@@ -323,32 +323,32 @@ class table_merge(Step):
     # Transform
 
     def transform_resource(self, resource):
-        resource1 = resource
-        resource2 = self.get("resource")
+        target = resource
+        source = self.get("resource")
         field_names = self.get("fieldNames")
         ignore_fields = self.get("ignoreFields")
         sort_by_field = self.get("sortByField")
-        if isinstance(resource2, str):
-            resource2 = resource1.package.get_resource(resource2)
-        resource2.infer()
-        view1 = resource1.to_petl()
-        view2 = resource2.to_petl()
+        if isinstance(source, str):
+            source = target.package.get_resource(source)
+        source.infer()
+        view1 = target.to_petl()
+        view2 = source.to_petl()
 
         # Ignore fields
         if ignore_fields:
-            for field in resource2.schema.fields[len(resource1.schema.fields) :]:
-                resource1.schema.add_field(field)
+            for field in source.schema.fields[len(target.schema.fields) :]:
+                target.schema.add_field(field)
             yield from petl.stack(view1, view2)
 
         # Default
         else:
-            for field in resource2.schema.fields:
-                if field.name not in resource1.schema.field_names:
-                    resource1.schema.add_field(field)
+            for field in source.schema.fields:
+                if field.name not in target.schema.field_names:
+                    target.schema.add_field(field)
             if field_names:
-                for field in list(resource1.schema.fields):
+                for field in list(target.schema.fields):
                     if field.name not in field_names:
-                        resource1.schema.remove_field(field.name)
+                        target.schema.remove_field(field.name)
             if sort_by_field:
                 key = sort_by_field
                 yield from petl.mergesort(view1, view2, key=key, header=field_names)

@@ -253,13 +253,14 @@ class XlsxParser(Parser):
 
     # Write
 
-    def write_row_stream(self, source):
+    def write_row_stream(self, resource):
         openpyxl = helpers.import_from_plugin("openpyxl", plugin="excel")
-        dialect = self.resource.dialect
+        source = resource
+        target = self.resource
         book = openpyxl.Workbook(write_only=True)
-        title = dialect.sheet
+        title = target.dialect.sheet
         if isinstance(title, int):
-            title = f"Sheet {dialect.sheet}"
+            title = f"Sheet {target.dialect.sheet}"
         sheet = book.create_sheet(title)
         with source:
             for row in source.row_stream:
@@ -270,7 +271,7 @@ class XlsxParser(Parser):
                 sheet.append(cells)
         file = tempfile.NamedTemporaryFile(delete=False)
         book.save(file.name)
-        loader = system.create_loader(self.resource)
+        loader = system.create_loader(target)
         loader.write_byte_stream(file.name)
 
 
@@ -366,13 +367,14 @@ class XlsParser(Parser):
 
     # Write
 
-    def write_row_stream(self, source):
+    def write_row_stream(self, resource):
         xlwt = helpers.import_from_plugin("xlwt", plugin="excel")
-        dialect = self.resource.dialect
+        source = resource
+        target = self.resource
         book = xlwt.Workbook()
-        title = dialect.sheet
+        title = target.dialect.sheet
         if isinstance(title, int):
-            title = f"Sheet {dialect.sheet}"
+            title = f"Sheet {target.dialect.sheet}"
         sheet = book.add_sheet(title)
         with source:
             for row_index, row in enumerate(source.row_stream):
@@ -384,7 +386,7 @@ class XlsParser(Parser):
                     sheet.write(row_index + 1, field_index, cell)
         file = tempfile.NamedTemporaryFile(delete=False)
         book.save(file.name)
-        loader = system.create_loader(self.resource)
+        loader = system.create_loader(target)
         loader.write_byte_stream(file.name)
 
 
