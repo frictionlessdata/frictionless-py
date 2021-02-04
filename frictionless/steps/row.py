@@ -18,14 +18,14 @@ class row_filter(Step):
 
     # Transform
 
-    def transform_resource(self, source, target):
+    def transform_resource(self, resource):
         formula = self.get("formula")
         function = self.get("function")
         if formula:
             # NOTE: review EvalWithCompoundTypes/sync with checks
             evalclass = simpleeval.EvalWithCompoundTypes
             function = lambda row: evalclass(names=row).eval(formula)
-        target.data = source.to_petl().select(function)
+        yield from resource.to_petl().select(function)
 
     # Metadata
 
@@ -50,15 +50,15 @@ class row_search(Step):
 
     # Transform
 
-    def transform_resource(self, source, target):
+    def transform_resource(self, resource):
         regex = self.get("regex")
         field_name = self.get("fieldName")
         negate = self.get("negate")
         search = petl.searchcomplement if negate else petl.search
         if field_name:
-            target.data = search(source.to_petl(), field_name, regex)
+            yield from search(resource.to_petl(), field_name, regex)
         else:
-            target.data = search(source.to_petl(), regex)
+            yield from search(resource.to_petl(), regex)
 
     # Metadata
 
@@ -95,18 +95,18 @@ class row_slice(Step):
 
     # Transform
 
-    def transform_resource(self, source, target):
+    def transform_resource(self, resource):
         start = self.get("start")
         stop = self.get("stop")
         step = self.get("step")
         head = self.get("head")
         tail = self.get("tail")
         if head:
-            target.data = source.to_petl().head(head)
+            yield from resource.to_petl().head(head)
         elif tail:
-            target.data = source.to_petl().tail(tail)
+            yield from resource.to_petl().tail(tail)
         else:
-            target.data = source.to_petl().rowslice(start, stop, step)
+            yield from resource.to_petl().rowslice(start, stop, step)
 
     # Metadata
 
@@ -133,10 +133,10 @@ class row_sort(Step):
 
     # Transform
 
-    def transform_resource(self, source, target):
+    def transform_resource(self, resource):
         field_names = self.get("fieldNames")
         reverse = self.get("reverse")
-        target.data = source.to_petl().sort(field_names, reverse=reverse)
+        yield from resource.to_petl().sort(field_names, reverse=reverse)
 
     # Metadata
 
@@ -160,10 +160,10 @@ class row_split(Step):
 
     # Transform
 
-    def transform_resource(self, source, target):
+    def transform_resource(self, resource):
         pattern = self.get("pattern")
         field_name = self.get("fieldName")
-        target.data = source.to_petl().splitdown(field_name, pattern)
+        yield from resource.to_petl().splitdown(field_name, pattern)
 
     # Metadata
 
@@ -188,17 +188,17 @@ class row_subset(Step):
 
     # Transform
 
-    def transform_resource(self, source, target):
+    def transform_resource(self, resource):
         subset = self.get("subset")
         field_name = self.get("fieldName")
         if subset == "conflicts":
-            target.data = source.to_petl().conflicts(field_name)
+            yield from resource.to_petl().conflicts(field_name)
         elif subset == "distinct":
-            target.data = source.to_petl().distinct(field_name)
+            yield from resource.to_petl().distinct(field_name)
         elif subset == "duplicates":
-            target.data = source.to_petl().duplicates(field_name)
+            yield from resource.to_petl().duplicates(field_name)
         elif subset == "unique":
-            target.data = source.to_petl().unique(field_name)
+            yield from resource.to_petl().unique(field_name)
 
     # Metadata
 
@@ -229,15 +229,15 @@ class row_ungroup(Step):
         self.setinitial("valueName", value_name)
         super().__init__(descriptor)
 
-    def transform_resource(self, source, target):
+    def transform_resource(self, resource):
         selection = self.get("selection")
         group_name = self.get("groupName")
         value_name = self.get("valueName")
         function = getattr(petl, f"groupselect{selection}")
         if selection in ["first", "last"]:
-            target.data = function(source.to_petl(), group_name)
+            yield from function(resource.to_petl(), group_name)
         else:
-            target.data = function(source.to_petl(), group_name, value_name)
+            yield from function(resource.to_petl(), group_name, value_name)
 
     # Metadata
 

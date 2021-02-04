@@ -18,18 +18,18 @@ class cell_convert(Step):
 
     # Transform
 
-    def transform_resource(self, source, target):
+    def transform_resource(self, resource):
         field_name = self.get("fieldName")
         function = self.get("function")
         value = self.get("value")
         if not field_name:
             if not function:
                 function = lambda input: value
-            target.data = source.to_petl().convertall(function)
+            yield from resource.to_petl().convertall(function)
         elif function:
-            target.data = source.to_petl().convert(field_name, function)
+            yield from resource.to_petl().convert(field_name, function)
         else:
-            target.data = source.to_petl().update(field_name, value)
+            yield from resource.to_petl().update(field_name, value)
 
     # Metadata
 
@@ -55,21 +55,21 @@ class cell_fill(Step):
 
     # Transform
 
-    def transform_resource(self, source, target):
+    def transform_resource(self, resource):
         value = self.get("value")
         field_name = self.get("fieldName")
         direction = self.get("direction")
         if value:
-            target.data = source.to_petl().convert(field_name, {None: value})
+            yield from resource.to_petl().convert(field_name, {None: value})
         elif direction == "down":
             if field_name:
-                target.data = source.to_petl().filldown(field_name)
+                yield from resource.to_petl().filldown(field_name)
             else:
-                target.data = source.to_petl().filldown()
+                yield from resource.to_petl().filldown()
         elif direction == "right":
-            target.data = source.to_petl().fillright()
+            yield from resource.to_petl().fillright()
         elif direction == "left":
-            target.data = source.to_petl().fillleft()
+            yield from resource.to_petl().fillleft()
 
     # Metadata
 
@@ -94,13 +94,13 @@ class cell_format(Step):
 
     # Transform
 
-    def transform_resource(self, source, target):
+    def transform_resource(self, resource):
         field_name = self.get("fieldName")
         template = self.get("template")
         if not field_name:
-            target.data = source.to_petl().formatall(template)
+            yield from resource.to_petl().formatall(template)
         else:
-            target.data = source.to_petl().format(field_name, template)
+            yield from resource.to_petl().format(field_name, template)
 
     # Metadata
 
@@ -124,13 +124,13 @@ class cell_interpolate(Step):
 
     # Transform
 
-    def transform_resource(self, source, target):
+    def transform_resource(self, resource):
         template = self.get("template")
         field_name = self.get("fieldName")
         if not field_name:
-            target.data = source.to_petl().interpolateall(template)
+            yield from resource.to_petl().interpolateall(template)
         else:
-            target.data = source.to_petl().interpolate(field_name, template)
+            yield from resource.to_petl().interpolate(field_name, template)
 
     # Metadata
 
@@ -155,19 +155,19 @@ class cell_replace(Step):
 
     # Transform
 
-    def transform_resource(self, source, target):
+    def transform_resource(self, resource):
         pattern = self.get("pattern")
         replace = self.get("replace")
         field_name = self.get("fieldName")
         if not field_name:
-            target.data = source.to_petl().replaceall(pattern, replace)
+            yield from resource.to_petl().replaceall(pattern, replace)
         else:
             pattern = pattern
             function = petl.replace
             if pattern.startswith("<regex>"):
                 pattern = pattern.replace("<regex>", "")
                 function = petl.sub
-            target.data = function(source.to_petl(), field_name, pattern, replace)
+            yield from function(resource.to_petl(), field_name, pattern, replace)
 
     # Metadata
 
@@ -190,10 +190,10 @@ class cell_set(Step):
         self.setinitial("fieldName", field_name)
         super().__init__(descriptor)
 
-    def transform_resource(self, source, target):
+    def transform_resource(self, resource):
         value = self.get("value")
         field_name = self.get("fieldName")
-        target.data = source.to_petl().update(field_name, value)
+        yield from resource.to_petl().update(field_name, value)
 
     # Metadata
 
