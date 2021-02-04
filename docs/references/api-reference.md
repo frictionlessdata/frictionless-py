@@ -3406,7 +3406,7 @@ Wrap list stream into error handler
 ### parser.write\_row\_stream
 
 ```python
- | write_row_stream(source)
+ | write_row_stream(resource)
 ```
 
 Write row stream from the source resource
@@ -4692,7 +4692,7 @@ Create a resource from PETL view
 ### resource.to\_petl
 
 ```python
- | to_petl(*, normalize=False)
+ | to_petl()
 ```
 
 Export resource as a PETL view
