@@ -134,16 +134,18 @@ class SpssParser(Parser):
 
     # Write
 
-    def write_row_stream(self, source):
+    def write_row_stream(self, resource):
         sav = helpers.import_from_plugin("savReaderWriter", plugin="spss")
         warnings.filterwarnings("ignore", category=sav.SPSSIOWarning)
+        target = self.resource
+        source = resource
 
         # Convert schema
         mapping = self.__write_convert_type()
         spss_schema = self.__write_convert_schema(source)
 
         # Write rows
-        with sav.SavWriter(self.resource.fullpath, ioUtf8=True, **spss_schema) as writer:
+        with sav.SavWriter(target.fullpath, ioUtf8=True, **spss_schema) as writer:
             with source:
                 for row in source.row_stream:
                     cells = []

@@ -130,7 +130,9 @@ class HtmlParser(Parser):
     # NOTE:
     # We can rebase on pyquery for writing this html
     # It will give us an ability to support HtmlDialect
-    def write_row_stream(self, source):
+    def write_row_stream(self, resource):
+        source = resource
+        target = self.resource
         html = "<html><body><table>\n"
         with source:
             for row in source.row_stream:
@@ -147,6 +149,6 @@ class HtmlParser(Parser):
         html += "</table></body></html>"
         with tempfile.NamedTemporaryFile("wt", delete=False) as file:
             file.write(html)
-        loader = system.create_loader(self.resource)
+        loader = system.create_loader(target)
         result = loader.write_byte_stream(file.name)
         return result

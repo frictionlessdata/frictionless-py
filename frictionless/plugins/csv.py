@@ -237,14 +237,16 @@ class CsvParser(Parser):
 
     # Write
 
-    def write_row_stream(self, source):
+    def write_row_stream(self, resource):
         options = {}
-        for name in vars(self.resource.dialect.to_python()):
-            value = getattr(self.resource.dialect, name, None)
+        source = resource
+        target = self.resource
+        for name in vars(target.dialect.to_python()):
+            value = getattr(target.dialect, name, None)
             if value is not None:
                 options[name] = value
         with tempfile.NamedTemporaryFile(
-            "wt", delete=False, encoding=self.resource.encoding, newline=""
+            "wt", delete=False, encoding=target.encoding, newline=""
         ) as file:
             writer = csv.writer(file, **options)
             with source:
@@ -252,7 +254,7 @@ class CsvParser(Parser):
                     if row.row_number == 1:
                         writer.writerow(row.field_names)
                     writer.writerow(row.to_list(types=self.supported_types))
-        loader = system.create_loader(self.resource)
+        loader = system.create_loader(target)
         loader.write_byte_stream(file.name)
 
 

@@ -35,7 +35,7 @@ class field_add(Step):
 
     # Transform
 
-    def transform_resource(self, source, target):
+    def transform_resource(self, resource):
         name = self.get("name")
         value = self.get("value")
         formula = self.get("formula")
@@ -44,18 +44,18 @@ class field_add(Step):
         incremental = self.get("incremental")
         options = self.get("options")
         index = position - 1 if position else None
+        field = Field(name=name, **options)
+        if index is None:
+            resource.schema.add_field(field)
+        else:
+            resource.schema.fields.insert(index, field)
         if incremental:
-            target.data = source.to_petl().addrownumbers(field=name)
+            yield from resource.to_petl().addrownumbers(field=name)
         else:
             if formula:
                 function = lambda row: simpleeval.simple_eval(formula, names=row)
             value = value or function
-            target.data = source.to_petl().addfield(name, value=value, index=index)
-        field = Field(name=name, **options)
-        if index is None:
-            target.schema.add_field(field)
-        else:
-            target.schema.fields.insert(index, field)
+            yield from resource.to_petl().addfield(name, value=value, index=index)
 
     # Metadata
 
@@ -80,12 +80,12 @@ class field_filter(Step):
 
     # Transform
 
-    def transform_resource(self, source, target):
+    def transform_resource(self, resource):
         names = self.get("names")
-        target.data = source.to_petl().cut(*names)
-        for name in target.schema.field_names:
+        for name in resource.schema.field_names:
             if name not in names:
-                target.schema.remove_field(name)
+                resource.schema.remove_field(name)
+        yield from resource.to_petl().cut(*names)
 
     # Metadata
 
@@ -108,12 +108,12 @@ class field_move(Step):
 
     # Transform
 
-    def transform_resource(self, source, target):
+    def transform_resource(self, resource):
         name = self.get("name")
         position = self.get("position")
-        target.data = source.to_petl().movefield(name, position - 1)
-        field = target.schema.remove_field(name)
-        target.schema.fields.insert(position - 1, field)
+        field = resource.schema.remove_field(name)
+        resource.schema.fields.insert(position - 1, field)
+        yield from resource.to_petl().movefield(name, position - 1)
 
     # Metadata
 
@@ -136,11 +136,11 @@ class field_remove(Step):
 
     # Transform
 
-    def transform_resource(self, source, target):
+    def transform_resource(self, resource):
         names = self.get("names")
-        target.data = source.to_petl().cutout(*names)
         for name in names:
-            target.schema.remove_field(name)
+            resource.schema.remove_field(name)
+        yield from resource.to_petl().cutout(*names)
 
     # Metadata
 
@@ -173,27 +173,26 @@ class field_split(Step):
 
     # Transform
 
-    def transform_resource(self, source, target):
+    def transform_resource(self, resource):
         name = self.get("name")
         to_names = self.get("toNames")
         pattern = self.get("pattern")
         preserve = self.get("preserve")
+        for to_name in to_names:
+            resource.schema.add_field(Field(name=to_name, type="string"))
+        if not preserve:
+            resource.schema.remove_field(name)
         processor = petl.split
         # NOTE: this condition needs to be improved
         if "(" in pattern:
             processor = petl.capture
-        target.data = processor(
-            source.to_petl(),
+        yield from processor(
+            resource.to_petl(),
             name,
             pattern,
             to_names,
             include_original=preserve,
         )
-        if not preserve:
-            target.schema.remove_field(name)
-        for name in to_names:
-            field = Field(name=name, type="string")
-            target.schema.add_field(field)
 
     # Metadata
 
@@ -220,21 +219,21 @@ class field_unpack(Step):
 
     # Transform
 
-    def transform_resource(self, source, target):
+    def transform_resource(self, resource):
         name = self.get("name")
         to_names = self.get("toNames")
         preserve = self.get("preserve")
-        if target.schema.get_field(name).type == "object":
-            processor = source.to_petl().unpackdict
-            target.data = processor(name, to_names, includeoriginal=preserve)
-        else:
-            processor = source.to_petl().unpack
-            target.data = processor(name, to_names, include_original=preserve)
+        field = resource.schema.get_field(name)
+        for to_name in to_names:
+            resource.schema.add_field(Field(name=to_name))
         if not preserve:
-            target.schema.remove_field(name)
-        for name in to_names:
-            field = Field(name=name)
-            target.schema.add_field(field)
+            resource.schema.remove_field(name)
+        if field.type == "object":
+            processor = resource.to_petl().unpackdict
+            yield from processor(name, to_names, includeoriginal=preserve)
+        else:
+            processor = resource.to_petl().unpack
+            yield from processor(name, to_names, include_original=preserve)
 
     # Metadata
 
@@ -271,21 +270,21 @@ class field_update(Step):
 
     # Transform
 
-    def transform_resource(self, source, target):
+    def transform_resource(self, resource):
         name = self.get("name")
         value = self.get("value")
         formula = self.get("formula")
         function = self.get("function")
         options = self.get("options")
+        field = resource.schema.get_field(name)
+        for item in options.items():
+            setattr(field, item[0], item[1])
         if formula:
             function = lambda val, row: simpleeval.simple_eval(formula, names=row)
         if function:
-            target.data = source.to_petl().convert(name, function)
+            yield from resource.to_petl().convert(name, function)
         else:
-            target.data = source.to_petl().update(name, value)
-        field = target.schema.get_field(name)
-        for name, value in options.items():
-            setattr(field, name, value)
+            yield from resource.to_petl().update(name, value)
 
     # Metadata
 

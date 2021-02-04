@@ -20,13 +20,13 @@ class Step(Metadata):
 
     # Transform
 
-    def transform_resource(self, source, target):
+    def transform_resource(self, resource):
         if self.__function:
-            self.__function(source, target)
+            return self.__function(resource)
 
-    def transform_package(self, source, target):
+    def transform_package(self, resource):
         if self.__function:
-            self.__function(source, target)
+            return self.__function(resource)
 
     # Metadata
 

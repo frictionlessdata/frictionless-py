@@ -117,10 +117,12 @@ class CkanParser(Parser):
 
     # Write
 
-    def write_row_stream(self, source):
-        storage = CkanStorage(self.resource.fullpath, dialect=self.resource.dialect)
+    def write_row_stream(self, resource):
+        source = resource
+        target = self.resource
+        storage = CkanStorage(target.fullpath, dialect=target.dialect)
         # NOTE: this approach is questionable
-        source.name = self.resource.dialect.resource
+        source.name = target.dialect.resource
         storage.write_resource(source, force=True)
 
 

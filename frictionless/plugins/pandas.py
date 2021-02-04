@@ -163,9 +163,11 @@ class PandasParser(Parser):
 
     # Write
 
-    def write_row_stream(self, source):
+    def write_row_stream(self, resource):
         np = helpers.import_from_plugin("numpy", plugin="pandas")
         pd = helpers.import_from_plugin("pandas", plugin="pandas")
+        source = resource
+        target = self.resource
 
         # Get data/index
         data_rows = []
@@ -222,7 +224,7 @@ class PandasParser(Parser):
         # Create/set dataframe
         array = np.array(data_rows, dtype=dtypes)
         dataframe = pd.DataFrame(array, index=index, columns=columns)
-        self.resource.data = dataframe
+        target.data = dataframe
 
     def __write_convert_type(self, type=None):
         np = helpers.import_from_plugin("numpy", plugin="pandas")

@@ -158,19 +158,21 @@ class JsonParser(Parser):
 
     # Write
 
-    def write_row_stream(self, source):
+    def write_row_stream(self, resource):
         data = []
-        dialect = self.resource.dialect
+        source = resource
+        target = self.resource
+        keyed = target.dialect.keyed
         with source:
             for row in source.row_stream:
                 cells = row.to_list(json=True)
-                item = dict(zip(row.field_names, cells)) if dialect.keyed else cells
-                if not dialect.keyed and row.row_number == 1:
+                item = dict(zip(row.field_names, cells)) if keyed else cells
+                if not target.dialect.keyed and row.row_number == 1:
                     data.append(row.field_names)
                 data.append(item)
         with tempfile.NamedTemporaryFile("wt", delete=False) as file:
             json.dump(data, file, indent=2)
-        loader = system.create_loader(self.resource)
+        loader = system.create_loader(target)
         loader.write_byte_stream(file.name)
 
 
@@ -211,17 +213,19 @@ class JsonlParser(Parser):
 
     # Write
 
-    def write_row_stream(self, source):
+    def write_row_stream(self, resource):
         jsonlines = helpers.import_from_plugin("jsonlines", plugin="json")
-        dialect = self.resource.dialect
+        source = resource
+        target = self.resource
+        keyed = target.dialect.keyed
         with tempfile.NamedTemporaryFile(delete=False) as file:
             writer = jsonlines.Writer(file)
             with source:
                 for row in source.row_stream:
                     cells = row.to_list(json=True)
-                    item = dict(zip(row.field_names, cells)) if dialect.keyed else cells
-                    if not dialect.keyed and row.row_number == 1:
+                    item = dict(zip(row.field_names, cells)) if keyed else cells
+                    if not target.dialect.keyed and row.row_number == 1:
                         writer.write(row.field_names)
                     writer.write(item)
-        loader = system.create_loader(self.resource)
+        loader = system.create_loader(target)
         loader.write_byte_stream(file.name)

@@ -118,16 +118,18 @@ class GsheetsParser(Parser):
 
     # Write
 
-    def write_row_stream(self, source):
+    def write_row_stream(self, resource):
         pygsheets = helpers.import_from_plugin("pygsheets", plugin="gsheets")
-        fullpath = self.resource.fullpath
+        source = resource
+        target = self.resource
+        fullpath = target.fullpath
         match = re.search(r".*/d/(?P<key>[^/]+)/.*?(?:gid=(?P<gid>\d+))?$", fullpath)
         if not match:
             error = errors.FormatError(note=f"Cannot save {fullpath}")
             raise FrictionlessException(error)
         key = match.group("key")
         gid = match.group("gid")
-        gc = pygsheets.authorize(service_account_file=self.resource.dialect.credentials)
+        gc = pygsheets.authorize(service_account_file=target.dialect.credentials)
         sh = gc.open_by_key(key)
         wks = sh.worksheet_by_id(gid) if gid else sh[0]
         data = []

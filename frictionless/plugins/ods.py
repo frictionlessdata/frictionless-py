@@ -151,12 +151,13 @@ class OdsParser(Parser):
 
     # Write
 
-    def write_row_stream(self, source):
+    def write_row_stream(self, resource):
         ezodf = helpers.import_from_plugin("ezodf", plugin="ods")
-        dialect = self.resource.dialect
+        source = resource
+        target = self.resource
         file = tempfile.NamedTemporaryFile(delete=False)
         book = ezodf.newdoc(doctype="ods", filename=file.name)
-        title = f"Sheet {dialect.sheet}"
+        title = f"Sheet {target.dialect.sheet}"
         book.sheets += ezodf.Sheet(title)
         sheet = book.sheets[title]
         with source:
@@ -168,5 +169,5 @@ class OdsParser(Parser):
                 for field_index, cell in enumerate(cells):
                     sheet[(row_index + 1, field_index)].set_value(cell)
             book.save()
-        loader = system.create_loader(self.resource)
+        loader = system.create_loader(target)
         loader.write_byte_stream(file.name)
