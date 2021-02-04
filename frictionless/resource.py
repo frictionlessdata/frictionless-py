@@ -886,89 +886,93 @@ class Resource(Metadata):
                 foreign_groups.append(group)
                 is_integrity = True
 
-        # Prepare iterator
+        # Create iterator
         iterator = chain(
             zip(self.__fragment_positions, self.__fragment),
             self.__read_list_stream(),
         )
 
-        # Stream rows
-        self.__row_number = 0
-        limit = self.layout.limit_rows
-        offset = self.layout.offset_rows or 0
-        for row_position, cells in iterator:
-            self.__row_position = row_position
+        # Create row stream
+        def row_stream():
+            self.__row_number = 0
+            limit = self.layout.limit_rows
+            offset = self.layout.offset_rows or 0
+            for row_position, cells in iterator:
+                self.__row_position = row_position
 
-            # Offset/offset rows
-            if offset:
-                offset -= 1
-                continue
-            if limit and limit <= self.__row_number:
-                break
+                # Offset/offset rows
+                if offset:
+                    offset -= 1
+                    continue
+                if limit and limit <= self.__row_number:
+                    break
 
-            # Create row
-            self.__row_number += 1
-            self.stats["rows"] = self.__row_number
-            row = Row(
-                cells,
-                field_info=field_info,
-                row_position=self.__row_position,
-                row_number=self.__row_number,
-            )
+                # Create row
+                self.__row_number += 1
+                self.stats["rows"] = self.__row_number
+                row = Row(
+                    cells,
+                    field_info=field_info,
+                    row_position=self.__row_position,
+                    row_number=self.__row_number,
+                )
 
-            # Unique Error
-            if is_integrity and memory_unique:
-                for field_name in memory_unique.keys():
-                    cell = row[field_name]
-                    if cell is not None:
-                        match = memory_unique[field_name].get(cell)
-                        memory_unique[field_name][cell] = row.row_position
+                # Unique Error
+                if is_integrity and memory_unique:
+                    for field_name in memory_unique.keys():
+                        cell = row[field_name]
+                        if cell is not None:
+                            match = memory_unique[field_name].get(cell)
+                            memory_unique[field_name][cell] = row.row_position
+                            if match:
+                                func = errors.UniqueError.from_row
+                                note = "the same as in the row at position %s" % match
+                                error = func(row, note=note, field_name=field_name)
+                                row.errors.append(error)
+
+                # Primary Key Error
+                if is_integrity and self.schema.primary_key:
+                    cells = tuple(row[name] for name in self.schema.primary_key)
+                    if set(cells) == {None}:
+                        note = 'cells composing the primary keys are all "None"'
+                        error = errors.PrimaryKeyError.from_row(row, note=note)
+                        row.errors.append(error)
+                    else:
+                        match = memory_primary.get(cells)
+                        memory_primary[cells] = row.row_position
                         if match:
-                            Error = errors.UniqueError
-                            note = "the same as in the row at position %s" % match
-                            error = Error.from_row(row, note=note, field_name=field_name)
-                            row.errors.append(error)
+                            if match:
+                                note = "the same as in the row at position %s" % match
+                                error = errors.PrimaryKeyError.from_row(row, note=note)
+                                row.errors.append(error)
 
-            # Primary Key Error
-            if is_integrity and self.schema.primary_key:
-                cells = tuple(row[field_name] for field_name in self.schema.primary_key)
-                if set(cells) == {None}:
-                    note = 'cells composing the primary keys are all "None"'
-                    error = errors.PrimaryKeyError.from_row(row, note=note)
-                    row.errors.append(error)
-                else:
-                    match = memory_primary.get(cells)
-                    memory_primary[cells] = row.row_position
-                    if match:
-                        if match:
-                            note = "the same as in the row at position %s" % match
-                            error = errors.PrimaryKeyError.from_row(row, note=note)
-                            row.errors.append(error)
+                # Foreign Key Error
+                if is_integrity and foreign_groups:
+                    for group in foreign_groups:
+                        group_lookup = self.__lookup.get(group["sourceName"])
+                        if group_lookup:
+                            cells = tuple(row[name] for name in group["targetKey"])
+                            if set(cells) == {None}:
+                                continue
+                            match = cells in group_lookup.get(group["sourceKey"], set())
+                            if not match:
+                                note = "not found in the lookup table"
+                                error = errors.ForeignKeyError.from_row(row, note=note)
+                                row.errors.append(error)
 
-            # Foreign Key Error
-            if is_integrity and foreign_groups:
-                for group in foreign_groups:
-                    group_lookup = self.__lookup.get(group["sourceName"])
-                    if group_lookup:
-                        cells = tuple(row[name] for name in group["targetKey"])
-                        if set(cells) == {None}:
-                            continue
-                        match = cells in group_lookup.get(group["sourceKey"], set())
-                        if not match:
-                            note = "not found in the lookup table"
-                            error = errors.ForeignKeyError.from_row(row, note=note)
-                            row.errors.append(error)
+                # Handle errors
+                if self.onerror != "ignore":
+                    if not row.valid:
+                        error = row.errors[0]
+                        if self.onerror == "raise":
+                            raise FrictionlessException(error)
+                        warnings.warn(error.message, UserWarning)
 
-            # Handle errors
-            if self.onerror != "ignore":
-                if not row.valid:
-                    error = row.errors[0]
-                    if self.onerror == "raise":
-                        raise FrictionlessException(error)
-                    warnings.warn(error.message, UserWarning)
+                # Yield row
+                yield row
 
-            # Yield row
-            yield row
+        # Return row stream
+        return row_stream()
 
     def __read_header(self):
 
