@@ -1,9 +1,11 @@
+import pytest
 from frictionless import Resource, transform, steps
 
 
 # General
 
 
+@pytest.mark.skip
 def test_transform_resource():
     source = Resource(path="data/transform.csv")
     source.infer()
@@ -23,6 +25,7 @@ def test_transform_resource():
     ]
 
 
+@pytest.mark.skip
 def test_transform_resource_from_descriptor():
     source = Resource(path="data/transform.csv")
     source.infer()

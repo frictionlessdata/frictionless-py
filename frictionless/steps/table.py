@@ -3,7 +3,6 @@ from ..step import Step
 from ..field import Field
 from ..resource import Resource
 from ..exception import FrictionlessException
-from .. import helpers
 
 
 # NOTE:
@@ -57,7 +56,8 @@ class table_attach(Step):
 
     # Transform
 
-    def transform_resource(self, resource1):
+    def transform_resource(self, resource):
+        resource1 = resource
         resource2 = self.get("resource")
         if isinstance(resource2, str):
             resource2 = resource1.package.get_resource(resource2)
@@ -124,7 +124,8 @@ class table_diff(Step):
 
     # Transform
 
-    def transform_resource(self, resource1):
+    def transform_resource(self, resource):
+        resource1 = resource
         resource2 = self.get("resource")
         ignore_order = self.get("ignoreOrder")
         use_hash = self.get("useHash")
@@ -162,7 +163,8 @@ class table_intersect(Step):
 
     # Transform
 
-    def transform_resource(self, resource1):
+    def transform_resource(self, resource):
+        resource1 = resource
         resource2 = self.get("resource")
         use_hash = self.get("useHash")
         if isinstance(resource2, str):
@@ -206,7 +208,8 @@ class table_join(Step):
 
     # Transform
 
-    def transform_resource(self, resource1):
+    def transform_resource(self, resource):
+        resource1 = resource
         resource2 = self.get("resource")
         field_name = self.get("fieldName")
         use_hash = self.get("useHash")

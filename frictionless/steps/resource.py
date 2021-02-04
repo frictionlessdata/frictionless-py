@@ -21,12 +21,12 @@ class resource_add(Step):
 
     # Transform
 
-    def transform_package(self, source, target):
+    def transform_package(self, package):
         name = self.get("name")
         options = self.get("options")
-        resource = Resource(name=name, basepath=target.basepath, **options)
+        resource = Resource(name=name, basepath=package.basepath, **options)
         resource.infer()
-        target.add_resource(resource)
+        package.add_resource(resource)
 
     # Metadata
 
@@ -48,13 +48,13 @@ class resource_remove(Step):
 
     # Transform
 
-    def transform_package(self, source, target):
+    def transform_package(self, package):
         name = self.get("name")
-        resource = target.get_resource(name)
+        resource = package.get_resource(name)
         if not resource:
             error = errors.ResourceError(note=f'No resource "{name}"')
             raise FrictionlessException(error=error)
-        target.remove_resource(name)
+        package.remove_resource(name)
 
     # Metadata
 
@@ -77,15 +77,15 @@ class resource_transform(Step):
 
     # Transform
 
-    def transform_package(self, source, target):
+    def transform_package(self, package):
         name = self.get("name")
         steps = self.get("steps")
-        resource = target.get_resource(name)
-        index = target.resources.index(resource)
+        resource = package.get_resource(name)
+        index = package.resources.index(resource)
         if not resource:
             error = errors.ResourceError(note=f'No resource "{name}"')
             raise FrictionlessException(error=error)
-        target.resources[index] = transform_resource(resource, steps=steps)
+        package.resources[index] = transform_resource(resource, steps=steps)
 
     # Metadata
 
@@ -109,10 +109,10 @@ class resource_update(Step):
 
     # Transform
 
-    def transform_package(self, source, target):
+    def transform_package(self, package):
         name = self.get("name")
         options = self.get("options")
-        resource = target.get_resource(name)
+        resource = package.get_resource(name)
         if not resource:
             error = errors.ResourceError(note=f'No resource "{name}"')
             raise FrictionlessException(error=error)

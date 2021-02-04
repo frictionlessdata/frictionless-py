@@ -1110,20 +1110,14 @@ class Resource(Metadata):
         """Create a resource from PETL view"""
         return Resource(data=view, **options)
 
-    def to_petl(self, *, normalize=False):
+    def to_petl(self):
         """Export resource as a PETL view"""
-        resource = self
+        resource = self.to_copy()
 
         # Define view
         class ResourceView(petl.Table):
             def __iter__(self):
-                with helpers.ensure_open(resource):
-                    # Normalized
-                    if normalize:
-                        yield resource.schema.field_names
-                        yield from (row.to_list() for row in resource.row_stream)
-                        return
-                    # Default
+                with resource:
                     if not resource.header.missing:
                         yield resource.header.labels
                     yield from (row.cells for row in resource.row_stream)
