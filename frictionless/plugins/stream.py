@@ -78,4 +78,4 @@ class StreamLoader(Loader):
     # Write
 
     def write_byte_stream_save(self, byte_stream):
-        return byte_stream
+        self.resource.data = byte_stream
