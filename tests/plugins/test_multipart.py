@@ -46,7 +46,6 @@ def test_multipart_loader_resource():
     ]
 
 
-@pytest.mark.skip
 @pytest.mark.vcr
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_multipart_loader_resource_remote():
@@ -66,7 +65,6 @@ def test_multipart_loader_resource_remote():
     ]
 
 
-@pytest.mark.skip
 @pytest.mark.vcr
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_multipart_loader_resource_remote_both_path_and_basepath():
@@ -149,7 +147,6 @@ def test_multipart_loader_resource_validate():
 
 # We're better implement here a round-robin testing including
 # reading using Resource as we do for other tests
-@pytest.mark.skip
 def test_multipart_loader_resource_write_file(tmpdir):
     target = str(tmpdir.join("table{number}.json"))
     target1 = str(tmpdir.join("table1.json"))
@@ -157,7 +154,7 @@ def test_multipart_loader_resource_write_file(tmpdir):
 
     # Write
     resource = Resource(data=[["id", "name"], [1, "english"], [2, "german"]])
-    resource.write(target, scheme="multipart", control={"chunkSize": 80})
+    resource.write(path=target, scheme="multipart", control={"chunkSize": 80})
 
     # Read
     text = ""
