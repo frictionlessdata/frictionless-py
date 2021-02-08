@@ -140,8 +140,7 @@ class File:
         name = "memory"
         if not memory:
             names = []
-            # Path can have a text scheme like "text://row1\nrow2"
-            for part in fullpath if multipart else [fullpath.split("\n")[0]]:
+            for part in fullpath if multipart else [fullpath]:
                 name = os.path.splitext(os.path.basename(part))[0]
                 names.append(name)
             name = os.path.commonprefix(names)

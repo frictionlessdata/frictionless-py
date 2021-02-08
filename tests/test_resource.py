@@ -346,9 +346,9 @@ def test_resource_scheme_stream():
             assert resource.scheme == "stream"
 
 
-def test_resource_scheme_text():
-    with Resource("text://a\nb", format="csv") as resource:
-        assert resource.scheme == "text"
+def test_resource_scheme_buffer():
+    with Resource(b"a\nb", format="csv") as resource:
+        assert resource.scheme == "buffer"
 
 
 def test_resource_scheme_error_bad_scheme():
@@ -692,8 +692,8 @@ def test_resource_compression_error_bad():
 
 
 def test_resource_compression_error_invalid_zip():
-    source = "id,filename\n1,archive.zip"
-    resource = Resource(source, scheme="text", format="csv")
+    source = b"id,filename\n1,archive"
+    resource = Resource(source, format="csv", compression="zip")
     with pytest.raises(FrictionlessException) as excinfo:
         resource.open()
     error = excinfo.value.error
@@ -704,8 +704,8 @@ def test_resource_compression_error_invalid_zip():
 @pytest.mark.skip
 @pytest.mark.skipif(sys.version_info < (3, 8), reason="Requires Python3.8+")
 def test_resource_compression_error_invalid_gz():
-    source = "id,filename\n\1,dump.tar.gz"
-    resource = Resource(source, scheme="text", format="csv")
+    source = b"id,filename\n\1,dump"
+    resource = Resource(source, format="csv", compression="gz")
     with pytest.raises(FrictionlessException) as excinfo:
         resource.open()
     error = excinfo.value.error
@@ -850,9 +850,9 @@ def test_resource_dialect_csv_delimiter():
 
 
 def test_resource_dialect_json_property():
-    source = '{"root": [["header1", "header2"], ["value1", "value2"]]}'
+    source = b'{"root": [["header1", "header2"], ["value1", "value2"]]}'
     dialect = JsonDialect(property="root")
-    with Resource(source, scheme="text", format="json", dialect=dialect) as resource:
+    with Resource(source, format="json", dialect=dialect) as resource:
         assert resource.header == ["header1", "header2"]
         assert resource.read_rows() == [
             {"header1": "value1", "header2": "value2"},
@@ -945,7 +945,8 @@ def test_resource_layout_header_inline():
 
 
 def test_resource_layout_header_json_keyed():
-    source = "text://[" '{"id": 1, "name": "english"},' '{"id": 2, "name": "中国人"}]'
+    source = "[" '{"id": 1, "name": "english"},' '{"id": 2, "name": "中国人"}]'
+    source = source.encode("utf-8")
     with Resource(source, format="json") as resource:
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
@@ -995,7 +996,7 @@ def test_resource_layout_header_xlsx_multiline():
 
 
 def test_resource_layout_header_csv_multiline_headers_join():
-    source = "text://k1\nk2\nv1\nv2\nv3"
+    source = b"k1\nk2\nv1\nv2\nv3"
     layout = Layout(header_rows=[1, 2], header_join=":")
     with Resource(source, format="csv", layout=layout) as resource:
         assert resource.header == ["k1:k2"]
@@ -1007,7 +1008,7 @@ def test_resource_layout_header_csv_multiline_headers_join():
 
 
 def test_resource_layout_header_csv_multiline_headers_duplicates():
-    source = "text://k1\nk1\nv1\nv2\nv3"
+    source = b"k1\nk1\nv1\nv2\nv3"
     layout = Layout(header_rows=[1, 2])
     with Resource(source, format="csv", layout=layout) as resource:
         assert resource.header == ["k1"]
@@ -1052,7 +1053,7 @@ def test_resource_layout_header_case_is_false():
 
 def test_resource_layout_pick_fields():
     layout = Layout(pick_fields=["header2"])
-    source = "text://header1,header2,header3\nvalue1,value2,value3"
+    source = b"header1,header2,header3\nvalue1,value2,value3"
     with Resource(source, format="csv", layout=layout) as resource:
         assert resource.header == ["header2"]
         assert resource.header.field_positions == [2]
@@ -1063,7 +1064,7 @@ def test_resource_layout_pick_fields():
 
 def test_resource_layout_pick_fields_position():
     layout = Layout(pick_fields=[2])
-    source = "text://header1,header2,header3\nvalue1,value2,value3"
+    source = b"header1,header2,header3\nvalue1,value2,value3"
     with Resource(source, format="csv", layout=layout) as resource:
         assert resource.header == ["header2"]
         assert resource.header.field_positions == [2]
@@ -1074,7 +1075,7 @@ def test_resource_layout_pick_fields_position():
 
 def test_resource_layout_pick_fields_regex():
     layout = Layout(pick_fields=["<regex>header(2)"])
-    source = "text://header1,header2,header3\nvalue1,value2,value3"
+    source = b"header1,header2,header3\nvalue1,value2,value3"
     with Resource(source, format="csv", layout=layout) as resource:
         assert resource.header == ["header2"]
         assert resource.header.field_positions == [2]
@@ -1085,7 +1086,7 @@ def test_resource_layout_pick_fields_regex():
 
 def test_resource_layout_pick_fields_position_and_prefix():
     layout = Layout(pick_fields=[2, "header3"])
-    source = "text://header1,header2,header3\nvalue1,value2,value3"
+    source = b"header1,header2,header3\nvalue1,value2,value3"
     with Resource(source, format="csv", layout=layout) as resource:
         assert resource.header == ["header2", "header3"]
         assert resource.header.field_positions == [2, 3]
@@ -1096,7 +1097,7 @@ def test_resource_layout_pick_fields_position_and_prefix():
 
 def test_resource_layout_skip_fields():
     layout = Layout(skip_fields=["header2"])
-    source = "text://header1,header2,header3\nvalue1,value2,value3"
+    source = b"header1,header2,header3\nvalue1,value2,value3"
     with Resource(source, format="csv", layout=layout) as resource:
         assert resource.header == ["header1", "header3"]
         assert resource.header.field_positions == [1, 3]
@@ -1107,7 +1108,7 @@ def test_resource_layout_skip_fields():
 
 def test_resource_layout_skip_fields_position():
     layout = Layout(skip_fields=[2])
-    source = "text://header1,header2,header3\nvalue1,value2,value3"
+    source = b"header1,header2,header3\nvalue1,value2,value3"
     with Resource(source, format="csv", layout=layout) as resource:
         assert resource.header == ["header1", "header3"]
         assert resource.header.field_positions == [1, 3]
@@ -1118,7 +1119,7 @@ def test_resource_layout_skip_fields_position():
 
 def test_resource_layout_skip_fields_regex():
     layout = Layout(skip_fields=["<regex>header(1|3)"])
-    source = "text://header1,header2,header3\nvalue1,value2,value3"
+    source = b"header1,header2,header3\nvalue1,value2,value3"
     with Resource(source, format="csv", layout=layout) as resource:
         assert resource.header == ["header2"]
         assert resource.header.field_positions == [2]
@@ -1129,7 +1130,7 @@ def test_resource_layout_skip_fields_regex():
 
 def test_resource_layout_skip_fields_position_and_prefix():
     layout = Layout(skip_fields=[2, "header3"])
-    source = "text://header1,header2,header3\nvalue1,value2,value3"
+    source = b"header1,header2,header3\nvalue1,value2,value3"
     with Resource(source, format="csv", layout=layout) as resource:
         assert resource.header == ["header1"]
         assert resource.header.field_positions == [1]
@@ -1140,7 +1141,7 @@ def test_resource_layout_skip_fields_position_and_prefix():
 
 def test_resource_layout_skip_fields_blank_header():
     layout = Layout(skip_fields=[""])
-    source = "text://header1,,header3\nvalue1,value2,value3"
+    source = b"header1,,header3\nvalue1,value2,value3"
     with Resource(source, format="csv", layout=layout) as resource:
         assert resource.header == ["header1", "header3"]
         assert resource.header.field_positions == [1, 3]
@@ -1151,7 +1152,7 @@ def test_resource_layout_skip_fields_blank_header():
 
 def test_resource_layout_skip_fields_blank_header_notation():
     layout = Layout(skip_fields=["<blank>"])
-    source = "text://header1,,header3\nvalue1,value2,value3"
+    source = b"header1,,header3\nvalue1,value2,value3"
     with Resource(source, format="csv", layout=layout) as resource:
         assert resource.header == ["header1", "header3"]
         assert resource.header.field_positions == [1, 3]
@@ -1178,7 +1179,7 @@ def test_resource_layout_skip_fields_keyed_source():
 
 def test_resource_layout_limit_fields():
     layout = Layout(limit_fields=1)
-    source = "text://header1,header2,header3\nvalue1,value2,value3"
+    source = b"header1,header2,header3\nvalue1,value2,value3"
     with Resource(source, format="csv", layout=layout) as resource:
         assert resource.header == ["header1"]
         assert resource.header.field_positions == [1]
@@ -1189,7 +1190,7 @@ def test_resource_layout_limit_fields():
 
 def test_resource_layout_offset_fields():
     layout = Layout(offset_fields=1)
-    source = "text://header1,header2,header3\nvalue1,value2,value3"
+    source = b"header1,header2,header3\nvalue1,value2,value3"
     with Resource(source, format="csv", layout=layout) as resource:
         assert resource.header == ["header2", "header3"]
         assert resource.header.field_positions == [2, 3]
@@ -1200,7 +1201,7 @@ def test_resource_layout_offset_fields():
 
 def test_resource_layout_limit_offset_fields():
     layout = Layout(limit_fields=1, offset_fields=1)
-    source = "text://header1,header2,header3\nvalue1,value2,value3"
+    source = b"header1,header2,header3\nvalue1,value2,value3"
     with Resource(source, format="csv", layout=layout) as resource:
         assert resource.header == ["header2"]
         assert resource.header.field_positions == [2]
@@ -2038,7 +2039,7 @@ def test_resource_open_without_headers():
 
 
 def test_resource_open_source_error_data():
-    resource = Resource("[1,2]", scheme="text", format="json")
+    resource = Resource(b"[1,2]", format="json")
     with pytest.raises(FrictionlessException) as excinfo:
         resource.open()
     error = excinfo.value.error

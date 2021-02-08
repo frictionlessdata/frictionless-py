@@ -31,15 +31,15 @@ def test_to_str():
 
 
 def test_to_str_with_doublequotes():
-    source = 'id,name\n1,"english,UK"\n2,"german,GE"'
-    resource = Resource(path=source, scheme="text", format="csv")
+    source = b'id,name\n1,"english,UK"\n2,"german,GE"'
+    resource = Resource(source, format="csv")
     rows = resource.read_rows()
     assert rows[0].to_str() == '1,"english,UK"'
     assert rows[1].to_str() == '2,"german,GE"'
 
 
 def test_to_dict_with_json_null_values_issue_519():
-    source = "text://value\n2020-01-01\n\n2020-03-03"
+    source = b"value\n2020-01-01\n\n2020-03-03"
     process = lambda row: row.to_dict(json=True)
     extract(source, format="csv", process=process) == [
         {"value": "2020-01-01"},
@@ -49,7 +49,7 @@ def test_to_dict_with_json_null_values_issue_519():
 
 
 def test_to_list_with_json_null_values_issue_519():
-    source = "text://value\n2020-01-01\n\n2020-03-03"
+    source = b"value\n2020-01-01\n\n2020-03-03"
     process = lambda row: row.to_list(json=True)
     extract(source, format="csv", process=process) == [
         ["2020-01-01"],

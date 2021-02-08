@@ -36,8 +36,8 @@ def test_csv_parser_with_bom_with_encoding():
 
 
 def test_csv_parser_excel():
-    source = "header1,header2\nvalue1,value2\nvalue3,value4"
-    with Resource(source, scheme="text", format="csv") as resource:
+    source = b"header1,header2\nvalue1,value2\nvalue3,value4"
+    with Resource(source, format="csv") as resource:
         assert resource.header == ["header1", "header2"]
         assert resource.read_rows() == [
             {"header1": "value1", "header2": "value2"},
@@ -46,9 +46,9 @@ def test_csv_parser_excel():
 
 
 def test_csv_parser_excel_tab():
-    source = "header1\theader2\nvalue1\tvalue2\nvalue3\tvalue4"
+    source = b"header1\theader2\nvalue1\tvalue2\nvalue3\tvalue4"
     dialect = CsvDialect(delimiter="\t")
-    with Resource(source, scheme="text", format="csv", dialect=dialect) as resource:
+    with Resource(source, format="csv", dialect=dialect) as resource:
         assert resource.header == ["header1", "header2"]
         assert resource.read_rows() == [
             {"header1": "value1", "header2": "value2"},
@@ -57,8 +57,8 @@ def test_csv_parser_excel_tab():
 
 
 def test_csv_parser_unix():
-    source = '"header1","header2"\n"value1","value2"\n"value3","value4"'
-    with Resource(source, scheme="text", format="csv") as resource:
+    source = b'"header1","header2"\n"value1","value2"\n"value3","value4"'
+    with Resource(source, format="csv") as resource:
         assert resource.header == ["header1", "header2"]
         assert resource.read_rows() == [
             {"header1": "value1", "header2": "value2"},
@@ -94,8 +94,8 @@ def test_csv_parser_stream():
         ]
 
 
-def test_csv_parser_text():
-    source = "text://id,name\n1,english\n2,中国人\n"
+def test_csv_parser_buffer():
+    source = "id,name\n1,english\n2,中国人\n".encode("utf-8")
     with Resource(source, format="csv") as resource:
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
@@ -130,9 +130,9 @@ def test_csv_parser_remote_non_ascii_url():
 
 
 def test_csv_parser_delimiter():
-    source = '"header1";"header2"\n"value1";"value2"\n"value3";"value4"'
+    source = b'"header1";"header2"\n"value1";"value2"\n"value3";"value4"'
     dialect = CsvDialect(delimiter=";")
-    with Resource(source, scheme="text", format="csv", dialect=dialect) as resource:
+    with Resource(source, format="csv", dialect=dialect) as resource:
         assert resource.header == ["header1", "header2"]
         assert resource.read_rows() == [
             {"header1": "value1", "header2": "value2"},
@@ -141,9 +141,9 @@ def test_csv_parser_delimiter():
 
 
 def test_csv_parser_escapechar():
-    source = "header1%,header2\nvalue1%,value2\nvalue3%,value4"
+    source = b"header1%,header2\nvalue1%,value2\nvalue3%,value4"
     dialect = CsvDialect(escape_char="%")
-    with Resource(source, scheme="text", format="csv", dialect=dialect) as resource:
+    with Resource(source, format="csv", dialect=dialect) as resource:
         assert resource.header == ["header1,header2"]
         assert resource.read_rows() == [
             {"header1,header2": "value1,value2"},
@@ -153,9 +153,9 @@ def test_csv_parser_escapechar():
 
 @pytest.mark.skip
 def test_csv_parser_quotechar():
-    source = "%header1,header2%\n%value1,value2%\n%value3,value4%"
+    source = b"%header1,header2%\n%value1,value2%\n%value3,value4%"
     dialect = CsvDialect(quote_char="%")
-    with Resource(source, scheme="text", format="csv", dialect=dialect) as resource:
+    with Resource(source, format="csv", dialect=dialect) as resource:
         assert resource.header == ["header1,header2"]
         assert resource.read_rows() == [
             {"header1,header2": "value1,value2"},
@@ -164,9 +164,9 @@ def test_csv_parser_quotechar():
 
 
 def test_csv_parser_skipinitialspace():
-    source = "header1, header2\nvalue1, value2\nvalue3, value4"
+    source = b"header1, header2\nvalue1, value2\nvalue3, value4"
     dialect = CsvDialect(skip_initial_space=False)
-    with Resource(source, scheme="text", format="csv", dialect=dialect) as resource:
+    with Resource(source, format="csv", dialect=dialect) as resource:
         assert resource.header == ["header1", "header2"]
         assert resource.read_rows() == [
             {"header1": "value1", "header2": " value2"},
@@ -175,8 +175,8 @@ def test_csv_parser_skipinitialspace():
 
 
 def test_csv_parser_skipinitialspace_default():
-    source = "header1, header2\nvalue1, value2\nvalue3, value4"
-    with Resource(source, scheme="text", format="csv") as resource:
+    source = b"header1, header2\nvalue1, value2\nvalue3, value4"
+    with Resource(source, format="csv") as resource:
         assert resource.header == ["header1", "header2"]
         assert resource.read_rows() == [
             {"header1": "value1", "header2": "value2"},
@@ -185,9 +185,9 @@ def test_csv_parser_skipinitialspace_default():
 
 
 def test_csv_parser_detect_delimiter_tab():
-    source = "a1\tb1\tc1A,c1B\na2\tb2\tc2\n"
+    source = b"a1\tb1\tc1A,c1B\na2\tb2\tc2\n"
     layout = Layout(header=False)
-    with Resource(source, scheme="text", format="csv", layout=layout) as resource:
+    with Resource(source, format="csv", layout=layout) as resource:
         assert resource.read_rows() == [
             {"field1": "a1", "field2": "b1", "field3": "c1A,c1B"},
             {"field1": "a2", "field2": "b2", "field3": "c2"},
@@ -195,9 +195,9 @@ def test_csv_parser_detect_delimiter_tab():
 
 
 def test_csv_parser_detect_delimiter_semicolon():
-    source = "a1;b1\na2;b2\n"
+    source = b"a1;b1\na2;b2\n"
     layout = Layout(header=False)
-    with Resource(source, scheme="text", format="csv", layout=layout) as resource:
+    with Resource(source, format="csv", layout=layout) as resource:
         assert resource.read_rows() == [
             {"field1": "a1", "field2": "b1"},
             {"field1": "a2", "field2": "b2"},
@@ -205,9 +205,9 @@ def test_csv_parser_detect_delimiter_semicolon():
 
 
 def test_csv_parser_detect_delimiter_pipe():
-    source = "a1|b1\na2|b2\n"
+    source = b"a1|b1\na2|b2\n"
     layout = Layout(header=False)
-    with Resource(source, scheme="text", format="csv", layout=layout) as resource:
+    with Resource(source, format="csv", layout=layout) as resource:
         assert resource.read_rows() == [
             {"field1": "a1", "field2": "b1"},
             {"field1": "a2", "field2": "b2"},
@@ -215,19 +215,19 @@ def test_csv_parser_detect_delimiter_pipe():
 
 
 def test_csv_parser_dialect_should_not_persist_if_sniffing_fails_issue_goodtables_228():
-    source1 = "a;b;c\n#comment"
-    source2 = "a,b,c\n#comment"
+    source1 = b"a;b;c\n#comment"
+    source2 = b"a,b,c\n#comment"
     dialect = CsvDialect(delimiter=";")
-    with Resource(source1, scheme="text", format="csv", dialect=dialect) as resource:
+    with Resource(source1, format="csv", dialect=dialect) as resource:
         assert resource.header == ["a", "b", "c"]
-    with Resource(source2, scheme="text", format="csv") as resource:
+    with Resource(source2, format="csv") as resource:
         assert resource.header == ["a", "b", "c"]
 
 
 def test_csv_parser_quotechar_is_empty_string():
-    source = 'header1,header2",header3\nvalue1,value2",value3'
+    source = b'header1,header2",header3\nvalue1,value2",value3'
     dialect = CsvDialect(quote_char="")
-    with Resource(source, scheme="text", format="csv", dialect=dialect) as resource:
+    with Resource(source, format="csv", dialect=dialect) as resource:
         resource.header == ["header1", 'header2"', "header3"]
         assert resource.read_rows() == [
             {"header1": "value1", 'header2"': 'value2"', "header3": "value3"},
