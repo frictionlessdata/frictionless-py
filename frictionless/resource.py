@@ -732,7 +732,6 @@ class Resource(Metadata):
             self["control"] = self.control
         if self.dialect:
             self["dialect"] = self.dialect
-        self["stats"] = {"hash": "", "bytes": 0, "fields": 0, "rows": 0}
 
         # Validate
         if self.metadata_errors:
@@ -744,6 +743,7 @@ class Resource(Metadata):
 
             # Table
             if self.tabular:
+                self["stats"] = {"hash": "", "bytes": 0, "fields": 0, "rows": 0}
                 self.__parser = system.create_parser(self)
                 self.__parser.open()
                 self.__read_detect_layout()
@@ -756,6 +756,7 @@ class Resource(Metadata):
 
             # File
             else:
+                self["stats"] = {"hash": "", "bytes": 0}
                 self.__loader = system.create_loader(self)
                 self.__loader.open()
                 return self
