@@ -42,7 +42,7 @@ def test_s3_loader_big_file(bucket_name):
     bucket = client.create_bucket(Bucket=bucket_name, ACL="public-read")
     bucket.put_object(
         ACL="private",
-        Body=open("data/table1.csv", "rb"),
+        Body=open("data/table-1MB.csv", "rb"),
         Bucket=bucket_name,
         ContentType="text/csv",
         Key="table1.csv",
