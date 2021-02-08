@@ -554,7 +554,6 @@ def test_validate_schema_maximum_constraint():
     ]
 
 
-@pytest.mark.skip
 def test_validate_sync_schema():
     schema = {
         "fields": [
@@ -662,7 +661,7 @@ def test_validate_infer_names():
 
 # Integrity
 
-# TODO: merge
+
 @pytest.mark.skip
 def test_validate_foreign_key_error():
     source = {
@@ -819,7 +818,6 @@ def test_validate_primary_key_error_composite():
     ]
 
 
-# TODO: merge
 @pytest.mark.skip
 def test_validate_foreign_key_error_copy():
     schema = {
@@ -836,7 +834,6 @@ def test_validate_foreign_key_error_copy():
     assert report.valid
 
 
-# TODO: merge
 @pytest.mark.skip
 def test_validate_foreign_key_error_invalid_copy():
     schema = {

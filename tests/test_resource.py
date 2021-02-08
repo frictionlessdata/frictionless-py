@@ -102,50 +102,44 @@ def test_resource_from_path_remote_error_bad_path():
     assert error.note.count("bad.json")
 
 
-@pytest.mark.skip
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_source_non_tabular():
     path = "data/text.txt"
-    resource = Resource(path=path)
-    assert resource.path == path
-    assert resource.data is None
-    assert resource.basepath == ""
-    assert resource.memory is False
-    assert resource.tabular is False
-    assert resource.multipart is False
-    assert resource.fullpath == path
-    assert resource.read_bytes() == b"text\n"
-    assert resource.stats == {
-        "hash": "e1cbb0c3879af8347246f12c559a86b5",
-        "bytes": 5,
-        "fields": 0,
-        "rows": 0,
-    }
+    with Resource(path) as resource:
+        assert resource.path == path
+        assert resource.data is None
+        assert resource.basepath == ""
+        assert resource.memory is False
+        assert resource.tabular is False
+        assert resource.multipart is False
+        assert resource.fullpath == path
+        assert resource.read_bytes() == b"text\n"
+        assert resource.stats == {
+            "hash": "e1cbb0c3879af8347246f12c559a86b5",
+            "bytes": 5,
+        }
 
 
-@pytest.mark.skip
 @pytest.mark.vcr
 def test_resource_source_non_tabular_remote():
     path = BASE_URL % "data/foo.txt"
-    resource = Resource(path=path)
-    assert resource.path == path
-    assert resource.data is None
-    assert resource.memory is False
-    assert resource.tabular is False
-    assert resource.multipart is False
-    assert resource.basepath == ""
-    assert resource.fullpath == path
-    assert resource.read_bytes() == b"foo\n"
-    assert resource.stats == {
-        "hash": "d3b07384d113edec49eaa6238ad5ff00",
-        "bytes": 4,
-        "fields": 0,
-        "rows": 0,
-    }
+    with Resource(path) as resource:
+        assert resource.path == path
+        assert resource.data is None
+        assert resource.memory is False
+        assert resource.tabular is False
+        assert resource.multipart is False
+        assert resource.basepath == ""
+        assert resource.fullpath == path
+        assert resource.read_bytes() == b"foo\n"
+        assert resource.stats == {
+            "hash": "d3b07384d113edec49eaa6238ad5ff00",
+            "bytes": 4,
+        }
 
 
 def test_resource_source_non_tabular_error_bad_path():
-    resource = Resource(path="data/bad.txt")
+    resource = Resource("data/bad.txt")
     with pytest.raises(FrictionlessException) as excinfo:
         resource.read_bytes()
     error = excinfo.value.error

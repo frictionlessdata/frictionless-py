@@ -652,7 +652,10 @@ class Resource(Metadata):
             gen<bytes>?: byte stream
         """
         if not self.closed:
-            loader = self.__loader or system.create_loader(self)
+            loader = self.__loader
+            if not loader:
+                loader = system.create_loader(self)
+                loader.open()
             return loader.byte_stream
 
     @property
@@ -663,7 +666,10 @@ class Resource(Metadata):
             gen<str[]>?: text stream
         """
         if not self.closed:
-            loader = self.__loader or system.create_loader(self)
+            loader = self.__loader
+            if not loader:
+                loader = system.create_loader(self)
+                loader.open()
             return loader.text_stream
 
     @property
@@ -800,7 +806,7 @@ class Resource(Metadata):
         if self.memory:
             return b""
         with helpers.ensure_open(self):
-            return self.byte_stream.read(size)
+            return self.byte_stream.read1(size)
 
     def read_text(self, *, size=None):
         """Read text into memory

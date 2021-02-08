@@ -45,7 +45,6 @@ def test_validate_package_from_path_invalid():
     ]
 
 
-@pytest.mark.skip
 @pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_validate_package_from_zip():
@@ -53,7 +52,6 @@ def test_validate_package_from_zip():
     assert report.valid
 
 
-@pytest.mark.skip
 @pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_validate_package_from_zip_invalid():
@@ -455,10 +453,11 @@ def test_validate_package_with_schema_issue_348():
     ]
 
 
+# TODO: use pytest.vcr?
 @pytest.mark.skip
 @pytest.mark.ci
 def test_validate_package_uppercase_format_issue_494():
     with pytest.warns(UserWarning):
-        report = validate("data/issue494.package.json")
+        report = validate("data/issue-494.package.json")
         assert report.valid
         assert report.stats["tasks"] == 1

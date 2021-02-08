@@ -76,7 +76,6 @@ def test_validate_inquiry_multiple_invalid_with_schema():
     ]
 
 
-@pytest.mark.skip
 def test_validate_inquiry_with_one_package():
     report = validate(
         {"tasks": [{"source": "data/package/datapackage.json"}]},
@@ -84,7 +83,6 @@ def test_validate_inquiry_with_one_package():
     assert report.valid
 
 
-@pytest.mark.skip
 def test_validate_inquiry_with_multiple_packages():
     report = validate(
         {
