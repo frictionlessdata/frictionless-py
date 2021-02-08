@@ -39,9 +39,9 @@ def test_json_parser_keyed_with_keys_provided():
         ]
 
 
-def test_json_parser_from_text():
-    source = '[["id", "name"], [1, "english"], [2, "中国人"]]'
-    with Resource(source, scheme="text", format="json") as resource:
+def test_json_parser_from_buffer():
+    source = '[["id", "name"], [1, "english"], [2, "中国人"]]'.encode("utf-8")
+    with Resource(source, format="json") as resource:
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
@@ -49,9 +49,9 @@ def test_json_parser_from_text():
         ]
 
 
-def test_json_parser_from_text_keyed():
-    source = '[{"id": 1, "name": "english" }, {"id": 2, "name": "中国人" }]'
-    with Resource(source, scheme="text", format="json") as resource:
+def test_json_parser_from_buffer_keyed():
+    source = '[{"id": 1, "name": "english" }, {"id": 2, "name": "中国人" }]'.encode("utf-8")
+    with Resource(source, format="json") as resource:
         assert resource.dialect.keyed is True
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
