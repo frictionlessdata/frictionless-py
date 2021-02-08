@@ -45,8 +45,6 @@ def test_sql_parser_order_by_desc(database_url):
         ]
 
 
-# TODO: it doesn't work with stricter validation
-@pytest.mark.skip
 def test_sql_parser_table_is_required_error(database_url):
     resource = Resource(database_url)
     with pytest.raises(FrictionlessException) as excinfo:
@@ -56,7 +54,7 @@ def test_sql_parser_table_is_required_error(database_url):
     assert error.note.count("'table' is a required property")
 
 
-# Probably it's not correct behaviour
+# NOTE: Probably it's not correct behaviour
 def test_sql_parser_headers_false(database_url):
     dialect = SqlDialect(table="table")
     layout = Layout(header=False)

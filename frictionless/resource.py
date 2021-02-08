@@ -1188,18 +1188,12 @@ class Resource(Metadata):
     def metadata_validate(self):
         yield from super().metadata_validate()
 
-        # Control
-        if self.control:
-            yield from self.control.metadata_errors
+        # Control/Dialect
+        yield from self.control.metadata_errors
+        yield from self.dialect.metadata_errors
 
-        # Dialect
-        if self.dialect:
-            yield from self.dialect.metadata_errors
-
-        # Layout
+        # Layout/Schema
         if self.layout:
             yield from self.layout.metadata_errors
-
-        # Schema
         if self.schema:
             yield from self.schema.metadata_errors
