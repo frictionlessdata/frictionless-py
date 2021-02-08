@@ -6,7 +6,7 @@ from frictionless.plugins.json import JsonDialect
 BASE_URL = "https://raw.githubusercontent.com/okfn/tabulator-py/master/%s"
 
 
-# Read
+# Loader
 
 
 def test_json_parser():
@@ -99,13 +99,9 @@ def test_jsonl_parser_ndjson():
         ]
 
 
-# Write
-
-
 def test_json_parser_write(tmpdir):
     source = Resource("data/table.csv")
-    target = Resource(path=str(tmpdir.join("table.json")), trusted=True)
-    source.write(target)
+    target = source.write(Resource(path=str(tmpdir.join("table.json"))))
     with open(target.fullpath) as file:
         assert json.load(file) == [
             ["id", "name"],
@@ -117,8 +113,7 @@ def test_json_parser_write(tmpdir):
 def test_json_parser_write_decimal(tmpdir):
     dialect = JsonDialect(keyed=True)
     source = Resource([["id", "name"], [1.5, "english"], [2.5, "german"]])
-    target = Resource(path=str(tmpdir.join("table.json")), dialect=dialect, trusted=True)
-    source.write(target)
+    target = source.write(Resource(path=str(tmpdir.join("table.json")), dialect=dialect))
     with open(target.fullpath) as file:
         assert json.load(file) == [
             {"id": "1.5", "name": "english"},
@@ -129,8 +124,7 @@ def test_json_parser_write_decimal(tmpdir):
 def test_json_parser_write_keyed(tmpdir):
     dialect = JsonDialect(keyed=True)
     source = Resource("data/table.csv")
-    target = Resource(path=str(tmpdir.join("table.json")), dialect=dialect, trusted=True)
-    source.write(target)
+    target = source.write(Resource(path=str(tmpdir.join("table.json")), dialect=dialect))
     with open(target.fullpath) as file:
         assert json.load(file) == [
             {"id": 1, "name": "english"},
@@ -140,8 +134,7 @@ def test_json_parser_write_keyed(tmpdir):
 
 def test_jsonl_parser_write(tmpdir):
     source = Resource("data/table.csv")
-    target = Resource(str(tmpdir.join("table.jsonl")), trusted=True)
-    source.write(target)
+    target = source.write(str(tmpdir.join("table.jsonl")))
     with target:
         assert target.header == ["id", "name"]
         assert target.read_rows() == [
@@ -153,8 +146,7 @@ def test_jsonl_parser_write(tmpdir):
 def test_jsonl_parser_write_keyed(tmpdir):
     dialect = JsonDialect(keyed=True)
     source = Resource("data/table.csv")
-    target = Resource(str(tmpdir.join("table.jsonl")), dialect=dialect, trusted=True)
-    source.write(target)
+    target = source.write(str(tmpdir.join("table.jsonl")), dialect=dialect)
     with target:
         assert target.header == ["id", "name"]
         assert target.read_rows() == [

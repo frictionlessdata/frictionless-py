@@ -183,28 +183,28 @@ It's an interface for writing Frictionless checks.
 
 - `FrictionlessException` - raise if metadata is invalid
 
-### check.table
+### check.resource
 
 ```python
  | @property
- | table()
+ | resource()
 ```
 
 **Returns**:
 
-- `Table?` - table object available after the `check.connect` call
+- `Resource?` - resource object available after the `check.connect` call
 
 ### check.connect
 
 ```python
- | connect(table)
+ | connect(resource)
 ```
 
-Connect to the given table
+Connect to the given resource
 
 **Arguments**:
 
-- `table` _Table_ - data table
+- `resource` _Resource_ - data resource
 
 ### check.prepare
 
@@ -214,10 +214,10 @@ Connect to the given table
 
 Called before validation
 
-### check.validate\_task
+### check.validate\_check
 
 ```python
- | validate_task()
+ | validate_check()
 ```
 
 Called to validate the check itself
@@ -226,10 +226,22 @@ Called to validate the check itself
 
 - `Error` - found errors
 
+### check.validate\_source
+
+```python
+ | validate_source()
+```
+
+Called to validate the given source
+
+**Yields**:
+
+- `Error` - found errors
+
 ### check.validate\_schema
 
 ```python
- | validate_schema(schema)
+ | validate_schema()
 ```
 
 Called to validate the given schema
@@ -246,7 +258,7 @@ Called to validate the given schema
 ### check.validate\_header
 
 ```python
- | validate_header(header)
+ | validate_header()
 ```
 
 Called to validate the given header
@@ -570,17 +582,58 @@ API      | Usage
 -------- | --------
 Public   | `from frictionless import Detector`
 
+**Arguments**:
+
+  
+- `buffer_size?` _int_ - The amount of bytes to be extracted as a buffer.
+  It defaults to 10000
+  
+- `sample_size?` _int_ - The amount of rows to be extracted as a samle.
+  It defaults to 100
+  
+- `field_type?` _str_ - Enforce all the inferred types to be this type.
+  For more information, please check "Describing  Data" guide.
+  
+- `field_names?` _str[]_ - Enforce all the inferred fields to have provided names.
+  For more information, please check "Describing  Data" guide.
+  
+- `field_confidence?` _float_ - A number from 0 to 1 setting the infer confidence.
+  If  1 the data is guaranteed to be valid against the inferred schema.
+  For more information, please check "Describing  Data" guide.
+  It defaults to 0.9
+  
+- `field_float_numbers?` _bool_ - Flag to indicate desired number type.
+  By default numbers will be `Decimal`; if `True` - `float`.
+  For more information, please check "Describing  Data" guide.
+  It defaults to `False`
+  
+- `field_missing_values?` _str[]_ - String to be considered as missing values.
+  For more information, please check "Describing  Data" guide.
+  It defaults to `['']`
+  
+- `schema_sync?` _bool_ - Whether to sync the schema.
+  If it sets to `True` the provided schema will be mapped to
+  the inferred schema. It means that, for example, you can
+  provide a subset of fileds to be applied on top of the inferred
+  fields or the provided schema can have different order of fields.
+  
+- `schema_patch?` _dict_ - A dictionary to be used as an inferred schema patch.
+  The form of this dictionary should follow the Schema descriptor form
+  except for the `fields` property which should be a mapping with the
+  key named after a field name and the values being a field patch.
+  For more information, please check "Extracting Data" guide.
+
 ### detector.detect\_encoding
 
 ```python
- | detect_encoding(sample)
+ | detect_encoding(buffer)
 ```
 
-Detect encoding from sample
+Detect encoding from buffer
 
 **Arguments**:
 
-- `sample` _byte_ - byte sample
+- `buffer` _byte_ - byte buffer
   
 
 **Returns**:
@@ -590,7 +643,7 @@ Detect encoding from sample
 ### detector.detect\_layout
 
 ```python
- | detect_layout(sample)
+ | detect_layout(sample, *, layout=None)
 ```
 
 Detect layout from sample
@@ -598,6 +651,7 @@ Detect layout from sample
 **Arguments**:
 
 - `sample` _any[][]_ - data sample
+- `layout?` _Layout_ - data layout
   
 
 **Returns**:
@@ -607,14 +661,14 @@ Detect layout from sample
 ### detector.detect\_schema
 
 ```python
- | detect_schema(sample, *, labels=None, schema=None)
+ | detect_schema(fragment, *, labels=None, schema=None)
 ```
 
-Detect schema from sample
+Detect schema from fragment
 
 **Arguments**:
 
-- `sample` _any[][]_ - data sample
+- `fragment` _any[][]_ - data fragment
 - `labels?` _str[]_ - data labels
 - `schema?` _Schema_ - data schema
   
@@ -1294,6 +1348,17 @@ Public   | `from frictionless import Header`
 - `row_positions` _int[]_ - row positions
 - `ignore_case` _bool_ - ignore case
 
+### header.labels
+
+```python
+ | @cached_property
+ | labels()
+```
+
+**Returns**:
+
+- `Schema` - table labels
+
 ### header.fields
 
 ```python
@@ -1392,7 +1457,7 @@ Convert to a list
 ## HeaderError
 
 ```python
-class HeaderError(Error)
+class HeaderError(TableError)
 ```
 
 Header error representation
@@ -2003,6 +2068,17 @@ Public   | `from frictionless import Loader`
 
 - `resource` _Resource_ - resource
 
+### loader.buffer
+
+```python
+ | @property
+ | buffer()
+```
+
+**Returns**:
+
+- `Loader` - buffer
+
 ### loader.byte\_stream
 
 ```python
@@ -2577,6 +2653,9 @@ API      | Usage
 -------- | --------
 Public   | `from frictionless import Package`
 
+This class is one of the cornerstones of of Frictionless framework.
+It manages underlaying resource and provides an ability to describe a package.
+
 
 ```python
 package = Package(resources=[Resource(path="data/table.csv")])
@@ -2588,25 +2667,80 @@ package.get_resoure('table').read_rows() == [
 
 **Arguments**:
 
-- `descriptor?` _str|dict_ - package descriptor
-- `resources?` _dict|Resource[]_ - list of resource descriptors
-- `name?` _str_ - package name (for machines)
-- `id?` _str_ - package id (for machines)
-- `licenses?` _dict[]_ - package licenses
-- `profile?` _str_ - profile name like 'data-package'
-- `title?` _str_ - package title (for humans)
-- `description?` _str_ - package description
-- `homepage?` _str_ - package homepage
-- `version?` _str_ - package version
-- `sources?` _dict[]_ - package sources
-- `contributors?` _dict[]_ - package contributors
-- `keywords?` _str[]_ - package keywords
-- `image?` _str_ - package image
-- `created?` _str_ - package created
+  
+- `source` _any_ - Source of the package; can be in various forms.
+  Usually, it's a package descriptor in a form of dict or path
+  Also, it can be a glob pattern or a resource path
+  
+- `descriptor` _dict|str_ - A resource descriptor provided explicitly.
+  Keyword arguments will patch this descriptor if provided.
+  
+- `resources?` _dict|Resource[]_ - A list of resource descriptors.
+  It can be dicts or Resource instances.
+  
+- `id?` _str_ - A property reserved for globally unique identifiers.
+  Examples of identifiers that are unique include UUIDs and DOIs.
+  
+- `name?` _str_ - A short url-usable (and preferably human-readable) name.
+  This MUST be lower-case and contain only alphanumeric characters
+  along with “.”, “_” or “-” characters.
+  
+- `title?` _str_ - A Package title according to the specs
+  It should a human-oriented title of the resource.
+  
+- `description?` _str_ - A Package description according to the specs
+  It should a human-oriented description of the resource.
+  
+- `licenses?` _dict[]_ - The license(s) under which the package is provided.
+  If omitted it's considered the same as the package's licenses.
+  
+- `sources?` _dict[]_ - The raw sources for this data package.
+  It MUST be an array of Source objects.
+  Each Source object MUST have a title and
+  MAY have path and/or email properties.
+  
+- `profile?` _str_ - A string identifying the profile of this descriptor.
+  For example, `fiscal-data-package`.
+  
+- `homepage?` _str_ - A URL for the home on the web that is related to this package.
+  For example, github repository or ckan dataset address.
+  
+- `version?` _str_ - A version string identifying the version of the package.
+  It should conform to the Semantic Versioning requirements and
+  should follow the Data Package Version pattern.
+  
+- `contributors?` _dict[]_ - The people or organizations who contributed to this package.
+  It MUST be an array. Each entry is a Contributor and MUST be an object.
+  A Contributor MUST have a title property and MAY contain
+  path, email, role and organization properties.
+  
+- `keywords?` _str[]_ - An Array of string keywords to assist users searching.
+  For example, ['data', 'fiscal']
+  
+- `image?` _str_ - An image to use for this data package.
+  For example, when showing the package in a listing.
+  
+- `created?` _str_ - The datetime on which this was created.
+  The datetime must conform to the string formats for RFC3339 datetime,
+  
+- `basepath?` _str_ - A basepath of the resource
+  The fullpath of the resource is joined `basepath` and /path`
+  
+- `detector?` _Detector_ - File/table detector.
+  For more information, please check the Detector documentation.
+  
+- `onerror?` _ignore|warn|raise_ - Behaviour if there is an error.
+  It defaults to 'ignore'. The default mode will ignore all errors
+  on resource level and they should be handled by the user
+  being available in Header and Row objects.
+  
+- `trusted?` _bool_ - Don't raise an exception on unsafe paths.
+  A path provided as a part of the descriptor considered unsafe
+  if there are path traversing or the path is absolute.
+  A path provided as `source` or `path` is alway trusted.
+  
 - `hashing?` _str_ - a hashing algorithm for resources
-- `basepath?` _str_ - a basepath of the package
-- `onerror?` _ignore|warn|raise_ - behaviour if there is an error
-- `trusted?` _bool_ - don't raise an exception on unsafe paths
+  It defaults to 'md5'.
   
 
 **Raises**:
@@ -2922,6 +3056,125 @@ Infer package's attributes
 
 - `stats?` _bool_ - stream files completely and infer stats
 
+### package.to\_copy
+
+```python
+ | to_copy()
+```
+
+Create a copy of the package
+
+### package.from\_bigquery
+
+```python
+ | @staticmethod
+ | from_bigquery(source, *, dialect=None)
+```
+
+Import package from Bigquery
+
+**Arguments**:
+
+- `source` _string_ - BigQuery `Service` object
+- `dialect` _dict_ - BigQuery dialect
+  
+
+**Returns**:
+
+- `Package` - package
+
+### package.to\_bigquery
+
+```python
+ | to_bigquery(target, *, dialect=None)
+```
+
+Export package to Bigquery
+
+**Arguments**:
+
+- `target` _string_ - BigQuery `Service` object
+- `dialect` _dict_ - BigQuery dialect
+  
+
+**Returns**:
+
+- `BigqueryStorage` - storage
+
+### package.from\_ckan
+
+```python
+ | @staticmethod
+ | from_ckan(source, *, dialect=None)
+```
+
+Import package from CKAN
+
+**Arguments**:
+
+- `source` _string_ - CKAN instance url e.g. "https://demo.ckan.org"
+- `dialect` _dict_ - CKAN dialect
+  
+
+**Returns**:
+
+- `Package` - package
+
+### package.to\_ckan
+
+```python
+ | to_ckan(target, *, dialect=None)
+```
+
+Export package to CKAN
+
+**Arguments**:
+
+- `target` _string_ - CKAN instance url e.g. "https://demo.ckan.org"
+- `dialect` _dict_ - CKAN dialect
+  
+
+**Returns**:
+
+- `CkanStorage` - storage
+
+### package.from\_sql
+
+```python
+ | @staticmethod
+ | from_sql(source, *, dialect=None)
+```
+
+Import package from SQL
+
+**Arguments**:
+
+- `source` _any_ - SQL connection string of engine
+- `dialect` _dict_ - SQL dialect
+  
+
+**Returns**:
+
+- `Package` - package
+
+### package.to\_sql
+
+```python
+ | to_sql(target, *, dialect=None)
+```
+
+Export package to SQL
+
+**Arguments**:
+
+- `target` _any_ - SQL connection string of engine
+- `dialect` _dict_ - SQL dialect
+  
+
+**Returns**:
+
+- `SqlStorage` - storage
+
 ### package.from\_zip
 
 ```python
@@ -2931,99 +3184,10 @@ Infer package's attributes
 
 Create a package from ZIP
 
-### package.from\_storage
-
-```python
- | @staticmethod
- | from_storage(storage)
-```
-
-Import package from storage
-
 **Arguments**:
 
-- `storage` _Storage_ - storage instance
-
-### package.from\_ckan
-
-```python
- | @staticmethod
- | from_ckan(*, url, dataset, apikey=None)
-```
-
-Import package from CKAN
-
-**Arguments**:
-
-- `url` _string_ - CKAN instance url e.g. "https://demo.ckan.org"
-- `dataset` _string_ - dataset id in CKAN e.g. "my-dataset"
-- `apikey?` _str_ - API key for CKAN e.g. "51912f57-a657-4caa-b2a7-0a1c16821f4b"
-
-### package.from\_sql
-
-```python
- | @staticmethod
- | from_sql(*, url=None, engine=None, prefix="", namespace=None)
-```
-
-Import package from SQL
-
-**Arguments**:
-
-- `url?` _string_ - SQL connection string
-- `engine?` _object_ - `sqlalchemy` engine
-- `prefix?` _str_ - prefix for all tables
-- `namespace?` _str_ - SQL scheme
-
-### package.from\_pandas
-
-```python
- | @staticmethod
- | from_pandas(*, dataframes)
-```
-
-Import package from Pandas dataframes
-
-**Arguments**:
-
-- `dataframes` _dict_ - mapping of Pandas dataframes
-
-### package.from\_spss
-
-```python
- | @staticmethod
- | from_spss(*, basepath)
-```
-
-Import package from SPSS directory
-
-**Arguments**:
-
-- `basepath` _str_ - SPSS dir path
-
-### package.from\_bigquery
-
-```python
- | @staticmethod
- | from_bigquery(*, service, project, dataset, prefix="")
-```
-
-Import package from Bigquery
-
-**Arguments**:
-
-- `service` _object_ - BigQuery `Service` object
-- `project` _str_ - BigQuery project name
-- `dataset` _str_ - BigQuery dataset name
-- `prefix?` _str_ - prefix for all names
-
-### package.to\_copy
-
-```python
- | to_copy()
-```
-
-Create a copy of the package
+- `path(str)` - file path
+- `**options(dict)` - resouce options
 
 ### package.to\_zip
 
@@ -3046,87 +3210,6 @@ Save package to a zip
 **Raises**:
 
 - `FrictionlessException` - on any error
-
-### package.to\_storage
-
-```python
- | to_storage(storage, *, force=False)
-```
-
-Export package to storage
-
-**Arguments**:
-
-- `storage` _Storage_ - storage instance
-- `force` _bool_ - overwrite existent
-
-### package.to\_ckan
-
-```python
- | to_ckan(*, url, dataset, apikey=None, force=False)
-```
-
-Export package to CKAN
-
-**Arguments**:
-
-- `url` _string_ - CKAN instance url e.g. "https://demo.ckan.org"
-- `dataset` _string_ - dataset id in CKAN e.g. "my-dataset"
-- `apikey?` _str_ - API key for CKAN e.g. "51912f57-a657-4caa-b2a7-0a1c16821f4b"
-- `force` _bool_ - (optional) overwrite existing data
-
-### package.to\_sql
-
-```python
- | to_sql(*, url=None, engine=None, prefix="", namespace=None, force=False)
-```
-
-Export package to SQL
-
-**Arguments**:
-
-- `url?` _string_ - SQL connection string
-- `engine?` _object_ - `sqlalchemy` engine
-- `prefix?` _str_ - prefix for all tables
-- `namespace?` _str_ - SQL scheme
-- `force` _bool_ - overwrite existent
-
-### package.to\_pandas
-
-```python
- | to_pandas()
-```
-
-Export package to Pandas dataframes
-
-### package.to\_spss
-
-```python
- | to_spss(*, basepath, force=False)
-```
-
-Export package to SPSS directory
-
-**Arguments**:
-
-- `basepath` _str_ - SPSS dir path
-- `force` _bool_ - overwrite existent
-
-### package.to\_bigquery
-
-```python
- | to_bigquery(*, service, project, dataset, prefix="", force=False)
-```
-
-Export package to Bigquery
-
-**Arguments**:
-
-- `service` _object_ - BigQuery `Service` object
-- `project` _str_ - BigQuery project name
-- `dataset` _str_ - BigQuery dataset name
-- `prefix?` _str_ - prefix for all names
-- `force` _bool_ - overwrite existent
 
 ## PandasDialect
 
@@ -3173,22 +3256,6 @@ API      | Usage
 -------- | --------
 Public   | `from frictionless.plugins.pandas import PandasPlugin`
 
-## PandasStorage
-
-```python
-class PandasStorage(Storage)
-```
-
-Pandas storage implementation
-
-API      | Usage
--------- | --------
-Public   | `from frictionless.plugins.pandas import PandasStorage`
-
-**Arguments**:
-
-- `dataframes?` _dict_ - dictionary of Pandas dataframes
-
 ## Parser
 
 ```python
@@ -3227,16 +3294,27 @@ Public   | `from frictionless import Parser`
 
 - `Loader` - loader
 
-### parser.data\_stream
+### parser.sample
 
 ```python
  | @property
- | data_stream()
+ | sample()
+```
+
+**Returns**:
+
+- `Loader` - sample
+
+### parser.list\_stream
+
+```python
+ | @property
+ | list_stream()
 ```
 
 **Yields**:
 
-- `any[][]` - data stream
+- `any[][]` - list stream
 
 ### parser.open
 
@@ -3279,25 +3357,25 @@ Create and open loader
 
 - `Loader` - loader
 
-### parser.read\_data\_stream
+### parser.read\_list\_stream
 
 ```python
- | read_data_stream()
+ | read_list_stream()
 ```
 
-Read data stream
+Read list stream
 
 **Returns**:
 
-- `gen<any[][]>` - data stream
+- `gen<any[][]>` - list stream
 
-### parser.read\_data\_stream\_create
+### parser.read\_list\_stream\_create
 
 ```python
- | read_data_stream_create(loader)
+ | read_list_stream_create()
 ```
 
-Create data stream from loader
+Create list stream from loader
 
 **Arguments**:
 
@@ -3306,36 +3384,36 @@ Create data stream from loader
 
 **Returns**:
 
-- `gen<any[][]>` - data stream
+- `gen<any[][]>` - list stream
 
-### parser.read\_data\_stream\_handle\_errors
+### parser.read\_list\_stream\_handle\_errors
 
 ```python
- | read_data_stream_handle_errors(data_stream)
+ | read_list_stream_handle_errors(list_stream)
 ```
 
-Wrap data stream into error handler
+Wrap list stream into error handler
 
 **Arguments**:
 
-- `gen<any[][]>` - data stream
+- `gen<any[][]>` - list stream
   
 
 **Returns**:
 
-- `gen<any[][]>` - data stream
+- `gen<any[][]>` - list stream
 
 ### parser.write\_row\_stream
 
 ```python
- | write_row_stream(read_row_stream)
+ | write_row_stream(resource)
 ```
 
-Write row stream into the resource
+Write row stream from the source resource
 
 **Arguments**:
 
-- `read_row_stream` _gen<Row[]>_ - row stream factory
+- `source` _Resource_ - source resource
 
 ## Pipeline
 
@@ -3906,32 +3984,109 @@ API      | Usage
 -------- | --------
 Public   | `from frictionless import Resource`
 
+This class is one of the cornerstones of of Frictionless framework.
+It loads a data source, and allows you to stream its parsed contents.
+At the same time, it's a metadata class data description.
+
+
+```python
+with Resource("data/table.csv") as resource:
+    resource.header == ["id", "name"]
+    resource.read_rows() == [
+        {'id': 1, 'name': 'english'},
+        {'id': 2, 'name': '中国人'},
+    ]
+```
+
 **Arguments**:
 
-- `descriptor?` _str|dict_ - resource descriptor
-- `name?` _str_ - resource name (for machines)
-- `title?` _str_ - resource title (for humans)
-- `descriptor?` _str_ - resource descriptor
-- `licenses?` _dict[]_ - resource licenses
-- `sources?` _dict[]_ - resource sources
-- `path?` _str_ - file path
-- `data?` _any[][]_ - array or data arrays
-- `scheme?` _str_ - file scheme
-- `format?` _str_ - file format
-- `hashing?` _str_ - file hashing
-- `encoding?` _str_ - file encoding
-- `innerpath?` _str_ - file compression path
-- `compression?` _str_ - file compression
-- `control?` _dict_ - file control
-- `dialect?` _dict_ - table dialect
-- `layout?` _dict_ - table layout
-- `schema?` _dict_ - table schema
-- `stats?` _dict_ - table stats
-- `profile?` _str_ - resource profile
-- `basepath?` _str_ - resource basepath
-- `onerror?` _ignore|warn|raise_ - behaviour if there is an error
-- `trusted?` _bool_ - don't raise an exception on unsafe paths
-- `package?` _Package_ - resource package
+  
+- `source` _any_ - Source of the resource; can be in various forms.
+  Usually, it's a string as `<scheme>://path/to/file.<format>`.
+  It also can be, for example, an array of data arrays/dictionaries.
+  Or it can be a resource descriptor dict or path.
+  
+- `descriptor` _dict|str_ - A resource descriptor provided explicitly.
+  Keyword arguments will patch this descriptor if provided.
+  
+- `name?` _str_ - A Resource name according to the specs.
+  It should be a slugified name of the resource.
+  
+- `title?` _str_ - A Resource title according to the specs
+  It should a human-oriented title of the resource.
+  
+- `description?` _str_ - A Resource description according to the specs
+  It should a human-oriented description of the resource.
+  
+- `mediatype?` _str_ - A mediatype/mimetype of the resource e.g. “text/csv”,
+  or “application/vnd.ms-excel”.  Mediatypes are maintained by the
+  Internet Assigned Numbers Authority (IANA) in a media type registry.
+  
+- `licenses?` _dict[]_ - The license(s) under which the resource is provided.
+  If omitted it's considered the same as the package's licenses.
+  
+- `sources?` _dict[]_ - The raw sources for this data resource.
+  It MUST be an array of Source objects.
+  Each Source object MUST have a title and
+  MAY have path and/or email properties.
+  
+- `profile?` _str_ - A string identifying the profile of this descriptor.
+  For example, `tabular-data-resource`.
+  
+- `scheme?` _str_ - Scheme for loading the file (file, http, ...).
+  If not set, it'll be inferred from `source`.
+  
+- `format?` _str_ - File source's format (csv, xls, ...).
+  If not set, it'll be inferred from `source`.
+  
+- `hashing?` _str_ - An algorithm to hash data.
+  It defaults to 'md5'.
+  
+- `encoding?` _str_ - Source encoding.
+  If not set, it'll be inferred from `source`.
+  
+- `innerpath?` _str_ - A path within the compressed file.
+  It defaults to the first file in the archive.
+  
+- `compression?` _str_ - Source file compression (zip, ...).
+  If not set, it'll be inferred from `source`.
+  
+- `control?` _dict|Control_ - File control.
+  For more information, please check the Control documentation.
+  
+- `dialect?` _dict|Dialect_ - Table dialect.
+  For more information, please check the Dialect documentation.
+  
+- `layout?` _dict|Layout_ - Table layout.
+  For more information, please check the Layout documentation.
+  
+- `schema?` _dict|Schema_ - Table schema.
+  For more information, please check the Schema documentation.
+  
+- `stats?` _dict_ - File/table stats.
+  A dict with the following possible properties: hash, bytes, fields, rows.
+  
+- `basepath?` _str_ - A basepath of the resource
+  The fullpath of the resource is joined `basepath` and /path`
+  
+- `detector?` _Detector_ - File/table detector.
+  For more information, please check the Detector documentation.
+  
+- `onerror?` _ignore|warn|raise_ - Behaviour if there is an error.
+  It defaults to 'ignore'. The default mode will ignore all errors
+  on resource level and they should be handled by the user
+  being available in Header and Row objects.
+  
+- `trusted?` _bool_ - Don't raise an exception on unsafe paths.
+  A path provided as a part of the descriptor considered unsafe
+  if there are path traversing or the path is absolute.
+  A path provided as `source` or `path` is alway trusted.
+  
+- `nolookup?` _bool_ - Don't create a lookup table.
+  A lookup table can be required by foreign keys.
+  
+- `package?` _Package_ - A owning this resource package.
+  It's actual if the resource is part of some data package.
   
 
 **Raises**:
@@ -3967,6 +4122,16 @@ Returns
 
 Returns
     str: resource description
+
+### resource.mediatype
+
+```python
+ | @Metadata.property
+ | mediatype()
+```
+
+Returns
+    str: resource mediatype
 
 ### resource.licenses
 
@@ -4119,6 +4284,22 @@ Returns
 Returns
     Schema: resource schema
 
+### resource.buffer
+
+```python
+ | @property
+ | buffer()
+```
+
+File's bytes used as a sample
+
+These buffer bytes are used to infer characteristics of the
+source file (e.g. encoding, ...).
+
+**Returns**:
+
+- `bytes?` - file buffer
+
 ### resource.sample
 
 ```python
@@ -4126,9 +4307,9 @@ Returns
  | sample()
 ```
 
-Tables's rows used as sample.
+Table's lists used as sample.
 
-These sample rows are used internally to infer characteristics of the
+These sample rows are used to infer characteristics of the
 source file (e.g. schema, ...).
 
 **Returns**:
@@ -4145,6 +4326,22 @@ source file (e.g. schema, ...).
 **Returns**:
 
 - `str[]?` - table labels
+
+### resource.fragment
+
+```python
+ | @property
+ | fragment()
+```
+
+Table's lists used as fragment.
+
+These fragment rows are used internally to infer characteristics of the
+source file (e.g. schema, ...).
+
+**Returns**:
+
+- `list[]?` - table fragment
 
 ### resource.header
 
@@ -4305,20 +4502,20 @@ Text stream in form of a generator
 
 **Yields**:
 
-- `gen<str[]>?` - data stream
+- `gen<str[]>?` - text stream
 
-### resource.data\_stream
+### resource.list\_stream
 
 ```python
  | @property
- | data_stream()
+ | list_stream()
 ```
 
-Data stream in form of a generator
+List stream in form of a generator
 
 **Yields**:
 
-- `gen<any[][]>?` - data stream
+- `gen<any[][]>?` - list stream
 
 ### resource.row\_stream
 
@@ -4392,11 +4589,11 @@ Whether the table is closed
  | read_bytes(*, size=None)
 ```
 
-Read data into memory
+Read bytes into memory
 
 **Returns**:
 
-- `any[][]` - table data
+- `any[][]` - resource bytes
 
 ### resource.read\_text
 
@@ -4408,7 +4605,7 @@ Read text into memory
 
 **Returns**:
 
-- `str` - table data
+- `str` - resource text
 
 ### resource.read\_data
 
@@ -4420,7 +4617,19 @@ Read data into memory
 
 **Returns**:
 
-- `any[][]` - table data
+- `any` - resource data
+
+### resource.read\_lists
+
+```python
+ | read_lists(*, size=None)
+```
+
+Read lists into memory
+
+**Returns**:
+
+- `any[][]` - table lists
 
 ### resource.read\_rows
 
@@ -4437,114 +4646,15 @@ Read rows into memory
 ### resource.write
 
 ```python
- | write(target)
+ | write(target=None, **options)
 ```
 
 Write this resource to the target resource
 
 **Arguments**:
 
-- `target` _Resource_ - target Resource
-
-### resource.from\_petl
-
-```python
- | @staticmethod
- | from_petl(storage, *, view, **options)
-```
-
-Create a resource from PETL container
-
-### resource.from\_storage
-
-```python
- | @staticmethod
- | from_storage(storage, *, name)
-```
-
-Import resource from storage
-
-**Arguments**:
-
-- `storage` _Storage_ - storage instance
-- `name` _str_ - resource name
-
-### resource.from\_ckan
-
-```python
- | @staticmethod
- | from_ckan(*, name, url, dataset, apikey=None)
-```
-
-Import resource from CKAN
-
-**Arguments**:
-
-- `name` _string_ - resource name
-- `url` _string_ - CKAN instance url e.g. "https://demo.ckan.org"
-- `dataset` _string_ - dataset id in CKAN e.g. "my-dataset"
-- `apikey?` _str_ - API key for CKAN e.g. "51912f57-a657-4caa-b2a7-0a1c16821f4b"
-
-### resource.from\_sql
-
-```python
- | @staticmethod
- | from_sql(*, name, url=None, engine=None, prefix="", namespace=None)
-```
-
-Import resource from SQL table
-
-**Arguments**:
-
-- `name` _str_ - resource name
-- `url?` _string_ - SQL connection string
-- `engine?` _object_ - `sqlalchemy` engine
-- `prefix?` _str_ - prefix for all tables
-- `namespace?` _str_ - SQL scheme
-
-### resource.from\_pandas
-
-```python
- | @staticmethod
- | from_pandas(dataframe)
-```
-
-Import resource from Pandas dataframe
-
-**Arguments**:
-
-- `dataframe` _str_ - padas dataframe
-
-### resource.from\_spss
-
-```python
- | @staticmethod
- | from_spss(*, name, basepath)
-```
-
-Import resource from SPSS file
-
-**Arguments**:
-
-- `name` _str_ - resource name
-- `basepath` _str_ - SPSS dir path
-
-### resource.from\_bigquery
-
-```python
- | @staticmethod
- | from_bigquery(*, name, service, project, dataset, prefix="")
-```
-
-Import resource from BigQuery table
-
-**Arguments**:
-
-- `name` _str_ - resource name
-- `service` _object_ - BigQuery `Service` object
-- `project` _str_ - BigQuery project name
-- `dataset` _str_ - BigQuery dataset name
-- `prefix?` _str_ - prefix for all names
+- `target` _any|Resource_ - target or target resource instance
+- `**options` _dict_ - Resource constructor options
 
 ### resource.to\_copy
 
@@ -4554,91 +4664,38 @@ Import resource from BigQuery table
 
 Create a copy of the resource
 
-### resource.to\_storage
+### resource.to\_inline
 
 ```python
- | to_storage(storage, *, force=False)
+ | to_inline(*, dialect=None)
 ```
 
-Export resource to storage
-
-**Arguments**:
-
-- `storage` _Storage_ - storage instance
-- `force` _bool_ - overwrite existent
-
-### resource.to\_ckan
-
-```python
- | to_ckan(*, url, dataset, apikey=None, force=False)
-```
-
-Export resource to CKAN
-
-**Arguments**:
-
-- `url` _string_ - CKAN instance url e.g. "https://demo.ckan.org"
-- `dataset` _string_ - dataset id in CKAN e.g. "my-dataset"
-- `apikey?` _str_ - API key for CKAN e.g. "51912f57-a657-4caa-b2a7-0a1c16821f4b"
-- `force` _bool_ - (optional) overwrite existing data
-
-### resource.to\_sql
-
-```python
- | to_sql(*, url=None, engine=None, prefix="", namespace=None, force=False)
-```
-
-Export resource to SQL table
-
-**Arguments**:
-
-- `url?` _string_ - SQL connection string
-- `engine?` _object_ - `sqlalchemy` engine
-- `prefix?` _str_ - prefix for all tables
-- `namespace?` _str_ - SQL scheme
-- `force?` _bool_ - overwrite existent
+Helper to export resource as an inline data
 
 ### resource.to\_pandas
 
 ```python
- | to_pandas()
+ | to_pandas(*, dialect=None)
 ```
 
-Export resource to Pandas dataframe
+Helper to export resource as an Pandas dataframe
 
-**Arguments**:
-
-- `dataframes` _dict_ - pandas dataframes
-- `force` _bool_ - overwrite existent
-
-### resource.to\_spss
+### resource.from\_petl
 
 ```python
- | to_spss(*, basepath, force=False)
+ | @staticmethod
+ | from_petl(view, **options)
 ```
 
-Export resource to SPSS file
+Create a resource from PETL view
 
-**Arguments**:
-
-- `basepath` _str_ - SPSS dir path
-- `force` _bool_ - overwrite existent
-
-### resource.to\_bigquery
+### resource.to\_petl
 
 ```python
- | to_bigquery(*, service, project, dataset, prefix="", force=False)
+ | to_petl()
 ```
 
-Export resource to Bigquery table
-
-**Arguments**:
-
-- `service` _object_ - BigQuery `Service` object
-- `project` _str_ - BigQuery project name
-- `dataset` _str_ - BigQuery dataset name
-- `prefix?` _str_ - prefix for all names
-- `force` _bool_ - overwrite existent
+Export resource as a PETL view
 
 ## Row
 
@@ -4828,7 +4885,7 @@ A mapping indexed by a field name with error cells before parsing
 ## RowError
 
 ```python
-class RowError(Error)
+class RowError(TableError)
 ```
 
 Row error representation
@@ -4929,6 +4986,15 @@ Schema representation
 API      | Usage
 -------- | --------
 Public   | `from frictionless import Schema`
+
+This class is one of the cornerstones of of Frictionless framework.
+It allow to work with Table Schema and its fields.
+
+
+```python
+schema = Schema('schema.json')
+schema.add_fied(Field(name='name', type='string'))
+```
 
 **Arguments**:
 
@@ -5210,23 +5276,6 @@ Plugin for SPSS
 API      | Usage
 -------- | --------
 Public   | `from frictionless.plugins.spss import SpssPlugin`
-
-## SpssStorage
-
-```python
-class SpssStorage(Storage)
-```
-
-SPSS storage implementation
-
-API      | Usage
--------- | --------
-Public   | `from frictionless.plugins.spss import SpssStorage`
-
-**Arguments**:
-
-- `basepath?` _str_ - A path to a dir for reading/writing SAV files.
-  Defaults to current dir.
 
 ## SqlDialect
 
@@ -5636,7 +5685,7 @@ Create steps
 ### system.create\_storage
 
 ```python
- | create_storage(name, **options)
+ | create_storage(name, source, **options)
 ```
 
 Create storage
@@ -6076,7 +6125,7 @@ Public   | `from frictionless import extract_resource`
 
 **Arguments**:
 
-- `source` _dict|str_ - data resource descriptor
+- `source` _any|Resource_ - data resource
 - `process?` _func_ - a row processor function
 - `**options` _dict_ - Resource constructor options
   

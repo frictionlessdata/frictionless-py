@@ -7,7 +7,6 @@ from ..dialect import Dialect
 from ..plugin import Plugin
 from ..parser import Parser
 from ..system import system
-from .sql import SCHEME_PREFIXES
 
 
 # Plugin
@@ -23,19 +22,12 @@ class CsvPlugin(Plugin):
     """
 
     def create_dialect(self, resource, *, descriptor):
-        # TODO: remove when plugin order is implemented
-        for prefix in SCHEME_PREFIXES:
-            if resource.scheme.startswith(prefix):
-                return
         if resource.format == "csv":
             return CsvDialect(descriptor)
         elif resource.format == "tsv":
             return CsvDialect(descriptor, delimiter="\t")
 
     def create_parser(self, resource):
-        for prefix in SCHEME_PREFIXES:
-            if resource.scheme.startswith(prefix):
-                return
         if resource.format in ["csv", "tsv"]:
             return CsvParser(resource)
 
@@ -208,19 +200,20 @@ class CsvParser(Parser):
 
     """
 
+    requires_loader = True
     supported_types = [
         "string",
     ]
 
     # Read
 
-    def read_data_stream_create(self):
-        sample = self.read_data_stream_infer_dialect()
+    def read_list_stream_create(self):
+        sample = self.read_list_stream_infer_dialect()
         source = chain(sample, self.loader.text_stream)
         data = csv.reader(source, dialect=self.resource.dialect.to_python())
         yield from data
 
-    def read_data_stream_infer_dialect(self):
+    def read_list_stream_infer_dialect(self):
         sample = extract_samle(self.loader.text_stream)
         delimiter = self.resource.dialect.get("delimiter", ",\t;|")
         try:
@@ -244,23 +237,25 @@ class CsvParser(Parser):
 
     # Write
 
-    def write_row_stream_save(self, read_row_stream):
+    def write_row_stream(self, resource):
         options = {}
-        for name in vars(self.resource.dialect.to_python()):
-            value = getattr(self.resource.dialect, name, None)
+        source = resource
+        target = self.resource
+        for name in vars(target.dialect.to_python()):
+            value = getattr(target.dialect, name, None)
             if value is not None:
                 options[name] = value
         with tempfile.NamedTemporaryFile(
-            "wt", delete=False, encoding=self.resource.encoding, newline=""
+            "wt", delete=False, encoding=target.encoding, newline=""
         ) as file:
             writer = csv.writer(file, **options)
-            for row in read_row_stream():
-                if row.row_number == 1:
-                    writer.writerow(row.field_names)
-                writer.writerow(row.to_list(types=self.supported_types))
-        loader = system.create_loader(self.resource)
-        result = loader.write_byte_stream(file.name)
-        return result
+            with source:
+                for row in source.row_stream:
+                    if row.row_number == 1:
+                        writer.writerow(row.field_names)
+                    writer.writerow(row.to_list(types=self.supported_types))
+        loader = system.create_loader(target)
+        loader.write_byte_stream(file.name)
 
 
 # Internal

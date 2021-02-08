@@ -1,3 +1,4 @@
+import types
 from ..step import Step
 from ..system import system
 from ..package import Package
@@ -24,26 +25,26 @@ def transform_package(source, *, steps, **options):
 
     # Prepare package
     native = isinstance(source, Package)
-    target = source.to_copy() if native else Package(source, **options)
-    target.infer()
+    package = source.to_copy() if native else Package(source, **options)
+    package.infer()
 
     # Prepare steps
     for index, step in enumerate(steps):
         if not isinstance(step, Step):
-            steps[index] = system.create_step(step)
+            steps[index] = (
+                Step(function=step)
+                if isinstance(step, types.FunctionType)
+                else system.create_step(step)
+            )
 
     # Run transforms
     for step in steps:
 
-        # Preprocess
-        source = target
-        target = source.to_copy()
-
         # Transform
         try:
-            step.transform_package(source, target)
+            step.transform_package(package)
         except Exception as exception:
             error = errors.StepError(note=f'"{get_name(step)}" raises "{exception}"')
             raise FrictionlessException(error) from exception
 
-    return target
+    return package

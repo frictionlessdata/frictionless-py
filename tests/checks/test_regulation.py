@@ -62,7 +62,7 @@ def test_validate_forbidden_value_many_rules_with_non_existent_field():
         ],
     )
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [None, None, "task-error"],
+        [None, None, "check-error"],
     ]
 
 
@@ -107,7 +107,7 @@ def test_validate_sequential_value_non_existent_field():
         ],
     )
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [None, None, "task-error"],
+        [None, None, "check-error"],
     ]
 
 

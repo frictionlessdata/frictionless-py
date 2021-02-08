@@ -3,35 +3,38 @@ import simpleeval
 from ..step import Step
 
 
-# TODO: review simpleeval perfomance for this transform
-# TODO: provide formula/regex helper constructors on the lib level?
+# NOTE:
+# We need to review simpleeval perfomance for using it with row_filter
+# Currently, metadata profiles are not fully finished; will require improvements
+
+
 class row_filter(Step):
     code = "row-filter"
 
-    def __init__(self, descriptor=None, *, predicat=None):
-        self.setinitial("predicat", predicat)
+    def __init__(self, descriptor=None, *, formula=None, function=None):
+        self.setinitial("formula", formula)
+        self.setinitial("function", function)
         super().__init__(descriptor)
-        # TODO: reimplement
-        self.__predicat = predicat
 
     # Transform
 
-    def transform_resource(self, source, target):
-        predicat = self.__predicat
-        if isinstance(predicat, str) and predicat.startswith("<formula>"):
-            formula = predicat.replace("<formula>", "")
-            # TODO: review EvalWithCompoundTypes/sync with checks
+    def transform_resource(self, resource):
+        formula = self.get("formula")
+        function = self.get("function")
+        if formula:
+            # NOTE: review EvalWithCompoundTypes/sync with checks
             evalclass = simpleeval.EvalWithCompoundTypes
-            predicat = lambda row: evalclass(names=row).eval(formula)
-        target.data = source.to_petl().select(predicat)
+            function = lambda row: evalclass(names=row).eval(formula)
+        yield from resource.to_petl().select(function)
 
     # Metadata
 
     metadata_profile = {  # type: ignore
         "type": "object",
-        "required": ["predicat"],
+        "required": [],
         "properties": {
-            "predicat": {},
+            "formula": {type: "string"},
+            "function": {},
         },
     }
 
@@ -39,24 +42,23 @@ class row_filter(Step):
 class row_search(Step):
     code = "row-search"
 
-    def __init__(self, descriptor=None, *, regex=None, field_name=None, anti=False):
+    def __init__(self, descriptor=None, *, regex=None, field_name=None, negate=False):
         self.setinitial("regex", regex)
         self.setinitial("fieldName", field_name)
-        self.setinitial("anti", anti)
+        self.setinitial("negate", negate)
         super().__init__(descriptor)
-        # TODO: reimplement
-        self.__regex = regex
-        self.__field_name = field_name
-        self.__anti = anti
 
     # Transform
 
-    def transform_resource(self, source, target):
-        search = petl.searchcomplement if self.__anti else petl.search
-        if self.__field_name:
-            target.data = search(source.to_petl(), self.__field_name, self.__regex)
+    def transform_resource(self, resource):
+        regex = self.get("regex")
+        field_name = self.get("fieldName")
+        negate = self.get("negate")
+        search = petl.searchcomplement if negate else petl.search
+        if field_name:
+            yield from search(resource.to_petl(), field_name, regex)
         else:
-            target.data = search(source.to_petl(), self.__regex)
+            yield from search(resource.to_petl(), regex)
 
     # Metadata
 
@@ -66,7 +68,7 @@ class row_search(Step):
         "properties": {
             "regex": {},
             "fieldName": {"type": "string"},
-            "anti": {},
+            "negate": {},
         },
     }
 
@@ -90,24 +92,21 @@ class row_slice(Step):
         self.setinitial("head", head)
         self.setinitial("tail", tail)
         super().__init__(descriptor)
-        # TODO: reimplement
-        self.__start = start
-        self.__stop = stop
-        self.__step = step
-        self.__head = head
-        self.__tail = tail
 
     # Transform
 
-    def transform_resource(self, source, target):
-        if self.__head:
-            target.data = source.to_petl().head(self.__head)
-        elif self.__tail:
-            target.data = source.to_petl().tail(self.__tail)
+    def transform_resource(self, resource):
+        start = self.get("start")
+        stop = self.get("stop")
+        step = self.get("step")
+        head = self.get("head")
+        tail = self.get("tail")
+        if head:
+            yield from resource.to_petl().head(head)
+        elif tail:
+            yield from resource.to_petl().tail(tail)
         else:
-            target.data = source.to_petl().rowslice(
-                self.__start, self.__stop, self.__step
-            )
+            yield from resource.to_petl().rowslice(start, stop, step)
 
     # Metadata
 
@@ -131,14 +130,13 @@ class row_sort(Step):
         self.setinitial("fieldNames", field_names)
         self.setinitial("reverse", reverse)
         super().__init__(descriptor)
-        # TODO: reimplement
-        self.__field_names = field_names
-        self.__reverse = reverse
 
     # Transform
 
-    def transform_resource(self, source, target):
-        target.data = source.to_petl().sort(self.__field_names, reverse=self.__reverse)
+    def transform_resource(self, resource):
+        field_names = self.get("fieldNames")
+        reverse = self.get("reverse")
+        yield from resource.to_petl().sort(field_names, reverse=reverse)
 
     # Metadata
 
@@ -155,18 +153,17 @@ class row_sort(Step):
 class row_split(Step):
     code = "row-add"
 
-    def __init__(self, descriptor=None, *, field_name=None, pattern=None):
-        self.setinitial("fieldName", field_name)
+    def __init__(self, descriptor=None, *, pattern=None, field_name=None):
         self.setinitial("pattern", pattern)
+        self.setinitial("fieldName", field_name)
         super().__init__(descriptor)
-        # TODO: reimplement
-        self.__field_name = field_name
-        self.__pattern = pattern
 
     # Transform
 
-    def transform_resource(self, source, target):
-        target.data = source.to_petl().splitdown(self.__field_name, self.__pattern)
+    def transform_resource(self, resource):
+        pattern = self.get("pattern")
+        field_name = self.get("fieldName")
+        yield from resource.to_petl().splitdown(field_name, pattern)
 
     # Metadata
 
@@ -186,23 +183,22 @@ class row_subset(Step):
     def __init__(self, descriptor=None, *, subset=None, field_name=None):
         assert subset in ["conflicts", "distinct", "duplicates", "unique"]
         self.setinitial("subset", subset)
-        self.setinitial("fieldNames", field_name)
+        self.setinitial("fieldName", field_name)
         super().__init__(descriptor)
-        # TODO: reimplement
-        self.__subset = subset
-        self.__field_name = field_name
 
     # Transform
 
-    def transform_resource(self, source, target):
-        if self.__subset == "conflicts":
-            target.data = source.to_petl().conflicts(self.__field_name)
-        elif self.__subset == "distinct":
-            target.data = source.to_petl().distinct(self.__field_name)
-        elif self.__subset == "duplicates":
-            target.data = source.to_petl().duplicates(self.__field_name)
-        elif self.__subset == "unique":
-            target.data = source.to_petl().unique(self.__field_name)
+    def transform_resource(self, resource):
+        subset = self.get("subset")
+        field_name = self.get("fieldName")
+        if subset == "conflicts":
+            yield from resource.to_petl().conflicts(field_name)
+        elif subset == "distinct":
+            yield from resource.to_petl().distinct(field_name)
+        elif subset == "duplicates":
+            yield from resource.to_petl().duplicates(field_name)
+        elif subset == "unique":
+            yield from resource.to_petl().unique(field_name)
 
     # Metadata
 
@@ -223,26 +219,25 @@ class row_ungroup(Step):
         self,
         descriptor=None,
         *,
-        group_name=None,
         selection=None,
+        group_name=None,
         value_name=None,
     ):
         assert selection in ["first", "last", "min", "max"]
-        self.setinitial("groupName", group_name)
         self.setinitial("selection", selection)
+        self.setinitial("groupName", group_name)
         self.setinitial("valueName", value_name)
         super().__init__(descriptor)
-        # TODO: reimplement
-        self.__group_name = group_name
-        self.__selection = selection
-        self.__value_name = value_name
 
-    def transform_resource(self, source, target):
-        function = getattr(petl, f"groupselect{self.__selection}")
-        if self.__selection in ["first", "last"]:
-            target.data = function(source.to_petl(), self.__group_name)
+    def transform_resource(self, resource):
+        selection = self.get("selection")
+        group_name = self.get("groupName")
+        value_name = self.get("valueName")
+        function = getattr(petl, f"groupselect{selection}")
+        if selection in ["first", "last"]:
+            yield from function(resource.to_petl(), group_name)
         else:
-            target.data = function(source.to_petl(), self.__group_name, self.__value_name)
+            yield from function(resource.to_petl(), group_name, value_name)
 
     # Metadata
 
@@ -250,8 +245,8 @@ class row_ungroup(Step):
         "type": "object",
         "required": ["groupName", "selection"],
         "properties": {
-            "groupName": {"type": "string"},
             "selection": {"type": "string"},
+            "groupName": {"type": "string"},
             "valueName": {"type": "string"},
         },
     }

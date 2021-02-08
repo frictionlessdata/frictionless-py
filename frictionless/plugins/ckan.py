@@ -34,9 +34,9 @@ class CkanPlugin(Plugin):
         if resource.format == "ckan":
             return CkanParser(resource)
 
-    def create_storage(self, name, **options):
+    def create_storage(self, name, source, **options):
         if name == "ckan":
-            return CkanStorage(**options)
+            return CkanStorage(source, **options)
 
 
 # Dialect
@@ -102,35 +102,28 @@ class CkanParser(Parser):
     Public   | `from frictionless.plugins.ckan import CkanParser`
     """
 
-    needs_loader = False
+    supported_types = [
+        "string",
+    ]
 
     # Read
 
-    def read_data_stream_create(self):
-        dialect = self.resource.dialect
-        storage = CkanStorage(
-            url=self.resource.fullpath,
-            dataset=dialect.dataset,
-            apikey=dialect.apikey,
-        )
-        resource = storage.read_resource(dialect.resource)
+    def read_list_stream_create(self):
+        storage = CkanStorage(self.resource.fullpath, dialect=self.resource.dialect)
+        resource = storage.read_resource(self.resource.dialect.resource)
         self.resource.schema = resource.schema
         with resource:
-            yield from resource.data_stream
+            yield from resource.list_stream
 
     # Write
 
-    def write_row_stream_save(self, read_row_stream):
-        dialect = self.resource.dialect
-        schema = self.resource.schema
-        storage = CkanStorage(
-            url=self.resource.fullpath,
-            dataset=dialect.dataset,
-            apikey=dialect.apikey,
-        )
-        resource = Resource(name=dialect.resource, data=read_row_stream, schema=schema)
-        storage.write_resource(resource, force=True)
-        return self.resource.fullpath
+    def write_row_stream(self, resource):
+        source = resource
+        target = self.resource
+        storage = CkanStorage(target.fullpath, dialect=target.dialect)
+        # NOTE: this approach is questionable
+        source.name = target.dialect.resource
+        storage.write_resource(source, force=True)
 
 
 # Storage
@@ -150,11 +143,12 @@ class CkanStorage(Storage):
     Public   | `from frictionless.plugins.ckan import CkanStorage`
     """
 
-    def __init__(self, *, url, dataset, apikey=None):
-        self.__url = url.rstrip("/")
+    def __init__(self, source, *, dialect=None):
+        dialect = dialect or CkanDialect()
+        self.__url = source.rstrip("/")
         self.__endpoint = f"{self.__url}/api/3/action"
-        self.__dataset = dataset
-        self.__apikey = apikey
+        self.__dataset = dialect.dataset
+        self.__apikey = dialect.apikey
 
     def __iter__(self):
         names = []
@@ -262,7 +256,7 @@ class CkanStorage(Storage):
 
     def write_resource(self, resource, *, force=False):
         package = Package(resources=[resource])
-        return self.write_package(package, force=force)
+        self.write_package(package, force=force)
 
     def write_package(self, package, *, force=False):
         existent_names = list(self)

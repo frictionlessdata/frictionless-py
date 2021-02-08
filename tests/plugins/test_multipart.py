@@ -8,7 +8,7 @@ from frictionless import FrictionlessException
 BASE_URL = "https://raw.githubusercontent.com/frictionlessdata/datapackage-py/master/%s"
 
 
-# Read
+# Loader
 
 
 def test_multipart_loader():
@@ -46,6 +46,7 @@ def test_multipart_loader_resource():
     ]
 
 
+@pytest.mark.skip
 @pytest.mark.vcr
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_multipart_loader_resource_remote():
@@ -65,6 +66,7 @@ def test_multipart_loader_resource_remote():
     ]
 
 
+@pytest.mark.skip
 @pytest.mark.vcr
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_multipart_loader_resource_remote_both_path_and_basepath():
@@ -144,8 +146,6 @@ def test_multipart_loader_resource_validate():
     assert report.valid
     assert report.task.resource.stats["rows"] == 2
 
-
-# Write
 
 # We're better implement here a round-robin testing including
 # reading using Resource as we do for other tests

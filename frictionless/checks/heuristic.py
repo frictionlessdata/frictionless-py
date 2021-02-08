@@ -79,18 +79,18 @@ class deviated_value(Check):
 
     # Validate
 
-    def validate_task(self):
+    def validate_check(self):
         numeric = ["integer", "number"]
-        if self.__field_name not in self.table.schema.field_names:
+        if self.__field_name not in self.resource.schema.field_names:
             note = 'deviated value check requires field "%s" to exist'
-            yield errors.TaskError(note=note % self.__field_name)
-        elif self.table.schema.get_field(self.__field_name).type not in numeric:
+            yield errors.CheckError(note=note % self.__field_name)
+        elif self.resource.schema.get_field(self.__field_name).type not in numeric:
             note = 'deviated value check requires field "%s" to be numiric'
-            yield errors.TaskError(note=note % self.__field_name)
+            yield errors.CheckError(note=note % self.__field_name)
         if not self.__average_function:
             note = 'deviated value check supports only average functions "%s"'
             note = note % ", ".join(AVERAGE_FUNCTIONS.keys())
-            yield errors.TaskError(note=note)
+            yield errors.CheckError(note=note)
 
     def validate_row(self, row):
         cell = row[self.__field_name]
@@ -116,9 +116,9 @@ class deviated_value(Check):
         # Check values
         for row_position, cell in zip(self.__row_positions, self.__cells):
             if not (minimum <= cell <= maximum):
-                dtl = 'value "%s" in row at position "%s" and field "%s" is deviated "[%.2f, %.2f]"'
-                dtl = dtl % (cell, row_position, self.__field_name, minimum, maximum)
-                yield errors.DeviatedValueError(note=dtl)
+                note = 'value "%s" in row at position "%s" and field "%s" is deviated "[%.2f, %.2f]"'
+                note = note % (cell, row_position, self.__field_name, minimum, maximum)
+                yield errors.DeviatedValueError(note=note)
 
     # Metadata
 

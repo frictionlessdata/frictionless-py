@@ -1,3 +1,4 @@
+from itertools import chain
 from .exception import FrictionlessException
 from .system import system
 from . import errors
@@ -16,14 +17,14 @@ class Parser:
 
     """
 
-    # TODO: remove needs_loader?
-    needs_loader = True
+    requires_loader = False
     supported_types = []
 
     def __init__(self, resource):
         self.__resource = resource
         self.__loader = None
-        self.__data_stream = None
+        self.__sample = None
+        self.__list_stream = None
 
     def __enter__(self):
         if self.closed:
@@ -50,24 +51,29 @@ class Parser:
         return self.__loader
 
     @property
-    def data_stream(self):
+    def sample(self):
+        """
+        Returns:
+            Loader: sample
+        """
+        return self.__sample
+
+    @property
+    def list_stream(self):
         """
         Yields:
-            any[][]: data stream
+            any[][]: list stream
         """
-        return self.__data_stream
+        return self.__list_stream
 
     # Open/Close
 
     def open(self):
         """Open the parser as "io.open" does"""
         self.close()
-        if self.__resource.dialect.metadata_errors:
-            error = self.__resource.dialect.metadata_errors[0]
-            raise FrictionlessException(error)
         try:
             self.__loader = self.read_loader()
-            self.__data_stream = self.read_data_stream()
+            self.__list_stream = self.read_list_stream()
             return self
         except Exception:
             self.close()
@@ -95,77 +101,77 @@ class Parser:
         Returns:
             Loader: loader
         """
-        if self.needs_loader:
+        if self.requires_loader:
             loader = system.create_loader(self.resource)
             return loader.open()
 
-    def read_data_stream(self):
-        """Read data stream
+    def read_list_stream(self):
+        """Read list stream
 
         Returns:
-            gen<any[][]>: data stream
+            gen<any[][]>: list stream
         """
-        data_stream = self.read_data_stream_create()
-        data_stream = self.read_data_stream_handle_errors(data_stream)
-        return data_stream
+        self.__sample = []
+        list_stream = self.read_list_stream_create()
+        list_stream = self.read_list_stream_handle_errors(list_stream)
+        for cells in list_stream:
+            self.__sample.append(cells)
+            if len(self.__sample) >= self.resource.detector.sample_size:
+                break
+        list_stream = chain(self.__sample, list_stream)
+        return list_stream
 
-    def read_data_stream_create(self, loader):
-        """Create data stream from loader
+    def read_list_stream_create(self):
+        """Create list stream from loader
 
         Parameters:
             loader (Loader): loader
 
         Returns:
-            gen<any[][]>: data stream
+            gen<any[][]>: list stream
         """
         raise NotImplementedError()
 
-    def read_data_stream_handle_errors(self, data_stream):
-        """Wrap data stream into error handler
+    def read_list_stream_handle_errors(self, list_stream):
+        """Wrap list stream into error handler
 
         Parameters:
-            gen<any[][]>: data stream
+            gen<any[][]>: list stream
 
         Returns:
-            gen<any[][]>: data stream
+            gen<any[][]>: list stream
         """
-        return DataStreamWithErrorHandling(data_stream)
+        return ListStreamWithErrorHandling(list_stream)
 
     # Write
 
-    def write_row_stream(self, read_row_stream):
-        """Write row stream into the resource
+    def write_row_stream(self, resource):
+        """Write row stream from the source resource
 
         Parameters:
-            read_row_stream (gen<Row[]>): row stream factory
+            source (Resource): source resource
         """
-        read_row_stream = self.write_row_stream_create(read_row_stream)
-        result = self.write_row_stream_save(read_row_stream)
-        return result
-
-    def write_row_stream_create(self, read_row_stream):
-        return read_row_stream
-
-    def write_row_stream_save(self, read_row_stream):
         raise NotImplementedError()
 
 
 # Internal
 
 
-# TODO:
+# NOTE:
 # Here we catch some Loader related errors
 # We can consider moving it to Loader if it's possible
-class DataStreamWithErrorHandling:
-    def __init__(self, data_stream):
-        self.data_stream = data_stream
+
+
+class ListStreamWithErrorHandling:
+    def __init__(self, list_stream):
+        self.list_stream = list_stream
 
     def __iter__(self):
         return self
 
     def __next__(self):
         try:
-            return self.data_stream.__next__()
+            return self.list_stream.__next__()
         except StopIteration:
             raise
         except FrictionlessException:

@@ -156,7 +156,6 @@
                             ]
                         },
                         "arcs":{
-                            "TODO":"Check if arcs refer to valid LinearRings",
                             "type":"array",
                             "items":{
                                 "type":"array",

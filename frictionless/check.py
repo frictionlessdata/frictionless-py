@@ -22,33 +22,34 @@ class Check(Metadata):
     code = "check"
     Errors = []  # type: ignore
 
-    def __init__(self, descriptor=None):
+    def __init__(self, descriptor=None, *, function=None):
         super().__init__(descriptor)
         self.setinitial("code", self.code)
+        self.__function = function
 
     @property
-    def table(self):
+    def resource(self):
         """
         Returns:
-            Table?: table object available after the `check.connect` call
+            Resource?: resource object available after the `check.connect` call
         """
-        return self.__table
+        return self.__resource
 
-    # Validation
-
-    def connect(self, table):
-        """Connect to the given table
+    def connect(self, resource):
+        """Connect to the given resource
 
         Parameters:
-            table (Table): data table
+            resource (Resource): data resource
         """
-        self.__table = table
+        self.__resource = resource
 
     def prepare(self):
         """Called before validation"""
         pass
 
-    def validate_task(self):
+    # Validate
+
+    def validate_check(self):
         """Called to validate the check itself
 
         Yields:
@@ -56,8 +57,15 @@ class Check(Metadata):
         """
         yield from []
 
-    # TODO: we actually don't need a schema argument here as self.table is available
-    def validate_schema(self, schema):
+    def validate_source(self):
+        """Called to validate the given source
+
+        Yields:
+            Error: found errors
+        """
+        yield from []
+
+    def validate_schema(self):
         """Called to validate the given schema
 
         Parameters:
@@ -68,8 +76,7 @@ class Check(Metadata):
         """
         yield from []
 
-    # TODO: we actually don't need a header argument here as self.table is available
-    def validate_header(self, header):
+    def validate_header(self):
         """Called to validate the given header
 
         Parameters:
@@ -89,6 +96,9 @@ class Check(Metadata):
         Yields:
             Error: found errors
         """
+        if self.__function:
+            yield from self.__function(row)
+            return
         yield from []
 
     def validate_table(self):

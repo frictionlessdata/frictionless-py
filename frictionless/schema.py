@@ -14,6 +14,14 @@ class Schema(Metadata):
     -------- | --------
     Public   | `from frictionless import Schema`
 
+    This class is one of the cornerstones of of Frictionless framework.
+    It allow to work with Table Schema and its fields.
+
+    ```python
+    schema = Schema('schema.json')
+    schema.add_fied(Field(name='name', type='string'))
+    ```
+
     Parameters:
         descriptor? (str|dict): schema descriptor
         fields? (dict[]): list of field descriptors
@@ -23,7 +31,6 @@ class Schema(Metadata):
 
     Raises:
         FrictionlessException: raise any error that occurs during the process
-
     """
 
     def __init__(

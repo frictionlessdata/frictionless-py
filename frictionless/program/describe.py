@@ -21,7 +21,7 @@ def program_describe(
     encoding: str = Opt(None, help="Specify encoding  [default: inferred]"),
     innerpath: str = Opt(None, help="Specify in-archive path  [default: first]"),
     compression: str = Opt(None, help="Specify compression  [default: inferred]"),
-    # Layout
+    # Table
     header_rows: str = Opt(None, help="Comma-separated row numbers  [default: 1]"),
     header_join: str = Opt(None, help="A separator to join a multiline header"),
     pick_fields: str = Opt(None, help='Comma-separated fields to pick e.g. "1,name1"'),

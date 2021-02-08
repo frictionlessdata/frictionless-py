@@ -5,7 +5,7 @@ from frictionless.plugins.csv import CsvDialect
 BASE_URL = "https://raw.githubusercontent.com/okfn/tabulator-py/master/%s"
 
 
-# Read
+# Parser
 
 
 def test_csv_parser():
@@ -114,6 +114,8 @@ def test_csv_parser_remote():
         ]
 
 
+# TODO: enable when loader.buffer is implemented
+@pytest.mark.skip
 @pytest.mark.vcr
 def test_csv_parser_remote_non_ascii_url():
     source = "http://data.defra.gov.uk/ops/government_procurement_card/over_£500_GPC_apr_2013.csv"
@@ -232,7 +234,7 @@ def test_csv_parser_quotechar_is_empty_string():
         ]
 
 
-def test_table_format_tsv():
+def test_csv_parser_format_tsv():
     detector = Detector(schema_patch={"missingValues": ["\\N"]})
     with Resource("data/table.tsv", detector=detector) as resource:
         assert resource.dialect == {"delimiter": "\t"}
@@ -244,12 +246,9 @@ def test_table_format_tsv():
         ]
 
 
-# Write
-
-
 def test_csv_parser_write(tmpdir):
     source = Resource("data/table.csv")
-    target = Resource(str(tmpdir.join("table.csv")), trusted=True)
+    target = Resource(str(tmpdir.join("table.csv")))
     source.write(target)
     with target:
         assert target.header == ["id", "name"]
@@ -262,7 +261,7 @@ def test_csv_parser_write(tmpdir):
 def test_csv_parser_write_delimiter(tmpdir):
     dialect = CsvDialect(delimiter=";")
     source = Resource("data/table.csv")
-    target = Resource(str(tmpdir.join("table.csv")), dialect=dialect, trusted=True)
+    target = Resource(str(tmpdir.join("table.csv")), dialect=dialect)
     source.write(target)
     with target:
         assert target.header == ["id", "name"]
@@ -275,7 +274,7 @@ def test_csv_parser_write_delimiter(tmpdir):
 
 def test_csv_parser_write_inline_source(tmpdir):
     source = Resource([{"key1": "value1", "key2": "value2"}])
-    target = Resource(str(tmpdir.join("table.csv")), trusted=True)
+    target = Resource(str(tmpdir.join("table.csv")))
     source.write(target)
     with target:
         assert target.header == ["key1", "key2"]
@@ -285,9 +284,9 @@ def test_csv_parser_write_inline_source(tmpdir):
 
 
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-def test_table_tsv_write(tmpdir):
+def test_csv_parser_tsv_write(tmpdir):
     source = Resource("data/table.csv")
-    target = Resource(str(tmpdir.join("table.tsv")), trusted=True)
+    target = Resource(str(tmpdir.join("table.tsv")))
     source.write(target)
     with open(target.fullpath) as file:
         assert file.read() == "id\tname\n1\tenglish\n2\t中国人\n"

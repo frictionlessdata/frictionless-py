@@ -26,19 +26,24 @@ class SqlPlugin(Plugin):
 
     """
 
-    def create_dialect(self, resource, *, descriptor):
+    def create_file(self, file):
         for prefix in SCHEME_PREFIXES:
-            if resource.scheme.startswith(prefix):
-                return SqlDialect(descriptor)
+            if file.scheme.startswith(prefix):
+                file.scheme = ""
+                file.format = "sql"
+                return file
+
+    def create_dialect(self, resource, *, descriptor):
+        if resource.format == "sql":
+            return SqlDialect(descriptor)
 
     def create_parser(self, resource):
-        for prefix in SCHEME_PREFIXES:
-            if resource.scheme.startswith(prefix):
-                return SqlParser(resource)
+        if resource.format == "sql":
+            return SqlParser(resource)
 
-    def create_storage(self, name, **options):
+    def create_storage(self, name, source, **options):
         if name == "sql":
-            return SqlStorage(**options)
+            return SqlStorage(source, **options)
 
 
 # Dialect
@@ -61,8 +66,17 @@ class SqlDialect(Dialect):
 
     """
 
-    def __init__(self, descriptor=None, *, table=None, order_by=None, namespace=None):
+    def __init__(
+        self,
+        descriptor=None,
+        *,
+        table=None,
+        prefix=None,
+        order_by=None,
+        namespace=None,
+    ):
         self.setinitial("table", table)
+        self.setinitial("prefix", prefix)
         self.setinitial("order_by", order_by)
         self.setinitial("namespace", namespace)
         super().__init__(descriptor)
@@ -70,6 +84,10 @@ class SqlDialect(Dialect):
     @Metadata.property
     def table(self):
         return self.get("table")
+
+    @Metadata.property
+    def prefix(self):
+        return self.get("prefix") or ""
 
     @Metadata.property
     def order_by(self):
@@ -87,6 +105,7 @@ class SqlDialect(Dialect):
         "additionalProperties": False,
         "properties": {
             "table": {"type": "string"},
+            "prefix": {"type": "string"},
             "order_by": {"type": "string"},
             "namespace": {"type": "string"},
         },
@@ -105,31 +124,35 @@ class SqlParser(Parser):
 
     """
 
-    needs_loader = False
+    supported_types = [
+        "boolean",
+        "date",
+        "datetime",
+        "integer",
+        "number",
+        "string",
+        "time",
+    ]
 
     # Read
 
-    def read_data_stream_create(self):
-        sa = helpers.import_from_plugin("sqlalchemy", plugin="sql")
-        engine = sa.create_engine(self.resource.fullpath)
+    def read_list_stream_create(self):
         dialect = self.resource.dialect
-        storage = SqlStorage(engine=engine, namespace=dialect.namespace)
+        storage = SqlStorage(self.resource.fullpath, dialect=dialect)
         resource = storage.read_resource(dialect.table, order_by=dialect.order_by)
         self.resource.schema = resource.schema
         with resource:
-            yield from resource.data_stream
+            yield from resource.list_stream
 
     # Write
 
-    def write_row_stream_save(self, read_row_stream):
-        sa = helpers.import_from_plugin("sqlalchemy", plugin="sql")
-        engine = sa.create_engine(self.resource.fullpath)
-        dialect = self.resource.dialect
-        schema = self.resource.schema
-        storage = SqlStorage(engine=engine, namespace=dialect.namespace)
-        resource = Resource(name=dialect.table, data=read_row_stream, schema=schema)
-        storage.write_resource(resource, force=True)
-        return self.resource.fullpath
+    def write_row_stream(self, resource):
+        source = resource
+        target = self.resource
+        # NOTE: this approach is questionable
+        source.name = target.dialect.table
+        storage = SqlStorage(target.fullpath, dialect=target.dialect)
+        storage.write_resource(source, force=True)
 
 
 # Storage
@@ -150,17 +173,14 @@ class SqlStorage(Storage):
 
     """
 
-    def __init__(self, *, url=None, engine=None, prefix="", namespace=None):
-        assert url or engine, "It's required to provide `url` or `engine`"
+    def __init__(self, source, *, dialect=None):
         sa = helpers.import_from_plugin("sqlalchemy", plugin="sql")
-
-        # Create engine
-        if not engine:
-            engine = sa.create_engine(url)
+        engine = sa.create_engine(source) if isinstance(source, str) else source
 
         # Set attributes
-        self.__prefix = prefix
-        self.__namespace = namespace
+        dialect = dialect or SqlDialect()
+        self.__prefix = dialect.prefix
+        self.__namespace = dialect.namespace
         self.__connection = engine.connect()
 
         # Add regex support
@@ -306,7 +326,7 @@ class SqlStorage(Storage):
 
     def write_resource(self, resource, *, force=False):
         package = Package(resources=[resource])
-        return self.write_package(package, force=force)
+        self.write_package(package, force=force)
 
     def write_package(self, package, force=False):
         existent_names = list(self)

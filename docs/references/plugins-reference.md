@@ -7,24 +7,26 @@ Frictionless Framework ships with a great deal of core plugins. Some of them are
 ## Stable
 
 These plugins are well-tested and can be used in production:
+
 - csv
 - excel
 - filelike
 - inline
 - json
 - local
-- multipart
 - ods
 - remote
 - text
 
 ## Experimental
 
-These plugins are not recommended for production yet:
+These plugins are not recommended for production yet. There can be bugs and the API might change within the same major version of Frictionless:
+
 - bigquery
 - ckan
 - gsheets
 - html
+- multipart
 - pandas
 - s3
 - server

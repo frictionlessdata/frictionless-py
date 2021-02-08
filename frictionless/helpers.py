@@ -6,7 +6,6 @@ import glob
 import atexit
 import shutil
 import zipfile
-import chardet
 import tempfile
 import datetime
 import platform
@@ -86,7 +85,7 @@ def import_from_plugin(name, *, plugin):
     except ImportError:
         module = import_module("frictionless.exception")
         errors = import_module("frictionless.errors")
-        error = errors.Error(note=f'Please install "frictionless[{plugin}]"')
+        error = errors.GeneralError(note=f'Please install "frictionless[{plugin}]"')
         raise module.FrictionlessException(error)
 
 
@@ -126,7 +125,7 @@ def compile_regex(items):
         return result
 
 
-def detect_basepath(descriptor):
+def parse_basepath(descriptor):
     basepath = ""
     if isinstance(descriptor, str):
         basepath = os.path.dirname(descriptor)
@@ -135,7 +134,7 @@ def detect_basepath(descriptor):
     return basepath
 
 
-def detect_scheme_and_format(source):
+def parse_scheme_and_format(source):
     parsed = urlparse(source)
     if re.search(r"\+.*://", source):
         # For sources like: db2+ibm_db://username:password@host:port/database
@@ -174,6 +173,13 @@ def copy_file(source, target):
     shutil.copy(source, target)
 
 
+def write_file(path, text):
+    with tempfile.NamedTemporaryFile("wt", delete=False, encoding="utf-8") as file:
+        file.write(text)
+        file.flush()
+    move_file(file.name, path)
+
+
 def create_byte_stream(bytes):
     stream = io.BufferedRandom(io.BytesIO())
     stream.write(bytes)
@@ -186,6 +192,9 @@ def is_remote_path(path):
     return urlparse(path).scheme in config.REMOTE_SCHEMES
 
 
+# NOTE:
+# We need to rebase this function on checking actual path
+# being withing a basepath directory (it's a safer approach)
 def is_safe_path(path):
     contains_windows_var = lambda val: re.match(r"%.+%", val)
     contains_posix_var = lambda val: re.match(r"\$.+", val)
@@ -230,6 +239,10 @@ def is_only_strings(cells):
     return True
 
 
+def is_type(object, name):
+    return type(object).__name__ == name
+
+
 def is_platform(name):
     current = platform.system()
     if name == "linux":
@@ -268,7 +281,7 @@ def stringify_csv_string(cells):
 
 def unzip_descriptor(path, innerpath):
     frictionless = import_module("frictionless")
-    resource = frictionless.Resource(path=path, compression="", trusted=True)
+    resource = frictionless.Resource(path=path, compression="")
     with frictionless.system.create_loader(resource) as loader:
         byte_stream = loader.byte_stream
         if loader.remote:
@@ -290,17 +303,6 @@ def parse_resource_hash(hash):
     if len(parts) == 1:
         return (config.DEFAULT_HASHING, parts[0])
     return parts
-
-
-def detect_encoding(sample, *, confidence):
-    result = chardet.detect(sample)
-    rescon = result["confidence"] or 0
-    encoding = result["encoding"] or config.DEFAULT_ENCODING
-    if rescon < confidence:
-        encoding = config.DEFAULT_ENCODING
-    if encoding == "ascii":
-        encoding = config.DEFAULT_ENCODING
-    return encoding
 
 
 # Measurements

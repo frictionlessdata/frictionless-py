@@ -1,3 +1,5 @@
+import types
+from itertools import chain
 from ..step import Step
 from ..system import system
 from ..helpers import get_name
@@ -24,35 +26,46 @@ def transform_resource(source, *, steps, **options):
 
     # Prepare resource
     native = isinstance(source, Resource)
-    target = source.to_copy() if native else Resource(source, **options)
-    target.infer()
+    resource = source.to_copy() if native else Resource(source, **options)
+    resource.infer()
 
     # Prepare steps
     for index, step in enumerate(steps):
         if not isinstance(step, Step):
-            steps[index] = system.create_step(step)
+            steps[index] = (
+                Step(function=step)
+                if isinstance(step, types.FunctionType)
+                else system.create_step(step)
+            )
 
     # Run transforms
     for step in steps:
 
-        # Preprocess
-        source = target
-        target = source.to_copy()
-
         # Transform
         try:
-            step.transform_resource(source, target)
+            data = step.transform_resource(resource)
+            if data:
+                data = DataWithErrorHandling(data, step=step)
         except Exception as exception:
             error = errors.StepError(note=f'"{get_name(step)}" raises "{exception}"')
             raise FrictionlessException(error) from exception
 
         # Postprocess
-        if source.data is not target.data:
-            target.data = DataWithErrorHandling(target.data, step=step)
-            # TODO: can be removed when path/data updates is implemented for resource
-            target.format = "inline"
+        if data:
+            resource = resource.to_copy()
+            resource.data = data
+            resource.scheme = ""
+            resource.format = "inline"
+            resource.pop("path", None)
+            resource.pop("hashing", None)
+            resource.pop("encoding", None)
+            resource.pop("innerpath", None)
+            resource.pop("compression", None)
+            resource.pop("control", None)
+            resource.pop("dialect", None)
+            resource.pop("layout", None)
 
-    return target
+    return resource
 
 
 # Internal
@@ -60,12 +73,17 @@ def transform_resource(source, *, steps, **options):
 
 class DataWithErrorHandling:
     def __init__(self, data, *, step):
-        self.data = data
         self.step = step
+        self.data = data
+        try:
+            # NOTE: consider extending to the sample size
+            self.data = chain([next(data)], data)
+        except StopIteration:
+            pass
 
     def __iter__(self):
         try:
-            yield from self.data() if callable(self.data) else self.data
+            yield from self.data
         except Exception as exception:
             if isinstance(exception, FrictionlessException):
                 if exception.error.code == "step-error":

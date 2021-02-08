@@ -56,7 +56,7 @@ def test_step_field_add_with_formula():
         source,
         steps=[
             steps.table_normalize(),
-            steps.field_add(name="calc", value="<formula>id * 100 + population"),
+            steps.field_add(name="calc", formula="id * 100 + population"),
         ],
     )
     assert target.schema == {
@@ -74,14 +74,14 @@ def test_step_field_add_with_formula():
     ]
 
 
-def test_step_field_add_with_value_callable():
+def test_step_field_add_with_function():
     source = Resource(path="data/transform.csv")
     target = transform(
         source,
         steps=[
             steps.table_normalize(),
             steps.field_add(
-                name="calc", value=lambda row: row["id"] * 100 + row["population"]
+                name="calc", function=lambda row: row["id"] * 100 + row["population"]
             ),
         ],
     )
@@ -356,7 +356,7 @@ def test_step_field_update():
     target = transform(
         source,
         steps=[
-            steps.field_update(name="id", type="string", value=str),
+            steps.field_update(name="id", type="string", function=str),
         ],
     )
     assert target.schema == {

@@ -124,6 +124,7 @@ class JsonParser(Parser):
 
     """
 
+    requires_loader = True
     supported_types = [
         "array",
         "boolean",
@@ -136,7 +137,7 @@ class JsonParser(Parser):
 
     # Read
 
-    def read_data_stream_create(self, dialect=None):
+    def read_list_stream_create(self):
         ijson = helpers.import_from_plugin("ijson", plugin="json")
         path = "item"
         dialect = self.resource.dialect
@@ -147,30 +148,32 @@ class JsonParser(Parser):
         resource = Resource(data=source, dialect=inline_dialect)
         with system.create_parser(resource) as parser:
             try:
-                yield next(parser.data_stream)
+                yield next(parser.list_stream)
             except StopIteration:
                 note = f'cannot extract JSON tabular data from "{self.resource.fullpath}"'
                 raise FrictionlessException(errors.SourceError(note=note))
             if parser.resource.dialect.keyed:
                 dialect["keyed"] = True
-            yield from parser.data_stream
+            yield from parser.list_stream
 
     # Write
 
-    def write_row_stream_save(self, read_row_stream):
+    def write_row_stream(self, resource):
         data = []
-        dialect = self.resource.dialect
-        for row in read_row_stream():
-            cells = row.to_list(json=True)
-            item = dict(zip(row.field_names, cells)) if dialect.keyed else cells
-            if not dialect.keyed and row.row_number == 1:
-                data.append(row.field_names)
-            data.append(item)
+        source = resource
+        target = self.resource
+        keyed = target.dialect.keyed
+        with source:
+            for row in source.row_stream:
+                cells = row.to_list(json=True)
+                item = dict(zip(row.field_names, cells)) if keyed else cells
+                if not target.dialect.keyed and row.row_number == 1:
+                    data.append(row.field_names)
+                data.append(item)
         with tempfile.NamedTemporaryFile("wt", delete=False) as file:
             json.dump(data, file, indent=2)
-        loader = system.create_loader(self.resource)
-        result = loader.write_byte_stream(file.name)
-        return result
+        loader = system.create_loader(target)
+        loader.write_byte_stream(file.name)
 
 
 class JsonlParser(Parser):
@@ -182,6 +185,7 @@ class JsonlParser(Parser):
 
     """
 
+    requires_loader = True
     supported_types = [
         "array",
         "boolean",
@@ -195,31 +199,33 @@ class JsonlParser(Parser):
 
     # Read
 
-    def read_data_stream_create(self, dialect=None):
+    def read_list_stream_create(self):
         jsonlines = helpers.import_from_plugin("jsonlines", plugin="json")
         dialect = self.resource.dialect
         source = iter(jsonlines.Reader(self.loader.text_stream))
         dialect = InlineDialect(keys=dialect.keys)
         resource = Resource(data=source, dialect=dialect)
         with system.create_parser(resource) as parser:
-            yield next(parser.data_stream)
+            yield next(parser.list_stream)
             if parser.resource.dialect.keyed:
                 dialect["keyed"] = True
-            yield from parser.data_stream
+            yield from parser.list_stream
 
     # Write
 
-    def write_row_stream_save(self, read_row_stream):
+    def write_row_stream(self, resource):
         jsonlines = helpers.import_from_plugin("jsonlines", plugin="json")
-        dialect = self.resource.dialect
+        source = resource
+        target = self.resource
+        keyed = target.dialect.keyed
         with tempfile.NamedTemporaryFile(delete=False) as file:
             writer = jsonlines.Writer(file)
-            for row in read_row_stream():
-                cells = row.to_list(json=True)
-                item = dict(zip(row.field_names, cells)) if dialect.keyed else cells
-                if not dialect.keyed and row.row_number == 1:
-                    writer.write(row.field_names)
-                writer.write(item)
-        loader = system.create_loader(self.resource)
-        result = loader.write_byte_stream(file.name)
-        return result
+            with source:
+                for row in source.row_stream:
+                    cells = row.to_list(json=True)
+                    item = dict(zip(row.field_names, cells)) if keyed else cells
+                    if not target.dialect.keyed and row.row_number == 1:
+                        writer.write(row.field_names)
+                    writer.write(item)
+        loader = system.create_loader(target)
+        loader.write_byte_stream(file.name)

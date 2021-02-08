@@ -95,11 +95,13 @@ class GsheetsParser(Parser):
 
     """
 
-    needs_loader = False
+    supported_types = [
+        "string",
+    ]
 
     # Read
 
-    def read_data_stream_create(self):
+    def read_list_stream_create(self):
         fullpath = self.resource.fullpath
         match = re.search(r".*/d/(?P<key>[^/]+)/.*?(?:gid=(?P<gid>\d+))?$", fullpath)
         fullpath = "https://docs.google.com/spreadsheets/d/%s/export?format=csv&id=%s"
@@ -112,26 +114,29 @@ class GsheetsParser(Parser):
             fullpath = "%s&gid=%s" % (fullpath, gid)
         resource = Resource(path=fullpath, stats=self.resource.stats)
         with system.create_parser(resource) as parser:
-            yield from parser.data_stream
+            yield from parser.list_stream
 
     # Write
 
-    def write_row_stream_save(self, read_row_stream):
+    def write_row_stream(self, resource):
         pygsheets = helpers.import_from_plugin("pygsheets", plugin="gsheets")
-        fullpath = self.resource.fullpath
+        source = resource
+        target = self.resource
+        fullpath = target.fullpath
         match = re.search(r".*/d/(?P<key>[^/]+)/.*?(?:gid=(?P<gid>\d+))?$", fullpath)
         if not match:
             error = errors.FormatError(note=f"Cannot save {fullpath}")
             raise FrictionlessException(error)
         key = match.group("key")
         gid = match.group("gid")
-        gc = pygsheets.authorize(service_account_file=self.resource.dialect.credentials)
+        gc = pygsheets.authorize(service_account_file=target.dialect.credentials)
         sh = gc.open_by_key(key)
         wks = sh.worksheet_by_id(gid) if gid else sh[0]
         data = []
-        for row in read_row_stream():
-            if row.row_number == 1:
-                data.append(row.field_names)
-            data.append(row.to_list())
+        with source:
+            for row in source.row_stream:
+                if row.row_number == 1:
+                    data.append(row.field_names)
+                data.append(row.to_list())
         wks.update_values("A1", data)
         return fullpath

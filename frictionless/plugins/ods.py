@@ -92,6 +92,7 @@ class OdsParser(Parser):
 
     """
 
+    requires_loader = True
     supported_types = [
         "boolean",
         "date",
@@ -105,7 +106,7 @@ class OdsParser(Parser):
 
     # Read
 
-    def read_data_stream_create(self):
+    def read_list_stream_create(self):
         ezodf = helpers.import_from_plugin("ezodf", plugin="ods")
         dialect = self.resource.dialect
 
@@ -150,22 +151,23 @@ class OdsParser(Parser):
 
     # Write
 
-    def write_row_stream_save(self, read_row_stream):
+    def write_row_stream(self, resource):
         ezodf = helpers.import_from_plugin("ezodf", plugin="ods")
-        dialect = self.resource.dialect
+        source = resource
+        target = self.resource
         file = tempfile.NamedTemporaryFile(delete=False)
         book = ezodf.newdoc(doctype="ods", filename=file.name)
-        title = f"Sheet {dialect.sheet}"
+        title = f"Sheet {target.dialect.sheet}"
         book.sheets += ezodf.Sheet(title)
         sheet = book.sheets[title]
-        for row_index, row in enumerate(read_row_stream()):
-            if row.row_number == 1:
-                for field_index, name in enumerate(row.field_names):
-                    sheet[(0, field_index)].set_value(name)
-            cells = row.to_list(types=self.supported_types)
-            for field_index, cell in enumerate(cells):
-                sheet[(row_index + 1, field_index)].set_value(cell)
-        book.save()
-        loader = system.create_loader(self.resource)
-        result = loader.write_byte_stream(file.name)
-        return result
+        with source:
+            for row_index, row in enumerate(source.row_stream):
+                if row.row_number == 1:
+                    for field_index, name in enumerate(row.field_names):
+                        sheet[(0, field_index)].set_value(name)
+                cells = row.to_list(types=self.supported_types)
+                for field_index, cell in enumerate(cells):
+                    sheet[(row_index + 1, field_index)].set_value(cell)
+            book.save()
+        loader = system.create_loader(target)
+        loader.write_byte_stream(file.name)

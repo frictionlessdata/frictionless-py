@@ -6,10 +6,15 @@ from . import helpers
 from . import config
 
 
+# NOTE:
+# For better detection we can add an argument allowing metadata reading
+# Exact set of file types needs to be reviewed
+
+
 class File:
     """File representation"""
 
-    def __init__(self, source, *, basepath="", innerpath=None, allow_reading=False):
+    def __init__(self, source, *, basepath="", innerpath=None):
 
         # Handle pathlib
         if isinstance(source, Path):
@@ -19,7 +24,6 @@ class File:
         self.__source = source
         self.__basepath = basepath
         self.__innerpath = innerpath
-        self.__allow_reading = allow_reading
 
         # Detect attributes
         self.__detect()
@@ -32,7 +36,6 @@ class File:
     def data(self):
         return self.__data
 
-    # TODO: review possible values
     @cached_property
     def type(self):
         return self.__type
@@ -143,6 +146,7 @@ class File:
                 names.append(name)
             name = os.path.commonprefix(names)
             name = helpers.slugify(name, regex_pattern=r"[^-a-z0-9._/]")
+            name = name or "name"
 
         # Detect type
         type = "table"
@@ -167,9 +171,6 @@ class File:
                     type = "inquiry"
                 elif path.endswith(("pipeline.json", "pipeline.yaml")):
                     type = "pipeline"
-                elif self.__allow_reading:
-                    # TODO: implement
-                    pass
 
         # Detect scheme/format/innerpath/compression
         scheme = ""
@@ -178,14 +179,14 @@ class File:
         innerpath = ""
         detection_path = fullpath[0] if multipart else fullpath
         if not memory:
-            scheme, format = helpers.detect_scheme_and_format(detection_path)
+            scheme, format = helpers.parse_scheme_and_format(detection_path)
             if format in config.COMPRESSION_FORMATS:
                 if not multipart:
                     compression = format
                 detection_path = detection_path[: -len(format) - 1]
                 if self.__innerpath:
                     detection_path = os.path.join(detection_path, self.__innerpath)
-                scheme, format = helpers.detect_scheme_and_format(detection_path)
+                scheme, format = helpers.parse_scheme_and_format(detection_path)
                 if format:
                     name = os.path.splitext(name)[0]
 

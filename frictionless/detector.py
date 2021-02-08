@@ -1,10 +1,17 @@
+import chardet
 from copy import copy, deepcopy
 from .exception import FrictionlessException
+from .layout import Layout
 from .schema import Schema
 from .field import Field
 from . import helpers
 from . import errors
 from . import config
+
+
+# NOTE:
+# We might consider making this class instalce of Metadata
+# It will alow providing detector options declaratively e.g. in validation Inquiry
 
 
 class Detector:
@@ -13,14 +20,54 @@ class Detector:
     API      | Usage
     -------- | --------
     Public   | `from frictionless import Detector`
+
+    Parameters:
+
+        buffer_size? (int): The amount of bytes to be extracted as a buffer.
+            It defaults to 10000
+
+        sample_size? (int): The amount of rows to be extracted as a samle.
+            It defaults to 100
+
+        field_type? (str): Enforce all the inferred types to be this type.
+            For more information, please check "Describing  Data" guide.
+
+        field_names? (str[]): Enforce all the inferred fields to have provided names.
+            For more information, please check "Describing  Data" guide.
+
+        field_confidence? (float): A number from 0 to 1 setting the infer confidence.
+            If  1 the data is guaranteed to be valid against the inferred schema.
+            For more information, please check "Describing  Data" guide.
+            It defaults to 0.9
+
+        field_float_numbers? (bool): Flag to indicate desired number type.
+            By default numbers will be `Decimal`; if `True` - `float`.
+            For more information, please check "Describing  Data" guide.
+            It defaults to `False`
+
+        field_missing_values? (str[]): String to be considered as missing values.
+            For more information, please check "Describing  Data" guide.
+            It defaults to `['']`
+
+        schema_sync? (bool): Whether to sync the schema.
+            If it sets to `True` the provided schema will be mapped to
+            the inferred schema. It means that, for example, you can
+            provide a subset of fileds to be applied on top of the inferred
+            fields or the provided schema can have different order of fields.
+
+        schema_patch? (dict): A dictionary to be used as an inferred schema patch.
+            The form of this dictionary should follow the Schema descriptor form
+            except for the `fields` property which should be a mapping with the
+            key named after a field name and the values being a field patch.
+            For more information, please check "Extracting Data" guide.
     """
 
     def __init__(
         self,
         buffer_size=config.DEFAULT_BUFFER_SIZE,
+        sample_size=config.DEFAULT_SAMPLE_SIZE,
         encoding_function=None,
         encoding_confidence=config.DEFAULT_ENCODING_CONFIDENCE,
-        sample_size=config.DEFAULT_SAMPLE_SIZE,
         field_type=None,
         field_names=None,
         field_confidence=config.DEFAULT_FIELD_CONFIDENCE,
@@ -30,9 +77,9 @@ class Detector:
         schema_patch=None,
     ):
         self.__buffer_size = buffer_size
+        self.__sample_size = sample_size
         self.__encoding_function = encoding_function
         self.__encoding_confidence = encoding_confidence
-        self.__sample_size = sample_size
         self.__field_type = field_type
         self.__field_names = field_names
         self.__field_confidence = field_confidence
@@ -51,36 +98,65 @@ class Detector:
 
     # Detect
 
-    def detect_encoding(self, sample):
-        """Detect encoding from sample
+    def detect_encoding(self, buffer):
+        """Detect encoding from buffer
 
         Parameters:
-            sample (byte): byte sample
+            buffer (byte): byte buffer
 
         Returns:
             str: encoding
         """
         if self.__encoding_function:
-            return self.__encoding_function(sample)
-        return helpers.detect_encoding(sample, confidence=self.__encoding_confidence)
+            return self.__encoding_function(buffer)
+        result = chardet.detect(buffer)
+        encoding = result["encoding"] or config.DEFAULT_ENCODING
+        confidence = result["confidence"] or 0
+        if confidence < self.__encoding_confidence:
+            encoding = config.DEFAULT_ENCODING
+        if encoding == "ascii":
+            encoding = config.DEFAULT_ENCODING
+        return encoding
 
-    # TODO: implement
-    def detect_layout(self, sample):
+    def detect_layout(self, sample, *, layout=None):
         """Detect layout from sample
 
         Parameters:
             sample (any[][]): data sample
+            layout? (Layout): data layout
 
         Returns:
             Layout: layout
         """
-        pass
+        layout = layout or Layout()
 
-    def detect_schema(self, sample, *, labels=None, schema=None):
-        """Detect schema from sample
+        # Infer header
+        row_number = 0
+        widths = [len(cells) for cells in sample]
+        if layout.get("header") is None and layout.get("headerRows") is None and widths:
+            layout["header"] = False
+            width = round(sum(widths) / len(widths))
+            drift = max(round(width * 0.1), 1)
+            match = list(range(width - drift, width + drift + 1))
+            for row_position, cells in enumerate(sample, start=1):
+                if layout.read_filter_rows(cells, row_position=row_position):
+                    row_number += 1
+                    if len(cells) not in match:
+                        continue
+                    if not helpers.is_only_strings(cells):
+                        continue
+                    del layout["header"]
+                    if row_number != config.DEFAULT_HEADER_ROWS[0]:
+                        layout["headerRows"] = [row_number]
+                    break
+
+        return layout
+
+    def detect_schema(self, fragment, *, labels=None, schema=None):
+        """Detect schema from fragment
 
         Parameters:
-            sample (any[][]): data sample
+            fragment (any[][]): data fragment
             labels? (str[]): data labels
             schema? (Schema): data schema
 
@@ -99,9 +175,9 @@ class Detector:
             # Prepare names
             names = copy(self.__field_names or labels or [])
             if not names:
-                if not sample:
+                if not fragment:
                     return schema
-                names = [f"field{number}" for number in range(1, len(sample[0]) + 1)]
+                names = [f"field{number}" for number in range(1, len(fragment[0]) + 1)]
 
             # Handle name/empty
             for index, name in enumerate(names):
@@ -117,14 +193,14 @@ class Detector:
                     seen_names.append(name)
 
             # Handle type/empty
-            if self.__field_type or not sample:
+            if self.__field_type or not fragment:
                 type = self.__field_type
                 schema.fields = [{"name": name, "type": type or "any"} for name in names]
                 return schema
 
             # Prepare fields
             runners = []
-            max_score = [len(sample)] * len(names)
+            max_score = [len(fragment)] * len(names)
             for index, name in enumerate(names):
                 runners.append([])
                 for type in FIELD_TYPES:
@@ -135,7 +211,8 @@ class Detector:
                 schema.fields.append(Field(name=name, type="any", schema=schema))
 
             # Infer fields
-            for cells in sample:
+            treshold = len(fragment) * (self.__field_confidence - 1)
+            for cells in fragment:
                 for index, name in enumerate(names):
                     if schema.fields[index].type != "any":
                         continue
@@ -144,7 +221,7 @@ class Detector:
                         max_score[index] -= 1
                         continue
                     for runner in runners[index]:
-                        if runner["score"] < len(sample) * (self.__field_confidence - 1):
+                        if runner["score"] < treshold:
                             continue
                         target, notes = runner["field"].read_cell(source)
                         runner["score"] += 1 if not notes else -1
@@ -170,7 +247,7 @@ class Detector:
                 field.update((fields.get(field.get("name"), {})))
 
         # Validate schema
-        # TODO: reconsider this - not perfect for transform
+        # NOTE: at some point we might need to remove it for transform needs
         if len(schema.field_names) != len(set(schema.field_names)):
             note = "Schemas with duplicate field names are not supported"
             raise FrictionlessException(errors.SchemaError(note=note))

@@ -28,13 +28,11 @@ class InlinePlugin(Plugin):
                 return file
 
     def create_dialect(self, resource, *, descriptor):
-        # TODO: remove this hack; resolve problem with Inline/Pandas/PETL collision
-        if resource.format == "inline" and not hasattr(resource.data, "query"):
+        if resource.format == "inline":
             return InlineDialect(descriptor)
 
     def create_parser(self, resource):
-        # TODO: remove this hack; resolve problem with Inline/Pandas/PETL collision
-        if resource.format == "inline" and not hasattr(resource.data, "query"):
+        if resource.format == "inline":
             return InlineParser(resource)
 
 
@@ -109,7 +107,6 @@ class InlineParser(Parser):
 
     """
 
-    needs_loader = False
     supported_types = [
         "array",
         "boolean",
@@ -129,7 +126,7 @@ class InlineParser(Parser):
 
     # Read
 
-    def read_data_stream_create(self):
+    def read_list_stream_create(self):
         dialect = self.resource.dialect
 
         # Iter
@@ -160,7 +157,7 @@ class InlineParser(Parser):
             yield headers
             yield [item.get(header) for header in headers]
             for item in data:
-                # TODO: measure/optimize
+                # NOTE: we need to profile and optimize this check if needed
                 if not isinstance(item, dict):
                     error = errors.SourceError(note="unsupported inline data")
                     raise FrictionlessException(error)
@@ -170,7 +167,7 @@ class InlineParser(Parser):
         elif isinstance(item, (list, tuple)):
             yield item
             for item in data:
-                # TODO: measure/optimize
+                # NOTE: we need to profile and optimize this check if needed
                 if not isinstance(item, (list, tuple)):
                     error = errors.SourceError(note="unsupported inline data")
                     raise FrictionlessException(error)
@@ -183,12 +180,14 @@ class InlineParser(Parser):
 
     # Write
 
-    def write_row_stream_save(self, read_row_stream):
+    def write_row_stream(self, resource):
         data = []
-        dialect = self.resource.dialect
-        for row in read_row_stream():
-            item = row.to_dict() if dialect.keyed else row.to_list()
-            if not dialect.keyed and row.row_number == 1:
-                self.resource.data.append(row.field_names)
-            data.append(item)
-        return data
+        source = resource
+        target = self.resource
+        with source:
+            for row in source.row_stream:
+                item = row.to_dict() if target.dialect.keyed else row.to_list()
+                if not target.dialect.keyed and row.row_number == 1:
+                    data.append(row.field_names)
+                data.append(item)
+        target.data = data

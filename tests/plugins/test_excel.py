@@ -8,7 +8,7 @@ from frictionless.plugins.excel import ExcelDialect
 BASE_URL = "https://raw.githubusercontent.com/frictionlessdata/tabulator-py/master/%s"
 
 
-# Read
+# Parser
 
 
 def test_xlsx_parser_table():
@@ -21,6 +21,7 @@ def test_xlsx_parser_table():
         ]
 
 
+@pytest.mark.skip
 @pytest.mark.vcr
 def test_xlsx_parser_remote():
     source = BASE_URL % "data/table.xlsx"
@@ -171,6 +172,7 @@ def test_xlsx_parser_preserve_formatting_number_multicode():
         ]
 
 
+@pytest.mark.skip
 @pytest.mark.vcr
 def test_xlsx_parser_workbook_cache():
     source = BASE_URL % "data/special/sheets.xlsx"
@@ -306,6 +308,7 @@ def test_xls_parser_with_ints_floats_dates():
         ]
 
 
+@pytest.mark.skip
 @pytest.mark.vcr
 def test_xlsx_parser_fix_for_2007_xls():
     source = "https://ams3.digitaloceanspaces.com/budgetkey-files/spending-reports/2018-3-משרד התרבות והספורט-לשכת הפרסום הממשלתית-2018-10-22-c457.xls"
@@ -313,13 +316,10 @@ def test_xlsx_parser_fix_for_2007_xls():
         assert len(resource.read_rows()) > 10
 
 
-# Write
-
-
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_xlsx_parser_write(tmpdir):
     source = Resource("data/table.csv")
-    target = Resource(str(tmpdir.join("table.xlsx")), trusted=True)
+    target = Resource(str(tmpdir.join("table.xlsx")))
     source.write(target)
     with target:
         assert target.header == ["id", "name"]
@@ -333,7 +333,7 @@ def test_xlsx_parser_write(tmpdir):
 def test_xlsx_parser_write_sheet_name(tmpdir):
     dialect = ExcelDialect(sheet="sheet")
     source = Resource("data/table.csv")
-    target = Resource(str(tmpdir.join("table.xlsx")), dialect=dialect, trusted=True)
+    target = Resource(str(tmpdir.join("table.xlsx")), dialect=dialect)
     source.write(target)
     with target:
         assert target.header == ["id", "name"]
@@ -346,7 +346,7 @@ def test_xlsx_parser_write_sheet_name(tmpdir):
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_xls_parser_write(tmpdir):
     source = Resource("data/table.csv")
-    target = Resource(str(tmpdir.join("table.xls")), trusted=True)
+    target = Resource(str(tmpdir.join("table.xls")))
     source.write(target)
     with target:
         assert target.header == ["id", "name"]
@@ -360,7 +360,7 @@ def test_xls_parser_write(tmpdir):
 def test_xls_parser_write_sheet_name(tmpdir):
     dialect = ExcelDialect(sheet="sheet")
     source = Resource("data/table.csv")
-    target = Resource(str(tmpdir.join("table.xls")), dialect=dialect, trusted=True)
+    target = Resource(str(tmpdir.join("table.xls")), dialect=dialect)
     source.write(target)
     with target:
         assert target.header == ["id", "name"]
