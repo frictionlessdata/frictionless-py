@@ -21,7 +21,6 @@ def test_xlsx_parser_table():
         ]
 
 
-@pytest.mark.skip
 @pytest.mark.vcr
 def test_xlsx_parser_remote():
     source = BASE_URL % "data/table.xlsx"
@@ -44,7 +43,6 @@ def test_xlsx_parser_sheet_by_index():
         ]
 
 
-@pytest.mark.skip
 def test_xlsx_parser_format_error_sheet_by_index_not_existent():
     source = "data/sheet2.xlsx"
     dialect = ExcelDialect(sheet=3)
@@ -67,7 +65,6 @@ def test_xlsx_parser_sheet_by_name():
         ]
 
 
-@pytest.mark.skip
 def test_xlsx_parser_format_errors_sheet_by_name_not_existent():
     source = "data/sheet2.xlsx"
     dialect = ExcelDialect(sheet="bad")
@@ -172,7 +169,6 @@ def test_xlsx_parser_preserve_formatting_number_multicode():
         ]
 
 
-@pytest.mark.skip
 @pytest.mark.vcr
 def test_xlsx_parser_workbook_cache():
     source = BASE_URL % "data/special/sheets.xlsx"
@@ -213,7 +209,6 @@ def test_xls_parser_sheet_by_index():
         ]
 
 
-@pytest.mark.skip
 def test_xls_parser_sheet_by_index_not_existent():
     source = "data/sheet2.xls"
     dialect = ExcelDialect(sheet=3)
@@ -233,7 +228,6 @@ def test_xls_parser_sheet_by_name():
         ]
 
 
-@pytest.mark.skip
 def test_xls_parser_sheet_by_name_not_existent():
     source = "data/sheet2.xls"
     dialect = ExcelDialect(sheet="bad")
@@ -308,7 +302,6 @@ def test_xls_parser_with_ints_floats_dates():
         ]
 
 
-@pytest.mark.skip
 @pytest.mark.vcr
 def test_xlsx_parser_fix_for_2007_xls():
     source = "https://ams3.digitaloceanspaces.com/budgetkey-files/spending-reports/2018-3-משרד התרבות והספורט-לשכת הפרסום הממשלתית-2018-10-22-c457.xls"
