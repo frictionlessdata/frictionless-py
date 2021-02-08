@@ -18,12 +18,10 @@ def test_remote_loader():
         ]
 
 
-# TODO: enable when loader.buffer is implemented
-@pytest.mark.skip
 @pytest.mark.vcr
 def test_remote_loader_latin1():
     # Github returns wrong encoding `utf-8`
-    with Resource(BASE_URL % "data/latin1.csv") as resource:
+    with Resource(BASE_URL % "data/latin1.csv", encoding="latin1") as resource:
         assert resource.read_rows()
 
 
