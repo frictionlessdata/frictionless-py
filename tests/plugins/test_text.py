@@ -28,3 +28,9 @@ def test_text_loader_write():
     source = Resource("data/table.csv")
     target = source.write(Resource(scheme="text", format="csv"))
     assert target.path == "id,name\r\n1,english\r\n2,中国人\r\n"
+
+
+def test_text_loader_recursion_error_issue_647():
+    source = open("tmp/issue647.csv.txt", encoding="iso-8859-1").read()
+    with Resource(source, scheme="text", format="csv") as resource:
+        assert len(resource.read_lists()) == 882
