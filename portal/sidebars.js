@@ -29,8 +29,8 @@ module.exports = {
         "tutorials/local-tutorial",
         "tutorials/multipart-tutorial",
         "tutorials/remote-tutorial",
-        "tutorials/stream-tutorial",
         "tutorials/s3-tutorial",
+        "tutorials/stream-tutorial",
       ],
       "Formats Tutorials": [
         "tutorials/bigquery-tutorial",
