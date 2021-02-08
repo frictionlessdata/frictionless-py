@@ -1,11 +1,9 @@
-import pytest
 from frictionless import Resource, transform, steps
 
 
 # General
 
 
-@pytest.mark.skip
 def test_transform_resource():
     source = Resource(path="data/transform.csv")
     source.infer()
@@ -14,32 +12,20 @@ def test_transform_resource():
         steps=[
             steps.table_normalize(),
             steps.table_melt(field_name="id"),
-            steps.table_recast(field_name="id"),
         ],
     )
-    assert target.schema == source.schema
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "variable"},
+            {"name": "value"},
+        ]
+    }
     assert target.read_rows() == [
-        {"id": 1, "name": "germany", "population": 83},
-        {"id": 2, "name": "france", "population": 66},
-        {"id": 3, "name": "spain", "population": 47},
-    ]
-
-
-@pytest.mark.skip
-def test_transform_resource_from_descriptor():
-    source = Resource(path="data/transform.csv")
-    source.infer()
-    target = transform(
-        source.to_dict(),
-        steps=[
-            steps.table_normalize(),
-            steps.table_melt(field_name="id"),
-            steps.table_recast(field_name="id"),
-        ],
-    )
-    assert target.schema == source.schema
-    assert target.read_rows() == [
-        {"id": 1, "name": "germany", "population": 83},
-        {"id": 2, "name": "france", "population": 66},
-        {"id": 3, "name": "spain", "population": 47},
+        {"id": 1, "variable": "name", "value": "germany"},
+        {"id": 1, "variable": "population", "value": 83},
+        {"id": 2, "variable": "name", "value": "france"},
+        {"id": 2, "variable": "population", "value": 66},
+        {"id": 3, "variable": "name", "value": "spain"},
+        {"id": 3, "variable": "population", "value": 47},
     ]

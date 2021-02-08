@@ -133,7 +133,6 @@ def test_package_from_zip():
     ]
 
 
-@pytest.mark.skip
 @pytest.mark.vcr
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_package_from_zip_remote():
@@ -449,6 +448,7 @@ def test_package_infer_multiple_paths():
     assert package.resources[1].path == "data2.csv"
 
 
+# TODO: review is there is an encoding detection regression (!!!)
 # TODO: enable when loader.buffer is implemented
 @pytest.mark.skip
 def test_package_infer_non_utf8_file():
