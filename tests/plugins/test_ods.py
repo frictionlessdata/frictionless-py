@@ -40,7 +40,6 @@ def test_ods_parser_sheet_by_index():
         ]
 
 
-@pytest.mark.skip
 def test_ods_parser_sheet_by_index_not_existent():
     dialect = OdsDialect(sheet=3)
     resource = Resource("data/table.ods", dialect=dialect)
@@ -61,7 +60,6 @@ def test_ods_parser_sheet_by_name():
         ]
 
 
-@pytest.mark.skip
 def test_ods_parser_sheet_by_name_not_existent():
     dialect = OdsDialect(sheet="bad")
     table = Resource("data/table.ods", dialect=dialect)
