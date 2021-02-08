@@ -137,7 +137,7 @@ def test_describe_resource_values_with_leading_zeros_issue_492():
 
 
 def test_describe_schema_proper_quote_issue_493():
-    resource = describe("data/issue493.csv")
+    resource = describe("data/issue-493.csv")
     assert resource.dialect.quote_char == '"'
     assert len(resource.schema.fields) == 126
 

@@ -15,7 +15,7 @@ def test_buffer_loader():
 
 
 def test_buffer_loader_recursion_error_issue_647():
-    with open("data/issue647.csv.txt", "rb") as file:
+    with open("data/issue-647.csv.txt", "rb") as file:
         with Resource(file.read(), format="csv", encoding="iso-8859-1") as resource:
             assert len(resource.read_lists()) == 883
 
