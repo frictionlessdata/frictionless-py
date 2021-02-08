@@ -4284,6 +4284,16 @@ Returns
 Returns
     Schema: resource schema
 
+### resource.stats
+
+```python
+ | @Metadata.property
+ | stats()
+```
+
+Returns
+    dict?: resource stats
+
 ### resource.buffer
 
 ```python
@@ -4364,16 +4374,6 @@ source file (e.g. schema, ...).
 **Returns**:
 
 - `any?` - table lookup
-
-### resource.stats
-
-```python
- | @Metadata.property
- | stats()
-```
-
-Returns
-    dict?: resource stats
 
 ### resource.basepath
 
