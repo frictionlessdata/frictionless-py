@@ -318,6 +318,13 @@ class ByteStreamWithStatsHandling:
     def __getattr__(self, name):
         return getattr(self.__byte_stream, name)
 
+    def __iter__(self):
+        while True:
+            bytes = self.read1(config.DEFAULT_BUFFER_SIZE)
+            if not bytes:
+                break
+            yield from bytes.splitlines(keepends=True)
+
     @property
     def closed(self):
         return self.__byte_stream.closed

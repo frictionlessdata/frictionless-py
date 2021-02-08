@@ -88,3 +88,20 @@ def test_describe_whitespace_cells_with_skip_initial_space_issue_7():
             {"name": "header2", "type": "any"},
         ]
     }
+
+
+def test_describe_non_tabular_resource_issue_641():
+    resource = describe("data/document.pdf")
+    assert resource == {
+        "path": "data/document.pdf",
+        "name": "document",
+        "profile": "data-resource",
+        "scheme": "file",
+        "format": "pdf",
+        "hashing": "md5",
+        "encoding": "utf-8",
+        "stats": {
+            "hash": "3a503daaa773a3ea32b1fedd9fece844",
+            "bytes": 262443,
+        },
+    }

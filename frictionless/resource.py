@@ -480,6 +480,20 @@ class Resource(Metadata):
             schema = self.metadata_attach("schema", schema)
         return schema
 
+    @Metadata.property
+    def stats(self):
+        """
+        Returns
+            dict?: resource stats
+        """
+        stats = self.get("stats")
+        if stats is None:
+            stats = {"hash": "", "bytes": 0}
+            if self.tabular:
+                stats.update({"fields": 0, "rows": 0})
+            stats = self.metadata_attach("stats", stats)
+        return stats
+
     @property
     def buffer(self):
         """File's bytes used as a sample
@@ -542,15 +556,6 @@ class Resource(Metadata):
             any?: table lookup
         """
         return self.__lookup
-
-    @Metadata.property
-    def stats(self):
-        """
-        Returns
-            dict?: resource stats
-        """
-        stats = {"hash": "", "bytes": 0, "fields": 0, "rows": 0}
-        return self.metadata_attach("stats", self.get("stats", stats))
 
     @Metadata.property(cache=False, write=False)
     def basepath(self):
@@ -718,6 +723,7 @@ class Resource(Metadata):
         self.close()
 
         # Infer
+        self.pop("stats", None)
         self["name"] = self.name
         self["profile"] = self.profile
         self["scheme"] = self.scheme
@@ -732,7 +738,7 @@ class Resource(Metadata):
             self["control"] = self.control
         if self.dialect:
             self["dialect"] = self.dialect
-        self["stats"] = {"hash": "", "bytes": 0, "fields": 0, "rows": 0}
+        self["stats"] = self.stats
 
         # Validate
         if self.metadata_errors:

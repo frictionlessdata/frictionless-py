@@ -17,6 +17,8 @@ from . import helpers
 # In general, it will be better to simplify magic used in Metadata
 # For exmple, we can make default values (like empty list) immutable
 # to get rid of metadata_attach and related complexity
+# Also, take a look at `resource.open` all these seitems trigger onchage (innefective)
+# We might consider having something like `with metadata.disable_onchange`
 
 
 class Metadata(helpers.ControlledDict):
