@@ -31,6 +31,7 @@ TESTS_REQUIRE = [
     "psycopg2",
     "pytest-cov",
     "pytest-vcr",
+    "pytest-only",
     "oauth2client",
     "requests-mock",
     "python-dotenv",
