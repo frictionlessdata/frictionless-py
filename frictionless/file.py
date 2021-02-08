@@ -160,15 +160,15 @@ class File:
                     type = "inquiry"
                 elif data.get("steps") is not None:
                     type = "pipeline"
-            elif not memory and path.endswith((".json", ".yaml")):
+            elif not memory and path.endswith((".json", ".yaml", ".yml")):
                 type = "resource"
-                if path.endswith(("schema.json", "schema.yaml")):
+                if path.endswith(("schema.json", "schema.yaml", "schema.yml")):
                     type = "schema"
-                elif path.endswith(("package.json", "package.yaml")):
+                elif path.endswith(("package.json", "package.yaml", "package.yml")):
                     type = "package"
-                elif path.endswith(("inquiry.json", "inquiry.yaml")):
+                elif path.endswith(("inquiry.json", "inquiry.yaml", "inquiry.yml")):
                     type = "inquiry"
-                elif path.endswith(("pipeline.json", "pipeline.yaml")):
+                elif path.endswith(("pipeline.json", "pipeline.yaml", "pipeline.yml")):
                     type = "pipeline"
 
         # Detect scheme/format/innerpath/compression

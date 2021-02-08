@@ -43,8 +43,28 @@ def test_resource_from_dict():
     ]
 
 
-def test_resource_from_path():
+def test_resource_from_path_json():
     resource = Resource("data/resource.json")
+    assert resource == {"name": "name", "path": "table.csv"}
+    assert resource.basepath == "data"
+    assert resource.read_rows() == [
+        {"id": 1, "name": "english"},
+        {"id": 2, "name": "中国人"},
+    ]
+
+
+def test_resource_from_path_yaml():
+    resource = Resource("data/resource.yaml")
+    assert resource == {"name": "name", "path": "table.csv"}
+    assert resource.basepath == "data"
+    assert resource.read_rows() == [
+        {"id": 1, "name": "english"},
+        {"id": 2, "name": "中国人"},
+    ]
+
+
+def test_resource_from_path_yml():
+    resource = Resource("data/resource.yml")
     assert resource == {"name": "name", "path": "table.csv"}
     assert resource.basepath == "data"
     assert resource.read_rows() == [
