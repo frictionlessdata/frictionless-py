@@ -201,7 +201,7 @@ class Metadata(helpers.ControlledDict):
                 else:
                     with open(descriptor, encoding="utf-8") as file:
                         content = file.read()
-                if descriptor.endswith(".yaml"):
+                if descriptor.endswith((".yaml", ".yml")):
                     metadata = yaml.safe_load(io.StringIO(content))
                 else:
                     metadata = json.loads(content)

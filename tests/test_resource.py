@@ -43,8 +43,28 @@ def test_resource_from_dict():
     ]
 
 
-def test_resource_from_path():
+def test_resource_from_path_json():
     resource = Resource("data/resource.json")
+    assert resource == {"name": "name", "path": "table.csv"}
+    assert resource.basepath == "data"
+    assert resource.read_rows() == [
+        {"id": 1, "name": "english"},
+        {"id": 2, "name": "中国人"},
+    ]
+
+
+def test_resource_from_path_yaml():
+    resource = Resource("data/resource.yaml")
+    assert resource == {"name": "name", "path": "table.csv"}
+    assert resource.basepath == "data"
+    assert resource.read_rows() == [
+        {"id": 1, "name": "english"},
+        {"id": 2, "name": "中国人"},
+    ]
+
+
+def test_resource_from_path_yml_issue_644():
+    resource = Resource("data/resource.yml")
     assert resource == {"name": "name", "path": "table.csv"}
     assert resource.basepath == "data"
     assert resource.read_rows() == [
@@ -2521,7 +2541,7 @@ def test_resource_stats_rows_remote():
 
 def test_resource_stats_rows_significant():
     layout = Layout(header=False)
-    with Resource("data/table1.csv", layout=layout) as resource:
+    with Resource("data/table-1MB.csv", layout=layout) as resource:
         print(resource.read_rows())
         assert resource.stats["rows"] == 10000
 
@@ -2585,7 +2605,7 @@ def test_resource_chardet_raises_remote_issue_305():
 
 
 def test_resource_skip_rows_non_string_cell_issue_320():
-    source = "data/issue320.xlsx"
+    source = "data/issue-320.xlsx"
     dialect = ExcelDialect(fill_merged_cells=True)
     layout = Layout(header_rows=[10, 11, 12])
     with pytest.warns(UserWarning):
