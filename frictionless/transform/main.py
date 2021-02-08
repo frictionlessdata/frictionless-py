@@ -21,11 +21,12 @@ def transform(source, type=None, **options):
     """
     if not type:
         type = "pipeline"
-        file = system.create_file(source, basepath=options.get("basepath", ""))
-        if file.type in ["table", "resource"]:
-            type = "resource"
-        elif file.type == "package":
-            type = "package"
+        if options:
+            file = system.create_file(source, basepath=options.get("basepath", ""))
+            if file.type in ["table", "resource"]:
+                type = "resource"
+            elif file.type == "package":
+                type = "package"
     module = import_module("frictionless.transform")
     transform = getattr(module, "transform_%s" % type, None)
     if transform is None:
