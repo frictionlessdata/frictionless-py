@@ -5,7 +5,7 @@ from frictionless import Resource
 # Loader
 
 
-def test_filelike_loader():
+def test_stream_loader():
     with open("data/table.csv", mode="rb") as file:
         with Resource(file, format="csv") as resource:
             assert resource.header == ["id", "name"]
@@ -17,7 +17,7 @@ def test_filelike_loader():
 
 # TODO: it doesn't work with stricter validation
 @pytest.mark.skip
-def test_filelike_loader_without_open():
+def test_stream_loader_without_open():
     with open("data/table.csv", mode="rb") as file:
         resource = Resource(path=file, format="csv")
         assert resource.read_rows() == [
@@ -27,9 +27,9 @@ def test_filelike_loader_without_open():
 
 
 @pytest.mark.skip
-def test_filelike_loader_write():
+def test_stream_loader_write():
     source = Resource("data/table.csv")
-    target = Resource(scheme="filelike", format="csv")
+    target = Resource(scheme="stream", format="csv")
     source.write(target)
     assert (
         target.read_bytes()

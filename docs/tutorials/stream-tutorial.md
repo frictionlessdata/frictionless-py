@@ -1,13 +1,13 @@
 ---
-title: Filelike Tutorial
-sidebar_label: Filelike
+title: Stream Tutorial
+sidebar_label: Stream
 ---
 
-Frictionless supports loading Filelike data.
+Frictionless supports loading Stream data.
 
-## Reading Filelike Data
+## Reading Stream Data
 
-You can read Filelike using `Package/Resource` or `Table` API, for example:
+You can read Stream using `Package/Resource` or `Table` API, for example:
 
 
 ```python
@@ -21,7 +21,7 @@ with open('data/table.csv', 'rb') as file:
     [Row([('id', 1), ('name', 'english')]), Row([('id', 2), ('name', '中国人')])]
 
 
-## Writing Filelike Data
+## Writing Stream Data
 
 The same is actual for writing CSV:
 
@@ -30,7 +30,7 @@ The same is actual for writing CSV:
 from frictionless import Resource
 
 resource = Resource(data=[['id', 'name'], [1, 'english'], [2, 'german']])
-resource.write(scheme='filelike', format='csv')
+resource.write(scheme='stream', format='csv')
 ```
 
 
@@ -40,9 +40,9 @@ resource.write(scheme='filelike', format='csv')
 
 
 
-## Configuring Filelike Data
+## Configuring Stream Data
 
-There are no options available in `FilelikeControl`.
+There are no options available in `StreamControl`.
 
 References:
-- [Filelike Control](https://frictionlessdata.io/tooling/python/controls-reference/#filelike)
+- [Stream Control](https://frictionlessdata.io/tooling/python/controls-reference/#stream)

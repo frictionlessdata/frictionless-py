@@ -340,9 +340,10 @@ def test_resource_scheme_https():
         assert resource.scheme == "https"
 
 
-def test_resource_scheme_filelike():
-    with Resource(open("data/table.csv", mode="rb"), format="csv") as resource:
-        assert resource.scheme == "filelike"
+def test_resource_scheme_stream():
+    with open("data/table.csv", mode="rb") as file:
+        with Resource(file, format="csv") as resource:
+            assert resource.scheme == "stream"
 
 
 def test_resource_scheme_text():
@@ -639,7 +640,7 @@ def test_resource_compression_local_csv_gz():
         ]
 
 
-def test_resource_compression_filelike_csv_zip():
+def test_resource_compression_stream_csv_zip():
     with open("data/table.csv.zip", "rb") as file:
         with Resource(file, format="csv", compression="zip") as resource:
             assert resource.header == ["id", "name"]
@@ -649,7 +650,7 @@ def test_resource_compression_filelike_csv_zip():
             ]
 
 
-def test_resource_compression_filelike_csv_gz():
+def test_resource_compression_stream_csv_gz():
     with open("data/table.csv.gz", "rb") as file:
         with Resource(file, format="csv", compression="gz") as resource:
             assert resource.header == ["id", "name"]

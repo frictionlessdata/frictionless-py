@@ -25,10 +25,10 @@ module.exports = {
     "tutorials/tutorials-overview",
     {
       "Schemes Tutorials": [
-        "tutorials/filelike-tutorial",
         "tutorials/local-tutorial",
         "tutorials/multipart-tutorial",
         "tutorials/remote-tutorial",
+        "tutorials/stream-tutorial",
         "tutorials/s3-tutorial",
         "tutorials/text-tutorial",
       ],
