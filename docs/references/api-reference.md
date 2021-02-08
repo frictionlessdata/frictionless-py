@@ -117,6 +117,51 @@ API      | Usage
 -------- | --------
 Public   | `from frictionless import types`
 
+## BufferControl
+
+```python
+class BufferControl(Control)
+```
+
+Buffer control representation
+
+API      | Usage
+-------- | --------
+Public   | `from frictionless.plugins.buffer import BufferControl`
+
+**Arguments**:
+
+- `descriptor?` _str|dict_ - descriptor
+  
+
+**Raises**:
+
+- `FrictionlessException` - raise any error that occurs during the process
+
+## BufferLoader
+
+```python
+class BufferLoader(Loader)
+```
+
+Buffer loader implementation.
+
+API      | Usage
+-------- | --------
+Public   | `from frictionless.plugins.buffer import BufferLoader`
+
+## BufferPlugin
+
+```python
+class BufferPlugin(Plugin)
+```
+
+Plugin for Buffer Data
+
+API      | Usage
+-------- | --------
+Public   | `from frictionless.plugins.local import BufferPlugin`
+
 ## CellError
 
 ```python
@@ -1173,51 +1218,6 @@ class File()
 ```
 
 File representation
-
-## FilelikeControl
-
-```python
-class FilelikeControl(Control)
-```
-
-Filelike control representation
-
-API      | Usage
--------- | --------
-Public   | `from frictionless.plugins.filelike import FilelikeControl`
-
-**Arguments**:
-
-- `descriptor?` _str|dict_ - descriptor
-  
-
-**Raises**:
-
-- `FrictionlessException` - raise any error that occurs during the process
-
-## FilelikeLoader
-
-```python
-class FilelikeLoader(Loader)
-```
-
-Filelike loader implementation.
-
-API      | Usage
--------- | --------
-Public   | `from frictionless.plugins.filelike import FilelikeLoader`
-
-## FilelikePlugin
-
-```python
-class FilelikePlugin(Plugin)
-```
-
-Plugin for Local Data
-
-API      | Usage
--------- | --------
-Public   | `from frictionless.plugins.filelike import FilelikePlugin`
 
 ## FrictionlessException
 
@@ -5502,6 +5502,51 @@ class Storage()
 
 Storage representation
 
+## StreamControl
+
+```python
+class StreamControl(Control)
+```
+
+Stream control representation
+
+API      | Usage
+-------- | --------
+Public   | `from frictionless.plugins.stream import StreamControl`
+
+**Arguments**:
+
+- `descriptor?` _str|dict_ - descriptor
+  
+
+**Raises**:
+
+- `FrictionlessException` - raise any error that occurs during the process
+
+## StreamLoader
+
+```python
+class StreamLoader(Loader)
+```
+
+Stream loader implementation.
+
+API      | Usage
+-------- | --------
+Public   | `from frictionless.plugins.stream import StreamLoader`
+
+## StreamPlugin
+
+```python
+class StreamPlugin(Plugin)
+```
+
+Plugin for Local Data
+
+API      | Usage
+-------- | --------
+Public   | `from frictionless.plugins.stream import StreamPlugin`
+
 ## StringType
 
 ```python
@@ -5716,51 +5761,6 @@ Create checks
 **Returns**:
 
 - `Type` - type
-
-## TextControl
-
-```python
-class TextControl(Control)
-```
-
-Text control representation
-
-API      | Usage
--------- | --------
-Public   | `from frictionless.plugins.text import TextControl`
-
-**Arguments**:
-
-- `descriptor?` _str|dict_ - descriptor
-  
-
-**Raises**:
-
-- `FrictionlessException` - raise any error that occurs during the process
-
-## TextLoader
-
-```python
-class TextLoader(Loader)
-```
-
-Text loader implementation.
-
-API      | Usage
--------- | --------
-Public   | `from frictionless.plugins.text import TextLoader`
-
-## TextPlugin
-
-```python
-class TextPlugin(Plugin)
-```
-
-Plugin for Text Data
-
-API      | Usage
--------- | --------
-Public   | `from frictionless.plugins.local import TextPlugin`
 
 ## TimeType
 
