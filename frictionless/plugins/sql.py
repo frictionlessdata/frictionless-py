@@ -146,10 +146,13 @@ class SqlParser(Parser):
 
     # Write
 
+    # NOTE: this approach is questionable
     def write_row_stream(self, resource):
         source = resource
         target = self.resource
-        # NOTE: this approach is questionable
+        if not target.dialect.table:
+            note = f'Please provide "dialect.table" for writing'
+            raise FrictionlessException(errors.StorageError(note=note))
         source.name = target.dialect.table
         storage = SqlStorage(target.fullpath, dialect=target.dialect)
         storage.write_resource(source, force=True)
