@@ -198,9 +198,8 @@ def test_bigquery_storage_constraints(options):
 
 @pytest.mark.ci
 def test_bigquery_storage_read_resource_not_existent_error(options):
-    prefix = options.pop("prefix")
     service = options.pop("service")
-    dialect = BigqueryDialect(table=prefix, **options)
+    dialect = BigqueryDialect(**options)
     storage = BigqueryStorage(service, dialect=dialect)
     with pytest.raises(FrictionlessException) as excinfo:
         storage.read_resource("bad")
@@ -209,11 +208,13 @@ def test_bigquery_storage_read_resource_not_existent_error(options):
     assert error.note.count("does not exist")
 
 
-@pytest.mark.skip
 @pytest.mark.ci
 def test_bigquery_storage_write_resource_existent_error(options):
+    service = options.pop("service")
+    dialect = BigqueryDialect(**options)
+    storage = BigqueryStorage(service, dialect=dialect)
     resource = Resource(path="data/table.csv")
-    storage = resource.to_bigquery(force=True, **options)
+    storage.write_resource(resource, force=True)
     with pytest.raises(FrictionlessException) as excinfo:
         storage.write_resource(resource)
     error = excinfo.value.error
@@ -225,9 +226,8 @@ def test_bigquery_storage_write_resource_existent_error(options):
 
 @pytest.mark.ci
 def test_bigquery_storage_delete_resource_not_existent_error(options):
-    prefix = options.pop("prefix")
     service = options.pop("service")
-    dialect = BigqueryDialect(table=prefix, **options)
+    dialect = BigqueryDialect(**options)
     storage = BigqueryStorage(service, dialect=dialect)
     with pytest.raises(FrictionlessException) as excinfo:
         storage.delete_resource("bad")
@@ -236,12 +236,14 @@ def test_bigquery_storage_delete_resource_not_existent_error(options):
     assert error.note.count("does not exist")
 
 
-@pytest.mark.skip
 @pytest.mark.ci
 def test_storage_big_file(options):
-    source = Resource(name="table", data=[[1]] * 1500)
-    storage = source.to_bigquery(force=True, **options)
-    target = Resource.from_bigquery(name="table", **options)
+    service = options.pop("service")
+    dialect = BigqueryDialect(**options)
+    storage = BigqueryStorage(service, dialect=dialect)
+    resource = Resource(name="table", data=[[1]] * 1500)
+    storage.write_resource(resource, force=True)
+    target = storage.read_resource("table")
     assert len(target.read_rows()) == 1500
     storage.delete_package(list(storage))
 
