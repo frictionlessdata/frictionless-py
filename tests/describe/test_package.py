@@ -7,13 +7,13 @@ from frictionless import describe, helpers
 
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_describe_package():
-    package = describe("data/chunk*.csv")
+    package = describe("data/tables/chunk*.csv")
     assert package.metadata_valid
     assert package == {
         "profile": "data-package",
         "resources": [
             {
-                "path": "data/chunk1.csv",
+                "path": "data/tables/chunk1.csv",
                 "profile": "tabular-data-resource",
                 "name": "chunk1",
                 "scheme": "file",
@@ -28,7 +28,7 @@ def test_describe_package():
                 },
             },
             {
-                "path": "data/chunk2.csv",
+                "path": "data/tables/chunk2.csv",
                 "profile": "tabular-data-resource",
                 "name": "chunk2",
                 "scheme": "file",
@@ -48,13 +48,13 @@ def test_describe_package():
 
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_describe_package_with_stats():
-    package = describe("data/chunk*.csv", stats=True)
+    package = describe("data/tables/chunk*.csv", stats=True)
     assert package.metadata_valid
     assert package == {
         "profile": "data-package",
         "resources": [
             {
-                "path": "data/chunk1.csv",
+                "path": "data/tables/chunk1.csv",
                 "profile": "tabular-data-resource",
                 "name": "chunk1",
                 "scheme": "file",
@@ -75,7 +75,7 @@ def test_describe_package_with_stats():
                 },
             },
             {
-                "path": "data/chunk2.csv",
+                "path": "data/tables/chunk2.csv",
                 "profile": "tabular-data-resource",
                 "name": "chunk2",
                 "scheme": "file",

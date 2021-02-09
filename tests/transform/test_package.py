@@ -5,7 +5,7 @@ from frictionless import transform, describe, steps
 
 
 def test_transform_package():
-    source = describe("data/chunk*.csv")
+    source = describe("data/tables/chunk*.csv")
     target = transform(
         source,
         steps=[

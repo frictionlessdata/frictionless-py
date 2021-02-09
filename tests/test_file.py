@@ -139,7 +139,7 @@ def test_file_multipart_with_basepath():
 
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_file_multipart_from_glob():
-    path = "data/chunk*.csv"
+    path = "data/tables/chunk*.csv"
     file = system.create_file(path)
     assert file.path == path
     assert file.data is None
@@ -154,14 +154,14 @@ def test_file_multipart_from_glob():
     assert file.multipart is True
     assert file.expandable is True
     assert file.basepath == ""
-    assert file.normpath == ["data/chunk1.csv", "data/chunk2.csv"]
-    assert file.fullpath == ["data/chunk1.csv", "data/chunk2.csv"]
+    assert file.normpath == ["data/tables/chunk1.csv", "data/tables/chunk2.csv"]
+    assert file.fullpath == ["data/tables/chunk1.csv", "data/tables/chunk2.csv"]
 
 
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_file_multipart_from_glob_with_basepath():
     path = "chunk*.csv"
-    file = system.create_file(path, basepath="data")
+    file = system.create_file(path, basepath="data/tables")
     assert file.path == path
     assert file.data is None
     assert file.name == "chunk"
@@ -174,9 +174,9 @@ def test_file_multipart_from_glob_with_basepath():
     assert file.remote is False
     assert file.multipart is True
     assert file.expandable is True
-    assert file.basepath == "data"
+    assert file.basepath == "data/tables"
     assert file.normpath == ["chunk1.csv", "chunk2.csv"]
-    assert file.fullpath == ["data/chunk1.csv", "data/chunk2.csv"]
+    assert file.fullpath == ["data/tables/chunk1.csv", "data/tables/chunk2.csv"]
 
 
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
