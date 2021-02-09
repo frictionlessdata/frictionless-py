@@ -230,7 +230,7 @@ def test_validate_package_schema_foreign_key_internal_resource_violation_non_exi
     ]
 
 
-# Checksum
+# Stats
 
 DESCRIPTOR_SH = {
     "resources": [
@@ -248,13 +248,13 @@ DESCRIPTOR_SH = {
 
 
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-def test_validate_package_checksum():
+def test_validate_package_stats():
     source = deepcopy(DESCRIPTOR_SH)
     report = validate(source)
     assert report.valid
 
 
-def test_validate_package_checksum_invalid():
+def test_validate_package_stats_invalid():
     source = deepcopy(DESCRIPTOR_SH)
     source["resources"][0]["stats"]["bytes"] += 1
     source["resources"][0]["stats"]["hash"] += "a"
@@ -266,14 +266,14 @@ def test_validate_package_checksum_invalid():
 
 
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-def test_validate_package_checksum_size():
+def test_validate_package_stats_size():
     source = deepcopy(DESCRIPTOR_SH)
     source["resources"][0]["stats"].pop("hash")
     report = validate(source)
     assert report.valid
 
 
-def test_validate_package_checksum_size_invalid():
+def test_validate_package_stats_size_invalid():
     source = deepcopy(DESCRIPTOR_SH)
     source["resources"][0]["stats"]["bytes"] += 1
     source["resources"][0]["stats"].pop("hash")
@@ -284,14 +284,14 @@ def test_validate_package_checksum_size_invalid():
 
 
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-def test_validate_package_checksum_hash():
+def test_validate_package_stats_hash():
     source = deepcopy(DESCRIPTOR_SH)
     source["resources"][0]["stats"].pop("bytes")
     report = validate(source)
     assert report.valid
 
 
-def test_check_file_package_checksum_hash_invalid():
+def test_check_file_package_stats_hash_invalid():
     source = deepcopy(DESCRIPTOR_SH)
     source["resources"][0]["stats"].pop("bytes")
     source["resources"][0]["stats"]["hash"] += "a"
@@ -301,7 +301,7 @@ def test_check_file_package_checksum_hash_invalid():
     ]
 
 
-def test_check_file_package_checksum_hash_not_supported_algorithm():
+def test_check_file_package_stats_hash_not_supported_algorithm():
     source = deepcopy(DESCRIPTOR_SH)
     source["resources"][0]["hashing"] = "bad"
     source["resources"][0]["stats"].pop("bytes")

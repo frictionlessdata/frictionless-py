@@ -15,7 +15,6 @@ def validate_resource(
     *,
     # Validation
     checks=None,
-    checksum=None,
     pick_errors=None,
     skip_errors=None,
     limit_errors=config.DEFAULT_LIMIT_ERRORS,
@@ -32,7 +31,6 @@ def validate_resource(
     Parameters:
         source (any): the source of the resource
         checks? (list): a list of checks
-        checksum? (dict): a checksum dictionary
         pick_errors? ((str|int)[]): pick errors
         skip_errors? ((str|int)[]): skip errors
         limit_errors? (int): limit errors
@@ -57,9 +55,10 @@ def validate_resource(
     except FrictionlessException as exception:
         return Report(time=timer.time, errors=[exception.error], tasks=[])
 
-    # Prepare checksum
-    if not checksum:
-        checksum = {key: value for key, value in resource.stats.items() if value}
+    # Prepare stats
+    stats = {}
+    if resource.stats:
+        stats = {key: val for key, val in resource.stats.items() if val}
 
     # Prepare resource
     if not original:
@@ -76,9 +75,7 @@ def validate_resource(
 
     # Prepare checks
     checks = checks or []
-    checks.insert(0, {"code": "baseline"})
-    if checksum:
-        checks.insert(1, {"code": "checksum", **checksum})
+    checks.insert(0, {"code": "baseline", "stats": stats})
     for index, check in enumerate(checks):
         if not isinstance(check, Check):
             checks[index] = (
