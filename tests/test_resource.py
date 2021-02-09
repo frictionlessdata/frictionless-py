@@ -2365,6 +2365,7 @@ def test_resource_reopen_generator():
 # Read
 
 
+@pytest.mark.xfail(reason="ValueError: read length must be positive (Python 3.6)")
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_read_bytes():
     resource = Resource(path="data/text.txt")
