@@ -147,7 +147,7 @@ def test_resource_source_non_tabular_error_bad_path():
     assert error.note.count("data/bad.txt")
 
 
-@pytest.mark.skip
+@pytest.mark.xfail
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_source_path():
     path = "data/table.csv"
