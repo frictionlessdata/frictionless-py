@@ -51,7 +51,12 @@ class StreamControl(Control):
 
     """
 
-    pass
+    # Metadata
+
+    metadata_profile = {  # type: ignore
+        "type": "object",
+        "additionalProperties": False,
+    }
 
 
 # Loader

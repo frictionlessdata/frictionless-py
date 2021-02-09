@@ -448,16 +448,6 @@ def test_resource_format_xlsx():
         assert resource.format == "xlsx"
 
 
-@pytest.mark.xfail(reason="error")
-def test_resource_format_error_bad_format():
-    resource = Resource("data/table.bad")
-    with pytest.raises(FrictionlessException) as excinfo:
-        resource.open()
-    error = excinfo.value.error
-    assert error.code == "format-error"
-    assert error.note == 'cannot create parser "bad". Try installing "frictionless-bad"'
-
-
 def test_resource_format_error_non_matching_format():
     resource = Resource("data/table.csv", format="xlsx")
     with pytest.raises(FrictionlessException) as excinfo:
@@ -714,7 +704,7 @@ def test_resource_compression_error_invalid_zip():
     assert error.note == "File is not a zip file"
 
 
-@pytest.mark.xfail(reason="error")
+@pytest.mark.xfail(reason="encoding")
 @pytest.mark.skipif(sys.version_info < (3, 8), reason="Requires Python3.8+")
 def test_resource_compression_error_invalid_gz():
     source = b"id,filename\n\1,dump"
@@ -760,7 +750,6 @@ def test_resource_control_http_preload():
         assert resource.header == ["id", "name"]
 
 
-@pytest.mark.xfail(reason="error")
 def test_resource_control_bad_property():
     resource = Resource("data/table.csv", control={"bad": True})
     with pytest.raises(FrictionlessException) as excinfo:

@@ -69,6 +69,7 @@ class S3Control(Control):
 
     metadata_profile = {  # type: ignore
         "type": "object",
+        "additionalProperties": False,
         "properties": {
             "endpointUrl": {"type": "string"},
         },
