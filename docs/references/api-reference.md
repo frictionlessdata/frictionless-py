@@ -271,18 +271,6 @@ Called to validate the check itself
 
 - `Error` - found errors
 
-### check.validate\_source
-
-```python
- | validate_source()
-```
-
-Called to validate the given source
-
-**Yields**:
-
-- `Error` - found errors
-
 ### check.validate\_schema
 
 ```python
@@ -329,18 +317,6 @@ Called to validate the given row (on every row)
 
 - `row` _Row_ - table row
   
-
-**Yields**:
-
-- `Error` - found errors
-
-### check.validate\_table
-
-```python
- | validate_table()
-```
-
-Called to validate the table (after no rows left)
 
 **Yields**:
 
@@ -4082,9 +4058,6 @@ with Resource("data/table.csv") as resource:
   if there are path traversing or the path is absolute.
   A path provided as `source` or `path` is alway trusted.
   
-- `nolookup?` _bool_ - Don't create a lookup table.
-  A lookup table can be required by foreign keys.
-  
 - `package?` _Package_ - A owning this resource package.
   It's actual if the resource is part of some data package.
   
@@ -4364,17 +4337,6 @@ source file (e.g. schema, ...).
 
 - `str[]?` - table header
 
-### resource.lookup
-
-```python
- | @property
- | lookup()
-```
-
-**Returns**:
-
-- `any?` - table lookup
-
 ### resource.basepath
 
 ```python
@@ -4437,36 +4399,6 @@ Returns
 **Returns**:
 
 - `Package?` - parent package
-
-### resource.memory
-
-```python
- | @Metadata.property(write=False)
- | memory()
-```
-
-Returns
-    bool: if resource is memory
-
-### resource.remote
-
-```python
- | @Metadata.property(write=False)
- | remote()
-```
-
-Returns
-    bool: if resource is remote
-
-### resource.multipart
-
-```python
- | @Metadata.property(write=False)
- | multipart()
-```
-
-Returns
-    bool: if resource is multipart
 
 ### resource.tabular
 
@@ -5494,14 +5426,6 @@ Status Task representation
 
 - `any` - validation target
 
-## Storage
-
-```python
-class Storage()
-```
-
-Storage representation
-
 ## StreamControl
 
 ```python
@@ -5906,30 +5830,6 @@ Implicit | `validate(...)`
 
 Ths check is enabled by default for any `validate` function run.
 
-## checksum
-
-```python
-class checksum(Check)
-```
-
-Check a table's checksum
-
-API      | Usage
--------- | --------
-Public   | `from frictionless import checks`
-Implicit | `validate(checksum={...})`
-
-Ths check is enabled by default if the `checksum` argument
-is provided for the `validate` function.
-
-**Arguments**:
-
-- `descriptor` _dict_ - check's descriptor
-- `hash?` _str_ - a hash sum of the table's bytes
-- `bytes?` _int_ - number of bytes
-- `fields?` _int_ - number of fields
-- `rows?` _int_ - number of rows
-
 ## describe
 
 ```python
@@ -5956,7 +5856,7 @@ Public   | `from frictionless import describe`
 ## describe\_package
 
 ```python
-describe_package(source, *, expand=False, nostats=False, **options)
+describe_package(source, *, expand=False, stats=False, **options)
 ```
 
 Describe the given source as a package
@@ -5969,7 +5869,7 @@ Public   | `from frictionless import describe_package`
 
 - `source` _any_ - data source
 - `expand?` _bool_ - if `True` it will expand the metadata
-- `nostats?` _bool_ - if `True` it not infer resource's stats
+- `stats?` _bool_ - if `True` infer resource's stats
 - `**options` _dict_ - Package constructor options
   
 
@@ -5980,7 +5880,7 @@ Public   | `from frictionless import describe_package`
 ## describe\_resource
 
 ```python
-describe_resource(source, *, expand=False, nostats=False, **options)
+describe_resource(source, *, expand=False, stats=False, **options)
 ```
 
 Describe the given source as a resource
@@ -5993,7 +5893,7 @@ Public   | `from frictionless import describe_resource`
 
 - `source` _any_ - data source
 - `expand?` _bool_ - if `True` it will expand the metadata
-- `nostats?` _bool_ - if `True` it not infer resource's stats
+- `stats?` _bool_ - if `True` infer resource's stats
 - `**options` _dict_ - Resource constructor options
   
 
@@ -6357,7 +6257,7 @@ Public   | `from frictionless import validate_inquiry`
 
 ```python
 @Report.from_validate
-validate_package(source, noinfer=False, nolookup=False, parallel=False, **options)
+validate_package(source, original=False, parallel=False, **options)
 ```
 
 Validate package
@@ -6371,8 +6271,7 @@ Public   | `from frictionless import validate_package`
 - `source` _dict|str_ - a package descriptor
 - `basepath?` _str_ - package basepath
 - `trusted?` _bool_ - don't raise an exception on unsafe paths
-- `noinfer?` _bool_ - don't call `package.infer`
-- `nolookup?` _bool_ - don't read lookup tables skipping integrity checks
+- `original?` _bool_ - don't call `package.infer`
 - `parallel?` _bool_ - enable multiprocessing
 - `**options` _dict_ - Package constructor options
   
@@ -6385,7 +6284,7 @@ Public   | `from frictionless import validate_package`
 
 ```python
 @Report.from_validate
-validate_resource(source, *, checks=None, checksum=None, pick_errors=None, skip_errors=None, limit_errors=config.DEFAULT_LIMIT_ERRORS, limit_memory=config.DEFAULT_LIMIT_MEMORY, noinfer=False, **options, ,)
+validate_resource(source, *, checks=None, pick_errors=None, skip_errors=None, limit_errors=config.DEFAULT_LIMIT_ERRORS, limit_memory=config.DEFAULT_LIMIT_MEMORY, original=False, **options, ,)
 ```
 
 Validate table
@@ -6398,12 +6297,11 @@ Public   | `from frictionless import validate_table`
 
 - `source` _any_ - the source of the resource
 - `checks?` _list_ - a list of checks
-- `checksum?` _dict_ - a checksum dictionary
   pick_errors? ((str|int)[]): pick errors
   skip_errors? ((str|int)[]): skip errors
 - `limit_errors?` _int_ - limit errors
 - `limit_memory?` _int_ - limit memory
-- `noinfer?` _bool_ - validate resource as it is
+- `original?` _bool_ - validate resource as it is
 - `**options?` _dict_ - Resource constructor options
   
 
