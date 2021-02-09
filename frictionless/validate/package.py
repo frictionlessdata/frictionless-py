@@ -37,27 +37,30 @@ def validate_package(source, original=False, parallel=False, **options):
     except FrictionlessException as exception:
         return Report(time=timer.time, errors=[exception.error], tasks=[])
 
+    # Prepare checksums
+    checksums = []
+    for resource in package.resources:
+        checksums.append({key: value for key, value in resource.stats.items() if value})
+
     # Prepare package
     if not original:
         package.infer()
-
     if package.metadata_errors:
         return Report(time=timer.time, errors=package.metadata_errors, tasks=[])
 
     # Prepare inquiry
     inquiry = Inquiry(tasks=[])
-    for resource in package.resources:
+    for resource, checksum in zip(package.resources, checksums):
         # NOTE: we should consider validating non tabular resources either
         if resource.profile == "tabular-data-resource":
             inquiry.tasks.append(
                 InquiryTask(
                     source=resource,
                     basepath=resource.basepath,
+                    checksum=checksum,
                     original=original,
                 )
             )
-
-    print(inquiry)
 
     # Validate inquiry
     report = validate_inquiry(inquiry, parallel=parallel)
