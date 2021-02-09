@@ -9,15 +9,14 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.25.0
+      - python-requests/2.25.1
     method: GET
-    uri: https://raw.githubusercontent.com/frictionlessdata/tableschema-py/master/data/schema_valid_simple.json
+    uri: https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/schema.json
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAA6vmUgACpbTM1JyUYiUrhWgwHwSq4SywirzE3FSgvFJmipIOqkxJZkkOWMozJTWv
-        JBNoVBGGksoCiOa8ktR0oDTcgFqEWTjsg5iOy8oQsN3oslDbikuKMvPSkSwDWxvLVcsFAHaNW632
-        AAAA
+        H4sIAAAAAAAAA6vmUgACpbTM1JyUYiUrhWgwHwSq4SywirzE3FSgvFJmipIOqkxJZQFEJq8kNT21
+        SAkuW6tDyDAwjcO44pKizLx0JNPArFiuWi4AXUFXhrQAAAA=
     headers:
       Accept-Ranges:
       - bytes
@@ -30,41 +29,41 @@ interactions:
       Content-Encoding:
       - gzip
       Content-Length:
-      - '117'
+      - '92'
       Content-Security-Policy:
       - default-src 'none'; style-src 'unsafe-inline'; sandbox
       Content-Type:
       - text/plain; charset=utf-8
       Date:
-      - Sat, 12 Dec 2020 14:49:22 GMT
+      - Tue, 09 Feb 2021 08:52:05 GMT
       ETag:
-      - W/"d05b5e7d32a0f890db30e7d162ba1089fb252f3995e0fb256f541e62cc0ec698"
+      - W/"dc46a8e33aaac98524ccf0ac9691a1fa1f0557925dfa873723d9164df436f640"
       Expires:
-      - Sat, 12 Dec 2020 14:54:22 GMT
+      - Tue, 09 Feb 2021 08:57:05 GMT
       Source-Age:
       - '0'
       Strict-Transport-Security:
       - max-age=31536000
       Vary:
-      - Authorization,Accept-Encoding, Accept-Encoding
+      - Authorization,Accept-Encoding
       Via:
-      - 1.1 varnish (Varnish/6.0), 1.1 varnish
+      - 1.1 varnish
       X-Cache:
-      - HFM, MISS
+      - HIT
       X-Cache-Hits:
-      - 0, 0
+      - '1'
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 08840d48ff92b68d0dcf28ff7ae68634f788f3a2
+      - 3d1f0213d00c33cf1e5a9365112720251b3056b3
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 5F26:64C4:358E86:3865D8:5FD4D870
+      - 8910:EEDF:196C6E:1B16FA:60224B72
       X-Served-By:
-      - cache-fra19145-FRA
+      - cache-fra19130-FRA
       X-Timer:
-      - S1607784562.337902,VS0,VE168
+      - S1612860726.848011,VS0,VE151
       X-XSS-Protection:
       - 1; mode=block
     status:
@@ -80,15 +79,14 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.25.0
+      - python-requests/2.25.1
     method: GET
-    uri: https://raw.githubusercontent.com/frictionlessdata/tableschema-py/master/data/schema_valid_simple.json
+    uri: https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/schema.json
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAA6vmUgACpbTM1JyUYiUrhWgwHwSq4SywirzE3FSgvFJmipIOqkxJZkkOWMozJTWv
-        JBNoVBGGksoCiOa8ktR0oDTcgFqEWTjsg5iOy8oQsN3oslDbikuKMvPSkSwDWxvLVcsFAHaNW632
-        AAAA
+        H4sIAAAAAAAAA6vmUgACpbTM1JyUYiUrhWgwHwSq4SywirzE3FSgvFJmipIOqkxJZQFEJq8kNT21
+        SAkuW6tDyDAwjcO44pKizLx0JNPArFiuWi4AXUFXhrQAAAA=
     headers:
       Accept-Ranges:
       - bytes
@@ -101,41 +99,41 @@ interactions:
       Content-Encoding:
       - gzip
       Content-Length:
-      - '117'
+      - '92'
       Content-Security-Policy:
       - default-src 'none'; style-src 'unsafe-inline'; sandbox
       Content-Type:
       - text/plain; charset=utf-8
       Date:
-      - Sat, 12 Dec 2020 14:49:22 GMT
+      - Tue, 09 Feb 2021 08:52:06 GMT
       ETag:
-      - W/"d05b5e7d32a0f890db30e7d162ba1089fb252f3995e0fb256f541e62cc0ec698"
+      - W/"dc46a8e33aaac98524ccf0ac9691a1fa1f0557925dfa873723d9164df436f640"
       Expires:
-      - Sat, 12 Dec 2020 14:54:22 GMT
+      - Tue, 09 Feb 2021 08:57:06 GMT
       Source-Age:
-      - '0'
+      - '1'
       Strict-Transport-Security:
       - max-age=31536000
       Vary:
-      - Authorization,Accept-Encoding, Accept-Encoding
+      - Authorization,Accept-Encoding
       Via:
-      - 1.1 varnish (Varnish/6.0), 1.1 varnish
+      - 1.1 varnish
       X-Cache:
-      - HFM, HIT
+      - HIT
       X-Cache-Hits:
-      - 0, 1
+      - '1'
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 9783091e20a937e223a7aef5bfd948a32d828fc3
+      - bc8e5af481939d8c28cdd0d8f4ace70b8325ab62
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 5F26:64C4:358E86:3865D8:5FD4D870
+      - 8910:EEDF:196C6E:1B16FA:60224B72
       X-Served-By:
-      - cache-fra19151-FRA
+      - cache-fra19128-FRA
       X-Timer:
-      - S1607784563.726379,VS0,VE1
+      - S1612860727.839850,VS0,VE1
       X-XSS-Protection:
       - 1; mode=block
     status:

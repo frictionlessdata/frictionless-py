@@ -3,7 +3,7 @@ from datetime import datetime
 from frictionless import Resource, Layout, FrictionlessException, helpers
 from frictionless.plugins.ods import OdsDialect
 
-BASE_URL = "https://raw.githubusercontent.com/okfn/tabulator-py/master/%s"
+BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
 
 
 # Parser
@@ -21,7 +21,7 @@ def test_ods_parser():
 
 @pytest.mark.vcr
 def test_ods_parser_remote():
-    source = BASE_URL % "data/table.ods"
+    source = BASEURL % "data/table.ods"
     with Resource(source) as resource:
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
@@ -40,7 +40,6 @@ def test_ods_parser_sheet_by_index():
         ]
 
 
-@pytest.mark.skip
 def test_ods_parser_sheet_by_index_not_existent():
     dialect = OdsDialect(sheet=3)
     resource = Resource("data/table.ods", dialect=dialect)
@@ -61,7 +60,6 @@ def test_ods_parser_sheet_by_name():
         ]
 
 
-@pytest.mark.skip
 def test_ods_parser_sheet_by_name_not_existent():
     dialect = OdsDialect(sheet="bad")
     table = Resource("data/table.ods", dialect=dialect)
@@ -97,7 +95,7 @@ def test_ods_parser_with_ints_floats_dates():
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_table_write_ods(tmpdir):
     source = Resource("data/table.csv")
-    # TODO: fix ezodf writer creates more cells than we ask (remove limits)
+    # NOTE: ezodf writer creates more cells than we ask (remove limits)
     layout = Layout(limit_fields=2, limit_rows=2)
     target = Resource(str(tmpdir.join("table.ods")), layout=layout)
     source.write(target)

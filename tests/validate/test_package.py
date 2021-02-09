@@ -45,7 +45,6 @@ def test_validate_package_from_path_invalid():
     ]
 
 
-@pytest.mark.skip
 @pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_validate_package_from_zip():
@@ -53,7 +52,6 @@ def test_validate_package_from_zip():
     assert report.valid
 
 
-@pytest.mark.skip
 @pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_validate_package_from_zip_invalid():
@@ -65,9 +63,15 @@ def test_validate_package_from_zip_invalid():
     ]
 
 
+@pytest.mark.xfail
 def test_validate_package_with_non_tabular():
     report = validate(
-        {"resources": [{"path": "data/table.csv"}, {"path": "data/file.txt"}]},
+        {
+            "resources": [
+                {"path": "data/table.csv"},
+                {"path": "data/file.txt"},
+            ]
+        },
     )
     assert report.valid
 
@@ -92,8 +96,8 @@ def test_validate_package_invalid_package():
     ]
 
 
-def test_validate_package_invalid_package_noinfer():
-    report = validate({"resources": [{"path": "data/table.csv"}]}, noinfer=True)
+def test_validate_package_invalid_package_original():
+    report = validate({"resources": [{"path": "data/table.csv"}]}, original=True)
     assert report.flatten(["code", "note"]) == [
         [
             "resource-error",
@@ -150,91 +154,7 @@ def test_validate_package_with_schema_as_string():
     assert report.valid
 
 
-# Checksum
-
-DESCRIPTOR_SH = {
-    "resources": [
-        {
-            "name": "resource1",
-            "path": "data/table.csv",
-            "hashing": "sha256",
-            "stats": {
-                "hash": "a1fd6c5ff3494f697874deeb07f69f8667e903dd94a7bc062dd57550cea26da8",
-                "bytes": 30,
-            },
-        }
-    ]
-}
-
-
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-def test_validate_package_checksum():
-    source = deepcopy(DESCRIPTOR_SH)
-    report = validate(source)
-    assert report.valid
-
-
-@pytest.mark.skip
-def test_validate_package_checksum_invalid():
-    source = deepcopy(DESCRIPTOR_SH)
-    source["resources"][0]["stats"]["bytes"] += 1
-    source["resources"][0]["stats"]["hash"] += "a"
-    report = validate(source)
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [None, None, "checksum-error"],
-        [None, None, "checksum-error"],
-    ]
-
-
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-def test_validate_package_checksum_size():
-    source = deepcopy(DESCRIPTOR_SH)
-    source["resources"][0]["stats"].pop("hash")
-    report = validate(source)
-    assert report.valid
-
-
-@pytest.mark.skip
-def test_validate_package_checksum_size_invalid():
-    source = deepcopy(DESCRIPTOR_SH)
-    source["resources"][0]["stats"]["bytes"] += 1
-    source["resources"][0]["stats"].pop("hash")
-    report = validate(source)
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [None, None, "checksum-error"],
-    ]
-
-
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-def test_validate_package_checksum_hash():
-    source = deepcopy(DESCRIPTOR_SH)
-    source["resources"][0]["stats"].pop("bytes")
-    report = validate(source)
-    assert report.valid
-
-
-@pytest.mark.skip
-def test_check_file_package_checksum_hash_invalid():
-    source = deepcopy(DESCRIPTOR_SH)
-    source["resources"][0]["stats"].pop("bytes")
-    source["resources"][0]["stats"]["hash"] += "a"
-    report = validate(source)
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [None, None, "checksum-error"],
-    ]
-
-
-def test_check_file_package_checksum_hash_not_supported_algorithm():
-    source = deepcopy(DESCRIPTOR_SH)
-    source["resources"][0]["hashing"] = "bad"
-    source["resources"][0]["stats"].pop("bytes")
-    report = validate(source)
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [None, None, "hashing-error"],
-    ]
-
-
-# Integrity
+# Schema
 
 
 DESCRIPTOR_FK = {
@@ -271,20 +191,20 @@ DESCRIPTOR_FK = {
 }
 
 
-def test_validate_package_integrity_foreign_key_error():
+def test_validate_package_schema_foreign_key_error():
     descriptor = deepcopy(DESCRIPTOR_FK)
     report = validate(descriptor)
     assert report.valid
 
 
-def test_validate_package_integrity_foreign_key_not_defined():
+def test_validate_package_schema_foreign_key_not_defined():
     descriptor = deepcopy(DESCRIPTOR_FK)
     del descriptor["resources"][0]["schema"]["foreignKeys"]
     report = validate(descriptor)
     assert report.valid
 
 
-def test_validate_package_integrity_foreign_key_self_referenced_resource_violation():
+def test_validate_package_schema_foreign_key_self_referenced_resource_violation():
     descriptor = deepcopy(DESCRIPTOR_FK)
     del descriptor["resources"][0]["data"][4]
     report = validate(descriptor)
@@ -293,8 +213,7 @@ def test_validate_package_integrity_foreign_key_self_referenced_resource_violati
     ]
 
 
-@pytest.mark.skip
-def test_validate_package_integrity_foreign_key_internal_resource_violation():
+def test_validate_package_schema_foreign_key_internal_resource_violation():
     descriptor = deepcopy(DESCRIPTOR_FK)
     del descriptor["resources"][1]["data"][4]
     report = validate(descriptor)
@@ -303,8 +222,7 @@ def test_validate_package_integrity_foreign_key_internal_resource_violation():
     ]
 
 
-@pytest.mark.skip
-def test_validate_package_integrity_foreign_key_internal_resource_violation_non_existent():
+def test_validate_package_schema_foreign_key_internal_resource_violation_non_existent():
     descriptor = deepcopy(DESCRIPTOR_FK)
     descriptor["resources"][1]["data"] = [["label", "population"], [10, 10]]
     report = validate(descriptor)
@@ -316,17 +234,91 @@ def test_validate_package_integrity_foreign_key_internal_resource_violation_non_
     ]
 
 
-def test_validate_package_integrity_foreign_key_internal_resource_violation_with_nolookup():
-    descriptor = deepcopy(DESCRIPTOR_FK)
-    del descriptor["resources"][1]["data"][4]
-    report = validate(descriptor, nolookup=True)
+# Stats
+
+DESCRIPTOR_SH = {
+    "resources": [
+        {
+            "name": "resource1",
+            "path": "data/table.csv",
+            "hashing": "sha256",
+            "stats": {
+                "hash": "a1fd6c5ff3494f697874deeb07f69f8667e903dd94a7bc062dd57550cea26da8",
+                "bytes": 30,
+            },
+        }
+    ]
+}
+
+
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
+def test_validate_package_stats():
+    source = deepcopy(DESCRIPTOR_SH)
+    report = validate(source)
     assert report.valid
+
+
+def test_validate_package_stats_invalid():
+    source = deepcopy(DESCRIPTOR_SH)
+    source["resources"][0]["stats"]["bytes"] += 1
+    source["resources"][0]["stats"]["hash"] += "a"
+    report = validate(source)
+    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
+        [None, None, "checksum-error"],
+        [None, None, "checksum-error"],
+    ]
+
+
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
+def test_validate_package_stats_size():
+    source = deepcopy(DESCRIPTOR_SH)
+    source["resources"][0]["stats"].pop("hash")
+    report = validate(source)
+    assert report.valid
+
+
+def test_validate_package_stats_size_invalid():
+    source = deepcopy(DESCRIPTOR_SH)
+    source["resources"][0]["stats"]["bytes"] += 1
+    source["resources"][0]["stats"].pop("hash")
+    report = validate(source)
+    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
+        [None, None, "checksum-error"],
+    ]
+
+
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
+def test_validate_package_stats_hash():
+    source = deepcopy(DESCRIPTOR_SH)
+    source["resources"][0]["stats"].pop("bytes")
+    report = validate(source)
+    assert report.valid
+
+
+def test_check_file_package_stats_hash_invalid():
+    source = deepcopy(DESCRIPTOR_SH)
+    source["resources"][0]["stats"].pop("bytes")
+    source["resources"][0]["stats"]["hash"] += "a"
+    report = validate(source)
+    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
+        [None, None, "checksum-error"],
+    ]
+
+
+def test_check_file_package_stats_hash_not_supported_algorithm():
+    source = deepcopy(DESCRIPTOR_SH)
+    source["resources"][0]["hashing"] = "bad"
+    source["resources"][0]["stats"].pop("bytes")
+    report = validate(source)
+    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
+        [None, None, "hashing-error"],
+    ]
 
 
 # Parallel
 
 
-@pytest.mark.skip
+@pytest.mark.xfail
 @pytest.mark.ci
 def test_validate_package_parallel_from_dict():
     with open("data/package/datapackage.json") as file:
@@ -334,7 +326,7 @@ def test_validate_package_parallel_from_dict():
         assert report.valid
 
 
-@pytest.mark.skip
+@pytest.mark.xfail
 @pytest.mark.ci
 def test_validate_package_parallel_from_dict_invalid():
     with open("data/invalid/datapackage.json") as file:
@@ -348,7 +340,7 @@ def test_validate_package_parallel_from_dict_invalid():
         ]
 
 
-@pytest.mark.skip
+@pytest.mark.xfail
 @pytest.mark.ci
 def test_validate_package_with_parallel():
     report = validate("data/invalid/datapackage.json", parallel=True)
@@ -394,7 +386,6 @@ def test_validate_package_composite_primary_key_unique_issue_215():
     assert report.valid
 
 
-@pytest.mark.skip
 def test_validate_package_composite_primary_key_not_unique_issue_215():
     descriptor = {
         "resources": [
@@ -455,10 +446,10 @@ def test_validate_package_with_schema_issue_348():
     ]
 
 
-@pytest.mark.skip
 @pytest.mark.ci
+@pytest.mark.vcr
 def test_validate_package_uppercase_format_issue_494():
     with pytest.warns(UserWarning):
-        report = validate("data/issue494.package.json")
+        report = validate("data/issue-494.package.json")
         assert report.valid
         assert report.stats["tasks"] == 1

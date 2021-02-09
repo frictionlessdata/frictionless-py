@@ -20,6 +20,11 @@ from . import errors
 from . import config
 
 
+# NOTE:
+# Consider making resource.stats unavailable until it's fully calculated
+# Also, review the situation with describe function removing stats (move to infer?)
+
+
 class Resource(Metadata):
     """Resource representation.
 
@@ -123,9 +128,6 @@ class Resource(Metadata):
             if there are path traversing or the path is absolute.
             A path provided as `source` or `path` is alway trusted.
 
-        nolookup? (bool): Don't create a lookup table.
-            A lookup table can be required by foreign keys.
-
         package? (Package): A owning this resource package.
             It's actual if the resource is part of some data package.
 
@@ -164,7 +166,6 @@ class Resource(Metadata):
         detector=None,
         onerror="ignore",
         trusted=False,
-        nolookup=False,
         package=None,
     ):
 
@@ -209,7 +210,6 @@ class Resource(Metadata):
         self.__detector = detector or Detector()
         self.__onerror = onerror
         self.__trusted = trusted
-        self.__nolookup = nolookup
         self.__package = package
 
         # Set specs
@@ -549,14 +549,6 @@ class Resource(Metadata):
         """
         return self.__header
 
-    @property
-    def lookup(self):
-        """
-        Returns:
-            any?: table lookup
-        """
-        return self.__lookup
-
     @Metadata.property(cache=False, write=False)
     def basepath(self):
         """
@@ -607,26 +599,14 @@ class Resource(Metadata):
 
     @Metadata.property(write=False)
     def memory(self):
-        """
-        Returns
-            bool: if resource is memory
-        """
         return self.__file.memory
 
     @Metadata.property(write=False)
     def remote(self):
-        """
-        Returns
-            bool: if resource is remote
-        """
         return self.__file.remote
 
     @Metadata.property(write=False)
     def multipart(self):
-        """
-        Returns
-            bool: if resource is multipart
-        """
         return self.__file.multipart
 
     @Metadata.property(write=False)
@@ -652,7 +632,10 @@ class Resource(Metadata):
             gen<bytes>?: byte stream
         """
         if not self.closed:
-            loader = self.__loader or system.create_loader(self)
+            loader = self.__loader
+            if not loader:
+                loader = system.create_loader(self)
+                loader.open()
             return loader.byte_stream
 
     @property
@@ -663,7 +646,10 @@ class Resource(Metadata):
             gen<str[]>?: text stream
         """
         if not self.closed:
-            loader = self.__loader or system.create_loader(self)
+            loader = self.__loader
+            if not loader:
+                loader = system.create_loader(self)
+                loader.open()
             return loader.text_stream
 
     @property
@@ -754,8 +740,7 @@ class Resource(Metadata):
                 self.__parser.open()
                 self.__read_detect_layout()
                 self.__read_detect_schema()
-                if not self.__nolookup:
-                    self.__lookup = self.__read_detect_lookup()
+                self.__read_detect_lookup()
                 self.__header = self.__read_header()
                 self.__row_stream = self.__read_row_stream()
                 return self
@@ -800,7 +785,7 @@ class Resource(Metadata):
         if self.memory:
             return b""
         with helpers.ensure_open(self):
-            return self.byte_stream.read(size)
+            return self.byte_stream.read1(size)
 
     def read_text(self, *, size=None):
         """Read text into memory
@@ -1054,7 +1039,8 @@ class Resource(Metadata):
                     raise FrictionlessException(errors.ResourceError(note=note))
                 source_res = self.__package.get_resource(source_name)
             else:
-                source_res = self.to_copy(nolookup=True)
+                source_res = self.to_copy()
+            source_res.schema.pop("foreignKeys", None)
             lookup.setdefault(source_name, {})
             if source_key in lookup[source_name]:
                 continue
@@ -1067,7 +1053,7 @@ class Resource(Metadata):
                     if set(cells) == {None}:
                         continue
                     lookup[source_name][source_key].add(cells)
-        return lookup
+        self.__lookup = lookup
 
     # Write
 
@@ -1100,6 +1086,14 @@ class Resource(Metadata):
             package=self.__package,
             **options,
         )
+
+    def to_snapshot(self):
+        snap = []
+        with helpers.ensure_open(self):
+            snap.append(self.header.to_list())
+            for row in self.row_stream:
+                snap.append(row.to_list())
+        return snap
 
     def to_inline(self, *, dialect=None):
         """Helper to export resource as an inline data"""
@@ -1188,18 +1182,12 @@ class Resource(Metadata):
     def metadata_validate(self):
         yield from super().metadata_validate()
 
-        # Control
-        if self.control:
-            yield from self.control.metadata_errors
+        # Control/Dialect
+        yield from self.control.metadata_errors
+        yield from self.dialect.metadata_errors
 
-        # Dialect
-        if self.dialect:
-            yield from self.dialect.metadata_errors
-
-        # Layout
+        # Layout/Schema
         if self.layout:
             yield from self.layout.metadata_errors
-
-        # Schema
         if self.schema:
             yield from self.schema.metadata_errors

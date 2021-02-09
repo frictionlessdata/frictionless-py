@@ -31,8 +31,8 @@ def test_validate_invalid_resource():
     ]
 
 
-def test_validate_invalid_resource_noinfer():
-    report = validate({"path": "data/table.csv"}, noinfer=True)
+def test_validate_invalid_resource_original():
+    report = validate({"path": "data/table.csv"}, original=True)
     assert report.flatten(["code", "note"]) == [
         [
             "resource-error",
@@ -192,8 +192,8 @@ def test_validate_format():
     assert report.valid
 
 
-@pytest.mark.skip
-def test_validate_format_invalid():
+@pytest.mark.xfail
+def test_validate_format_non_tabular():
     report = validate("data/table.bad")
     assert report.flatten(["code", "note"]) == [
         ["format-error", 'cannot create parser "bad". Try installing "frictionless-bad"'],
@@ -483,11 +483,10 @@ def test_validate_schema_extra_headers_and_cells():
     ]
 
 
-@pytest.mark.skip
 def test_validate_schema_multiple_errors():
     source = "data/schema-errors.csv"
     schema = "data/schema-valid.json"
-    report = validate(source, schema=schema, pick_errors=["#schema"], limit_errors=3)
+    report = validate(source, schema=schema, pick_errors=["#row"], limit_errors=3)
     assert report.task.partial
     assert report.task.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [4, 1, "type-error"],
@@ -554,157 +553,7 @@ def test_validate_schema_maximum_constraint():
     ]
 
 
-@pytest.mark.skip
-def test_validate_sync_schema():
-    schema = {
-        "fields": [
-            {"name": "id", "type": "integer"},
-            {"name": "name", "type": "string"},
-        ],
-    }
-    detector = Detector(schema_sync=True)
-    report = validate("data/sync-schema.csv", schema=schema, detector=detector)
-    assert report.valid
-    assert report.task.resource.schema == {
-        "fields": [
-            {"name": "name", "type": "string"},
-            {"name": "id", "type": "integer"},
-        ],
-    }
-
-
-def test_validate_sync_schema_invalid():
-    source = [["LastName", "FirstName", "Address"], ["Test", "Tester", "23 Avenue"]]
-    schema = {"fields": [{"name": "id"}, {"name": "FirstName"}, {"name": "LastName"}]}
-    detector = Detector(schema_sync=True)
-    report = validate(source, schema=schema, detector=detector)
-    assert report.valid
-
-
-def test_validate_schema_headers_errors():
-    source = [
-        ["id", "last_name", "first_name", "language"],
-        [1, "Alex", "John", "English"],
-        [2, "Peters", "John", "Afrikaans"],
-        [3, "Smith", "Paul", None],
-    ]
-    schema = {
-        "fields": [
-            {"name": "id", "type": "number"},
-            {"name": "language", "constraints": {"required": True}},
-            {"name": "country"},
-        ]
-    }
-    detector = Detector(schema_sync=True)
-    report = validate(source, schema=schema, detector=detector)
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [4, 4, "constraint-error"],
-    ]
-
-
-def test_validate_patch_schema():
-    detector = Detector(schema_patch={"missingValues": ["-"]})
-    report = validate("data/table.csv", detector=detector)
-    assert report.valid
-    assert report.task.resource.schema == {
-        "fields": [
-            {"name": "id", "type": "integer"},
-            {"name": "name", "type": "string"},
-        ],
-        "missingValues": ["-"],
-    }
-
-
-def test_validate_patch_schema_fields():
-    detector = Detector(
-        schema_patch={"fields": {"id": {"type": "string"}}, "missingValues": ["-"]}
-    )
-    report = validate("data/table.csv", detector=detector)
-    assert report.valid
-    assert report.task.resource.schema == {
-        "fields": [{"name": "id", "type": "string"}, {"name": "name", "type": "string"}],
-        "missingValues": ["-"],
-    }
-
-
-def test_validate_infer_type_string():
-    detector = Detector(field_type="string")
-    report = validate("data/table.csv", detector=detector)
-    assert report.valid
-    assert report.task.resource.schema == {
-        "fields": [{"name": "id", "type": "string"}, {"name": "name", "type": "string"}],
-    }
-
-
-def test_validate_infer_type_any():
-    detector = Detector(field_type="any")
-    report = validate("data/table.csv", detector=detector)
-    assert report.valid
-    assert report.task.resource.schema == {
-        "fields": [{"name": "id", "type": "any"}, {"name": "name", "type": "any"}],
-    }
-
-
-def test_validate_infer_names():
-    detector = Detector(field_names=["id", "name"])
-    report = validate(
-        "data/without-headers.csv",
-        layout={"header": False},
-        detector=detector,
-    )
-    assert report.task.resource.schema["fields"][0]["name"] == "id"
-    assert report.task.resource.schema["fields"][1]["name"] == "name"
-    assert report.task.resource.stats["rows"] == 3
-    assert report.task.resource.labels == []
-    assert report.task.resource.header == ["id", "name"]
-    assert report.valid
-
-
-# Integrity
-
-# TODO: merge
-@pytest.mark.skip
-def test_validate_foreign_key_error():
-    source = {
-        "path": "data/table.csv",
-        "schema": {
-            "fields": [
-                {"name": "id", "type": "integer"},
-                {"name": "name", "type": "string"},
-            ],
-            "foreignKeys": [
-                {"fields": "id", "reference": {"resource": "ids", "fields": "id"}}
-            ],
-        },
-    }
-    lookup = {"ids": {("id",): set([(1,), (2,)])}}
-    report = validate(source, lookup=lookup)
-    assert report.valid
-
-
-# TODO: merge
-@pytest.mark.skip
-def test_validate_foreign_key_error_invalid():
-    source = {
-        "path": "data/table.csv",
-        "schema": {
-            "fields": [
-                {"name": "id", "type": "integer"},
-                {"name": "name", "type": "string"},
-            ],
-            "foreignKeys": [
-                {"fields": "id", "reference": {"resource": "ids", "fields": "id"}}
-            ],
-        },
-    }
-    lookup = {"ids": {("id",): set([(1,)])}}
-    report = validate(source, lookup=lookup)
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [3, None, "foreign-key-error"],
-    ]
-
-
-def test_validate_foreign_key_error_self_referencing():
+def test_validate_schema_foreign_key_error_self_referencing():
     source = {
         "path": "data/nested.csv",
         "schema": {
@@ -722,7 +571,7 @@ def test_validate_foreign_key_error_self_referencing():
     assert report.valid
 
 
-def test_validate_foreign_key_error_self_referencing_invalid():
+def test_validate_schema_foreign_key_error_self_referencing_invalid():
     source = {
         "path": "data/nested-invalid.csv",
         "schema": {
@@ -742,7 +591,7 @@ def test_validate_foreign_key_error_self_referencing_invalid():
     ]
 
 
-def test_validate_unique_error():
+def test_validate_schema_unique_error():
     report = validate(
         "data/unique-field.csv",
         schema="data/unique-field.json",
@@ -753,7 +602,7 @@ def test_validate_unique_error():
     ]
 
 
-def test_validate_unique_error_and_type_error():
+def test_validate_schema_unique_error_and_type_error():
     source = [
         ["id", "unique_number"],
         ["a1", 100],
@@ -773,7 +622,7 @@ def test_validate_unique_error_and_type_error():
     ]
 
 
-def test_validate_primary_key_error():
+def test_validate_schema_primary_key_error():
     report = validate(
         "data/unique-field.csv",
         schema="data/unique-field.json",
@@ -784,7 +633,7 @@ def test_validate_primary_key_error():
     ]
 
 
-def test_validate_primary_key_and_unique_error():
+def test_validate_schema_primary_key_and_unique_error():
     report = validate(
         "data/unique-field.csv",
         schema="data/unique-field.json",
@@ -795,7 +644,7 @@ def test_validate_primary_key_and_unique_error():
     ]
 
 
-def test_validate_primary_key_error_composite():
+def test_validate_schema_primary_key_error_composite():
     source = [
         ["id", "name"],
         [1, "Alex"],
@@ -819,134 +668,98 @@ def test_validate_primary_key_error_composite():
     ]
 
 
-# TODO: merge
-@pytest.mark.skip
-def test_validate_foreign_key_error_copy():
-    schema = {
-        "fields": [
-            {"name": "id", "type": "integer"},
-            {"name": "name", "type": "string"},
-        ],
-        "foreignKeys": [
-            {"fields": "id", "reference": {"resource": "ids", "fields": "id"}}
-        ],
-    }
-    lookup = {"ids": {("id",): set([(1,), (2,)])}}
-    report = validate("data/table.csv", schema=schema, lookup=lookup)
-    assert report.valid
-
-
-# TODO: merge
-@pytest.mark.skip
-def test_validate_foreign_key_error_invalid_copy():
-    schema = {
-        "fields": [
-            {"name": "id", "type": "integer"},
-            {"name": "name", "type": "string"},
-        ],
-        "foreignKeys": [
-            {"fields": "id", "reference": {"resource": "ids", "fields": "id"}}
-        ],
-    }
-    lookup = {"ids": {("id",): set([(1,)])}}
-    report = validate("data/table.csv", schema=schema, lookup=lookup)
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [3, None, "foreign-key-error"],
-    ]
-
-
-# Validation
+# Stats
 
 
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-def test_validate_checksum_hash():
+def test_validate_stats_hash():
     hash = "6c2c61dd9b0e9c6876139a449ed87933"
-    report = validate("data/table.csv", checksum={"hash": hash})
+    report = validate("data/table.csv", stats={"hash": hash})
     assert report.task.valid
 
 
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-def test_validate_checksum_hash_invalid():
+def test_validate_stats_hash_invalid():
     hash = "6c2c61dd9b0e9c6876139a449ed87933"
-    report = validate("data/table.csv", checksum={"hash": "bad"})
+    report = validate("data/table.csv", stats={"hash": "bad"})
     assert report.flatten(["code", "note"]) == [
         ["checksum-error", 'expected hash in md5 is "bad" and actual is "%s"' % hash],
     ]
 
 
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-def test_validate_checksum_hash_md5():
+def test_validate_stats_hash_md5():
     hash = "6c2c61dd9b0e9c6876139a449ed87933"
-    report = validate("data/table.csv", checksum={"hash": hash})
+    report = validate("data/table.csv", stats={"hash": hash})
     assert report.task.valid
 
 
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-def test_validate_checksum_hash_md5_invalid():
+def test_validate_stats_hash_md5_invalid():
     hash = "6c2c61dd9b0e9c6876139a449ed87933"
-    report = validate("data/table.csv", checksum={"hash": "bad"})
+    report = validate("data/table.csv", stats={"hash": "bad"})
     assert report.flatten(["code", "note"]) == [
         ["checksum-error", 'expected hash in md5 is "bad" and actual is "%s"' % hash],
     ]
 
 
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-def test_validate_checksum_hash_sha1():
+def test_validate_stats_hash_sha1():
     hash = "db6ea2f8ff72a9e13e1d70c28ed1c6b42af3bb0e"
-    report = validate("data/table.csv", hashing="sha1", checksum={"hash": hash})
+    report = validate("data/table.csv", hashing="sha1", stats={"hash": hash})
     assert report.task.valid
 
 
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-def test_validate_checksum_hash_sha1_invalid():
+def test_validate_stats_hash_sha1_invalid():
     hash = "db6ea2f8ff72a9e13e1d70c28ed1c6b42af3bb0e"
-    report = validate("data/table.csv", hashing="sha1", checksum={"hash": "bad"})
+    report = validate("data/table.csv", hashing="sha1", stats={"hash": "bad"})
     assert report.flatten(["code", "note"]) == [
         ["checksum-error", 'expected hash in sha1 is "bad" and actual is "%s"' % hash],
     ]
 
 
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-def test_validate_checksum_hash_sha256():
+def test_validate_stats_hash_sha256():
     hash = "a1fd6c5ff3494f697874deeb07f69f8667e903dd94a7bc062dd57550cea26da8"
-    report = validate("data/table.csv", hashing="sha256", checksum={"hash": hash})
+    report = validate("data/table.csv", hashing="sha256", stats={"hash": hash})
     assert report.task.valid
 
 
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-def test_validate_checksum_hash_sha256_invalid():
+def test_validate_stats_hash_sha256_invalid():
     hash = "a1fd6c5ff3494f697874deeb07f69f8667e903dd94a7bc062dd57550cea26da8"
-    report = validate("data/table.csv", hashing="sha256", checksum={"hash": "bad"})
+    report = validate("data/table.csv", hashing="sha256", stats={"hash": "bad"})
     assert report.flatten(["code", "note"]) == [
         ["checksum-error", 'expected hash in sha256 is "bad" and actual is "%s"' % hash],
     ]
 
 
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-def test_validate_checksum_hash_sha512():
+def test_validate_stats_hash_sha512():
     hash = "d52e3f5f5693894282f023b9985967007d7984292e9abd29dca64454500f27fa45b980132d7b496bc84d336af33aeba6caf7730ec1075d6418d74fb8260de4fd"
-    report = validate("data/table.csv", hashing="sha512", checksum={"hash": hash})
+    report = validate("data/table.csv", hashing="sha512", stats={"hash": hash})
     assert report.task.valid
 
 
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-def test_validate_checksum_hash_sha512_invalid():
+def test_validate_stats_hash_sha512_invalid():
     hash = "d52e3f5f5693894282f023b9985967007d7984292e9abd29dca64454500f27fa45b980132d7b496bc84d336af33aeba6caf7730ec1075d6418d74fb8260de4fd"
-    report = validate("data/table.csv", hashing="sha512", checksum={"hash": "bad"})
+    report = validate("data/table.csv", hashing="sha512", stats={"hash": "bad"})
     assert report.flatten(["code", "note"]) == [
         ["checksum-error", 'expected hash in sha512 is "bad" and actual is "%s"' % hash],
     ]
 
 
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-def test_validate_checksum_bytes():
-    report = validate("data/table.csv", checksum={"bytes": 30})
+def test_validate_stats_bytes():
+    report = validate("data/table.csv", stats={"bytes": 30})
     assert report.task.valid
 
 
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-def test_validate_checksum_bytes_invalid():
-    report = validate("data/table.csv", checksum={"bytes": 40})
+def test_validate_stats_bytes_invalid():
+    report = validate("data/table.csv", stats={"bytes": 40})
     assert report.task.error.get("rowPosition") is None
     assert report.task.error.get("fieldPosition") is None
     assert report.flatten(["code", "note"]) == [
@@ -955,19 +768,130 @@ def test_validate_checksum_bytes_invalid():
 
 
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-def test_validate_checksum_rows():
-    report = validate("data/table.csv", checksum={"rows": 2})
+def test_validate_stats_rows():
+    report = validate("data/table.csv", stats={"rows": 2})
     assert report.task.valid
 
 
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-def test_validate_checksum_rows_invalid():
-    report = validate("data/table.csv", checksum={"rows": 3})
+def test_validate_stats_rows_invalid():
+    report = validate("data/table.csv", stats={"rows": 3})
     assert report.task.error.get("rowPosition") is None
     assert report.task.error.get("fieldPosition") is None
     assert report.flatten(["code", "note"]) == [
         ["checksum-error", 'expected rows count is "3" and actual is "2"'],
     ]
+
+
+# Detector
+
+
+def test_validate_detector_sync_schema():
+    schema = {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+        ],
+    }
+    detector = Detector(schema_sync=True)
+    report = validate("data/sync-schema.csv", schema=schema, detector=detector)
+    assert report.valid
+    assert report.task.resource.schema == {
+        "fields": [
+            {"name": "name", "type": "string"},
+            {"name": "id", "type": "integer"},
+        ],
+    }
+
+
+def test_validate_detector_sync_schema_invalid():
+    source = [["LastName", "FirstName", "Address"], ["Test", "Tester", "23 Avenue"]]
+    schema = {"fields": [{"name": "id"}, {"name": "FirstName"}, {"name": "LastName"}]}
+    detector = Detector(schema_sync=True)
+    report = validate(source, schema=schema, detector=detector)
+    assert report.valid
+
+
+def test_validate_detector_headers_errors():
+    source = [
+        ["id", "last_name", "first_name", "language"],
+        [1, "Alex", "John", "English"],
+        [2, "Peters", "John", "Afrikaans"],
+        [3, "Smith", "Paul", None],
+    ]
+    schema = {
+        "fields": [
+            {"name": "id", "type": "number"},
+            {"name": "language", "constraints": {"required": True}},
+            {"name": "country"},
+        ]
+    }
+    detector = Detector(schema_sync=True)
+    report = validate(source, schema=schema, detector=detector)
+    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
+        [4, 4, "constraint-error"],
+    ]
+
+
+def test_validate_detector_patch_schema():
+    detector = Detector(schema_patch={"missingValues": ["-"]})
+    report = validate("data/table.csv", detector=detector)
+    assert report.valid
+    assert report.task.resource.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+        ],
+        "missingValues": ["-"],
+    }
+
+
+def test_validate_detector_patch_schema_fields():
+    detector = Detector(
+        schema_patch={"fields": {"id": {"type": "string"}}, "missingValues": ["-"]}
+    )
+    report = validate("data/table.csv", detector=detector)
+    assert report.valid
+    assert report.task.resource.schema == {
+        "fields": [{"name": "id", "type": "string"}, {"name": "name", "type": "string"}],
+        "missingValues": ["-"],
+    }
+
+
+def test_validate_detector_infer_type_string():
+    detector = Detector(field_type="string")
+    report = validate("data/table.csv", detector=detector)
+    assert report.valid
+    assert report.task.resource.schema == {
+        "fields": [{"name": "id", "type": "string"}, {"name": "name", "type": "string"}],
+    }
+
+
+def test_validate_detector_infer_type_any():
+    detector = Detector(field_type="any")
+    report = validate("data/table.csv", detector=detector)
+    assert report.valid
+    assert report.task.resource.schema == {
+        "fields": [{"name": "id", "type": "any"}, {"name": "name", "type": "any"}],
+    }
+
+
+def test_validate_detector_infer_names():
+    detector = Detector(field_names=["id", "name"])
+    report = validate(
+        "data/without-headers.csv",
+        layout={"header": False},
+        detector=detector,
+    )
+    assert report.task.resource.schema["fields"][0]["name"] == "id"
+    assert report.task.resource.schema["fields"][1]["name"] == "name"
+    assert report.task.resource.stats["rows"] == 3
+    assert report.task.resource.labels == []
+    assert report.task.resource.header == ["id", "name"]
+    assert report.valid
+
+
+# Validation
 
 
 def test_validate_pick_errors():

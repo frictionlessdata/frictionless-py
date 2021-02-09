@@ -8,7 +8,6 @@ runner = CliRunner()
 # General
 
 
-@pytest.mark.skip
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_transform():
     result = runner.invoke(program, "transform data/pipeline.yaml")
@@ -16,8 +15,6 @@ def test_transform():
     assert result.stdout.count('success: "data/pipeline.yaml"')
 
 
-# TODO: can be solved by File(allow_reading) implementation
-@pytest.mark.skip
 def test_transform_error_not_found():
     result = runner.invoke(program, "transform data/bad.yaml")
     assert result.exit_code == 1

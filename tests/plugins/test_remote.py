@@ -2,7 +2,7 @@ import pytest
 from frictionless import Resource
 
 
-BASE_URL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
+BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
 
 
 # Loader
@@ -10,7 +10,7 @@ BASE_URL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/m
 
 @pytest.mark.vcr
 def test_remote_loader():
-    with Resource(BASE_URL % "data/table.csv") as resource:
+    with Resource(BASEURL % "data/table.csv") as resource:
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
@@ -18,19 +18,18 @@ def test_remote_loader():
         ]
 
 
-# TODO: enable when loader.buffer is implemented
-@pytest.mark.skip
+@pytest.mark.xfail(reason="encoding")
 @pytest.mark.vcr
 def test_remote_loader_latin1():
     # Github returns wrong encoding `utf-8`
-    with Resource(BASE_URL % "data/latin1.csv") as resource:
+    with Resource(BASEURL % "data/latin1.csv") as resource:
         assert resource.read_rows()
 
 
 @pytest.mark.ci
 @pytest.mark.vcr
 def test_remote_loader_big_file():
-    with Resource(BASE_URL % "data/table1.csv") as resource:
+    with Resource(BASEURL % "data/table1.csv") as resource:
         assert resource.read_rows()
         assert resource.stats == {
             "hash": "78ea269458be04a0e02816c56fc684ef",

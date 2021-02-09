@@ -2,7 +2,7 @@ import pytest
 from frictionless import Resource, Layout, Detector, helpers
 from frictionless.plugins.csv import CsvDialect
 
-BASE_URL = "https://raw.githubusercontent.com/okfn/tabulator-py/master/%s"
+BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
 
 
 # Parser
@@ -106,7 +106,7 @@ def test_csv_parser_buffer():
 
 @pytest.mark.vcr
 def test_csv_parser_remote():
-    with Resource(BASE_URL % "data/table.csv") as resource:
+    with Resource(BASEURL % "data/table.csv") as resource:
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
@@ -114,8 +114,7 @@ def test_csv_parser_remote():
         ]
 
 
-# TODO: enable when loader.buffer is implemented
-@pytest.mark.skip
+@pytest.mark.xfail(reason="encoding")
 @pytest.mark.vcr
 def test_csv_parser_remote_non_ascii_url():
     source = "http://data.defra.gov.uk/ops/government_procurement_card/over_£500_GPC_apr_2013.csv"
@@ -151,7 +150,6 @@ def test_csv_parser_escapechar():
         ]
 
 
-@pytest.mark.skip
 def test_csv_parser_quotechar():
     source = b"%header1,header2%\n%value1,value2%\n%value3,value4%"
     dialect = CsvDialect(quote_char="%")

@@ -149,11 +149,14 @@ class BigqueryParser(Parser):
 
     # Write
 
+    # NOTE: this approach is questionable
     def write_row_stream(self, resource):
         source = resource
         target = self.resource
         storage = BigqueryStorage(self.resource.data, dialect=target.dialect)
-        # NOTE: this approach is questionable
+        if not target.dialect.table:
+            note = 'Please provide "dialect.table" for writing'
+            raise FrictionlessException(errors.StorageError(note=note))
         source.name = target.dialect.table
         storage.write_resource(source, force=True)
 

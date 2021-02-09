@@ -1,5 +1,5 @@
 import pytest
-from frictionless import describe, Detector, helpers
+from frictionless import Detector, Layout, describe, helpers
 
 
 # General
@@ -8,6 +8,27 @@ from frictionless import describe, Detector, helpers
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_describe_resource():
     resource = describe("data/table.csv")
+    assert resource.metadata_valid
+    assert resource == {
+        "profile": "tabular-data-resource",
+        "name": "table",
+        "path": "data/table.csv",
+        "scheme": "file",
+        "format": "csv",
+        "hashing": "md5",
+        "encoding": "utf-8",
+        "schema": {
+            "fields": [
+                {"name": "id", "type": "integer"},
+                {"name": "name", "type": "string"},
+            ]
+        },
+    }
+
+
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
+def test_describe_resource_with_stats():
+    resource = describe("data/table.csv", stats=True)
     assert resource.metadata_valid
     assert resource == {
         "profile": "tabular-data-resource",
@@ -102,9 +123,10 @@ def test_describe_resource_schema_with_missing_values_using_the_argument():
     }
 
 
-@pytest.mark.skip
 def test_describe_resource_schema_check_type_boolean_string_tie():
-    resource = describe([["f"], ["stringish"]], headers=False, infer_names=["field"])
+    layout = Layout(header=False)
+    detector = Detector(field_names=["field"])
+    resource = describe([["f"], ["stringish"]], layout=layout, detector=detector)
     assert resource.schema.get_field("field").type == "string"
 
 
@@ -149,7 +171,7 @@ def test_describe_file_with_different_characters_name_issue_600():
 
 
 def test_describe_resource_compression_gzip_issue_606():
-    resource = describe("data/table.csv.gz")
+    resource = describe("data/table.csv.gz", stats=True)
     assert resource.name == "table"
     assert resource.stats["hash"] == "edf56ce48e402d83eb08d5dac6aa2ad9"
     assert resource.stats["bytes"] == 61

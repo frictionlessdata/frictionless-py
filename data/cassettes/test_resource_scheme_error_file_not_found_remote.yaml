@@ -29,6 +29,8 @@ interactions:
         3VOFhOgtWiWdI0eSpe0hz4weCItVHg3PhFum6WazSSTXPDF2nY4hXbpPMypujB1IEKAKQZKE0HgR
         ELM0iJOle6nS8UH7CyjrfG/oBAAA
     headers:
+      Age:
+      - '84583'
       Cache-Control:
       - max-age=604800
       Content-Encoding:
@@ -38,13 +40,17 @@ interactions:
       Content-Type:
       - text/html; charset=UTF-8
       Date:
-      - Tue, 12 Jan 2021 06:21:06 GMT
+      - Tue, 09 Feb 2021 08:44:29 GMT
       Expires:
-      - Tue, 19 Jan 2021 06:21:06 GMT
+      - Tue, 16 Feb 2021 08:44:29 GMT
+      Last-Modified:
+      - Mon, 08 Feb 2021 09:14:46 GMT
       Server:
-      - EOS (vny/044F)
+      - ECS (oxr/837A)
       Vary:
       - Accept-Encoding
+      X-Cache:
+      - 404-HIT
     status:
       code: 404
       message: Not Found

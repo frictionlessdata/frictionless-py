@@ -9,14 +9,14 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.25.0
+      - python-requests/2.25.1
     method: GET
-    uri: https://raw.githubusercontent.com/frictionlessdata/datapackage-py/master/data/package.json
+    uri: https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/package.json
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAA6vmUlBQKkotzi8tSk4tVrJSiAYKKChUg0mgVF5ibipQFELrwEQLEksyQKJgGixY
-        CyRjuWq5AG8b+Q9QAAAA
+        H4sIAAAAAAAAA6vmUlBQykvMTVWygtI6IJGi1OL80qLk1GKgcDRQQEGhGkxiUwwWLUgsyQCJliQm
+        5aTqJReXKYFlaoFkLFctFwDpqh6KZwAAAA==
     headers:
       Accept-Ranges:
       - bytes
@@ -29,41 +29,41 @@ interactions:
       Content-Encoding:
       - gzip
       Content-Length:
-      - '72'
+      - '82'
       Content-Security-Policy:
       - default-src 'none'; style-src 'unsafe-inline'; sandbox
       Content-Type:
       - text/plain; charset=utf-8
       Date:
-      - Sat, 12 Dec 2020 12:30:57 GMT
+      - Tue, 09 Feb 2021 08:48:54 GMT
       ETag:
-      - W/"71e7ba181cfeb7208e4e6898cdfc3501234131e8503118b753ccf107edbce16e"
+      - W/"6146a0ca3a109c07c2d1c77f444d0594c9e11fd4f679f2e65abff433714d9dc4"
       Expires:
-      - Sat, 12 Dec 2020 12:35:57 GMT
+      - Tue, 09 Feb 2021 08:53:54 GMT
       Source-Age:
       - '0'
       Strict-Transport-Security:
       - max-age=31536000
       Vary:
-      - Authorization,Accept-Encoding, Accept-Encoding
+      - Authorization,Accept-Encoding
       Via:
-      - 1.1 varnish (Varnish/6.0), 1.1 varnish
+      - 1.1 varnish
       X-Cache:
-      - MISS, MISS
+      - MISS
       X-Cache-Hits:
-      - 0, 0
+      - '0'
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 6f5179cea9400009e386149448e3d169975db4ad
+      - db5ed3d12adee0a4e0f0a2b40f21504a695a4107
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 6A68:3F71:304DBE:32F2E5:5FD4B7FF
+      - B5A8:5722:C8C83:D7756:60224C72
       X-Served-By:
-      - cache-bma1640-BMA
+      - cache-fra19125-FRA
       X-Timer:
-      - S1607776258.673675,VS0,VE201
+      - S1612860534.845776,VS0,VE159
       X-XSS-Protection:
       - 1; mode=block
     status:

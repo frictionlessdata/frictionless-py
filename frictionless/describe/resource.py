@@ -1,7 +1,7 @@
 from ..resource import Resource
 
 
-def describe_resource(source, *, expand=False, nostats=False, **options):
+def describe_resource(source, *, expand=False, stats=False, **options):
     """Describe the given source as a resource
 
     API      | Usage
@@ -11,7 +11,7 @@ def describe_resource(source, *, expand=False, nostats=False, **options):
     Parameters:
         source (any): data source
         expand? (bool): if `True` it will expand the metadata
-        nostats? (bool): if `True` it not infer resource's stats
+        stats? (bool): if `True` infer resource's stats
         **options (dict): Resource constructor options
 
     Returns:
@@ -19,7 +19,9 @@ def describe_resource(source, *, expand=False, nostats=False, **options):
 
     """
     resource = Resource(source, **options)
-    resource.infer(stats=not nostats)
+    resource.infer(stats=stats)
     if expand:
         resource.expand()
+    if not stats:
+        resource.pop("stats")
     return resource

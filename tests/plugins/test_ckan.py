@@ -182,7 +182,7 @@ def test_ckan_storage_constraints(options):
 @pytest.mark.vcr
 def test_ckan_storage_not_existent_error(options):
     url = options.pop("url")
-    dialect = CkanDialect(resource="table", **options)
+    dialect = CkanDialect(**options)
     storage = CkanStorage(url, dialect=dialect)
     with pytest.raises(FrictionlessException) as excinfo:
         storage.read_resource("bad")
@@ -191,11 +191,13 @@ def test_ckan_storage_not_existent_error(options):
     assert error.note.count("does not exist")
 
 
-@pytest.mark.skip
 @pytest.mark.vcr
 def test_ckan_storage_write_resource_existent_error(options):
+    url = options.pop("url")
+    dialect = CkanDialect(**options)
+    storage = CkanStorage(url, dialect=dialect)
     resource = Resource(path="data/table.csv")
-    storage = resource.to_ckan(**options, force=True)
+    storage.write_resource(resource, force=True)
     with pytest.raises(FrictionlessException) as excinfo:
         storage.write_resource(resource)
     error = excinfo.value.error
@@ -208,7 +210,7 @@ def test_ckan_storage_write_resource_existent_error(options):
 @pytest.mark.vcr
 def test_ckan_storage_delete_resource_not_existent_error(options):
     url = options.pop("url")
-    dialect = CkanDialect(resource="table", **options)
+    dialect = CkanDialect(**options)
     storage = CkanStorage(url, dialect=dialect)
     with pytest.raises(FrictionlessException) as excinfo:
         storage.delete_resource("bad")

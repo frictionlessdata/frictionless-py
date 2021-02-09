@@ -50,7 +50,12 @@ class BufferControl(Control):
 
     """
 
-    pass
+    # Metadata
+
+    metadata_profile = {  # type: ignore
+        "type": "object",
+        "additionalProperties": False,
+    }
 
 
 # Loader
@@ -76,5 +81,4 @@ class BufferLoader(Loader):
     # Write
 
     def write_byte_stream_save(self, byte_stream):
-        bytes = byte_stream.read()
-        self.resource.data = bytes
+        self.resource.data = byte_stream.read()

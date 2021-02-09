@@ -601,6 +601,9 @@ class Package(Metadata):
                             raise FrictionlessException(errors.ResourceError(note=note))
 
                     # Remote data
+                    # NOTE:
+                    # sql/ckan/etc should go here (rename to network?)
+                    # we might need to add format.remote/network and update resource.remote
                     elif resource.remote:
                         if "remote" in resolve:
                             path = f"{resource.name}.{resource.format}"

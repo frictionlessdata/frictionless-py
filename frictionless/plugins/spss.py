@@ -46,7 +46,12 @@ class SpssDialect(Dialect):
 
     """
 
-    pass
+    # Metadata
+
+    metadata_profile = {  # type: ignore
+        "type": "object",
+        "additionalProperties": False,
+    }
 
 
 # Parser

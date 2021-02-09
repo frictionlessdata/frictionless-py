@@ -12,11 +12,11 @@ interactions:
       - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
         like Gecko) Chrome/54.0.2840.87 Safari/537.36
     method: GET
-    uri: https://raw.githubusercontent.com/frictionlessdata/datapackage-py/master/data/foo.txt
+    uri: https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/text.txt
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAA0vLz+cCAKhlMn4EAAAA
+        H4sIAAAAAAAAAytJrSjhAgAn2uw3BQAAAA==
     headers:
       Accept-Ranges:
       - bytes
@@ -29,41 +29,41 @@ interactions:
       Content-Encoding:
       - gzip
       Content-Length:
-      - '24'
+      - '25'
       Content-Security-Policy:
       - default-src 'none'; style-src 'unsafe-inline'; sandbox
       Content-Type:
       - text/plain; charset=utf-8
       Date:
-      - Sat, 12 Dec 2020 12:33:11 GMT
+      - Tue, 09 Feb 2021 08:44:22 GMT
       ETag:
-      - W/"abfd4f21a4d3062bd1485e55113f2774c27470a908c2e23f6d972af79b9f366b"
+      - W/"b817bdabb63060f38820bfbc3d36bc43130b015102b3b90e8b5194c6c4515d81"
       Expires:
-      - Sat, 12 Dec 2020 12:38:11 GMT
+      - Tue, 09 Feb 2021 08:49:22 GMT
       Source-Age:
       - '0'
       Strict-Transport-Security:
       - max-age=31536000
       Vary:
-      - Authorization,Accept-Encoding, Accept-Encoding
+      - Authorization,Accept-Encoding
       Via:
-      - 1.1 varnish (Varnish/6.0), 1.1 varnish
+      - 1.1 varnish
       X-Cache:
-      - MISS, MISS
+      - MISS
       X-Cache-Hits:
-      - 0, 0
+      - '0'
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 02c981adc2e2d3be6d90cb43d27acb38a38dc232
+      - 72f1cb84987b380e59cdce6a167756b39b7c1f84
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 5340:62D1:2C3D33:2EB22B:5FD4B887
+      - CBF4:E8DD:D143C:E0851:60224B64
       X-Served-By:
-      - cache-bma1645-BMA
+      - cache-fra19126-FRA
       X-Timer:
-      - S1607776392.608799,VS0,VE185
+      - S1612860262.840073,VS0,VE181
       X-XSS-Protection:
       - 1; mode=block
     status:
@@ -82,11 +82,11 @@ interactions:
       - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
         like Gecko) Chrome/54.0.2840.87 Safari/537.36
     method: GET
-    uri: https://raw.githubusercontent.com/frictionlessdata/datapackage-py/master/data/foo.txt
+    uri: https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/text.txt
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAA0vLz+cCAKhlMn4EAAAA
+        H4sIAAAAAAAAAytJrSjhAgAn2uw3BQAAAA==
     headers:
       Accept-Ranges:
       - bytes
@@ -99,41 +99,41 @@ interactions:
       Content-Encoding:
       - gzip
       Content-Length:
-      - '24'
+      - '25'
       Content-Security-Policy:
       - default-src 'none'; style-src 'unsafe-inline'; sandbox
       Content-Type:
       - text/plain; charset=utf-8
       Date:
-      - Sat, 12 Dec 2020 12:33:12 GMT
+      - Tue, 09 Feb 2021 08:44:22 GMT
       ETag:
-      - W/"abfd4f21a4d3062bd1485e55113f2774c27470a908c2e23f6d972af79b9f366b"
+      - W/"b817bdabb63060f38820bfbc3d36bc43130b015102b3b90e8b5194c6c4515d81"
       Expires:
-      - Sat, 12 Dec 2020 12:38:12 GMT
+      - Tue, 09 Feb 2021 08:49:22 GMT
       Source-Age:
-      - '0'
+      - '1'
       Strict-Transport-Security:
       - max-age=31536000
       Vary:
-      - Authorization,Accept-Encoding, Accept-Encoding
+      - Authorization,Accept-Encoding
       Via:
-      - 1.1 varnish (Varnish/6.0), 1.1 varnish
+      - 1.1 varnish
       X-Cache:
-      - MISS, HIT
+      - HIT
       X-Cache-Hits:
-      - 0, 1
+      - '1'
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 334b915cb6f84df9236a1af16d720a1f2e5441e3
+      - 8f392f58b30beae4c4f20ecbdc229186094a3a92
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 5340:62D1:2C3D33:2EB22B:5FD4B887
+      - CBF4:E8DD:D143C:E0851:60224B64
       X-Served-By:
-      - cache-bma1621-BMA
+      - cache-fra19125-FRA
       X-Timer:
-      - S1607776392.005371,VS0,VE1
+      - S1612860263.845686,VS0,VE0
       X-XSS-Protection:
       - 1; mode=block
     status:

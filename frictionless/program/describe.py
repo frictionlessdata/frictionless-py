@@ -43,7 +43,7 @@ def program_describe(
     # Misc
     basepath: str = Opt(None, help="Basepath of the resource/package"),
     expand: bool = Opt(None, help="Expand default values"),
-    nostats: bool = Opt(None, help="Do not infer stats"),
+    stats: bool = Opt(None, help="Do not infer stats"),
     yaml: bool = Opt(False, help="Return in pure YAML format"),
     json: bool = Opt(False, help="Return in JSON format"),
 ):
@@ -117,7 +117,7 @@ def program_describe(
             # Extra
             detector=detector,
             expand=expand,
-            nostats=nostats,
+            stats=stats,
         )
     )
 

@@ -117,11 +117,14 @@ class CkanParser(Parser):
 
     # Write
 
+    # NOTE: this approach is questionable
     def write_row_stream(self, resource):
         source = resource
         target = self.resource
         storage = CkanStorage(target.fullpath, dialect=target.dialect)
-        # NOTE: this approach is questionable
+        if not target.dialect.resource:
+            note = 'Please provide "dialect.resource" for writing'
+            raise FrictionlessException(errors.StorageError(note=note))
         source.name = target.dialect.resource
         storage.write_resource(source, force=True)
 

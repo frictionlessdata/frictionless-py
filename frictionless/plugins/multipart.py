@@ -75,6 +75,7 @@ class MultipartControl(Control):
 
     metadata_profile = {  # type: ignore
         "type": "object",
+        "additionalProperties": False,
         "properties": {
             "chunkSize": {"type": "number"},
         },

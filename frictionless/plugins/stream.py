@@ -51,7 +51,12 @@ class StreamControl(Control):
 
     """
 
-    pass
+    # Metadata
+
+    metadata_profile = {  # type: ignore
+        "type": "object",
+        "additionalProperties": False,
+    }
 
 
 # Loader
@@ -78,4 +83,4 @@ class StreamLoader(Loader):
     # Write
 
     def write_byte_stream_save(self, byte_stream):
-        return byte_stream
+        self.resource.data = byte_stream

@@ -45,7 +45,6 @@ def program_validate(
     schema_sync: bool = Opt(None, help="Sync the schema based on headers"),
     # Misc
     basepath: str = Opt(None, help="Basepath of the resource/package"),
-    parallel: bool = Opt(None, help="Enable multiprocessing"),
     checksum_hash: str = Opt(None, help="Expected hash based on hashing option"),
     checksum_bytes: int = Opt(None, help="Expected size in bytes"),
     checksum_rows: int = Opt(None, help="Expected amoutn of rows"),
@@ -53,6 +52,8 @@ def program_validate(
     skip_errors: str = Opt(None, help='Comma-separated errors to skip e.g. "blank-row"'),
     limit_errors: int = Opt(None, help="Limit errors by this integer"),
     limit_memory: int = Opt(None, help="Limit memory by this integer in MB"),
+    original: bool = Opt(None, help="Don't call infer on resources"),
+    parallel: bool = Opt(None, help="Enable multiprocessing"),
     yaml: bool = Opt(False, help="Return in pure YAML format"),
     json: bool = Opt(False, help="Return in JSON format"),
 ):
@@ -138,12 +139,13 @@ def program_validate(
             # Extra
             basepath=basepath,
             detector=detector,
-            parallel=parallel,
             checksum=checksum,
             pick_errors=pick_errors,
             skip_errors=skip_errors,
             limit_errors=limit_errors,
             limit_memory=limit_memory,
+            original=original,
+            parallel=parallel,
         )
     )
 

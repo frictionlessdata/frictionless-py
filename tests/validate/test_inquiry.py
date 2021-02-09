@@ -76,7 +76,6 @@ def test_validate_inquiry_multiple_invalid_with_schema():
     ]
 
 
-@pytest.mark.skip
 def test_validate_inquiry_with_one_package():
     report = validate(
         {"tasks": [{"source": "data/package/datapackage.json"}]},
@@ -84,7 +83,6 @@ def test_validate_inquiry_with_one_package():
     assert report.valid
 
 
-@pytest.mark.skip
 def test_validate_inquiry_with_multiple_packages():
     report = validate(
         {
@@ -104,7 +102,7 @@ def test_validate_inquiry_with_multiple_packages():
 # Parallel
 
 
-@pytest.mark.skip
+@pytest.mark.xfail
 @pytest.mark.ci
 def test_validate_inquiry_parallel_multiple():
     report = validate(
@@ -114,7 +112,7 @@ def test_validate_inquiry_parallel_multiple():
     assert report.valid
 
 
-@pytest.mark.skip
+@pytest.mark.xfail
 @pytest.mark.ci
 def test_validate_inquiry_parallel_multiple_invalid():
     report = validate(
@@ -133,7 +131,8 @@ def test_validate_inquiry_parallel_multiple_invalid():
     ]
 
 
-@pytest.mark.skip
+@pytest.mark.xfail
+@pytest.mark.ci
 def test_validate_inquiry_with_multiple_packages_with_parallel():
     report = validate(
         {

@@ -10,7 +10,7 @@ from frictionless import FrictionlessException
 
 # General
 
-BASE_URL = "https://raw.githubusercontent.com/frictionlessdata/tableschema-py/master/%s"
+BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
 DESCRIPTOR_MIN = {"fields": [{"name": "id"}, {"name": "height", "type": "integer"}]}
 DESCRIPTOR_MAX = {
     "fields": [
@@ -60,7 +60,7 @@ def test_schema_descriptor_path():
 
 @pytest.mark.vcr
 def test_schema_descriptor_url():
-    url = BASE_URL % "data/schema_valid_simple.json"
+    url = BASEURL % "data/schema.json"
     actual = Schema(url)
     expect = requests.get(url).json()
     assert actual == expect

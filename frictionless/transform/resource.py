@@ -71,12 +71,16 @@ def transform_resource(source, *, steps, **options):
 # Internal
 
 
+# NOTE:
+# We might consider extending to the sample size
+# Also, we can move here some inferring logic (see pivor/recast/transpose)
+
+
 class DataWithErrorHandling:
     def __init__(self, data, *, step):
         self.step = step
         self.data = data
         try:
-            # NOTE: consider extending to the sample size
             self.data = chain([next(data)], data)
         except StopIteration:
             pass

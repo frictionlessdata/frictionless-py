@@ -54,6 +54,7 @@ def test_report():
         "type-error",
         "constraint-error",
         "unique-error",
+        "checksum-error",
     ]
     assert report.task.stats == {
         "errors": 0,

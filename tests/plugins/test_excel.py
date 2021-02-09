@@ -5,7 +5,7 @@ from datetime import datetime
 from frictionless import Resource, Layout, Detector, FrictionlessException, helpers
 from frictionless.plugins.excel import ExcelDialect
 
-BASE_URL = "https://raw.githubusercontent.com/frictionlessdata/tabulator-py/master/%s"
+BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
 
 
 # Parser
@@ -21,10 +21,9 @@ def test_xlsx_parser_table():
         ]
 
 
-@pytest.mark.skip
 @pytest.mark.vcr
 def test_xlsx_parser_remote():
-    source = BASE_URL % "data/table.xlsx"
+    source = BASEURL % "data/table.xlsx"
     with Resource(source) as resource:
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
@@ -44,7 +43,6 @@ def test_xlsx_parser_sheet_by_index():
         ]
 
 
-@pytest.mark.skip
 def test_xlsx_parser_format_error_sheet_by_index_not_existent():
     source = "data/sheet2.xlsx"
     dialect = ExcelDialect(sheet=3)
@@ -67,7 +65,6 @@ def test_xlsx_parser_sheet_by_name():
         ]
 
 
-@pytest.mark.skip
 def test_xlsx_parser_format_errors_sheet_by_name_not_existent():
     source = "data/sheet2.xlsx"
     dialect = ExcelDialect(sheet="bad")
@@ -172,10 +169,9 @@ def test_xlsx_parser_preserve_formatting_number_multicode():
         ]
 
 
-@pytest.mark.skip
 @pytest.mark.vcr
 def test_xlsx_parser_workbook_cache():
-    source = BASE_URL % "data/special/sheets.xlsx"
+    source = BASEURL % "data/sheets.xlsx"
     for sheet in ["Sheet1", "Sheet2", "Sheet3"]:
         dialect = ExcelDialect(sheet=sheet, workbook_cache={})
         with Resource(source, dialect=dialect) as resource:
@@ -194,7 +190,7 @@ def test_xls_parser():
 
 @pytest.mark.vcr
 def test_xls_parser_remote():
-    with Resource(BASE_URL % "data/table.xls") as resource:
+    with Resource(BASEURL % "data/table.xls") as resource:
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
@@ -213,7 +209,6 @@ def test_xls_parser_sheet_by_index():
         ]
 
 
-@pytest.mark.skip
 def test_xls_parser_sheet_by_index_not_existent():
     source = "data/sheet2.xls"
     dialect = ExcelDialect(sheet=3)
@@ -233,7 +228,6 @@ def test_xls_parser_sheet_by_name():
         ]
 
 
-@pytest.mark.skip
 def test_xls_parser_sheet_by_name_not_existent():
     source = "data/sheet2.xls"
     dialect = ExcelDialect(sheet="bad")
@@ -308,7 +302,6 @@ def test_xls_parser_with_ints_floats_dates():
         ]
 
 
-@pytest.mark.skip
 @pytest.mark.vcr
 def test_xlsx_parser_fix_for_2007_xls():
     source = "https://ams3.digitaloceanspaces.com/budgetkey-files/spending-reports/2018-3-משרד התרבות והספורט-לשכת הפרסום הממשלתית-2018-10-22-c457.xls"

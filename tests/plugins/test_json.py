@@ -3,7 +3,7 @@ import pytest
 from frictionless import Resource
 from frictionless.plugins.json import JsonDialect
 
-BASE_URL = "https://raw.githubusercontent.com/okfn/tabulator-py/master/%s"
+BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
 
 
 # Loader
@@ -62,7 +62,7 @@ def test_json_parser_from_buffer_keyed():
 
 @pytest.mark.vcr
 def test_json_parser_from_remote():
-    with Resource(path=BASE_URL % "data/table-lists.json") as resource:
+    with Resource(path=BASEURL % "data/table.json") as resource:
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
@@ -72,7 +72,7 @@ def test_json_parser_from_remote():
 
 @pytest.mark.vcr
 def test_json_parser_from_remote_keyed():
-    with Resource(path=BASE_URL % "data/table-dicts.json") as resource:
+    with Resource(path=BASEURL % "data/table.keyed.json") as resource:
         assert resource.dialect.keyed is True
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [

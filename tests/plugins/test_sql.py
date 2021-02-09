@@ -45,8 +45,6 @@ def test_sql_parser_order_by_desc(database_url):
         ]
 
 
-# TODO: it doesn't work with stricter validation
-@pytest.mark.skip
 def test_sql_parser_table_is_required_error(database_url):
     resource = Resource(database_url)
     with pytest.raises(FrictionlessException) as excinfo:
@@ -56,7 +54,7 @@ def test_sql_parser_table_is_required_error(database_url):
     assert error.note.count("'table' is a required property")
 
 
-# Probably it's not correct behaviour
+# NOTE: Probably it's not correct behaviour
 def test_sql_parser_headers_false(database_url):
     dialect = SqlDialect(table="table")
     layout = Layout(header=False)
@@ -267,7 +265,6 @@ def test_sql_storage_sqlite_constraints(sqlite_url):
     storage.delete_package(target.resource_names)
 
 
-@pytest.mark.skip
 @pytest.mark.parametrize(
     "field_name, cell",
     [
@@ -287,9 +284,9 @@ def test_sql_storage_sqlite_constraints_not_valid_error(sqlite_url, field_name, 
     for index, field in enumerate(resource.schema.fields):
         if field.name == field_name:
             resource.data[1][index] = cell
-    # TODO: should we wrap these exceptions?
+    # NOTE: should we wrap these exceptions?
     with pytest.raises(sa.exc.IntegrityError):
-        resource.write(sqlite_url)
+        resource.write(sqlite_url, dialect={"table": "table"})
 
 
 def test_sql_storage_sqlite_read_resource_not_existent_error(sqlite_url):
@@ -301,11 +298,10 @@ def test_sql_storage_sqlite_read_resource_not_existent_error(sqlite_url):
     assert error.note.count("does not exist")
 
 
-@pytest.mark.skip
 def test_sql_storage_sqlite_write_resource_existent_error(sqlite_url):
-    engine = sa.create_engine(sqlite_url)
+    storage = SqlStorage(sqlite_url)
     resource = Resource(path="data/table.csv")
-    storage = resource.to_sql(engine=engine)
+    storage.write_resource(resource)
     with pytest.raises(FrictionlessException) as excinfo:
         storage.write_resource(resource)
     error = excinfo.value.error
@@ -343,21 +339,20 @@ def test_sql_storage_sqlite_views_support(sqlite_url):
     ]
 
 
-@pytest.mark.skip
 def test_sql_storage_sqlite_resource_url_argument(sqlite_url):
     source = Resource(path="data/table.csv")
-    source.to_sql(url=sqlite_url)
-    target = Resource.from_sql(name="table", url=sqlite_url)
-    assert target.schema == {
-        "fields": [
-            {"name": "id", "type": "integer"},
-            {"name": "name", "type": "string"},
+    target = source.write(sqlite_url, dialect={"table": "table"})
+    with target:
+        assert target.schema == {
+            "fields": [
+                {"name": "id", "type": "integer"},
+                {"name": "name", "type": "string"},
+            ]
+        }
+        assert target.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
         ]
-    }
-    assert target.read_rows() == [
-        {"id": 1, "name": "english"},
-        {"id": 2, "name": "中国人"},
-    ]
 
 
 def test_sql_storage_sqlite_package_url_argument(sqlite_url):
@@ -411,7 +406,7 @@ def test_sql_storage_postgresql_types(postgresql_url):
     assert target.get_resource("types").read_rows() == [
         {
             "any": "中国人",
-            "array": None,  # TODO: fix array
+            "array": None,  # NOTE: review why it's None
             "boolean": True,
             "date": datetime.date(2015, 1, 1),
             "date_year": datetime.date(2015, 1, 1),
@@ -524,7 +519,6 @@ def test_sql_storage_postgresql_constraints(postgresql_url):
     storage.delete_package(target.resource_names)
 
 
-@pytest.mark.skip
 @pytest.mark.parametrize(
     "name, cell",
     [
@@ -545,7 +539,7 @@ def test_sql_storage_postgresql_constraints_not_valid_error(postgresql_url, name
         if field.name == name:
             resource.data[1][index] = cell
     with pytest.raises((sa.exc.IntegrityError, sa.exc.DataError)):
-        resource.write(postgresql_url)
+        resource.write(postgresql_url, dialect={"table": "table"})
 
 
 def test_sql_storage_postgresql_views_support(postgresql_url):
@@ -569,28 +563,29 @@ def test_sql_storage_postgresql_views_support(postgresql_url):
     ]
 
 
-@pytest.mark.skip
 def test_sql_storage_postgresql_comment_support(postgresql_url):
+    dialect = SqlDialect(table="table")
 
     # Write
     source = Resource(path="data/table.csv")
     source.infer()
     source.schema.get_field("id").description = "integer field"
     source.schema.get_field("name").description = "string field"
-    source.to_sql(url=postgresql_url, force=True)
+    source.write(postgresql_url, dialect=dialect)
 
     # Read
-    target = Resource.from_sql(url=postgresql_url, name="table")
-    assert target.schema == {
-        "fields": [
-            {"name": "id", "type": "integer", "description": "integer field"},
-            {"name": "name", "type": "string", "description": "string field"},
+    target = Resource(postgresql_url, dialect=dialect)
+    with target:
+        assert target.schema == {
+            "fields": [
+                {"name": "id", "type": "integer", "description": "integer field"},
+                {"name": "name", "type": "string", "description": "string field"},
+            ]
+        }
+        assert target.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
         ]
-    }
-    assert target.read_rows() == [
-        {"id": 1, "name": "english"},
-        {"id": 2, "name": "中国人"},
-    ]
 
 
 # Storage (MySQL)
@@ -741,7 +736,6 @@ def test_sql_storage_mysql_constraints(mysql_url):
     storage.delete_package(target.resource_names)
 
 
-@pytest.mark.skip
 @pytest.mark.parametrize(
     "field_name, cell",
     [
@@ -761,11 +755,10 @@ def test_sql_storage_mysql_constraints_not_valid_error(mysql_url, field_name, ce
     for index, field in enumerate(resource.schema.fields):
         if field.name == field_name:
             resource.data[1][index] = cell
-    # TODO: should we wrap these exceptions? (why other exceptions for mysql here?)
-    with pytest.raises(
-        (sa.exc.IntegrityError, sa.exc.OperationalError, sa.exc.DataError)
-    ):
-        resource.write(mysql_url)
+    # NOTE: should we wrap these exceptions? (why other exceptions for mysql here?)
+    types = (sa.exc.IntegrityError, sa.exc.OperationalError, sa.exc.DataError)
+    with pytest.raises(types):
+        resource.write(mysql_url, dialect={"table": "table"})
 
 
 def test_sql_storage_mysql_views_support(mysql_url):
@@ -789,25 +782,26 @@ def test_sql_storage_mysql_views_support(mysql_url):
     ]
 
 
-@pytest.mark.skip
 def test_sql_storage_mysql_comment_support(mysql_url):
+    dialect = SqlDialect(table="table")
 
     # Write
     source = Resource(path="data/table.csv")
     source.infer()
     source.schema.get_field("id").description = "integer field"
     source.schema.get_field("name").description = "string field"
-    source.to_sql(url=mysql_url, force=True)
+    source.write(mysql_url, dialect=dialect)
 
     # Read
-    target = Resource.from_sql(url=mysql_url, name="table")
-    assert target.schema == {
-        "fields": [
-            {"name": "id", "type": "integer", "description": "integer field"},
-            {"name": "name", "type": "string", "description": "string field"},
+    target = Resource(mysql_url, dialect=dialect)
+    with target:
+        assert target.schema == {
+            "fields": [
+                {"name": "id", "type": "integer", "description": "integer field"},
+                {"name": "name", "type": "string", "description": "string field"},
+            ]
+        }
+        assert target.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
         ]
-    }
-    assert target.read_rows() == [
-        {"id": 1, "name": "english"},
-        {"id": 2, "name": "中国人"},
-    ]

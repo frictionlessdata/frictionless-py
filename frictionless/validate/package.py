@@ -1,13 +1,14 @@
+import inspect
 from .. import helpers
 from ..report import Report
 from ..package import Package
 from ..inquiry import Inquiry, InquiryTask
 from ..exception import FrictionlessException
-from .inquiry import validate_inquiry
+from .resource import validate_resource
 
 
 @Report.from_validate
-def validate_package(source, noinfer=False, nolookup=False, parallel=False, **options):
+def validate_package(source, original=False, parallel=False, **options):
     """Validate package
 
     API      | Usage
@@ -18,8 +19,7 @@ def validate_package(source, noinfer=False, nolookup=False, parallel=False, **op
         source (dict|str): a package descriptor
         basepath? (str): package basepath
         trusted? (bool): don't raise an exception on unsafe paths
-        noinfer? (bool): don't call `package.infer`
-        nolookup? (bool): don't read lookup tables skipping integrity checks
+        original? (bool): don't call `package.infer`
         parallel? (bool): enable multiprocessing
         **options (dict): Package constructor options
 
@@ -31,35 +31,54 @@ def validate_package(source, noinfer=False, nolookup=False, parallel=False, **op
     # Create state
     timer = helpers.Timer()
 
+    # Prepare options
+    package_options = {}
+    signature = inspect.signature(validate_resource)
+    for name, value in options.copy().items():
+        param = signature.parameters.get(name)
+        if not param or param.kind != param.KEYWORD_ONLY:
+            package_options[name] = options.pop(name)
+
     # Create package
     try:
         native = isinstance(source, Package)
-        package = source.to_copy() if native else Package(source, **options)
+        package = source.to_copy() if native else Package(source, **package_options)
     except FrictionlessException as exception:
         return Report(time=timer.time, errors=[exception.error], tasks=[])
 
-    # Prepare package
-    if not noinfer:
-        package.infer()
+    # Prepare stats
+    package_stats = []
+    for resource in package.resources:
+        package_stats.append({key: val for key, val in resource.stats.items() if val})
 
+    # Prepare package
+    if not original:
+        package.infer()
     if package.metadata_errors:
         return Report(time=timer.time, errors=package.metadata_errors, tasks=[])
 
-    # Prepare inquiry
-    inquiry = Inquiry(tasks=[])
-    for resource in package.resources:
-        # NOTE: we should consider validating non tabular resources either
-        if resource.profile == "tabular-data-resource":
+    # Validate sequentially
+    if not parallel:
+        tasks = []
+        errors = []
+        for resource, stats in zip(package.resources, package_stats):
+            resource.stats = stats
+            report = validate_resource(resource, original=original, **options)
+            tasks.extend(report.tasks)
+            errors.extend(report.errors)
+        return Report(time=timer.time, errors=errors, tasks=tasks)
+
+    # Validate in-parallel
+    else:
+        inquiry = Inquiry(tasks=[])
+        for resource, stats in zip(package.resources, package_stats):
+            resource.stats = stats
             inquiry.tasks.append(
                 InquiryTask(
                     source=resource,
                     basepath=resource.basepath,
-                    noinfer=noinfer,
+                    original=original,
+                    **options,
                 )
             )
-
-    # Validate inquiry
-    report = validate_inquiry(inquiry, parallel=parallel)
-
-    # Return report
-    return Report(time=timer.time, errors=report["errors"], tasks=report["tasks"])
+        return inquiry.run(parallel=parallel)

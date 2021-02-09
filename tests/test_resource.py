@@ -11,7 +11,7 @@ from frictionless.plugins.excel import ExcelDialect
 from frictionless.plugins.json import JsonDialect
 
 
-BASE_URL = "https://raw.githubusercontent.com/frictionlessdata/datapackage-py/master/%s"
+BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
 
 
 # General
@@ -84,9 +84,9 @@ def test_resource_from_path_error_bad_path():
 @pytest.mark.vcr
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_from_path_remote():
-    resource = Resource(BASE_URL % "data/resource.json")
+    resource = Resource(BASEURL % "data/resource.json")
     assert resource.path == "table.csv"
-    assert resource.fullpath == BASE_URL % "data/table.csv"
+    assert resource.fullpath == BASEURL % "data/table.csv"
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
@@ -96,56 +96,51 @@ def test_resource_from_path_remote():
 @pytest.mark.vcr
 def test_resource_from_path_remote_error_bad_path():
     with pytest.raises(FrictionlessException) as excinfo:
-        Resource(BASE_URL % "data/bad.json")
+        Resource(BASEURL % "data/bad.json")
     error = excinfo.value.error
     assert error.code == "resource-error"
     assert error.note.count("bad.json")
 
 
-@pytest.mark.skip
+@pytest.mark.xfail(reason="ValueError: read length must be positive (Python 3.6)")
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_source_non_tabular():
     path = "data/text.txt"
-    resource = Resource(path=path)
-    assert resource.path == path
-    assert resource.data is None
-    assert resource.basepath == ""
-    assert resource.memory is False
-    assert resource.tabular is False
-    assert resource.multipart is False
-    assert resource.fullpath == path
-    assert resource.read_bytes() == b"text\n"
-    assert resource.stats == {
-        "hash": "e1cbb0c3879af8347246f12c559a86b5",
-        "bytes": 5,
-        "fields": 0,
-        "rows": 0,
-    }
+    with Resource(path) as resource:
+        assert resource.path == path
+        assert resource.data is None
+        assert resource.basepath == ""
+        assert resource.memory is False
+        assert resource.tabular is False
+        assert resource.multipart is False
+        assert resource.fullpath == path
+        assert resource.read_bytes() == b"text\n"
+        assert resource.stats == {
+            "hash": "e1cbb0c3879af8347246f12c559a86b5",
+            "bytes": 5,
+        }
 
 
-@pytest.mark.skip
 @pytest.mark.vcr
 def test_resource_source_non_tabular_remote():
-    path = BASE_URL % "data/foo.txt"
-    resource = Resource(path=path)
-    assert resource.path == path
-    assert resource.data is None
-    assert resource.memory is False
-    assert resource.tabular is False
-    assert resource.multipart is False
-    assert resource.basepath == ""
-    assert resource.fullpath == path
-    assert resource.read_bytes() == b"foo\n"
-    assert resource.stats == {
-        "hash": "d3b07384d113edec49eaa6238ad5ff00",
-        "bytes": 4,
-        "fields": 0,
-        "rows": 0,
-    }
+    path = BASEURL % "data/text.txt"
+    with Resource(path) as resource:
+        assert resource.path == path
+        assert resource.data is None
+        assert resource.memory is False
+        assert resource.tabular is False
+        assert resource.multipart is False
+        assert resource.basepath == ""
+        assert resource.fullpath == path
+        assert resource.read_bytes() == b"text\n"
+        assert resource.stats == {
+            "hash": "e1cbb0c3879af8347246f12c559a86b5",
+            "bytes": 5,
+        }
 
 
 def test_resource_source_non_tabular_error_bad_path():
-    resource = Resource(path="data/bad.txt")
+    resource = Resource("data/bad.txt")
     with pytest.raises(FrictionlessException) as excinfo:
         resource.read_bytes()
     error = excinfo.value.error
@@ -153,7 +148,7 @@ def test_resource_source_non_tabular_error_bad_path():
     assert error.note.count("data/bad.txt")
 
 
-@pytest.mark.skip
+@pytest.mark.xfail
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_source_path():
     path = "data/table.csv"
@@ -200,8 +195,8 @@ def test_resource_source_path_and_basepath():
 @pytest.mark.vcr
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_source_path_and_basepath_remote():
-    resource = Resource(path="table.csv", basepath=BASE_URL % "data")
-    assert resource.fullpath == BASE_URL % "data/table.csv"
+    resource = Resource(path="table.csv", basepath=BASEURL % "data")
+    assert resource.fullpath == BASEURL % "data/table.csv"
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
@@ -210,8 +205,8 @@ def test_resource_source_path_and_basepath_remote():
 
 @pytest.mark.vcr
 def test_resource_source_path_remote_and_basepath_remote():
-    resource = Resource(path=BASE_URL % "data/table.csv", basepath=BASE_URL % "data")
-    assert resource.fullpath == BASE_URL % "data/table.csv"
+    resource = Resource(path=BASEURL % "data/table.csv", basepath=BASEURL % "data")
+    assert resource.fullpath == BASEURL % "data/table.csv"
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
@@ -356,7 +351,7 @@ def test_resource_scheme_file():
 
 @pytest.mark.vcr
 def test_resource_scheme_https():
-    with Resource(BASE_URL % "data/table.csv") as resource:
+    with Resource(BASEURL % "data/table.csv") as resource:
         assert resource.scheme == "https"
 
 
@@ -454,17 +449,6 @@ def test_resource_format_xlsx():
         assert resource.format == "xlsx"
 
 
-@pytest.mark.skip
-def test_resource_format_error_bad_format():
-    resource = Resource("data/table.bad")
-    with pytest.raises(FrictionlessException) as excinfo:
-        resource.open()
-    error = excinfo.value.error
-    assert error.code == "format-error"
-    assert error.note == 'cannot create parser "bad". Try installing "frictionless-bad"'
-
-
-@pytest.mark.skip
 def test_resource_format_error_non_matching_format():
     resource = Resource("data/table.csv", format="xlsx")
     with pytest.raises(FrictionlessException) as excinfo:
@@ -535,7 +519,7 @@ def test_resource_encoding_explicit_latin1():
         ]
 
 
-@pytest.mark.skip
+@pytest.mark.xfail(reason="encoding")
 def test_resource_encoding_utf_16():
     # Bytes encoded as UTF-16 with BOM in platform order is detected
     bio = io.BytesIO(u"en,English\nja,日本語".encode("utf-16"))
@@ -721,7 +705,7 @@ def test_resource_compression_error_invalid_zip():
     assert error.note == "File is not a zip file"
 
 
-@pytest.mark.skip
+@pytest.mark.xfail(reason="encoding")
 @pytest.mark.skipif(sys.version_info < (3, 8), reason="Requires Python3.8+")
 def test_resource_compression_error_invalid_gz():
     source = b"id,filename\n\1,dump"
@@ -760,14 +744,13 @@ def test_resource_control():
 @pytest.mark.vcr
 def test_resource_control_http_preload():
     control = RemoteControl(http_preload=True)
-    with Resource(BASE_URL % "data/table.csv", control=control) as resource:
+    with Resource(BASEURL % "data/table.csv", control=control) as resource:
         assert resource.control == {"httpPreload": True}
         assert resource.sample == [["id", "name"], ["1", "english"], ["2", "中国人"]]
         assert resource.fragment == [["1", "english"], ["2", "中国人"]]
         assert resource.header == ["id", "name"]
 
 
-@pytest.mark.skip
 def test_resource_control_bad_property():
     resource = Resource("data/table.csv", control={"bad": True})
     with pytest.raises(FrictionlessException) as excinfo:
@@ -819,12 +802,12 @@ def test_resource_dialect_from_path():
 @pytest.mark.vcr
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_dialect_from_path_remote():
-    resource = Resource(BASE_URL % "data/resource-with-dereferencing.json")
+    resource = Resource(BASEURL % "data/resource-with-dereferencing.json")
     assert resource == {
         "name": "name",
         "path": "table.csv",
         "dialect": "dialect.json",
-        "schema": "schema-simple.json",
+        "schema": "schema.json",
     }
     assert resource.dialect == {
         "delimiter": ";",
@@ -1437,6 +1420,19 @@ def test_resource_layout_respect_set_after_creation_issue_503():
 # Schema
 
 
+DESCRIPTOR_FK = {
+    "path": "data/nested.csv",
+    "schema": {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "cat", "type": "integer"},
+            {"name": "name", "type": "string"},
+        ],
+        "foreignKeys": [{"fields": "cat", "reference": {"resource": "", "fields": "id"}}],
+    },
+}
+
+
 def test_resource_schema():
     descriptor = {
         "name": "name",
@@ -1478,9 +1474,9 @@ def test_resource_schema_source_remote():
         "name": "name",
         "profile": "tabular-data-resource",
         "path": "table.csv",
-        "schema": "resource_schema.json",
+        "schema": "schema.json",
     }
-    resource = Resource(descriptor, basepath=BASE_URL % "data")
+    resource = Resource(descriptor, basepath=BASEURL % "data")
     assert resource.schema == {
         "fields": [{"name": "id", "type": "integer"}, {"name": "name", "type": "string"}]
     }
@@ -1515,19 +1511,18 @@ def test_resource_schema_from_path_with_basepath():
 @pytest.mark.vcr
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_schema_from_path_remote():
-    resource = Resource(BASE_URL % "data/resource-with-dereferencing.json")
+    resource = Resource(BASEURL % "data/resource-with-dereferencing.json")
     assert resource == {
         "name": "name",
         "path": "table.csv",
         "dialect": "dialect.json",
-        "schema": "schema-simple.json",
+        "schema": "schema.json",
     }
     assert resource.schema == {
         "fields": [{"name": "id", "type": "integer"}, {"name": "name", "type": "string"}]
     }
 
 
-@pytest.mark.skip
 def test_resource_schema_from_path_error_bad_path():
     resource = Resource({"name": "name", "path": "path", "schema": "data/bad.json"})
     with pytest.raises(FrictionlessException) as excinfo:
@@ -1576,6 +1571,205 @@ def test_resource_schema_provided():
             {"new1": "1", "new2": "english"},
             {"new1": "2", "new2": "中国人"},
         ]
+
+
+def test_resource_schema_unique():
+    source = [["name"], [1], [2], [3]]
+    detector = Detector(
+        schema_patch={"fields": {"name": {"constraints": {"unique": True}}}}
+    )
+    with Resource(source, detector=detector) as resource:
+        for row in resource:
+            assert row.valid
+
+
+def test_resource_schema_unique_error():
+    source = [["name"], [1], [2], [2]]
+    detector = Detector(
+        schema_patch={"fields": {"name": {"constraints": {"unique": True}}}}
+    )
+    with Resource(source, detector=detector) as resource:
+        for row in resource:
+            if row.row_number == 3:
+                assert row.valid is False
+                assert row.errors[0].code == "unique-error"
+                continue
+            assert row.valid
+
+
+def test_resource_schema_primary_key():
+    source = [["name"], [1], [2], [3]]
+    detector = Detector(schema_patch={"primaryKey": ["name"]})
+    with Resource(source, detector=detector) as resource:
+        for row in resource:
+            assert row.valid
+
+
+def test_resource_schema_primary_key_error():
+    source = [["name"], [1], [2], [2]]
+    detector = Detector(schema_patch={"primaryKey": ["name"]})
+    with Resource(source, detector=detector) as resource:
+        for row in resource:
+            if row.row_number == 3:
+                assert row.valid is False
+                assert row.errors[0].code == "primary-key-error"
+                continue
+            assert row.valid
+
+
+def test_resource_schema_foreign_keys():
+    resource = Resource(DESCRIPTOR_FK)
+    rows = resource.read_rows()
+    assert rows[0].valid
+    assert rows[1].valid
+    assert rows[2].valid
+    assert rows[3].valid
+    assert rows[0].to_dict() == {"id": 1, "cat": None, "name": "England"}
+    assert rows[1].to_dict() == {"id": 2, "cat": None, "name": "France"}
+    assert rows[2].to_dict() == {"id": 3, "cat": 1, "name": "London"}
+    assert rows[3].to_dict() == {"id": 4, "cat": 2, "name": "Paris"}
+
+
+def test_resource_schema_foreign_keys_invalid():
+    resource = Resource(DESCRIPTOR_FK, path="data/nested-invalid.csv")
+    rows = resource.read_rows()
+    assert rows[0].valid
+    assert rows[1].valid
+    assert rows[2].valid
+    assert rows[3].valid
+    assert rows[4].errors[0].code == "foreign-key-error"
+    assert rows[0].to_dict() == {"id": 1, "cat": None, "name": "England"}
+    assert rows[1].to_dict() == {"id": 2, "cat": None, "name": "France"}
+    assert rows[2].to_dict() == {"id": 3, "cat": 1, "name": "London"}
+    assert rows[3].to_dict() == {"id": 4, "cat": 2, "name": "Paris"}
+    assert rows[4].to_dict() == {"id": 5, "cat": 6, "name": "Rome"}
+
+
+# Stats
+
+
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
+def test_resource_stats_hash():
+    with Resource("data/doublequote.csv") as resource:
+        resource.read_rows()
+        assert resource.hashing == "md5"
+        assert resource.stats["hash"] == "d82306001266c4343a2af4830321ead8"
+
+
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
+def test_resource_stats_hash_md5():
+    with Resource("data/doublequote.csv", hashing="md5") as resource:
+        resource.read_rows()
+        assert resource.hashing == "md5"
+        assert resource.stats["hash"] == "d82306001266c4343a2af4830321ead8"
+
+
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
+def test_resource_stats_hash_sha1():
+    with Resource("data/doublequote.csv", hashing="sha1") as resource:
+        resource.read_rows()
+        assert resource.hashing == "sha1"
+        assert resource.stats["hash"] == "2842768834a6804d8644dd689da61c7ab71cbb33"
+
+
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
+def test_resource_stats_hash_sha256():
+    with Resource("data/doublequote.csv", hashing="sha256") as resource:
+        resource.read_rows()
+        assert resource.hashing == "sha256"
+        assert (
+            resource.stats["hash"]
+            == "41fdde1d8dbcb3b2d4a1410acd7ad842781f076076a73b049863d6c1c73868db"
+        )
+
+
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
+def test_resource_stats_hash_sha512():
+    with Resource("data/doublequote.csv", hashing="sha512") as resource:
+        resource.read_rows()
+        assert resource.hashing == "sha512"
+        assert (
+            resource.stats["hash"]
+            == "fa555b28a01959c8b03996cd4757542be86293fd49641d61808e4bf9fe4115619754aae9ae6af6a0695585eaade4488ce00dfc40fc4394b6376cd20d6967769c"
+        )
+
+
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
+def test_resource_stats_hash_compressed():
+    with Resource("data/doublequote.csv.zip") as resource:
+        resource.read_rows()
+        assert resource.hashing == "md5"
+        assert resource.stats["hash"] == "2a72c90bd48c1fa48aec632db23ce8f7"
+
+
+@pytest.mark.vcr
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
+def test_resource_stats_hash_remote():
+    with Resource(BASEURL % "data/doublequote.csv") as resource:
+        resource.read_rows()
+        assert resource.hashing == "md5"
+        assert resource.stats["hash"] == "d82306001266c4343a2af4830321ead8"
+
+
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
+def test_resource_stats_bytes():
+    with Resource("data/doublequote.csv") as resource:
+        resource.read_rows()
+        assert resource.stats["bytes"] == 7346
+
+
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
+def test_resource_stats_bytes_compressed():
+    with Resource("data/doublequote.csv.zip") as resource:
+        resource.read_rows()
+        assert resource.stats["bytes"] == 1265
+
+
+@pytest.mark.vcr
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
+def test_resource_stats_bytes_remote():
+    with Resource(BASEURL % "data/doublequote.csv") as resource:
+        resource.read_rows()
+        assert resource.stats["bytes"] == 7346
+
+
+def test_resource_stats_fields():
+    with Resource("data/doublequote.csv") as resource:
+        resource.read_rows()
+        assert resource.stats["fields"] == 17
+        resource.open()
+        resource.read_rows()
+        assert resource.stats["fields"] == 17
+
+
+@pytest.mark.vcr
+def test_resource_stats_fields_remote():
+    with Resource(BASEURL % "data/doublequote.csv") as resource:
+        resource.read_rows()
+        assert resource.stats["fields"] == 17
+
+
+def test_resource_stats_rows():
+    with Resource("data/doublequote.csv") as resource:
+        resource.read_rows()
+        assert resource.stats["rows"] == 5
+        resource.open()
+        resource.read_rows()
+        assert resource.stats["rows"] == 5
+
+
+@pytest.mark.vcr
+def test_resource_stats_rows_remote():
+    with Resource(BASEURL % "data/doublequote.csv") as resource:
+        resource.read_rows()
+        assert resource.stats["rows"] == 5
+
+
+def test_resource_stats_rows_significant():
+    layout = Layout(header=False)
+    with Resource("data/table-1MB.csv", layout=layout) as resource:
+        print(resource.read_rows())
+        assert resource.stats["rows"] == 10000
 
 
 # Detector
@@ -1758,6 +1952,51 @@ def test_resource_detector_schema_patch_with_infer():
     ]
 
 
+# Onerror
+
+
+def test_resource_onerror():
+    resource = Resource(path="data/invalid.csv")
+    assert resource.onerror == "ignore"
+    assert resource.read_rows()
+
+
+def test_resource_onerror_header_warn():
+    data = [["name"], [1], [2], [3]]
+    schema = {"fields": [{"name": "bad", "type": "integer"}]}
+    resource = Resource(data=data, schema=schema, onerror="warn")
+    assert resource.onerror == "warn"
+    with pytest.warns(UserWarning):
+        resource.read_rows()
+
+
+def test_resource_onerror_header_raise():
+    data = [["name"], [1], [2], [3]]
+    schema = {"fields": [{"name": "bad", "type": "integer"}]}
+    resource = Resource(data=data, schema=schema, onerror="raise")
+    assert resource.onerror == "raise"
+    with pytest.raises(FrictionlessException):
+        resource.read_rows()
+
+
+def test_resource_onerror_row_warn():
+    data = [["name"], [1], [2], [3]]
+    schema = {"fields": [{"name": "name", "type": "string"}]}
+    resource = Resource(data=data, schema=schema, onerror="warn")
+    assert resource.onerror == "warn"
+    with pytest.warns(UserWarning):
+        resource.read_rows()
+
+
+def test_resource_onerror_row_raise():
+    data = [["name"], [1], [2], [3]]
+    schema = {"fields": [{"name": "name", "type": "string"}]}
+    resource = Resource(data=data, schema=schema, onerror="raise")
+    assert resource.onerror == "raise"
+    with pytest.raises(FrictionlessException):
+        resource.read_rows()
+
+
 # Expand
 
 
@@ -1848,7 +2087,6 @@ def test_resource_infer():
     }
 
 
-@pytest.mark.skip
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_infer_source_non_tabular():
     resource = Resource(path="data/text.txt")
@@ -1862,14 +2100,9 @@ def test_resource_infer_source_non_tabular():
         "format": "txt",
         "hashing": "md5",
         "encoding": "utf-8",
-        "innerpath": "",
-        "compression": "",
-        "control": {},
         "stats": {
             "hash": "e1cbb0c3879af8347246f12c559a86b5",
             "bytes": 5,
-            "fields": 0,
-            "rows": 0,
         },
     }
 
@@ -2039,7 +2272,6 @@ def test_resource_open_without_rows():
         }
 
 
-@pytest.mark.skip
 def test_resource_open_without_headers():
     with Resource("data/without-headers.csv") as resource:
         assert resource.labels == []
@@ -2133,6 +2365,7 @@ def test_resource_reopen_generator():
 # Read
 
 
+@pytest.mark.xfail(reason="ValueError: read length must be positive (Python 3.6)")
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_read_bytes():
     resource = Resource(path="data/text.txt")
@@ -2147,11 +2380,9 @@ def test_resource_read_text():
     assert text == "text\n"
 
 
-@pytest.mark.skip
 def test_resource_read_data():
     resource = Resource(path="data/table.json")
-    data = resource.read_data()
-    assert data == [
+    assert resource.read_lists() == [
         ["id", "name"],
         [1, "english"],
         [2, "中国人"],
@@ -2256,296 +2487,6 @@ def test_resource_metadata_bad_schema_format():
     assert resource.metadata_errors[0].code == "field-error"
 
 
-# Integrity
-
-
-def test_resource_integrity_onerror():
-    resource = Resource(path="data/invalid.csv")
-    assert resource.onerror == "ignore"
-    assert resource.read_rows()
-
-
-def test_resource_integrity_onerror_header_warn():
-    data = [["name"], [1], [2], [3]]
-    schema = {"fields": [{"name": "bad", "type": "integer"}]}
-    resource = Resource(data=data, schema=schema, onerror="warn")
-    assert resource.onerror == "warn"
-    with pytest.warns(UserWarning):
-        resource.read_rows()
-
-
-def test_resource_integrity_onerror_header_raise():
-    data = [["name"], [1], [2], [3]]
-    schema = {"fields": [{"name": "bad", "type": "integer"}]}
-    resource = Resource(data=data, schema=schema, onerror="raise")
-    assert resource.onerror == "raise"
-    with pytest.raises(FrictionlessException):
-        resource.read_rows()
-
-
-def test_resource_integrity_onerror_row_warn():
-    data = [["name"], [1], [2], [3]]
-    schema = {"fields": [{"name": "name", "type": "string"}]}
-    resource = Resource(data=data, schema=schema, onerror="warn")
-    assert resource.onerror == "warn"
-    with pytest.warns(UserWarning):
-        resource.read_rows()
-
-
-def test_resource_integrity_onerror_row_raise():
-    data = [["name"], [1], [2], [3]]
-    schema = {"fields": [{"name": "name", "type": "string"}]}
-    resource = Resource(data=data, schema=schema, onerror="raise")
-    assert resource.onerror == "raise"
-    with pytest.raises(FrictionlessException):
-        resource.read_rows()
-
-
-def test_resource_integrity_unique():
-    source = [["name"], [1], [2], [3]]
-    detector = Detector(
-        schema_patch={"fields": {"name": {"constraints": {"unique": True}}}}
-    )
-    with Resource(source, detector=detector) as resource:
-        for row in resource:
-            assert row.valid
-
-
-def test_resource_integrity_unique_error():
-    source = [["name"], [1], [2], [2]]
-    detector = Detector(
-        schema_patch={"fields": {"name": {"constraints": {"unique": True}}}}
-    )
-    with Resource(source, detector=detector) as resource:
-        for row in resource:
-            if row.row_number == 3:
-                assert row.valid is False
-                assert row.errors[0].code == "unique-error"
-                continue
-            assert row.valid
-
-
-def test_resource_integrity_primary_key():
-    source = [["name"], [1], [2], [3]]
-    detector = Detector(schema_patch={"primaryKey": ["name"]})
-    with Resource(source, detector=detector) as resource:
-        for row in resource:
-            assert row.valid
-
-
-def test_resource_integrity_primary_key_error():
-    source = [["name"], [1], [2], [2]]
-    detector = Detector(schema_patch={"primaryKey": ["name"]})
-    with Resource(source, detector=detector) as resource:
-        for row in resource:
-            if row.row_number == 3:
-                assert row.valid is False
-                assert row.errors[0].code == "primary-key-error"
-                continue
-            assert row.valid
-
-
-DESCRIPTOR_FK = {
-    "path": "data/nested.csv",
-    "schema": {
-        "fields": [
-            {"name": "id", "type": "integer"},
-            {"name": "cat", "type": "integer"},
-            {"name": "name", "type": "string"},
-        ],
-        "foreignKeys": [{"fields": "cat", "reference": {"resource": "", "fields": "id"}}],
-    },
-}
-
-
-def test_resource_integrity_foreign_keys():
-    resource = Resource(DESCRIPTOR_FK)
-    rows = resource.read_rows()
-    assert rows[0].valid
-    assert rows[1].valid
-    assert rows[2].valid
-    assert rows[3].valid
-    assert rows[0].to_dict() == {"id": 1, "cat": None, "name": "England"}
-    assert rows[1].to_dict() == {"id": 2, "cat": None, "name": "France"}
-    assert rows[2].to_dict() == {"id": 3, "cat": 1, "name": "London"}
-    assert rows[3].to_dict() == {"id": 4, "cat": 2, "name": "Paris"}
-
-
-def test_resource_integrity_foreign_keys_invalid():
-    resource = Resource(DESCRIPTOR_FK, path="data/nested-invalid.csv")
-    rows = resource.read_rows()
-    assert rows[0].valid
-    assert rows[1].valid
-    assert rows[2].valid
-    assert rows[3].valid
-    assert rows[4].errors[0].code == "foreign-key-error"
-    assert rows[0].to_dict() == {"id": 1, "cat": None, "name": "England"}
-    assert rows[1].to_dict() == {"id": 2, "cat": None, "name": "France"}
-    assert rows[2].to_dict() == {"id": 3, "cat": 1, "name": "London"}
-    assert rows[3].to_dict() == {"id": 4, "cat": 2, "name": "Paris"}
-    assert rows[4].to_dict() == {"id": 5, "cat": 6, "name": "Rome"}
-
-
-def test_resource_integrity_lookup():
-    with Resource(DESCRIPTOR_FK) as resource:
-        assert resource.lookup == {"": {("id",): {(1,), (2,), (3,), (4,)}}}
-
-
-@pytest.mark.skip
-def test_resource_schema_lookup_foreign_keys():
-    source = [["name"], [1], [2], [3]]
-    lookup = {"other": {("name",): {(1,), (2,), (3,)}}}
-    fk = {"fields": ["name"], "reference": {"fields": ["name"], "resource": "other"}}
-    with Resource(source, lookup=lookup, schema_patch={"foreignKeys": [fk]}) as resource:
-        for row in resource:
-            assert row.valid
-
-
-@pytest.mark.skip
-def test_resource_schema_lookup_foreign_keys_error():
-    source = [["name"], [1], [2], [4]]
-    lookup = {"other": {("name",): {(1,), (2,), (3,)}}}
-    fk = {"fields": ["name"], "reference": {"fields": ["name"], "resource": "other"}}
-    with Resource(source, lookup=lookup, schema_patch={"foreignKeys": [fk]}) as resource:
-        for row in resource:
-            if row.row_number == 3:
-                assert row.valid is False
-                assert row.errors[0].code == "foreign-key-error"
-                continue
-            assert row.valid
-
-
-# Stats
-
-
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-def test_resource_stats_hash():
-    with Resource("data/doublequote.csv") as resource:
-        resource.read_rows()
-        assert resource.hashing == "md5"
-        assert resource.stats["hash"] == "d82306001266c4343a2af4830321ead8"
-
-
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-def test_resource_stats_hash_md5():
-    with Resource("data/doublequote.csv", hashing="md5") as resource:
-        resource.read_rows()
-        assert resource.hashing == "md5"
-        assert resource.stats["hash"] == "d82306001266c4343a2af4830321ead8"
-
-
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-def test_resource_stats_hash_sha1():
-    with Resource("data/doublequote.csv", hashing="sha1") as resource:
-        resource.read_rows()
-        assert resource.hashing == "sha1"
-        assert resource.stats["hash"] == "2842768834a6804d8644dd689da61c7ab71cbb33"
-
-
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-def test_resource_stats_hash_sha256():
-    with Resource("data/doublequote.csv", hashing="sha256") as resource:
-        resource.read_rows()
-        assert resource.hashing == "sha256"
-        assert (
-            resource.stats["hash"]
-            == "41fdde1d8dbcb3b2d4a1410acd7ad842781f076076a73b049863d6c1c73868db"
-        )
-
-
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-def test_resource_stats_hash_sha512():
-    with Resource("data/doublequote.csv", hashing="sha512") as resource:
-        resource.read_rows()
-        assert resource.hashing == "sha512"
-        assert (
-            resource.stats["hash"]
-            == "fa555b28a01959c8b03996cd4757542be86293fd49641d61808e4bf9fe4115619754aae9ae6af6a0695585eaade4488ce00dfc40fc4394b6376cd20d6967769c"
-        )
-
-
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-def test_resource_stats_hash_compressed():
-    with Resource("data/doublequote.csv.zip") as resource:
-        resource.read_rows()
-        assert resource.hashing == "md5"
-        assert resource.stats["hash"] == "2a72c90bd48c1fa48aec632db23ce8f7"
-
-
-@pytest.mark.skip
-@pytest.mark.vcr
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-def test_resource_stats_hash_remote():
-    with Resource(BASE_URL % "data/special/doublequote.csv") as resource:
-        resource.read_rows()
-        assert resource.hashing == "md5"
-        assert resource.stats["hash"] == "d82306001266c4343a2af4830321ead8"
-
-
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-def test_resource_stats_bytes():
-    with Resource("data/doublequote.csv") as resource:
-        resource.read_rows()
-        assert resource.stats["bytes"] == 7346
-
-
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-def test_resource_stats_bytes_compressed():
-    with Resource("data/doublequote.csv.zip") as resource:
-        resource.read_rows()
-        assert resource.stats["bytes"] == 1265
-
-
-@pytest.mark.skip
-@pytest.mark.vcr
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-def test_resource_stats_bytes_remote():
-    with Resource(BASE_URL % "data/special/doublequote.csv") as resource:
-        resource.read_rows()
-        assert resource.stats["bytes"] == 7346
-
-
-def test_resource_stats_fields():
-    with Resource("data/doublequote.csv") as resource:
-        resource.read_rows()
-        assert resource.stats["fields"] == 17
-        resource.open()
-        resource.read_rows()
-        assert resource.stats["fields"] == 17
-
-
-@pytest.mark.skip
-@pytest.mark.vcr
-def test_resource_stats_fields_remote():
-    with Resource(BASE_URL % "data/special/doublequote.csv") as resource:
-        resource.read_rows()
-        assert resource.stats["fields"] == 17
-
-
-def test_resource_stats_rows():
-    with Resource("data/doublequote.csv") as resource:
-        resource.read_rows()
-        assert resource.stats["rows"] == 5
-        resource.open()
-        resource.read_rows()
-        assert resource.stats["rows"] == 5
-
-
-@pytest.mark.skip
-@pytest.mark.vcr
-def test_resource_stats_rows_remote():
-    with Resource(BASE_URL % "data/special/doublequote.csv") as resource:
-        resource.read_rows()
-        assert resource.stats["rows"] == 5
-
-
-def test_resource_stats_rows_significant():
-    layout = Layout(header=False)
-    with Resource("data/table-1MB.csv", layout=layout) as resource:
-        print(resource.read_rows())
-        assert resource.stats["rows"] == 10000
-
-
 # Issues
 
 
@@ -2570,10 +2511,10 @@ def test_resource_skip_blank_at_the_end_issue_bco_dmo_33():
         assert rows[1].cells == []
 
 
-# TODO: enable when loader.buffer is implemented
-@pytest.mark.skip
+@pytest.mark.xfail(reason="encoding")
 def test_resource_wrong_encoding_detection_issue_265():
     with Resource("data/accent.csv") as resource:
+        print(resource.encoding)
         assert resource.encoding == "iso8859-1"
 
 
