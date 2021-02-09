@@ -317,7 +317,7 @@ def test_validate_package_integrity_foreign_key_internal_resource_violation_non_
 # Parallel
 
 
-@pytest.mark.skip
+@pytest.mark.xfail
 @pytest.mark.ci
 def test_validate_package_parallel_from_dict():
     with open("data/package/datapackage.json") as file:
@@ -325,7 +325,7 @@ def test_validate_package_parallel_from_dict():
         assert report.valid
 
 
-@pytest.mark.skip
+@pytest.mark.xfail
 @pytest.mark.ci
 def test_validate_package_parallel_from_dict_invalid():
     with open("data/invalid/datapackage.json") as file:
@@ -339,7 +339,7 @@ def test_validate_package_parallel_from_dict_invalid():
         ]
 
 
-@pytest.mark.skip
+@pytest.mark.xfail
 @pytest.mark.ci
 def test_validate_package_with_parallel():
     report = validate("data/invalid/datapackage.json", parallel=True)
@@ -446,9 +446,9 @@ def test_validate_package_with_schema_issue_348():
     ]
 
 
-# TODO: use pytest.vcr?
 @pytest.mark.skip
 @pytest.mark.ci
+@pytest.mark.vcr
 def test_validate_package_uppercase_format_issue_494():
     with pytest.warns(UserWarning):
         report = validate("data/issue-494.package.json")
