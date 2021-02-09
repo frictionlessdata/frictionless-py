@@ -11,7 +11,7 @@ from frictionless import FrictionlessException
 # General
 
 
-BASE_URL = "https://raw.githubusercontent.com/frictionlessdata/datapackage-py/master/%s"
+BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
 
 
 def test_package():
@@ -81,15 +81,18 @@ def test_package_from_path_error_bad_json_not_dict():
 
 @pytest.mark.vcr
 def test_package_from_path_remote():
-    package = Package(BASE_URL % "data/package.json")
-    assert package.basepath == BASE_URL % "data"
-    assert package == {"resources": [{"name": "name", "path": "path"}]}
+    package = Package(BASEURL % "data/package.json")
+    assert package.basepath == BASEURL % "data"
+    assert package == {
+        "name": "name",
+        "resources": [{"name": "name", "path": "table.csv"}],
+    }
 
 
 @pytest.mark.vcr
 def test_package_from_path_remote_error_not_found():
     with pytest.raises(FrictionlessException) as excinfo:
-        Package(BASE_URL % "data/bad.json")
+        Package(BASEURL % "data/bad.json")
     error = excinfo.value.error
     assert error.code == "package-error"
     assert error.note.count("bad.json")
@@ -98,7 +101,7 @@ def test_package_from_path_remote_error_not_found():
 @pytest.mark.vcr
 def test_package_from_path_remote_error_bad_json():
     with pytest.raises(FrictionlessException) as excinfo:
-        Package(BASE_URL % "data/invalid.json")
+        Package(BASEURL % "data/invalid.json")
     error = excinfo.value.error
     assert error.code == "package-error"
     assert error.note.count("invalid.json")
@@ -107,7 +110,7 @@ def test_package_from_path_remote_error_bad_json():
 @pytest.mark.vcr
 def test_package_from_path_remote_error_bad_json_not_dict():
     with pytest.raises(FrictionlessException) as excinfo:
-        Package(BASE_URL % "data/table-lists.json")
+        Package(BASEURL % "data/table-lists.json")
     error = excinfo.value.error
     assert error.code == "package-error"
     assert error.note.count("table-lists.json")
@@ -136,7 +139,7 @@ def test_package_from_zip():
 @pytest.mark.vcr
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_package_from_zip_remote():
-    package = Package(BASE_URL % "data/package.zip")
+    package = Package(BASEURL % "data/package.zip")
     assert package.name == "testing"
     assert len(package.resources) == 2
     assert package.get_resource("data2").read_rows() == [
@@ -614,7 +617,7 @@ def test_package_to_zip_resolve_remote(tmpdir):
 
     # Write
     target = os.path.join(tmpdir, "package.zip")
-    resource = Resource(path=BASE_URL % "data/table.csv")
+    resource = Resource(path=BASEURL % "data/table.csv")
     package = Package(resources=[resource])
     package.to_zip(target, resolve=["remote"])
 
@@ -635,7 +638,7 @@ def test_package_to_zip_resolve_memory_and_remote(tmpdir):
     # Write
     target = os.path.join(tmpdir, "package.zip")
     resource1 = Resource(name="name1", data=[["id", "name"], [1, "english"], [2, "中国人"]])
-    resource2 = Resource(name="name2", path=BASE_URL % "data/table.csv")
+    resource2 = Resource(name="name2", path=BASEURL % "data/table.csv")
     package = Package(resources=[resource1, resource2])
     package.to_zip(target, resolve=["memory", "remote"])
 
@@ -658,7 +661,7 @@ def test_package_to_zip_resolve_memory_and_remote(tmpdir):
 def test_package_to_zip_source_remote(tmpdir):
 
     # Write
-    path = BASE_URL % "data/table.csv"
+    path = BASEURL % "data/table.csv"
     target = os.path.join(tmpdir, "package.zip")
     package = Package(name="name", resources=[{"name": "name", "path": path}])
     package.to_zip(target)

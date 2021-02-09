@@ -9,56 +9,63 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.25.0
+      - python-requests/2.25.1
     method: GET
-    uri: https://raw.githubusercontent.com/frictionlessdata/datapackage-py/master/data/invalid.json
+    uri: https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/invalid.json
   response:
     body:
-      string: '404: Not Found'
+      string: !!binary |
+        H4sIAAAAAAAAA6vmUgAC9bzE3FR1Kyitw1XLBQB2Nx0gGAAAAA==
     headers:
       Accept-Ranges:
       - bytes
       Access-Control-Allow-Origin:
       - '*'
+      Cache-Control:
+      - max-age=300
       Connection:
       - keep-alive
+      Content-Encoding:
+      - gzip
       Content-Length:
-      - '14'
+      - '37'
       Content-Security-Policy:
       - default-src 'none'; style-src 'unsafe-inline'; sandbox
       Content-Type:
       - text/plain; charset=utf-8
       Date:
-      - Sat, 12 Dec 2020 12:30:58 GMT
+      - Tue, 09 Feb 2021 08:49:49 GMT
+      ETag:
+      - W/"458e8cef7910dca220e050b81f3168c3b8f46fc68cfbbcfc0a8212f0ce32bb17"
       Expires:
-      - Sat, 12 Dec 2020 12:35:58 GMT
+      - Tue, 09 Feb 2021 08:54:49 GMT
       Source-Age:
       - '0'
       Strict-Transport-Security:
       - max-age=31536000
       Vary:
-      - Authorization,Accept-Encoding
+      - Authorization,Accept-Encoding, Accept-Encoding
       Via:
-      - 1.1 varnish (Varnish/6.0), 1.1 varnish
+      - 1.1 varnish
       X-Cache:
-      - MISS, MISS
+      - MISS
       X-Cache-Hits:
-      - 0, 0
+      - '0'
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 45de4d456696c09b170186dc0c385e43a7dd2849
+      - 221dd75d6f370cf7d959a5db576b3f7d5bb8f3c5
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 1146:A59C:17EFA0:1958ED:5FD4B801
+      - 2D4A:E19D:350541:383FBF:60224CA9
       X-Served-By:
-      - cache-bma1622-BMA
+      - cache-fra19177-FRA
       X-Timer:
-      - S1607776259.769843,VS0,VE166
+      - S1612860589.902063,VS0,VE158
       X-XSS-Protection:
       - 1; mode=block
     status:
-      code: 404
-      message: Not Found
+      code: 200
+      message: OK
 version: 1

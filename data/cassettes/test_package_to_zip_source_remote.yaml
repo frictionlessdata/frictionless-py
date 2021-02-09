@@ -12,7 +12,7 @@ interactions:
       - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
         like Gecko) Chrome/54.0.2840.87 Safari/537.36
     method: GET
-    uri: https://raw.githubusercontent.com/frictionlessdata/datapackage-py/master/data/table.csv
+    uri: https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/table.csv
   response:
     body:
       string: !!binary |
@@ -35,35 +35,35 @@ interactions:
       Content-Type:
       - text/plain; charset=utf-8
       Date:
-      - Sat, 12 Dec 2020 12:31:01 GMT
+      - Tue, 09 Feb 2021 08:49:56 GMT
       ETag:
       - W/"0172a2fd99319bed82fe7cccbd7a44b27a77f7200caf0d04b7f23cbb6b81026d"
       Expires:
-      - Sat, 12 Dec 2020 12:36:01 GMT
+      - Tue, 09 Feb 2021 08:54:56 GMT
       Source-Age:
-      - '1'
+      - '4'
       Strict-Transport-Security:
       - max-age=31536000
       Vary:
       - Authorization,Accept-Encoding, Accept-Encoding
       Via:
-      - 1.1 varnish (Varnish/6.0), 1.1 varnish
+      - 1.1 varnish
       X-Cache:
-      - MISS, HIT
+      - HIT
       X-Cache-Hits:
-      - 0, 1
+      - '1'
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - c3f960c1abc7f4e434b74548ef72042595e3f3bf
+      - 5c5fe2f913c34b8487fa836a901529928b1dcca6
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - D01A:DE6F:187EBB:19EC2D:5FD4B803
+      - D380:D1E8:3124FA:3429BD:602249E6
       X-Served-By:
-      - cache-bma1639-BMA
+      - cache-fra19176-FRA
       X-Timer:
-      - S1607776261.354124,VS0,VE0
+      - S1612860597.849583,VS0,VE0
       X-XSS-Protection:
       - 1; mode=block
     status:
@@ -82,7 +82,7 @@ interactions:
       - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
         like Gecko) Chrome/54.0.2840.87 Safari/537.36
     method: GET
-    uri: https://raw.githubusercontent.com/frictionlessdata/datapackage-py/master/data/table.csv
+    uri: https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/table.csv
   response:
     body:
       string: !!binary |
@@ -105,35 +105,35 @@ interactions:
       Content-Type:
       - text/plain; charset=utf-8
       Date:
-      - Sat, 12 Dec 2020 12:31:01 GMT
+      - Tue, 09 Feb 2021 08:49:57 GMT
       ETag:
       - W/"0172a2fd99319bed82fe7cccbd7a44b27a77f7200caf0d04b7f23cbb6b81026d"
       Expires:
-      - Sat, 12 Dec 2020 12:36:01 GMT
+      - Tue, 09 Feb 2021 08:54:57 GMT
       Source-Age:
-      - '1'
+      - '5'
       Strict-Transport-Security:
       - max-age=31536000
       Vary:
       - Authorization,Accept-Encoding, Accept-Encoding
       Via:
-      - 1.1 varnish (Varnish/6.0), 1.1 varnish
+      - 1.1 varnish
       X-Cache:
-      - MISS, HIT
+      - HIT
       X-Cache-Hits:
-      - 0, 3
+      - '1'
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - e93479f870ae5ff238653ba4195e7b56fc42d972
+      - 4b90cb9210f3a26a9bf8f65271696b633585226e
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - D01A:DE6F:187EBB:19EC2D:5FD4B803
+      - D380:D1E8:3124FA:3429BD:602249E6
       X-Served-By:
-      - cache-bma1637-BMA
+      - cache-fra19154-FRA
       X-Timer:
-      - S1607776262.558828,VS0,VE0
+      - S1612860598.883021,VS0,VE0
       X-XSS-Protection:
       - 1; mode=block
     status:

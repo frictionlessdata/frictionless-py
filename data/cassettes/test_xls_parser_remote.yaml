@@ -12,7 +12,7 @@ interactions:
       - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
         like Gecko) Chrome/54.0.2840.87 Safari/537.36
     method: GET
-    uri: https://raw.githubusercontent.com/frictionlessdata/tabulator-py/master/data/table.xls
+    uri: https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/table.xls
   response:
     body:
       string: !!binary |
@@ -140,37 +140,37 @@ interactions:
       Content-Type:
       - application/octet-stream
       Date:
-      - Tue, 12 Jan 2021 11:35:09 GMT
+      - Tue, 09 Feb 2021 08:54:42 GMT
       ETag:
       - W/"5e9743142445cc16c21bad322b5572e58d0b7ee26d76ea911bd99bd9379c7f58"
       Expires:
-      - Tue, 12 Jan 2021 11:40:09 GMT
+      - Tue, 09 Feb 2021 08:59:42 GMT
       Source-Age:
-      - '68'
+      - '0'
       Strict-Transport-Security:
       - max-age=31536000
       Vary:
       - Authorization,Accept-Encoding, Accept-Encoding
+      Via:
+      - 1.1 varnish
       X-Cache:
-      - MISS, HIT
+      - MISS
       X-Cache-Hits:
-      - 0, 1
+      - '0'
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 92a37cbe793b97f019135c297bd10d9544780457
+      - ddb716ef88e9361a93bc91927544b61717cd0b06
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - DF1A:45FB:0918:09B4:5FFD8929
+      - 988C:31E0:7CED4:86995:60224DD1
       X-Served-By:
-      - cache-fra19130-FRA
+      - cache-fra19176-FRA
       X-Timer:
-      - S1610451310.686040,VS0,VE1
+      - S1612860882.849358,VS0,VE170
       X-XSS-Protection:
       - 1; mode=block
-      via:
-      - 1.1 varnish (Varnish/6.0), 1.1 varnish
     status:
       code: 200
       message: OK
@@ -187,7 +187,7 @@ interactions:
       - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
         like Gecko) Chrome/54.0.2840.87 Safari/537.36
     method: GET
-    uri: https://raw.githubusercontent.com/frictionlessdata/tabulator-py/master/data/table.xls
+    uri: https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/table.xls
   response:
     body:
       string: !!binary |
@@ -315,37 +315,37 @@ interactions:
       Content-Type:
       - application/octet-stream
       Date:
-      - Tue, 12 Jan 2021 11:35:09 GMT
+      - Tue, 09 Feb 2021 08:54:42 GMT
       ETag:
       - W/"5e9743142445cc16c21bad322b5572e58d0b7ee26d76ea911bd99bd9379c7f58"
       Expires:
-      - Tue, 12 Jan 2021 11:40:09 GMT
+      - Tue, 09 Feb 2021 08:59:42 GMT
       Source-Age:
-      - '68'
+      - '1'
       Strict-Transport-Security:
       - max-age=31536000
       Vary:
       - Authorization,Accept-Encoding, Accept-Encoding
+      Via:
+      - 1.1 varnish
       X-Cache:
-      - MISS, HIT
+      - HIT
       X-Cache-Hits:
-      - 0, 2
+      - '1'
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - ba786c0ed9dbe51a7d76ad6cb33983437d5d33c6
+      - 6e36d1770fbf5bf1a28f44dca6764156f694adcf
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - DF1A:45FB:0918:09B4:5FFD8929
+      - 988C:31E0:7CED4:86995:60224DD1
       X-Served-By:
-      - cache-fra19130-FRA
+      - cache-fra19147-FRA
       X-Timer:
-      - S1610451310.745244,VS0,VE0
+      - S1612860883.847219,VS0,VE1
       X-XSS-Protection:
       - 1; mode=block
-      via:
-      - 1.1 varnish (Varnish/6.0), 1.1 varnish
     status:
       code: 200
       message: OK

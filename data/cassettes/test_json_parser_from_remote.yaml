@@ -12,7 +12,7 @@ interactions:
       - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
         like Gecko) Chrome/54.0.2840.87 Safari/537.36
     method: GET
-    uri: https://raw.githubusercontent.com/okfn/tabulator-py/master/data/table-lists.json
+    uri: https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/table.json
   response:
     body:
       string: !!binary |
@@ -36,37 +36,37 @@ interactions:
       Content-Type:
       - text/plain; charset=utf-8
       Date:
-      - Tue, 12 Jan 2021 11:53:27 GMT
+      - Tue, 09 Feb 2021 08:51:18 GMT
       ETag:
       - W/"20db6aec4dc5e597f76a8dab6d177a8d283d48572e0e098094494d11e9816e37"
       Expires:
-      - Tue, 12 Jan 2021 11:58:27 GMT
+      - Tue, 09 Feb 2021 08:56:18 GMT
       Source-Age:
       - '0'
       Strict-Transport-Security:
       - max-age=31536000
       Vary:
-      - Authorization,Accept-Encoding, Accept-Encoding
+      - Authorization,Accept-Encoding
+      Via:
+      - 1.1 varnish
       X-Cache:
-      - MISS, MISS
+      - MISS
       X-Cache-Hits:
-      - 0, 0
+      - '0'
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 64930b1596945ab7dbedfd79d8481b90229e6de8
+      - 561a87911d7141c4cdd307eee43ddd7b3f1c9d9e
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 5316:B41D:22403:235CD:5FFD8DB4
+      - 912C:E19A:4A36A:51A7B:60224D05
       X-Served-By:
-      - cache-fra19143-FRA
+      - cache-fra19131-FRA
       X-Timer:
-      - S1610452408.686164,VS0,VE212
+      - S1612860679.845399,VS0,VE151
       X-XSS-Protection:
       - 1; mode=block
-      via:
-      - 1.1 varnish (Varnish/6.0), 1.1 varnish
     status:
       code: 200
       message: OK
@@ -83,7 +83,7 @@ interactions:
       - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
         like Gecko) Chrome/54.0.2840.87 Safari/537.36
     method: GET
-    uri: https://raw.githubusercontent.com/okfn/tabulator-py/master/data/table-lists.json
+    uri: https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/table.json
   response:
     body:
       string: !!binary |
@@ -107,37 +107,37 @@ interactions:
       Content-Type:
       - text/plain; charset=utf-8
       Date:
-      - Tue, 12 Jan 2021 11:53:27 GMT
+      - Tue, 09 Feb 2021 08:51:19 GMT
       ETag:
       - W/"20db6aec4dc5e597f76a8dab6d177a8d283d48572e0e098094494d11e9816e37"
       Expires:
-      - Tue, 12 Jan 2021 11:58:27 GMT
+      - Tue, 09 Feb 2021 08:56:19 GMT
       Source-Age:
-      - '0'
+      - '1'
       Strict-Transport-Security:
       - max-age=31536000
       Vary:
-      - Authorization,Accept-Encoding, Accept-Encoding
+      - Authorization,Accept-Encoding
+      Via:
+      - 1.1 varnish
       X-Cache:
-      - MISS, HIT
+      - HIT
       X-Cache-Hits:
-      - 0, 1
+      - '1'
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 48b1078df3ead49e96661eabb466adc58dbd4e5c
+      - 013718721cb1af460fc8cb3642768d24e1f57da0
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 5316:B41D:22403:235CD:5FFD8DB4
+      - 912C:E19A:4A36A:51A7B:60224D05
       X-Served-By:
-      - cache-fra19143-FRA
+      - cache-fra19178-FRA
       X-Timer:
-      - S1610452408.954395,VS0,VE0
+      - S1612860680.851238,VS0,VE0
       X-XSS-Protection:
       - 1; mode=block
-      via:
-      - 1.1 varnish (Varnish/6.0), 1.1 varnish
     status:
       code: 200
       message: OK

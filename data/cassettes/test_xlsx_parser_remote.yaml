@@ -12,7 +12,7 @@ interactions:
       - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
         like Gecko) Chrome/54.0.2840.87 Safari/537.36
     method: GET
-    uri: https://raw.githubusercontent.com/frictionlessdata/tabulator-py/master/data/table.xlsx
+    uri: https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/table.xlsx
   response:
     body:
       string: !!binary |
@@ -142,13 +142,13 @@ interactions:
       Content-Type:
       - application/octet-stream
       Date:
-      - Mon, 08 Feb 2021 12:20:16 GMT
+      - Tue, 09 Feb 2021 08:54:33 GMT
       ETag:
       - W/"cd696b652199bc7fb2221c1c0e1b45da1d93915d77c5e2623482a7c71447e884"
       Expires:
-      - Mon, 08 Feb 2021 12:25:16 GMT
+      - Tue, 09 Feb 2021 08:59:33 GMT
       Source-Age:
-      - '0'
+      - '46'
       Strict-Transport-Security:
       - max-age=31536000
       Vary:
@@ -156,21 +156,21 @@ interactions:
       Via:
       - 1.1 varnish
       X-Cache:
-      - MISS
+      - HIT
       X-Cache-Hits:
-      - '0'
+      - '1'
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 7faea4b3f61d7bd00d2e5561e6fbe6d203b6a1ea
+      - fb67d40b81a9f8d8015040e7476a90b4d62ccc6e
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 9322:15FD:1FF634:22BB59:60212C7F
+      - 737C:E683:5924D:6161A:60224D95
       X-Served-By:
-      - cache-fra19124-FRA
+      - cache-fra19180-FRA
       X-Timer:
-      - S1612786816.813095,VS0,VE219
+      - S1612860874.849913,VS0,VE0
       X-XSS-Protection:
       - 1; mode=block
     status:
@@ -189,7 +189,7 @@ interactions:
       - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
         like Gecko) Chrome/54.0.2840.87 Safari/537.36
     method: GET
-    uri: https://raw.githubusercontent.com/frictionlessdata/tabulator-py/master/data/table.xlsx
+    uri: https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/table.xlsx
   response:
     body:
       string: !!binary |
@@ -319,13 +319,13 @@ interactions:
       Content-Type:
       - application/octet-stream
       Date:
-      - Mon, 08 Feb 2021 12:20:16 GMT
+      - Tue, 09 Feb 2021 08:54:34 GMT
       ETag:
       - W/"cd696b652199bc7fb2221c1c0e1b45da1d93915d77c5e2623482a7c71447e884"
       Expires:
-      - Mon, 08 Feb 2021 12:25:16 GMT
+      - Tue, 09 Feb 2021 08:59:34 GMT
       Source-Age:
-      - '1'
+      - '47'
       Strict-Transport-Security:
       - max-age=31536000
       Vary:
@@ -339,15 +339,15 @@ interactions:
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - f4d10245f89a0884faaba8bdb7da256ddc17daaf
+      - 699e7c2202de6035c1a192f2ac73464607c17b0e
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 9322:15FD:1FF634:22BB59:60212C7F
+      - 737C:E683:5924D:6161A:60224D95
       X-Served-By:
-      - cache-fra19181-FRA
+      - cache-fra19177-FRA
       X-Timer:
-      - S1612786817.811263,VS0,VE1
+      - S1612860875.850267,VS0,VE0
       X-XSS-Protection:
       - 1; mode=block
     status:

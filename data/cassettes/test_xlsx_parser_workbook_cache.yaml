@@ -12,7 +12,7 @@ interactions:
       - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
         like Gecko) Chrome/54.0.2840.87 Safari/537.36
     method: GET
-    uri: https://raw.githubusercontent.com/frictionlessdata/tabulator-py/master/data/special/sheets.xlsx
+    uri: https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/sheets.xlsx
   response:
     body:
       string: !!binary |
@@ -164,11 +164,11 @@ interactions:
       Content-Type:
       - application/octet-stream
       Date:
-      - Mon, 08 Feb 2021 12:22:14 GMT
+      - Tue, 09 Feb 2021 08:54:36 GMT
       ETag:
       - W/"aef2f5e64be1a4bcf25aa8f03e5fccb74795daf744cd3c0802e0f58438d3cab2"
       Expires:
-      - Mon, 08 Feb 2021 12:27:14 GMT
+      - Tue, 09 Feb 2021 08:59:36 GMT
       Source-Age:
       - '0'
       Strict-Transport-Security:
@@ -184,15 +184,15 @@ interactions:
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - a9290c4d5bfec512d06885533890839a5b5bb8d0
+      - 218693bb9393b2f7c5f0646c14ed0d3f5fd82874
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 6966:1603:13E70EF:1508A10:60212CF6
+      - CC80:E686:302A30:3325C2:60224DCB
       X-Served-By:
-      - cache-fra19165-FRA
+      - cache-fra19123-FRA
       X-Timer:
-      - S1612786935.805672,VS0,VE154
+      - S1612860876.867817,VS0,VE146
       X-XSS-Protection:
       - 1; mode=block
     status:
@@ -211,7 +211,7 @@ interactions:
       - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
         like Gecko) Chrome/54.0.2840.87 Safari/537.36
     method: GET
-    uri: https://raw.githubusercontent.com/frictionlessdata/tabulator-py/master/data/special/sheets.xlsx
+    uri: https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/sheets.xlsx
   response:
     body:
       string: !!binary |
@@ -363,11 +363,11 @@ interactions:
       Content-Type:
       - application/octet-stream
       Date:
-      - Mon, 08 Feb 2021 12:22:15 GMT
+      - Tue, 09 Feb 2021 08:54:36 GMT
       ETag:
       - W/"aef2f5e64be1a4bcf25aa8f03e5fccb74795daf744cd3c0802e0f58438d3cab2"
       Expires:
-      - Mon, 08 Feb 2021 12:27:15 GMT
+      - Tue, 09 Feb 2021 08:59:36 GMT
       Source-Age:
       - '1'
       Strict-Transport-Security:
@@ -383,15 +383,15 @@ interactions:
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 579aa5ae2ee1969526b0e97bd02569bcf333a846
+      - 58cf1a9e1683e17999339905e02f3b310dbe0aa9
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 6966:1603:13E70EF:1508A10:60212CF6
+      - CC80:E686:302A30:3325C2:60224DCB
       X-Served-By:
-      - cache-fra19181-FRA
+      - cache-fra19129-FRA
       X-Timer:
-      - S1612786936.818902,VS0,VE1
+      - S1612860877.890194,VS0,VE1
       X-XSS-Protection:
       - 1; mode=block
     status:
@@ -410,7 +410,7 @@ interactions:
       - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
         like Gecko) Chrome/54.0.2840.87 Safari/537.36
     method: GET
-    uri: https://raw.githubusercontent.com/frictionlessdata/tabulator-py/master/data/special/sheets.xlsx
+    uri: https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/sheets.xlsx
   response:
     body:
       string: !!binary |
@@ -562,11 +562,11 @@ interactions:
       Content-Type:
       - application/octet-stream
       Date:
-      - Mon, 08 Feb 2021 12:22:16 GMT
+      - Tue, 09 Feb 2021 08:54:37 GMT
       ETag:
       - W/"aef2f5e64be1a4bcf25aa8f03e5fccb74795daf744cd3c0802e0f58438d3cab2"
       Expires:
-      - Mon, 08 Feb 2021 12:27:16 GMT
+      - Tue, 09 Feb 2021 08:59:37 GMT
       Source-Age:
       - '2'
       Strict-Transport-Security:
@@ -582,15 +582,15 @@ interactions:
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - fbacd2a4924b72ca7088ee8147e02c4096bfc5e4
+      - 5fad0179f50f817d83b63fc377c3bdf80f7f4174
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 6966:1603:13E70EF:1508A10:60212CF6
+      - CC80:E686:302A30:3325C2:60224DCB
       X-Served-By:
-      - cache-fra19164-FRA
+      - cache-fra19168-FRA
       X-Timer:
-      - S1612786937.812863,VS0,VE0
+      - S1612860878.848524,VS0,VE1
       X-XSS-Protection:
       - 1; mode=block
     status:
@@ -609,7 +609,7 @@ interactions:
       - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
         like Gecko) Chrome/54.0.2840.87 Safari/537.36
     method: GET
-    uri: https://raw.githubusercontent.com/frictionlessdata/tabulator-py/master/data/special/sheets.xlsx
+    uri: https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/sheets.xlsx
   response:
     body:
       string: !!binary |
@@ -761,11 +761,11 @@ interactions:
       Content-Type:
       - application/octet-stream
       Date:
-      - Mon, 08 Feb 2021 12:22:17 GMT
+      - Tue, 09 Feb 2021 08:54:38 GMT
       ETag:
       - W/"aef2f5e64be1a4bcf25aa8f03e5fccb74795daf744cd3c0802e0f58438d3cab2"
       Expires:
-      - Mon, 08 Feb 2021 12:27:17 GMT
+      - Tue, 09 Feb 2021 08:59:38 GMT
       Source-Age:
       - '3'
       Strict-Transport-Security:
@@ -781,15 +781,15 @@ interactions:
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 20c60ea03299b5cf9612b1bfcaadfebf34195294
+      - bc618492701bc9debf3384853dc68a2452ee1446
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 6966:1603:13E70EF:1508A10:60212CF6
+      - CC80:E686:302A30:3325C2:60224DCB
       X-Served-By:
-      - cache-fra19155-FRA
+      - cache-fra19177-FRA
       X-Timer:
-      - S1612786938.810100,VS0,VE1
+      - S1612860879.843664,VS0,VE0
       X-XSS-Protection:
       - 1; mode=block
     status:
@@ -808,7 +808,7 @@ interactions:
       - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
         like Gecko) Chrome/54.0.2840.87 Safari/537.36
     method: GET
-    uri: https://raw.githubusercontent.com/frictionlessdata/tabulator-py/master/data/special/sheets.xlsx
+    uri: https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/sheets.xlsx
   response:
     body:
       string: !!binary |
@@ -960,11 +960,11 @@ interactions:
       Content-Type:
       - application/octet-stream
       Date:
-      - Mon, 08 Feb 2021 12:22:18 GMT
+      - Tue, 09 Feb 2021 08:54:39 GMT
       ETag:
       - W/"aef2f5e64be1a4bcf25aa8f03e5fccb74795daf744cd3c0802e0f58438d3cab2"
       Expires:
-      - Mon, 08 Feb 2021 12:27:18 GMT
+      - Tue, 09 Feb 2021 08:59:39 GMT
       Source-Age:
       - '4'
       Strict-Transport-Security:
@@ -980,15 +980,15 @@ interactions:
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 94beeb1d145b8b9fd6131b1a4bfa1fcfae24ea02
+      - 34000a5b3654d1e78fbfa46715cf146b91c8a4c8
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 6966:1603:13E70EF:1508A10:60212CF6
+      - CC80:E686:302A30:3325C2:60224DCB
       X-Served-By:
-      - cache-fra19149-FRA
+      - cache-fra19171-FRA
       X-Timer:
-      - S1612786939.845747,VS0,VE1
+      - S1612860880.876089,VS0,VE1
       X-XSS-Protection:
       - 1; mode=block
     status:
@@ -1007,7 +1007,7 @@ interactions:
       - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
         like Gecko) Chrome/54.0.2840.87 Safari/537.36
     method: GET
-    uri: https://raw.githubusercontent.com/frictionlessdata/tabulator-py/master/data/special/sheets.xlsx
+    uri: https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/sheets.xlsx
   response:
     body:
       string: !!binary |
@@ -1159,11 +1159,11 @@ interactions:
       Content-Type:
       - application/octet-stream
       Date:
-      - Mon, 08 Feb 2021 12:22:19 GMT
+      - Tue, 09 Feb 2021 08:54:40 GMT
       ETag:
       - W/"aef2f5e64be1a4bcf25aa8f03e5fccb74795daf744cd3c0802e0f58438d3cab2"
       Expires:
-      - Mon, 08 Feb 2021 12:27:19 GMT
+      - Tue, 09 Feb 2021 08:59:40 GMT
       Source-Age:
       - '5'
       Strict-Transport-Security:
@@ -1179,15 +1179,15 @@ interactions:
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - fe1a6122d111f94adf231ca41f8b3d10a541d100
+      - 9a753a2f15be438f28ce54d749b6a43032b392f7
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 6966:1603:13E70EF:1508A10:60212CF6
+      - CC80:E686:302A30:3325C2:60224DCB
       X-Served-By:
-      - cache-fra19145-FRA
+      - cache-fra19173-FRA
       X-Timer:
-      - S1612786940.811590,VS0,VE1
+      - S1612860881.846764,VS0,VE1
       X-XSS-Protection:
       - 1; mode=block
     status:

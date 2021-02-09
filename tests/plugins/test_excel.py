@@ -5,7 +5,7 @@ from datetime import datetime
 from frictionless import Resource, Layout, Detector, FrictionlessException, helpers
 from frictionless.plugins.excel import ExcelDialect
 
-BASE_URL = "https://raw.githubusercontent.com/frictionlessdata/tabulator-py/master/%s"
+BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
 
 
 # Parser
@@ -23,7 +23,7 @@ def test_xlsx_parser_table():
 
 @pytest.mark.vcr
 def test_xlsx_parser_remote():
-    source = BASE_URL % "data/table.xlsx"
+    source = BASEURL % "data/table.xlsx"
     with Resource(source) as resource:
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
@@ -171,7 +171,7 @@ def test_xlsx_parser_preserve_formatting_number_multicode():
 
 @pytest.mark.vcr
 def test_xlsx_parser_workbook_cache():
-    source = BASE_URL % "data/special/sheets.xlsx"
+    source = BASEURL % "data/sheets.xlsx"
     for sheet in ["Sheet1", "Sheet2", "Sheet3"]:
         dialect = ExcelDialect(sheet=sheet, workbook_cache={})
         with Resource(source, dialect=dialect) as resource:
@@ -190,7 +190,7 @@ def test_xls_parser():
 
 @pytest.mark.vcr
 def test_xls_parser_remote():
-    with Resource(BASE_URL % "data/table.xls") as resource:
+    with Resource(BASEURL % "data/table.xls") as resource:
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},

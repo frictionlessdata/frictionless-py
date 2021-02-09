@@ -9,9 +9,9 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.25.0
+      - python-requests/2.25.1
     method: GET
-    uri: https://raw.githubusercontent.com/frictionlessdata/datapackage-py/master/data/table-lists.json
+    uri: https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/table-lists.json
   response:
     body:
       string: '404: Not Found'
@@ -29,9 +29,9 @@ interactions:
       Content-Type:
       - text/plain; charset=utf-8
       Date:
-      - Sat, 12 Dec 2020 12:30:59 GMT
+      - Tue, 09 Feb 2021 08:49:49 GMT
       Expires:
-      - Sat, 12 Dec 2020 12:35:59 GMT
+      - Tue, 09 Feb 2021 08:54:49 GMT
       Source-Age:
       - '0'
       Strict-Transport-Security:
@@ -39,23 +39,23 @@ interactions:
       Vary:
       - Authorization,Accept-Encoding
       Via:
-      - 1.1 varnish (Varnish/6.0), 1.1 varnish
+      - 1.1 varnish
       X-Cache:
-      - MISS, MISS
+      - MISS
       X-Cache-Hits:
-      - 0, 0
+      - '0'
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - b60c17f417b9ec3bd38716c2fd8070a3e6ab1fc3
+      - 5eab5d393d12c723735b997afd6f31ac1f85db73
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 2E8C:CA98:2EC4B7:315ED3:5FD4B802
+      - F35E:0ED9:2FA384:329216:60224CAD
       X-Served-By:
-      - cache-bma1640-BMA
+      - cache-fra19120-FRA
       X-Timer:
-      - S1607776259.156908,VS0,VE173
+      - S1612860590.853872,VS0,VE130
       X-XSS-Protection:
       - 1; mode=block
     status:

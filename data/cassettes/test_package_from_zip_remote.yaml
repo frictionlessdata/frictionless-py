@@ -12,7 +12,7 @@ interactions:
       - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
         like Gecko) Chrome/54.0.2840.87 Safari/537.36
     method: GET
-    uri: https://raw.githubusercontent.com/frictionlessdata/datapackage-py/master/data/package.zip
+    uri: https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/package.zip
   response:
     body:
       string: !!binary |
@@ -49,11 +49,11 @@ interactions:
       Content-Type:
       - application/zip
       Date:
-      - Mon, 08 Feb 2021 14:11:46 GMT
+      - Tue, 09 Feb 2021 08:49:51 GMT
       ETag:
       - W/"80bc02060313f0614c746350412affbfc9893846d1b21f6d69b3cffc284ef5a8"
       Expires:
-      - Mon, 08 Feb 2021 14:16:46 GMT
+      - Tue, 09 Feb 2021 08:54:51 GMT
       Source-Age:
       - '0'
       Strict-Transport-Security:
@@ -69,15 +69,15 @@ interactions:
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 355bba65371a4474d94ad2634651e43be7b7acaa
+      - 26df6def07f22f87ca0dde9ad3f14d80575fbce4
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - BE58:285B:DFEEAA:ECBC81:602146A1
+      - 8A2A:E19C:1B940E:1D5BF2:60224CAB
       X-Served-By:
-      - cache-fra19164-FRA
+      - cache-fra19130-FRA
       X-Timer:
-      - S1612793506.815037,VS0,VE192
+      - S1612860591.850921,VS0,VE177
       X-XSS-Protection:
       - 1; mode=block
     status:
@@ -96,7 +96,7 @@ interactions:
       - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
         like Gecko) Chrome/54.0.2840.87 Safari/537.36
     method: GET
-    uri: https://raw.githubusercontent.com/frictionlessdata/datapackage-py/master/data/package.zip
+    uri: https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/package.zip
   response:
     body:
       string: !!binary |
@@ -133,11 +133,11 @@ interactions:
       Content-Type:
       - application/zip
       Date:
-      - Mon, 08 Feb 2021 14:11:46 GMT
+      - Tue, 09 Feb 2021 08:49:51 GMT
       ETag:
       - W/"80bc02060313f0614c746350412affbfc9893846d1b21f6d69b3cffc284ef5a8"
       Expires:
-      - Mon, 08 Feb 2021 14:16:46 GMT
+      - Tue, 09 Feb 2021 08:54:51 GMT
       Source-Age:
       - '1'
       Strict-Transport-Security:
@@ -153,15 +153,15 @@ interactions:
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 31e03ec792bc71198254f7ea8e75c74485900191
+      - cb907c019a64a229494ccfd851169d9afc35cc76
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - BE58:285B:DFEEAA:ECBC81:602146A1
+      - 8A2A:E19C:1B940E:1D5BF2:60224CAB
       X-Served-By:
-      - cache-fra19148-FRA
+      - cache-fra19182-FRA
       X-Timer:
-      - S1612793507.807202,VS0,VE1
+      - S1612860592.850838,VS0,VE1
       X-XSS-Protection:
       - 1; mode=block
     status:

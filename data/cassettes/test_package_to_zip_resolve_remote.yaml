@@ -12,7 +12,7 @@ interactions:
       - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
         like Gecko) Chrome/54.0.2840.87 Safari/537.36
     method: GET
-    uri: https://raw.githubusercontent.com/frictionlessdata/datapackage-py/master/data/table.csv
+    uri: https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/table.csv
   response:
     body:
       string: !!binary |
@@ -35,35 +35,35 @@ interactions:
       Content-Type:
       - text/plain; charset=utf-8
       Date:
-      - Tue, 09 Feb 2021 07:50:36 GMT
+      - Tue, 09 Feb 2021 08:49:52 GMT
       ETag:
       - W/"0172a2fd99319bed82fe7cccbd7a44b27a77f7200caf0d04b7f23cbb6b81026d"
       Expires:
-      - Tue, 09 Feb 2021 07:55:36 GMT
+      - Tue, 09 Feb 2021 08:54:52 GMT
       Source-Age:
       - '0'
       Strict-Transport-Security:
       - max-age=31536000
       Vary:
-      - Authorization,Accept-Encoding
+      - Authorization,Accept-Encoding, Accept-Encoding
       Via:
       - 1.1 varnish
       X-Cache:
-      - MISS
+      - HIT
       X-Cache-Hits:
-      - '0'
+      - '1'
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 8682e90b24d5e8cf0c6a2fad7b21d213aef11257
+      - 4a927f2590382101221559ca6abb3acc936ce719
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 55FC:F79A:317635:347E5B:60223ECB
+      - D380:D1E8:3124FA:3429BD:602249E6
       X-Served-By:
-      - cache-fra19125-FRA
+      - cache-fra19121-FRA
       X-Timer:
-      - S1612857036.842908,VS0,VE171
+      - S1612860593.841688,VS0,VE144
       X-XSS-Protection:
       - 1; mode=block
     status:
@@ -82,7 +82,7 @@ interactions:
       - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
         like Gecko) Chrome/54.0.2840.87 Safari/537.36
     method: GET
-    uri: https://raw.githubusercontent.com/frictionlessdata/datapackage-py/master/data/table.csv
+    uri: https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/table.csv
   response:
     body:
       string: !!binary |
@@ -105,17 +105,17 @@ interactions:
       Content-Type:
       - text/plain; charset=utf-8
       Date:
-      - Tue, 09 Feb 2021 07:50:36 GMT
+      - Tue, 09 Feb 2021 08:49:53 GMT
       ETag:
       - W/"0172a2fd99319bed82fe7cccbd7a44b27a77f7200caf0d04b7f23cbb6b81026d"
       Expires:
-      - Tue, 09 Feb 2021 07:55:36 GMT
+      - Tue, 09 Feb 2021 08:54:53 GMT
       Source-Age:
       - '1'
       Strict-Transport-Security:
       - max-age=31536000
       Vary:
-      - Authorization,Accept-Encoding
+      - Authorization,Accept-Encoding, Accept-Encoding
       Via:
       - 1.1 varnish
       X-Cache:
@@ -125,15 +125,15 @@ interactions:
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - e5d4d420998000f016b16c2e1b35448aef8fe7d5
+      - d16f03d198396f73f7ef0d1d952a7de3c6b63019
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 55FC:F79A:317635:347E5B:60223ECB
+      - D380:D1E8:3124FA:3429BD:602249E6
       X-Served-By:
-      - cache-fra19132-FRA
+      - cache-fra19178-FRA
       X-Timer:
-      - S1612857037.866927,VS0,VE1
+      - S1612860594.853233,VS0,VE0
       X-XSS-Protection:
       - 1; mode=block
     status:

@@ -5,7 +5,7 @@ from frictionless import Resource, validate, helpers
 from frictionless import FrictionlessException
 
 
-BASE_URL = "https://raw.githubusercontent.com/frictionlessdata/datapackage-py/master/%s"
+BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
 
 
 # Loader
@@ -51,11 +51,11 @@ def test_multipart_loader_resource():
 def test_multipart_loader_resource_remote():
     descriptor = {
         "name": "name",
-        "path": ["chunk2.csv", "chunk3.csv"],
+        "path": ["chunk2.headless.csv", "chunk3.csv"],
         "layout": {"header": False},
-        "schema": "resource_schema.json",
+        "schema": "schema.json",
     }
-    resource = Resource(descriptor, basepath=BASE_URL % "data")
+    resource = Resource(descriptor, basepath=BASEURL % "data")
     assert resource.memory is False
     assert resource.multipart is True
     assert resource.tabular is True
@@ -70,11 +70,11 @@ def test_multipart_loader_resource_remote():
 def test_multipart_loader_resource_remote_both_path_and_basepath():
     descriptor = {
         "name": "name",
-        "path": ["chunk2.csv", BASE_URL % "data/chunk3.csv"],
+        "path": ["chunk2.headless.csv", BASEURL % "data/chunk3.csv"],
         "layout": {"header": False},
-        "schema": "resource_schema.json",
+        "schema": "schema.json",
     }
-    resource = Resource(descriptor, basepath=BASE_URL % "data")
+    resource = Resource(descriptor, basepath=BASEURL % "data")
     assert resource.memory is False
     assert resource.multipart is True
     assert resource.tabular is True

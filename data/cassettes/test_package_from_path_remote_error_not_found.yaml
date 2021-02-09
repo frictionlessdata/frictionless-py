@@ -9,9 +9,9 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.25.0
+      - python-requests/2.25.1
     method: GET
-    uri: https://raw.githubusercontent.com/frictionlessdata/datapackage-py/master/data/bad.json
+    uri: https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/bad.json
   response:
     body:
       string: '404: Not Found'
@@ -29,9 +29,9 @@ interactions:
       Content-Type:
       - text/plain; charset=utf-8
       Date:
-      - Sat, 12 Dec 2020 12:30:58 GMT
+      - Tue, 09 Feb 2021 08:49:47 GMT
       Expires:
-      - Sat, 12 Dec 2020 12:35:58 GMT
+      - Tue, 09 Feb 2021 08:54:47 GMT
       Source-Age:
       - '0'
       Strict-Transport-Security:
@@ -39,23 +39,23 @@ interactions:
       Vary:
       - Authorization,Accept-Encoding
       Via:
-      - 1.1 varnish (Varnish/6.0), 1.1 varnish
+      - 1.1 varnish
       X-Cache:
-      - MISS, MISS
+      - MISS
       X-Cache-Hits:
-      - 0, 0
+      - '0'
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 4928ee8eab4275579bfb7092a51539aecb6ea807
+      - 0b165ffa38561daf3f6d9d351bc42a8c84e501c0
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - D9AE:DE70:2B03AB:2D63A3:5FD4B7FE
+      - 6FD8:5722:C9072:D7B9D:60224CA9
       X-Served-By:
-      - cache-bma1643-BMA
+      - cache-fra19128-FRA
       X-Timer:
-      - S1607776258.088994,VS0,VE451
+      - S1612860588.857488,VS0,VE129
       X-XSS-Protection:
       - 1; mode=block
     status:

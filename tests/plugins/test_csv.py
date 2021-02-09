@@ -2,7 +2,7 @@ import pytest
 from frictionless import Resource, Layout, Detector, helpers
 from frictionless.plugins.csv import CsvDialect
 
-BASE_URL = "https://raw.githubusercontent.com/okfn/tabulator-py/master/%s"
+BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
 
 
 # Parser
@@ -106,7 +106,7 @@ def test_csv_parser_buffer():
 
 @pytest.mark.vcr
 def test_csv_parser_remote():
-    with Resource(BASE_URL % "data/table.csv") as resource:
+    with Resource(BASEURL % "data/table.csv") as resource:
         assert resource.header == ["id", "name"]
         assert resource.read_rows() == [
             {"id": 1, "name": "english"},
