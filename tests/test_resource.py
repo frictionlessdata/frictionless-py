@@ -102,7 +102,7 @@ def test_resource_from_path_remote_error_bad_path():
     assert error.note.count("bad.json")
 
 
-@pytest.mark.xfail(reason='ValueError: read length must be positive (Python 3.6)')
+@pytest.mark.xfail(reason="ValueError: read length must be positive (Python 3.6)")
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_source_non_tabular():
     path = "data/text.txt"
