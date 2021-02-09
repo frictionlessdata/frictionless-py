@@ -2380,35 +2380,6 @@ def test_resource_integrity_foreign_keys_invalid():
     assert rows[4].to_dict() == {"id": 5, "cat": 6, "name": "Rome"}
 
 
-def test_resource_integrity_lookup():
-    with Resource(DESCRIPTOR_FK) as resource:
-        assert resource.lookup == {"": {("id",): {(1,), (2,), (3,), (4,)}}}
-
-
-@pytest.mark.skip
-def test_resource_schema_lookup_foreign_keys():
-    source = [["name"], [1], [2], [3]]
-    lookup = {"other": {("name",): {(1,), (2,), (3,)}}}
-    fk = {"fields": ["name"], "reference": {"fields": ["name"], "resource": "other"}}
-    with Resource(source, lookup=lookup, schema_patch={"foreignKeys": [fk]}) as resource:
-        for row in resource:
-            assert row.valid
-
-
-@pytest.mark.skip
-def test_resource_schema_lookup_foreign_keys_error():
-    source = [["name"], [1], [2], [4]]
-    lookup = {"other": {("name",): {(1,), (2,), (3,)}}}
-    fk = {"fields": ["name"], "reference": {"fields": ["name"], "resource": "other"}}
-    with Resource(source, lookup=lookup, schema_patch={"foreignKeys": [fk]}) as resource:
-        for row in resource:
-            if row.row_number == 3:
-                assert row.valid is False
-                assert row.errors[0].code == "foreign-key-error"
-                continue
-            assert row.valid
-
-
 # Stats
 
 

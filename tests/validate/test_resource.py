@@ -662,47 +662,6 @@ def test_validate_infer_names():
 # Integrity
 
 
-@pytest.mark.skip
-def test_validate_foreign_key_error():
-    source = {
-        "path": "data/table.csv",
-        "schema": {
-            "fields": [
-                {"name": "id", "type": "integer"},
-                {"name": "name", "type": "string"},
-            ],
-            "foreignKeys": [
-                {"fields": "id", "reference": {"resource": "ids", "fields": "id"}}
-            ],
-        },
-    }
-    lookup = {"ids": {("id",): set([(1,), (2,)])}}
-    report = validate(source, lookup=lookup)
-    assert report.valid
-
-
-# TODO: merge
-@pytest.mark.skip
-def test_validate_foreign_key_error_invalid():
-    source = {
-        "path": "data/table.csv",
-        "schema": {
-            "fields": [
-                {"name": "id", "type": "integer"},
-                {"name": "name", "type": "string"},
-            ],
-            "foreignKeys": [
-                {"fields": "id", "reference": {"resource": "ids", "fields": "id"}}
-            ],
-        },
-    }
-    lookup = {"ids": {("id",): set([(1,)])}}
-    report = validate(source, lookup=lookup)
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [3, None, "foreign-key-error"],
-    ]
-
-
 def test_validate_foreign_key_error_self_referencing():
     source = {
         "path": "data/nested.csv",
@@ -815,40 +774,6 @@ def test_validate_primary_key_error_composite():
         [5, None, "primary-key-error"],
         [6, None, "blank-row"],
         [6, None, "primary-key-error"],
-    ]
-
-
-@pytest.mark.skip
-def test_validate_foreign_key_error_copy():
-    schema = {
-        "fields": [
-            {"name": "id", "type": "integer"},
-            {"name": "name", "type": "string"},
-        ],
-        "foreignKeys": [
-            {"fields": "id", "reference": {"resource": "ids", "fields": "id"}}
-        ],
-    }
-    lookup = {"ids": {("id",): set([(1,), (2,)])}}
-    report = validate("data/table.csv", schema=schema, lookup=lookup)
-    assert report.valid
-
-
-@pytest.mark.skip
-def test_validate_foreign_key_error_invalid_copy():
-    schema = {
-        "fields": [
-            {"name": "id", "type": "integer"},
-            {"name": "name", "type": "string"},
-        ],
-        "foreignKeys": [
-            {"fields": "id", "reference": {"resource": "ids", "fields": "id"}}
-        ],
-    }
-    lookup = {"ids": {("id",): set([(1,)])}}
-    report = validate("data/table.csv", schema=schema, lookup=lookup)
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [3, None, "foreign-key-error"],
     ]
 
 

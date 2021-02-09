@@ -549,14 +549,6 @@ class Resource(Metadata):
         """
         return self.__header
 
-    @property
-    def lookup(self):
-        """
-        Returns:
-            any?: table lookup
-        """
-        return self.__lookup
-
     @Metadata.property(cache=False, write=False)
     def basepath(self):
         """

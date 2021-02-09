@@ -943,14 +943,6 @@ def test_package_integrity_foreign_key_multifield_invalid():
     assert rows[2].errors[0].code == "foreign-key-error"
 
 
-def test_package_integrity_lookup():
-    package = Package(DESCRIPTOR_FK)
-    with package.get_resource("main") as resource:
-        assert resource.lookup == {
-            "people": {("firstname",): {("Walter",), ("Alex",), ("John",)}}
-        }
-
-
 # Issues
 
 
