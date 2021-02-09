@@ -63,9 +63,15 @@ def test_validate_package_from_zip_invalid():
     ]
 
 
+@pytest.mark.xfail
 def test_validate_package_with_non_tabular():
     report = validate(
-        {"resources": [{"path": "data/table.csv"}, {"path": "data/file.txt"}]},
+        {
+            "resources": [
+                {"path": "data/table.csv"},
+                {"path": "data/file.txt"},
+            ]
+        },
     )
     assert report.valid
 
@@ -207,7 +213,6 @@ def test_validate_package_schema_foreign_key_self_referenced_resource_violation(
     ]
 
 
-@pytest.mark.xfail(reason="integrity")
 def test_validate_package_schema_foreign_key_internal_resource_violation():
     descriptor = deepcopy(DESCRIPTOR_FK)
     del descriptor["resources"][1]["data"][4]
@@ -217,7 +222,6 @@ def test_validate_package_schema_foreign_key_internal_resource_violation():
     ]
 
 
-@pytest.mark.xfail(reason="integrity")
 def test_validate_package_schema_foreign_key_internal_resource_violation_non_existent():
     descriptor = deepcopy(DESCRIPTOR_FK)
     descriptor["resources"][1]["data"] = [["label", "population"], [10, 10]]
@@ -382,7 +386,6 @@ def test_validate_package_composite_primary_key_unique_issue_215():
     assert report.valid
 
 
-@pytest.mark.xfail(reason="integrity")
 def test_validate_package_composite_primary_key_not_unique_issue_215():
     descriptor = {
         "resources": [
