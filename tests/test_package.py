@@ -448,9 +448,7 @@ def test_package_infer_multiple_paths():
     assert package.resources[1].path == "data2.csv"
 
 
-# TODO: review is there is an encoding detection regression (!!!)
-# TODO: enable when loader.buffer is implemented
-@pytest.mark.skip
+@pytest.mark.xfail(reason="encoding")
 def test_package_infer_non_utf8_file():
     package = Package("data/table-with-accents.csv")
     package.infer()
