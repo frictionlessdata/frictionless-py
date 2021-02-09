@@ -114,7 +114,7 @@ def test_step_table_diff():
     ]
 
 
-@pytest.mark.skip
+@pytest.mark.xfail
 def test_step_table_diff_with_ignore_order():
     source = Resource(path="data/transform.csv")
     source.infer()
@@ -393,7 +393,7 @@ def test_step_table_join_mode_cross():
     ]
 
 
-@pytest.mark.skip
+@pytest.mark.xfail
 def test_step_table_join_mode_negate():
     source = Resource(path="data/transform.csv")
     target = transform(
@@ -527,7 +527,6 @@ def test_step_table_melt_with_to_field_names():
 
 
 def test_step_table_merge():
-    # TODO: renamed population header to people
     source = Resource(path="data/transform.csv")
     target = transform(
         source,
@@ -633,7 +632,6 @@ def test_step_table_merge_with_sort():
 # Pivot
 
 
-# TODO: we need to infer schema in the processor
 @pytest.mark.xfail
 def test_step_table_pivot():
     source = Resource(path="data/transform-pivot.csv")
@@ -685,9 +683,6 @@ def test_step_table_recast():
 # Transpose
 
 
-# TODO:
-# We need to infer schema in the processor
-# We might merge this logic with transform.DataWithErrorHandling
 @pytest.mark.xfail
 def test_step_table_transpose():
     source = Resource(path="data/transform.csv")
