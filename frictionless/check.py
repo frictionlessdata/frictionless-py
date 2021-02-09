@@ -58,11 +58,6 @@ class Check(Metadata):
         yield from []
 
     def validate_source(self):
-        """Called to validate the given source
-
-        Yields:
-            Error: found errors
-        """
         yield from []
 
     def validate_schema(self):
@@ -102,11 +97,6 @@ class Check(Metadata):
         yield from []
 
     def validate_table(self):
-        """Called to validate the table (after no rows left)
-
-        Yields:
-            Error: found errors
-        """
         yield from []
 
     # Metadata
