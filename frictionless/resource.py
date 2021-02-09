@@ -1087,6 +1087,14 @@ class Resource(Metadata):
             **options,
         )
 
+    def to_snapshot(self):
+        snap = []
+        with helpers.ensure_open(self):
+            snap.append(self.header.to_list())
+            for row in self.row_stream:
+                snap.append(row.to_list())
+        return snap
+
     def to_inline(self, *, dialect=None):
         """Helper to export resource as an inline data"""
         target = self.write(Resource(format="inline", dialect=dialect))
