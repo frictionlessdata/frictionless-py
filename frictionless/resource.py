@@ -123,9 +123,6 @@ class Resource(Metadata):
             if there are path traversing or the path is absolute.
             A path provided as `source` or `path` is alway trusted.
 
-        nolookup? (bool): Don't create a lookup table.
-            A lookup table can be required by foreign keys.
-
         package? (Package): A owning this resource package.
             It's actual if the resource is part of some data package.
 
@@ -164,7 +161,6 @@ class Resource(Metadata):
         detector=None,
         onerror="ignore",
         trusted=False,
-        nolookup=False,
         package=None,
     ):
 
@@ -209,7 +205,6 @@ class Resource(Metadata):
         self.__detector = detector or Detector()
         self.__onerror = onerror
         self.__trusted = trusted
-        self.__nolookup = nolookup
         self.__package = package
 
         # Set specs
@@ -760,8 +755,7 @@ class Resource(Metadata):
                 self.__parser.open()
                 self.__read_detect_layout()
                 self.__read_detect_schema()
-                if not self.__nolookup:
-                    self.__lookup = self.__read_detect_lookup()
+                self.__read_detect_lookup()
                 self.__header = self.__read_header()
                 self.__row_stream = self.__read_row_stream()
                 return self
@@ -1060,7 +1054,8 @@ class Resource(Metadata):
                     raise FrictionlessException(errors.ResourceError(note=note))
                 source_res = self.__package.get_resource(source_name)
             else:
-                source_res = self.to_copy(nolookup=True)
+                source_res = self.to_copy()
+            source_res.schema.pop("foreignKeys", None)
             lookup.setdefault(source_name, {})
             if source_key in lookup[source_name]:
                 continue
@@ -1073,7 +1068,7 @@ class Resource(Metadata):
                     if set(cells) == {None}:
                         continue
                     lookup[source_name][source_key].add(cells)
-        return lookup
+        self.__lookup = lookup
 
     # Write
 

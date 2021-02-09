@@ -7,7 +7,7 @@ from .inquiry import validate_inquiry
 
 
 @Report.from_validate
-def validate_package(source, noinfer=False, nolookup=False, parallel=False, **options):
+def validate_package(source, noinfer=False, parallel=False, **options):
     """Validate package
 
     API      | Usage
@@ -19,7 +19,6 @@ def validate_package(source, noinfer=False, nolookup=False, parallel=False, **op
         basepath? (str): package basepath
         trusted? (bool): don't raise an exception on unsafe paths
         noinfer? (bool): don't call `package.infer`
-        nolookup? (bool): don't read lookup tables skipping integrity checks
         parallel? (bool): enable multiprocessing
         **options (dict): Package constructor options
 
