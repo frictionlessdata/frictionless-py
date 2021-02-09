@@ -57,6 +57,8 @@ def validate_package(source, original=False, parallel=False, **options):
                 )
             )
 
+    print(inquiry)
+
     # Validate inquiry
     report = validate_inquiry(inquiry, parallel=parallel)
 
