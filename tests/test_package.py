@@ -590,7 +590,7 @@ def test_package_to_zip_resolve_memory(tmpdir):
     ]
 
 
-@pytest.mark.xfail(reason="remote/network")
+@pytest.mark.xfail
 @pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_package_to_zip_resolve_memory_sql(tmpdir, database_url):

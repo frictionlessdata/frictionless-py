@@ -599,26 +599,14 @@ class Resource(Metadata):
 
     @Metadata.property(write=False)
     def memory(self):
-        """
-        Returns
-            bool: if resource is memory
-        """
         return self.__file.memory
 
     @Metadata.property(write=False)
     def remote(self):
-        """
-        Returns
-            bool: if resource is remote
-        """
         return self.__file.remote
 
     @Metadata.property(write=False)
     def multipart(self):
-        """
-        Returns
-            bool: if resource is multipart
-        """
         return self.__file.multipart
 
     @Metadata.property(write=False)
