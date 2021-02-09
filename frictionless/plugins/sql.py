@@ -151,7 +151,7 @@ class SqlParser(Parser):
         source = resource
         target = self.resource
         if not target.dialect.table:
-            note = f'Please provide "dialect.table" for writing'
+            note = 'Please provide "dialect.table" for writing'
             raise FrictionlessException(errors.StorageError(note=note))
         source.name = target.dialect.table
         storage = SqlStorage(target.fullpath, dialect=target.dialect)

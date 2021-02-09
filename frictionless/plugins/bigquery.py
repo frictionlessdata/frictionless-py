@@ -155,7 +155,7 @@ class BigqueryParser(Parser):
         target = self.resource
         storage = BigqueryStorage(self.resource.data, dialect=target.dialect)
         if not target.dialect.table:
-            note = f'Please provide "dialect.table" for writing'
+            note = 'Please provide "dialect.table" for writing'
             raise FrictionlessException(errors.StorageError(note=note))
         source.name = target.dialect.table
         storage.write_resource(source, force=True)

@@ -1,7 +1,7 @@
 from ..package import Package
 
 
-def describe_package(source, *, expand=False, nostats=False, **options):
+def describe_package(source, *, expand=False, stats=False, **options):
     """Describe the given source as a package
 
     API      | Usage
@@ -11,7 +11,7 @@ def describe_package(source, *, expand=False, nostats=False, **options):
     Parameters:
         source (any): data source
         expand? (bool): if `True` it will expand the metadata
-        nostats? (bool): if `True` it not infer resource's stats
+        stats? (bool): if `True` infer resource's stats
         **options (dict): Package constructor options
 
     Returns:
@@ -19,7 +19,10 @@ def describe_package(source, *, expand=False, nostats=False, **options):
 
     """
     package = Package(source, **options)
-    package.infer(stats=not nostats)
+    package.infer(stats=stats)
     if expand:
         package.expand()
+    if not stats:
+        for resource in package.resources:
+            resource.pop("stats")
     return package

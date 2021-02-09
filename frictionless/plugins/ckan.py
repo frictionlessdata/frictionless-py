@@ -123,7 +123,7 @@ class CkanParser(Parser):
         target = self.resource
         storage = CkanStorage(target.fullpath, dialect=target.dialect)
         if not target.dialect.resource:
-            note = f'Please provide "dialect.resource" for writing'
+            note = 'Please provide "dialect.resource" for writing'
             raise FrictionlessException(errors.StorageError(note=note))
         source.name = target.dialect.resource
         storage.write_resource(source, force=True)

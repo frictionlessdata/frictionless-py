@@ -26,6 +26,47 @@ def test_describe_package():
                         {"name": "name", "type": "string"},
                     ]
                 },
+            },
+            {
+                "path": "data/chunk2.csv",
+                "profile": "tabular-data-resource",
+                "name": "chunk2",
+                "scheme": "file",
+                "format": "csv",
+                "hashing": "md5",
+                "encoding": "utf-8",
+                "schema": {
+                    "fields": [
+                        {"name": "id", "type": "integer"},
+                        {"name": "name", "type": "string"},
+                    ]
+                },
+            },
+        ],
+    }
+
+
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
+def test_describe_package_with_stats():
+    package = describe("data/chunk*.csv", stats=True)
+    assert package.metadata_valid
+    assert package == {
+        "profile": "data-package",
+        "resources": [
+            {
+                "path": "data/chunk1.csv",
+                "profile": "tabular-data-resource",
+                "name": "chunk1",
+                "scheme": "file",
+                "format": "csv",
+                "hashing": "md5",
+                "encoding": "utf-8",
+                "schema": {
+                    "fields": [
+                        {"name": "id", "type": "integer"},
+                        {"name": "name", "type": "string"},
+                    ]
+                },
                 "stats": {
                     "hash": "8fff9d97e5c0cb77b7c469ec37c8e766",
                     "bytes": 18,
@@ -68,7 +109,7 @@ def test_describe_package_basepath():
 
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_describe_package_hashing():
-    package = describe("data/chunk*.csv", hashing="sha256")
+    package = describe("data/chunk*.csv", hashing="sha256", stats=True)
     assert package.get_resource("chunk1").hashing == "sha256"
     assert package.get_resource("chunk2").hashing == "sha256"
     assert (

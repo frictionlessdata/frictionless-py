@@ -12,7 +12,7 @@ runner = CliRunner()
 
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_describe():
-    result = runner.invoke(program, "describe data/table.csv")
+    result = runner.invoke(program, "describe data/table.csv --stats")
     assert result.exit_code == 0
     assert result.stdout.count("metadata: data/table.csv")
     assert result.stdout.count("hash: 6c2c61dd9b0e9c6876139a449ed87933")

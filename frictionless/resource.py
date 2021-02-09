@@ -20,6 +20,11 @@ from . import errors
 from . import config
 
 
+# NOTE:
+# Consider making resource.stats unavailable until it's fully calculated
+# Also, review the situation with describe function removing stats (move to infer?)
+
+
 class Resource(Metadata):
     """Resource representation.
 
