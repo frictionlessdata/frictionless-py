@@ -301,6 +301,252 @@ def test_package_resources_respect_layout_set_after_creation_issue_503():
     assert resource.header == ["id", "name"]
 
 
+# Compression
+
+
+def test_package_compression_implicit_gz():
+    package = Package("data/compression/datapackage.json")
+    resource = package.get_resource("implicit-gz")
+    assert resource.read_rows() == [
+        {"id": 1, "name": "english"},
+        {"id": 2, "name": "中国人"},
+    ]
+
+
+def test_package_compression_implicit_zip():
+    package = Package("data/compression/datapackage.json")
+    resource = package.get_resource("implicit-zip")
+    assert resource.read_rows() == [
+        {"id": 1, "name": "english"},
+        {"id": 2, "name": "中国人"},
+    ]
+
+
+def test_package_compression_explicit_gz():
+    package = Package("data/compression/datapackage.json")
+    resource = package.get_resource("explicit-gz")
+    assert resource.read_rows() == [
+        {"id": 1, "name": "english"},
+        {"id": 2, "name": "中国人"},
+    ]
+
+
+def test_package_compression_explicit_zip():
+    package = Package("data/compression/datapackage.json")
+    resource = package.get_resource("explicit-zip")
+    assert resource.read_rows() == [
+        {"id": 1, "name": "english"},
+        {"id": 2, "name": "中国人"},
+    ]
+
+
+# Schema
+
+
+DESCRIPTOR_FK = {
+    "resources": [
+        {
+            "name": "main",
+            "data": [
+                ["id", "name", "surname", "parent_id"],
+                ["1", "Alex", "Martin", ""],
+                ["2", "John", "Dockins", "1"],
+                ["3", "Walter", "White", "2"],
+            ],
+            "schema": {
+                "fields": [
+                    {"name": "id"},
+                    {"name": "name"},
+                    {"name": "surname"},
+                    {"name": "parent_id"},
+                ],
+                "foreignKeys": [
+                    {
+                        "fields": "name",
+                        "reference": {"resource": "people", "fields": "firstname"},
+                    },
+                ],
+            },
+        },
+        {
+            "name": "people",
+            "data": [
+                ["firstname", "surname"],
+                ["Alex", "Martin"],
+                ["John", "Dockins"],
+                ["Walter", "White"],
+            ],
+        },
+    ],
+}
+
+
+def test_package_schema_foreign_key():
+    package = Package(DESCRIPTOR_FK)
+    resource = package.get_resource("main")
+    rows = resource.read_rows()
+    assert rows[0].valid
+    assert rows[1].valid
+    assert rows[2].valid
+    assert rows[0].to_dict() == {
+        "id": "1",
+        "name": "Alex",
+        "surname": "Martin",
+        "parent_id": None,
+    }
+    assert rows[1].to_dict() == {
+        "id": "2",
+        "name": "John",
+        "surname": "Dockins",
+        "parent_id": "1",
+    }
+    assert rows[2].to_dict() == {
+        "id": "3",
+        "name": "Walter",
+        "surname": "White",
+        "parent_id": "2",
+    }
+
+
+def test_package_schema_foreign_key_invalid():
+    package = Package(DESCRIPTOR_FK)
+    package.resources[1].data[3][0] = "bad"
+    resource = package.get_resource("main")
+    rows = resource.read_rows()
+    assert rows[0].valid
+    assert rows[1].valid
+    assert rows[2].errors[0].code == "foreign-key-error"
+    assert rows[0].to_dict() == {
+        "id": "1",
+        "name": "Alex",
+        "surname": "Martin",
+        "parent_id": None,
+    }
+    assert rows[1].to_dict() == {
+        "id": "2",
+        "name": "John",
+        "surname": "Dockins",
+        "parent_id": "1",
+    }
+    assert rows[2].to_dict() == {
+        "id": "3",
+        "name": "Walter",
+        "surname": "White",
+        "parent_id": "2",
+    }
+
+
+def test_package_schema_foreign_key_self_reference():
+    package = Package(DESCRIPTOR_FK)
+    package.resources[0].schema.foreign_keys = [
+        {"fields": "parent_id", "reference": {"resource": "", "fields": "id"}}
+    ]
+    resource = package.get_resource("main")
+    rows = resource.read_rows()
+    assert rows[0].valid
+    assert rows[1].valid
+    assert rows[2].valid
+
+
+def test_package_schema_foreign_key_self_reference_invalid():
+    package = Package(DESCRIPTOR_FK)
+    package.resources[0].data[2][0] = "0"
+    package.resources[0].schema.foreign_keys = [
+        {"fields": "parent_id", "reference": {"resource": "", "fields": "id"}}
+    ]
+    resource = package.get_resource("main")
+    rows = resource.read_rows()
+    assert rows[0].valid
+    assert rows[1].valid
+    assert rows[2].errors[0].code == "foreign-key-error"
+
+
+def test_package_schema_foreign_key_multifield():
+    package = Package(DESCRIPTOR_FK)
+    package.resources[0].schema.foreign_keys = [
+        {
+            "fields": ["name", "surname"],
+            "reference": {"resource": "people", "fields": ["firstname", "surname"]},
+        }
+    ]
+    resource = package.get_resource("main")
+    rows = resource.read_rows()
+    assert rows[0].valid
+    assert rows[1].valid
+    assert rows[2].valid
+
+
+def test_package_schema_foreign_key_multifield_invalid():
+    package = Package(DESCRIPTOR_FK)
+    package.resources[0].schema.foreign_keys = [
+        {
+            "fields": ["name", "surname"],
+            "reference": {"resource": "people", "fields": ["firstname", "surname"]},
+        }
+    ]
+    package.resources[1].data[3][0] = "bad"
+    resource = package.get_resource("main")
+    rows = resource.read_rows()
+    assert rows[0].valid
+    assert rows[1].valid
+    assert rows[2].errors[0].code == "foreign-key-error"
+
+
+# Onerror
+
+
+def test_resource_onerror():
+    package = Package(resources=[Resource(path="data/invalid.csv")])
+    resource = package.resources[0]
+    assert package.onerror == "ignore"
+    assert resource.onerror == "ignore"
+    assert resource.read_rows()
+
+
+def test_resource_onerror_header_warn():
+    data = [["name"], [1], [2], [3]]
+    schema = {"fields": [{"name": "bad", "type": "integer"}]}
+    package = Package(resources=[Resource(data=data, schema=schema)], onerror="warn")
+    resource = package.resources[0]
+    assert package.onerror == "warn"
+    assert resource.onerror == "warn"
+    with pytest.warns(UserWarning):
+        resource.read_rows()
+
+
+def test_resource_onerror_header_raise():
+    data = [["name"], [1], [2], [3]]
+    schema = {"fields": [{"name": "bad", "type": "integer"}]}
+    package = Package({"resources": [{"data": data, "schema": schema}]}, onerror="raise")
+    resource = package.resources[0]
+    assert package.onerror == "raise"
+    assert resource.onerror == "raise"
+    with pytest.raises(FrictionlessException):
+        resource.read_rows()
+
+
+def test_resource_onerror_row_warn():
+    data = [["name"], [1], [2], [3]]
+    schema = {"fields": [{"name": "name", "type": "string"}]}
+    package = Package(resources=[Resource(data=data, schema=schema)], onerror="warn")
+    resource = package.resources[0]
+    assert package.onerror == "warn"
+    assert resource.onerror == "warn"
+    with pytest.warns(UserWarning):
+        resource.read_rows()
+
+
+def test_resource_onerror_row_raise():
+    data = [["name"], [1], [2], [3]]
+    schema = {"fields": [{"name": "name", "type": "string"}]}
+    package = Package({"resources": [{"data": data, "schema": schema}]}, onerror="raise")
+    resource = package.resources[0]
+    assert package.onerror == "raise"
+    assert resource.onerror == "raise"
+    with pytest.raises(FrictionlessException):
+        resource.read_rows()
+
+
 # Expand
 
 
@@ -697,249 +943,6 @@ def test_package_to_zip_source_inline(tmpdir):
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
-
-
-# Compression
-
-
-def test_package_compression_implicit_gz():
-    package = Package("data/compression/datapackage.json")
-    resource = package.get_resource("implicit-gz")
-    assert resource.read_rows() == [
-        {"id": 1, "name": "english"},
-        {"id": 2, "name": "中国人"},
-    ]
-
-
-def test_package_compression_implicit_zip():
-    package = Package("data/compression/datapackage.json")
-    resource = package.get_resource("implicit-zip")
-    assert resource.read_rows() == [
-        {"id": 1, "name": "english"},
-        {"id": 2, "name": "中国人"},
-    ]
-
-
-def test_package_compression_explicit_gz():
-    package = Package("data/compression/datapackage.json")
-    resource = package.get_resource("explicit-gz")
-    assert resource.read_rows() == [
-        {"id": 1, "name": "english"},
-        {"id": 2, "name": "中国人"},
-    ]
-
-
-def test_package_compression_explicit_zip():
-    package = Package("data/compression/datapackage.json")
-    resource = package.get_resource("explicit-zip")
-    assert resource.read_rows() == [
-        {"id": 1, "name": "english"},
-        {"id": 2, "name": "中国人"},
-    ]
-
-
-# Integrity
-
-
-def test_resource_integrity_onerror():
-    package = Package(resources=[Resource(path="data/invalid.csv")])
-    resource = package.resources[0]
-    assert package.onerror == "ignore"
-    assert resource.onerror == "ignore"
-    assert resource.read_rows()
-
-
-def test_resource_integrity_onerror_header_warn():
-    data = [["name"], [1], [2], [3]]
-    schema = {"fields": [{"name": "bad", "type": "integer"}]}
-    package = Package(resources=[Resource(data=data, schema=schema)], onerror="warn")
-    resource = package.resources[0]
-    assert package.onerror == "warn"
-    assert resource.onerror == "warn"
-    with pytest.warns(UserWarning):
-        resource.read_rows()
-
-
-def test_resource_integrity_onerror_header_raise():
-    data = [["name"], [1], [2], [3]]
-    schema = {"fields": [{"name": "bad", "type": "integer"}]}
-    package = Package({"resources": [{"data": data, "schema": schema}]}, onerror="raise")
-    resource = package.resources[0]
-    assert package.onerror == "raise"
-    assert resource.onerror == "raise"
-    with pytest.raises(FrictionlessException):
-        resource.read_rows()
-
-
-def test_resource_integrity_onerror_row_warn():
-    data = [["name"], [1], [2], [3]]
-    schema = {"fields": [{"name": "name", "type": "string"}]}
-    package = Package(resources=[Resource(data=data, schema=schema)], onerror="warn")
-    resource = package.resources[0]
-    assert package.onerror == "warn"
-    assert resource.onerror == "warn"
-    with pytest.warns(UserWarning):
-        resource.read_rows()
-
-
-def test_resource_integrity_onerror_row_raise():
-    data = [["name"], [1], [2], [3]]
-    schema = {"fields": [{"name": "name", "type": "string"}]}
-    package = Package({"resources": [{"data": data, "schema": schema}]}, onerror="raise")
-    resource = package.resources[0]
-    assert package.onerror == "raise"
-    assert resource.onerror == "raise"
-    with pytest.raises(FrictionlessException):
-        resource.read_rows()
-
-
-DESCRIPTOR_FK = {
-    "resources": [
-        {
-            "name": "main",
-            "data": [
-                ["id", "name", "surname", "parent_id"],
-                ["1", "Alex", "Martin", ""],
-                ["2", "John", "Dockins", "1"],
-                ["3", "Walter", "White", "2"],
-            ],
-            "schema": {
-                "fields": [
-                    {"name": "id"},
-                    {"name": "name"},
-                    {"name": "surname"},
-                    {"name": "parent_id"},
-                ],
-                "foreignKeys": [
-                    {
-                        "fields": "name",
-                        "reference": {"resource": "people", "fields": "firstname"},
-                    },
-                ],
-            },
-        },
-        {
-            "name": "people",
-            "data": [
-                ["firstname", "surname"],
-                ["Alex", "Martin"],
-                ["John", "Dockins"],
-                ["Walter", "White"],
-            ],
-        },
-    ],
-}
-
-
-def test_package_integrity_foreign_key():
-    package = Package(DESCRIPTOR_FK)
-    resource = package.get_resource("main")
-    rows = resource.read_rows()
-    assert rows[0].valid
-    assert rows[1].valid
-    assert rows[2].valid
-    assert rows[0].to_dict() == {
-        "id": "1",
-        "name": "Alex",
-        "surname": "Martin",
-        "parent_id": None,
-    }
-    assert rows[1].to_dict() == {
-        "id": "2",
-        "name": "John",
-        "surname": "Dockins",
-        "parent_id": "1",
-    }
-    assert rows[2].to_dict() == {
-        "id": "3",
-        "name": "Walter",
-        "surname": "White",
-        "parent_id": "2",
-    }
-
-
-def test_package_integrity_foreign_key_invalid():
-    package = Package(DESCRIPTOR_FK)
-    package.resources[1].data[3][0] = "bad"
-    resource = package.get_resource("main")
-    rows = resource.read_rows()
-    assert rows[0].valid
-    assert rows[1].valid
-    assert rows[2].errors[0].code == "foreign-key-error"
-    assert rows[0].to_dict() == {
-        "id": "1",
-        "name": "Alex",
-        "surname": "Martin",
-        "parent_id": None,
-    }
-    assert rows[1].to_dict() == {
-        "id": "2",
-        "name": "John",
-        "surname": "Dockins",
-        "parent_id": "1",
-    }
-    assert rows[2].to_dict() == {
-        "id": "3",
-        "name": "Walter",
-        "surname": "White",
-        "parent_id": "2",
-    }
-
-
-def test_package_integrity_foreign_key_self_reference():
-    package = Package(DESCRIPTOR_FK)
-    package.resources[0].schema.foreign_keys = [
-        {"fields": "parent_id", "reference": {"resource": "", "fields": "id"}}
-    ]
-    resource = package.get_resource("main")
-    rows = resource.read_rows()
-    assert rows[0].valid
-    assert rows[1].valid
-    assert rows[2].valid
-
-
-def test_package_integrity_foreign_key_self_reference_invalid():
-    package = Package(DESCRIPTOR_FK)
-    package.resources[0].data[2][0] = "0"
-    package.resources[0].schema.foreign_keys = [
-        {"fields": "parent_id", "reference": {"resource": "", "fields": "id"}}
-    ]
-    resource = package.get_resource("main")
-    rows = resource.read_rows()
-    assert rows[0].valid
-    assert rows[1].valid
-    assert rows[2].errors[0].code == "foreign-key-error"
-
-
-def test_package_integrity_foreign_key_multifield():
-    package = Package(DESCRIPTOR_FK)
-    package.resources[0].schema.foreign_keys = [
-        {
-            "fields": ["name", "surname"],
-            "reference": {"resource": "people", "fields": ["firstname", "surname"]},
-        }
-    ]
-    resource = package.get_resource("main")
-    rows = resource.read_rows()
-    assert rows[0].valid
-    assert rows[1].valid
-    assert rows[2].valid
-
-
-def test_package_integrity_foreign_key_multifield_invalid():
-    package = Package(DESCRIPTOR_FK)
-    package.resources[0].schema.foreign_keys = [
-        {
-            "fields": ["name", "surname"],
-            "reference": {"resource": "people", "fields": ["firstname", "surname"]},
-        }
-    ]
-    package.resources[1].data[3][0] = "bad"
-    resource = package.get_resource("main")
-    rows = resource.read_rows()
-    assert rows[0].valid
-    assert rows[1].valid
-    assert rows[2].errors[0].code == "foreign-key-error"
 
 
 # Issues

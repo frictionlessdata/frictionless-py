@@ -148,6 +148,88 @@ def test_validate_package_with_schema_as_string():
     assert report.valid
 
 
+# Schema
+
+
+DESCRIPTOR_FK = {
+    "resources": [
+        {
+            "name": "cities",
+            "data": [
+                ["id", "name", "next_id"],
+                [1, "london", 2],
+                [2, "paris", 3],
+                [3, "rome", 4],
+                [4, "rio", None],
+            ],
+            "schema": {
+                "fields": [
+                    {"name": "id", "type": "integer"},
+                    {"name": "name", "type": "string"},
+                    {"name": "next_id", "type": "integer"},
+                ],
+                "foreignKeys": [
+                    {"fields": "next_id", "reference": {"resource": "", "fields": "id"}},
+                    {
+                        "fields": "id",
+                        "reference": {"resource": "people", "fields": "label"},
+                    },
+                ],
+            },
+        },
+        {
+            "name": "people",
+            "data": [["label", "population"], [1, 8], [2, 2], [3, 3], [4, 6]],
+        },
+    ],
+}
+
+
+def test_validate_package_schema_foreign_key_error():
+    descriptor = deepcopy(DESCRIPTOR_FK)
+    report = validate(descriptor)
+    assert report.valid
+
+
+def test_validate_package_schema_foreign_key_not_defined():
+    descriptor = deepcopy(DESCRIPTOR_FK)
+    del descriptor["resources"][0]["schema"]["foreignKeys"]
+    report = validate(descriptor)
+    assert report.valid
+
+
+def test_validate_package_schema_foreign_key_self_referenced_resource_violation():
+    descriptor = deepcopy(DESCRIPTOR_FK)
+    del descriptor["resources"][0]["data"][4]
+    report = validate(descriptor)
+    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
+        [4, None, "foreign-key-error"],
+    ]
+
+
+@pytest.mark.xfail(reason="integrity")
+def test_validate_package_schema_foreign_key_internal_resource_violation():
+    descriptor = deepcopy(DESCRIPTOR_FK)
+    del descriptor["resources"][1]["data"][4]
+    report = validate(descriptor)
+    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
+        [5, None, "foreign-key-error"],
+    ]
+
+
+@pytest.mark.xfail(reason="integrity")
+def test_validate_package_schema_foreign_key_internal_resource_violation_non_existent():
+    descriptor = deepcopy(DESCRIPTOR_FK)
+    descriptor["resources"][1]["data"] = [["label", "population"], [10, 10]]
+    report = validate(descriptor)
+    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
+        [2, None, "foreign-key-error"],
+        [3, None, "foreign-key-error"],
+        [4, None, "foreign-key-error"],
+        [5, None, "foreign-key-error"],
+    ]
+
+
 # Checksum
 
 DESCRIPTOR_SH = {
@@ -226,88 +308,6 @@ def test_check_file_package_checksum_hash_not_supported_algorithm():
     report = validate(source)
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [None, None, "hashing-error"],
-    ]
-
-
-# Integrity
-
-
-DESCRIPTOR_FK = {
-    "resources": [
-        {
-            "name": "cities",
-            "data": [
-                ["id", "name", "next_id"],
-                [1, "london", 2],
-                [2, "paris", 3],
-                [3, "rome", 4],
-                [4, "rio", None],
-            ],
-            "schema": {
-                "fields": [
-                    {"name": "id", "type": "integer"},
-                    {"name": "name", "type": "string"},
-                    {"name": "next_id", "type": "integer"},
-                ],
-                "foreignKeys": [
-                    {"fields": "next_id", "reference": {"resource": "", "fields": "id"}},
-                    {
-                        "fields": "id",
-                        "reference": {"resource": "people", "fields": "label"},
-                    },
-                ],
-            },
-        },
-        {
-            "name": "people",
-            "data": [["label", "population"], [1, 8], [2, 2], [3, 3], [4, 6]],
-        },
-    ],
-}
-
-
-def test_validate_package_integrity_foreign_key_error():
-    descriptor = deepcopy(DESCRIPTOR_FK)
-    report = validate(descriptor)
-    assert report.valid
-
-
-def test_validate_package_integrity_foreign_key_not_defined():
-    descriptor = deepcopy(DESCRIPTOR_FK)
-    del descriptor["resources"][0]["schema"]["foreignKeys"]
-    report = validate(descriptor)
-    assert report.valid
-
-
-def test_validate_package_integrity_foreign_key_self_referenced_resource_violation():
-    descriptor = deepcopy(DESCRIPTOR_FK)
-    del descriptor["resources"][0]["data"][4]
-    report = validate(descriptor)
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [4, None, "foreign-key-error"],
-    ]
-
-
-@pytest.mark.xfail(reason="integrity")
-def test_validate_package_integrity_foreign_key_internal_resource_violation():
-    descriptor = deepcopy(DESCRIPTOR_FK)
-    del descriptor["resources"][1]["data"][4]
-    report = validate(descriptor)
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [5, None, "foreign-key-error"],
-    ]
-
-
-@pytest.mark.xfail(reason="integrity")
-def test_validate_package_integrity_foreign_key_internal_resource_violation_non_existent():
-    descriptor = deepcopy(DESCRIPTOR_FK)
-    descriptor["resources"][1]["data"] = [["label", "population"], [10, 10]]
-    report = validate(descriptor)
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [2, None, "foreign-key-error"],
-        [3, None, "foreign-key-error"],
-        [4, None, "foreign-key-error"],
-        [5, None, "foreign-key-error"],
     ]
 
 

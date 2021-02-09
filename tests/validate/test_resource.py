@@ -553,115 +553,7 @@ def test_validate_schema_maximum_constraint():
     ]
 
 
-def test_validate_sync_schema():
-    schema = {
-        "fields": [
-            {"name": "id", "type": "integer"},
-            {"name": "name", "type": "string"},
-        ],
-    }
-    detector = Detector(schema_sync=True)
-    report = validate("data/sync-schema.csv", schema=schema, detector=detector)
-    assert report.valid
-    assert report.task.resource.schema == {
-        "fields": [
-            {"name": "name", "type": "string"},
-            {"name": "id", "type": "integer"},
-        ],
-    }
-
-
-def test_validate_sync_schema_invalid():
-    source = [["LastName", "FirstName", "Address"], ["Test", "Tester", "23 Avenue"]]
-    schema = {"fields": [{"name": "id"}, {"name": "FirstName"}, {"name": "LastName"}]}
-    detector = Detector(schema_sync=True)
-    report = validate(source, schema=schema, detector=detector)
-    assert report.valid
-
-
-def test_validate_schema_headers_errors():
-    source = [
-        ["id", "last_name", "first_name", "language"],
-        [1, "Alex", "John", "English"],
-        [2, "Peters", "John", "Afrikaans"],
-        [3, "Smith", "Paul", None],
-    ]
-    schema = {
-        "fields": [
-            {"name": "id", "type": "number"},
-            {"name": "language", "constraints": {"required": True}},
-            {"name": "country"},
-        ]
-    }
-    detector = Detector(schema_sync=True)
-    report = validate(source, schema=schema, detector=detector)
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [4, 4, "constraint-error"],
-    ]
-
-
-def test_validate_patch_schema():
-    detector = Detector(schema_patch={"missingValues": ["-"]})
-    report = validate("data/table.csv", detector=detector)
-    assert report.valid
-    assert report.task.resource.schema == {
-        "fields": [
-            {"name": "id", "type": "integer"},
-            {"name": "name", "type": "string"},
-        ],
-        "missingValues": ["-"],
-    }
-
-
-def test_validate_patch_schema_fields():
-    detector = Detector(
-        schema_patch={"fields": {"id": {"type": "string"}}, "missingValues": ["-"]}
-    )
-    report = validate("data/table.csv", detector=detector)
-    assert report.valid
-    assert report.task.resource.schema == {
-        "fields": [{"name": "id", "type": "string"}, {"name": "name", "type": "string"}],
-        "missingValues": ["-"],
-    }
-
-
-def test_validate_infer_type_string():
-    detector = Detector(field_type="string")
-    report = validate("data/table.csv", detector=detector)
-    assert report.valid
-    assert report.task.resource.schema == {
-        "fields": [{"name": "id", "type": "string"}, {"name": "name", "type": "string"}],
-    }
-
-
-def test_validate_infer_type_any():
-    detector = Detector(field_type="any")
-    report = validate("data/table.csv", detector=detector)
-    assert report.valid
-    assert report.task.resource.schema == {
-        "fields": [{"name": "id", "type": "any"}, {"name": "name", "type": "any"}],
-    }
-
-
-def test_validate_infer_names():
-    detector = Detector(field_names=["id", "name"])
-    report = validate(
-        "data/without-headers.csv",
-        layout={"header": False},
-        detector=detector,
-    )
-    assert report.task.resource.schema["fields"][0]["name"] == "id"
-    assert report.task.resource.schema["fields"][1]["name"] == "name"
-    assert report.task.resource.stats["rows"] == 3
-    assert report.task.resource.labels == []
-    assert report.task.resource.header == ["id", "name"]
-    assert report.valid
-
-
-# Integrity
-
-
-def test_validate_foreign_key_error_self_referencing():
+def test_validate_schema_foreign_key_error_self_referencing():
     source = {
         "path": "data/nested.csv",
         "schema": {
@@ -679,7 +571,7 @@ def test_validate_foreign_key_error_self_referencing():
     assert report.valid
 
 
-def test_validate_foreign_key_error_self_referencing_invalid():
+def test_validate_schema_foreign_key_error_self_referencing_invalid():
     source = {
         "path": "data/nested-invalid.csv",
         "schema": {
@@ -699,7 +591,7 @@ def test_validate_foreign_key_error_self_referencing_invalid():
     ]
 
 
-def test_validate_unique_error():
+def test_validate_schema_unique_error():
     report = validate(
         "data/unique-field.csv",
         schema="data/unique-field.json",
@@ -710,7 +602,7 @@ def test_validate_unique_error():
     ]
 
 
-def test_validate_unique_error_and_type_error():
+def test_validate_schema_unique_error_and_type_error():
     source = [
         ["id", "unique_number"],
         ["a1", 100],
@@ -730,7 +622,7 @@ def test_validate_unique_error_and_type_error():
     ]
 
 
-def test_validate_primary_key_error():
+def test_validate_schema_primary_key_error():
     report = validate(
         "data/unique-field.csv",
         schema="data/unique-field.json",
@@ -741,7 +633,7 @@ def test_validate_primary_key_error():
     ]
 
 
-def test_validate_primary_key_and_unique_error():
+def test_validate_schema_primary_key_and_unique_error():
     report = validate(
         "data/unique-field.csv",
         schema="data/unique-field.json",
@@ -752,7 +644,7 @@ def test_validate_primary_key_and_unique_error():
     ]
 
 
-def test_validate_primary_key_error_composite():
+def test_validate_schema_primary_key_error_composite():
     source = [
         ["id", "name"],
         [1, "Alex"],
@@ -774,6 +666,114 @@ def test_validate_primary_key_error_composite():
         [6, None, "blank-row"],
         [6, None, "primary-key-error"],
     ]
+
+
+# Detector
+
+
+def test_validate_detector_sync_schema():
+    schema = {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+        ],
+    }
+    detector = Detector(schema_sync=True)
+    report = validate("data/sync-schema.csv", schema=schema, detector=detector)
+    assert report.valid
+    assert report.task.resource.schema == {
+        "fields": [
+            {"name": "name", "type": "string"},
+            {"name": "id", "type": "integer"},
+        ],
+    }
+
+
+def test_validate_detector_sync_schema_invalid():
+    source = [["LastName", "FirstName", "Address"], ["Test", "Tester", "23 Avenue"]]
+    schema = {"fields": [{"name": "id"}, {"name": "FirstName"}, {"name": "LastName"}]}
+    detector = Detector(schema_sync=True)
+    report = validate(source, schema=schema, detector=detector)
+    assert report.valid
+
+
+def test_validate_detector_headers_errors():
+    source = [
+        ["id", "last_name", "first_name", "language"],
+        [1, "Alex", "John", "English"],
+        [2, "Peters", "John", "Afrikaans"],
+        [3, "Smith", "Paul", None],
+    ]
+    schema = {
+        "fields": [
+            {"name": "id", "type": "number"},
+            {"name": "language", "constraints": {"required": True}},
+            {"name": "country"},
+        ]
+    }
+    detector = Detector(schema_sync=True)
+    report = validate(source, schema=schema, detector=detector)
+    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
+        [4, 4, "constraint-error"],
+    ]
+
+
+def test_validate_detector_patch_schema():
+    detector = Detector(schema_patch={"missingValues": ["-"]})
+    report = validate("data/table.csv", detector=detector)
+    assert report.valid
+    assert report.task.resource.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+        ],
+        "missingValues": ["-"],
+    }
+
+
+def test_validate_detector_patch_schema_fields():
+    detector = Detector(
+        schema_patch={"fields": {"id": {"type": "string"}}, "missingValues": ["-"]}
+    )
+    report = validate("data/table.csv", detector=detector)
+    assert report.valid
+    assert report.task.resource.schema == {
+        "fields": [{"name": "id", "type": "string"}, {"name": "name", "type": "string"}],
+        "missingValues": ["-"],
+    }
+
+
+def test_validate_detector_infer_type_string():
+    detector = Detector(field_type="string")
+    report = validate("data/table.csv", detector=detector)
+    assert report.valid
+    assert report.task.resource.schema == {
+        "fields": [{"name": "id", "type": "string"}, {"name": "name", "type": "string"}],
+    }
+
+
+def test_validate_detector_infer_type_any():
+    detector = Detector(field_type="any")
+    report = validate("data/table.csv", detector=detector)
+    assert report.valid
+    assert report.task.resource.schema == {
+        "fields": [{"name": "id", "type": "any"}, {"name": "name", "type": "any"}],
+    }
+
+
+def test_validate_detector_infer_names():
+    detector = Detector(field_names=["id", "name"])
+    report = validate(
+        "data/without-headers.csv",
+        layout={"header": False},
+        detector=detector,
+    )
+    assert report.task.resource.schema["fields"][0]["name"] == "id"
+    assert report.task.resource.schema["fields"][1]["name"] == "name"
+    assert report.task.resource.stats["rows"] == 3
+    assert report.task.resource.labels == []
+    assert report.task.resource.header == ["id", "name"]
+    assert report.valid
 
 
 # Validation
