@@ -192,8 +192,8 @@ def test_validate_format():
     assert report.valid
 
 
-@pytest.mark.skip
-def test_validate_format_invalid():
+@pytest.mark.xfail
+def test_validate_format_non_tabular():
     report = validate("data/table.bad")
     assert report.flatten(["code", "note"]) == [
         ["format-error", 'cannot create parser "bad". Try installing "frictionless-bad"'],
@@ -483,11 +483,10 @@ def test_validate_schema_extra_headers_and_cells():
     ]
 
 
-@pytest.mark.skip
 def test_validate_schema_multiple_errors():
     source = "data/schema-errors.csv"
     schema = "data/schema-valid.json"
-    report = validate(source, schema=schema, pick_errors=["#schema"], limit_errors=3)
+    report = validate(source, schema=schema, pick_errors=["#row"], limit_errors=3)
     assert report.task.partial
     assert report.task.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [4, 1, "type-error"],
