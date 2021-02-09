@@ -7,7 +7,7 @@ from .inquiry import validate_inquiry
 
 
 @Report.from_validate
-def validate_package(source, noinfer=False, parallel=False, **options):
+def validate_package(source, original=False, parallel=False, **options):
     """Validate package
 
     API      | Usage
@@ -18,7 +18,7 @@ def validate_package(source, noinfer=False, parallel=False, **options):
         source (dict|str): a package descriptor
         basepath? (str): package basepath
         trusted? (bool): don't raise an exception on unsafe paths
-        noinfer? (bool): don't call `package.infer`
+        original? (bool): don't call `package.infer`
         parallel? (bool): enable multiprocessing
         **options (dict): Package constructor options
 
@@ -38,7 +38,7 @@ def validate_package(source, noinfer=False, parallel=False, **options):
         return Report(time=timer.time, errors=[exception.error], tasks=[])
 
     # Prepare package
-    if not noinfer:
+    if not original:
         package.infer()
 
     if package.metadata_errors:
@@ -53,7 +53,7 @@ def validate_package(source, noinfer=False, parallel=False, **options):
                 InquiryTask(
                     source=resource,
                     basepath=resource.basepath,
-                    noinfer=noinfer,
+                    original=original,
                 )
             )
 

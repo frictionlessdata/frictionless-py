@@ -90,8 +90,8 @@ def test_validate_package_invalid_package():
     ]
 
 
-def test_validate_package_invalid_package_noinfer():
-    report = validate({"resources": [{"path": "data/table.csv"}]}, noinfer=True)
+def test_validate_package_invalid_package_original():
+    report = validate({"resources": [{"path": "data/table.csv"}]}, original=True)
     assert report.flatten(["code", "note"]) == [
         [
             "resource-error",
@@ -312,13 +312,6 @@ def test_validate_package_integrity_foreign_key_internal_resource_violation_non_
         [4, None, "foreign-key-error"],
         [5, None, "foreign-key-error"],
     ]
-
-
-def test_validate_package_integrity_foreign_key_internal_resource_violation_with_nolookup():
-    descriptor = deepcopy(DESCRIPTOR_FK)
-    del descriptor["resources"][1]["data"][4]
-    report = validate(descriptor, nolookup=True)
-    assert report.valid
 
 
 # Parallel

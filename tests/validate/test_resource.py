@@ -31,8 +31,8 @@ def test_validate_invalid_resource():
     ]
 
 
-def test_validate_invalid_resource_noinfer():
-    report = validate({"path": "data/table.csv"}, noinfer=True)
+def test_validate_invalid_resource_original():
+    report = validate({"path": "data/table.csv"}, original=True)
     assert report.flatten(["code", "note"]) == [
         [
             "resource-error",

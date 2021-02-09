@@ -20,7 +20,7 @@ def validate_resource(
     skip_errors=None,
     limit_errors=config.DEFAULT_LIMIT_ERRORS,
     limit_memory=config.DEFAULT_LIMIT_MEMORY,
-    noinfer=False,
+    original=False,
     **options,
 ):
     """Validate table
@@ -37,7 +37,7 @@ def validate_resource(
         skip_errors? ((str|int)[]): skip errors
         limit_errors? (int): limit errors
         limit_memory? (int): limit memory
-        noinfer? (bool): validate resource as it is
+        original? (bool): validate resource as it is
         **options? (dict): Resource constructor options
 
     Returns:
@@ -62,7 +62,7 @@ def validate_resource(
         checksum = {key: value for key, value in resource.stats.items() if value}
 
     # Prepare resource
-    if not noinfer:
+    if not original:
         resource.infer()
     if resource.metadata_errors:
         return Report(time=timer.time, errors=resource.metadata_errors, tasks=[])
