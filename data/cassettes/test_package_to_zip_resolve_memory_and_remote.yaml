@@ -35,35 +35,105 @@ interactions:
       Content-Type:
       - text/plain; charset=utf-8
       Date:
-      - Thu, 07 Jan 2021 11:08:17 GMT
+      - Tue, 09 Feb 2021 07:51:12 GMT
       ETag:
       - W/"0172a2fd99319bed82fe7cccbd7a44b27a77f7200caf0d04b7f23cbb6b81026d"
       Expires:
-      - Thu, 07 Jan 2021 11:13:17 GMT
+      - Tue, 09 Feb 2021 07:56:12 GMT
       Source-Age:
-      - '0'
+      - '37'
       Strict-Transport-Security:
       - max-age=31536000
       Vary:
-      - Authorization,Accept-Encoding, Accept-Encoding
+      - Authorization,Accept-Encoding
       Via:
-      - 1.1 varnish (Varnish/6.0), 1.1 varnish
+      - 1.1 varnish
       X-Cache:
-      - MISS, MISS
+      - HIT
       X-Cache-Hits:
-      - 0, 0
+      - '1'
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 07382523a9202dc46984c59ef7142706aec4fc97
+      - 6e0d06172e57519fd062b9e09543f940856f2d6e
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 2332:CA98:8FD2F47:9705877:5FF6EBA1
+      - 55FC:F79A:317635:347E5B:60223ECB
       X-Served-By:
-      - cache-fra19140-FRA
+      - cache-fra19171-FRA
       X-Timer:
-      - S1610017697.491755,VS0,VE181
+      - S1612857073.921946,VS0,VE0
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/54.0.2840.87 Safari/537.36
+    method: GET
+    uri: https://raw.githubusercontent.com/frictionlessdata/datapackage-py/master/data/table.csv
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA8tM0clLzE3lMtRJzUvPySzO4DLSebJj7dPZe5/s2sUFAAFuQI0eAAAA
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - max-age=300
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '51'
+      Content-Security-Policy:
+      - default-src 'none'; style-src 'unsafe-inline'; sandbox
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Tue, 09 Feb 2021 07:51:13 GMT
+      ETag:
+      - W/"0172a2fd99319bed82fe7cccbd7a44b27a77f7200caf0d04b7f23cbb6b81026d"
+      Expires:
+      - Tue, 09 Feb 2021 07:56:13 GMT
+      Source-Age:
+      - '38'
+      Strict-Transport-Security:
+      - max-age=31536000
+      Vary:
+      - Authorization,Accept-Encoding
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Content-Type-Options:
+      - nosniff
+      X-Fastly-Request-ID:
+      - ec94ad086803316b93b674682383981604984571
+      X-Frame-Options:
+      - deny
+      X-GitHub-Request-Id:
+      - 55FC:F79A:317635:347E5B:60223ECB
+      X-Served-By:
+      - cache-fra19177-FRA
+      X-Timer:
+      - S1612857074.952307,VS0,VE0
       X-XSS-Protection:
       - 1; mode=block
     status:
