@@ -12,54 +12,167 @@ interactions:
       - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
         like Gecko) Chrome/54.0.2840.87 Safari/537.36
     method: GET
-    uri: https://raw.githubusercontent.com/frictionlessdata/datapackage-py/master/data/special/doublequote.csv
+    uri: https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/doublequote.csv
   response:
     body:
-      string: '404: Not Found'
+      string: !!binary |
+        H4sIAAAAAAAAA+1Yy47aSBTdz1eU2MzGsjC0DSgrhiYtpARQM1lHhV2giuwqUuVqNfmDWY7mC7LM
+        gsUouyzHPzbn2tg8ml6NNFIkb+hbj1v33HNfDZ3ZfDJbLTpeZ754/9vjtFl+mDZ7pTgu/qTtyeJ+
+        9rAYL5vDUryfriaPs+VktpiX6+rW8nHx8Dh+P27unm2caZztVtYr7RJDIzrxMdYJhJ0R1u2csDlP
+        NK03kj7XsvNLZ+zP/am/9AlukkklbW54LIvvis3xVyueskSwaeLi4/ay+LFOZcwJ83RFn1pZ8Ulf
+        XVuJ2KmEG4mLvW4w8oZeZ3r/YTKezIq/5qVaBmAKWqm2zArzJGHPMkJLQC3jjKcuU5D2DHsukVzl
+        wnpYXqokOhZ08oalnG20yVx6RLFn/Mor2NvptDjkcMEyQYBz+cTxKt+RW80thXdo24ht/RzuuFwb
+        +aV5HbwSClsrES7CYgiVYALMFH9z9YVD1RYHFutME0ipnuCR3B4fqkwnnBwlvi03RqepZuIZ78sM
+        LyIOQgFM7VmsVWmNW6fykqKbfGC15ZYuVKoIKFFbavMX5OzZlmAdnakdqUmC+NkJJrMdNznAiFO0
+        ETRhY51y40GWGcXdA6I6B/CyU/JJGCvz6uxEh4Z5C0ZgOHeEUFR21kZCWZUBbfDFfAc5r9Y+O0si
+        fsycJoAnPrh7lqnkOGbVzRNyr8IACMruNNwi1FtnZMITgEwr7uvop/oTzyR2NBagoLKVFd8ShA/o
+        dKJxlhbft8d1yd9NIIiAeNb23AWeiKz4agEQnNvYCRKQwTEdSMgZlHPS9i7vVDkt4+LAryLU5B8C
+        q4RBEu3rGqkjxw2npKtBIuVypJw2aAlRF0U7U2XYyrCIBAhiWcISn53cHdlAOTOUeej18dHt9r3B
+        XT/sDlH1tTpM4ZKPs7so/M99561ILhvP25NDcPukVfaesO09be9pe8/P1XtCr/N6UZ8fEQCjN8KW
+        TeMmzVLFqdvDT30FgMqE7iWaaLEarQ0v+OwdZ+/Enj0ccV82ovk/P1gw9O/6HsGyjsHf4hA7lIwy
+        2mf9AAobqcSVsYus9VnxBxLG9332a6djBcUkFmtpiq9VVpzRB04AjDL5Io8pPGtuYk46L/zKOBIS
+        GeA1EsuLb7GSMe1VjOkynCe54aN6ZVMcbJVLN0g6ryKoVYV0hNCUEWK7QomLjL/W1Q2NEZAMEvxy
+        goTlBAm9IBj0R9HwLkCwnSp1m1mDMTIY9QftGGnHSDtG2jHSjpF2jLw2RvrDoDsIg+7LLyK9cBC1
+        E6SdIO0EaSdIO0HaCfLqF5EoiIbRKOwNvM4SPpMuTZCgO+r3/u/vIFE7QdoJ0k6Qn2uCRN3gZWuo
+        GDxrCtTlT0mzPBXX70QqxZy6XfNLe92eeuEwjIaD0e2fSYJwiH9y/wUHrVdnshwAAA==
     headers:
       Accept-Ranges:
       - bytes
       Access-Control-Allow-Origin:
       - '*'
+      Cache-Control:
+      - max-age=300
       Connection:
       - keep-alive
+      Content-Encoding:
+      - gzip
       Content-Length:
-      - '14'
+      - '1075'
       Content-Security-Policy:
       - default-src 'none'; style-src 'unsafe-inline'; sandbox
       Content-Type:
       - text/plain; charset=utf-8
       Date:
-      - Tue, 12 Jan 2021 07:17:10 GMT
+      - Tue, 09 Feb 2021 08:47:14 GMT
+      ETag:
+      - W/"066c22a33ca23b13adaee1ecacf91b1a7edab00d39c4d6386d8e705cfe09cf42"
       Expires:
-      - Tue, 12 Jan 2021 07:22:10 GMT
+      - Tue, 09 Feb 2021 08:52:14 GMT
       Source-Age:
       - '0'
       Strict-Transport-Security:
       - max-age=31536000
       Vary:
       - Authorization,Accept-Encoding
+      Via:
+      - 1.1 varnish
       X-Cache:
-      - MISS, MISS
+      - HIT
       X-Cache-Hits:
-      - 0, 0
+      - '1'
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 3188a0704bad0f8e243c0a0ab0bf6fd282bd53fc
+      - 38ded0a094ad686cc39b7b458b37256aceb436e8
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - E1C8:1058E:DFE41:EAEDB:5FFD4CF5
+      - 0BDC:E8DF:301D58:3313B3:60224929
       X-Served-By:
-      - cache-fra19163-FRA
+      - cache-fra19179-FRA
       X-Timer:
-      - S1610435830.086849,VS0,VE160
+      - S1612860434.881949,VS0,VE159
       X-XSS-Protection:
       - 1; mode=block
-      via:
-      - 1.1 varnish (Varnish/6.0), 1.1 varnish
     status:
-      code: 404
-      message: Not Found
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/54.0.2840.87 Safari/537.36
+    method: GET
+    uri: https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/doublequote.csv
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA+1Yy47aSBTdz1eU2MzGsjC0DSgrhiYtpARQM1lHhV2giuwqUuVqNfmDWY7mC7LM
+        gsUouyzHPzbn2tg8ml6NNFIkb+hbj1v33HNfDZ3ZfDJbLTpeZ754/9vjtFl+mDZ7pTgu/qTtyeJ+
+        9rAYL5vDUryfriaPs+VktpiX6+rW8nHx8Dh+P27unm2caZztVtYr7RJDIzrxMdYJhJ0R1u2csDlP
+        NK03kj7XsvNLZ+zP/am/9AlukkklbW54LIvvis3xVyueskSwaeLi4/ay+LFOZcwJ83RFn1pZ8Ulf
+        XVuJ2KmEG4mLvW4w8oZeZ3r/YTKezIq/5qVaBmAKWqm2zArzJGHPMkJLQC3jjKcuU5D2DHsukVzl
+        wnpYXqokOhZ08oalnG20yVx6RLFn/Mor2NvptDjkcMEyQYBz+cTxKt+RW80thXdo24ht/RzuuFwb
+        +aV5HbwSClsrES7CYgiVYALMFH9z9YVD1RYHFutME0ipnuCR3B4fqkwnnBwlvi03RqepZuIZ78sM
+        LyIOQgFM7VmsVWmNW6fykqKbfGC15ZYuVKoIKFFbavMX5OzZlmAdnakdqUmC+NkJJrMdNznAiFO0
+        ETRhY51y40GWGcXdA6I6B/CyU/JJGCvz6uxEh4Z5C0ZgOHeEUFR21kZCWZUBbfDFfAc5r9Y+O0si
+        fsycJoAnPrh7lqnkOGbVzRNyr8IACMruNNwi1FtnZMITgEwr7uvop/oTzyR2NBagoLKVFd8ShA/o
+        dKJxlhbft8d1yd9NIIiAeNb23AWeiKz4agEQnNvYCRKQwTEdSMgZlHPS9i7vVDkt4+LAryLU5B8C
+        q4RBEu3rGqkjxw2npKtBIuVypJw2aAlRF0U7U2XYyrCIBAhiWcISn53cHdlAOTOUeej18dHt9r3B
+        XT/sDlH1tTpM4ZKPs7so/M99561ILhvP25NDcPukVfaesO09be9pe8/P1XtCr/N6UZ8fEQCjN8KW
+        TeMmzVLFqdvDT30FgMqE7iWaaLEarQ0v+OwdZ+/Enj0ccV82ovk/P1gw9O/6HsGyjsHf4hA7lIwy
+        2mf9AAobqcSVsYus9VnxBxLG9332a6djBcUkFmtpiq9VVpzRB04AjDL5Io8pPGtuYk46L/zKOBIS
+        GeA1EsuLb7GSMe1VjOkynCe54aN6ZVMcbJVLN0g6ryKoVYV0hNCUEWK7QomLjL/W1Q2NEZAMEvxy
+        goTlBAm9IBj0R9HwLkCwnSp1m1mDMTIY9QftGGnHSDtG2jHSjpF2jLw2RvrDoDsIg+7LLyK9cBC1
+        E6SdIO0EaSdIO0HaCfLqF5EoiIbRKOwNvM4SPpMuTZCgO+r3/u/vIFE7QdoJ0k6Qn2uCRN3gZWuo
+        GDxrCtTlT0mzPBXX70QqxZy6XfNLe92eeuEwjIaD0e2fSYJwiH9y/wUHrVdnshwAAA==
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - max-age=300
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '1075'
+      Content-Security-Policy:
+      - default-src 'none'; style-src 'unsafe-inline'; sandbox
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Tue, 09 Feb 2021 08:47:14 GMT
+      ETag:
+      - W/"066c22a33ca23b13adaee1ecacf91b1a7edab00d39c4d6386d8e705cfe09cf42"
+      Expires:
+      - Tue, 09 Feb 2021 08:52:14 GMT
+      Source-Age:
+      - '1'
+      Strict-Transport-Security:
+      - max-age=31536000
+      Vary:
+      - Authorization,Accept-Encoding
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Content-Type-Options:
+      - nosniff
+      X-Fastly-Request-ID:
+      - 6dce938df1d5e2fa37fff59ac222d7d70bdf2145
+      X-Frame-Options:
+      - deny
+      X-GitHub-Request-Id:
+      - 0BDC:E8DF:301D58:3313B3:60224929
+      X-Served-By:
+      - cache-fra19129-FRA
+      X-Timer:
+      - S1612860435.841518,VS0,VE1
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
 version: 1

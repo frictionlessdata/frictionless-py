@@ -11,7 +11,7 @@ from frictionless.plugins.excel import ExcelDialect
 from frictionless.plugins.json import JsonDialect
 
 
-BASE_URL = "https://raw.githubusercontent.com/frictionlessdata/datapackage-py/master/%s"
+BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
 
 
 # General
@@ -84,9 +84,9 @@ def test_resource_from_path_error_bad_path():
 @pytest.mark.vcr
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_from_path_remote():
-    resource = Resource(BASE_URL % "data/resource.json")
+    resource = Resource(BASEURL % "data/resource.json")
     assert resource.path == "table.csv"
-    assert resource.fullpath == BASE_URL % "data/table.csv"
+    assert resource.fullpath == BASEURL % "data/table.csv"
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
@@ -96,7 +96,7 @@ def test_resource_from_path_remote():
 @pytest.mark.vcr
 def test_resource_from_path_remote_error_bad_path():
     with pytest.raises(FrictionlessException) as excinfo:
-        Resource(BASE_URL % "data/bad.json")
+        Resource(BASEURL % "data/bad.json")
     error = excinfo.value.error
     assert error.code == "resource-error"
     assert error.note.count("bad.json")
@@ -122,7 +122,7 @@ def test_resource_source_non_tabular():
 
 @pytest.mark.vcr
 def test_resource_source_non_tabular_remote():
-    path = BASE_URL % "data/foo.txt"
+    path = BASEURL % "data/text.txt"
     with Resource(path) as resource:
         assert resource.path == path
         assert resource.data is None
@@ -131,10 +131,10 @@ def test_resource_source_non_tabular_remote():
         assert resource.multipart is False
         assert resource.basepath == ""
         assert resource.fullpath == path
-        assert resource.read_bytes() == b"foo\n"
+        assert resource.read_bytes() == b"text\n"
         assert resource.stats == {
-            "hash": "d3b07384d113edec49eaa6238ad5ff00",
-            "bytes": 4,
+            "hash": "e1cbb0c3879af8347246f12c559a86b5",
+            "bytes": 5,
         }
 
 
@@ -194,8 +194,8 @@ def test_resource_source_path_and_basepath():
 @pytest.mark.vcr
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_source_path_and_basepath_remote():
-    resource = Resource(path="table.csv", basepath=BASE_URL % "data")
-    assert resource.fullpath == BASE_URL % "data/table.csv"
+    resource = Resource(path="table.csv", basepath=BASEURL % "data")
+    assert resource.fullpath == BASEURL % "data/table.csv"
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
@@ -204,8 +204,8 @@ def test_resource_source_path_and_basepath_remote():
 
 @pytest.mark.vcr
 def test_resource_source_path_remote_and_basepath_remote():
-    resource = Resource(path=BASE_URL % "data/table.csv", basepath=BASE_URL % "data")
-    assert resource.fullpath == BASE_URL % "data/table.csv"
+    resource = Resource(path=BASEURL % "data/table.csv", basepath=BASEURL % "data")
+    assert resource.fullpath == BASEURL % "data/table.csv"
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
@@ -350,7 +350,7 @@ def test_resource_scheme_file():
 
 @pytest.mark.vcr
 def test_resource_scheme_https():
-    with Resource(BASE_URL % "data/table.csv") as resource:
+    with Resource(BASEURL % "data/table.csv") as resource:
         assert resource.scheme == "https"
 
 
@@ -448,7 +448,7 @@ def test_resource_format_xlsx():
         assert resource.format == "xlsx"
 
 
-@pytest.mark.skip
+@pytest.mark.xfail(reason="minor")
 def test_resource_format_error_bad_format():
     resource = Resource("data/table.bad")
     with pytest.raises(FrictionlessException) as excinfo:
@@ -458,7 +458,6 @@ def test_resource_format_error_bad_format():
     assert error.note == 'cannot create parser "bad". Try installing "frictionless-bad"'
 
 
-@pytest.mark.skip
 def test_resource_format_error_non_matching_format():
     resource = Resource("data/table.csv", format="xlsx")
     with pytest.raises(FrictionlessException) as excinfo:
@@ -715,7 +714,7 @@ def test_resource_compression_error_invalid_zip():
     assert error.note == "File is not a zip file"
 
 
-@pytest.mark.skip
+@pytest.mark.xfail(reason="minor")
 @pytest.mark.skipif(sys.version_info < (3, 8), reason="Requires Python3.8+")
 def test_resource_compression_error_invalid_gz():
     source = b"id,filename\n\1,dump"
@@ -754,14 +753,14 @@ def test_resource_control():
 @pytest.mark.vcr
 def test_resource_control_http_preload():
     control = RemoteControl(http_preload=True)
-    with Resource(BASE_URL % "data/table.csv", control=control) as resource:
+    with Resource(BASEURL % "data/table.csv", control=control) as resource:
         assert resource.control == {"httpPreload": True}
         assert resource.sample == [["id", "name"], ["1", "english"], ["2", "中国人"]]
         assert resource.fragment == [["1", "english"], ["2", "中国人"]]
         assert resource.header == ["id", "name"]
 
 
-@pytest.mark.skip
+@pytest.mark.xfail(reason="minor")
 def test_resource_control_bad_property():
     resource = Resource("data/table.csv", control={"bad": True})
     with pytest.raises(FrictionlessException) as excinfo:
@@ -813,12 +812,12 @@ def test_resource_dialect_from_path():
 @pytest.mark.vcr
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_dialect_from_path_remote():
-    resource = Resource(BASE_URL % "data/resource-with-dereferencing.json")
+    resource = Resource(BASEURL % "data/resource-with-dereferencing.json")
     assert resource == {
         "name": "name",
         "path": "table.csv",
         "dialect": "dialect.json",
-        "schema": "schema-simple.json",
+        "schema": "schema.json",
     }
     assert resource.dialect == {
         "delimiter": ";",
@@ -1472,9 +1471,9 @@ def test_resource_schema_source_remote():
         "name": "name",
         "profile": "tabular-data-resource",
         "path": "table.csv",
-        "schema": "resource_schema.json",
+        "schema": "schema.json",
     }
-    resource = Resource(descriptor, basepath=BASE_URL % "data")
+    resource = Resource(descriptor, basepath=BASEURL % "data")
     assert resource.schema == {
         "fields": [{"name": "id", "type": "integer"}, {"name": "name", "type": "string"}]
     }
@@ -1509,19 +1508,18 @@ def test_resource_schema_from_path_with_basepath():
 @pytest.mark.vcr
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_schema_from_path_remote():
-    resource = Resource(BASE_URL % "data/resource-with-dereferencing.json")
+    resource = Resource(BASEURL % "data/resource-with-dereferencing.json")
     assert resource == {
         "name": "name",
         "path": "table.csv",
         "dialect": "dialect.json",
-        "schema": "schema-simple.json",
+        "schema": "schema.json",
     }
     assert resource.schema == {
         "fields": [{"name": "id", "type": "integer"}, {"name": "name", "type": "string"}]
     }
 
 
-@pytest.mark.skip
 def test_resource_schema_from_path_error_bad_path():
     resource = Resource({"name": "name", "path": "path", "schema": "data/bad.json"})
     with pytest.raises(FrictionlessException) as excinfo:
@@ -1842,7 +1840,6 @@ def test_resource_infer():
     }
 
 
-@pytest.mark.skip
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_infer_source_non_tabular():
     resource = Resource(path="data/text.txt")
@@ -1856,14 +1853,9 @@ def test_resource_infer_source_non_tabular():
         "format": "txt",
         "hashing": "md5",
         "encoding": "utf-8",
-        "innerpath": "",
-        "compression": "",
-        "control": {},
         "stats": {
             "hash": "e1cbb0c3879af8347246f12c559a86b5",
             "bytes": 5,
-            "fields": 0,
-            "rows": 0,
         },
     }
 
@@ -2033,7 +2025,6 @@ def test_resource_open_without_rows():
         }
 
 
-@pytest.mark.skip
 def test_resource_open_without_headers():
     with Resource("data/without-headers.csv") as resource:
         assert resource.labels == []
@@ -2141,11 +2132,9 @@ def test_resource_read_text():
     assert text == "text\n"
 
 
-@pytest.mark.skip
 def test_resource_read_data():
     resource = Resource(path="data/table.json")
-    data = resource.read_data()
-    assert data == [
+    assert resource.read_lists() == [
         ["id", "name"],
         [1, "english"],
         [2, "中国人"],
@@ -2437,11 +2426,10 @@ def test_resource_stats_hash_compressed():
         assert resource.stats["hash"] == "2a72c90bd48c1fa48aec632db23ce8f7"
 
 
-@pytest.mark.skip
 @pytest.mark.vcr
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_stats_hash_remote():
-    with Resource(BASE_URL % "data/special/doublequote.csv") as resource:
+    with Resource(BASEURL % "data/doublequote.csv") as resource:
         resource.read_rows()
         assert resource.hashing == "md5"
         assert resource.stats["hash"] == "d82306001266c4343a2af4830321ead8"
@@ -2461,11 +2449,10 @@ def test_resource_stats_bytes_compressed():
         assert resource.stats["bytes"] == 1265
 
 
-@pytest.mark.skip
 @pytest.mark.vcr
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_stats_bytes_remote():
-    with Resource(BASE_URL % "data/special/doublequote.csv") as resource:
+    with Resource(BASEURL % "data/doublequote.csv") as resource:
         resource.read_rows()
         assert resource.stats["bytes"] == 7346
 
@@ -2479,10 +2466,9 @@ def test_resource_stats_fields():
         assert resource.stats["fields"] == 17
 
 
-@pytest.mark.skip
 @pytest.mark.vcr
 def test_resource_stats_fields_remote():
-    with Resource(BASE_URL % "data/special/doublequote.csv") as resource:
+    with Resource(BASEURL % "data/doublequote.csv") as resource:
         resource.read_rows()
         assert resource.stats["fields"] == 17
 
@@ -2496,10 +2482,9 @@ def test_resource_stats_rows():
         assert resource.stats["rows"] == 5
 
 
-@pytest.mark.skip
 @pytest.mark.vcr
 def test_resource_stats_rows_remote():
-    with Resource(BASE_URL % "data/special/doublequote.csv") as resource:
+    with Resource(BASEURL % "data/doublequote.csv") as resource:
         resource.read_rows()
         assert resource.stats["rows"] == 5
 
