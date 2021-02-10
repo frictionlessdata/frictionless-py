@@ -1319,31 +1319,26 @@ Here is an example of a custom step written as a python function:
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
-def step(source, target):
-
-    # Data
-    def data():
-        for row in source.read_row_stream():
+def step(resource):
+    with resource:
+        resource.schema.remove_field("id")
+        for row in resource.read_row_stream():
             del row["id"]
             yield row
 
-    # Meta
-    target.data = data
-    target.schema.remove_field("id")
-
-
-source = Resource(path="data/transform.csv")
+source = Resource("data/transform.csv")
 target = transform(source, steps=[step])
 pprint(target.schema)
 pprint(target.read_rows())
 ```
 
-    {'fields': [{'name': 'name', 'type': 'string'},
-                {'name': 'population', 'type': 'integer'}]}
-    [Row([('name', 'germany'), ('population', 83)]),
-     Row([('name', 'france'), ('population', 66)]),
-     Row([('name', 'spain'), ('population', 47)])]
-
+```
+{'fields': [{'name': 'name', 'type': 'string'},
+            {'name': 'population', 'type': 'integer'}]}
+[Row([('name', 'germany'), ('population', 83)]),
+ Row([('name', 'france'), ('population', 66)]),
+ Row([('name', 'spain'), ('population', 47)])]
+```
 
 ## Transform Utils
 
