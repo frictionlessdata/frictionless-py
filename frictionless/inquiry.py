@@ -58,8 +58,8 @@ class Inquiry(Metadata):
         tasks = []
         errors = []
         for report in reports:
-            tasks.extend(report["tasks"])
-            errors.extend(report["errors"])
+            tasks.extend(report.tasks)
+            errors.extend(report.errors)
         return Report(time=timer.time, errors=errors, tasks=tasks)
 
     # Metadata
@@ -135,7 +135,7 @@ class InquiryTask(Metadata):
 
 
 def run_task_in_parallel(task_descriptor):
-    validate = import_module("frictionless").validate
-    report = validate(**helpers.create_options(task_descriptor))
+    task = InquiryTask(task_descriptor)
+    report = task.run()
     report_descriptor = report.to_dict()
     return report_descriptor

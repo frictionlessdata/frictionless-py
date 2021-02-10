@@ -1,3 +1,4 @@
+from multiprocessing import Pool
 from importlib import import_module
 from .errors import PipelineError, TaskError
 from .status import Status, StatusTask
@@ -36,20 +37,32 @@ class Pipeline(Metadata):
 
     def run(self, *, parallel=False):
         """Run the pipeline"""
-        tasks = []
+
+        # Create state
+        statuses = []
         timer = helpers.Timer()
-        for task in self.tasks:
-            errors = []
-            target = None
-            task_timer = helpers.Timer()
-            try:
-                target = task.run()
-            except Exception as exception:
-                errors.append(TaskError(note=str(exception)))
-            time = task_timer.time
-            task = StatusTask(time=time, errors=errors, target=target, type=task.type)
-            tasks.append(task)
-        return Status(tasks=tasks, time=timer.time, errors=[])
+
+        # Transform sequentially
+        if not parallel:
+            for task in self.tasks:
+                status = task.run()
+                statuses.append(status)
+
+        # Transform in-parallel
+        else:
+            with Pool() as pool:
+                task_descriptors = [task.to_dict() for task in self.tasks]
+                status_descriptors = pool.map(run_task_in_parallel, task_descriptors)
+                for status_descriptor in status_descriptors:
+                    statuses.append(Status(status_descriptor))
+
+        # Return status
+        tasks = []
+        errors = []
+        for status in statuses:
+            tasks.extend(status["tasks"])
+            errors.extend(status["errors"])
+        return Status(time=timer.time, errors=[], tasks=tasks)
 
     # Metadata
 
@@ -105,8 +118,16 @@ class PipelineTask(Metadata):
 
     def run(self):
         """Run the task"""
-        transform = import_module("frictionless.transform").transform
-        return transform(self.source, type=self.type, steps=self.steps)
+        errors = []
+        target = None
+        timer = helpers.Timer()
+        try:
+            transform = import_module("frictionless").transform
+            target = transform(self.source, type=self.type, steps=self.steps)
+        except Exception as exception:
+            errors.append(TaskError(note=str(exception)))
+        task = StatusTask(time=timer.time, errors=errors, target=target, type=self.type)
+        return Status(tasks=[task], time=timer.time, errors=[])
 
     # Metadata
 
@@ -121,3 +142,13 @@ class PipelineTask(Metadata):
         if not isinstance(source, Metadata):
             source = Resource(source) if self.type == "resource" else Package(source)
             dict.__setitem__(self, "source", source)
+
+
+# Internal
+
+
+def run_task_in_parallel(task_descriptor):
+    task = PipelineTask(task_descriptor)
+    status = task.run()
+    status_descriptor = status.to_dict()
+    return status_descriptor
