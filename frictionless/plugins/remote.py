@@ -191,9 +191,10 @@ class RemoteByteStream:
     def flush(self):
         pass
 
-    def read(self, size=None):
-        args = [size] if size is not None else []
-        return self.__response.raw.read(*args)
+    def read(self, size=-1):
+        if size == -1:
+            size = None
+        return self.__response.raw.read(size)
 
     def read1(self, size=-1):
         return self.read(size)
