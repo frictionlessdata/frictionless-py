@@ -4,8 +4,8 @@ from .resource import Resource
 from .metadata import Metadata
 from .errors import Error, TaskError, ReportError
 from .exception import FrictionlessException
-from . import config
 from . import helpers
+from . import config
 
 
 # NOTE:
@@ -32,6 +32,7 @@ class Report(Metadata):
     """
 
     def __init__(self, descriptor=None, *, time=None, errors=None, tasks=None):
+        # TODO: merge groups after metadata_strict removal
 
         # Store provided
         self.setinitial("version", config.VERSION)
@@ -225,11 +226,11 @@ class ReportTask(Metadata):
         partial=None,
         errors=None
     ):
+        # TODO: merge groups after metadata_strict removal
 
         # Store provided
         self.setinitial("resource", resource)
         self.setinitial("time", time)
-        self.setinitial("valid", not errors)
         self.setinitial("scope", scope)
         self.setinitial("partial", partial)
         self.setinitial("errors", errors)
@@ -237,6 +238,7 @@ class ReportTask(Metadata):
 
         # Store computed
         self.setinitial("stats", {"errors": len(self.errors)})
+        self.setinitial("valid", not self.errors)
 
     @property
     def resource(self):

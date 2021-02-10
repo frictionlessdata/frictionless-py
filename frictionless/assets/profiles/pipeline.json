@@ -19,7 +19,11 @@
       "items": {
         "title": "Task",
         "type": "object",
-        "required": ["source", "type", "steps"]
+        "required": ["source", "type", "steps"],
+        "properties": {
+          "type": {"type": "string", "enum": ["resource", "package"]},
+          "steps": {"type": "array"}
+        }
       }
     }
   }

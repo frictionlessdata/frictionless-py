@@ -1,5 +1,5 @@
+from multiprocessing import Pool
 from importlib import import_module
-from .exception import FrictionlessException
 from .errors import PipelineError, TaskError
 from .status import Status, StatusTask
 from .metadata import Metadata
@@ -37,17 +37,32 @@ class Pipeline(Metadata):
 
     def run(self, *, parallel=False):
         """Run the pipeline"""
-        tasks = []
+
+        # Create state
+        statuses = []
         timer = helpers.Timer()
-        for task in self.tasks:
-            errors = []
-            target = None
-            try:
-                target = task.run()
-            except Exception as exception:
-                errors.append(TaskError(note=str(exception)))
-            tasks.append(StatusTask(errors=errors, target=target, type=task.type))
-        return Status(tasks=tasks, time=timer.time, errors=[])
+
+        # Transform sequentially
+        if not parallel:
+            for task in self.tasks:
+                status = task.run()
+                statuses.append(status)
+
+        # Transform in-parallel
+        else:
+            with Pool() as pool:
+                task_descriptors = [task.to_dict() for task in self.tasks]
+                status_descriptors = pool.map(run_task_in_parallel, task_descriptors)
+                for status_descriptor in status_descriptors:
+                    statuses.append(Status(status_descriptor))
+
+        # Return status
+        tasks = []
+        errors = []
+        for status in statuses:
+            tasks.extend(status["tasks"])
+            errors.extend(status["errors"])
+        return Status(time=timer.time, errors=[], tasks=tasks)
 
     # Metadata
 
@@ -70,7 +85,6 @@ class Pipeline(Metadata):
                 dict.__setitem__(self, "tasks", tasks)
 
 
-# NOTE: we can use metadata_process to task.source -> Resource/Package?
 class PipelineTask(Metadata):
     """Pipeline task representation.
 
@@ -104,24 +118,37 @@ class PipelineTask(Metadata):
 
     def run(self):
         """Run the task"""
-        transforms = import_module("frictionless.transform")
-
-        # Resource transform
-        if self.type == "resource":
-            source = Resource(self.source)
-            return transforms.transform_resource(source, steps=self.steps)
-
-        # Package transform
-        elif self.type == "package":
-            source = Package(self.source)
-            return transforms.transform_package(source, steps=self.steps)
-
-        # Not supported transform
-        note = f'Transform type "{self.type}" is not supported'
-        raise FrictionlessException(PipelineError(note=note))
+        errors = []
+        target = None
+        timer = helpers.Timer()
+        try:
+            transform = import_module("frictionless").transform
+            target = transform(self.source, type=self.type, steps=self.steps)
+        except Exception as exception:
+            errors.append(TaskError(note=str(exception)))
+        task = StatusTask(time=timer.time, errors=errors, target=target, type=self.type)
+        return Status(tasks=[task], time=timer.time, errors=[])
 
     # Metadata
 
     metadata_strict = True
     metadata_Error = PipelineError
     metadata_profile = config.PIPELINE_PROFILE["properties"]["tasks"]["items"]
+
+    def metadata_process(self):
+
+        # Source
+        source = self.get("source")
+        if not isinstance(source, Metadata):
+            source = Resource(source) if self.type == "resource" else Package(source)
+            dict.__setitem__(self, "source", source)
+
+
+# Internal
+
+
+def run_task_in_parallel(task_descriptor):
+    task = PipelineTask(task_descriptor)
+    status = task.run()
+    status_descriptor = status.to_dict()
+    return status_descriptor
