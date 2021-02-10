@@ -114,21 +114,19 @@ def test_step_table_diff():
     ]
 
 
-@pytest.mark.xfail(reason="steps.diff/join")
 def test_step_table_diff_with_ignore_order():
     source = Resource(path="data/transform.csv")
     source.infer()
     target = transform(
         source,
         steps=[
-            steps.table_normalize(),
             steps.table_diff(
                 resource=Resource(
                     data=[
                         ["name", "id", "population"],
-                        ["germany", 1, 83],
-                        ["france", 2, 50],
-                        ["spain", 3, 47],
+                        ["germany", "1", "83"],
+                        ["france", "2", "50"],
+                        ["spain", "3", "47"],
                     ]
                 ),
                 ignore_order=True,
@@ -393,15 +391,13 @@ def test_step_table_join_mode_cross():
     ]
 
 
-@pytest.mark.xfail(reason="steps.diff/join")
 def test_step_table_join_mode_negate():
     source = Resource(path="data/transform.csv")
     target = transform(
         source,
         steps=[
-            steps.table_normalize(),
             steps.table_join(
-                resource=Resource(data=[["id", "note"], [1, "beer"], [4, "rum"]]),
+                resource=Resource(data=[["id", "note"], ["1", "beer"], ["4", "rum"]]),
                 mode="negate",
             ),
         ],
