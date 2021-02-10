@@ -114,7 +114,7 @@ def test_step_table_diff():
     ]
 
 
-@pytest.mark.xfail
+@pytest.mark.xfail(reason="steps.diff/join")
 def test_step_table_diff_with_ignore_order():
     source = Resource(path="data/transform.csv")
     source.infer()
@@ -393,7 +393,7 @@ def test_step_table_join_mode_cross():
     ]
 
 
-@pytest.mark.xfail
+@pytest.mark.xfail(reason="steps.diff/join")
 def test_step_table_join_mode_negate():
     source = Resource(path="data/transform.csv")
     target = transform(
@@ -632,7 +632,7 @@ def test_step_table_merge_with_sort():
 # Pivot
 
 
-@pytest.mark.xfail
+@pytest.mark.xfail(reason="steps.pivot/recast/transpose")
 def test_step_table_pivot():
     source = Resource(path="data/transform-pivot.csv")
     target = transform(
@@ -660,7 +660,7 @@ def test_step_table_pivot():
 
 # We need to infer schema in the processor
 # We might merge this logic with transform.DataWithErrorHandling
-@pytest.mark.xfail
+@pytest.mark.xfail(reason="steps.pivot/recast/transpose")
 def test_step_table_recast():
     source = Resource(path="data/transform.csv")
     source.infer()
@@ -683,7 +683,7 @@ def test_step_table_recast():
 # Transpose
 
 
-@pytest.mark.xfail
+@pytest.mark.xfail(reason="steps.pivot/recast/transpose")
 def test_step_table_transpose():
     source = Resource(path="data/transform.csv")
     target = transform(

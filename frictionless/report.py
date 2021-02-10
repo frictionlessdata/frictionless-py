@@ -1,5 +1,6 @@
 import functools
 from copy import deepcopy
+from .resource import Resource
 from .metadata import Metadata
 from .errors import Error, TaskError, ReportError
 from .exception import FrictionlessException
@@ -30,15 +31,19 @@ class Report(Metadata):
 
     """
 
-    def __init__(self, descriptor=None, *, time, errors, tasks):
-        error_count = len(errors) + sum(tab["stats"]["errors"] for tab in tasks)
+    def __init__(self, descriptor=None, *, time=None, errors=None, tasks=None):
+
+        # Store provided
         self.setinitial("version", config.VERSION)
         self.setinitial("time", time)
-        self.setinitial("valid", not errors and all(task["valid"] for task in tasks))
-        self.setinitial("stats", {"errors": error_count, "tasks": len(tasks)})
         self.setinitial("errors", errors)
         self.setinitial("tasks", tasks)
         super().__init__(descriptor)
+
+        # Store computed
+        error_count = len(self.errors) + sum(task.stats["errors"] for task in self.tasks)
+        self.setinitial("stats", {"errors": error_count, "tasks": len(self.tasks)})
+        self.setinitial("valid", not error_count)
 
     @property
     def version(self):
@@ -168,6 +173,20 @@ class Report(Metadata):
         "items": {"type": "object"},
     }
 
+    def metadata_process(self):
+
+        # Tasks
+        tasks = self.get("tasks")
+        if isinstance(tasks, list):
+            for index, task in enumerate(tasks):
+                if not isinstance(task, ReportTask):
+                    task = ReportTask(task)
+                    list.__setitem__(tasks, index, task)
+            if not isinstance(tasks, helpers.ControlledList):
+                tasks = helpers.ControlledList(tasks)
+                tasks.__onchange__(self.metadata_process)
+                dict.__setitem__(self, "tasks", tasks)
+
     def metadata_validate(self):
         yield from super().metadata_validate()
 
@@ -196,15 +215,28 @@ class ReportTask(Metadata):
 
     """
 
-    def __init__(self, descriptor=None, *, resource, time, scope, partial, errors):
+    def __init__(
+        self,
+        descriptor=None,
+        *,
+        resource=None,
+        time=None,
+        scope=None,
+        partial=None,
+        errors=None
+    ):
+
+        # Store provided
         self.setinitial("resource", resource)
         self.setinitial("time", time)
         self.setinitial("valid", not errors)
         self.setinitial("scope", scope)
         self.setinitial("partial", partial)
-        self.setinitial("stats", {"errors": len(errors)})
         self.setinitial("errors", errors)
         super().__init__(descriptor)
+
+        # Store computed
+        self.setinitial("stats", {"errors": len(self.errors)})
 
     @property
     def resource(self):
@@ -306,3 +338,11 @@ class ReportTask(Metadata):
     metadata_Error = ReportError
     metadata_profile = config.REPORT_PROFILE["properties"]["tasks"]["items"]
     #  del metadata_profile["properties"]["errors"]
+
+    def metadata_process(self):
+
+        # Resource
+        resource = self.get("resource")
+        if not isinstance(resource, Resource):
+            resource = Resource(resource)
+            dict.__setitem__(self, "resource", resource)

@@ -102,7 +102,6 @@ def test_validate_inquiry_with_multiple_packages():
 # Parallel
 
 
-@pytest.mark.xfail
 @pytest.mark.ci
 def test_validate_inquiry_parallel_multiple():
     report = validate(
@@ -112,7 +111,6 @@ def test_validate_inquiry_parallel_multiple():
     assert report.valid
 
 
-@pytest.mark.xfail
 @pytest.mark.ci
 def test_validate_inquiry_parallel_multiple_invalid():
     report = validate(
@@ -131,7 +129,6 @@ def test_validate_inquiry_parallel_multiple_invalid():
     ]
 
 
-@pytest.mark.xfail
 @pytest.mark.ci
 def test_validate_inquiry_with_multiple_packages_with_parallel():
     report = validate(

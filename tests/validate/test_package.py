@@ -63,7 +63,7 @@ def test_validate_package_from_zip_invalid():
     ]
 
 
-@pytest.mark.xfail
+@pytest.mark.xfail(reason="non-tabular validation")
 def test_validate_package_with_non_tabular():
     report = validate(
         {
@@ -318,15 +318,14 @@ def test_check_file_package_stats_hash_not_supported_algorithm():
 # Parallel
 
 
-@pytest.mark.xfail
 @pytest.mark.ci
 def test_validate_package_parallel_from_dict():
     with open("data/package/datapackage.json") as file:
-        report = validate(json.load(file), basepath="data/package", parallel=True)
-        assert report.valid
+        with pytest.warns(UserWarning):
+            report = validate(json.load(file), basepath="data/package", parallel=True)
+            assert report.valid
 
 
-@pytest.mark.xfail
 @pytest.mark.ci
 def test_validate_package_parallel_from_dict_invalid():
     with open("data/invalid/datapackage.json") as file:
@@ -340,7 +339,6 @@ def test_validate_package_parallel_from_dict_invalid():
         ]
 
 
-@pytest.mark.xfail
 @pytest.mark.ci
 def test_validate_package_with_parallel():
     report = validate("data/invalid/datapackage.json", parallel=True)

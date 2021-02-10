@@ -98,10 +98,10 @@ class Metadata(helpers.ControlledDict):
         return type(self)(self.to_dict())
 
     def to_dict(self):
-        """Convert metadata to a dict
+        """Convert metadata to a plain dict
 
         Returns:
-            dict: metadata as a dict
+            dict: metadata as a plain dict
         """
         return helpers.deepfork(self)
 

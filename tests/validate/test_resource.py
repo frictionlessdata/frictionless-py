@@ -192,7 +192,7 @@ def test_validate_format():
     assert report.valid
 
 
-@pytest.mark.xfail
+@pytest.mark.xfail(reason="non-tabular validation")
 def test_validate_format_non_tabular():
     report = validate("data/table.bad")
     assert report.flatten(["code", "note"]) == [
