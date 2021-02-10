@@ -715,7 +715,6 @@ class Resource(Metadata):
         self["scheme"] = self.scheme
         self["format"] = self.format
         self["hashing"] = self.hashing
-        self["encoding"] = self.encoding
         if self.innerpath:
             self["innerpath"] = self.innerpath
         if self.compression:

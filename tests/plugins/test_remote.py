@@ -18,7 +18,6 @@ def test_remote_loader():
         ]
 
 
-@pytest.mark.xfail(reason="encoding")
 @pytest.mark.vcr
 def test_remote_loader_latin1():
     # Github returns wrong encoding `utf-8`

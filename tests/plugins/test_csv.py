@@ -114,7 +114,6 @@ def test_csv_parser_remote():
         ]
 
 
-@pytest.mark.xfail(reason="encoding")
 @pytest.mark.vcr
 def test_csv_parser_remote_non_ascii_url():
     source = "http://data.defra.gov.uk/ops/government_procurement_card/over_£500_GPC_apr_2013.csv"

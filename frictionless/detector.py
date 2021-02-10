@@ -1,3 +1,4 @@
+import codecs
 import chardet
 from copy import copy, deepcopy
 from .exception import FrictionlessException
@@ -98,7 +99,7 @@ class Detector:
 
     # Detect
 
-    def detect_encoding(self, buffer):
+    def detect_encoding(self, buffer, *, encoding=None):
         """Detect encoding from buffer
 
         Parameters:
@@ -107,15 +108,37 @@ class Detector:
         Returns:
             str: encoding
         """
+
+        # Use defined
         if self.__encoding_function:
             return self.__encoding_function(buffer)
-        result = chardet.detect(buffer)
-        encoding = result["encoding"] or config.DEFAULT_ENCODING
-        confidence = result["confidence"] or 0
-        if confidence < self.__encoding_confidence:
-            encoding = config.DEFAULT_ENCODING
-        if encoding == "ascii":
-            encoding = config.DEFAULT_ENCODING
+
+        # Detect encoding
+        if not encoding:
+            result = chardet.detect(buffer)
+            encoding = result["encoding"] or config.DEFAULT_ENCODING
+            confidence = result["confidence"] or 0
+            if confidence < self.__encoding_confidence:
+                encoding = config.DEFAULT_ENCODING
+            if encoding == "ascii":
+                encoding = config.DEFAULT_ENCODING
+            if encoding is None:
+                encoding = self.resource.detector.detect_encoding(buffer)
+
+        # Normalize encoding
+        encoding = codecs.lookup(encoding).name
+        # Work around for incorrect inferion of utf-8-sig encoding
+        if encoding == "utf-8":
+            if buffer.startswith(codecs.BOM_UTF8):
+                encoding = "utf-8-sig"
+        # Use the BOM stripping name (without byte-order) for UTF-16 encodings
+        elif encoding == "utf-16-be":
+            if buffer.startswith(codecs.BOM_UTF16_BE):
+                encoding = "utf-16"
+        elif encoding == "utf-16-le":
+            if buffer.startswith(codecs.BOM_UTF16_LE):
+                encoding = "utf-16"
+
         return encoding
 
     def detect_layout(self, sample, *, layout=None):

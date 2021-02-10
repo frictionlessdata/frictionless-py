@@ -519,7 +519,6 @@ def test_resource_encoding_explicit_latin1():
         ]
 
 
-@pytest.mark.xfail(reason="encoding")
 def test_resource_encoding_utf_16():
     # Bytes encoded as UTF-16 with BOM in platform order is detected
     bio = io.BytesIO(u"en,English\nja,日本語".encode("utf-16"))
@@ -705,7 +704,6 @@ def test_resource_compression_error_invalid_zip():
     assert error.note == "File is not a zip file"
 
 
-@pytest.mark.xfail(reason="encoding")
 @pytest.mark.skipif(sys.version_info < (3, 8), reason="Requires Python3.8+")
 def test_resource_compression_error_invalid_gz():
     source = b"id,filename\n\1,dump"
@@ -2511,10 +2509,8 @@ def test_resource_skip_blank_at_the_end_issue_bco_dmo_33():
         assert rows[1].cells == []
 
 
-@pytest.mark.xfail(reason="encoding")
 def test_resource_wrong_encoding_detection_issue_265():
     with Resource("data/accent.csv") as resource:
-        print(resource.encoding)
         assert resource.encoding == "iso8859-1"
 
 
