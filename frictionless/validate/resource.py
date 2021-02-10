@@ -104,29 +104,32 @@ def validate_resource(
                     errors.append(error)
 
             # Validate rows
-            for row in resource.row_stream:
+            if resource.tabular:
+                for row in resource.row_stream:
 
-                # Validate row
-                for check in checks:
-                    for error in check.validate_row(row):
-                        errors.append(error)
+                    # Validate row
+                    for check in checks:
+                        for error in check.validate_row(row):
+                            errors.append(error)
 
-                # Limit errors
-                if limit_errors and len(errors) >= limit_errors:
-                    partial = True
-                    break
-
-                # Limit memory
-                if limit_memory and not resource.stats["rows"] % 100000:
-                    memory = helpers.get_current_memory_usage()
-                    if memory and memory > limit_memory:
-                        note = f'exceeded memory limit "{limit_memory}MB"'
-                        errors.append(TaskError(note=note))
+                    # Limit errors
+                    if limit_errors and len(errors) >= limit_errors:
                         partial = True
                         break
 
+                    # Limit memory
+                    if limit_memory and not resource.stats["rows"] % 100000:
+                        memory = helpers.get_current_memory_usage()
+                        if memory and memory > limit_memory:
+                            note = f'exceeded memory limit "{limit_memory}MB"'
+                            errors.append(TaskError(note=note))
+                            partial = True
+                            break
+
             # Validate end
             if not partial:
+                if not resource.tabular:
+                    resource.infer(stats=True)
                 for check in checks:
                     for error in check.validate_end():
                         errors.append(error)

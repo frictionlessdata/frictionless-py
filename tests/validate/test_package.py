@@ -63,7 +63,6 @@ def test_validate_package_from_zip_invalid():
     ]
 
 
-@pytest.mark.xfail(reason="non-tabular validation")
 def test_validate_package_with_non_tabular():
     report = validate(
         {

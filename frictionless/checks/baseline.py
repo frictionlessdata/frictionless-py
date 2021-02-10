@@ -65,28 +65,28 @@ class baseline(Check):
         if stats.get("hash"):
             hashing = self.resource.hashing
             if stats["hash"] != self.resource.stats["hash"]:
-                note = 'expected hash in %s is "%s" and actual is "%s"'
+                note = 'expected %s is "%s" and actual is "%s"'
                 note = note % (hashing, stats["hash"], self.resource.stats["hash"])
                 yield errors.HashCountError(note=note)
 
         # Bytes
         if stats.get("bytes"):
             if stats["bytes"] != self.resource.stats["bytes"]:
-                note = 'expected bytes count is "%s" and actual is "%s"'
+                note = 'expected is "%s" and actual is "%s"'
                 note = note % (stats["bytes"], self.resource.stats["bytes"])
                 yield errors.ByteCountError(note=note)
 
         # Fields
         if stats.get("fields"):
             if stats["fields"] != self.resource.stats["fields"]:
-                note = 'expected fields count is "%s" and actual is "%s"'
+                note = 'expected is "%s" and actual is "%s"'
                 note = note % (stats["fields"], self.resource.stats["fields"])
                 yield errors.FieldCountError(note=note)
 
         # Rows
         if stats.get("rows"):
             if stats["rows"] != self.resource.stats["rows"]:
-                note = 'expected rows count is "%s" and actual is "%s"'
+                note = 'expected is "%s" and actual is "%s"'
                 note = note % (stats["rows"], self.resource.stats["rows"])
                 yield errors.RowCountError(note=note)
 
