@@ -647,10 +647,7 @@ class Package(Metadata):
     metadata_duplicate = True
     metadata_Error = errors.PackageError  # type: ignore
     metadata_profile = deepcopy(config.PACKAGE_PROFILE)
-    metadata_profile["properties"]["resources"] = {
-        "type": "array",
-        "items": {"type": "object"},
-    }
+    metadata_profile["properties"]["resources"] = {"type": "array"}
 
     def metadata_process(self):
 

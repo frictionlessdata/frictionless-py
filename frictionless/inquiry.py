@@ -1,4 +1,5 @@
 import stringcase
+from copy import deepcopy
 from multiprocessing import Pool
 from importlib import import_module
 from .metadata import Metadata
@@ -40,6 +41,10 @@ class Inquiry(Metadata):
         reports = []
         timer = helpers.Timer()
 
+        # Validate inquiry
+        if self.metadata_errors:
+            return Report(time=timer.time, errors=self.metadata_errors, tasks=[])
+
         # Validate sequentially
         if not parallel:
             for task in self.tasks:
@@ -64,9 +69,9 @@ class Inquiry(Metadata):
 
     # Metadata
 
-    metadata_strict = True
     metadata_Error = InquiryError
-    metadata_profile = config.INQUIRY_PROFILE
+    metadata_profile = deepcopy(config.INQUIRY_PROFILE)
+    metadata_profile["properties"]["tasks"] = {"type": "array"}
 
     def metadata_process(self):
 
@@ -81,6 +86,13 @@ class Inquiry(Metadata):
                 tasks = helpers.ControlledList(tasks)
                 tasks.__onchange__(self.metadata_process)
                 dict.__setitem__(self, "tasks", tasks)
+
+    def metadata_validate(self):
+        yield from super().metadata_validate()
+
+        # Fields
+        for task in self.tasks:
+            yield from task.metadata_errors
 
 
 class InquiryTask(Metadata):
@@ -126,7 +138,6 @@ class InquiryTask(Metadata):
 
     # Metadata
 
-    metadata_strict = True
     metadata_Error = InquiryError
     metadata_profile = config.INQUIRY_PROFILE["properties"]["tasks"]["items"]
 
