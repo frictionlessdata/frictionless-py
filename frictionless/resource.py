@@ -632,11 +632,10 @@ class Resource(Metadata):
             gen<bytes>?: byte stream
         """
         if not self.closed:
-            loader = self.__loader
-            if not loader:
-                loader = system.create_loader(self)
-                loader.open()
-            return loader.byte_stream
+            if not self.__loader:
+                self.__loader = system.create_loader(self)
+                self.__loader.open()
+            return self.__loader.byte_stream
 
     @property
     def text_stream(self):
@@ -646,11 +645,10 @@ class Resource(Metadata):
             gen<str[]>?: text stream
         """
         if not self.closed:
-            loader = self.__loader
-            if not loader:
-                loader = system.create_loader(self)
-                loader.open()
-            return loader.text_stream
+            if not self.__loader:
+                self.__loader = system.create_loader(self)
+                self.__loader.open()
+            return self.__loader.text_stream
 
     @property
     def list_stream(self):
