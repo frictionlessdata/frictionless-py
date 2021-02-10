@@ -13,27 +13,42 @@ Frictionless is a logical continuation of many currently existing packages:
 
 Although, most of these packages will be supported going forward, you can migrate to Frictionless as it improves many aspects of working with data and metadata.
 
+## From frictionless@3
+
+> This section in under development. Please consult with [CHANGELOG](../development/changelog.md) while it's being completed.
+
+### Table/Resource
+
+The main change in v4 is that `Table` is now merged into the `Resource` class. You can use `Resource` mostly the same way you used `Table` previously.
+
+```python
+# Before
+with Table('data/table.csv') as table:
+    # use table
+# After
+with Resource('data/table.csv') as resource:
+    # use resource
+```
+
 ## From goodtables
 
 Frictionless provides the `frictionless validate` function which is in high-level exactly the same as `goodtables validate`. Also `frictionless describe` is an improved version of `goodtables init`. You instead need to use the `frictionless` command instead of the `goodtables` command:
 
-```sh
+```bash
 # Before
 $ goodtables validate table.csv
 # After
 $ frictionless validate table.csv
 ```
 
-
 The Python interface is also mostly identical:
 
-```py
+```python
 # Before
 report = goodtables.validate('table.csv')
 # After
 report = frictionless.validate('table.csv')
 ```
-
 
 Please read the following sections and use `frictionless validate --help` to learn what is the difference in the options and in report's properties.
 
@@ -58,7 +73,7 @@ Please read the following sections and use `frictionless validate --help` to lea
 
 Frictionless has `Resource` and `Package` classes which is almost the same as `datapackage` has. There are a lot of improvements for working with metadata described in the "Describing Data" guide.
 
-```py
+```python
 # Before
 resource = datapackage.Resource('resource.json')
 package = datapackage.Package('package.json')
@@ -66,7 +81,6 @@ package = datapackage.Package('package.json')
 resource = frictionless.Resource('resource.json')
 package = frictionless.Package('package.json')
 ```
-
 
 ### Package
 
@@ -94,7 +108,7 @@ package = frictionless.Package('package.json')
 
 Frictionless has `Schema` and `Fields` classes which is almost the same as `tableschema` has. There are a lot of improvements for working with metadata described in the "Describing Data" guide.
 
-```py
+```python
 # Before
 schema = tableschema.Schema('schema.json')
 field = tableschema.Field('field.json')
@@ -102,7 +116,6 @@ field = tableschema.Field('field.json')
 schema = frictionless.Schema('schema.json')
 field = frictionless.Field('field.json')
 ```
-
 
 ### Schema
 
@@ -126,10 +139,9 @@ field = frictionless.Field('field.json')
 
 ## From tabulator
 
-
 Frictionless has `Table` class which is an equivalent of the tabulator's `Stream` class.
 
-```py
+```python
 # Before
 with tabulator.Stream('table.csv') as stream:
   print(stream.read())
@@ -137,7 +149,6 @@ with tabulator.Stream('table.csv') as stream:
 with frictionless.Table('table.csv') as table:
   print(table.read_rows())
 ```
-
 
 ### Table
 
