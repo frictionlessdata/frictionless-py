@@ -17,7 +17,7 @@ Although, most of these packages will be supported going forward, you can migrat
 
 > This section in under development. Please consult with [CHANGELOG](../development/changelog.md) while it's being completed.
 
-### Table/Resource
+### Table
 
 The main change in v4 is that `Table` is now merged into the `Resource` class. You can use `Resource` mostly the same way you used `Table` previously.
 
