@@ -102,6 +102,30 @@ Template: `{note}` <br/>
 Description: `Error` <br/>
 
 
+## File Error
+
+Code: `file-error` <br/>
+Tags: `#file` <br/>
+Template: `General file error: {note}` <br/>
+Description: `There is a file error.` <br/>
+
+
+## Hash Count Error
+
+Code: `hash-count-error` <br/>
+Tags: `#file` <br/>
+Template: `The data source does not match the expected hash count: {note}` <br/>
+Description: `This error can happen if the data is corrupted.` <br/>
+
+
+## Byte Count Error
+
+Code: `byte-count-error` <br/>
+Tags: `#file` <br/>
+Template: `The data source does not match the expected byte count: {note}` <br/>
+Description: `This error can happen if the data is corrupted.` <br/>
+
+
 ## Package Error
 
 Code: `package-error` <br/>
@@ -122,7 +146,7 @@ Description: `A validation cannot be processed.` <br/>
 
 Code: `pipeline-error` <br/>
 Tags: `#general` <br/>
-Template: `The pipeline is not valid: {note}` <br/>
+Template: `Pipeline is not valid: {note}` <br/>
 Description: `Provided pipeline is not valid.` <br/>
 
 
@@ -130,7 +154,7 @@ Description: `Provided pipeline is not valid.` <br/>
 
 Code: `inquiry-error` <br/>
 Tags: `#general` <br/>
-Template: `The inquiry is not valid: {note}` <br/>
+Template: `Inquiry is not valid: {note}` <br/>
 Description: `Provided inquiry is not valid.` <br/>
 
 
@@ -138,7 +162,7 @@ Description: `Provided inquiry is not valid.` <br/>
 
 Code: `control-error` <br/>
 Tags: `#general` <br/>
-Template: `Control object is not valid: {note}` <br/>
+Template: `Control is not valid: {note}` <br/>
 Description: `Provided control is not valid.` <br/>
 
 
@@ -146,7 +170,7 @@ Description: `Provided control is not valid.` <br/>
 
 Code: `dialect-error` <br/>
 Tags: `#general` <br/>
-Template: `Dialect object is not valid: {note}` <br/>
+Template: `Dialect is not valid: {note}` <br/>
 Description: `Provided dialect is not valid.` <br/>
 
 
@@ -154,7 +178,7 @@ Description: `Provided dialect is not valid.` <br/>
 
 Code: `layout-error` <br/>
 Tags: `#general` <br/>
-Template: `The data source could not be successfully described by the invalid Table Layout: {note}` <br/>
+Template: `Layout is not valid: {note}` <br/>
 Description: `Provided layout is not valid.` <br/>
 
 
@@ -162,7 +186,7 @@ Description: `Provided layout is not valid.` <br/>
 
 Code: `schema-error` <br/>
 Tags: `#general` <br/>
-Template: `The data source could not be successfully described by the invalid Table Schema: {note}` <br/>
+Template: `Schema is not valid: {note}` <br/>
 Description: `Provided schema is not valid.` <br/>
 
 
@@ -170,7 +194,7 @@ Description: `Provided schema is not valid.` <br/>
 
 Code: `field-error` <br/>
 Tags: `#general` <br/>
-Template: `The data source could not be successfully described by the invalid Table Schema: {note}` <br/>
+Template: `Field is not valid: {note}` <br/>
 Description: `Provided field is not valid.` <br/>
 
 
@@ -178,15 +202,15 @@ Description: `Provided field is not valid.` <br/>
 
 Code: `report-error` <br/>
 Tags: `#general` <br/>
-Template: `The validation report has an error: {note}` <br/>
-Description: `A validation cannot be presented.` <br/>
+Template: `Report is not valid: {note}` <br/>
+Description: `Provided report is not valid.` <br/>
 
 
 ## Status Error
 
 Code: `status-error` <br/>
 Tags: `#general` <br/>
-Template: `The status is not valid: {note}` <br/>
+Template: `Status is not valid: {note}` <br/>
 Description: `Provided status is not valid.` <br/>
 
 
@@ -194,16 +218,16 @@ Description: `Provided status is not valid.` <br/>
 
 Code: `check-error` <br/>
 Tags: `#general` <br/>
-Template: `The validation check has an error: {note}` <br/>
-Description: `A validation check cannot be created` <br/>
+Template: `Check is not valid: {note}` <br/>
+Description: `Provided check is not valid` <br/>
 
 
 ## Step Error
 
 Code: `step-error` <br/>
 Tags: `#general` <br/>
-Template: `The transfrom step has an error: {note}` <br/>
-Description: `A transform step cannot be finished` <br/>
+Template: `Step is not valid: {note}` <br/>
+Description: `Provided step is not valid` <br/>
 
 
 ## Source Error
@@ -382,11 +406,19 @@ Template: `The row at position {rowPosition} has an error: {note}` <br/>
 Description: `The value does not conform to the row constraint.` <br/>
 
 
-## Checksum Error
+## Field Count Error
 
-Code: `checksum-error` <br/>
+Code: `field-count-error` <br/>
 Tags: `#table` <br/>
-Template: `The data source does not match the expected checksum: {note}` <br/>
+Template: `The data source does not match the expected field count: {note}` <br/>
+Description: `This error can happen if the data is corrupted.` <br/>
+
+
+## Row Count Error
+
+Code: `row-count-error` <br/>
+Tags: `#table` <br/>
+Template: `The data source does not match the expected row count: {note}` <br/>
 Description: `This error can happen if the data is corrupted.` <br/>
 
 

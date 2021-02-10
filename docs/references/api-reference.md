@@ -251,55 +251,13 @@ Connect to the given resource
 
 - `resource` _Resource_ - data resource
 
-### check.prepare
+### check.validate\_start
 
 ```python
- | prepare()
+ | validate_start()
 ```
 
-Called before validation
-
-### check.validate\_check
-
-```python
- | validate_check()
-```
-
-Called to validate the check itself
-
-**Yields**:
-
-- `Error` - found errors
-
-### check.validate\_schema
-
-```python
- | validate_schema()
-```
-
-Called to validate the given schema
-
-**Arguments**:
-
-- `schema` _Schema_ - table schema
-  
-
-**Yields**:
-
-- `Error` - found errors
-
-### check.validate\_header
-
-```python
- | validate_header()
-```
-
-Called to validate the given header
-
-**Arguments**:
-
-- `header` _Header_ - table header
-  
+Called to validate the resource after opening
 
 **Yields**:
 
@@ -317,6 +275,18 @@ Called to validate the given row (on every row)
 
 - `row` _Row_ - table row
   
+
+**Yields**:
+
+- `Error` - found errors
+
+### check.validate\_end
+
+```python
+ | validate_end()
+```
+
+Called to validate the resource before closing
 
 **Yields**:
 
@@ -647,7 +617,7 @@ Public   | `from frictionless import Detector`
 ### detector.detect\_encoding
 
 ```python
- | detect_encoding(buffer)
+ | detect_encoding(buffer, *, encoding=None)
 ```
 
 Detect encoding from buffer
@@ -1006,6 +976,17 @@ Public   | `from frictionless import Field`
 **Returns**:
 
 - `bool` - if field is requried
+
+### field.builtin
+
+```python
+ | @property
+ | builtin()
+```
+
+**Returns**:
+
+- `bool` - returns True is the type is not custom
 
 ### field.schema
 
@@ -2138,13 +2119,13 @@ Create bytes stream
 
 - `io.ByteStream` - resource byte stream
 
-### loader.read\_byte\_stream\_infer\_stats
+### loader.read\_byte\_stream\_process
 
 ```python
- | read_byte_stream_infer_stats(byte_stream)
+ | read_byte_stream_process(byte_stream)
 ```
 
-Infer byte stream stats
+Process byte stream
 
 **Arguments**:
 
@@ -2172,6 +2153,35 @@ Decompress byte stream
 
 - `io.ByteStream` - resource byte stream
 
+### loader.read\_byte\_stream\_buffer
+
+```python
+ | read_byte_stream_buffer(byte_stream)
+```
+
+Buffer byte stream
+
+**Arguments**:
+
+- `byte_stream` _io.ByteStream_ - resource byte stream
+  
+
+**Returns**:
+
+- `bytes` - buffer
+
+### loader.read\_byte\_stream\_analyze
+
+```python
+ | read_byte_stream_analyze(buffer)
+```
+
+Detect metadta using sample
+
+**Arguments**:
+
+- `buffer` _bytes_ - byte buffer
+
 ### loader.read\_text\_stream
 
 ```python
@@ -2183,35 +2193,6 @@ Read text stream
 **Returns**:
 
 - `io.TextStream` - resource text stream
-
-### loader.read\_text\_stream\_infer\_encoding
-
-```python
- | read_text_stream_infer_encoding(byte_stream)
-```
-
-Infer text stream encoding
-
-**Arguments**:
-
-- `byte_stream` _io.ByteStream_ - resource byte stream
-
-### loader.read\_text\_stream\_decode
-
-```python
- | read_text_stream_decode(byte_stream)
-```
-
-Decode text stream
-
-**Arguments**:
-
-- `byte_stream` _io.ByteStream_ - resource byte stream
-  
-
-**Returns**:
-
-- `text_stream` _io.TextStream_ - resource text stream
 
 ### loader.write\_byte\_stream
 
@@ -2352,11 +2333,11 @@ Create a copy of the metadata
  | to_dict()
 ```
 
-Convert metadata to a dict
+Convert metadata to a plain dict
 
 **Returns**:
 
-- `dict` - metadata as a dict
+- `dict` - metadata as a plain dict
 
 ### metadata.to\_json
 
@@ -5312,7 +5293,7 @@ Status representation.
 
 **Returns**:
 
-- `float` - validation time
+- `float` - transformation time
 
 ### status.valid
 
@@ -5323,7 +5304,7 @@ Status representation.
 
 **Returns**:
 
-- `bool` - validation result
+- `bool` - transformation result
 
 ### status.stats
 
@@ -5334,7 +5315,7 @@ Status representation.
 
 **Returns**:
 
-- `dict` - validation stats
+- `dict` - transformation stats
 
 ### status.errors
 
@@ -5345,7 +5326,7 @@ Status representation.
 
 **Returns**:
 
-- `Error[]` - validation errors
+- `Error[]` - transformation errors
 
 ### status.tasks
 
@@ -5356,7 +5337,7 @@ Status representation.
 
 **Returns**:
 
-- `ReportTable[]` - validation tasks
+- `ReportTable[]` - transformation tasks
 
 ### status.task
 
@@ -5367,7 +5348,7 @@ Status representation.
 
 **Returns**:
 
-- `ReportTable` - validation task (if there is only one)
+- `ReportTable` - transformation task (if there is only one)
   
 
 **Raises**:
@@ -5382,6 +5363,17 @@ class StatusTask(Metadata)
 
 Status Task representation
 
+### statusTask.time
+
+```python
+ | @property
+ | time()
+```
+
+**Returns**:
+
+- `dict` - transformation time
+
 ### statusTask.valid
 
 ```python
@@ -5391,7 +5383,18 @@ Status Task representation
 
 **Returns**:
 
-- `bool` - validation result
+- `bool` - transformation result
+
+### statusTask.stats
+
+```python
+ | @property
+ | stats()
+```
+
+**Returns**:
+
+- `dict` - transformation stats
 
 ### statusTask.errors
 
@@ -5402,7 +5405,7 @@ Status Task representation
 
 **Returns**:
 
-- `Error[]` - validation errors
+- `Error[]` - transformation errors
 
 ### statusTask.target
 
@@ -5413,7 +5416,7 @@ Status Task representation
 
 **Returns**:
 
-- `any` - validation target
+- `any` - transformation target
 
 ### statusTask.type
 
@@ -5424,7 +5427,49 @@ Status Task representation
 
 **Returns**:
 
-- `any` - validation target
+- `any` - transformation target
+
+## Step
+
+```python
+class Step(Metadata)
+```
+
+Step representation
+
+### step.transform\_resource
+
+```python
+ | transform_resource(resource)
+```
+
+Transform resource
+
+**Arguments**:
+
+- `resource` _Resource_ - resource
+  
+
+**Returns**:
+
+- `resource` _Resource_ - resource
+
+### step.transform\_package
+
+```python
+ | transform_package(resource)
+```
+
+Transform package
+
+**Arguments**:
+
+- `package` _Package_ - package
+  
+
+**Returns**:
+
+- `package` _Package_ - package
 
 ## StreamControl
 
