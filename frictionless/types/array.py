@@ -12,6 +12,7 @@ class ArrayType(Type):
     """
 
     code = "array"
+    builtin = True
     constraints = [
         "required",
         "minLength",

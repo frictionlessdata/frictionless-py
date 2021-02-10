@@ -13,6 +13,7 @@ class DurationType(Type):
     """
 
     code = "duration"
+    builtin = True
     constraints = [
         "required",
         "enum",

@@ -14,6 +14,7 @@ class IntegerType(Type):
     """
 
     code = "integer"
+    builtin = True
     constraints = [
         "required",
         "minimum",

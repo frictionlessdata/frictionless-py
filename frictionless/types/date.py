@@ -14,6 +14,7 @@ class DateType(Type):
     """
 
     code = "date"
+    builtin = True
     constraints = [
         "required",
         "minimum",

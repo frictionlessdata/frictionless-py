@@ -11,6 +11,7 @@ class AnyType(Type):
     """
 
     code = "any"
+    builtin = True
     constraints = [
         "required",
         "enum",

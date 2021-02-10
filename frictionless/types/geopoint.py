@@ -14,6 +14,7 @@ class GeopointType(Type):
     """
 
     code = "geopoint"
+    builtin = True
     constraints = [
         "required",
         "enum",
