@@ -38,7 +38,6 @@ class Metadata(helpers.ControlledDict):
 
     metadata_Error = None
     metadata_profile = None
-    metadata_strict = False
     metadata_duplicate = False
 
     def __init__(self, descriptor=None):
@@ -73,9 +72,6 @@ class Metadata(helpers.ControlledDict):
                 if reset and key in self.__dict__:
                     self.__dict__.pop(key)
             self.metadata_process()
-            if self.metadata_strict:
-                for error in self.metadata_errors:
-                    raise FrictionlessException(error)
 
     def setinitial(self, key, value):
         """Set an initial item in a subclass' constructor

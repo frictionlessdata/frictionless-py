@@ -30,5 +30,4 @@ class Step(Metadata):
 
     # Metadata
 
-    metadata_strict = True
     metadata_Error = errors.StepError

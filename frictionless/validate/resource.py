@@ -45,7 +45,7 @@ def validate_resource(
     # Create state
     partial = False
     task_errors = []
-    table_errors = TableErrors(pick_errors, skip_errors, limit_errors)
+    resource_errors = ResourceErrors(pick_errors, skip_errors, limit_errors)
     timer = helpers.Timer()
 
     # Create resource
@@ -70,7 +70,7 @@ def validate_resource(
     try:
         resource.open()
     except FrictionlessException as exception:
-        table_errors.append(exception.error, force=True)
+        resource_errors.append(exception.error, force=True)
         resource.close()
 
     # Prepare checks
@@ -84,13 +84,19 @@ def validate_resource(
                 else system.create_check(check)
             )
 
+    # Validate checks
+    for index, check in enumerate(checks.copy()):
+        if check.metadata_errors:
+            task_errors.extend(check.metadata_errors)
+            del check[index]
+
     # Enter table
-    if not table_errors:
+    if not resource_errors:
         with resource:
 
             # Prepare checks
             for check in checks:
-                table_errors.register(check)
+                resource_errors.register(check)
                 check.connect(resource)
                 check.prepare()
 
@@ -104,18 +110,18 @@ def validate_resource(
             # Validate source
             for check in checks:
                 for error in check.validate_source():
-                    table_errors.append(error, force=True)
+                    resource_errors.append(error, force=True)
 
             # Validate schema
             for check in checks:
                 for error in check.validate_schema():
-                    table_errors.append(error, force=True)
+                    resource_errors.append(error, force=True)
 
             # Validate header
             if resource.header:
                 for check in checks:
                     for error in check.validate_header():
-                        table_errors.append(error)
+                        resource_errors.append(error)
 
             # Validate rows
             for row in resource.row_stream:
@@ -123,10 +129,10 @@ def validate_resource(
                 # Validate row
                 for check in checks:
                     for error in check.validate_row(row):
-                        table_errors.append(error)
+                        resource_errors.append(error)
 
                 # Limit errors
-                if limit_errors and len(table_errors) >= limit_errors:
+                if limit_errors and len(resource_errors) >= limit_errors:
                     partial = True
                     break
 
@@ -143,7 +149,7 @@ def validate_resource(
             if not partial:
                 for check in checks:
                     for error in check.validate_table():
-                        table_errors.append(error)
+                        resource_errors.append(error)
 
     # Return report
     return Report(
@@ -152,9 +158,9 @@ def validate_resource(
         tasks=[
             ReportTask(
                 time=timer.time,
-                scope=table_errors.scope,
+                scope=resource_errors.scope,
                 partial=partial,
-                errors=table_errors,
+                errors=resource_errors,
                 resource=resource,
             )
         ],
@@ -164,7 +170,7 @@ def validate_resource(
 # Internal
 
 
-class TableErrors(list):
+class ResourceErrors(list):
     def __init__(self, pick_errors, skip_errors, limit_errors):
         self.__pick_errors = set(pick_errors or [])
         self.__skip_errors = set(skip_errors or [])
