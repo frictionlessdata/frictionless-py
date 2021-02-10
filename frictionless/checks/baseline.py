@@ -16,6 +16,12 @@ class baseline(Check):
 
     code = "baseline"
     Errors = [
+        # File
+        errors.HashCountError,
+        errors.ByteCountError,
+        # Table
+        errors.FieldCountError,
+        errors.RowCountError,
         # Header
         errors.BlankHeaderError,
         # Label
@@ -34,8 +40,6 @@ class baseline(Check):
         errors.TypeError,
         errors.ConstraintError,
         errors.UniqueError,
-        # Table
-        errors.ChecksumError,
     ]
 
     def __init__(self, descriptor=None, *, stats=None):
@@ -44,53 +48,47 @@ class baseline(Check):
 
     # Validate
 
-    # TODO: rename to validate_start?
-    def validate_source(self):
-        empty = not (self.resource.sample or self.resource.labels)
-        yield from [errors.SourceError(note="the source is empty")] if empty else []
-
-    def validate_schema(self):
-        empty = not (self.resource.sample or self.resource.labels)
-        yield from self.resource.schema.metadata_errors if not empty else []
-
-    def validate_header(self):
-        yield from self.resource.header.errors
+    def validate_start(self):
+        if self.resource.tabular:
+            empty = not (self.resource.labels or self.resource.fragment)
+            yield from [errors.SourceError(note="the source is empty")] if empty else []
+            yield from self.resource.header.errors
+        yield from []
 
     def validate_row(self, row):
         yield from row.errors
 
-    # TODO: rename to validate_end?
-    def validate_table(self):
+    def validate_end(self):
         stats = self.get("stats", {})
 
         # Hash
         if stats.get("hash"):
             hashing = self.resource.hashing
             if stats["hash"] != self.resource.stats["hash"]:
-                note = 'expected hash in %s is "%s" and actual is "%s"'
+                note = 'expected %s is "%s" and actual is "%s"'
                 note = note % (hashing, stats["hash"], self.resource.stats["hash"])
-                yield errors.ChecksumError(note=note)
+                yield errors.HashCountError(note=note)
 
         # Bytes
         if stats.get("bytes"):
             if stats["bytes"] != self.resource.stats["bytes"]:
-                note = 'expected bytes count is "%s" and actual is "%s"'
+                note = 'expected is "%s" and actual is "%s"'
                 note = note % (stats["bytes"], self.resource.stats["bytes"])
-                yield errors.ChecksumError(note=note)
+                yield errors.ByteCountError(note=note)
 
         # Fields
         if stats.get("fields"):
             if stats["fields"] != self.resource.stats["fields"]:
-                note = 'expected fields count is "%s" and actual is "%s"'
+                note = 'expected is "%s" and actual is "%s"'
                 note = note % (stats["fields"], self.resource.stats["fields"])
-                yield errors.ChecksumError(note=note)
+                yield errors.FieldCountError(note=note)
 
         # Rows
         if stats.get("rows"):
             if stats["rows"] != self.resource.stats["rows"]:
-                note = 'expected rows count is "%s" and actual is "%s"'
+                note = 'expected is "%s" and actual is "%s"'
                 note = note % (stats["rows"], self.resource.stats["rows"])
-                yield errors.ChecksumError(note=note)
+                yield errors.RowCountError(note=note)
 
     # Metadata
 

@@ -11,6 +11,8 @@ from . import errors
 
 
 class Step(Metadata):
+    """Step representation"""
+
     code = "step"
 
     def __init__(self, descriptor=None, *, function=None):
@@ -21,14 +23,29 @@ class Step(Metadata):
     # Transform
 
     def transform_resource(self, resource):
+        """Transform resource
+
+        Parameters:
+            resource (Resource): resource
+
+        Returns:
+            resource (Resource): resource
+        """
         if self.__function:
             return self.__function(resource)
 
     def transform_package(self, resource):
+        """Transform package
+
+        Parameters:
+            package (Package): package
+
+        Returns:
+            package (Package): package
+        """
         if self.__function:
             return self.__function(resource)
 
     # Metadata
 
-    metadata_strict = True
     metadata_Error = errors.StepError

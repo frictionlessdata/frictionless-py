@@ -229,10 +229,7 @@ class Schema(Metadata):
     metadata_duplicate = True
     metadata_Error = errors.SchemaError  # type: ignore
     metadata_profile = deepcopy(config.SCHEMA_PROFILE)
-    metadata_profile["properties"]["fields"] = {
-        "type": "array",
-        "items": {"type": "object"},
-    }
+    metadata_profile["properties"]["fields"] = {"type": "array"}
 
     def metadata_process(self):
 

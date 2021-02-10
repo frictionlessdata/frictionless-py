@@ -24,7 +24,7 @@ def program_extract(
     encoding: str = Opt(None, help="Specify encoding  [default: inferred]"),
     innerpath: str = Opt(None, help="Specify in-archive path  [default: first]"),
     compression: str = Opt(None, help="Specify compression  [default: inferred]"),
-    # Table
+    # Layout
     header_rows: str = Opt(None, help="Comma-separated row numbers  [default: 1]"),
     header_join: str = Opt(None, help="A separator to join a multiline header"),
     pick_fields: str = Opt(None, help='Comma-separated fields to pick e.g. "1,name1"'),
@@ -35,6 +35,7 @@ def program_extract(
     skip_rows: str = Opt(None, help='Comma-separated rows to skip e.g. "2,3,4,5"'),
     limit_rows: int = Opt(None, help="Limit rows by this integer"),
     offset_rows: int = Opt(None, help="Offset rows by this integer"),
+    # Schema
     schema: str = Opt(None, help="Specify a path to a schema"),
     # Detector
     buffer_size: int = Opt(None, help="Limit byte buffer size by this integer"),
@@ -45,7 +46,7 @@ def program_extract(
     field_float_numbers: bool = Opt(None, help="Make number floats instead of decimals"),
     field_missing_values: str = Opt(None, help="Comma-separated list of missing values"),
     schema_sync: bool = Opt(None, help="Sync the schema based on headers"),
-    # Misc
+    # Extraction
     basepath: str = Opt(None, help="Basepath of the resource/package"),
     yaml: bool = Opt(False, help="Return in pure YAML format"),
     json: bool = Opt(False, help="Return in JSON format"),

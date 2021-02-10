@@ -43,39 +43,10 @@ class Check(Metadata):
         """
         self.__resource = resource
 
-    def prepare(self):
-        """Called before validation"""
-        pass
-
     # Validate
 
-    def validate_check(self):
-        """Called to validate the check itself
-
-        Yields:
-            Error: found errors
-        """
-        yield from []
-
-    def validate_source(self):
-        yield from []
-
-    def validate_schema(self):
-        """Called to validate the given schema
-
-        Parameters:
-            schema (Schema): table schema
-
-        Yields:
-            Error: found errors
-        """
-        yield from []
-
-    def validate_header(self):
-        """Called to validate the given header
-
-        Parameters:
-            header (Header): table header
+    def validate_start(self):
+        """Called to validate the resource after opening
 
         Yields:
             Error: found errors
@@ -91,15 +62,16 @@ class Check(Metadata):
         Yields:
             Error: found errors
         """
-        if self.__function:
-            yield from self.__function(row)
-            return
-        yield from []
+        yield from self.__function(row) if self.__function else []
 
-    def validate_table(self):
+    def validate_end(self):
+        """Called to validate the resource before closing
+
+        Yields:
+            Error: found errors
+        """
         yield from []
 
     # Metadata
 
-    metadata_strict = True
     metadata_Error = errors.CheckError

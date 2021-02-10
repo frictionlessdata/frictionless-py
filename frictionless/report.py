@@ -32,7 +32,6 @@ class Report(Metadata):
     """
 
     def __init__(self, descriptor=None, *, time=None, errors=None, tasks=None):
-        # TODO: merge groups after metadata_strict removal
 
         # Store provided
         self.setinitial("version", config.VERSION)
@@ -166,13 +165,9 @@ class Report(Metadata):
 
     # Metadata
 
-    #  metadata_strict = True
     metadata_Error = ReportError
     metadata_profile = deepcopy(config.REPORT_PROFILE)
-    metadata_profile["properties"]["tasks"] = {
-        "type": "array",
-        "items": {"type": "object"},
-    }
+    metadata_profile["properties"]["tasks"] = {"type": "array"}
 
     def metadata_process(self):
 
@@ -226,7 +221,6 @@ class ReportTask(Metadata):
         partial=None,
         errors=None
     ):
-        # TODO: merge groups after metadata_strict removal
 
         # Store provided
         self.setinitial("resource", resource)
@@ -336,10 +330,8 @@ class ReportTask(Metadata):
 
     # Metadata
 
-    #  metadata_strict = True
     metadata_Error = ReportError
     metadata_profile = config.REPORT_PROFILE["properties"]["tasks"]["items"]
-    #  del metadata_profile["properties"]["errors"]
 
     def metadata_process(self):
 

@@ -1,3 +1,4 @@
+from copy import deepcopy
 from multiprocessing import Pool
 from importlib import import_module
 from .errors import PipelineError, TaskError
@@ -42,6 +43,10 @@ class Pipeline(Metadata):
         statuses = []
         timer = helpers.Timer()
 
+        # Validate pipeline
+        if self.metadata_errors:
+            return Status(time=timer.time, errors=self.metadata_errors, tasks=[])
+
         # Transform sequentially
         if not parallel:
             for task in self.tasks:
@@ -66,9 +71,9 @@ class Pipeline(Metadata):
 
     # Metadata
 
-    metadata_strict = True
     metadata_Error = PipelineError
-    metadata_profile = config.PIPELINE_PROFILE
+    metadata_profile = deepcopy(config.PIPELINE_PROFILE)
+    metadata_profile["properties"]["tasks"] = {"type": "array"}
 
     def metadata_process(self):
 
@@ -83,6 +88,13 @@ class Pipeline(Metadata):
                 tasks = helpers.ControlledList(tasks)
                 tasks.__onchange__(self.metadata_process)
                 dict.__setitem__(self, "tasks", tasks)
+
+    def metadata_validate(self):
+        yield from super().metadata_validate()
+
+        # Tasks
+        for task in self.tasks:
+            yield from task.metadata_errors
 
 
 class PipelineTask(Metadata):
@@ -131,7 +143,6 @@ class PipelineTask(Metadata):
 
     # Metadata
 
-    metadata_strict = True
     metadata_Error = PipelineError
     metadata_profile = config.PIPELINE_PROFILE["properties"]["tasks"]["items"]
 

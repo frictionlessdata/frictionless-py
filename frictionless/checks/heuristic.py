@@ -20,7 +20,8 @@ class duplicate_row(Check):
     code = "duplicate-row"
     Errors = [errors.DuplicateRowError]
 
-    def prepare(self):
+    def __init__(self, descriptor=None):
+        super().__init__(descriptor)
         self.__memory = {}
 
     def validate_row(self, row):
@@ -67,9 +68,6 @@ class deviated_value(Check):
         self.setinitial("average", average)
         self.setinitial("interval", interval)
         super().__init__(descriptor)
-
-    def prepare(self):
-        self.__exited = False
         self.__cells = []
         self.__row_positions = []
         self.__field_name = self["fieldName"]
@@ -79,7 +77,7 @@ class deviated_value(Check):
 
     # Validate
 
-    def validate_check(self):
+    def validate_start(self):
         numeric = ["integer", "number"]
         if self.__field_name not in self.resource.schema.field_names:
             note = 'deviated value check requires field "%s" to exist'
@@ -99,7 +97,7 @@ class deviated_value(Check):
             self.__row_positions.append(row.row_position)
         yield from []
 
-    def validate_table(self):
+    def validate_end(self):
         if len(self.__cells) < 2:
             return
 

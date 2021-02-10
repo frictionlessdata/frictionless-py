@@ -1,3 +1,4 @@
+from copy import deepcopy
 from .exception import FrictionlessException
 from .errors import Error, StatusError
 from .metadata import Metadata
@@ -19,7 +20,6 @@ class Status(Metadata):
     """
 
     def __init__(self, descriptor=None, *, time=None, errors=None, tasks=None):
-        # TODO: merge groups after metadata_strict removal
 
         # Store provided
         self.setinitial("version", config.VERSION)
@@ -97,9 +97,9 @@ class Status(Metadata):
 
     # Metadata
 
-    metadata_strict = True
     metadata_Error = StatusError
-    metadata_profile = config.STATUS_PROFILE
+    metadata_profile = deepcopy(config.STATUS_PROFILE)
+    metadata_profile["properties"]["tasks"] = {"type": "array"}
 
     def metadata_process(self):
 
@@ -115,6 +115,13 @@ class Status(Metadata):
                 tasks.__onchange__(self.metadata_process)
                 dict.__setitem__(self, "tasks", tasks)
 
+    def metadata_validate(self):
+        yield from super().metadata_validate()
+
+        # Tasks
+        for task in self.tasks:
+            yield from task.metadata_errors
+
 
 class StatusTask(Metadata):
     """ Status Task representation"""
@@ -128,15 +135,12 @@ class StatusTask(Metadata):
         target=None,
         type=None,
     ):
-        # TODO: merge groups after metadata_strict removal
 
         # Store provided
         self.setinitial("time", not errors)
         self.setinitial("errors", errors)
         self.setinitial("target", target)
         self.setinitial("type", type)
-        # TODO: remove this hack after metadata_strict removal
-        self.setinitial("valid", True)
         super().__init__(descriptor)
 
         # Store computed
@@ -193,7 +197,6 @@ class StatusTask(Metadata):
 
     # Metadata
 
-    metadata_strict = True
     metadata_Error = StatusError
     metadata_profile = config.STATUS_PROFILE["properties"]["tasks"]["items"]
 

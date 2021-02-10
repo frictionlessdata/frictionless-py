@@ -617,12 +617,11 @@ class Resource(Metadata):
         """
         if not self.closed:
             return bool(self.__parser)
-        else:
-            try:
-                system.create_parser(self)
-                return True
-            except Exception:
-                return False
+        try:
+            system.create_parser(self)
+            return True
+        except Exception:
+            return False
 
     @property
     def byte_stream(self):

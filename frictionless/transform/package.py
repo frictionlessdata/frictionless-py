@@ -37,6 +37,11 @@ def transform_package(source, *, steps, **options):
                 else system.create_step(step)
             )
 
+    # Validate steps
+    for step in steps:
+        if step.metadata_errors:
+            raise FrictionlessException(step.metadata_errors[0])
+
     # Run transforms
     for step in steps:
 
