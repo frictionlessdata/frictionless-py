@@ -1,9 +1,7 @@
 import stringcase
-from functools import partial
 from multiprocessing import Pool
 from importlib import import_module
 from .metadata import Metadata
-from .exception import FrictionlessException
 from .errors import InquiryError
 from .system import system
 from .report import Report
@@ -37,47 +35,31 @@ class Inquiry(Metadata):
     # Run
 
     def run(self, *, parallel=False):
-        validate = import_module("frictionless").validate
 
         # Create state
-        tasks = []
         reports = []
         timer = helpers.Timer()
 
-        # Prepare tasks
-        for task in self.tasks:
-            if task.type == "inquiry":
-                note = "Inquiry cannot contain nested inquiries"
-                raise FrictionlessException(InquiryError(note=note))
-            if task.type == "package":
-                # NOTE:
-                # For now, we don't flatten inquiry completely and for the case
-                # of a list of packages with one resource we don't get proper multiprocessing
-                report = validate(**helpers.create_options(task))
-                reports.append(report)
-                continue
-            tasks.append(task)
-
         # Validate sequentially
-        if len(tasks) == 1 or not parallel:
-            for task in tasks:
-                report = validate(**helpers.create_options(task))
+        if not parallel:
+            for task in self.tasks:
+                report = task.run()
                 reports.append(report)
 
         # Validate in-parallel
         else:
             with Pool() as pool:
-                # NOTE:
-                # We need more tests to guarantee proper serialization
-                # In general, we need to send plain object and get plain objects back
-                reports.extend(pool.map(partial(helpers.apply_function, validate), tasks))
+                task_descriptors = [task.to_dict() for task in self.tasks]
+                report_descriptors = pool.map(run_task_in_parallel, task_descriptors)
+                for report_descriptor in report_descriptors:
+                    reports.append(Report(report_descriptor))
 
         # Return report
-        errors = []
         tasks = []
+        errors = []
         for report in reports:
-            errors.extend(report["errors"])
             tasks.extend(report["tasks"])
+            errors.extend(report["errors"])
         return Report(time=timer.time, errors=errors, tasks=tasks)
 
     # Metadata
@@ -135,8 +117,25 @@ class InquiryTask(Metadata):
         """
         return self.get("type") or system.create_file(self.source).type
 
+    # Run
+
+    def run(self):
+        validate = import_module("frictionless").validate
+        report = validate(**helpers.create_options(self))
+        return report
+
     # Metadata
 
     metadata_strict = True
     metadata_Error = InquiryError
     metadata_profile = config.INQUIRY_PROFILE["properties"]["tasks"]["items"]
+
+
+# Internal
+
+
+def run_task_in_parallel(task_descriptor):
+    validate = import_module("frictionless").validate
+    report = validate(**helpers.create_options(task_descriptor))
+    report_descriptor = report.to_dict()
+    return report_descriptor

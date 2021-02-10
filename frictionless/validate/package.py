@@ -73,9 +73,9 @@ def validate_package(source, original=False, parallel=False, **options):
     else:
         inquiry = Inquiry(tasks=[])
         for resource, stats in zip(package.resources, package_stats):
-            for fk in resource.foreign_keys:
+            for fk in resource.schema.foreign_keys:
                 if fk["reference"]["resource"]:
-                    message = f"Foreign keys validation is ignored in the parallel mode"
+                    message = "Foreign keys validation is ignored in the parallel mode"
                     warnings.warn(message, UserWarning)
                     break
             resource.stats = stats

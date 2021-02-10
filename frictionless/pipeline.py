@@ -100,6 +100,8 @@ class PipelineTask(Metadata):
     def steps(self):
         return self["steps"]
 
+    # Run
+
     def run(self):
         """Run the task"""
         transforms = import_module("frictionless.transform")

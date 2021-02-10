@@ -212,7 +212,7 @@ class Resource(Metadata):
         self.__trusted = trusted
         self.__package = package
 
-        # Set specs
+        # Store specs
         self.setinitial("name", name)
         self.setinitial("title", title)
         self.setinitial("description", description)
