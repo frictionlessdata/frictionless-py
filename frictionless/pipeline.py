@@ -1,5 +1,4 @@
 from importlib import import_module
-from .exception import FrictionlessException
 from .errors import PipelineError, TaskError
 from .status import Status, StatusTask
 from .metadata import Metadata
@@ -42,11 +41,14 @@ class Pipeline(Metadata):
         for task in self.tasks:
             errors = []
             target = None
+            task_timer = helpers.Timer()
             try:
                 target = task.run()
             except Exception as exception:
                 errors.append(TaskError(note=str(exception)))
-            tasks.append(StatusTask(errors=errors, target=target, type=task.type))
+            time = task_timer.time
+            task = StatusTask(time=time, errors=errors, target=target, type=task.type)
+            tasks.append(task)
         return Status(tasks=tasks, time=timer.time, errors=[])
 
     # Metadata
@@ -70,7 +72,6 @@ class Pipeline(Metadata):
                 dict.__setitem__(self, "tasks", tasks)
 
 
-# NOTE: we can use metadata_process to task.source -> Resource/Package?
 class PipelineTask(Metadata):
     """Pipeline task representation.
 
@@ -104,24 +105,19 @@ class PipelineTask(Metadata):
 
     def run(self):
         """Run the task"""
-        transforms = import_module("frictionless.transform")
-
-        # Resource transform
-        if self.type == "resource":
-            source = Resource(self.source)
-            return transforms.transform_resource(source, steps=self.steps)
-
-        # Package transform
-        elif self.type == "package":
-            source = Package(self.source)
-            return transforms.transform_package(source, steps=self.steps)
-
-        # Not supported transform
-        note = f'Transform type "{self.type}" is not supported'
-        raise FrictionlessException(PipelineError(note=note))
+        transform = import_module("frictionless.transform").transform
+        return transform(self.source, type=self.type, steps=self.steps)
 
     # Metadata
 
     metadata_strict = True
     metadata_Error = PipelineError
     metadata_profile = config.PIPELINE_PROFILE["properties"]["tasks"]["items"]
+
+    def metadata_process(self):
+
+        # Source
+        source = self.get("source")
+        if not isinstance(source, Metadata):
+            source = Resource(source) if self.type == "resource" else Package(source)
+            dict.__setitem__(self, "source", source)

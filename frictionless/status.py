@@ -1,6 +1,9 @@
 from .exception import FrictionlessException
 from .errors import Error, StatusError
 from .metadata import Metadata
+from .resource import Resource
+from .package import Package
+from . import helpers
 from . import config
 
 
@@ -15,15 +18,20 @@ class Status(Metadata):
 
     """
 
-    def __init__(self, descriptor=None, *, time, errors, tasks):
-        stats_errors = len(errors) + sum(task["stats"]["errors"] for task in tasks)
+    def __init__(self, descriptor=None, *, time=None, errors=None, tasks=None):
+        # TODO: merge groups after metadata_strict removal
+
+        # Store provided
         self.setinitial("version", config.VERSION)
         self.setinitial("time", time)
-        self.setinitial("valid", not errors and all(task["valid"] for task in tasks))
-        self.setinitial("stats", {"errors": stats_errors, "tasks": len(tasks)})
         self.setinitial("errors", errors)
         self.setinitial("tasks", tasks)
         super().__init__(descriptor)
+
+        # Store computed
+        error_count = len(self.errors) + sum(task.stats["errors"] for task in self.tasks)
+        self.setinitial("stats", {"errors": error_count, "tasks": len(self.tasks)})
+        self.setinitial("valid", not error_count)
 
     @property
     def version(self):
@@ -37,7 +45,7 @@ class Status(Metadata):
     def time(self):
         """
         Returns:
-            float: validation time
+            float: transformation time
         """
         return self["time"]
 
@@ -45,7 +53,7 @@ class Status(Metadata):
     def valid(self):
         """
         Returns:
-            bool: validation result
+            bool: transformation result
         """
         return self["valid"]
 
@@ -53,7 +61,7 @@ class Status(Metadata):
     def stats(self):
         """
         Returns:
-            dict: validation stats
+            dict: transformation stats
         """
         return self["stats"]
 
@@ -61,7 +69,7 @@ class Status(Metadata):
     def errors(self):
         """
         Returns:
-            Error[]: validation errors
+            Error[]: transformation errors
         """
         return self["errors"]
 
@@ -69,7 +77,7 @@ class Status(Metadata):
     def tasks(self):
         """
         Returns:
-            ReportTable[]: validation tasks
+            ReportTable[]: transformation tasks
         """
         return self["tasks"]
 
@@ -77,7 +85,7 @@ class Status(Metadata):
     def task(self):
         """
         Returns:
-            ReportTable: validation task (if there is only one)
+            ReportTable: transformation task (if there is only one)
 
         Raises:
             FrictionlessException: if there are more that 1 task
@@ -93,31 +101,77 @@ class Status(Metadata):
     metadata_Error = StatusError
     metadata_profile = config.STATUS_PROFILE
 
+    def metadata_process(self):
+
+        # Tasks
+        tasks = self.get("tasks")
+        if isinstance(tasks, list):
+            for index, task in enumerate(tasks):
+                if not isinstance(task, StatusTask):
+                    task = StatusTask(task)
+                    list.__setitem__(tasks, index, task)
+            if not isinstance(tasks, helpers.ControlledList):
+                tasks = helpers.ControlledList(tasks)
+                tasks.__onchange__(self.metadata_process)
+                dict.__setitem__(self, "tasks", tasks)
+
 
 class StatusTask(Metadata):
     """ Status Task representation"""
 
-    def __init__(self, descriptor=None, *, errors, target, type):
-        self.setinitial("valid", not errors)
+    def __init__(
+        self,
+        descriptor=None,
+        *,
+        time=None,
+        errors=None,
+        target=None,
+        type=None,
+    ):
+        # TODO: merge groups after metadata_strict removal
+
+        # Store provided
+        self.setinitial("time", not errors)
         self.setinitial("errors", errors)
         self.setinitial("target", target)
         self.setinitial("type", type)
-        self.setinitial("stats", {"errors": len(errors)})
+        # TODO: remove this hack after metadata_strict removal
+        self.setinitial("valid", True)
         super().__init__(descriptor)
+
+        # Store computed
+        self.setinitial("stats", {"errors": len(self.errors)})
+        self.setinitial("valid", not self.errors)
+
+    @property
+    def time(self):
+        """
+        Returns:
+            dict: transformation time
+        """
+        return self["time"]
 
     @property
     def valid(self):
         """
         Returns:
-            bool: validation result
+            bool: transformation result
         """
         return self["valid"]
+
+    @property
+    def stats(self):
+        """
+        Returns:
+            dict: transformation stats
+        """
+        return self["stats"]
 
     @property
     def errors(self):
         """
         Returns:
-            Error[]: validation errors
+            Error[]: transformation errors
         """
         return self["errors"]
 
@@ -125,7 +179,7 @@ class StatusTask(Metadata):
     def target(self):
         """
         Returns:
-            any: validation target
+            any: transformation target
         """
         return self["target"]
 
@@ -133,7 +187,7 @@ class StatusTask(Metadata):
     def type(self):
         """
         Returns:
-            any: validation target
+            any: transformation target
         """
         return self["type"]
 
@@ -142,3 +196,11 @@ class StatusTask(Metadata):
     metadata_strict = True
     metadata_Error = StatusError
     metadata_profile = config.STATUS_PROFILE["properties"]["tasks"]["items"]
+
+    def metadata_process(self):
+
+        # Target
+        target = self.get("target")
+        if not isinstance(target, Metadata):
+            target = Resource(target) if self.type == "resource" else Package(target)
+            dict.__setitem__(self, "target", target)
