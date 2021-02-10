@@ -1,5 +1,5 @@
 ---
-title: Migration Guide
+title: Migration
 ---
 
 > Frictionless Framework requires Python3.6+

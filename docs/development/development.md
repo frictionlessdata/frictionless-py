@@ -15,4 +15,5 @@ If you would like to contribute to the codebase:
 Full list of API changes and people behind the project:
 
 - [Changelog](changelog.md)
+- [Migration](migration.md)
 - [Authors](authors.md)

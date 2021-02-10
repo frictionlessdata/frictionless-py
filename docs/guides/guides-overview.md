@@ -25,10 +25,14 @@ Main Frictionless Framework classes to work with data in Python:
 - [Package Guide](package-guide.md)
 - [Resource Guide](resource-guide.md)
 - [Schema Guide](schema-guide.md)
+- [Layout Guide](layout-guide.md)
+- [Inquiry Guide](inquiry-guide.md)
+- [Report Guide](report-guide.md)
+- [Pipeline Guide](pipeline-guide.md)
+- [Status Guide](status-guide.md)
 
 ## Advanced Level
 
 Extending Frictionless Framework and other advanced topics:
 
 - [Extension Guide](extension-guide.md)
-- [Migration Guide](migration-guide.md)
