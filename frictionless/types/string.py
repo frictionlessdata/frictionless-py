@@ -13,6 +13,7 @@ class StringType(Type):
     """
 
     code = "string"
+    builtin = True
     constraints = [
         "required",
         "minLength",

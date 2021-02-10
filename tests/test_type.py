@@ -1,8 +1,6 @@
-import pytest
 from frictionless import system, Plugin, Type, Resource, Schema, Field
 
 
-@pytest.mark.xfail
 def test_type_custom():
 
     # Type
@@ -18,7 +16,12 @@ def test_type_custom():
 
     # Testing
     system.register("custom", CustomPlugin())
-    schema = Schema(fields=[Field(type="integer"), Field(type="custom")])
+    schema = Schema(
+        fields=[
+            Field(name="integer", type="integer"),
+            Field(name="custom", type="custom"),
+        ]
+    )
     resource = Resource(path="data/table.csv", schema=schema)
     assert resource.read_rows() == [
         {"integer": 1, "custom": ["english"]},

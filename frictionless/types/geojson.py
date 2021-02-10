@@ -14,6 +14,7 @@ class GeojsonType(Type):
     """
 
     code = "geojson"
+    builtin = True
     constraints = [
         "required",
         "enum",

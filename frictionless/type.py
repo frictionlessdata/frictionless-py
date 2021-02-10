@@ -15,6 +15,7 @@ class Type:
     """
 
     code = "type"
+    builtin = False
     constraints = []
     """
     Returns:

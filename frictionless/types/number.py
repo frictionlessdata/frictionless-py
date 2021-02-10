@@ -14,6 +14,7 @@ class NumberType(Type):
     """
 
     code = "number"
+    builtin = True
     constraints = [
         "required",
         "minimum",

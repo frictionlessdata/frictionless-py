@@ -102,6 +102,7 @@ def test_resource_from_path_remote_error_bad_path():
     assert error.note.count("bad.json")
 
 
+@pytest.mark.skipif(sys.version_info < (3, 7), reason="Requires Python3.7+")
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_source_non_tabular():
     path = "data/text.txt"
@@ -147,6 +148,7 @@ def test_resource_source_non_tabular_error_bad_path():
     assert error.note.count("data/bad.txt")
 
 
+@pytest.mark.skipif(sys.version_info < (3, 7), reason="Requires Python3.7+")
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_source_path():
     path = "data/table.csv"
@@ -2361,6 +2363,7 @@ def test_resource_reopen_generator():
 # Read
 
 
+@pytest.mark.skipif(sys.version_info < (3, 7), reason="Requires Python3.7+")
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_read_bytes():
     resource = Resource(path="data/text.txt")

@@ -6,7 +6,7 @@ Let's get started with Frictionless! We will learn how to install and use the fr
 
 ## Installation
 
-> Versioning follows the [SemVer Standard](https://semver.org/)
+> The framework requires Python3.6+. Versioning follows the [SemVer Standard](https://semver.org/)
 
 ```bash
 $ pip install frictionless

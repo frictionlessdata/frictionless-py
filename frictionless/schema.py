@@ -255,7 +255,8 @@ class Schema(Metadata):
 
         # Fields
         for field in self.fields:
-            yield from field.metadata_errors
+            if field.builtin:
+                yield from field.metadata_errors
 
         # Primary Key
         for name in self.primary_key:

@@ -11,6 +11,7 @@ class YearType(Type):
     """
 
     code = "year"
+    builtin = True
     constraints = [
         "required",
         "minimum",

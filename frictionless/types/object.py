@@ -12,6 +12,7 @@ class ObjectType(Type):
     """
 
     code = "object"
+    builtin = True
     constraints = [
         "required",
         "minLength",

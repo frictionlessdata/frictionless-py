@@ -315,7 +315,8 @@ class ByteStreamWithStatsHandling:
         return self.__byte_stream.closed
 
     def read1(self, size=-1):
-        chunk = self.__byte_stream.read1(size or -1)
+        size = -1 if size is None else size
+        chunk = self.__byte_stream.read1(size)
         self.__stats["bytes"] += len(chunk)
         if self.__hasher:
             self.__hasher.update(chunk)

@@ -12,6 +12,7 @@ class YearmonthType(Type):
     """
 
     code = "yearmonth"
+    builtin = True
     constraints = [
         "required",
         "minimum",

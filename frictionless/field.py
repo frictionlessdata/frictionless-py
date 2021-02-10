@@ -152,6 +152,14 @@ class Field(Metadata):
         return self.constraints.get("required", False)
 
     @property
+    def builtin(self):
+        """
+        Returns:
+            bool: returns True is the type is not custom
+        """
+        return self.__type.builtin
+
+    @property
     def schema(self):
         """
         Returns:
