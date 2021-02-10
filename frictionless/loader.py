@@ -1,7 +1,6 @@
 import io
 import os
 import gzip
-import codecs
 import shutil
 import atexit
 import hashlib
@@ -83,6 +82,8 @@ class Loader:
         Returns:
             io.TextStream: resource text stream
         """
+        if not self.__text_stream:
+            self.__text_stream = self.read_text_stream()
         return self.__text_stream
 
     # Open/Close
@@ -92,7 +93,6 @@ class Loader:
         self.close()
         try:
             self.__byte_stream = self.read_byte_stream()
-            self.__text_stream = self.read_text_stream()
             return self
         except Exception:
             self.close()
@@ -123,13 +123,19 @@ class Loader:
         """
         try:
             byte_stream = self.read_byte_stream_create()
-            byte_stream = self.read_byte_stream_infer_stats(byte_stream)
+            byte_stream = self.read_byte_stream_process(byte_stream)
             byte_stream = self.read_byte_stream_decompress(byte_stream)
-        except IOError as exception:
-            error = errors.SchemeError(note=str(exception))
-            raise FrictionlessException(error)
+            buffer = self.read_byte_stream_buffer(byte_stream)
+            self.read_byte_stream_analyze(buffer)
+            self.__buffer = buffer
+        except (LookupError, UnicodeDecodeError) as exception:
+            error = errors.EncodingError(note=str(exception))
+            raise FrictionlessException(error) from exception
         except config.COMPRESSION_EXCEPTIONS as exception:
             error = errors.CompressionError(note=str(exception))
+            raise FrictionlessException(error)
+        except IOError as exception:
+            error = errors.SchemeError(note=str(exception))
             raise FrictionlessException(error)
         return byte_stream
 
@@ -141,8 +147,8 @@ class Loader:
         """
         raise NotImplementedError()
 
-    def read_byte_stream_infer_stats(self, byte_stream):
-        """Infer byte stream stats
+    def read_byte_stream_process(self, byte_stream):
+        """Process byte stream
 
         Parameters:
             byte_stream (io.ByteStream): resource byte stream
@@ -150,8 +156,6 @@ class Loader:
         Returns:
             io.ByteStream: resource byte stream
         """
-        if not self.resource.get("stats"):
-            return byte_stream
         return ByteStreamWithStatsHandling(byte_stream, resource=self.resource)
 
     def read_byte_stream_decompress(self, byte_stream):
@@ -209,59 +213,40 @@ class Loader:
         note = f'compression "{self.resource.compression}" is not supported'
         raise FrictionlessException(errors.CompressionError(note=note))
 
+    def read_byte_stream_buffer(self, byte_stream):
+        """Buffer byte stream
+
+        Parameters:
+            byte_stream (io.ByteStream): resource byte stream
+
+        Returns:
+            bytes: buffer
+        """
+        buffer = byte_stream.read(self.resource.detector.buffer_size)
+        buffer = buffer[: self.resource.detector.buffer_size]
+        byte_stream.seek(0)
+        return buffer
+
+    def read_byte_stream_analyze(self, buffer):
+        """Detect metadta using sample
+
+        Parameters:
+            buffer (bytes): byte buffer
+        """
+        # We don't need a default encoding
+        encoding = self.resource.get("encoding")
+        encoding = self.resource.detector.detect_encoding(buffer, encoding=encoding)
+        self.resource.encoding = encoding
+
     def read_text_stream(self):
         """Read text stream
 
         Returns:
             io.TextStream: resource text stream
         """
-        try:
-            self.read_text_stream_infer_encoding(self.byte_stream)
-        except (LookupError, UnicodeDecodeError) as exception:
-            error = errors.EncodingError(note=str(exception))
-            raise FrictionlessException(error) from exception
-        return self.read_text_stream_decode(self.byte_stream)
-
-    def read_text_stream_infer_encoding(self, byte_stream):
-        """Infer text stream encoding
-
-        Parameters:
-            byte_stream (io.ByteStream): resource byte stream
-        """
-        # We don't need a default encoding
-        encoding = self.resource.get("encoding")
-        buffer = byte_stream.read(self.resource.detector.buffer_size)
-        buffer = buffer[: self.resource.detector.buffer_size]
-        byte_stream.seek(0)
-        if encoding is None:
-            encoding = self.resource.detector.detect_encoding(buffer)
-        encoding = codecs.lookup(encoding).name
-        # Work around for incorrect inferion of utf-8-sig encoding
-        if encoding == "utf-8":
-            if buffer.startswith(codecs.BOM_UTF8):
-                encoding = "utf-8-sig"
-        # Use the BOM stripping name (without byte-order) for UTF-16 encodings
-        elif encoding == "utf-16-be":
-            if buffer.startswith(codecs.BOM_UTF16_BE):
-                encoding = "utf-16"
-        elif encoding == "utf-16-le":
-            if buffer.startswith(codecs.BOM_UTF16_LE):
-                encoding = "utf-16"
-        self.resource.encoding = encoding
-        self.__buffer = buffer
-
-    def read_text_stream_decode(self, byte_stream):
-        """Decode text stream
-
-        Parameters:
-            byte_stream (io.ByteStream): resource byte stream
-
-        Returns:
-            text_stream (io.TextStream): resource text stream
-        """
         # NOTE: this solution might be improved using parser properties
         newline = "" if self.resource.format == "csv" else None
-        return io.TextIOWrapper(byte_stream, self.resource.encoding, newline=newline)
+        return io.TextIOWrapper(self.byte_stream, self.resource.encoding, newline=newline)
 
     # Write
 
