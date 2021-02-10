@@ -28,14 +28,12 @@ class forbidden_value(Check):
         self.setinitial("fieldName", field_name)
         self.setinitial("values", values)
         super().__init__(descriptor)
-
-    def prepare(self):
         self.__field_name = self["fieldName"]
         self.__values = self["values"]
 
     # Validate
 
-    def validate_check(self):
+    def validate_start(self):
         if self.__field_name not in self.resource.schema.field_names:
             note = 'forbidden value check requires field "%s"' % self.__field_name
             yield errors.CheckError(note=note)
@@ -53,7 +51,7 @@ class forbidden_value(Check):
 
     metadata_profile = {  # type: ignore
         "type": "object",
-        "requred": ["fieldName", "forbidden"],
+        "requred": ["fieldName", "values"],
         "properties": {
             "fieldName": {"type": "string"},
             "values": {"type": "array"},
@@ -84,15 +82,13 @@ class sequential_value(Check):
     def __init__(self, descriptor=None, *, field_name=None):
         self.setinitial("fieldName", field_name)
         super().__init__(descriptor)
-
-    def prepare(self):
+        self.__field_name = self.get("fieldName")
         self.__cursor = None
         self.__exited = False
-        self.__field_name = self.get("fieldName")
 
     # Validate
 
-    def validate_check(self):
+    def validate_start(self):
         if self.__field_name not in self.resource.schema.field_names:
             note = 'sequential value check requires field "%s"' % self.__field_name
             yield errors.CheckError(note=note)
@@ -145,8 +141,6 @@ class row_constraint(Check):
     def __init__(self, descriptor=None, *, formula=None):
         self.setinitial("formula", formula)
         super().__init__(descriptor)
-
-    def prepare(self):
         self.__formula = self["formula"]
 
     # Validate

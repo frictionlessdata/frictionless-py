@@ -29,7 +29,7 @@ class PipelineError(GeneralError):
     code = "pipeline-error"
     name = "Pipeline Error"
     tags = ["#general"]
-    template = "The pipeline is not valid: {note}"
+    template = "Pipeline is not valid: {note}"
     description = "Provided pipeline is not valid."
 
 
@@ -37,7 +37,7 @@ class InquiryError(GeneralError):
     code = "inquiry-error"
     name = "Inquiry Error"
     tags = ["#general"]
-    template = "The inquiry is not valid: {note}"
+    template = "Inquiry is not valid: {note}"
     description = "Provided inquiry is not valid."
 
 
@@ -45,7 +45,7 @@ class ControlError(GeneralError):
     code = "control-error"
     name = "Control Error"
     tags = ["#general"]
-    template = "Control object is not valid: {note}"
+    template = "Control is not valid: {note}"
     description = "Provided control is not valid."
 
 
@@ -53,7 +53,7 @@ class DialectError(GeneralError):
     code = "dialect-error"
     name = "Dialect Error"
     tags = ["#general"]
-    template = "Dialect object is not valid: {note}"
+    template = "Dialect is not valid: {note}"
     description = "Provided dialect is not valid."
 
 
@@ -61,7 +61,7 @@ class LayoutError(GeneralError):
     code = "layout-error"
     name = "Layout Error"
     tags = ["#general"]
-    template = "The data source could not be successfully described by the invalid Table Layout: {note}"
+    template = "Layout is not valid: {note}"
     description = "Provided layout is not valid."
 
 
@@ -69,7 +69,7 @@ class SchemaError(GeneralError):
     code = "schema-error"
     name = "Schema Error"
     tags = ["#general"]
-    template = "The data source could not be successfully described by the invalid Table Schema: {note}"
+    template = "Schema is not valid: {note}"
     description = "Provided schema is not valid."
 
 
@@ -77,7 +77,7 @@ class FieldError(GeneralError):
     code = "field-error"
     name = "Field Error"
     tags = ["#general"]
-    template = "The data source could not be successfully described by the invalid Table Schema: {note}"
+    template = "Field is not valid: {note}"
     description = "Provided field is not valid."
 
 
@@ -85,15 +85,15 @@ class ReportError(GeneralError):
     code = "report-error"
     name = "Report Error"
     tags = ["#general"]
-    template = "The validation report has an error: {note}"
-    description = "A validation cannot be presented."
+    template = "Report is not valid: {note}"
+    description = "Provided report is not valid."
 
 
 class StatusError(GeneralError):
     code = "status-error"
     name = "Status Error"
     tags = ["#general"]
-    template = "The status is not valid: {note}"
+    template = "Status is not valid: {note}"
     description = "Provided status is not valid."
 
 
@@ -101,16 +101,16 @@ class CheckError(GeneralError):
     code = "check-error"
     name = "Check Error"
     tags = ["#general"]
-    template = "The validation check has an error: {note}"
-    description = "A validation check cannot be created"
+    template = "Check is not valid: {note}"
+    description = "Provided check is not valid"
 
 
 class StepError(GeneralError):
     code = "step-error"
     name = "Step Error"
     tags = ["#general"]
-    template = "The transfrom step has an error: {note}"
-    description = "A transform step cannot be finished"
+    template = "Step is not valid: {note}"
+    description = "Provided step is not valid"
 
 
 class SourceError(GeneralError):

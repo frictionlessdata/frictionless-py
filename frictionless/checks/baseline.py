@@ -48,21 +48,17 @@ class baseline(Check):
 
     # Validate
 
-    def validate_source(self):
-        empty = not (self.resource.sample or self.resource.labels)
-        yield from [errors.SourceError(note="the source is empty")] if empty else []
-
-    def validate_schema(self):
-        empty = not (self.resource.sample or self.resource.labels)
-        yield from self.resource.schema.metadata_errors if not empty else []
-
-    def validate_header(self):
-        yield from self.resource.header.errors
+    def validate_start(self):
+        if self.resource.tabular:
+            empty = not (self.resource.labels or self.resource.fragment)
+            yield from [errors.SourceError(note="the source is empty")] if empty else []
+            yield from self.resource.header.errors
+        yield from []
 
     def validate_row(self, row):
         yield from row.errors
 
-    def validate_table(self):
+    def validate_end(self):
         stats = self.get("stats", {})
 
         # Hash

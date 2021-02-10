@@ -1,11 +1,11 @@
 import inspect
 import warnings
-from .. import helpers
 from ..report import Report
 from ..package import Package
 from ..inquiry import Inquiry, InquiryTask
 from ..exception import FrictionlessException
 from .resource import validate_resource
+from .. import helpers
 
 
 @Report.from_validate
@@ -44,13 +44,11 @@ def validate_package(source, original=False, parallel=False, **options):
     try:
         native = isinstance(source, Package)
         package = source.to_copy() if native else Package(source, **package_options)
+        package_stats = []
+        for resource in package.resources:
+            package_stats.append({key: val for key, val in resource.stats.items() if val})
     except FrictionlessException as exception:
         return Report(time=timer.time, errors=[exception.error], tasks=[])
-
-    # Prepare stats
-    package_stats = []
-    for resource in package.resources:
-        package_stats.append({key: val for key, val in resource.stats.items() if val})
 
     # Prepare package
     if not original:

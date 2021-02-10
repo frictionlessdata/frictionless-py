@@ -4,9 +4,9 @@ from ..system import system
 from ..resource import Resource
 from ..exception import FrictionlessException
 from ..report import Report, ReportTask
-from .. import config
-from .. import errors
+from ..errors import TaskError
 from .. import helpers
+from .. import config
 
 
 @Report.from_validate
@@ -43,85 +43,65 @@ def validate_resource(
     """
 
     # Create state
+    resource = None
     partial = False
-    task_errors = []
-    resource_errors = ResourceErrors(pick_errors, skip_errors, limit_errors)
     timer = helpers.Timer()
+    errors = ManagedErrors(pick_errors, skip_errors, limit_errors)
 
     # Create resource
     try:
         native = isinstance(source, Resource)
         resource = source.to_copy() if native else Resource(source, **options)
-    except FrictionlessException as exception:
-        return Report(time=timer.time, errors=[exception.error], tasks=[])
-
-    # Prepare stats
-    stats = {}
-    if resource.stats:
         stats = {key: val for key, val in resource.stats.items() if val}
+    except FrictionlessException as exception:
+        errors.append(exception.error)
 
     # Prepare resource
-    if not original:
-        resource.infer()
-    if resource.metadata_errors:
-        return Report(time=timer.time, errors=resource.metadata_errors, tasks=[])
+    if not errors:
+        if not original:
+            resource.infer()
+        if resource.metadata_errors:
+            for error in resource.metadata_errors:
+                errors.append(error)
 
     # Open resource
-    try:
-        resource.open()
-    except FrictionlessException as exception:
-        resource_errors.append(exception.error, force=True)
-        resource.close()
+    if not errors:
+        try:
+            resource.open()
+        except FrictionlessException as exception:
+            errors.append(exception.error)
+            resource.close()
 
     # Prepare checks
-    checks = checks or []
-    checks.insert(0, {"code": "baseline", "stats": stats})
-    for index, check in enumerate(checks):
-        if not isinstance(check, Check):
-            checks[index] = (
-                Check(function=check)
-                if isinstance(check, types.FunctionType)
-                else system.create_check(check)
-            )
+    if not errors:
+        checks = checks or []
+        checks.insert(0, {"code": "baseline", "stats": stats})
+        for index, check in enumerate(checks):
+            if not isinstance(check, Check):
+                func = isinstance(check, types.FunctionType)
+                check = Check(function=check) if func else system.create_check(check)
+                checks[index] = check
+            errors.register(check)
 
     # Validate checks
-    for index, check in enumerate(checks.copy()):
-        if check.metadata_errors:
-            task_errors.extend(check.metadata_errors)
-            del check[index]
+    if not errors:
+        for index, check in enumerate(checks.copy()):
+            if check.metadata_errors:
+                del checks[index]
+                for error in check.metadata_errors:
+                    errors.append(error)
 
-    # Enter table
-    if not resource_errors:
+    # Validate resource
+    if not errors:
         with resource:
 
-            # Prepare checks
-            for check in checks:
-                resource_errors.register(check)
+            # Validate start
+            for index, check in enumerate(checks.copy()):
                 check.connect(resource)
-                check.prepare()
-
-            # Validate checks
-            for check in checks.copy():
-                for error in check.validate_check():
-                    task_errors.append(error)
-                    if check in checks:
-                        checks.remove(check)
-
-            # Validate source
-            for check in checks:
-                for error in check.validate_source():
-                    resource_errors.append(error, force=True)
-
-            # Validate schema
-            for check in checks:
-                for error in check.validate_schema():
-                    resource_errors.append(error, force=True)
-
-            # Validate header
-            if resource.header:
-                for check in checks:
-                    for error in check.validate_header():
-                        resource_errors.append(error)
+                for error in check.validate_start():
+                    if error.code == "check-error":
+                        del checks[index]
+                    errors.append(error)
 
             # Validate rows
             for row in resource.row_stream:
@@ -129,10 +109,10 @@ def validate_resource(
                 # Validate row
                 for check in checks:
                     for error in check.validate_row(row):
-                        resource_errors.append(error)
+                        errors.append(error)
 
                 # Limit errors
-                if limit_errors and len(resource_errors) >= limit_errors:
+                if limit_errors and len(errors) >= limit_errors:
                     partial = True
                     break
 
@@ -141,26 +121,26 @@ def validate_resource(
                     memory = helpers.get_current_memory_usage()
                     if memory and memory > limit_memory:
                         note = f'exceeded memory limit "{limit_memory}MB"'
-                        task_errors.append(errors.TaskError(note=note))
+                        errors.append(TaskError(note=note))
                         partial = True
                         break
 
-            # Validate table
+            # Validate end
             if not partial:
                 for check in checks:
-                    for error in check.validate_table():
-                        resource_errors.append(error)
+                    for error in check.validate_end():
+                        errors.append(error)
 
     # Return report
     return Report(
         time=timer.time,
-        errors=task_errors,
+        errors=[],
         tasks=[
             ReportTask(
                 time=timer.time,
-                scope=resource_errors.scope,
+                scope=errors.scope,
                 partial=partial,
-                errors=resource_errors,
+                errors=errors,
                 resource=resource,
             )
         ],
@@ -170,7 +150,13 @@ def validate_resource(
 # Internal
 
 
-class ResourceErrors(list):
+# NOTE:
+# We might consider merging this code into ReportTask
+# It had been written much earlier that ReportTask was introduces
+# Also, we can use Report/ReportTask API instead of working with lists
+
+
+class ManagedErrors(list):
     def __init__(self, pick_errors, skip_errors, limit_errors):
         self.__pick_errors = set(pick_errors or [])
         self.__skip_errors = set(skip_errors or [])
@@ -181,8 +167,8 @@ class ResourceErrors(list):
     def scope(self):
         return self.__scope
 
-    def append(self, error, *, force=False):
-        if not force:
+    def append(self, error):
+        if "#general" not in error.tags:
             if self.__limit_errors:
                 if len(self) >= self.__limit_errors:
                     return
