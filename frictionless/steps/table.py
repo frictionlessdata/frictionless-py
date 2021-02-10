@@ -376,9 +376,8 @@ class table_normalize(Step):
 
     def transform_resource(self, resource):
         with resource:
-            for number, row in enumerate(resource.row_stream, start=1):
-                if number == 1:
-                    yield row.field_names
+            yield resource.header.to_list()
+            for row in resource.row_stream:
                 yield row.to_list()
 
     # Metadata
