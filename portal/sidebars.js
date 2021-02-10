@@ -17,6 +17,7 @@ module.exports = {
     "guides/transforming-data",
     "guides/package-guide",
     "guides/resource-guide",
+    "guides/schema-guide",
     "guides/layout-guide",
     "guides/inquiry-guide",
     "guides/pipeline-guide",
