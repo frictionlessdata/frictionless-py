@@ -90,7 +90,7 @@ class Inquiry(Metadata):
     def metadata_validate(self):
         yield from super().metadata_validate()
 
-        # Fields
+        # Tasks
         for task in self.tasks:
             yield from task.metadata_errors
 

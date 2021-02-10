@@ -21,7 +21,7 @@ def program_describe(
     encoding: str = Opt(None, help="Specify encoding  [default: inferred]"),
     innerpath: str = Opt(None, help="Specify in-archive path  [default: first]"),
     compression: str = Opt(None, help="Specify compression  [default: inferred]"),
-    # Table
+    # Layout
     header_rows: str = Opt(None, help="Comma-separated row numbers  [default: 1]"),
     header_join: str = Opt(None, help="A separator to join a multiline header"),
     pick_fields: str = Opt(None, help='Comma-separated fields to pick e.g. "1,name1"'),
@@ -40,7 +40,7 @@ def program_describe(
     field_confidence: float = Opt(None, help="A float from 0 to 1"),
     field_float_numbers: bool = Opt(None, help="Make number floats instead of decimals"),
     field_missing_values: str = Opt(None, help="Comma-separated list of missing values"),
-    # Misc
+    # Description
     basepath: str = Opt(None, help="Basepath of the resource/package"),
     expand: bool = Opt(None, help="Expand default values"),
     stats: bool = Opt(None, help="Do not infer stats"),

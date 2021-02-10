@@ -9,11 +9,19 @@ class TableError(Error):
     description = "There is a table error."
 
 
-class ChecksumError(TableError):
-    code = "checksum-error"
-    name = "Checksum Error"
+class FieldCountError(TableError):
+    code = "field-count-error"
+    name = "Field Count Error"
     tags = ["#table"]
-    template = "The data source does not match the expected checksum: {note}"
+    template = "The data source does not match the expected field count: {note}"
+    description = "This error can happen if the data is corrupted."
+
+
+class RowCountError(TableError):
+    code = "row-count-error"
+    name = "Row Count Error"
+    tags = ["#table"]
+    template = "The data source does not match the expected row count: {note}"
     description = "This error can happen if the data is corrupted."
 
 

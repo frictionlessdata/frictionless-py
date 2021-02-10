@@ -40,21 +40,30 @@ def test_report():
     assert report.task.time
     assert report.task.valid is True
     assert report.task.scope == [
+        # File
+        "hash-count-error",
+        "byte-count-error",
+        # Table
+        "field-count-error",
+        "row-count-error",
+        # Header
         "blank-header",
+        # Label
         "extra-label",
         "missing-label",
         "blank-label",
         "duplicate-label",
         "incorrect-label",
+        # Row
         "blank-row",
         "primary-key-error",
         "foreign-key-error",
+        # Cell
         "extra-cell",
         "missing-cell",
         "type-error",
         "constraint-error",
         "unique-error",
-        "checksum-error",
     ]
     assert report.task.stats == {
         "errors": 0,

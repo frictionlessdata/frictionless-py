@@ -132,33 +132,33 @@ def test_validate_field_missing_values():
 def test_validate_chucksum_hash():
     result = runner.invoke(
         program,
-        "validate data/table.csv --json --checksum-hash 6c2c61dd9b0e9c6876139a449ed87933",
+        "validate data/table.csv --json --stats-hash 6c2c61dd9b0e9c6876139a449ed87933",
     )
     assert result.exit_code == 0
     assert no_time(json.loads(result.stdout)) == no_time(
-        validate("data/table.csv", checksum={"hash": "6c2c61dd9b0e9c6876139a449ed87933"})
+        validate("data/table.csv", stats={"hash": "6c2c61dd9b0e9c6876139a449ed87933"})
     )
 
 
 def test_validate_chucksum_bytes():
     result = runner.invoke(
         program,
-        "validate data/table.csv --json --checksum-bytes 30",
+        "validate data/table.csv --json --stats-bytes 30",
     )
     assert result.exit_code == 0
     assert no_time(json.loads(result.stdout)) == no_time(
-        validate("data/table.csv", checksum={"bytes": 30})
+        validate("data/table.csv", stats={"bytes": 30})
     )
 
 
 def test_validate_chucksum_rows():
     result = runner.invoke(
         program,
-        "validate data/table.csv --json --checksum-rows 2",
+        "validate data/table.csv --json --stats-rows 2",
     )
     assert result.exit_code == 0
     assert no_time(json.loads(result.stdout)) == no_time(
-        validate("data/table.csv", checksum={"rows": 2})
+        validate("data/table.csv", stats={"rows": 2})
     )
 
 

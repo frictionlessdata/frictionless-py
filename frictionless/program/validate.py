@@ -22,7 +22,7 @@ def program_validate(
     encoding: str = Opt(None, help="Specify encoding  [default: inferred]"),
     innerpath: str = Opt(None, help="Specify in-archive path  [default: first]"),
     compression: str = Opt(None, help="Specify compression  [default: inferred]"),
-    # Table
+    # Layout
     header_rows: str = Opt(None, help="Comma-separated row numbers  [default: 1]"),
     header_join: str = Opt(None, help="A separator to join a multiline header"),
     pick_fields: str = Opt(None, help='Comma-separated fields to pick e.g. "1,name1"'),
@@ -33,7 +33,13 @@ def program_validate(
     skip_rows: str = Opt(None, help='Comma-separated rows to skip e.g. "2,3,4,5"'),
     limit_rows: int = Opt(None, help="Limit rows by this integer"),
     offset_rows: int = Opt(None, help="Offset rows by this integer"),
+    # Schema
     schema: str = Opt(None, help="Specify a path to a schema"),
+    # Stats
+    stats_hash: str = Opt(None, help="Expected hash based on hashing option"),
+    stats_bytes: int = Opt(None, help="Expected size in bytes"),
+    stats_fields: int = Opt(None, help="Expected amount of fields"),
+    stats_rows: int = Opt(None, help="Expected amount of rows"),
     # Detector
     buffer_size: int = Opt(None, help="Limit byte buffer size by this integer"),
     sample_size: int = Opt(None, help="Limit data sample size by this integer"),
@@ -43,11 +49,8 @@ def program_validate(
     field_float_numbers: bool = Opt(None, help="Make number floats instead of decimals"),
     field_missing_values: str = Opt(None, help="Comma-separated list of missing values"),
     schema_sync: bool = Opt(None, help="Sync the schema based on headers"),
-    # Misc
+    # Validation
     basepath: str = Opt(None, help="Basepath of the resource/package"),
-    checksum_hash: str = Opt(None, help="Expected hash based on hashing option"),
-    checksum_bytes: int = Opt(None, help="Expected size in bytes"),
-    checksum_rows: int = Opt(None, help="Expected amoutn of rows"),
     pick_errors: str = Opt(None, help='Comma-separated errors to pick e.g. "type-error"'),
     skip_errors: str = Opt(None, help='Comma-separated errors to skip e.g. "blank-row"'),
     limit_errors: int = Opt(None, help="Limit errors by this integer"),
@@ -99,6 +102,19 @@ def program_validate(
         or None
     )
 
+    # Prepare stats
+    stats = (
+        helpers.remove_non_values(
+            dict(
+                hash=stats_hash,
+                bytes=stats_bytes,
+                fields=stats_fields,
+                rows=stats_rows,
+            )
+        )
+        or None
+    )
+
     # Prepare detector
     detector = Detector(
         **helpers.remove_non_values(
@@ -115,14 +131,6 @@ def program_validate(
         )
     )
 
-    # Prepare checksum
-    checksum = (
-        helpers.remove_non_values(
-            dict(hash=checksum_hash, bytes=checksum_bytes, rows=checksum_rows)
-        )
-        or None
-    )
-
     # Prepare options
     options = helpers.remove_non_values(
         dict(
@@ -136,10 +144,10 @@ def program_validate(
             compression=compression,
             layout=layout,
             schema=schema,
+            stats=stats,
             # Extra
             basepath=basepath,
             detector=detector,
-            checksum=checksum,
             pick_errors=pick_errors,
             skip_errors=skip_errors,
             limit_errors=limit_errors,

@@ -260,12 +260,12 @@ def test_validate_package_stats():
 
 def test_validate_package_stats_invalid():
     source = deepcopy(DESCRIPTOR_SH)
-    source["resources"][0]["stats"]["bytes"] += 1
     source["resources"][0]["stats"]["hash"] += "a"
+    source["resources"][0]["stats"]["bytes"] += 1
     report = validate(source)
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [None, None, "checksum-error"],
-        [None, None, "checksum-error"],
+        [None, None, "hash-count-error"],
+        [None, None, "byte-count-error"],
     ]
 
 
@@ -283,7 +283,7 @@ def test_validate_package_stats_size_invalid():
     source["resources"][0]["stats"].pop("hash")
     report = validate(source)
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [None, None, "checksum-error"],
+        [None, None, "byte-count-error"],
     ]
 
 
@@ -301,7 +301,7 @@ def test_check_file_package_stats_hash_invalid():
     source["resources"][0]["stats"]["hash"] += "a"
     report = validate(source)
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [None, None, "checksum-error"],
+        [None, None, "hash-count-error"],
     ]
 
 
