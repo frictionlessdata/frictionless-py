@@ -22,8 +22,10 @@ def extract(source, *, type=None, process=None, stream=False, **options):
         Row[]|{path: Row[]}: rows in a form depending on the source type
     """
     if not type:
+        type = "resource"
         file = system.create_file(source, basepath=options.get("basepath", ""))
-        type = "package" if file.type == "package" else "resource"
+        if file.type == "package" or file.multipart:
+            type = "package"
     module = import_module("frictionless.extract")
     extract = getattr(module, "extract_%s" % type, None)
     if extract is None:

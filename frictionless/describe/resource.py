@@ -22,6 +22,4 @@ def describe_resource(source, *, expand=False, stats=False, **options):
     resource.infer(stats=stats)
     if expand:
         resource.expand()
-    if not stats:
-        resource.pop("stats")
     return resource

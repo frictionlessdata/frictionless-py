@@ -22,7 +22,4 @@ def describe_package(source, *, expand=False, stats=False, **options):
     package.infer(stats=stats)
     if expand:
         package.expand()
-    if not stats:
-        for resource in package.resources:
-            resource.pop("stats")
     return package

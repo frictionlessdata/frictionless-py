@@ -691,9 +691,10 @@ class Resource(Metadata):
             stats? (bool): stream file completely and infer stats
         """
         with helpers.ensure_open(self):
-            if stats:
-                stream = self.row_stream or self.byte_stream
-                helpers.pass_through(stream)
+            if not stats:
+                return self.pop("stats", None)
+            stream = self.row_stream or self.byte_stream
+            helpers.pass_through(stream)
 
     # Open/Close
 

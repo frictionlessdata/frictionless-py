@@ -112,6 +112,7 @@ In many cases, the code above doesn't really make sense as we can just provide a
 from frictionless import Resource
 
 resource = Resource('data/capital-3.csv')
+resource.infer()
 resource.schema.missing_values.append('3')
 resource.to_yaml('tmp/capital.resource.yaml')
 ```
@@ -246,7 +247,7 @@ from frictionless import Resource
 with Resource('data/country-3.csv') as resource:
     pprint(resource.byte_stream)
     pprint(resource.text_stream)
-    pprint(resource.data_stream)
+    pprint(resource.list_stream)
     pprint(resource.row_stream)
     for row in resource.row_stream:
       print(row)
