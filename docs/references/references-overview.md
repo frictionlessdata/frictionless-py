@@ -6,13 +6,13 @@ In this section you can find detailed references for:
 
 ## Plugins
 
-List of the core Frictionless Framework plugins and their status:
+List of the core plugins and their status:
 
 - [Plugins Reference](plugins-reference.md)
 
-## Elements
+## Blocks
 
-List of Frictionless Framework elements:
+List of the core building blocks:
 
 - [Schemes Reference](schemes-reference.md)
 - [Formats Reference](formats-reference.md)
@@ -23,6 +23,6 @@ List of Frictionless Framework elements:
 
 ## API
 
-Full API reference
+Full API reference:
 
 - [API Reference](api-reference.md)
