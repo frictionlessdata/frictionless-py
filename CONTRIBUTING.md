@@ -35,7 +35,7 @@ Frictionless is a Python3.6+ framework, and it uses some basically standard Pyth
 
 It's a commonplace but, of course, you need `git` to work on the project, also `make` is recommended. After cloning the repository, it's recommended to create a virtual environment and install the dependencies:
 
-> it will install a `git commit` hook runnin g the tests
+> it will install a `git commit` hook running the tests
 
 ```bash
 python3.8 -m venv .python
