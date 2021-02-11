@@ -68,7 +68,7 @@ $ frictionless validate --source-type table
 ```
 
 
-### Validating Schema
+## Validating Schema
 
 The `validate_schema` function is the only function validating solely metadata. Let's create a invalid table schema:
 
@@ -101,7 +101,7 @@ And validate it using the command-line interface:
 
 Schema validation can be very useful when you work with different classes of tables and create schemas for them. Using this function you can ensure that the metadata is valid.
 
-### Validating Resource
+## Validating Resource
 
 As it was shown in the "Describing Data" guide a resource is a container having both metadata and data. We need to create a resource descriptor to validate it:
 
@@ -168,7 +168,7 @@ We have added a few bad metrics to our resource descriptor. The validation below
 
 
 
-### Validating Package
+## Validating Package
 
 A package is a set of resources + additional metadata. To showcase a package validation we need one more tabular file:
 
@@ -215,7 +215,7 @@ Let's describe and validate a package:
 
 As we can see, the result is pretty straight-forward and expected: we have one invalid resource and one valid. One important note regarding the package validation: if there are more than one resource, it will use multiprocessing to speed up the process
 
-### Validating Inquiry
+## Validating Inquiry
 
 The Inquiry gives you an ability to create arbitrary validation jobs containing a set of individual validation tasks. Let's create an inquiry that includes an individual file validation and a resource validation:
 
@@ -257,59 +257,6 @@ Tasks in the Inquiry accept the same arguments written in camelCase as the corre
 
 
 At first sight, it's no clear why such a construct exists but when your validation workflow gets complex, the Inquiry can provide a lot of flexibility and power. Last but not least, the Inquiry will use multiprocessing if there are more than 1 task provided.
-
-### Validating Table
-
-All the functions above except for `validate_schema` are just wrappers over the `validate_table` function. Below we will be talking a lot about the table validation so here will just provide a simple example:
-
-
-```python
-! frictionless validate data/capital-invalid.csv --pick-errors duplicate-header
-```
-
-    ---
-    invalid: data/capital-invalid.csv
-    ---
-
-    ====  =====  ================  ================================================================================================
-    row   field  code              message
-    ====  =====  ================  ================================================================================================
-    None      3  duplicate-header  Header "name" in field at position "3" is duplicated to header in another field: at position "2"
-    ====  =====  ================  ================================================================================================
-
-
-
-Please keep reading to learn about the table validation in-detail.
-
-## Validation Options
-
-Let's overview options that the described `validate` functions accept:
-
-### Schema/Inquiry
-
-The `validate_schema` and `validate_inquiry` don't accept any options in addition to `source`.
-
-### Resource/Package
-
-The Resource and Package incapsulate most of information within their descriptor so the amount of additional options is really limited:
-- `basepath`: base path for a resource/package
-- `noinfer`: a flag disabling an infer function call
-
-### Table
-
-The `validate_table` function accept most of the `describe/extract` function's options:
-
-- File Details (see "Extracting Data")
-- File Control (see "Extracting Data")
-- Table Dialect (see "Extracting Data")
-- Table Query (see "Extracting Data")
-- Header Options (see "Extracting Data")
-- Schema Options (see "Extracting Data")
-- Integrity Options (see "Extracting Data")
-- Infer Options (see "Describing Data")
-- Errors Options
-- Memory Options
-- Checks Options
 
 ## Validation Report
 
@@ -645,7 +592,7 @@ from pprint import pprint
 from frictionless import validate
 
 source = 'header\nvalue\nvalue'
-report = validate(source, scheme='text', format='csv', extra_checks=['duplicate-row'])
+report = validate(source, scheme='text', format='csv', extra_checks=[{'code:': 'duplicate-row'}])
 pprint(report.flatten(['code', 'message']))
 ```
 
@@ -663,7 +610,7 @@ This check uses the Python's builtin `statistics` module to check a field's data
     from frictionless import validate
 
     source = [["temperature"], [1], [-2], [7], [0], [1], [2], [5], [-4], [1000], [8], [3]]
-    report = validate(source, extra_checks=[("deviated-value", {"fieldName": "temperature"})])
+    report = validate(source, extra_checks=[{"code": "deviated-value", "fieldName": "temperature"})])
     pprint(report.flatten(["code", "message"]))
 
 ```
@@ -684,7 +631,7 @@ from pprint import pprint
 from frictionless import validate
 
 source = [["int", "str"], ["a" * 255, 32767], ["good", 2147483647]]
-report = validate(source, extra_checks=["truncated-value"],)
+report = validate(source, extra_checks=[{"code": "truncated-value"}],)
 pprint(report.flatten(["code", "message"]))
 ```
 
@@ -705,7 +652,7 @@ pprint(report.flatten(["code", "message"]))
 
 In the contrary to heuristic checks, regulation checks gives you an ability to provide additional rules for your data. Use the `extra_checks` argument of the `validate` function to active one or more of these checks.
 
-### Blacklisted Value
+### Forbidden Value
 
 This check ensures that some field doesn't have any blacklisted values. For example:
 
@@ -715,7 +662,7 @@ from pprint import pprint
 from frictionless import validate
 
 source = 'header\nvalue1\nvalue2'
-extra_checks = [('blacklisted-value', {'fieldName': 'header', 'blacklist': ['value2']})]
+extra_checks = [{'code': 'forbidden-value', 'fieldName': 'header', 'values': ['value2']}]
 report = validate(source, scheme='text', format='csv', extra_checks=extra_checks)
 pprint(report.flatten(['code', 'message']))
 ```
@@ -735,7 +682,7 @@ from pprint import pprint
 from frictionless import validate
 
 source = 'header\n2\n3\n5'
-extra_checks = [('sequential-value', {'fieldName': 'header'})]
+extra_checks = [{'code': 'sequential-value', 'fieldName': 'header'}]
 report = validate(source, scheme='text', format='csv', extra_checks=extra_checks)
 pprint(report.flatten(['code', 'message']))
 ```
@@ -761,7 +708,7 @@ source = [
   [4, 1300, 500],
   [5, 5000, 1000],
 ]
-extra_checks=[("row-constraint", {"constraint": "salary == bonus * 5"})]
+extra_checks=[{"code": "row-constraint", "constraint": "salary == bonus * 5"}]
 report = validate(source, extra_checks=extra_checks)
 pprint(report.flatten(["code", "message"]))
 ```
@@ -781,16 +728,14 @@ from pprint import pprint
 from frictionless import validate, errors, Check
 
 # Create check
-class ForbidNumber(Check):
-    def validate_row(self, row):
-        if row['header'] == self['number']:
-          note = f"number {self['number']} is forbidden!"
-          yield errors.CellError.from_row(row, note=note, field_name='header')
+def custom(self, row):
+    if row['header'] == 2:
+      note = f"number {self['number']} is forbidden!"
+      yield errors.CellError.from_row(row, note=note, field_name='header')
 
 # Validate table
-source = 'header\n1\n2\n3'
-extra_checks=[(ForbidNumber, {'number': 2})]
-report = validate(source,  scheme='text', format='csv', extra_checks=extra_checks)
+source = b'header\n1\n2\n3'
+report = validate(source,  format='csv', extra_checks=[custom])
 pprint(report.flatten(["rowPosition", "fieldPosition", "code", "note"]))
 ```
 

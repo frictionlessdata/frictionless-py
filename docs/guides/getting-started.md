@@ -15,7 +15,6 @@ $ frictionless --version
 4.0.0
 ```
 
-
 The framework supports CSV, Excel, and JSON formats by default. Please use the command above to install a core plugin and add support for SQL, Pandas, HTML, and others (check the [list of Frictionless Framework plugins and their status](https://framework.frictionlessdata.io/docs/references/plugins-reference)). Usually, you don't need to think about it in advance–frictionless will display a useful error message about a missing plugin with installation instructions.
 
 ## Usage
@@ -27,16 +26,18 @@ The framework can be used:
 
 For instance, all the examples below do the same thing:
 
-
 ```python
 # Python:
 from frictionless import extract
-
 rows = extract('data/table.csv')
+```
 
-# CLI:
+```bash
+# CLI
 $ frictionless extract data/table.csv
+```
 
+```
 # API:
 [POST] /extract {"source': 'data/table.csv"}
 ```
@@ -58,24 +59,23 @@ $ frictionless validate --help
 $ frictionless transform --help
 ```
 
-
 ## Example
 
 > All the examples use the data folder from [this](https://github.com/frictionlessdata/frictionless-py/) repository
 
 We will take a very messy data file:
 
-
 ```bash
 $ cat data/invalid.csv
 ```
 
-    id,name,,name
-    1,english
-    1,english
+```
+id,name,,name
+1,english
+1,english
 
-    2,german,1,2,3
-
+2,german,1,2,3
+```
 
 First of all, let's use `describe` to infer the metadata directly from the tabular data. We can then edit and save it to provide others with useful information about the data:
 
@@ -86,62 +86,50 @@ First of all, let's use `describe` to infer the metadata directly from the tabul
 $ frictionless describe data/invalid.csv
 ```
 
-    ---
-    metadata: data/invalid.csv
-    ---
+```
+---
+metadata: data/invalid.csv
+---
 
-    compression: 'no'
-    compressionPath: ''
-    control:
-      newline: ''
-    dialect: {}
-    encoding: utf-8
-    format: csv
-    hashing: md5
-    name: invalid
-    path: data/invalid.csv
-    profile: tabular-data-resource
-    query: {}
-    schema:
-      fields:
-        - name: id
-          type: integer
-        - name: name
-          type: string
-        - name: field3
-          type: integer
-        - name: name2
-          type: integer
-    scheme: file
-    stats:
-      bytes: 50
-      fields: 4
-      hash: 8c73c3d9d59088dcb2508e0b348bf8a8
-      rows: 4
-
-
+encoding: utf-8
+format: csv
+scheme: file
+hashing: md5
+name: invalid
+path: data/invalid.csv
+profile: tabular-data-resource
+schema:
+  fields:
+    - name: id
+      type: integer
+    - name: name
+      type: string
+    - name: field3
+      type: integer
+    - name: name2
+      type: integer
+```
 
 Now that we have inferred a table schema from the data file (e.g., expected format of the table, expected type of each value in a column, etc.), we can use `extract` to read the normalized tabular data from the source CSV file:
-
 
 ```bash
 $ frictionless extract data/invalid.csv
 ```
 
-    ---
-    data: data/invalid.csv
-    ---
+```
+---
+data: data/invalid.csv
+---
 
-    ====  =======  ======  =====
-    id    name     field3  name2
-    ====  =======  ======  =====
-       1  english  None    None
-       1  english  None    None
-    None  None     None    None
-       2  german        1      2
-    ====  =======  ======  =====
-
-
+====  =======  ======  =====
+id    name     field3  name2
+====  =======  ======  =====
+   1  english  None    None
+   1  english  None    None
+None  None     None    None
+   2  german        1      2
+====  =======  ======  =====
+```
 
 Last but not least, let's get a validation report. This report will help us to identify and fix all the errors present in the tabular data, as comprehensive information is provided for every problem:
 
@@ -150,24 +138,24 @@ Last but not least, let's get a validation report. This report will help us to i
 $ frictionless validate data/invalid.csv
 ```
 
-    ---
-    invalid: data/invalid.csv
-    ---
+```
+---
+invalid: data/invalid.csv
+---
 
-    ====  =====  ================  ================================================================================================
-    row   field  code              message
-    ====  =====  ================  ================================================================================================
-    None      3  blank-header      Header in field at position "3" is blank
-    None      4  duplicate-header  Header "name" in field at position "4" is duplicated to header in another field: at position "2"
-       2      3  missing-cell      Row at position "2" has a missing cell in field "field3" at position "3"
-       2      4  missing-cell      Row at position "2" has a missing cell in field "name2" at position "4"
-       3      3  missing-cell      Row at position "3" has a missing cell in field "field3" at position "3"
-       3      4  missing-cell      Row at position "3" has a missing cell in field "name2" at position "4"
-       4  None   blank-row         Row at position "4" is completely blank
-       5      5  extra-cell        Row at position "5" has an extra value in field at position "5"
-    ====  =====  ================  ================================================================================================
-
-
+====  =====  ===============  ====================================================================================
+row   field  code             message
+====  =====  ===============  ====================================================================================
+None      3  blank-label      Label in the header in field at position "3" is blank
+None      4  duplicate-label  Label "name" in the header at position "4" is duplicated to a label: at position "2"
+   2      3  missing-cell     Row at position "2" has a missing cell in field "field3" at position "3"
+   2      4  missing-cell     Row at position "2" has a missing cell in field "name2" at position "4"
+   3      3  missing-cell     Row at position "3" has a missing cell in field "field3" at position "3"
+   3      4  missing-cell     Row at position "3" has a missing cell in field "name2" at position "4"
+   4  None   blank-row        Row at position "4" is completely blank
+   5      5  extra-cell       Row at position "5" has an extra value in field at position "5"
+====  =====  ===============  ====================================================================================
+```
 
 Now that we have all this information:
 - we can clean up the table to ensure the data quality
