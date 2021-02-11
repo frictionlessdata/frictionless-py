@@ -33,11 +33,21 @@ def program_describe(
     limit_rows: int = Opt(None, help="Limit rows by this integer"),
     offset_rows: int = Opt(None, help="Offset rows by this integer"),
     # Detector
-    buffer_size: int = Opt(10000, help="Limit the amount of bytes to be extracted as a buffer"),
-    sample_size: int = Opt(100, help="Limit the number of rows to be extracted as a sample"),
+    buffer_size: int = Opt(
+        10000, help="Limit the amount of bytes to be extracted as a buffer"
+    ),
+    sample_size: int = Opt(
+        100, help="Limit the number of rows to be extracted as a sample"
+    ),
     field_type: str = Opt(None, help="Force all the fields to have this type"),
     field_names: str = Opt(None, help="Comma-separated list of field names"),
-    field_confidence: float = Opt(0.9, help="Infer confidence. A float from 0 to 1, if 1 data is guaranteed to be valid against the inferred schema"),
+    field_confidence: float = Opt(
+        0.9,
+        help=(
+            "Infer confidence. A float from 0 to 1. If 1, (sampled) data ",
+            "is guaranteed to be valid against the inferred schema",
+        ),
+    ),
     field_float_numbers: bool = Opt(False, help="Make number floats instead of decimals"),
     field_missing_values: str = Opt("''", help="Comma-separated list of missing values"),
     # Description
