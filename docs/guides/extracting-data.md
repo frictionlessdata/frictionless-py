@@ -2,7 +2,7 @@
 title: Extracting Data
 ---
 
-Extracting data means reading tabular data from some source. We can use various customizations for this process such as providing a file format, table schema, limiting fields or rows amount, and much more. Let's see this with real files:
+Extracting data means reading tabular data from some source. We can use various customizations for this process such as providing a file format, table schema, limiting fields or rows amounts, and much more. Let's see this with some real files:
 
 ```bash
 $ cat data/country-3.csv
@@ -30,7 +30,7 @@ id,name
 5,Rome
 ```
 
-For a starter, we will use the command-line interface:
+To start, we will use the command-line interface:
 
 ```bash
 $ frictionless extract data/country-3.csv
@@ -73,11 +73,11 @@ pprint(rows)
 ## Extract Functions
 
 The high-level interface for extracting data provided by Frictionless is a set of `extract` functions:
-- `extract`: it will detect the source type and extract data accordingly
-- `extract_package`: it accepts a package descriptor and returns a map of the package's tables
-- `extract_resource`: it accepts a resource descriptor and returns a table data
+- `extract`: detects the source type and extracts data accordingly
+- `extract_package`: accepts a package descriptor and returns a map of the package's tables
+- `extract_resource`: accepts a resource descriptor and returns a data table
 
-In command-line, there is only 1 command but there is a flag to adjust the behavior:
+In the command-line, there is only 1 command (`extract`) but there is a flag to adjust the behavior:
 
 ```bash
 $ frictionless extract
@@ -89,7 +89,7 @@ The `extract` functions always read data in a form of rows (see the object descr
 
 ## Extracting Resource
 
-A resource contains only one file and for extracting a resource we can use the same approach we used above but providing only one file. We will extract data using a metadata descriptor:
+A resource contains only one file and for extracting a resource we can use the same approach we used above except we'll provide only one file. We will extract data using a metadata descriptor:
 
 ```python
 from frictionless import extract
@@ -106,7 +106,7 @@ pprint(rows)
  Row([('id', 5), ('name', 'Rome')])]
 ```
 
-Usually, the code above doesn't really make sense as we can just provide a path to the high-level `extract` function instead of a descriptor to the `extract_resource` function but the power of the descriptor is that it can contain different metadata and be stored on the disc. Let's extend our example:
+In many cases, the code above doesn't really make sense as we can just provide a path to the high-level `extract` function instead of a descriptor to the `extract_resource` function but the power of the descriptor is that it can contain different metadata and be stored on the disc. Let's extend our example:
 
 ```python
 from frictionless import Resource
@@ -136,7 +136,7 @@ None  Paris
 ====  ======
 ```
 
-So what's happened? We set textual representation of the number "3" to be a missing value. It was done only for the presentational purpose because it's definitely not a missing value. On the other hand, it demonstrated how metadata can be used.
+So what's happened? We set the textual representation of the number "3" to be a missing value. It was done only for presentational purposes because it's definitely not a missing value. On the other hand, it demonstrated how metadata can be used.
 
 ## Extracting Package
 
@@ -181,7 +181,7 @@ In Python we can do the same by providing a glob for the `extract` function, but
 ```python
 from frictionless import extract
 
-data = extract('data/*-3.csv)
+data = extract('data/*-3.csv')
 for path, rows in data.items():
   pprint(path)
   pprint(rows)
@@ -238,7 +238,7 @@ pprint(resource.read_rows())
  Row([('id', 5), ('capital_id', 4), ('name', 'Spain'), ('population', 47)])]
 ```
 
-It's really handy to read all your data into memory but it's not always possible as a file can be really big. For such cases, Frictionless provides streaming functions:
+It's really handy to read all your data into memory but it's not always possible if a file is really big. For such cases, Frictionless provides streaming functions:
 
 ```python
 from frictionless import Resource
@@ -296,11 +296,11 @@ pprint(package.get_resource('capital-3').read_rows())
  Row([('id', 5), ('name', 'Rome')])]
 ```
 
-The package by itself doesn't provide any read functions directly as it's a role of its resources. So everything written below for the Resource class can be used within a package.
+The package by itself doesn't provide any read functions directly because it's a role of its resources. So everything written below for the Resource class can be used within a package.
 
 ## Header Class
 
-After opening a resource you get access to a `resource.header` object. It's a list of normalized labels but providing some additional functionality. Let's take a look:
+After opening a resource you get access to a `resource.header` object. It's a list of normalized labels but also provides some additional functionality. Let's take a look:
 
 
 ```python
@@ -371,4 +371,4 @@ As Dict: {'id': None, 'name': 'London'}
 As List: [None, 'London']
 ```
 
-As we can see, it provides a lot of information which is especially useful when a row is not valid. Our row is valid but we demonstrated how it can preserve data about raw missing values. It also preserves data about all errored cells. Please read "API Reference" for more details.
+As we can see, it provides a lot of information which is especially useful when a row is not valid. Our row is valid but we demonstrated how it can preserve data about row missing values. It also preserves data about all errored cells. Please read "API Reference" for more details.
