@@ -9,14 +9,15 @@ Let's say we have a few raw data files. It's been just collected by the data res
 $ cat data/countries.csv
 ```
 
-    # clean this data!
-    id,neighbor_id,name,population
-    1,Ireland,Britain,67
-    2,3,France,n/a,find the population
-    3,22,Germany,83
-    4,,Italy,60
-    5
-
+```
+# clean this data!
+id,neighbor_id,name,population
+1,Ireland,Britain,67
+2,3,France,n/a,find the population
+3,22,Germany,83
+4,,Italy,60
+5
+```
 
 As we can see, it's a data containing information about European countries and their populations. Also, it's easy to notice that there are two fields having a relationship based on a country's identifier: neighbor_id is a Foreign Key to id.
 
@@ -30,47 +31,37 @@ First of all, we're going to describe our dataset. Frictionless uses powerful [F
 
 Let's describe the `countries` table:
 
-
 ```bash
 $ frictionless describe data/countries.csv
+$ frictionless describe data/countries.csv --stats # to get also stats
 ```
 
-    ---
-    metadata: data/countries.csv
-    ---
+```yaml
+---
+metadata: data/countries.csv
+---
 
-    compression: 'no'
-    compressionPath: ''
-    control:
-      newline: ''
-    dialect:
-      headerRows:
-        - 2
-    encoding: utf-8
-    format: csv
-    hashing: md5
-    name: countries
-    path: data/countries.csv
-    profile: tabular-data-resource
-    query: {}
-    schema:
-      fields:
-        - name: id
-          type: integer
-        - name: neighbor_id
-          type: string
-        - name: name
-          type: string
-        - name: population
-          type: string
-    scheme: file
-    stats:
-      bytes: 136
-      fields: 4
-      hash: b0481536cb4ab3e5db64f0feede627fa
-      rows: 5
-
-
+path: data/countries.csv
+encoding: utf-8
+format: csv
+scheme: file
+hashing: md5
+name: countries
+profile: tabular-data-resource
+layout:
+  headerRows:
+    - 2
+schema:
+  fields:
+    - name: id
+      type: integer
+    - name: neighbor_id
+      type: string
+    - name: name
+      type: string
+    - name: population
+      type: string
+ ```
 
 As we can see, Frictionless was smart enough to understand that the first row contains a comment. It's good, but we still have a few problems:
 - we use `n/a` as a missing values marker
@@ -79,7 +70,6 @@ As we can see, Frictionless was smart enough to understand that the first row co
 - there is a relation between the `id` and `neighbor_id` fields
 
 Let's update our metadata and save it to the disc:
-
 
 ```python
 from frictionless import describe
