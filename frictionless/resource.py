@@ -690,7 +690,9 @@ class Resource(Metadata):
         Parameters:
             stats? (bool): stream file completely and infer stats
         """
-        with helpers.ensure_open(self):
+        if not self.closed:
+            raise FrictionlessException("Resource.infer canot be used on a open resource")
+        with self:
             if not stats:
                 return self.pop("stats", None)
             stream = self.row_stream or self.byte_stream

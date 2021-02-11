@@ -129,7 +129,7 @@ def validate_resource(
             # Validate end
             if not partial:
                 if not resource.tabular:
-                    resource.infer(stats=True)
+                    helpers.pass_through(resource.byte_stream)
                 for check in checks:
                     for error in check.validate_end():
                         errors.append(error)
