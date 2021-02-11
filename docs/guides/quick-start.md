@@ -1,8 +1,8 @@
 ---
-title: Getting Started
+title: Quick Start Guide
 ---
 
-Let's get started with Frictionless! We will learn how to install and use the framework. The simple example below will showcase the framework's basic functionality.
+Let's get started with Frictionless! We will learn how to install and use the framework. The simple example below will showcase the framework's basic functionality. For an introduction to concepts behind the Frictionless Framework, please read the [Frictionless Introduction](../introduction/introduction.md).
 
 ## Installation
 
@@ -22,7 +22,7 @@ The framework supports CSV, Excel, and JSON formats by default. Please use the c
 The framework can be used:
 - as a Python library
 - as a command-line interface
-- as a restful API server
+- as a restful API server (for advanced use cases)
 
 For instance, all the examples below do the same thing:
 
@@ -42,7 +42,7 @@ $ frictionless extract data/table.csv
 [POST] /extract {"source': 'data/table.csv"}
 ```
 
-All these interfaces are as much alike as possible regarding naming conventions and the way you interact with them. Usually, it's straightforward to translate, for instance, Python code to a command-line call. Frictionless provides code completion for Python and the command-line, which should help to get useful hints in real time.
+All these interfaces are as much alike as possible regarding naming conventions and the way you interact with them. Usually, it's straightforward to translate, for instance, Python code to a command-line call. Frictionless provides code completion for Python and the command-line, which should help to get useful hints in real time. You can find the API reference [here](../references/api-reference.md).
 
 Arguments conform to the following naming convention:
 - for Python interfaces, they are snake_cased, e.g. `missing_values`
@@ -59,9 +59,9 @@ $ frictionless validate --help
 $ frictionless transform --help
 ```
 
-## Example
+## Short Example
 
-> All the examples use the data folder from [this](https://github.com/frictionlessdata/frictionless-py/) repository
+> All the examples use the data folder from [this](https://github.com/frictionlessdata/frictionless-py/) repository. For a more indepth example, use the [Overview Example](overview-example).
 
 We will take a very messy data file:
 

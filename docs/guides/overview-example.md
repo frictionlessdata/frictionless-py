@@ -1,9 +1,10 @@
 ---
-title: Introduction Guide
+title: Overview Example
 ---
 
-Let's say we have a few raw data files. It's been just collected by the data researchers, and the quality of data is still far from perfect. In fact, they haven't even removed the comments from the first row!
+> This example assumes that you are familiar with the concepts behind the Frictionless Framework. For an introduction, please read the [Introduction](../introduction/introduction.md).
 
+Let's start with an example dataset. We will look at a few raw data files that have recently been collected by an anthropologist. The anthropologist wants to publish this data in an open repository so her colleagues can also use this data. Before publishing the data, she wants to add metadata and check the data for errors. We are here to help, so let’s start by exploring the data. We see that the quality of data is far from perfect. In fact, the first row contains comments from the anthropologist! To be able to use this data, we need to clean it up a bit.
 
 ```bash
 $ cat data/countries.csv
