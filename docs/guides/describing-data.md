@@ -17,25 +17,25 @@ In other words, "describing data" means creating metadata for your data files. T
 $ pip install frictionless
 ```
 
-For a dataset, there is even more information that can be provided like general dataset purpose, information about data sources, list of authors, and many more. Of course, when there are many tabular files, relational rules can be very important. Usually, there are foreign keys ensuring the integrity of the dataset; for example, there is some reference table containing country names and other tables using it as a reference. Data in this form is called "normalized data" and it occurs very often in scientific and another kind of research.
+For a dataset, there is even more information that can be provided, like the general purpose of a dataset, information about data sources, list of authors, and more. Of course, when there are many tabular files, relational rules can be very important. Usually, there are foreign keys ensuring the integrity of the dataset; for example, think of a reference table containing country names and other tables using it as a reference. Data in this form is called "normalized data" and it occurs very often in scientific and other kinds of research.
 
-Having a general understanding of what is "data describing", we can now articulate why it's important:
-- **data validation**; metadata helps to reveal problems in your data on the early stages of your workflow
-- **data publication**; metadata provides additional information that your data can't include
+Now that we have a general understanding of what "describing data" is, we can now articulate why it's important:
+- **data validation**: metadata helps to reveal problems in your data during early stages of your workflow
+- **data publication**: metadata provides additional information that your data doesn't include
 
-There are not the only two pros of having metadata but they are two the most important. Please continue reading to learn how Frictionless helps to achieve these advantages describing your data.
+These are not the only positives of having metadata, but they are two of the most important. Please continue reading to learn how Frictionless helps to achieve these advantages by describing your data.
 
 ## Describe Functions
 
-The `describe` functions are the main tool for data describing. In many cases, this high-level interface is enough for data exploration and other needs.
+The `describe` functions are the main Frictionless tool for describing data. In many cases, this high-level interface is enough for data exploration and other needs.
 
 The frictionless framework provides 4 different `describe` functions in Python:
-- `describe`: it will detect the source type and return Data Resource or Data Package metadata
-- `describe_schema`: it will always return Table Schema metadata
-- `describe_resource`: it will always return Data Resource metadata
-- `describe_package`: it will always return Data Package metadata
+- `describe`: detects the source type and returns Data Resource or Data Package metadata
+- `describe_schema`: always returns Table Schema metadata
+- `describe_resource`: always returns Data Resource metadata
+- `describe_package`: always returns Data Package metadata
 
-In command-line, there is only 1 command but there is a flag to adjust the behavior:
+In the command-line, there is only 1 command (`describe`) but there is also a flag to adjust the behavior:
 
 ```bash
 $ frictionless describe
@@ -75,9 +75,9 @@ resources:
 
 ## Describing Schema
 
-Table Schema is a specification for providing a "schema" (similar to a database schema) for tabular data. This information includes the expected type of each value in a column ("string", "number", "date", etc.), constraints on the value ("this string can only be at most 10 characters long"), and the expected format of the data ("this field should only contain strings that look like email addresses"). Table Schema can also specify relations between tables.
+Table Schema is a specification for providing a "schema" (similar to a database schema) for tabular data. This information includes the expected data type for each value in a column ("string", "number", "date", etc.), constraints on the value ("this string can only be at most 10 characters long"), and the expected format of the data ("this field should only contain strings that look like email addresses"). Table Schema can also specify relations between tables.
 
-We're going to use this file for this section examples. For this guide, we use solely CSV files because of their demonstrativeness but in-general Frictionless can handle Excel, JSON, SQL, and many other formats:
+We're going to use this file for the examples in this section. For this guide, we only use CSV files because of their demonstrativeness, but in-general Frictionless can handle data in Excel, JSON, SQL, and many other formats:
 
 ```bash
 $ cat data/country-1.csv
@@ -92,7 +92,7 @@ id,neighbor_id,name,population
 5,4,Spain,47
 ```
 
-Let's get Table Schema using Frictionless framework:
+Let's get a Table Schema using the Frictionless framework:
 
 ```python
 from frictionless import describe_schema
@@ -101,7 +101,7 @@ schema = describe_schema("data/country-1.csv")
 schema.to_yaml("tmp/country.schema-simple.yaml")
 ```
 
-The high-level functions of Frictionless operate on dataset and resource levels so we have to use Python a little of Python programming to get schema information. Below we will show how to use a command-line interface for similar tasks.
+The high-level functions of Frictionless operate on the dataset and resource levels so we have to use a little bit of Python programming to get the schema information. Below we will show how to use a command-line interface for similar tasks.
 
 ```bash
 $ cat tmp/country.schema-simple.yaml
@@ -119,7 +119,7 @@ fields:
     type: integer
 ```
 
-As we can see, we were able to get infer basic metadata of our data file but describing data doesn't end here, we can  provide additional information we discussed earlier:
+As we can see, we were able to infer basic metadata from our data file. But describing data doesn't end here - we can provide additional information that we discussed earlier:
 
 ```python
 from frictionless import describe_schema
@@ -141,7 +141,7 @@ Let's break it down:
 - we added a title for all the fields
 - we added a description to the "Population" field; the year information can be critical to interpret the data
 - we set a constraint to the "Population" field because it can't be less than 0
-- we added a foreign key saying that "Identifier of the neighbor" should present in the "Identifier" field
+- we added a foreign key saying that "Identifier of the neighbor" should be present in the "Identifier" field
 
 
 ```bash
@@ -186,7 +186,7 @@ The Data Resource format describes a data resource such as an individual file or
 The essence of a Data Resource is a locator for the data it describes.
 A range of other properties can be declared to provide a richer set of metadata.
 
-For this section, we will use the file that is slightly more complex to handle. For some reason, cells are separated by the ";" char and there is a comment on the top:
+For this section, we will use a file that is slightly more complex to handle. For some reason, cells are separated by the ";" char and there is a comment on the top:
 
 
 ```bash
@@ -233,7 +233,7 @@ schema:
       type: string
 ```
 
-OK, that's clearly wrong. As we have seen in the "Introductory Guide" Frictionless is capable of inferring some complicated cases' metadata but our table is too weird for it. We need to program it:
+OK, that's clearly wrong. As we have seen in the "Introductory Guide" Frictionless is capable of inferring some complicated cases' metadata but our table is too unusual for it to automatically infer. We need to manually program it:
 
 ```python
 from frictionless import Schema, describe
@@ -245,9 +245,9 @@ resource.schema = Schema("tmp/country.schema.yaml")
 resource.to_yaml("tmp/country.resource.yaml")
 ```
 
-So what we are doing here:
-- we set header rows to be row number 2; as humans, we can easily see it
-- we set CSV Delimiter to be ";"; this file in not really usual CSV for some reason
+So what we did here:
+- we set the header rows to be row number 2; as humans, we can easily see that was the proper row
+- we set the CSV Delimiter to be ";"
 - we reuse the schema we created earlier as the data has the same structure and meaning
 
 ```bash
@@ -293,18 +293,18 @@ schema:
         resource: ''
 ```
 
-Our resource metadata includes the schema metadata we created earlier but also it has:
+Our resource metadata includes the schema metadata we created earlier, but it also has:
 - general information about the file's schema, format, and compression
-- information about CSV Dialect helping software understand how to read it
-- checksum information as though hash, bytes, and rows
+- information about CSV Dialect which helps software understand how to read it
+- checksum information like hash, bytes, and rows
 
-But the most important difference is that resource metadata contains the `path` property. It conceptually distinct Data Resource specification from Table Schema specification because while a Table Schema descriptor can describe a class of data files, a Data Resource descriptor describes the only one exact data file, `data/country-2.csv` in our case.
+But the most important difference is that the resource metadata contains the `path` property. This is a conceptual distinction of the Data Resource specification compared to the Table Schema specification. While a Table Schema descriptor can describe a class of data files, a Data Resource descriptor describes only one exact data file, `data/country-2.csv` in our case.
 
 Using programming terminology we could say that:
 - Table Schema descriptor is abstract (for a class of files)
 - Data Resource descriptor is concrete (for an individual file)
 
-We will show the practical difference in the "Using Metadata" section but in the next section, we will overview the Data Package specification.
+We will show the practical difference in the "Using Metadata" section, but in the next section, we will overview the Data Package specification.
 
 To continue learning about data resources please read:
 - [Data Resource Spec](https://specs.frictionlessdata.io/data-resource/)
@@ -397,9 +397,9 @@ resources:
     scheme: file
 ```
 
-We have already learned about many concepts that are reflected in this metadata. We can see resources, schemas, fields, and other familiar entities. The difference is that this descriptor has information about multiple files which is the most popular way of sharing data - in datasets. Very often you have not only one data file but also additional data files, some textual documents e.g. PDF, and others. To package all of these files with the corresponding metadata we use data packages.
+We have already learned about many concepts that are reflected in this metadata. We can see resources, schemas, fields, and other familiar entities. The difference is that this descriptor has information about multiple files which is a popular way of sharing data - in datasets. Very often you have not only one data file but also additional data files, some textual documents e.g. PDF, and others. To package all of these files with the corresponding metadata we use data packages.
 
-Following the already familiar to the guide reader pattern, we add some additional metadata:
+Following the pattern that is already familiar to the guide reader, we add some additional metadata:
 
 ```python
 from frictionless import describe
@@ -415,7 +415,7 @@ package.get_resource("country").schema.foreign_keys.append(
 package.to_yaml("tmp/country.package.yaml")
 ```
 
-In this case, we add a relation between different files connecting `id` and `capital_id`. Also, we provide dataset-level metadata to share with the purpose of this dataset. We haven't added individual fields' titles and description but it can be done as it was shown in the "Table Schema" section.
+In this case, we add a relation between different files connecting `id` and `capital_id`. Also, we provide dataset-level metadata to explain the purpose of this dataset. We haven't added individual fields' titles and descriptions, but that can be done as it was shown in the "Table Schema" section.
 
 ```bash
 $ cat tmp/country.package.yaml
@@ -465,17 +465,17 @@ resources:
             resource: capital
 ```
 
-The main role of the Data Package descriptor is describing a dataset; as we can see, it includes previously shown descriptors as though `schema`, `dialect`, and `resource`. But it's a mistake to think then that Data Package is the least important specification; actually, it completes the Frictionless Data suite making possible sharing and validating not only individual files but complete datasets.
+The main role of the Data Package descriptor is describing a dataset; as we can see, it includes previously shown descriptors like `schema`, `dialect`, and `resource`. But it would be a mistake to think that Data Package is the least important specification; actually, it completes the Frictionless Data suite making it possible to share and validate not only individual files but also complete datasets.
 
 To continue learning about data resources please read:
 - [Data Package Spec](https://specs.frictionlessdata.io/data-package/)
 - [API Reference: Package](../references/api-reference.md#package)
 
-##  Metadata Purpose
+##  Metadata Importance
 
-This documentation contains a great deal of information on how to use metadata and why it's vital for your data. In this article, we're going to provide a quick example based on the "Data Resource" section but please read other documents to get the full picture.
+This documentation contains a great deal of information on how to use metadata and why it's vital for your data. In this section, we're going to provide a quick example based on the "Data Resource" section but please read other documents to get the full picture.
 
-Let's get back to this exotic data table:
+Let's get back to this unusual data table:
 
 
 ```bash
@@ -539,7 +539,7 @@ id;neighbor_id;name;population
 ==============================
 ```
 
-Basically, that's a really important idea - with not metadata many software will not be able to even read this data file, furthermore, without metadata people can not understand the purpose of this data. Let's now use the `country.resource.yaml` the file we created in the "Data Resource" section:
+This example highlights a really important idea - without metadata many software will not be able to even read this data file. Furthermore, without metadata people cannot understand the purpose of this data. To see how we can use metadata to fix our data, let's now use the `country.resource.yaml` file we created in the "Data Resource" section with Frictionless `extract`:
 
 ```bash
 $ frictionless extract tmp/country.resource.yaml --basepath .
@@ -561,11 +561,11 @@ id  neighbor_id  name     population
 ==  ===========  =======  ==========
 ```
 
-As we can see, it's now fixed. The metadata we'd had saved the day. If we explore this data in Python we can discover that it also correct data types e.g. `id` is Python's integer not string. This fact will allow exporting and sharing this data without any fear.
+As we can see, the data is now fixed. The metadata we had saved the day! If we explore this data in Python we can discover that it also corrected data types - e.g. `id` is Python's integer not string. We can now export and share this data without any worries.
 
 ## Inferring Metadata
 
-Many Frictionless functions infer metadata under the hood as though `describe`, `extract`, and many more. On a lower-level, it's possible to control this process. Let's create a `Resource`.
+Many Frictionless functions infer metadata under the hood such as `describe`, `extract`, and many more. On a lower-level, it's possible to control this process. To see this, let's create a `Resource`.
 
 ```python
 from pprint import pprint
@@ -633,7 +633,7 @@ pprint(resource.schema)
             {'name': 'population', 'type': 'integer'}]}
 ```
 
-Under the hood it, for example, still treats empty string as missing values because it's the specs' default. We can make reveal implicit metadata by expanding it:
+Under the hood it, for example, still treats empty strings as missing values because it's the specs' default. We can reveal implicit metadata by expanding it:
 
 ```python
 resource.schema.expand()
@@ -659,7 +659,7 @@ pprint(resource.schema)
 
 ## Transforming Metadata
 
-We have seen it before but let's re-iterate; it's possible to transform core metadata properties using Python interface:
+We have seen this before but let's re-iterate; it's possible to transform core metadata properties using Python's interface:
 
 ```python
 from frictionless import Resource
@@ -672,7 +672,7 @@ resource.layout.header_rows = [2]
 resource.to_yaml("tmp/country.resource.yaml")
 ```
 
-But not only the Python interface is available. Thanks to the flexibility of the Frictionless Specs, we can add arbitrary metadata to our descriptor. We use dictionary operations for it:
+But the Python interface is not our only option. Thanks to the flexibility of the Frictionless Specs, we can add arbitrary metadata to our descriptor. We use dictionary operations to do this:
 
 ```python
 from frictionless import Resource
@@ -734,7 +734,7 @@ schema:
 
 ## Validating Metadata
 
-Metadata validity is an important topic so it's recommended to validate your metadata before publishing. For example, let's make it invalid:
+Metadata validity is an important topic, and we recommend validating your metadata before publishing. For example, let's first make it invalid:
 
 ```python
 from frictionless import Resource
@@ -750,7 +750,7 @@ False
 [{'code': 'resource-error', 'name': 'Resource Error', 'tags': ['#general'], 'note': '"1 is not of type \'string\'" at "title" in metadata and at "properties/title/type" in profile', 'message': 'The data resource has an error: "1 is not of type \'string\'" at "title" in metadata and at "properties/title/type" in profile', 'description': 'A validation cannot be processed.'}]
 ```
 
-Let's fix our resource metadata:
+We see this error: `'message': 'The data resource has an error: "1 is not of type \'string\'" at "title" in metadata and at "properties/title/type" in profile'` Now, let's fix our resource metadata:
 
 ```python
 from frictionless import Resource
@@ -764,11 +764,11 @@ print(resource.metadata_valid)
 True
 ```
 
-You need to check `metadata.metadata_valid` only if you change it by hands; the available high-level functions like `validate` do it on their own.
+You need to check `metadata.metadata_valid` only if you change it manually; Frictionless' high-level functions like `validate` do that on their own.
 
 ## Mastering Metadata
 
-Metadata class is under the hood of many of Frictionless' classes. Let's overview main `Metadata` features. For a full reference, please read "API Reference". Let's take a look at the Metadata class which is a `dict` subclass:
+The Metadata class is under the hood of many of Frictionless' classes. Let's overview the main `Metadata` features. For a full reference, please read ["API Reference"](../references/api-reference.md). Let's take a look at the Metadata class which is a `dict` subclass:
 
 ```
 Metadata(dict)
@@ -784,18 +784,18 @@ Metadata(dict)
   metadata_validate
 ```
 
-This class exists for subclassing and here is important points that will help to work with metadata objects and design and write new metadata classes:
-- to bind default values to a property it's possible to use `metadata_attach` (see e.g. the `Schema` class)
+This class exists for subclassing, and here are some important points that will help you work with metadata objects and design and write new metadata classes:
+- to bind default values to a property it is possible to use `metadata_attach` (see e.g. the `Schema` class)
 - during the initialization a descriptor is processed by `metadata_extract`
 - metadata detect any shallow update and call `metadata_process`
 - checking for validity or errors will trigger `metadata_validate`
-- functions exporting to json and yaml are available be default
+- functions exporting to json and yaml are available by default
 - `metadata_profile` can be set to a JSON Schema
 - `metadata_Error` can be set to an Error class
 
 ## Metadata Classes
 
-Frictionless has many classes that is derived from the `Metadata` class. It means that all of them can be treated as a metadata object with getters and setters, `to_json` and `to_yaml` function, and other Metadata's API. See "API Reference" for more information about these classes:
+Frictionless has many classes that are derived from the `Metadata` class. This means that all of them can be treated as a metadata objects with getters and setters, `to_json` and `to_yaml` function, and other Metadata's API. See ["API Reference"](../references/api-reference.md) for more information about these classes:
 
 - Package
 - Resource
