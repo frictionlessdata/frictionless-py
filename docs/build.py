@@ -8,30 +8,28 @@ import subprocess
 from jinja2 import Template
 from docstring_parser import parse
 from importlib import import_module
-from frictionless import plugins, errors, helpers
+from frictionless import plugins, errors, checks, steps, types, helpers
 
 
 # Main
 
 
 def main():
-
-    # Intorduction
     build_introduction()
-
-    # References
+    build_plugins_reference()
     build_schemes_reference()
     build_formats_reference()
     build_errors_reference()
+    build_checks_reference()
+    build_steps_reference()
+    build_types_reference()
     build_api_reference()
-
-    # Development
     build_contributing()
     build_changelog()
     build_authors()
 
 
-# Builders
+# Introduction
 
 
 def build_introduction():
@@ -40,6 +38,46 @@ def build_introduction():
     document = re.sub(r"## Documentation.*", "", document, flags=re.DOTALL)
     write_file(os.path.join("docs", "introduction", "introduction.md"), document)
     print("Built: Introduction")
+
+
+# References
+
+
+def build_plugins_reference():
+    TEMPLATE = """
+    ---
+    title: Plugins Reference
+    ---
+
+    Frictionless Framework ships with a great deal of core plugins.
+    Some of them are production ready and some of them are not.
+    - **stable**: These plugins are well-tested and can be used in production
+    - **experimental**: These plugins are not recommended for production yet. There can be bugs and the API might change within the same major version of Frictionless
+
+    {% for Plugin in Plugins %}
+    ## {{ Plugin.__name__ }}
+
+    Code: `{{ Plugin.code }}` <br/>
+    Status: `{{ Plugin.status }}` <br/>
+
+    {% endfor %}
+    """
+
+    # Input
+    Plugins = []
+    for item in pkgutil.iter_modules([os.path.dirname(plugins.__file__)]):
+        module = import_module(f"frictionless.plugins.{item.name}")
+        for name, Plugin in vars(module).items():
+            match = re.match(r"(.+)Plugin", name)
+            if not match:
+                continue
+            Plugins.append(Plugin)
+
+    # Ouput
+    template = Template(inspect.cleandoc(TEMPLATE))
+    document = template.render(Plugins=Plugins).strip()
+    write_file(os.path.join("docs", "references", "plugins-reference.md"), document)
+    print("Built: Plugins Reference")
 
 
 def build_schemes_reference():
@@ -73,12 +111,12 @@ def build_schemes_reference():
     for item in pkgutil.iter_modules([os.path.dirname(plugins.__file__)]):
         modules.append(import_module(f"frictionless.plugins.{item.name}"))
     for module in modules:
-        for name, Dialect in vars(module).items():
+        for name, Control in vars(module).items():
             match = re.match(r"(.+)Control", name)
             if not match:
                 continue
             name = match.group(1)
-            data = parse(Dialect.__doc__)
+            data = parse(Control.__doc__)
             scheme = {"name": name, "options": []}
             for param in data.params:
                 if param.arg_name.startswith("descriptor"):
@@ -180,6 +218,81 @@ def build_errors_reference():
     print("Built: Errors Reference")
 
 
+def build_checks_reference():
+    TEMPLATE = """
+    ---
+    title: Checks Reference
+    ---
+
+    This document provides a full reference to the Frictionless checks.
+    {% for Check in Checks %}
+    ## {{ Check.__name__ }}
+
+    Code: `{{ Check.code }}` <br/>
+
+    {% endfor %}
+    """
+
+    # Input
+    Checks = [item for item in vars(checks).values() if hasattr(item, "code")]
+
+    # Ouput
+    template = Template(inspect.cleandoc(TEMPLATE))
+    document = template.render(Checks=Checks).strip()
+    write_file(os.path.join("docs", "references", "checks-reference.md"), document)
+    print("Built: Checks Reference")
+
+
+def build_steps_reference():
+    TEMPLATE = """
+    ---
+    title: Steps Reference
+    ---
+
+    This document provides a full reference to the Frictionless steps.
+    {% for Step in Steps %}
+    ## {{ Step.__name__ }}
+
+    Code: `{{ Step.code }}` <br/>
+
+    {% endfor %}
+    """
+
+    # Input
+    Steps = [item for item in vars(steps).values() if hasattr(item, "code")]
+
+    # Ouput
+    template = Template(inspect.cleandoc(TEMPLATE))
+    document = template.render(Steps=Steps).strip()
+    write_file(os.path.join("docs", "references", "steps-reference.md"), document)
+    print("Built: Steps Reference")
+
+
+def build_types_reference():
+    TEMPLATE = """
+    ---
+    title: Types Reference
+    ---
+
+    This document provides a full reference to the Frictionless types.
+    {% for Type in Types %}
+    ## {{ Type.__name__ }}
+
+    Code: `{{ Type.code }}` <br/>
+
+    {% endfor %}
+    """
+
+    # Input
+    Types = [item for item in vars(types).values() if hasattr(item, "code")]
+
+    # Ouput
+    template = Template(inspect.cleandoc(TEMPLATE))
+    document = template.render(Types=Types).strip()
+    write_file(os.path.join("docs", "references", "types-reference.md"), document)
+    print("Built: Types Reference")
+
+
 def build_api_reference():
 
     # Input
@@ -220,6 +333,9 @@ def build_api_reference():
     print("Built: API Reference")
 
 
+# Development
+
+
 def build_contributing():
     document = read_file("CONTRIBUTING.md")
     document = re.sub(r"^# (.*)", "---\ntitle: \\1\n---", document)
@@ -232,6 +348,13 @@ def build_changelog():
     document = re.sub(r"^# (.*)", "---\ntitle: \\1\n---", document)
     write_file(os.path.join("docs", "development", "changelog.md"), document)
     print("Built: Changelog")
+
+
+def build_migration():
+    document = read_file("MIGRATION.md")
+    document = re.sub(r"^# (.*)", "---\ntitle: \\1\n---", document)
+    write_file(os.path.join("docs", "development", "migraion.md"), document)
+    print("Built: Migration")
 
 
 def build_authors():

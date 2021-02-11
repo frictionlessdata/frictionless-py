@@ -20,19 +20,8 @@ Main Frictionless Framework functionality: describe, extract, validate, and tran
 - [Validating Data](validating-data.md)
 - [Transforming Data](transforming-data.md)
 
-Main Frictionless Framework classes to work with data in Python:
-
-- [Package Guide](package-guide.md)
-- [Resource Guide](resource-guide.md)
-- [Schema Guide](schema-guide.md)
-- [Layout Guide](layout-guide.md)
-- [Inquiry Guide](inquiry-guide.md)
-- [Report Guide](report-guide.md)
-- [Pipeline Guide](pipeline-guide.md)
-- [Status Guide](status-guide.md)
-
 ## Advanced Level
 
-Extending Frictionless Framework and other advanced topics:
-
-- [Extension Guide](extension-guide.md)
+Explor the following section for more advanced guides:
+- [Mastering the Framework](package-guide.md)
+- [Writing an Extension](system-guide.md)

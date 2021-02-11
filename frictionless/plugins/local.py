@@ -17,6 +17,8 @@ class LocalPlugin(Plugin):
 
     """
 
+    code = "local"
+
     def create_control(self, resource, *, descriptor):
         if resource.scheme == "file":
             return LocalControl(descriptor)

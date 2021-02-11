@@ -21,6 +21,9 @@ class ServerPlugin(Plugin):
 
     """
 
+    code = "server"
+    status = "experimental"
+
     def create_server(self, name):
         if name == "api":
             return ApiServer()

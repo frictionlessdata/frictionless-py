@@ -19,6 +19,9 @@ class HtmlPlugin(Plugin):
 
     """
 
+    code = "html"
+    status = "experimental"
+
     def create_dialect(self, resource, *, descriptor):
         if resource.format == "html":
             return HtmlDialect(descriptor)

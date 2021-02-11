@@ -16,6 +16,8 @@ class BufferPlugin(Plugin):
 
     """
 
+    code = "buffer"
+
     def create_file(self, file):
         if not file.scheme and not file.format:
             if isinstance(file.data, bytes):

@@ -10,6 +10,9 @@ class Plugin:
 
     """
 
+    code = "plugin"
+    status = "stable"
+
     def create_check(self, name, *, descriptor=None):
         """Create checks
 

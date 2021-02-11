@@ -31,7 +31,7 @@ from .system import system
 from .transform import *
 from .type import Type
 from .validate import *
-from . import checks
 from . import errors
+from . import checks
 from . import steps
 from . import types

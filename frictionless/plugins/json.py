@@ -24,6 +24,8 @@ class JsonPlugin(Plugin):
 
     """
 
+    code = "json"
+
     def create_dialect(self, resource, *, descriptor):
         if resource.format in ["json", "jsonl", "ndjson"]:
             return JsonDialect(descriptor)

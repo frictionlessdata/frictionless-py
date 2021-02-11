@@ -16,21 +16,37 @@ module.exports = {
     "guides/validating-data",
     "guides/transforming-data",
     {
-      "Working in Python": [
+      "Mastring the Framework": [
         "guides/package-guide",
         "guides/resource-guide",
         "guides/schema-guide",
+        "guides/field-guide",
         "guides/layout-guide",
+        "guides/detector-guide",
         "guides/inquiry-guide",
         "guides/report-guide",
         "guides/pipeline-guide",
         "guides/status-guide",
       ],
-      "Advanced topics": ["guides/extension-guide"],
+      "Writing an Extension": [
+        "guides/system-guide",
+        "guides/plugin-guide",
+        "guides/scheme-guide",
+        "guides/format-guide",
+        "guides/storage-guide",
+        "guides/server-guide",
+        "guides/error-guide",
+        "guides/check-guide",
+        "guides/step-guide",
+        "guides/type-guide",
+      ],
     },
   ],
   tutorials: [
     "tutorials/tutorials-overview",
+    "tutorials/working-in-python",
+    "tutorials/working-with-cli",
+    "tutorials/working-with-api",
     {
       "Schemes Tutorials": [
         "tutorials/buffer-tutorial",
@@ -55,14 +71,16 @@ module.exports = {
         "tutorials/sql-tutorial",
       ],
     },
-    "tutorials/server-tutorial",
   ],
   references: [
     "references/references-overview",
+    "references/plugins-reference",
     "references/schemes-reference",
     "references/formats-reference",
-    "references/plugins-reference",
     "references/errors-reference",
+    "references/checks-reference",
+    "references/steps-reference",
+    "references/types-reference",
     "references/api-reference",
   ],
   development: [

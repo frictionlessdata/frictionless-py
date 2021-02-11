@@ -6,29 +6,24 @@ We use Github as a code and issues hosting platform. To report a bug or propose 
 
 ## Docs Contribution
 
-We use a flexible documentation system as the docs are generated from:
-- markdown documents in the `docs` directory interpreted by the Jupyter Notebook runner
-- python scripts in the `docs` directory generating references or copying documents from the root directory such as `README.md`, `CHANGELOG.md` etc
+To contribute to the documentation, please find an article in the `docs` folder and update its contents. Here is a list of hand-written sections:
+- `docs/guides`
+- `docs/tutorials`
 
-To contribute to the documentation, please check to the corresponding `docs/name.md|py` file to understand the source of a document. If it's a markdown just edit it in-line if it's a script edit it or find a corresponding document in the root directory.
+Some documentation is generated (for more information see `docs/build.py`). Here is a list of generated sections (excluding `overview/whats-next` docs):
+- `docs/introduction` (from the repository root's docs)
+- `docs/development` (from the repository root's docs)
+- `docs/references` (from the codebase's docstrings)
 
-### Building Process
-
-There are two main `docs` directories:
-- source directory: `docs`
-- target directory: `docs/build`
-
-To build only one document run:
+It's possible to run this documentation portal locally but it requires Node.js 12+ installed on your comupter:
 
 ```bash
-python scripts/docs.py name
+$ cd portal
+$ npm install
+$ npm start
 ```
 
-To build the whole documentation:
-
-```bash
-python scripts/docs.py # or make docs
-```
+To update a reference in `docs/references` and some other generated documents please update codebaes docstrings or root documents. For more information about generated documentation see `docs/build.py`.
 
 ## Code Contribution
 
@@ -38,11 +33,7 @@ Frictionless is a Python3.6+ framework, and it uses some basically standard Pyth
 - formatting: `black`
 - type checking: `mypy` (under construction)
 
-It's a commonplace but, of course, you need `git` to work on the project, also `make` is recommended.
-
-### Development Environment
-
-After cloning the repository, it's recommended to create a virtual environment and install the dependencies:
+It's a commonplace but, of course, you need `git` to work on the project, also `make` is recommended. After cloning the repository, it's recommended to create a virtual environment and install the dependencies:
 
 > it will install a `git commit` hook running the tests
 

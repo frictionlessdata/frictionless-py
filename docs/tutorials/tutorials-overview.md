@@ -4,19 +4,16 @@ title: Tutorials Overview
 
 Frictionless Framework is based on plugins: core and external. It ships with many core plugins mostly responsible for reading and writing data to/from different data schemes and formats. The "Tutorials" section is grouped accordingly.
 
-## Schemes Tutorials
+## Running the Framework
 
-Based on your data source path:
-- [Remote Scheme](remote-tutorial.md) (`HTTP://example.com/table.csv`)
-- Explore other schemes in the menu and select similarly
+Frictionless Framework can be used in Python, in CLI, and run as an API server:
 
-## Formats Tutorials
+- [Working in Python](working-in-python.md)
+- [Working with CLI](working-with-cli.md)
+- [Working with API](working-with-api.md)
 
-Based on your data source path:
-- [CSV Format](csv-tutorial.md) (`http://example.com/table.CSV`)
-- Explore other formats in the menu and select similarly
+## Working with Data
 
-## Server Tutorial
-
-Frictionless Framework can be used as a server:
-- [Server Tutorial](server-tutorial.md)
+Explore the following sections for schemes and formats tutorials:
+- [Schemes Tutorials](local-tutorial.md)
+- [Formats Tutorials](csv-tutorial.md)

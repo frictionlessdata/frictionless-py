@@ -26,6 +26,9 @@ class SqlPlugin(Plugin):
 
     """
 
+    code = "sql"
+    status = "experimental"
+
     def create_file(self, file):
         for prefix in SCHEME_PREFIXES:
             if file.scheme.startswith(prefix):

@@ -1,5 +1,5 @@
 ---
-title: Extension Guide
+title: Plugin Guide
 ---
 
 Frictionless is built on top of a powerful plugins system which is used internally and allows to extend the framework.

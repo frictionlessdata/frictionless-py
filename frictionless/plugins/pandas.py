@@ -25,6 +25,9 @@ class PandasPlugin(Plugin):
 
     """
 
+    code = "pandas"
+    status = "experimental"
+
     def create_file(self, file):
         if not file.scheme and not file.format and file.memory:
             if helpers.is_type(file.data, "DataFrame"):

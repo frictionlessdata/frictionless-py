@@ -25,6 +25,9 @@ class MultipartPlugin(Plugin):
 
     """
 
+    code = "multipart"
+    status = "experimental"
+
     def create_file(self, file):
         if file.multipart:
             file.scheme = "multipart"

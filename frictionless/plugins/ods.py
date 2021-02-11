@@ -23,6 +23,8 @@ class OdsPlugin(Plugin):
 
     """
 
+    code = "ods"
+
     def create_dialect(self, resource, *, descriptor):
         if resource.format == "ods":
             return OdsDialect(descriptor)

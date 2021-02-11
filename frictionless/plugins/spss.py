@@ -19,6 +19,9 @@ class SpssPlugin(Plugin):
     Public   | `from frictionless.plugins.spss import SpssPlugin`
     """
 
+    code = "spss"
+    status = "experimental"
+
     def create_dialect(self, resource, *, descriptor):
         if resource.format in ["sav", "zsav"]:
             return SpssDialect(descriptor)

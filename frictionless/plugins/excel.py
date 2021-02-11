@@ -28,6 +28,8 @@ class ExcelPlugin(Plugin):
 
     """
 
+    code = "excel"
+
     def create_dialect(self, resource, *, descriptor):
         if resource.format in ["xlsx", "xls"]:
             return ExcelDialect(descriptor)

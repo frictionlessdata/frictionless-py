@@ -19,6 +19,8 @@ class RemotePlugin(Plugin):
 
     """
 
+    code = "remote"
+
     def create_control(self, resource, *, descriptor):
         if resource.scheme in config.REMOTE_SCHEMES:
             return RemoteControl(descriptor)

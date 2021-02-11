@@ -17,6 +17,8 @@ class StreamPlugin(Plugin):
 
     """
 
+    code = "stream"
+
     def create_file(self, file):
         if not file.scheme and not file.format:
             if hasattr(file.data, "read"):

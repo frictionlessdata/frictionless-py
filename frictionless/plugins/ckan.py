@@ -26,6 +26,9 @@ class CkanPlugin(Plugin):
     Public   | `from frictionless.plugins.ckan import CkanPlugin`
     """
 
+    code = "ckan"
+    status = "experimental"
+
     def create_dialect(self, resource, *, descriptor):
         if resource.format == "ckan":
             return CkanDialect(descriptor)

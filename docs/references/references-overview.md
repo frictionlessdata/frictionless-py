@@ -4,24 +4,22 @@ title: References Overview
 
 In this section you can find detailed references for:
 
-## Schemes/Formats
-
-List of options for schemes and formats:
-
-- [Schemes Reference](schemes-reference.md)
-- [Formats Reference](formats-reference.md)
-
 ## Plugins
 
-List of Frictionless Framework plugins and their status:
+List of the core Frictionless Framework plugins and their status:
 
 - [Plugins Reference](plugins-reference.md)
 
-## Errors
+## Elements
 
-List of Frictionless Framework errors
+List of Frictionless Framework elements:
 
+- [Schemes Reference](schemes-reference.md)
+- [Formats Reference](formats-reference.md)
 - [Errors Reference](errors-reference.md)
+- [Checks Reference](checks-reference.md)
+- [Steps Reference](steps-reference.md)
+- [Types Reference](types-reference.md)
 
 ## API
 

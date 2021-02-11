@@ -22,6 +22,9 @@ class GsheetsPlugin(Plugin):
 
     """
 
+    code = "gsheet"
+    status = "experimental"
+
     def create_file(self, file):
         if not file.memory:
             if "docs.google.com/spreadsheets" in file.path:

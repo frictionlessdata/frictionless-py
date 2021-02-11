@@ -19,6 +19,9 @@ class S3Plugin(Plugin):
 
     """
 
+    code = "s3"
+    status = "experimental"
+
     def create_control(self, resource, *, descriptor):
         if resource.scheme == "s3":
             return S3Control(descriptor)

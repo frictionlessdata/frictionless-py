@@ -21,6 +21,8 @@ class CsvPlugin(Plugin):
 
     """
 
+    code = "csv"
+
     def create_dialect(self, resource, *, descriptor):
         if resource.format == "csv":
             return CsvDialect(descriptor)

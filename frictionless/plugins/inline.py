@@ -19,6 +19,8 @@ class InlinePlugin(Plugin):
 
     """
 
+    code = "inline"
+
     def create_file(self, file):
         if not file.scheme and not file.format and file.memory:
             if not hasattr(file.data, "read"):

@@ -35,6 +35,9 @@ class BigqueryPlugin(Plugin):
     Public   | `from frictionless.plugins.bigquery import BigqueryPlugin`
     """
 
+    code = "bigquery"
+    status = "experimental"
+
     def create_file(self, file):
         if not file.scheme and not file.format and file.memory:
             if helpers.is_type(file.data, "Resource"):
