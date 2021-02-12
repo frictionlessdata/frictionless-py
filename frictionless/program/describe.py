@@ -49,7 +49,7 @@ def program_describe(
         ),
     ),
     field_float_numbers: bool = Opt(False, help="Make number floats instead of decimals"),
-    field_missing_values: str = Opt("''", help="Comma-separated list of missing values"),
+    field_missing_values: str = Opt('""', help="Comma-separated list of missing values"),
     # Description
     basepath: str = Opt(None, help="Basepath of the resource/package"),
     expand: bool = Opt(None, help="Expand default values"),
