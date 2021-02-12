@@ -2,7 +2,7 @@
 title: Extracting Data
 ---
 
-Extracting data means reading tabular data from some source. We can use various customizations for this process such as providing a file format, table schema, limiting fields or rows amounts, and much more. Let's see this with some real files:
+Extracting data means reading tabular data from a source. We can use various customizations for this process such as providing a file format, table schema, limiting field or row values, and much more. Let's see this with some real files:
 
 ```bash
 $ cat data/country-3.csv
@@ -77,19 +77,19 @@ The high-level interface for extracting data provided by Frictionless is a set o
 - `extract_package`: accepts a package descriptor and returns a map of the package's tables
 - `extract_resource`: accepts a resource descriptor and returns a data table
 
-In the command-line, there is only 1 command (`extract`) but there is a flag to adjust the behavior:
+On the command-line, there is only one command (`extract`) but there is a flag to adjust the behavior:
 
 ```bash
 $ frictionless extract
-$ frictionless extract --type package
 $ frictionless extract --type resource
+$ frictionless extract --type package
 ```
 
 The `extract` functions always read data in a form of rows (see the object description below) into memory. The lower-level interfaces will allow you to stream data and various output forms.
 
-## Extracting Resource
+## Extracting a Resource
 
-A resource contains only one file and for extracting a resource we can use the same approach we used above except we'll provide only one file. We will extract data using a metadata descriptor:
+A resource contains only one file. To extract a resource we can use the same approach as above:
 
 ```python
 from frictionless import extract
@@ -106,16 +106,24 @@ pprint(rows)
  Row([('id', 5), ('name', 'Rome')])]
 ```
 
-In many cases, the code above doesn't really make sense as we can just provide a path to the high-level `extract` function instead of a descriptor to the `extract_resource` function but the power of the descriptor is that it can contain different metadata and be stored on the disc. Let's extend our example:
+In many cases, the code above doesn't really make sense as we can just provide a path to the high-level `extract` function. Instead, let's use the `extract_resource` function to extract the resource from a descriptor. The power of the descriptor is that it can contain different metadata and be stored on the disc. First let's create the descriptor:
 
 ```python
 from frictionless import Resource
 
 resource = Resource('data/capital-3.csv')
 resource.infer()
-resource.schema.missing_values.append('3')
+resource.schema.missing_values.append('3') # set 3 as a missing value
 resource.to_yaml('tmp/capital.resource.yaml')
 ```
+This description can then be used to extract the resource:
+
+```python
+from frictionless import extract_resource
+
+data = extract_resource('tmp/capital.resource.yaml')
+```
+This can also be done on the command-line:
 
 ```bash
 $ frictionless extract tmp/capital.resource.yaml --basepath .
@@ -137,11 +145,11 @@ None  Paris
 ====  ======
 ```
 
-So what's happened? We set the textual representation of the number "3" to be a missing value. It was done only for presentational purposes because it's definitely not a missing value. On the other hand, it demonstrated how metadata can be used.
+So what has happened? We set the textual representation of the number "3" to be a missing value. It was done only for explanation purposes because it's definitely not a missing value. On the other hand, it demonstrated how metadata can be used.
 
-## Extracting Package
+## Extracting a Package
 
-Let's start by using the command line-interface. We're going to provide two files to the `extract` command which will be enough to detect that it's a dataset:
+Let's start by using the command-line interface. We're going to provide two files to the `extract` command which will be enough to detect that it's a dataset:
 
 ```bash
 $ frictionless extract data/*-3.csv
@@ -177,7 +185,7 @@ id  capital_id  name     population
 ==  ==========  =======  ==========
 ```
 
-In Python we can do the same by providing a glob for the `extract` function, but instead we will use `extract_package` by providing a package descriptor:
+In Python we can do the same:
 
 ```python
 from frictionless import extract
@@ -202,10 +210,17 @@ for path, rows in data.items():
  Row([('id', 4), ('name', 'Madrid')]),
  Row([('id', 5), ('name', 'Rome')])]
 ```
+We can also extract the package from a descriptor using the `extract_package` function: 
+
+```python
+package  = extract_package('tmp/country.package.yaml')
+
+pprint(package)
+```
 
 ## Resource Class
 
-The Resource class is also a metadata class which provides various read and stream functions. The `extract` functions always read rows into memory; Resource can do the same but it also gives a choice regarding output data. It can be `rows`, `data`, `text`, or `bytes`. Let's try reading all of them:
+The Resource class provides metadata about a resource with read and stream functions. The `extract` functions always read rows into memory; Resource can do the same but it also gives a choice regarding output data which can be `rows`, `data`, `text`, or `bytes`. Let's try reading all of them:
 
 ```python
 from frictionless import Resource
@@ -239,7 +254,7 @@ pprint(resource.read_rows())
  Row([('id', 5), ('capital_id', 4), ('name', 'Spain'), ('population', 47)])]
 ```
 
-It's really handy to read all your data into memory but it's not always possible if a file is really big. For such cases, Frictionless provides streaming functions:
+It's really handy to read all your data into memory but it's not always possible if a file is very big. For such cases, Frictionless provides streaming functions:
 
 ```python
 from frictionless import Resource
@@ -267,14 +282,13 @@ Row([('id', 5), ('capital_id', 4), ('name', 'Spain'), ('population', 47)])
 
 ## Package Class
 
-The Package class is a metadata class which provides an ability to read its contents. First of all, let's create a package descriptor:
-
+The Package class provides functions to read the contents of a package. First of all, let's create a package descriptor:
 
 ```bash
 $ frictionless describe data/*-3.csv --json > tmp/country.package.json
 ```
 
-Now, we can open the created descriptor and read the package's resources:
+Now, we can open the descriptor and read the package's resources:
 
 ```python
 from frictionless import Package
@@ -297,11 +311,11 @@ pprint(package.get_resource('capital-3').read_rows())
  Row([('id', 5), ('name', 'Rome')])]
 ```
 
-The package by itself doesn't provide any read functions directly because it's a role of its resources. So everything written below for the Resource class can be used within a package.
+The package by itself doesn't provide any read functions directly because that is a role of its resources. So everything written above for the Resource class can be used within a package.
 
 ## Header Class
 
-After opening a resource you get access to a `resource.header` object. It's a list of normalized labels but also provides some additional functionality. Let's take a look:
+After opening a resource you get access to a `resource.header` object. This is a list of normalized labels but also provides some additional functionality. Let's take a look:
 
 
 ```python
@@ -328,12 +342,11 @@ with Resource('data/capital-3.csv') as resource:
     As List: ['id', 'name']
 
 
-The example above covers the case when a header is valid. For a header with tabular errors this information can be much more useful revealing discrepancies, duplicates or missing cells information. Please read "API Reference" for more details.
+The example above covers the case when a header is valid. For a header that contains errors in its tabular structure this information can be much more useful, revealing discrepancies, duplicates or missing cell information. Please read "API Reference" for more details.
 
 ## Row Class
 
-The `extract`, `resource.read_rows()` and many other functions return or yield row objects. It's a `dict` providing additional API shown below:
-
+The `extract`, `resource.read_rows()` and other functions return or yield row objects. In Python, this returns a dictionary with the following information:
 ```python
 from frictionless import Resource, Detector
 
@@ -372,4 +385,4 @@ As Dict: {'id': None, 'name': 'London'}
 As List: [None, 'London']
 ```
 
-As we can see, it provides a lot of information which is especially useful when a row is not valid. Our row is valid but we demonstrated how it can preserve data about row missing values. It also preserves data about all errored cells. Please read "API Reference" for more details.
+As we can see, this output provides a lot of information which is especially useful when a row is not valid. Our row is valid but we demonstrated how it can preserve data about missing values. It also preserves data about all cells that contain errors. Please read "API Reference" for more details.
