@@ -11,8 +11,6 @@ Let's get started with Frictionless! We will learn how to install and use the fr
 ```bash title="CLI"
 $ pip install frictionless
 $ pip install frictionless[sql] # to install a core plugin
-$ frictionless --version
-4.0.0
 ```
 
 The framework supports CSV, Excel, and JSON formats by default. Please use the command above to install a core plugin and add support for SQL, Pandas, HTML, and others (check the [list of Frictionless Framework plugins and their status](https://framework.frictionlessdata.io/docs/references/plugins-reference)). Usually, you don't need to think about it in advance–frictionless will display a useful error message about a missing plugin with installation instructions.
@@ -65,7 +63,6 @@ We will take a very messy data file:
 ```bash title="CLI"
 $ cat data/invalid.csv
 ```
-
 ```csv title="data/invalid.csv"
 id,name,,name
 1,english
@@ -82,11 +79,10 @@ First of all, let's use `describe` to infer the metadata directly from the tabul
 ```bash title="CLI"
 $ frictionless describe data/invalid.csv
 ```
-
-```
----
-metadata: data/invalid.csv
----
+```yaml
+# --------
+# metadata: data/invalid.csv
+# --------
 
 encoding: utf-8
 format: csv
@@ -112,11 +108,10 @@ Now that we have inferred a table schema from the data file (e.g., expected form
 ```bash title="CLI"
 $ frictionless extract data/invalid.csv
 ```
-
-```
----
-data: data/invalid.csv
----
+```yaml
+# ----
+# data: data/invalid.csv
+# ----
 
 ====  =======  ======  =====
 id    name     field3  name2
@@ -134,11 +129,10 @@ Last but not least, let's get a validation report. This report will help us to i
 ```bash title="CLI"
 $ frictionless validate data/invalid.csv
 ```
-
-```
----
-invalid: data/invalid.csv
----
+```yaml
+# -------
+# invalid: data/invalid.csv
+# -------
 
 ====  =====  ===============  ====================================================================================
 row   field  code             message
