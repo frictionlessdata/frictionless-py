@@ -146,9 +146,10 @@ def program_describe(
         source = "stdin"
     elif isinstance(source, list):
         source = " ".join(source)
-    typer.secho("---")
-    typer.secho(f"metadata: {source}", bold=True)
-    typer.secho("---")
+    prefix = "metadata"
+    typer.secho(f"# {'-'*len(prefix)}", bold=True)
+    typer.secho(f"# {prefix}: {source}", bold=True)
+    typer.secho(f"# {'-'*len(prefix)}", bold=True)
     typer.secho("")
     typer.secho(metadata.to_yaml().strip())
     typer.secho("")

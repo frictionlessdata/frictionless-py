@@ -181,9 +181,10 @@ def program_validate(
         content = []
         if is_stdin:
             source = "stdin"
-        typer.secho("---")
-        typer.secho(f"invalid: {source}", bold=True)
-        typer.secho("---")
+        prefix = "invalid"
+        typer.secho(f"# {'-'*len(prefix)}", bold=True)
+        typer.secho(f"# {prefix}: {source}", bold=True)
+        typer.secho(f"# {'-'*len(prefix)}", bold=True)
         for error in report.errors:
             content.append([error.code, error.message])
         typer.secho(
@@ -203,9 +204,9 @@ def program_validate(
         source = task.resource.path
         if is_stdin:
             source = "stdin"
-        typer.secho("---")
-        typer.secho(f"{prefix}: {source}", bold=True)
-        typer.secho("---")
+        typer.secho(f"# {'-'*len(prefix)}", bold=True)
+        typer.secho(f"# {prefix}: {source}", bold=True)
+        typer.secho(f"# {'-'*len(prefix)}", bold=True)
         if task.errors:
             prev_invalid = True
             typer.secho("")

@@ -167,9 +167,10 @@ def program_extract(
     for number, (name, rows) in enumerate(normdata.items(), start=1):
         if is_stdin:
             name = "stdin"
-        typer.secho("---")
-        typer.secho(f"data: {name}", bold=True)
-        typer.secho("---")
+        prefix = "data"
+        typer.secho(f"# {'-'*len(prefix)}", bold=True)
+        typer.secho(f"# {prefix}: {name}", bold=True)
+        typer.secho(f"# {'-'*len(prefix)}", bold=True)
         typer.secho("")
         subdata = helpers.rows_to_data(rows)
         typer.secho(str(petl.util.vis.lookall(subdata, vrepr=str, style="simple")))

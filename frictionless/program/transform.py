@@ -33,6 +33,7 @@ def program_transform(
     # Return default
     if is_stdin:
         source = "stdin"
-    typer.secho("---")
-    typer.secho(f'success: "{source}"', bold=True)
-    typer.secho("---")
+    prefix = "success"
+    typer.secho(f"# {'-'*len(prefix)}", bold=True)
+    typer.secho(f"# {prefix}: {source}", bold=True)
+    typer.secho(f"# {'-'*len(prefix)}", bold=True)
