@@ -13,49 +13,47 @@ Frictionless supports a few different kinds of data and metadata transformations
 The main difference between the first two and pipelines that resource and package transforms are imperative while pipelines can be created beforehand or shared as a JSON file. Also, Frictionless supports a [Dataflows](https://frictionlessdata.io/tooling/python/working-with-dataflows/) pipeline runner. You need to install the `dataflows` plugin to use it.
 
 
-```python
-! cat data/transform.csv
+```bash title="CLI"
+$ cat data/transform.csv
+```
+```csv title="data/transform.csv"
+id,name,population
+1,germany,83
+2,france,66
+3,spain,47
 ```
 
-    id,name,population
-    1,germany,83
-    2,france,66
-    3,spain,47
-
-
-
-```python
-! cat data/transform-groups.csv
+```bash title="CLI"
+$ cat data/transform-groups.csv
+```
+```csv title="data/transform-groups.csv"
+id,name,population,year
+1,germany,83,2020
+2,germany,77,1920
+3,france,66,2020
+4,france,54,1920
+5,spain,47,2020
+6,spain,33,1920
 ```
 
-    id,name,population,year
-    1,germany,83,2020
-    2,germany,77,1920
-    3,france,66,2020
-    4,france,54,1920
-    5,spain,47,2020
-    6,spain,33,1920
-
-
-
-```python
-! cat data/transform-pivot.csv
+```bash title="CLI"
+$ cat data/transform-pivot.csv
 ```
-
-    region,gender,style,units
-    east,boy,tee,12
-    east,boy,golf,14
-    east,boy,fancy,7
-    east,girl,tee,3
-    east,girl,golf,8
-    east,girl,fancy,18
-    west,boy,tee,12
-    west,boy,golf,15
-    west,boy,fancy,8
-    west,girl,tee,6
-    west,girl,golf,16
-    west,girl,fancy,1
-
+```csv title="data/transform-pivot.csv"
+region,gender,style,units
+east,boy,tee,12
+east,boy,golf,14
+east,boy,fancy,7
+east,girl,tee,3
+east,girl,golf,8
+east,girl,fancy,18
+west,boy,tee,12
+west,boy,golf,15
+west,boy,fancy,8
+west,girl,tee,6
+west,girl,golf,16
+west,girl,fancy,1
+```
 
 ## Transform Functions
 
@@ -69,8 +67,7 @@ The high-level interface for transforming data provided by Frictionless is a set
 
 Let's write our first transform. It's as easy as defining a source resource, applying transform steps and getting back a resulting target resource:
 
-
-```python
+```python title="Python"
 from pprint import pprint
 from frictionless import Resource, transform, steps
 
@@ -85,17 +82,17 @@ target = transform(
 pprint(target.schema)
 pprint(target.read_rows())
 ```
-
-    {'fields': [{'name': 'name', 'type': 'string'},
-                {'name': 'variable'},
-                {'name': 'value'}]}
-    [Row([('name', 'germany'), ('variable', 'id'), ('value', 1)]),
-     Row([('name', 'germany'), ('variable', 'population'), ('value', 83)]),
-     Row([('name', 'france'), ('variable', 'id'), ('value', 2)]),
-     Row([('name', 'france'), ('variable', 'population'), ('value', 66)]),
-     Row([('name', 'spain'), ('variable', 'id'), ('value', 3)]),
-     Row([('name', 'spain'), ('variable', 'population'), ('value', 47)])]
-
+```
+{'fields': [{'name': 'name', 'type': 'string'},
+            {'name': 'variable'},
+            {'name': 'value'}]}
+[Row([('name', 'germany'), ('variable', 'id'), ('value', 1)]),
+ Row([('name', 'germany'), ('variable', 'population'), ('value', 83)]),
+ Row([('name', 'france'), ('variable', 'id'), ('value', 2)]),
+ Row([('name', 'france'), ('variable', 'population'), ('value', 66)]),
+ Row([('name', 'spain'), ('variable', 'id'), ('value', 3)]),
+ Row([('name', 'spain'), ('variable', 'population'), ('value', 47)])]
+```
 
 Let's break the transforming steps we applied down:
 1. `steps.table_normalize` - cast data types and shape the table according to the schema, inferred or provided
@@ -107,8 +104,7 @@ There are dozens of other available steps that will be covered below.
 
 Transforming a package is not much more difficult than a resource. Basically, a package is a set of resources so we will be transforming resources exactly the same way as we did above + we will be managing the resources list itself, adding or removing them:
 
-
-```python
+```python title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -128,18 +124,18 @@ pprint(target.resource_names)
 pprint(target.get_resource('main').schema)
 pprint(target.get_resource('main').read_rows())
 ```
-
-    ['main']
-    {'fields': [{'name': 'id', 'type': 'integer'},
-                {'name': 'name', 'type': 'string'},
-                {'name': 'population', 'type': 'integer'}]}
-    [Row([('id', 1), ('name', 'germany'), ('population', 83)]),
-     Row([('id', 1), ('name', 'germany'), ('population', 83)]),
-     Row([('id', 2), ('name', 'france'), ('population', 66)]),
-     Row([('id', 2), ('name', 'france'), ('population', 66)]),
-     Row([('id', 3), ('name', 'spain'), ('population', 47)]),
-     Row([('id', 3), ('name', 'spain'), ('population', 47)])]
-
+```
+['main']
+{'fields': [{'name': 'id', 'type': 'integer'},
+            {'name': 'name', 'type': 'string'},
+            {'name': 'population', 'type': 'integer'}]}
+[Row([('id', 1), ('name', 'germany'), ('population', 83)]),
+ Row([('id', 1), ('name', 'germany'), ('population', 83)]),
+ Row([('id', 2), ('name', 'france'), ('population', 66)]),
+ Row([('id', 2), ('name', 'france'), ('population', 66)]),
+ Row([('id', 3), ('name', 'spain'), ('population', 47)]),
+ Row([('id', 3), ('name', 'spain'), ('population', 47)])]
+```
 
 The exact transformation we have applied actually doesn't make any sense as we just duplicated every row of the `main` resource. But it must have provided basic understanding of how simple and at the same time flexible package transformations can be.
 
@@ -153,8 +149,7 @@ A pipeline is a metadata object having one of these types:
 
 For resource and package types it's basically the same functionality as we have seen above but written declaratively. So let's just run the same resource transformation as we did in the `Tranforming Resource` section:
 
-
-```python
+```python title="Python"
 from pprint import pprint
 from frictionless import Pipeline, transform, steps
 
@@ -170,17 +165,17 @@ target = transform(pipeline)
 pprint(target.schema)
 pprint(target.read_rows())
 ```
-
-    {'fields': [{'name': 'name', 'type': 'string'},
-                {'name': 'variable'},
-                {'name': 'value'}]}
-    [Row([('name', 'germany'), ('variable', 'id'), ('value', 1)]),
-     Row([('name', 'germany'), ('variable', 'population'), ('value', 83)]),
-     Row([('name', 'france'), ('variable', 'id'), ('value', 2)]),
-     Row([('name', 'france'), ('variable', 'population'), ('value', 66)]),
-     Row([('name', 'spain'), ('variable', 'id'), ('value', 3)]),
-     Row([('name', 'spain'), ('variable', 'population'), ('value', 47)])]
-
+```
+{'fields': [{'name': 'name', 'type': 'string'},
+            {'name': 'variable'},
+            {'name': 'value'}]}
+[Row([('name', 'germany'), ('variable', 'id'), ('value', 1)]),
+ Row([('name', 'germany'), ('variable', 'population'), ('value', 83)]),
+ Row([('name', 'france'), ('variable', 'id'), ('value', 2)]),
+ Row([('name', 'france'), ('variable', 'population'), ('value', 66)]),
+ Row([('name', 'spain'), ('variable', 'id'), ('value', 3)]),
+ Row([('name', 'spain'), ('variable', 'population'), ('value', 47)])]
+```
 
 And as we had expected we got the same result.
 
@@ -242,8 +237,7 @@ Frictionless includes more than 40+ builtin transform steps. They are grouped by
 
 ### Add Resource
 
-
-```python
+```python title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -258,20 +252,20 @@ pprint(target.resource_names)
 pprint(target.get_resource('extra').schema)
 pprint(target.get_resource('extra').read_rows())
 ```
-
-    ['main', 'extra']
-    {'fields': [{'name': 'id', 'type': 'integer'},
-                {'name': 'name', 'type': 'string'},
-                {'name': 'population', 'type': 'integer'}]}
-    [Row([('id', 1), ('name', 'germany'), ('population', 83)]),
-     Row([('id', 2), ('name', 'france'), ('population', 66)]),
-     Row([('id', 3), ('name', 'spain'), ('population', 47)])]
-
+```
+['main', 'extra']
+{'fields': [{'name': 'id', 'type': 'integer'},
+            {'name': 'name', 'type': 'string'},
+            {'name': 'population', 'type': 'integer'}]}
+[Row([('id', 1), ('name', 'germany'), ('population', 83)]),
+ Row([('id', 2), ('name', 'france'), ('population', 66)]),
+ Row([('id', 3), ('name', 'spain'), ('population', 47)])]
+```
 
 ### Remove Resource
 
 
-```python
+```python title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -284,14 +278,14 @@ target = transform(
 )
 pprint(target)
 ```
-
-    {'profile': 'data-package', 'resources': []}
-
+```
+{'profile': 'data-package', 'resources': []}
+```
 
 ### Transform Resource
 
 
-```python
+```python title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -311,23 +305,23 @@ pprint(target.resource_names)
 pprint(target.get_resource('main').schema)
 pprint(target.get_resource('main').read_rows())
 ```
-
-    ['main']
-    {'fields': [{'name': 'id', 'type': 'integer'},
-                {'name': 'name', 'type': 'string'},
-                {'name': 'population', 'type': 'integer'}]}
-    [Row([('id', 1), ('name', 'germany'), ('population', 83)]),
-     Row([('id', 1), ('name', 'germany'), ('population', 83)]),
-     Row([('id', 2), ('name', 'france'), ('population', 66)]),
-     Row([('id', 2), ('name', 'france'), ('population', 66)]),
-     Row([('id', 3), ('name', 'spain'), ('population', 47)]),
-     Row([('id', 3), ('name', 'spain'), ('population', 47)])]
-
+```
+['main']
+{'fields': [{'name': 'id', 'type': 'integer'},
+            {'name': 'name', 'type': 'string'},
+            {'name': 'population', 'type': 'integer'}]}
+[Row([('id', 1), ('name', 'germany'), ('population', 83)]),
+ Row([('id', 1), ('name', 'germany'), ('population', 83)]),
+ Row([('id', 2), ('name', 'france'), ('population', 66)]),
+ Row([('id', 2), ('name', 'france'), ('population', 66)]),
+ Row([('id', 3), ('name', 'spain'), ('population', 47)]),
+ Row([('id', 3), ('name', 'spain'), ('population', 47)])]
+```
 
 ### Update Resource
 
 
-```python
+```python title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -340,32 +334,32 @@ target = transform(
 )
 pprint(target.get_resource('main'))
 ```
-
-    {'compression': 'no',
-     'compressionPath': '',
-     'control': {'newline': ''},
-     'description': 'For the docs',
-     'dialect': {},
-     'encoding': 'utf-8',
-     'format': 'csv',
-     'hashing': 'md5',
-     'name': 'main',
-     'path': 'data/transform.csv',
-     'profile': 'tabular-data-resource',
-     'query': {},
-     'schema': {'fields': [{'name': 'id', 'type': 'integer'},
-                           {'name': 'name', 'type': 'string'},
-                           {'name': 'population', 'type': 'integer'}]},
-     'scheme': 'file',
-     'title': 'Main Resource'}
-
+```
+{'compression': 'no',
+ 'compressionPath': '',
+ 'control': {'newline': ''},
+ 'description': 'For the docs',
+ 'dialect': {},
+ 'encoding': 'utf-8',
+ 'format': 'csv',
+ 'hashing': 'md5',
+ 'name': 'main',
+ 'path': 'data/transform.csv',
+ 'profile': 'tabular-data-resource',
+ 'query': {},
+ 'schema': {'fields': [{'name': 'id', 'type': 'integer'},
+                       {'name': 'name', 'type': 'string'},
+                       {'name': 'population', 'type': 'integer'}]},
+ 'scheme': 'file',
+ 'title': 'Main Resource'}
+```
 
 ## Table Steps
 
 ### Aggregate Table
 
 
-```python
+```python title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -382,17 +376,17 @@ target = transform(
 pprint(target.schema)
 pprint(target.read_rows())
 ```
-
-    {'fields': [{'name': 'name', 'type': 'string'}, {'name': 'sum'}]}
-    [Row([('name', 'france'), ('sum', 120)]),
-     Row([('name', 'germany'), ('sum', 160)]),
-     Row([('name', 'spain'), ('sum', 80)])]
-
+```
+{'fields': [{'name': 'name', 'type': 'string'}, {'name': 'sum'}]}
+[Row([('name', 'france'), ('sum', 120)]),
+ Row([('name', 'germany'), ('sum', 160)]),
+ Row([('name', 'spain'), ('sum', 80)])]
+```
 
 ### Attach Tables
 
 
-```python
+```python title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -406,20 +400,20 @@ target = transform(
 pprint(target.schema)
 pprint(target.read_rows())
 ```
-
-    {'fields': [{'name': 'id', 'type': 'integer'},
-                {'name': 'name', 'type': 'string'},
-                {'name': 'population', 'type': 'integer'},
-                {'name': 'note', 'type': 'string'}]}
-    [Row([('id', 1), ('name', 'germany'), ('population', 83), ('note', 'large')]),
-     Row([('id', 2), ('name', 'france'), ('population', 66), ('note', 'mid')]),
-     Row([('id', 3), ('name', 'spain'), ('population', 47), ('note', None)])]
-
+```
+{'fields': [{'name': 'id', 'type': 'integer'},
+            {'name': 'name', 'type': 'string'},
+            {'name': 'population', 'type': 'integer'},
+            {'name': 'note', 'type': 'string'}]}
+[Row([('id', 1), ('name', 'germany'), ('population', 83), ('note', 'large')]),
+ Row([('id', 2), ('name', 'france'), ('population', 66), ('note', 'mid')]),
+ Row([('id', 3), ('name', 'spain'), ('population', 47), ('note', None)])]
+```
 
 ### Debug Table
 
 
-```python
+```python title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -432,19 +426,18 @@ target = transform(
 )
 pprint(target.read_rows())
 ```
-
-    ['1', 'germany', '83']
-    ['2', 'france', '66']
-    ['3', 'spain', '47']
-    [Row([('id', 1), ('name', 'germany'), ('population', 83)]),
-     Row([('id', 2), ('name', 'france'), ('population', 66)]),
-     Row([('id', 3), ('name', 'spain'), ('population', 47)])]
-
+```
+['1', 'germany', '83']
+['2', 'france', '66']
+['3', 'spain', '47']
+[Row([('id', 1), ('name', 'germany'), ('population', 83)]),
+ Row([('id', 2), ('name', 'france'), ('population', 66)]),
+ Row([('id', 3), ('name', 'spain'), ('population', 47)])]
+```
 
 ### Diff Tables
 
-
-```python
+```python title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -468,17 +461,16 @@ target = transform(
 pprint(target.schema)
 pprint(target.read_rows())
 ```
-
-    {'fields': [{'name': 'id', 'type': 'integer'},
-                {'name': 'name', 'type': 'string'},
-                {'name': 'population', 'type': 'integer'}]}
-    [Row([('id', 2), ('name', 'france'), ('population', 66)])]
-
+```
+{'fields': [{'name': 'id', 'type': 'integer'},
+            {'name': 'name', 'type': 'string'},
+            {'name': 'population', 'type': 'integer'}]}
+[Row([('id', 2), ('name', 'france'), ('population', 66)])]
+```
 
 ### Intersect Tables
 
-
-```python
+```python title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -502,18 +494,17 @@ target = transform(
 pprint(target.schema)
 pprint(target.read_rows())
 ```
-
-    {'fields': [{'name': 'id', 'type': 'integer'},
-                {'name': 'name', 'type': 'string'},
-                {'name': 'population', 'type': 'integer'}]}
-    [Row([('id', 1), ('name', 'germany'), ('population', 83)]),
-     Row([('id', 3), ('name', 'spain'), ('population', 47)])]
-
+```
+{'fields': [{'name': 'id', 'type': 'integer'},
+            {'name': 'name', 'type': 'string'},
+            {'name': 'population', 'type': 'integer'}]}
+[Row([('id', 1), ('name', 'germany'), ('population', 83)]),
+ Row([('id', 3), ('name', 'spain'), ('population', 47)])]
+```
 
 ### Join Tables
 
-
-```python
+```python title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -531,19 +522,19 @@ target = transform(
 pprint(target.schema)
 pprint(target.read_rows())
 ```
-
-    {'fields': [{'name': 'id', 'type': 'integer'},
-                {'name': 'name', 'type': 'string'},
-                {'name': 'population', 'type': 'integer'},
-                {'name': 'note', 'type': 'string'}]}
-    [Row([('id', 1), ('name', 'germany'), ('population', 83), ('note', 'beer')]),
-     Row([('id', 2), ('name', 'france'), ('population', 66), ('note', 'vine')])]
-
+```
+{'fields': [{'name': 'id', 'type': 'integer'},
+            {'name': 'name', 'type': 'string'},
+            {'name': 'population', 'type': 'integer'},
+            {'name': 'note', 'type': 'string'}]}
+[Row([('id', 1), ('name', 'germany'), ('population', 83), ('note', 'beer')]),
+ Row([('id', 2), ('name', 'france'), ('population', 66), ('note', 'vine')])]
+```
 
 ### Melt Table
 
 
-```python
+```python title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -558,22 +549,22 @@ target = transform(
 pprint(target.schema)
 pprint(target.read_rows())
 ```
-
-    {'fields': [{'name': 'name', 'type': 'string'},
-                {'name': 'variable'},
-                {'name': 'value'}]}
-    [Row([('name', 'germany'), ('variable', 'id'), ('value', 1)]),
-     Row([('name', 'germany'), ('variable', 'population'), ('value', 83)]),
-     Row([('name', 'france'), ('variable', 'id'), ('value', 2)]),
-     Row([('name', 'france'), ('variable', 'population'), ('value', 66)]),
-     Row([('name', 'spain'), ('variable', 'id'), ('value', 3)]),
-     Row([('name', 'spain'), ('variable', 'population'), ('value', 47)])]
-
+```
+{'fields': [{'name': 'name', 'type': 'string'},
+            {'name': 'variable'},
+            {'name': 'value'}]}
+[Row([('name', 'germany'), ('variable', 'id'), ('value', 1)]),
+ Row([('name', 'germany'), ('variable', 'population'), ('value', 83)]),
+ Row([('name', 'france'), ('variable', 'id'), ('value', 2)]),
+ Row([('name', 'france'), ('variable', 'population'), ('value', 66)]),
+ Row([('name', 'spain'), ('variable', 'id'), ('value', 3)]),
+ Row([('name', 'spain'), ('variable', 'population'), ('value', 47)])]
+```
 
 ### Merge Tables
 
 
-```python
+```python title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -589,21 +580,20 @@ target = transform(
 pprint(target.schema)
 pprint(target.read_rows())
 ```
-
-    {'fields': [{'name': 'id', 'type': 'integer'},
-                {'name': 'name', 'type': 'string'},
-                {'name': 'population', 'type': 'integer'},
-                {'name': 'note', 'type': 'string'}]}
-    [Row([('id', 1), ('name', 'germany'), ('population', 83), ('note', None)]),
-     Row([('id', 2), ('name', 'france'), ('population', 66), ('note', None)]),
-     Row([('id', 3), ('name', 'spain'), ('population', 47), ('note', None)]),
-     Row([('id', 4), ('name', 'malta'), ('population', None), ('note', 'island')])]
-
+```
+{'fields': [{'name': 'id', 'type': 'integer'},
+            {'name': 'name', 'type': 'string'},
+            {'name': 'population', 'type': 'integer'},
+            {'name': 'note', 'type': 'string'}]}
+[Row([('id', 1), ('name', 'germany'), ('population', 83), ('note', None)]),
+ Row([('id', 2), ('name', 'france'), ('population', 66), ('note', None)]),
+ Row([('id', 3), ('name', 'spain'), ('population', 47), ('note', None)]),
+ Row([('id', 4), ('name', 'malta'), ('population', None), ('note', 'island')])]
+```
 
 ### Pivot Table
 
-
-```python
+```python title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -618,18 +608,17 @@ target = transform(
 pprint(target.schema)
 pprint(target.read_rows())
 ```
-
-    {'fields': [{'name': 'region', 'type': 'string'},
-                {'name': 'boy', 'type': 'integer'},
-                {'name': 'girl', 'type': 'integer'}]}
-    [Row([('region', 'east'), ('boy', 33), ('girl', 29)]),
-     Row([('region', 'west'), ('boy', 35), ('girl', 23)])]
-
+```
+{'fields': [{'name': 'region', 'type': 'string'},
+            {'name': 'boy', 'type': 'integer'},
+            {'name': 'girl', 'type': 'integer'}]}
+[Row([('region', 'east'), ('boy', 33), ('girl', 29)]),
+ Row([('region', 'west'), ('boy', 35), ('girl', 23)])]
+```
 
 ### Print Table
 
-
-```python
+```python title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -642,21 +631,19 @@ target = transform(
     ]
 )
 ```
-
-    ==  =======  ==========
-    id  name     population
-    ==  =======  ==========
-     1  germany          83
-     2  france           66
-     3  spain            47
-    ==  =======  ==========
-
-
+```
+==  =======  ==========
+id  name     population
+==  =======  ==========
+ 1  germany          83
+ 2  france           66
+ 3  spain            47
+==  =======  ==========
+```
 
 ### Recast Table
 
-
-```python
+```python title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -672,19 +659,18 @@ target = transform(
 pprint(target.schema)
 pprint(target.read_rows())
 ```
-
-    {'fields': [{'name': 'id', 'type': 'integer'},
-                {'name': 'name', 'type': 'string'},
-                {'name': 'population', 'type': 'integer'}]}
-    [Row([('id', 1), ('name', 'germany'), ('population', 83)]),
-     Row([('id', 2), ('name', 'france'), ('population', 66)]),
-     Row([('id', 3), ('name', 'spain'), ('population', 47)])]
-
+```
+{'fields': [{'name': 'id', 'type': 'integer'},
+            {'name': 'name', 'type': 'string'},
+            {'name': 'population', 'type': 'integer'}]}
+[Row([('id', 1), ('name', 'germany'), ('population', 83)]),
+ Row([('id', 2), ('name', 'france'), ('population', 66)]),
+ Row([('id', 3), ('name', 'spain'), ('population', 47)])]
+```
 
 ### Transpose Table
 
-
-```python
+```python title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -699,18 +685,18 @@ target = transform(
 pprint(target.schema)
 pprint(target.read_rows())
 ```
-
-    {'fields': [{'name': 'name', 'type': 'string'},
-                {'name': 'germany', 'type': 'integer'},
-                {'name': 'france', 'type': 'integer'},
-                {'name': 'spain', 'type': 'integer'}]}
-    [Row([('name', 'population'), ('germany', 83), ('france', 66), ('spain', 47)])]
-
+```
+{'fields': [{'name': 'name', 'type': 'string'},
+            {'name': 'germany', 'type': 'integer'},
+            {'name': 'france', 'type': 'integer'},
+            {'name': 'spain', 'type': 'integer'}]}
+[Row([('name', 'population'), ('germany', 83), ('france', 66), ('spain', 47)])]
+```
 
 ### Validate Table
 
 
-```python
+```python title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -728,17 +714,16 @@ try:
 except Exception as exception:
   pprint(exception)
 ```
-
-    {'fields': [{'name': 'id', 'type': 'integer'},
-                {'name': 'name', 'type': 'string'},
-                {'name': 'population', 'type': 'integer'}]}
-    FrictionlessException('[step-error] The transfrom step has an error: "table_validate" raises "[type-error] The cell "bad" in row at position "2" and field "population" at position "3" has incompatible type: type is "integer/default""')
-
+```
+{'fields': [{'name': 'id', 'type': 'integer'},
+            {'name': 'name', 'type': 'string'},
+            {'name': 'population', 'type': 'integer'}]}
+FrictionlessException('[step-error] The transfrom step has an error: "table_validate" raises "[type-error] The cell "bad" in row at position "2" and field "population" at position "3" has incompatible type: type is "integer/default""')
+```
 
 ### Write Table
 
-
-```python
+```python title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -751,40 +736,39 @@ target = transform(
 )
 ```
 
-
-```python
-! cat tmp/transform.json
+```bash title="CLI"
+$ cat tmp/transform.json
 ```
-
-    [
-      [
-        "id",
-        "name",
-        "population"
-      ],
-      [
-        1,
-        "germany",
-        83
-      ],
-      [
-        2,
-        "france",
-        66
-      ],
-      [
-        3,
-        "spain",
-        47
-      ]
-    ]
+```json title="tmp/transform.json"
+[
+  [
+    "id",
+    "name",
+    "population"
+  ],
+  [
+    1,
+    "germany",
+    83
+  ],
+  [
+    2,
+    "france",
+    66
+  ],
+  [
+    3,
+    "spain",
+    47
+  ]
+]
+```
 
 ## Field Steps
 
 ### Add Field
 
-
-```python
+```python title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -798,20 +782,19 @@ target = transform(
 pprint(target.schema)
 pprint(target.read_rows())
 ```
-
-    {'fields': [{'name': 'id', 'type': 'integer'},
-                {'name': 'name', 'type': 'string'},
-                {'name': 'population', 'type': 'integer'},
-                {'name': 'note', 'type': 'string'}]}
-    [Row([('id', 1), ('name', 'germany'), ('population', 83), ('note', 'eu')]),
-     Row([('id', 2), ('name', 'france'), ('population', 66), ('note', 'eu')]),
-     Row([('id', 3), ('name', 'spain'), ('population', 47), ('note', 'eu')])]
-
+```
+{'fields': [{'name': 'id', 'type': 'integer'},
+            {'name': 'name', 'type': 'string'},
+            {'name': 'population', 'type': 'integer'},
+            {'name': 'note', 'type': 'string'}]}
+[Row([('id', 1), ('name', 'germany'), ('population', 83), ('note', 'eu')]),
+ Row([('id', 2), ('name', 'france'), ('population', 66), ('note', 'eu')]),
+ Row([('id', 3), ('name', 'spain'), ('population', 47), ('note', 'eu')])]
+```
 
 ### Filter Fields
 
-
-```python
+```python title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -825,18 +808,18 @@ target = transform(
 pprint(target.schema)
 pprint(target.read_rows())
 ```
-
-    {'fields': [{'name': 'id', 'type': 'integer'},
-                {'name': 'name', 'type': 'string'}]}
-    [Row([('id', 1), ('name', 'germany')]),
-     Row([('id', 2), ('name', 'france')]),
-     Row([('id', 3), ('name', 'spain')])]
-
+```
+{'fields': [{'name': 'id', 'type': 'integer'},
+            {'name': 'name', 'type': 'string'}]}
+[Row([('id', 1), ('name', 'germany')]),
+ Row([('id', 2), ('name', 'france')]),
+ Row([('id', 3), ('name', 'spain')])]
+```
 
 ### Move Field
 
 
-```python
+```python title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -850,19 +833,18 @@ target = transform(
 pprint(target.schema)
 pprint(target.read_rows())
 ```
-
-    {'fields': [{'name': 'name', 'type': 'string'},
-                {'name': 'population', 'type': 'integer'},
-                {'name': 'id', 'type': 'integer'}]}
-    [Row([('name', 'germany'), ('population', 83), ('id', 1)]),
-     Row([('name', 'france'), ('population', 66), ('id', 2)]),
-     Row([('name', 'spain'), ('population', 47), ('id', 3)])]
-
+```
+{'fields': [{'name': 'name', 'type': 'string'},
+            {'name': 'population', 'type': 'integer'},
+            {'name': 'id', 'type': 'integer'}]}
+[Row([('name', 'germany'), ('population', 83), ('id', 1)]),
+ Row([('name', 'france'), ('population', 66), ('id', 2)]),
+ Row([('name', 'spain'), ('population', 47), ('id', 3)])]
+```
 
 ### Remove Field
 
-
-```python
+```python title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -876,18 +858,17 @@ target = transform(
 pprint(target.schema)
 pprint(target.read_rows())
 ```
-
-    {'fields': [{'name': 'name', 'type': 'string'},
-                {'name': 'population', 'type': 'integer'}]}
-    [Row([('name', 'germany'), ('population', 83)]),
-     Row([('name', 'france'), ('population', 66)]),
-     Row([('name', 'spain'), ('population', 47)])]
-
+```
+{'fields': [{'name': 'name', 'type': 'string'},
+            {'name': 'population', 'type': 'integer'}]}
+[Row([('name', 'germany'), ('population', 83)]),
+ Row([('name', 'france'), ('population', 66)]),
+ Row([('name', 'spain'), ('population', 47)])]
+```
 
 ### Split Field
 
-
-```python
+```python title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -901,20 +882,20 @@ target = transform(
 pprint(target.schema)
 pprint(target.read_rows())
 ```
-
-    {'fields': [{'name': 'id', 'type': 'integer'},
-                {'name': 'population', 'type': 'integer'},
-                {'name': 'name1', 'type': 'string'},
-                {'name': 'name2', 'type': 'string'}]}
-    [Row([('id', 1), ('population', 83), ('name1', 'germ'), ('name2', 'ny')]),
-     Row([('id', 2), ('population', 66), ('name1', 'fr'), ('name2', 'nce')]),
-     Row([('id', 3), ('population', 47), ('name1', 'sp'), ('name2', 'in')])]
-
+```
+{'fields': [{'name': 'id', 'type': 'integer'},
+            {'name': 'population', 'type': 'integer'},
+            {'name': 'name1', 'type': 'string'},
+            {'name': 'name2', 'type': 'string'}]}
+[Row([('id', 1), ('population', 83), ('name1', 'germ'), ('name2', 'ny')]),
+ Row([('id', 2), ('population', 66), ('name1', 'fr'), ('name2', 'nce')]),
+ Row([('id', 3), ('population', 47), ('name1', 'sp'), ('name2', 'in')])]
+```
 
 ### Unpack Field
 
 
-```python
+```python title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -929,20 +910,19 @@ target = transform(
 pprint(target.schema)
 pprint(target.read_rows())
 ```
-
-    {'fields': [{'name': 'name', 'type': 'string'},
-                {'name': 'population', 'type': 'integer'},
-                {'name': 'id2'},
-                {'name': 'id3'}]}
-    [Row([('name', 'germany'), ('population', 83), ('id2', 1), ('id3', 1)]),
-     Row([('name', 'france'), ('population', 66), ('id2', 1), ('id3', 1)]),
-     Row([('name', 'spain'), ('population', 47), ('id2', 1), ('id3', 1)])]
-
+```
+{'fields': [{'name': 'name', 'type': 'string'},
+            {'name': 'population', 'type': 'integer'},
+            {'name': 'id2'},
+            {'name': 'id3'}]}
+[Row([('name', 'germany'), ('population', 83), ('id2', 1), ('id3', 1)]),
+ Row([('name', 'france'), ('population', 66), ('id2', 1), ('id3', 1)]),
+ Row([('name', 'spain'), ('population', 47), ('id2', 1), ('id3', 1)])]
+```
 
 ### Update Field
 
-
-```python
+```python title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -956,21 +936,20 @@ target = transform(
 pprint(target.schema)
 pprint(target.read_rows())
 ```
-
-    {'fields': [{'name': 'id', 'type': 'string'},
-                {'name': 'name', 'type': 'string'},
-                {'name': 'population', 'type': 'integer'}]}
-    [Row([('id', '1'), ('name', 'germany'), ('population', 83)]),
-     Row([('id', '2'), ('name', 'france'), ('population', 66)]),
-     Row([('id', '3'), ('name', 'spain'), ('population', 47)])]
-
+```
+{'fields': [{'name': 'id', 'type': 'string'},
+            {'name': 'name', 'type': 'string'},
+            {'name': 'population', 'type': 'integer'}]}
+[Row([('id', '1'), ('name', 'germany'), ('population', 83)]),
+ Row([('id', '2'), ('name', 'france'), ('population', 66)]),
+ Row([('id', '3'), ('name', 'spain'), ('population', 47)])]
+```
 
 ## Row Steps
 
 ### Filter Rows
 
-
-```python
+```python title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -985,18 +964,17 @@ target = transform(
 pprint(target.schema)
 pprint(target.read_rows())
 ```
-
-    {'fields': [{'name': 'id', 'type': 'integer'},
-                {'name': 'name', 'type': 'string'},
-                {'name': 'population', 'type': 'integer'}]}
-    [Row([('id', 2), ('name', 'france'), ('population', 66)]),
-     Row([('id', 3), ('name', 'spain'), ('population', 47)])]
-
+```
+{'fields': [{'name': 'id', 'type': 'integer'},
+            {'name': 'name', 'type': 'string'},
+            {'name': 'population', 'type': 'integer'}]}
+[Row([('id', 2), ('name', 'france'), ('population', 66)]),
+ Row([('id', 3), ('name', 'spain'), ('population', 47)])]
+```
 
 ### Search Rows
 
-
-```python
+```python title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -1010,17 +988,16 @@ target = transform(
 pprint(target.schema)
 pprint(target.read_rows())
 ```
-
-    {'fields': [{'name': 'id', 'type': 'integer'},
-                {'name': 'name', 'type': 'string'},
-                {'name': 'population', 'type': 'integer'}]}
-    [Row([('id', 2), ('name', 'france'), ('population', 66)])]
-
+```
+{'fields': [{'name': 'id', 'type': 'integer'},
+            {'name': 'name', 'type': 'string'},
+            {'name': 'population', 'type': 'integer'}]}
+[Row([('id', 2), ('name', 'france'), ('population', 66)])]
+```
 
 ### Slice Rows
 
-
-```python
+```python title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -1034,18 +1011,17 @@ target = transform(
 pprint(target.schema)
 pprint(target.read_rows())
 ```
-
-    {'fields': [{'name': 'id', 'type': 'integer'},
-                {'name': 'name', 'type': 'string'},
-                {'name': 'population', 'type': 'integer'}]}
-    [Row([('id', 1), ('name', 'germany'), ('population', 83)]),
-     Row([('id', 2), ('name', 'france'), ('population', 66)])]
-
+```
+{'fields': [{'name': 'id', 'type': 'integer'},
+            {'name': 'name', 'type': 'string'},
+            {'name': 'population', 'type': 'integer'}]}
+[Row([('id', 1), ('name', 'germany'), ('population', 83)]),
+ Row([('id', 2), ('name', 'france'), ('population', 66)])]
+```
 
 ### Sort Rows
 
-
-```python
+```python title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -1059,19 +1035,18 @@ target = transform(
 pprint(target.schema)
 pprint(target.read_rows())
 ```
-
-    {'fields': [{'name': 'id', 'type': 'integer'},
-                {'name': 'name', 'type': 'string'},
-                {'name': 'population', 'type': 'integer'}]}
-    [Row([('id', 2), ('name', 'france'), ('population', 66)]),
-     Row([('id', 1), ('name', 'germany'), ('population', 83)]),
-     Row([('id', 3), ('name', 'spain'), ('population', 47)])]
-
+```
+{'fields': [{'name': 'id', 'type': 'integer'},
+            {'name': 'name', 'type': 'string'},
+            {'name': 'population', 'type': 'integer'}]}
+[Row([('id', 2), ('name', 'france'), ('population', 66)]),
+ Row([('id', 1), ('name', 'germany'), ('population', 83)]),
+ Row([('id', 3), ('name', 'spain'), ('population', 47)])]
+```
 
 ### Split Rows
 
-
-```python
+```python title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -1085,22 +1060,21 @@ target = transform(
 pprint(target.schema)
 pprint(target.read_rows())
 ```
-
-    {'fields': [{'name': 'id', 'type': 'integer'},
-                {'name': 'name', 'type': 'string'},
-                {'name': 'population', 'type': 'integer'}]}
-    [Row([('id', 1), ('name', 'germ'), ('population', 83)]),
-     Row([('id', 1), ('name', 'ny'), ('population', 83)]),
-     Row([('id', 2), ('name', 'fr'), ('population', 66)]),
-     Row([('id', 2), ('name', 'nce'), ('population', 66)]),
-     Row([('id', 3), ('name', 'sp'), ('population', 47)]),
-     Row([('id', 3), ('name', 'in'), ('population', 47)])]
-
+```
+{'fields': [{'name': 'id', 'type': 'integer'},
+            {'name': 'name', 'type': 'string'},
+            {'name': 'population', 'type': 'integer'}]}
+[Row([('id', 1), ('name', 'germ'), ('population', 83)]),
+ Row([('id', 1), ('name', 'ny'), ('population', 83)]),
+ Row([('id', 2), ('name', 'fr'), ('population', 66)]),
+ Row([('id', 2), ('name', 'nce'), ('population', 66)]),
+ Row([('id', 3), ('name', 'sp'), ('population', 47)]),
+ Row([('id', 3), ('name', 'in'), ('population', 47)])]
+```
 
 ### Subset Rows
 
-
-```python
+```python title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -1115,19 +1089,18 @@ target = transform(
 pprint(target.schema)
 pprint(target.read_rows())
 ```
-
-    {'fields': [{'name': 'id', 'type': 'integer'},
-                {'name': 'name', 'type': 'string'},
-                {'name': 'population', 'type': 'integer'}]}
-    [Row([('id', 1), ('name', 'germany'), ('population', 83)]),
-     Row([('id', 1), ('name', 'france'), ('population', 66)]),
-     Row([('id', 1), ('name', 'spain'), ('population', 47)])]
-
+```
+{'fields': [{'name': 'id', 'type': 'integer'},
+            {'name': 'name', 'type': 'string'},
+            {'name': 'population', 'type': 'integer'}]}
+[Row([('id', 1), ('name', 'germany'), ('population', 83)]),
+ Row([('id', 1), ('name', 'france'), ('population', 66)]),
+ Row([('id', 1), ('name', 'spain'), ('population', 47)])]
+```
 
 ### Ungroup Rows
 
-
-```python
+```python title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -1141,22 +1114,21 @@ target = transform(
 pprint(target.schema)
 pprint(target.read_rows())
 ```
-
-    {'fields': [{'name': 'id', 'type': 'integer'},
-                {'name': 'name', 'type': 'string'},
-                {'name': 'population', 'type': 'integer'},
-                {'name': 'year', 'type': 'integer'}]}
-    [Row([('id', 3), ('name', 'france'), ('population', 66), ('year', 2020)]),
-     Row([('id', 1), ('name', 'germany'), ('population', 83), ('year', 2020)]),
-     Row([('id', 5), ('name', 'spain'), ('population', 47), ('year', 2020)])]
-
+```
+{'fields': [{'name': 'id', 'type': 'integer'},
+            {'name': 'name', 'type': 'string'},
+            {'name': 'population', 'type': 'integer'},
+            {'name': 'year', 'type': 'integer'}]}
+[Row([('id', 3), ('name', 'france'), ('population', 66), ('year', 2020)]),
+ Row([('id', 1), ('name', 'germany'), ('population', 83), ('year', 2020)]),
+ Row([('id', 5), ('name', 'spain'), ('population', 47), ('year', 2020)])]
+```
 
 ## Cell Steps
 
 ### Convert Cells
 
-
-```python
+```python title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -1170,19 +1142,18 @@ target = transform(
 pprint(target.schema)
 pprint(target.read_rows())
 ```
-
-    {'fields': [{'name': 'id', 'type': 'integer'},
-                {'name': 'name', 'type': 'string'},
-                {'name': 'population', 'type': 'integer'}]}
-    [Row([('id', 1), ('name', 'n/a'), ('population', 83)]),
-     Row([('id', 2), ('name', 'n/a'), ('population', 66)]),
-     Row([('id', 3), ('name', 'n/a'), ('population', 47)])]
-
+```
+{'fields': [{'name': 'id', 'type': 'integer'},
+            {'name': 'name', 'type': 'string'},
+            {'name': 'population', 'type': 'integer'}]}
+[Row([('id', 1), ('name', 'n/a'), ('population', 83)]),
+ Row([('id', 2), ('name', 'n/a'), ('population', 66)]),
+ Row([('id', 3), ('name', 'n/a'), ('population', 47)])]
+```
 
 ### Fill Cells
 
-
-```python
+```python title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -1197,19 +1168,18 @@ target = transform(
 pprint(target.schema)
 pprint(target.read_rows())
 ```
-
-    {'fields': [{'name': 'id', 'type': 'integer'},
-                {'name': 'name', 'type': 'string'},
-                {'name': 'population', 'type': 'integer'}]}
-    [Row([('id', 1), ('name', 'germany'), ('population', 83)]),
-     Row([('id', 2), ('name', 'FRANCE'), ('population', 66)]),
-     Row([('id', 3), ('name', 'spain'), ('population', 47)])]
-
+```
+{'fields': [{'name': 'id', 'type': 'integer'},
+            {'name': 'name', 'type': 'string'},
+            {'name': 'population', 'type': 'integer'}]}
+[Row([('id', 1), ('name', 'germany'), ('population', 83)]),
+ Row([('id', 2), ('name', 'FRANCE'), ('population', 66)]),
+ Row([('id', 3), ('name', 'spain'), ('population', 47)])]
+```
 
 ### Format Cells
 
-
-```python
+```python title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -1223,19 +1193,18 @@ target = transform(
 pprint(target.schema)
 pprint(target.read_rows())
 ```
-
-    {'fields': [{'name': 'id', 'type': 'integer'},
-                {'name': 'name', 'type': 'string'},
-                {'name': 'population', 'type': 'integer'}]}
-    [Row([('id', 1), ('name', 'Prefix: germany'), ('population', 83)]),
-     Row([('id', 2), ('name', 'Prefix: france'), ('population', 66)]),
-     Row([('id', 3), ('name', 'Prefix: spain'), ('population', 47)])]
-
+```
+{'fields': [{'name': 'id', 'type': 'integer'},
+            {'name': 'name', 'type': 'string'},
+            {'name': 'population', 'type': 'integer'}]}
+[Row([('id', 1), ('name', 'Prefix: germany'), ('population', 83)]),
+ Row([('id', 2), ('name', 'Prefix: france'), ('population', 66)]),
+ Row([('id', 3), ('name', 'Prefix: spain'), ('population', 47)])]
+```
 
 ### Interpolate Cells
 
-
-```python
+```python title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -1249,19 +1218,18 @@ target = transform(
 pprint(target.schema)
 pprint(target.read_rows())
 ```
-
-    {'fields': [{'name': 'id', 'type': 'integer'},
-                {'name': 'name', 'type': 'string'},
-                {'name': 'population', 'type': 'integer'}]}
-    [Row([('id', 1), ('name', 'Prefix: germany'), ('population', 83)]),
-     Row([('id', 2), ('name', 'Prefix: france'), ('population', 66)]),
-     Row([('id', 3), ('name', 'Prefix: spain'), ('population', 47)])]
-
+```
+{'fields': [{'name': 'id', 'type': 'integer'},
+            {'name': 'name', 'type': 'string'},
+            {'name': 'population', 'type': 'integer'}]}
+[Row([('id', 1), ('name', 'Prefix: germany'), ('population', 83)]),
+ Row([('id', 2), ('name', 'Prefix: france'), ('population', 66)]),
+ Row([('id', 3), ('name', 'Prefix: spain'), ('population', 47)])]
+```
 
 ### Replace Cells
 
-
-```python
+```python title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -1275,19 +1243,18 @@ target = transform(
 pprint(target.schema)
 pprint(target.read_rows())
 ```
-
-    {'fields': [{'name': 'id', 'type': 'integer'},
-                {'name': 'name', 'type': 'string'},
-                {'name': 'population', 'type': 'integer'}]}
-    [Row([('id', 1), ('name', 'germany'), ('population', 83)]),
-     Row([('id', 2), ('name', 'FRANCE'), ('population', 66)]),
-     Row([('id', 3), ('name', 'spain'), ('population', 47)])]
-
+```
+{'fields': [{'name': 'id', 'type': 'integer'},
+            {'name': 'name', 'type': 'string'},
+            {'name': 'population', 'type': 'integer'}]}
+[Row([('id', 1), ('name', 'germany'), ('population', 83)]),
+ Row([('id', 2), ('name', 'FRANCE'), ('population', 66)]),
+ Row([('id', 3), ('name', 'spain'), ('population', 47)])]
+```
 
 ### Set Cells
 
-
-```python
+```python title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -1301,21 +1268,20 @@ target = transform(
 pprint(target.schema)
 pprint(target.read_rows())
 ```
-
-    {'fields': [{'name': 'id', 'type': 'integer'},
-                {'name': 'name', 'type': 'string'},
-                {'name': 'population', 'type': 'integer'}]}
-    [Row([('id', 1), ('name', 'germany'), ('population', 100)]),
-     Row([('id', 2), ('name', 'france'), ('population', 100)]),
-     Row([('id', 3), ('name', 'spain'), ('population', 100)])]
-
+```
+{'fields': [{'name': 'id', 'type': 'integer'},
+            {'name': 'name', 'type': 'string'},
+            {'name': 'population', 'type': 'integer'}]}
+[Row([('id', 1), ('name', 'germany'), ('population', 100)]),
+ Row([('id', 2), ('name', 'france'), ('population', 100)]),
+ Row([('id', 3), ('name', 'spain'), ('population', 100)])]
+```
 
 ## Custom Steps
 
 Here is an example of a custom step written as a python function:
 
-
-```python
+```python title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -1331,7 +1297,6 @@ target = transform(source, steps=[step])
 pprint(target.schema)
 pprint(target.read_rows())
 ```
-
 ```
 {'fields': [{'name': 'name', 'type': 'string'},
             {'name': 'population', 'type': 'integer'}]}
@@ -1348,8 +1313,7 @@ pprint(target.read_rows())
 
 In some cases, it's better to use a lower-level API to achieve some goal. A resource can be exported as a PETL table. For more information please visit PETL's [documentation portal](https://petl.readthedocs.io/en/stable/).
 
-
-```python
+```python title="Python"
 from frictionless import Resource
 
 resource = Resource(path='data/transform.csv')
@@ -1357,13 +1321,14 @@ petl_table = resource.to_petl()
 # Use it with PETL framework
 print(petl_table)
 ```
-
-    +---+---------+----+
-    |   |         |    |
-    +===+=========+====+
-    | 1 | germany | 83 |
-    +---+---------+----+
-    | 2 | france  | 66 |
-    +---+---------+----+
-    | 3 | spain   | 47 |
-    +---+---------+----+
+```
++---+---------+----+
+|   |         |    |
++===+=========+====+
+| 1 | germany | 83 |
++---+---------+----+
+| 2 | france  | 66 |
++---+---------+----+
+| 3 | spain   | 47 |
++---+---------+----+
+```
