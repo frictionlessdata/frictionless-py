@@ -8,6 +8,7 @@ from ..detector import Detector
 from ..layout import Layout
 from .main import program
 from .. import helpers
+from .. import config
 
 
 @program.command(name="describe")
@@ -22,34 +23,42 @@ def program_describe(
     innerpath: str = Opt(None, help="Specify in-archive path  [default: first]"),
     compression: str = Opt(None, help="Specify compression  [default: inferred]"),
     # Layout
-    header_rows: str = Opt(None, help="Comma-separated row numbers  [default: 1]"),
-    header_join: str = Opt(None, help="A separator to join a multiline header"),
+    header_rows: str = Opt(None, help="Comma-separated row numbers [default: inferred]"),
+    header_join: str = Opt(None, help="Multiline header joiner [default: inferred]"),
     pick_fields: str = Opt(None, help='Comma-separated fields to pick e.g. "1,name1"'),
     skip_fields: str = Opt(None, help='Comma-separated fields to skip e.g. "2,name2"'),
-    limit_fields: int = Opt(None, help="Limit fields by this integer"),
-    offset_fields: int = Opt(None, help="Offset fields by this integer"),
+    limit_fields: int = Opt(None, help='Limit fields by this integer e.g. "10"'),
+    offset_fields: int = Opt(None, help='Offset fields by this integer e.g "5"'),
     pick_rows: str = Opt(None, help='Comma-separated rows to pick e.g. "1,<blank>"'),
     skip_rows: str = Opt(None, help='Comma-separated rows to skip e.g. "2,3,4,5"'),
-    limit_rows: int = Opt(None, help="Limit rows by this integer"),
-    offset_rows: int = Opt(None, help="Offset rows by this integer"),
+    limit_rows: int = Opt(None, help='Limit rows by this integer e.g "100"'),
+    offset_rows: int = Opt(None, help='Offset rows by this integer e.g. "50"'),
     # Detector
     buffer_size: int = Opt(
-        10000, help="Limit the amount of bytes to be extracted as a buffer"
+        config.DEFAULT_BUFFER_SIZE,
+        help="Limit the amount of bytes to be extracted as a buffer",
     ),
     sample_size: int = Opt(
-        100, help="Limit the number of rows to be extracted as a sample"
+        config.DEFAULT_SAMPLE_SIZE,
+        help="Limit the number of rows to be extracted as a sample",
     ),
     field_type: str = Opt(None, help="Force all the fields to have this type"),
     field_names: str = Opt(None, help="Comma-separated list of field names"),
     field_confidence: float = Opt(
-        0.9,
+        config.DEFAULT_FIELD_CONFIDENCE,
         help=(
-            "Infer confidence. A float from 0 to 1. If 1, (sampled) data ",
-            "is guaranteed to be valid against the inferred schema",
+            "Infer confidence. A float from 0 to 1. "
+            "If 1, (sampled) data is guaranteed to be valid against the inferred schema"
         ),
     ),
-    field_float_numbers: bool = Opt(False, help="Make number floats instead of decimals"),
-    field_missing_values: str = Opt('""', help="Comma-separated list of missing values"),
+    field_float_numbers: bool = Opt(
+        config.DEFAULT_FLOAT_NUMBERS,
+        help="Make number floats instead of decimals",
+    ),
+    field_missing_values: str = Opt(
+        f'"{",".join(config.DEFAULT_MISSING_VALUES)}"',
+        help="Comma-separated list of missing values",
+    ),
     # Description
     basepath: str = Opt(None, help="Basepath of the resource/package"),
     expand: bool = Opt(None, help="Expand default values"),
