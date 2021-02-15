@@ -26,19 +26,16 @@ The framework can be used:
 
 For instance, all the examples below do the same thing:
 
-```python
-# Python:
+```python title="Python"
 from frictionless import extract
 rows = extract('data/table.csv')
 ```
 
-```bash
-# CLI
+```bash title="CLI"
 $ frictionless extract data/table.csv
 ```
 
-```
-# API:
+```text title="API"
 [POST] /extract {"source': 'data/table.csv"}
 ```
 
@@ -51,7 +48,7 @@ Arguments conform to the following naming convention:
 
 To get the documentation for a command-line interface just use the `--help` flag:
 
-```bash
+```bash title="CLI"
 $ frictionless --help
 $ frictionless describe --help
 $ frictionless extract --help
@@ -65,11 +62,11 @@ $ frictionless transform --help
 
 We will take a very messy data file:
 
-```bash
+```bash title="CLI"
 $ cat data/invalid.csv
 ```
 
-```
+```csv title="data/invalid.csv"
 id,name,,name
 1,english
 1,english
@@ -82,7 +79,7 @@ First of all, let's use `describe` to infer the metadata directly from the tabul
 > This output is in [YAML](https://yaml.org/), it is a default Frictionless output format.
 
 
-```bash
+```bash title="CLI"
 $ frictionless describe data/invalid.csv
 ```
 
@@ -112,7 +109,7 @@ schema:
 
 Now that we have inferred a table schema from the data file (e.g., expected format of the table, expected type of each value in a column, etc.), we can use `extract` to read the normalized tabular data from the source CSV file:
 
-```bash
+```bash title="CLI"
 $ frictionless extract data/invalid.csv
 ```
 
@@ -134,7 +131,7 @@ None  None     None    None
 Last but not least, let's get a validation report. This report will help us to identify and fix all the errors present in the tabular data, as comprehensive information is provided for every problem:
 
 
-```bash
+```bash title="CLI"
 $ frictionless validate data/invalid.csv
 ```
 
