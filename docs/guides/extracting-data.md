@@ -4,11 +4,10 @@ title: Extracting Data
 
 Extracting data means reading tabular data from some source. We can use various customizations for this process such as providing a file format, table schema, limiting fields or rows amounts, and much more. Let's see this with some real files:
 
-```bash
+```bash title="CLI"
 $ cat data/country-3.csv
 ```
-
-```csv
+```csv title="data/country-3.csv"
 id,capital_id,name,population
 1,1,Britain,67
 2,3,France,67
@@ -17,11 +16,10 @@ id,capital_id,name,population
 5,4,Spain,47
 ```
 
-```bash
+```bash title="CLI"
 $ cat data/capital-3.csv
 ```
-
-```csv
+```csv title="data/capital-3.csv"
 id,name
 1,London
 2,Berlin
@@ -32,10 +30,9 @@ id,name
 
 To start, we will use the command-line interface:
 
-```bash
+```bash title="CLI"
 $ frictionless extract data/country-3.csv
 ```
-
 ```
 ---
 data: data/country-3.csv
@@ -54,14 +51,13 @@ id  capital_id  name     population
 
 The same can be done in Python:
 
-```python
+```python title="Python"
 from pprint import pprint
 from frictionless import extract
 
 rows = extract('data/country-3.csv')
 pprint(rows)
 ```
-
 ```
 [Row([('id', 1), ('capital_id', 1), ('name', 'Britain'), ('population', 67)]),
  Row([('id', 2), ('capital_id', 3), ('name', 'France'), ('population', 67)]),
@@ -79,7 +75,7 @@ The high-level interface for extracting data provided by Frictionless is a set o
 
 In the command-line, there is only 1 command (`extract`) but there is a flag to adjust the behavior:
 
-```bash
+```bash title="CLI"
 $ frictionless extract
 $ frictionless extract --type package
 $ frictionless extract --type resource
@@ -91,13 +87,12 @@ The `extract` functions always read data in a form of rows (see the object descr
 
 A resource contains only one file and for extracting a resource we can use the same approach we used above except we'll provide only one file. We will extract data using a metadata descriptor:
 
-```python
+```python title="Python"
 from frictionless import extract
 
 rows = extract('data/capital-3.csv')
 pprint(rows)
 ```
-
 ```
 [Row([('id', 1), ('name', 'London')]),
  Row([('id', 2), ('name', 'Berlin')]),
@@ -108,7 +103,7 @@ pprint(rows)
 
 In many cases, the code above doesn't really make sense as we can just provide a path to the high-level `extract` function instead of a descriptor to the `extract_resource` function but the power of the descriptor is that it can contain different metadata and be stored on the disc. Let's extend our example:
 
-```python
+```python title="Python"
 from frictionless import Resource
 
 resource = Resource('data/capital-3.csv')
@@ -117,10 +112,9 @@ resource.schema.missing_values.append('3')
 resource.to_yaml('tmp/capital.resource.yaml')
 ```
 
-```bash
+```bash title="CLI"
 $ frictionless extract tmp/capital.resource.yaml --basepath .
 ```
-
 ```
 ---
 data: tmp/capital.resource.yaml
@@ -143,10 +137,9 @@ So what's happened? We set the textual representation of the number "3" to be a 
 
 Let's start by using the command line-interface. We're going to provide two files to the `extract` command which will be enough to detect that it's a dataset:
 
-```bash
+```bash title="CLI"
 $ frictionless extract data/*-3.csv
 ```
-
 ```
 ---
 data: data/capital-3.csv
@@ -179,7 +172,7 @@ id  capital_id  name     population
 
 In Python we can do the same by providing a glob for the `extract` function, but instead we will use `extract_package` by providing a package descriptor:
 
-```python
+```python title="Python"
 from frictionless import extract
 
 data = extract('data/*-3.csv')
@@ -187,7 +180,6 @@ for path, rows in data.items():
   pprint(path)
   pprint(rows)
 ```
-
 ```
 'data/country-3.csv'
 [Row([('id', 1), ('capital_id', 1), ('name', 'Britain'), ('population', 67)]),
@@ -207,7 +199,7 @@ for path, rows in data.items():
 
 The Resource class is also a metadata class which provides various read and stream functions. The `extract` functions always read rows into memory; Resource can do the same but it also gives a choice regarding output data. It can be `rows`, `data`, `text`, or `bytes`. Let's try reading all of them:
 
-```python
+```python title="Python"
 from frictionless import Resource
 
 resource = Resource('data/country-3.csv')
@@ -216,7 +208,6 @@ pprint(resource.read_text())
 pprint(resource.read_lists())
 pprint(resource.read_rows())
 ```
-
 ```
 (b'id,capital_id,name,population\n1,1,Britain,67\n2,3,France,67\n3,2,Germany,8'
  b'3\n4,5,Italy,60\n5,4,Spain,47\n')
@@ -241,7 +232,7 @@ pprint(resource.read_rows())
 
 It's really handy to read all your data into memory but it's not always possible if a file is really big. For such cases, Frictionless provides streaming functions:
 
-```python
+```python title="Python"
 from frictionless import Resource
 
 with Resource('data/country-3.csv') as resource:
@@ -252,7 +243,6 @@ with Resource('data/country-3.csv') as resource:
     for row in resource.row_stream:
       print(row)
 ```
-
 ```
 <frictionless.loader.ByteStreamWithStatsHandling object at 0x7fe7e3664910>
 <_io.TextIOWrapper name='./data/country-3.csv' encoding='utf-8'>
@@ -270,20 +260,19 @@ Row([('id', 5), ('capital_id', 4), ('name', 'Spain'), ('population', 47)])
 The Package class is a metadata class which provides an ability to read its contents. First of all, let's create a package descriptor:
 
 
-```bash
+```bash title="CLI"
 $ frictionless describe data/*-3.csv --json > tmp/country.package.json
 ```
 
 Now, we can open the created descriptor and read the package's resources:
 
-```python
+```python title="Python"
 from frictionless import Package
 
 package = Package('data/*-3.csv')
 pprint(package.get_resource('country-3').read_rows())
 pprint(package.get_resource('capital-3').read_rows())
 ```
-
 ```
 [Row([('id', 1), ('capital_id', 1), ('name', 'Britain'), ('population', 67)]),
  Row([('id', 2), ('capital_id', 3), ('name', 'France'), ('population', 67)]),
@@ -304,7 +293,7 @@ The package by itself doesn't provide any read functions directly because it's a
 After opening a resource you get access to a `resource.header` object. It's a list of normalized labels but also provides some additional functionality. Let's take a look:
 
 
-```python
+```python title="Python"
 from frictionless import Resource
 
 with Resource('data/capital-3.csv') as resource:
@@ -334,7 +323,7 @@ The example above covers the case when a header is valid. For a header with tabu
 
 The `extract`, `resource.read_rows()` and many other functions return or yield row objects. It's a `dict` providing additional API shown below:
 
-```python
+```python title="Python"
 from frictionless import Resource, Detector
 
 detector = Detector(schema_patch={'missingValues': ['1']})
@@ -355,7 +344,6 @@ with Resource('data/capital-3.csv', detector=detector) as resource:
     print(f'As List: {row.to_list(json=True)}') # JSON compatible data types
     break
 ```
-
 ```
 Row: Row([('id', None), ('name', 'London')])
 Cells: ['1', 'londong']

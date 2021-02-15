@@ -5,7 +5,7 @@ title: Introduction Guide
 Let's say we have a few raw data files. It's been just collected by the data researchers, and the quality of data is still far from perfect. In fact, they haven't even removed the comments from the first row!
 
 
-```bash
+```bash title="CLI"
 $ cat data/countries.csv
 ```
 ```
@@ -30,7 +30,7 @@ First of all, we're going to describe our dataset. Frictionless uses powerful [F
 
 Let's describe the `countries` table:
 
-```bash
+```bash title="CLI"
 $ frictionless describe data/countries.csv
 $ frictionless describe data/countries.csv --stats # to get also stats
 ```
@@ -70,7 +70,7 @@ As we can see, Frictionless was smart enough to understand that the first row co
 
 Let's update our metadata and save it to the disc:
 
-```python
+```python title="Python"
 from frictionless import Detector, describe
 
 detector = Detector(field_missing_values=["", "n/a"])
@@ -84,10 +84,10 @@ resource.to_yaml("tmp/countries.resource.yaml")
 
 Let's see what we have created:
 
-```bash
+```bash title="CLI"
 $ cat tmp/countries.resource.yaml
 ```
-```
+```yaml
 encoding: utf-8
 format: csv
 scheme: file
@@ -127,7 +127,7 @@ It has the same metadata as we saw above but also includes our editing related t
 It's time to try extracting our data as a table. As a first naive attempt, we will ignore the metadata we saved on the previous step:
 
 
-```bash
+```bash title="CLI"
 $ frictionless extract data/countries.csv
 ```
 ```
@@ -153,7 +153,7 @@ Actually, it doesn't look terrible, but in reality, data like this is not quite 
 
 Let's use the metadata we save to try extracting data with the help of Frictionless Data specifications:
 
-```bash
+```bash title="CLI"
 $ frictionless extract tmp/countries.resource.yaml --basepath .
 ```
 ```
@@ -178,10 +178,9 @@ It's now much better! Numerical fields are numerical fields, and there are no mo
 
 Data validation with Frictionless is as easy as describing or extracting data:
 
-```bash
+```bash title="CLI"
 $ frictionless validate data/countries.csv
 ```
-
 ```
 ---
 invalid: data/countries.csv
@@ -199,7 +198,7 @@ row  field  code          message
 
 Ahh, we had seen that coming. The data is not valid; there are some missing and extra cells. But wait a minute, in the first step, we created the metadata file with more information about our table. We have to use it.
 
-```bash
+```bash title="CLI"
 $ frictionless validate tmp/countries.resource.yaml --basepath .
 ```
 ```
@@ -233,7 +232,7 @@ We will use metadata to fix all the data type problems automatically. The only t
 - France's population
 - Germany's neighborhood
 
-```python
+```python title="Python"
 from frictionless import Resource, Table
 
 def source():
@@ -252,7 +251,7 @@ with Table(source) as table:
 
 Finally, we've got the cleaned version of our data, which can be exported to a database or published. We have used a CSV as an output format but could have used Excel, JSON, SQL, and others.
 
-```bash
+```bash title="CLI"
 $ cat tmp/countries-cleaned.csv
 ```
 ```
@@ -265,7 +264,7 @@ id,neighbor_id,name,population
 
 We also need to update our metadata file:
 
-```python
+```python title="Python"
 from frictionless import Resource, describe
 
 source = Resource("tmp/countries.resource.yaml")
@@ -276,10 +275,10 @@ target.to_yaml("tmp/countries-cleaned.resource.yaml")
 
 After running this script our metadata will be:
 
-```bash
+```bash title="CLI"
 $ cat tmp/countries-cleaned.resource.yaml
 ```
-```
+```yaml
 encoding: utf-8
 format: csv
 scheme: file
@@ -309,10 +308,9 @@ schema:
 Basically, that's it; now, we have a valid data file and a corresponding metadata file. It can be shared with other people or stored without fear of type errors or other problems making data research not reproducible.
 
 
-```bash
+```bash title="CLI"
 $ ls -la tmp/countries-cleaned.csv tmp/countries-cleaned.resource.yaml
 ```
-
 ```
 -rw------- 1 roll roll  91 дек  2 11:42 tmp/countries-cleaned.csv
 -rw------- 1 roll roll 926 дек  2 11:41 tmp/countries-cleaned.resource.yaml
