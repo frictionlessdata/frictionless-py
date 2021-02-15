@@ -1,70 +1,52 @@
 import sys
 import typer
 from typing import List
-from typer import Option as Opt
-from typer import Argument as Arg
 from ..describe import describe
 from ..detector import Detector
 from ..layout import Layout
 from .main import program
 from .. import helpers
-from .. import config
+from . import common
 
 
 @program.command(name="describe")
 def program_describe(
-    source: List[str] = Arg(None, help="Data source to describe [default: stdin]"),
-    type: str = Opt(None, help='Specify source type e.g. "package"'),
+    # Source
+    source: List[str] = common.source,
+    type: str = common.type,
     # File
-    scheme: str = Opt(None, help="Specify schema  [default: inferred]"),
-    format: str = Opt(None, help="Specify format  [default: inferred]"),
-    hashing: str = Opt(None, help="Specify hashing algorithm  [default: inferred]"),
-    encoding: str = Opt(None, help="Specify encoding  [default: inferred]"),
-    innerpath: str = Opt(None, help="Specify in-archive path  [default: first]"),
-    compression: str = Opt(None, help="Specify compression  [default: inferred]"),
+    scheme: str = common.scheme,
+    format: str = common.format,
+    hashing: str = common.hashing,
+    encoding: str = common.encoding,
+    innerpath: str = common.innerpath,
+    compression: str = common.compression,
     # Layout
-    header_rows: str = Opt(None, help="Comma-separated row numbers [default: inferred]"),
-    header_join: str = Opt(None, help="Multiline header joiner [default: inferred]"),
-    pick_fields: str = Opt(None, help='Comma-separated fields to pick e.g. "1,name1"'),
-    skip_fields: str = Opt(None, help='Comma-separated fields to skip e.g. "2,name2"'),
-    limit_fields: int = Opt(None, help='Limit fields by this integer e.g. "10"'),
-    offset_fields: int = Opt(None, help='Offset fields by this integer e.g "5"'),
-    pick_rows: str = Opt(None, help='Comma-separated rows to pick e.g. "1,<blank>"'),
-    skip_rows: str = Opt(None, help='Comma-separated rows to skip e.g. "2,3,4,5"'),
-    limit_rows: int = Opt(None, help='Limit rows by this integer e.g "100"'),
-    offset_rows: int = Opt(None, help='Offset rows by this integer e.g. "50"'),
+    header_rows: str = common.header_rows,
+    header_join: str = common.header_join,
+    pick_fields: str = common.pick_fields,
+    skip_fields: str = common.skip_fields,
+    limit_fields: int = common.limit_fields,
+    offset_fields: int = common.offset_fields,
+    pick_rows: str = common.pick_rows,
+    skip_rows: str = common.skip_rows,
+    limit_rows: int = common.limit_rows,
+    offset_rows: int = common.offset_rows,
+    # Stats
+    stats: bool = common.stats,
     # Detector
-    buffer_size: int = Opt(
-        config.DEFAULT_BUFFER_SIZE,
-        help="Limit the amount of bytes to be extracted as a buffer",
-    ),
-    sample_size: int = Opt(
-        config.DEFAULT_SAMPLE_SIZE,
-        help="Limit the number of rows to be extracted as a sample",
-    ),
-    field_type: str = Opt(None, help="Force all the fields to have this type"),
-    field_names: str = Opt(None, help="Comma-separated list of field names"),
-    field_confidence: float = Opt(
-        config.DEFAULT_FIELD_CONFIDENCE,
-        help=(
-            "Infer confidence. A float from 0 to 1. "
-            "If 1, (sampled) data is guaranteed to be valid against the inferred schema"
-        ),
-    ),
-    field_float_numbers: bool = Opt(
-        config.DEFAULT_FLOAT_NUMBERS,
-        help="Make number floats instead of decimals",
-    ),
-    field_missing_values: str = Opt(
-        f'"{",".join(config.DEFAULT_MISSING_VALUES)}"',
-        help="Comma-separated list of missing values",
-    ),
-    # Description
-    basepath: str = Opt(None, help="Basepath of the resource/package"),
-    expand: bool = Opt(None, help="Expand default values"),
-    stats: bool = Opt(None, help="Do not infer stats"),
-    yaml: bool = Opt(False, help="Return in pure YAML format"),
-    json: bool = Opt(False, help="Return in JSON format"),
+    buffer_size: int = common.buffer_size,
+    sample_size: int = common.sample_size,
+    field_type: str = common.field_type,
+    field_names: str = common.field_names,
+    field_confidence: float = common.field_confidence,
+    field_float_numbers: bool = common.field_float_numbers,
+    field_missing_values: str = common.field_missing_values,
+    # Command
+    basepath: str = common.basepath,
+    expand: bool = common.expand,
+    yaml: bool = common.yaml,
+    json: bool = common.json,
 ):
     """
     Describe a data source.

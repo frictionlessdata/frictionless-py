@@ -1,22 +1,27 @@
 import sys
 import typer
 from ..transform import transform
-from typer import Argument as Arg
 from .main import program
 from .. import helpers
+from . import common
 
 
 @program.command(name="transform")
 def program_transform(
-    source: str = Arg(None, help="Path to a transform pipeline [default: stdin]"),
+    # Source
+    source: str = common.source,
 ):
-    """Transform data source using a provided pipeline."""
+    """Transform data using a provided pipeline.
+
+    Please read more about Transform pipelines to write a pipeline
+    that can be accepted by this funtion.
+    """
 
     # Support stdin
     is_stdin = False
     if not source:
         is_stdin = True
-        source = [helpers.create_byte_stream(sys.stdin.buffer.read())]
+        source = helpers.create_byte_stream(sys.stdin.buffer.read())
 
     # Transform source
     try:
