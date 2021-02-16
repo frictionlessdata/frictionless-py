@@ -9,14 +9,14 @@ module.exports = {
   introduction: ["introduction/introduction", "introduction/whats-next"],
   guides: [
     "guides/guides-overview",
-    "guides/getting-started",
-    "guides/introduction-guide",
+    "guides/quick-start",
+    "guides/overview-example",
     "guides/describing-data",
     "guides/extracting-data",
     "guides/validating-data",
     "guides/transforming-data",
     {
-      "Mastring the Framework": [
+      "Mastering the Framework": [
         "guides/package-guide",
         "guides/resource-guide",
         "guides/schema-guide",

@@ -1,8 +1,8 @@
 ---
-title: Getting Started
+title: Quick Start Guide
 ---
 
-Let's get started with Frictionless! We will learn how to install and use the framework. The simple example below will showcase the framework's basic functionality.
+Let's get started with Frictionless! We will learn how to install and use the framework. The simple example below will showcase the framework's basic functionality. For an introduction to concepts behind the Frictionless Framework, please read the [Frictionless Introduction](../introduction/introduction.md).
 
 ## Installation
 
@@ -10,17 +10,25 @@ Let's get started with Frictionless! We will learn how to install and use the fr
 
 ```bash title="CLI"
 pip install frictionless
-pip install frictionless[sql] # to install a core plugin
+pip install frictionless[sql] # to install a core plugin (optional)
 ```
 
 The framework supports CSV, Excel, and JSON formats by default. Please use the command above to install a core plugin and add support for SQL, Pandas, HTML, and others (check the [list of Frictionless Framework plugins and their status](https://framework.frictionlessdata.io/docs/references/plugins-reference)). Usually, you don't need to think about it in advance–frictionless will display a useful error message about a missing plugin with installation instructions.
+
+### Installation Troubleshooting
+Did you have an error installing Frictionless? Here are some dependencies and common errors:
+- `pip: command not found`. Please see the [pip docs](https://pip.pypa.io/en/stable/installing/) for help installing pip.
+- [Installing Python help (Mac)](https://docs.python.org/3/using/mac.html)
+- [Installing Python help (Windows)](https://docs.python.org/3/using/windows.html)
+
+Still having a problem? Ask us for help on our [Discord](https://discord.com/invite/j9DNFNw) chat or open an [issue](https://github.com/frictionlessdata/frictionless-py/issues). We're happy to help!
 
 ## Usage
 
 The framework can be used:
 - as a Python library
 - as a command-line interface
-- as a restful API server
+- as a restful API server (for advanced use cases)
 
 For instance, all the examples below do the same thing:
 
@@ -37,7 +45,7 @@ frictionless extract data/table.csv
 [POST] /extract {"source': 'data/table.csv"}
 ```
 
-All these interfaces are as much alike as possible regarding naming conventions and the way you interact with them. Usually, it's straightforward to translate, for instance, Python code to a command-line call. Frictionless provides code completion for Python and the command-line, which should help to get useful hints in real time.
+All these interfaces are as much alike as possible regarding naming conventions and the way you interact with them. Usually, it's straightforward to translate, for instance, Python code to a command-line call. Frictionless provides code completion for Python and the command-line, which should help to get useful hints in real time. You can find the API reference [here](../references/api-reference.md).
 
 Arguments conform to the following naming convention:
 - for Python interfaces, they are snake_cased, e.g. `missing_values`
@@ -54,7 +62,9 @@ frictionless validate --help
 frictionless transform --help
 ```
 
-## Example
+## Short Example
+
+> For a more indepth example, use the [Overview Example](overview-example)
 
 We will take a very messy data file:
 

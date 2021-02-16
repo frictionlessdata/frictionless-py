@@ -6,7 +6,7 @@ Based on your familiarity level and your tasks you can continue with one of the 
 
 ## Guides
 
-If you want to know more about core Frictionless Framework concepts:
+If you want to know more about core Frictionless Framework functions:
 - [Guides Overview](../guides/guides-overview.md)
 
 ## Tutorials
