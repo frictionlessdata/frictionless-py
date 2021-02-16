@@ -60,8 +60,10 @@ You can read more about the Frictionless specifications here: https://specs.fric
 
 ## Example
 
+```bash title="CLI"
+frictionless validate data/invalid.csv
 ```
-$ frictionless validate data/invalid.csv
+```
 [invalid] data/invalid.csv
 
   row    field  code              message
