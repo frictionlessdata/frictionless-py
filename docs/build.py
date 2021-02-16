@@ -15,7 +15,6 @@ from frictionless import plugins, errors, checks, steps, types, helpers
 
 
 def main():
-    #  build_introduction()
     build_plugins_reference()
     build_schemes_reference()
     build_formats_reference()
@@ -27,17 +26,6 @@ def main():
     build_contributing()
     build_changelog()
     build_authors()
-
-
-# Introduction
-
-
-def build_introduction():
-    document = read_file("README.md")
-    document = re.sub(r"^# (.*)", "---\ntitle: Introduction\n---", document)
-    document = re.sub(r"## Documentation.*", "", document, flags=re.DOTALL)
-    write_file(os.path.join("docs", "introduction", "introduction.md"), document)
-    print("Built: Introduction")
 
 
 # References

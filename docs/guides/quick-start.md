@@ -1,5 +1,5 @@
 ---
-title: Quick Start Guide
+title: Quick Start
 ---
 
 Let's get started with Frictionless! We will learn how to install and use the framework. The simple example below will showcase the framework's basic functionality. For an introduction to concepts behind the Frictionless Framework, please read the [Frictionless Introduction](../introduction/introduction.md).
@@ -15,7 +15,8 @@ pip install frictionless[sql] # to install a core plugin (optional)
 
 The framework supports CSV, Excel, and JSON formats by default. Please use the command above to install a core plugin and add support for SQL, Pandas, HTML, and others (check the [list of Frictionless Framework plugins and their status](https://framework.frictionlessdata.io/docs/references/plugins-reference)). Usually, you don't need to think about it in advance–frictionless will display a useful error message about a missing plugin with installation instructions.
 
-### Installation Troubleshooting
+### Troubleshooting
+
 Did you have an error installing Frictionless? Here are some dependencies and common errors:
 - `pip: command not found`. Please see the [pip docs](https://pip.pypa.io/en/stable/installing/) for help installing pip.
 - [Installing Python help (Mac)](https://docs.python.org/3/using/mac.html)
@@ -62,9 +63,9 @@ frictionless validate --help
 frictionless transform --help
 ```
 
-## Short Example
+## Example
 
-> For a more indepth example, use the [Overview Example](overview-example)
+> For more examples, use the [Basic Examples](basic-examples)
 
 We will take a very messy data file:
 

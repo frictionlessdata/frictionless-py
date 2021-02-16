@@ -78,11 +78,6 @@ module.exports = {
       },
       items: [
         {
-          to: "docs/introduction/introduction",
-          label: "Introduction",
-          position: "left",
-        },
-        {
           to: "docs/guides/guides-overview",
           label: "Guides",
           position: "left",

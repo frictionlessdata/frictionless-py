@@ -2,14 +2,6 @@
 title: Introduction
 ---
 
-[![Build](https://img.shields.io/github/workflow/status/frictionlessdata/frictionless-py/general/master)](https://github.com/frictionlessdata/frictionless-py/actions)
-[![Coverage](https://img.shields.io/codecov/c/github/frictionlessdata/frictionless-py/master)](https://codecov.io/gh/frictionlessdata/frictionless-py)
-[![Registry](https://img.shields.io/pypi/v/frictionless.svg)](https://pypi.python.org/pypi/frictionless)
-[![Codebase](https://img.shields.io/badge/github-master-brightgreen)](https://github.com/frictionlessdata/frictionless-py)
-[![Support](https://img.shields.io/badge/chat-discord-brightgreen)](https://discord.com/channels/695635777199145130/695635777199145133)
-
-> Frictionless@4 is now live! Please read the [migration guide](https://framework.frictionlessdata.io/docs/development/migration)
-
 Frictionless is a framework to describe, extract, validate, and transform tabular data (DEVT Framework). It supports a great deal of data schemes and formats, as well as provides popular platforms integrations. The framework is powered by the lightweight yet comprehensive [Frictionless Data Specifications](https://specs.frictionlessdata.io/).
 
 ## Why Frictionless Data?
@@ -50,7 +42,7 @@ In contrast to an ETL-framework (extract-transform-load), the DEVT-framework doe
 
 ## What is Frictionless Framework based on?
 
-The core of the Framework is the Frictionless Specifications. These specifications are a set of patterns for describing data including Data Package (for datasets), Data Resource (for files) and Table Schema (for tables). A Data Package is a simple container format used to describe and package a collection of data and metadata, including schemas. Frictionless-py lets users create data packages and schemas that conform to the Frictionless specifications. 
+The core of the Framework is the Frictionless Specifications. These specifications are a set of patterns for describing data including Data Package (for datasets), Data Resource (for files) and Table Schema (for tables). A Data Package is a simple container format used to describe and package a collection of data and metadata, including schemas. Frictionless-py lets users create data packages and schemas that conform to the Frictionless specifications.
 You can read more about the Frictionless specifications here: https://specs.frictionlessdata.io/.
 
 ## Features

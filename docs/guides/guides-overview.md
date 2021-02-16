@@ -2,7 +2,7 @@
 title: Guides Overview
 ---
 
-## How to use this documentation
+**<big>How to use this documentation</big>**
 
 Frictionless Framework documentation has various guides which can be grouped by an end user level in relation to the framework:
 
