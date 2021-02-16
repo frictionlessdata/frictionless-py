@@ -33,7 +33,7 @@ Frictionless is a framework to describe, extract, validate, and transform tabula
 
 ## Example
 
-```bash
+```
 $ frictionless validate data/invalid.csv
 [invalid] data/invalid.csv
 

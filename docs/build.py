@@ -15,7 +15,7 @@ from frictionless import plugins, errors, checks, steps, types, helpers
 
 
 def main():
-    build_introduction()
+    #  build_introduction()
     build_plugins_reference()
     build_schemes_reference()
     build_formats_reference()
