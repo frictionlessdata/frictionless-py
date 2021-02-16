@@ -56,9 +56,9 @@ frictionless transform --help
 
 ## Example
 
-> All the examples use the data folder from [this](https://github.com/frictionlessdata/frictionless-py/) repository
-
 We will take a very messy data file:
+
+> Download [`invalid.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/invalid.csv) into the `data` folder to reproduce the examples
 
 ```bash title="CLI"
 cat data/invalid.csv
@@ -74,7 +74,6 @@ id,name,,name
 First of all, let's use `describe` to infer the metadata directly from the tabular data. We can then edit and save it to provide others with useful information about the data:
 
 > This output is in [YAML](https://yaml.org/), it is a default Frictionless output format.
-
 
 ```bash title="CLI"
 frictionless describe data/invalid.csv

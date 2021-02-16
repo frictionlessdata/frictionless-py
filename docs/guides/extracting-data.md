@@ -4,6 +4,8 @@ title: Extracting Data
 
 Extracting data means reading tabular data from some source. We can use various customizations for this process such as providing a file format, table schema, limiting fields or rows amounts, and much more. Let's see this with some real files:
 
+> Download [`country-3.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/country-3.csv) into the `data` folder to reproduce the examples
+
 ```bash title="CLI"
 cat data/country-3.csv
 ```
@@ -15,6 +17,7 @@ id,capital_id,name,population
 4,5,Italy,60
 5,4,Spain,47
 ```
+> Download [`capital-3.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/capital-3.csv) into the `data` folder to reproduce the examples
 
 ```bash title="CLI"
 cat data/capital-3.csv

@@ -4,11 +4,12 @@ title: Introduction Guide
 
 Let's say we have a few raw data files. It's been just collected by the data researchers, and the quality of data is still far from perfect. In fact, they haven't even removed the comments from the first row!
 
+> Download [`countries.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/countries.csv) into the `data` folder to reproduce the examples
 
 ```bash title="CLI"
 cat data/countries.csv
 ```
-```
+```csv title="data/countries.csv"
 # clean this data!
 id,neighbor_id,name,population
 1,Ireland,Britain,67

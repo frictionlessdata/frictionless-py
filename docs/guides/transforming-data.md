@@ -12,6 +12,7 @@ Frictionless supports a few different kinds of data and metadata transformations
 
 The main difference between the first two and pipelines that resource and package transforms are imperative while pipelines can be created beforehand or shared as a JSON file. Also, Frictionless supports a [Dataflows](https://frictionlessdata.io/tooling/python/working-with-dataflows/) pipeline runner. You need to install the `dataflows` plugin to use it.
 
+> Download [`transform.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/transform.csv) into the `data` folder to reproduce the examples
 
 ```bash title="CLI"
 cat data/transform.csv
@@ -22,6 +23,8 @@ id,name,population
 2,france,66
 3,spain,47
 ```
+
+> Download [`transform-groups.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/transform-groups.csv) into the `data` folder to reproduce the examples
 
 ```bash title="CLI"
 cat data/transform-groups.csv
@@ -35,6 +38,8 @@ id,name,population,year
 5,spain,47,2020
 6,spain,33,1920
 ```
+
+> Download [`transform-pivot.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/transform-pivot.csv) into the `data` folder to reproduce the examples
 
 ```bash title="CLI"
 cat data/transform-pivot.csv

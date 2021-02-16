@@ -78,6 +78,8 @@ Table Schema is a specification for providing a "schema" (similar to a database 
 
 We're going to use this file for the examples in this section. For this guide, we only use CSV files because of their demonstrativeness, but in-general Frictionless can handle data in Excel, JSON, SQL, and many other formats:
 
+> Download [`country-1.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/country-1.csv) into the `data` folder to reproduce the examples
+
 ```bash title="CLI"
 cat data/country-1.csv
 ```
@@ -184,6 +186,7 @@ A range of other properties can be declared to provide a richer set of metadata.
 
 For this section, we will use a file that is slightly more complex to handle. For some reason, cells are separated by the ";" char and there is a comment on the top:
 
+> Download [`country-2.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/country-2.csv) into the `data` folder to reproduce the examples
 
 ```bash title="CLI"
 cat data/country-2.csv
@@ -319,6 +322,8 @@ The data included in the package may be provided as:
 
 For this section, we will use the following files:
 
+> Download [`country-3.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/country-3.csv) into the `data` folder to reproduce the examples
+
 ```bash title="CLI"
 cat data/country-3.csv
 ```
@@ -330,6 +335,8 @@ id,capital_id,name,population
 4,5,Italy,60
 5,4,Spain,47
 ```
+
+> Download [`capital-3.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/capital-3.csv) into the `data` folder to reproduce the examples
 
 ```bash title="CLI"
 cat data/capital-3.csv

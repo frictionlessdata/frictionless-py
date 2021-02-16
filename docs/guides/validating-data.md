@@ -4,6 +4,7 @@ title: Validating Data
 
 Tabular data validation is a process of identifying tabular problems that have place in your data for further correction. Let's explore how Frictionless helps to achieve these tasks using an invalid data table example:
 
+> Download [`capital-invalid.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/capital-invalid.csv) and put into the `data` folder to reproduce the examples
 
 ```bash title="CLI"
 cat data/capital-invalid.csv
