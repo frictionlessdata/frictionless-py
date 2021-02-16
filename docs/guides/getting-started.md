@@ -9,8 +9,8 @@ Let's get started with Frictionless! We will learn how to install and use the fr
 > The framework requires Python3.6+. Versioning follows the [SemVer Standard](https://semver.org/)
 
 ```bash title="CLI"
-$ pip install frictionless
-$ pip install frictionless[sql] # to install a core plugin
+pip install frictionless
+pip install frictionless[sql] # to install a core plugin
 ```
 
 The framework supports CSV, Excel, and JSON formats by default. Please use the command above to install a core plugin and add support for SQL, Pandas, HTML, and others (check the [list of Frictionless Framework plugins and their status](https://framework.frictionlessdata.io/docs/references/plugins-reference)). Usually, you don't need to think about it in advance–frictionless will display a useful error message about a missing plugin with installation instructions.
@@ -30,7 +30,7 @@ rows = extract('data/table.csv')
 ```
 
 ```bash title="CLI"
-$ frictionless extract data/table.csv
+frictionless extract data/table.csv
 ```
 
 ```text title="API"
@@ -47,11 +47,11 @@ Arguments conform to the following naming convention:
 To get the documentation for a command-line interface just use the `--help` flag:
 
 ```bash title="CLI"
-$ frictionless --help
-$ frictionless describe --help
-$ frictionless extract --help
-$ frictionless validate --help
-$ frictionless transform --help
+frictionless --help
+frictionless describe --help
+frictionless extract --help
+frictionless validate --help
+frictionless transform --help
 ```
 
 ## Example
@@ -61,7 +61,7 @@ $ frictionless transform --help
 We will take a very messy data file:
 
 ```bash title="CLI"
-$ cat data/invalid.csv
+cat data/invalid.csv
 ```
 ```csv title="data/invalid.csv"
 id,name,,name
@@ -77,7 +77,7 @@ First of all, let's use `describe` to infer the metadata directly from the tabul
 
 
 ```bash title="CLI"
-$ frictionless describe data/invalid.csv
+frictionless describe data/invalid.csv
 ```
 ```yaml
 # --------
@@ -106,7 +106,7 @@ schema:
 Now that we have inferred a table schema from the data file (e.g., expected format of the table, expected type of each value in a column, etc.), we can use `extract` to read the normalized tabular data from the source CSV file:
 
 ```bash title="CLI"
-$ frictionless extract data/invalid.csv
+frictionless extract data/invalid.csv
 ```
 ```yaml
 # ----
@@ -127,7 +127,7 @@ Last but not least, let's get a validation report. This report will help us to i
 
 
 ```bash title="CLI"
-$ frictionless validate data/invalid.csv
+frictionless validate data/invalid.csv
 ```
 ```yaml
 # -------

@@ -6,7 +6,7 @@ Let's say we have a few raw data files. It's been just collected by the data res
 
 
 ```bash title="CLI"
-$ cat data/countries.csv
+cat data/countries.csv
 ```
 ```
 # clean this data!
@@ -31,8 +31,8 @@ First of all, we're going to describe our dataset. Frictionless uses powerful [F
 Let's describe the `countries` table:
 
 ```bash title="CLI"
-$ frictionless describe data/countries.csv
-$ frictionless describe data/countries.csv --stats # to get also stats
+frictionless describe data/countries.csv
+frictionless describe data/countries.csv --stats # to get also stats
 ```
 
 ```yaml
@@ -85,7 +85,7 @@ resource.to_yaml("tmp/countries.resource.yaml")
 Let's see what we have created:
 
 ```bash title="CLI"
-$ cat tmp/countries.resource.yaml
+cat tmp/countries.resource.yaml
 ```
 ```yaml
 encoding: utf-8
@@ -128,7 +128,7 @@ It's time to try extracting our data as a table. As a first naive attempt, we wi
 
 
 ```bash title="CLI"
-$ frictionless extract data/countries.csv
+frictionless extract data/countries.csv
 ```
 ```
 ---
@@ -154,7 +154,7 @@ Actually, it doesn't look terrible, but in reality, data like this is not quite 
 Let's use the metadata we save to try extracting data with the help of Frictionless Data specifications:
 
 ```bash title="CLI"
-$ frictionless extract tmp/countries.resource.yaml --basepath .
+frictionless extract tmp/countries.resource.yaml --basepath .
 ```
 ```
 ---
@@ -179,7 +179,7 @@ It's now much better! Numerical fields are numerical fields, and there are no mo
 Data validation with Frictionless is as easy as describing or extracting data:
 
 ```bash title="CLI"
-$ frictionless validate data/countries.csv
+frictionless validate data/countries.csv
 ```
 ```
 ---
@@ -199,7 +199,7 @@ row  field  code          message
 Ahh, we had seen that coming. The data is not valid; there are some missing and extra cells. But wait a minute, in the first step, we created the metadata file with more information about our table. We have to use it.
 
 ```bash title="CLI"
-$ frictionless validate tmp/countries.resource.yaml --basepath .
+frictionless validate tmp/countries.resource.yaml --basepath .
 ```
 ```
 ---
@@ -252,7 +252,7 @@ with Table(source) as table:
 Finally, we've got the cleaned version of our data, which can be exported to a database or published. We have used a CSV as an output format but could have used Excel, JSON, SQL, and others.
 
 ```bash title="CLI"
-$ cat tmp/countries-cleaned.csv
+cat tmp/countries-cleaned.csv
 ```
 ```
 id,neighbor_id,name,population
@@ -276,7 +276,7 @@ target.to_yaml("tmp/countries-cleaned.resource.yaml")
 After running this script our metadata will be:
 
 ```bash title="CLI"
-$ cat tmp/countries-cleaned.resource.yaml
+cat tmp/countries-cleaned.resource.yaml
 ```
 ```yaml
 encoding: utf-8
@@ -309,7 +309,7 @@ Basically, that's it; now, we have a valid data file and a corresponding metadat
 
 
 ```bash title="CLI"
-$ ls -la tmp/countries-cleaned.csv tmp/countries-cleaned.resource.yaml
+ls -la tmp/countries-cleaned.csv tmp/countries-cleaned.resource.yaml
 ```
 ```
 -rw------- 1 roll roll  91 дек  2 11:42 tmp/countries-cleaned.csv

@@ -14,7 +14,7 @@ The main difference between the first two and pipelines that resource and packag
 
 
 ```bash title="CLI"
-$ cat data/transform.csv
+cat data/transform.csv
 ```
 ```csv title="data/transform.csv"
 id,name,population
@@ -24,7 +24,7 @@ id,name,population
 ```
 
 ```bash title="CLI"
-$ cat data/transform-groups.csv
+cat data/transform-groups.csv
 ```
 ```csv title="data/transform-groups.csv"
 id,name,population,year
@@ -37,7 +37,7 @@ id,name,population,year
 ```
 
 ```bash title="CLI"
-$ cat data/transform-pivot.csv
+cat data/transform-pivot.csv
 ```
 ```csv title="data/transform-pivot.csv"
 region,gender,style,units
@@ -737,7 +737,7 @@ target = transform(
 ```
 
 ```bash title="CLI"
-$ cat tmp/transform.json
+cat tmp/transform.json
 ```
 ```json title="tmp/transform.json"
 [

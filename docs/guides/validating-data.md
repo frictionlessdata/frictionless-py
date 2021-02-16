@@ -6,7 +6,7 @@ Tabular data validation is a process of identifying tabular problems that have p
 
 
 ```bash title="CLI"
-$ cat data/capital-invalid.csv
+cat data/capital-invalid.csv
 ```
 ```csv title="data/capital-valid.csv"
 id,name,name
@@ -27,7 +27,7 @@ Using the command-line interface we can validate this file. Frictionless provide
 
 
 ```bash title="CLI"
-$ frictionless validate data/capital-invalid.csv
+frictionless validate data/capital-invalid.csv
 ```
 ```
 ---
@@ -58,12 +58,12 @@ The high-level interface for validating data provided by Frictionless is a set o
 In command-line, there is only 1 command but there is a flag to adjust the behavior:
 
 ```bash title="CLI"
-$ frictionless validate
-$ frictionless validate --source-type schema
-$ frictionless validate --source-type resource
-$ frictionless validate --source-type package
-$ frictionless validate --source-type inquiry
-$ frictionless validate --source-type table
+frictionless validate
+frictionless validate --source-type schema
+frictionless validate --source-type resource
+frictionless validate --source-type package
+frictionless validate --source-type inquiry
+frictionless validate --source-type table
 ```
 
 ## Validating Schema
@@ -82,7 +82,7 @@ And validate it using the command-line interface:
 
 
 ```bash title="CLI"
-$ frictionless validate tmp/invalid.schema.yaml
+frictionless validate tmp/invalid.schema.yaml
 ```
 ```
 ---
@@ -102,13 +102,13 @@ Schema validation can be very useful when you work with different classes of tab
 As it was shown in the "Describing Data" guide a resource is a container having both metadata and data. We need to create a resource descriptor to validate it:
 
 ```bash title="CLI"
-$ frictionless describe data/capital-invalid.csv --json > tmp/capital.resource.json
+frictionless describe data/capital-invalid.csv --json > tmp/capital.resource.json
 ```
 
 Let's now use the command-line interface to ensure that we are getting the same result as we had without using a resource:
 
 ```bash title="CLI"
-$ frictionless validate tmp/capital.resource.json --basepath .
+frictionless validate tmp/capital.resource.json --basepath .
 ```
 ```
 ---
@@ -140,7 +140,7 @@ resource.to_yaml('tmp/capital.resource.yaml')
 We have added a few bad metrics to our resource descriptor. The validation below reports it in addition to all the errors we had before. This example is showing how concepts like Data Resource can be extremely useful when working with data.
 
 ```bash title="CLI"
-$ frictionless validate tmp/capital.resource.yaml --basepath .
+frictionless validate tmp/capital.resource.yaml --basepath .
 ```
 ```
 ---
@@ -163,7 +163,7 @@ None      3  duplicate-header  Header "name" in field at position "3" is duplica
 A package is a set of resources + additional metadata. To showcase a package validation we need one more tabular file:
 
 ```bash title="CLI"
-$ cat data/capital-valid.csv
+cat data/capital-valid.csv
 ```
 ```csv  title="data/capital-valid.csv"
 id,name
@@ -177,8 +177,8 @@ id,name
 Let's describe and validate a package:
 
 ```bash title="CLI"
-$ frictionless describe data/capital-*id.csv --json > tmp/capital.package.json
-$ frictionless validate tmp/capital.package.json --basepath .
+frictionless describe data/capital-*id.csv --json > tmp/capital.package.json
+frictionless validate tmp/capital.package.json --basepath .
 ```
 ```
 ---
@@ -220,7 +220,7 @@ inquiry.to_yaml('tmp/capital.inquiry.yaml')
 Tasks in the Inquiry accept the same arguments written in camelCase as the corresponding `validate` functions have. As usual, let' run validation:
 
 ```bash title="CLI"
-$ frictionless validate tmp/capital.inquiry.yaml
+frictionless validate tmp/capital.inquiry.yaml
 ```
 ```
 ---

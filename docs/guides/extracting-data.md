@@ -5,7 +5,7 @@ title: Extracting Data
 Extracting data means reading tabular data from some source. We can use various customizations for this process such as providing a file format, table schema, limiting fields or rows amounts, and much more. Let's see this with some real files:
 
 ```bash title="CLI"
-$ cat data/country-3.csv
+cat data/country-3.csv
 ```
 ```csv title="data/country-3.csv"
 id,capital_id,name,population
@@ -17,7 +17,7 @@ id,capital_id,name,population
 ```
 
 ```bash title="CLI"
-$ cat data/capital-3.csv
+cat data/capital-3.csv
 ```
 ```csv title="data/capital-3.csv"
 id,name
@@ -31,7 +31,7 @@ id,name
 To start, we will use the command-line interface:
 
 ```bash title="CLI"
-$ frictionless extract data/country-3.csv
+frictionless extract data/country-3.csv
 ```
 ```
 ---
@@ -76,9 +76,9 @@ The high-level interface for extracting data provided by Frictionless is a set o
 In the command-line, there is only 1 command (`extract`) but there is a flag to adjust the behavior:
 
 ```bash title="CLI"
-$ frictionless extract
-$ frictionless extract --type package
-$ frictionless extract --type resource
+frictionless extract
+frictionless extract --type package
+frictionless extract --type resource
 ```
 
 The `extract` functions always read data in a form of rows (see the object description below) into memory. The lower-level interfaces will allow you to stream data and various output forms.
@@ -113,7 +113,7 @@ resource.to_yaml('tmp/capital.resource.yaml')
 ```
 
 ```bash title="CLI"
-$ frictionless extract tmp/capital.resource.yaml --basepath .
+frictionless extract tmp/capital.resource.yaml --basepath .
 ```
 ```
 ---
@@ -138,7 +138,7 @@ So what's happened? We set the textual representation of the number "3" to be a 
 Let's start by using the command line-interface. We're going to provide two files to the `extract` command which will be enough to detect that it's a dataset:
 
 ```bash title="CLI"
-$ frictionless extract data/*-3.csv
+frictionless extract data/*-3.csv
 ```
 ```
 ---
@@ -261,7 +261,7 @@ The Package class is a metadata class which provides an ability to read its cont
 
 
 ```bash title="CLI"
-$ frictionless describe data/*-3.csv --json > tmp/country.package.json
+frictionless describe data/*-3.csv --json > tmp/country.package.json
 ```
 
 Now, we can open the created descriptor and read the package's resources:
