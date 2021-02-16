@@ -2,6 +2,10 @@
 
 Here described only the breaking and most significant changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/frictionless-py/commits/master).
 
+## v4.0.0
+
+- Released `frictionless@4` :tada:
+
 ## v4.0.0a15
 
 - Updated loaders (#658) (BREAKING)
