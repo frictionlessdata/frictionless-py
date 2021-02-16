@@ -604,6 +604,8 @@ All the main `Metadata` classes have this method with different available option
 - `resource.infer`
 - `schema.infer`
 
+For more advanced detection options, please read the [Detector Guide](detector-guide.md)
+
 ## Expanding Metadata
 
 By default, Frictionless never adds default values to metadata, for example:
