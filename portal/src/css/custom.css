@@ -1,5 +1,9 @@
 /* Header */
 
+.header-version-link {
+  padding-right: 0;
+}
+
 .header-mainsite-link {
   opacity: 0.5;
   padding-right: 0;
