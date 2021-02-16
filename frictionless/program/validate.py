@@ -2,63 +2,63 @@ import sys
 import petl
 import typer
 from typing import List
-from typer import Option as Opt
-from typer import Argument as Arg
 from ..validate import validate
 from ..detector import Detector
 from ..layout import Layout
 from .main import program
 from .. import helpers
+from . import common
 
 
 @program.command(name="validate")
 def program_validate(
-    source: List[str] = Arg(None, help="Data source to describe [default: stdin]"),
-    type: str = Opt(None, help='Specify source type e.g. "package"'),
+    # Source
+    source: List[str] = common.source,
+    type: str = common.type,
     # File
-    scheme: str = Opt(None, help="Specify schema  [default: inferred]"),
-    format: str = Opt(None, help="Specify format  [default: inferred]"),
-    hashing: str = Opt(None, help="Specify hashing algorithm  [default: inferred]"),
-    encoding: str = Opt(None, help="Specify encoding  [default: inferred]"),
-    innerpath: str = Opt(None, help="Specify in-archive path  [default: first]"),
-    compression: str = Opt(None, help="Specify compression  [default: inferred]"),
+    scheme: str = common.scheme,
+    format: str = common.format,
+    hashing: str = common.hashing,
+    encoding: str = common.encoding,
+    innerpath: str = common.innerpath,
+    compression: str = common.compression,
     # Layout
-    header_rows: str = Opt(None, help="Comma-separated row numbers  [default: 1]"),
-    header_join: str = Opt(None, help="A separator to join a multiline header"),
-    pick_fields: str = Opt(None, help='Comma-separated fields to pick e.g. "1,name1"'),
-    skip_fields: str = Opt(None, help='Comma-separated fields to skip e.g. "2,name2"'),
-    limit_fields: int = Opt(None, help="Limit fields by this integer"),
-    offset_fields: int = Opt(None, help="Offset fields by this integer"),
-    pick_rows: str = Opt(None, help='Comma-separated rows to pick e.g. "1,<blank>"'),
-    skip_rows: str = Opt(None, help='Comma-separated rows to skip e.g. "2,3,4,5"'),
-    limit_rows: int = Opt(None, help="Limit rows by this integer"),
-    offset_rows: int = Opt(None, help="Offset rows by this integer"),
+    header_rows: str = common.header_rows,
+    header_join: str = common.header_join,
+    pick_fields: str = common.pick_fields,
+    skip_fields: str = common.skip_fields,
+    limit_fields: int = common.limit_fields,
+    offset_fields: int = common.offset_fields,
+    pick_rows: str = common.pick_rows,
+    skip_rows: str = common.skip_rows,
+    limit_rows: int = common.limit_rows,
+    offset_rows: int = common.offset_rows,
     # Schema
-    schema: str = Opt(None, help="Specify a path to a schema"),
+    schema: str = common.schema,
     # Stats
-    stats_hash: str = Opt(None, help="Expected hash based on hashing option"),
-    stats_bytes: int = Opt(None, help="Expected size in bytes"),
-    stats_fields: int = Opt(None, help="Expected amount of fields"),
-    stats_rows: int = Opt(None, help="Expected amount of rows"),
+    stats_hash: str = common.stats_hash,
+    stats_bytes: int = common.stats_bytes,
+    stats_fields: int = common.stats_fields,
+    stats_rows: int = common.stats_rows,
     # Detector
-    buffer_size: int = Opt(None, help="Limit byte buffer size by this integer"),
-    sample_size: int = Opt(None, help="Limit data sample size by this integer"),
-    field_type: str = Opt(None, help="Force all the fields to have this type"),
-    field_names: str = Opt(None, help="Comma-separated list of field names"),
-    field_confidence: float = Opt(None, help="A float from 0 to 1"),
-    field_float_numbers: bool = Opt(None, help="Make number floats instead of decimals"),
-    field_missing_values: str = Opt(None, help="Comma-separated list of missing values"),
-    schema_sync: bool = Opt(None, help="Sync the schema based on headers"),
-    # Validation
-    basepath: str = Opt(None, help="Basepath of the resource/package"),
-    pick_errors: str = Opt(None, help='Comma-separated errors to pick e.g. "type-error"'),
-    skip_errors: str = Opt(None, help='Comma-separated errors to skip e.g. "blank-row"'),
-    limit_errors: int = Opt(None, help="Limit errors by this integer"),
-    limit_memory: int = Opt(None, help="Limit memory by this integer in MB"),
-    original: bool = Opt(None, help="Don't call infer on resources"),
-    parallel: bool = Opt(None, help="Enable multiprocessing"),
-    yaml: bool = Opt(False, help="Return in pure YAML format"),
-    json: bool = Opt(False, help="Return in JSON format"),
+    buffer_size: int = common.buffer_size,
+    sample_size: int = common.sample_size,
+    field_type: str = common.field_type,
+    field_names: str = common.field_names,
+    field_confidence: float = common.field_confidence,
+    field_float_numbers: bool = common.field_float_numbers,
+    field_missing_values: str = common.field_missing_values,
+    schema_sync: bool = common.schema_sync,
+    # Command
+    basepath: str = common.basepath,
+    pick_errors: str = common.pick_errors,
+    skip_errors: str = common.skip_errors,
+    limit_errors: int = common.limit_errors,
+    limit_memory: int = common.limit_memory,
+    original: bool = common.original,
+    parallel: bool = common.parallel,
+    yaml: bool = common.yaml,
+    json: bool = common.json,
 ):
     """
     Validate a data source.
@@ -181,9 +181,10 @@ def program_validate(
         content = []
         if is_stdin:
             source = "stdin"
-        typer.secho("---")
-        typer.secho(f"invalid: {source}", bold=True)
-        typer.secho("---")
+        prefix = "invalid"
+        typer.secho(f"# {'-'*len(prefix)}", bold=True)
+        typer.secho(f"# {prefix}: {source}", bold=True)
+        typer.secho(f"# {'-'*len(prefix)}", bold=True)
         for error in report.errors:
             content.append([error.code, error.message])
         typer.secho(
@@ -203,9 +204,9 @@ def program_validate(
         source = task.resource.path
         if is_stdin:
             source = "stdin"
-        typer.secho("---")
-        typer.secho(f"{prefix}: {source}", bold=True)
-        typer.secho("---")
+        typer.secho(f"# {'-'*len(prefix)}", bold=True)
+        typer.secho(f"# {prefix}: {source}", bold=True)
+        typer.secho(f"# {'-'*len(prefix)}", bold=True)
         if task.errors:
             prev_invalid = True
             typer.secho("")

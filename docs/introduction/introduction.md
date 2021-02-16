@@ -68,7 +68,7 @@ You can read more about the Frictionless specifications here: https://specs.fric
 
 ## Example
 
-```bash
+```
 $ frictionless validate data/invalid.csv
 [invalid] data/invalid.csv
 

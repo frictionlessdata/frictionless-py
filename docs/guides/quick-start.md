@@ -8,11 +8,9 @@ Let's get started with Frictionless! We will learn how to install and use the fr
 
 > The framework requires Python3.6+. Versioning follows the [SemVer Standard](https://semver.org/)
 
-```bash
-$ pip install frictionless
-$ pip install frictionless[sql] # to install a core plugin (optional)
-$ frictionless --version
-4.0.0
+```bash title="CLI"
+pip install frictionless
+pip install frictionless[sql] # to install a core plugin (optional)
 ```
 
 The framework supports CSV, Excel, and JSON formats by default. Please use the command above to install a core plugin and add support for SQL, Pandas, HTML, and others (check the [list of Frictionless Framework plugins and their status](https://framework.frictionlessdata.io/docs/references/plugins-reference)). Usually, you don't need to think about it in advance–frictionless will display a useful error message about a missing plugin with installation instructions.
@@ -34,19 +32,16 @@ The framework can be used:
 
 For instance, all the examples below do the same thing:
 
-```python
-# Python:
+```python title="Python"
 from frictionless import extract
 rows = extract('data/table.csv')
 ```
 
-```bash
-# CLI
-$ frictionless extract data/table.csv
+```bash title="CLI"
+frictionless extract data/table.csv
 ```
 
-```
-# API:
+```text title="API"
 [POST] /extract {"source': 'data/table.csv"}
 ```
 
@@ -59,25 +54,26 @@ Arguments conform to the following naming convention:
 
 To get the documentation for a command-line interface just use the `--help` flag:
 
-```bash
-$ frictionless --help
-$ frictionless describe --help
-$ frictionless extract --help
-$ frictionless validate --help
-$ frictionless transform --help
+```bash title="CLI"
+frictionless --help
+frictionless describe --help
+frictionless extract --help
+frictionless validate --help
+frictionless transform --help
 ```
 
 ## Short Example
 
-> All the examples use the data folder from [this](https://github.com/frictionlessdata/frictionless-py/) repository. For a more indepth example, use the [Overview Example](overview-example).
+> For a more indepth example, use the [Overview Example](overview-example)
 
 We will take a very messy data file:
 
-```bash
-$ cat data/invalid.csv
-```
+> Download [`invalid.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/invalid.csv) into the `data` folder to reproduce the examples
 
+```bash title="CLI"
+cat data/invalid.csv
 ```
+```csv title="data/invalid.csv"
 id,name,,name
 1,english
 1,english
@@ -89,15 +85,13 @@ First of all, let's use `describe` to infer the metadata directly from the tabul
 
 > This output is in [YAML](https://yaml.org/), it is a default Frictionless output format.
 
-
-```bash
-$ frictionless describe data/invalid.csv
+```bash title="CLI"
+frictionless describe data/invalid.csv
 ```
-
-```
----
-metadata: data/invalid.csv
----
+```yaml
+# --------
+# metadata: data/invalid.csv
+# --------
 
 encoding: utf-8
 format: csv
@@ -120,14 +114,13 @@ schema:
 
 Now that we have inferred a table schema from the data file (e.g., expected format of the table, expected type of each value in a column, etc.), we can use `extract` to read the normalized tabular data from the source CSV file:
 
-```bash
-$ frictionless extract data/invalid.csv
+```bash title="CLI"
+frictionless extract data/invalid.csv
 ```
-
-```
----
-data: data/invalid.csv
----
+```yaml
+# ----
+# data: data/invalid.csv
+# ----
 
 ====  =======  ======  =====
 id    name     field3  name2
@@ -142,14 +135,13 @@ None  None     None    None
 Last but not least, let's get a validation report. This report will help us to identify and fix all the errors present in the tabular data, as comprehensive information is provided for every problem:
 
 
-```bash
-$ frictionless validate data/invalid.csv
+```bash title="CLI"
+frictionless validate data/invalid.csv
 ```
-
-```
----
-invalid: data/invalid.csv
----
+```yaml
+# -------
+# invalid: data/invalid.csv
+# -------
 
 ====  =====  ===============  ====================================================================================
 row   field  code             message
