@@ -41,6 +41,7 @@ module.exports = {
         "guides/type-guide",
       ],
     },
+    "guides/whats-next",
   ],
   tutorials: [
     "tutorials/tutorials-overview",
@@ -71,6 +72,7 @@ module.exports = {
         "tutorials/sql-tutorial",
       ],
     },
+    "tutorials/whats-next",
   ],
   references: [
     "references/references-overview",
@@ -82,12 +84,14 @@ module.exports = {
     "references/steps-reference",
     "references/types-reference",
     "references/api-reference",
+    "references/whats-next",
   ],
   development: [
     "development/development",
-    "development/contributing",
     "development/changelog",
     "development/migration",
     "development/authors",
+    "development/contributing",
+    "development/whats-next",
   ],
 };
