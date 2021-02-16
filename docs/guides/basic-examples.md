@@ -229,33 +229,38 @@ In the next section, we will clean up the data.
 
 ## Transforming Data
 
-> Currently, the transform capabilities are under construction. For now, we will use Python programming for data cleaning.
-
 We will use metadata to fix all the data type problems automatically. The only two things we need to handle manually:
 - France's population
 - Germany's neighborhood
 
 ```python title="Python"
-from frictionless import Resource, Table
+from frictionless import Resource, describe, transform, steps
 
-def source():
-    resource = Resource("tmp/countries.resource.yaml", basepath='.')
-    for row in resource.read_rows():
-        if row["name"] == "France":
-            row["population"] = 67
-        if row["name"] == "Germany":
-            row["neighbor_id"] = 2
-        if row["name"]:
-            yield row
+def clean(resource):
+    with resource:
+        resource.schema = Resource("tmp/countries.resource.yaml").schema
+        for row in resource.row_stream:
+            if row["name"] == "France":
+                row["population"] = 67
+            if row["name"] == "Germany":
+                row["neighbor_id"] = 2
+            if row["name"]:
+                yield row
 
-with Table(source) as table:
-    table.write("tmp/countries-cleaned.csv")
+source = describe("data/countries.csv")
+target = transform(
+    source,
+    steps=[
+        clean,
+        steps.table_write(path="data/countries.csv"),
+    ],
+)
 ```
 
 Finally, we've got the cleaned version of our data, which can be exported to a database or published. We have used a CSV as an output format but could have used Excel, JSON, SQL, and others.
 
 ```bash title="CLI"
-cat tmp/countries-cleaned.csv
+cat data/countries.csv
 ```
 ```
 id,neighbor_id,name,population
@@ -265,58 +270,15 @@ id,neighbor_id,name,population
 4,,Italy,60
 ```
 
-We also need to update our metadata file:
-
-```python title="Python"
-from frictionless import Resource, describe
-
-source = Resource("tmp/countries.resource.yaml")
-target = describe("tmp/countries-cleaned.csv")
-target.schema.foreign_keys = source.schema.foreign_keys
-target.to_yaml("tmp/countries-cleaned.resource.yaml")
-```
-
-After running this script our metadata will be:
-
-```bash title="CLI"
-cat tmp/countries-cleaned.resource.yaml
-```
-```yaml
-encoding: utf-8
-format: csv
-scheme: file
-hashing: md5
-name: countries-cleaned
-path: tmp/countries-cleaned.csv
-profile: tabular-data-resource
-schema:
-  fields:
-    - name: id
-      type: integer
-    - name: neighbor_id
-      type: any
-    - name: name
-      type: string
-    - name: population
-      type: integer
-  foreignKeys:
-    - fields:
-        - neighbor_id
-      reference:
-        fields:
-          - id
-        resource: ''
-```
-
 Basically, that's it; now, we have a valid data file and a corresponding metadata file. It can be shared with other people or stored without fear of type errors or other problems making data research not reproducible.
 
 
 ```bash title="CLI"
-ls -la tmp/countries-cleaned.csv tmp/countries-cleaned.resource.yaml
+ls -la data/countries.csv tmp/countries.resource.yaml
 ```
 ```
--rw------- 1 roll roll  91 дек  2 11:42 tmp/countries-cleaned.csv
--rw------- 1 roll roll 926 дек  2 11:41 tmp/countries-cleaned.resource.yaml
+-rw------- 1 roll roll  91 дек  2 11:42 data/countries.csv
+-rw------- 1 roll roll 926 дек  2 11:41 tmp/countries.resource.yaml
 ```
 
 In the next articles, we will explore more advanced Frictionless' functionality.
