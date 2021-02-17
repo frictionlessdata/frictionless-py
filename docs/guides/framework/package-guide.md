@@ -105,7 +105,7 @@ Will make all the paths treated as relative to this path.
 
 ### Detector
 
-[Detector](detector.md) object to tweak metadata detection.
+[Detector](detector-guide.md) object to tweak metadata detection.
 
 ### Onerror
 
@@ -122,7 +122,7 @@ By default an error will be reaised on [unsafe paths](https://specs.frictionless
 
 Will be passed to underlaying resources as a default hasing algorithm.
 
-[Detector](detector.md) object to tweak metadata detection.
+[Detector](detector-guide.md) object to tweak metadata detection.
 
 ## Import/Export
 
