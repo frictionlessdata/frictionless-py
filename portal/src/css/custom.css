@@ -27,6 +27,13 @@ html[data-theme='dark'] .header-github-link:before {
     no-repeat;
 }
 
+/* Menu */
+
+.menu__list-item .menu__list-item {
+    margin: 0;
+    font-weight: normal;
+}
+
 /* Codeblock */
 
 .language-bash .token-line:before {
