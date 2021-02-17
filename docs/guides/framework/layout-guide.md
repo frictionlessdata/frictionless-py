@@ -5,7 +5,7 @@ title: Layout Guide
 The Layout concept give us an ability to manage table header and pick/skip arbitrary fields and rows from the raw data stream.
 
 ```bash title="CLI"
-$ cat data/matrix.csv
+cat data/matrix.csv
 ```
 ```csv
 f1,f2,f3,f4
