@@ -1,5 +1,5 @@
 ---
-title: Validating Data
+title: Validation Guide
 ---
 
 Tabular data validation is a process of identifying tabular problems that have place in your data for further correction. Let's explore how Frictionless helps to achieve these tasks using an invalid data table example:
@@ -25,7 +25,6 @@ x,Tokio,Japan,review
 ```
 
 Using the command-line interface we can validate this file. Frictionless provides comprehensive error details so it's self-explanatory. Continue reading to learn the validation process in-details.
-
 
 ```bash title="CLI"
 frictionless validate data/capital-invalid.csv
@@ -395,11 +394,60 @@ pprint(error)
 
 Please explore "Errors Reference" to learn about all the available errors and their properties.
 
-## Errors Options
+## Available Checks
 
-We have already seen a few mentions of error options like `pick_errors`. Let's take a look at all of them. These options are similar to the `extract`'s counterparts for fields and rows.
+> Note that only the Baseline Check in enabled by default. Other builtin checks need to be activated as it's shown below
 
-### Pick/Skip Errors
+There are various validation checks included in the core Frictionless Framework along with an ability to create custom checks. You can provide a list of checks where individual checks are in the form of:
+- a dict: `{'code': 'code', 'option1': 'value1'}`
+- an object: `checks.code(option1='value1')`
+
+```python title="Python"
+from frictionless import validate, checks
+
+checks = [checks.sequential_value(field_name='id')]
+report = validate('data/capital-invalid.csv', checks=checks)
+pprint(report.flatten(["rowPosition", "fieldPosition", "code", "note"]))
+```
+```
+[[None, 3, 'duplicate-header', 'at position "2"'],
+ [10, 3, 'missing-cell', ''],
+ [10, 1, 'sequential-value', 'the value is not sequential'],
+ [11, None, 'blank-row', ''],
+ [12, 4, 'extra-cell', ''],
+ [12, 1, 'type-error', 'type is "integer/default"']]
+```
+
+See [Validation Checks](validation-checks.md) for a list of available checks.
+
+## Custom Checks
+
+There are many cases when built-in Frictionless' checks are not enough. It can be a business logic rule or specific quality requirement to the data. With Frictionless it's very easy to use your own custom checks. Let's see on an example:
+
+```python title="Python"
+from pprint import pprint
+from frictionless import validate, errors, Check
+
+# Create check
+def forbidden_two(row):
+    if row['header'] == 2:
+      note = f"number {self['number']} is forbidden!"
+      yield errors.CellError.from_row(row, note=note, field_name='header')
+
+# Validate table
+source = b'header\n1\n2\n3'
+report = validate(source,  format='csv', checks=[forbidden_two])
+pprint(report.flatten(["rowPosition", "fieldPosition", "code", "note"]))
+```
+```
+[[3, 1, 'cell-error', 'number 2 is forbidden!']]
+```
+
+Usually, it also makes sense to create a custom error for your custom check. The Check class provides other useful methods like `validate_header` etc. Please read "API Reference" to learn it in details.
+
+Learn more about custom checks in the [Check Guide](check-guide.md).
+
+## Pick/Skip Errors
 
 We can pick or skip errors providing a list of error codes. For example:
 
@@ -434,7 +482,7 @@ pprint(report2.flatten(['rowPosition', 'fieldPosition', 'code']))
 [[None, 3, 'duplicate-header']]
 ```
 
-### Limit Errors
+## Limit Errors
 
 This option is self-explanatory and can be used when you need to "fail fast" or get a limited amount of errors:
 
@@ -448,11 +496,9 @@ pprint(report.flatten(['rowPosition', 'fieldPosition', 'code']))
 [[None, 3, 'duplicate-header']]
 ```
 
-## Memory Options
+## Limit Memory
 
 Frictionless is a streaming engine; usually it's possible to validate terrabytes of data with basically O(1) memory consumption. For some validation, it's not the case because Frctionless needs to buffer some cells e.g. to checks uniqueness. Here memory management can be handy.
-
-### Limit Memory
 
 Default memory limit is 1000MB. You can adjust it based on your exact use case. For example, if you're running Frictionless as an API server you might reduce the memory usage. If a validation hits the limit it will not raise of fail - it will return a report with a task error:
 
@@ -465,249 +511,3 @@ report = validate(source, headers=False, schema=schema, limit_memory=50)
 print(report.flatten(["code", "note"]))
 # [['task-error', 'exceeded memory limit "50MB"']]
 ```
-
-## Checks Options
-
-There are two check options: `checksum` and `extra_checks`. The first allows to make stricter a baseline validation white the latter is used to enforce additional checks.
-
-### Checksum
-
-We can provide a hash string, the amount of bytes, and the amount of rows. Frictionless will ensure as a part of a validation that the actual values match the expected ones. Let's show for the hash:
-
-```python title="Python"
-from frictionless import validate
-
-report = validate('data/capital-invalid.csv', checksum={'hash': 'bad'}, pick_errors=['#checksum'])
-print(report.flatten(["code", "note"]))
-```
-```
-[['checksum-error', 'expected hash in md5 is "bad" and actual is "dcdeae358cfd50860c18d953e021f836"']]
-```
-
-The same can be show for the bytes and rows:
-
-```python title="Python"
-from frictionless import validate
-
-report = validate('data/capital-invalid.csv', checksum={'bytes': 10, 'rows': 10}, pick_errors=['#checksum'])
-pprint(report.flatten(["code", "note"]))
-```
-```
-[['checksum-error', 'expected bytes count is "10" and actual is "171"'],
- ['checksum-error', 'expected rows count is "10" and actual is "11"']]
-```
-
-### Extra Checks
-
-It's possible to provide a list of extra checks where individual checks are in the form of:
-- a string: `check-name`
-- a list: `['check-name', {'option1': 'value1'}]`
-
-It's also possible to use a `Check` subclass instead of name which will be shown in the "Custom Checks" section. Let's have a loot at an example:
-
-```python title="Python"
-from frictionless import validate
-
-report = validate('data/capital-invalid.csv', extra_checks=[('sequential-value', {'fieldName': 'id'})])
-pprint(report.flatten(["rowPosition", "fieldPosition", "code", "note"]))
-```
-```
-[[None, 3, 'duplicate-header', 'at position "2"'],
- [10, 3, 'missing-cell', ''],
- [10, 1, 'sequential-value', 'the value is not sequential'],
- [11, None, 'blank-row', ''],
- [12, 4, 'extra-cell', ''],
- [12, 1, 'type-error', 'type is "integer/default"']]
-```
-
-See the sections below for a list of available checks.
-
-## Baseline Check
-
-By default, Frictionless runs only the Baseline Check but includes various smaller checks revealing a great deal of tabular errors. There is a `report.tables[].scope` property to check what exact errors it have been checked for:
-
-```python title="Python"
-from frictionless import validate
-
-report = validate('data/capital-invalid.csv')
-pprint(report.table.scope)
-```
-```
-['dialect-error',
- 'schema-error',
- 'field-error',
- 'extra-header',
- 'missing-header',
- 'blank-header',
- 'duplicate-header',
- 'non-matching-header',
- 'extra-cell',
- 'missing-cell',
- 'blank-row',
- 'type-error',
- 'constraint-error',
- 'unique-error',
- 'primary-key-error',
- 'foreign-key-error',
- 'checksum-error']
-```
-
-## Heuristic Checks
-
-There is a group of checks that indicate probable errors. You need to use the `extra_checks` argument of the `validate` function to active one or more of these checks.
-
-### Duplicate Row
-
-This check is self-explanatory. You need to take into account that checking for duplicate rows can lean to high memory consumption on big files. Here is an example:
-
-```python title="Python"
-from pprint import pprint
-from frictionless import validate
-
-source = 'header\nvalue\nvalue'
-report = validate(source, scheme='text', format='csv', extra_checks=[{'code:': 'duplicate-row'}])
-pprint(report.flatten(['code', 'message']))
-```
-```
-[['duplicate-row',
-  'Row at position 3 is duplicated: the same as row at position "2"']]
-```
-
-### Deviated Value
-
-This check uses the Python's builtin `statistics` module to check a field's data for deviations. By default, deviated values are outside of the average +- three standard deviations. Take a look at the [API Reference](https://github.com/frictionlessdata/frictionless-py/blob/master/docs/target/api-reference/README.md#deviatedvaluecheck) for more details about available options and default values. The exact algorithm can be found [here](https://github.com/frictionlessdata/frictionless-py/blob/7ae8bae9a9197adbfe443233a6bad8a94e065ece/frictionless/checks/heuristic.py#L94). For example:
-
-
-```python title="Python"
-from pprint import pprint
-from frictionless import validate
-
-source = [["temperature"], [1], [-2], [7], [0], [1], [2], [5], [-4], [1000], [8], [3]]
-report = validate(source, extra_checks=[{"code": "deviated-value", "fieldName": "temperature"})])
-pprint(report.flatten(["code", "message"]))
-
-```
-```
-[['deviated-value',
-  'There is a possible error because the value is deviated: value "1000" in '
-  'row at position "10" and field "temperature" is deviated "[-809.88, '
-  '995.52]"']]
-```
-
-### Truncated Value
-
-Sometime during the export from a database or another storage, data values can be truncated. This check tries to detect it. Let's explore some truncation indicators:
-
-```python title="Python"
-from pprint import pprint
-from frictionless import validate
-
-source = [["int", "str"], ["a" * 255, 32767], ["good", 2147483647]]
-report = validate(source, extra_checks=[{"code": "truncated-value"}],)
-pprint(report.flatten(["code", "message"]))
-```
-```
-[['truncated-value',
-  'The cell '
-  'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa '
-  'in row at position 2 and field int at position 1 has an error: value  is '
-  'probably truncated'],
- ['truncated-value',
-  'The cell 32767 in row at position 2 and field str at position 2 has an '
-  'error: value  is probably truncated'],
- ['truncated-value',
-  'The cell 2147483647 in row at position 3 and field str at position 2 has an '
-  'error: value  is probably truncated']]
-```
-
-## Regulation Checks
-
-In the contrary to heuristic checks, regulation checks gives you an ability to provide additional rules for your data. Use the `extra_checks` argument of the `validate` function to active one or more of these checks.
-
-### Forbidden Value
-
-This check ensures that some field doesn't have any blacklisted values. For example:
-
-```python title="Python"
-from pprint import pprint
-from frictionless import validate
-
-source = 'header\nvalue1\nvalue2'
-extra_checks = [{'code': 'forbidden-value', 'fieldName': 'header', 'values': ['value2']}]
-report = validate(source, scheme='text', format='csv', extra_checks=extra_checks)
-pprint(report.flatten(['code', 'message']))
-```
-```
-[['blacklisted-value',
-  'The cell value2 in row at position 3 and field header at position 1 has an '
-  'error: blacklisted values are "[\'value2\']"']]
-```
-
-### Sequential Value
-
-This check gives us an opportunity to validate sequential fields like primary keys or other similar data. It doesn't need to start from 0 or 1. We're providing a field name:
-
-```python title="Python"
-from pprint import pprint
-from frictionless import validate
-
-source = 'header\n2\n3\n5'
-extra_checks = [{'code': 'sequential-value', 'fieldName': 'header'}]
-report = validate(source, scheme='text', format='csv', extra_checks=extra_checks)
-pprint(report.flatten(['code', 'message']))
-```
-```
-[['sequential-value',
-  'The cell 5 in row at position 4 and field header at position 1 has an '
-  'error: the value is not sequential']]
-```
-
-### Row Constraint
-
-This checks is the most powerful one as it uses the external `simpleeval` package allowing to evaluate arbitrary python expressions on data rows. Let's show on an example:
-
-```python title="Python"
-from pprint import pprint
-from frictionless import validate
-
-source = [
-  ["row", "salary", "bonus"],
-  [2, 1000, 200],
-  [3, 2500, 500],
-  [4, 1300, 500],
-  [5, 5000, 1000],
-]
-extra_checks=[{"code": "row-constraint", "constraint": "salary == bonus * 5"}]
-report = validate(source, extra_checks=extra_checks)
-pprint(report.flatten(["code", "message"]))
-```
-```
-[['row-constraint',
-  'The row at position 4 has an error: the row constraint to conform is '
-  '"salary == bonus * 5"']]
-```
-
-## Custom Checks
-
-There are many cases when built-in Frictionless' checks are not enough. It can be a business logic rule or specific quality requirement to the data. With Frictionless it's very easy to use your own custom checks. Let's see on an example:
-
-```python title="Python"
-from pprint import pprint
-from frictionless import validate, errors, Check
-
-# Create check
-def custom(self, row):
-    if row['header'] == 2:
-      note = f"number {self['number']} is forbidden!"
-      yield errors.CellError.from_row(row, note=note, field_name='header')
-
-# Validate table
-source = b'header\n1\n2\n3'
-report = validate(source,  format='csv', extra_checks=[custom])
-pprint(report.flatten(["rowPosition", "fieldPosition", "code", "note"]))
-```
-```
-[[3, 1, 'cell-error', 'number 2 is forbidden!']]
-```
-
-Usually, it also makes sense to create a custom error for your custom check. The Check class provides other useful methods like `validate_header` etc. Please read "API Reference" to learn it in details.
