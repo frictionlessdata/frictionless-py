@@ -32,7 +32,7 @@ The detector class instance are accepted by many classes and functions:
 - validate
 - and more
 
-In cases, you just need to create a Detector instance using desired options and pass to the classed and function from above.
+You just need to create a Detector instance using desired options and pass to the classed and function from above.
 
 ## Detector Options
 
