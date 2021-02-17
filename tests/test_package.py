@@ -780,6 +780,7 @@ def test_package_to_zip(tmpdir):
     ]
 
 
+@pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_package_to_zip_withdir_path(tmpdir):
 
