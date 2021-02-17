@@ -3,7 +3,7 @@ title: BugQuery Tutorial
 sidebar_label: BigQuery
 ---
 
-> This functionality requires an experimental `bigquery` plugin. [Read More](/../references/plugins-reference.md)
+> This functionality requires an experimental `bigquery` plugin. [Read More](../../references/plugins-reference.md)
 
 Frictionless supports both reading tables from BigQuery source and treating a BigQuery dataset as a tabular data storage.
 
