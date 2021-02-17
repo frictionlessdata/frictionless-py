@@ -12,7 +12,9 @@ module.exports = {
         "guides/validation-checks",
       ],
     },
-    "guides/transforming-data",
+    {
+      "Transforming Data": ["guides/transform-guide", "guides/transform-steps"],
+    },
     {
       "Mastering the Framework": [
         "guides/package-guide",

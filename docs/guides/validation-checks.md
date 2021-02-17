@@ -165,30 +165,3 @@ pprint(report.flatten(["code", "message"]))
   'The row at position 4 has an error: the row constraint to conform is '
   '"salary == bonus * 5"']]
 ```
-
-## Custom Checks
-
-There are many cases when built-in Frictionless' checks are not enough. It can be a business logic rule or specific quality requirement to the data. With Frictionless it's very easy to use your own custom checks. Let's see on an example:
-
-```python title="Python"
-from pprint import pprint
-from frictionless import validate, errors, Check
-
-# Create check
-def forbidden_two(row):
-    if row['header'] == 2:
-      note = f"number {self['number']} is forbidden!"
-      yield errors.CellError.from_row(row, note=note, field_name='header')
-
-# Validate table
-source = b'header\n1\n2\n3'
-report = validate(source,  format='csv', checks=[forbidden_two])
-pprint(report.flatten(["rowPosition", "fieldPosition", "code", "note"]))
-```
-```
-[[3, 1, 'cell-error', 'number 2 is forbidden!']]
-```
-
-Usually, it also makes sense to create a custom error for your custom check. The Check class provides other useful methods like `validate_header` etc. Please read "API Reference" to learn it in details.
-
-Learn more about custom checks in the [Check Guide](check-guide.md).
