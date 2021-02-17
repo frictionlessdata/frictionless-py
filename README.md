@@ -28,6 +28,7 @@ Frictionless is a framework to describe, extract, validate, and transform tabula
 - Fully pluggable architecture
 - The included API server
 - More than 1000+ tests
+- Open Source (MIT)
 
 ## Example
 
@@ -50,4 +51,4 @@ $ frictionless validate data/invalid.csv
 ## Documentation
 
 Please visit our documentation portal:
-- https://framework.frictionlessdata.io/docs/introduction/introduction
+- https://framework.frictionlessdata.io/docs/guides/quick-start

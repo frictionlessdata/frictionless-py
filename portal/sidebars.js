@@ -1,9 +1,9 @@
 module.exports = {
-  introduction: ["introduction/introduction", "introduction/whats-next"],
   guides: [
     "guides/guides-overview",
+    "guides/introduction",
     "guides/quick-start",
-    "guides/overview-example",
+    "guides/basic-examples",
     "guides/describing-data",
     "guides/extracting-data",
     {

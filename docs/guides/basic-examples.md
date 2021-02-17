@@ -1,5 +1,5 @@
 ---
-title: Overview Example
+title: Basic Examples
 ---
 
 > This example assumes that you are familiar with the concepts behind the Frictionless Framework. For an introduction, please read the [Introduction](../introduction/introduction.md).
