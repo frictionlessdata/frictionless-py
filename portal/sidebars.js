@@ -6,7 +6,12 @@ module.exports = {
     "guides/overview-example",
     "guides/describing-data",
     "guides/extracting-data",
-    "guides/validating-data",
+    {
+      "Validating Data": [
+        "guides/validation-guide",
+        "guides/validation-checks",
+      ],
+    },
     "guides/transforming-data",
     {
       "Mastering the Framework": [

@@ -19,7 +19,7 @@ Main Frictionless Framework functionality: describe, extract, validate, and tran
 
 - [Describing Data](describing-data.md)
 - [Extracting Data](extracting-data.md)
-- [Validating Data](validating-data.md)
+- [Validating Data](validation-guide.md)
 - [Transforming Data](transforming-data.md)
 
 ### Advanced Level
