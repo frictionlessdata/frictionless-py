@@ -42,4 +42,4 @@ resource.write('tmp/table.csv')
 There are no options available in `LocalControl`.
 
 References:
-- [Local Control](https://frictionlessdata.io/tooling/python/controls-reference/#local)
+- [Local Control](../../references/schemes-reference.md#local)

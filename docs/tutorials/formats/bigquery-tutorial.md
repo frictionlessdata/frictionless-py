@@ -4,7 +4,7 @@ sidebar_label: BigQuery
 ---
 
 :::caution
-This functionality requires an experimental `bigquery` plugin. [Read More](../references/plugins-reference.md)
+This functionality requires an experimental `bigquery` plugin. [Read More](/../references/plugins-reference.md)
 :::
 
 Frictionless supports both reading tables from BigQuery source and treating a BigQuery dataset as a tabular data storage.
@@ -82,4 +82,4 @@ print(resource.read_rows())
 
 
 References:
-- [BigQuery Dialect](https://frictionlessdata.io/tooling/python/formats-reference/#bigquery)
+- [BigQuery Dialect](../../references/formats-reference.md#bigquery)

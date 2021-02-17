@@ -4,7 +4,7 @@ sidebar_label: S3
 ---
 
 :::caution
-This functionality requires an experimental `s3` plugin. [Read More](../references/plugins-reference.md)
+This functionality requires an experimental `s3` plugin. [Read More](../../references/plugins-reference.md)
 :::
 
 Frictionless supports reading data from S3 cloud source. You can read file in any format that is available in your bucket.
@@ -54,4 +54,4 @@ resource.write('table.new.csv', control=controls.S3Control(endpoint_url='<url>')
 
 
 References:
-- [S3 Control](https://frictionlessdata.io/tooling/python/schemes-reference/#s3)
+- [S3 Control](../../references/schemes-reference.md#s3)

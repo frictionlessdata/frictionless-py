@@ -50,4 +50,4 @@ print(resource.read_rows())
 
 
 References:
-- [Remote Control](https://frictionlessdata.io/tooling/python/schemes-reference/#remote)
+- [Remote Control](../../references/schemes-reference.md#remote)

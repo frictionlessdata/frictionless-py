@@ -4,7 +4,7 @@ sidebar_label: SPSS
 ---
 
 :::caution
-This functionality requires an experimental `spss` plugin. [Read More](../references/plugins-reference.md)
+This functionality requires an experimental `spss` plugin. [Read More](../../references/plugins-reference.md)
 :::
 
 Frictionless supports reading and writing SPSS files.
@@ -47,4 +47,4 @@ package.to_spss(basepath='target')
 There are no options available in `SpssDialect`.
 
 References:
-- [SPSS Dialect](https://frictionlessdata.io/tooling/python/dialects-reference/#spss)
+- [SPSS Dialect](../../references/formats-reference.md#spss)

@@ -4,7 +4,7 @@ sidebar_label: Pandas
 ---
 
 :::caution
-This functionality requires an experimental `pandas` plugin. [Read More](../references/plugins-reference.md)
+This functionality requires an experimental `pandas` plugin. [Read More](../../references/plugins-reference.md)
 :::
 
 Frictionless supports reading and writing Pandas dataframes.
@@ -47,4 +47,4 @@ dataframes = package.to_pandas()
 There are no options available in `PandasDialect`.
 
 References:
-- [Pandas Dialect](https://frictionlessdata.io/tooling/python/dialects-reference/#pandas)
+- [Pandas Dialect](../../references/formats-reference.md#pandas)

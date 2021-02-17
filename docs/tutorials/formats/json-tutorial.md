@@ -80,4 +80,4 @@ resource.write('tmp/table.json', dialect=JsonDialect(keyed=True))
 
 
 References:
-- [JSON Dialect](https://frictionlessdata.io/tooling/python/formats-reference/#csv)
+- [JSON Dialect](../../references/formats-reference.md#json)

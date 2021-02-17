@@ -4,7 +4,7 @@ sidebar_label: HTML
 ---
 
 :::caution
-This functionality requires an experimental `html` plugin. [Read More](../references/plugins-reference.md)
+This functionality requires an experimental `html` plugin. [Read More](../../references/plugins-reference.md)
 :::
 
 Frictionless supports parsing HTML format
@@ -99,6 +99,5 @@ resource = Resource(path='data/table1.html', dialect=HtmlDialect(selector='#id')
 print(resource.read_rows())
 ```
 
-
 References:
-- [HTML Dialect](https://frictionlessdata.io/tooling/python/formats-reference/#html)
+- [Html Dialect](../../references/formats-reference.md#html)

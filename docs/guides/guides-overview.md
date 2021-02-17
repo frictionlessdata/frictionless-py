@@ -10,8 +10,8 @@ Frictionless Framework documentation has various guides which can be grouped by 
 
 Installation and first steps with Frictionless Framework:
 
-- [Quick Start](quick-start)
-- [Overview Example](overview-example)
+- [Quick Start](quick-start.md)
+- [Basic Examples](basic-examples.md)
 
 ### Intermediate Level
 
@@ -20,10 +20,10 @@ Main Frictionless Framework functionality: describe, extract, validate, and tran
 - [Describing Data](describing-data.md)
 - [Extracting Data](extracting-data.md)
 - [Validating Data](validation-guide.md)
-- [Transforming Data](transforming-data.md)
+- [Transforming Data](transform-guide.md)
 
 ### Advanced Level
 
 Explor the following section for more advanced guides:
-- [Mastering the Framework](package-guide.md)
-- [Writing an Extension](system-guide.md)
+- [Mastering the Framework](framework/package-guide.md)
+- [Writing an Extension](extension/system-guide.md)

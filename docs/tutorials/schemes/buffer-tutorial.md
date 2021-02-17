@@ -44,4 +44,4 @@ resource.write(scheme='buffer', format='csv')
 There are no options available in `BufferControl`.
 
 References:
-- [Buffer Control](https://frictionlessdata.io/tooling/python/controls-reference/#buffer)
+- [Buffer Control](../../references/schemes-reference.md#buffer)

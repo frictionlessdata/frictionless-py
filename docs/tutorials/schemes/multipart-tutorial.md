@@ -4,7 +4,7 @@ sidebar_label: Multipart
 ---
 
 :::caution
-This functionality requires an experimental `mulripart` plugin. [Read More](../references/plugins-reference.md)
+This functionality requires an experimental `mulripart` plugin. [Read More](../../references/plugins-reference.md)
 :::
 
 You can read and write files split into chunks with Frictionless.
@@ -51,4 +51,4 @@ resource.write('tmp/table{number}.json', scheme="multipart", control=control)
 
 
 References:
-- [Multipart Control](https://frictionlessdata.io/tooling/python/schemes-reference/#multipart)
+- [Multipart Control](../../references/schemes-reference.md#multipart)

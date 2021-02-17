@@ -45,4 +45,4 @@ resource.write(scheme='stream', format='csv')
 There are no options available in `StreamControl`.
 
 References:
-- [Stream Control](https://frictionlessdata.io/tooling/python/controls-reference/#stream)
+- [Stream Control](../../references/schemes-reference.md#stream)

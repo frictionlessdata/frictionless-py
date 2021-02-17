@@ -15,5 +15,5 @@ Frictionless Framework can be used in Python, in CLI, and run as an API server:
 ## Working with Data
 
 Explore the following sections for schemes and formats tutorials:
-- [Schemes Tutorials](local-tutorial.md)
-- [Formats Tutorials](csv-tutorial.md)
+- [Schemes Tutorials](schemes/local-tutorial.md)
+- [Formats Tutorials](formats/csv-tutorial.md)

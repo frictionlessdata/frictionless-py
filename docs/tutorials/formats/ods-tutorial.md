@@ -65,4 +65,4 @@ resource.write('tmp/table.ods', dialect=OdsDialect(sheet='My Table'))
 
 
 References:
-- [ODS Dialect](https://frictionlessdata.io/tooling/python/formats-reference/#ods)
+- [ODS Dialect](../../references/formats-reference.md#ods)

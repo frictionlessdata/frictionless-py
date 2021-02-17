@@ -4,7 +4,7 @@ sidebar_label: SQL
 ---
 
 :::caution
-This functionality requires an experimental `sql` plugin. [Read More](../references/plugins-reference.md)
+This functionality requires an experimental `sql` plugin. [Read More](../../references/plugins-reference.md)
 :::
 
 Frictionless supports reading and writing SQL databases.
@@ -56,4 +56,4 @@ resource = Resource('postgresql://database', dialect=dialect)
 
 
 References:
-- [SQL Dialect](https://frictionlessdata.io/tooling/python/dialects-reference/#sql)
+- [SQL Dialect](../../references/formats-reference.md#sql)

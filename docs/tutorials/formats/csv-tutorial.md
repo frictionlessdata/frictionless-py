@@ -90,4 +90,4 @@ resource.write('tmp/table.csv', dialect=CsvDialect(delimiter=';'))
 
 
 References:
-- [CSV Dialect](https://frictionlessdata.io/tooling/python/formats-reference/#csv)
+- [Csv Dialect](../../references/formats-reference.md#csv)

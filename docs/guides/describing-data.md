@@ -604,7 +604,7 @@ All the main `Metadata` classes have this method with different available option
 - `resource.infer`
 - `schema.infer`
 
-For more advanced detection options, please read the [Detector Guide](detector-guide.md)
+For more advanced detection options, please read the [Detector Guide](framework/detector-guide.md)
 
 ## Expanding Metadata
 

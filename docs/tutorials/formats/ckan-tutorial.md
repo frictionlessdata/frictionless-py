@@ -4,7 +4,7 @@ sidebar_label: CKAN
 ---
 
 :::caution
-This functionality requires an experimental `ckan` plugin. [Read More](../references/plugins-reference.md)
+This functionality requires an experimental `ckan` plugin. [Read More](../../references/plugins-reference.md)
 :::
 
 Frictionless supports reading and writing CKAN datasets.
@@ -56,4 +56,4 @@ resource = Resource('https://ckan-portal.com', format='ckan', dialect=dialect)
 
 
 References:
-- [CKAN Dialect](https://frictionlessdata.io/tooling/python/dialects-reference/#ckan)
+- [Ckan Dialect](../../references/formats-reference.md#ckan)

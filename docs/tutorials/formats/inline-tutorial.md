@@ -62,4 +62,4 @@ print(resource.read_rows())
 
 
 References:
-- [Inline Dialect](https://frictionlessdata.io/tooling/python/formats-reference/#inline)
+- [Inline Dialect](../../references/formats-reference.md#inline)

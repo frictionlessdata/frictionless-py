@@ -182,7 +182,7 @@ Frictionless includes more than 40+ builtin transform steps. They are grouped by
 - row
 - cell
 
-See [Transform Steps](transform-step.md) for a list of available steps.
+See [Transform Steps](transform-steps.md) for a list of available steps.
 
 ## Custom Steps
 
@@ -212,7 +212,7 @@ pprint(target.read_rows())
  Row([('name', 'spain'), ('population', 47)])]
 ```
 
-Learn more about custom steps in the [Step Guide](step-guide.md).
+Learn more about custom steps in the [Step Guide](extension/step-guide.md).
 
 ## Transform Utils
 

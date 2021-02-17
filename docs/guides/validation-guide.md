@@ -445,7 +445,7 @@ pprint(report.flatten(["rowPosition", "fieldPosition", "code", "note"]))
 
 Usually, it also makes sense to create a custom error for your custom check. The Check class provides other useful methods like `validate_header` etc. Please read "API Reference" to learn it in details.
 
-Learn more about custom checks in the [Check Guide](check-guide.md).
+Learn more about custom checks in the [Check Guide](extension/check-guide.md).
 
 ## Pick/Skip Errors
 

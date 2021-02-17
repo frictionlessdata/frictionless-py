@@ -2,7 +2,7 @@
 title: Quick Start
 ---
 
-Let's get started with Frictionless! We will learn how to install and use the framework. The simple example below will showcase the framework's basic functionality. For an introduction to concepts behind the Frictionless Framework, please read the [Frictionless Introduction](../introduction/introduction.md).
+Let's get started with Frictionless! We will learn how to install and use the framework. The simple example below will showcase the framework's basic functionality. For an introduction to concepts behind the Frictionless Framework, please read the [Frictionless Introduction](introduction.md).
 
 ## Installation
 
@@ -65,7 +65,7 @@ frictionless transform --help
 
 ## Example
 
-> For more examples, use the [Basic Examples](basic-examples)
+> For more examples, use the [Basic Examples](basic-examples.md)
 
 We will take a very messy data file:
 

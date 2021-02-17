@@ -65,4 +65,4 @@ resource.write('tmp/table.xlsx', dialect=ExcelDialect(sheet='My Table'))
 
 
 References:
-- [Excel Dialect](https://frictionlessdata.io/tooling/python/formats-reference/#excel)
+- [Excel Dialect](../../references/formats-reference.md#excel)
