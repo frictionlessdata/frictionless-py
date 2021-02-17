@@ -37,6 +37,7 @@ The Frictionless Framework helps make data more useable by generating metadata a
 
 Frictionless is a complete data solution providing rich functionality. It's hard to list of features it provides so we will focus on the most important:
 
+- Open Source (MIT)
 - Powerful Python framework
 - Convenient command-line interface
 - Low memory consumption for data of any size
@@ -46,7 +47,6 @@ Frictionless is a complete data solution providing rich functionality. It's hard
 - Fully pluggable architecture
 - An included API server
 - More than 1000+ tests
-- Open Source (MIT)
 
 ## Usage Example
 

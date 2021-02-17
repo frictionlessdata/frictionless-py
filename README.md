@@ -19,6 +19,7 @@ Frictionless is a framework to describe, extract, validate, and transform tabula
 
 ## Features
 
+- Open Source (MIT)
 - Powerful Python framework
 - Convenient command-line interface
 - Low memory consumption for data of any size
@@ -28,7 +29,6 @@ Frictionless is a framework to describe, extract, validate, and transform tabula
 - Fully pluggable architecture
 - The included API server
 - More than 1000+ tests
-- Open Source (MIT)
 
 ## Example
 
