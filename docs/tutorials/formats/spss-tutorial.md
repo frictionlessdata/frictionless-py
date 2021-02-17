@@ -3,9 +3,7 @@ title: SPSS Tutorial
 sidebar_label: SPSS
 ---
 
-:::caution
-This functionality requires an experimental `spss` plugin. [Read More](../../references/plugins-reference.md)
-:::
+> This functionality requires an experimental `spss` plugin. [Read More](../../references/plugins-reference.md)
 
 Frictionless supports reading and writing SPSS files.
 

@@ -3,9 +3,7 @@ title: Pandas Tutorial
 sidebar_label: Pandas
 ---
 
-:::caution
-This functionality requires an experimental `pandas` plugin. [Read More](../../references/plugins-reference.md)
-:::
+> This functionality requires an experimental `pandas` plugin. [Read More](../../references/plugins-reference.md)
 
 Frictionless supports reading and writing Pandas dataframes.
 

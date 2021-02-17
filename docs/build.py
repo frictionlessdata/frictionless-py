@@ -39,8 +39,8 @@ def build_plugins_reference():
 
     Frictionless Framework ships with a great deal of core plugins.
     Some of them are production ready and some of them are not.
-    - **stable**: These plugins are well-tested and can be used in production
-    - **experimental**: These plugins are not recommended for production yet. There can be bugs and the API might change within the same major version of Frictionless
+    - **Stable**: These plugins are well-tested and can be used in production
+    - **Experimental**: These plugins are not recommended for production yet. There can be bugs and the API might change within the same major version of Frictionless
 
     {% for Plugin in Plugins %}
     ## {{ Plugin.__name__ }}

@@ -3,9 +3,7 @@ title: CKAN Tutorial
 sidebar_label: CKAN
 ---
 
-:::caution
-This functionality requires an experimental `ckan` plugin. [Read More](../../references/plugins-reference.md)
-:::
+> This functionality requires an experimental `ckan` plugin. [Read More](../../references/plugins-reference.md)
 
 Frictionless supports reading and writing CKAN datasets.
 

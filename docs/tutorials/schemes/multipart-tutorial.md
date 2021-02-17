@@ -3,9 +3,7 @@ title: Multipart Tutorial
 sidebar_label: Multipart
 ---
 
-:::caution
-This functionality requires an experimental `mulripart` plugin. [Read More](../../references/plugins-reference.md)
-:::
+> This functionality requires an experimental `mulripart` plugin. [Read More](../../references/plugins-reference.md)
 
 You can read and write files split into chunks with Frictionless.
 
