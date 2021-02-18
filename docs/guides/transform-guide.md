@@ -113,7 +113,6 @@ The exact transformation we have applied actually doesn't make any sense as we j
 A pipeline is a metadata object having one of these types:
 - resource
 - package
-- dataflows
 - others (depending on custom plugins you use)
 
 For resource and package types it's basically the same functionality as we have seen above but written declaratively. So let's just run the same resource transformation as we did in the `Tranforming Resource` section:
