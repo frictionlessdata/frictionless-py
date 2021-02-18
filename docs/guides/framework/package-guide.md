@@ -9,13 +9,14 @@ The Data Package is a core Frictionless Data concept meaning a set of resources 
 Let's create a data package:
 
 ```python title="Python"
-from frictionless import Package
+from frictionless import Package, Resource
 
 package = Package('data/table.csv') # from a resource path
 package = Package('data/tables/*') # from a resources glob
 package = Package(['data/tables/chunk1.csv', 'data/tables/chunk2.csv]') # from a list
 package = Package('data/package/datapackage.json') # from a descriptor path
 package = Package({'resources': {'path': 'data/table.csv'}}) # from a descriptor
+package = Package(resources=[Resource(path='data/table.csv')]) # from arguments
 ```
 
 As you can see it's possible to create a package providing different kinds of sources which will be detector to have some type automatically (e.g. whether it's a glob or a path). It's possible to make this step more explicit:
@@ -61,7 +62,7 @@ And edit them:
 from frictionless import Package
 
 package = Package('some/datapackage.json')
-package.name = 'new name'
+package.name = 'new-name'
 package.title = 'New Title'
 package.description = 'New Description'
 # and others
