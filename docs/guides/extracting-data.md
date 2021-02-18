@@ -74,10 +74,10 @@ pprint(rows)
 
 The high-level interface for extracting data provided by Frictionless is a set of `extract` functions:
 - `extract`: detects the source type and extracts data accordingly
-- `extract_package`: accepts a package descriptor and returns a map of the package's tables
 - `extract_resource`: accepts a resource descriptor and returns a data table
+- `extract_package`: accepts a package descriptor and returns a map of the package's tables
 
-On the command-line, there is only one command (`extract`) but there is a flag to adjust the behavior:
+On the command-line, the command would be used as follows:
 
 ```bash
 $ frictionless extract
@@ -85,7 +85,7 @@ $ frictionless extract --type resource
 $ frictionless extract --type package
 ```
 
-The `extract` functions always read data in a form of rows (see the object description below) into memory. The lower-level interfaces will allow you to stream data and various output forms.
+The `extract` functions always read data in the form of rows, into memory. The lower-level interfaces will allow you to stream data and various output forms.
 
 ## Extracting a Resource
 
@@ -106,14 +106,16 @@ pprint(rows)
  Row([('id', 5), ('name', 'Rome')])]
 ```
 
-In many cases, the code above doesn't really make sense as we can just provide a path to the high-level `extract` function. Instead, let's use the `extract_resource` function to extract the resource from a descriptor. The power of the descriptor is that it can contain different metadata and be stored on the disc. First let's create the descriptor:
+Using the `extract_resource` function though, we can extract the resource from a descriptor. The power of the descriptor is that it can contain different metadata and be stored on the disc. 
+
+First let's create the descriptor:
 
 ```python
 from frictionless import Resource
 
 resource = Resource('data/capital-3.csv')
 resource.infer()
-resource.schema.missing_values.append('3') # set 3 as a missing value
+resource.schema.missing_values.append('3') # set 3 as a missing value for the purposes of this example
 resource.to_yaml('tmp/capital.resource.yaml')
 ```
 This description can then be used to extract the resource:
@@ -145,11 +147,11 @@ None  Paris
 ====  ======
 ```
 
-So what has happened? We set the textual representation of the number "3" to be a missing value. It was done only for explanation purposes because it's definitely not a missing value. On the other hand, it demonstrated how metadata can be used.
+So what has happened? We set the textual representation of the number "3" to be a missing value. It was done only for explanation purposes because it's definitely not a missing value. On the other hand, it demonstrated how metadata can be used. In the output we can see how the id number 3 now appears as "None" representing a missing value.
 
 ## Extracting a Package
 
-Let's start by using the command-line interface. We're going to provide two files to the `extract` command which will be enough to detect that it's a dataset:
+We're going to provide two files to the `extract` command which will be enough to detect that it's a dataset. Let's start by using the command-line interface:
 
 ```bash
 $ frictionless extract data/*-3.csv
@@ -203,6 +205,7 @@ for path, rows in data.items():
  Row([('id', 3), ('capital_id', 2), ('name', 'Germany'), ('population', 83)]),
  Row([('id', 4), ('capital_id', 5), ('name', 'Italy'), ('population', 60)]),
  Row([('id', 5), ('capital_id', 4), ('name', 'Spain'), ('population', 47)])]
+ 
 'data/capital-3.csv'
 [Row([('id', 1), ('name', 'London')]),
  Row([('id', 2), ('name', 'Berlin')]),
@@ -213,6 +216,8 @@ for path, rows in data.items():
 We can also extract the package from a descriptor using the `extract_package` function: 
 
 ```python
+from frictionless import extract_package
+
 package  = extract_package('tmp/country.package.yaml')
 
 pprint(package)
@@ -287,6 +292,7 @@ The Package class provides functions to read the contents of a package. First of
 ```bash
 $ frictionless describe data/*-3.csv --json > tmp/country.package.json
 ```
+Note that --json is used here to output the descriptor in JSON format. Without this, the default output is in YAML format as we saw above.
 
 Now, we can open the descriptor and read the package's resources:
 
@@ -315,7 +321,7 @@ The package by itself doesn't provide any read functions directly because that i
 
 ## Header Class
 
-After opening a resource you get access to a `resource.header` object. This is a list of normalized labels but also provides some additional functionality. Let's take a look:
+After opening a resource you get access to a `resource.header` object which describes the resource in more detail. This is a list of normalized labels but also provides some additional functionality. Let's take a look:
 
 
 ```python
