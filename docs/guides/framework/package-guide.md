@@ -2,7 +2,7 @@
 title: Package Guide
 ---
 
-The Data Package is a core Frictionless Data concept meaning a set of resources with additional metadata provided. You can read [Package Spec](https://specs.frictionlessdata.io/data-package/) for more information.
+The Data Package is a core Frictionless Data concept meaning a set of resources with additional metadata provided. You can read [Data Package Spec](https://specs.frictionlessdata.io/data-package/) for more information.
 
 ## Creating Package
 
@@ -43,7 +43,7 @@ package = Package(
 )
 ```
 
-If you have created a package from a descriptor you can access this properties:
+If you have created a package, for example, from a descriptor you can access this properties:
 
 ```python title="Python"
 from frictionless import Package

@@ -33,7 +33,7 @@ For some types there are additional properties available:
 from frictionless import describe
 
 resource = describe('data/table.csv')
-field = schema.get_fied('id') # it's an integer
+field = resource.schema.get_fied('id') # it's an integer
 field.bare_number
 ```
 
