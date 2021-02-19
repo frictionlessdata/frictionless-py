@@ -1,10 +1,3 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
-
 module.exports = {
   title: "Frictionless Framework",
   tagline: "Describe, extract, validate, and fransform data in Python",
@@ -78,11 +71,6 @@ module.exports = {
       },
       items: [
         {
-          to: "docs/introduction/introduction",
-          label: "Introduction",
-          position: "left",
-        },
-        {
           to: "docs/guides/guides-overview",
           label: "Guides",
           position: "left",
@@ -107,6 +95,12 @@ module.exports = {
           label: "Back to the main site",
           position: "right",
           className: "header-mainsite-link",
+        },
+        {
+          to: "docs/development/changelog",
+          label: "v4",
+          position: "right",
+          className: "header-version-link",
         },
         {
           href: "https://github.com/frictionlessdata/frictionless-py",

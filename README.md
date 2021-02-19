@@ -19,6 +19,7 @@ Frictionless is a framework to describe, extract, validate, and transform tabula
 
 ## Features
 
+- Open Source (MIT)
 - Powerful Python framework
 - Convenient command-line interface
 - Low memory consumption for data of any size
@@ -50,4 +51,4 @@ $ frictionless validate data/invalid.csv
 ## Documentation
 
 Please visit our documentation portal:
-- https://framework.frictionlessdata.io/docs/guides/getting-started
+- https://framework.frictionlessdata.io/docs/guides/quick-start

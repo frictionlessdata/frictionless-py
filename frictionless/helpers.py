@@ -9,6 +9,7 @@ import zipfile
 import tempfile
 import datetime
 import platform
+import textwrap
 import stringcase
 from inspect import signature
 from importlib import import_module
@@ -19,6 +20,10 @@ from . import config
 
 
 # General
+
+
+def compact(text):
+    return " ".join(filter(None, textwrap.dedent(text).splitlines()))
 
 
 def apply_function(function, descriptor):

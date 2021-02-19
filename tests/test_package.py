@@ -124,6 +124,7 @@ def test_package_from_invalid_descriptor_type():
     assert error.note.count("51")
 
 
+@pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_package_from_zip():
     package = Package("data/package.zip")
@@ -137,6 +138,7 @@ def test_package_from_zip():
 
 
 @pytest.mark.vcr
+@pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_package_from_zip_remote():
     package = Package(BASEURL % "data/package.zip")
@@ -149,6 +151,7 @@ def test_package_from_zip_remote():
     ]
 
 
+@pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_package_from_zip_no_descriptor(tmpdir):
     descriptor = str(tmpdir.join("package.zip"))
@@ -761,6 +764,7 @@ def test_package_to_yaml(tmpdir):
         assert package == yaml.safe_load(file)
 
 
+@pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_package_to_zip(tmpdir):
 
@@ -780,6 +784,7 @@ def test_package_to_zip(tmpdir):
     ]
 
 
+@pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_package_to_zip_withdir_path(tmpdir):
 
@@ -798,6 +803,7 @@ def test_package_to_zip_withdir_path(tmpdir):
     ]
 
 
+@pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_package_to_zip_absolute_path(tmpdir):
 
@@ -902,6 +908,7 @@ def test_package_to_zip_resolve_memory_and_remote(tmpdir):
 
 
 @pytest.mark.vcr
+@pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_package_to_zip_source_remote(tmpdir):
 
@@ -923,6 +930,7 @@ def test_package_to_zip_source_remote(tmpdir):
     ]
 
 
+@pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_package_to_zip_source_inline(tmpdir):
 

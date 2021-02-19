@@ -13,9 +13,8 @@ To contribute to the documentation, please find an article in the `docs` folder 
 - `docs/tutorials`
 
 Some documentation is generated (for more information see `docs/build.py`). Here is a list of generated sections (excluding `overview/whats-next` docs):
-- `docs/introduction` (from the repository root's docs)
-- `docs/development` (from the repository root's docs)
 - `docs/references` (from the codebase's docstrings)
+- `docs/development` (from the repository root's docs)
 
 It's possible to run this documentation portal locally but it requires Node.js 12+ installed on your comupter:
 

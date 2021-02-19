@@ -15,7 +15,6 @@ from frictionless import plugins, errors, checks, steps, types, helpers
 
 
 def main():
-    build_introduction()
     build_plugins_reference()
     build_schemes_reference()
     build_formats_reference()
@@ -29,17 +28,6 @@ def main():
     build_authors()
 
 
-# Introduction
-
-
-def build_introduction():
-    document = read_file("README.md")
-    document = re.sub(r"^# (.*)", "---\ntitle: Introduction\n---", document)
-    document = re.sub(r"## Documentation.*", "", document, flags=re.DOTALL)
-    write_file(os.path.join("docs", "introduction", "introduction.md"), document)
-    print("Built: Introduction")
-
-
 # References
 
 
@@ -51,8 +39,8 @@ def build_plugins_reference():
 
     Frictionless Framework ships with a great deal of core plugins.
     Some of them are production ready and some of them are not.
-    - **stable**: These plugins are well-tested and can be used in production
-    - **experimental**: These plugins are not recommended for production yet. There can be bugs and the API might change within the same major version of Frictionless
+    - **Stable**: These plugins are well-tested and can be used in production
+    - **Experimental**: These plugins are not recommended for production yet. There can be bugs and the API might change within the same major version of Frictionless
 
     {% for Plugin in Plugins %}
     ## {{ Plugin.__name__ }}

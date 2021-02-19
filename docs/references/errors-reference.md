@@ -378,7 +378,7 @@ Description: `This row is empty. A row should contain at least one value.` <br/>
 
 Code: `primary-key-error` <br/>
 Tags: `#table #row` <br/>
-Template: `The row at position "{rowPosition}" does not conform to the primary key constraint: {note}` <br/>
+Template: `Row at position "{rowPosition}" violates the primary key: {note}` <br/>
 Description: `Values in the primary key fields should be unique for every row` <br/>
 
 
@@ -386,7 +386,7 @@ Description: `Values in the primary key fields should be unique for every row` <
 
 Code: `foreign-key-error` <br/>
 Tags: `#table #row` <br/>
-Template: `The row at position "{rowPosition}" does not conform to the foreign key constraint: {note}` <br/>
+Template: `Row at position "{rowPosition}" violates the foreign key: {note}` <br/>
 Description: `Values in the foreign key fields should exist in the reference table` <br/>
 
 

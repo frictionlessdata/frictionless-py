@@ -60,7 +60,7 @@ class PrimaryKeyError(RowError):
     code = "primary-key-error"
     name = "PrimaryKey Error"
     tags = ["#table", "#row"]
-    template = 'The row at position "{rowPosition}" does not conform to the primary key constraint: {note}'
+    template = 'Row at position "{rowPosition}" violates the primary key: {note}'
     description = "Values in the primary key fields should be unique for every row"
 
 
@@ -68,7 +68,7 @@ class ForeignKeyError(RowError):
     code = "foreign-key-error"
     name = "ForeignKey Error"
     tags = ["#table", "#row"]
-    template = 'The row at position "{rowPosition}" does not conform to the foreign key constraint: {note}'
+    template = 'Row at position "{rowPosition}" violates the foreign key: {note}'
     description = "Values in the foreign key fields should exist in the reference table"
 
 
