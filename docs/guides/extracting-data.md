@@ -111,7 +111,7 @@ from frictionless import Resource
 
 resource = Resource('data/capital-3.csv')
 resource.infer()
-resource.schema.missing_values.append('3')
+resource.schema.missing_values.append('3') # will interpret 3 as a missing value
 resource.to_yaml('tmp/capital.resource.yaml')
 ```
 
@@ -134,7 +134,7 @@ None  Paris
 ====  ======
 ```
 
-So what's happened? We set the textual representation of the number "3" to be a missing value. It was done only for presentational purposes because it's definitely not a missing value. On the other hand, it demonstrated how metadata can be used.
+So what's happened? We set the textual representation of the number "3" to be a missing value. It was done only for illustrational purposes because it's definitely not a missing value. On the other hand, it demonstrated how metadata can be used.
 
 ## Extracting Package
 
@@ -200,7 +200,7 @@ for path, rows in data.items():
 
 ## Resource Class
 
-The Resource class is also a metadata class which provides various read and stream functions. The `extract` functions always read rows into memory; Resource can do the same but it also gives a choice regarding output data. It can be `rows`, `data`, `text`, or `bytes`. Let's try reading all of them:
+The Resource class is also a metadata class which provides various read and stream functions. The `extract` functions always reads rows into memory; Resource can do the same but it also gives a choice regarding output data. It can be `rows`, `data`, `text`, or `bytes`. Let's try reading all of them:
 
 ```python title="Python"
 from frictionless import Resource
@@ -267,7 +267,7 @@ The Package class is a metadata class which provides an ability to read its cont
 frictionless describe data/*-3.csv --json > tmp/country.package.json
 ```
 
-Now, we can open the created descriptor and read the package's resources:
+We can also create a descriptor with the Package class in Python and read the package's resources:
 
 ```python title="Python"
 from frictionless import Package
@@ -320,7 +320,7 @@ with Resource('data/capital-3.csv') as resource:
     As List: ['id', 'name']
 
 
-The example above covers the case when a header is valid. For a header with tabular errors this information can be much more useful revealing discrepancies, duplicates or missing cells information. Please read "API Reference" for more details.
+The example above covers the case when a header is valid. For a header with tabular errors this information can be much more useful revealing discrepancies, duplicates or missing cells information. Please read "[API Reference](/docs/references/api-reference/)" for more details.
 
 ## Row Class
 
@@ -337,6 +337,7 @@ with Resource('data/capital-3.csv', detector=detector) as resource:
     print(f'Fields: {row.fields}')
     print(f'Field Names: {row.field_names}')
     print(f'Field Positions: {row.field_positions}')
+    print(f'Value of field "name": {row["name"]}') # accessed as a dict
     print(f'Row Position: {row.row_position}') # physical line number starting from 1
     print(f'Row Number: {row.row_number}') # counted row number starting from 1
     print(f'Blank Cells: {row.blank_cells}')
@@ -349,10 +350,11 @@ with Resource('data/capital-3.csv', detector=detector) as resource:
 ```
 ```
 Row: Row([('id', None), ('name', 'London')])
-Cells: ['1', 'londong']
+Cells: ['1', 'London']
 Fields: [{'name': 'id', 'type': 'integer'}, {'name': 'name', 'type': 'string'}]
 Field Names: ['id', 'name']
 Field Positions: [1, 2]
+Value of field "name": London
 Row Position: 2
 Row Number: 1
 Blank Cells: {'id': '1'}
