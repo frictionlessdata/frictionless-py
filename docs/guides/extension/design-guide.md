@@ -1,12 +1,12 @@
 ---
-title: System Guide
+title: Design Guide
 ---
 
-The most important undelaying object in the Frictionless Framework is `system`. It's an singletone object avaialble as `frictionless.system`. This object can be used to instantiate different kind of lower-level as though `Check`, `Step`, or `Type`.
+This guides provides a high-level overview of the Frictionless Framework architecture. It will be useful for plugin authors and advanced users.
 
-## System Basics
+## System Object
 
-Here is a quick example of using the `system` object:
+The most important undelaying object in the Frictionless Framework is `system`. It's an singletone object avaialble as `frictionless.system`. This object can be used to instantiate different kind of lower-level as though `Check`, `Step`, or `Type`. Here is a quick example of using the `system` object:
 
 ```python title="Python"
 from frictionless import system
@@ -20,10 +20,9 @@ loader = system.create_loader(resource)
 parser = system.create_parser(resource)
 server = system.create_server('api')
 step = system.create_step({'code': 'table-validate'})
+storage = system.create_storage('sql', 'postgresql://database')
 type = system.create_type(resource.get_field('id'))
 ```
-
-## Using System
 
 As an extension author you might use the `system` object in various cases. For example, take a look at this `MultipartLoader` excerpts:
 

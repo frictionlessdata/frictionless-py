@@ -29,8 +29,8 @@ module.exports = {
         "guides/framework/status-guide",
       ],
       "Writing an Extension": [
+        "guides/extension/design-guide",
         "guides/extension/plugin-guide",
-        "guides/extension/system-guide",
         "guides/extension/scheme-guide",
         "guides/extension/format-guide",
         "guides/extension/storage-guide",
