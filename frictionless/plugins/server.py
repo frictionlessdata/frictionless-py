@@ -41,7 +41,7 @@ class ApiServer(Server):
 
     """
 
-    def listen(self, *, port):
+    def start(self, *, port):
         app = create_api()
         server = create_server(app, port=port)
         server.run()

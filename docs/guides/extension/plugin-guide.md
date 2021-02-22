@@ -13,6 +13,9 @@ Here is a list of available hooks that you can implement in your plugin:
 - `create_loader`
 - `create_parser`
 - `create_server`
+- `create_step`
+- `create_storage`
+- `create_type`
 
 To create a plugin you need:
 - create a module called `frictionless_<name>` available in PYTHONPATH

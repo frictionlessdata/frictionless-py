@@ -12,4 +12,4 @@ def program_api(
     Start API server
     """
     server = system.create_server("api")
-    server.listen(port=port)
+    server.start(port=port)
