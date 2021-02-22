@@ -32,4 +32,4 @@ class duplicate_row(Check):
     }
 ```
 
-It's usuall to create a custom [Error](error.md) along side with a Custom Check.
+It's usuall to create a custom [Error](error-guide.md) along side with a Custom Check.
