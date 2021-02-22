@@ -26,4 +26,4 @@ Main Frictionless Framework functionality: describe, extract, validate, and tran
 
 Explor the following section for more advanced guides:
 - [Mastering the Framework](framework/package-guide.md)
-- [Writing an Extension](extension/system-guide.md)
+- [Writing an Extension](extension/design-guide.md)
