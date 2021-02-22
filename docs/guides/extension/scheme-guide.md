@@ -2,7 +2,7 @@
 title: Scheme Guide
 ---
 
-In Frictionless Framework a scheme is a set of cocnepts associated with a data source protocol:
+In Frictionless Framework a scheme is a set of concepts associated with a data source protocol:
 - Loader
 - Control
 
