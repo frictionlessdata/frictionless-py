@@ -2,7 +2,7 @@
 title: Step Guide
 ---
 
-The Step concept is a part of the Transform API. You can create a custom Step to be used as part of resource or package trnasformation.
+The Step concept is a part of the Transform API. You can create a custom Step to be used as part of resource or package transformation.
 
 ## Step Example
 
