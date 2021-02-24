@@ -426,13 +426,13 @@ There are many cases when built-in Frictionless' checks are not enough. It can b
 
 ```python title="Python"
 from pprint import pprint
-from frictionless import validate, errors, Check
+from frictionless import validate, errors
 
 # Create check
 def forbidden_two(row):
     if row['header'] == 2:
-      note = f"number {self['number']} is forbidden!"
-      yield errors.CellError.from_row(row, note=note, field_name='header')
+        note = '2 is forbidden!'
+        yield errors.CellError.from_row(row, note=note, field_name='header')
 
 # Validate table
 source = b'header\n1\n2\n3'
