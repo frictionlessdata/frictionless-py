@@ -2,7 +2,7 @@
 title: Extracting Data
 ---
 
-Extracting data means reading tabular data from a source. We can use various customizations for this process such as providing a file format, table schema, limiting field or row values, and much more. Let's see this with some real files:
+Extracting data means reading tabular data from a source. We can use various customizations for this process such as providing a file format, table schema, limiting fields or rows amount, and much more. Let's see this with some real files:
 
 > Download [`country-3.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/country-3.csv) into the `data` folder to reproduce the examples
 
@@ -86,7 +86,7 @@ frictionless extract --type resource
 
 The `extract` functions always read data in the form of rows, into memory. The lower-level interfaces will allow you to stream data and various output forms.
 
-## Extracting a Resource
+## Extracting Resource
 
 A resource contains only one file. To extract a resource we can use the same approach as above:
 
@@ -146,7 +146,7 @@ None  Paris
 
 So what has happened? We set the textual representation of the number "3" to be a missing value. It was done only for explanation purposes because it's definitely not a missing value. On the other hand, it demonstrated how metadata can be used. In the output we can see how the id number 3 now appears as "None" representing a missing value.
 
-## Extracting a Package
+## Extracting Package
 
 We're going to provide two files to the `extract` command which will be enough to detect that it's a dataset. Let's start by using the command-line interface:
 
