@@ -194,7 +194,7 @@ from frictionless import Package, Resource, transform, steps
 def step(resource):
     with resource:
         resource.schema.remove_field("id")
-        for row in resource.read_row_stream():
+        for row in resource.row_stream:
             del row["id"]
             yield row
 
