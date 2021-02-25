@@ -35,7 +35,7 @@ class cell_convert(Step):
 
     metadata_profile = {  # type: ignore
         "type": "object",
-        "required": ["value"],
+        "required": [],
         "properties": {
             "value": {},
             "fieldName": {"type": "string"},
