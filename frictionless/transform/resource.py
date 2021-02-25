@@ -1,5 +1,4 @@
 import types
-from itertools import chain
 from ..step import Step
 from ..system import system
 from ..helpers import get_name
@@ -48,9 +47,14 @@ def transform_resource(source, *, steps, **options):
 
         # Transform
         try:
+            temp = resource.to_copy()
             data = step.transform_resource(resource)
             if data:
-                data = DataWithErrorHandling(data, step=step)
+                try:
+                    next(data)
+                except StopIteration:
+                    pass
+                data = DataWithErrorHandling(temp, step=step)
         except Exception as exception:
             error = errors.StepError(note=f'"{get_name(step)}" raises "{exception}"')
             raise FrictionlessException(error) from exception
@@ -82,17 +86,13 @@ def transform_resource(source, *, steps, **options):
 
 
 class DataWithErrorHandling:
-    def __init__(self, data, *, step):
+    def __init__(self, resource, *, step):
+        self.resource = resource
         self.step = step
-        self.data = data
-        try:
-            self.data = chain([next(data)], data)
-        except StopIteration:
-            pass
 
     def __iter__(self):
         try:
-            yield from self.data
+            yield from self.step.transform_resource(self.resource.to_copy())
         except Exception as exception:
             if isinstance(exception, FrictionlessException):
                 if exception.error.code == "step-error":
