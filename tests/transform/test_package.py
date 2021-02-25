@@ -1,9 +1,11 @@
+import pytest
 from frictionless import transform, describe, steps
 
 
 # General
 
 
+@pytest.mark.xfail(reason="steps.pivot/recast/transpose")
 def test_transform_package():
     source = describe("data/tables/chunk*.csv")
     target = transform(
