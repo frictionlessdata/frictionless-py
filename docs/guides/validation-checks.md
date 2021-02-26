@@ -9,29 +9,31 @@ There are various validation checks included in the core Frictionless Framework 
 The Baseline Check is always enabled. It makes various small checks revealing a great deal of tabular errors. There is a `report.tables[].scope` property to check what exact errors it have been checked for:
 
 ```python title="Python"
+from pprint import pprint
 from frictionless import validate
 
 report = validate('data/capital-invalid.csv')
-pprint(report.table.scope)
+pprint(report.task.scope)
 ```
 ```
-['dialect-error',
- 'schema-error',
- 'field-error',
- 'extra-header',
- 'missing-header',
+['hash-count-error',
+ 'byte-count-error',
+ 'field-count-error',
+ 'row-count-error',
  'blank-header',
- 'duplicate-header',
- 'non-matching-header',
- 'extra-cell',
- 'missing-cell',
+ 'extra-label',
+ 'missing-label',
+ 'blank-label',
+ 'duplicate-label',
+ 'incorrect-label',
  'blank-row',
- 'type-error',
- 'constraint-error',
- 'unique-error',
  'primary-key-error',
  'foreign-key-error',
- 'checksum-error']
+ 'extra-cell',
+ 'missing-cell',
+ 'type-error',
+ 'constraint-error',
+ 'unique-error']
 ```
 
 ## Heuristic Checks
@@ -46,9 +48,10 @@ This check is self-explanatory. You need to take into account that checking for 
 from pprint import pprint
 from frictionless import validate, checks
 
-source = 'header\nvalue\nvalue'
-report = validate(source, scheme='text', format='csv', checks=[checks.duplicate_row()])
-pprint(report.flatten(['code', 'message']))
+source = b"header\nvalue\nvalue"
+report = validate(source, format="csv", checks=[checks.duplicate_row()])
+pprint(report.flatten(["code", "message"]))
+print(report.flatten(['code', 'message']))
 ```
 ```
 [['duplicate-row',
@@ -66,7 +69,6 @@ from frictionless import validate, checks
 source = [["temperature"], [1], [-2], [7], [0], [1], [2], [5], [-4], [1000], [8], [3]]
 report = validate(source, checks=[checks.deviated_value(field_name="temperature")])
 pprint(report.flatten(["code", "message"]))
-
 ```
 ```
 [['deviated-value',
@@ -114,14 +116,14 @@ from pprint import pprint
 from frictionless import validate, checks
 
 source = b'header\nvalue1\nvalue2'
-checks = [checks.forbidden_values(field_name='header', values=['value2'])]
+checks = [checks.forbidden_value(field_name='header', values=['value2'])]
 report = validate(source, format='csv', checks=checks)
 pprint(report.flatten(['code', 'message']))
 ```
 ```
-[['blacklisted-value',
+[['forbidden-value',
   'The cell value2 in row at position 3 and field header at position 1 has an '
-  'error: blacklisted values are "[\'value2\']"']]
+  'error: forbiddened values are "[\'value2\']"']]
 ```
 
 ### Sequential Value
@@ -148,16 +150,16 @@ This checks is the most powerful one as it uses the external `simpleeval` packag
 
 ```python title="Python"
 from pprint import pprint
-from frictionless import validate
+from frictionless import validate, checks
 
 source = [
-  ["row", "salary", "bonus"],
-  [2, 1000, 200],
-  [3, 2500, 500],
-  [4, 1300, 500],
-  [5, 5000, 1000],
+    ["row", "salary", "bonus"],
+    [2, 1000, 200],
+    [3, 2500, 500],
+    [4, 1300, 500],
+    [5, 5000, 1000],
 ]
-report = validate(source, checks=checks.row_constraint(constraint="salary == bonus * 5"))
+report = validate(source, checks=[checks.row_constraint(formula="salary == bonus * 5")])
 pprint(report.flatten(["code", "message"]))
 ```
 ```

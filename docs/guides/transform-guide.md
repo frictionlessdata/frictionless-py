@@ -10,7 +10,7 @@ Frictionless supports a few different kinds of data and metadata transformations
 - resource and package transforms
 - transforms based on a declarative pipeline
 
-The main difference between the first two and pipelines that resource and package transforms are imperative while pipelines can be created beforehand or shared as a JSON file. Also, Frictionless supports a [Dataflows](https://frictionlessdata.io/tooling/python/working-with-dataflows/) pipeline runner. You need to install the `dataflows` plugin to use it.
+The main difference between the first two and pipelines that resource and package transforms are imperative while pipelines can be created beforehand or shared as a JSON file.
 
 > Download [`transform.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/transform.csv) into the `data` folder to reproduce the examples
 
@@ -55,12 +55,12 @@ pprint(target.read_rows())
 {'fields': [{'name': 'name', 'type': 'string'},
             {'name': 'variable'},
             {'name': 'value'}]}
-[Row([('name', 'germany'), ('variable', 'id'), ('value', 1)]),
- Row([('name', 'germany'), ('variable', 'population'), ('value', 83)]),
- Row([('name', 'france'), ('variable', 'id'), ('value', 2)]),
- Row([('name', 'france'), ('variable', 'population'), ('value', 66)]),
- Row([('name', 'spain'), ('variable', 'id'), ('value', 3)]),
- Row([('name', 'spain'), ('variable', 'population'), ('value', 47)])]
+[{'name': 'germany', 'variable': 'id', 'value': 1},
+ {'name': 'germany', 'variable': 'population', 'value': 83},
+ {'name': 'france', 'variable': 'id', 'value': 2},
+ {'name': 'france', 'variable': 'population', 'value': 66},
+ {'name': 'spain', 'variable': 'id', 'value': 3},
+ {'name': 'spain', 'variable': 'population', 'value': 47}]
 ```
 
 Let's break the transforming steps we applied down:
@@ -72,6 +72,8 @@ There are dozens of other available steps that will be covered below.
 ## Transforming Package
 
 Transforming a package is not much more difficult than a resource. Basically, a package is a set of resources so we will be transforming resources exactly the same way as we did above + we will be managing the resources list itself, adding or removing them:
+
+> This example is about to be fixed in https://github.com/frictionlessdata/frictionless-py/issues/715
 
 ```python title="Python"
 from pprint import pprint
@@ -118,31 +120,34 @@ A pipeline is a metadata object having one of these types:
 For resource and package types it's basically the same functionality as we have seen above but written declaratively. So let's just run the same resource transformation as we did in the `Tranforming Resource` section:
 
 ```python title="Python"
-from pprint import pprint
-from frictionless import Pipeline, transform, steps
-
-pipeline = Pipeline({
-    'type': 'resource',
-    'source': {'path': 'data/transform.csv'},
-    'steps': [
-        {'code': 'table-normalize'},
-        {'code': 'table-melt', field_name: 'name'}
-    ]
-})
-target = transform(pipeline)
-pprint(target.schema)
-pprint(target.read_rows())
+pipeline = Pipeline(
+    {
+        "tasks": [
+            {
+                "type": "resource",
+                "source": {"path": "data/transform.csv"},
+                "steps": [
+                    {"code": "table-normalize"},
+                    {"code": "table-melt", "fieldName": "name"},
+                ],
+            }
+        ]
+    }
+)
+status = transform(pipeline)
+pprint(status.task.target.schema)
+pprint(status.task.target.read_rows())
 ```
 ```
 {'fields': [{'name': 'name', 'type': 'string'},
             {'name': 'variable'},
             {'name': 'value'}]}
-[Row([('name', 'germany'), ('variable', 'id'), ('value', 1)]),
- Row([('name', 'germany'), ('variable', 'population'), ('value', 83)]),
- Row([('name', 'france'), ('variable', 'id'), ('value', 2)]),
- Row([('name', 'france'), ('variable', 'population'), ('value', 66)]),
- Row([('name', 'spain'), ('variable', 'id'), ('value', 3)]),
- Row([('name', 'spain'), ('variable', 'population'), ('value', 47)])]
+[{'name': 'germany', 'variable': 'id', 'value': 1},
+ {'name': 'germany', 'variable': 'population', 'value': 83},
+ {'name': 'france', 'variable': 'id', 'value': 2},
+ {'name': 'france', 'variable': 'population', 'value': 66},
+ {'name': 'spain', 'variable': 'id', 'value': 3},
+ {'name': 'spain', 'variable': 'population', 'value': 47}]
 ```
 
 And as we had expected we got the same result.
@@ -187,6 +192,8 @@ See [Transform Steps](transform-steps.md) for a list of available steps.
 
 Here is an example of a custom step written as a python function:
 
+> This example is about to be fixed in https://github.com/frictionlessdata/frictionless-py/issues/715
+
 ```python title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
@@ -230,13 +237,13 @@ petl_table = resource.to_petl()
 print(petl_table)
 ```
 ```
-+---+---------+----+
-|   |         |    |
-+===+=========+====+
-| 1 | germany | 83 |
-+---+---------+----+
-| 2 | france  | 66 |
-+---+---------+----+
-| 3 | spain   | 47 |
-+---+---------+----+
++----+---------+------------+
+| id | name    | population |
++====+=========+============+
+| 1  | germany | 83         |
++----+---------+------------+
+| 2  | france  | 66         |
++----+---------+------------+
+| 3  | spain   | 47         |
++----+---------+------------+
 ```

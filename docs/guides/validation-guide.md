@@ -52,18 +52,16 @@ The high-level interface for validating data provided by Frictionless is a set o
 - `validate_schema`: it validates a schema's metadata
 - `validate_resource`: it validates a resource's data and metadata
 - `validate_package`: it validates a package's data and metadata
-- `validate_inquiery`: it validates a special `Inquiery` object which represents a validation task instruction
-- `validate_table`: it validates a table
+- `validate_inquiry`: it validates a special `Inquery` object which represents a validation task instruction
 
 In command-line, there is only 1 command but there is a flag to adjust the behavior:
 
 ```bash title="CLI"
 frictionless validate
-frictionless validate --source-type schema
-frictionless validate --source-type resource
-frictionless validate --source-type package
-frictionless validate --source-type inquiry
-frictionless validate --source-type table
+frictionless validate --type schema
+frictionless validate --type resource
+frictionless validate --type package
+frictionless validate --type inquiry
 ```
 
 ## Validating Schema
@@ -144,18 +142,21 @@ frictionless validate tmp/capital.resource.yaml --basepath .
 ```
 ```
 ---
-invalid: ./data/capital-invalid.csv
+invalid: data/capital-invalid.csv
 ---
 
-====  =====  ================  ====================================================================================================================
+====  =====  ================  ===========================================================================================================================================================
 row   field  code              message
-====  =====  ================  ====================================================================================================================
-None      3  duplicate-header  Header "name" in field at position "3" is duplicated to header in another field: at position "2"
+====  =====  ================  ===========================================================================================================================================================
+None      3  duplicate-label   Label "name" in the header at position "3" is duplicated to a label: at position "2"
   10      3  missing-cell      Row at position "10" has a missing cell in field "name2" at position "3"
   11  None   blank-row         Row at position "11" is completely blank
-  12      4  extra-cell        Row at position "12" has an extra value in field at position "4"
   12      1  type-error        The cell "x" in row at position "12" and field "id" at position "1" has incompatible type: type is "integer/default"
-====  =====  ================  ====================================================================================================================
+  12      4  extra-cell        Row at position "12" has an extra value in field at position "4"
+None  None   hash-count-error  The data source does not match the expected hash count: expected md5 is "ae23c74693ca2d3f0e38b9ba3570775b" and actual is "dcdeae358cfd50860c18d953e021f836"
+None  None   byte-count-error  The data source does not match the expected byte count: expected is "100" and actual is "171"
+====  =====  ================  ===========================================================================================================================================================
+
 ```
 
 ## Validating Package
@@ -256,89 +257,76 @@ pprint(report)
 ```
 ```
 {'errors': [],
- 'stats': {'errors': 1, 'tables': 1},
- 'tables': [{'compression': 'no',
-             'compressionPath': '',
-             'dialect': {},
-             'encoding': 'utf-8',
-             'errors': [{'cell': 'name',
-                         'cells': ['id', 'name', 'name'],
-                         'code': 'duplicate-header',
-                         'description': 'Two columns in the header row have '
-                                        'the same value. Column names should '
-                                        'be unique.',
-                         'fieldName': 'name2',
-                         'fieldNumber': 3,
-                         'fieldPosition': 3,
-                         'message': 'Header "name" in field at position "3" is '
-                                    'duplicated to header in another field: at '
-                                    'position "2"',
-                         'name': 'Duplicate Header',
-                         'note': 'at position "2"',
-                         'tags': ['#head', '#structure']}],
-             'format': 'csv',
-             'hashing': 'md5',
-             'header': ['id', 'name', 'name'],
-             'partial': False,
-             'path': 'data/capital-invalid.csv',
-             'query': {},
-             'schema': {'fields': [{'name': 'id', 'type': 'integer'},
-                                   {'name': 'name', 'type': 'string'},
-                                   {'name': 'name2', 'type': 'string'}]},
-             'scheme': 'file',
-             'scope': ['duplicate-header'],
-             'stats': {'bytes': 171,
-                       'errors': 1,
-                       'fields': 3,
-                       'hash': 'dcdeae358cfd50860c18d953e021f836',
-                       'rows': 11},
-             'time': 0.019,
-             'valid': False}],
- 'time': 0.019,
- 'valid': False,
- 'version': '3.38.1'}
+ 'stats': {'errors': 0, 'tasks': 1},
+ 'tasks': [{'errors': [],
+            'partial': False,
+            'resource': {'encoding': 'utf-8',
+                         'format': 'csv',
+                         'hashing': 'md5',
+                         'name': 'capital-invalid',
+                         'path': 'data/capital-invalid.csv',
+                         'profile': 'tabular-data-resource',
+                         'schema': {'fields': [{'name': 'id',
+                                                'type': 'integer'},
+                                               {'name': 'name',
+                                                'type': 'string'},
+                                               {'name': 'name2',
+                                                'type': 'string'}]},
+                         'scheme': 'file',
+                         'stats': {'bytes': 171,
+                                   'fields': 3,
+                                   'hash': 'dcdeae358cfd50860c18d953e021f836',
+                                   'rows': 11}},
+            'scope': [],
+            'stats': {'errors': 0},
+            'time': 0.023,
+            'valid': True}],
+ 'time': 0.023,
+ 'valid': True,
+ 'version': '4.0.4'}
 ```
 
-As we can see, there are a lot of information; you can find its details description in "API Reference". Errors are grouped by tables; for some validation there are can be dozens of tables. Let's use the `report.flatten` function to simplify errors representation:
+As we can see, there are a lot of information; you can find its detailed description in the [API Reference](../references/api-reference.md). Errors are grouped by tables; for some validation there are can be dozens of tables. Let's use the `report.flatten` function to simplify errors representation:
 
 ```python title="Python"
+from pprint import pprint
 from frictionless import validate
 
-report = validate('data/capital-invalid.csv', pick_errors=['duplicate-header'])
-pprint(report.flatten(['rowPosition', 'fieldPosition', 'code', 'message']))
+report = validate("data/capital-invalid.csv", pick_errors=["duplicate-label"])
+pprint(report.flatten(["rowPosition", "fieldPosition", "code", "message"]))
 ```
 ```
 [[None,
   3,
-  'duplicate-header',
-  'Header "name" in field at position "3" is duplicated to header in another '
-  'field: at position "2"']]
+  'duplicate-label',
+  'Label "name" in the header at position "3" is duplicated to a label: at '
+  'position "2"']]
 ```
 
 In some situation, an error can't be associated with a table; then it goes to the top-level `report.errors` property:
 
 ```python title="Python"
+from pprint import pprint
 from frictionless import validate_schema
 
-report = validate_schema('bad.json')
+report = validate_schema("bad.json")
 pprint(report)
 ```
 ```
 {'errors': [{'code': 'schema-error',
              'description': 'Provided schema is not valid.',
-             'message': 'The data source could not be successfully described '
-                        'by the invalid Table Schema: cannot extract metadata '
+             'message': 'Schema is not valid: cannot extract metadata '
                         '"bad.json" because "[Errno 2] No such file or '
                         'directory: \'bad.json\'"',
              'name': 'Schema Error',
              'note': 'cannot extract metadata "bad.json" because "[Errno 2] No '
                      'such file or directory: \'bad.json\'"',
-             'tags': ['#table', '#schema']}],
- 'stats': {'errors': 1, 'tables': 0},
- 'tables': [],
+             'tags': ['#general']}],
+ 'stats': {'errors': 1, 'tasks': 0},
+ 'tasks': [],
  'time': 0.0,
  'valid': False,
- 'version': '3.38.1'}
+ 'version': '4.0.4'}
 ```
 
 ## Validation Errors
@@ -348,8 +336,8 @@ The Error object is at the heart of the validation process. The Report has `repo
 ```python title="Python"
 from frictionless import validate
 
-report = validate('data/capital-invalid.csv', pick_errors=['duplicate-header'])
-error = report.table.error # it's only available for 1 table / 1 error sitution
+report = validate("data/capital-invalid.csv", pick_errors=["duplicate-label"])
+error = report.task.error  # it's only available for 1 table / 1 error sitution
 print(f'Code: "{error.code}"')
 print(f'Name: "{error.name}"')
 print(f'Tags: "{error.tags}"')
@@ -358,38 +346,39 @@ print(f'Message: "{error.message}"')
 print(f'Description: "{error.description}"')
 ```
 ```
-Code: "duplicate-header"
-Name: "Duplicate Header"
-Tags: "['#head', '#structure']"
+Code: "duplicate-label"
+Name: "Duplicate Label"
+Tags: "['table', '#header', 'label']"
 Note: "at position "2""
-Message: "Header "name" in field at position "3" is duplicated to header in another field: at position "2""
+Message: "Label "name" in the header at position "3" is duplicated to a label: at position "2""
 Description: "Two columns in the header row have the same value. Column names should be unique."
 ```
 
 Above, we have listed universal error properties. Depending on the type of an error there can be additional ones. For example, for our `duplicate-header` error:
 
-
 ```python title="Python"
+from pprint import pprint
 from frictionless import validate
 
-report = validate('data/capital-invalid.csv', pick_errors=['duplicate-header'])
-error = report.table.error # it's only available for 1 table / 1 error sitution
+report = validate("data/capital-invalid.csv", pick_errors=["duplicate-label"])
+error = report.task.error  # it's only available for 1 table / 1 error sitution
 pprint(error)
 ```
 ```
-{'cell': 'name',
- 'cells': ['id', 'name', 'name'],
- 'code': 'duplicate-header',
+{'code': 'duplicate-label',
  'description': 'Two columns in the header row have the same value. Column '
                 'names should be unique.',
  'fieldName': 'name2',
  'fieldNumber': 3,
  'fieldPosition': 3,
- 'message': 'Header "name" in field at position "3" is duplicated to header in '
-            'another field: at position "2"',
- 'name': 'Duplicate Header',
+ 'label': 'name',
+ 'labels': ['id', 'name', 'name'],
+ 'message': 'Label "name" in the header at position "3" is duplicated to a '
+            'label: at position "2"',
+ 'name': 'Duplicate Label',
  'note': 'at position "2"',
- 'tags': ['#head', '#structure']}
+ 'rowPositions': [1],
+ 'tags': ['table', '#header', 'label']}
 ```
 
 Please explore "Errors Reference" to learn about all the available errors and their properties.
@@ -403,6 +392,7 @@ There are various validation checks included in the core Frictionless Framework 
 - an object: `checks.code(option1='value1')`
 
 ```python title="Python"
+from pprint import pprint
 from frictionless import validate, checks
 
 checks = [checks.sequential_value(field_name='id')]
@@ -410,12 +400,12 @@ report = validate('data/capital-invalid.csv', checks=checks)
 pprint(report.flatten(["rowPosition", "fieldPosition", "code", "note"]))
 ```
 ```
-[[None, 3, 'duplicate-header', 'at position "2"'],
+[[None, 3, 'duplicate-label', 'at position "2"'],
  [10, 3, 'missing-cell', ''],
  [10, 1, 'sequential-value', 'the value is not sequential'],
  [11, None, 'blank-row', ''],
- [12, 4, 'extra-cell', ''],
- [12, 1, 'type-error', 'type is "integer/default"']]
+ [12, 1, 'type-error', 'type is "integer/default"'],
+ [12, 4, 'extra-cell', '']]
 ```
 
 See [Validation Checks](validation-checks.md) for a list of available checks.
@@ -452,34 +442,36 @@ Learn more about custom checks in the [Check Guide](extension/check-guide.md).
 We can pick or skip errors providing a list of error codes. For example:
 
 ```python title="Python"
+from pprint import pprint
 from frictionless import validate
 
-report1 = validate('data/capital-invalid.csv', pick_errors=['duplicate-header'])
-report2 = validate('data/capital-invalid.csv', skip_errors=['duplicate-header'])
-pprint(report1.flatten(['rowPosition', 'fieldPosition', 'code']))
-pprint(report2.flatten(['rowPosition', 'fieldPosition', 'code']))
+report1 = validate("data/capital-invalid.csv", pick_errors=["duplicate-label"])
+report2 = validate("data/capital-invalid.csv", skip_errors=["duplicate-label"])
+pprint(report1.flatten(["rowPosition", "fieldPosition", "code"]))
+pprint(report2.flatten(["rowPosition", "fieldPosition", "code"]))
 ```
 ```
-[[None, 3, 'duplicate-header']]
+[[None, 3, 'duplicate-label']]
 [[10, 3, 'missing-cell'],
  [11, None, 'blank-row'],
- [12, 4, 'extra-cell'],
- [12, 1, 'type-error']]
+ [12, 1, 'type-error'],
+ [12, 4, 'extra-cell']]
 ```
 
-It's also possible to use error tags (for more information please consult with "Errors Reference"):
+It's also possible to use error tags (for more information please consult with [Errors Reference](../references/errors-reference.md)):
 
 ```python title="Python"
+from pprint import pprint
 from frictionless import validate
 
-report1 = validate('data/capital-invalid.csv', pick_errors=['#head'])
-report2 = validate('data/capital-invalid.csv', skip_errors=['#body'])
-pprint(report1.flatten(['rowPosition', 'fieldPosition', 'code']))
-pprint(report2.flatten(['rowPosition', 'fieldPosition', 'code']))
+report1 = validate("data/capital-invalid.csv", pick_errors=["#header"])
+report2 = validate("data/capital-invalid.csv", skip_errors=["#row"])
+pprint(report1.flatten(["rowPosition", "fieldPosition", "code"]))
+pprint(report2.flatten(["rowPosition", "fieldPosition", "code"]))
 ```
 ```
-[[None, 3, 'duplicate-header']]
-[[None, 3, 'duplicate-header']]
+[[None, 3, 'duplicate-label']]
+[[None, 3, 'duplicate-label']]
 ```
 
 ## Limit Errors
@@ -487,13 +479,14 @@ pprint(report2.flatten(['rowPosition', 'fieldPosition', 'code']))
 This option is self-explanatory and can be used when you need to "fail fast" or get a limited amount of errors:
 
 ```python title="Python"
+from pprint import pprint
 from frictionless import validate
 
-report = validate('data/capital-invalid.csv', limit_errors=1)
-pprint(report.flatten(['rowPosition', 'fieldPosition', 'code']))
+report = validate("data/capital-invalid.csv", limit_errors=1)
+pprint(report.flatten(["rowPosition", "fieldPosition", "code"]))
 ```
 ```
-[[None, 3, 'duplicate-header']]
+[[None, 3, 'duplicate-label']]
 ```
 
 ## Limit Memory
@@ -509,5 +502,7 @@ source = lambda: ([integer] for integer in range(1, 100000000))
 schema = {"fields": [{"name": "integer", "type": "integer"}], "primaryKey": "integer"}
 report = validate(source, headers=False, schema=schema, limit_memory=50)
 print(report.flatten(["code", "note"]))
-# [['task-error', 'exceeded memory limit "50MB"']]
+```
+```
+[['task-error', 'exceeded memory limit "50MB"']]
 ```

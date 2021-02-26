@@ -107,7 +107,7 @@ class TypeError(CellError):
     code = "type-error"
     name = "Missing Cell"
     tags = ["table", "#row", "cell"]
-    template = 'The cell "{cell}" in row at position "{rowPosition}" and field "{fieldName}" at position "{fieldPosition}" has incompatible type: {note}'
+    template = 'Type error in the cell "{cell}" in row "{rowPosition}" and field "{fieldName}" at position "{fieldPosition}": {note}'
     description = "The value does not match the schema type and format for this field."
 
 
