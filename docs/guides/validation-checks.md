@@ -2,6 +2,8 @@
 title: Validation Checks
 ---
 
+> This guide assumes basic familiarity with the Frictionless Framework. To learn more, please read the [Introduction](https://framework.frictionlessdata.io/docs/guides/introduction) and [Quick Start](https://framework.frictionlessdata.io/docs/guides/quick-start)
+
 There are various validation checks included in the core Frictionless Framework along with an ability to create custom checks. Let's review what's in the box.
 
 ## Baseline Check
