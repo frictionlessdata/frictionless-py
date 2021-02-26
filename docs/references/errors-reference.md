@@ -50,7 +50,7 @@ Description: `This row has less values compared to the header row (the first row
 
 Code: `type-error` <br/>
 Tags: `table #row cell` <br/>
-Template: `The cell "{cell}" in row at position "{rowPosition}" and field "{fieldName}" at position "{fieldPosition}" has incompatible type: {note}` <br/>
+Template: `Type error in the cell "{cell}" in row "{rowPosition}" and field "{fieldName}" at position "{fieldPosition}": {note}` <br/>
 Description: `The value does not match the schema type and format for this field.` <br/>
 
 
