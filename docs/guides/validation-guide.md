@@ -4,7 +4,7 @@ title: Validation Guide
 
 > This guide assumes basic familiarity with the Frictionless Framework. To learn more, please read the [Introduction](https://framework.frictionlessdata.io/docs/guides/introduction) and [Quick Start](https://framework.frictionlessdata.io/docs/guides/quick-start)
 
-Tabular data validation is a process of identifying tabular problems that have occured in your data so you can correct them. Let's explore how Frictionless helps to achieve this task using an invalid data table example:
+Tabular data validation is a process of identifying problems that have occured in your data so you can correct them. Let's explore how Frictionless helps to achieve this task using an invalid data table example:
 
 > Download [`capital-invalid.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/capital-invalid.csv) and put into the `data` folder to reproduce the examples
 
@@ -54,9 +54,9 @@ The high-level interface for validating data provided by Frictionless is a set o
 - `validate_schema`: validates a schema's metadata
 - `validate_resource`: validates a resource's data and metadata
 - `validate_package`: validates a package's data and metadata
-- `validate_inquiry`: validates a special `Inquery` object which represents a validation task instruction
+- `validate_inquiry`: validates a special `Inquiry` object which represents a validation task instruction
 
-In the command-line, there is only 1 command but there is a flag to adjust the behavior:
+On the command-line, there is only one command but there is a flag to adjust the behavior:
 
 ```bash title="CLI"
 frictionless validate
@@ -68,7 +68,7 @@ frictionless validate --type inquiry
 
 ## Validating Schema
 
-The `validate_schema` function is the only function validating solely metadata. To see this work, let's create a invalid table schema:
+The `validate_schema` function is the only function validating solely metadata. To see this work, let's create an invalid table schema:
 
 ```python title="Python"
 from frictionless import Schema
@@ -99,7 +99,7 @@ We see that the schema is invalid and the error is displayed. Schema validation 
 
 ## Validating Resource
 
-As it was shown in the ["Describing Data" guide](https://framework.frictionlessdata.io/docs/guides/describing-data), a resource is a container having both metadata and data. We need to create a resource descriptor and then we can validate it:
+As was shown in the ["Describing Data" guide](https://framework.frictionlessdata.io/docs/guides/describing-data), a resource is a container having both metadata and data. We need to create a resource descriptor and then we can validate it:
 
 ```bash title="CLI"
 frictionless describe data/capital-invalid.csv --json > tmp/capital.resource.json
@@ -137,7 +137,7 @@ resource['hash'] = 'ae23c74693ca2d3f0e38b9ba3570775b' # this is wrong
 resource.to_yaml('tmp/capital.resource.yaml')
 ```
 
-We have added a few bad metrics to our resource descriptor. Now, the validation below reports it these errors in addition to all the errors we had before. This example shows how concepts like Data Resource can be extremely useful when working with data.
+We have added a few bad metrics to our resource descriptor. Now, the validation below reports these errors in addition to all the errors we had before. This example shows how concepts like Data Resource can be extremely useful when working with data.
 
 ```bash title="CLI"
 frictionless validate tmp/capital.resource.yaml --basepath .
@@ -177,7 +177,7 @@ id,name
 5,Rome
 ```
 
-Let's describe and validate a package:
+Now let's describe and validate a package which contains the data files we have seen so far:
 
 ```bash title="CLI"
 frictionless describe data/capital-*id.csv --json > tmp/capital.package.json
@@ -204,11 +204,13 @@ valid: ./data/capital-valid.csv
 ---
 ```
 
-As we can see, the result is pretty straight-forward and expected: we have one invalid resource and one valid resource. One important note regarding the package validation: if there is more than one resource, it will use multiprocessing to speed up the process.
+As we can see, the result is in a similar format to what we have already seen, and shows errors as we expected: we have one invalid resource and one valid resource. One important note regarding the package validation: if there is more than one resource, it will use multiprocessing to speed up the process.
 
 ## Validating Inquiry
 
-Inquiry gives you an ability to create arbitrary validation jobs containing a set of individual validation tasks. Let's create an Inquiry that includes an individual file validation and a resource validation:
+Inquiry gives you an ability to create arbitrary validation jobs containing a set of individual validation tasks. Tasks in the Inquiry accept the same arguments written in camelCase as the corresponding `validate` functions. 
+
+Let's create an Inquiry that includes an individual file validation and a resource validation. In this example we will use the data file, `capital-valid.csv` and the resource, `capital.resource.json` which describes the invalid data file we have already seen: 
 
 ```python title="Python"
 from frictionless import Inquiry
@@ -219,8 +221,7 @@ inquiry = Inquiry({'tasks': [
 ]})
 inquiry.to_yaml('tmp/capital.inquiry.yaml')
 ```
-
-Tasks in the Inquiry accept the same arguments written in camelCase as the corresponding `validate` functions have. As usual, let's run validation:
+As usual, let's run validation:
 
 ```bash title="CLI"
 frictionless validate tmp/capital.inquiry.yaml
@@ -244,7 +245,7 @@ None      3  duplicate-header  Header "name" in field at position "3" is duplica
 ====  =====  ================  ====================================================================================================================
 ```
 
-At first sight, it might not be clear why such a construct exists, but when your validation workflow gets complex, the Inquiry can provide a lot of flexibility and power. Last but not least, the Inquiry will use multiprocessing if there is more than 1 task provided.
+At first sight, it might not be clear why such a construct exists, but when your validation workflow gets complex, the Inquiry can provide a lot of flexibility and power. Last but not least, the Inquiry will use multiprocessing if there is more than one task provided.
 
 ## Validation Report
 
@@ -333,13 +334,13 @@ pprint(report)
 
 ## Validation Errors
 
-The Error object is at the heart of the validation process. The Report has `report.errors` and `report.tables[].errors` properties that can contain the Error object. Let's explore it:
+The Error object is at the heart of the validation process. The Report has `report.errors` and `report.tables[].errors`, properties that can contain the Error object. Let's explore it:
 
 ```python title="Python"
 from frictionless import validate
 
 report = validate("data/capital-invalid.csv", pick_errors=["duplicate-label"])
-error = report.task.error  # it's only available for 1 table / 1 error sitution
+error = report.task.error  # this is only available for one table / one error sitution
 print(f'Code: "{error.code}"')
 print(f'Name: "{error.name}"')
 print(f'Tags: "{error.tags}"')
@@ -363,7 +364,7 @@ from pprint import pprint
 from frictionless import validate
 
 report = validate("data/capital-invalid.csv", pick_errors=["duplicate-label"])
-error = report.task.error  # it's only available for 1 table / 1 error sitution
+error = report.task.error  # this is only available for one table / one error sitution
 pprint(error)
 ```
 ```
