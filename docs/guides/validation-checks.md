@@ -2,11 +2,13 @@
 title: Validation Checks
 ---
 
+> This guide assumes basic familiarity with the Frictionless Framework. To learn more, please read the [Introduction](https://framework.frictionlessdata.io/docs/guides/introduction) and [Quick Start](https://framework.frictionlessdata.io/docs/guides/quick-start)
+
 There are various validation checks included in the core Frictionless Framework along with an ability to create custom checks. Let's review what's in the box.
 
 ## Baseline Check
 
-The Baseline Check is always enabled. It makes various small checks revealing a great deal of tabular errors. There is a `report.tables[].scope` property to check what exact errors it have been checked for:
+The Baseline Check is always enabled. It makes various small checks that reveal a great deal of tabular errors. There is a `report.tables[].scope` property to check which exact errors have been checked for:
 
 ```python title="Python"
 from pprint import pprint
@@ -42,7 +44,7 @@ There is a group of checks that indicate probable errors. You need to use the `c
 
 ### Duplicate Row
 
-This check is self-explanatory. You need to take into account that checking for duplicate rows can lean to high memory consumption on big files. Here is an example:
+This checks for duplicate rows. You need to take into account that checking for duplicate rows can lead to high memory consumption on big files. Here is an example:
 
 ```python title="Python"
 from pprint import pprint
@@ -60,7 +62,7 @@ print(report.flatten(['code', 'message']))
 
 ### Deviated Value
 
-This check uses the Python's builtin `statistics` module to check a field's data for deviations. By default, deviated values are outside of the average +- three standard deviations. Take a look at the [API Reference](https://github.com/frictionlessdata/frictionless-py/blob/master/docs/target/api-reference/README.md#deviatedvaluecheck) for more details about available options and default values. The exact algorithm can be found [here](https://github.com/frictionlessdata/frictionless-py/blob/7ae8bae9a9197adbfe443233a6bad8a94e065ece/frictionless/checks/heuristic.py#L94). For example:
+This check uses Python's built-in `statistics` module to check a field's data for deviations. By default, deviated values are outside of the average +- three standard deviations. Take a look at the [API Reference](https://github.com/frictionlessdata/frictionless-py/blob/master/docs/target/api-reference/README.md#deviatedvaluecheck) for more details about available options and default values. The exact algorithm can be found [here](https://github.com/frictionlessdata/frictionless-py/blob/7ae8bae9a9197adbfe443233a6bad8a94e065ece/frictionless/checks/heuristic.py#L94). For example:
 
 ```python title="Python"
 from pprint import pprint
@@ -79,7 +81,7 @@ pprint(report.flatten(["code", "message"]))
 
 ### Truncated Value
 
-Sometime during the export from a database or another storage, data values can be truncated. This check tries to detect it. Let's explore some truncation indicators:
+Sometime during data export from a database or other storage, data values can be truncated. This check tries to detect such truncation. Let's explore some truncation indicators:
 
 ```python title="Python"
 from pprint import pprint
@@ -105,11 +107,11 @@ pprint(report.flatten(["code", "message"]))
 
 ## Regulation Checks
 
-In the contrary to heuristic checks, regulation checks gives you an ability to provide additional rules for your data. Use the `checks` argument of the `validate` function to active one or more of these checks.
+Contrary to heuristic checks, regulation checks give you the ability to provide additional rules for your data. Use the `checks` argument of the `validate` function to active one or more of these checks.
 
 ### Forbidden Value
 
-This check ensures that some field doesn't have any blacklisted values. For example:
+This check ensures that some field doesn't have any forbidden or denylist values. For example:
 
 ```python title="Python"
 from pprint import pprint
@@ -146,7 +148,7 @@ pprint(report.flatten(['code', 'message']))
 
 ### Row Constraint
 
-This checks is the most powerful one as it uses the external `simpleeval` package allowing to evaluate arbitrary python expressions on data rows. Let's show on an example:
+This check is the most powerful one as it uses the external `simpleeval` package allowing you to evaluate arbitrary Python expressions on data rows. Let's show on an example:
 
 ```python title="Python"
 from pprint import pprint

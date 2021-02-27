@@ -2,7 +2,9 @@
 title: Transform Steps
 ---
 
-Frictionless includes more than 40+ builtin transform steps. They are grouped by the object so you can find them easily if you have code auto completion. Start typing, for example, `steps.table...` and you will see all the available steps. The groups are listed below and you will find every group described in more detail in the next sections. It's also possible to write custom transform steps. Please read the section below to learn more about it.  Let's prepare the data that we need to show how the checks below work:
+> This guide assumes basic familiarity with the Frictionless Framework. To learn more, please read the [Introduction](https://framework.frictionlessdata.io/docs/guides/introduction) and [Quick Start](https://framework.frictionlessdata.io/docs/guides/quick-start)
+
+Frictionless includes more than 40+ built-in transform steps. They are grouped by the object so you can find them easily if you have code auto completion. Start typing, for example, `steps.table...` and you will see all the available steps. The groups are listed below and you will find every group described in more detail in the next sections. It's also possible to write custom transform steps. Please read the section below to learn more about it.  Let's prepare the data that we need to show how the checks below work:
 
 > Download [`transform.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/transform.csv) into the `data` folder to reproduce the examples
 
@@ -54,7 +56,7 @@ west,girl,fancy,1
 
 ## Resource Steps
 
-The Resource steps are only available for a package transformation. It includes some basic resource management operations like adding or removing resources along with the hierarchical `transform_resource` step.
+The Resource steps are only available for a package transformation. This includes some basic resource management operations like adding or removing resources along with the hierarchical `transform_resource` step.
 
 ### Add Resource
 
@@ -177,7 +179,7 @@ pprint(target.get_resource('main'))
 
 ## Table Steps
 
-These steps are meant to be used on a table level of a resource. It includes various different operations from simple validation or writing to the disc to complex re-shaping like pivoting or melting.
+These steps are meant to be used on a table level of a resource. This includes various different operations from simple validation or writing to the disc to complex re-shaping like pivoting or melting.
 
 ### Aggregate Table
 
@@ -589,7 +591,7 @@ cat tmp/transform.json
 
 ## Field Steps
 
-The Field steps are responsible for managing Table Schema's fields. You can add them or remote along with more complex operations like unpacking.
+The Field steps are responsible for managing a Table Schema's fields. You can add or remove them along with more complex operations like unpacking.
 
 ### Add Field
 
@@ -953,7 +955,7 @@ pprint(target.read_rows())
 
 ## Cell Steps
 
-The Cell steps are responsible for cell operation like converting, replacing, or formating  along with others.
+The Cell steps are responsible for cell operations like converting, replacing, or formating, along with others.
 
 ### Convert Cells
 
