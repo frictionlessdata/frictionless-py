@@ -388,11 +388,11 @@ Please explore the "Errors Reference" to learn about all the available errors an
 
 ## Available Checks
 
-> Note that only the Baseline Check is enabled by default. Other built-in checks need to be activated as shown below.
-
 There are various validation checks included in the core Frictionless Framework along with an ability to create custom checks. You can provide a list of checks where individual checks are in the form of:
 - a dict: `{'code': 'code', 'option1': 'value1'}`
 - an object: `checks.code(option1='value1')`
+
+See [Validation Checks](validation-checks.md) for a list of available checks.
 
 ```python title="Python"
 from pprint import pprint
@@ -410,8 +410,7 @@ pprint(report.flatten(["rowPosition", "fieldPosition", "code", "note"]))
  [12, 1, 'type-error', 'type is "integer/default"'],
  [12, 4, 'extra-cell', '']]
 ```
-
-See [Validation Checks](validation-checks.md) for a list of available checks.
+> Note that only the Baseline Check is enabled by default. Other built-in checks need to be activated as shown below.
 
 ## Custom Checks
 
@@ -436,7 +435,7 @@ pprint(report.flatten(["rowPosition", "fieldPosition", "code", "note"]))
 [[3, 1, 'cell-error', 'number 2 is forbidden!']]
 ```
 
-Usually, it also makes sense to create a custom error for your custom check. The Check class provides other useful methods like `validate_header` etc. Please read the "API Reference" to learn it in detail.
+Usually, it also makes sense to create a custom error for your custom check. The Check class provides other useful methods like `validate_header` etc. Please read the [API Reference](../references/api-reference.md) for more details.
 
 Learn more about custom checks in the [Check Guide](extension/check-guide.md).
 
@@ -494,7 +493,7 @@ pprint(report.flatten(["rowPosition", "fieldPosition", "code"]))
 
 ## Limit Memory
 
-Frictionless is a streaming engine; usually it's possible to validate terrabytes of data with basically O(1) memory consumption. For some validation, it's not the case because Frctionless needs to buffer some cells e.g. to check uniqueness. Here memory management can be handy.
+Frictionless is a streaming engine; usually it is possible to validate terrabytes of data with basically O(1) memory consumption. For some validation, this is not the case because Frctionless needs to buffer some cells e.g. to check uniqueness. Here memory management can be handy.
 
 The default memory limit is 1000MB. You can adjust this based on your exact use case. For example, if you're running Frictionless as an API server you might reduce the memory usage. If a validation hits the limit it will not raise a failure - it will return a report with a task error:
 
