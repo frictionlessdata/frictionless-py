@@ -126,3 +126,16 @@ def test_describe_non_tabular_resource_issue_641():
             "bytes": 262443,
         },
     }
+
+
+def test_describe_non_tabular_html_issue_715():
+    resource = describe("data/text.html")
+    assert resource == {
+        "path": "data/text.html",
+        "name": "text",
+        "profile": "data-resource",
+        "scheme": "file",
+        "format": "html",
+        "hashing": "md5",
+        "encoding": "utf-8",
+    }

@@ -12,7 +12,6 @@ from frictionless.plugins.html import HtmlDialect
         ("data/table1.html", "table"),
         ("data/table2.html", "table"),
         ("data/table3.html", ".mememe"),
-        ("data/table4.html", ""),
     ],
 )
 def test_html_parser(source, selector):
