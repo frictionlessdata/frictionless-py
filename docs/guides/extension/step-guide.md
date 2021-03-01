@@ -6,7 +6,7 @@ The Step concept is a part of the Transform API. You can create a custom Step to
 
 ## Step Example
 
-> This step uses PETL under the hood
+> This step uses PETL under the hood.
 
 ```python title="Python"
 class cell_set(Step):

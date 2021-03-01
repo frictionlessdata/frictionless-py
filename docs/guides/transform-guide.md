@@ -2,7 +2,7 @@
 title: Transform Guide
 ---
 
-> This guide assumes basic familiarity with the Frictionless Framework. To learn more, please read the [Introduction](https://framework.frictionlessdata.io/docs/guides/introduction) and [Quick Start](https://framework.frictionlessdata.io/docs/guides/quick-start)
+> This guide assumes basic familiarity with the Frictionless Framework. To learn more, please read the [Introduction](https://framework.frictionlessdata.io/docs/guides/introduction) and [Quick Start](https://framework.frictionlessdata.io/docs/guides/quick-start).
 
 Transforming data in Frictionless means modifying data and metadata from  state A to state B. For example, it could be a messy Excel file we need to transform to a cleaned CSV file or a folder of data files we want to update and save as a data package.
 
@@ -14,7 +14,7 @@ Frictionless supports a few different kinds of data and metadata transformations
 
 The main difference between these three is that resource and package transforms are imperative while pipelines can be created beforehand or shared as a JSON file.
 
-> Download [`transform.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/transform.csv) into the `data` folder to reproduce the examples
+> Download [`transform.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/transform.csv) into the `data` folder to reproduce the examples.
 
 ```bash title="CLI"
 cat data/transform.csv
@@ -75,7 +75,7 @@ There are dozens of other available steps that will be covered below.
 
 Transforming a package is not much more difficult than a resource. Basically, a package is a set of resources so we will be transforming resources exactly the same way as we did above and we will be managing the resources list itself, adding or removing them:
 
-> NOTE: This example is about to be fixed in https://github.com/frictionlessdata/frictionless-py/issues/715
+> NOTE: This example is about to be fixed in https://github.com/frictionlessdata/frictionless-py/issues/715.
 
 ```python title="Python"
 from pprint import pprint
@@ -194,7 +194,7 @@ See [Transform Steps](transform-steps.md) for a list of available steps.
 
 Here is an example of a custom step written as a Python function:
 
-> NOTE: This example is about to be fixed in https://github.com/frictionlessdata/frictionless-py/issues/715
+> NOTE: This example is about to be fixed in https://github.com/frictionlessdata/frictionless-py/issues/715.
 
 ```python title="Python"
 from pprint import pprint
@@ -224,7 +224,7 @@ Learn more about custom steps in the [Step Guide](extension/step-guide.md).
 
 ## Transform Utils
 
-> Transform Utils is under construction
+> Transform Utils is under construction.
 
 ## Working with PETL
 
