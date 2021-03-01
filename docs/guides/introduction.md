@@ -10,32 +10,32 @@ title: Introduction
 
 > Frictionless@4 is now live! Please read the [migration guide](https://framework.frictionlessdata.io/docs/development/migration)
 
-Frictionless is a framework to describe, extract, validate, and transform tabular data (DEVT Framework). It supports a great deal of data schemes and formats, as well as provides popular platforms integrations. The framework is powered by the lightweight yet comprehensive [Frictionless Data Specifications](https://specs.frictionlessdata.io/).
+Frictionless is a framework to describe, extract, validate, and transform tabular data (DEVT Framework). It supports a great deal of data schemes and formats, and provides popular platforms integrations. The framework is powered by the lightweight yet comprehensive [Frictionless Data Specifications](https://specs.frictionlessdata.io/).
 
 ## Why Frictionless Data?
 
-Generating insight and conclusions from data is often not a straightforward process. Data can be poorly structured, hard to find, archived in difficult to use formats, or incomplete. These issues create “friction” and make it difficult to use, publish and share data. The Frictionless Data project aims to reduce frictions while working with data, with a goal to make it effortless to transport data among different tools and platforms for further analysis. This project is a suite of open source software, tools, and specifications focused on improving data and metadata interoperability. The core software library is [Frictionless-py](https://github.com/frictionlessdata/frictionless-py), and this documentation will help you learn how to use this Frictionless Framework. Are you interested in learning more about the project as a whole? Read this overview section.
+Generating insight and conclusions from data is often not a straightforward process. Data can be poorly structured, hard to find, archived in difficult to use formats, or incomplete. These issues create “friction” and make it difficult to use, publish and share data. The Frictionless Data project aims to reduce frictions while working with data, with a goal to make it effortless to transport data among different tools and platforms for further analysis. This project is a suite of open source software, tools, and specifications focused on improving data and metadata interoperability. The core software library is [Frictionless-py](https://github.com/frictionlessdata/frictionless-py), and this documentation will help you learn how to use this Frictionless Framework. Are you interested in learning more about the project as a whole? Read the overview section below.
 
 ## Frictionless Specifications
 
-The core of the Framework is the Frictionless Specifications. These specifications are a set of patterns for describing data including Data Package (for datasets), Data Resource (for files) and Table Schema (for tables). A Data Package is a simple container format used to describe and package a collection of data and metadata, including schemas. Frictionless-py lets users create data packages and schemas that conform to the Frictionless specifications.
-You can read more about the Frictionless specifications here: https://specs.frictionlessdata.io/.
+The core of the Framework are the Frictionless Specifications. These specifications are a set of patterns for describing data including Data Package (for datasets), Data Resource (for files) and Table Schema (for tables). A Data Package is a simple container format used to describe and package a collection of data and metadata, including schemas. Frictionless-py lets users create data packages and schemas that conform to the Frictionless specifications.
+You can read more about the Frictionless specifications at https://specs.frictionlessdata.io/.
 
 ## Frictionless Framework
 
-The Frictionless Framework helps make data more useable by generating metadata and schemas and validating data to ensure quality. There are four main functions that can be used independently to improve your data: Describe data, Extract data, Validate data, and Transform data (DEVT). Here, we will go into more detail on each of these main functions.
+The Frictionless Framework makes data more usable by generating metadata and schemas and by validating data to ensure quality. There are four main functions that can be used independently to improve your data: Describe data, Extract data, Validate data, and Transform data (DEVT). Here, we will go into more detail on each of these main functions.
 
-**<big>Describe your data:</big>** infer and edit a file's metadata. For instance, Describe will generate metadata describing the layout of the data (i.e. which row is the header) and also a schema describing the data contents (i.e. the type of data in a column). This is a first step for ensuring data quality and usability.
+**<big>Describe your data:</big>** infer and edit metadata from a data file. For instance, `describe` will generate metadata describing the layout of the data (i.e. which row is the header) as well as a schema describing the data contents (i.e. the type of data in a column). This is a first step for ensuring data quality and usability.
 
-**<big>Extract your data:</big>** read and normalize file's data. By default, extract returns data conforming to the metadata that was either defined in the describe step or inferred automatically. The user can opt-out of this to get the raw (unnormalized) data. Frictionless supports various file schemes like HTTP, FTP, and S3 and data formats like CSV, XLS, JSON, SQL, and others.
+**<big>Extract your data:</big>** read and normalize data from a data file. By default, `extract` returns data conforming to the metadata that was either defined in the `describe` step or inferred automatically. The user can opt-out of this to get the raw (unnormalized) data. Frictionless supports various file schemes like HTTP, FTP, and S3 and data formats like CSV, XLS, JSON, SQL, and others.
 
-**<big>Validate your data:</big>** detect errors in the file. Validate runs checks on data tables, resources, and datasets to identify potential issues (i.e. are there any missing values?). These checks can be modified and can be based on a provided schema. While extract cleans the data by removing the invalid cells, validate helps to see the whole picture of the raw file.
+**<big>Validate your data:</big>** detect errors in a data file. `validate` runs checks on data tables, resources, and datasets to identify potential issues (i.e. are there any missing values?). These checks can be modified and can be based on a provided schema. While `extract` cleans the data by removing the invalid cells, `validate` helps to see the whole picture of the raw file.
 
-**<big>Transform your data:</big>** change the file's metadata and data. This step can including reshaping data, saving it in a different format, or uploading the data somewhere. Frictionless provides a pipeline capability and a lower-level interface to work with the data.
+**<big>Transform your data:</big>** change a data file's metadata and data. This step can including reshaping data, saving it in a different format, or uploading the data somewhere. Frictionless provides a pipeline capability and a lower-level interface to work with the data.
 
 ## Important Features
 
-Frictionless is a complete data solution providing rich functionality. It's hard to list of features it provides so we will focus on the most important:
+Frictionless is a complete data solution providing rich functionality. It's hard to list all the features it provides, but here are the most important ones:
 
 - Open Source (MIT)
 - Powerful Python framework
@@ -50,7 +50,7 @@ Frictionless is a complete data solution providing rich functionality. It's hard
 
 ## Usage Example
 
-Frictionless can be run on CLI, in Python, and even as an API server. We will show the simplest example to get started with the framework:
+Frictionless can be run on CLI, in Python, and even as an API server. Here is a very simple example to get started with the framework:
 
 > Download [`invalid.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/invalid.csv) into the `data` folder to reproduce the examples
 
