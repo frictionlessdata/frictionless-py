@@ -72,18 +72,6 @@ def deepfork(value):
     return value
 
 
-def deepsafe(value):
-    if isinstance(value, dict):
-        value = {key: deepsafe(value) for key, value in value.items()}
-    elif isinstance(value, list):
-        value = [deepsafe(value) for value in value]
-    elif isinstance(value, set):
-        value = {deepsafe(value) for value in value}
-    elif isinstance(value, io.BufferedRandom):
-        value = "memory"
-    return value
-
-
 def import_from_plugin(name, *, plugin):
     try:
         return import_module(name)
