@@ -100,16 +100,13 @@ class HtmlParser(Parser):
 
     def read_list_stream_create(self):
         pq = helpers.import_from_plugin("pyquery", plugin="html").PyQuery
-        dialect = self.resource.dialect
 
-        # Get Page content
+        # Get table
         page = pq(self.loader.text_stream.read(), parser="html")
-
-        # Find required table
-        if dialect.selector:
-            table = pq(page.find(dialect.selector)[0])
-        else:
-            table = page
+        tables = page.find(self.resource.dialect.selector)
+        table = pq(tables[0]) if tables else None
+        if not table:
+            return
 
         # Stream headers
         data = (
