@@ -6,7 +6,7 @@ Let's get started with Frictionless! We will learn how to install and use the fr
 
 ## Installation
 
-> The framework requires Python3.6+. Versioning follows the [SemVer Standard](https://semver.org/)
+> The framework requires Python3.6+. Versioning follows the [SemVer Standard](https://semver.org/).
 
 ```bash title="CLI"
 pip install frictionless
@@ -65,11 +65,11 @@ frictionless transform --help
 
 ## Example
 
-> For more examples, use the [Basic Examples](basic-examples.md)
+> For more examples, use the [Basic Examples](basic-examples.md).
 
 We will take a very messy data file:
 
-> Download [`invalid.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/invalid.csv) into the `data` folder to reproduce the examples
+> Download [`invalid.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/invalid.csv) into the `data` folder to reproduce the examples.
 
 ```bash title="CLI"
 cat data/invalid.csv
