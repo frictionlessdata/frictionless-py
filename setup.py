@@ -57,6 +57,7 @@ INSTALL_REQUIRES = [
     "petl>=1.6",
     "pyyaml>=5.3",
     "isodate>=0.6",
+    "rfc3986>=1.4",
     "chardet>=3.0",
     "requests>=2.10",
     "jsonschema>=2.5",
