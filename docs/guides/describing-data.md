@@ -2,28 +2,30 @@
 title: Describing Data
 ---
 
-What does "describing data" mean?
+> This guide assumes basic familiarity with the Frictionless Framework. To learn more, please read the [Introduction](https://framework.frictionlessdata.io/docs/guides/introduction) and [Quick Start](https://framework.frictionlessdata.io/docs/guides/quick-start).
 
-Frictionless is a project based on the [Frictionless Data Specifications](https://specs.frictionlessdata.io/). It's a set of patterns for creating metadata, including Data Package (for datasets), Data Resource (for files), and Table Schema (for tables).
+> This guide is meant to be read in order from top to bottom, and reuses examples throughout the text. You can use the menu to skip sections, but please note that you might need to run code from earlier sections to make all the examples work.
 
-In other words, "describing data" means creating metadata for your data files. The reason for having metadata is simple: usually, data files themselves are not capable of providing enough information. For example, if you have a data table in a CSV format, it misses a few critical pieces of information:
-- meaning of the fields e.g., what the `size` field means; is it clothes size or file size
-- data types information e.g., is this field a string or an integer
+In Frictionless terms, "Describing data" means creating metadata for your data files. Having metadata is important because data files by themselves usually do not provide enough information to fully understand the data. For example, if you have a data table in a CSV format without metadata, you are missing a few critical pieces of information:
+- the meaning of the fields e.g., what the `size` field means (does that field mean geographic size? Or does it refer to the size of the file?)
+- data type information e.g., is this field a string or an integer?
 - data constraints e.g., the minimum temperature for your measurements
-- data relations e.g., identifiers connection
+- data relations e.g., identifier connections
 - and others
+
+For a dataset, there is even more information that can be provided, like the general purpose of a dataset, information about data sources, list of authors, and more. Also, when there are many tabular files, relational rules can be very important. Usually, there are foreign keys ensuring the integrity of the dataset; for example, think of a reference table containing country names and other tables using it as a reference. Data in this form is called "normalized data" and it occurs very often in scientific and other kinds of research.
+
+Now that we have a general understanding of what "describing data" is, we can discuss why it is important:
+- **data validation**: metadata helps to reveal problems in your data during early stages of your workflow
+- **data publication**: metadata provides additional information that your data doesn't include
+
+These are not the only positives of having metadata, but they are two of the most important. Please continue reading to learn how Frictionless helps to achieve these advantages by describing your data. This guide will discuss the main `describe` functions (`describe`, `describe_schema`, `describe_resource`, `describe_package`) and will then go into more detail about how to create and edit metadata in Frictionless.
+
+For the following examples, you will need to have Frictionless installed. See our [Quick Start Guide](https://framework.frictionlessdata.io/docs/guides/quick-start) if you need help.
 
 ```bash title="CLI"
 pip install frictionless
 ```
-
-For a dataset, there is even more information that can be provided, like the general purpose of a dataset, information about data sources, list of authors, and more. Of course, when there are many tabular files, relational rules can be very important. Usually, there are foreign keys ensuring the integrity of the dataset; for example, think of a reference table containing country names and other tables using it as a reference. Data in this form is called "normalized data" and it occurs very often in scientific and other kinds of research.
-
-Now that we have a general understanding of what "describing data" is, we can now articulate why it's important:
-- **data validation**: metadata helps to reveal problems in your data during early stages of your workflow
-- **data publication**: metadata provides additional information that your data doesn't include
-
-These are not the only positives of having metadata, but they are two of the most important. Please continue reading to learn how Frictionless helps to achieve these advantages by describing your data.
 
 ## Describe Functions
 
@@ -184,7 +186,7 @@ The Data Resource format describes a data resource such as an individual file or
 The essence of a Data Resource is a locator for the data it describes.
 A range of other properties can be declared to provide a richer set of metadata.
 
-For this section, we will use a file that is slightly more complex to handle. For some reason, cells are separated by the ";" char and there is a comment on the top:
+For this section, we will use a file that is slightly more complex to handle. In this example, cells are separated by the ";" character and there is a comment on the top:
 
 > Download [`country-2.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/country-2.csv) into the `data` folder to reproduce the examples.
 
@@ -230,7 +232,7 @@ schema:
       type: string
 ```
 
-OK, that's clearly wrong. As we have seen in the "Introductory Guide" Frictionless is capable of inferring some complicated cases' metadata but our table is too unusual for it to automatically infer. We need to manually program it:
+OK, that's clearly wrong. As we have seen in the "Introductory Guide" Frictionless is capable of inferring some complicated cases' metadata but our table is too complex for it to automatically infer. We need to manually program it:
 
 ```python title="Python"
 from frictionless import Schema, describe
@@ -471,7 +473,7 @@ To continue learning about data resources please read:
 
 This documentation contains a great deal of information on how to use metadata and why it's vital for your data. In this section, we're going to provide a quick example based on the "Data Resource" section but please read other documents to get the full picture.
 
-Let's get back to this unusual data table:
+Let's get back to this complex data table:
 
 
 ```bash title="CLI"
