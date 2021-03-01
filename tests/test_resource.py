@@ -2467,12 +2467,18 @@ def test_resource_to_yaml(tmpdir):
         assert resource == yaml.safe_load(file)
 
 
-@pytest.mark.xfail
 def test_to_json_with_resource_data_is_not_a_list_issue_693():
-    data = lambda: [['id', 'name'], [1, 'english'], [2, 'german']]
+    data = lambda: [["id", "name"], [1, "english"], [2, "german"]]
     resource = Resource(data=data)
     text = resource.to_json()
-    print(text)
+    assert text == "{}"
+
+
+def test_to_yaml_with_resource_data_is_not_a_list_issue_693():
+    data = lambda: [["id", "name"], [1, "english"], [2, "german"]]
+    resource = Resource(data=data)
+    text = resource.to_yaml()
+    assert text == "{}\n"
 
 
 # Metadata
