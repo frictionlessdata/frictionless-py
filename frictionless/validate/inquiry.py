@@ -18,8 +18,6 @@ def validate_inquiry(source, *, parallel=False, **options):
         Report: validation report
 
     """
-    # TODO: remove this quicfix
-    options.pop("detector", None)
     native = isinstance(source, Inquiry)
     inquiry = source.to_copy() if native else Inquiry(source, **options)
     return inquiry.run(parallel=parallel)

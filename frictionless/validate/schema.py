@@ -25,8 +25,6 @@ def validate_schema(source, **options):
 
     # Create schema
     try:
-        # TODO: remove this quickfix
-        options.pop("detector", None)
         native = isinstance(source, Schema)
         schema = source.to_copy() if native else Schema(source, **options)
     except FrictionlessException as exception:
