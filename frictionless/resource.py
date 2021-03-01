@@ -1076,14 +1076,20 @@ class Resource(Metadata):
 
     # Import/Export
 
+    def to_dict(self):
+        # Data can be not serializable (generators/functions)
+        descriptor = super().to_dict()
+        data = descriptor.pop("data", None)
+        if isinstance(data, list):
+            descriptor["data"] = data
+        return descriptor
+
     def to_copy(self, **options):
         """Create a copy of the resource"""
         descriptor = self.to_dict()
-        # Data can be not serializable (generators/functions)
-        data = descriptor.pop("data", None)
         return Resource(
             descriptor,
-            data=data,
+            data=self.data,
             basepath=self.__basepath,
             onerror=self.__onerror,
             trusted=self.__trusted,
