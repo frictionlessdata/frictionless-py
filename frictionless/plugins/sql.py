@@ -201,9 +201,8 @@ class SqlStorage(Storage):
     def __iter__(self):
         names = []
         for sql_table in self.__metadata.sorted_tables:
-            name = self.__read_convert_name(sql_table.name)
-            if name is not None:
-                names.append(name)
+            if sql_table.fullname is not None:
+                names.append(sql_table.fullname)
         return iter(names)
 
     @property
@@ -324,8 +323,6 @@ class SqlStorage(Storage):
 
     def __read_sql_table(self, name):
         sql_name = self.__write_convert_name(name)
-        if self.__namespace:
-            sql_name = ".".join((self.__namespace, sql_name))
         return self.__metadata.tables.get(sql_name)
 
     # Write
