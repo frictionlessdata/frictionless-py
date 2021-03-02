@@ -244,6 +244,10 @@ class SqlStorage(Storage):
             field = Field(name=column.name, type=field_type)
             if not column.nullable:
                 field.required = True
+            if isinstance(column.type, sa.sql.sqltypes.CHAR):
+                field.constraints["minLength"] = column.type.length
+            if isinstance(column.type, (sa.sql.sqltypes.CHAR, sa.sql.sqltypes.VARCHAR)):
+                field.constraints["maxLength"] = column.type.length
             if column.comment:
                 field.description = column.comment
             schema.fields.append(field)
