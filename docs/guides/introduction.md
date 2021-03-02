@@ -50,7 +50,7 @@ Frictionless is a complete data solution providing rich functionality. It's hard
 
 ## Usage Example
 
-Frictionless can be run on CLI, in Python, and even as an API server. Here is a very simple example to get started with the framework:
+Frictionless can be run on CLI, in Python, and even as an API server. Here is a short example to get started with the framework:
 
 > Download [`invalid.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/invalid.csv) into the `data` folder to reproduce the examples
 
