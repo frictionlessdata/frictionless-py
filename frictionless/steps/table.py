@@ -90,13 +90,13 @@ class table_debug(Step):
     # Transform
 
     def transform_resource(self, resource):
-        source = resource.to_copy()
+        current = resource.to_copy()
         function = self.get("function")
 
         # Data
         def data():
-            with source:
-                for row in source.row_stream:
+            with current:
+                for row in current.row_stream:
                     function(row)
                     yield row
 
@@ -384,13 +384,13 @@ class table_normalize(Step):
     # Transform
 
     def transform_resource(self, resource):
-        source = resource.to_copy()
+        current = resource.to_copy()
 
         # Data
         def data():
-            with source:
-                yield source.header.to_list()
-                for row in source.row_stream:
+            with current:
+                yield current.header.to_list()
+                for row in current.row_stream:
                     yield row.to_list()
 
         # Meta
@@ -515,15 +515,15 @@ class table_validate(Step):
     # Transform
 
     def transform_resource(self, resource):
-        source = resource.to_copy()
+        current = resource.to_copy()
 
         # Data
         def data():
-            with source:
-                if not source.header.valid:
-                    raise FrictionlessException(error=source.header.errors[0])
-                yield source.header
-                for row in source.row_stream:
+            with current:
+                if not current.header.valid:
+                    raise FrictionlessException(error=current.header.errors[0])
+                yield current.header
+                for row in current.row_stream:
                     if not row.valid:
                         raise FrictionlessException(error=row.errors[0])
                     yield row

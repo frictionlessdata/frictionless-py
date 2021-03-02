@@ -203,12 +203,12 @@ from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
 def step(resource):
-    source = resource.to_copy()
+    current = resource.to_copy()
 
     # Data
     def data():
-        with source:
-            for list in source.list_stream:
+        with current:
+            for list in current.list_stream:
                 yield list[1:]
 
     # Meta
