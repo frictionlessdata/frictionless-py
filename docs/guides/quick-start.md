@@ -13,7 +13,7 @@ pip install frictionless
 pip install frictionless[sql] # to install a core plugin (optional)
 ```
 
-The framework supports CSV, Excel, and JSON formats by default. The second command above installs a plugin for SQL support. Their are plugins for SQL, Pandas, HTML, and others (check the [list of Frictionless Framework plugins and their status](https://framework.frictionlessdata.io/docs/references/plugins-reference)). Usually, you don't need to think about it in advance–frictionless will display a useful error message about a missing plugin with installation instructions.
+The framework supports CSV, Excel, and JSON formats by default. The second command above installs a plugin for SQL support. There are plugins for SQL, Pandas, HTML, and others (check the [list of Frictionless Framework plugins and their status](https://framework.frictionlessdata.io/docs/references/plugins-reference)). Usually, you don't need to think about it in advance–frictionless will display a useful error message about a missing plugin with installation instructions.
 
 ### Troubleshooting
 
