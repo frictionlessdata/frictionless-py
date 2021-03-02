@@ -90,12 +90,13 @@ class table_debug(Step):
     # Transform
 
     def transform_resource(self, resource):
+        source = resource.to_copy()
         function = self.get("function")
 
         # Data
-        def data(resource):
-            with resource:
-                for row in resource.row_stream:
+        def data():
+            with source:
+                for row in source.row_stream:
                     function(row)
                     yield row
 
@@ -383,12 +384,13 @@ class table_normalize(Step):
     # Transform
 
     def transform_resource(self, resource):
+        source = resource.to_copy()
 
         # Data
-        def data(resource):
-            with resource:
-                yield resource.header.to_list()
-                for row in resource.row_stream:
+        def data():
+            with source:
+                yield source.header.to_list()
+                for row in source.row_stream:
                     yield row.to_list()
 
         # Meta
@@ -415,7 +417,7 @@ class table_pivot(Step):
     def transform_resource(self, resource):
         view = resource.to_petl()
         options = self.get("options")
-        resource.pop('schema', None)
+        resource.pop("schema", None)
         resource.data = view.pivot(**options)
         resource.infer()
 
@@ -467,7 +469,7 @@ class table_recast(Step):
         view = resource.to_petl()
         field_name = self.get("fieldName")
         from_field_names = self.get("fromFieldNames")
-        resource.pop('schema', None)
+        resource.pop("schema", None)
         resource.data = view.recast(
             key=field_name,
             variablefield=from_field_names[0],
@@ -494,7 +496,7 @@ class table_transpose(Step):
 
     def transform_resource(self, resource):
         view = resource.to_petl()
-        resource.pop('schema', None)
+        resource.pop("schema", None)
         resource.data = view.transpose()
         resource.infer()
 
@@ -513,15 +515,15 @@ class table_validate(Step):
     # Transform
 
     def transform_resource(self, resource):
+        source = resource.to_copy()
 
         # Data
-        # Data
-        def data(resource):
-            with resource:
-                if not resource.header.valid:
-                    raise FrictionlessException(error=resource.header.errors[0])
-                yield resource.header
-                for row in resource.row_stream:
+        def data():
+            with source:
+                if not source.header.valid:
+                    raise FrictionlessException(error=source.header.errors[0])
+                yield source.header
+                for row in source.row_stream:
                     if not row.valid:
                         raise FrictionlessException(error=row.errors[0])
                     yield row

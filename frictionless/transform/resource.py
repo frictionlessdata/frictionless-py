@@ -44,7 +44,7 @@ def transform_resource(source, *, steps, **options):
 
     # Run transforms
     for step in steps:
-        source = resource.to_copy()
+        data = resource.data
 
         # Transform
         try:
@@ -54,8 +54,21 @@ def transform_resource(source, *, steps, **options):
             raise FrictionlessException(error) from exception
 
         # Postprocess
-        if resource.data is not source.data:
-            resource.data = DataWithErrorHandling(source, data=resource.data, step=step)
+        if resource.data is not data:
+            resource.data = DataWithErrorHandling(resource.data, step=step)
+            # NOTE:
+            # We need rework resource.data or move to resource.__setattr__
+            # https://github.com/frictionlessdata/frictionless-py/issues/722
+            resource.scheme = ""
+            resource.format = "inline"
+            dict.pop(resource, "path", None)
+            dict.pop(resource, "hashing", None)
+            dict.pop(resource, "encoding", None)
+            dict.pop(resource, "innerpath", None)
+            dict.pop(resource, "compression", None)
+            dict.pop(resource, "control", None)
+            dict.pop(resource, "dialect", None)
+            dict.pop(resource, "layout", None)
 
     return resource
 
@@ -64,14 +77,13 @@ def transform_resource(source, *, steps, **options):
 
 
 class DataWithErrorHandling:
-    def __init__(self, resource, *, data, step):
-        self.resource = resource
+    def __init__(self, data, *, step):
         self.data = data
         self.step = step
 
     def __iter__(self):
         try:
-            yield from self.data(self.resource) if callable(self.data) else self.data
+            yield from self.data() if callable(self.data) else self.data
         except Exception as exception:
             if isinstance(exception, FrictionlessException):
                 if exception.error.code == "step-error":

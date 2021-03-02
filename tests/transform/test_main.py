@@ -35,10 +35,17 @@ def test_transform_custom_step_function_based():
 
     # Create step
     def custom(resource):
-        with resource:
-            for row in resource.row_stream:
-                row["id"] = row["id"] * row["id"]
-                yield row
+        source = resource.to_copy()
+
+        # Data
+        def data():
+            with source:
+                for row in source.row_stream:
+                    row["id"] = row["id"] * row["id"]
+                    yield row
+
+        # Meta
+        resource.data = data
 
     # Transform resource
     source = Resource(path="data/transform.csv")

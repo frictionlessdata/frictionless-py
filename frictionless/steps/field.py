@@ -290,7 +290,7 @@ class field_update(Step):
             function = lambda val, row: simpleeval.simple_eval(formula, names=row)
         if function:
             resource.data = view.convert(name, function)
-        else:
+        elif "value" in self:
             resource.data = view.update(name, value)
 
     # Metadata

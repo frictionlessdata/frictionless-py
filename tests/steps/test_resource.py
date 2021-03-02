@@ -6,7 +6,6 @@ from frictionless import Package, transform, steps
 
 def test_step_resource_add():
     source = Package("data/package/datapackage.json")
-    source.infer()
     target = transform(
         source,
         steps=[
@@ -27,7 +26,6 @@ def test_step_resource_add():
 
 def test_step_resource_remove():
     source = Package("data/package/datapackage.json")
-    source.infer()
     target = transform(
         source,
         steps=[
@@ -80,7 +78,6 @@ def test_step_resource_transform():
 
 def test_step_resource_update():
     source = Package("data/package/datapackage.json")
-    source.infer()
     target = transform(
         source,
         steps=[
