@@ -202,8 +202,8 @@ class SqlStorage(Storage):
         names = []
         for sql_table in self.__metadata.sorted_tables:
             table_name = self.__read_convert_name(sql_table.name)
-            name = ".".join([sql_table.schema, table_name])
-            if name is not None:
+            if table_name is not None:
+                name = ".".join([sql_table.schema, table_name])
                 names.append(name)
         return iter(names)
 
@@ -233,7 +233,7 @@ class SqlStorage(Storage):
     def __read_convert_name(self, sql_name):
         if sql_name.startswith(self.__prefix):
             return sql_name.replace(self.__prefix, "", 1)
-        return None
+        return sql_name
 
     def __read_convert_schema(self, sql_table):
         sa = helpers.import_from_plugin("sqlalchemy", plugin="sql")
