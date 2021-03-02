@@ -324,9 +324,9 @@ class SqlStorage(Storage):
         return mapping
 
     def __read_sql_table(self, name):
-        name_elements = name.split('.')
+        name_elements = name.split(".")
         name_elements[-1] = self.__write_convert_name(name_elements[-1])
-        sql_name = '.'.join(name_elements)
+        sql_name = ".".join(name_elements)
         return self.__metadata.tables.get(sql_name)
 
     # Write
