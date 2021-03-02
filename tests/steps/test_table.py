@@ -628,7 +628,6 @@ def test_step_table_merge_with_sort():
 # Pivot
 
 
-@pytest.mark.xfail(reason="steps.pivot/recast/transpose")
 def test_step_table_pivot():
     source = Resource(path="data/transform-pivot.csv")
     target = transform(
@@ -638,6 +637,7 @@ def test_step_table_pivot():
             steps.table_pivot(f1="region", f2="gender", f3="units", aggfun=sum),
         ],
     )
+    print(target.schema)
     assert target.schema == {
         "fields": [
             {"name": "region", "type": "string"},
@@ -654,9 +654,6 @@ def test_step_table_pivot():
 # Recast
 
 
-# We need to infer schema in the processor
-# We might merge this logic with transform.DataWithErrorHandling
-@pytest.mark.xfail(reason="steps.pivot/recast/transpose")
 def test_step_table_recast():
     source = Resource(path="data/transform.csv")
     source.infer()
@@ -679,7 +676,6 @@ def test_step_table_recast():
 # Transpose
 
 
-@pytest.mark.xfail(reason="steps.pivot/recast/transpose")
 def test_step_table_transpose():
     source = Resource(path="data/transform.csv")
     target = transform(

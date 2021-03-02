@@ -280,6 +280,18 @@ class Resource(Metadata):
         elif name == "package":
             self.__package = value
         else:
+            # NOTE: Review: https://github.com/frictionlessdata/frictionless-py/issues/722
+            if name == 'data':
+                self.scheme = ""
+                self.format = "inline"
+                dict.pop(self, "path", None)
+                dict.pop(self, "hashing", None)
+                dict.pop(self, "encoding", None)
+                dict.pop(self, "innerpath", None)
+                dict.pop(self, "compression", None)
+                dict.pop(self, "control", None)
+                dict.pop(self, "dialect", None)
+                dict.pop(self, "layout", None)
             return super().__setattr__(name, value)
         self.metadata_process()
 

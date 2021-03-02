@@ -19,13 +19,14 @@ class row_filter(Step):
     # Transform
 
     def transform_resource(self, resource):
+        view = resource.to_petl()
         formula = self.get("formula")
         function = self.get("function")
         if formula:
             # NOTE: review EvalWithCompoundTypes/sync with checks
             evalclass = simpleeval.EvalWithCompoundTypes
             function = lambda row: evalclass(names=row).eval(formula)
-        yield from resource.to_petl().select(function)
+        resource.data = view.select(function)
 
     # Metadata
 
@@ -51,14 +52,15 @@ class row_search(Step):
     # Transform
 
     def transform_resource(self, resource):
+        view = resource.to_petl()
         regex = self.get("regex")
         field_name = self.get("fieldName")
         negate = self.get("negate")
         search = petl.searchcomplement if negate else petl.search
         if field_name:
-            yield from search(resource.to_petl(), field_name, regex)
+            resource.data = search(view, field_name, regex)
         else:
-            yield from search(resource.to_petl(), regex)
+            resource.data = search(view, regex)
 
     # Metadata
 
@@ -96,17 +98,18 @@ class row_slice(Step):
     # Transform
 
     def transform_resource(self, resource):
+        view = resource.to_petl()
         start = self.get("start")
         stop = self.get("stop")
         step = self.get("step")
         head = self.get("head")
         tail = self.get("tail")
         if head:
-            yield from resource.to_petl().head(head)
+            resource.data = view.head(head)
         elif tail:
-            yield from resource.to_petl().tail(tail)
+            resource.data = view.tail(tail)
         else:
-            yield from resource.to_petl().rowslice(start, stop, step)
+            resource.data = view.rowslice(start, stop, step)
 
     # Metadata
 
@@ -134,9 +137,10 @@ class row_sort(Step):
     # Transform
 
     def transform_resource(self, resource):
+        view = resource.to_petl()
         field_names = self.get("fieldNames")
         reverse = self.get("reverse")
-        yield from resource.to_petl().sort(field_names, reverse=reverse)
+        resource.data = view.sort(field_names, reverse=reverse)
 
     # Metadata
 
@@ -161,9 +165,10 @@ class row_split(Step):
     # Transform
 
     def transform_resource(self, resource):
+        view = resource.to_petl()
         pattern = self.get("pattern")
         field_name = self.get("fieldName")
-        yield from resource.to_petl().splitdown(field_name, pattern)
+        resource.data = view.splitdown(field_name, pattern)
 
     # Metadata
 
@@ -189,16 +194,17 @@ class row_subset(Step):
     # Transform
 
     def transform_resource(self, resource):
+        view = resource.to_petl()
         subset = self.get("subset")
         field_name = self.get("fieldName")
         if subset == "conflicts":
-            yield from resource.to_petl().conflicts(field_name)
+            resource.data = view.conflicts(field_name)
         elif subset == "distinct":
-            yield from resource.to_petl().distinct(field_name)
+            resource.data = view.distinct(field_name)
         elif subset == "duplicates":
-            yield from resource.to_petl().duplicates(field_name)
+            resource.data = view.duplicates(field_name)
         elif subset == "unique":
-            yield from resource.to_petl().unique(field_name)
+            resource.data = view.unique(field_name)
 
     # Metadata
 
@@ -230,14 +236,15 @@ class row_ungroup(Step):
         super().__init__(descriptor)
 
     def transform_resource(self, resource):
+        view = resource.to_petl()
         selection = self.get("selection")
         group_name = self.get("groupName")
         value_name = self.get("valueName")
         function = getattr(petl, f"groupselect{selection}")
         if selection in ["first", "last"]:
-            yield from function(resource.to_petl(), group_name)
+            resource.data = function(view, group_name)
         else:
-            yield from function(resource.to_petl(), group_name, value_name)
+            resource.data = function(view, group_name, value_name)
 
     # Metadata
 

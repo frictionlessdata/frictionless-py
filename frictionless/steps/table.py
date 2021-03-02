@@ -26,6 +26,7 @@ class table_aggregate(Step):
     # Transform
 
     def transform_resource(self, resource):
+        view = resource.to_petl()
         group_name = self.get("groupName")
         aggregation = self.get("aggregation")
         field = resource.schema.get_field(group_name)
@@ -33,7 +34,7 @@ class table_aggregate(Step):
         resource.schema.add_field(field)
         for name in aggregation.keys():
             resource.schema.add_field(Field(name=name))
-        yield from resource.to_petl().aggregate(group_name, aggregation)
+        resource.data = view.aggregate(group_name, aggregation)
 
     # Metadata
 
@@ -62,11 +63,11 @@ class table_attach(Step):
         if isinstance(source, str):
             source = target.package.get_resource(source)
         source.infer()
-        for field in source.schema.fields:
-            target.schema.fields.append(field.to_copy())
         view1 = target.to_petl()
         view2 = source.to_petl()
-        yield from petl.annex(view1, view2)
+        for field in source.schema.fields:
+            target.schema.fields.append(field.to_copy())
+        resource.data = petl.annex(view1, view2)
 
     # Metadata
 
@@ -90,10 +91,16 @@ class table_debug(Step):
 
     def transform_resource(self, resource):
         function = self.get("function")
-        with resource:
-            for row in resource.row_stream:
-                function(row)
-                yield row
+
+        # Data
+        def data(resource):
+            with resource:
+                for row in resource.row_stream:
+                    function(row)
+                    yield row
+
+        # Meta
+        resource.data = data
 
     # Metadata
 
@@ -138,7 +145,7 @@ class table_diff(Step):
         # NOTE: we might raise an error for ignore/hash
         if use_hash and not ignore_order:
             function = petl.hashcomplement
-        yield from function(view1, view2)
+        resource.data = function(view1, view2)
 
     # Metadata
 
@@ -173,7 +180,7 @@ class table_intersect(Step):
         view1 = target.to_petl()
         view2 = source.to_petl()
         function = petl.hashintersection if use_hash else petl.intersection
-        yield from function(view1, view2)
+        resource.data = function(view1, view2)
 
     # Metadata
 
@@ -225,20 +232,20 @@ class table_join(Step):
                     target.schema.fields.append(field.to_copy())
         if mode == "inner":
             join = petl.hashjoin if use_hash else petl.join
-            yield from join(view1, view2, field_name)
+            resource.data = join(view1, view2, field_name)
         elif mode == "left":
             leftjoin = petl.hashleftjoin if use_hash else petl.leftjoin
-            yield from leftjoin(view1, view2, field_name)
+            resource.data = leftjoin(view1, view2, field_name)
         elif mode == "right":
             rightjoin = petl.hashrightjoin if use_hash else petl.rightjoin
-            yield from rightjoin(view1, view2, field_name)
+            resource.data = rightjoin(view1, view2, field_name)
         elif mode == "outer":
-            yield from petl.outerjoin(view1, view2, field_name)
+            resource.data = petl.outerjoin(view1, view2, field_name)
         elif mode == "cross":
-            yield from petl.crossjoin(view1, view2)
+            resource.data = petl.crossjoin(view1, view2)
         elif mode == "negate":
             antijoin = petl.hashantijoin if use_hash else petl.antijoin
-            yield from antijoin(view1, view2, field_name)
+            resource.data = antijoin(view1, view2, field_name)
 
     # Metadata
 
@@ -274,6 +281,7 @@ class table_melt(Step):
     # Transform
 
     def transform_resource(self, resource):
+        view = resource.to_petl()
         variables = self.get("variables")
         field_name = self.get("fieldName")
         to_field_names = self.get("toFieldNames")
@@ -282,7 +290,7 @@ class table_melt(Step):
         resource.schema.add_field(field)
         for name in to_field_names:
             resource.schema.add_field(Field(name=name))
-        yield from resource.to_petl().melt(
+        resource.data = view.melt(
             key=field_name,
             variables=variables,
             variablefield=to_field_names[0],
@@ -338,7 +346,7 @@ class table_merge(Step):
         if ignore_fields:
             for field in source.schema.fields[len(target.schema.fields) :]:
                 target.schema.add_field(field)
-            yield from petl.stack(view1, view2)
+            resource.data = petl.stack(view1, view2)
 
         # Default
         else:
@@ -351,9 +359,9 @@ class table_merge(Step):
                         target.schema.remove_field(field.name)
             if sort_by_field:
                 key = sort_by_field
-                yield from petl.mergesort(view1, view2, key=key, header=field_names)
+                resource.data = petl.mergesort(view1, view2, key=key, header=field_names)
             else:
-                yield from petl.cat(view1, view2, header=field_names)
+                resource.data = petl.cat(view1, view2, header=field_names)
 
     # Metadata
 
@@ -375,10 +383,16 @@ class table_normalize(Step):
     # Transform
 
     def transform_resource(self, resource):
-        with resource:
-            yield resource.header.to_list()
-            for row in resource.row_stream:
-                yield row.to_list()
+
+        # Data
+        def data(resource):
+            with resource:
+                yield resource.header.to_list()
+                for row in resource.row_stream:
+                    yield row.to_list()
+
+        # Meta
+        resource.data = data
 
     # Metadata
 
@@ -399,8 +413,11 @@ class table_pivot(Step):
     # Transform
 
     def transform_resource(self, resource):
+        view = resource.to_petl()
         options = self.get("options")
-        yield from resource.to_petl().pivot(**options)
+        resource.pop('schema', None)
+        resource.data = view.pivot(**options)
+        resource.infer()
 
     # Metadata
 
@@ -416,8 +433,9 @@ class table_print(Step):
 
     # Transform
 
-    def transform_resource(self, source, target):
-        print(source.to_petl().look(vrepr=str, style="simple"))
+    def transform_resource(self, resource):
+        view = resource.to_petl()
+        print(view.look(vrepr=str, style="simple"))
 
     # Metadata
 
@@ -446,13 +464,16 @@ class table_recast(Step):
     # Transform
 
     def transform_resource(self, resource):
+        view = resource.to_petl()
         field_name = self.get("fieldName")
         from_field_names = self.get("fromFieldNames")
-        yield from resource.to_petl().recast(
+        resource.pop('schema', None)
+        resource.data = view.recast(
             key=field_name,
             variablefield=from_field_names[0],
             valuefield=from_field_names[1],
         )
+        resource.infer()
 
     # Metadata
 
@@ -472,7 +493,10 @@ class table_transpose(Step):
     # Transform
 
     def transform_resource(self, resource):
-        yield resource.to_petl().transpose()
+        view = resource.to_petl()
+        resource.pop('schema', None)
+        resource.data = view.transpose()
+        resource.infer()
 
     # Metadata
 
@@ -489,14 +513,21 @@ class table_validate(Step):
     # Transform
 
     def transform_resource(self, resource):
-        with resource:
-            if not resource.header.valid:
-                raise FrictionlessException(error=resource.header.errors[0])
-            yield resource.header
-            for row in resource.row_stream:
-                if not row.valid:
-                    raise FrictionlessException(error=row.errors[0])
-                yield row
+
+        # Data
+        # Data
+        def data(resource):
+            with resource:
+                if not resource.header.valid:
+                    raise FrictionlessException(error=resource.header.errors[0])
+                yield resource.header
+                for row in resource.row_stream:
+                    if not row.valid:
+                        raise FrictionlessException(error=row.errors[0])
+                    yield row
+
+        # Meta
+        resource.data = data
 
     # Metadata
 

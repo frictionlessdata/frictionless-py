@@ -44,35 +44,18 @@ def transform_resource(source, *, steps, **options):
 
     # Run transforms
     for step in steps:
+        source = resource.to_copy()
 
         # Transform
         try:
-            temp = resource.to_copy()
-            data = step.transform_resource(resource)
-            if data:
-                try:
-                    next(data)
-                except StopIteration:
-                    pass
-                data = DataWithErrorHandling(temp, step=step)
+            step.transform_resource(resource)
         except Exception as exception:
             error = errors.StepError(note=f'"{get_name(step)}" raises "{exception}"')
             raise FrictionlessException(error) from exception
 
         # Postprocess
-        if data:
-            resource = resource.to_copy()
-            resource.data = data
-            resource.scheme = ""
-            resource.format = "inline"
-            resource.pop("path", None)
-            resource.pop("hashing", None)
-            resource.pop("encoding", None)
-            resource.pop("innerpath", None)
-            resource.pop("compression", None)
-            resource.pop("control", None)
-            resource.pop("dialect", None)
-            resource.pop("layout", None)
+        if resource.data is not source.data:
+            resource.data = DataWithErrorHandling(source, data=resource.data, step=step)
 
     return resource
 
@@ -80,19 +63,15 @@ def transform_resource(source, *, steps, **options):
 # Internal
 
 
-# NOTE:
-# We might consider extending to the sample size
-# Also, we can move here some inferring logic (see pivor/recast/transpose)
-
-
 class DataWithErrorHandling:
-    def __init__(self, resource, *, step):
+    def __init__(self, resource, *, data, step):
         self.resource = resource
+        self.data = data
         self.step = step
 
     def __iter__(self):
         try:
-            yield from self.step.transform_resource(self.resource.to_copy())
+            yield from self.data(self.resource) if callable(self.data) else self.data
         except Exception as exception:
             if isinstance(exception, FrictionlessException):
                 if exception.error.code == "step-error":
