@@ -387,7 +387,7 @@ Please explore the "Errors Reference" to learn about all the available errors an
 
 ## Available Checks
 
-> Note that only the Baseline Check is enabled by default. Other built-in checks need to be activated as shown below.
+> Note that only the Baseline Check is enabled by default. Other built-in checks need to be activated as shown below. See [Validation Checks](validation-checks.md) for a list of available checks.
 
 There are various validation checks included in the core Frictionless Framework along with an ability to create custom checks. You can provide a list of checks where individual checks are in the form of:
 - a dict: `{'code': 'code', 'option1': 'value1'}`
@@ -410,7 +410,6 @@ pprint(report.flatten(["rowPosition", "fieldPosition", "code", "note"]))
  [12, 4, 'extra-cell', '']]
 ```
 
-See [Validation Checks](validation-checks.md) for a list of available checks.
 
 ## Custom Checks
 
