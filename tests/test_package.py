@@ -797,20 +797,6 @@ def test_package_to_zip_resource_path(tmpdir):
 
 @pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-def test_package_to_zip_resource_absolute_path(tmpdir):
-    path = os.path.join(tmpdir, "package.zip")
-    source = Package(resources=[Resource(path=os.path.abspath("data/table.csv"))])
-    source.to_zip(path)
-    target = Package.from_zip(path)
-    assert target.get_resource("table").path == "table.csv"
-    assert target.get_resource("table").read_rows() == [
-        {"id": 1, "name": "english"},
-        {"id": 2, "name": "中国人"},
-    ]
-
-
-@pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_package_to_zip_resource_remote_path(tmpdir):
     path = os.path.join(tmpdir, "package.zip")
     source = Package(resources=[Resource(path=BASEURL % "data/table.csv")])
@@ -846,7 +832,7 @@ def test_package_to_zip_resource_memory_function(tmpdir):
     source = Package(resources=[Resource(name="table", data=data)])
     source.to_zip(path)
     target = Package.from_zip(path)
-    assert target.get_resource("table").path == 'table.csv'
+    assert target.get_resource("table").path == "table.csv"
     assert target.get_resource("table").read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
@@ -858,11 +844,25 @@ def test_package_to_zip_resource_memory_function(tmpdir):
 def test_package_to_zip_resource_sql(tmpdir, database_url):
     path = os.path.join(tmpdir, "package.zip")
     dialect = SqlDialect(table="table")
-    source = Package(resources=[Resource(database_url, name='table', dialect=dialect)])
+    source = Package(resources=[Resource(database_url, name="table", dialect=dialect)])
     source.to_zip(path)
     target = Package.from_zip(path)
     assert target.get_resource("table").path == database_url
     assert target.get_resource("table").read_rows() == [
+        {"id": 1, "name": "english"},
+        {"id": 2, "name": "中国人"},
+    ]
+
+
+@pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
+def test_package_to_zip_resource_multipart(tmpdir, database_url):
+    path = os.path.join(tmpdir, "package.zip")
+    source = Package(resources=[Resource(path=["data/chunk1.csv", "data/chunk2.csv"])])
+    source.to_zip(path)
+    target = Package.from_zip(path)
+    assert target.get_resource("chunk").path == ["data/chunk1.csv", "data/chunk2.csv"]
+    assert target.get_resource("chunk").read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]

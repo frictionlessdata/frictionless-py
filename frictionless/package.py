@@ -573,7 +573,7 @@ class Package(Metadata):
             FrictionlessException: on any error
         """
         try:
-            with zipfile.ZipFile(path, "w") as zip:
+            with zipfile.ZipFile(path, "w") as archive:
                 package_descriptor = self.to_dict()
                 for index, resource in enumerate(self.resources):
                     descriptor = package_descriptor["resources"][index]
@@ -591,23 +591,31 @@ class Package(Metadata):
                             with tempfile.NamedTemporaryFile() as file:
                                 tgt = Resource(path=file.name, format="csv", trusted=True)
                                 resource.write(tgt)
-                                zip.write(file.name, path)
+                                archive.write(file.name, path)
 
                     # Multipart data
                     elif resource.multipart:
-                        note = "Zipping multipart resource is not yet supported"
-                        raise FrictionlessException(errors.ResourceError(note=note))
+                        for path, fullpath in zip(resource.path, resource.fullpath):
+                            if os.path.isfile(fullpath):
+                                if not helpers.is_safe_path(fullpath):
+                                    note = f'Zipping usafe "{fullpath}" is not supported'
+                                    error = errors.PackageError(note=note)
+                                    raise FrictionlessException(error)
+                                archive.write(fullpath, path)
 
                     # Local Data
-                    elif os.path.isfile(resource.fullpath):
+                    else:
                         path = resource.path
-                        if not helpers.is_safe_path(resource.path):
-                            path = f"{resource.name}.{resource.format}"
-                            descriptor["path"] = path
-                        zip.write(resource.fullpath, path)
+                        fullpath = resource.fullpath
+                        if os.path.isfile(fullpath):
+                            if not helpers.is_safe_path(fullpath):
+                                note = f'Zipping usafe "{fullpath}" is not supported'
+                                error = errors.PackageError(note=note)
+                                raise FrictionlessException(error)
+                            archive.write(fullpath, path)
 
                 # Metadata
-                zip.writestr(
+                archive.writestr(
                     "datapackage.json",
                     json.dumps(
                         package_descriptor,
