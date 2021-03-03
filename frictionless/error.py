@@ -6,6 +6,7 @@ from .metadata import Metadata
 # effective as it can be very memory consumig. As an option we can store
 # raw data without rendering an error template to an error messsage.
 # Also, validation is disabled for performance reasons at the moment.
+# Allow creating from a descriptor (note needs to be optional)
 
 
 class Error(Metadata):

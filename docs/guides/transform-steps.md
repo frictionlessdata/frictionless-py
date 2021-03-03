@@ -87,7 +87,6 @@ pprint(target.get_resource('extra').read_rows())
 
 ### Remove Resource
 
-
 ```python title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
@@ -106,7 +105,6 @@ pprint(target)
 ```
 
 ### Transform Resource
-
 
 ```python title="Python"
 from pprint import pprint
@@ -142,7 +140,6 @@ pprint(target.get_resource('main').read_rows())
 ```
 
 ### Update Resource
-
 
 ```python title="Python"
 from pprint import pprint
@@ -183,7 +180,6 @@ These steps are meant to be used on a table level of a resource. This includes v
 
 ### Aggregate Table
 
-
 ```python title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
@@ -210,7 +206,6 @@ pprint(target.read_rows())
 
 ### Attach Tables
 
-
 ```python title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
@@ -236,7 +231,6 @@ pprint(target.read_rows())
 ```
 
 ### Debug Table
-
 
 ```python title="Python"
 from pprint import pprint
@@ -358,7 +352,6 @@ pprint(target.read_rows())
 
 ### Melt Table
 
-
 ```python title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
@@ -387,7 +380,6 @@ pprint(target.read_rows())
 ```
 
 ### Merge Tables
-
 
 ```python title="Python"
 from pprint import pprint
@@ -520,7 +512,6 @@ pprint(target.read_rows())
 
 ### Validate Table
 
-
 ```python title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
@@ -645,7 +636,6 @@ pprint(target.read_rows())
 
 ### Move Field
 
-
 ```python title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
@@ -720,7 +710,6 @@ pprint(target.read_rows())
 ```
 
 ### Unpack Field
-
 
 ```python title="Python"
 from pprint import pprint
