@@ -1,3 +1,4 @@
+import os
 import json
 import zipfile
 import tempfile
@@ -561,74 +562,60 @@ class Package(Metadata):
         """
         return Package(descriptor=path, **options)
 
-    def to_zip(self, path, *, resolve=[], encoder_class=None):
+    def to_zip(self, path, *, encoder_class=None):
         """Save package to a zip
 
         Parameters:
             path (str): target path
-            resolve (str[]): Data sources to resolve.
-                For "memory" data it means saving them as CSV and including into ZIP.
-                For "remote" data it means downloading them and including into ZIP.
-                For example, `resolve=["memory", "remote"]`
             encoder_class (object): json encoder class
 
         Raises:
             FrictionlessException: on any error
         """
         try:
-            with zipfile.ZipFile(path, "w") as zip:
+            with zipfile.ZipFile(path, "w") as archive:
                 package_descriptor = self.to_dict()
                 for index, resource in enumerate(self.resources):
                     descriptor = package_descriptor["resources"][index]
 
-                    # Multipart data
-                    if resource.multipart:
-                        note = "Zipping multipart resource is not yet supported"
-                        raise FrictionlessException(errors.ResourceError(note=note))
+                    # Remote data
+                    if resource.remote:
+                        pass
 
                     # Memory data
                     elif resource.memory:
-                        if "memory" in resolve:
+                        if not isinstance(resource.data, list):
                             path = f"{resource.name}.csv"
                             descriptor["path"] = path
                             del descriptor["data"]
                             with tempfile.NamedTemporaryFile() as file:
                                 tgt = Resource(path=file.name, format="csv", trusted=True)
                                 resource.write(tgt)
-                                zip.write(file.name, path)
-                        elif not isinstance(resource.data, list):
-                            note = f"Use resolve argument to zip {resource.data}"
-                            raise FrictionlessException(errors.ResourceError(note=note))
+                                archive.write(file.name, path)
 
-                    # Remote data
-                    # NOTE:
-                    # sql/ckan/etc should go here (rename to network?)
-                    # we might need to add format.remote/network and update resource.remote
-                    elif resource.remote:
-                        if "remote" in resolve:
-                            path = f"{resource.name}.{resource.format}"
-                            descriptor["path"] = path
-                            with tempfile.NamedTemporaryFile() as file:
-                                # NOTE: we might rebase on using resource here
-                                with system.create_loader(resource) as loader:
-                                    while True:
-                                        chunk = loader.byte_stream.read(1024)
-                                        if not chunk:
-                                            break
-                                        file.write(chunk)
-                                    file.flush()
-                                zip.write(file.name, path)
+                    # Multipart data
+                    elif resource.multipart:
+                        for path, fullpath in zip(resource.path, resource.fullpath):
+                            if os.path.isfile(fullpath):
+                                if not helpers.is_safe_path(fullpath):
+                                    note = f'Zipping usafe "{fullpath}" is not supported'
+                                    error = errors.PackageError(note=note)
+                                    raise FrictionlessException(error)
+                                archive.write(fullpath, path)
 
                     # Local Data
                     else:
                         path = resource.path
-                        if not helpers.is_safe_path(path):
-                            path = f"{resource.name}.{resource.format}"
-                            descriptor["path"] = path
-                        zip.write(resource.fullpath, path)
+                        fullpath = resource.fullpath
+                        if os.path.isfile(fullpath):
+                            if not helpers.is_safe_path(fullpath):
+                                note = f'Zipping usafe "{fullpath}" is not supported'
+                                error = errors.PackageError(note=note)
+                                raise FrictionlessException(error)
+                            archive.write(fullpath, path)
 
                 # Metadata
-                zip.writestr(
+                archive.writestr(
                     "datapackage.json",
                     json.dumps(
                         package_descriptor,
