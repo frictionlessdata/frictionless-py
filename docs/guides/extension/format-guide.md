@@ -10,7 +10,7 @@ The Parser is responsible for parsing data from/to different data sources as tho
 
 ## Parser Example
 
-> This parser has quite a naive experimental implementation
+> This parser has quite a naive experimental implementation.
 
 ```python title="Python"
 class HtmlParser(Parser):

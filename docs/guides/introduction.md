@@ -8,7 +8,7 @@ title: Introduction
 [![Codebase](https://img.shields.io/badge/github-master-brightgreen)](https://github.com/frictionlessdata/frictionless-py)
 [![Support](https://img.shields.io/badge/chat-discord-brightgreen)](https://discord.com/channels/695635777199145130/695635777199145133)
 
-> Frictionless@4 is now live! Please read the [migration guide](https://framework.frictionlessdata.io/docs/development/migration)
+> Frictionless@4 is now live! Please read the [migration guide](https://framework.frictionlessdata.io/docs/development/migration).
 
 Frictionless is a framework to describe, extract, validate, and transform tabular data (DEVT Framework). It supports a great deal of data schemes and formats, and provides popular platforms integrations. The framework is powered by the lightweight yet comprehensive [Frictionless Data Specifications](https://specs.frictionlessdata.io/).
 
@@ -52,7 +52,7 @@ Frictionless is a complete data solution providing rich functionality. It's hard
 
 Frictionless can be run on CLI, in Python, and even as an API server. Here is a short example to get started with the framework:
 
-> Download [`invalid.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/invalid.csv) into the `data` folder to reproduce the examples
+> Download [`invalid.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/invalid.csv) into the `data` folder to reproduce the examples.
 
 ```bash title="CLI"
 pip install frictionless
@@ -77,7 +77,7 @@ frictionless validate data/invalid.csv
 
 ## User Stories
 
-> TODO: Add visual diagrams here
+> TODO: Add visual diagrams here.
 
 Frictionless is a DEVT-framework (describe-extract-validate-transform). In contrast to ETL-frameworks (extract-transform-load), Frictionless does not have a linear flow. For example, let’s look at some user stories:
 

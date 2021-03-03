@@ -6,7 +6,7 @@ from frictionless import Resource, FrictionlessException, transform, steps
 
 
 def test_step_table_aggregate():
-    source = Resource(path="data/transform-groups.csv")
+    source = Resource("data/transform-groups.csv")
     target = transform(
         source,
         steps=[
@@ -30,7 +30,7 @@ def test_step_table_aggregate():
 
 
 def test_step_table_aggregate_multiple():
-    source = Resource(path="data/transform-groups.csv")
+    source = Resource("data/transform-groups.csv")
     target = transform(
         source,
         steps=[
@@ -64,7 +64,7 @@ def test_step_table_aggregate_multiple():
 
 
 def test_step_table_attach():
-    source = Resource(path="data/transform.csv")
+    source = Resource("data/transform.csv")
     target = transform(
         source,
         steps=[
@@ -90,8 +90,7 @@ def test_step_table_attach():
 
 
 def test_step_table_diff():
-    source = Resource(path="data/transform.csv")
-    source.infer()
+    source = Resource("data/transform.csv")
     target = transform(
         source,
         steps=[
@@ -108,15 +107,20 @@ def test_step_table_diff():
             ),
         ],
     )
-    assert target.schema == source.schema
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+        ]
+    }
     assert target.read_rows() == [
         {"id": 2, "name": "france", "population": 66},
     ]
 
 
 def test_step_table_diff_with_ignore_order():
-    source = Resource(path="data/transform.csv")
-    source.infer()
+    source = Resource("data/transform.csv")
     target = transform(
         source,
         steps=[
@@ -133,15 +137,20 @@ def test_step_table_diff_with_ignore_order():
             ),
         ],
     )
-    assert target.schema == source.schema
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+        ]
+    }
     assert target.read_rows() == [
         {"id": 2, "name": "france", "population": 66},
     ]
 
 
 def test_step_table_diff_with_use_hash():
-    source = Resource(path="data/transform.csv")
-    source.infer()
+    source = Resource("data/transform.csv")
     target = transform(
         source,
         steps=[
@@ -159,7 +168,13 @@ def test_step_table_diff_with_use_hash():
             ),
         ],
     )
-    assert target.schema == source.schema
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+        ]
+    }
     assert target.read_rows() == [
         {"id": 2, "name": "france", "population": 66},
     ]
@@ -169,8 +184,7 @@ def test_step_table_diff_with_use_hash():
 
 
 def test_step_table_intersect():
-    source = Resource(path="data/transform.csv")
-    source.infer()
+    source = Resource("data/transform.csv")
     target = transform(
         source,
         steps=[
@@ -187,7 +201,13 @@ def test_step_table_intersect():
             ),
         ],
     )
-    assert target.schema == source.schema
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+        ]
+    }
     assert target.read_rows() == [
         {"id": 1, "name": "germany", "population": 83},
         {"id": 3, "name": "spain", "population": 47},
@@ -195,8 +215,7 @@ def test_step_table_intersect():
 
 
 def test_step_table_intersect_with_use_hash():
-    source = Resource(path="data/transform.csv")
-    source.infer()
+    source = Resource("data/transform.csv")
     target = transform(
         source,
         steps=[
@@ -214,7 +233,13 @@ def test_step_table_intersect_with_use_hash():
             ),
         ],
     )
-    assert target.schema == source.schema
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+        ]
+    }
     assert target.read_rows() == [
         {"id": 1, "name": "germany", "population": 83},
         {"id": 3, "name": "spain", "population": 47},
@@ -225,7 +250,7 @@ def test_step_table_intersect_with_use_hash():
 
 
 def test_step_table_join():
-    source = Resource(path="data/transform.csv")
+    source = Resource("data/transform.csv")
     target = transform(
         source,
         steps=[
@@ -251,7 +276,7 @@ def test_step_table_join():
 
 
 def test_step_table_join_with_name_is_not_first_field():
-    source = Resource(path="data/transform.csv")
+    source = Resource("data/transform.csv")
     target = transform(
         source,
         steps=[
@@ -278,7 +303,7 @@ def test_step_table_join_with_name_is_not_first_field():
 
 
 def test_step_table_join_mode_left():
-    source = Resource(path="data/transform.csv")
+    source = Resource("data/transform.csv")
     target = transform(
         source,
         steps=[
@@ -306,7 +331,7 @@ def test_step_table_join_mode_left():
 
 
 def test_step_table_join_mode_right():
-    source = Resource(path="data/transform.csv")
+    source = Resource("data/transform.csv")
     target = transform(
         source,
         steps=[
@@ -333,7 +358,7 @@ def test_step_table_join_mode_right():
 
 
 def test_step_table_join_mode_outer():
-    source = Resource(path="data/transform.csv")
+    source = Resource("data/transform.csv")
     target = transform(
         source,
         steps=[
@@ -362,7 +387,7 @@ def test_step_table_join_mode_outer():
 
 
 def test_step_table_join_mode_cross():
-    source = Resource(path="data/transform.csv")
+    source = Resource("data/transform.csv")
     target = transform(
         source,
         steps=[
@@ -392,7 +417,7 @@ def test_step_table_join_mode_cross():
 
 
 def test_step_table_join_mode_negate():
-    source = Resource(path="data/transform.csv")
+    source = Resource("data/transform.csv")
     target = transform(
         source,
         steps=[
@@ -416,7 +441,7 @@ def test_step_table_join_mode_negate():
 
 
 def test_step_table_join_hash_is_true():
-    source = Resource(path="data/transform.csv")
+    source = Resource("data/transform.csv")
     target = transform(
         source,
         steps=[
@@ -446,7 +471,7 @@ def test_step_table_join_hash_is_true():
 
 
 def test_step_table_melt():
-    source = Resource(path="data/transform.csv")
+    source = Resource("data/transform.csv")
     target = transform(
         source,
         steps=[
@@ -472,7 +497,7 @@ def test_step_table_melt():
 
 
 def test_step_table_melt_with_variables():
-    source = Resource(path="data/transform.csv")
+    source = Resource("data/transform.csv")
     target = transform(
         source,
         steps=[
@@ -495,7 +520,7 @@ def test_step_table_melt_with_variables():
 
 
 def test_step_table_melt_with_to_field_names():
-    source = Resource(path="data/transform.csv")
+    source = Resource("data/transform.csv")
     target = transform(
         source,
         steps=[
@@ -523,7 +548,7 @@ def test_step_table_melt_with_to_field_names():
 
 
 def test_step_table_merge():
-    source = Resource(path="data/transform.csv")
+    source = Resource("data/transform.csv")
     target = transform(
         source,
         steps=[
@@ -549,7 +574,7 @@ def test_step_table_merge():
 
 
 def test_step_table_merge_with_field_names():
-    source = Resource(path="data/transform.csv")
+    source = Resource("data/transform.csv")
     target = transform(
         source,
         steps=[
@@ -574,7 +599,7 @@ def test_step_table_merge_with_field_names():
 
 
 def test_step_merge_ignore_fields():
-    source = Resource(path="data/transform.csv")
+    source = Resource("data/transform.csv")
     target = transform(
         source,
         steps=[
@@ -600,7 +625,7 @@ def test_step_merge_ignore_fields():
 
 
 def test_step_table_merge_with_sort():
-    source = Resource(path="data/transform.csv")
+    source = Resource("data/transform.csv")
     target = transform(
         source,
         steps=[
@@ -628,9 +653,8 @@ def test_step_table_merge_with_sort():
 # Pivot
 
 
-@pytest.mark.xfail(reason="steps.pivot/recast/transpose")
 def test_step_table_pivot():
-    source = Resource(path="data/transform-pivot.csv")
+    source = Resource("data/transform-pivot.csv")
     target = transform(
         source,
         steps=[
@@ -638,6 +662,7 @@ def test_step_table_pivot():
             steps.table_pivot(f1="region", f2="gender", f3="units", aggfun=sum),
         ],
     )
+    print(target.schema)
     assert target.schema == {
         "fields": [
             {"name": "region", "type": "string"},
@@ -654,12 +679,8 @@ def test_step_table_pivot():
 # Recast
 
 
-# We need to infer schema in the processor
-# We might merge this logic with transform.DataWithErrorHandling
-@pytest.mark.xfail(reason="steps.pivot/recast/transpose")
 def test_step_table_recast():
-    source = Resource(path="data/transform.csv")
-    source.infer()
+    source = Resource("data/transform.csv")
     target = transform(
         source,
         steps=[
@@ -668,7 +689,14 @@ def test_step_table_recast():
             steps.table_recast(field_name="id"),
         ],
     )
-    assert target.schema == source.schema
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+        ]
+    }
+
     assert target.read_rows() == [
         {"id": 1, "name": "germany", "population": 83},
         {"id": 2, "name": "france", "population": 66},
@@ -679,9 +707,8 @@ def test_step_table_recast():
 # Transpose
 
 
-@pytest.mark.xfail(reason="steps.pivot/recast/transpose")
 def test_step_table_transpose():
-    source = Resource(path="data/transform.csv")
+    source = Resource("data/transform.csv")
     target = transform(
         source,
         steps=[
@@ -706,8 +733,7 @@ def test_step_table_transpose():
 
 
 def test_step_table_validate():
-    source = Resource(path="data/transform.csv")
-    source.infer()
+    source = Resource("data/transform.csv")
     target = transform(
         source,
         steps=[
@@ -715,7 +741,13 @@ def test_step_table_validate():
             steps.table_validate(),
         ],
     )
-    assert target.schema == source.schema
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+        ]
+    }
     with pytest.raises(FrictionlessException) as excinfo:
         target.read_rows()
     error = excinfo.value.error
@@ -730,7 +762,7 @@ def test_step_table_write(tmpdir):
     path = str(tmpdir.join("table.json"))
 
     # Write
-    source = Resource(path="data/transform.csv")
+    source = Resource("data/transform.csv")
     transform(
         source,
         steps=[
