@@ -6,6 +6,7 @@ import zipfile
 from pathlib import Path
 from frictionless import Package, Resource, Layout, describe_package, helpers
 from frictionless import FrictionlessException
+from frictionless.plugins.sql import SqlDialect
 
 
 # General
@@ -767,18 +768,14 @@ def test_package_to_yaml(tmpdir):
 @pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_package_to_zip(tmpdir):
-
-    # Write
-    target = os.path.join(tmpdir, "package.zip")
-    package = Package("data/package.json")
-    package.to_zip(target)
-
-    # Read
-    package = Package.from_zip(target)
-    assert package.name == "name"
-    assert package.get_resource("name").name == "name"
-    assert package.get_resource("name").path == "table.csv"
-    assert package.get_resource("name").read_rows() == [
+    path = os.path.join(tmpdir, "package.zip")
+    source = Package("data/package.json")
+    source.to_zip(path)
+    target = Package.from_zip(path)
+    assert target.name == "name"
+    assert target.get_resource("name").name == "name"
+    assert target.get_resource("name").path == "table.csv"
+    assert target.get_resource("name").read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
@@ -786,18 +783,13 @@ def test_package_to_zip(tmpdir):
 
 @pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-def test_package_to_zip_withdir_path(tmpdir):
-
-    # Write
-    target = os.path.join(tmpdir, "package.zip")
-    resource = Resource(path="data/table.csv")
-    package = Package(resources=[resource])
-    package.to_zip(target)
-
-    # Read
-    package = Package.from_zip(target)
-    assert package.get_resource("table").path == "data/table.csv"
-    assert package.get_resource("table").read_rows() == [
+def test_package_to_zip_resource_path(tmpdir):
+    path = os.path.join(tmpdir, "package.zip")
+    source = Package(resources=[Resource(path="data/table.csv")])
+    source.to_zip(path)
+    target = Package.from_zip(path)
+    assert target.get_resource("table").path == "data/table.csv"
+    assert target.get_resource("table").read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
@@ -805,18 +797,13 @@ def test_package_to_zip_withdir_path(tmpdir):
 
 @pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-def test_package_to_zip_absolute_path(tmpdir):
-
-    # Write
-    target = os.path.join(tmpdir, "package.zip")
-    resource = Resource(path=os.path.abspath("data/table.csv"))
-    package = Package(resources=[resource])
-    package.to_zip(target)
-
-    # Read
-    package = Package.from_zip(target)
-    assert package.get_resource("table").path == "table.csv"
-    assert package.get_resource("table").read_rows() == [
+def test_package_to_zip_resource_remote_path(tmpdir):
+    path = os.path.join(tmpdir, "package.zip")
+    source = Package(resources=[Resource(path=BASEURL % "data/table.csv")])
+    source.to_zip(path)
+    target = Package.from_zip(path)
+    assert target.get_resource("table").path == BASEURL % "data/table.csv"
+    assert target.get_resource("table").read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
@@ -824,107 +811,14 @@ def test_package_to_zip_absolute_path(tmpdir):
 
 @pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-def test_package_to_zip_resolve_memory(tmpdir):
-
-    # Write
-    target = os.path.join(tmpdir, "package.zip")
-    resource = Resource(name="table", data=[["id", "name"], [1, "english"], [2, "中国人"]])
-    package = Package(resources=[resource])
-    package.to_zip(target, resolve=["memory"])
-
-    # Read
-    package = Package.from_zip(target)
-    assert package.get_resource("table").path == "table.csv"
-    assert package.get_resource("table").read_rows() == [
-        {"id": 1, "name": "english"},
-        {"id": 2, "name": "中国人"},
-    ]
-
-
-@pytest.mark.xfail(reason="zipping services")
-@pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-def test_package_to_zip_resolve_memory_sql(tmpdir, database_url):
-
-    # Write
-    target = os.path.join(tmpdir, "package.zip")
-    resource = Resource(database_url, dialect={"table": "table"})
-    package = Package(resources=[resource])
-    package.to_zip(target, resolve=["memory"])
-
-    # Read
-    package = Package.from_zip(target)
-    assert package.get_resource("table").path == "table.csv"
-    assert package.get_resource("table").read_rows() == [
-        {"id": 1, "name": "english"},
-        {"id": 2, "name": "中国人"},
-    ]
-
-
-@pytest.mark.vcr
-@pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-def test_package_to_zip_resolve_remote(tmpdir):
-
-    # Write
-    target = os.path.join(tmpdir, "package.zip")
-    resource = Resource(path=BASEURL % "data/table.csv")
-    package = Package(resources=[resource])
-    package.to_zip(target, resolve=["remote"])
-
-    # Read
-    package = Package.from_zip(target)
-    assert package.get_resource("table").path == "table.csv"
-    assert package.get_resource("table").read_rows() == [
-        {"id": 1, "name": "english"},
-        {"id": 2, "name": "中国人"},
-    ]
-
-
-@pytest.mark.vcr
-@pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-def test_package_to_zip_resolve_memory_and_remote(tmpdir):
-
-    # Write
-    target = os.path.join(tmpdir, "package.zip")
-    resource1 = Resource(name="name1", data=[["id", "name"], [1, "english"], [2, "中国人"]])
-    resource2 = Resource(name="name2", path=BASEURL % "data/table.csv")
-    package = Package(resources=[resource1, resource2])
-    package.to_zip(target, resolve=["memory", "remote"])
-
-    # Read
-    package = Package.from_zip(target)
-    assert package.get_resource("name1").path == "name1.csv"
-    assert package.get_resource("name1").read_rows() == [
-        {"id": 1, "name": "english"},
-        {"id": 2, "name": "中国人"},
-    ]
-    assert package.get_resource("name2").path == "name2.csv"
-    assert package.get_resource("name2").read_rows() == [
-        {"id": 1, "name": "english"},
-        {"id": 2, "name": "中国人"},
-    ]
-
-
-@pytest.mark.vcr
-@pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-def test_package_to_zip_source_remote(tmpdir):
-
-    # Write
-    path = BASEURL % "data/table.csv"
-    target = os.path.join(tmpdir, "package.zip")
-    package = Package(name="name", resources=[{"name": "name", "path": path}])
-    package.to_zip(target)
-
-    # Read
-    package = Package.from_zip(target)
-    assert package == {
-        "name": "name",
-        "resources": [{"name": "name", "path": path}],
-    }
-    assert package.get_resource("name").read_rows() == [
+def test_package_to_zip_resource_memory_inline(tmpdir):
+    path = os.path.join(tmpdir, "package.zip")
+    data = [["id", "name"], [1, "english"], [2, "中国人"]]
+    source = Package(resources=[Resource(name="table", data=data)])
+    source.to_zip(path)
+    target = Package.from_zip(path)
+    assert target.get_resource("table").data == data
+    assert target.get_resource("table").read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
@@ -932,21 +826,43 @@ def test_package_to_zip_source_remote(tmpdir):
 
 @pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-def test_package_to_zip_source_inline(tmpdir):
+def test_package_to_zip_resource_memory_function(tmpdir):
+    path = os.path.join(tmpdir, "package.zip")
+    data = lambda: [["id", "name"], [1, "english"], [2, "中国人"]]
+    source = Package(resources=[Resource(name="table", data=data)])
+    source.to_zip(path)
+    target = Package.from_zip(path)
+    assert target.get_resource("table").path == "table.csv"
+    assert target.get_resource("table").read_rows() == [
+        {"id": 1, "name": "english"},
+        {"id": 2, "name": "中国人"},
+    ]
 
-    # Read
-    target = os.path.join(tmpdir, "package.zip")
-    data = [["id", "name"], ["1", "english"], ["2", "中国人"]]
-    package = Package(name="name", resources=[{"name": "name", "data": data}])
-    package.to_zip(target)
 
-    # Write
-    package = Package.from_zip(target)
-    assert package == {
-        "name": "name",
-        "resources": [{"name": "name", "data": data}],
-    }
-    assert package.get_resource("name").read_rows() == [
+@pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
+def test_package_to_zip_resource_sql(tmpdir, database_url):
+    path = os.path.join(tmpdir, "package.zip")
+    dialect = SqlDialect(table="table")
+    source = Package(resources=[Resource(database_url, name="table", dialect=dialect)])
+    source.to_zip(path)
+    target = Package.from_zip(path)
+    assert target.get_resource("table").path == database_url
+    assert target.get_resource("table").read_rows() == [
+        {"id": 1, "name": "english"},
+        {"id": 2, "name": "中国人"},
+    ]
+
+
+@pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
+def test_package_to_zip_resource_multipart(tmpdir, database_url):
+    path = os.path.join(tmpdir, "package.zip")
+    source = Package(resources=[Resource(path=["data/chunk1.csv", "data/chunk2.csv"])])
+    source.to_zip(path)
+    target = Package.from_zip(path)
+    assert target.get_resource("chunk").path == ["data/chunk1.csv", "data/chunk2.csv"]
+    assert target.get_resource("chunk").read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
