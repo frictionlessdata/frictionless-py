@@ -13,7 +13,7 @@ In Frictionless terms, "Describing data" means creating metadata for your data f
 - data relations e.g., identifier connections
 - and others
 
-For a dataset, there is even more information that can be provided, like the general purpose of a dataset, information about data sources, list of authors, and more. Also, when there are many tabular files, relational rules can be very important. Usually, there are foreign keys ensuring the integrity of the dataset; for example, think of a reference table containing country names and other tables using it as a reference. Data in this form is called "normalized data" and it occurs very often in scientific and other kinds of research.
+For a dataset, there is even more information that can be provided, like the general purpose of a dataset, information about data sources, list of authors, and more. Also, when there are many tabular files, relational rules can be very important. Usually, there are foreign keys ensuring the integrity of the dataset; for example, think of a reference table containing country names and other data tables using it as a reference. Data in this form is called "normalized data" and it occurs very often in scientific and other kinds of research.
 
 Now that we have a general understanding of what "describing data" is, we can discuss why it is important:
 - **data validation**: metadata helps to reveal problems in your data during early stages of your workflow
@@ -76,7 +76,7 @@ resources:
 
 ## Describing Schema
 
-Table Schema is a specification for providing a "schema" (similar to a database schema) for tabular data. This information includes the expected data type for each value in a column ("string", "number", "date", etc.), constraints on the value ("this string can only be at most 10 characters long"), and the expected format of the data ("this field should only contain strings that look like email addresses"). Table Schema can also specify relations between tables.
+Table Schema is a specification for providing a "schema" (similar to a database schema) for tabular data. This information includes the expected data type for each value in a column ("string", "number", "date", etc.), constraints on the value ("this string can only be at most 10 characters long"), and the expected format of the data ("this field should only contain strings that look like email addresses"). Table Schema can also specify relations between data tables.
 
 We're going to use this file for the examples in this section. For this guide, we only use CSV files because of their demonstrativeness, but in-general Frictionless can handle data in Excel, JSON, SQL, and many other formats:
 
@@ -182,7 +182,7 @@ To continue learning about table schemas please read:
 
 ## Describing Resource
 
-The Data Resource format describes a data resource such as an individual file or table.
+The Data Resource format describes a data resource such as an individual file or data table.
 The essence of a Data Resource is a locator for the data it describes.
 A range of other properties can be declared to provide a richer set of metadata.
 
@@ -232,7 +232,7 @@ schema:
       type: string
 ```
 
-OK, that's clearly wrong. As we have seen in the "Introductory Guide" Frictionless is capable of inferring some complicated cases' metadata but our table is too complex for it to automatically infer. We need to manually program it:
+OK, that looks wrong -- for example, the schema has only inferred one field, and that field does not seem correct either. As we have seen in the "Introductory Guide" Frictionless is capable of inferring some complicated cases' metadata but our data table is too complex for it to automatically infer. We need to manually program it:
 
 ```python title="Python"
 from frictionless import Schema, describe
@@ -319,7 +319,7 @@ In addition to this descriptor, a data package will include other resources such
 
 The data included in the package may be provided as:
 - Files bundled locally with the package descriptor
-- Remote resources, referenced by URL
+- Remote resources, referenced by URL (see the [schemes tutorial](https://framework.frictionlessdata.io/docs/tutorials/schemes/local-tutorial) for more information about supported URLs)
 - "Inline" data (see below) which is included directly in the descriptor
 
 For this section, we will use the following files:
