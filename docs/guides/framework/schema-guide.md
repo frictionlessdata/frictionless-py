@@ -91,7 +91,7 @@ schema.to_yaml('schema.yaml') # Save as YAML
 
 ## Reading Cells
 
-During the process of data reading a resource useses a schema to convert data:
+During the process of data reading a resource uses a schema to convert data:
 
 ```python title="Python"
 from frictionless import Schema, Field
@@ -102,7 +102,7 @@ schema.read_cells(['3', 'value']) # [3, 'value']
 
 ## Writing Cells
 
-During the process of data writing a resource useses a schema to convert data:
+During the process of data writing a resource uses a schema to convert data:
 
 ```python title="Python"
 from frictionless import Schema, Field
