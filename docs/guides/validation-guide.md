@@ -54,7 +54,7 @@ The high-level interface for validating data provided by Frictionless is a set o
 - `validate_schema`: validates a schema's metadata
 - `validate_resource`: validates a resource's data and metadata
 - `validate_package`: validates a package's data and metadata
-- `validate_inquiry`: validates a special `Inquery` object which represents a validation task instruction
+- `validate_inquiry`: validates a special `Inquiry` object which represents a validation task instruction
 
 In the command-line, there is only 1 command but there is a flag to adjust the behavior:
 
@@ -66,7 +66,7 @@ frictionless validate --type package
 frictionless validate --type inquiry
 ```
 
-## Validating Schema
+## Validating a Schema
 
 The `validate_schema` function is the only function validating solely metadata. To see this work, let's create a invalid table schema:
 
@@ -97,7 +97,7 @@ schema-error  The data source could not be successfully described by the invalid
 
 We see that the schema is invalid and the error is displayed. Schema validation can be very useful when you work with different classes of tables and create schemas for them. Using this function will ensure that the metadata is valid.
 
-## Validating Resource
+## Validating a Resource
 
 As it was shown in the ["Describing Data" guide](https://framework.frictionlessdata.io/docs/guides/describing-data), a resource is a container having both metadata and data. We need to create a resource descriptor and then we can validate it:
 
@@ -161,7 +161,7 @@ None  None   byte-count-error  The data source does not match the expected byte 
 
 ```
 
-## Validating Package
+## Validating a Package
 
 A package is a set of resources + additional metadata. To showcase a package validation we need to use one more tabular file:
 
@@ -206,7 +206,7 @@ valid: ./data/capital-valid.csv
 
 As we can see, the result is pretty straight-forward and expected: we have one invalid resource and one valid resource. One important note regarding the package validation: if there is more than one resource, it will use multiprocessing to speed up the process.
 
-## Validating Inquiry
+## Validating an Inquiry
 
 Inquiry gives you an ability to create arbitrary validation jobs containing a set of individual validation tasks. Let's create an Inquiry that includes an individual file validation and a resource validation:
 
