@@ -4,9 +4,9 @@ title: Transform Guide
 
 > This guide assumes basic familiarity with the Frictionless Framework. To learn more, please read the [Introduction](https://framework.frictionlessdata.io/docs/guides/introduction) and [Quick Start](https://framework.frictionlessdata.io/docs/guides/quick-start).
 
-Transforming data in Frictionless means modifying data and metadata from  state A to state B. For example, it could be a messy Excel file we need to transform to a cleaned CSV file or a folder of data files we want to update and save as a data package.
+Transforming data in Frictionless means modifying data and metadata from state A to state B. For example, it could be transforming a messy Excel file to a cleaned CSV file. Or updating a folder of data files to a data package we can publish.
 
-For the core transform functions Frictionless uses the amazing [PETL](https://petl.readthedocs.io/en/stable/) project under the hood. This library provides lazy-loading functionality in running data pipelines. On top of it Frictionless adds metadata management and a bridge between already familiar concepts like Package/Resource and PETL's processors.
+For the core transform functions, Frictionless uses the amazing [PETL](https://petl.readthedocs.io/en/stable/) project under the hood. This library provides lazy-loading functionality in running data pipelines. On top of it Frictionless adds metadata management and a bridge between already familiar concepts like Package/Resource and PETL's processors.
 
 Frictionless supports a few different kinds of data and metadata transformations:
 - resource and package transformations
@@ -28,11 +28,11 @@ id,name,population
 
 ## Transform Functions
 
-The high-level interface for transforming data provided by Frictionless is a set of `transform` functions:
+The high-level interface to transform data is a set of `transform` functions:
 - `transform`: detects the source type and transforms data accordingly
 - `transform_resource`: transforms a resource
 - `transform_package`: transforms a package
-- `transform_pipeline`: transforms resource or package based on a declarative pipeline definition
+- `transform_pipeline`: transforms a resource or package based on a declarative pipeline definition
 
 ## Transforming Resource
 
@@ -73,7 +73,7 @@ There are dozens of other available steps that will be covered below.
 
 ## Transforming Package
 
-Transforming a package is not much more difficult than a resource. Basically, a package is a set of resources so we will be transforming resources exactly the same way as we did above and we will be managing the resources list itself, adding or removing them:
+A package is a set of resources. Transforming a package means adding or removing resources and/or transforming those resources themselves:
 
 > NOTE: This example is about to be fixed in https://github.com/frictionlessdata/frictionless-py/issues/715.
 
@@ -119,7 +119,7 @@ A pipeline is a metadata object having one of these types:
 - package
 - others (depending on custom plugins you use)
 
-For resource and package types it's basically the same functionality as we have seen above but written declaratively. So let's run the same resource transformation as we did in the `Transforming Resource` section:
+For resource and package types it's basically the same functionality as we have seen above, but written declaratively. So let's run the same resource transformation as we did in the `Transforming Resource` section:
 
 ```python title="Python"
 pipeline = Pipeline(
@@ -152,7 +152,7 @@ pprint(status.task.target.read_rows())
  {'name': 'spain', 'variable': 'population', 'value': 47}]
 ```
 
-And as we had expected we got the same result.
+It returns the same result as in `Transform resource`.
 
 ## Transform Principles
 
@@ -168,19 +168,19 @@ There are plenty of great ETL-frameworks written in Python and other languages. 
 
 ### Data Streaming
 
-Whenever it's possible Frictionless streams the data instead of reading it into memory. For example, for sorting big tables we use a memory usage threshold and when it is met we use a file system to unload the data. The ability to stream data gives users power to work with files of any size.
+Whenever possible, Frictionless streams the data instead of reading it into memory. For example, for sorting big tables we use a memory usage threshold and when it is met we use the file system to unload the data. The ability to stream data gives users power to work with files of any size.
 
 ### Lazy Evaluation
 
-Unlike some systems like `Data Package Pipelines`, the core Frictionless Transform doesn't have a back-pressured flow as all data manipulation happens on-demand. For example, if you transform a data package containing 10 big csv files but you only need to reshape one table Frictionless will not even read other tables. Actually, when you call `target = transform(source)` it does almost nothing until a data reading call like `target.read_rows()` is made.
+Unlike some systems like `Data Package Pipelines`, the core Frictionless Transform doesn't have a back-pressured flow, since all data manipulation happens on-demand. For example, if you reshape one table in a data package containing 10 big csv files, Frictionless will not even read the 9 other tables. Actually, when you call `target = transform(source)` it does almost nothing until a data reading call like `target.read_rows()` is made.
 
 ### Lean Processing
 
-Similar to the section above, Frictionless tries to be as explicit as possible regarding actions taken. For example, it will not use CPU resources to cast data unless a user adds a "normalize" step, "validate" step, or similar steps. So it's possible to transform a rather big file without even casting types, for example, if you only need to reshape it.
+Similar to the section above, Frictionless tries to be as explicit as possible regarding actions taken. For example, it will not use CPU resources to cast data unless a user adds a `normalize` step, `validate` step, or similar steps. So it's possible to transform a rather big file without even casting types, for example, if you only need to reshape it.
 
 ## Available Steps
 
-Frictionless includes more than 40+ built-in transform steps. They are grouped by the object so you can find them easily if you have code auto completion. Start typing, for example, `steps.table...` and you will see all the available steps. The groups are listed below and you will find every group described in more detail in the next sections. It's also possible to write custom transform steps. Please read the section below to learn more about it.
+Frictionless includes more than 40+ built-in transform steps. They are grouped by the object so you can find them easily using code auto completion. For example, start typing `steps.table...` and you will see all the available steps for that group. The available groups are:
 
 - resource
 - table
@@ -188,7 +188,7 @@ Frictionless includes more than 40+ built-in transform steps. They are grouped b
 - row
 - cell
 
-See [Transform Steps](transform-steps.md) for a list of available steps.
+See [Transform Steps](transform-steps.md) for a list of all available steps. It is also possible to write custom transform steps: see the next section.
 
 ## Custom Steps
 
