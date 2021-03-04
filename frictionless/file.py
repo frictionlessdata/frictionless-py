@@ -133,7 +133,7 @@ class File:
                         part = os.path.join(self.__basepath, part)
                     fullpath.append(part)
             else:  # for string paths
-                if not helpers.is_remote_path(path):
+                if not helpers.is_remote_path(path) and "://" not in path:
                     fullpath = os.path.join(self.__basepath, path)
 
         # Detect name

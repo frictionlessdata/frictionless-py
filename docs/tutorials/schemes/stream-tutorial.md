@@ -14,7 +14,7 @@ You can read Stream using `Package/Resource` or `Table` API, for example:
 from frictionless import Resource
 
 with open('data/table.csv', 'rb') as file:
-  resource = Resource(path=file, format='csv')
+  resource = Resource(file, format='csv')
   print(resource.read_rows())
 ```
 

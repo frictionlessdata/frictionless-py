@@ -80,8 +80,6 @@ There are dozens of other available steps that will be covered below.
 
 A package is a set of resources. Transforming a package means adding or removing resources and/or transforming those resources themselves:
 
-> NOTE: This example is about to be fixed in https://github.com/frictionlessdata/frictionless-py/issues/715.
-
 ```python title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
@@ -93,19 +91,22 @@ source = Package(resources=[Resource(name='main', path="data/transform.csv")])
 target = transform(
     source,
     steps=[
-        steps.resource_add(name='extra', path='data/transform.csv'),
-        steps.resource_transform(name='main', steps=[
-            steps.table_merge(resource='extra'),
-            steps.row_sort(field_names=['id'])
-        ]),
+        steps.resource_add(name="extra", path="data/transform.csv"),
+        steps.resource_transform(
+            name="main",
+            steps=[
+                steps.table_merge(resource="extra"),
+                steps.row_sort(field_names=["id"]),
+            ],
+        ),
         steps.resource_remove(name="extra"),
     ],
 )
 
 # Print resulting resources, schema and data
 pprint(target.resource_names)
-pprint(target.get_resource('main').schema)
-pprint(target.get_resource('main').read_rows())
+pprint(target.get_resource("main").schema)
+pprint(target.get_resource("main").read_rows())
 ```
 ```
 ['main']
@@ -132,6 +133,9 @@ A pipeline is a metadata object having one of these types:
 For resource and package types it's basically the same functionality as we have seen above, but written declaratively. So let's run the same resource transformation as we did in the `Transforming Resource` section:
 
 ```python title="Python"
+from pprint import pprint
+from frictionless import Pipeline, transform
+
 pipeline = Pipeline(
     {
         "tasks": [
@@ -204,18 +208,23 @@ See [Transform Steps](transform-steps.md) for a list of all available steps. It 
 
 Here is an example of a custom step written as a Python function:
 
-> NOTE: This example is about to be fixed in https://github.com/frictionlessdata/frictionless-py/issues/715.
-
 ```python title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
 def step(resource):
-    with resource:
-        resource.schema.remove_field("id")
-        for row in resource.row_stream:
-            del row["id"]
-            yield row
+    current = resource.to_copy()
+
+    # Data
+    def data():
+        with current:
+            for list in current.list_stream:
+                yield list[1:]
+
+    # Meta
+    resource.data = data
+    resource.schema.remove_field("id")
+
 
 source = Resource("data/transform.csv")
 target = transform(source, steps=[step])
