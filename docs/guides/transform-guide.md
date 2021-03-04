@@ -42,7 +42,10 @@ Let's write our first transform. It's as straightforward as defining a source re
 from pprint import pprint
 from frictionless import Resource, transform, steps
 
+# Define source resource
 source = Resource(path="data/transform.csv")
+
+# Apply transform steps
 target = transform(
     source,
     steps=[
@@ -50,6 +53,8 @@ target = transform(
         steps.table_melt(field_name="name"),
     ],
 )
+
+# Print resulting schema and data
 pprint(target.schema)
 pprint(target.read_rows())
 ```
@@ -81,7 +86,10 @@ A package is a set of resources. Transforming a package means adding or removing
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
+# Define source package
 source = Package(resources=[Resource(name='main', path="data/transform.csv")])
+
+# Apply transform steps
 target = transform(
     source,
     steps=[
@@ -93,6 +101,8 @@ target = transform(
         steps.resource_remove(name="extra"),
     ],
 )
+
+# Print resulting resources, schema and data
 pprint(target.resource_names)
 pprint(target.get_resource('main').schema)
 pprint(target.get_resource('main').read_rows())
