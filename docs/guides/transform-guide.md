@@ -12,7 +12,7 @@ Frictionless supports a few different kinds of data and metadata transformations
 - resource and package transformations
 - transformations based on a declarative pipeline
 
-The main difference between these three is that resource and package transforms are imperative while pipelines can be created beforehand or shared as a JSON file.
+The main difference between these is that resource and package transforms are imperative while pipelines can be created beforehand or shared as a JSON file.
 
 > Download [`transform.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/transform.csv) into the `data` folder to reproduce the examples.
 
@@ -119,7 +119,7 @@ A pipeline is a metadata object having one of these types:
 - package
 - others (depending on custom plugins you use)
 
-For resource and package types it's basically the same functionality as we have seen above but written declaratively. So let's run the same resource transformation as we did in the `Tranforming Resource` section:
+For resource and package types it's basically the same functionality as we have seen above but written declaratively. So let's run the same resource transformation as we did in the `Transforming Resource` section:
 
 ```python title="Python"
 pipeline = Pipeline(
