@@ -1,17 +1,22 @@
 ---
 title: Basic Examples
+goodread:
+  clean:
+    - countries.csv
+    - countries.resource.yaml
 ---
 
 > This example assumes that you are familiar with the concepts behind the Frictionless Framework. For an introduction, please read the [Introduction](introduction.md).
 
 Let's start with an example dataset. We will look at a few raw data files that have recently been collected by an anthropologist. The anthropologist wants to publish this data in an open repository so her colleagues can also use this data. Before publishing the data, she wants to add metadata and check the data for errors. We are here to help, so let’s start by exploring the data. We see that the quality of data is far from perfect. In fact, the first row contains comments from the anthropologist! To be able to use this data, we need to clean it up a bit.
 
-> Download [`countries.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/countries.csv) into the `data` folder to reproduce the examples
+> Download [`countries.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/countries.csv) into the `data` folder to reproduce the examples.
 
-```bash title="CLI"
-cat data/countries.csv
+```bash goodread title="CLI"
+cp data/countries.csv countries.csv
+cat countries.csv
 ```
-```csv title="data/countries.csv"
+```csv title="countries.csv"
 # clean this data!
 id,neighbor_id,name,population
 1,Ireland,Britain,67
@@ -33,26 +38,23 @@ First of all, we're going to describe our dataset. Frictionless uses powerful [F
 
 Let's describe the `countries` table:
 
-```bash title="CLI"
-frictionless describe data/countries.csv
-frictionless describe data/countries.csv --stats # to get also stats (optional)
+```bash goodread title="CLI"
+frictionless describe countries.csv # add --stats to get metrics
 ```
-
 ```yaml
----
-metadata: data/countries.csv
----
+# --------
+# metadata: countries.csv
+# --------
 
-path: data/countries.csv
 encoding: utf-8
 format: csv
-scheme: file
 hashing: md5
-name: countries
-profile: tabular-data-resource
 layout:
   headerRows:
     - 2
+name: countries
+path: countries.csv
+profile: tabular-data-resource
 schema:
   fields:
     - name: id
@@ -63,7 +65,8 @@ schema:
       type: string
     - name: population
       type: string
- ```
+scheme: file
+```
 
 As we can see, Frictionless was smart enough to understand that the first row contains a comment. It's good, but we still have a few problems:
 - we use `n/a` as a missing values marker
@@ -73,34 +76,33 @@ As we can see, Frictionless was smart enough to understand that the first row co
 
 Let's update our metadata and save it to the disc:
 
-```python title="Python"
+```python goodread title="Python"
 from frictionless import Detector, describe
 
 detector = Detector(field_missing_values=["", "n/a"])
-resource = describe("data/countries.csv", detector=detector)
+resource = describe("countries.csv", detector=detector)
 resource.schema.get_field("neighbor_id").type = "integer"
 resource.schema.foreign_keys.append(
     {"fields": ["neighbor_id"], "reference": {"resource": "", "fields": ["id"]}}
 )
-resource.to_yaml("tmp/countries.resource.yaml")
+resource.to_yaml("countries.resource.yaml")
 ```
 
 Let's see what we have created:
 
-```bash title="CLI"
-cat tmp/countries.resource.yaml
+```bash goodread title="CLI"
+cat countries.resource.yaml
 ```
 ```yaml
 encoding: utf-8
 format: csv
-scheme: file
 hashing: md5
-name: countries
-path: data/countries.csv
-profile: tabular-data-resource
 layout:
   headerRows:
     - 2
+name: countries
+path: countries.csv
+profile: tabular-data-resource
 schema:
   fields:
     - name: id
@@ -121,6 +123,7 @@ schema:
   missingValues:
     - ''
     - n/a
+scheme: file
 ```
 
 It has the same metadata as we saw above but also includes our editing related to missing values and data types. We didn't change all the wrong data types manually because providing proper missing values had fixed it automatically. Now we have a resource descriptor. In the next section, we will show why metadata matters and how to use it.
@@ -129,14 +132,13 @@ It has the same metadata as we saw above but also includes our editing related t
 
 It's time to try extracting our data as a table. As a first naive attempt, we will ignore the metadata we saved on the previous step:
 
-
-```bash title="CLI"
-frictionless extract data/countries.csv
+```bash goodread title="CLI"
+frictionless extract countries.csv
 ```
 ```
----
-data: data/countries.csv
----
+# ----
+# data: countries.csv
+# ----
 
 ==  ===========  =======  ==========
 id  neighbor_id  name     population
@@ -156,13 +158,13 @@ Actually, it doesn't look terrible, but in reality, data like this is not quite 
 
 Let's use the metadata we save to try extracting data with the help of Frictionless Data specifications:
 
-```bash title="CLI"
-frictionless extract tmp/countries.resource.yaml --basepath .
+```bash goodread title="CLI"
+frictionless extract countries.resource.yaml
 ```
 ```
----
-data: tmp/countries.resource.yaml
----
+# ----
+# data: countries.resource.yaml
+# ----
 
 ==  ===========  =======  ==========
 id  neighbor_id  name     population
@@ -181,13 +183,13 @@ It's now much better! Numerical fields are numerical fields, and there are no mo
 
 Data validation with Frictionless is as easy as describing or extracting data:
 
-```bash title="CLI"
-frictionless validate data/countries.csv
+```bash goodread title="CLI"
+frictionless validate countries.csv
 ```
 ```
----
-invalid: data/countries.csv
----
+# -------
+# invalid: countries.csv
+# -------
 
 ===  =====  ============  =============================================================================
 row  field  code          message
@@ -201,24 +203,24 @@ row  field  code          message
 
 Ahh, we had seen that coming. The data is not valid; there are some missing and extra cells. But wait a minute, in the first step, we created the metadata file with more information about our table. We have to use it.
 
-```bash title="CLI"
-frictionless validate tmp/countries.resource.yaml --basepath .
+```bash goodread title="CLI"
+frictionless validate countries.resource.yaml
 ```
 ```
----
-invalid: ./data/countries.csv
----
+# -------
+# invalid: countries.csv
+# -------
 
-===  =====  =================  ==================================================================================================================================
+===  =====  =================  ==============================================================================================================
 row  field  code               message
-===  =====  =================  ==================================================================================================================================
-  3      2  type-error         The cell "Ireland" in row at position "3" and field "neighbor_id" at position "2" has incompatible type: type is "integer/default"
+===  =====  =================  ==============================================================================================================
+  3      2  type-error         Type error in the cell "Ireland" in row "3" and field "neighbor_id" at position "2": type is "integer/default"
   4      5  extra-cell         Row at position "4" has an extra value in field at position "5"
-  5  None   foreign-key-error  The row at position "5" does not conform to the foreign key constraint: not found in the lookup table
+  5  None   foreign-key-error  Row at position "5" violates the foreign key: not found in the lookup table
   7      2  missing-cell       Row at position "7" has a missing cell in field "neighbor_id" at position "2"
   7      3  missing-cell       Row at position "7" has a missing cell in field "name" at position "3"
   7      4  missing-cell       Row at position "7" has a missing cell in field "population" at position "4"
-===  =====  =================  ==================================================================================================================================
+===  =====  =================  ==============================================================================================================
 ```
 
 Now it's even worse, but regarding data validation errors, the more, the better, actually. Thanks to the metadata, we were able to reveal some critical errors:
@@ -233,34 +235,41 @@ We will use metadata to fix all the data type problems automatically. The only t
 - France's population
 - Germany's neighborhood
 
-```python title="Python"
+```python goodread title="Python"
 from frictionless import Resource, describe, transform, steps
 
 def clean(resource):
-    with resource:
-        resource.schema = Resource("tmp/countries.resource.yaml").schema
-        for row in resource.row_stream:
-            if row["name"] == "France":
-                row["population"] = 67
-            if row["name"] == "Germany":
-                row["neighbor_id"] = 2
-            if row["name"]:
-                yield row
+    current = resource.to_copy()
 
-source = describe("data/countries.csv")
+    # Data
+    def data():
+        with current:
+            for row in current.row_stream:
+                if row["name"] == "France":
+                    row["population"] = 67
+                if row["name"] == "Germany":
+                    row["neighbor_id"] = 2
+                if row["name"]:
+                    yield row
+
+    # Meta
+    resource.schema = Resource("countries.resource.yaml").schema
+    resource.data = data
+
+source = describe("countries.csv")
 target = transform(
     source,
     steps=[
         clean,
-        steps.table_write(path="data/countries.csv"),
+        steps.table_write(path="countries.csv"),
     ],
 )
 ```
 
 Finally, we've got the cleaned version of our data, which can be exported to a database or published. We have used a CSV as an output format but could have used Excel, JSON, SQL, and others.
 
-```bash title="CLI"
-cat data/countries.csv
+```bash goodread title="CLI"
+cat countries.csv
 ```
 ```
 id,neighbor_id,name,population
@@ -272,13 +281,12 @@ id,neighbor_id,name,population
 
 Basically, that's it; now, we have a valid data file and a corresponding metadata file. It can be shared with other people or stored without fear of type errors or other problems making data research not reproducible.
 
-
-```bash title="CLI"
-ls -la data/countries.csv tmp/countries.resource.yaml
+```bash goodread title="CLI"
+ls -la countries.csv countries.resource.yaml
 ```
 ```
--rw------- 1 roll roll  91 дек  2 11:42 data/countries.csv
--rw------- 1 roll roll 926 дек  2 11:41 tmp/countries.resource.yaml
+-rw------- 1 roll roll  91 Mar  4 13:11 countries.csv
+-rw------- 1 roll roll 483 Mar  4 13:11 countries.resource.yaml
 ```
 
 In the next articles, we will explore more advanced Frictionless' functionality.

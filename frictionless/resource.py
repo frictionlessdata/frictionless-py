@@ -691,10 +691,12 @@ class Resource(Metadata):
             stats? (bool): stream file completely and infer stats
         """
         if not self.closed:
-            raise FrictionlessException("Resource.infer canot be used on a open resource")
+            note = "Resource.infer canot be used on a open resource"
+            raise FrictionlessException(errors.ResourceError(note=note))
         with self:
             if not stats:
-                return self.pop("stats", None)
+                self.pop("stats", None)
+                return
             stream = self.row_stream or self.byte_stream
             helpers.pass_through(stream)
 
@@ -1023,7 +1025,10 @@ class Resource(Metadata):
         self.__fragment = fragment
         self.__field_positions = field_positions
         self.__fragment_positions = fragment_positions
-        self.stats["fields"] = len(self.schema.fields)
+        self.stats["fields"] = len(schema.fields)
+        # NOTE: review whether it's a proper place for this fallback to data resource
+        if not schema:
+            self.profile = "data-resource"
 
     def __read_detect_lookup(self):
         lookup = {}
@@ -1071,14 +1076,20 @@ class Resource(Metadata):
 
     # Import/Export
 
+    def to_dict(self):
+        # Data can be not serializable (generators/functions)
+        descriptor = super().to_dict()
+        data = descriptor.pop("data", None)
+        if isinstance(data, list):
+            descriptor["data"] = data
+        return descriptor
+
     def to_copy(self, **options):
         """Create a copy of the resource"""
         descriptor = self.to_dict()
-        # Data can be not serializable (generators/functions)
-        data = descriptor.pop("data", None)
         return Resource(
             descriptor,
-            data=data,
+            data=self.data,
             basepath=self.__basepath,
             onerror=self.__onerror,
             trusted=self.__trusted,

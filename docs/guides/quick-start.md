@@ -2,18 +2,18 @@
 title: Quick Start
 ---
 
-Let's get started with Frictionless! We will learn how to install and use the framework. The simple example below will showcase the framework's basic functionality. For an introduction to concepts behind the Frictionless Framework, please read the [Frictionless Introduction](introduction.md).
+Let's get started with Frictionless! We will learn how to install and use the framework. The simple example below will showcase the framework's basic functionality. For an introduction to the concepts behind the Frictionless Framework, please read the [Frictionless Introduction](introduction.md).
 
 ## Installation
 
-> The framework requires Python3.6+. Versioning follows the [SemVer Standard](https://semver.org/)
+> The framework requires Python3.6+. Versioning follows the [SemVer Standard](https://semver.org/).
 
 ```bash title="CLI"
 pip install frictionless
 pip install frictionless[sql] # to install a core plugin (optional)
 ```
 
-The framework supports CSV, Excel, and JSON formats by default. Please use the command above to install a core plugin and add support for SQL, Pandas, HTML, and others (check the [list of Frictionless Framework plugins and their status](https://framework.frictionlessdata.io/docs/references/plugins-reference)). Usually, you don't need to think about it in advance–frictionless will display a useful error message about a missing plugin with installation instructions.
+The framework supports CSV, Excel, and JSON formats by default. The second command above installs a plugin for SQL support. There are plugins for SQL, Pandas, HTML, and others (check the [list of Frictionless Framework plugins and their status](https://framework.frictionlessdata.io/docs/references/plugins-reference)). Usually, you don't need to think about it in advance–frictionless will display a useful error message about a missing plugin with installation instructions.
 
 ### Troubleshooting
 
@@ -65,11 +65,11 @@ frictionless transform --help
 
 ## Example
 
-> For more examples, use the [Basic Examples](basic-examples.md)
+> For more examples, use the [Basic Examples](basic-examples.md).
 
 We will take a very messy data file:
 
-> Download [`invalid.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/invalid.csv) into the `data` folder to reproduce the examples
+> Download [`invalid.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/invalid.csv) into the `data` folder to reproduce the examples.
 
 ```bash title="CLI"
 cat data/invalid.csv

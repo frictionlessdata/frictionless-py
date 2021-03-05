@@ -78,7 +78,7 @@ Table Schema is a specification for providing a "schema" (similar to a database 
 
 We're going to use this file for the examples in this section. For this guide, we only use CSV files because of their demonstrativeness, but in-general Frictionless can handle data in Excel, JSON, SQL, and many other formats:
 
-> Download [`country-1.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/country-1.csv) into the `data` folder to reproduce the examples
+> Download [`country-1.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/country-1.csv) into the `data` folder to reproduce the examples.
 
 ```bash title="CLI"
 cat data/country-1.csv
@@ -186,7 +186,7 @@ A range of other properties can be declared to provide a richer set of metadata.
 
 For this section, we will use a file that is slightly more complex to handle. For some reason, cells are separated by the ";" char and there is a comment on the top:
 
-> Download [`country-2.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/country-2.csv) into the `data` folder to reproduce the examples
+> Download [`country-2.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/country-2.csv) into the `data` folder to reproduce the examples.
 
 ```bash title="CLI"
 cat data/country-2.csv
@@ -322,7 +322,7 @@ The data included in the package may be provided as:
 
 For this section, we will use the following files:
 
-> Download [`country-3.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/country-3.csv) into the `data` folder to reproduce the examples
+> Download [`country-3.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/country-3.csv) into the `data` folder to reproduce the examples.
 
 ```bash title="CLI"
 cat data/country-3.csv
@@ -336,7 +336,7 @@ id,capital_id,name,population
 5,4,Spain,47
 ```
 
-> Download [`capital-3.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/capital-3.csv) into the `data` folder to reproduce the examples
+> Download [`capital-3.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/capital-3.csv) into the `data` folder to reproduce the examples.
 
 ```bash title="CLI"
 cat data/capital-3.csv
@@ -572,7 +572,7 @@ pprint(resource)
 
 Frictionless always tries to be as explicit as possible. We didn't provide any metadata except for `path` so we got the expected result. But now, we'd like to `infer` additional metadata:
 
-> Note that we use the `stats` argument for the `resource.infer` function. We can ask for stats using CLI with `frictionless describe data/table.csv --stats`
+> Note that we use the `stats` argument for the `resource.infer` function. We can ask for stats using CLI with `frictionless describe data/table.csv --stats`.
 
 
 ```python title="Python"
