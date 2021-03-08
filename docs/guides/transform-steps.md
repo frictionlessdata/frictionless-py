@@ -2,11 +2,11 @@
 title: Transform Steps
 ---
 
-> This guide assumes basic familiarity with the Frictionless Framework. To learn more, please read the [Introduction](https://framework.frictionlessdata.io/docs/guides/introduction) and [Quick Start](https://framework.frictionlessdata.io/docs/guides/quick-start)
+> This guide assumes basic familiarity with the Frictionless Framework. To learn more, please read the [Introduction](https://framework.frictionlessdata.io/docs/guides/introduction) and [Quick Start](https://framework.frictionlessdata.io/docs/guides/quick-start).
 
 Frictionless includes more than 40+ built-in transform steps. They are grouped by the object so you can find them easily if you have code auto completion. Start typing, for example, `steps.table...` and you will see all the available steps. The groups are listed below and you will find every group described in more detail in the next sections. It's also possible to write custom transform steps. Please read the section below to learn more about it.  Let's prepare the data that we need to show how the checks below work:
 
-> Download [`transform.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/transform.csv) into the `data` folder to reproduce the examples
+> Download [`transform.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/transform.csv) into the `data` folder to reproduce the examples.
 
 ```bash title="CLI"
 cat data/transform.csv
@@ -18,7 +18,7 @@ id,name,population
 3,spain,47
 ```
 
-> Download [`transform-groups.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/transform-groups.csv) into the `data` folder to reproduce the examples
+> Download [`transform-groups.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/transform-groups.csv) into the `data` folder to reproduce the examples.
 
 ```bash title="CLI"
 cat data/transform-groups.csv
@@ -33,7 +33,7 @@ id,name,population,year
 6,spain,33,1920
 ```
 
-> Download [`transform-pivot.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/transform-pivot.csv) into the `data` folder to reproduce the examples
+> Download [`transform-pivot.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/transform-pivot.csv) into the `data` folder to reproduce the examples.
 
 ```bash title="CLI"
 cat data/transform-pivot.csv
@@ -87,7 +87,6 @@ pprint(target.get_resource('extra').read_rows())
 
 ### Remove Resource
 
-
 ```python title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
@@ -106,7 +105,6 @@ pprint(target)
 ```
 
 ### Transform Resource
-
 
 ```python title="Python"
 from pprint import pprint
@@ -142,7 +140,6 @@ pprint(target.get_resource('main').read_rows())
 ```
 
 ### Update Resource
-
 
 ```python title="Python"
 from pprint import pprint
@@ -183,7 +180,6 @@ These steps are meant to be used on a table level of a resource. This includes v
 
 ### Aggregate Table
 
-
 ```python title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
@@ -210,7 +206,6 @@ pprint(target.read_rows())
 
 ### Attach Tables
 
-
 ```python title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
@@ -236,7 +231,6 @@ pprint(target.read_rows())
 ```
 
 ### Debug Table
-
 
 ```python title="Python"
 from pprint import pprint
@@ -358,7 +352,6 @@ pprint(target.read_rows())
 
 ### Melt Table
 
-
 ```python title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
@@ -387,7 +380,6 @@ pprint(target.read_rows())
 ```
 
 ### Merge Tables
-
 
 ```python title="Python"
 from pprint import pprint
@@ -520,7 +512,6 @@ pprint(target.read_rows())
 
 ### Validate Table
 
-
 ```python title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
@@ -645,7 +636,6 @@ pprint(target.read_rows())
 
 ### Move Field
 
-
 ```python title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
@@ -720,7 +710,6 @@ pprint(target.read_rows())
 ```
 
 ### Unpack Field
-
 
 ```python title="Python"
 from pprint import pprint
