@@ -48,6 +48,7 @@ class System:
         "create_check",
         "create_control",
         "create_dialect",
+        "create_error",
         "create_file",
         "create_loader",
         "create_parser",
@@ -110,6 +111,26 @@ class System:
             if dialect is not None:
                 return dialect
         return Dialect(descriptor)
+
+    def create_error(self, descriptor):
+        """Create errors
+
+        Parameters:
+            descriptor (dict): error descriptor
+
+        Returns:
+            Error: error
+        """
+        code = descriptor.get("code", "")
+        for func in self.methods["create_error"].values():
+            error = func(descriptor)
+            if error is not None:
+                return error
+        for Class in vars(import_module("frictionless.errors")).values():
+            if getattr(Class, "code", None) == code:
+                return Class(descriptor)
+        note = f'cannot create error "{code}". Try installing "frictionless-{code}"'
+        raise FrictionlessException(errors.Error(note=note))
 
     def create_file(self, source, **options):
         """Create file

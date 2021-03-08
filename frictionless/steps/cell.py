@@ -19,17 +19,18 @@ class cell_convert(Step):
     # Transform
 
     def transform_resource(self, resource):
+        view = resource.to_petl()
         field_name = self.get("fieldName")
         function = self.get("function")
         value = self.get("value")
         if not field_name:
             if not function:
                 function = lambda input: value
-            yield from resource.to_petl().convertall(function)
+            resource.data = view.convertall(function)
         elif function:
-            yield from resource.to_petl().convert(field_name, function)
+            resource.data = view.convert(field_name, function)
         else:
-            yield from resource.to_petl().update(field_name, value)
+            resource.data = view.update(field_name, value)
 
     # Metadata
 
@@ -56,20 +57,21 @@ class cell_fill(Step):
     # Transform
 
     def transform_resource(self, resource):
+        view = resource.to_petl()
         value = self.get("value")
         field_name = self.get("fieldName")
         direction = self.get("direction")
         if value:
-            yield from resource.to_petl().convert(field_name, {None: value})
+            resource.data = view.convert(field_name, {None: value})
         elif direction == "down":
             if field_name:
-                yield from resource.to_petl().filldown(field_name)
+                resource.data = view.filldown(field_name)
             else:
-                yield from resource.to_petl().filldown()
+                resource.data = view.filldown()
         elif direction == "right":
-            yield from resource.to_petl().fillright()
+            resource.data = view.fillright()
         elif direction == "left":
-            yield from resource.to_petl().fillleft()
+            resource.data = view.fillleft()
 
     # Metadata
 
@@ -95,12 +97,13 @@ class cell_format(Step):
     # Transform
 
     def transform_resource(self, resource):
+        view = resource.to_petl()
         field_name = self.get("fieldName")
         template = self.get("template")
         if not field_name:
-            yield from resource.to_petl().formatall(template)
+            resource.data = view.formatall(template)
         else:
-            yield from resource.to_petl().format(field_name, template)
+            resource.data = view.format(field_name, template)
 
     # Metadata
 
@@ -127,10 +130,11 @@ class cell_interpolate(Step):
     def transform_resource(self, resource):
         template = self.get("template")
         field_name = self.get("fieldName")
+        view = resource.to_petl()
         if not field_name:
-            yield from resource.to_petl().interpolateall(template)
+            resource.data = view.interpolateall(template)
         else:
-            yield from resource.to_petl().interpolate(field_name, template)
+            resource.data = view.interpolate(field_name, template)
 
     # Metadata
 
@@ -156,18 +160,19 @@ class cell_replace(Step):
     # Transform
 
     def transform_resource(self, resource):
+        view = resource.to_petl()
         pattern = self.get("pattern")
         replace = self.get("replace")
         field_name = self.get("fieldName")
         if not field_name:
-            yield from resource.to_petl().replaceall(pattern, replace)
+            resource.data = view.replaceall(pattern, replace)
         else:
             pattern = pattern
             function = petl.replace
             if pattern.startswith("<regex>"):
                 pattern = pattern.replace("<regex>", "")
                 function = petl.sub
-            yield from function(resource.to_petl(), field_name, pattern, replace)
+            resource.data = function(view, field_name, pattern, replace)
 
     # Metadata
 
@@ -191,9 +196,10 @@ class cell_set(Step):
         super().__init__(descriptor)
 
     def transform_resource(self, resource):
+        view = resource.to_petl()
         value = self.get("value")
         field_name = self.get("fieldName")
-        yield from resource.to_petl().update(field_name, value)
+        resource.data = view.update(field_name, value)
 
     # Metadata
 

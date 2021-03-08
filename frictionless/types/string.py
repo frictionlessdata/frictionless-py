@@ -1,4 +1,5 @@
 import base64
+import rfc3986
 import validators
 from ..type import Type
 
@@ -30,7 +31,10 @@ class StringType(Type):
         if self.field.format == "default":
             return cell
         elif self.field.format == "uri":
-            if not validators.url(cell):
+            uri = rfc3986.uri_reference(cell)
+            try:
+                uri_validator.validate(uri)
+            except rfc3986.exceptions.ValidationError:
                 return None
         elif self.field.format == "email":
             if not validators.email(cell):
@@ -49,3 +53,8 @@ class StringType(Type):
 
     def write_cell(self, cell):
         return cell
+
+
+# Internal
+
+uri_validator = rfc3986.validators.Validator().require_presence_of("scheme")

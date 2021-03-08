@@ -5,8 +5,7 @@ from frictionless import Resource, transform, steps
 
 
 def test_step_row_filter():
-    source = Resource(path="data/transform.csv")
-    source.infer()
+    source = Resource("data/transform.csv")
     target = transform(
         source,
         steps=[
@@ -14,7 +13,13 @@ def test_step_row_filter():
             steps.row_filter(formula="id > 1"),
         ],
     )
-    assert target.schema == source.schema
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+        ]
+    }
     assert target.read_rows() == [
         {"id": 2, "name": "france", "population": 66},
         {"id": 3, "name": "spain", "population": 47},
@@ -22,8 +27,7 @@ def test_step_row_filter():
 
 
 def test_step_row_filter_with_function():
-    source = Resource(path="data/transform.csv")
-    source.infer()
+    source = Resource("data/transform.csv")
     target = transform(
         source,
         steps=[
@@ -31,7 +35,13 @@ def test_step_row_filter_with_function():
             steps.row_filter(function=lambda row: row["id"] > 1),
         ],
     )
-    assert target.schema == source.schema
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+        ]
+    }
     assert target.read_rows() == [
         {"id": 2, "name": "france", "population": 66},
         {"id": 3, "name": "spain", "population": 47},
@@ -39,8 +49,7 @@ def test_step_row_filter_with_function():
 
 
 def test_step_row_filter_petl_selectop():
-    source = Resource(path="data/transform.csv")
-    source.infer()
+    source = Resource("data/transform.csv")
     target = transform(
         source,
         steps=[
@@ -48,15 +57,20 @@ def test_step_row_filter_petl_selectop():
             steps.row_filter(formula="id == 1"),
         ],
     )
-    assert target.schema == source.schema
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+        ]
+    }
     assert target.read_rows() == [
         {"id": 1, "name": "germany", "population": 83},
     ]
 
 
 def test_step_row_filter_petl_selecteq():
-    source = Resource(path="data/transform.csv")
-    source.infer()
+    source = Resource("data/transform.csv")
     target = transform(
         source,
         steps=[
@@ -64,15 +78,20 @@ def test_step_row_filter_petl_selecteq():
             steps.row_filter(formula="id == 1"),
         ],
     )
-    assert target.schema == source.schema
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+        ]
+    }
     assert target.read_rows() == [
         {"id": 1, "name": "germany", "population": 83},
     ]
 
 
 def test_step_row_filter_petl_selectne():
-    source = Resource(path="data/transform.csv")
-    source.infer()
+    source = Resource("data/transform.csv")
     target = transform(
         source,
         steps=[
@@ -80,7 +99,13 @@ def test_step_row_filter_petl_selectne():
             steps.row_filter(formula="id != 1"),
         ],
     )
-    assert target.schema == source.schema
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+        ]
+    }
     assert target.read_rows() == [
         {"id": 2, "name": "france", "population": 66},
         {"id": 3, "name": "spain", "population": 47},
@@ -88,8 +113,7 @@ def test_step_row_filter_petl_selectne():
 
 
 def test_step_row_filter_petl_selectlt():
-    source = Resource(path="data/transform.csv")
-    source.infer()
+    source = Resource("data/transform.csv")
     target = transform(
         source,
         steps=[
@@ -97,15 +121,20 @@ def test_step_row_filter_petl_selectlt():
             steps.row_filter(formula="id < 2"),
         ],
     )
-    assert target.schema == source.schema
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+        ]
+    }
     assert target.read_rows() == [
         {"id": 1, "name": "germany", "population": 83},
     ]
 
 
 def test_step_row_filter_petl_selectle():
-    source = Resource(path="data/transform.csv")
-    source.infer()
+    source = Resource("data/transform.csv")
     target = transform(
         source,
         steps=[
@@ -113,7 +142,13 @@ def test_step_row_filter_petl_selectle():
             steps.row_filter(formula="id <= 2"),
         ],
     )
-    assert target.schema == source.schema
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+        ]
+    }
     assert target.read_rows() == [
         {"id": 1, "name": "germany", "population": 83},
         {"id": 2, "name": "france", "population": 66},
@@ -121,8 +156,7 @@ def test_step_row_filter_petl_selectle():
 
 
 def test_step_row_filter_petl_selectgt():
-    source = Resource(path="data/transform.csv")
-    source.infer()
+    source = Resource("data/transform.csv")
     target = transform(
         source,
         steps=[
@@ -130,15 +164,20 @@ def test_step_row_filter_petl_selectgt():
             steps.row_filter(formula="id > 2"),
         ],
     )
-    assert target.schema == source.schema
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+        ]
+    }
     assert target.read_rows() == [
         {"id": 3, "name": "spain", "population": 47},
     ]
 
 
 def test_step_row_filter_petl_selectge():
-    source = Resource(path="data/transform.csv")
-    source.infer()
+    source = Resource("data/transform.csv")
     target = transform(
         source,
         steps=[
@@ -146,7 +185,13 @@ def test_step_row_filter_petl_selectge():
             steps.row_filter(formula="id >= 2"),
         ],
     )
-    assert target.schema == source.schema
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+        ]
+    }
     assert target.read_rows() == [
         {"id": 2, "name": "france", "population": 66},
         {"id": 3, "name": "spain", "population": 47},
@@ -154,8 +199,7 @@ def test_step_row_filter_petl_selectge():
 
 
 def test_step_row_filter_petl_selectrangeopen():
-    source = Resource(path="data/transform.csv")
-    source.infer()
+    source = Resource("data/transform.csv")
     target = transform(
         source,
         steps=[
@@ -163,7 +207,13 @@ def test_step_row_filter_petl_selectrangeopen():
             steps.row_filter(formula="1 <= id <= 3"),
         ],
     )
-    assert target.schema == source.schema
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+        ]
+    }
     assert target.read_rows() == [
         {"id": 1, "name": "germany", "population": 83},
         {"id": 2, "name": "france", "population": 66},
@@ -172,8 +222,7 @@ def test_step_row_filter_petl_selectrangeopen():
 
 
 def test_step_row_filter_petl_selectrangeopenleft():
-    source = Resource(path="data/transform.csv")
-    source.infer()
+    source = Resource("data/transform.csv")
     target = transform(
         source,
         steps=[
@@ -181,7 +230,13 @@ def test_step_row_filter_petl_selectrangeopenleft():
             steps.row_filter(formula="1 <= id < 3"),
         ],
     )
-    assert target.schema == source.schema
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+        ]
+    }
     assert target.read_rows() == [
         {"id": 1, "name": "germany", "population": 83},
         {"id": 2, "name": "france", "population": 66},
@@ -189,8 +244,7 @@ def test_step_row_filter_petl_selectrangeopenleft():
 
 
 def test_step_row_filter_petl_selectrangeopenright():
-    source = Resource(path="data/transform.csv")
-    source.infer()
+    source = Resource("data/transform.csv")
     target = transform(
         source,
         steps=[
@@ -198,7 +252,13 @@ def test_step_row_filter_petl_selectrangeopenright():
             steps.row_filter(formula="1 < id <= 3"),
         ],
     )
-    assert target.schema == source.schema
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+        ]
+    }
     assert target.read_rows() == [
         {"id": 2, "name": "france", "population": 66},
         {"id": 3, "name": "spain", "population": 47},
@@ -206,8 +266,7 @@ def test_step_row_filter_petl_selectrangeopenright():
 
 
 def test_step_row_filter_petl_selectrangeclosed():
-    source = Resource(path="data/transform.csv")
-    source.infer()
+    source = Resource("data/transform.csv")
     target = transform(
         source,
         steps=[
@@ -215,30 +274,40 @@ def test_step_row_filter_petl_selectrangeclosed():
             steps.row_filter(formula="1 < id < 3"),
         ],
     )
-    assert target.schema == source.schema
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+        ]
+    }
     assert target.read_rows() == [
         {"id": 2, "name": "france", "population": 66},
     ]
 
 
 def test_step_row_filter_petl_selectcontains():
-    source = Resource(path="data/transform.csv")
-    source.infer()
+    source = Resource("data/transform.csv")
     target = transform(
         source,
         steps=[
             steps.row_filter(formula="'er' in name"),
         ],
     )
-    assert target.schema == source.schema
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+        ]
+    }
     assert target.read_rows() == [
         {"id": 1, "name": "germany", "population": 83},
     ]
 
 
 def test_step_row_filter_petl_selectin():
-    source = Resource(path="data/transform.csv")
-    source.infer()
+    source = Resource("data/transform.csv")
     target = transform(
         source,
         steps=[
@@ -246,15 +315,20 @@ def test_step_row_filter_petl_selectin():
             steps.row_filter(formula="id in [1]"),
         ],
     )
-    assert target.schema == source.schema
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+        ]
+    }
     assert target.read_rows() == [
         {"id": 1, "name": "germany", "population": 83},
     ]
 
 
 def test_step_row_filter_petl_selectnoin():
-    source = Resource(path="data/transform.csv")
-    source.infer()
+    source = Resource("data/transform.csv")
     target = transform(
         source,
         steps=[
@@ -262,15 +336,20 @@ def test_step_row_filter_petl_selectnoin():
             steps.row_filter(formula="id not in [2, 3]"),
         ],
     )
-    assert target.schema == source.schema
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+        ]
+    }
     assert target.read_rows() == [
         {"id": 1, "name": "germany", "population": 83},
     ]
 
 
 def test_step_row_filter_petl_selectis():
-    source = Resource(path="data/transform.csv")
-    source.infer()
+    source = Resource("data/transform.csv")
     target = transform(
         source,
         steps=[
@@ -278,15 +357,20 @@ def test_step_row_filter_petl_selectis():
             steps.row_filter(formula="id is 1"),
         ],
     )
-    assert target.schema == source.schema
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+        ]
+    }
     assert target.read_rows() == [
         {"id": 1, "name": "germany", "population": 83},
     ]
 
 
 def test_step_row_filter_petl_selectisnot():
-    source = Resource(path="data/transform.csv")
-    source.infer()
+    source = Resource("data/transform.csv")
     target = transform(
         source,
         steps=[
@@ -294,7 +378,13 @@ def test_step_row_filter_petl_selectisnot():
             steps.row_filter(formula="id is not 1"),
         ],
     )
-    assert target.schema == source.schema
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+        ]
+    }
     assert target.read_rows() == [
         {"id": 2, "name": "france", "population": 66},
         {"id": 3, "name": "spain", "population": 47},
@@ -302,8 +392,7 @@ def test_step_row_filter_petl_selectisnot():
 
 
 def test_step_row_filter_petl_selectisinstance():
-    source = Resource(path="data/transform.csv")
-    source.infer()
+    source = Resource("data/transform.csv")
     target = transform(
         source,
         steps=[
@@ -311,7 +400,13 @@ def test_step_row_filter_petl_selectisinstance():
             steps.row_filter(function=lambda row: isinstance(row["id"], int)),
         ],
     )
-    assert target.schema == source.schema
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+        ]
+    }
     assert target.read_rows() == [
         {"id": 1, "name": "germany", "population": 83},
         {"id": 2, "name": "france", "population": 66},
@@ -320,15 +415,20 @@ def test_step_row_filter_petl_selectisinstance():
 
 
 def test_step_row_filter_petl_selectistrue():
-    source = Resource(path="data/transform.csv")
-    source.infer()
+    source = Resource("data/transform.csv")
     target = transform(
         source,
         steps=[
             steps.row_filter(function=lambda row: bool(row["id"])),
         ],
     )
-    assert target.schema == source.schema
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+        ]
+    }
     assert target.read_rows() == [
         {"id": 1, "name": "germany", "population": 83},
         {"id": 2, "name": "france", "population": 66},
@@ -337,41 +437,56 @@ def test_step_row_filter_petl_selectistrue():
 
 
 def test_step_row_filter_petl_selectisfalse():
-    source = Resource(path="data/transform.csv")
-    source.infer()
+    source = Resource("data/transform.csv")
     target = transform(
         source,
         steps=[
             steps.row_filter(function=lambda row: not bool(row["id"])),
         ],
     )
-    assert target.schema == source.schema
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+        ]
+    }
     assert target.read_rows() == []
 
 
 def test_step_row_filter_petl_selectnone():
-    source = Resource(path="data/transform.csv")
-    source.infer()
+    source = Resource("data/transform.csv")
     target = transform(
         source,
         steps=[
             steps.row_filter(formula="id is None"),
         ],
     )
-    assert target.schema == source.schema
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+        ]
+    }
     assert target.read_rows() == []
 
 
 def test_step_row_filter_petl_selectisnone():
-    source = Resource(path="data/transform.csv")
-    source.infer()
+    source = Resource("data/transform.csv")
     target = transform(
         source,
         steps=[
             steps.row_filter(formula="id is not None"),
         ],
     )
-    assert target.schema == source.schema
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+        ]
+    }
     assert target.read_rows() == [
         {"id": 1, "name": "germany", "population": 83},
         {"id": 2, "name": "france", "population": 66},
@@ -380,15 +495,20 @@ def test_step_row_filter_petl_selectisnone():
 
 
 def test_step_row_filter_petl_rowlenselect():
-    source = Resource(path="data/transform.csv")
-    source.infer()
+    source = Resource("data/transform.csv")
     target = transform(
         source,
         steps=[
             steps.row_filter(function=lambda row: len(row) == 3),
         ],
     )
-    assert target.schema == source.schema
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+        ]
+    }
     assert target.read_rows() == [
         {"id": 1, "name": "germany", "population": 83},
         {"id": 2, "name": "france", "population": 66},
@@ -400,45 +520,60 @@ def test_step_row_filter_petl_rowlenselect():
 
 
 def test_step_row_search():
-    source = Resource(path="data/transform.csv")
-    source.infer()
+    source = Resource("data/transform.csv")
     target = transform(
         source,
         steps=[
             steps.row_search(regex=r"^f.*"),
         ],
     )
-    assert target.schema == source.schema
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+        ]
+    }
     assert target.read_rows() == [
         {"id": 2, "name": "france", "population": 66},
     ]
 
 
 def test_step_row_search_with_name():
-    source = Resource(path="data/transform.csv")
-    source.infer()
+    source = Resource("data/transform.csv")
     target = transform(
         source,
         steps=[
             steps.row_search(regex=r"^f.*", field_name="name"),
         ],
     )
-    assert target.schema == source.schema
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+        ]
+    }
     assert target.read_rows() == [
         {"id": 2, "name": "france", "population": 66},
     ]
 
 
 def test_step_row_search_with_negate():
-    source = Resource(path="data/transform.csv")
-    source.infer()
+    source = Resource("data/transform.csv")
     target = transform(
         source,
         steps=[
             steps.row_search(regex=r"^f.*", negate=True),
         ],
     )
-    assert target.schema == source.schema
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+        ]
+    }
     assert target.read_rows() == [
         {"id": 1, "name": "germany", "population": 83},
         {"id": 3, "name": "spain", "population": 47},
@@ -449,15 +584,20 @@ def test_step_row_search_with_negate():
 
 
 def test_step_row_slice():
-    source = Resource(path="data/transform.csv")
-    source.infer()
+    source = Resource("data/transform.csv")
     target = transform(
         source,
         steps=[
             steps.row_slice(stop=2),
         ],
     )
-    assert target.schema == source.schema
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+        ]
+    }
     assert target.read_rows() == [
         {"id": 1, "name": "germany", "population": 83},
         {"id": 2, "name": "france", "population": 66},
@@ -465,45 +605,60 @@ def test_step_row_slice():
 
 
 def test_step_row_slice_with_start():
-    source = Resource(path="data/transform.csv")
-    source.infer()
+    source = Resource("data/transform.csv")
     target = transform(
         source,
         steps=[
             steps.row_slice(start=1, stop=2),
         ],
     )
-    assert target.schema == source.schema
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+        ]
+    }
     assert target.read_rows() == [
         {"id": 2, "name": "france", "population": 66},
     ]
 
 
 def test_step_row_slice_with_start_and_step():
-    source = Resource(path="data/transform.csv")
-    source.infer()
+    source = Resource("data/transform.csv")
     target = transform(
         source,
         steps=[
             steps.row_slice(start=1, stop=3, step=2),
         ],
     )
-    assert target.schema == source.schema
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+        ]
+    }
     assert target.read_rows() == [
         {"id": 2, "name": "france", "population": 66},
     ]
 
 
 def test_step_row_slice_with_head():
-    source = Resource(path="data/transform.csv")
-    source.infer()
+    source = Resource("data/transform.csv")
     target = transform(
         source,
         steps=[
             steps.row_slice(head=2),
         ],
     )
-    assert target.schema == source.schema
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+        ]
+    }
     assert target.read_rows() == [
         {"id": 1, "name": "germany", "population": 83},
         {"id": 2, "name": "france", "population": 66},
@@ -511,15 +666,20 @@ def test_step_row_slice_with_head():
 
 
 def test_step_row_slice_with_tail():
-    source = Resource(path="data/transform.csv")
-    source.infer()
+    source = Resource("data/transform.csv")
     target = transform(
         source,
         steps=[
             steps.row_slice(tail=2),
         ],
     )
-    assert target.schema == source.schema
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+        ]
+    }
     assert target.read_rows() == [
         {"id": 2, "name": "france", "population": 66},
         {"id": 3, "name": "spain", "population": 47},
@@ -530,15 +690,20 @@ def test_step_row_slice_with_tail():
 
 
 def test_step_row_sort():
-    source = Resource(path="data/transform.csv")
-    source.infer()
+    source = Resource("data/transform.csv")
     target = transform(
         source,
         steps=[
             steps.row_sort(field_names=["name"]),
         ],
     )
-    assert target.schema == source.schema
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+        ]
+    }
     assert target.read_rows() == [
         {"id": 2, "name": "france", "population": 66},
         {"id": 1, "name": "germany", "population": 83},
@@ -547,15 +712,20 @@ def test_step_row_sort():
 
 
 def test_step_row_sort_with_reverse():
-    source = Resource(path="data/transform.csv")
-    source.infer()
+    source = Resource("data/transform.csv")
     target = transform(
         source,
         steps=[
             steps.row_sort(field_names=["id"], reverse=True),
         ],
     )
-    assert target.schema == source.schema
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+        ]
+    }
     assert target.read_rows() == [
         {"id": 3, "name": "spain", "population": 47},
         {"id": 2, "name": "france", "population": 66},
@@ -567,15 +737,20 @@ def test_step_row_sort_with_reverse():
 
 
 def test_step_row_split():
-    source = Resource(path="data/transform.csv")
-    source.infer()
+    source = Resource("data/transform.csv")
     target = transform(
         source,
         steps=[
             steps.row_split(field_name="name", pattern="a"),
         ],
     )
-    assert target.schema == source.schema
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+        ]
+    }
     assert target.read_rows() == [
         {"id": 1, "name": "germ", "population": 83},
         {"id": 1, "name": "ny", "population": 83},
@@ -590,21 +765,25 @@ def test_step_row_split():
 
 
 def test_step_row_subset_conflicts():
-    source = Resource(path="data/transform.csv")
-    source.infer()
+    source = Resource("data/transform.csv")
     target = transform(
         source,
         steps=[
             steps.row_subset(subset="conflicts", field_name="id"),
         ],
     )
-    assert target.schema == source.schema
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+        ]
+    }
     assert target.read_rows() == []
 
 
 def test_step_row_subset_conflicts_with_duplicates():
-    source = Resource(path="data/transform.csv")
-    source.infer()
+    source = Resource("data/transform.csv")
     target = transform(
         source,
         steps=[
@@ -612,7 +791,13 @@ def test_step_row_subset_conflicts_with_duplicates():
             steps.row_subset(subset="conflicts", field_name="id"),
         ],
     )
-    assert target.schema == source.schema
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+        ]
+    }
     assert target.read_rows() == [
         {"id": 1, "name": "germany", "population": 83},
         {"id": 1, "name": "france", "population": 66},
@@ -621,15 +806,20 @@ def test_step_row_subset_conflicts_with_duplicates():
 
 
 def test_step_row_subset_distinct():
-    source = Resource(path="data/transform.csv")
-    source.infer()
+    source = Resource("data/transform.csv")
     target = transform(
         source,
         steps=[
             steps.row_subset(subset="distinct", field_name="id"),
         ],
     )
-    assert target.schema == source.schema
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+        ]
+    }
     assert target.read_rows() == [
         {"id": 1, "name": "germany", "population": 83},
         {"id": 2, "name": "france", "population": 66},
@@ -638,8 +828,7 @@ def test_step_row_subset_distinct():
 
 
 def test_step_row_subset_distinct_with_duplicates():
-    source = Resource(path="data/transform.csv")
-    source.infer()
+    source = Resource("data/transform.csv")
     target = transform(
         source,
         steps=[
@@ -647,28 +836,38 @@ def test_step_row_subset_distinct_with_duplicates():
             steps.row_subset(subset="distinct", field_name="id"),
         ],
     )
-    assert target.schema == source.schema
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+        ]
+    }
     assert target.read_rows() == [
         {"id": 1, "name": "germany", "population": 83},
     ]
 
 
 def test_step_row_subset_duplicates():
-    source = Resource(path="data/transform.csv")
-    source.infer()
+    source = Resource("data/transform.csv")
     target = transform(
         source,
         steps=[
             steps.row_subset(subset="duplicates"),
         ],
     )
-    assert target.schema == source.schema
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+        ]
+    }
     assert target.read_rows() == []
 
 
 def test_step_row_subset_duplicates_with_name():
-    source = Resource(path="data/transform.csv")
-    source.infer()
+    source = Resource("data/transform.csv")
     target = transform(
         source,
         steps=[
@@ -676,7 +875,13 @@ def test_step_row_subset_duplicates_with_name():
             steps.row_subset(subset="duplicates", field_name="id"),
         ],
     )
-    assert target.schema == source.schema
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+        ]
+    }
     assert target.read_rows() == [
         {"id": 1, "name": "germany", "population": 83},
         {"id": 1, "name": "france", "population": 66},
@@ -685,15 +890,20 @@ def test_step_row_subset_duplicates_with_name():
 
 
 def test_step_row_subset_unique():
-    source = Resource(path="data/transform.csv")
-    source.infer()
+    source = Resource("data/transform.csv")
     target = transform(
         source,
         steps=[
             steps.row_subset(subset="unique"),
         ],
     )
-    assert target.schema == source.schema
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+        ]
+    }
     assert target.read_rows() == [
         {"id": 1, "name": "germany", "population": 83},
         {"id": 2, "name": "france", "population": 66},
@@ -702,8 +912,7 @@ def test_step_row_subset_unique():
 
 
 def test_step_row_subset_unique_with_name():
-    source = Resource(path="data/transform.csv")
-    source.infer()
+    source = Resource("data/transform.csv")
     target = transform(
         source,
         steps=[
@@ -711,7 +920,13 @@ def test_step_row_subset_unique_with_name():
             steps.row_subset(subset="unique", field_name="id"),
         ],
     )
-    assert target.schema == source.schema
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+        ]
+    }
     assert target.read_rows() == []
 
 
@@ -719,15 +934,21 @@ def test_step_row_subset_unique_with_name():
 
 
 def test_step_row_ungroup_first():
-    source = Resource(path="data/transform-groups.csv")
-    source.infer()
+    source = Resource("data/transform-groups.csv")
     target = transform(
         source,
         steps=[
             steps.row_ungroup(group_name="name", selection="first"),
         ],
     )
-    assert target.schema == source.schema
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+            {"name": "year", "type": "integer"},
+        ]
+    }
     assert target.read_rows() == [
         {"id": 3, "name": "france", "population": 66, "year": 2020},
         {"id": 1, "name": "germany", "population": 83, "year": 2020},
@@ -736,15 +957,21 @@ def test_step_row_ungroup_first():
 
 
 def test_step_row_ungroup_last():
-    source = Resource(path="data/transform-groups.csv")
-    source.infer()
+    source = Resource("data/transform-groups.csv")
     target = transform(
         source,
         steps=[
             steps.row_ungroup(group_name="name", selection="last"),
         ],
     )
-    assert target.schema == source.schema
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+            {"name": "year", "type": "integer"},
+        ]
+    }
     assert target.read_rows() == [
         {"id": 4, "name": "france", "population": 54, "year": 1920},
         {"id": 2, "name": "germany", "population": 77, "year": 1920},
@@ -753,8 +980,7 @@ def test_step_row_ungroup_last():
 
 
 def test_step_row_ungroup_min():
-    source = Resource(path="data/transform-groups.csv")
-    source.infer()
+    source = Resource("data/transform-groups.csv")
     target = transform(
         source,
         steps=[
@@ -763,7 +989,14 @@ def test_step_row_ungroup_min():
             ),
         ],
     )
-    assert target.schema == source.schema
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+            {"name": "year", "type": "integer"},
+        ]
+    }
     assert target.read_rows() == [
         {"id": 4, "name": "france", "population": 54, "year": 1920},
         {"id": 2, "name": "germany", "population": 77, "year": 1920},
@@ -772,8 +1005,7 @@ def test_step_row_ungroup_min():
 
 
 def test_step_row_ungroup_max():
-    source = Resource(path="data/transform-groups.csv")
-    source.infer()
+    source = Resource("data/transform-groups.csv")
     target = transform(
         source,
         steps=[
@@ -782,7 +1014,14 @@ def test_step_row_ungroup_max():
             ),
         ],
     )
-    assert target.schema == source.schema
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+            {"name": "year", "type": "integer"},
+        ]
+    }
     assert target.read_rows() == [
         {"id": 3, "name": "france", "population": 66, "year": 2020},
         {"id": 1, "name": "germany", "population": 83, "year": 2020},

@@ -30,4 +30,9 @@ def validate(source, type=None, **options):
     if validate is None:
         note = f"Not supported validate type: {type}"
         raise FrictionlessException(errors.GeneralError(note=note))
+    # NOTE:
+    # Review whether it's a proper place for this (program sends a detector)
+    # We might resolve it when we convert Detector to be a metadata
+    if type in ["inquiry", "schema"]:
+        options.pop("detector", None)
     return validate(source, **options)
