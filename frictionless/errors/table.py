@@ -12,7 +12,6 @@ class TableError(Error):
 class FieldCountError(TableError):
     code = "field-count-error"
     name = "Field Count Error"
-    tags = ["#table"]
     template = "The data source does not match the expected field count: {note}"
     description = "This error can happen if the data is corrupted."
 
@@ -20,7 +19,6 @@ class FieldCountError(TableError):
 class RowCountError(TableError):
     code = "row-count-error"
     name = "Row Count Error"
-    tags = ["#table"]
     template = "The data source does not match the expected row count: {note}"
     description = "This error can happen if the data is corrupted."
 
@@ -28,6 +26,5 @@ class RowCountError(TableError):
 class DeviatedValueError(TableError):
     code = "deviated-value"
     name = "Deviated Value"
-    tags = ["#table"]
     template = "There is a possible error because the value is deviated: {note}"
     description = "The value is deviated."
