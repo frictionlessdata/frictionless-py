@@ -1,4 +1,4 @@
-from frictionless import Resource
+from frictionless import Resource, validate
 
 
 # Loader
@@ -31,3 +31,9 @@ def test_stream_loader_write():
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
         ]
+
+
+def test_stream_loader_validate_issue_740():
+    with open("data/table.csv", mode="rb") as file:
+        report = validate(file, format="csv")
+        assert report.valid

@@ -76,13 +76,33 @@ class StreamLoader(Loader):
     # Read
 
     def read_byte_stream_create(self):
-        data = self.resource.data
-        if hasattr(data, "encoding"):
+        if hasattr(self.resource.data, "encoding"):
             error = errors.SchemeError(note="only byte streams are supported")
             raise FrictionlessException(error)
-        return data
+        byte_stream = ReusableByteStream(self.resource.data)
+        return byte_stream
 
     # Write
 
     def write_byte_stream_save(self, byte_stream):
         self.resource.data = byte_stream
+
+
+# Internal
+
+
+class ReusableByteStream:
+    def __init__(self, byte_stream):
+        self.__byte_stream = byte_stream
+
+    def __getattr__(self, name):
+        return getattr(self.__byte_stream, name)
+
+    def read(self, size=-1):
+        if self.__byte_stream.closed:
+            try:
+                self.__byte_stream = open(self.__byte_stream.name, "rb")
+            except Exception:
+                note = "cannot re-open a byte stream: {self.__byte_stream}"
+                raise FrictionlessException(errors.SchemeError(note=note))
+        return self.__byte_stream.read(size)
