@@ -1,3 +1,4 @@
+import os
 from ..plugin import Plugin
 from ..loader import Loader
 from ..control import Control
@@ -76,10 +77,17 @@ class StreamLoader(Loader):
     # Read
 
     def read_byte_stream_create(self):
-        if hasattr(self.resource.data, "encoding"):
-            error = errors.SchemeError(note="only byte streams are supported")
-            raise FrictionlessException(error)
-        byte_stream = ReusableByteStream(self.resource.data)
+        byte_stream = self.resource.data
+        if not os.path.isfile(byte_stream.name):
+            note = f"only local streams are supported: {byte_stream}"
+            raise FrictionlessException(errors.SchemeError(note=note))
+        if hasattr(byte_stream, "encoding"):
+            try:
+                byte_stream = open(byte_stream.name, "rb")
+            except Exception:
+                note = f"cannot open a stream in the byte mode: {byte_stream}"
+                raise FrictionlessException(errors.SchemeError(note=note))
+        byte_stream = ReusableByteStream(byte_stream)
         return byte_stream
 
     # Write
