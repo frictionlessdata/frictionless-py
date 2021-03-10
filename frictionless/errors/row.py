@@ -51,7 +51,6 @@ class RowError(TableError):
 class BlankRowError(RowError):
     code = "blank-row"
     name = "Blank Row"
-    tags = ["#table", "#row"]
     template = 'Row at position "{rowPosition}" is completely blank'
     description = "This row is empty. A row should contain at least one value."
 
@@ -59,7 +58,6 @@ class BlankRowError(RowError):
 class PrimaryKeyError(RowError):
     code = "primary-key-error"
     name = "PrimaryKey Error"
-    tags = ["#table", "#row"]
     template = 'Row at position "{rowPosition}" violates the primary key: {note}'
     description = "Values in the primary key fields should be unique for every row"
 
@@ -67,7 +65,6 @@ class PrimaryKeyError(RowError):
 class ForeignKeyError(RowError):
     code = "foreign-key-error"
     name = "ForeignKey Error"
-    tags = ["#table", "#row"]
     template = 'Row at position "{rowPosition}" violates the foreign key: {note}'
     description = "Values in the foreign key fields should exist in the reference table"
 
@@ -75,7 +72,6 @@ class ForeignKeyError(RowError):
 class DuplicateRowError(RowError):
     code = "duplicate-row"
     name = "Duplicate Row"
-    tags = ["#table", "#row"]
     template = "Row at position {rowPosition} is duplicated: {note}"
     description = "The row is duplicated."
 
@@ -83,6 +79,5 @@ class DuplicateRowError(RowError):
 class RowConstraintError(RowError):
     code = "row-constraint"
     name = "Row Constraint"
-    tags = ["#table", "#row"]
     template = "The row at position {rowPosition} has an error: {note}"
     description = "The value does not conform to the row constraint."

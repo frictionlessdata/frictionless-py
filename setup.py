@@ -28,6 +28,7 @@ TESTS_REQUIRE = [
     "pytest",
     "ipython",
     "pymysql",
+    "goodread",
     "psycopg2",
     "pytest-cov",
     "pytest-vcr",

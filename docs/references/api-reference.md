@@ -999,6 +999,28 @@ Public   | `from frictionless import Field`
 
 - `Schema?` - parent schema
 
+### field.array\_item
+
+```python
+ | @Metadata.property
+ | array_item()
+```
+
+**Returns**:
+
+- `dict` - field descriptor
+
+### field.array\_item\_field
+
+```python
+ | @Metadata.property(write=False)
+ | array_item_field()
+```
+
+**Returns**:
+
+- `dict` - field descriptor
+
 ### field.true\_values
 
 ```python
