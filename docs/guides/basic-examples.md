@@ -282,11 +282,11 @@ id,neighbor_id,name,population
 Basically, that's it; now, we have a valid data file and a corresponding metadata file. It can be shared with other people or stored without fear of type errors or other problems making data research not reproducible.
 
 ```bash goodread title="CLI"
-ls -la countries.csv countries.resource.yaml
+ls countries.*
 ```
 ```
--rw------- 1 roll roll  91 Mar  4 13:11 countries.csv
--rw------- 1 roll roll 483 Mar  4 13:11 countries.resource.yaml
+countries.csv
+countries.resource.yaml
 ```
 
 In the next articles, we will explore more advanced Frictionless' functionality.
