@@ -1,4 +1,3 @@
-import io
 import os
 import sys
 import json
@@ -521,8 +520,8 @@ def test_resource_encoding_explicit_latin1():
 
 def test_resource_encoding_utf_16():
     # Bytes encoded as UTF-16 with BOM in platform order is detected
-    bio = io.BytesIO(u"en,English\nja,日本語".encode("utf-16"))
-    with Resource(bio, format="csv", layout={"header": False}) as resource:
+    source = "en,English\nja,日本語".encode("utf-16")
+    with Resource(source, format="csv", layout={"header": False}) as resource:
         assert resource.encoding == "utf-16"
         assert resource.read_rows() == [
             {"field1": "en", "field2": "English"},

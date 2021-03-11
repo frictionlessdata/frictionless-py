@@ -50,6 +50,13 @@ class Field(Metadata):
         missing_values=None,
         constraints=None,
         rdf_type=None,
+        array_item=None,
+        true_values=None,
+        false_values=None,
+        bare_number=None,
+        float_number=None,
+        decimal_char=None,
+        group_char=None,
         # Extra
         schema=None,
     ):
@@ -60,6 +67,14 @@ class Field(Metadata):
         self.setinitial("format", format)
         self.setinitial("missingValues", missing_values)
         self.setinitial("constraints", constraints)
+        self.setinitial("rdfType", rdf_type)
+        self.setinitial("arrayItem", array_item)
+        self.setinitial("trueValues", true_values)
+        self.setinitial("falseValues", false_values)
+        self.setinitial("bareNumber", bare_number)
+        self.setinitial("floatNumber", float_number)
+        self.setinitial("decimalChar", decimal_char)
+        self.setinitial("groupChar", group_char)
         self.setinitial("rdfType", rdf_type)
         self.__schema = schema
         self.__type = None
@@ -166,6 +181,28 @@ class Field(Metadata):
             Schema?: parent schema
         """
         return self.__schema
+
+    # Array
+
+    @Metadata.property
+    def array_item(self):
+        """
+        Returns:
+            dict: field descriptor
+        """
+        return self.get("arrayItem")
+
+    @Metadata.property(write=False)
+    def array_item_field(self):
+        """
+        Returns:
+            dict: field descriptor
+        """
+        if self.array_item:
+            if "arrayItem" in self.array_item:
+                note = 'Property "arrayItem" cannot be nested'
+                raise FrictionlessException(errors.FieldError(note=note))
+            return Field(self.array_item)
 
     # Boolean
 

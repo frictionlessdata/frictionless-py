@@ -20,7 +20,7 @@ class HeaderError(TableError):
 
     code = "header-error"
     name = "Header Error"
-    tags = ["table", "#header"]
+    tags = ["#table", "#header"]
     template = "Cell Error"
     description = "Cell Error"
 
@@ -40,6 +40,5 @@ class HeaderError(TableError):
 class BlankHeaderError(HeaderError):
     code = "blank-header"
     name = "Blank Header"
-    tags = ["table", "#header"]
     template = "Header is completely blank"
     description = "This header is empty. A header should contain at least one value."
