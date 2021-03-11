@@ -37,13 +37,15 @@ The frictionless framework provides 4 different `describe` functions in Python:
 - `describe_resource`: always returns Data Resource metadata
 - `describe_package`: always returns Data Package metadata
 
+As described in more detail in the [Introduction](https://framework.frictionlessdata.io/docs/guides/introduction), a resource is a single file, such as a data file, and a package is a set of files, such as a data file and a schema. 
+
 In the command-line, there is only 1 command (`describe`) but there is also a flag to adjust the behavior:
 
 ```bash title="CLI"
-frictionless describe
-frictionless describe --type schema
-frictionless describe --type resource
-frictionless describe --type package
+frictionless describe your-data.csv
+frictionless describe your-data.csv --type schema
+frictionless describe your-data.csv --type resource
+frictionless describe your-data.csv --type package
 ```
 
 For example, if we want a Data Package descriptor for a single file:
@@ -94,13 +96,13 @@ id,neighbor_id,name,population
 5,4,Spain,47
 ```
 
-Let's get a Table Schema using the Frictionless framework:
+Let's get a Table Schema using the Frictionless framework (note: this example uses YAML for the schema format, but Frictionless also supports JSON format):
 
 ```python title="Python"
 from frictionless import describe_schema
 
 schema = describe_schema("data/country-1.csv")
-schema.to_yaml("tmp/country.schema-simple.yaml")
+schema.to_yaml("tmp/country.schema-simple.yaml") # use schema.to_json for JSON
 ```
 
 The high-level functions of Frictionless operate on the dataset and resource levels so we have to use a little bit of Python programming to get the schema information. Below we will show how to use a command-line interface for similar tasks.
@@ -247,7 +249,7 @@ resource.to_yaml("tmp/country.resource.yaml")
 So what we did here:
 - we set the header rows to be row number 2; as humans, we can easily see that was the proper row
 - we set the CSV Delimiter to be ";"
-- we reuse the schema we created earlier as the data has the same structure and meaning
+- we reuse the schema we created [earlier](#describing-schema) as the data has the same structure and meaning
 
 ```bash title="CLI"
 cat tmp/country.resource.yaml
