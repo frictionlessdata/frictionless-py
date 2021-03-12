@@ -999,6 +999,28 @@ Public   | `from frictionless import Field`
 
 - `Schema?` - parent schema
 
+### field.array\_item
+
+```python
+ | @Metadata.property
+ | array_item()
+```
+
+**Returns**:
+
+- `dict` - field descriptor
+
+### field.array\_item\_field
+
+```python
+ | @Metadata.property(write=False)
+ | array_item_field()
+```
+
+**Returns**:
+
+- `dict` - field descriptor
+
 ### field.true\_values
 
 ```python
@@ -3149,7 +3171,7 @@ Create a package from ZIP
 ### package.to\_zip
 
 ```python
- | to_zip(path, *, resolve=[], encoder_class=None)
+ | to_zip(path, *, encoder_class=None)
 ```
 
 Save package to a zip
@@ -3157,10 +3179,6 @@ Save package to a zip
 **Arguments**:
 
 - `path` _str_ - target path
-- `resolve` _str[]_ - Data sources to resolve.
-  For "memory" data it means saving them as CSV and including into ZIP.
-  For "remote" data it means downloading them and including into ZIP.
-  For example, `resolve=["memory", "remote"]`
 - `encoder_class` _object_ - json encoder class
   
 
@@ -5608,6 +5626,23 @@ Create dialect
 **Returns**:
 
 - `Dialect` - dialect
+
+### system.create\_error
+
+```python
+ | create_error(descriptor)
+```
+
+Create errors
+
+**Arguments**:
+
+- `descriptor` _dict_ - error descriptor
+  
+
+**Returns**:
+
+- `Error` - error
 
 ### system.create\_file
 

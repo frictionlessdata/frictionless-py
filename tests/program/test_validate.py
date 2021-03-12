@@ -9,19 +9,19 @@ runner = CliRunner()
 # General
 
 
-def test_validate():
+def test_program_validate():
     result = runner.invoke(program, "validate data/table.csv")
     assert result.exit_code == 0
     assert result.stdout.count("valid: data/table.csv")
 
 
-def test_validate_invalid():
+def test_program_validate_invalid():
     result = runner.invoke(program, "validate data/invalid.csv")
     assert result.exit_code == 1
     assert result.stdout.count("invalid: data/invalid.csv")
 
 
-def test_validate_header_rows():
+def test_program_validate_header_rows():
     result = runner.invoke(program, "validate data/table.csv --json --header-rows '1,2'")
     assert result.exit_code == 0
     assert no_time(json.loads(result.stdout)) == no_time(
@@ -29,7 +29,7 @@ def test_validate_header_rows():
     )
 
 
-def test_validate_header_join():
+def test_program_validate_header_join():
     result = runner.invoke(
         program, "validate data/table.csv --json --header-rows '1,2' --header-join ':'"
     )
@@ -39,7 +39,7 @@ def test_validate_header_join():
     )
 
 
-def test_validate_pick_fields():
+def test_program_validate_pick_fields():
     result = runner.invoke(program, "validate data/table.csv --json --pick-fields 'id'")
     assert result.exit_code == 0
     assert no_time(json.loads(result.stdout)) == no_time(
@@ -47,7 +47,7 @@ def test_validate_pick_fields():
     )
 
 
-def test_validate_skip_fields():
+def test_program_validate_skip_fields():
     result = runner.invoke(program, "validate data/table.csv --json --skip-fields 'id'")
     assert result.exit_code == 0
     assert no_time(json.loads(result.stdout)) == no_time(
@@ -55,7 +55,7 @@ def test_validate_skip_fields():
     )
 
 
-def test_validate_limit_fields():
+def test_program_validate_limit_fields():
     result = runner.invoke(program, "validate data/table.csv --json --limit-fields 1")
     assert result.exit_code == 0
     assert no_time(json.loads(result.stdout)) == no_time(
@@ -63,7 +63,7 @@ def test_validate_limit_fields():
     )
 
 
-def test_validate_offset_fields():
+def test_program_validate_offset_fields():
     result = runner.invoke(program, "validate data/table.csv --json --offset-fields 1")
     assert result.exit_code == 0
     assert no_time(json.loads(result.stdout)) == no_time(
@@ -71,7 +71,7 @@ def test_validate_offset_fields():
     )
 
 
-def test_validate_pick_rows():
+def test_program_validate_pick_rows():
     result = runner.invoke(program, "validate data/table.csv --json --pick-rows 1")
     assert result.exit_code == 0
     assert no_time(json.loads(result.stdout)) == no_time(
@@ -79,7 +79,7 @@ def test_validate_pick_rows():
     )
 
 
-def test_validate_skip_rows():
+def test_program_validate_skip_rows():
     result = runner.invoke(program, "validate data/table.csv --json --skip-rows 1")
     assert result.exit_code == 0
     assert no_time(json.loads(result.stdout)) == no_time(
@@ -87,7 +87,7 @@ def test_validate_skip_rows():
     )
 
 
-def test_validate_limit_rows():
+def test_program_validate_limit_rows():
     result = runner.invoke(program, "validate data/table.csv --json --limit-rows 1")
     assert result.exit_code == 0
     assert no_time(json.loads(result.stdout)) == no_time(
@@ -95,7 +95,7 @@ def test_validate_limit_rows():
     )
 
 
-def test_validate_offset_rows():
+def test_program_validate_offset_rows():
     result = runner.invoke(program, "validate data/table.csv --json --offset-rows 1")
     assert result.exit_code == 0
     assert no_time(json.loads(result.stdout)) == no_time(
@@ -103,7 +103,7 @@ def test_validate_offset_rows():
     )
 
 
-def test_validate_infer_type():
+def test_program_validate_infer_type():
     result = runner.invoke(program, "validate data/table.csv --json --field-type string")
     assert result.exit_code == 0
     assert no_time(json.loads(result.stdout)) == no_time(
@@ -111,7 +111,7 @@ def test_validate_infer_type():
     )
 
 
-def test_validate_field_names():
+def test_program_validate_field_names():
     result = runner.invoke(program, "validate data/table.csv --json --field-names 'a,b'")
     assert result.exit_code == 0
     assert no_time(json.loads(result.stdout)) == no_time(
@@ -119,7 +119,7 @@ def test_validate_field_names():
     )
 
 
-def test_validate_field_missing_values():
+def test_program_validate_field_missing_values():
     result = runner.invoke(
         program, "validate data/table.csv --json --field-missing-values 1"
     )
@@ -129,7 +129,7 @@ def test_validate_field_missing_values():
     )
 
 
-def test_validate_chucksum_hash():
+def test_program_validate_chucksum_hash():
     result = runner.invoke(
         program,
         "validate data/table.csv --json --stats-hash 6c2c61dd9b0e9c6876139a449ed87933",
@@ -140,7 +140,7 @@ def test_validate_chucksum_hash():
     )
 
 
-def test_validate_chucksum_bytes():
+def test_program_validate_chucksum_bytes():
     result = runner.invoke(
         program,
         "validate data/table.csv --json --stats-bytes 30",
@@ -151,7 +151,7 @@ def test_validate_chucksum_bytes():
     )
 
 
-def test_validate_chucksum_rows():
+def test_program_validate_chucksum_rows():
     result = runner.invoke(
         program,
         "validate data/table.csv --json --stats-rows 2",
@@ -162,7 +162,7 @@ def test_validate_chucksum_rows():
     )
 
 
-def test_validate_pick_errors():
+def test_program_validate_pick_errors():
     result = runner.invoke(
         program,
         "validate data/table.csv --json --pick-errors 'blank-row,extra-cell'",
@@ -173,7 +173,7 @@ def test_validate_pick_errors():
     )
 
 
-def test_validate_skip_errors():
+def test_program_validate_skip_errors():
     result = runner.invoke(
         program,
         "validate data/table.csv --json --skip-errors 'blank-row,extra-cell'",
@@ -184,7 +184,7 @@ def test_validate_skip_errors():
     )
 
 
-def test_validate_limit_errors():
+def test_program_validate_limit_errors():
     result = runner.invoke(
         program,
         "validate data/table.csv --json --limit-errors 1",
@@ -195,19 +195,19 @@ def test_validate_limit_errors():
     )
 
 
-def test_validate_yaml():
+def test_program_validate_yaml():
     result = runner.invoke(program, "validate data/table.csv --yaml")
     assert result.exit_code == 0
     assert no_time(yaml.safe_load(result.stdout)) == no_time(validate("data/table.csv"))
 
 
-def test_validate_json():
+def test_program_validate_json():
     result = runner.invoke(program, "validate data/table.csv --json")
     assert result.exit_code == 0
     assert no_time(json.loads(result.stdout)) == no_time(validate("data/table.csv"))
 
 
-def test_validate_error_not_found():
+def test_program_validate_error_not_found():
     result = runner.invoke(program, "validate data/bad.csv")
     assert result.exit_code == 1
     assert result.stdout.count("No such file or directory: 'data/bad.csv'")
