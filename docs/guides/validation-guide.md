@@ -66,7 +66,7 @@ frictionless validate your-package.json --type package
 frictionless validate your-inquiry.yaml --type inquiry
 ```
 
-As a reminder, a resource is a single file, such as a data file, and a package is a set of files, such as a data file and a schema. This concept is described in more detail in the [Introduction](https://framework.frictionlessdata.io/docs/guides/introduction), 
+As a reminder, in the Frictionless ecosystem, a resource is a single file, such as a data file, and a package is a set of files, such as a data file and a schema. This concept is described in more detail in the [Introduction](https://framework.frictionlessdata.io/docs/guides/introduction). 
 
 ## Validating a Schema
 
