@@ -86,7 +86,7 @@ On the command-line, the command would be used as follows:
 
 ```bash title="CLI"
 frictionless extract your-data.csv
-frictionless extract your-data.csv --type package
+frictionless extract your-package.json --type package
 frictionless extract your-data.csv --type resource
 ```
 
