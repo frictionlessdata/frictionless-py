@@ -165,6 +165,8 @@ None  None   byte-count-error  The data source does not match the expected byte 
 
 A package is a set of resources + additional metadata. To showcase a package validation we need to use one more tabular file:
 
+> Download [``capital-valid.csv``](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/capital-valid.csv) and put into the `data` folder to reproduce the examples.
+
 ```bash title="CLI"
 cat data/capital-valid.csv
 ```
