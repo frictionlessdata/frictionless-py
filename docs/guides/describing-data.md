@@ -43,9 +43,9 @@ In the command-line, there is only 1 command (`describe`) but there is also a fl
 
 ```bash title="CLI"
 frictionless describe your-data.csv
-frictionless describe your-data.csv --type schema
+frictionless describe your-schema.yaml --type schema
 frictionless describe your-data.csv --type resource
-frictionless describe your-data.csv --type package
+frictionless describe your-package.json --type package
 ```
 
 For example, if we want a Data Package descriptor for a single file:
