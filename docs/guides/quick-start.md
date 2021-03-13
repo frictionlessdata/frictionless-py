@@ -128,14 +128,14 @@ frictionless extract invalid.csv
 # data: invalid.csv
 # ----
 
-====  =======  ======  =====
-id    name     field3  name2
-====  =======  ======  =====
-   1  english  None    None
-   1  english  None    None
-None  None     None    None
-   2  german        1      2
-====  =======  ======  =====
+==  =======  ======  =====
+id  name     field3  name2
+==  =======  ======  =====
+ 1  english
+ 1  english
+
+ 2  german        1      2
+==  =======  ======  =====
 ```
 
 Last but not least, let's get a validation report. This report will help us to identify and fix all the errors present in the tabular data, as comprehensive information is provided for every problem:
@@ -148,18 +148,18 @@ frictionless validate invalid.csv
 # invalid: invalid.csv
 # -------
 
-====  =====  ===============  ====================================================================================
-row   field  code             message
-====  =====  ===============  ====================================================================================
-None      3  blank-label      Label in the header in field at position "3" is blank
-None      4  duplicate-label  Label "name" in the header at position "4" is duplicated to a label: at position "2"
-   2      3  missing-cell     Row at position "2" has a missing cell in field "field3" at position "3"
-   2      4  missing-cell     Row at position "2" has a missing cell in field "name2" at position "4"
-   3      3  missing-cell     Row at position "3" has a missing cell in field "field3" at position "3"
-   3      4  missing-cell     Row at position "3" has a missing cell in field "name2" at position "4"
-   4  None   blank-row        Row at position "4" is completely blank
-   5      5  extra-cell       Row at position "5" has an extra value in field at position "5"
-====  =====  ===============  ====================================================================================
+===  =====  ===============  ====================================================================================
+row  field  code             message
+===  =====  ===============  ====================================================================================
+         3  blank-label      Label in the header in field at position "3" is blank
+         4  duplicate-label  Label "name" in the header at position "4" is duplicated to a label: at position "2"
+  2      3  missing-cell     Row at position "2" has a missing cell in field "field3" at position "3"
+  2      4  missing-cell     Row at position "2" has a missing cell in field "name2" at position "4"
+  3      3  missing-cell     Row at position "3" has a missing cell in field "field3" at position "3"
+  3      4  missing-cell     Row at position "3" has a missing cell in field "name2" at position "4"
+  4         blank-row        Row at position "4" is completely blank
+  5      5  extra-cell       Row at position "5" has an extra value in field at position "5"
+===  =====  ===============  ====================================================================================
 ```
 
 Now that we have all this information:

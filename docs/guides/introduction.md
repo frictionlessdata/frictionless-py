@@ -65,18 +65,18 @@ frictionless validate invalid.csv
 # invalid: invalid.csv
 # -------
 
-====  =====  ===============  ====================================================================================
-row   field  code             message
-====  =====  ===============  ====================================================================================
-None      3  blank-label      Label in the header in field at position "3" is blank
-None      4  duplicate-label  Label "name" in the header at position "4" is duplicated to a label: at position "2"
-   2      3  missing-cell     Row at position "2" has a missing cell in field "field3" at position "3"
-   2      4  missing-cell     Row at position "2" has a missing cell in field "name2" at position "4"
-   3      3  missing-cell     Row at position "3" has a missing cell in field "field3" at position "3"
-   3      4  missing-cell     Row at position "3" has a missing cell in field "name2" at position "4"
-   4  None   blank-row        Row at position "4" is completely blank
-   5      5  extra-cell       Row at position "5" has an extra value in field at position "5"
-====  =====  ===============  ====================================================================================
+===  =====  ===============  ====================================================================================
+row  field  code             message
+===  =====  ===============  ====================================================================================
+         3  blank-label      Label in the header in field at position "3" is blank
+         4  duplicate-label  Label "name" in the header at position "4" is duplicated to a label: at position "2"
+  2      3  missing-cell     Row at position "2" has a missing cell in field "field3" at position "3"
+  2      4  missing-cell     Row at position "2" has a missing cell in field "name2" at position "4"
+  3      3  missing-cell     Row at position "3" has a missing cell in field "field3" at position "3"
+  3      4  missing-cell     Row at position "3" has a missing cell in field "name2" at position "4"
+  4         blank-row        Row at position "4" is completely blank
+  5      5  extra-cell       Row at position "5" has an extra value in field at position "5"
+===  =====  ===============  ====================================================================================
 ```
 
 ## User Stories

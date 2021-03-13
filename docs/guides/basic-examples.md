@@ -147,8 +147,8 @@ id  neighbor_id  name     population
  1  Ireland      Britain  67
  2  3            France   n/a
  3  22           Germany  83
- 4  None         Italy    60
- 5  None         None     None
+ 4               Italy    60
+ 5
 ==  ===========  =======  ==========
 ```
 
@@ -170,11 +170,11 @@ frictionless extract countries.resource.yaml
 ==  ===========  =======  ==========
 id  neighbor_id  name     population
 ==  ===========  =======  ==========
- 1  None         Britain          67
- 2            3  France   None
+ 1               Britain          67
+ 2            3  France
  3           22  Germany          83
- 4  None         Italy            60
- 5  None         None     None
+ 4               Italy            60
+ 5
 ==  ===========  =======  ==========
 ```
 
@@ -217,7 +217,7 @@ row  field  code               message
 ===  =====  =================  ==============================================================================================================
   3      2  type-error         Type error in the cell "Ireland" in row "3" and field "neighbor_id" at position "2": type is "integer/default"
   4      5  extra-cell         Row at position "4" has an extra value in field at position "5"
-  5  None   foreign-key-error  Row at position "5" violates the foreign key: not found in the lookup table
+  5         foreign-key-error  Row at position "5" violates the foreign key: not found in the lookup table
   7      2  missing-cell       Row at position "7" has a missing cell in field "neighbor_id" at position "2"
   7      3  missing-cell       Row at position "7" has a missing cell in field "name" at position "3"
   7      4  missing-cell       Row at position "7" has a missing cell in field "population" at position "4"
