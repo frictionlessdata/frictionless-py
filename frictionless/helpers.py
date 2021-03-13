@@ -62,7 +62,7 @@ def rows_to_data(rows):
     data = []
     data.append(list(rows[0].field_names))
     for row in rows:
-        data.append([cell if cell is not None else '' for cell in row.to_list()])
+        data.append([cell if cell is not None else "" for cell in row.to_list()])
     return data
 
 
