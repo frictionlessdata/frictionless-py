@@ -6,7 +6,9 @@ The Check concept is a part of the Validation API. You can create a custom Check
 
 ## Check Example
 
-```python title="Python"
+```python goodread title="Python"
+from frictionless import Check, errors
+
 class duplicate_row(Check):
     code = "duplicate-row"
     Errors = [errors.DuplicateRowError]

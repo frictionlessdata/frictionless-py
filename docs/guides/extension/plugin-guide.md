@@ -31,8 +31,8 @@ First of all, we need to create a `frictionless_csv2k` module containing a Plugi
 
 > frictionless_csv2k.py
 
-```py
-from frictionless import Plugin
+```python goodread title="Python"
+from frictionless import Plugin, system
 from frictionless.plugins.csv import CsvParser
 
 class Csv2kPlugin(Plugin):
@@ -42,17 +42,17 @@ class Csv2kPlugin(Plugin):
 
 class Csv2kParser(CsvParser):
     pass
-```
 
+system.register('csv2k', Csv2kPlugin())
+```
 
 Now, we can use our new format in any of the Frictionless functions that accept a table source, for example, `extract` or `Table`:
 
-```py
+```python title="Python"
 from frictionless import extract
 
 rows = extract('data/table.csv2k')
 print(rows)
 ```
-
 
 This example is over-simplified to show the high-level mechanics but writing Frictionless Plugins is designed to be easy. For inspiration, you can check the `frictionless/plugins` directory and learn from real-life examples. Also, in the Frictionless codebase there are many `Check`, `Control`, `Dialect`, `Loader`, `Parser`, and `Server` implementations - you can read their code for better understanding of how to write your own subclass or reach out to us for support.
