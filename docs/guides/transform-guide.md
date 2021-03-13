@@ -1,5 +1,10 @@
 ---
 title: Transform Guide
+goodread:
+  prepare:
+    - cp data/transform.csv transform.csv
+  cleanup:
+    - rm transform.csv
 ---
 
 > This guide assumes basic familiarity with the Frictionless Framework. To learn more, please read the [Introduction](https://framework.frictionlessdata.io/docs/guides/introduction) and [Quick Start](https://framework.frictionlessdata.io/docs/guides/quick-start).
@@ -14,12 +19,12 @@ Frictionless supports a few different kinds of data and metadata transformations
 
 The main difference between these is that resource and package transforms are imperative while pipelines can be created beforehand or shared as a JSON file.
 
-> Download [`transform.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/transform.csv) into the `data` folder to reproduce the examples.
+> Download [`transform.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/transform.csv) to reproduce the examples (right-click and "Save link as").
 
-```bash title="CLI"
-cat data/transform.csv
+```bash goodread title="CLI"
+cat transform.csv
 ```
-```csv title="data/transform.csv"
+```csv title="transform.csv"
 id,name,population
 1,germany,83
 2,france,66
@@ -38,12 +43,12 @@ The high-level interface to transform data is a set of `transform` functions:
 
 Let's write our first transform. It's as straightforward as defining a source resource, applying transform steps and getting back a resulting target resource:
 
-```python title="Python"
+```python goodread title="Python"
 from pprint import pprint
 from frictionless import Resource, transform, steps
 
 # Define source resource
-source = Resource(path="data/transform.csv")
+source = Resource(path="transform.csv")
 
 # Apply transform steps
 target = transform(
@@ -72,7 +77,7 @@ pprint(target.read_rows())
 
 Let's break down the transforming steps we applied:
 1. `steps.table_normalize` - cast data types and shape the table according to the schema, inferred or provided
-2. `steps.table_melt` - melt the table as it is done in R-Language or in other scientific libraries like `pandas`
+1. `steps.table_melt` - melt the table as it is done in R-Language or in other scientific libraries like `pandas`
 
 There are dozens of other available steps that will be covered below.
 
@@ -80,12 +85,12 @@ There are dozens of other available steps that will be covered below.
 
 A package is a set of resources. Transforming a package means adding or removing resources and/or transforming those resources themselves:
 
-```python title="Python"
+```python goodread title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
 # Define source package
-source = Package(resources=[Resource(name='main', path="data/transform.csv")])
+source = Package(resources=[Resource(name='main', path="transform.csv")])
 
 # Apply transform steps
 target = transform(
@@ -113,12 +118,12 @@ pprint(target.get_resource("main").read_rows())
 {'fields': [{'name': 'id', 'type': 'integer'},
             {'name': 'name', 'type': 'string'},
             {'name': 'population', 'type': 'integer'}]}
-[Row([('id', 1), ('name', 'germany'), ('population', 83)]),
- Row([('id', 1), ('name', 'germany'), ('population', 83)]),
- Row([('id', 2), ('name', 'france'), ('population', 66)]),
- Row([('id', 2), ('name', 'france'), ('population', 66)]),
- Row([('id', 3), ('name', 'spain'), ('population', 47)]),
- Row([('id', 3), ('name', 'spain'), ('population', 47)])]
+[{'id': 1, 'name': 'germany', 'population': 83},
+ {'id': 1, 'name': 'germany', 'population': 83},
+ {'id': 2, 'name': 'france', 'population': 66},
+ {'id': 2, 'name': 'france', 'population': 66},
+ {'id': 3, 'name': 'spain', 'population': 47},
+ {'id': 3, 'name': 'spain', 'population': 47}]
 ```
 
 The exact transformation we have applied actually doesn't make much sense as we just duplicated every row of the `main` resource. But hopefully this example provids a basic understanding of how simple, and at the same time flexible, package transformations can be.
@@ -132,7 +137,7 @@ A pipeline is a metadata object having one of these types:
 
 For resource and package types it's basically the same functionality as we have seen above, but written declaratively. So let's run the same resource transformation as we did in the `Transforming Resource` section:
 
-```python title="Python"
+```python goodread title="Python"
 from pprint import pprint
 from frictionless import Pipeline, transform
 
@@ -208,7 +213,7 @@ See [Transform Steps](transform-steps.md) for a list of all available steps. It 
 
 Here is an example of a custom step written as a Python function:
 
-```python title="Python"
+```python goodread title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -226,7 +231,7 @@ def step(resource):
     resource.schema.remove_field("id")
 
 
-source = Resource("data/transform.csv")
+source = Resource("transform.csv")
 target = transform(source, steps=[step])
 pprint(target.schema)
 pprint(target.read_rows())
@@ -234,9 +239,9 @@ pprint(target.read_rows())
 ```
 {'fields': [{'name': 'name', 'type': 'string'},
             {'name': 'population', 'type': 'integer'}]}
-[Row([('name', 'germany'), ('population', 83)]),
- Row([('name', 'france'), ('population', 66)]),
- Row([('name', 'spain'), ('population', 47)])]
+[{'name': 'germany', 'population': 83},
+ {'name': 'france', 'population': 66},
+ {'name': 'spain', 'population': 47}]
 ```
 
 Learn more about custom steps in the [Step Guide](extension/step-guide.md).
@@ -249,10 +254,10 @@ Learn more about custom steps in the [Step Guide](extension/step-guide.md).
 
 In some cases, it's better to use a lower-level API to achieve your goal. A resource can be exported as a PETL table. For more information please visit PETL's [documentation portal](https://petl.readthedocs.io/en/stable/).
 
-```python title="Python"
+```python goodread title="Python"
 from frictionless import Resource
 
-resource = Resource(path='data/transform.csv')
+resource = Resource(path='transform.csv')
 petl_table = resource.to_petl()
 # Use it with PETL framework
 print(petl_table)
