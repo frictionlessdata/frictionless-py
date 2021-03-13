@@ -1,15 +1,22 @@
 ---
 title: Extracting Data
+goodread:
+  prepare:
+    - cp data/country-3.csv country-3.csv
+    - cp data/capital-3.csv capital-3.csv
+  cleanup:
+    - rm country-3.csv
+    - rm capital-3.csv
 ---
 
 Extracting data means reading tabular data from a source. We can use various customizations for this process such as providing a file format, table schema, limiting fields or rows amount, and much more. Let's see this with some real files:
 
-> Download [`country-3.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/country-3.csv) into the `data` folder to reproduce the examples.
+> Download [`country-3.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/country-3.csv) to reproduce the examples (right-click and "Save link as").
 
-```bash title="CLI"
-cat data/country-3.csv
+```bash goodread title="CLI"
+cat country-3.csv
 ```
-```csv title="data/country-3.csv"
+```csv title="country-3.csv"
 id,capital_id,name,population
 1,1,Britain,67
 2,3,France,67
@@ -17,12 +24,12 @@ id,capital_id,name,population
 4,5,Italy,60
 5,4,Spain,47
 ```
-> Download [`capital-3.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/capital-3.csv) into the `data` folder to reproduce the examples.
+> Download [`capital-3.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/capital-3.csv) to reproduce the examples (right-click and "Save link as").
 
-```bash title="CLI"
-cat data/capital-3.csv
+```bash goodread title="CLI"
+cat capital-3.csv
 ```
-```csv title="data/capital-3.csv"
+```csv title="capital-3.csv"
 id,name
 1,London
 2,Berlin
@@ -33,13 +40,13 @@ id,name
 
 To start, we will use the command-line interface:
 
-```bash title="CLI"
-frictionless extract data/country-3.csv
+```bash goodread title="CLI"
+frictionless extract country-3.csv
 ```
 ```
----
-data: data/country-3.csv
----
+# ----
+# data: country-3.csv
+# ----
 
 ==  ==========  =======  ==========
 id  capital_id  name     population
@@ -54,19 +61,19 @@ id  capital_id  name     population
 
 The same can be done in Python:
 
-```python title="Python"
+```python goodread title="Python"
 from pprint import pprint
 from frictionless import extract
 
-rows = extract('data/country-3.csv')
+rows = extract('country-3.csv')
 pprint(rows)
 ```
 ```
-[Row([('id', 1), ('capital_id', 1), ('name', 'Britain'), ('population', 67)]),
- Row([('id', 2), ('capital_id', 3), ('name', 'France'), ('population', 67)]),
- Row([('id', 3), ('capital_id', 2), ('name', 'Germany'), ('population', 83)]),
- Row([('id', 4), ('capital_id', 5), ('name', 'Italy'), ('population', 60)]),
- Row([('id', 5), ('capital_id', 4), ('name', 'Spain'), ('population', 47)])]
+[{'id': 1, 'capital_id': 1, 'name': 'Britain', 'population': 67},
+ {'id': 2, 'capital_id': 3, 'name': 'France', 'population': 67},
+ {'id': 3, 'capital_id': 2, 'name': 'Germany', 'population': 83},
+ {'id': 4, 'capital_id': 5, 'name': 'Italy', 'population': 60},
+ {'id': 5, 'capital_id': 4, 'name': 'Spain', 'population': 47}]
 ```
 
 ## Extract Functions
@@ -90,58 +97,58 @@ The `extract` functions always read data in the form of rows, into memory. The l
 
 A resource contains only one file. To extract a resource we can use the same approach as above:
 
-```python title="Python"
+```python goodread title="Python"
 from frictionless import extract
 
-rows = extract('data/capital-3.csv')
+rows = extract('capital-3.csv')
 pprint(rows)
 ```
 ```
-[Row([('id', 1), ('name', 'London')]),
- Row([('id', 2), ('name', 'Berlin')]),
- Row([('id', 3), ('name', 'Paris')]),
- Row([('id', 4), ('name', 'Madrid')]),
- Row([('id', 5), ('name', 'Rome')])]
+[{'id': 1, 'name': 'London'},
+ {'id': 2, 'name': 'Berlin'},
+ {'id': 3, 'name': 'Paris'},
+ {'id': 4, 'name': 'Madrid'},
+ {'id': 5, 'name': 'Rome'}]
 ```
 
 Using the `extract_resource` function though, we can extract the resource from a descriptor. The power of the descriptor is that it can contain different metadata and be stored on the disc.
 
 First let's create the descriptor:
 
-```python title="Python"
+```python goodread title="Python"
 from frictionless import Resource
 
-resource = Resource('data/capital-3.csv')
+resource = Resource('capital-3.csv')
 resource.infer()
 resource.schema.missing_values.append('3') # will interpret 3 as a missing value
-resource.to_yaml('tmp/capital.resource.yaml')
+resource.to_yaml('capital.resource.yaml')
 ```
 This description can then be used to extract the resource:
 
-```python
-from frictionless import extract_resource
+```python title="Python"
+from frictionless import extract
 
-data = extract_resource('tmp/capital.resource.yaml')
+data = extract('capital.resource.yaml')
 ```
 This can also be done on the command-line:
 
-```bash title="CLI"
-frictionless extract tmp/capital.resource.yaml --basepath .
+```bash goodread title="CLI"
+frictionless extract capital.resource.yaml
 ```
 ```
----
-data: tmp/capital.resource.yaml
----
+# ----
+# data: capital.resource.yaml
+# ----
 
-====  ======
-id    name
-====  ======
-   1  London
-   2  Berlin
-None  Paris
-   4  Madrid
-   5  Rome
-====  ======
+==  ======
+id  name
+==  ======
+ 1  London
+ 2  Berlin
+    Paris
+ 4  Madrid
+ 5  Rome
+==  ======
 ```
 
 So what has happened? We set the textual representation of the number "3" to be a missing value. It was done only for explanation purposes because it's definitely not a missing value. On the other hand, it demonstrated how metadata can be used. In the output we can see how the id number 3 now appears as "None" representing a missing value.
@@ -150,13 +157,13 @@ So what has happened? We set the textual representation of the number "3" to be 
 
 We're going to provide two files to the `extract` command which will be enough to detect that it's a dataset. Let's start by using the command-line interface:
 
-```bash title="CLI"
-frictionless extract data/*-3.csv
+```bash goodread title="CLI"
+frictionless extract *-3.csv
 ```
 ```
----
-data: data/capital-3.csv
----
+# ----
+# data: capital-3.csv
+# ----
 
 ==  ======
 id  name
@@ -168,9 +175,10 @@ id  name
  5  Rome
 ==  ======
 
----
-data: data/country-3.csv
----
+
+# ----
+# data: country-3.csv
+# ----
 
 ==  ==========  =======  ==========
 id  capital_id  name     population
@@ -188,7 +196,7 @@ In Python we can do the same:
 ```python title="Python"
 from frictionless import extract
 
-data = extract('data/*-3.csv')
+data = extract('*-3.csv')
 for path, rows in data.items():
   pprint(path)
   pprint(rows)
@@ -210,10 +218,10 @@ for path, rows in data.items():
 ```
 We can also extract the package from a descriptor using the `extract_package` function:
 
-```python
-from frictionless import extract_package
+```python title="Python"
+from frictionless import package
 
-package  = extract_package('tmp/country.package.yaml')
+package = package('country.package.yaml')
 
 pprint(package)
 ```
@@ -222,10 +230,10 @@ pprint(package)
 
 The Resource class provides metadata about a resource with read and stream functions. The `extract` functions always read rows into memory; Resource can do the same but it also gives a choice regarding output data which can be `rows`, `data`, `text`, or `bytes`. Let's try reading all of them:
 
-```python title="Python"
+```python goodread title="Python"
 from frictionless import Resource
 
-resource = Resource('data/country-3.csv')
+resource = Resource('country-3.csv')
 pprint(resource.read_bytes())
 pprint(resource.read_text())
 pprint(resource.read_lists())
@@ -246,67 +254,67 @@ pprint(resource.read_rows())
  ['3', '2', 'Germany', '83'],
  ['4', '5', 'Italy', '60'],
  ['5', '4', 'Spain', '47']]
-[Row([('id', 1), ('capital_id', 1), ('name', 'Britain'), ('population', 67)]),
- Row([('id', 2), ('capital_id', 3), ('name', 'France'), ('population', 67)]),
- Row([('id', 3), ('capital_id', 2), ('name', 'Germany'), ('population', 83)]),
- Row([('id', 4), ('capital_id', 5), ('name', 'Italy'), ('population', 60)]),
- Row([('id', 5), ('capital_id', 4), ('name', 'Spain'), ('population', 47)])]
+[{'id': 1, 'capital_id': 1, 'name': 'Britain', 'population': 67},
+ {'id': 2, 'capital_id': 3, 'name': 'France', 'population': 67},
+ {'id': 3, 'capital_id': 2, 'name': 'Germany', 'population': 83},
+ {'id': 4, 'capital_id': 5, 'name': 'Italy', 'population': 60},
+ {'id': 5, 'capital_id': 4, 'name': 'Spain', 'population': 47}]
 ```
 
 It's really handy to read all your data into memory but it's not always possible if a file is very big. For such cases, Frictionless provides streaming functions:
 
-```python title="Python"
+```python goodread title="Python"
 from frictionless import Resource
 
-with Resource('data/country-3.csv') as resource:
-    pprint(resource.byte_stream)
-    pprint(resource.text_stream)
+with Resource('country-3.csv') as resource:
+    pprint(type(resource.byte_stream))
+    pprint(type(resource.text_stream))
     pprint(resource.list_stream)
     pprint(resource.row_stream)
     for row in resource.row_stream:
       print(row)
 ```
 ```
-<frictionless.loader.ByteStreamWithStatsHandling object at 0x7fe7e3664910>
-<_io.TextIOWrapper name='./data/country-3.csv' encoding='utf-8'>
-<generator object Resource.read_data_stream at 0x7fe7e3c93a50>
-<generator object Resource.read_row_stream at 0x7fe7e3c93a50>
-Row([('id', 1), ('capital_id', 1), ('name', 'Britain'), ('population', 67)])
-Row([('id', 2), ('capital_id', 3), ('name', 'France'), ('population', 67)])
-Row([('id', 3), ('capital_id', 2), ('name', 'Germany'), ('population', 83)])
-Row([('id', 4), ('capital_id', 5), ('name', 'Italy'), ('population', 60)])
-Row([('id', 5), ('capital_id', 4), ('name', 'Spain'), ('population', 47)])
+<class 'frictionless.loader.ByteStreamWithStatsHandling'>
+<class '_io.TextIOWrapper'>
+<itertools.chain object at 0x7fa95be13880>
+<generator object Resource.__read_row_stream.<locals>.row_stream at 0x7fa95be45580>
+{'id': 1, 'capital_id': 1, 'name': 'Britain', 'population': 67}
+{'id': 2, 'capital_id': 3, 'name': 'France', 'population': 67}
+{'id': 3, 'capital_id': 2, 'name': 'Germany', 'population': 83}
+{'id': 4, 'capital_id': 5, 'name': 'Italy', 'population': 60}
+{'id': 5, 'capital_id': 4, 'name': 'Spain', 'population': 47}
 ```
 
 ## Package Class
 
 The Package class provides functions to read the contents of a package. First of all, let's create a package descriptor:
 
-```bash title="CLI"
-frictionless describe data/*-3.csv --json > tmp/country.package.json
+```bash goodread title="CLI"
+frictionless describe *-3.csv --json > country.package.json
 ```
 Note that --json is used here to output the descriptor in JSON format. Without this, the default output is in YAML format as we saw above.
 
 We can create a package from paths and read the package's resources:
 
-```python title="Python"
+```python goodread title="Python"
 from frictionless import Package
 
-package = Package('data/*-3.csv')
+package = Package('*-3.csv')
 pprint(package.get_resource('country-3').read_rows())
 pprint(package.get_resource('capital-3').read_rows())
 ```
 ```
-[Row([('id', 1), ('capital_id', 1), ('name', 'Britain'), ('population', 67)]),
- Row([('id', 2), ('capital_id', 3), ('name', 'France'), ('population', 67)]),
- Row([('id', 3), ('capital_id', 2), ('name', 'Germany'), ('population', 83)]),
- Row([('id', 4), ('capital_id', 5), ('name', 'Italy'), ('population', 60)]),
- Row([('id', 5), ('capital_id', 4), ('name', 'Spain'), ('population', 47)])]
-[Row([('id', 1), ('name', 'London')]),
- Row([('id', 2), ('name', 'Berlin')]),
- Row([('id', 3), ('name', 'Paris')]),
- Row([('id', 4), ('name', 'Madrid')]),
- Row([('id', 5), ('name', 'Rome')])]
+[{'id': 1, 'capital_id': 1, 'name': 'Britain', 'population': 67},
+ {'id': 2, 'capital_id': 3, 'name': 'France', 'population': 67},
+ {'id': 3, 'capital_id': 2, 'name': 'Germany', 'population': 83},
+ {'id': 4, 'capital_id': 5, 'name': 'Italy', 'population': 60},
+ {'id': 5, 'capital_id': 4, 'name': 'Spain', 'population': 47}]
+[{'id': 1, 'name': 'London'},
+ {'id': 2, 'name': 'Berlin'},
+ {'id': 3, 'name': 'Paris'},
+ {'id': 4, 'name': 'Madrid'},
+ {'id': 5, 'name': 'Rome'}]
 ```
 
 The package by itself doesn't provide any read functions directly because that is a role of its resources. So everything written above for the Resource class can be used within a package.
@@ -315,11 +323,10 @@ The package by itself doesn't provide any read functions directly because that i
 
 After opening a resource you get access to a `resource.header` object which describes the resource in more detail. This is a list of normalized labels but also provides some additional functionality. Let's take a look:
 
-
-```python title="Python"
+```python goodread title="Python"
 from frictionless import Resource
 
-with Resource('data/capital-3.csv') as resource:
+with Resource('capital-3.csv') as resource:
   print(f'Header: {resource.header}')
   print(f'Labels: {resource.header.labels}')
   print(f'Fields: {resource.header.fields}')
@@ -329,23 +336,24 @@ with Resource('data/capital-3.csv') as resource:
   print(f'Valid: {resource.header.valid}')
   print(f'As List: {resource.header.to_list()}')
 ```
-
-    Header: ['id', 'name']
-    Labels: ['id', 'name']
-    Fields: [{'name': 'id', 'type': 'integer'}, {'name': 'name', 'type': 'string'}]
-    Field Names: ['id', 'name']
-    Field Positions: [1, 2]
-    Errors: []
-    Valid: True
-    As List: ['id', 'name']
-
+```
+Header: ['id', 'name']
+Labels: ['id', 'name']
+Fields: [{'name': 'id', 'type': 'integer'}, {'name': 'name', 'type': 'string'}]
+Field Names: ['id', 'name']
+Field Positions: [1, 2]
+Errors: []
+Valid: True
+As List: ['id', 'name']
+```
 
 The example above covers the case when a header is valid. For a header that contains errors in its tabular structure this information can be much more useful, revealing discrepancies, duplicates or missing cell information. Please read [API Reference](/docs/references/api-reference/) for more details.
 
 ## Row Class
 
 The `extract`, `resource.read_rows()` and other functions return or yield row objects. In Python, this returns a dictionary with the following information:
-```python title="Python"
+
+```python goodread title="Python"
 from frictionless import Resource, Detector
 
 detector = Detector(schema_patch={'missingValues': ['1']})
@@ -368,7 +376,7 @@ with Resource('data/capital-3.csv', detector=detector) as resource:
     break
 ```
 ```
-Row: Row([('id', None), ('name', 'London')])
+Row: {'id': None, 'name': 'London'}
 Cells: ['1', 'London']
 Fields: [{'name': 'id', 'type': 'integer'}, {'name': 'name', 'type': 'string'}]
 Field Names: ['id', 'name']
