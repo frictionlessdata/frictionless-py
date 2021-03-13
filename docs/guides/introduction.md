@@ -1,5 +1,10 @@
 ---
 title: Introduction
+goodread:
+  prepare:
+    - cp data/invalid.csv invalid.csv
+  cleanup:
+    - rm invalid.csv
 ---
 
 [![Build](https://img.shields.io/github/workflow/status/frictionlessdata/frictionless-py/general/master)](https://github.com/frictionlessdata/frictionless-py/actions)
@@ -52,27 +57,26 @@ Frictionless is a complete data solution providing rich functionality. It's hard
 
 Frictionless can be run on CLI, in Python, and even as an API server. Here is a short example to get started with the framework:
 
-> Download [`invalid.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/invalid.csv) into the `data` folder to reproduce the examples.
-
-```bash title="CLI"
-pip install frictionless
-frictionless validate data/invalid.csv
+```bash goodread title="CLI"
+frictionless validate invalid.csv
 ```
 ```yaml
 # -------
-# invalid: data/invalid.csv
+# invalid: invalid.csv
 # -------
 
-  row    field  code              message
------  -------  ----------------  --------------------------------------------
-             3  blank-header      Header in field at position "3" is blank
-             4  duplicate-header  Header "name" in field "4" is duplicated
-    2        3  missing-cell      Row "2" has a missing cell in field "field3"
-    2        4  missing-cell      Row "2" has a missing cell in field "name2"
-    3        3  missing-cell      Row "3" has a missing cell in field "field3"
-    3        4  missing-cell      Row "3" has a missing cell in field "name2"
-    4           blank-row         Row "4" is completely blank
-    5        5  extra-cell        Row "5" has an extra value in field  "5"
+====  =====  ===============  ====================================================================================
+row   field  code             message
+====  =====  ===============  ====================================================================================
+None      3  blank-label      Label in the header in field at position "3" is blank
+None      4  duplicate-label  Label "name" in the header at position "4" is duplicated to a label: at position "2"
+   2      3  missing-cell     Row at position "2" has a missing cell in field "field3" at position "3"
+   2      4  missing-cell     Row at position "2" has a missing cell in field "name2" at position "4"
+   3      3  missing-cell     Row at position "3" has a missing cell in field "field3" at position "3"
+   3      4  missing-cell     Row at position "3" has a missing cell in field "name2" at position "4"
+   4  None   blank-row        Row at position "4" is completely blank
+   5      5  extra-cell       Row at position "5" has an extra value in field at position "5"
+====  =====  ===============  ====================================================================================
 ```
 
 ## User Stories
