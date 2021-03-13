@@ -1,19 +1,20 @@
 ---
 title: Basic Examples
 goodread:
-  clean:
-    - countries.csv
-    - countries.resource.yaml
+  prepare:
+    - cp data/countries.csv countries.csv
+  cleanup:
+    - rm countries.csv
+    - rm countries.resource.yaml
 ---
 
 > This example assumes that you are familiar with the concepts behind the Frictionless Framework. For an introduction, please read the [Introduction](introduction.md).
 
 Let's start with an example dataset. We will look at a few raw data files that have recently been collected by an anthropologist. The anthropologist wants to publish this data in an open repository so her colleagues can also use this data. Before publishing the data, she wants to add metadata and check the data for errors. We are here to help, so let’s start by exploring the data. We see that the quality of data is far from perfect. In fact, the first row contains comments from the anthropologist! To be able to use this data, we need to clean it up a bit.
 
-> Download [`countries.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/countries.csv) into the `data` folder to reproduce the examples.
+> Download [`countries.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/countries.csv) to reproduce the examples (right-click and "Save link as").
 
 ```bash goodread title="CLI"
-cp data/countries.csv countries.csv
 cat countries.csv
 ```
 ```csv title="countries.csv"
