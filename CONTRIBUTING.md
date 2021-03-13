@@ -16,6 +16,8 @@ Some documentation is generated (for more information see `docs/build.py`). Here
 
 You can test this documentation using [Goodread](https://github.com/roll/goodread-py). Goodread executes Python and Bash codeblocks in Markdown and writes the results back. Here is a quick example:
 
+> Run `goodread` against an article only if you consider the article to be a trusted source.It will execute codeblocks marked by the `goodread` property.
+
 ```bash
 goodread docs/guides/basic-examples.md --diff # get the diff
 goodread docs/guides/basic-examples.md --print # print the doc
