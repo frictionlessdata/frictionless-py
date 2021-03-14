@@ -42,10 +42,10 @@ As described in more detail in the [Introduction](https://framework.frictionless
 In the command-line, there is only 1 command (`describe`) but there is also a flag to adjust the behavior:
 
 ```bash title="CLI"
-frictionless describe your-data.csv
-frictionless describe your-schema.yaml --type schema
-frictionless describe your-data.csv --type resource
-frictionless describe your-package.json --type package
+frictionless describe your-table.csv
+frictionless describe your-table.csv --type schema
+frictionless describe your-table.csv --type resource
+frictionless describe your-table.csv --type package
 ```
 
 For example, if we want a Data Package descriptor for a single file:
