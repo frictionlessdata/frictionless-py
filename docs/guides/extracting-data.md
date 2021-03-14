@@ -85,9 +85,9 @@ As described in more detail in the [Introduction](https://framework.frictionless
 On the command-line, the command would be used as follows:
 
 ```bash title="CLI"
-frictionless extract your-data.csv
+frictionless extract your-table.csv
 frictionless extract your-package.json --type package
-frictionless extract your-data.csv --type resource
+frictionless extract your-resource.json --type resource
 ```
 
 The `extract` functions always reads data in the form of rows, into memory. The lower-level interfaces will allow you to stream data, which you can read about in the [Resource Class](#resource-class) section below.
