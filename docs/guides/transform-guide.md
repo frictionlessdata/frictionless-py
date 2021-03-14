@@ -181,10 +181,6 @@ Frictionless Transform is based on a few core principles which are shared with o
 
 Frictionless Transform can be thought of as a list of functions that accept a source resource/package object and return a target resource/package object. Every function updates the input's metadata and data - and nothing more. We tried to make this straightforward and conceptually simple, because we want our users to be able to understand the tools and master them.
 
-### Using PETL
-
-For the core transform functions, Frictionless uses the amazing [PETL](https://petl.readthedocs.io/en/stable/) project under the hood. This library provides lazy-loading functionality in running data pipelines. On top of PETL, Frictionless adds metadata management and a bridge between Frictionless concepts like Package/Resource and PETL's processors.
-
 ### Metadata Matters
 
 There are plenty of great ETL-frameworks written in Python and other languages. As we mentioned earlier, we use one of them (PETL) under the hood. The core difference between Frictionless and others is that we treat metadata as a first-class citizen. This means that you don't lose type and other important information during the pipeline evaluation.
@@ -200,6 +196,10 @@ Unlike some systems like `Data Package Pipelines`, the core Frictionless Transfo
 ### Lean Processing
 
 Frictionless tries to be as explicit as possible regarding actions taken. For example, it will not use CPU resources to cast data unless a user adds a `normalize` step, `validate` step, or similar steps. So it's possible to transform a rather big file without even casting types, for example, if you only need to reshape it.
+
+### Best Practices
+
+For the core transform functions, Frictionless uses the amazing [PETL](https://petl.readthedocs.io/en/stable/) project under the hood. This library provides lazy-loading functionality in running data pipelines. On top of PETL, Frictionless adds metadata management and a bridge between Frictionless concepts like Package/Resource and PETL's processors.
 
 ## Available Steps
 
