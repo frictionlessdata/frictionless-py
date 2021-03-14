@@ -1,19 +1,20 @@
 ---
 title: Basic Examples
 goodread:
-  clean:
-    - countries.csv
-    - countries.resource.yaml
+  prepare:
+    - cp data/countries.csv countries.csv
+  cleanup:
+    - rm countries.csv
+    - rm countries.resource.yaml
 ---
 
 > This example assumes that you are familiar with the concepts behind the Frictionless Framework. For an introduction, please read the [Introduction](introduction.md).
 
 Let's start with an example dataset. We will look at a few raw data files that have recently been collected by an anthropologist. The anthropologist wants to publish this data in an open repository so her colleagues can also use this data. Before publishing the data, she wants to add metadata and check the data for errors. We are here to help, so let’s start by exploring the data. We see that the quality of data is far from perfect. In fact, the first row contains comments from the anthropologist! To be able to use this data, we need to clean it up a bit.
 
-> Download [`countries.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/countries.csv) into the `data` folder to reproduce the examples.
+> Download [`countries.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/countries.csv) to reproduce the examples (right-click and "Save link as").
 
 ```bash goodread title="CLI"
-cp data/countries.csv countries.csv
 cat countries.csv
 ```
 ```csv title="countries.csv"
@@ -146,8 +147,8 @@ id  neighbor_id  name     population
  1  Ireland      Britain  67
  2  3            France   n/a
  3  22           Germany  83
- 4  None         Italy    60
- 5  None         None     None
+ 4               Italy    60
+ 5
 ==  ===========  =======  ==========
 ```
 
@@ -169,11 +170,11 @@ frictionless extract countries.resource.yaml
 ==  ===========  =======  ==========
 id  neighbor_id  name     population
 ==  ===========  =======  ==========
- 1  None         Britain          67
- 2            3  France   None
+ 1               Britain          67
+ 2            3  France
  3           22  Germany          83
- 4  None         Italy            60
- 5  None         None     None
+ 4               Italy            60
+ 5
 ==  ===========  =======  ==========
 ```
 
@@ -216,7 +217,7 @@ row  field  code               message
 ===  =====  =================  ==============================================================================================================
   3      2  type-error         Type error in the cell "Ireland" in row "3" and field "neighbor_id" at position "2": type is "integer/default"
   4      5  extra-cell         Row at position "4" has an extra value in field at position "5"
-  5  None   foreign-key-error  Row at position "5" violates the foreign key: not found in the lookup table
+  5         foreign-key-error  Row at position "5" violates the foreign key: not found in the lookup table
   7      2  missing-cell       Row at position "7" has a missing cell in field "neighbor_id" at position "2"
   7      3  missing-cell       Row at position "7" has a missing cell in field "name" at position "3"
   7      4  missing-cell       Row at position "7" has a missing cell in field "population" at position "4"
@@ -282,11 +283,11 @@ id,neighbor_id,name,population
 Basically, that's it; now, we have a valid data file and a corresponding metadata file. It can be shared with other people or stored without fear of type errors or other problems making data research not reproducible.
 
 ```bash goodread title="CLI"
-ls -la countries.csv countries.resource.yaml
+ls countries.*
 ```
 ```
--rw------- 1 roll roll  91 Mar  4 13:11 countries.csv
--rw------- 1 roll roll 483 Mar  4 13:11 countries.resource.yaml
+countries.csv
+countries.resource.yaml
 ```
 
 In the next articles, we will explore more advanced Frictionless' functionality.

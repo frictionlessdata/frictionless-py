@@ -12,7 +12,9 @@ The Parser is responsible for parsing data from/to different data sources as tho
 
 > This parser has quite a naive experimental implementation.
 
-```python title="Python"
+```python goodread title="Python"
+from frictionless import Parser
+
 class HtmlParser(Parser):
     requires_loader = True
     supported_types = [
@@ -79,8 +81,9 @@ class HtmlParser(Parser):
 
 ## Dialect Example
 
+```python goodread title="Python"
+from frictionless import Dialect, Metadata
 
-```python title="Python"
 class HtmlDialect(Dialect):
 
     def __init__(self, descriptor=None, *, selector=None):

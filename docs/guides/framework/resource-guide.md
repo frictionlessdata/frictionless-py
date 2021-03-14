@@ -1,5 +1,9 @@
 ---
 title: Resource Guide
+goodread:
+  cleanup:
+    - rm resource.json
+    - rm resource.yaml
 ---
 
 The Resource class is arguable the most important class of the whole Frictionless Framework. It's based on [Data Resource Spec](https://specs.frictionlessdata.io/data-resource/) and  [Tabular Data Resource Spec](https://specs.frictionlessdata.io/data-resource/)
@@ -8,18 +12,18 @@ The Resource class is arguable the most important class of the whole Frictionles
 
 Let's create a data resource:
 
-```python title="Python"
+```python goodread title="Python"
 from frictionless import Resource
 
 resource = Resource('data/table.csv') # from a resource path
 resource = Resource('data/resource.json') # from a descriptor path
 resource = Resource({'path': 'data/table.csv'}) # from a descriptor
-resource = Resource(path='data/table.csv) # from arguments
+resource = Resource(path='data/table.csv') # from arguments
 ```
 
 As you can see it's possible to create a resource providing different kinds of sources which will be detector to have some type automatically (e.g. whether it's a descriptor or a path). It's possible to make this step more explicit:
 
-```python title="Python"
+```python goodread title="Python"
 from frictionless import Resource
 
 resource = Resource(path='data/table.csv') # from a path
@@ -30,13 +34,13 @@ resource = Resource(descriptor='data/resource.json') # from a descriptor
 
 The specs support a great deal of resource metadata which is possible to have with Frictionless Framework too:
 
-```python title="Python"
+```python goodread title="Python"
 from frictionless import Resource
 
 resource = Resource(
     name='resource',
     title='My Resource',
-    descriptor='My Resource for the Guide',
+    description='My Resource for the Guide',
     path='data/table.csv',
     # it's possible to provide all the official properties like mediatype, etc
 )
@@ -44,7 +48,7 @@ resource = Resource(
 
 If you have created a resource, for example, from a descriptor you can access this properties:
 
-```python title="Python"
+```python goodread title="Python"
 from frictionless import Resource
 
 resource = Resource('data/resource.json')
@@ -56,7 +60,7 @@ resource.description
 
 And edit them:
 
-```python title="Python"
+```python goodread title="Python"
 from frictionless import Resource
 
 resource = Resource('data/resource.json')
@@ -70,7 +74,7 @@ resource.description = 'New Description'
 
 As any of the Metadata classes the Resource class can be saved as JSON or YAML:
 
-```python title="Python"
+```python goodread title="Python"
 from frictionless import Resource
 resource = Resource('data/table.csv')
 resource.to_json('resource.json') # Save as JSON
@@ -81,7 +85,8 @@ resource.to_yaml('resource.yaml') # Save as YAML
 
 You might have noticed that we had to duplicate the `with Resource(...)` statement in some examples. The reason is that Resource is a streaming interface. Once it's read you need to open it again. Let's show it in an example:
 
-```python title="Python"
+```python goodread title="Python"
+from pprint import pprint
 from frictionless import Resource
 
 resource = Resource('data/capital-3.csv')
@@ -95,33 +100,40 @@ pprint(resource.read_rows())
 resource.close()
 ```
 ```
-[Row([('id', 1), ('name', 'London')]),
- Row([('id', 2), ('name', 'Berlin')]),
- Row([('id', 3), ('name', 'Paris')]),
- Row([('id', 4), ('name', 'Madrid')]),
- Row([('id', 5), ('name', 'Rome')])]
+[{'id': 1, 'name': 'London'},
+ {'id': 2, 'name': 'Berlin'},
+ {'id': 3, 'name': 'Paris'},
+ {'id': 4, 'name': 'Madrid'},
+ {'id': 5, 'name': 'Rome'}]
 []
-[Row([('id', 1), ('name', 'London')]),
- Row([('id', 2), ('name', 'Berlin')]),
- Row([('id', 3), ('name', 'Paris')]),
- Row([('id', 4), ('name', 'Madrid')]),
- Row([('id', 5), ('name', 'Rome')])]
+[{'id': 1, 'name': 'London'},
+ {'id': 2, 'name': 'Berlin'},
+ {'id': 3, 'name': 'Paris'},
+ {'id': 4, 'name': 'Madrid'},
+ {'id': 5, 'name': 'Rome'}]
 ```
 
 At the same you can read data for a resource without opening and closing it explicitly. In this case Frictionless Framework will open and close the resource for you so it will be basically a one-time operation:
 
-```python title="Python"
+```python goodread title="Python"
 from frictionless import Resource
 
 resource = Resource('data/capital-3.csv')
 pprint(resource.read_rows())
+```
+```
+[{'id': 1, 'name': 'London'},
+ {'id': 2, 'name': 'Berlin'},
+ {'id': 3, 'name': 'Paris'},
+ {'id': 4, 'name': 'Madrid'},
+ {'id': 5, 'name': 'Rome'}]
 ```
 
 ## Reading Data
 
 The Resource class is also a metadata class which provides various read and stream functions. The `extract` functions always read rows into memory; Resource can do the same but it also gives a choice regarding output data. It can be `rows`, `data`, `text`, or `bytes`. Let's try reading all of them:
 
-```python title="Python"
+```python goodread title="Python"
 from frictionless import Resource
 
 resource = Resource('data/country-3.csv')
@@ -145,16 +157,16 @@ pprint(resource.read_rows())
  ['3', '2', 'Germany', '83'],
  ['4', '5', 'Italy', '60'],
  ['5', '4', 'Spain', '47']]
-[Row([('id', 1), ('capital_id', 1), ('name', 'Britain'), ('population', 67)]),
- Row([('id', 2), ('capital_id', 3), ('name', 'France'), ('population', 67)]),
- Row([('id', 3), ('capital_id', 2), ('name', 'Germany'), ('population', 83)]),
- Row([('id', 4), ('capital_id', 5), ('name', 'Italy'), ('population', 60)]),
- Row([('id', 5), ('capital_id', 4), ('name', 'Spain'), ('population', 47)])]
+[{'id': 1, 'capital_id': 1, 'name': 'Britain', 'population': 67},
+ {'id': 2, 'capital_id': 3, 'name': 'France', 'population': 67},
+ {'id': 3, 'capital_id': 2, 'name': 'Germany', 'population': 83},
+ {'id': 4, 'capital_id': 5, 'name': 'Italy', 'population': 60},
+ {'id': 5, 'capital_id': 4, 'name': 'Spain', 'population': 47}]
 ```
 
 It's really handy to read all your data into memory but it's not always possible if a file is really big. For such cases, Frictionless provides streaming functions:
 
-```python title="Python"
+```python goodread title="Python"
 from frictionless import Resource
 
 with Resource('data/country-3.csv') as resource:
@@ -166,15 +178,15 @@ with Resource('data/country-3.csv') as resource:
       print(row)
 ```
 ```
-<frictionless.loader.ByteStreamWithStatsHandling object at 0x7fe7e3664910>
-<_io.TextIOWrapper name='./data/country-3.csv' encoding='utf-8'>
-<generator object Resource.read_data_stream at 0x7fe7e3c93a50>
-<generator object Resource.read_row_stream at 0x7fe7e3c93a50>
-Row([('id', 1), ('capital_id', 1), ('name', 'Britain'), ('population', 67)])
-Row([('id', 2), ('capital_id', 3), ('name', 'France'), ('population', 67)])
-Row([('id', 3), ('capital_id', 2), ('name', 'Germany'), ('population', 83)])
-Row([('id', 4), ('capital_id', 5), ('name', 'Italy'), ('population', 60)])
-Row([('id', 5), ('capital_id', 4), ('name', 'Spain'), ('population', 47)])
+<frictionless.loader.ByteStreamWithStatsHandling object at 0x7ff1d141b2e0>
+<_io.TextIOWrapper name='data/country-3.csv' encoding='utf-8'>
+<itertools.chain object at 0x7ff1d1427040>
+<generator object Resource.__read_row_stream.<locals>.row_stream at 0x7ff1d1483510>
+{'id': 1, 'capital_id': 1, 'name': 'Britain', 'population': 67}
+{'id': 2, 'capital_id': 3, 'name': 'France', 'population': 67}
+{'id': 3, 'capital_id': 2, 'name': 'Germany', 'population': 83}
+{'id': 4, 'capital_id': 5, 'name': 'Italy', 'population': 60}
+{'id': 5, 'capital_id': 4, 'name': 'Spain', 'population': 47}
 ```
 
 ## File Details
@@ -185,24 +197,23 @@ Let's overview the details we can specify for a file. Usually you don't need to 
 
 The scheme also know as protocol indicates which loader Frictionless should use to read or write data. It can be `file` (default), `text`, `http`, `https`, `s3`, and others.
 
-
-```python title="Python"
+```python goodread title="Python"
 from frictionless import Resource
 
-with Resource('header1,header2\nvalue1,value2.csv', scheme='text') as resource:
+with Resource(b'header1,header2\nvalue1,value2', format='csv') as resource:
   print(resource.scheme)
   print(resource.read_rows())
 ```
 ```
-text
-[Row([('header1', 'value1'), ('header2', 'value2.csv')])]
+buffer
+[{'header1': 'value1', 'header2': 'value2'}]
 ```
 
 ### Format
 
 The format or as it's also called extension helps Frictionless to choose a proper parser to handle the file. Popular formats are `csv`, `xlsx`, `json` and others
 
-```python title="Python"
+```python goodread title="Python"
 from frictionless import Resource
 
 with Resource(b'header1,header2\nvalue1,value2.csv', format='csv') as resource:
@@ -211,14 +222,14 @@ with Resource(b'header1,header2\nvalue1,value2.csv', format='csv') as resource:
 ```
 ```
 csv
-[Row([('header1', 'value1'), ('header2', 'value2')])]
+[{'header1': 'value1', 'header2': 'value2.csv'}]
 ```
 
 ### Hashing
 
 The hashing option controls which hashing algorithm should be used for generating the `hash` property. It doesn't affect the `extract` function but can be used with the `Resource` class:
 
-```python title="Python"
+```python goodread title="Python"
 from frictionless import Resource
 
 with Resource('data/country-3.csv', hashing='sha256') as resource:
@@ -235,12 +246,12 @@ sha256
 
 Frictionless automatically detects encoding of files but sometimes it can be inaccurate. It's possible to provide an encoding manually:
 
-```python title="Python"
+```python goodread title="Python"
 from frictionless import Resource
 
 with Resource('data/country-3.csv', encoding='utf-8') as resource:
   print(resource.encoding)
-  print(resource.source)
+  print(resource.path)
 ```
 ```
 utf-8
@@ -251,7 +262,7 @@ data/country-3.csv
 
 By default, Frictionless uses the first file found in a zip archive. It's possible to adjust this behaviour:
 
-```python
+```python goodread title="Python"
 from frictionless import Resource
 
 with Resource('data/table-multiple-files.zip', innerpath='table-reverse.csv') as resource:
@@ -262,14 +273,14 @@ with Resource('data/table-multiple-files.zip', innerpath='table-reverse.csv') as
 ```
 zip
 table-reverse.csv
-[Row([('id', 1), ('name', '中国人')]), Row([('id', 2), ('name', 'english')])]
+[{'id': 1, 'name': '中国人'}, {'id': 2, 'name': 'english'}]
 ```
 
 ### Compression
 
 It's possible to adjust compression detection by providing the algorithm explicitly. For the example below it's not required as it would be detected anyway:
 
-```python title="Python"
+```python goodread title="Python"
 from frictionless import Resource
 
 with Resource('data/table.csv.zip', compression='zip') as resource:
@@ -278,14 +289,14 @@ with Resource('data/table.csv.zip', compression='zip') as resource:
 ```
 ```
 zip
-[Row([('id', 1), ('name', 'english')]), Row([('id', 2), ('name', '中国人')])]
+[{'id': 1, 'name': 'english'}, {'id': 2, 'name': '中国人'}]
 ```
 
 ### Control
 
 The Control object allows you to manage the loader used by the Resource class. In most cases, you don't need to provide any Control settings but sometimes it can be useful:
 
-```python title="Python"
+```python goodread title="Python"
 from frictionless import Resource
 from frictionless.plugins.remote import RemoteControl
 
@@ -296,8 +307,8 @@ with Resource(source, control=control) as resource:
   print(resource.read_rows())
 ```
 ```
-{'httpTimeout': 10, 'newline': ''}
-[Row([('id', 1), ('name', 'english')]), Row([('id', 2), ('name', '中国人')])]
+{'httpTimeout': 10}
+[{'id': 1, 'name': 'english'}, {'id': 2, 'name': '中国人'}]
 ```
 
 Exact parameters depend on schemes and can be found in the "Schemes Reference". For example, the Remote Control provides `http_timeout`, `http_session`, and others but there is only one option available for all controls:
@@ -306,7 +317,7 @@ Exact parameters depend on schemes and can be found in the "Schemes Reference". 
 
 The Dialect adjusts the way the parsers work. The concept is similar to the Control above. Let's use the CSV Dialect to adjust the delimiter configuration:
 
-```python title="Python"
+```python goodread title="Python"
 from frictionless import Resource
 from frictionless.plugins.csv import CsvDialect
 
@@ -318,7 +329,7 @@ with Resource(source, format='csv', dialect=dialect) as resource:
 ```
 ```
 {'delimiter': ';'}
-[Row([('header1', 'value1'), ('header2', 'value2')])]
+[{'header1': 'value1', 'header2': 'value2'}]
 ```
 
 There are a great deal of options available for different dialects that can be found in "Formats Reference". We will list the properties that can be used with every dialect:
@@ -339,12 +350,15 @@ Please read [Schema Guide](schema-guide.md) for more information.
 
 Resource's stats can be accessed with `resource.stats`:
 
-```python title="Python"
+```python goodread title="Python"
 from frictionless import Resource
 
 resource = Resource('data/table.csv')
 resource.infer(stats=True)
 print(resource.stats)
+```
+```
+{'hash': '6c2c61dd9b0e9c6876139a449ed87933', 'bytes': 30, 'fields': 2, 'rows': 2}
 ```
 
 ## Resource Options
@@ -368,13 +382,12 @@ This option accept one of the three possible values configuring an `extract`, `R
 
 Let's investigate how we can add warnings on all header/row errors:
 
-
-```python
-from frictionless import Resou
+```python title="Python"
+from frictionless import Resource
 
 data = [["name"], [1], [2], [3]]
 schema = {"fields": [{"name": "name", "type": "string"}]}
-with  Resou(data, schema=schema, onerror="warn") as table:
+with  Resource(data, schema=schema, onerror="warn") as table:
   table.read_rows()
 ```
 
@@ -385,12 +398,10 @@ with  Resou(data, schema=schema, onerror="warn") as table:
     /home/roll/projects/frictionless-py/frictionless/table.py:771: UserWarning: The cell "3" in row at position "4" and field "name" at position "1" has incompatible type: type is "string/default"
       warnings.warn(error.message, UserWarning)
 
-
 In some cases, we need to fail on the first error. We will use `raise` for it:
 
-
 ```python
-from frictionless import Resou
+from frictionless import Resource
 
 data = [["name"], [1], [2], [3]]
 schema = {"fields": [{"name": "name", "type": "string"}]}

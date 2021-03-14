@@ -36,7 +36,7 @@ You can write SQL databases:
 from frictionless import Package
 
 package = Package('path/to/datapackage.json')
-package.to_sql(url='postgresql://mydatabase')
+package.to_sql('postgresql://mydatabase')
 ```
 
 

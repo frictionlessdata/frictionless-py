@@ -8,7 +8,9 @@ The Step concept is a part of the Transform API. You can create a custom Step to
 
 > This step uses PETL under the hood.
 
-```python title="Python"
+```python goodread title="Python"
+from frictionless import Step
+
 class cell_set(Step):
     code = "cell-set"
 

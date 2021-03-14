@@ -1,5 +1,9 @@
 ---
 title: Package Guide
+goodread:
+  cleanup:
+    - rm package.json
+    - rm package.yaml
 ---
 
 The Data Package is a core Frictionless Data concept meaning a set of resources with additional metadata provided. You can read [Data Package Spec](https://specs.frictionlessdata.io/data-package/) for more information.
@@ -8,12 +12,12 @@ The Data Package is a core Frictionless Data concept meaning a set of resources 
 
 Let's create a data package:
 
-```python title="Python"
+```python goodread title="Python"
 from frictionless import Package, Resource
 
 package = Package('data/table.csv') # from a resource path
 package = Package('data/tables/*') # from a resources glob
-package = Package(['data/tables/chunk1.csv', 'data/tables/chunk2.csv]') # from a list
+package = Package(['data/tables/chunk1.csv', 'data/tables/chunk2.csv']) # from a list
 package = Package('data/package/datapackage.json') # from a descriptor path
 package = Package({'resources': {'path': 'data/table.csv'}}) # from a descriptor
 package = Package(resources=[Resource(path='data/table.csv')]) # from arguments
@@ -32,13 +36,13 @@ package = Package(descriptor='data/package/datapackage.json') # from a descripto
 
 The specs support a great deal of package metadata which is possible to have with Frictionless Framework too:
 
-```python title="Python"
+```python goodread title="Python"
 from frictionless import Package, Resource
 
 package = Package(
     name='package',
     title='My Package',
-    descriptor='My Package for the Guide',
+    description='My Package for the Guide',
     resources=[Resource(path='data/table.csv')],
     # it's possible to provide all the official properties like homepage, version, etc
 )
@@ -46,10 +50,10 @@ package = Package(
 
 If you have created a package, for example, from a descriptor you can access this properties:
 
-```python title="Python"
+```python goodread title="Python"
 from frictionless import Package
 
-package = Package('some/datapackage.json')
+package = Package('data/package/datapackage.json')
 package.name
 package.title
 package.description
@@ -58,10 +62,10 @@ package.description
 
 And edit them:
 
-```python title="Python"
+```python goodread title="Python"
 from frictionless import Package
 
-package = Package('some/datapackage.json')
+package = Package('data/package/datapackage.json')
 package.name = 'new-name'
 package.title = 'New Title'
 package.description = 'New Description'
@@ -72,8 +76,7 @@ package.description = 'New Description'
 
 The core purpose of having a package is to provide an ability to have a set of resources. The Package class provides useful methods to manage resources:
 
-
-```python title="Python"
+```python goodread title="Python"
 from frictionless import Package, Resource
 
 package = Package('data/package/datapackage.json')
@@ -84,12 +87,17 @@ resource = package.get_resource('new')
 print(package.has_resource('new'))
 package.remove_resource('new')
 ```
+```
+[{'name': 'data', 'path': 'data.csv', 'schema': {'fields': [{'name': 'id', 'type': 'string', 'constraints': {'required': True}}, {'name': 'name', 'type': 'string'}, {'name': 'description', 'type': 'string'}, {'name': 'amount', 'type': 'number'}], 'primaryKey': 'id'}}, {'name': 'data2', 'path': 'data2.csv', 'schema': {'fields': [{'type': 'string', 'name': 'parent'}, {'type': 'string', 'name': 'comment'}], 'foreignKeys': [{'fields': 'parent', 'reference': {'resource': 'data', 'fields': 'id'}}]}}]
+['data', 'data2']
+True
+```
 
 ## Saving Descriptor
 
 As any of the Metadata classes the Package class can be saved as JSON or YAML:
 
-```python title="Python"
+```python goodread title="Python"
 from frictionless import Package
 package = Package('data/tables/*')
 package.to_json('package.json') # Save as JSON
