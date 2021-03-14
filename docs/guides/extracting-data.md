@@ -131,7 +131,7 @@ resource.infer()
 resource.schema.missing_values.append('3') # will interpret 3 as a missing value
 resource.to_yaml('capital.resource.yaml') # use resource.to_json for JSON format
 ```
-You can also use a pre-made descriptor file. 
+You can also use a pre-made descriptor file.
 
 Now, this descriptor file can be used to extract the resource:
 
@@ -365,7 +365,7 @@ Valid: True
 As List: ['id', 'name']
 ```
 
-The example above shows a case when a header is valid. For a header that contains errors in its tabular structure, this information can be very useful, revealing discrepancies, duplicates or missing cell information. Please read the [API Reference](/docs/references/api-reference#header) for more details.
+The example above shows a case when a header is valid. For a header that contains errors in its tabular structure, this information can be very useful, revealing discrepancies, duplicates or missing cell information. Please read the [API Reference](../references/api-reference#header) for more details.
 
 ## Row Class
 
@@ -410,4 +410,4 @@ As Dict: {'id': None, 'name': 'London'}
 As List: [None, 'London']
 ```
 
-As we can see, this output provides a lot of information which is especially useful when a row is not valid. Our row is valid but we demonstrated how it can preserve data about missing values. It also preserves data about all cells that contain errors. Please read the [API Reference](docs/references/api-reference#row) for more details.
+As we can see, this output provides a lot of information which is especially useful when a row is not valid. Our row is valid but we demonstrated how it can preserve data about missing values. It also preserves data about all cells that contain errors. Please read the [API Reference](../references/api-reference#row) for more details.
