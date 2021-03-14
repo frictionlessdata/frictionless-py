@@ -59,7 +59,11 @@ def remove_non_values(mapping):
 def rows_to_data(rows):
     if not rows:
         return []
-    return [list(rows[0].field_names)] + [row.to_list() for row in rows]
+    data = []
+    data.append(list(rows[0].field_names))
+    for row in rows:
+        data.append([cell if cell is not None else "" for cell in row.to_list()])
+    return data
 
 
 def deepfork(value):

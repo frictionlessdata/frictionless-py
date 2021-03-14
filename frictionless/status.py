@@ -91,7 +91,7 @@ class Status(Metadata):
             FrictionlessException: if there are more that 1 task
         """
         if len(self.tasks) != 1:
-            error = Error(note='The "report.task" is available for single task reports')
+            error = Error(note='The "status.task" is available for single task reports')
             raise FrictionlessException(error)
         return self.tasks[0]
 
