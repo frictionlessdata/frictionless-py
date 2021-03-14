@@ -37,7 +37,7 @@ id,name,name
 x,Tokio,Japan,review
 ```
 
-We can validate this file by using the command-line interface. Frictionless provides comprehensive error details so the error should be self-explanatory. Continue reading to learn the validation process in detail.
+We can validate this file by using the command-line interface. Frictionless provides comprehensive error details so that errors can be understood by the user. Continue reading to learn the validation process in detail.
 
 ```bash goodread title="CLI"
 frictionless validate capital-invalid.csv
@@ -70,12 +70,14 @@ The high-level interface for validating data provided by Frictionless is a set o
 On the command-line, there is only one command but there is a flag to adjust the behavior:
 
 ```bash title="CLI"
-frictionless validate
-frictionless validate --type schema
-frictionless validate --type resource
-frictionless validate --type package
-frictionless validate --type inquiry
+frictionless validate your-data.csv
+frictionless validate your-schema.yaml --type schema
+frictionless validate your-data.csv --type resource
+frictionless validate your-package.json --type package
+frictionless validate your-inquiry.yaml --type inquiry
 ```
+
+As a reminder, in the Frictionless ecosystem, a resource is a single file, such as a data file, and a package is a set of files, such as a data file and a schema. This concept is described in more detail in the [Introduction](https://framework.frictionlessdata.io/docs/guides/introduction). 
 
 ## Validating a Schema
 
@@ -115,6 +117,8 @@ As was shown in the ["Describing Data" guide](https://framework.frictionlessdata
 frictionless describe capital-invalid.csv --json > capital.resource.yaml
 ```
 
+Note: this example uses JSON for the resource descriptor format, but Frictionless also supports YAML format as shown in examples below.
+
 Let's now use the command-line interface to ensure that we are getting the same result that we got without using a resource:
 
 ```bash goodread title="CLI"
@@ -143,11 +147,11 @@ from frictionless import describe
 
 resource = describe('capital-invalid.csv')
 resource['bytes'] = 100 # this is wrong
-resource['hash'] = 'ae23c74693ca2d3f0e38b9ba3570775b' # this is wrong
+resource['hash'] = 'ae23c74693ca2d3f0e38b9ba3570775b' # this is a made up incorrect hash
 resource.to_yaml('capital.resource.yaml')
 ```
 
-We have added a few bad metrics to our resource descriptor. Now, the validation below reports these errors in addition to all the errors we had before. This example shows how concepts like Data Resource can be extremely useful when working with data.
+We have added a few incorrect, made up attributes to our resource descriptor as an example. Now, the validation below reports these errors in addition to all the errors we had before. This example shows how concepts like Data Resource can be extremely useful when working with data.
 
 ```bash goodread title="CLI"
 frictionless validate capital.resource.yaml
@@ -268,7 +272,7 @@ All the `validate` functions return a Validation Report. This is a unified objec
 from pprint import pprint
 from frictionless import validate
 
-report = validate('capital-invalid.csv', pick_errors=['duplicate-header'])
+report = validate('capital-invalid.csv', pick_errors=['duplicate-label'])
 pprint(report)
 ```
 ```
@@ -347,7 +351,7 @@ pprint(report)
 
 ## Validation Errors
 
-The Error object is at the heart of the validation process. The Report has `report.errors` and `report.tables[].errors`, properties that can contain the Error object. Let's explore it:
+The Error object is at the heart of the validation process. The Report has `report.errors` and `report.tables[].errors`, properties that can contain the Error object. Let's explore it by taking a deeper look at the 'duplicate-label' error:
 
 ```python goodread title="Python"
 from frictionless import validate
@@ -370,7 +374,7 @@ Message: "Label "name" in the header at position "3" is duplicated to a label: a
 Description: "Two columns in the header row have the same value. Column names should be unique."
 ```
 
-Above, we have listed universal error properties. Depending on the type of an error there can be additional ones. For example, for our `duplicate-header` error:
+Above, we have listed universal error properties. Depending on the type of an error there can be additional ones. For example, for our `duplicate-label` error:
 
 ```python goodread title="Python"
 from pprint import pprint
@@ -397,7 +401,7 @@ pprint(error)
  'tags': ['#table', '#header', '#label']}
 ```
 
-Please explore the "Errors Reference" to learn about all the available errors and their properties.
+Please explore the [Errors Reference](/docs/references/errors-reference) to learn about all the available errors and their properties.
 
 ## Available Checks
 
@@ -454,7 +458,7 @@ Learn more about custom checks in the [Check Guide](extension/check-guide.md).
 
 ## Pick/Skip Errors
 
-We can pick or skip errors by providing a list of error codes. For example:
+We can pick or skip errors by providing a list of error codes. This is useful when you already know your data has some errors, but you want to ignore them for now. For instance, if you have a data table with repeating header names. Let's see an example of how to pick and skip errors:
 
 ```python goodread title="Python"
 from pprint import pprint
@@ -491,7 +495,7 @@ pprint(report2.flatten(["rowPosition", "fieldPosition", "code"]))
 
 ## Limit Errors
 
-This option allows you to limit the amount of errors, and can be used when you need to "fail fast":
+This option allows you to limit the amount of errors, and can be used when you need to do a quick check or want to "fail fast". For instance, here we use `limit_errors` to find just the 1st error and add it to our report:
 
 ```python goodread title="Python"
 from pprint import pprint
