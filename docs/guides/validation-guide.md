@@ -277,8 +277,22 @@ pprint(report)
 ```
 ```
 {'errors': [],
- 'stats': {'errors': 0, 'tasks': 1},
- 'tasks': [{'errors': [],
+ 'stats': {'errors': 1, 'tasks': 1},
+ 'tasks': [{'errors': [{'code': 'duplicate-label',
+                        'description': 'Two columns in the header row have the '
+                                       'same value. Column names should be '
+                                       'unique.',
+                        'fieldName': 'name2',
+                        'fieldNumber': 3,
+                        'fieldPosition': 3,
+                        'label': 'name',
+                        'labels': ['id', 'name', 'name'],
+                        'message': 'Label "name" in the header at position "3" '
+                                   'is duplicated to a label: at position "2"',
+                        'name': 'Duplicate Label',
+                        'note': 'at position "2"',
+                        'rowPositions': [1],
+                        'tags': ['#table', '#header', '#label']}],
             'partial': False,
             'resource': {'encoding': 'utf-8',
                          'format': 'csv',
@@ -297,12 +311,12 @@ pprint(report)
                                    'fields': 3,
                                    'hash': 'dcdeae358cfd50860c18d953e021f836',
                                    'rows': 11}},
-            'scope': [],
-            'stats': {'errors': 0},
-            'time': 0.029,
-            'valid': True}],
- 'time': 0.029,
- 'valid': True,
+            'scope': ['duplicate-label'],
+            'stats': {'errors': 1},
+            'time': 0.028,
+            'valid': False}],
+ 'time': 0.028,
+ 'valid': False,
  'version': '4.1.0'}
 ```
 
