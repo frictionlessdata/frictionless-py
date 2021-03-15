@@ -26,13 +26,13 @@ Generating insight and conclusions from data is often not a straightforward proc
 The core of the Framework are the Frictionless Specifications. These specifications are a set of patterns for describing data including Data Package (for datasets), Data Resource (for files) and Table Schema (for tables). A Data Package is a simple container format used to describe and package a collection of data and metadata, including schemas. Frictionless-py lets users create data packages and schemas that conform to the Frictionless specifications.
 You can read more about the Frictionless specifications at https://specs.frictionlessdata.io/. The main concepts of the Frictionless Specifications are:
 
-**<big>Table Schema:</big>** a metadata file usually written in JSON or YAML that describes a tabular file by providing its dimension, field data types, and constraints. One Table Schema can be used with many tabular files with the same structure.
+**<big>Table Schema:</big>** a metadata file usually written in JSON or YAML that describes a tabular file by providing its dimension, field data types, relations, and constraints. One Table Schema can be used with many tabular files with the same structure.
 
 **<big>Data Resource:</big>** a metadata file usually written in JSON or YAML that describes an EXACT tabular file providing a path to the file and details like title, description, and others. For a tabular resource it also includes a Table Schema from above.
 
 **<big>Data Package:</big>** a metadata file usually written in JSON or YAML that describes a COLLECTION of EXACT tabular files providing data resource information from above along with general information about the package itself as though a license, authors, and other metadata.
 
-For example, thinking in SQL terminology a package would be a database, a resource would be a table, and a schema would be column definitions.
+> For example, thinking in SQL terminology a package would be a database, a resource would be a table, and a schema would be column definitions.
 
 ## Frictionless Framework
 
