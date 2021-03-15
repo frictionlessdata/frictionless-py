@@ -81,25 +81,8 @@ row  field  code             message
 
 ## User Stories
 
-> TODO: Add visual diagrams here.
-
 Frictionless is a DEVT-framework (describe-extract-validate-transform). In contrast to ETL-frameworks (extract-transform-load), Frictionless does not have a linear flow. For example, let’s look at some user stories:
 
-- I want to quickly clean my data file:
-  - [D] Describe (optional)
-  - [E] Extract
-- I want to explore my data file:
-  - [D] Describe (optional)
-  - [E] Extract (in the raw-data mode)
-- I want to find errors in my data and clean it manually:
-  - [D] Describe (optional)
-  - [V] Validate
-- I want to share my data file with metadata:
-  - [D] Describe
-  - [T] Transform (optional)
-- I want to export my file into a different format:
-  - [D] Describe (optional)
-  - [T] Transform
-- I want to reshape my file:
-  - [D] Describe (optional)
-  - [T] Transform
+![Diagram](/img/diagram.png)
+
+Continue reading this documentation to learn more about it!
