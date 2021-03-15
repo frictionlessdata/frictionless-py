@@ -246,32 +246,72 @@ You can read more advanced details about the [Package Class below](#package-clas
 
 ## Resource Class
 
-The Resource class provides metadata about a resource with read and stream functions. The `extract` functions always read rows into memory; Resource can do the same but it also gives a choice regarding output data which can be `rows`, `data`, `text`, or `bytes`. Let's try reading all of them:
+The Resource class provides metadata about a resource with read and stream functions. The `extract` functions always read rows into memory; Resource can do the same but it also gives a choice regarding output data which can be `rows`, `data`, `text`, or `bytes`. Let's try reading all of them.
+
+### Reading Bytes
+
+It's a byte representation of the contents:
 
 ```python goodread title="Python"
 from frictionless import Resource
 
 resource = Resource('country-3.csv')
 pprint(resource.read_bytes())
-pprint(resource.read_text())
-pprint(resource.read_lists())
-pprint(resource.read_rows())
 ```
 ```
 (b'id,capital_id,name,population\n1,1,Britain,67\n2,3,France,67\n3,2,Germany,8'
  b'3\n4,5,Italy,60\n5,4,Spain,47\n')
+```
+
+### Reading Text
+
+It's a textual representation of the contents:
+
+```python goodread title="Python"
+from frictionless import Resource
+
+resource = Resource('country-3.csv')
+pprint(resource.read_text())
+```
+```
 ('id,capital_id,name,population\n'
  '1,1,Britain,67\n'
  '2,3,France,67\n'
  '3,2,Germany,83\n'
  '4,5,Italy,60\n'
  '5,4,Spain,47\n')
+```
+
+### Reading Lists
+
+For a tabular data there are raw representaion of the tabular contents:
+
+```python goodread title="Python"
+from frictionless import Resource
+
+resource = Resource('country-3.csv')
+pprint(resource.read_lists())
+```
+```
 [['id', 'capital_id', 'name', 'population'],
  ['1', '1', 'Britain', '67'],
  ['2', '3', 'France', '67'],
  ['3', '2', 'Germany', '83'],
  ['4', '5', 'Italy', '60'],
  ['5', '4', 'Spain', '47']]
+```
+
+### Reading Rows
+
+For a tabular data there are row available which is are normalized lists presented as dictionaries:
+
+```python goodread title="Python"
+from frictionless import Resource
+
+resource = Resource('country-3.csv')
+pprint(resource.read_rows())
+```
+```
 [{'id': 1, 'capital_id': 1, 'name': 'Britain', 'population': 67},
  {'id': 2, 'capital_id': 3, 'name': 'France', 'population': 67},
  {'id': 3, 'capital_id': 2, 'name': 'Germany', 'population': 83},
@@ -279,29 +319,32 @@ pprint(resource.read_rows())
  {'id': 5, 'capital_id': 4, 'name': 'Spain', 'population': 47}]
 ```
 
+### Reading a Header
+
+For a tabular data there is the Header object available:
+
+```python goodread title="Python"
+from frictionless import Resource
+
+with Resource('country-3.csv') as resource:
+    pprint(resource.header)
+```
+```
+['id', 'capital_id', 'name', 'population']
+```
+
+### Streaming Interfaces
+
 It's really handy to read all your data into memory but it's not always possible if a file is very big. For such cases, Frictionless provides streaming functions:
 
 ```python goodread title="Python"
 from frictionless import Resource
 
 with Resource('country-3.csv') as resource:
-    pprint(type(resource.byte_stream))
-    pprint(type(resource.text_stream))
-    pprint(resource.list_stream)
-    pprint(resource.row_stream)
-    for row in resource.row_stream:
-      print(row)
-```
-```
-<class 'frictionless.loader.ByteStreamWithStatsHandling'>
-<class '_io.TextIOWrapper'>
-<itertools.chain object at 0x7fa95be13880>
-<generator object Resource.__read_row_stream.<locals>.row_stream at 0x7fa95be45580>
-{'id': 1, 'capital_id': 1, 'name': 'Britain', 'population': 67}
-{'id': 2, 'capital_id': 3, 'name': 'France', 'population': 67}
-{'id': 3, 'capital_id': 2, 'name': 'Germany', 'population': 83}
-{'id': 4, 'capital_id': 5, 'name': 'Italy', 'population': 60}
-{'id': 5, 'capital_id': 4, 'name': 'Spain', 'population': 47}
+    resource.byte_stream
+    resource.text_stream
+    resource.list_stream
+    resource.row_stream
 ```
 
 ## Package Class
