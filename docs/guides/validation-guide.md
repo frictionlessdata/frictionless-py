@@ -77,7 +77,7 @@ frictionless validate your-package.json --type package
 frictionless validate your-inquiry.yaml --type inquiry
 ```
 
-As a reminder, in the Frictionless ecosystem, a resource is a single file, such as a data file, and a package is a set of files, such as a data file and a schema. This concept is described in more detail in the [Introduction](https://framework.frictionlessdata.io/docs/guides/introduction). 
+As a reminder, in the Frictionless ecosystem, a resource is a single file, such as a data file, and a package is a set of files, such as a data file and a schema. This concept is described in more detail in the [Introduction](https://framework.frictionlessdata.io/docs/guides/introduction).
 
 ## Validating a Schema
 
@@ -114,7 +114,7 @@ We see that the schema is invalid and the error is displayed. Schema validation 
 As was shown in the ["Describing Data" guide](https://framework.frictionlessdata.io/docs/guides/describing-data), a resource is a container having both metadata and data. We need to create a resource descriptor and then we can validate it:
 
 ```bash goodread title="CLI"
-frictionless describe capital-invalid.csv --json > capital.resource.yaml
+frictionless describe capital-invalid.csv > capital.resource.yaml
 ```
 
 Note: this example uses JSON for the resource descriptor format, but Frictionless also supports YAML format as shown in examples below.
@@ -195,7 +195,7 @@ id,name
 Now let's describe and validate a package which contains the data files we have seen so far:
 
 ```bash goodread title="CLI"
-frictionless describe capital-*id.csv --json > capital.package.yaml
+frictionless describe capital-*id.csv > capital.package.yaml
 frictionless validate capital.package.yaml
 ```
 ```
@@ -219,11 +219,13 @@ row  field  code             message
 # -----
 ```
 
-As we can see, the result is in a similar format to what we have already seen, and shows errors as we expected: we have one invalid resource and one valid resource. One important note regarding the package validation: if there is more than one resource, it will use multiprocessing to speed up the process.
+As we can see, the result is in a similar format to what we have already seen, and shows errors as we expected: we have one invalid resource and one valid resource.
 
 ## Validating an Inquiry
 
-Inquiry gives you an ability to create arbitrary validation jobs containing a set of individual validation tasks. Tasks in the Inquiry accept the same arguments written in camelCase as the corresponding `validate` functions.
+> The Inquiry is an advanced concept mostly used by software integrators. For example, under the hood, Frictionless Framework uses inquiries to implement client-server validation within the built-in API. Please skip this section if this information feels unnecessary for you.
+
+Inquiry is a declarative representation of a validation job. It gives you an ability to create, export, ans share arbitrary validation jobs containing a set of individual validation tasks. Tasks in the Inquiry accept the same arguments written in camelCase as the corresponding `validate` functions.
 
 Let's create an Inquiry that includes an individual file validation and a resource validation. In this example we will use the data file, `capital-valid.csv` and the resource, `capital.resource.json` which describes the invalid data file we have already seen:
 
@@ -262,7 +264,9 @@ row  field  code              message
 ===  =====  ================  ===========================================================================================================================================================
 ```
 
-At first sight, it might not be clear why such a construct exists, but when your validation workflow gets complex, the Inquiry can provide a lot of flexibility and power. Last but not least, the Inquiry will use multiprocessing if there is more than one task provided.
+At first sight, it might not be clear why such a construct exists, but when your validation workflow gets complex, the Inquiry can provide a lot of flexibility and power.
+
+> The Inquiry will use multiprocessing if there is the `parallel` flag provided. It might speed up your validation dramatically especially on a 4+ cores processor.
 
 ## Validation Report
 
@@ -320,7 +324,7 @@ pprint(report)
  'version': '4.1.0'}
 ```
 
-As we can see, there is a lot of information; you can find a detailed description of the Validation Report in the [API Reference](../references/api-reference.md). Errors are grouped by tables; for some validation there can be dozens of tables. Let's use the `report.flatten` function to simplify the representation of errors:
+As we can see, there is a lot of information; you can find a detailed description of the Validation Report in the [API Reference](../references/api-reference.md#report). Errors are grouped by tasks (i.e. data files); for some validation there can be dozens of tasks. Let's use the `report.flatten` function to simplify the representation of errors:
 
 ```python goodread title="Python"
 from pprint import pprint
@@ -337,7 +341,7 @@ pprint(report.flatten(["rowPosition", "fieldPosition", "code", "message"]))
   'position "2"']]
 ```
 
-In some situations, an error can't be associated with a table; then it goes to the top-level `report.errors` property:
+In some situations, an error can't be associated with a task; then it goes to the top-level `report.errors` property:
 
 ```python goodread title="Python"
 from pprint import pprint
@@ -365,7 +369,7 @@ pprint(report)
 
 ## Validation Errors
 
-The Error object is at the heart of the validation process. The Report has `report.errors` and `report.tables[].errors`, properties that can contain the Error object. Let's explore it by taking a deeper look at the 'duplicate-label' error:
+The Error object is at the heart of the validation process. The Report has `report.errors` and `report.tasks[].errors`, properties that can contain the Error object. Let's explore it by taking a deeper look at the `duplicate-label` error:
 
 ```python goodread title="Python"
 from frictionless import validate

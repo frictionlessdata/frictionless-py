@@ -94,13 +94,13 @@ On the command-line, the command would be used as follows:
 
 ```bash title="CLI"
 frictionless extract your-table.csv
-frictionless extract your-package.json --type package
 frictionless extract your-resource.json --type resource
+frictionless extract your-package.json --type package
 ```
 
 The `extract` functions always reads data in the form of rows, into memory. The lower-level interfaces will allow you to stream data, which you can read about in the [Resource Class](#resource-class) section below.
 
-## Extracting Resource
+## Extracting a Resource
 
 A resource contains only one file. To extract a resource, we have three options. First, we can use the same approach as above, extracting from the data file itself:
 
@@ -165,7 +165,7 @@ So what has happened in this example? We set the textual representation of the n
 
 You can read more advanced details about the [Resource Class below](#resource-class).
 
-## Extracting Package
+## Extracting a Package
 
 The third way we can extract information is from a package, which is a set of two or more files, for instance, two data files and a corresponding metadata file.
 

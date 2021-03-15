@@ -197,7 +197,7 @@ Unlike some systems like `Data Package Pipelines`, the core Frictionless Transfo
 
 Frictionless tries to be as explicit as possible regarding actions taken. For example, it will not use CPU resources to cast data unless a user adds a `normalize` step, `validate` step, or similar steps. So it's possible to transform a rather big file without even casting types, for example, if you only need to reshape it.
 
-### Best Practices
+### Software Reuse
 
 For the core transform functions, Frictionless uses the amazing [PETL](https://petl.readthedocs.io/en/stable/) project under the hood. This library provides lazy-loading functionality in running data pipelines. On top of PETL, Frictionless adds metadata management and a bridge between Frictionless concepts like Package/Resource and PETL's processors.
 

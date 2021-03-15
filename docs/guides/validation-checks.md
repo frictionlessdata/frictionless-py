@@ -13,7 +13,7 @@ There are various validation checks included in the core Frictionless Framework 
 
 ## Baseline Check
 
-The Baseline Check is always enabled. It makes various small checks that reveal a great deal of tabular errors. There is a `report.tables[].scope` property to check which exact errors have been checked for:
+The Baseline Check is always enabled. It makes various small checks that reveal a great deal of tabular errors. There is a `report.tasks[].scope` property to check which exact errors have been checked for:
 
 > Download [`capital-invalid.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/capital-invalid.csv) to reproduce the examples (right-click and "Save link as")..
 
