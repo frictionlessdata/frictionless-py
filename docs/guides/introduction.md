@@ -7,10 +7,10 @@ goodread:
     - rm invalid.csv
 ---
 
-[![Build](https://img.shields.io/github/workflow/status/frictionlessdata/frictionless-py/general/master)](https://github.com/frictionlessdata/frictionless-py/actions)
-[![Coverage](https://img.shields.io/codecov/c/github/frictionlessdata/frictionless-py/master)](https://codecov.io/gh/frictionlessdata/frictionless-py)
+[![Build](https://img.shields.io/github/workflow/status/frictionlessdata/frictionless-py/general/main)](https://github.com/frictionlessdata/frictionless-py/actions)
+[![Coverage](https://img.shields.io/codecov/c/github/frictionlessdata/frictionless-py/main)](https://codecov.io/gh/frictionlessdata/frictionless-py)
 [![Registry](https://img.shields.io/pypi/v/frictionless.svg)](https://pypi.python.org/pypi/frictionless)
-[![Codebase](https://img.shields.io/badge/github-master-brightgreen)](https://github.com/frictionlessdata/frictionless-py)
+[![Codebase](https://img.shields.io/badge/github-main-brightgreen)](https://github.com/frictionlessdata/frictionless-py)
 [![Support](https://img.shields.io/badge/chat-discord-brightgreen)](https://discord.com/channels/695635777199145130/695635777199145133)
 
 > Frictionless@4 is now live! Please read the [migration guide](https://framework.frictionlessdata.io/docs/development/migration).
