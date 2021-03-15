@@ -53,7 +53,7 @@ The frictionless framework provides 4 different `describe` functions in Python:
 - `describe_resource`: always returns Data Resource metadata
 - `describe_package`: always returns Data Package metadata
 
-As described in more detail in the [Introduction](https://framework.frictionlessdata.io/docs/guides/introduction), a resource is a single file, such as a data file, and a package is a set of files, such as a data file and a schema. 
+As described in more detail in the [Introduction](https://framework.frictionlessdata.io/docs/guides/introduction), a resource is a single file, such as a data file, and a package is a set of files, such as a data file and a schema.
 
 In the command-line, there is only 1 command (`describe`) but there is also a flag to adjust the behavior:
 
@@ -93,7 +93,7 @@ resources:
     scheme: file
 ```
 
-## Describing Schema
+## Describing a Schema
 
 Table Schema is a specification for providing a "schema" (similar to a database schema) for tabular data. This information includes the expected data type for each value in a column ("string", "number", "date", etc.), constraints on the value ("this string can only be at most 10 characters long"), and the expected format of the data ("this field should only contain strings that look like email addresses"). Table Schema can also specify relations between data tables.
 
@@ -198,7 +198,7 @@ To continue learning about table schemas please read:
 - [Table Schema Spec](https://specs.frictionlessdata.io/table-schema/)
 - [API Reference: Schema](../references/api-reference.md#schema)
 
-## Describing Resource
+## Describing a Resource
 
 The Data Resource format describes a data resource such as an individual file or data table.
 The essence of a Data Resource is a locator for the data it describes.
@@ -320,7 +320,7 @@ To continue learning about data resources please read:
 - [Data Resource Spec](https://specs.frictionlessdata.io/data-resource/)
 - [API Reference: Resource](../references/api-reference.md#resource)
 
-## Describing Package
+## Describing a Package
 
 A Data Package consists of:
 - Metadata that describes the structure and contents of the package
@@ -570,6 +570,8 @@ As we can see, the data is now fixed. The metadata we had saved the day! If we e
 
 ## Inferring Metadata
 
+> Many Frictionless Framework's classes are metadata classes as though Schema, Resource, or Package. All the sections below are applicable for all these classes. You can read about the base Metadata class in more detail in [API Reference](../references/api-reference.md#metadata).
+
 Many Frictionless functions infer metadata under the hood such as `describe`, `extract`, and many more. On a lower-level, it's possible to control this process. To see this, let's create a `Resource`.
 
 ```python goodread title="Python"
@@ -772,46 +774,3 @@ True
 ```
 
 You need to check `metadata.metadata_valid` only if you change it manually; Frictionless' high-level functions like `validate` do that on their own.
-
-## Mastering Metadata
-
-The Metadata class is under the hood of many of Frictionless' classes. Let's overview the main `Metadata` features. For a full reference, please read ["API Reference"](../references/api-reference.md). Let's take a look at the Metadata class which is a `dict` subclass:
-
-```text title="Text"
-Metadata(dict)
-  to_json
-  to_yaml
-  ---
-  metadata_valid
-  metadata_errors
-  ---
-  metadata_attach
-  metadata_extract
-  metadata_process
-  metadata_validate
-```
-
-This class exists for subclassing, and here are some important points that will help you work with metadata objects and design and write new metadata classes:
-- to bind default values to a property it is possible to use `metadata_attach` (see e.g. the `Schema` class)
-- during the initialization a descriptor is processed by `metadata_extract`
-- metadata detect any shallow update and call `metadata_process`
-- checking for validity or errors will trigger `metadata_validate`
-- functions exporting to json and yaml are available by default
-- `metadata_profile` can be set to a JSON Schema
-- `metadata_Error` can be set to an Error class
-
-## Metadata Classes
-
-Frictionless has many classes that are derived from the `Metadata` class. This means that all of them can be treated as a metadata objects with getters and setters, `to_json` and `to_yaml` function, and other Metadata's API. See ["API Reference"](../references/api-reference.md) for more information about these classes:
-
-- Package
-- Resource
-- Schema
-- Field
-- Layout
-- Control
-- Dialect
-- Report
-- Pipeline
-- Error
-- etc
