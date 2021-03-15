@@ -1,10 +1,5 @@
 ---
 title: Introduction
-goodread:
-  prepare:
-    - cp data/invalid.csv invalid.csv
-  cleanup:
-    - rm invalid.csv
 ---
 
 [![Build](https://img.shields.io/github/workflow/status/frictionlessdata/frictionless-py/general/main)](https://github.com/frictionlessdata/frictionless-py/actions)
@@ -63,29 +58,9 @@ Frictionless is a complete data solution providing rich functionality. It's hard
 
 ## Usage Example
 
-Frictionless can be run on CLI, in Python, and even as an API server. Here is a short example to get started with the framework:
+Frictionless can be run on CLI, in Python, and even as an API server. Here is a short example how to validate a data file in CLI:
 
-```bash goodread title="CLI"
-frictionless validate invalid.csv
-```
-```yaml
-# -------
-# invalid: invalid.csv
-# -------
-
-===  =====  ===============  ====================================================================================
-row  field  code             message
-===  =====  ===============  ====================================================================================
-         3  blank-label      Label in the header in field at position "3" is blank
-         4  duplicate-label  Label "name" in the header at position "4" is duplicated to a label: at position "2"
-  2      3  missing-cell     Row at position "2" has a missing cell in field "field3" at position "3"
-  2      4  missing-cell     Row at position "2" has a missing cell in field "name2" at position "4"
-  3      3  missing-cell     Row at position "3" has a missing cell in field "field3" at position "3"
-  3      4  missing-cell     Row at position "3" has a missing cell in field "name2" at position "4"
-  4         blank-row        Row at position "4" is completely blank
-  5      5  extra-cell       Row at position "5" has an extra value in field at position "5"
-===  =====  ===============  ====================================================================================
-```
+![Diagram](/img/example.png)
 
 ## User Stories
 
