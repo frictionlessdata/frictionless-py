@@ -8,8 +8,6 @@ title: Introduction
 [![Codebase](https://img.shields.io/badge/github-main-brightgreen)](https://github.com/frictionlessdata/frictionless-py)
 [![Support](https://img.shields.io/badge/chat-discord-brightgreen)](https://discord.com/channels/695635777199145130/695635777199145133)
 
-> Frictionless@4 is now live! Please read the [migration guide](https://framework.frictionlessdata.io/docs/development/migration).
-
 Frictionless is a framework to describe, extract, validate, and transform tabular data (DEVT Framework). It supports a great deal of data schemes and formats, and provides popular platforms integrations. The framework is powered by the lightweight yet comprehensive [Frictionless Data Specifications](https://specs.frictionlessdata.io/).
 
 ## Why Frictionless Data?
@@ -27,7 +25,9 @@ You can read more about the Frictionless specifications at https://specs.frictio
 
 **<big>Data Package:</big>** a metadata file usually written in JSON or YAML that describes a COLLECTION of EXACT tabular files providing data resource information from above along with general information about the package itself as though a license, authors, and other metadata.
 
-> For example, thinking in SQL terminology a package would be a database, a resource would be a table, and a schema would be column definitions.
+:::tip
+Thinking in SQL terminology a package would be a database, a resource would be a table, and a schema would be column definitions.
+:::
 
 ## Frictionless Framework
 
