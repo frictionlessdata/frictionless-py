@@ -67,7 +67,7 @@ The high-level interface for validating data provided by Frictionless is a set o
 - `validate_package`: validates a package's data and metadata
 - `validate_inquiry`: validates a special `Inquiry` object which represents a validation task instruction
 
-On the command-line, there is only one command but there is a flag to adjust the behavior:
+On the command-line, there is only one command but there is a flag to adjust the behavior. It's useful when you have a file which has a ambiguous type, for example, a json file containing a data instead of metadata:
 
 ```bash title="CLI"
 frictionless validate your-data.csv
@@ -324,7 +324,7 @@ pprint(report)
  'version': '4.1.0'}
 ```
 
-As we can see, there is a lot of information; you can find a detailed description of the Validation Report in the [API Reference](../references/api-reference.md#report). Errors are grouped by tasks (i.e. data files); for some validation there can be dozens of tasks. Let's use the `report.flatten` function to simplify the representation of errors:
+As we can see, there is a lot of information; you can find a detailed description of the Validation Report in the [API Reference](../references/api-reference.md#report). Errors are grouped by tasks (i.e. data files); for some validation there can be dozens of tasks. Let's use the `report.flatten` function to simplify the representation of errors. This function helps to represent a report as a list of errors:
 
 ```python goodread title="Python"
 from pprint import pprint
@@ -528,7 +528,7 @@ pprint(report.flatten(["rowPosition", "fieldPosition", "code"]))
 
 ## Limit Memory
 
-Frictionless is a streaming engine; usually it is possible to validate terrabytes of data with basically O(1) memory consumption. For some validation, this is not the case because Frctionless needs to buffer some cells e.g. to check uniqueness. Here memory management can be handy.
+Frictionless is a streaming engine; usually it is possible to validate terrabytes of data with basically O(1) memory consumption. It means that memory usage doesn't depend on the size of your data making the validation infinitely scalable. For some validation, this is not the case because Frctionless needs to buffer some cells e.g. to check uniqueness. Here memory management can be handy.
 
 The default memory limit is 1000MB. You can adjust this based on your exact use case. For example, if you're running Frictionless as an API server you might reduce the memory usage. If a validation hits the limit it will not raise a failure - it will return a report with a task error:
 
