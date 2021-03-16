@@ -32,6 +32,22 @@ npm install
 npm start
 ```
 
+Alternatively, you can run the documentation portal with Docker. With
+both Docker and Docker Compose installed on the system, first build the
+docker container with:
+
+```
+docker build --rm -t frictionless-docs .
+```
+
+then, every time you want to run the documentation portal locally, run:
+
+```
+docker-compose up
+```
+
+then open http://localhost:3000 on a web browser to see the portal.
+
 To update a reference in `docs/references` and some other generated documents please update codebaes docstrings or root documents. For more information about generated documentation see `docs/build.py`.
 
 ## Code Contribution
