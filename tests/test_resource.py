@@ -158,10 +158,11 @@ def test_resource_source_path():
     assert resource.multipart is False
     assert resource.basepath == ""
     assert resource.fullpath == path
-    assert (
-        resource.read_bytes()
-        == b"id,name\n1,english\n2,\xe4\xb8\xad\xe5\x9b\xbd\xe4\xba\xba\n"
-    )
+    if IS_UNIX:
+        assert (
+            resource.read_bytes()
+            == b"id,name\n1,english\n2,\xe4\xb8\xad\xe5\x9b\xbd\xe4\xba\xba\n"
+        )
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
@@ -170,12 +171,13 @@ def test_resource_source_path():
     assert resource.fragment == [["1", "english"], ["2", "中国人"]]
     assert resource.labels == ["id", "name"]
     assert resource.header == ["id", "name"]
-    assert resource.stats == {
-        "hash": "6c2c61dd9b0e9c6876139a449ed87933",
-        "bytes": 30,
-        "fields": 2,
-        "rows": 2,
-    }
+    if IS_UNIX:
+        assert resource.stats == {
+            "hash": "6c2c61dd9b0e9c6876139a449ed87933",
+            "bytes": 30,
+            "fields": 2,
+            "rows": 2,
+        }
 
 
 @pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
