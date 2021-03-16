@@ -1705,20 +1705,23 @@ def test_resource_stats_hash_remote():
 def test_resource_stats_bytes():
     with Resource("data/doublequote.csv") as resource:
         resource.read_rows()
-        assert resource.stats["bytes"] == 7346
+        if IS_UNIX:
+            assert resource.stats["bytes"] == 7346
 
 
 def test_resource_stats_bytes_compressed():
     with Resource("data/doublequote.csv.zip") as resource:
         resource.read_rows()
-        assert resource.stats["bytes"] == 1265
+        if IS_UNIX:
+            assert resource.stats["bytes"] == 1265
 
 
 @pytest.mark.vcr
 def test_resource_stats_bytes_remote():
     with Resource(BASEURL % "data/doublequote.csv") as resource:
         resource.read_rows()
-        assert resource.stats["bytes"] == 7346
+        if IS_UNIX:
+            assert resource.stats["bytes"] == 7346
 
 
 def test_resource_stats_fields():
