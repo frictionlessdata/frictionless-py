@@ -22,7 +22,7 @@ def test_resource():
     assert resource.name == "name"
     assert resource.path == "table.csv"
     assert resource.basepath == "data"
-    assert resource.fullpath == "data/table.csv" if IS_UNIX else "data\table.csv"
+    assert resource.fullpath == "data/table.csv" if IS_UNIX else "data\\table.csv"
     assert resource.profile == "tabular-data-resource"
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
@@ -180,12 +180,11 @@ def test_resource_source_path():
         }
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_source_path_and_basepath():
     resource = Resource(path="table.csv", basepath="data")
     assert resource.path == "table.csv"
     assert resource.basepath == "data"
-    assert resource.fullpath == "data/table.csv"
+    assert resource.fullpath == "data/table.csv" if IS_UNIX else 'data\\table.csv'
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
@@ -193,7 +192,6 @@ def test_resource_source_path_and_basepath():
 
 
 @pytest.mark.vcr
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_source_path_and_basepath_remote():
     resource = Resource(path="table.csv", basepath=BASEURL % "data")
     assert resource.fullpath == BASEURL % "data/table.csv"
