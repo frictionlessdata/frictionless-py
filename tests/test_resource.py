@@ -10,19 +10,19 @@ from frictionless.plugins.excel import ExcelDialect
 from frictionless.plugins.json import JsonDialect
 
 
+IS_UNIX = not helpers.is_platform("windows")
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
 
 
 # General
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource():
     resource = Resource("data/resource.json")
     assert resource.name == "name"
     assert resource.path == "table.csv"
     assert resource.basepath == "data"
-    assert resource.fullpath == "data/table.csv"
+    assert resource.fullpath == "data/table.csv" if IS_UNIX else "data\table.csv"
     assert resource.profile == "tabular-data-resource"
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
