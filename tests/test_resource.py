@@ -2050,52 +2050,52 @@ def test_resource_expand_with_schema():
 # Infer
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_infer():
     resource = Resource(path="data/table.csv")
     resource.infer(stats=True)
     assert resource.metadata_valid
-    assert resource == {
-        "path": "data/table.csv",
-        "profile": "tabular-data-resource",
-        "name": "table",
-        "scheme": "file",
-        "format": "csv",
-        "hashing": "md5",
-        "encoding": "utf-8",
-        "schema": {
-            "fields": [
-                {"name": "id", "type": "integer"},
-                {"name": "name", "type": "string"},
-            ]
-        },
-        "stats": {
-            "hash": "6c2c61dd9b0e9c6876139a449ed87933",
-            "bytes": 30,
-            "fields": 2,
-            "rows": 2,
-        },
-    }
+    if IS_UNIX:
+        assert resource == {
+            "path": "data/table.csv",
+            "profile": "tabular-data-resource",
+            "name": "table",
+            "scheme": "file",
+            "format": "csv",
+            "hashing": "md5",
+            "encoding": "utf-8",
+            "schema": {
+                "fields": [
+                    {"name": "id", "type": "integer"},
+                    {"name": "name", "type": "string"},
+                ]
+            },
+            "stats": {
+                "hash": "6c2c61dd9b0e9c6876139a449ed87933",
+                "bytes": 30,
+                "fields": 2,
+                "rows": 2,
+            },
+        }
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_infer_source_non_tabular():
     resource = Resource(path="data/text.txt")
     resource.infer(stats=True)
     assert resource.metadata_valid
-    assert resource == {
-        "name": "text",
-        "path": "data/text.txt",
-        "profile": "data-resource",
-        "scheme": "file",
-        "format": "txt",
-        "hashing": "md5",
-        "encoding": "utf-8",
-        "stats": {
-            "hash": "e1cbb0c3879af8347246f12c559a86b5",
-            "bytes": 5,
-        },
-    }
+    if IS_UNIX:
+        assert resource == {
+            "name": "text",
+            "path": "data/text.txt",
+            "profile": "data-resource",
+            "scheme": "file",
+            "format": "txt",
+            "hashing": "md5",
+            "encoding": "utf-8",
+            "stats": {
+                "hash": "e1cbb0c3879af8347246f12c559a86b5",
+                "bytes": 5,
+            },
+        }
 
 
 def test_resource_infer_from_path():
@@ -2357,18 +2357,18 @@ def test_resource_reopen_generator():
 
 
 @pytest.mark.skipif(sys.version_info < (3, 7), reason="Requires Python3.7+")
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_read_bytes():
     resource = Resource(path="data/text.txt")
     bytes = resource.read_bytes()
-    assert bytes == b"text\n"
+    if IS_UNIX:
+        assert bytes == b"text\n"
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_read_text():
     resource = Resource(path="data/text.txt")
     text = resource.read_text()
-    assert text == "text\n"
+    if IS_UNIX:
+        assert text == "text\n"
 
 
 def test_resource_read_data():
@@ -2569,44 +2569,44 @@ def test_resource_skip_rows_non_string_cell_issue_322():
         ]
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_relative_parent_path_with_trusted_option_issue_171():
+    path = "data/../data/table.csv" if IS_UNIX else "data\\..\\data\\table.csv"
     # trusted=false (default)
     with pytest.raises(FrictionlessException) as excinfo:
-        Resource({"path": "data/../data/table.csv"})
+        Resource({"path": path})
     error = excinfo.value.error
     assert error.code == "resource-error"
-    assert error.note.count("data/table.csv")
+    assert error.note.count("table.csv")
     # trusted=true
-    resource = Resource({"path": "data/../data/table.csv"}, trusted=True)
+    resource = Resource({"path": path}, trusted=True)
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_preserve_format_from_descriptor_on_infer_issue_188():
     resource = Resource({"path": "data/table.csvformat", "format": "csv"})
     resource.infer(stats=True)
-    assert resource == {
-        "path": "data/table.csvformat",
-        "format": "csv",
-        "profile": "tabular-data-resource",
-        "name": "table",
-        "scheme": "file",
-        "hashing": "md5",
-        "encoding": "utf-8",
-        "schema": {
-            "fields": [
-                {"name": "city", "type": "string"},
-                {"name": "population", "type": "integer"},
-            ]
-        },
-        "stats": {
-            "hash": "f71969080b27963b937ca28cdd5f63b9",
-            "bytes": 58,
-            "fields": 2,
-            "rows": 3,
-        },
-    }
+    if IS_UNIX:
+        assert resource == {
+            "path": "data/table.csvformat",
+            "format": "csv",
+            "profile": "tabular-data-resource",
+            "name": "table",
+            "scheme": "file",
+            "hashing": "md5",
+            "encoding": "utf-8",
+            "schema": {
+                "fields": [
+                    {"name": "city", "type": "string"},
+                    {"name": "population", "type": "integer"},
+                ]
+            },
+            "stats": {
+                "hash": "f71969080b27963b937ca28cdd5f63b9",
+                "bytes": 58,
+                "fields": 2,
+                "rows": 3,
+            },
+        }
