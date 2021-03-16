@@ -1702,14 +1702,12 @@ def test_resource_stats_hash_remote():
             assert resource.stats["hash"] == "d82306001266c4343a2af4830321ead8"
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_stats_bytes():
     with Resource("data/doublequote.csv") as resource:
         resource.read_rows()
         assert resource.stats["bytes"] == 7346
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_stats_bytes_compressed():
     with Resource("data/doublequote.csv.zip") as resource:
         resource.read_rows()
@@ -1717,7 +1715,6 @@ def test_resource_stats_bytes_compressed():
 
 
 @pytest.mark.vcr
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_stats_bytes_remote():
     with Resource(BASEURL % "data/doublequote.csv") as resource:
         resource.read_rows()
