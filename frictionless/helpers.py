@@ -186,7 +186,12 @@ def create_byte_stream(bytes):
 
 def is_remote_path(path):
     path = path[0] if path and isinstance(path, list) else path
-    return urlparse(path).scheme in config.REMOTE_SCHEMES
+    scheme = urlparse(path).scheme
+    if not scheme:
+        return False
+    if path.startswith(f"{scheme}:\\"):
+        return False
+    return True
 
 
 # NOTE:

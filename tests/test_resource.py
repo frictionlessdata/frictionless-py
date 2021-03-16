@@ -81,7 +81,6 @@ def test_resource_from_path_error_bad_path():
 
 
 @pytest.mark.vcr
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_from_path_remote():
     resource = Resource(BASEURL % "data/resource.json")
     assert resource.path == "table.csv"
