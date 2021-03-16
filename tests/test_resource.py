@@ -184,7 +184,7 @@ def test_resource_source_path_and_basepath():
     resource = Resource(path="table.csv", basepath="data")
     assert resource.path == "table.csv"
     assert resource.basepath == "data"
-    assert resource.fullpath == "data/table.csv" if IS_UNIX else 'data\\table.csv'
+    assert resource.fullpath == "data/table.csv" if IS_UNIX else "data\\table.csv"
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
@@ -220,22 +220,20 @@ def test_resource_source_path_error_bad_path():
     assert error.note == "[Errno 2] No such file or directory: 'table.csv'"
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_source_path_error_bad_path_not_safe_absolute():
     with pytest.raises(FrictionlessException) as excinfo:
         Resource({"path": os.path.abspath("data/table.csv")})
     error = excinfo.value.error
     assert error.code == "resource-error"
-    assert error.note.count("data/table.csv")
+    assert error.note.count("table.csv")
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_source_path_error_bad_path_not_safe_traversing():
     with pytest.raises(FrictionlessException) as excinfo:
-        Resource({"path": "data/../data/table.csv"})
+        Resource({"path": "data/../data/table.csv" if IS_UNIX else "data\\..\\table.csv"})
     error = excinfo.value.error
     assert error.code == "resource-error"
-    assert error.note.count("data/table.csv")
+    assert error.note.count("table.csv")
 
 
 def test_resource_source_data():
