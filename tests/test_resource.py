@@ -111,11 +111,12 @@ def test_resource_source_non_tabular():
         assert resource.tabular is False
         assert resource.multipart is False
         assert resource.fullpath == path
-        assert resource.read_bytes() == b"text\n"
-        assert resource.stats == {
-            "hash": "e1cbb0c3879af8347246f12c559a86b5",
-            "bytes": 5,
-        }
+        if IS_UNIX:
+            assert resource.read_bytes() == b"text\n"
+            assert resource.stats == {
+                "hash": "e1cbb0c3879af8347246f12c559a86b5",
+                "bytes": 5,
+            }
 
 
 @pytest.mark.vcr
@@ -129,11 +130,12 @@ def test_resource_source_non_tabular_remote():
         assert resource.multipart is False
         assert resource.basepath == ""
         assert resource.fullpath == path
-        assert resource.read_bytes() == b"text\n"
-        assert resource.stats == {
-            "hash": "e1cbb0c3879af8347246f12c559a86b5",
-            "bytes": 5,
-        }
+        if IS_UNIX:
+            assert resource.read_bytes() == b"text\n"
+            assert resource.stats == {
+                "hash": "e1cbb0c3879af8347246f12c559a86b5",
+                "bytes": 5,
+            }
 
 
 def test_resource_source_non_tabular_error_bad_path():
