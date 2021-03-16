@@ -146,7 +146,6 @@ def test_resource_source_non_tabular_error_bad_path():
 
 
 @pytest.mark.skipif(sys.version_info < (3, 7), reason="Requires Python3.7+")
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_source_path():
     path = "data/table.csv"
     resource = Resource({"path": path})
