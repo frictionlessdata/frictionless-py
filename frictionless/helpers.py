@@ -194,6 +194,16 @@ def is_remote_path(path):
     return True
 
 
+def join_path(basepath, path):
+    if not is_remote_path(path):
+        if basepath:
+            separator = os.path.sep
+            if is_remote_path(basepath):
+                separator = "/"
+            path = separator.join([basepath, path])
+    return path
+
+
 # NOTE:
 # We need to rebase this function on checking actual path
 # being withing a basepath directory (it's a safer approach)

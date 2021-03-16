@@ -535,7 +535,6 @@ def test_resource_encoding_error_bad_encoding():
     assert error.note == "unknown encoding: bad"
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_encoding_error_non_matching_encoding():
     resource = Resource("data/table.csv", encoding="ascii")
     with pytest.raises(FrictionlessException) as excinfo:
@@ -794,7 +793,6 @@ def test_resource_dialect_from_path():
 
 
 @pytest.mark.vcr
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_dialect_from_path_remote():
     resource = Resource(BASEURL % "data/resource-with-dereferencing.json")
     assert resource == {

@@ -129,19 +129,10 @@ class File:
             elif multipart:
                 fullpath = []
                 for part in path:
-                    if not helpers.is_remote_path(part):
-                        if self.__basepath:
-                            separator = os.path.sep
-                            if helpers.is_remote_path(self.__basepath):
-                                separator = "/"
-                            part = separator.join([self.__basepath, part])
+                    part = helpers.join_path(self.__basepath, part)
                     fullpath.append(part)
-            elif not helpers.is_remote_path(path):
-                if self.__basepath:
-                    separator = os.path.sep
-                    if helpers.is_remote_path(self.__basepath):
-                        separator = "/"
-                    fullpath = separator.join([self.__basepath, path])
+            else:  # string path
+                fullpath = helpers.join_path(self.__basepath, path)
 
         # Detect name
         name = "memory"
