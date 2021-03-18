@@ -834,7 +834,6 @@ def test_package_to_zip_resource_memory_function(tmpdir):
 
 
 @pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_package_to_zip_resource_sql(tmpdir, database_url):
     path = os.path.join(tmpdir, "package.zip")
     dialect = SqlDialect(table="table")
@@ -849,7 +848,6 @@ def test_package_to_zip_resource_sql(tmpdir, database_url):
 
 
 @pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_package_to_zip_resource_multipart(tmpdir, database_url):
     path = os.path.join(tmpdir, "package.zip")
     source = Package(resources=[Resource(path=["data/chunk1.csv", "data/chunk2.csv"])])
