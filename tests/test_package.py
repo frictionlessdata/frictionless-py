@@ -764,7 +764,6 @@ def test_package_to_yaml(tmpdir):
 
 
 @pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_package_to_zip(tmpdir):
     path = os.path.join(tmpdir, "package.zip")
     source = Package("data/package.json")
@@ -780,7 +779,6 @@ def test_package_to_zip(tmpdir):
 
 
 @pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_package_to_zip_resource_path(tmpdir):
     path = os.path.join(tmpdir, "package.zip")
     source = Package(resources=[Resource(path="data/table.csv")])
@@ -794,7 +792,6 @@ def test_package_to_zip_resource_path(tmpdir):
 
 
 @pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_package_to_zip_resource_remote_path(tmpdir):
     path = os.path.join(tmpdir, "package.zip")
     source = Package(resources=[Resource(path=BASEURL % "data/table.csv")])
@@ -808,7 +805,6 @@ def test_package_to_zip_resource_remote_path(tmpdir):
 
 
 @pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_package_to_zip_resource_memory_inline(tmpdir):
     path = os.path.join(tmpdir, "package.zip")
     data = [["id", "name"], [1, "english"], [2, "中国人"]]
