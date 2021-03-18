@@ -6,6 +6,7 @@ from frictionless import system, helpers
 # General
 
 
+IS_UNIX = not helpers.is_platform("windows")
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master"
 
 
@@ -81,7 +82,6 @@ def test_file_remote():
     assert file.fullpath == path
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_file_remote_with_basepath():
     path = "data/table.csv"
     file = system.create_file(path, basepath=BASEURL)
@@ -118,7 +118,6 @@ def test_file_multipart():
     assert file.fullpath == path
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_file_multipart_with_basepath():
     path = ["data/chunk1.csv", "data/chunk2.csv"]
     file = system.create_file(path, basepath="base")
@@ -134,10 +133,10 @@ def test_file_multipart_with_basepath():
     assert file.remote is False
     assert file.multipart is True
     assert file.basepath == "base"
-    assert file.fullpath == ["base/data/chunk1.csv", "base/data/chunk2.csv"]
+    if IS_UNIX:
+        assert file.fullpath == ["base/data/chunk1.csv", "base/data/chunk2.csv"]
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_file_multipart_from_glob():
     path = "data/tables/chunk*.csv"
     file = system.create_file(path)
@@ -154,11 +153,11 @@ def test_file_multipart_from_glob():
     assert file.multipart is True
     assert file.expandable is True
     assert file.basepath == ""
-    assert file.normpath == ["data/tables/chunk1.csv", "data/tables/chunk2.csv"]
-    assert file.fullpath == ["data/tables/chunk1.csv", "data/tables/chunk2.csv"]
+    if IS_UNIX:
+        assert file.normpath == ["data/tables/chunk1.csv", "data/tables/chunk2.csv"]
+        assert file.fullpath == ["data/tables/chunk1.csv", "data/tables/chunk2.csv"]
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_file_multipart_from_glob_with_basepath():
     path = "chunk*.csv"
     file = system.create_file(path, basepath="data/tables")
@@ -175,11 +174,11 @@ def test_file_multipart_from_glob_with_basepath():
     assert file.multipart is True
     assert file.expandable is True
     assert file.basepath == "data/tables"
-    assert file.normpath == ["chunk1.csv", "chunk2.csv"]
-    assert file.fullpath == ["data/tables/chunk1.csv", "data/tables/chunk2.csv"]
+    if IS_UNIX:
+        assert file.normpath == ["chunk1.csv", "chunk2.csv"]
+        assert file.fullpath == ["data/tables/chunk1.csv", "data/tables/chunk2.csv"]
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_file_multipart_from_dir():
     path = "data/tables"
     file = system.create_file(path)
@@ -196,11 +195,11 @@ def test_file_multipart_from_dir():
     assert file.multipart is True
     assert file.expandable is True
     assert file.basepath == ""
-    assert file.normpath == ["data/tables/chunk1.csv", "data/tables/chunk2.csv"]
-    assert file.fullpath == ["data/tables/chunk1.csv", "data/tables/chunk2.csv"]
+    if IS_UNIX:
+        assert file.normpath == ["data/tables/chunk1.csv", "data/tables/chunk2.csv"]
+        assert file.fullpath == ["data/tables/chunk1.csv", "data/tables/chunk2.csv"]
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_file_multipart_from_dir_with_basepath():
     path = "tables"
     file = system.create_file(path, basepath="data")
@@ -217,8 +216,9 @@ def test_file_multipart_from_dir_with_basepath():
     assert file.multipart is True
     assert file.expandable is True
     assert file.basepath == "data"
-    assert file.normpath == ["tables/chunk1.csv", "tables/chunk2.csv"]
-    assert file.fullpath == ["data/tables/chunk1.csv", "data/tables/chunk2.csv"]
+    if IS_UNIX:
+        assert file.normpath == ["tables/chunk1.csv", "tables/chunk2.csv"]
+        assert file.fullpath == ["data/tables/chunk1.csv", "data/tables/chunk2.csv"]
 
 
 def test_file_schema():
@@ -275,7 +275,6 @@ def test_file_package():
     assert file.fullpath == "data/package.json"
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_file_package_from_pathlib():
     path = Path("data/package.json")
     file = system.create_file(path)
@@ -291,4 +290,5 @@ def test_file_package_from_pathlib():
     assert file.remote is False
     assert file.multipart is False
     assert file.basepath == ""
-    assert file.fullpath == "data/package.json"
+    if IS_UNIX:
+        assert file.fullpath == "data/package.json"
