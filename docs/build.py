@@ -61,7 +61,7 @@ def build_plugins_reference():
                 continue
             Plugins.append(Plugin)
 
-    # Ouput
+    # Output
     template = Template(inspect.cleandoc(TEMPLATE))
     document = template.render(Plugins=Plugins).strip()
     write_file(os.path.join("docs", "references", "plugins-reference.md"), document)
@@ -169,7 +169,7 @@ def build_formats_reference():
                 format["options"].append({"name": name, "text": text, "type": type})
             formats.append(format)
 
-    # Ouput
+    # Output
     template = Template(inspect.cleandoc(TEMPLATE))
     document = template.render(formats=formats).strip()
     write_file(os.path.join("docs", "references", "formats-reference.md"), document)
@@ -199,7 +199,7 @@ def build_errors_reference():
     # Input
     Errors = [item for item in vars(errors).values() if hasattr(item, "code")]
 
-    # Ouput
+    # Output
     template = Template(inspect.cleandoc(TEMPLATE))
     document = template.render(Errors=Errors).strip()
     write_file(os.path.join("docs", "references", "errors-reference.md"), document)
@@ -224,7 +224,7 @@ def build_checks_reference():
     # Input
     Checks = [item for item in vars(checks).values() if hasattr(item, "code")]
 
-    # Ouput
+    # Output
     template = Template(inspect.cleandoc(TEMPLATE))
     document = template.render(Checks=Checks).strip()
     write_file(os.path.join("docs", "references", "checks-reference.md"), document)
@@ -249,7 +249,7 @@ def build_steps_reference():
     # Input
     Steps = [item for item in vars(steps).values() if hasattr(item, "code")]
 
-    # Ouput
+    # Output
     template = Template(inspect.cleandoc(TEMPLATE))
     document = template.render(Steps=Steps).strip()
     write_file(os.path.join("docs", "references", "steps-reference.md"), document)
@@ -274,7 +274,7 @@ def build_types_reference():
     # Input
     Types = [item for item in vars(types).values() if hasattr(item, "code")]
 
-    # Ouput
+    # Output
     template = Template(inspect.cleandoc(TEMPLATE))
     document = template.render(Types=Types).strip()
     write_file(os.path.join("docs", "references", "types-reference.md"), document)
@@ -307,7 +307,7 @@ def build_api_reference():
             blocks.setdefault(element, "")
             blocks[element] += line
 
-    # Ouput
+    # Output
     document = ""
     document += "---\n"
     document += "title: API Reference\n"
