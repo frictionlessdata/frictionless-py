@@ -273,7 +273,8 @@ def test_validate_package_stats_size():
     source = deepcopy(DESCRIPTOR_SH)
     source["resources"][0]["stats"].pop("hash")
     report = validate(source)
-    assert report.valid
+    if IS_UNIX:
+        assert report.valid
 
 
 def test_validate_package_stats_size_invalid():
@@ -290,7 +291,8 @@ def test_validate_package_stats_hash():
     source = deepcopy(DESCRIPTOR_SH)
     source["resources"][0]["stats"].pop("bytes")
     report = validate(source)
-    assert report.valid
+    if IS_UNIX:
+        assert report.valid
 
 
 def test_check_file_package_stats_hash_invalid():
