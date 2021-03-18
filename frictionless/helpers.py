@@ -189,7 +189,7 @@ def is_remote_path(path):
     scheme = urlparse(path).scheme
     if not scheme:
         return False
-    if path.startswith(f"{scheme}:\\"):
+    if path.lower().startswith(f"{scheme}:\\"):
         return False
     return True
 
