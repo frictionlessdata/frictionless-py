@@ -2,6 +2,7 @@ import pytest
 from frictionless import Resource, Layout, Detector, helpers
 from frictionless.plugins.csv import CsvDialect
 
+
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
 
 
