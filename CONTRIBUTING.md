@@ -24,7 +24,8 @@ goodread docs/guides/basic-examples.md --print # print the doc
 goodread docs/guides/basic-examples.md # update inline
 ```
 
-It's possible to run this documentation portal locally but it requires Node.js 12+ installed on your comupter:
+It's possible to run this documentation portal locally but it requires
+Node.js 12+ installed on your computer:
 
 ```bash
 cd portal
@@ -32,7 +33,9 @@ npm install
 npm start
 ```
 
-To update a reference in `docs/references` and some other generated documents please update codebaes docstrings or root documents. For more information about generated documentation see `docs/build.py`.
+To update a reference in `docs/references` and some other generated
+documents please update codebase docstrings or root documents. For more
+information about generated documentation see `docs/build.py`.
 
 ## Code Contribution
 
