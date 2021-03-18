@@ -9,11 +9,11 @@ from frictionless import FrictionlessException
 from frictionless.plugins.sql import SqlDialect
 
 
-# General
-
-
 IS_UNIX = not helpers.is_platform("windows")
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
+
+
+# General
 
 
 def test_package():

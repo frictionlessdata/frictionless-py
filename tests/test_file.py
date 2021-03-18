@@ -2,11 +2,11 @@ from pathlib import Path
 from frictionless import system, helpers
 
 
-# General
-
-
 IS_UNIX = not helpers.is_platform("windows")
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master"
+
+
+# General
 
 
 def test_file_type_table():

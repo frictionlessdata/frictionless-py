@@ -3,6 +3,7 @@ import yaml
 from typer.testing import CliRunner
 from frictionless import program, describe, Detector, helpers
 
+
 runner = CliRunner()
 IS_UNIX = not helpers.is_platform("windows")
 
