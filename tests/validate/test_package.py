@@ -48,13 +48,11 @@ def test_validate_package_from_path_invalid():
     ]
 
 
-@pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
 def test_validate_package_from_zip():
     report = validate("data/package.zip", type="package")
     assert report.valid
 
 
-@pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
 def test_validate_package_from_zip_invalid():
     report = validate("data/package-invalid.zip", type="package")
     assert report.flatten(["taskPosition", "rowPosition", "fieldPosition", "code"]) == [
