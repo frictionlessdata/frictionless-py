@@ -5,6 +5,7 @@ from datetime import datetime
 from frictionless import Resource, Layout, Detector, FrictionlessException, helpers
 from frictionless.plugins.excel import ExcelDialect
 
+IS_UNIX = not helpers.is_platform("windows")
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
 
 
@@ -119,31 +120,33 @@ def test_xlsx_parser_adjust_floating_point_error_default():
             assert resource.read_rows()[1].cells[2] == 274.65999999999997
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_xlsx_parser_preserve_formatting():
     source = "data/preserve-formatting.xlsx"
     dialect = ExcelDialect(preserve_formatting=True)
     layout = Layout(header_rows=[1])
     detector = Detector(field_type="any")
-    with Resource(source, dialect=dialect, layout=layout, detector=detector) as resource:
-        assert resource.read_rows() == [
-            {
-                # general
-                "empty": None,
-                # numeric
-                "0": "1001",
-                "0.00": "1000.56",
-                "0.0000": "1000.5577",
-                "0.00000": "1000.55770",
-                "0.0000#": "1000.5577",
-                # temporal
-                "m/d/yy": "5/20/40",
-                "d-mmm": "20-May",
-                "mm/dd/yy": "05/20/40",
-                "mmddyy": "052040",
-                "mmddyyam/pmdd": "052040AM20",
-            }
-        ]
+    if IS_UNIX:
+        with Resource(
+            source, dialect=dialect, layout=layout, detector=detector
+        ) as resource:
+            assert resource.read_rows() == [
+                {
+                    # general
+                    "empty": None,
+                    # numeric
+                    "0": "1001",
+                    "0.00": "1000.56",
+                    "0.0000": "1000.5577",
+                    "0.00000": "1000.55770",
+                    "0.0000#": "1000.5577",
+                    # temporal
+                    "m/d/yy": "5/20/40",
+                    "d-mmm": "20-May",
+                    "mm/dd/yy": "05/20/40",
+                    "mmddyy": "052040",
+                    "mmddyyam/pmdd": "052040AM20",
+                }
+            ]
 
 
 def test_xlsx_parser_preserve_formatting_percentage():
@@ -309,7 +312,6 @@ def test_xlsx_parser_fix_for_2007_xls():
         assert len(resource.read_rows()) > 10
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_xlsx_parser_write(tmpdir):
     source = Resource("data/table.csv")
     target = Resource(str(tmpdir.join("table.xlsx")))
@@ -322,7 +324,6 @@ def test_xlsx_parser_write(tmpdir):
         ]
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_xlsx_parser_write_sheet_name(tmpdir):
     dialect = ExcelDialect(sheet="sheet")
     source = Resource("data/table.csv")
@@ -336,7 +337,6 @@ def test_xlsx_parser_write_sheet_name(tmpdir):
         ]
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_xls_parser_write(tmpdir):
     source = Resource("data/table.csv")
     target = Resource(str(tmpdir.join("table.xls")))
@@ -349,7 +349,6 @@ def test_xls_parser_write(tmpdir):
         ]
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_xls_parser_write_sheet_name(tmpdir):
     dialect = ExcelDialect(sheet="sheet")
     source = Resource("data/table.csv")
