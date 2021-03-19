@@ -819,18 +819,18 @@ def test_package_to_zip_resource_memory_inline(tmpdir):
 
 
 @pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_package_to_zip_resource_memory_function(tmpdir):
     path = os.path.join(tmpdir, "package.zip")
     data = lambda: [["id", "name"], [1, "english"], [2, "中国人"]]
     source = Package(resources=[Resource(name="table", data=data)])
-    source.to_zip(path)
-    target = Package.from_zip(path)
-    assert target.get_resource("table").path == "table.csv"
-    assert target.get_resource("table").read_rows() == [
-        {"id": 1, "name": "english"},
-        {"id": 2, "name": "中国人"},
-    ]
+    if IS_UNIX:
+        source.to_zip(path)
+        target = Package.from_zip(path)
+        assert target.get_resource("table").path == "table.csv"
+        assert target.get_resource("table").read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 @pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")

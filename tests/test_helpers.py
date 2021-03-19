@@ -3,6 +3,9 @@ import pytest
 from frictionless import helpers
 
 
+IS_UNIX = not helpers.is_platform("windows")
+
+
 # General
 
 
@@ -14,7 +17,6 @@ def test_ensure_dir(tmpdir):
     assert os.path.isdir(dir_path)
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 @pytest.mark.parametrize(
     "path,is_safe",
     (
@@ -33,4 +35,5 @@ def test_ensure_dir(tmpdir):
     ),
 )
 def test_is_safe_path(path, is_safe):
-    assert helpers.is_safe_path(path) is is_safe
+    if IS_UNIX:
+        assert helpers.is_safe_path(path) is is_safe
