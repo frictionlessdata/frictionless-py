@@ -25,7 +25,6 @@ def test_html_parser(source, selector):
         ]
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_html_parser_write(tmpdir):
     source = Resource("data/table.csv")
     target = source.write(str(tmpdir.join("table.html")))
