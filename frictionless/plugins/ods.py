@@ -158,6 +158,7 @@ class OdsParser(Parser):
         source = resource
         target = self.resource
         file = tempfile.NamedTemporaryFile(delete=False)
+        file.close()
         book = ezodf.newdoc(doctype="ods", filename=file.name)
         title = f"Sheet {target.dialect.sheet}"
         book.sheets += ezodf.Sheet(title)
