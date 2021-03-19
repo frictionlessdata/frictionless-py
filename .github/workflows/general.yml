@@ -77,12 +77,12 @@ jobs:
         with:
           python-version: 3.8
       - name: Install dependencies
-        run: |
-          LDFLAGS=`echo $(pg_config --ldflags)` make install
-          echo 'export DYLD_LIBRARY_PATH=/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/savReaderWriter/spssio/macos'  >> ~/.bash_profile
-          echo 'export LC_ALL=en_US.UTF-8'  >> ~/.bash_profile
+        run: LDFLAGS=`echo $(pg_config --ldflags)` make install
       - name: Test software
-        run: make test
+        run: |
+          export DYLD_LIBRARY_PATH=/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/savReaderWriter/spssio/macos'
+          export LC_ALL=en_US.UTF-8'
+          make test
 
   # Test (Windows)
 
