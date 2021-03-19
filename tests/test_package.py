@@ -138,7 +138,6 @@ def test_package_from_zip():
 
 
 @pytest.mark.vcr
-@pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
 def test_package_from_zip_remote():
     package = Package(BASEURL % "data/package.zip")
     assert package.name == "testing"
@@ -150,7 +149,6 @@ def test_package_from_zip_remote():
     ]
 
 
-@pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
 def test_package_from_zip_no_descriptor(tmpdir):
     descriptor = str(tmpdir.join("package.zip"))
     with zipfile.ZipFile(descriptor, "w") as zip:
@@ -762,7 +760,6 @@ def test_package_to_yaml(tmpdir):
         assert package == yaml.safe_load(file)
 
 
-@pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
 def test_package_to_zip(tmpdir):
     path = os.path.join(tmpdir, "package.zip")
     source = Package("data/package.json")
@@ -777,7 +774,6 @@ def test_package_to_zip(tmpdir):
     ]
 
 
-@pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
 def test_package_to_zip_resource_path(tmpdir):
     path = os.path.join(tmpdir, "package.zip")
     source = Package(resources=[Resource(path="data/table.csv")])
@@ -790,7 +786,6 @@ def test_package_to_zip_resource_path(tmpdir):
     ]
 
 
-@pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
 def test_package_to_zip_resource_remote_path(tmpdir):
     path = os.path.join(tmpdir, "package.zip")
     source = Package(resources=[Resource(path=BASEURL % "data/table.csv")])
@@ -803,7 +798,6 @@ def test_package_to_zip_resource_remote_path(tmpdir):
     ]
 
 
-@pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
 def test_package_to_zip_resource_memory_inline(tmpdir):
     path = os.path.join(tmpdir, "package.zip")
     data = [["id", "name"], [1, "english"], [2, "中国人"]]
@@ -817,7 +811,6 @@ def test_package_to_zip_resource_memory_inline(tmpdir):
     ]
 
 
-@pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
 def test_package_to_zip_resource_memory_function(tmpdir):
     path = os.path.join(tmpdir, "package.zip")
     data = lambda: [["id", "name"], [1, "english"], [2, "中国人"]]
@@ -832,7 +825,6 @@ def test_package_to_zip_resource_memory_function(tmpdir):
         ]
 
 
-@pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
 def test_package_to_zip_resource_sql(tmpdir, database_url):
     path = os.path.join(tmpdir, "package.zip")
     dialect = SqlDialect(table="table")
@@ -846,7 +838,6 @@ def test_package_to_zip_resource_sql(tmpdir, database_url):
     ]
 
 
-@pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
 def test_package_to_zip_resource_multipart(tmpdir, database_url):
     path = os.path.join(tmpdir, "package.zip")
     source = Package(resources=[Resource(path=["data/chunk1.csv", "data/chunk2.csv"])])
