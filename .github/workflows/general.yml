@@ -79,9 +79,9 @@ jobs:
       - name: Install dependencies
         run: LDFLAGS=`echo $(pg_config --ldflags)` make install
       - name: Test software
-        run: |
-          DYLD_LIBRARY_PATH=/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/savReaderWriter/spssio/macos' \
-          LC_ALL=en_US.UTF-8' \
+        run: >
+          DYLD_LIBRARY_PATH=/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/savReaderWriter/spssio/macos'
+          LC_ALL=en_US.UTF-8'
           make test
 
   # Test (Windows)
