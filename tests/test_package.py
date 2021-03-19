@@ -126,7 +126,6 @@ def test_package_from_invalid_descriptor_type():
     assert error.note.count("51")
 
 
-@pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
 def test_package_from_zip():
     package = Package("data/package.zip")
     assert package.name == "testing"
