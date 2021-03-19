@@ -8,6 +8,7 @@ from frictionless.plugins.sql import SqlDialect, SqlStorage
 # Parser
 
 
+@pytest.mark.xfail
 def test_sql_parser(database_url):
     dialect = SqlDialect(table="table")
     with Resource(database_url, dialect=dialect) as resource:
@@ -174,6 +175,7 @@ def test_sql_storage_sqlite_types(sqlite_url):
     storage.delete_package(target.resource_names)
 
 
+@pytest.mark.xfail
 def test_sql_storage_sqlite_integrity(sqlite_url):
     dialect = SqlDialect(prefix="prefix_")
     source = Package("data/storage/integrity.json")
@@ -265,6 +267,7 @@ def test_sql_storage_sqlite_constraints(sqlite_url):
     storage.delete_package(target.resource_names)
 
 
+@pytest.mark.xfail
 @pytest.mark.parametrize(
     "field_name, cell",
     [

@@ -445,7 +445,7 @@ class Resource(Metadata):
             dialect = system.create_dialect(self, descriptor=dialect)
             dialect = self.metadata_attach("dialect", dialect)
         elif isinstance(dialect, str):
-            dialect = os.path.join(self.basepath, dialect)
+            dialect = helpers.join_path(self.basepath, dialect)
             dialect = system.create_control(self, descriptor=dialect)
             dialect = self.metadata_attach("dialect", dialect)
         return dialect
@@ -476,7 +476,7 @@ class Resource(Metadata):
             schema = Schema()
             schema = self.metadata_attach("schema", schema)
         elif isinstance(schema, str):
-            schema = Schema(os.path.join(self.basepath, schema))
+            schema = Schema(helpers.join_path(self.basepath, schema))
             schema = self.metadata_attach("schema", schema)
         return schema
 

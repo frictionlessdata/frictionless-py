@@ -1,6 +1,7 @@
 import pytest
-from frictionless import Resource, Layout, Detector, helpers
+from frictionless import Resource, Layout, Detector
 from frictionless.plugins.csv import CsvDialect
+
 
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
 
@@ -280,10 +281,9 @@ def test_csv_parser_write_inline_source(tmpdir):
         ]
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_csv_parser_tsv_write(tmpdir):
     source = Resource("data/table.csv")
     target = Resource(str(tmpdir.join("table.tsv")))
     source.write(target)
-    with open(target.fullpath) as file:
+    with open(target.fullpath, encoding="utf-8") as file:
         assert file.read() == "id\tname\n1\tenglish\n2\t中国人\n"

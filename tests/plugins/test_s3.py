@@ -6,6 +6,9 @@ from moto import mock_s3
 from frictionless import Resource, validate, helpers
 
 
+IS_UNIX = not helpers.is_platform("windows")
+
+
 # Loader
 
 
@@ -34,7 +37,6 @@ def test_s3_loader(bucket_name):
 
 @mock_s3
 @pytest.mark.ci
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_s3_loader_big_file(bucket_name):
 
     # Write
@@ -51,12 +53,13 @@ def test_s3_loader_big_file(bucket_name):
     # Read
     with Resource("s3://%s/table1.csv" % bucket_name) as resource:
         assert resource.read_rows()
-        assert resource.stats == {
-            "hash": "78ea269458be04a0e02816c56fc684ef",
-            "bytes": 1000000,
-            "fields": 10,
-            "rows": 10000,
-        }
+        if IS_UNIX:
+            assert resource.stats == {
+                "hash": "78ea269458be04a0e02816c56fc684ef",
+                "bytes": 1000000,
+                "fields": 10,
+                "rows": 10000,
+            }
 
 
 @mock_s3

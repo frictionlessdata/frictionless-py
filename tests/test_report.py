@@ -1,11 +1,12 @@
-import pytest
 from frictionless import validate, helpers
+
+
+IS_UNIX = not helpers.is_platform("windows")
 
 
 # Report
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_report():
     report = validate("data/table.csv")
     # Report
@@ -31,12 +32,13 @@ def test_report():
             {"name": "name", "type": "string"},
         ],
     }
-    assert report.task.resource.stats == {
-        "hash": "6c2c61dd9b0e9c6876139a449ed87933",
-        "bytes": 30,
-        "fields": 2,
-        "rows": 2,
-    }
+    if IS_UNIX:
+        assert report.task.resource.stats == {
+            "hash": "6c2c61dd9b0e9c6876139a449ed87933",
+            "bytes": 30,
+            "fields": 2,
+            "rows": 2,
+        }
     assert report.task.time
     assert report.task.valid is True
     assert report.task.scope == [
