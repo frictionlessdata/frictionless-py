@@ -1,6 +1,6 @@
 import pytest
 from datetime import datetime
-from frictionless import Resource, Layout, FrictionlessException, helpers
+from frictionless import Resource, Layout, FrictionlessException
 from frictionless.plugins.ods import OdsDialect
 
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"

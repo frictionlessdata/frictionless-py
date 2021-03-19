@@ -1,5 +1,5 @@
 import pytest
-from frictionless import Resource, helpers
+from frictionless import Resource
 from frictionless.plugins.html import HtmlDialect
 
 

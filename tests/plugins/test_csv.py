@@ -1,5 +1,5 @@
 import pytest
-from frictionless import Resource, Layout, Detector, helpers
+from frictionless import Resource, Layout, Detector
 from frictionless.plugins.csv import CsvDialect
 
 
