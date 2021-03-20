@@ -287,3 +287,25 @@ def test_csv_parser_tsv_write(tmpdir):
     source.write(target)
     with open(target.fullpath, encoding="utf-8") as file:
         assert file.read() == "id\tname\n1\tenglish\n2\t中国人\n"
+
+
+def test_csv_parser_write_newline_lf(tmpdir):
+    dialect = CsvDialect(line_terminator="\n")
+    source = Resource("data/table.csv")
+    target = Resource(str(tmpdir.join("table.csv")), dialect=dialect)
+    source.write(target)
+    with target:
+        assert target.dialect == {"lineTerminator": "\n"}
+    with open(target.fullpath, "rb") as file:
+        assert file.read().decode("utf-8") == "id,name\n1,english\n2,中国人\n"
+
+
+def test_csv_parser_write_newline_crlf(tmpdir):
+    dialect = CsvDialect(line_terminator="\r\n")
+    source = Resource("data/table.csv")
+    target = Resource(str(tmpdir.join("table.csv")), dialect=dialect)
+    source.write(target)
+    with target:
+        assert target.dialect == {"lineTerminator": "\r\n"}
+    with open(target.fullpath, "rb") as file:
+        assert file.read().decode("utf-8") == "id,name\r\n1,english\r\n2,中国人\r\n"
