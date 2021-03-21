@@ -5,6 +5,9 @@ from copy import deepcopy
 from frictionless import validate, helpers
 
 
+IS_UNIX = not helpers.is_platform("windows")
+
+
 # General
 
 
@@ -45,15 +48,11 @@ def test_validate_package_from_path_invalid():
     ]
 
 
-@pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_validate_package_from_zip():
     report = validate("data/package.zip", type="package")
     assert report.valid
 
 
-@pytest.mark.skipif(helpers.is_platform("macos"), reason="It doesn't work for Macos")
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_validate_package_from_zip_invalid():
     report = validate("data/package-invalid.zip", type="package")
     assert report.flatten(["taskPosition", "rowPosition", "fieldPosition", "code"]) == [
@@ -250,11 +249,11 @@ DESCRIPTOR_SH = {
 }
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_validate_package_stats():
     source = deepcopy(DESCRIPTOR_SH)
     report = validate(source)
-    assert report.valid
+    if IS_UNIX:
+        assert report.valid
 
 
 def test_validate_package_stats_invalid():
@@ -268,12 +267,12 @@ def test_validate_package_stats_invalid():
     ]
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_validate_package_stats_size():
     source = deepcopy(DESCRIPTOR_SH)
     source["resources"][0]["stats"].pop("hash")
     report = validate(source)
-    assert report.valid
+    if IS_UNIX:
+        assert report.valid
 
 
 def test_validate_package_stats_size_invalid():
@@ -286,12 +285,12 @@ def test_validate_package_stats_size_invalid():
     ]
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_validate_package_stats_hash():
     source = deepcopy(DESCRIPTOR_SH)
     source["resources"][0]["stats"].pop("bytes")
     report = validate(source)
-    assert report.valid
+    if IS_UNIX:
+        assert report.valid
 
 
 def test_check_file_package_stats_hash_invalid():

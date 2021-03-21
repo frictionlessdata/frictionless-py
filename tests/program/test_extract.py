@@ -1,20 +1,19 @@
 import json
 import yaml
-import pytest
 from typer.testing import CliRunner
 from frictionless import program, extract, Detector, helpers
 
 runner = CliRunner()
+IS_UNIX = not helpers.is_platform("windows")
 
 
 # General
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_program_extract():
     result = runner.invoke(program, "extract data/table.csv")
     assert result.exit_code == 0
-    assert result.stdout.count("data: data/table.csv")
+    assert result.stdout.count("table.csv")
     assert result.stdout.count("id  name")
     assert result.stdout.count("1  english")
     assert result.stdout.count("2  中国人")
@@ -159,9 +158,9 @@ def test_program_extract_json():
     assert json.loads(result.stdout) == extract("data/table.csv")
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_program_extract_csv():
     result = runner.invoke(program, "extract data/table.csv --csv")
     assert result.exit_code == 0
-    with open("data/table.csv") as file:
-        assert result.stdout == file.read()
+    if IS_UNIX:
+        with open("data/table.csv") as file:
+            assert result.stdout == file.read()

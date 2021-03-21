@@ -272,6 +272,7 @@ class XlsxParser(Parser):
                 cells = row.to_list(types=self.supported_types)
                 sheet.append(cells)
         file = tempfile.NamedTemporaryFile(delete=False)
+        file.close()
         book.save(file.name)
         loader = system.create_loader(target)
         loader.write_byte_stream(file.name)
@@ -387,6 +388,7 @@ class XlsParser(Parser):
                 for field_index, cell in enumerate(cells):
                     sheet.write(row_index + 1, field_index, cell)
         file = tempfile.NamedTemporaryFile(delete=False)
+        file.close()
         book.save(file.name)
         loader = system.create_loader(target)
         loader.write_byte_stream(file.name)
