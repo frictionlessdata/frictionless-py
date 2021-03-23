@@ -81,10 +81,12 @@ jobs:
         run: LDFLAGS=`echo $(pg_config --ldflags)` make install
       - name: Test software
         # https://pythonhosted.org/savReaderWriter/#setup
-        run: >
-          DYLD_LIBRARY_PATH='/Users/runner/hostedtoolcache/Python/3.8.8/x64/lib/python3.8/site-packages/savReaderWriter/spssio/macos'
-          LC_ALL='en_US.UTF-8'
-          make test
+        run: |
+          sudo ln -s /Users/runner/hostedtoolcache/Python/3.8.8/x64/lib/python3.8/site-packages/savReaderWriter/spssio/macos/libicudata48.1.dylib /usr/local/lib/libicudata48.1.dylib
+          sudo ln -s /Users/runner/hostedtoolcache/Python/3.8.8/x64/lib/python3.8/site-packages/savReaderWriter/spssio/macos/libicui18n48.1.dylib /usr/local/lib/libicui18n48.1.dylib
+          sudo ln -s /Users/runner/hostedtoolcache/Python/3.8.8/x64/lib/python3.8/site-packages/savReaderWriter/spssio/macos/libspssdio.dylib /usr/local/lib/libspssdio.dylib
+          sudo ln -s /Users/runner/hostedtoolcache/Python/3.8.8/x64/lib/python3.8/site-packages/savReaderWriter/spssio/macos/libzlib123spss.dylib /usr/local/lib/libzlib123spss.dylib
+          LC_ALL='en_US.UTF-8' make test
 
   # Test (Windows)
 
