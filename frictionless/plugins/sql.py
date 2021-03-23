@@ -61,8 +61,10 @@ class SqlDialect(Dialect):
 
     Parameters:
         descriptor? (str|dict): descriptor
-        table (str): table
-        order_by? (str): order_by
+        table (str): table name
+        prefix (str): prefix for all table names
+        order_by? (str): order_by statement passed to SQL
+        namespace? (str): SQL schema
 
     Raises:
         FrictionlessException: raise any error that occurs during the process

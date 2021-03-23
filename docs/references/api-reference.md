@@ -5223,8 +5223,10 @@ Public   | `from frictionless.plugins.sql import SqlDialect`
 **Arguments**:
 
 - `descriptor?` _str|dict_ - descriptor
-- `table` _str_ - table
-- `order_by?` _str_ - order_by
+- `table` _str_ - table name
+- `prefix` _str_ - prefix for all table names
+- `order_by?` _str_ - order_by statement passed to SQL
+- `namespace?` _str_ - SQL schema
   
 
 **Raises**:
