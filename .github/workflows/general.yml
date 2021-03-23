@@ -77,13 +77,10 @@ jobs:
         with:
           python-version: 3.8
       - name: Install dependencies
+        # https://stackoverflow.com/questions/9678408/cant-install-psycopg2-with-pip-in-virtualenv-on-mac-os-x-10-7
         run: LDFLAGS=`echo $(pg_config --ldflags)` make install
       - name: Test software
-        # https://pythonhosted.org/savReaderWriter/#setup
-        run: >
-          DYLD_LIBRARY_PATH='DYLD_LIBRARY_PATH=/Library/Python/3.8/site-packages/savReaderWriter/spssio/macos'
-          LC_ALL='en_US.UTF-8'
-          make test
+        run: make test
 
   # Test (Windows)
 
