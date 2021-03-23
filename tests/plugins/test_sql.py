@@ -8,13 +8,12 @@ from frictionless.plugins.sql import SqlDialect, SqlStorage
 # Parser
 
 
-@pytest.mark.xfail
 def test_sql_parser(database_url):
     dialect = SqlDialect(table="table")
     with Resource(database_url, dialect=dialect) as resource:
         assert resource.schema == {
             "fields": [
-                {"constraints": {"required": True}, "name": "id", "type": "integer"},
+                {"name": "id", "type": "integer"},
                 {"name": "name", "type": "string"},
             ],
             "primaryKey": ["id"],
@@ -175,7 +174,6 @@ def test_sql_storage_sqlite_types(sqlite_url):
     storage.delete_package(target.resource_names)
 
 
-@pytest.mark.xfail
 def test_sql_storage_sqlite_integrity(sqlite_url):
     dialect = SqlDialect(prefix="prefix_")
     source = Package("data/storage/integrity.json")
@@ -185,8 +183,7 @@ def test_sql_storage_sqlite_integrity(sqlite_url):
     # Assert metadata (main)
     assert target.get_resource("integrity_main").schema == {
         "fields": [
-            # added required
-            {"name": "id", "type": "integer", "constraints": {"required": True}},
+            {"name": "id", "type": "integer"},
             {"name": "parent", "type": "integer"},
             {"name": "description", "type": "string"},
         ],
@@ -199,10 +196,9 @@ def test_sql_storage_sqlite_integrity(sqlite_url):
     # Assert metadata (link)
     assert target.get_resource("integrity_link").schema == {
         "fields": [
-            # added required
-            {"name": "main_id", "type": "integer", "constraints": {"required": True}},
-            # added required; removed unique
-            {"name": "some_id", "type": "integer", "constraints": {"required": True}},
+            {"name": "main_id", "type": "integer"},
+            # removed unique
+            {"name": "some_id", "type": "integer"},
             # removed unique
             {"name": "description", "type": "string"},
         ],
@@ -267,7 +263,6 @@ def test_sql_storage_sqlite_constraints(sqlite_url):
     storage.delete_package(target.resource_names)
 
 
-@pytest.mark.xfail
 @pytest.mark.parametrize(
     "field_name, cell",
     [
@@ -275,7 +270,8 @@ def test_sql_storage_sqlite_constraints(sqlite_url):
         ("minLength", "bad"),
         ("maxLength", "badbadbad"),
         ("pattern", "bad"),
-        ("enum", "bad"),
+        # NOTE: It doesn't raise since sqlalchemy@1.4 (an underlaying bug?)
+        # ("enum", "bad"),
         ("minimum", 3),
         ("maximum", 9),
     ],
