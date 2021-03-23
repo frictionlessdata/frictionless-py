@@ -1,29 +1,38 @@
 ---
 title: Transform Steps
+goodread:
+  prepare:
+    - cp data/transform.csv transform.csv
+    - cp data/transform-groups.csv transform-groups.csv
+    - cp data/transform-pivot.csv transform-pivot.csv
+  cleanup:
+    - rm transform.csv
+    - rm transform-groups.csv
+    - rm transform-pivot.csv
 ---
 
 > This guide assumes basic familiarity with the Frictionless Framework. To learn more, please read the [Introduction](https://framework.frictionlessdata.io/docs/guides/introduction) and [Quick Start](https://framework.frictionlessdata.io/docs/guides/quick-start).
 
 Frictionless includes more than 40+ built-in transform steps. They are grouped by the object so you can find them easily if you have code auto completion. Start typing, for example, `steps.table...` and you will see all the available steps. The groups are listed below and you will find every group described in more detail in the next sections. It's also possible to write custom transform steps. Please read the section below to learn more about it.  Let's prepare the data that we need to show how the checks below work:
 
-> Download [`transform.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/transform.csv) into the `data` folder to reproduce the examples.
+> Download [`transform.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/transform.csv) to reproduce the examples (right-click and "Save link as").
 
 ```bash title="CLI"
-cat data/transform.csv
+cat transform.csv
 ```
-```csv title="data/transform.csv"
+```csv title="transform.csv"
 id,name,population
 1,germany,83
 2,france,66
 3,spain,47
 ```
 
-> Download [`transform-groups.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/transform-groups.csv) into the `data` folder to reproduce the examples.
+> Download [`transform-groups.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/transform-groups.csv) to reproduce the examples (right-click and "Save link as").
 
 ```bash title="CLI"
-cat data/transform-groups.csv
+cat transform-groups.csv
 ```
-```csv title="data/transform-groups.csv"
+```csv title="transform-groups.csv"
 id,name,population,year
 1,germany,83,2020
 2,germany,77,1920
@@ -33,12 +42,12 @@ id,name,population,year
 6,spain,33,1920
 ```
 
-> Download [`transform-pivot.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/transform-pivot.csv) into the `data` folder to reproduce the examples.
+> Download [`transform-pivot.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/transform-pivot.csv) to reproduce the examples (right-click and "Save link as").
 
 ```bash title="CLI"
-cat data/transform-pivot.csv
+cat transform-pivot.csv
 ```
-```csv title="data/transform-pivot.csv"
+```csv title="transform-pivot.csv"
 region,gender,style,units
 east,boy,tee,12
 east,boy,golf,14
@@ -60,15 +69,15 @@ The Resource steps are only available for a package transformation. This include
 
 ### Add Resource
 
-```python title="Python"
+```python goodread title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
-source = Package(resources=[Resource(name='main', path="data/transform.csv")])
+source = Package(resources=[Resource(name='main', path="transform.csv")])
 target = transform(
     source,
     steps=[
-        steps.resource_add(name='extra', path='data/transform.csv'),
+        steps.resource_add(name='extra', path='transform.csv'),
     ],
 )
 pprint(target.resource_names)
@@ -80,18 +89,18 @@ pprint(target.get_resource('extra').read_rows())
 {'fields': [{'name': 'id', 'type': 'integer'},
             {'name': 'name', 'type': 'string'},
             {'name': 'population', 'type': 'integer'}]}
-[Row([('id', 1), ('name', 'germany'), ('population', 83)]),
- Row([('id', 2), ('name', 'france'), ('population', 66)]),
- Row([('id', 3), ('name', 'spain'), ('population', 47)])]
+[{'id': 1, 'name': 'germany', 'population': 83},
+ {'id': 2, 'name': 'france', 'population': 66},
+ {'id': 3, 'name': 'spain', 'population': 47}]
 ```
 
 ### Remove Resource
 
-```python title="Python"
+```python goodread title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
-source = Package(resources=[Resource(name='main', path="data/transform.csv")])
+source = Package(resources=[Resource(name='main', path="transform.csv")])
 target = transform(
     source,
     steps=[
@@ -106,15 +115,15 @@ pprint(target)
 
 ### Transform Resource
 
-```python title="Python"
+```python goodread title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
-source = Package(resources=[Resource(name='main', path="data/transform.csv")])
+source = Package(resources=[Resource(name='main', path="transform.csv")])
 target = transform(
     source,
     steps=[
-        steps.resource_add(name='extra', path='data/transform.csv'),
+        steps.resource_add(name='extra', path='transform.csv'),
         steps.resource_transform(name='main', steps=[
             steps.table_merge(resource='extra'),
             steps.row_sort(field_names=['id'])
@@ -131,21 +140,21 @@ pprint(target.get_resource('main').read_rows())
 {'fields': [{'name': 'id', 'type': 'integer'},
             {'name': 'name', 'type': 'string'},
             {'name': 'population', 'type': 'integer'}]}
-[Row([('id', 1), ('name', 'germany'), ('population', 83)]),
- Row([('id', 1), ('name', 'germany'), ('population', 83)]),
- Row([('id', 2), ('name', 'france'), ('population', 66)]),
- Row([('id', 2), ('name', 'france'), ('population', 66)]),
- Row([('id', 3), ('name', 'spain'), ('population', 47)]),
- Row([('id', 3), ('name', 'spain'), ('population', 47)])]
+[{'id': 1, 'name': 'germany', 'population': 83},
+ {'id': 1, 'name': 'germany', 'population': 83},
+ {'id': 2, 'name': 'france', 'population': 66},
+ {'id': 2, 'name': 'france', 'population': 66},
+ {'id': 3, 'name': 'spain', 'population': 47},
+ {'id': 3, 'name': 'spain', 'population': 47}]
 ```
 
 ### Update Resource
 
-```python title="Python"
+```python goodread title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
-source = Package(resources=[Resource(name='main', path="data/transform.csv")])
+source = Package(resources=[Resource(name='main', path="transform.csv")])
 target = transform(
     source,
     steps=[
@@ -155,18 +164,13 @@ target = transform(
 pprint(target.get_resource('main'))
 ```
 ```
-{'compression': 'no',
- 'compressionPath': '',
- 'control': {'newline': ''},
- 'description': 'For the docs',
- 'dialect': {},
+{'description': 'For the docs',
  'encoding': 'utf-8',
  'format': 'csv',
  'hashing': 'md5',
  'name': 'main',
- 'path': 'data/transform.csv',
+ 'path': 'transform.csv',
  'profile': 'tabular-data-resource',
- 'query': {},
  'schema': {'fields': [{'name': 'id', 'type': 'integer'},
                        {'name': 'name', 'type': 'string'},
                        {'name': 'population', 'type': 'integer'}]},
@@ -180,11 +184,11 @@ These steps are meant to be used on a table level of a resource. This includes v
 
 ### Aggregate Table
 
-```python title="Python"
+```python goodread title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
-source = Resource(path="data/transform-groups.csv")
+source = Resource(path="transform-groups.csv")
 target = transform(
     source,
     steps=[
@@ -199,18 +203,18 @@ pprint(target.read_rows())
 ```
 ```
 {'fields': [{'name': 'name', 'type': 'string'}, {'name': 'sum'}]}
-[Row([('name', 'france'), ('sum', 120)]),
- Row([('name', 'germany'), ('sum', 160)]),
- Row([('name', 'spain'), ('sum', 80)])]
+[{'name': 'france', 'sum': 120},
+ {'name': 'germany', 'sum': 160},
+ {'name': 'spain', 'sum': 80}]
 ```
 
 ### Attach Tables
 
-```python title="Python"
+```python goodread title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
-source = Resource(path="data/transform.csv")
+source = Resource(path="transform.csv")
 target = transform(
     source,
     steps=[
@@ -225,18 +229,18 @@ pprint(target.read_rows())
             {'name': 'name', 'type': 'string'},
             {'name': 'population', 'type': 'integer'},
             {'name': 'note', 'type': 'string'}]}
-[Row([('id', 1), ('name', 'germany'), ('population', 83), ('note', 'large')]),
- Row([('id', 2), ('name', 'france'), ('population', 66), ('note', 'mid')]),
- Row([('id', 3), ('name', 'spain'), ('population', 47), ('note', None)])]
+[{'id': 1, 'name': 'germany', 'population': 83, 'note': 'large'},
+ {'id': 2, 'name': 'france', 'population': 66, 'note': 'mid'},
+ {'id': 3, 'name': 'spain', 'population': 47, 'note': None}]
 ```
 
 ### Debug Table
 
-```python title="Python"
+```python goodread title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
-source = Resource(path="data/transform.csv")
+source = Resource(path="transform.csv")
 target = transform(
     source,
     steps=[
@@ -246,21 +250,21 @@ target = transform(
 pprint(target.read_rows())
 ```
 ```
-['1', 'germany', '83']
-['2', 'france', '66']
-['3', 'spain', '47']
-[Row([('id', 1), ('name', 'germany'), ('population', 83)]),
- Row([('id', 2), ('name', 'france'), ('population', 66)]),
- Row([('id', 3), ('name', 'spain'), ('population', 47)])]
+{'id': 1, 'name': 'germany', 'population': 83}
+{'id': 2, 'name': 'france', 'population': 66}
+{'id': 3, 'name': 'spain', 'population': 47}
+[{'id': 1, 'name': 'germany', 'population': 83},
+ {'id': 2, 'name': 'france', 'population': 66},
+ {'id': 3, 'name': 'spain', 'population': 47}]
 ```
 
 ### Diff Tables
 
-```python title="Python"
+```python goodread title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
-source = Resource(path="data/transform.csv")
+source = Resource(path="transform.csv")
 target = transform(
     source,
     steps=[
@@ -284,16 +288,16 @@ pprint(target.read_rows())
 {'fields': [{'name': 'id', 'type': 'integer'},
             {'name': 'name', 'type': 'string'},
             {'name': 'population', 'type': 'integer'}]}
-[Row([('id', 2), ('name', 'france'), ('population', 66)])]
+[{'id': 2, 'name': 'france', 'population': 66}]
 ```
 
 ### Intersect Tables
 
-```python title="Python"
+```python goodread title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
-source = Resource(path="data/transform.csv")
+source = Resource(path="transform.csv")
 target = transform(
     source,
     steps=[
@@ -317,17 +321,17 @@ pprint(target.read_rows())
 {'fields': [{'name': 'id', 'type': 'integer'},
             {'name': 'name', 'type': 'string'},
             {'name': 'population', 'type': 'integer'}]}
-[Row([('id', 1), ('name', 'germany'), ('population', 83)]),
- Row([('id', 3), ('name', 'spain'), ('population', 47)])]
+[{'id': 1, 'name': 'germany', 'population': 83},
+ {'id': 3, 'name': 'spain', 'population': 47}]
 ```
 
 ### Join Tables
 
-```python title="Python"
+```python goodread title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
-source = Resource(path="data/transform.csv")
+source = Resource(path="transform.csv")
 target = transform(
     source,
     steps=[
@@ -346,17 +350,17 @@ pprint(target.read_rows())
             {'name': 'name', 'type': 'string'},
             {'name': 'population', 'type': 'integer'},
             {'name': 'note', 'type': 'string'}]}
-[Row([('id', 1), ('name', 'germany'), ('population', 83), ('note', 'beer')]),
- Row([('id', 2), ('name', 'france'), ('population', 66), ('note', 'vine')])]
+[{'id': 1, 'name': 'germany', 'population': 83, 'note': 'beer'},
+ {'id': 2, 'name': 'france', 'population': 66, 'note': 'vine'}]
 ```
 
 ### Melt Table
 
-```python title="Python"
+```python goodread title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
-source = Resource(path="data/transform.csv")
+source = Resource(path="transform.csv")
 target = transform(
     source,
     steps=[
@@ -371,21 +375,21 @@ pprint(target.read_rows())
 {'fields': [{'name': 'name', 'type': 'string'},
             {'name': 'variable'},
             {'name': 'value'}]}
-[Row([('name', 'germany'), ('variable', 'id'), ('value', 1)]),
- Row([('name', 'germany'), ('variable', 'population'), ('value', 83)]),
- Row([('name', 'france'), ('variable', 'id'), ('value', 2)]),
- Row([('name', 'france'), ('variable', 'population'), ('value', 66)]),
- Row([('name', 'spain'), ('variable', 'id'), ('value', 3)]),
- Row([('name', 'spain'), ('variable', 'population'), ('value', 47)])]
+[{'name': 'germany', 'variable': 'id', 'value': 1},
+ {'name': 'germany', 'variable': 'population', 'value': 83},
+ {'name': 'france', 'variable': 'id', 'value': 2},
+ {'name': 'france', 'variable': 'population', 'value': 66},
+ {'name': 'spain', 'variable': 'id', 'value': 3},
+ {'name': 'spain', 'variable': 'population', 'value': 47}]
 ```
 
 ### Merge Tables
 
-```python title="Python"
+```python goodread title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
-source = Resource(path="data/transform.csv")
+source = Resource(path="transform.csv")
 target = transform(
     source,
     steps=[
@@ -402,19 +406,19 @@ pprint(target.read_rows())
             {'name': 'name', 'type': 'string'},
             {'name': 'population', 'type': 'integer'},
             {'name': 'note', 'type': 'string'}]}
-[Row([('id', 1), ('name', 'germany'), ('population', 83), ('note', None)]),
- Row([('id', 2), ('name', 'france'), ('population', 66), ('note', None)]),
- Row([('id', 3), ('name', 'spain'), ('population', 47), ('note', None)]),
- Row([('id', 4), ('name', 'malta'), ('population', None), ('note', 'island')])]
+[{'id': 1, 'name': 'germany', 'population': 83, 'note': None},
+ {'id': 2, 'name': 'france', 'population': 66, 'note': None},
+ {'id': 3, 'name': 'spain', 'population': 47, 'note': None},
+ {'id': 4, 'name': 'malta', 'population': None, 'note': 'island'}]
 ```
 
 ### Pivot Table
 
-```python title="Python"
+```python goodread title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
-source = Resource(path="data/transform-pivot.csv")
+source = Resource(path="transform-pivot.csv")
 target = transform(
     source,
     steps=[
@@ -429,17 +433,17 @@ pprint(target.read_rows())
 {'fields': [{'name': 'region', 'type': 'string'},
             {'name': 'boy', 'type': 'integer'},
             {'name': 'girl', 'type': 'integer'}]}
-[Row([('region', 'east'), ('boy', 33), ('girl', 29)]),
- Row([('region', 'west'), ('boy', 35), ('girl', 23)])]
+[{'region': 'east', 'boy': 33, 'girl': 29},
+ {'region': 'west', 'boy': 35, 'girl': 23}]
 ```
 
 ### Print Table
 
-```python title="Python"
+```python goodread title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
-source = Resource(path="data/transform.csv")
+source = Resource(path="transform.csv")
 target = transform(
     source,
     steps=[
@@ -460,11 +464,11 @@ id  name     population
 
 ### Recast Table
 
-```python title="Python"
+```python goodread title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
-source = Resource(path="data/transform.csv")
+source = Resource(path="transform.csv")
 target = transform(
     source,
     steps=[
@@ -480,18 +484,18 @@ pprint(target.read_rows())
 {'fields': [{'name': 'id', 'type': 'integer'},
             {'name': 'name', 'type': 'string'},
             {'name': 'population', 'type': 'integer'}]}
-[Row([('id', 1), ('name', 'germany'), ('population', 83)]),
- Row([('id', 2), ('name', 'france'), ('population', 66)]),
- Row([('id', 3), ('name', 'spain'), ('population', 47)])]
+[{'id': 1, 'name': 'germany', 'population': 83},
+ {'id': 2, 'name': 'france', 'population': 66},
+ {'id': 3, 'name': 'spain', 'population': 47}]
 ```
 
 ### Transpose Table
 
-```python title="Python"
+```python goodread title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
-source = Resource(path="data/transform.csv")
+source = Resource(path="transform.csv")
 target = transform(
     source,
     steps=[
@@ -507,16 +511,16 @@ pprint(target.read_rows())
             {'name': 'germany', 'type': 'integer'},
             {'name': 'france', 'type': 'integer'},
             {'name': 'spain', 'type': 'integer'}]}
-[Row([('name', 'population'), ('germany', 83), ('france', 66), ('spain', 47)])]
+[{'name': 'population', 'germany': 83, 'france': 66, 'spain': 47}]
 ```
 
 ### Validate Table
 
-```python title="Python"
+```python goodread title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
-source = Resource(path="data/transform.csv")
+source = Resource(path="transform.csv")
 target = transform(
     source,
     steps=[
@@ -534,16 +538,16 @@ except Exception as exception:
 {'fields': [{'name': 'id', 'type': 'integer'},
             {'name': 'name', 'type': 'string'},
             {'name': 'population', 'type': 'integer'}]}
-FrictionlessException('[step-error] The transfrom step has an error: "table_validate" raises "[type-error] The cell "bad" in row at position "2" and field "population" at position "3" has incompatible type: type is "integer/default""')
+FrictionlessException('[step-error] Step is not valid: "table_validate" raises "[type-error] Type error in the cell "bad" in row "2" and field "population" at position "3": type is "integer/default""')
 ```
 
 ### Write Table
 
-```python title="Python"
+```python goodread title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
-source = Resource(path="data/transform.csv")
+source = Resource(path="transform.csv")
 target = transform(
     source,
     steps=[
@@ -586,11 +590,11 @@ The Field steps are responsible for managing a Table Schema's fields. You can ad
 
 ### Add Field
 
-```python title="Python"
+```python goodread title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
-source = Resource(path="data/transform.csv")
+source = Resource(path="transform.csv")
 target = transform(
     source,
     steps=[
@@ -605,18 +609,18 @@ pprint(target.read_rows())
             {'name': 'name', 'type': 'string'},
             {'name': 'population', 'type': 'integer'},
             {'name': 'note', 'type': 'string'}]}
-[Row([('id', 1), ('name', 'germany'), ('population', 83), ('note', 'eu')]),
- Row([('id', 2), ('name', 'france'), ('population', 66), ('note', 'eu')]),
- Row([('id', 3), ('name', 'spain'), ('population', 47), ('note', 'eu')])]
+[{'id': 1, 'name': 'germany', 'population': 83, 'note': 'eu'},
+ {'id': 2, 'name': 'france', 'population': 66, 'note': 'eu'},
+ {'id': 3, 'name': 'spain', 'population': 47, 'note': 'eu'}]
 ```
 
 ### Filter Fields
 
-```python title="Python"
+```python goodread title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
-source = Resource(path="data/transform.csv")
+source = Resource(path="transform.csv")
 target = transform(
     source,
     steps=[
@@ -629,18 +633,18 @@ pprint(target.read_rows())
 ```
 {'fields': [{'name': 'id', 'type': 'integer'},
             {'name': 'name', 'type': 'string'}]}
-[Row([('id', 1), ('name', 'germany')]),
- Row([('id', 2), ('name', 'france')]),
- Row([('id', 3), ('name', 'spain')])]
+[{'id': 1, 'name': 'germany'},
+ {'id': 2, 'name': 'france'},
+ {'id': 3, 'name': 'spain'}]
 ```
 
 ### Move Field
 
-```python title="Python"
+```python goodread title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
-source = Resource(path="data/transform.csv")
+source = Resource(path="transform.csv")
 target = transform(
     source,
     steps=[
@@ -654,18 +658,18 @@ pprint(target.read_rows())
 {'fields': [{'name': 'name', 'type': 'string'},
             {'name': 'population', 'type': 'integer'},
             {'name': 'id', 'type': 'integer'}]}
-[Row([('name', 'germany'), ('population', 83), ('id', 1)]),
- Row([('name', 'france'), ('population', 66), ('id', 2)]),
- Row([('name', 'spain'), ('population', 47), ('id', 3)])]
+[{'name': 'germany', 'population': 83, 'id': 1},
+ {'name': 'france', 'population': 66, 'id': 2},
+ {'name': 'spain', 'population': 47, 'id': 3}]
 ```
 
 ### Remove Field
 
-```python title="Python"
+```python goodread title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
-source = Resource(path="data/transform.csv")
+source = Resource(path="transform.csv")
 target = transform(
     source,
     steps=[
@@ -678,18 +682,18 @@ pprint(target.read_rows())
 ```
 {'fields': [{'name': 'name', 'type': 'string'},
             {'name': 'population', 'type': 'integer'}]}
-[Row([('name', 'germany'), ('population', 83)]),
- Row([('name', 'france'), ('population', 66)]),
- Row([('name', 'spain'), ('population', 47)])]
+[{'name': 'germany', 'population': 83},
+ {'name': 'france', 'population': 66},
+ {'name': 'spain', 'population': 47}]
 ```
 
 ### Split Field
 
-```python title="Python"
+```python goodread title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
-source = Resource(path="data/transform.csv")
+source = Resource(path="transform.csv")
 target = transform(
     source,
     steps=[
@@ -704,18 +708,18 @@ pprint(target.read_rows())
             {'name': 'population', 'type': 'integer'},
             {'name': 'name1', 'type': 'string'},
             {'name': 'name2', 'type': 'string'}]}
-[Row([('id', 1), ('population', 83), ('name1', 'germ'), ('name2', 'ny')]),
- Row([('id', 2), ('population', 66), ('name1', 'fr'), ('name2', 'nce')]),
- Row([('id', 3), ('population', 47), ('name1', 'sp'), ('name2', 'in')])]
+[{'id': 1, 'population': 83, 'name1': 'germ', 'name2': 'ny'},
+ {'id': 2, 'population': 66, 'name1': 'fr', 'name2': 'nce'},
+ {'id': 3, 'population': 47, 'name1': 'sp', 'name2': 'in'}]
 ```
 
 ### Unpack Field
 
-```python title="Python"
+```python goodread title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
-source = Resource(path="data/transform.csv")
+source = Resource(path="transform.csv")
 target = transform(
     source,
     steps=[
@@ -731,18 +735,18 @@ pprint(target.read_rows())
             {'name': 'population', 'type': 'integer'},
             {'name': 'id2'},
             {'name': 'id3'}]}
-[Row([('name', 'germany'), ('population', 83), ('id2', 1), ('id3', 1)]),
- Row([('name', 'france'), ('population', 66), ('id2', 1), ('id3', 1)]),
- Row([('name', 'spain'), ('population', 47), ('id2', 1), ('id3', 1)])]
+[{'name': 'germany', 'population': 83, 'id2': 1, 'id3': 1},
+ {'name': 'france', 'population': 66, 'id2': 1, 'id3': 1},
+ {'name': 'spain', 'population': 47, 'id2': 1, 'id3': 1}]
 ```
 
 ### Update Field
 
-```python title="Python"
+```python goodread title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
-source = Resource(path="data/transform.csv")
+source = Resource(path="transform.csv")
 target = transform(
     source,
     steps=[
@@ -756,9 +760,9 @@ pprint(target.read_rows())
 {'fields': [{'name': 'id', 'type': 'string'},
             {'name': 'name', 'type': 'string'},
             {'name': 'population', 'type': 'integer'}]}
-[Row([('id', '1'), ('name', 'germany'), ('population', 83)]),
- Row([('id', '2'), ('name', 'france'), ('population', 66)]),
- Row([('id', '3'), ('name', 'spain'), ('population', 47)])]
+[{'id': None, 'name': 'germany', 'population': 83},
+ {'id': None, 'name': 'france', 'population': 66},
+ {'id': None, 'name': 'spain', 'population': 47}]
 ```
 
 ## Row Steps
@@ -767,16 +771,16 @@ These steps are row-based including row filtering, slicing, and many more.
 
 ### Filter Rows
 
-```python title="Python"
+```python goodread title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
-source = Resource(path="data/transform.csv")
+source = Resource(path="transform.csv")
 target = transform(
     source,
     steps=[
         steps.table_normalize(),
-        steps.row_filter(predicat="<formula>id > 1"),
+        steps.row_filter(formula="id > 1"),
     ]
 )
 pprint(target.schema)
@@ -786,17 +790,17 @@ pprint(target.read_rows())
 {'fields': [{'name': 'id', 'type': 'integer'},
             {'name': 'name', 'type': 'string'},
             {'name': 'population', 'type': 'integer'}]}
-[Row([('id', 2), ('name', 'france'), ('population', 66)]),
- Row([('id', 3), ('name', 'spain'), ('population', 47)])]
+[{'id': 2, 'name': 'france', 'population': 66},
+ {'id': 3, 'name': 'spain', 'population': 47}]
 ```
 
 ### Search Rows
 
-```python title="Python"
+```python goodread title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
-source = Resource(path="data/transform.csv")
+source = Resource(path="transform.csv")
 target = transform(
     source,
     steps=[
@@ -810,16 +814,16 @@ pprint(target.read_rows())
 {'fields': [{'name': 'id', 'type': 'integer'},
             {'name': 'name', 'type': 'string'},
             {'name': 'population', 'type': 'integer'}]}
-[Row([('id', 2), ('name', 'france'), ('population', 66)])]
+[{'id': 2, 'name': 'france', 'population': 66}]
 ```
 
 ### Slice Rows
 
-```python title="Python"
+```python goodread title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
-source = Resource(path="data/transform.csv")
+source = Resource(path="transform.csv")
 target = transform(
     source,
     steps=[
@@ -833,17 +837,17 @@ pprint(target.read_rows())
 {'fields': [{'name': 'id', 'type': 'integer'},
             {'name': 'name', 'type': 'string'},
             {'name': 'population', 'type': 'integer'}]}
-[Row([('id', 1), ('name', 'germany'), ('population', 83)]),
- Row([('id', 2), ('name', 'france'), ('population', 66)])]
+[{'id': 1, 'name': 'germany', 'population': 83},
+ {'id': 2, 'name': 'france', 'population': 66}]
 ```
 
 ### Sort Rows
 
-```python title="Python"
+```python goodread title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
-source = Resource(path="data/transform.csv")
+source = Resource(path="transform.csv")
 target = transform(
     source,
     steps=[
@@ -857,18 +861,18 @@ pprint(target.read_rows())
 {'fields': [{'name': 'id', 'type': 'integer'},
             {'name': 'name', 'type': 'string'},
             {'name': 'population', 'type': 'integer'}]}
-[Row([('id', 2), ('name', 'france'), ('population', 66)]),
- Row([('id', 1), ('name', 'germany'), ('population', 83)]),
- Row([('id', 3), ('name', 'spain'), ('population', 47)])]
+[{'id': 2, 'name': 'france', 'population': 66},
+ {'id': 1, 'name': 'germany', 'population': 83},
+ {'id': 3, 'name': 'spain', 'population': 47}]
 ```
 
 ### Split Rows
 
-```python title="Python"
+```python goodread title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
-source = Resource(path="data/transform.csv")
+source = Resource(path="transform.csv")
 target = transform(
     source,
     steps=[
@@ -882,21 +886,21 @@ pprint(target.read_rows())
 {'fields': [{'name': 'id', 'type': 'integer'},
             {'name': 'name', 'type': 'string'},
             {'name': 'population', 'type': 'integer'}]}
-[Row([('id', 1), ('name', 'germ'), ('population', 83)]),
- Row([('id', 1), ('name', 'ny'), ('population', 83)]),
- Row([('id', 2), ('name', 'fr'), ('population', 66)]),
- Row([('id', 2), ('name', 'nce'), ('population', 66)]),
- Row([('id', 3), ('name', 'sp'), ('population', 47)]),
- Row([('id', 3), ('name', 'in'), ('population', 47)])]
+[{'id': 1, 'name': 'germ', 'population': 83},
+ {'id': 1, 'name': 'ny', 'population': 83},
+ {'id': 2, 'name': 'fr', 'population': 66},
+ {'id': 2, 'name': 'nce', 'population': 66},
+ {'id': 3, 'name': 'sp', 'population': 47},
+ {'id': 3, 'name': 'in', 'population': 47}]
 ```
 
 ### Subset Rows
 
-```python title="Python"
+```python goodread title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
-source = Resource(path="data/transform.csv")
+source = Resource(path="transform.csv")
 target = transform(
     source,
     steps=[
@@ -911,18 +915,18 @@ pprint(target.read_rows())
 {'fields': [{'name': 'id', 'type': 'integer'},
             {'name': 'name', 'type': 'string'},
             {'name': 'population', 'type': 'integer'}]}
-[Row([('id', 1), ('name', 'germany'), ('population', 83)]),
- Row([('id', 1), ('name', 'france'), ('population', 66)]),
- Row([('id', 1), ('name', 'spain'), ('population', 47)])]
+[{'id': 1, 'name': 'germany', 'population': 83},
+ {'id': 1, 'name': 'france', 'population': 66},
+ {'id': 1, 'name': 'spain', 'population': 47}]
 ```
 
 ### Ungroup Rows
 
-```python title="Python"
+```python goodread title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
-source = Resource(path="data/transform-groups.csv")
+source = Resource(path="transform-groups.csv")
 target = transform(
     source,
     steps=[
@@ -937,9 +941,9 @@ pprint(target.read_rows())
             {'name': 'name', 'type': 'string'},
             {'name': 'population', 'type': 'integer'},
             {'name': 'year', 'type': 'integer'}]}
-[Row([('id', 3), ('name', 'france'), ('population', 66), ('year', 2020)]),
- Row([('id', 1), ('name', 'germany'), ('population', 83), ('year', 2020)]),
- Row([('id', 5), ('name', 'spain'), ('population', 47), ('year', 2020)])]
+[{'id': 3, 'name': 'france', 'population': 66, 'year': 2020},
+ {'id': 1, 'name': 'germany', 'population': 83, 'year': 2020},
+ {'id': 5, 'name': 'spain', 'population': 47, 'year': 2020}]
 ```
 
 ## Cell Steps
@@ -948,11 +952,11 @@ The Cell steps are responsible for cell operations like converting, replacing, o
 
 ### Convert Cells
 
-```python title="Python"
+```python goodread title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
-source = Resource(path="data/transform.csv")
+source = Resource(path="transform.csv")
 target = transform(
     source,
     steps=[
@@ -966,18 +970,18 @@ pprint(target.read_rows())
 {'fields': [{'name': 'id', 'type': 'integer'},
             {'name': 'name', 'type': 'string'},
             {'name': 'population', 'type': 'integer'}]}
-[Row([('id', 1), ('name', 'n/a'), ('population', 83)]),
- Row([('id', 2), ('name', 'n/a'), ('population', 66)]),
- Row([('id', 3), ('name', 'n/a'), ('population', 47)])]
+[{'id': 1, 'name': 'n/a', 'population': 83},
+ {'id': 2, 'name': 'n/a', 'population': 66},
+ {'id': 3, 'name': 'n/a', 'population': 47}]
 ```
 
 ### Fill Cells
 
-```python title="Python"
+```python goodread title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
-source = Resource(path="data/transform.csv")
+source = Resource(path="transform.csv")
 target = transform(
     source,
     steps=[
@@ -992,18 +996,18 @@ pprint(target.read_rows())
 {'fields': [{'name': 'id', 'type': 'integer'},
             {'name': 'name', 'type': 'string'},
             {'name': 'population', 'type': 'integer'}]}
-[Row([('id', 1), ('name', 'germany'), ('population', 83)]),
- Row([('id', 2), ('name', 'FRANCE'), ('population', 66)]),
- Row([('id', 3), ('name', 'spain'), ('population', 47)])]
+[{'id': 1, 'name': 'germany', 'population': 83},
+ {'id': 2, 'name': 'FRANCE', 'population': 66},
+ {'id': 3, 'name': 'spain', 'population': 47}]
 ```
 
 ### Format Cells
 
-```python title="Python"
+```python goodread title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
-source = Resource(path="data/transform.csv")
+source = Resource(path="transform.csv")
 target = transform(
     source,
     steps=[
@@ -1017,18 +1021,18 @@ pprint(target.read_rows())
 {'fields': [{'name': 'id', 'type': 'integer'},
             {'name': 'name', 'type': 'string'},
             {'name': 'population', 'type': 'integer'}]}
-[Row([('id', 1), ('name', 'Prefix: germany'), ('population', 83)]),
- Row([('id', 2), ('name', 'Prefix: france'), ('population', 66)]),
- Row([('id', 3), ('name', 'Prefix: spain'), ('population', 47)])]
+[{'id': 1, 'name': 'Prefix: germany', 'population': 83},
+ {'id': 2, 'name': 'Prefix: france', 'population': 66},
+ {'id': 3, 'name': 'Prefix: spain', 'population': 47}]
 ```
 
 ### Interpolate Cells
 
-```python title="Python"
+```python goodread title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
-source = Resource(path="data/transform.csv")
+source = Resource(path="transform.csv")
 target = transform(
     source,
     steps=[
@@ -1042,18 +1046,18 @@ pprint(target.read_rows())
 {'fields': [{'name': 'id', 'type': 'integer'},
             {'name': 'name', 'type': 'string'},
             {'name': 'population', 'type': 'integer'}]}
-[Row([('id', 1), ('name', 'Prefix: germany'), ('population', 83)]),
- Row([('id', 2), ('name', 'Prefix: france'), ('population', 66)]),
- Row([('id', 3), ('name', 'Prefix: spain'), ('population', 47)])]
+[{'id': 1, 'name': 'Prefix: germany', 'population': 83},
+ {'id': 2, 'name': 'Prefix: france', 'population': 66},
+ {'id': 3, 'name': 'Prefix: spain', 'population': 47}]
 ```
 
 ### Replace Cells
 
-```python title="Python"
+```python goodread title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
-source = Resource(path="data/transform.csv")
+source = Resource(path="transform.csv")
 target = transform(
     source,
     steps=[
@@ -1067,18 +1071,18 @@ pprint(target.read_rows())
 {'fields': [{'name': 'id', 'type': 'integer'},
             {'name': 'name', 'type': 'string'},
             {'name': 'population', 'type': 'integer'}]}
-[Row([('id', 1), ('name', 'germany'), ('population', 83)]),
- Row([('id', 2), ('name', 'FRANCE'), ('population', 66)]),
- Row([('id', 3), ('name', 'spain'), ('population', 47)])]
+[{'id': 1, 'name': 'germany', 'population': 83},
+ {'id': 2, 'name': 'FRANCE', 'population': 66},
+ {'id': 3, 'name': 'spain', 'population': 47}]
 ```
 
 ### Set Cells
 
-```python title="Python"
+```python goodread title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
-source = Resource(path="data/transform.csv")
+source = Resource(path="transform.csv")
 target = transform(
     source,
     steps=[
@@ -1092,7 +1096,7 @@ pprint(target.read_rows())
 {'fields': [{'name': 'id', 'type': 'integer'},
             {'name': 'name', 'type': 'string'},
             {'name': 'population', 'type': 'integer'}]}
-[Row([('id', 1), ('name', 'germany'), ('population', 100)]),
- Row([('id', 2), ('name', 'france'), ('population', 100)]),
- Row([('id', 3), ('name', 'spain'), ('population', 100)])]
+[{'id': 1, 'name': 'germany', 'population': 100},
+ {'id': 2, 'name': 'france', 'population': 100},
+ {'id': 3, 'name': 'spain', 'population': 100}]
 ```

@@ -284,7 +284,7 @@ class SqlStorage(Storage):
             if order_by:
                 select = select.order_by(sa.sql.text(order_by))
             result = select.execute()
-            yield result.keys()
+            yield list(result.keys())
             for item in result:
                 cells = list(item)
                 yield cells

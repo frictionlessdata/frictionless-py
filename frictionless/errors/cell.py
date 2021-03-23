@@ -24,7 +24,7 @@ class CellError(RowError):
 
     code = "cell-error"
     name = "Cell Error"
-    tags = ["table", "#row", "cell"]
+    tags = ["#table", "#row", "#cell"]
     template = "Cell Error"
     description = "Cell Error"
 
@@ -90,7 +90,6 @@ class CellError(RowError):
 class ExtraCellError(CellError):
     code = "extra-cell"
     name = "Extra Cell"
-    tags = ["table", "#row", "cell"]
     template = 'Row at position "{rowPosition}" has an extra value in field at position "{fieldPosition}"'
     description = "This row has more values compared to the header row (the first row in the data source). A key concept is that all the rows in tabular data must have the same number of columns."
 
@@ -98,15 +97,14 @@ class ExtraCellError(CellError):
 class MissingCellError(CellError):
     code = "missing-cell"
     name = "Missing Cell"
-    tags = ["table", "#row", "cell"]
+    tags = ["#table", "#row", "#cell"]
     template = 'Row at position "{rowPosition}" has a missing cell in field "{fieldName}" at position "{fieldPosition}"'
     description = "This row has less values compared to the header row (the first row in the data source). A key concept is that all the rows in tabular data must have the same number of columns."
 
 
 class TypeError(CellError):
     code = "type-error"
-    name = "Missing Cell"
-    tags = ["table", "#row", "cell"]
+    name = "Type Error"
     template = 'Type error in the cell "{cell}" in row "{rowPosition}" and field "{fieldName}" at position "{fieldPosition}": {note}'
     description = "The value does not match the schema type and format for this field."
 
@@ -114,7 +112,6 @@ class TypeError(CellError):
 class ConstraintError(CellError):
     code = "constraint-error"
     name = "Constraint Error"
-    tags = ["table", "#row", "cell"]
     template = 'The cell "{cell}" in row at position "{rowPosition}" and field "{fieldName}" at position "{fieldPosition}" does not conform to a constraint: {note}'
     description = "A field value does not conform to a constraint."
 
@@ -122,7 +119,6 @@ class ConstraintError(CellError):
 class UniqueError(CellError):
     code = "unique-error"
     name = "Unique Error"
-    tags = ["table", "#row", "cell"]
     template = 'Row at position "{rowPosition}" has unique constraint violation in field "{fieldName}" at position "{fieldPosition}": {note}'
     description = "This field is a unique field but it contains a value that has been used in another row."
 
@@ -130,7 +126,6 @@ class UniqueError(CellError):
 class TruncatedValueError(CellError):
     code = "truncated-value"
     name = "Truncated Value"
-    tags = ["table", "#row", "cell"]
     template = "The cell {cell} in row at position {rowPosition} and field {fieldName} at position {fieldPosition} has an error: {note}"
     description = "The value is possible truncated."
 
@@ -138,7 +133,6 @@ class TruncatedValueError(CellError):
 class ForbiddenValueError(CellError):
     code = "forbidden-value"
     name = "Forbidden Value"
-    tags = ["table", "#row", "cell"]
     template = "The cell {cell} in row at position {rowPosition} and field {fieldName} at position {fieldPosition} has an error: {note}"
     description = "The value is forbidden."
 
@@ -146,6 +140,5 @@ class ForbiddenValueError(CellError):
 class SequentialValueError(CellError):
     code = "sequential-value"
     name = "Sequential Value"
-    tags = ["table", "#row", "cell"]
     template = "The cell {cell} in row at position {rowPosition} and field {fieldName} at position {fieldPosition} has an error: {note}"
     description = "The value is not sequential."

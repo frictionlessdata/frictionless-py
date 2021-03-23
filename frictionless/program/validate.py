@@ -214,8 +214,8 @@ def program_validate(
             for error in task.errors:
                 content.append(
                     [
-                        error.get("rowPosition"),
-                        error.get("fieldPosition"),
+                        error.get("rowPosition", ""),
+                        error.get("fieldPosition", ""),
                         error.code,
                         error.message,
                     ]

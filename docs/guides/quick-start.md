@@ -1,5 +1,10 @@
 ---
 title: Quick Start
+goodread:
+  prepare:
+    - cp data/invalid.csv invalid.csv
+  cleanup:
+    - rm invalid.csv
 ---
 
 Let's get started with Frictionless! We will learn how to install and use the framework. The simple example below will showcase the framework's basic functionality. For an introduction to the concepts behind the Frictionless Framework, please read the [Frictionless Introduction](introduction.md).
@@ -69,12 +74,12 @@ frictionless transform --help
 
 We will take a very messy data file:
 
-> Download [`invalid.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/invalid.csv) into the `data` folder to reproduce the examples.
+> Download [`invalid.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/invalid.csv) to reproduce the examples (right-click and "Save link as").
 
-```bash title="CLI"
-cat data/invalid.csv
+```bash goodread title="CLI"
+cat invalid.csv
 ```
-```csv title="data/invalid.csv"
+```csv title="invalid.csv"
 id,name,,name
 1,english
 1,english
@@ -86,20 +91,19 @@ First of all, let's use `describe` to infer the metadata directly from the tabul
 
 > This output is in [YAML](https://yaml.org/), it is a default Frictionless output format.
 
-```bash title="CLI"
-frictionless describe data/invalid.csv
+```bash goodread title="CLI"
+frictionless describe invalid.csv
 ```
 ```yaml
 # --------
-# metadata: data/invalid.csv
+# metadata: invalid.csv
 # --------
 
 encoding: utf-8
 format: csv
-scheme: file
 hashing: md5
 name: invalid
-path: data/invalid.csv
+path: invalid.csv
 profile: tabular-data-resource
 schema:
   fields:
@@ -111,51 +115,51 @@ schema:
       type: integer
     - name: name2
       type: integer
+scheme: file
 ```
 
 Now that we have inferred a table schema from the data file (e.g., expected format of the table, expected type of each value in a column, etc.), we can use `extract` to read the normalized tabular data from the source CSV file:
 
-```bash title="CLI"
-frictionless extract data/invalid.csv
+```bash goodread title="CLI"
+frictionless extract invalid.csv
 ```
 ```yaml
 # ----
-# data: data/invalid.csv
+# data: invalid.csv
 # ----
 
-====  =======  ======  =====
-id    name     field3  name2
-====  =======  ======  =====
-   1  english  None    None
-   1  english  None    None
-None  None     None    None
-   2  german        1      2
-====  =======  ======  =====
+==  =======  ======  =====
+id  name     field3  name2
+==  =======  ======  =====
+ 1  english
+ 1  english
+
+ 2  german        1      2
+==  =======  ======  =====
 ```
 
 Last but not least, let's get a validation report. This report will help us to identify and fix all the errors present in the tabular data, as comprehensive information is provided for every problem:
 
-
-```bash title="CLI"
-frictionless validate data/invalid.csv
+```bash goodread title="CLI"
+frictionless validate invalid.csv
 ```
 ```yaml
 # -------
-# invalid: data/invalid.csv
+# invalid: invalid.csv
 # -------
 
-====  =====  ===============  ====================================================================================
-row   field  code             message
-====  =====  ===============  ====================================================================================
-None      3  blank-label      Label in the header in field at position "3" is blank
-None      4  duplicate-label  Label "name" in the header at position "4" is duplicated to a label: at position "2"
-   2      3  missing-cell     Row at position "2" has a missing cell in field "field3" at position "3"
-   2      4  missing-cell     Row at position "2" has a missing cell in field "name2" at position "4"
-   3      3  missing-cell     Row at position "3" has a missing cell in field "field3" at position "3"
-   3      4  missing-cell     Row at position "3" has a missing cell in field "name2" at position "4"
-   4  None   blank-row        Row at position "4" is completely blank
-   5      5  extra-cell       Row at position "5" has an extra value in field at position "5"
-====  =====  ===============  ====================================================================================
+===  =====  ===============  ====================================================================================
+row  field  code             message
+===  =====  ===============  ====================================================================================
+         3  blank-label      Label in the header in field at position "3" is blank
+         4  duplicate-label  Label "name" in the header at position "4" is duplicated to a label: at position "2"
+  2      3  missing-cell     Row at position "2" has a missing cell in field "field3" at position "3"
+  2      4  missing-cell     Row at position "2" has a missing cell in field "name2" at position "4"
+  3      3  missing-cell     Row at position "3" has a missing cell in field "field3" at position "3"
+  3      4  missing-cell     Row at position "3" has a missing cell in field "name2" at position "4"
+  4         blank-row        Row at position "4" is completely blank
+  5      5  extra-cell       Row at position "5" has an extra value in field at position "5"
+===  =====  ===============  ====================================================================================
 ```
 
 Now that we have all this information:

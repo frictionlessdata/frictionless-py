@@ -3,12 +3,12 @@ name: general
 on:
   push:
     branches:
-      - master
+      - main
     tags:
       - v*.*.*
   pull_request:
     branches:
-      - master
+      - main
 
 jobs:
 
@@ -77,6 +77,7 @@ jobs:
         with:
           python-version: 3.8
       - name: Install dependencies
+        # https://stackoverflow.com/questions/9678408/cant-install-psycopg2-with-pip-in-virtualenv-on-mac-os-x-10-7
         run: LDFLAGS=`echo $(pg_config --ldflags)` make install
       - name: Test software
         run: make test

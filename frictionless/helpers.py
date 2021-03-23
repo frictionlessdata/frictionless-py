@@ -59,7 +59,11 @@ def remove_non_values(mapping):
 def rows_to_data(rows):
     if not rows:
         return []
-    return [list(rows[0].field_names)] + [row.to_list() for row in rows]
+    data = []
+    data.append(list(rows[0].field_names))
+    for row in rows:
+        data.append([cell if cell is not None else "" for cell in row.to_list()])
+    return data
 
 
 def deepfork(value):
@@ -123,7 +127,8 @@ def parse_basepath(descriptor):
     if isinstance(descriptor, str):
         basepath = os.path.dirname(descriptor)
         if basepath and not is_remote_path(basepath):
-            basepath = os.path.relpath(basepath, start=os.getcwd())
+            if not os.path.abspath(basepath):
+                basepath = os.path.relpath(basepath, start=os.getcwd())
     return basepath
 
 
@@ -182,7 +187,22 @@ def create_byte_stream(bytes):
 
 def is_remote_path(path):
     path = path[0] if path and isinstance(path, list) else path
-    return urlparse(path).scheme in config.REMOTE_SCHEMES
+    scheme = urlparse(path).scheme
+    if not scheme:
+        return False
+    if path.lower().startswith(f"{scheme}:\\"):
+        return False
+    return True
+
+
+def join_path(basepath, path):
+    if not is_remote_path(path):
+        if basepath:
+            separator = os.path.sep
+            if is_remote_path(basepath):
+                separator = "/"
+            path = separator.join([basepath, path])
+    return path
 
 
 # NOTE:

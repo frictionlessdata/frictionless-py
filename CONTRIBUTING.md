@@ -14,13 +14,39 @@ Some documentation is generated (for more information see `docs/build.py`). Here
 - `docs/references` (from the codebase's docstrings)
 - `docs/development` (from the repository root's docs)
 
-It's possible to run this documentation portal locally but it requires Node.js 12+ installed on your comupter:
+You can test this documentation using [Goodread](https://github.com/roll/goodread-py). Goodread executes Python and Bash codeblocks in Markdown and writes the results back. Here is a quick example:
+
+> Run `goodread` against an article only if you consider the article to be a trusted source.It will execute codeblocks marked by the `goodread` property.
 
 ```bash
-$ cd portal
-$ npm install
-$ npm start
+goodread docs/guides/basic-examples.md --diff # get the diff
+goodread docs/guides/basic-examples.md --print # print the doc
+goodread docs/guides/basic-examples.md # update inline
 ```
+
+It's possible to run this documentation portal locally but it requires Node.js 12+ installed on your computer:
+
+```bash
+cd portal
+npm install
+npm start
+```
+
+Alternatively, you can run the documentation portal with Docker. With
+both Docker and Docker Compose installed on the system, first build the
+docker container with:
+
+```
+docker build --rm -t frictionless-docs .
+```
+
+then, every time you want to run the documentation portal locally, run:
+
+```
+docker-compose up
+```
+
+then open http://localhost:3000 on a web browser to see the portal.
 
 To update a reference in `docs/references` and some other generated documents please update codebaes docstrings or root documents. For more information about generated documentation see `docs/build.py`.
 

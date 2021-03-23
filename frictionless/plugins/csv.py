@@ -243,9 +243,8 @@ class CsvParser(Parser):
         options = {}
         source = resource
         target = self.resource
-        for name in vars(target.dialect.to_python()):
-            value = getattr(target.dialect, name, None)
-            if value is not None:
+        for name, value in vars(target.dialect.to_python()).items():
+            if not name.startswith("_") and value is not None:
                 options[name] = value
         with tempfile.NamedTemporaryFile(
             "wt", delete=False, encoding=target.encoding, newline=""

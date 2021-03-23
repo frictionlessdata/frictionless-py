@@ -6,7 +6,9 @@ Frictionless Framework support custom data types. A data type is an integer, flo
 
 ## Type Example
 
-```python title="Python"
+```python goodread title="Python"
+from frictionless import Type
+
 class ObjectType(Type):
     code = "object"
     constraints = [
