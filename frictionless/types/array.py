@@ -35,12 +35,6 @@ class ArrayType(Type):
                 cell = list(cell)
             else:
                 return None
-        if self.field.array_item_field:
-            for index, item in enumerate(cell):
-                item, note = self.field.array_item_field.read_cell(item)
-                if note:
-                    return None
-                cell[index] = item
         return cell
 
     # Write

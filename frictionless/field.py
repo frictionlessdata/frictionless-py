@@ -198,11 +198,12 @@ class Field(Metadata):
         Returns:
             dict: field descriptor
         """
-        if self.array_item:
-            if "arrayItem" in self.array_item:
-                note = 'Property "arrayItem" cannot be nested'
-                raise FrictionlessException(errors.FieldError(note=note))
-            return Field(self.array_item)
+        if self.type == "array":
+            if self.array_item:
+                if "arrayItem" in self.array_item:
+                    note = 'Property "arrayItem" cannot be nested'
+                    raise FrictionlessException(errors.FieldError(note=note))
+                return Field(self.array_item)
 
     # Boolean
 
@@ -302,7 +303,23 @@ class Field(Metadata):
             for name, check in self.read_cell_checks.items():
                 if not check(cell):
                     notes = notes or OrderedDict()
-                    notes[name] = f'constraint "{name}" is "{self.constraints[name]}"'
+                    constraint = self.constraints[name]
+                    notes[name] = f'constraint "{name}" is "{constraint}"'
+        # NOTE: we might want to move this logic to types.array when possible
+        if not notes and self.array_item_field:
+            field = self.array_item_field
+            for index, item in enumerate(cell):
+                item = field.read_cell_convert(item)
+                if item is None:
+                    notes = notes or OrderedDict()
+                    notes["type"] = f'array item type is "{field.type}/{field.format}"'
+                    item = None
+                for name, check in field.read_cell_checks.items():
+                    if not check(item):
+                        notes = notes or OrderedDict()
+                        constraint = field.constraints[name]
+                        notes[name] = f'array item constraint "{name}" is "{constraint}"'
+                cell[index] = item
         return cell, notes
 
     def read_cell_convert(self, cell):
