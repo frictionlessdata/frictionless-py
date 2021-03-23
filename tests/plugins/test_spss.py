@@ -1,4 +1,3 @@
-import pytest
 import datetime
 from frictionless import Package, Resource
 
@@ -6,7 +5,6 @@ from frictionless import Package, Resource
 # Parser
 
 
-@pytest.mark.xfail
 def test_spss_parser_write(tmpdir):
     source = Resource("data/table.csv")
     target = source.write(str(tmpdir.join("table.sav")))
@@ -18,7 +16,6 @@ def test_spss_parser_write(tmpdir):
         ]
 
 
-@pytest.mark.xfail
 def test_spss_parser_write_types(tmpdir):
     source = Package("data/storage/types.json").get_resource("types")
     target = source.write(str(tmpdir.join("table.sav")))
@@ -69,7 +66,6 @@ def test_spss_parser_write_types(tmpdir):
         ]
 
 
-@pytest.mark.xfail
 def test_spss_storage_constraints(tmpdir):
     source = Package("data/storage/constraints.json").get_resource("constraints")
     target = source.write(str(tmpdir.join("table.sav")))
@@ -102,7 +98,6 @@ def test_spss_storage_constraints(tmpdir):
         ]
 
 
-@pytest.mark.xfail
 def test_spss_parser_write_timezone(tmpdir):
     source = Resource("data/timezone.csv")
     target = source.write(str(tmpdir.join("table.sav")))

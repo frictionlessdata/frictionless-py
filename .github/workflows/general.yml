@@ -79,9 +79,9 @@ jobs:
       - name: Install dependencies
         run: LDFLAGS=`echo $(pg_config --ldflags)` make install
       - name: Test software
-        # https://pythonhosted.org/savReaderWriter/#setup
+        # https://bitbucket.org/fomcl/savreaderwriter/issues/62/savwriter-macos-error-libicuuc481dylib
         run: >
-          DYLD_LIBRARY_PATH='DYLD_LIBRARY_PATH=/Library/Python/3.8/site-packages/savReaderWriter/spssio/macos'
+          DYLD_LIBRARY_PATH='/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/savReaderWriter/spssio/macos'
           LC_ALL='en_US.UTF-8'
           make test
 
