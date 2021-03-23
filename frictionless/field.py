@@ -305,6 +305,7 @@ class Field(Metadata):
                     notes = notes or OrderedDict()
                     constraint = self.constraints[name]
                     notes[name] = f'constraint "{name}" is "{constraint}"'
+        # NOTE: we might want to move this logic to types.array when possible
         if not notes and self.array_item_field:
             field = self.array_item_field
             for index, item in enumerate(cell):
