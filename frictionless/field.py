@@ -146,6 +146,7 @@ class Field(Metadata):
             dict: constraints
         """
         constraints = self.get("constraints", {})
+        constraints = constraints if isinstance(constraints, dict) else {}
         return self.metadata_attach("constraints", constraints)
 
     @Metadata.property
@@ -417,7 +418,7 @@ class Field(Metadata):
         for name in self.constraints.keys():
             if name not in self.__type.constraints + ["unique"]:
                 note = f'constraint "{name}" is not supported by type "{self.type}"'
-                yield errors.SchemaError(note=note)
+                yield errors.FieldError(note=note)
 
     # Metadata
 

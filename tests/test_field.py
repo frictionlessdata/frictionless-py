@@ -67,22 +67,22 @@ def test_field_standard_specs_properties(create_descriptor):
         type="string",
         format="format",
         missing_values="missing",
-        constraints=[],
+        constraints={},
         rdf_type="rdf",
     )
-    resource = (
+    field = (
         Field(**options)
         if not create_descriptor
         else Field(helpers.create_descriptor(**options))
     )
-    assert resource.name == "name"
-    assert resource.title == "title"
-    assert resource.description == "description"
-    assert resource.type == "string"
-    assert resource.format == "format"
-    assert resource.missing_values == "missing"
-    assert resource.constraints == []
-    assert resource.rdf_type == "rdf"
+    assert field.name == "name"
+    assert field.title == "title"
+    assert field.description == "description"
+    assert field.type == "string"
+    assert field.format == "format"
+    assert field.missing_values == "missing"
+    assert field.constraints == {}
+    assert field.rdf_type == "rdf"
 
 
 # Constraints
