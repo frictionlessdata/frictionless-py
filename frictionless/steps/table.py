@@ -26,7 +26,7 @@ class table_aggregate(Step):
     # Transform
 
     def transform_resource(self, resource):
-        view = resource.to_petl()
+        table = resource.to_petl()
         group_name = self.get("groupName")
         aggregation = self.get("aggregation")
         field = resource.schema.get_field(group_name)
@@ -34,7 +34,7 @@ class table_aggregate(Step):
         resource.schema.add_field(field)
         for name in aggregation.keys():
             resource.schema.add_field(Field(name=name))
-        resource.data = view.aggregate(group_name, aggregation)
+        resource.data = table.aggregate(group_name, aggregation)
 
     # Metadata
 
@@ -282,7 +282,7 @@ class table_melt(Step):
     # Transform
 
     def transform_resource(self, resource):
-        view = resource.to_petl()
+        table = resource.to_petl()
         variables = self.get("variables")
         field_name = self.get("fieldName")
         to_field_names = self.get("toFieldNames")
@@ -291,7 +291,7 @@ class table_melt(Step):
         resource.schema.add_field(field)
         for name in to_field_names:
             resource.schema.add_field(Field(name=name))
-        resource.data = view.melt(
+        resource.data = table.melt(
             key=field_name,
             variables=variables,
             variablefield=to_field_names[0],
@@ -415,10 +415,10 @@ class table_pivot(Step):
     # Transform
 
     def transform_resource(self, resource):
-        view = resource.to_petl()
+        table = resource.to_petl()
         options = self.get("options")
         resource.pop("schema", None)
-        resource.data = view.pivot(**options)
+        resource.data = table.pivot(**options)
         resource.infer()
 
     # Metadata
@@ -436,8 +436,8 @@ class table_print(Step):
     # Transform
 
     def transform_resource(self, resource):
-        view = resource.to_petl()
-        print(view.look(vrepr=str, style="simple"))
+        table = resource.to_petl()
+        print(table.look(vrepr=str, style="simple"))
 
     # Metadata
 
@@ -466,11 +466,11 @@ class table_recast(Step):
     # Transform
 
     def transform_resource(self, resource):
-        view = resource.to_petl()
+        table = resource.to_petl()
         field_name = self.get("fieldName")
         from_field_names = self.get("fromFieldNames")
         resource.pop("schema", None)
-        resource.data = view.recast(
+        resource.data = table.recast(
             key=field_name,
             variablefield=from_field_names[0],
             valuefield=from_field_names[1],
@@ -495,9 +495,9 @@ class table_transpose(Step):
     # Transform
 
     def transform_resource(self, resource):
-        view = resource.to_petl()
+        table = resource.to_petl()
         resource.pop("schema", None)
-        resource.data = view.transpose()
+        resource.data = table.transpose()
         resource.infer()
 
     # Metadata
