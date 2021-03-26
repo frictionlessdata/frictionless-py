@@ -371,10 +371,10 @@ def test_sql_storage_sqlite_package_url_argument(sqlite_url):
 
 
 def test_sql_storage_sqlite_integer_enum_issue_776(sqlite_url):
-    dialect = SqlDialect(table='table')
+    dialect = SqlDialect(table="table")
     source = Resource(path="data/table.csv")
     source.infer()
-    source.schema.get_field('id').constraints['enum'] = [1, 2]
+    source.schema.get_field("id").constraints["enum"] = [1, 2]
     target = source.write(sqlite_url, dialect=dialect)
     assert target.read_rows() == [
         {"id": 1, "name": "english"},

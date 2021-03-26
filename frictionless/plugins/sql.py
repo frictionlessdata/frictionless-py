@@ -405,7 +405,7 @@ class SqlStorage(Storage):
                         checks.append(check)
                 elif const == "enum":
                     # NOTE: https://github.com/frictionlessdata/frictionless-py/issues/778
-                    if field.type == 'string':
+                    if field.type == "string":
                         enum_name = "%s_%s_enum" % (sql_name, field.name)
                         column_type = sa.Enum(*value, name=enum_name)
             column_args = [field.name, column_type] + checks
