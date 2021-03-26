@@ -404,8 +404,10 @@ class SqlStorage(Storage):
                         check = Check("%s REGEXP '%s'" % (quoted_name, value))
                         checks.append(check)
                 elif const == "enum":
-                    enum_name = "%s_%s_enum" % (sql_name, field.name)
-                    column_type = sa.Enum(*value, name=enum_name)
+                    # NOTE: https://github.com/frictionlessdata/frictionless-py/issues/778
+                    if field.type == 'string':
+                        enum_name = "%s_%s_enum" % (sql_name, field.name)
+                        column_type = sa.Enum(*value, name=enum_name)
             column_args = [field.name, column_type] + checks
             column_kwargs = {"nullable": nullable, "unique": unique}
             if field.description:
