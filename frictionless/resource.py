@@ -1077,6 +1077,11 @@ class Resource(Metadata):
     # Import/Export
 
     def to_dict(self):
+        """Create a dict from the resource
+
+        Returns
+            dict: dict representation
+        """
         # Data can be not serializable (generators/functions)
         descriptor = super().to_dict()
         data = descriptor.pop("data", None)
@@ -1085,7 +1090,11 @@ class Resource(Metadata):
         return descriptor
 
     def to_copy(self, **options):
-        """Create a copy of the resource"""
+        """Create a copy from the resource
+
+        Returns
+            Resource: resource copy
+        """
         descriptor = self.to_dict()
         return Resource(
             descriptor,
@@ -1097,7 +1106,28 @@ class Resource(Metadata):
             **options,
         )
 
-    def to_snapshot(self):
+    def to_view(self, type="look", **options):
+        """Create a view from the resource
+
+        See PETL's docs for more information:
+        https://petl.readthedocs.io/en/stable/util.html#visualising-tables
+
+        Parameters:
+            type (look|lookall|see|display|displayall): view's type
+            **options (dict): options to be passed to PETL
+
+        Returns
+            str: resource's view
+        """
+        assert type in ["look", "lookall", "see", "display", "displayall"]
+        return getattr(self.to_petl(normalize=True), type)(**options)
+
+    def to_snap(self):
+        """Create a snapshot from the resource
+
+        Returns
+            list: resource's data
+        """
         snap = []
         with helpers.ensure_open(self):
             snap.append(self.header.to_list())
@@ -1120,14 +1150,18 @@ class Resource(Metadata):
         """Create a resource from PETL view"""
         return Resource(data=view, **options)
 
-    def to_petl(self):
-        """Export resource as a PETL view"""
+    def to_petl(self, normalize=False):
+        """Export resource as a PETL table"""
         resource = self.to_copy()
 
         # Define view
         class ResourceView(petl.Table):
             def __iter__(self):
                 with resource:
+                    if normalize:
+                        yield resource.schema.field_names
+                        yield from (row.to_list() for row in resource.row_stream)
+                        return
                     if not resource.header.missing:
                         yield resource.header.labels
                     yield from (row.cells for row in resource.row_stream)
