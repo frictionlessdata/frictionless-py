@@ -7,6 +7,9 @@ goodread:
     - rm invalid.csv
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 Let's get started with Frictionless! We will learn how to install and use the framework. The simple example below will showcase the framework's basic functionality. For an introduction to the concepts behind the Frictionless Framework, please read the [Frictionless Introduction](introduction.md).
 
 ## Installation
@@ -70,13 +73,16 @@ frictionless transform --help
 
 ## Example
 
-> For more examples, use the [Basic Examples](basic-examples.md).
+> Download [`invalid.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/invalid.csv) to reproduce the examples (right-click and "Save link as"). For more examples, please take a look at the [Basic Examples](basic-examples.md) article.
 
 We will take a very messy data file:
 
-> Download [`invalid.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/invalid.csv) to reproduce the examples (right-click and "Save link as").
+<Tabs
+defaultValue="cli"
+values={[{ label: 'CLI', value: 'cli'}, { label: 'Python', value: 'python'}]}>
+<TabItem value="cli">
 
-```bash goodread title="CLI"
+```bash goodread
 cat invalid.csv
 ```
 ```csv title="invalid.csv"
@@ -87,11 +93,34 @@ id,name,,name
 2,german,1,2,3
 ```
 
+</TabItem>
+<TabItem value="python">
+
+
+```python goodread
+with open('invalid.csv') as file:
+    print(file.read())
+```
+```csv title="invalid.csv"
+id,name,,name
+1,english
+1,english
+
+2,german,1,2,3
+```
+
+</TabItem>
+</Tabs>
+
+
 First of all, let's use `describe` to infer the metadata directly from the tabular data. We can then edit and save it to provide others with useful information about the data:
 
-> This output is in [YAML](https://yaml.org/), it is a default Frictionless output format.
+<Tabs
+defaultValue="cli"
+values={[{ label: 'CLI', value: 'cli'}, { label: 'Python', value: 'python'}]}>
+<TabItem value="cli">
 
-```bash goodread title="CLI"
+```bash goodread
 frictionless describe invalid.csv
 ```
 ```yaml
@@ -118,9 +147,45 @@ schema:
 scheme: file
 ```
 
+> This output is in [YAML](https://yaml.org/), it is a default Frictionless output format.
+
+</TabItem>
+<TabItem value="python">
+
+
+```python goodread
+from pprint import pprint
+from frictionless import describe
+
+resource = describe('data/invalid.csv')
+pprint(resource)
+```
+```
+{'encoding': 'utf-8',
+ 'format': 'csv',
+ 'hashing': 'md5',
+ 'name': 'invalid',
+ 'path': 'data/invalid.csv',
+ 'profile': 'tabular-data-resource',
+ 'schema': {'fields': [{'name': 'id', 'type': 'integer'},
+                       {'name': 'name', 'type': 'string'},
+                       {'name': 'field3', 'type': 'integer'},
+                       {'name': 'name2', 'type': 'integer'}]},
+ 'scheme': 'file'}
+```
+
+</TabItem>
+</Tabs>
+
+
 Now that we have inferred a table schema from the data file (e.g., expected format of the table, expected type of each value in a column, etc.), we can use `extract` to read the normalized tabular data from the source CSV file:
 
-```bash goodread title="CLI"
+<Tabs
+defaultValue="cli"
+values={[{ label: 'CLI', value: 'cli'}, { label: 'Python', value: 'python'}]}>
+<TabItem value="cli">
+
+```bash goodread
 frictionless extract invalid.csv
 ```
 ```yaml
@@ -138,7 +203,34 @@ id  name     field3  name2
 ==  =======  ======  =====
 ```
 
+</TabItem>
+<TabItem value="python">
+
+
+```python goodread
+from pprint import pprint
+from frictionless import extract
+
+rows = extract('invalid.csv')
+pprint(rows)
+```
+```
+[{'id': 1, 'name': 'english', 'field3': None, 'name2': None},
+ {'id': 1, 'name': 'english', 'field3': None, 'name2': None},
+ {'id': None, 'name': None, 'field3': None, 'name2': None},
+ {'id': 2, 'name': 'german', 'field3': 1, 'name2': 2}]
+```
+
+</TabItem>
+</Tabs>
+
+
 Last but not least, let's get a validation report. This report will help us to identify and fix all the errors present in the tabular data, as comprehensive information is provided for every problem:
+
+<Tabs
+defaultValue="cli"
+values={[{ label: 'CLI', value: 'cli'}, { label: 'Python', value: 'python'}]}>
+<TabItem value="cli">
 
 ```bash goodread title="CLI"
 frictionless validate invalid.csv
@@ -161,6 +253,32 @@ row  field  code             message
   5      5  extra-cell       Row at position "5" has an extra value in field at position "5"
 ===  =====  ===============  ====================================================================================
 ```
+
+</TabItem>
+<TabItem value="python">
+
+
+```python goodread
+from pprint import pprint
+from frictionless import validate
+
+report = validate('invalid.csv')
+pprint(report.flatten(["rowPosition", "fieldPosition", "code"]))
+```
+```
+[[None, 3, 'blank-label'],
+ [None, 4, 'duplicate-label'],
+ [2, 3, 'missing-cell'],
+ [2, 4, 'missing-cell'],
+ [3, 3, 'missing-cell'],
+ [3, 4, 'missing-cell'],
+ [4, None, 'blank-row'],
+ [5, 5, 'extra-cell']]
+```
+
+</TabItem>
+</Tabs>
+
 
 Now that we have all this information:
 - we can clean up the table to ensure the data quality
