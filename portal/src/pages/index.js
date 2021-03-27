@@ -16,10 +16,14 @@ import styles from "./styles.module.css";
 
 function Home() {
   const context = useDocusaurusContext();
-  const { siteConfig: { customFields = {} } = {} } = context;
+  const { siteConfig: { customFields = {}, tagline } = {} } = context;
 
   return (
-    <Layout permalink="/" description={customFields.description}>
+    <Layout
+      title={tagline}
+      permalink="/"
+      description={customFields.description}
+    >
       <div className={styles.hero}>
         <div className={styles.heroInner}>
           <h1 className={styles.heroProjectTagline}>
