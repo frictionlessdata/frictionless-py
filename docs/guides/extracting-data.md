@@ -7,6 +7,8 @@ goodread:
   cleanup:
     - rm country-3.csv
     - rm capital-3.csv
+    - rm country.package.json
+    - rm capital.resource.yaml
 ---
 
 > This guide assumes basic familiarity with the Frictionless Framework. To learn more, please read the [Introduction](https://framework.frictionlessdata.io/docs/guides/introduction) and [Quick Start](https://framework.frictionlessdata.io/docs/guides/quick-start).
@@ -378,7 +380,7 @@ pprint(package.get_resource('capital-3').read_rows())
  {'id': 5, 'name': 'Rome'}]
 ```
 
-The package by itself doesn't provide any read functions directly because that is a role of its resources. So everything written above for the Resource class can be used within a package.
+The package by itself doesn't provide any read functions directly because it's just a contrainer. You can select a pacakge's resource and use the Resource API from above for data reading.
 
 ## Header Class
 
@@ -408,7 +410,33 @@ Valid: True
 As List: ['id', 'name']
 ```
 
-The example above shows a case when a header is valid. For a header that contains errors in its tabular structure, this information can be very useful, revealing discrepancies, duplicates or missing cell information. Please read the [API Reference](../references/api-reference#header) for more details.
+The example above shows a case when a header is valid. For a header that contains errors in its tabular structure, this information can be very useful, revealing discrepancies, duplicates or missing cell information:
+
+```python goodread title="Python"
+from pprint import pprint
+from frictionless import Resource
+
+with Resource([['name', 'name'], ['value', 'value']]) as resource:
+    pprint(resource.header.errors)
+```
+```
+[{'code': 'duplicate-label',
+  'description': 'Two columns in the header row have the same value. Column '
+                 'names should be unique.',
+  'fieldName': 'name2',
+  'fieldNumber': 2,
+  'fieldPosition': 2,
+  'label': 'name',
+  'labels': ['name', 'name'],
+  'message': 'Label "name" in the header at position "2" is duplicated to a '
+             'label: at position "1"',
+  'name': 'Duplicate Label',
+  'note': 'at position "1"',
+  'rowPositions': [1],
+  'tags': ['#table', '#header', '#label']}]
+```
+
+Please read the [API Reference](../references/api-reference#header) for more details.
 
 ## Row Class
 
@@ -453,4 +481,32 @@ As Dict: {'id': None, 'name': 'London'}
 As List: [None, 'London']
 ```
 
-As we can see, this output provides a lot of information which is especially useful when a row is not valid. Our row is valid but we demonstrated how it can preserve data about missing values. It also preserves data about all cells that contain errors. Please read the [API Reference](../references/api-reference#row) for more details.
+As we can see, this output provides a lot of information which is especially useful when a row is not valid. Our row is valid but we demonstrated how it can preserve data about missing values. It also preserves data about all cells that contain errors:
+
+```python goodread title="Python"
+from pprint import pprint
+from frictionless import Resource
+
+with Resource([['name'], ['value', 'value']]) as resource:
+    for row in resource.row_stream:
+        pprint(row.errors)
+```
+```
+[{'cell': 'value',
+  'cells': ['value', 'value'],
+  'code': 'extra-cell',
+  'description': 'This row has more values compared to the header row (the '
+                 'first row in the data source). A key concept is that all the '
+                 'rows in tabular data must have the same number of columns.',
+  'fieldName': '',
+  'fieldNumber': 1,
+  'fieldPosition': 2,
+  'message': 'Row at position "2" has an extra value in field at position "2"',
+  'name': 'Extra Cell',
+  'note': '',
+  'rowNumber': 1,
+  'rowPosition': 2,
+  'tags': ['#table', '#row', '#cell']}]
+```
+
+Please read the [API Reference](../references/api-reference#row) for more details.
