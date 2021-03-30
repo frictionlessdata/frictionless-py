@@ -11,13 +11,39 @@ goodread:
 
 Transforming data in Frictionless means modifying data and metadata from state A to state B. For example, it could be transforming a messy Excel file to a cleaned CSV file, or transforming a folder of data files to a data package we can publish easier. To read more about the concepts behind Frictionless Transform, please check out the [Transform Principles](#transform-principles) sections belows.
 
+Comparing to similiar Python's software like Pandas, Frictionless provides better control over metadata, modular API, and fully supports Frictionless Specifications. Also, it's a streaming framework with an ability to work with large data. As a downside of Frictionless architecture, it might be slower comparing to competitors, especially to projects like Pandas.
+
+## Transform Principles
+
+Frictionless Transform is based on a few core principles which are shared with other parts of the framework:
+
+### Conceptual Simplicity
+
+Frictionless Transform can be thought of as a list of functions that accept a source resource/package object and return a target resource/package object. Every function updates the input's metadata and data - and nothing more. We tried to make this straightforward and conceptually simple, because we want our users to be able to understand the tools and master them.
+
+### Metadata Matters
+
+There are plenty of great ETL-frameworks written in Python and other languages. As we mentioned earlier, we use one of them (PETL) under the hood. The core difference between Frictionless and others is that we treat metadata as a first-class citizen. This means that you don't lose type and other important information during the pipeline evaluation.
+
+### Data Streaming
+
+Whenever possible, Frictionless streams the data instead of reading it into memory. For example, for sorting big tables we use a memory usage threshold and when it is met we use the file system to unload the data. The ability to stream data gives users power to work with files of any size, even very large files.
+
+### Lazy Evaluation
+
+With Frictionless all data manipulation happens on-demand. For example, if you reshape one table in a data package containing 10 big csv files, Frictionless will not even read the 9 other tables. Frictionless tries to be as explicit as possible regarding actions taken. For example, it will not use CPU resources to cast data unless a user adds a `normalize` step. So it's possible to transform a rather big file without even casting types, for example, if you only need to reshape it.
+
+### Software Reuse
+
+For the core transform functions, Frictionless uses the amazing [PETL](https://petl.readthedocs.io/en/stable/) project under the hood. This library provides lazy-loading functionality in running data pipelines. On top of PETL, Frictionless adds metadata management and a bridge between Frictionless concepts like Package/Resource and PETL's processors.
+
+## Transform Functions
+
 Frictionless supports a few different kinds of data and metadata transformations:
 - resource and package transformations
 - transformations based on a declarative pipeline
 
 The main difference between these is that resource and package transforms are imperative while pipelines can be created beforehand or shared as a JSON file. We'll talk more about pipelines in the [Transforming Pipeline](#transforming-pipeline) section below. First, we will introduce the transform functions, then go into detail about how to transform a resource and a package. As a reminder, in the Frictionless ecosystem, a resource is a single file, such as a data file, and a package is a set of files, such as a data file and a schema. This concept is described in more detail in the [Introduction](https://framework.frictionlessdata.io/docs/guides/introduction).
-
-## Transform Functions
 
 > Download [`transform.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/transform.csv) to reproduce the examples (right-click and "Save link as").
 
@@ -172,34 +198,6 @@ pprint(status.task.target.read_rows())
 ```
 
 It returns the same result as in `Transform resource`.
-
-## Transform Principles
-
-Frictionless Transform is based on a few core principles which are shared with other parts of the framework:
-
-### Conceptual Simplicity
-
-Frictionless Transform can be thought of as a list of functions that accept a source resource/package object and return a target resource/package object. Every function updates the input's metadata and data - and nothing more. We tried to make this straightforward and conceptually simple, because we want our users to be able to understand the tools and master them.
-
-### Metadata Matters
-
-There are plenty of great ETL-frameworks written in Python and other languages. As we mentioned earlier, we use one of them (PETL) under the hood. The core difference between Frictionless and others is that we treat metadata as a first-class citizen. This means that you don't lose type and other important information during the pipeline evaluation.
-
-### Data Streaming
-
-Whenever possible, Frictionless streams the data instead of reading it into memory. For example, for sorting big tables we use a memory usage threshold and when it is met we use the file system to unload the data. The ability to stream data gives users power to work with files of any size, even very large files.
-
-### Lazy Evaluation
-
-Unlike some systems like `Data Package Pipelines`, the core Frictionless Transform doesn't have a back-pressured flow, since all data manipulation happens on-demand. For example, if you reshape one table in a data package containing 10 big csv files, Frictionless will not even read the 9 other tables. For instance, when you call `target = transform(source)` it does almost nothing until a data reading call like `target.read_rows()` is made.
-
-### Lean Processing
-
-Frictionless tries to be as explicit as possible regarding actions taken. For example, it will not use CPU resources to cast data unless a user adds a `normalize` step, `validate` step, or similar steps. So it's possible to transform a rather big file without even casting types, for example, if you only need to reshape it.
-
-### Software Reuse
-
-For the core transform functions, Frictionless uses the amazing [PETL](https://petl.readthedocs.io/en/stable/) project under the hood. This library provides lazy-loading functionality in running data pipelines. On top of PETL, Frictionless adds metadata management and a bridge between Frictionless concepts like Package/Resource and PETL's processors.
 
 ## Available Steps
 
