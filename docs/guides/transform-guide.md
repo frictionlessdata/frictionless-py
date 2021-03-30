@@ -81,7 +81,7 @@ target = transform(
     source,
     steps=[
         steps.table_normalize(),
-        steps.table_melt(field_name="name"),
+        steps.field_add(name="cars", type="integer", formula='population*2'),
     ],
 )
 
@@ -90,20 +90,18 @@ pprint(target.schema)
 pprint(target.read_rows())
 ```
 ```
-{'fields': [{'name': 'name', 'type': 'string'},
-            {'name': 'variable'},
-            {'name': 'value'}]}
-[{'name': 'germany', 'variable': 'id', 'value': 1},
- {'name': 'germany', 'variable': 'population', 'value': 83},
- {'name': 'france', 'variable': 'id', 'value': 2},
- {'name': 'france', 'variable': 'population', 'value': 66},
- {'name': 'spain', 'variable': 'id', 'value': 3},
- {'name': 'spain', 'variable': 'population', 'value': 47}]
+{'fields': [{'name': 'id', 'type': 'integer'},
+            {'name': 'name', 'type': 'string'},
+            {'name': 'population', 'type': 'integer'},
+            {'name': 'cars', 'type': 'integer'}]}
+[{'id': 1, 'name': 'germany', 'population': 83, 'cars': 166},
+ {'id': 2, 'name': 'france', 'population': 66, 'cars': 132},
+ {'id': 3, 'name': 'spain', 'population': 47, 'cars': 94}]
 ```
 
 Let's break down the transforming steps we applied:
 1. `steps.table_normalize` - cast data types and shape the table according to the schema, inferred or provided
-1. `steps.table_melt` - melt the table as it is done in R-Language or in other scientific libraries like `pandas`
+1. `steps.field_add` - adds a field to data and metadata based on the information provided by the user
 
 There are many more available steps that we will cover below.
 
@@ -161,7 +159,7 @@ A pipeline is a metadata object having one of these types:
 - package
 - others (depending on custom plugins you use)
 
-For resource and package types it's mostly the same functionality as we have seen above, but written declaratively. So let's run the same resource transformation as we did in the `Transforming a Resource` section:
+For resource and package types it's mostly the same functionality as we have seen above, but written declaratively. So let's run the same resource transformation as we did in the [Transforming a Resource](#transforming-a-resource) section:
 
 ```python goodread title="Python"
 from pprint import pprint
@@ -175,7 +173,12 @@ pipeline = Pipeline(
                 "source": {"path": "data/transform.csv"},
                 "steps": [
                     {"code": "table-normalize"},
-                    {"code": "table-melt", "fieldName": "name"},
+                    {
+                        "code": "field-add",
+                        "name": "cars",
+                        "type": "integer",
+                        "formula": "population*2",
+                    },
                 ],
             }
         ]
@@ -186,18 +189,16 @@ pprint(status.task.target.schema)
 pprint(status.task.target.read_rows())
 ```
 ```
-{'fields': [{'name': 'name', 'type': 'string'},
-            {'name': 'variable'},
-            {'name': 'value'}]}
-[{'name': 'germany', 'variable': 'id', 'value': 1},
- {'name': 'germany', 'variable': 'population', 'value': 83},
- {'name': 'france', 'variable': 'id', 'value': 2},
- {'name': 'france', 'variable': 'population', 'value': 66},
- {'name': 'spain', 'variable': 'id', 'value': 3},
- {'name': 'spain', 'variable': 'population', 'value': 47}]
+{'fields': [{'name': 'id', 'type': 'integer'},
+            {'name': 'name', 'type': 'string'},
+            {'name': 'population', 'type': 'integer'},
+            {'name': 'cars'}]}
+[{'id': 1, 'name': 'germany', 'population': 83, 'cars': 166},
+ {'id': 2, 'name': 'france', 'population': 66, 'cars': 132},
+ {'id': 3, 'name': 'spain', 'population': 47, 'cars': 94}]
 ```
 
-It returns the same result as in `Transform resource`.
+It returns the same result as in the [Transforming a Resource](#transforming-a-resource). So what's the reason to use declarative pipelines as it works the same as the Python code? The main difference is that pipelines saved as JSON files can be shared among different users and used with CLI and API. For example, if you implement your own UI based on Frictionless Framework you can serialize the whole pipeline as a JSON file and send it to the server. The same for CLI, if you've been shared with a `pipeline.json` file you can run `frictionless transform pipeline.json` to get the same results as the colleague written it.
 
 ## Available Steps
 
@@ -213,7 +214,7 @@ See [Transform Steps](transform-steps.md) for a list of all available steps. It 
 
 ## Custom Steps
 
-Here is an example of a custom step written as a Python function:
+Here is an example of a custom step written as a Python function. This step basically just does the same as builtin `steps.field_remove` i.e. removing a field from a data table:
 
 ```python goodread title="Python"
 from pprint import pprint
@@ -246,7 +247,7 @@ pprint(target.read_rows())
  {'name': 'spain', 'population': 47}]
 ```
 
-Learn more about custom steps in the [Step Guide](extension/step-guide.md).
+As you can see you can implement any custom steps within a Pyhton script. To make it work within a declarative pipeline you need to implement a plugin. Learn more about [Custom Steps](extension/step-guide.md) and [Plugins](extension/plugin-guide.md).
 
 ## Transform Utils
 
