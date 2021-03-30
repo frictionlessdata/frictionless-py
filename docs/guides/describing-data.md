@@ -201,8 +201,8 @@ To continue learning about table schemas please read:
 ## Describing a Resource
 
 The Data Resource format describes a data resource such as an individual file or data table.
-The essence of a Data Resource is a locator for the data it describes.
-A range of other properties can be declared to provide a richer set of metadata.
+The essence of a Data Resource is a path to the data file it describes.
+A range of other properties can be declared to provide a richer set of metadata including Table Schema for tabular data.
 
 For this section, we will use a file that is slightly more complex to handle. In this example, cells are separated by the ";" character and there is a comment on the top:
 
