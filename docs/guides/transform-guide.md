@@ -120,12 +120,12 @@ source = Package(resources=[Resource(name='main', path="transform.csv")])
 target = transform(
     source,
     steps=[
-        steps.resource_add(name="extra", path="data/transform.csv"),
+        steps.resource_add(name="extra", data=[['id', 'cars'], [1, 166], [2, 132], [3, 94]]),
         steps.resource_transform(
             name="main",
             steps=[
-                steps.table_merge(resource="extra"),
-                steps.row_sort(field_names=["id"]),
+                steps.table_normalize(),
+                steps.table_join(resource="extra", field_name="id"),
             ],
         ),
         steps.resource_remove(name="extra"),
@@ -141,16 +141,14 @@ pprint(target.get_resource("main").read_rows())
 ['main']
 {'fields': [{'name': 'id', 'type': 'integer'},
             {'name': 'name', 'type': 'string'},
-            {'name': 'population', 'type': 'integer'}]}
-[{'id': 1, 'name': 'germany', 'population': 83},
- {'id': 1, 'name': 'germany', 'population': 83},
- {'id': 2, 'name': 'france', 'population': 66},
- {'id': 2, 'name': 'france', 'population': 66},
- {'id': 3, 'name': 'spain', 'population': 47},
- {'id': 3, 'name': 'spain', 'population': 47}]
+            {'name': 'population', 'type': 'integer'},
+            {'name': 'cars', 'type': 'integer'}]}
+[{'id': 1, 'name': 'germany', 'population': 83, 'cars': 166},
+ {'id': 2, 'name': 'france', 'population': 66, 'cars': 132},
+ {'id': 3, 'name': 'spain', 'population': 47, 'cars': 94}]
 ```
 
-The exact transformation we have applied actually doesn't make much sense as we just duplicated every row of the `main` resource. But hopefully this example provids a basic understanding of how simple, and at the same time flexible, package transformations can be.
+We have basically done the same as in [Transforming a Resource](#transforming-a-resource) section. This example is quite artificial and created only to show how to join two resources, but hopefully it provides a basic understanding of how simple, and at the same time flexible, package transformations can be.
 
 ## Transforming Pipeline
 
