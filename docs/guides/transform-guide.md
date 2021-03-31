@@ -9,9 +9,11 @@ goodread:
 
 > This guide assumes basic familiarity with the Frictionless Framework. To learn more, please read the [Introduction](https://framework.frictionlessdata.io/docs/guides/introduction) and [Quick Start](https://framework.frictionlessdata.io/docs/guides/quick-start).
 
-Transforming data in Frictionless means modifying data and metadata from state A to state B. For example, it could be transforming a messy Excel file to a cleaned CSV file, or transforming a folder of data files to a data package we can publish easier. To read more about the concepts behind Frictionless Transform, please check out the [Transform Principles](#transform-principles) sections belows.
+Transforming data in Frictionless means modifying data and metadata from state A to state B. For example, it could be transforming a messy Excel file to a cleaned CSV file, or transforming a folder of data files to a data package we can publish more easily. To read more about the concepts behind Frictionless Transform, please check out the [Transform Principles](#transform-principles) sections belows.
 
-Comparing to similiar Python's software like Pandas, Frictionless provides better control over metadata, modular API, and fully supports Frictionless Specifications. Also, it's a streaming framework with an ability to work with large data. As a downside of Frictionless architecture, it might be slower comparing to competitors, especially to projects like Pandas.
+In comparison to similiar Python software like Pandas, Frictionless provides better control over metadata, has a modular API, and fully supports Frictionless Specifications. Also, it is a streaming framework with an ability to work with large data. As a downside of the Frictionless architecture, it might be slower compared to other Python packages, especially to projects like Pandas.
+
+Keep reading below to learn about the principles underlying Frictionless Transform, or [skip ahead](/docs/guides/transform-guide#transform-functions) to see how to use the Transform code.
 
 ## Transform Principles
 
@@ -23,7 +25,7 @@ Frictionless Transform can be thought of as a list of functions that accept a so
 
 ### Metadata Matters
 
-There are plenty of great ETL-frameworks written in Python and other languages. As we mentioned earlier, we use one of them (PETL) under the hood. The core difference between Frictionless and others is that we treat metadata as a first-class citizen. This means that you don't lose type and other important information during the pipeline evaluation.
+There are plenty of great ETL-frameworks written in Python and other languages. We use one of them (PETL) under the hood (described in more detail later). The core difference between Frictionless and others is that we treat metadata as a first-class citizen. This means that you don't lose type and other important information during the pipeline evaluation.
 
 ### Data Streaming
 
@@ -45,7 +47,7 @@ Frictionless supports a few different kinds of data and metadata transformations
 
 The main difference between these is that resource and package transforms are imperative while pipelines can be created beforehand or shared as a JSON file. We'll talk more about pipelines in the [Transforming Pipeline](#transforming-pipeline) section below. First, we will introduce the transform functions, then go into detail about how to transform a resource and a package. As a reminder, in the Frictionless ecosystem, a resource is a single file, such as a data file, and a package is a set of files, such as a data file and a schema. This concept is described in more detail in the [Introduction](https://framework.frictionlessdata.io/docs/guides/introduction).
 
-> Download [`transform.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/transform.csv) to reproduce the examples (right-click and "Save link as").
+> Download [`transform.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/transform.csv) to reproduce the examples (right-click and "Save link as". You might need to change the file extension from .txt to .csv).
 
 ```bash goodread title="CLI"
 cat transform.csv
@@ -107,7 +109,7 @@ There are many more available steps that we will cover below.
 
 ## Transforming a Package
 
-A package is a set of resources. Transforming a package means adding or removing resources and/or transforming those resources themselves:
+A package is a set of resources. Transforming a package means adding or removing resources and/or transforming those resources themselves. This example shows how transforming a package is similar to transforming a single resource:
 
 ```python goodread title="Python"
 from pprint import pprint
@@ -148,7 +150,7 @@ pprint(target.get_resource("main").read_rows())
  {'id': 3, 'name': 'spain', 'population': 47, 'cars': 94}]
 ```
 
-We have basically done the same as in [Transforming a Resource](#transforming-a-resource) section. This example is quite artificial and created only to show how to join two resources, but hopefully it provides a basic understanding of how simple, and at the same time flexible, package transformations can be.
+We have basically done the same as in [Transforming a Resource](#transforming-a-resource) section. This example is quite artificial and created only to show how to join two resources, but hopefully it provides a basic understanding of how flexible package transformations can be.
 
 ## Transforming Pipeline
 
@@ -196,11 +198,11 @@ pprint(status.task.target.read_rows())
  {'id': 3, 'name': 'spain', 'population': 47, 'cars': 94}]
 ```
 
-It returns the same result as in the [Transforming a Resource](#transforming-a-resource). So what's the reason to use declarative pipelines as it works the same as the Python code? The main difference is that pipelines saved as JSON files can be shared among different users and used with CLI and API. For example, if you implement your own UI based on Frictionless Framework you can serialize the whole pipeline as a JSON file and send it to the server. The same for CLI, if you've been shared with a `pipeline.json` file you can run `frictionless transform pipeline.json` to get the same results as the colleague written it.
+This returns the same result as in the [Transforming a Resource](#transforming-a-resource). So what's the reason to use declarative pipelines if it works the same as the Python code? The main difference is that pipelines can be saved as JSON files which can be shared among different users and used with CLI and API. For example, if you implement your own UI based on Frictionless Framework you can serialize the whole pipeline as a JSON file and send it to the server. This is the same for CLI - if your colleague has  given you a `pipeline.json` file, you can run `frictionless transform pipeline.json` in the CLI to get the same results as they got.
 
 ## Available Steps
 
-Frictionless includes more than 40+ built-in transform steps. They are grouped by the object so you can find them easily using code auto completion. For example, start typing `steps.table...` and you will see all the available steps for that group. The available groups are:
+Frictionless includes more than 40+ built-in transform steps. They are grouped by the object so you can find them easily using code auto completion in a code editor. For example, start typing `steps.table...` and you will see all the available steps for that group. The available groups are:
 
 - resource
 - table
@@ -212,7 +214,7 @@ See [Transform Steps](transform-steps.md) for a list of all available steps. It 
 
 ## Custom Steps
 
-Here is an example of a custom step written as a Python function. This step basically just does the same as builtin `steps.field_remove` i.e. removing a field from a data table:
+Here is an example of a custom step written as a Python function. This example step removes a field from a data table (note: Frictionless already has a built-in function that does this same thing: `steps.field_remove`).
 
 ```python goodread title="Python"
 from pprint import pprint
