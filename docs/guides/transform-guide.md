@@ -154,10 +154,7 @@ We have basically done the same as in [Transforming a Resource](#transforming-a-
 
 ## Transforming Pipeline
 
-A pipeline is a metadata object having one of these types:
-- resource
-- package
-- others (depending on custom plugins you use)
+A pipeline is a declarative way to write out metadata transform steps. With a pipeline, you can transform a resource, package, or write custom plugins too.
 
 For resource and package types it's mostly the same functionality as we have seen above, but written declaratively. So let's run the same resource transformation as we did in the [Transforming a Resource](#transforming-a-resource) section:
 
