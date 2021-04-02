@@ -8,7 +8,7 @@ goodread:
 
 Frictionless supports parsing JSON tables (JSON and JSONL/NDJSON).
 
-```bash
+```bash title="CLI"
 pip install frictionless[json]
 ```
 

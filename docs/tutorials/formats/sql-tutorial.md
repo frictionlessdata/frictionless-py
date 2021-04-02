@@ -8,25 +8,24 @@ sidebar_label: SQL
 Frictionless supports reading and writing SQL databases.
 
 ```bash title="CLI"
-! pip install frictionless[sql]
+pip install frictionless[sql]
 ```
 
-
-## Reading from SQL
+## Reading Data
 
 You can read SQL database:
 
-```python
+```python title="Python"
+from pprint import pprint
 from frictionless import Package
 
-package = Package.from_pandas(url='postgresql://mydatabase')
-print(package)
+package = Package.from_sql('postgresql://database')
+pprint(package)
 for resource in package.resources:
-  print(resource.read_rows())
+  pprint(resource.read_rows())
 ```
 
-
-## Wriring to SQL
+## Writing Data
 
 > **[NOTE]** Timezone information is ignored for `datetime` and `time` types.
 
@@ -36,11 +35,10 @@ You can write SQL databases:
 from frictionless import Package
 
 package = Package('path/to/datapackage.json')
-package.to_sql('postgresql://mydatabase')
+package.to_sql('postgresql://database')
 ```
 
-
-## Configuring SQL
+## Configuring Data
 
 There is a dialect to configure how Frictionless read and write files in this format. For example:
 
@@ -51,7 +49,6 @@ from frictionless.plugins.sql import SqlDialect
 dialect = SqlDialect(table='table', order_by='field')
 resource = Resource('postgresql://database', dialect=dialect)
 ```
-
 
 References:
 - [SQL Dialect](../../references/formats-reference.md#sql)
