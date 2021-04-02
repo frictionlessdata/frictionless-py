@@ -7,21 +7,22 @@ sidebar_label: Multipart
 
 You can read and write files split into chunks with Frictionless.
 
-## Reading Multipart Data
+## Reading Data
 
-You can read using `Package/Resource` or `Table` API, for example:
+You can read using `Package/Resource`, for example:
 
-```python title="Python"
+```python goodread title="Python"
+from pprint import pprint
 from frictionless import Resource
 
 resource = Resource(path=['data/chunk1.csv', 'data/chunk2.csv'])
-print(resource.read_rows())
+pprint(resource.read_rows())
 ```
 ```
-[Row([('id', 1), ('name', 'english')]), Row([('id', 2), ('name', '中国人')])]
+[{'id': 1, 'name': 'english'}, {'id': 2, 'name': '中国人'}]
 ```
 
-## Writing Multipart Data
+## Writing Data
 
 The actual for writing:
 
@@ -32,9 +33,9 @@ resource = Resource(path='data/table.json')
 resource.write('tmp/table{number}.json', scheme="multipart", control={"chunkSize": 1000000})
 ```
 
-## Configuring Local Data
+## Using Control
 
-There is a control to configure how Frictionless read files using this scheme. For example:
+There is a control to configure how Frictionless handle files using this scheme. For example:
 
 ```python title="Python"
 from frictionless import Resource
