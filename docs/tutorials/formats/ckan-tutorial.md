@@ -7,7 +7,7 @@ sidebar_label: CKAN
 
 Frictionless supports reading and writing CKAN datasets.
 
-```bash
+```bash title="CLI"
 pip install frictionless[ckan]
 ```
 

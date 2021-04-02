@@ -7,7 +7,7 @@ sidebar_label: Google Sheets
 
 Frictionless supports parsing Google Sheets data as a file format.
 
-```bash
+```bash title="CLI"
 pip install frictionless[gsheets]
 ```
 

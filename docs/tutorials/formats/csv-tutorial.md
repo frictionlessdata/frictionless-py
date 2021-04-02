@@ -16,7 +16,7 @@ You can read this format using `Package/Resource`, for example:
 from pprint import pprint
 from frictionless import Resource
 
-resource = Resource(path='data/table.csv')
+resource = Resource('data/table.csv')
 pprint(resource.read_rows())
 ```
 ```

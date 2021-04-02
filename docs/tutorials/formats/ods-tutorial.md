@@ -8,7 +8,7 @@ goodread:
 
 Frictionless supports ODS parsing.
 
-```bash
+```bash title="CLI"
 pip install frictionless[ods]
 ```
 

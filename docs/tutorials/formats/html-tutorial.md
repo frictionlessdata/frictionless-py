@@ -10,7 +10,7 @@ goodread:
 
 Frictionless supports parsing HTML format:
 
-```bash
+```bash title="CLI"
 pip install frictionless[html]
 ```
 

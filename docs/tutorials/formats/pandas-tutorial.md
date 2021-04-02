@@ -7,7 +7,7 @@ sidebar_label: Pandas
 
 Frictionless supports reading and writing Pandas dataframes.
 
-```bash
+```bash title="CLI"
 pip install frictionless[pandas]
 ```
 

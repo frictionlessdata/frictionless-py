@@ -7,7 +7,7 @@ sidebar_label: SQL
 
 Frictionless supports reading and writing SQL databases.
 
-```shell
+```bash title="CLI"
 ! pip install frictionless[sql]
 ```
 

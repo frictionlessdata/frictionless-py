@@ -8,7 +8,7 @@ goodread:
 
 Excel is a very popular tabular data format that usually has `xlsx` (newer) and `xls` (older) file extensions. Frictionless supports Excel files extensively.
 
-```bash
+```bash title="CLI"
 pip install frictionless[excel]
 ```
 
