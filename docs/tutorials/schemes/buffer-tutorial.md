@@ -3,11 +3,11 @@ title: Buffer Tutorial
 sidebar_label: Buffer
 ---
 
-Frictionless supports reading bytes loaded into from memory.
+Frictionless supports reading bytes loaded from memory.
 
 ## Reading Buffer Data
 
-You can read Buffer Data using `Package/Resource` or `Table` API, for example:
+You can read Buffer Data using the `Package/Resource` or `Table` [API](/docs/references/api-reference), for example:
 
 ```python title="Python"
 from frictionless import Resource
@@ -21,7 +21,7 @@ print(resource.read_rows())
 
 ## Writing Buffer Data
 
-The same is actual for writing Buffer Data:
+The same can be done for writing Buffer Data:
 
 ```python title="Python"
 from frictionless import Resource

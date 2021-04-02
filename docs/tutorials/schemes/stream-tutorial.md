@@ -7,9 +7,9 @@ Frictionless supports loading Stream data.
 
 ## Reading Stream Data
 
-> It's recommended to open files in byte-mode. If it's opened in text-mode, Frictionless will try re-open it in byte-mode.
+> It's recommended to open files in byte-mode. If the file is opened in text-mode, Frictionless will try to re-open it in byte-mode.
 
-You can read Stream using `Package/Resource` or `Table` API, for example:
+You can read Stream using `Package/Resource` or `Table` [API](/docs/references/api-reference), for example:
 
 ```python title="Python"
 from frictionless import Resource
@@ -24,7 +24,7 @@ with open('data/table.csv', 'rb') as file:
 
 ## Writing Stream Data
 
-The same is actual for writing CSV:
+The same can be done for writing CSV:
 
 ```python title="Python"
 from frictionless import Resource

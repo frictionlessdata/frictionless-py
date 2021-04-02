@@ -9,7 +9,7 @@ You can read and write files split into chunks with Frictionless.
 
 ## Reading Multipart Data
 
-You can read using `Package/Resource` or `Table` API, for example:
+You can read using `Package/Resource` or `Table` [API](/docs/references/api-reference), for example:
 
 ```python title="Python"
 from frictionless import Resource
@@ -23,7 +23,7 @@ print(resource.read_rows())
 
 ## Writing Multipart Data
 
-The actual for writing:
+The same can be done for writing:
 
 ```python title="Python"
 from frictionless import Resource
@@ -34,7 +34,7 @@ resource.write('tmp/table{number}.json', scheme="multipart", control={"chunkSize
 
 ## Configuring Local Data
 
-There is a control to configure how Frictionless read files using this scheme. For example:
+There is a `Control` to configure how Frictionless reads files using this scheme. For example:
 
 ```python title="Python"
 from frictionless import Resource
