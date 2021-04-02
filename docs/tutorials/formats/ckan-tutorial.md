@@ -38,7 +38,7 @@ package = Package('path/to/datapackage.json')
 package.to_ckan('<base_url>', dataset_id='<dataset_id>', api_key='<api_key>')
 ```
 
-## Using Dialect
+## Configuring Data
 
 There is a dialect to configure how Frictionless read and write files in this format. For example:
 

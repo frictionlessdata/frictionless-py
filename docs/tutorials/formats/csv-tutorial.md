@@ -40,7 +40,7 @@ pprint(target.read_rows())
 [{'id': 1, 'name': 'english'}, {'id': 2, 'name': 'german'}]
 ```
 
-## Using Dialect
+## Configuring Data
 
 There is a dialect to configure how Frictionless read and write files in this format. For example:
 

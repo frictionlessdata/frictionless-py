@@ -33,7 +33,7 @@ resource = Resource(path='data/table.json')
 resource.write('tmp/table{number}.json', scheme="multipart", control={"chunkSize": 1000000})
 ```
 
-## Using Control
+## Configuring Data
 
 There is a control to configure how Frictionless handle files using this scheme. For example:
 

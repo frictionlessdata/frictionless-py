@@ -31,7 +31,7 @@ resource = Resource(path='data/table.csv')
 resource.write('https://example.com/data/table.csv') # will POST the file to the server
 ```
 
-## Using Control
+## Configuring Data
 
 There is a control to configure remote data, for example:
 

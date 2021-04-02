@@ -65,7 +65,7 @@ package.to_bigquery(service, project=project, dataset='<dataset>')
 
 Also, it's possible to save a resource as a Bigquery table using `resource.write()`.
 
-## Using Dialect
+## Configuring Data
 
 There is the `BigqueryDialect` to configure how Frictionles works with BigQuery:
 

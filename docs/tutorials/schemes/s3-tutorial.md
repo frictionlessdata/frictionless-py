@@ -36,7 +36,7 @@ resource = Resource(path='data/table.csv')
 resource.write('s3://bucket/table.csv')
 ```
 
-## Using Control
+## Configuring Data
 
 There is a control to configure how Frictionless read files in this storage. For example:
 

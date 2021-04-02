@@ -40,7 +40,7 @@ pprint(target.read_rows())
 [{'id': 1, 'name': 'english'}, {'id': 2, 'name': 'german'}]
 ```
 
-## Using Control
+## Configuring Data
 
 There are no options available for `BufferControl`.
 
