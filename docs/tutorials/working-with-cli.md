@@ -23,7 +23,7 @@ frictionless --version # to get the version
 
 ## Arguments
 
-All the arguments for the main CLI command are the same as they are in Python. You can read [Guides](../guides/guide-overview.md) and use almost all the information from there within the command-line. There is an important different in how arguments are written (note the dashes):
+All the arguments for the main CLI command are the same as they are in Python. You can read [Guides](../guides/guides-overview.md) and use almost all the information from there within the command-line. There is an important different in how arguments are written (note the dashes):
 
 ```
 Python: validate('data/table.csv', limit_errors=1)
