@@ -1,38 +1,49 @@
 ---
 title: Local Tutorial
 sidebar_label: Local
+goodread:
+  cleanup:
+    - rm table.csv
 ---
 
 You can read and write files locally with Frictionless. It's basic functionality.
 
-## Reading Local Data
+## Reading Data
 
-You can read using `Package/Resource` or `Table` API, for example:
+You can read using `Package/Resource`, for example:
 
-```python title="Python"
+```python goodread title="Python"
+from pprint import pprint
 from frictionless import Resource
 
 resource = Resource(path='data/table.csv')
-print(resource.read_rows())
+pprint(resource.read_rows())
 ```
 ```
-[Row([('id', 1), ('name', 'english')]), Row([('id', 2), ('name', '中国人')])]
+[{'id': 1, 'name': 'english'}, {'id': 2, 'name': '中国人'}]
 ```
 
-## Writing Local Data
+## Writing Data
 
 The same is actual for writing:
 
-```python title="Python"
+```python goodread title="Python"
+from pprint import pprint
 from frictionless import Resource
 
-resource = Resource(data=[['id', 'name'], [1, 'english'], [2, 'german']])
-resource.write('tmp/table.csv')
+source = Resource(data=[['id', 'name'], [1, 'english'], [2, 'german']])
+target = source.write('table.csv')
+pprint(target)
+pprint(target.read_rows())
+```
+```
+{'path': 'table.csv'}
+[{'id': 1, 'name': 'english'}, {'id': 2, 'name': 'german'}]
 ```
 
-## Configuring Local Data
+## Using Control
 
-There are no options available in `LocalControl`.
+There are no options available for `LocalControl`.
 
 References:
 - [Local Control](../../references/schemes-reference.md#local)

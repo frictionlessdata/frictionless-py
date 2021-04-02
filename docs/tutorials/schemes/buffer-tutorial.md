@@ -31,11 +31,13 @@ from frictionless import Resource
 source = Resource(data=[['id', 'name'], [1, 'english'], [2, 'german']])
 target = source.write(scheme='buffer', format='csv')
 pprint(target)
+pprint(target.read_rows())
 ```
 ```
 {'data': b'id,name\r\n1,english\r\n2,german\r\n',
  'format': 'csv',
  'scheme': 'buffer'}
+[{'id': 1, 'name': 'english'}, {'id': 2, 'name': 'german'}]
 ```
 
 ## Using Control
