@@ -7,40 +7,38 @@ sidebar_label: SPSS
 
 Frictionless supports reading and writing SPSS files.
 
-```shell
-! pip install frictionless[spss]
+```bash title="CLI"
+pip install frictionless[spss]
 ```
 
-
-## Reading from SPSS
+## Reading Data
 
 You can read SPSS files:
 
-```python
-from frictionless import Package
+```python title="Python"
+from pprint import pprint
+from frictionless import Resource
 
-package = Package.from_pandas(basepath='<dir with your .SAV files>')
-print(package)
-for resource in package.resources:
-  print(resource.read_rows())
+resource = Resource('data/table.sav')
+pprint(resource.read_rows())
 ```
 
-
-## Writing to SPSS
+## Writing Data
 
 > **[NOTE]** Timezone information is ignored for `datetime` and `time` types.
 
 You can write SPSS files:
 
-```python
-from frictionless import Package
+```python title="Python"
+from frictionless import Resource
 
-package = Package('path/to/datapackage.json')
-package.to_spss(basepath='target')
+source = Resource(data=[['id', 'name'], [1, 'english'], [2, 'german']])
+target = source.write('table.sav')
+pprint(target)
+pprint(target.read_rows())
 ```
 
-
-## Configuring SPSS
+## Configuring Data
 
 There are no options available in `SpssDialect`.
 

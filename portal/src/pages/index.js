@@ -92,7 +92,7 @@ function Home() {
               </p>
             </div>
             <div className="col">
-              <a href="docs/guides/validating-data">
+              <a href="docs/guides/validation-guide">
                 <img
                   alt="Software"
                   className={styles.featureImage}
@@ -106,7 +106,7 @@ function Home() {
               </p>
             </div>
             <div className="col">
-              <a href="docs/guides/transforming-data">
+              <a href="docs/guides/transform-guide">
                 <img
                   alt="Community"
                   className={styles.featureImage}

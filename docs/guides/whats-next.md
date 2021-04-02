@@ -1,5 +1,5 @@
 ---
-title: What's next?
+title: What's Next?
 ---
 
 ## Tutorials

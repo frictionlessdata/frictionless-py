@@ -7,40 +7,35 @@ sidebar_label: Pandas
 
 Frictionless supports reading and writing Pandas dataframes.
 
-```bash
-! pip install frictionless[pandas]
+```bash title="CLI"
+pip install frictionless[pandas]
 ```
 
-
-## Reading from Pandas
+## Reading Data
 
 You can read a Pandas dataframe:
 
-```python
+```python title="Python"
 from frictionless import Package
 
-package = Package.from_pandas(dataframes=['table1': '<df1>', 'tables2': '<df2>'])
-print(package)
-for resource in package.resources:
-  print(resource.read_rows())
+resource = Resource(df)
+pprint(resource.read_rows())
 ```
 
-
-## Writing to Pandas
+## Writing Data
 
 > **[NOTE]** Timezone information is ignored for `datetime` and `time` types.
 
 You can write a dataset to Pandas:
 
 ```python
-from frictionless import Package
+from frictionless import Resource
 
-package = Package('path/to/datapackage.json')
-dataframes = package.to_pandas()
+resource = Resource('data/table.csv')
+df = resource.to_pandas()
 ```
 
-
-## Configuring Pandas
+## Configuring Data
 
 There are no options available in `PandasDialect`.
 
