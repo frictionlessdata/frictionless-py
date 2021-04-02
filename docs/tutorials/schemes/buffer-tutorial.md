@@ -3,39 +3,44 @@ title: Buffer Tutorial
 sidebar_label: Buffer
 ---
 
-Frictionless supports reading bytes loaded into from memory.
+Frictionless supports working with bytes loaded into memory.
 
-## Reading Buffer Data
+## Reading Data
 
-You can read Buffer Data using `Package/Resource` or `Table` API, for example:
+You can read Buffer Data using `Package/Resource` API, for example:
 
-```python title="Python"
+```python goodread title="Python"
+from pprint import pprint
 from frictionless import Resource
 
 resource = Resource(b'id,name\n1,english\n2,german', format='csv')
-print(resource.read_rows())
+pprint(resource.read_rows())
 ```
 ```
-[Row([('id', 1), ('name', 'english')]), Row([('id', 2), ('name', 'german')])]
+[{'id': 1, 'name': 'english'}, {'id': 2, 'name': 'german'}]
 ```
 
-## Writing Buffer Data
+## Writing Data
 
 The same is actual for writing Buffer Data:
 
-```python title="Python"
+```python goodread title="Python"
+from pprint import pprint
 from frictionless import Resource
 
-resource = Resource(data=[['id', 'name'], [1, 'english'], [2, 'german']])
-resource.write(scheme='buffer', format='csv')
+source = Resource(data=[['id', 'name'], [1, 'english'], [2, 'german']])
+target = source.write(scheme='buffer', format='csv')
+pprint(target)
 ```
 ```
-b'id,name\r\n1,english\r\n2,german\r\n'
+{'data': b'id,name\r\n1,english\r\n2,german\r\n',
+ 'format': 'csv',
+ 'scheme': 'buffer'}
 ```
 
-## Configuring Buffer Data
+## Using Control
 
-There are no options available in `BufferControl`.
+There are no options available for `BufferControl`.
 
 References:
 - [Buffer Control](../../references/schemes-reference.md#buffer)
