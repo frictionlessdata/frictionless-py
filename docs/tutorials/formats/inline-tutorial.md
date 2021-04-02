@@ -3,63 +3,57 @@ title: Inline Tutorial
 sidebar_label: Inline
 ---
 
-Frictionless supports parsing Inline Data.
+Frictionless supports working with Inline Data from memory.
 
-```bash
-! cat data/table.csv
-```
+## Reading Data
 
+You can read data in this format using `Package/Resource`, for example:
 
-## Reading Inline Data
-
-You can read data in this format using `Package/Resource` or `Table` API, for example:
-
-
-```python
+```python goodread title="Python"
+from pprint import pprint
 from frictionless import Resource
 
 resource = Resource(data=[['id', 'name'], [1, 'english'], [2, 'german']])
-print(resource.read_rows())
+pprint(resource.read_rows())
+```
+```
+[{'id': 1, 'name': 'english'}, {'id': 2, 'name': 'german'}]
 ```
 
-    [Row([('id', 1), ('name', 'english')]), Row([('id', 2), ('name', 'german')])]
-
-
-## Writing Inline Data
+## Writing Data
 
 The same is actual for writing:
 
-
-```python
+```python goodread title="Python"
+from pprint import pprint
 from frictionless import Resource
 
-resource = Resource(path='data/table.csv')
-resource.write(format='inline')
+source = Resource('data/table.csv')
+target = source.write(format='inline')
+pprint(target)
+pprint(target.read_rows())
+```
+```
+{'data': [['id', 'name'], [1, 'english'], [2, '中国人']], 'format': 'inline'}
+[{'id': 1, 'name': 'english'}, {'id': 2, 'name': '中国人'}]
 ```
 
-
-
-
-    [['id', 'name'], [1, 'english'], [2, '中国人']]
-
-
-
-## Configuring Inline Data
+## Configuring Data
 
 There is a dialect to configure this format, for example:
 
-
-```python
+```python goodread title="Python"
+from pprint import pprint
 from frictionless import Resource
 from frictionless.plugins.inline import InlineDialect
 
 dialect = InlineDialect(keyed=True, keys=['name', 'id'])
 resource = Resource(data=[{'id': 1, 'name': 'english'}, {'id': 2, 'name': 'german'}], dialect=dialect)
-print(resource.read_rows())
+pprint(resource.read_rows())
 ```
-
-    [Row([('name', 'english'), ('id', 1)]), Row([('name', 'german'), ('id', 2)])]
-
+```
+[{'name': 'english', 'id': 1}, {'name': 'german', 'id': 2}]
+```
 
 References:
 - [Inline Dialect](../../references/formats-reference.md#inline)
