@@ -1,95 +1,57 @@
 ---
 title: HTML Tutorial
 sidebar_label: HTML
+goodread:
+  cleanup:
+    - rm table.html
 ---
 
 > This functionality requires an experimental `html` plugin. [Read More](../../references/plugins-reference.md)
 
-Frictionless supports parsing HTML format
+Frictionless supports parsing HTML format:
 
 ```bash
-!pip install frictionless[html]
+pip install frictionless[html]
 ```
 
+## Reading Data
 
+You can this file format using `Package/Resource`, for example:
 
-```python
-! cat data/table1.html
-```
-
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <meta charset="UTF-8">
-    </head>
-    <body>
-        <table>
-            <tr>
-                <td>id</td>
-                <td>name</td>
-            </tr>
-            <tr>
-                <td>1</td>
-                <td>english</td>
-            </tr>
-            <tr>
-                <td>2</td>
-                <td>中国人</td>
-            </tr>
-        </table>
-    </body>
-    </html
-
-## Reading HTML
-
-You can this file format using `Package/Resource` or `Table` API, for example:
-
-
-```python
+```python goodread title="Python"
+from pprint import pprint
 from frictionless import Resource
 
 resource = Resource(path='data/table1.html')
-print(resource.read_rows())
+pprint(resource.read_rows())
+```
+```
+[{'id': 1, 'name': 'english'}, {'id': 2, 'name': '中国人'}]
 ```
 
-    [Row([('id', 1), ('name', 'english')]), Row([('id', 2), ('name', '中国人')])]
-
-
-## Writing HTML
+## Writing Data
 
 The same is actual for writing:
 
-
-```python
+```python goodread title="Python"
+from pprint import pprint
 from frictionless import Resource
 
-resource = Resource(data=[['id', 'name'], [1, 'english'], [2, 'german']])
-resource.write('tmp/table.html')
+source = Resource(data=[['id', 'name'], [1, 'english'], [2, 'german']])
+target = source.write('table.html')
+pprint(target)
+pprint(target.read_rows())
+```
+```
+{'path': 'table.html'}
+[{'id': 1, 'name': 'english'}, {'id': 2, 'name': 'german'}]
 ```
 
-
-
-
-    'tmp/table.html'
-
-
-
-
-```python
-!cat tmp/table.html
-```
-
-    <html><body><table>
-    <tr><td>id</td><td>name</td></tr>
-    <tr><td>1</td><td>english</td></tr>
-    <tr><td>2</td><td>german</td></tr>
-    </table></body></html>
-
-## Configuring HTML
+## Configuring Data
 
 There is a dialect to configure HTML, for example:
 
-```python
+```python title="Python"
 from frictionless import Resource
 from frictionless.plugins.html import HtmlDialect
 
