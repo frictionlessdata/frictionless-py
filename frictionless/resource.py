@@ -1121,11 +1121,6 @@ class Resource(Metadata):
         """
         assert type in ["look", "lookall", "see", "display", "displayall"]
         view = str(getattr(self.to_petl(normalize=True), type)(**options))
-        # We escape newlines in the header
-        if type in ["look", "lookall"]:
-            view1, view2 = view.split("+==", maxsplit=1)
-            view1 = view1.replace("\n", "\\n")
-            view = "+==".join([view1, view2])
         return view
 
     def to_snap(self):
