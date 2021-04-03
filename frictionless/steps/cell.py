@@ -8,6 +8,8 @@ from ..step import Step
 
 
 class cell_convert(Step):
+    """Convert cell"""
+
     code = "cell-convert"
 
     def __init__(self, descriptor=None, *, value=None, function=None, field_name=None):
@@ -45,6 +47,8 @@ class cell_convert(Step):
 
 
 class cell_fill(Step):
+    """Fill cell"""
+
     code = "cell-fill"
 
     def __init__(self, descriptor=None, *, value=None, field_name=None, direction=None):
@@ -87,6 +91,8 @@ class cell_fill(Step):
 
 
 class cell_format(Step):
+    """Format cell"""
+
     code = "cell-format"
 
     def __init__(self, descriptor=None, *, template=None, field_name=None):
@@ -118,6 +124,8 @@ class cell_format(Step):
 
 
 class cell_interpolate(Step):
+    """Interpolate cell"""
+
     code = "cell-interpolate"
 
     def __init__(self, descriptor=None, *, template=None, field_name=None):
@@ -149,6 +157,8 @@ class cell_interpolate(Step):
 
 
 class cell_replace(Step):
+    """Replace cell"""
+
     code = "cell-replace"
 
     def __init__(self, descriptor=None, *, pattern=None, replace=None, field_name=None):
@@ -188,6 +198,8 @@ class cell_replace(Step):
 
 
 class cell_set(Step):
+    """Set cell"""
+
     code = "cell-set"
 
     def __init__(self, descriptor=None, *, value=None, field_name=None):

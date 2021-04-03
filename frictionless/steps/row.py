@@ -9,6 +9,8 @@ from ..step import Step
 
 
 class row_filter(Step):
+    """Filter rows"""
+
     code = "row-filter"
 
     def __init__(self, descriptor=None, *, formula=None, function=None):
@@ -41,6 +43,8 @@ class row_filter(Step):
 
 
 class row_search(Step):
+    """Search rows"""
+
     code = "row-search"
 
     def __init__(self, descriptor=None, *, regex=None, field_name=None, negate=False):
@@ -76,6 +80,8 @@ class row_search(Step):
 
 
 class row_slice(Step):
+    """Slice rows"""
+
     code = "row-slice"
 
     def __init__(
@@ -127,6 +133,8 @@ class row_slice(Step):
 
 
 class row_sort(Step):
+    """Sort rows"""
+
     code = "row-sort"
 
     def __init__(self, descriptor=None, *, field_names=None, reverse=False):
@@ -155,6 +163,8 @@ class row_sort(Step):
 
 
 class row_split(Step):
+    """Split rows"""
+
     code = "row-add"
 
     def __init__(self, descriptor=None, *, pattern=None, field_name=None):
@@ -183,6 +193,8 @@ class row_split(Step):
 
 
 class row_subset(Step):
+    """Subset rows"""
+
     code = "row-subset"
 
     def __init__(self, descriptor=None, *, subset=None, field_name=None):
@@ -219,6 +231,8 @@ class row_subset(Step):
 
 
 class row_ungroup(Step):
+    """Ungroup rows"""
+
     code = "row-ungroup"
 
     def __init__(

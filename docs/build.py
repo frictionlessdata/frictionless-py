@@ -285,17 +285,24 @@ def build_api_reference():
 
     # Input
     blocks = {}
+    group = None
     element = None
     command = "pydoc-markdown -p frictionless"
     content = subprocess.check_output(command, shell=True).decode()
     for line in content.splitlines(keepends=True):
         if line.startswith("<a"):
+            group = None
+            for name in ["errors", "checks", "steps", "types"]:
+                if f"frictionless.{name}" in line:
+                    group = name
             continue
         if line.startswith("# "):
             element = None
             continue
         if line.startswith("## "):
             element = re.search(r"^## (.*) Objects$", line).group(1)
+            if group:
+                element = f"{group}.{element}"
             continue
         if line.startswith("#### "):
             if not element or element.islower():

@@ -16,6 +16,8 @@ from ..exception import FrictionlessException
 
 
 class table_aggregate(Step):
+    """Aggregate table"""
+
     code = "table-aggregate"
 
     def __init__(self, descriptor=None, *, group_name=None, aggregation=None):
@@ -49,6 +51,8 @@ class table_aggregate(Step):
 
 
 class table_attach(Step):
+    """Attach table"""
+
     code = "table-attach"
 
     def __init__(self, descriptor=None, *, resource=None):
@@ -81,6 +85,8 @@ class table_attach(Step):
 
 
 class table_debug(Step):
+    """Debug table"""
+
     code = "table-debug"
 
     def __init__(self, descriptor=None, *, function=None):
@@ -115,6 +121,8 @@ class table_debug(Step):
 
 
 class table_diff(Step):
+    """Diff tables"""
+
     code = "table-diff"
 
     def __init__(
@@ -162,6 +170,8 @@ class table_diff(Step):
 
 
 class table_intersect(Step):
+    """Intersect tables"""
+
     code = "table-intersect"
 
     def __init__(self, descriptor=None, *, resource=None, use_hash=False):
@@ -196,6 +206,8 @@ class table_intersect(Step):
 
 
 class table_join(Step):
+    """Join tables"""
+
     code = "table-join"
 
     def __init__(
@@ -263,6 +275,8 @@ class table_join(Step):
 
 
 class table_melt(Step):
+    """Melt tables"""
+
     code = "table-melt"
 
     def __init__(
@@ -312,6 +326,8 @@ class table_melt(Step):
 
 
 class table_merge(Step):
+    """Merge tables"""
+
     code = "table-merge"
 
     def __init__(
@@ -379,6 +395,8 @@ class table_merge(Step):
 
 
 class table_normalize(Step):
+    """Normalize table"""
+
     code = "table-normalize"
 
     # Transform
@@ -406,6 +424,8 @@ class table_normalize(Step):
 
 
 class table_pivot(Step):
+    """Pivot table"""
+
     code = "table-pivot"
 
     def __init__(self, descriptor=None, **options):
@@ -431,6 +451,8 @@ class table_pivot(Step):
 
 
 class table_print(Step):
+    """Print table"""
+
     code = "table-print"
 
     # Transform
@@ -449,6 +471,8 @@ class table_print(Step):
 
 
 class table_recast(Step):
+    """Recast table"""
+
     code = "table-recast"
 
     def __init__(
@@ -490,6 +514,8 @@ class table_recast(Step):
 
 
 class table_transpose(Step):
+    """Transpose table"""
+
     code = "table-transpose"
 
     # Transform
@@ -510,6 +536,8 @@ class table_transpose(Step):
 
 
 class table_validate(Step):
+    """Validate table"""
+
     code = "table-validate"
 
     # Transform
@@ -541,6 +569,8 @@ class table_validate(Step):
 
 
 class table_write(Step):
+    """Write table"""
+
     code = "table-write"
 
     def __init__(self, descriptor=None, *, path=None, **options):

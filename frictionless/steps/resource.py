@@ -11,6 +11,8 @@ from .. import errors
 
 
 class resource_add(Step):
+    """Add resource"""
+
     code = "resource-add"
 
     def __init__(self, descriptor=None, *, name=None, **options):
@@ -40,6 +42,8 @@ class resource_add(Step):
 
 
 class resource_remove(Step):
+    """Remove resource"""
+
     code = "resource-remove"
 
     def __init__(self, descriptor=None, *, name=None):
@@ -68,6 +72,8 @@ class resource_remove(Step):
 
 
 class resource_transform(Step):
+    """Transform resource"""
+
     code = "resource-transform"
 
     def __init__(self, descriptor=None, *, name=None, steps=None):
@@ -100,6 +106,8 @@ class resource_transform(Step):
 
 
 class resource_update(Step):
+    """Update resource"""
+
     code = "resource-update"
 
     def __init__(self, descriptor=None, *, name=None, **options):

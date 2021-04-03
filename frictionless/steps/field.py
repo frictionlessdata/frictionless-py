@@ -10,6 +10,8 @@ from ..field import Field
 
 
 class field_add(Step):
+    """Add field"""
+
     code = "field-add"
 
     def __init__(
@@ -73,6 +75,8 @@ class field_add(Step):
 
 
 class field_filter(Step):
+    """Filter fields"""
+
     code = "field-filter"
 
     def __init__(self, descriptor=None, *, names=None):
@@ -101,6 +105,8 @@ class field_filter(Step):
 
 
 class field_move(Step):
+    """Move field"""
+
     code = "field-move"
 
     def __init__(self, descriptor=None, *, name=None, position=None):
@@ -131,6 +137,8 @@ class field_move(Step):
 
 
 class field_remove(Step):
+    """Remove field"""
+
     code = "field-remove"
 
     def __init__(self, descriptor=None, *, names=None):
@@ -158,6 +166,8 @@ class field_remove(Step):
 
 
 class field_split(Step):
+    """Split field"""
+
     code = "field-split"
 
     def __init__(
@@ -214,6 +224,8 @@ class field_split(Step):
 
 
 class field_unpack(Step):
+    """Unpack field"""
+
     code = "field-unpack"
 
     def __init__(self, descriptor=None, *, name, to_names, preserve=False):
@@ -255,6 +267,8 @@ class field_unpack(Step):
 
 
 class field_update(Step):
+    """Update field"""
+
     code = "field-update"
 
     def __init__(

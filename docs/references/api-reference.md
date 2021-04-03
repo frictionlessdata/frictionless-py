@@ -2,18 +2,6 @@
 title: API Reference
 ---
 
-## AnyType
-
-```python
-class AnyType(Type)
-```
-
-Any type implementation.
-
-API      | Usage
--------- | --------
-Public   | `from frictionless import types`
-
 ## ApiServer
 
 ```python
@@ -25,18 +13,6 @@ API server implementation.
 API      | Usage
 -------- | --------
 Public   | `from frictionless.plugins.server import ApiParser`
-
-## ArrayType
-
-```python
-class ArrayType(Type)
-```
-
-Array type implementation.
-
-API      | Usage
--------- | --------
-Public   | `from frictionless import types`
 
 ## BigqueryDialect
 
@@ -105,18 +81,6 @@ Public   | `from frictionless.plugins.bigquery import BigqueryStorage`
 - `dataset` _str_ - BigQuery dataset name
 - `prefix?` _str_ - prefix for all names
 
-## BooleanType
-
-```python
-class BooleanType(Type)
-```
-
-Boolean type implementation.
-
-API      | Usage
--------- | --------
-Public   | `from frictionless import types`
-
 ## BufferControl
 
 ```python
@@ -161,49 +125,6 @@ Plugin for Buffer Data
 API      | Usage
 -------- | --------
 Public   | `from frictionless.plugins.local import BufferPlugin`
-
-## CellError
-
-```python
-class CellError(RowError)
-```
-
-Cell error representation
-
-**Arguments**:
-
-- `descriptor?` _str|dict_ - error descriptor
-- `note` _str_ - an error note
-- `cells` _str[]_ - row cells
-- `row_number` _int_ - row number
-- `row_position` _int_ - row position
-- `cell` _str_ - errored cell
-- `field_name` _str_ - field name
-- `field_number` _int_ - field number
-- `field_position` _int_ - field position
-  
-  # Raises
-- `FrictionlessException` - raise any error that occurs during the process
-
-### cellError.from\_row
-
-```python
- | @classmethod
- | from_row(cls, row, *, note, field_name)
-```
-
-Create and error from a cell
-
-**Arguments**:
-
-- `row` _Row_ - row
-- `note` _str_ - note
-- `field_name` _str_ - field name
-  
-
-**Returns**:
-
-- `CellError` - error
 
 ## Check
 
@@ -537,30 +458,6 @@ API      | Usage
 -------- | --------
 Public   | `from frictionless.plugins.csv import CsvPlugin`
 
-## DateType
-
-```python
-class DateType(Type)
-```
-
-Date type implementation.
-
-API      | Usage
--------- | --------
-Public   | `from frictionless import types`
-
-## DatetimeType
-
-```python
-class DatetimeType(Type)
-```
-
-Datetime type implementation.
-
-API      | Usage
--------- | --------
-Public   | `from frictionless import types`
-
 ## Detector
 
 ```python
@@ -688,18 +585,6 @@ Public   | `from frictionless import Dialect`
 **Raises**:
 
 - `FrictionlessException` - raise any error that occurs during the process
-
-## DurationType
-
-```python
-class DurationType(Type)
-```
-
-Duration type implementation.
-
-API      | Usage
--------- | --------
-Public   | `from frictionless import types`
 
 ## Error
 
@@ -1225,30 +1110,6 @@ Public   | `from frictionless import FrictionlessException`
 
 - `Error` - error
 
-## GeojsonType
-
-```python
-class GeojsonType(Type)
-```
-
-Geojson type implementation.
-
-API      | Usage
--------- | --------
-Public   | `from frictionless import types`
-
-## GeopointType
-
-```python
-class GeopointType(Type)
-```
-
-Geopoint type implementation.
-
-API      | Usage
--------- | --------
-Public   | `from frictionless import types`
-
 ## GsheetsDialect
 
 ```python
@@ -1432,29 +1293,6 @@ Public   | `from frictionless import Header`
 ```
 
 Convert to a list
-
-## HeaderError
-
-```python
-class HeaderError(TableError)
-```
-
-Header error representation
-
-**Arguments**:
-
-- `descriptor?` _str|dict_ - error descriptor
-- `note` _str_ - an error note
-- `labels` _str[]_ - header labels
-- `label` _str_ - an errored label
-- `field_name` _str_ - field name
-- `field_number` _int_ - field number
-- `field_position` _int_ - field position
-  
-
-**Raises**:
-
-- `FrictionlessException` - raise any error that occurs during the process
 
 ## HtmlDialect
 
@@ -1665,18 +1503,6 @@ Inquiry task representation.
 
 - `string?` - type
 
-## IntegerType
-
-```python
-class IntegerType(Type)
-```
-
-Integer type implementation.
-
-API      | Usage
--------- | --------
-Public   | `from frictionless import types`
-
 ## JsonDialect
 
 ```python
@@ -1777,29 +1603,6 @@ JSONL parser implementation.
 API      | Usage
 -------- | --------
 Public   | `from frictionless.plugins.json import JsonlParser
-
-## LabelError
-
-```python
-class LabelError(HeaderError)
-```
-
-Label error representation
-
-**Arguments**:
-
-- `descriptor?` _str|dict_ - error descriptor
-- `note` _str_ - an error note
-- `labels` _str[]_ - header labels
-- `label` _str_ - an errored label
-- `field_name` _str_ - field name
-- `field_number` _int_ - field number
-- `field_position` _int_ - field position
-  
-
-**Raises**:
-
-- `FrictionlessException` - raise any error that occurs during the process
 
 ## Layout
 
@@ -2530,30 +2333,6 @@ Plugin for Multipart Data
 API      | Usage
 -------- | --------
 Public   | `from frictionless.plugins.multipart import MultipartPlugin`
-
-## NumberType
-
-```python
-class NumberType(Type)
-```
-
-Number type implementation.
-
-API      | Usage
--------- | --------
-Public   | `from frictionless import types`
-
-## ObjectType
-
-```python
-class ObjectType(Type)
-```
-
-Object type implementation.
-
-API      | Usage
--------- | --------
-Public   | `from frictionless import types`
 
 ## OdsDialect
 
@@ -4857,45 +4636,6 @@ A mapping indexed by a field name with error cells before parsing
 
 - `dict` - a row as a dictionary
 
-## RowError
-
-```python
-class RowError(TableError)
-```
-
-Row error representation
-
-**Arguments**:
-
-- `descriptor?` _str|dict_ - error descriptor
-- `note` _str_ - an error note
-- `row_number` _int_ - row number
-- `row_position` _int_ - row position
-  
-
-**Raises**:
-
-- `FrictionlessException` - raise any error that occurs during the process
-
-### rowError.from\_row
-
-```python
- | @classmethod
- | from_row(cls, row, *, note)
-```
-
-Create an error from a row
-
-**Arguments**:
-
-- `row` _Row_ - row
-- `note` _str_ - note
-  
-
-**Returns**:
-
-- `RowError` - error
-
 ## S3Control
 
 ```python
@@ -5580,18 +5320,6 @@ API      | Usage
 -------- | --------
 Public   | `from frictionless.plugins.stream import StreamPlugin`
 
-## StringType
-
-```python
-class StringType(Type)
-```
-
-String type implementation.
-
-API      | Usage
--------- | --------
-Public   | `from frictionless import types`
-
 ## System
 
 ```python
@@ -5812,18 +5540,6 @@ Create checks
 
 - `Type` - type
 
-## TimeType
-
-```python
-class TimeType(Type)
-```
-
-Time type implementation.
-
-API      | Usage
--------- | --------
-Public   | `from frictionless import types`
-
 ## Type
 
 ```python
@@ -5917,31 +5633,7 @@ API      | Usage
 -------- | --------
 Public   | `from frictionless.plugins.excel import XlsxParser
 
-## YearType
-
-```python
-class YearType(Type)
-```
-
-Year type implementation.
-
-API      | Usage
--------- | --------
-Public   | `from frictionless import types`
-
-## YearmonthType
-
-```python
-class YearmonthType(Type)
-```
-
-Yearmonth type implementation.
-
-API      | Usage
--------- | --------
-Public   | `from frictionless import types`
-
-## baseline
+## checks.baseline
 
 ```python
 class baseline(Check)
@@ -5955,6 +5647,126 @@ Public   | `from frictionless import checks`
 Implicit | `validate(...)`
 
 Ths check is enabled by default for any `validate` function run.
+
+## checks.deviated\_value
+
+```python
+class deviated_value(Check)
+```
+
+Check for deviated values in a field
+
+API      | Usage
+-------- | --------
+Public   | `from frictionless import checks`
+Implicit | `validate(checks=([{"code": "deviated-value", **descriptor}])`
+
+This check can be enabled using the `checks` parameter
+for the `validate` function.
+
+**Arguments**:
+
+- `descriptor` _dict_ - check's descriptor
+- `field_name` _str_ - a field name to check
+- `average?` _str_ - one of "mean", "median" or "mode" (default: "mean")
+- `interval?` _str_ - statistical interval (default: 3)
+
+## checks.duplicate\_row
+
+```python
+class duplicate_row(Check)
+```
+
+Check for duplicate rows
+
+API      | Usage
+-------- | --------
+Public   | `from frictionless import checks`
+Implicit | `validate(checks=[{"code": "duplicate-row"}])`
+
+This check can be enabled using the `checks` parameter
+for the `validate` function.
+
+## checks.forbidden\_value
+
+```python
+class forbidden_value(Check)
+```
+
+Check for forbidden values in a field
+
+API      | Usage
+-------- | --------
+Public   | `from frictionless import checks`
+Implicit | `validate(checks=[{"code": "backlisted-value", **descriptor}])`
+
+This check can be enabled using the `checks` parameter
+for the `validate` function.
+
+**Arguments**:
+
+- `descriptor` _dict_ - check's descriptor
+- `field_name` _str_ - a field name to look into
+- `forbidden` _any[]_ - a list of forbidden values
+
+## checks.row\_constraint
+
+```python
+class row_constraint(Check)
+```
+
+Check that every row satisfies a provided Python expression
+
+API      | Usage
+-------- | --------
+Public   | `from frictionless import checks`
+Implicit | `validate(checks=([{"code": "row-constraint", **descriptor}])`
+
+This check can be enabled using the `checks` parameter
+for the `validate` function. The syntax for the row constraint
+check can be found here - https://github.com/danthedeckie/simpleeval
+
+**Arguments**:
+
+- `descriptor` _dict_ - check's descriptor
+- `formula` _str_ - a python expression to evaluate against a row
+
+## checks.sequential\_value
+
+```python
+class sequential_value(Check)
+```
+
+Check that a column having sequential values
+
+API      | Usage
+-------- | --------
+Public   | `from frictionless import checks`
+Implicit | `validate(checks=[{"code": "sequential-value", **descriptor}])`
+
+This check can be enabled using the `checks` parameter
+for the `validate` function.
+
+**Arguments**:
+
+- `descriptor` _dict_ - check's descriptor
+- `field_name` _str_ - a field name to check
+
+## checks.truncated\_value
+
+```python
+class truncated_value(Check)
+```
+
+Check for possible truncated values
+
+API      | Usage
+-------- | --------
+Public   | `from frictionless import checks`
+Implicit | `validate(checks=([{"code": "truncated-value"}])`
+
+This check can be enabled using the `checks` parameter
+for the `validate` function.
 
 ## describe
 
@@ -6049,44 +5861,133 @@ Public   | `from frictionless import describe_schema`
 
 - `Schema` - table schema
 
-## deviated\_value
+## errors.CellError
 
 ```python
-class deviated_value(Check)
+class CellError(RowError)
 ```
 
-Check for deviated values in a field
-
-API      | Usage
--------- | --------
-Public   | `from frictionless import checks`
-Implicit | `validate(checks=([{"code": "deviated-value", **descriptor}])`
-
-This check can be enabled using the `checks` parameter
-for the `validate` function.
+Cell error representation
 
 **Arguments**:
 
-- `descriptor` _dict_ - check's descriptor
-- `field_name` _str_ - a field name to check
-- `average?` _str_ - one of "mean", "median" or "mode" (default: "mean")
-- `interval?` _str_ - statistical interval (default: 3)
+- `descriptor?` _str|dict_ - error descriptor
+- `note` _str_ - an error note
+- `cells` _str[]_ - row cells
+- `row_number` _int_ - row number
+- `row_position` _int_ - row position
+- `cell` _str_ - errored cell
+- `field_name` _str_ - field name
+- `field_number` _int_ - field number
+- `field_position` _int_ - field position
+  
+  # Raises
+- `FrictionlessException` - raise any error that occurs during the process
 
-## duplicate\_row
+### errors.CellError.from\_row
 
 ```python
-class duplicate_row(Check)
+ | @classmethod
+ | from_row(cls, row, *, note, field_name)
 ```
 
-Check for duplicate rows
+Create and error from a cell
 
-API      | Usage
--------- | --------
-Public   | `from frictionless import checks`
-Implicit | `validate(checks=[{"code": "duplicate-row"}])`
+**Arguments**:
 
-This check can be enabled using the `checks` parameter
-for the `validate` function.
+- `row` _Row_ - row
+- `note` _str_ - note
+- `field_name` _str_ - field name
+  
+
+**Returns**:
+
+- `CellError` - error
+
+## errors.HeaderError
+
+```python
+class HeaderError(TableError)
+```
+
+Header error representation
+
+**Arguments**:
+
+- `descriptor?` _str|dict_ - error descriptor
+- `note` _str_ - an error note
+- `labels` _str[]_ - header labels
+- `label` _str_ - an errored label
+- `field_name` _str_ - field name
+- `field_number` _int_ - field number
+- `field_position` _int_ - field position
+  
+
+**Raises**:
+
+- `FrictionlessException` - raise any error that occurs during the process
+
+## errors.LabelError
+
+```python
+class LabelError(HeaderError)
+```
+
+Label error representation
+
+**Arguments**:
+
+- `descriptor?` _str|dict_ - error descriptor
+- `note` _str_ - an error note
+- `labels` _str[]_ - header labels
+- `label` _str_ - an errored label
+- `field_name` _str_ - field name
+- `field_number` _int_ - field number
+- `field_position` _int_ - field position
+  
+
+**Raises**:
+
+- `FrictionlessException` - raise any error that occurs during the process
+
+## errors.RowError
+
+```python
+class RowError(TableError)
+```
+
+Row error representation
+
+**Arguments**:
+
+- `descriptor?` _str|dict_ - error descriptor
+- `note` _str_ - an error note
+- `row_number` _int_ - row number
+- `row_position` _int_ - row position
+  
+
+**Raises**:
+
+- `FrictionlessException` - raise any error that occurs during the process
+
+### errors.RowError.from\_row
+
+```python
+ | @classmethod
+ | from_row(cls, row, *, note)
+```
+
+Create an error from a row
+
+**Arguments**:
+
+- `row` _Row_ - row
+- `note` _str_ - note
+  
+
+**Returns**:
+
+- `RowError` - error
 
 ## extract
 
@@ -6160,70 +6061,317 @@ Public   | `from frictionless import extract_resource`
 
 - `Row[]` - an array/stream of rows
 
-## forbidden\_value
+## steps.cell\_convert
 
 ```python
-class forbidden_value(Check)
+class cell_convert(Step)
 ```
 
-Check for forbidden values in a field
+Convert cell
 
-API      | Usage
--------- | --------
-Public   | `from frictionless import checks`
-Implicit | `validate(checks=[{"code": "backlisted-value", **descriptor}])`
-
-This check can be enabled using the `checks` parameter
-for the `validate` function.
-
-**Arguments**:
-
-- `descriptor` _dict_ - check's descriptor
-- `field_name` _str_ - a field name to look into
-- `forbidden` _any[]_ - a list of forbidden values
-
-## row\_constraint
+## steps.cell\_fill
 
 ```python
-class row_constraint(Check)
+class cell_fill(Step)
 ```
 
-Check that every row satisfies a provided Python expression
+Fill cell
 
-API      | Usage
--------- | --------
-Public   | `from frictionless import checks`
-Implicit | `validate(checks=([{"code": "row-constraint", **descriptor}])`
-
-This check can be enabled using the `checks` parameter
-for the `validate` function. The syntax for the row constraint
-check can be found here - https://github.com/danthedeckie/simpleeval
-
-**Arguments**:
-
-- `descriptor` _dict_ - check's descriptor
-- `formula` _str_ - a python expression to evaluate against a row
-
-## sequential\_value
+## steps.cell\_format
 
 ```python
-class sequential_value(Check)
+class cell_format(Step)
 ```
 
-Check that a column having sequential values
+Format cell
 
-API      | Usage
--------- | --------
-Public   | `from frictionless import checks`
-Implicit | `validate(checks=[{"code": "sequential-value", **descriptor}])`
+## steps.cell\_interpolate
 
-This check can be enabled using the `checks` parameter
-for the `validate` function.
+```python
+class cell_interpolate(Step)
+```
 
-**Arguments**:
+Interpolate cell
 
-- `descriptor` _dict_ - check's descriptor
-- `field_name` _str_ - a field name to check
+## steps.cell\_replace
+
+```python
+class cell_replace(Step)
+```
+
+Replace cell
+
+## steps.cell\_set
+
+```python
+class cell_set(Step)
+```
+
+Set cell
+
+## steps.field\_add
+
+```python
+class field_add(Step)
+```
+
+Add field
+
+## steps.field\_filter
+
+```python
+class field_filter(Step)
+```
+
+Filter fields
+
+## steps.field\_move
+
+```python
+class field_move(Step)
+```
+
+Move field
+
+## steps.field\_remove
+
+```python
+class field_remove(Step)
+```
+
+Remove field
+
+## steps.field\_split
+
+```python
+class field_split(Step)
+```
+
+Split field
+
+## steps.field\_unpack
+
+```python
+class field_unpack(Step)
+```
+
+Unpack field
+
+## steps.field\_update
+
+```python
+class field_update(Step)
+```
+
+Update field
+
+## steps.resource\_add
+
+```python
+class resource_add(Step)
+```
+
+Add resource
+
+## steps.resource\_remove
+
+```python
+class resource_remove(Step)
+```
+
+Remove resource
+
+## steps.resource\_transform
+
+```python
+class resource_transform(Step)
+```
+
+Transform resource
+
+## steps.resource\_update
+
+```python
+class resource_update(Step)
+```
+
+Update resource
+
+## steps.row\_filter
+
+```python
+class row_filter(Step)
+```
+
+Filter rows
+
+## steps.row\_search
+
+```python
+class row_search(Step)
+```
+
+Search rows
+
+## steps.row\_slice
+
+```python
+class row_slice(Step)
+```
+
+Slice rows
+
+## steps.row\_sort
+
+```python
+class row_sort(Step)
+```
+
+Sort rows
+
+## steps.row\_split
+
+```python
+class row_split(Step)
+```
+
+Split rows
+
+## steps.row\_subset
+
+```python
+class row_subset(Step)
+```
+
+Subset rows
+
+## steps.row\_ungroup
+
+```python
+class row_ungroup(Step)
+```
+
+Ungroup rows
+
+## steps.table\_aggregate
+
+```python
+class table_aggregate(Step)
+```
+
+Aggregate table
+
+## steps.table\_attach
+
+```python
+class table_attach(Step)
+```
+
+Attach table
+
+## steps.table\_debug
+
+```python
+class table_debug(Step)
+```
+
+Debug table
+
+## steps.table\_diff
+
+```python
+class table_diff(Step)
+```
+
+Diff tables
+
+## steps.table\_intersect
+
+```python
+class table_intersect(Step)
+```
+
+Intersect tables
+
+## steps.table\_join
+
+```python
+class table_join(Step)
+```
+
+Join tables
+
+## steps.table\_melt
+
+```python
+class table_melt(Step)
+```
+
+Melt tables
+
+## steps.table\_merge
+
+```python
+class table_merge(Step)
+```
+
+Merge tables
+
+## steps.table\_normalize
+
+```python
+class table_normalize(Step)
+```
+
+Normalize table
+
+## steps.table\_pivot
+
+```python
+class table_pivot(Step)
+```
+
+Pivot table
+
+## steps.table\_print
+
+```python
+class table_print(Step)
+```
+
+Print table
+
+## steps.table\_recast
+
+```python
+class table_recast(Step)
+```
+
+Recast table
+
+## steps.table\_transpose
+
+```python
+class table_transpose(Step)
+```
+
+Transpose table
+
+## steps.table\_validate
+
+```python
+class table_validate(Step)
+```
+
+Validate table
+
+## steps.table\_write
+
+```python
+class table_write(Step)
+```
+
+Write table
 
 ## transform
 
@@ -6316,21 +6464,185 @@ Public   | `from frictionless import transform_resource`
 
 - `Resource` - the transform result
 
-## truncated\_value
+## types.AnyType
 
 ```python
-class truncated_value(Check)
+class AnyType(Type)
 ```
 
-Check for possible truncated values
+Any type implementation.
 
 API      | Usage
 -------- | --------
-Public   | `from frictionless import checks`
-Implicit | `validate(checks=([{"code": "truncated-value"}])`
+Public   | `from frictionless import types`
 
-This check can be enabled using the `checks` parameter
-for the `validate` function.
+## types.ArrayType
+
+```python
+class ArrayType(Type)
+```
+
+Array type implementation.
+
+API      | Usage
+-------- | --------
+Public   | `from frictionless import types`
+
+## types.BooleanType
+
+```python
+class BooleanType(Type)
+```
+
+Boolean type implementation.
+
+API      | Usage
+-------- | --------
+Public   | `from frictionless import types`
+
+## types.DateType
+
+```python
+class DateType(Type)
+```
+
+Date type implementation.
+
+API      | Usage
+-------- | --------
+Public   | `from frictionless import types`
+
+## types.DatetimeType
+
+```python
+class DatetimeType(Type)
+```
+
+Datetime type implementation.
+
+API      | Usage
+-------- | --------
+Public   | `from frictionless import types`
+
+## types.DurationType
+
+```python
+class DurationType(Type)
+```
+
+Duration type implementation.
+
+API      | Usage
+-------- | --------
+Public   | `from frictionless import types`
+
+## types.GeojsonType
+
+```python
+class GeojsonType(Type)
+```
+
+Geojson type implementation.
+
+API      | Usage
+-------- | --------
+Public   | `from frictionless import types`
+
+## types.GeopointType
+
+```python
+class GeopointType(Type)
+```
+
+Geopoint type implementation.
+
+API      | Usage
+-------- | --------
+Public   | `from frictionless import types`
+
+## types.IntegerType
+
+```python
+class IntegerType(Type)
+```
+
+Integer type implementation.
+
+API      | Usage
+-------- | --------
+Public   | `from frictionless import types`
+
+## types.NumberType
+
+```python
+class NumberType(Type)
+```
+
+Number type implementation.
+
+API      | Usage
+-------- | --------
+Public   | `from frictionless import types`
+
+## types.ObjectType
+
+```python
+class ObjectType(Type)
+```
+
+Object type implementation.
+
+API      | Usage
+-------- | --------
+Public   | `from frictionless import types`
+
+## types.StringType
+
+```python
+class StringType(Type)
+```
+
+String type implementation.
+
+API      | Usage
+-------- | --------
+Public   | `from frictionless import types`
+
+## types.TimeType
+
+```python
+class TimeType(Type)
+```
+
+Time type implementation.
+
+API      | Usage
+-------- | --------
+Public   | `from frictionless import types`
+
+## types.YearType
+
+```python
+class YearType(Type)
+```
+
+Year type implementation.
+
+API      | Usage
+-------- | --------
+Public   | `from frictionless import types`
+
+## types.YearmonthType
+
+```python
+class YearmonthType(Type)
+```
+
+Yearmonth type implementation.
+
+API      | Usage
+-------- | --------
+Public   | `from frictionless import types`
 
 ## validate
 
