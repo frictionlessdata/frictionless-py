@@ -86,8 +86,29 @@ module.exports = {
           position: "left",
         },
         {
+          label: "Notebooks",
+          position: "left",
+          items: [
+            {
+              label: "Frictionless Cars",
+              href:
+                "https://colab.research.google.com/drive/1x5tbNm-i_kbCnBbK42GD1ogDcHTCAAbj",
+            },
+            {
+              label: "Frictionless Biology",
+              href:
+                "https://colab.research.google.com/drive/1iIrTed-d056VXtl9t1WLQnLMC2KeK9Ul",
+            },
+          ],
+        },
+        {
           to: "docs/development/development",
           label: "Development",
+          position: "left",
+        },
+        {
+          to: "docs/faq",
+          label: "FAQ",
           position: "left",
         },
         {
