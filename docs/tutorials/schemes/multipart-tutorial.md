@@ -24,7 +24,7 @@ pprint(resource.read_rows())
 
 ## Writing Data
 
-The same can be done for writing:
+A similiar approach can be used for writing:
 
 ```python title="Python"
 from frictionless import Resource
