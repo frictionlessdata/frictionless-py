@@ -18,9 +18,7 @@ goodread:
     - rm country.package.yaml
 ---
 
-> This guide assumes basic familiarity with the Frictionless Framework. To learn more, please read the [Introduction](https://framework.frictionlessdata.io/docs/guides/introduction) and [Quick Start](https://framework.frictionlessdata.io/docs/guides/quick-start).
-
-> This guide is meant to be read in order from top to bottom, and reuses examples throughout the text. You can use the menu to skip sections, but please note that you might need to run code from earlier sections to make all the examples work.
+> This guide assumes basic familiarity with the Frictionless Framework. To learn more, please read the [Introduction](https://framework.frictionlessdata.io/docs/guides/introduction) and [Quick Start](https://framework.frictionlessdata.io/docs/guides/quick-start). Also, this guide is meant to be read in order from top to bottom, and reuses examples throughout the text. You can use the menu to skip sections, but please note that you might need to run code from earlier sections to make all the examples work.
 
 In Frictionless terms, "Describing data" means creating metadata for your data files. Having metadata is important because data files by themselves usually do not provide enough information to fully understand the data. For example, if you have a data table in a CSV format without metadata, you are missing a few critical pieces of information:
 - the meaning of the fields e.g., what the `size` field means (does that field mean geographic size? Or does it refer to the size of the file?)

@@ -7,18 +7,18 @@ sidebar_label: BigQuery
 
 Frictionless supports both reading tables from BigQuery source and treating a BigQuery dataset as a tabular data storage.
 
-```bash
-! pip install frictionless[bigquery]
+```bash title="CLI"
+pip install frictionless[bigquery]
 ```
 
+## Reading Data
 
-## Reading from BigQuery
+You can read from this source using `Package/Resource`, for example:
 
-You can read from this source using `Package/Resource` or `Table` API, for example:
-
-```python
+```python title="Python"
 import os
 import json
+from pprint import pprint
 from apiclient.discovery import build
 from oauth2client.client import GoogleCredentials
 from frictionless import Resource
@@ -32,52 +32,52 @@ service = build("bigquery", "v2", credentials=credentials),
 project = json.load(open(".google.json"))["project_id"],
 
 # Read from BigQuery
-dialect = BigqueryDialect(project=project, dataset='<dataset>', table='<table>'
-resource = Resource(path=service, dialect=dialect)
-print(resource.read_rows())
+dialect = BigqueryDialect(project=project, dataset='<dataset>', table='<table>')
+resource = Resource(service, dialect=dialect)
+pprint(resource.read_rows())
 ```
-
 
 If you'd like to treat BigQuery dataset as a tabular storage:
 
-```python
+```python title="Python"
+from pprint import pprint
+from frictionless import Package
+
 package = Package.from_bigquery(service=service, project=project, dataset='<dataset>')
-print(package)
+pprint(package)
 for resource in package.resources:
-  print(resource.read_rows())
+  pprint(resource.read_rows())
 ```
 
-
-## Writing to BigQuery
+## Writing Data
 
 > **[NOTE]** Timezone information is ignored for `datetime` and `time` types.
 
 We can export a package to a BigQuery dataset:
 
 ```python
+from pprint import pprint
+from frictionless import Package
+
 package = Package('path/to/datapackage.json')
-package.to_bigquery(service=service, project=project, dataset='<dataset>')
+package.to_bigquery(service, project=project, dataset='<dataset>')
 ```
 
+Also, it's possible to save a resource as a Bigquery table using `resource.write()`.
 
-## Configuring BigQuery
+## Configuring Data
 
-There are two options to configure BigQuery interactions. First of all, there are different options for these functions:
-
-```
-Resource/Package.from_bigquery
-resource/package.to_bigquery
-```
-
-
-Secondly, there a dialect:
+There is the `BigqueryDialect` to configure how Frictionles works with BigQuery:
 
 ```python
-dialect = BigqueryDialect(project=project, dataset='<dataset>', table='<table>'
-resource = Resource(path=service, dialect=dialect)
-print(resource.read_rows())
-```
+from pprint import pprint
+from frictionless import Resource
+from frictionless.plugins.bigquery import BigqueryDialect
 
+dialect = BigqueryDialect(project=project, dataset='<dataset>', table='<table>'
+resource = Resource(service, dialect=dialect)
+pprint(resource.read_rows())
+```
 
 References:
 - [BigQuery Dialect](../../references/formats-reference.md#bigquery)

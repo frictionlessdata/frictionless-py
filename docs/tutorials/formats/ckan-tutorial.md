@@ -7,26 +7,25 @@ sidebar_label: CKAN
 
 Frictionless supports reading and writing CKAN datasets.
 
-```bash
-! pip install frictionless[ckan]
+```bash title="CLI"
+pip install frictionless[ckan]
 ```
 
-
-## Reading from CKAN
+## Reading Data
 
 You can read a CKAN dataset:
 
 ```python
+from pprint import pprint
 from frictionless import Package
 
-package = Package.from_ckan(base_url='<base_url>', dataset_id='<dataset_id>', api_key='<api_key>')
-print(package)
+package = Package.from_ckan('<base_url>', dataset_id='<dataset_id>', api_key='<api_key>')
+pprint(package)
 for resource in package.resources:
-  print(resource.read_rows())
+  pprint(resource.read_rows())
 ```
 
-
-## Writing to CKAN
+## Writing Data
 
 > **[NOTE]** Timezone information is ignored for `datetime` and `time` types.
 
@@ -36,11 +35,10 @@ You can write a dataset to CKAN:
 from frictionless import Package
 
 package = Package('path/to/datapackage.json')
-package.to_ckan(base_url='<base_url>', dataset_id='<dataset_id>', api_key='<api_key>')
+package.to_ckan('<base_url>', dataset_id='<dataset_id>', api_key='<api_key>')
 ```
 
-
-## Configuring CKAN
+## Configuring Data
 
 There is a dialect to configure how Frictionless read and write files in this format. For example:
 
@@ -51,7 +49,6 @@ from frictionless.plugins.ckan import CkanDialect
 dialect = CkanDialect(resource='resource', dataset='dataset', apikey='apikey')
 resource = Resource('https://ckan-portal.com', format='ckan', dialect=dialect)
 ```
-
 
 References:
 - [Ckan Dialect](../../references/formats-reference.md#ckan)
