@@ -253,10 +253,22 @@ There are no options available.
 
 > Type: str
 
-Table
+Table name
+
+### Prefix
+
+> Type: str
+
+Prefix for all table names
 
 ### Order By
 
 > Type: str
 
-Order_by
+Order_by statement passed to sql
+
+### Namespace
+
+> Type: str
+
+Sql schema

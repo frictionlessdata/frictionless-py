@@ -1,29 +1,45 @@
 ---
 title: Describing Data
+goodread:
+  prepare:
+    - cp data/table.csv table.csv
+    - cp data/country-1.csv country-1.csv
+    - cp data/country-2.csv country-2.csv
+    - cp data/country-3.csv country-3.csv
+    - cp data/capital-3.csv capital-3.csv
+  cleanup:
+    - rm table.csv
+    - rm country-1.csv
+    - rm country-2.csv
+    - rm country-3.csv
+    - rm capital-3.csv
+    - rm country.schema.yaml
+    - rm country.resource.yaml
+    - rm country.package.yaml
 ---
 
-What does "describing data" mean?
+> This guide assumes basic familiarity with the Frictionless Framework. To learn more, please read the [Introduction](https://framework.frictionlessdata.io/docs/guides/introduction) and [Quick Start](https://framework.frictionlessdata.io/docs/guides/quick-start). Also, this guide is meant to be read in order from top to bottom, and reuses examples throughout the text. You can use the menu to skip sections, but please note that you might need to run code from earlier sections to make all the examples work.
 
-Frictionless is a project based on the [Frictionless Data Specifications](https://specs.frictionlessdata.io/). It's a set of patterns for creating metadata, including Data Package (for datasets), Data Resource (for files), and Table Schema (for tables).
-
-In other words, "describing data" means creating metadata for your data files. The reason for having metadata is simple: usually, data files themselves are not capable of providing enough information. For example, if you have a data table in a CSV format, it misses a few critical pieces of information:
-- meaning of the fields e.g., what the `size` field means; is it clothes size or file size
-- data types information e.g., is this field a string or an integer
+In Frictionless terms, "Describing data" means creating metadata for your data files. Having metadata is important because data files by themselves usually do not provide enough information to fully understand the data. For example, if you have a data table in a CSV format without metadata, you are missing a few critical pieces of information:
+- the meaning of the fields e.g., what the `size` field means (does that field mean geographic size? Or does it refer to the size of the file?)
+- data type information e.g., is this field a string or an integer?
 - data constraints e.g., the minimum temperature for your measurements
-- data relations e.g., identifiers connection
+- data relations e.g., identifier connections
 - and others
+
+For a dataset, there is even more information that can be provided, like the general purpose of a dataset, information about data sources, list of authors, and more. Also, when there are many tabular files, relational rules can be very important. Usually, there are foreign keys ensuring the integrity of the dataset; for example, think of a reference table containing country names and other data tables using it as a reference. Data in this form is called "normalized data" and it occurs very often in scientific and other kinds of research.
+
+Now that we have a general understanding of what "describing data" is, we can discuss why it is important:
+- **data validation**: metadata helps to reveal problems in your data during early stages of your workflow
+- **data publication**: metadata provides additional information that your data doesn't include
+
+These are not the only positives of having metadata, but they are two of the most important. Please continue reading to learn how Frictionless helps to achieve these advantages by describing your data. This guide will discuss the main `describe` functions (`describe`, `describe_schema`, `describe_resource`, `describe_package`) and will then go into more detail about how to create and edit metadata in Frictionless.
+
+For the following examples, you will need to have Frictionless installed. See our [Quick Start Guide](https://framework.frictionlessdata.io/docs/guides/quick-start) if you need help.
 
 ```bash title="CLI"
 pip install frictionless
 ```
-
-For a dataset, there is even more information that can be provided, like the general purpose of a dataset, information about data sources, list of authors, and more. Of course, when there are many tabular files, relational rules can be very important. Usually, there are foreign keys ensuring the integrity of the dataset; for example, think of a reference table containing country names and other tables using it as a reference. Data in this form is called "normalized data" and it occurs very often in scientific and other kinds of research.
-
-Now that we have a general understanding of what "describing data" is, we can now articulate why it's important:
-- **data validation**: metadata helps to reveal problems in your data during early stages of your workflow
-- **data publication**: metadata provides additional information that your data doesn't include
-
-These are not the only positives of having metadata, but they are two of the most important. Please continue reading to learn how Frictionless helps to achieve these advantages by describing your data.
 
 ## Describe Functions
 
@@ -35,33 +51,36 @@ The frictionless framework provides 4 different `describe` functions in Python:
 - `describe_resource`: always returns Data Resource metadata
 - `describe_package`: always returns Data Package metadata
 
+As described in more detail in the [Introduction](https://framework.frictionlessdata.io/docs/guides/introduction), a resource is a single file, such as a data file, and a package is a set of files, such as a data file and a schema.
+
 In the command-line, there is only 1 command (`describe`) but there is also a flag to adjust the behavior:
 
 ```bash title="CLI"
-frictionless describe
-frictionless describe --type schema
-frictionless describe --type resource
-frictionless describe --type package
+frictionless describe your-table.csv
+frictionless describe your-table.csv --type schema
+frictionless describe your-table.csv --type resource
+frictionless describe your-table.csv --type package
 ```
 
 For example, if we want a Data Package descriptor for a single file:
 
+> Download [`table.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/table.csv) to reproduce the examples (right-click and "Save link as").
 
-```bash title="CLI"
-frictionless describe data/table.csv --type package
+```bash goodread title="CLI"
+frictionless describe table.csv --type package
 ```
 ```yaml
----
-metadata: data/table.csv
----
+# --------
+# metadata: table.csv
+# --------
 
 profile: data-package
 resources:
-    encoding: utf-8
+  - encoding: utf-8
     format: csv
     hashing: md5
     name: table
-    path: data/table.csv
+    path: table.csv
     profile: tabular-data-resource
     schema:
       fields:
@@ -72,18 +91,18 @@ resources:
     scheme: file
 ```
 
-## Describing Schema
+## Describing a Schema
 
-Table Schema is a specification for providing a "schema" (similar to a database schema) for tabular data. This information includes the expected data type for each value in a column ("string", "number", "date", etc.), constraints on the value ("this string can only be at most 10 characters long"), and the expected format of the data ("this field should only contain strings that look like email addresses"). Table Schema can also specify relations between tables.
+Table Schema is a specification for providing a "schema" (similar to a database schema) for tabular data. This information includes the expected data type for each value in a column ("string", "number", "date", etc.), constraints on the value ("this string can only be at most 10 characters long"), and the expected format of the data ("this field should only contain strings that look like email addresses"). Table Schema can also specify relations between data tables.
 
 We're going to use this file for the examples in this section. For this guide, we only use CSV files because of their demonstrativeness, but in-general Frictionless can handle data in Excel, JSON, SQL, and many other formats:
 
-> Download [`country-1.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/country-1.csv) into the `data` folder to reproduce the examples.
+> Download [`country-1.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/country-1.csv) to reproduce the examples (right-click and "Save link as").
 
-```bash title="CLI"
-cat data/country-1.csv
+```bash goodread title="CLI"
+cat country-1.csv
 ```
-```csv title="data/country-1.csv"
+```csv title="country-1.csv"
 id,neighbor_id,name,population
 1,,Britain,67
 2,3,France,67
@@ -92,19 +111,19 @@ id,neighbor_id,name,population
 5,4,Spain,47
 ```
 
-Let's get a Table Schema using the Frictionless framework:
+Let's get a Table Schema using the Frictionless framework (note: this example uses YAML for the schema format, but Frictionless also supports JSON format):
 
-```python title="Python"
+```python goodread title="Python"
 from frictionless import describe_schema
 
-schema = describe_schema("data/country-1.csv")
-schema.to_yaml("tmp/country.schema-simple.yaml")
+schema = describe_schema("country-1.csv")
+schema.to_yaml("country.schema.yaml") # use schema.to_json for JSON
 ```
 
 The high-level functions of Frictionless operate on the dataset and resource levels so we have to use a little bit of Python programming to get the schema information. Below we will show how to use a command-line interface for similar tasks.
 
-```bash title="CLI"
-cat tmp/country.schema-simple.yaml
+```bash goodread title="CLI"
+cat country.schema.yaml
 ```
 ```yaml
 fields:
@@ -120,10 +139,10 @@ fields:
 
 As we can see, we were able to infer basic metadata from our data file. But describing data doesn't end here - we can provide additional information that we discussed earlier:
 
-```python title="Python"
+```python goodread title="Python"
 from frictionless import describe_schema
 
-schema = describe_schema("data/country-1.csv")
+schema = describe_schema("country-1.csv")
 schema.get_field("id").title = "Identifier"
 schema.get_field("neighbor_id").title = "Identifier of the neighbor"
 schema.get_field("name").title = "Name of the country"
@@ -133,7 +152,7 @@ schema.get_field("population").constraints["minimum"] = 0
 schema.foreign_keys.append(
     {"fields": ["neighbor_id"], "reference": {"resource": "", "fields": ["id"]}}
 )
-schema.to_yaml("tmp/country.schema.yaml")
+schema.to_yaml("country.schema.yaml")
 ```
 
 Let's break it down:
@@ -142,9 +161,8 @@ Let's break it down:
 - we set a constraint to the "Population" field because it can't be less than 0
 - we added a foreign key saying that "Identifier of the neighbor" should be present in the "Identifier" field
 
-
-```bash title="CLI"
-cat tmp/country.schema.yaml
+```bash goodread title="CLI"
+cat country.schema.yaml
 ```
 ```yaml
 fields:
@@ -178,20 +196,20 @@ To continue learning about table schemas please read:
 - [Table Schema Spec](https://specs.frictionlessdata.io/table-schema/)
 - [API Reference: Schema](../references/api-reference.md#schema)
 
-## Describing Resource
+## Describing a Resource
 
-The Data Resource format describes a data resource such as an individual file or table.
-The essence of a Data Resource is a locator for the data it describes.
-A range of other properties can be declared to provide a richer set of metadata.
+The Data Resource format describes a data resource such as an individual file or data table.
+The essence of a Data Resource is a path to the data file it describes.
+A range of other properties can be declared to provide a richer set of metadata including Table Schema for tabular data.
 
-For this section, we will use a file that is slightly more complex to handle. For some reason, cells are separated by the ";" char and there is a comment on the top:
+For this section, we will use a file that is slightly more complex to handle. In this example, cells are separated by the ";" character and there is a comment on the top:
 
-> Download [`country-2.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/country-2.csv) into the `data` folder to reproduce the examples.
+> Download [`country-2.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/country-2.csv) to reproduce the examples (right-click and "Save link as").
 
 ```bash title="CLI"
-cat data/country-2.csv
+cat country-2.csv
 ```
-```csv title="data/country-2.csv"
+```csv title="country-2.csv"
 # Author: the scientist
 id;neighbor_id;name;population
 1;;Britain;67
@@ -203,66 +221,59 @@ id;neighbor_id;name;population
 
 Let's describe it this time using the command-line interface:
 
-```bash title="CLI"
-frictionless describe data/country-2.csv
+```bash goodread title="CLI"
+frictionless describe country-2.csv
 ```
 ```yaml
----
-metadata: data/country-2.csv
----
+# --------
+# metadata: country-2.csv
+# --------
 
-compression: 'no'
-compressionPath: ''
-control:
-  newline: ''
-dialect: {}
 encoding: utf-8
-scheme: file
 format: csv
 hashing: md5
 name: country-2
-path: data/country-2.csv
+path: country-2.csv
 profile: tabular-data-resource
-query: {}
 schema:
   fields:
     - name: '# Author: the scientist'
       type: string
+scheme: file
 ```
 
-OK, that's clearly wrong. As we have seen in the "Introductory Guide" Frictionless is capable of inferring some complicated cases' metadata but our table is too unusual for it to automatically infer. We need to manually program it:
+OK, that looks wrong -- for example, the schema has only inferred one field, and that field does not seem correct either. As we have seen in the "Introductory Guide" Frictionless is capable of inferring some complicated cases' metadata but our data table is too complex for it to automatically infer. We need to manually program it:
 
-```python title="Python"
+```python goodread title="Python"
 from frictionless import Schema, describe
 
-resource = describe("data/country-2.csv")
+resource = describe("country-2.csv")
 resource.dialect.delimiter = ";"
 resource.layout.header_rows = [2]
-resource.schema = Schema("tmp/country.schema.yaml")
-resource.to_yaml("tmp/country.resource.yaml")
+resource.schema = Schema("country.schema.yaml")
+resource.to_yaml("country.resource.yaml")
 ```
 
 So what we did here:
 - we set the header rows to be row number 2; as humans, we can easily see that was the proper row
 - we set the CSV Delimiter to be ";"
-- we reuse the schema we created earlier as the data has the same structure and meaning
+- we reuse the schema we created [earlier](#describing-schema) as the data has the same structure and meaning
 
-```bash title="CLI"
-cat tmp/country.resource.yaml
+```bash goodread title="CLI"
+cat country.resource.yaml
 ```
 ```yaml
-encoding: utf-8
-scheme: file
-format: csv
-hashing: md5
-name: country-2
-path: data/country-2.csv
-profile: tabular-data-resource
 dialect:
   delimiter: ;
+encoding: utf-8
+format: csv
+hashing: md5
 layout:
   headerRows:
     - 2
+name: country-2
+path: country-2.csv
+profile: tabular-data-resource
 schema:
   fields:
     - name: id
@@ -287,6 +298,7 @@ schema:
         fields:
           - id
         resource: ''
+scheme: file
 ```
 
 Our resource metadata includes the schema metadata we created earlier, but it also has:
@@ -306,7 +318,7 @@ To continue learning about data resources please read:
 - [Data Resource Spec](https://specs.frictionlessdata.io/data-resource/)
 - [API Reference: Resource](../references/api-reference.md#resource)
 
-## Describing Package
+## Describing a Package
 
 A Data Package consists of:
 - Metadata that describes the structure and contents of the package
@@ -317,17 +329,17 @@ In addition to this descriptor, a data package will include other resources such
 
 The data included in the package may be provided as:
 - Files bundled locally with the package descriptor
-- Remote resources, referenced by URL
+- Remote resources, referenced by URL (see the [schemes tutorial](https://framework.frictionlessdata.io/docs/tutorials/schemes/local-tutorial) for more information about supported URLs)
 - "Inline" data (see below) which is included directly in the descriptor
 
 For this section, we will use the following files:
 
-> Download [`country-3.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/country-3.csv) into the `data` folder to reproduce the examples.
+> Download [`country-3.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/country-3.csv) to reproduce the examples (right-click and "Save link as")
 
-```bash title="CLI"
-cat data/country-3.csv
+```bash goodread title="CLI"
+cat country-3.csv
 ```
-```csv title="data/country-3.csv"
+```csv title="country-3.csv"
 id,capital_id,name,population
 1,1,Britain,67
 2,3,France,67
@@ -336,12 +348,12 @@ id,capital_id,name,population
 5,4,Spain,47
 ```
 
-> Download [`capital-3.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/capital-3.csv) into the `data` folder to reproduce the examples.
+> Download [`capital-3.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/capital-3.csv) to reproduce the examples (right-click and "Save link as").
 
-```bash title="CLI"
-cat data/capital-3.csv
+```bash goodread title="CLI"
+cat capital-3.csv
 ```
-```csv title="data/capital-3.csv"
+```csv title="capital-3.csv"
 id,name
 1,London
 2,Berlin
@@ -352,21 +364,21 @@ id,name
 
 First of all, let's describe our package using the command-line interface. We did it before for a resource but now we're going to use a glob pattern to indicate that there are multiple files:
 
-```bash title="CLI"
-frictionless describe data/*-3.csv
+```bash goodread title="CLI"
+frictionless describe *-3.csv
 ```
 ```yaml
----
-metadata: data/capital-3.csv data/country-3.csv
----
+# --------
+# metadata: capital-3.csv country-3.csv
+# --------
 
 profile: data-package
 resources:
-    encoding: utf-8
+  - encoding: utf-8
     format: csv
     hashing: md5
     name: capital-3
-    path: data/capital-3.csv
+    path: capital-3.csv
     profile: tabular-data-resource
     schema:
       fields:
@@ -379,7 +391,7 @@ resources:
     format: csv
     hashing: md5
     name: country-3
-    path: data/country-3.csv
+    path: country-3.csv
     profile: tabular-data-resource
     schema:
       fields:
@@ -398,10 +410,10 @@ We have already learned about many concepts that are reflected in this metadata.
 
 Following the pattern that is already familiar to the guide reader, we add some additional metadata:
 
-```python title="Python"
+```python goodread title="Python"
 from frictionless import describe
 
-package = describe("data/*-3.csv")
+package = describe("*-3.csv")
 package.title = "Countries and their capitals"
 package.description = "The data was collected as a research project"
 package.get_resource("country-3").name = "country"
@@ -409,16 +421,15 @@ package.get_resource("capital-3").name = "capital"
 package.get_resource("country").schema.foreign_keys.append(
     {"fields": ["capital_id"], "reference": {"resource": "capital", "fields": ["id"]}}
 )
-package.to_yaml("tmp/country.package.yaml")
+package.to_yaml("country.package.yaml")
 ```
 
 In this case, we add a relation between different files connecting `id` and `capital_id`. Also, we provide dataset-level metadata to explain the purpose of this dataset. We haven't added individual fields' titles and descriptions, but that can be done as it was shown in the "Table Schema" section.
 
-```bash title="CLI"
-cat tmp/country.package.yaml
+```bash goodread title="CLI"
+cat country.package.yaml
 ```
 ```yaml
-title: Countries and their capitals
 description: The data was collected as a research project
 profile: data-package
 resources:
@@ -426,7 +437,7 @@ resources:
     format: csv
     hashing: md5
     name: capital
-    path: data/capital-3.csv
+    path: capital-3.csv
     profile: tabular-data-resource
     schema:
       fields:
@@ -436,11 +447,10 @@ resources:
           type: string
     scheme: file
   - encoding: utf-8
-    scheme: file
     format: csv
     hashing: md5
     name: country
-    path: data/country-3.csv
+    path: country-3.csv
     profile: tabular-data-resource
     schema:
       fields:
@@ -459,6 +469,8 @@ resources:
             fields:
               - id
             resource: capital
+    scheme: file
+title: Countries and their capitals
 ```
 
 The main role of the Data Package descriptor is describing a dataset; as we can see, it includes previously shown descriptors like `schema`, `dialect`, and `resource`. But it would be a mistake to think that Data Package is the least important specification; actually, it completes the Frictionless Data suite making it possible to share and validate not only individual files but also complete datasets.
@@ -467,17 +479,16 @@ To continue learning about data resources please read:
 - [Data Package Spec](https://specs.frictionlessdata.io/data-package/)
 - [API Reference: Package](../references/api-reference.md#package)
 
-##  Metadata Importance
+## Metadata Importance
 
 This documentation contains a great deal of information on how to use metadata and why it's vital for your data. In this section, we're going to provide a quick example based on the "Data Resource" section but please read other documents to get the full picture.
 
-Let's get back to this unusual data table:
+Let's get back to this complex data table:
 
-
-```bash title="CLI"
-cat data/country-2.csv
+```bash goodread title="CLI"
+cat country-2.csv
 ```
-```csv title="data/country-2.csv"
+```csv title="country-2.csv"
 # Author: the scientist
 id;neighbor_id;name;population
 1;;Britain;67
@@ -489,36 +500,36 @@ id;neighbor_id;name;population
 
 As we tried before, by default Frictionless can't properly describe this file so we got something like:
 
-```bash title="CLI"
-frictionless describe data/country-2.csv
+```bash goodread title="CLI"
+frictionless describe country-2.csv
 ```
 ```yaml
----
-metadata: data/country-2.csv
----
+# --------
+# metadata: country-2.csv
+# --------
 
 encoding: utf-8
-scheme: file
 format: csv
 hashing: md5
 name: country-2
-path: data/country-2.csv
+path: country-2.csv
 profile: tabular-data-resource
 schema:
   fields:
     - name: '# Author: the scientist'
       type: string
+scheme: file
 ```
 
 Trying to extract the data will fail this way:
 
-```bash title="CLI"
-frictionless extract data/country-2.csv
+```bash goodread title="CLI"
+frictionless extract country-2.csv
 ```
 ```
----
-data: data/country-2.csv
----
+# ----
+# data: country-2.csv
+# ----
 
 ==============================
 # Author: the scientist
@@ -534,18 +545,18 @@ id;neighbor_id;name;population
 
 This example highlights a really important idea - without metadata many software will not be able to even read this data file. Furthermore, without metadata people cannot understand the purpose of this data. To see how we can use metadata to fix our data, let's now use the `country.resource.yaml` file we created in the "Data Resource" section with Frictionless `extract`:
 
-```bash title="CLI"
-frictionless extract tmp/country.resource.yaml --basepath .
+```bash goodread title="CLI"
+frictionless extract country.resource.yaml
 ```
 ```
----
-data: tmp/country.resource.yaml
----
+# ----
+# data: country.resource.yaml
+# ----
 
 ==  ===========  =======  ==========
 id  neighbor_id  name     population
 ==  ===========  =======  ==========
- 1  None         Britain          67
+ 1               Britain          67
  2            3  France           67
  3            2  Germany          83
  4            5  Italy            60
@@ -557,25 +568,30 @@ As we can see, the data is now fixed. The metadata we had saved the day! If we e
 
 ## Inferring Metadata
 
+> Many Frictionless Framework's classes are metadata classes as though Schema, Resource, or Package. All the sections below are applicable for all these classes. You can read about the base Metadata class in more detail in [API Reference](../references/api-reference.md#metadata).
+
 Many Frictionless functions infer metadata under the hood such as `describe`, `extract`, and many more. On a lower-level, it's possible to control this process. To see this, let's create a `Resource`.
 
-```python title="Python"
+```python goodread title="Python"
 from pprint import pprint
 from frictionless import Resource
 
-resource = Resource("data/country-1.csv")
+resource = Resource("country-1.csv")
 pprint(resource)
 ```
 ```
-{'path': 'data/country-1.csv'}
+{'path': 'country-1.csv'}
 ```
 
 Frictionless always tries to be as explicit as possible. We didn't provide any metadata except for `path` so we got the expected result. But now, we'd like to `infer` additional metadata:
 
 > Note that we use the `stats` argument for the `resource.infer` function. We can ask for stats using CLI with `frictionless describe data/table.csv --stats`.
 
-
 ```python title="Python"
+from pprint import pprint
+from frictionless import Resource
+
+resource = Resource("country-1.csv")
 resource.infer(stats=True)
 pprint(resource)
 ```
@@ -610,7 +626,7 @@ For more advanced detection options, please read the [Detector Guide](framework/
 
 By default, Frictionless never adds default values to metadata, for example:
 
-```python title="Python"
+```python goodread title="Python"
 from pprint import pprint
 from frictionless import describe
 
@@ -626,7 +642,11 @@ pprint(resource.schema)
 
 Under the hood it, for example, still treats empty strings as missing values because it's the specs' default. We can reveal implicit metadata by expanding it:
 
-```python title="Python"
+```python goodread title="Python"
+from pprint import pprint
+from frictionless import describe
+
+resource = describe("data/country-1.csv")
 resource.schema.expand()
 pprint(resource.schema)
 ```
@@ -651,49 +671,47 @@ pprint(resource.schema)
 
 We have seen this before but let's re-iterate; it's possible to transform core metadata properties using Python's interface:
 
-```python title="Python"
+```python goodread title="Python"
 from frictionless import Resource
 
-resource = Resource("tmp/country.resource.yaml")
+resource = Resource("country.resource.yaml")
 resource.title = "Countries"
 resource.description = "It's a research project"
 resource.dialect.delimiter = ";"
 resource.layout.header_rows = [2]
-resource.to_yaml("tmp/country.resource.yaml")
+resource.to_yaml("country.resource.yaml")
 ```
 
 But the Python interface is not our only option. Thanks to the flexibility of the Frictionless Specs, we can add arbitrary metadata to our descriptor. We use dictionary operations to do this:
 
-```python title="Python"
+```python goodread title="Python"
 from frictionless import Resource
 
-resource = Resource("tmp/country.resource.yaml")
+resource = Resource("country.resource.yaml")
 resource["customKey1"] = "Value1"
 resource["customKey2"] = "Value2"
-resource.to_yaml("tmp/country.resource.yaml")
+resource.to_yaml("country.resource.yaml")
 ```
 
 Let's check it out:
 
-```bash title="CLI"
-cat tmp/country.resource.yaml
+```bash goodread title="CLI"
+cat country.resource.yaml
 ```
 ```yaml
 customKey1: Value1
 customKey2: Value2
-title: Countries
 description: It's a research project
 dialect:
   delimiter: ;
+encoding: utf-8
+format: csv
+hashing: md5
 layout:
   headerRows:
     - 2
-encoding: utf-8
-scheme: file
-format: csv
-hashing: md5
 name: country-2
-path: data/country-2.csv
+path: country-2.csv
 profile: tabular-data-resource
 schema:
   fields:
@@ -719,31 +737,33 @@ schema:
         fields:
           - id
         resource: ''
+scheme: file
+title: Countries
 ```
 
 ## Validating Metadata
 
 Metadata validity is an important topic, and we recommend validating your metadata before publishing. For example, let's first make it invalid:
 
-```python title="Python"
+```python goodread title="Python"
 from frictionless import Resource
 
-resource = Resource("tmp/country.resource.yaml")
+resource = Resource("country.resource.yaml")
 resource["title"] = 1
 print(resource.metadata_valid)
 print(resource.metadata_errors)
 ```
 ```
 False
-[{'code': 'resource-error', 'name': 'Resource Error', 'tags': ['#general'], 'note': '"1 is not of type \'string\'" at "title" in metadata and at "properties/title/type" in profile', 'message': 'The data resource has an error: "1 is not of type \'string\'" at "title" in metadata and at "properties/title/type" in profile', 'description': 'A validation cannot be processed.'}]
+[{'code': 'resource-error', 'name': 'Resource Error', 'tags': [], 'note': '"1 is not of type \'string\'" at "title" in metadata and at "properties/title/type" in profile', 'message': 'The data resource has an error: "1 is not of type \'string\'" at "title" in metadata and at "properties/title/type" in profile', 'description': 'A validation cannot be processed.'}]
 ```
 
 We see this error: `'message': 'The data resource has an error: "1 is not of type \'string\'" at "title" in metadata and at "properties/title/type" in profile'` Now, let's fix our resource metadata:
 
-```python title="Python"
+```python goodread title="Python"
 from frictionless import Resource
 
-resource = Resource("tmp/country.resource.yaml")
+resource = Resource("country.resource.yaml")
 resource["title"] = 'Countries'
 print(resource.metadata_valid)
 ```
@@ -752,46 +772,3 @@ True
 ```
 
 You need to check `metadata.metadata_valid` only if you change it manually; Frictionless' high-level functions like `validate` do that on their own.
-
-## Mastering Metadata
-
-The Metadata class is under the hood of many of Frictionless' classes. Let's overview the main `Metadata` features. For a full reference, please read ["API Reference"](../references/api-reference.md). Let's take a look at the Metadata class which is a `dict` subclass:
-
-```text title="Text"
-Metadata(dict)
-  to_json
-  to_yaml
-  ---
-  metadata_valid
-  metadata_errors
-  ---
-  metadata_attach
-  metadata_extract
-  metadata_process
-  metadata_validate
-```
-
-This class exists for subclassing, and here are some important points that will help you work with metadata objects and design and write new metadata classes:
-- to bind default values to a property it is possible to use `metadata_attach` (see e.g. the `Schema` class)
-- during the initialization a descriptor is processed by `metadata_extract`
-- metadata detect any shallow update and call `metadata_process`
-- checking for validity or errors will trigger `metadata_validate`
-- functions exporting to json and yaml are available by default
-- `metadata_profile` can be set to a JSON Schema
-- `metadata_Error` can be set to an Error class
-
-## Metadata Classes
-
-Frictionless has many classes that are derived from the `Metadata` class. This means that all of them can be treated as a metadata objects with getters and setters, `to_json` and `to_yaml` function, and other Metadata's API. See ["API Reference"](../references/api-reference.md) for more information about these classes:
-
-- Package
-- Resource
-- Schema
-- Field
-- Layout
-- Control
-- Dialect
-- Report
-- Pipeline
-- Error
-- etc

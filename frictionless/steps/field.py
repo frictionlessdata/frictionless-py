@@ -36,7 +36,7 @@ class field_add(Step):
     # Transform
 
     def transform_resource(self, resource):
-        view = resource.to_petl()
+        table = resource.to_petl()
         name = self.get("name")
         value = self.get("value")
         formula = self.get("formula")
@@ -51,12 +51,12 @@ class field_add(Step):
         else:
             resource.schema.fields.insert(index, field)
         if incremental:
-            resource.data = view.addrownumbers(field=name)
+            resource.data = table.addrownumbers(field=name)
         else:
             if formula:
                 function = lambda row: simpleeval.simple_eval(formula, names=row)
             value = value or function
-            resource.data = view.addfield(name, value=value, index=index)
+            resource.data = table.addfield(name, value=value, index=index)
 
     # Metadata
 
@@ -82,12 +82,12 @@ class field_filter(Step):
     # Transform
 
     def transform_resource(self, resource):
-        view = resource.to_petl()
+        table = resource.to_petl()
         names = self.get("names")
         for name in resource.schema.field_names:
             if name not in names:
                 resource.schema.remove_field(name)
-        resource.data = view.cut(*names)
+        resource.data = table.cut(*names)
 
     # Metadata
 
@@ -111,12 +111,12 @@ class field_move(Step):
     # Transform
 
     def transform_resource(self, resource):
-        view = resource.to_petl()
+        table = resource.to_petl()
         name = self.get("name")
         position = self.get("position")
         field = resource.schema.remove_field(name)
         resource.schema.fields.insert(position - 1, field)
-        resource.data = view.movefield(name, position - 1)
+        resource.data = table.movefield(name, position - 1)
 
     # Metadata
 
@@ -140,11 +140,11 @@ class field_remove(Step):
     # Transform
 
     def transform_resource(self, resource):
-        view = resource.to_petl()
+        table = resource.to_petl()
         names = self.get("names")
         for name in names:
             resource.schema.remove_field(name)
-        resource.data = view.cutout(*names)
+        resource.data = table.cutout(*names)
 
     # Metadata
 
@@ -178,7 +178,7 @@ class field_split(Step):
     # Transform
 
     def transform_resource(self, resource):
-        view = resource.to_petl()
+        table = resource.to_petl()
         name = self.get("name")
         to_names = self.get("toNames")
         pattern = self.get("pattern")
@@ -192,7 +192,7 @@ class field_split(Step):
         if "(" in pattern:
             processor = petl.capture
         resource.data = processor(
-            view,
+            table,
             name,
             pattern,
             to_names,
@@ -225,7 +225,7 @@ class field_unpack(Step):
     # Transform
 
     def transform_resource(self, resource):
-        view = resource.to_petl()
+        table = resource.to_petl()
         name = self.get("name")
         to_names = self.get("toNames")
         preserve = self.get("preserve")
@@ -235,10 +235,10 @@ class field_unpack(Step):
         if not preserve:
             resource.schema.remove_field(name)
         if field.type == "object":
-            processor = view.unpackdict
+            processor = table.unpackdict
             resource.data = processor(name, to_names, includeoriginal=preserve)
         else:
-            processor = view.unpack
+            processor = table.unpack
             resource.data = processor(name, to_names, include_original=preserve)
 
     # Metadata
@@ -277,7 +277,7 @@ class field_update(Step):
     # Transform
 
     def transform_resource(self, resource):
-        view = resource.to_petl()
+        table = resource.to_petl()
         name = self.get("name")
         value = self.get("value")
         formula = self.get("formula")
@@ -289,9 +289,9 @@ class field_update(Step):
         if formula:
             function = lambda val, row: simpleeval.simple_eval(formula, names=row)
         if function:
-            resource.data = view.convert(name, function)
+            resource.data = table.convert(name, function)
         elif "value" in self:
-            resource.data = view.update(name, value)
+            resource.data = table.update(name, value)
 
     # Metadata
 

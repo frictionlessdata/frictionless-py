@@ -16,10 +16,14 @@ import styles from "./styles.module.css";
 
 function Home() {
   const context = useDocusaurusContext();
-  const { siteConfig: { customFields = {} } = {} } = context;
+  const { siteConfig: { customFields = {}, tagline } = {} } = context;
 
   return (
-    <Layout permalink="/" description={customFields.description}>
+    <Layout
+      title={tagline}
+      permalink="/"
+      description={customFields.description}
+    >
       <div className={styles.hero}>
         <div className={styles.heroInner}>
           <h1 className={styles.heroProjectTagline}>
@@ -88,7 +92,7 @@ function Home() {
               </p>
             </div>
             <div className="col">
-              <a href="docs/guides/validating-data">
+              <a href="docs/guides/validation-guide">
                 <img
                   alt="Software"
                   className={styles.featureImage}
@@ -102,7 +106,7 @@ function Home() {
               </p>
             </div>
             <div className="col">
-              <a href="docs/guides/transforming-data">
+              <a href="docs/guides/transform-guide">
                 <img
                   alt="Community"
                   className={styles.featureImage}

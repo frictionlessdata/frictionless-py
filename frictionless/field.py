@@ -50,6 +50,13 @@ class Field(Metadata):
         missing_values=None,
         constraints=None,
         rdf_type=None,
+        array_item=None,
+        true_values=None,
+        false_values=None,
+        bare_number=None,
+        float_number=None,
+        decimal_char=None,
+        group_char=None,
         # Extra
         schema=None,
     ):
@@ -60,6 +67,14 @@ class Field(Metadata):
         self.setinitial("format", format)
         self.setinitial("missingValues", missing_values)
         self.setinitial("constraints", constraints)
+        self.setinitial("rdfType", rdf_type)
+        self.setinitial("arrayItem", array_item)
+        self.setinitial("trueValues", true_values)
+        self.setinitial("falseValues", false_values)
+        self.setinitial("bareNumber", bare_number)
+        self.setinitial("floatNumber", float_number)
+        self.setinitial("decimalChar", decimal_char)
+        self.setinitial("groupChar", group_char)
         self.setinitial("rdfType", rdf_type)
         self.__schema = schema
         self.__type = None
@@ -131,6 +146,7 @@ class Field(Metadata):
             dict: constraints
         """
         constraints = self.get("constraints", {})
+        constraints = constraints if isinstance(constraints, dict) else {}
         return self.metadata_attach("constraints", constraints)
 
     @Metadata.property
@@ -166,6 +182,29 @@ class Field(Metadata):
             Schema?: parent schema
         """
         return self.__schema
+
+    # Array
+
+    @Metadata.property
+    def array_item(self):
+        """
+        Returns:
+            dict: field descriptor
+        """
+        return self.get("arrayItem")
+
+    @Metadata.property(write=False)
+    def array_item_field(self):
+        """
+        Returns:
+            dict: field descriptor
+        """
+        if self.type == "array":
+            if self.array_item:
+                if "arrayItem" in self.array_item:
+                    note = 'Property "arrayItem" cannot be nested'
+                    raise FrictionlessException(errors.FieldError(note=note))
+                return Field(self.array_item)
 
     # Boolean
 
@@ -265,7 +304,23 @@ class Field(Metadata):
             for name, check in self.read_cell_checks.items():
                 if not check(cell):
                     notes = notes or OrderedDict()
-                    notes[name] = f'constraint "{name}" is "{self.constraints[name]}"'
+                    constraint = self.constraints[name]
+                    notes[name] = f'constraint "{name}" is "{constraint}"'
+        # NOTE: we might want to move this logic to types.array when possible
+        if not notes and self.array_item_field:
+            field = self.array_item_field
+            for index, item in enumerate(cell):
+                item = field.read_cell_convert(item)
+                if item is None:
+                    notes = notes or OrderedDict()
+                    notes["type"] = f'array item type is "{field.type}/{field.format}"'
+                    item = None
+                for name, check in field.read_cell_checks.items():
+                    if not check(item):
+                        notes = notes or OrderedDict()
+                        constraint = field.constraints[name]
+                        notes[name] = f'array item constraint "{name}" is "{constraint}"'
+                cell[index] = item
         return cell, notes
 
     def read_cell_convert(self, cell):
@@ -363,7 +418,7 @@ class Field(Metadata):
         for name in self.constraints.keys():
             if name not in self.__type.constraints + ["unique"]:
                 note = f'constraint "{name}" is not supported by type "{self.type}"'
-                yield errors.SchemaError(note=note)
+                yield errors.FieldError(note=note)
 
     # Metadata
 

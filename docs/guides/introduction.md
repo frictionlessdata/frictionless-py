@@ -2,13 +2,11 @@
 title: Introduction
 ---
 
-[![Build](https://img.shields.io/github/workflow/status/frictionlessdata/frictionless-py/general/master)](https://github.com/frictionlessdata/frictionless-py/actions)
-[![Coverage](https://img.shields.io/codecov/c/github/frictionlessdata/frictionless-py/master)](https://codecov.io/gh/frictionlessdata/frictionless-py)
+[![Build](https://img.shields.io/github/workflow/status/frictionlessdata/frictionless-py/general/main)](https://github.com/frictionlessdata/frictionless-py/actions)
+[![Coverage](https://img.shields.io/codecov/c/github/frictionlessdata/frictionless-py/main)](https://codecov.io/gh/frictionlessdata/frictionless-py)
 [![Registry](https://img.shields.io/pypi/v/frictionless.svg)](https://pypi.python.org/pypi/frictionless)
-[![Codebase](https://img.shields.io/badge/github-master-brightgreen)](https://github.com/frictionlessdata/frictionless-py)
+[![Codebase](https://img.shields.io/badge/github-main-brightgreen)](https://github.com/frictionlessdata/frictionless-py)
 [![Support](https://img.shields.io/badge/chat-discord-brightgreen)](https://discord.com/channels/695635777199145130/695635777199145133)
-
-> Frictionless@4 is now live! Please read the [migration guide](https://framework.frictionlessdata.io/docs/development/migration).
 
 Frictionless is a framework to describe, extract, validate, and transform tabular data (DEVT Framework). It supports a great deal of data schemes and formats, and provides popular platforms integrations. The framework is powered by the lightweight yet comprehensive [Frictionless Data Specifications](https://specs.frictionlessdata.io/).
 
@@ -19,7 +17,17 @@ Generating insight and conclusions from data is often not a straightforward proc
 ## Frictionless Specifications
 
 The core of the Framework are the Frictionless Specifications. These specifications are a set of patterns for describing data including Data Package (for datasets), Data Resource (for files) and Table Schema (for tables). A Data Package is a simple container format used to describe and package a collection of data and metadata, including schemas. Frictionless-py lets users create data packages and schemas that conform to the Frictionless specifications.
-You can read more about the Frictionless specifications at https://specs.frictionlessdata.io/.
+You can read more about the Frictionless specifications at https://specs.frictionlessdata.io/. The main concepts of the Frictionless Specifications are:
+
+**<big>Table Schema:</big>** a metadata file usually written in JSON or YAML that describes a tabular file by providing its dimension, field data types, relations, and constraints. One Table Schema can be used with many tabular files with the same structure.
+
+**<big>Data Resource:</big>** a metadata file usually written in JSON or YAML that describes an EXACT tabular file providing a path to the file and details like title, description, and others. For a tabular resource it also includes a Table Schema from above.
+
+**<big>Data Package:</big>** a metadata file usually written in JSON or YAML that describes a COLLECTION of EXACT tabular files providing data resource information from above along with general information about the package itself as though a license, authors, and other metadata.
+
+:::tip
+Thinking in SQL terminology a package would be a database, a resource would be a table, and a schema would be column definitions.
+:::
 
 ## Frictionless Framework
 
@@ -50,52 +58,14 @@ Frictionless is a complete data solution providing rich functionality. It's hard
 
 ## Usage Example
 
-Frictionless can be run on CLI, in Python, and even as an API server. Here is a short example to get started with the framework:
+Frictionless can be run on CLI, in Python, and even as an API server. Here is a short example how to validate a data file in CLI:
 
-> Download [`invalid.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/invalid.csv) into the `data` folder to reproduce the examples.
-
-```bash title="CLI"
-pip install frictionless
-frictionless validate data/invalid.csv
-```
-```yaml
-# -------
-# invalid: data/invalid.csv
-# -------
-
-  row    field  code              message
------  -------  ----------------  --------------------------------------------
-             3  blank-header      Header in field at position "3" is blank
-             4  duplicate-header  Header "name" in field "4" is duplicated
-    2        3  missing-cell      Row "2" has a missing cell in field "field3"
-    2        4  missing-cell      Row "2" has a missing cell in field "name2"
-    3        3  missing-cell      Row "3" has a missing cell in field "field3"
-    3        4  missing-cell      Row "3" has a missing cell in field "name2"
-    4           blank-row         Row "4" is completely blank
-    5        5  extra-cell        Row "5" has an extra value in field  "5"
-```
+![Diagram](/img/example.png)
 
 ## User Stories
 
-> TODO: Add visual diagrams here.
-
 Frictionless is a DEVT-framework (describe-extract-validate-transform). In contrast to ETL-frameworks (extract-transform-load), Frictionless does not have a linear flow. For example, let’s look at some user stories:
 
-- I want to quickly clean my data file:
-  - [D] Describe (optional)
-  - [E] Extract
-- I want to explore my data file:
-  - [D] Describe (optional)
-  - [E] Extract (in the raw-data mode)
-- I want to find errors in my data and clean it manually:
-  - [D] Describe (optional)
-  - [V] Validate
-- I want to share my data file with metadata:
-  - [D] Describe
-  - [T] Transform (optional)
-- I want to export my file into a different format:
-  - [D] Describe (optional)
-  - [T] Transform
-- I want to reshape my file:
-  - [D] Describe (optional)
-  - [T] Transform
+![Diagram](/img/diagram.png)
+
+Continue reading this documentation to learn more about it!

@@ -34,6 +34,14 @@ html[data-theme='dark'] .header-github-link:before {
     font-weight: normal;
 }
 
+/* Tabs */
+
+div[role=tabpanel] {
+    border: solid 1px #3578e5;
+    padding: 10px;
+    padding-bottom: 0;
+}
+
 /* Codeblock */
 
 .language-bash .token-line:before {

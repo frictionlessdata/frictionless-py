@@ -147,7 +147,9 @@ class HtmlParser(Parser):
                     html += f"<td>{cell}</td>"
                 html += "</tr>\n"
         html += "</table></body></html>"
-        with tempfile.NamedTemporaryFile("wt", delete=False) as file:
+        with tempfile.NamedTemporaryFile(
+            "wt", delete=False, encoding=target.encoding
+        ) as file:
             file.write(html)
         loader = system.create_loader(target)
         result = loader.write_byte_stream(file.name)

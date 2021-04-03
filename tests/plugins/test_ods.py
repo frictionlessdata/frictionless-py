@@ -1,6 +1,6 @@
 import pytest
 from datetime import datetime
-from frictionless import Resource, Layout, FrictionlessException, helpers
+from frictionless import Resource, Layout, FrictionlessException
 from frictionless.plugins.ods import OdsDialect
 
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
@@ -92,7 +92,6 @@ def test_ods_parser_with_ints_floats_dates():
         ]
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_table_write_ods(tmpdir):
     source = Resource("data/table.csv")
     # NOTE: ezodf writer creates more cells than we ask (remove limits)

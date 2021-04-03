@@ -1,5 +1,10 @@
 ---
 title: Validation Checks
+goodread:
+  prepare:
+    - cp data/capital-invalid.csv capital-invalid.csv
+  cleanup:
+    - rm capital-invalid.csv
 ---
 
 > This guide assumes basic familiarity with the Frictionless Framework. To learn more, please read the [Introduction](https://framework.frictionlessdata.io/docs/guides/introduction) and [Quick Start](https://framework.frictionlessdata.io/docs/guides/quick-start).
@@ -8,13 +13,15 @@ There are various validation checks included in the core Frictionless Framework 
 
 ## Baseline Check
 
-The Baseline Check is always enabled. It makes various small checks that reveal a great deal of tabular errors. There is a `report.tables[].scope` property to check which exact errors have been checked for:
+The Baseline Check is always enabled. It makes various small checks that reveal a great deal of tabular errors. There is a `report.tasks[].scope` property to check which exact errors have been checked for:
 
-```python title="Python"
+> Download [`capital-invalid.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/capital-invalid.csv) to reproduce the examples (right-click and "Save link as")..
+
+```python goodread title="Python"
 from pprint import pprint
 from frictionless import validate
 
-report = validate('data/capital-invalid.csv')
+report = validate('capital-invalid.csv')
 pprint(report.task.scope)
 ```
 ```
@@ -38,6 +45,8 @@ pprint(report.task.scope)
  'unique-error']
 ```
 
+The Baseline Check is incorporated into base Frictionless classes as though Resource, Header, and Row. There is no exact order in which those errors are revealed as it's highly optimized. One should consider the Baseline Check as one unit of validation.
+
 ## Heuristic Checks
 
 There is a group of checks that indicate probable errors. You need to use the `checks` argument of the `validate` function to activate one or more of these checks.
@@ -46,14 +55,13 @@ There is a group of checks that indicate probable errors. You need to use the `c
 
 This checks for duplicate rows. You need to take into account that checking for duplicate rows can lead to high memory consumption on big files. Here is an example:
 
-```python title="Python"
+```python goodread title="Python"
 from pprint import pprint
 from frictionless import validate, checks
 
 source = b"header\nvalue\nvalue"
 report = validate(source, format="csv", checks=[checks.duplicate_row()])
 pprint(report.flatten(["code", "message"]))
-print(report.flatten(['code', 'message']))
 ```
 ```
 [['duplicate-row',
@@ -64,7 +72,7 @@ print(report.flatten(['code', 'message']))
 
 This check uses Python's built-in `statistics` module to check a field's data for deviations. By default, deviated values are outside of the average +- three standard deviations. Take a look at the [API Reference](https://github.com/frictionlessdata/frictionless-py/blob/master/docs/target/api-reference/README.md#deviatedvaluecheck) for more details about available options and default values. The exact algorithm can be found [here](https://github.com/frictionlessdata/frictionless-py/blob/7ae8bae9a9197adbfe443233a6bad8a94e065ece/frictionless/checks/heuristic.py#L94). For example:
 
-```python title="Python"
+```python goodread title="Python"
 from pprint import pprint
 from frictionless import validate, checks
 
@@ -83,7 +91,7 @@ pprint(report.flatten(["code", "message"]))
 
 Sometime during data export from a database or other storage, data values can be truncated. This check tries to detect such truncation. Let's explore some truncation indicators:
 
-```python title="Python"
+```python goodread title="Python"
 from pprint import pprint
 from frictionless import validate, checks
 
@@ -113,7 +121,7 @@ Contrary to heuristic checks, regulation checks give you the ability to provide 
 
 This check ensures that some field doesn't have any forbidden or denylist values. For example:
 
-```python title="Python"
+```python goodread title="Python"
 from pprint import pprint
 from frictionless import validate, checks
 
@@ -132,7 +140,7 @@ pprint(report.flatten(['code', 'message']))
 
 This check gives us an opportunity to validate sequential fields like primary keys or other similar data. It doesn't need to start from 0 or 1. We're providing a field name:
 
-```python title="Python"
+```python goodread title="Python"
 from pprint import pprint
 from frictionless import validate, checks
 
@@ -150,7 +158,7 @@ pprint(report.flatten(['code', 'message']))
 
 This check is the most powerful one as it uses the external `simpleeval` package allowing you to evaluate arbitrary Python expressions on data rows. Let's show on an example:
 
-```python title="Python"
+```python goodread title="Python"
 from pprint import pprint
 from frictionless import validate, checks
 

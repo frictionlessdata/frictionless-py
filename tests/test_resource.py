@@ -1,4 +1,3 @@
-import io
 import os
 import sys
 import json
@@ -11,19 +10,19 @@ from frictionless.plugins.excel import ExcelDialect
 from frictionless.plugins.json import JsonDialect
 
 
+IS_UNIX = not helpers.is_platform("windows")
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
 
 
 # General
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource():
     resource = Resource("data/resource.json")
     assert resource.name == "name"
     assert resource.path == "table.csv"
     assert resource.basepath == "data"
-    assert resource.fullpath == "data/table.csv"
+    assert resource.fullpath == "data/table.csv" if IS_UNIX else "data\\table.csv"
     assert resource.profile == "tabular-data-resource"
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
@@ -82,7 +81,6 @@ def test_resource_from_path_error_bad_path():
 
 
 @pytest.mark.vcr
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_from_path_remote():
     resource = Resource(BASEURL % "data/resource.json")
     assert resource.path == "table.csv"
@@ -103,7 +101,6 @@ def test_resource_from_path_remote_error_bad_path():
 
 
 @pytest.mark.skipif(sys.version_info < (3, 7), reason="Requires Python3.7+")
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_source_non_tabular():
     path = "data/text.txt"
     with Resource(path) as resource:
@@ -114,11 +111,12 @@ def test_resource_source_non_tabular():
         assert resource.tabular is False
         assert resource.multipart is False
         assert resource.fullpath == path
-        assert resource.read_bytes() == b"text\n"
-        assert resource.stats == {
-            "hash": "e1cbb0c3879af8347246f12c559a86b5",
-            "bytes": 5,
-        }
+        if IS_UNIX:
+            assert resource.read_bytes() == b"text\n"
+            assert resource.stats == {
+                "hash": "e1cbb0c3879af8347246f12c559a86b5",
+                "bytes": 5,
+            }
 
 
 @pytest.mark.vcr
@@ -132,11 +130,12 @@ def test_resource_source_non_tabular_remote():
         assert resource.multipart is False
         assert resource.basepath == ""
         assert resource.fullpath == path
-        assert resource.read_bytes() == b"text\n"
-        assert resource.stats == {
-            "hash": "e1cbb0c3879af8347246f12c559a86b5",
-            "bytes": 5,
-        }
+        if IS_UNIX:
+            assert resource.read_bytes() == b"text\n"
+            assert resource.stats == {
+                "hash": "e1cbb0c3879af8347246f12c559a86b5",
+                "bytes": 5,
+            }
 
 
 def test_resource_source_non_tabular_error_bad_path():
@@ -149,7 +148,6 @@ def test_resource_source_non_tabular_error_bad_path():
 
 
 @pytest.mark.skipif(sys.version_info < (3, 7), reason="Requires Python3.7+")
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_source_path():
     path = "data/table.csv"
     resource = Resource({"path": path})
@@ -160,10 +158,11 @@ def test_resource_source_path():
     assert resource.multipart is False
     assert resource.basepath == ""
     assert resource.fullpath == path
-    assert (
-        resource.read_bytes()
-        == b"id,name\n1,english\n2,\xe4\xb8\xad\xe5\x9b\xbd\xe4\xba\xba\n"
-    )
+    if IS_UNIX:
+        assert (
+            resource.read_bytes()
+            == b"id,name\n1,english\n2,\xe4\xb8\xad\xe5\x9b\xbd\xe4\xba\xba\n"
+        )
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
@@ -172,20 +171,20 @@ def test_resource_source_path():
     assert resource.fragment == [["1", "english"], ["2", "中国人"]]
     assert resource.labels == ["id", "name"]
     assert resource.header == ["id", "name"]
-    assert resource.stats == {
-        "hash": "6c2c61dd9b0e9c6876139a449ed87933",
-        "bytes": 30,
-        "fields": 2,
-        "rows": 2,
-    }
+    if IS_UNIX:
+        assert resource.stats == {
+            "hash": "6c2c61dd9b0e9c6876139a449ed87933",
+            "bytes": 30,
+            "fields": 2,
+            "rows": 2,
+        }
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_source_path_and_basepath():
     resource = Resource(path="table.csv", basepath="data")
     assert resource.path == "table.csv"
     assert resource.basepath == "data"
-    assert resource.fullpath == "data/table.csv"
+    assert resource.fullpath == "data/table.csv" if IS_UNIX else "data\\table.csv"
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
@@ -193,7 +192,6 @@ def test_resource_source_path_and_basepath():
 
 
 @pytest.mark.vcr
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_source_path_and_basepath_remote():
     resource = Resource(path="table.csv", basepath=BASEURL % "data")
     assert resource.fullpath == BASEURL % "data/table.csv"
@@ -222,22 +220,20 @@ def test_resource_source_path_error_bad_path():
     assert error.note == "[Errno 2] No such file or directory: 'table.csv'"
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_source_path_error_bad_path_not_safe_absolute():
     with pytest.raises(FrictionlessException) as excinfo:
         Resource({"path": os.path.abspath("data/table.csv")})
     error = excinfo.value.error
     assert error.code == "resource-error"
-    assert error.note.count("data/table.csv")
+    assert error.note.count("table.csv")
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_source_path_error_bad_path_not_safe_traversing():
     with pytest.raises(FrictionlessException) as excinfo:
-        Resource({"path": "data/../data/table.csv"})
+        Resource({"path": "data/../data/table.csv" if IS_UNIX else "data\\..\\table.csv"})
     error = excinfo.value.error
     assert error.code == "resource-error"
-    assert error.note.count("data/table.csv")
+    assert error.note.count("table.csv")
 
 
 def test_resource_source_data():
@@ -461,20 +457,20 @@ def test_resource_format_error_non_matching_format():
 # Hashing
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_hashing():
     with Resource("data/table.csv") as resource:
         resource.read_rows()
         assert resource.hashing == "md5"
-        assert resource.stats["hash"] == "6c2c61dd9b0e9c6876139a449ed87933"
+        if IS_UNIX:
+            assert resource.stats["hash"] == "6c2c61dd9b0e9c6876139a449ed87933"
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_hashing_provided():
     with Resource("data/table.csv", hashing="sha1") as resource:
         resource.read_rows()
         assert resource.hashing == "sha1"
-        assert resource.stats["hash"] == "db6ea2f8ff72a9e13e1d70c28ed1c6b42af3bb0e"
+        if IS_UNIX:
+            assert resource.stats["hash"] == "db6ea2f8ff72a9e13e1d70c28ed1c6b42af3bb0e"
 
 
 def test_resource_hashing_error_bad_hashing():
@@ -521,8 +517,8 @@ def test_resource_encoding_explicit_latin1():
 
 def test_resource_encoding_utf_16():
     # Bytes encoded as UTF-16 with BOM in platform order is detected
-    bio = io.BytesIO(u"en,English\nja,日本語".encode("utf-16"))
-    with Resource(bio, format="csv", layout={"header": False}) as resource:
+    source = "en,English\nja,日本語".encode("utf-16")
+    with Resource(source, format="csv", layout={"header": False}) as resource:
         assert resource.encoding == "utf-16"
         assert resource.read_rows() == [
             {"field1": "en", "field2": "English"},
@@ -539,14 +535,14 @@ def test_resource_encoding_error_bad_encoding():
     assert error.note == "unknown encoding: bad"
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_encoding_error_non_matching_encoding():
     resource = Resource("data/table.csv", encoding="ascii")
     with pytest.raises(FrictionlessException) as excinfo:
         resource.open()
     error = excinfo.value.error
     assert error.code == "encoding-error"
-    assert error.note[:51] == "'ascii' codec can't decode byte 0xe4 in position 20"
+    if IS_UNIX:
+        assert error.note[:51] == "'ascii' codec can't decode byte 0xe4 in position 20"
 
 
 # Innerpath
@@ -798,7 +794,6 @@ def test_resource_dialect_from_path():
 
 
 @pytest.mark.vcr
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_dialect_from_path_remote():
     resource = Resource(BASEURL % "data/resource-with-dereferencing.json")
     assert resource == {
@@ -1466,7 +1461,6 @@ def test_resource_schema_source_data():
 
 
 @pytest.mark.vcr
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_schema_source_remote():
     descriptor = {
         "name": "name",
@@ -1507,7 +1501,6 @@ def test_resource_schema_from_path_with_basepath():
 
 
 @pytest.mark.vcr
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_schema_from_path_remote():
     resource = Resource(BASEURL % "data/resource-with-dereferencing.json")
     assert resource == {
@@ -1646,89 +1639,89 @@ def test_resource_schema_foreign_keys_invalid():
 # Stats
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_stats_hash():
     with Resource("data/doublequote.csv") as resource:
         resource.read_rows()
         assert resource.hashing == "md5"
-        assert resource.stats["hash"] == "d82306001266c4343a2af4830321ead8"
+        if IS_UNIX:
+            assert resource.stats["hash"] == "d82306001266c4343a2af4830321ead8"
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_stats_hash_md5():
     with Resource("data/doublequote.csv", hashing="md5") as resource:
         resource.read_rows()
         assert resource.hashing == "md5"
-        assert resource.stats["hash"] == "d82306001266c4343a2af4830321ead8"
+        if IS_UNIX:
+            assert resource.stats["hash"] == "d82306001266c4343a2af4830321ead8"
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_stats_hash_sha1():
     with Resource("data/doublequote.csv", hashing="sha1") as resource:
         resource.read_rows()
         assert resource.hashing == "sha1"
-        assert resource.stats["hash"] == "2842768834a6804d8644dd689da61c7ab71cbb33"
+        if IS_UNIX:
+            assert resource.stats["hash"] == "2842768834a6804d8644dd689da61c7ab71cbb33"
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_stats_hash_sha256():
     with Resource("data/doublequote.csv", hashing="sha256") as resource:
         resource.read_rows()
         assert resource.hashing == "sha256"
-        assert (
-            resource.stats["hash"]
-            == "41fdde1d8dbcb3b2d4a1410acd7ad842781f076076a73b049863d6c1c73868db"
-        )
+        if IS_UNIX:
+            assert (
+                resource.stats["hash"]
+                == "41fdde1d8dbcb3b2d4a1410acd7ad842781f076076a73b049863d6c1c73868db"
+            )
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_stats_hash_sha512():
     with Resource("data/doublequote.csv", hashing="sha512") as resource:
         resource.read_rows()
         assert resource.hashing == "sha512"
-        assert (
-            resource.stats["hash"]
-            == "fa555b28a01959c8b03996cd4757542be86293fd49641d61808e4bf9fe4115619754aae9ae6af6a0695585eaade4488ce00dfc40fc4394b6376cd20d6967769c"
-        )
+        if IS_UNIX:
+            assert (
+                resource.stats["hash"]
+                == "fa555b28a01959c8b03996cd4757542be86293fd49641d61808e4bf9fe4115619754aae9ae6af6a0695585eaade4488ce00dfc40fc4394b6376cd20d6967769c"
+            )
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_stats_hash_compressed():
     with Resource("data/doublequote.csv.zip") as resource:
         resource.read_rows()
         assert resource.hashing == "md5"
-        assert resource.stats["hash"] == "2a72c90bd48c1fa48aec632db23ce8f7"
+        if IS_UNIX:
+            assert resource.stats["hash"] == "2a72c90bd48c1fa48aec632db23ce8f7"
 
 
 @pytest.mark.vcr
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_stats_hash_remote():
     with Resource(BASEURL % "data/doublequote.csv") as resource:
         resource.read_rows()
         assert resource.hashing == "md5"
-        assert resource.stats["hash"] == "d82306001266c4343a2af4830321ead8"
+        if IS_UNIX:
+            assert resource.stats["hash"] == "d82306001266c4343a2af4830321ead8"
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_stats_bytes():
     with Resource("data/doublequote.csv") as resource:
         resource.read_rows()
-        assert resource.stats["bytes"] == 7346
+        if IS_UNIX:
+            assert resource.stats["bytes"] == 7346
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_stats_bytes_compressed():
     with Resource("data/doublequote.csv.zip") as resource:
         resource.read_rows()
-        assert resource.stats["bytes"] == 1265
+        if IS_UNIX:
+            assert resource.stats["bytes"] == 1265
 
 
 @pytest.mark.vcr
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_stats_bytes_remote():
     with Resource(BASEURL % "data/doublequote.csv") as resource:
         resource.read_rows()
-        assert resource.stats["bytes"] == 7346
+        if IS_UNIX:
+            assert resource.stats["bytes"] == 7346
 
 
 def test_resource_stats_fields():
@@ -2057,52 +2050,52 @@ def test_resource_expand_with_schema():
 # Infer
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_infer():
     resource = Resource(path="data/table.csv")
     resource.infer(stats=True)
     assert resource.metadata_valid
-    assert resource == {
-        "path": "data/table.csv",
-        "profile": "tabular-data-resource",
-        "name": "table",
-        "scheme": "file",
-        "format": "csv",
-        "hashing": "md5",
-        "encoding": "utf-8",
-        "schema": {
-            "fields": [
-                {"name": "id", "type": "integer"},
-                {"name": "name", "type": "string"},
-            ]
-        },
-        "stats": {
-            "hash": "6c2c61dd9b0e9c6876139a449ed87933",
-            "bytes": 30,
-            "fields": 2,
-            "rows": 2,
-        },
-    }
+    if IS_UNIX:
+        assert resource == {
+            "path": "data/table.csv",
+            "profile": "tabular-data-resource",
+            "name": "table",
+            "scheme": "file",
+            "format": "csv",
+            "hashing": "md5",
+            "encoding": "utf-8",
+            "schema": {
+                "fields": [
+                    {"name": "id", "type": "integer"},
+                    {"name": "name", "type": "string"},
+                ]
+            },
+            "stats": {
+                "hash": "6c2c61dd9b0e9c6876139a449ed87933",
+                "bytes": 30,
+                "fields": 2,
+                "rows": 2,
+            },
+        }
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_infer_source_non_tabular():
     resource = Resource(path="data/text.txt")
     resource.infer(stats=True)
     assert resource.metadata_valid
-    assert resource == {
-        "name": "text",
-        "path": "data/text.txt",
-        "profile": "data-resource",
-        "scheme": "file",
-        "format": "txt",
-        "hashing": "md5",
-        "encoding": "utf-8",
-        "stats": {
-            "hash": "e1cbb0c3879af8347246f12c559a86b5",
-            "bytes": 5,
-        },
-    }
+    if IS_UNIX:
+        assert resource == {
+            "name": "text",
+            "path": "data/text.txt",
+            "profile": "data-resource",
+            "scheme": "file",
+            "format": "txt",
+            "hashing": "md5",
+            "encoding": "utf-8",
+            "stats": {
+                "hash": "e1cbb0c3879af8347246f12c559a86b5",
+                "bytes": 5,
+            },
+        }
 
 
 def test_resource_infer_from_path():
@@ -2364,18 +2357,18 @@ def test_resource_reopen_generator():
 
 
 @pytest.mark.skipif(sys.version_info < (3, 7), reason="Requires Python3.7+")
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_read_bytes():
     resource = Resource(path="data/text.txt")
     bytes = resource.read_bytes()
-    assert bytes == b"text\n"
+    if IS_UNIX:
+        assert bytes == b"text\n"
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_read_text():
     resource = Resource(path="data/text.txt")
     text = resource.read_text()
-    assert text == "text\n"
+    if IS_UNIX:
+        assert text == "text\n"
 
 
 def test_resource_read_data():
@@ -2481,6 +2474,11 @@ def test_to_yaml_with_resource_data_is_not_a_list_issue_693():
     assert text == "{}\n"
 
 
+def test_resource_to_view():
+    resource = Resource("data/table.csv")
+    assert resource.to_view()
+
+
 # Metadata
 
 
@@ -2576,44 +2574,44 @@ def test_resource_skip_rows_non_string_cell_issue_322():
         ]
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_relative_parent_path_with_trusted_option_issue_171():
+    path = "data/../data/table.csv" if IS_UNIX else "data\\..\\data\\table.csv"
     # trusted=false (default)
     with pytest.raises(FrictionlessException) as excinfo:
-        Resource({"path": "data/../data/table.csv"})
+        Resource({"path": path})
     error = excinfo.value.error
     assert error.code == "resource-error"
-    assert error.note.count("data/table.csv")
+    assert error.note.count("table.csv")
     # trusted=true
-    resource = Resource({"path": "data/../data/table.csv"}, trusted=True)
+    resource = Resource({"path": path}, trusted=True)
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_resource_preserve_format_from_descriptor_on_infer_issue_188():
     resource = Resource({"path": "data/table.csvformat", "format": "csv"})
     resource.infer(stats=True)
-    assert resource == {
-        "path": "data/table.csvformat",
-        "format": "csv",
-        "profile": "tabular-data-resource",
-        "name": "table",
-        "scheme": "file",
-        "hashing": "md5",
-        "encoding": "utf-8",
-        "schema": {
-            "fields": [
-                {"name": "city", "type": "string"},
-                {"name": "population", "type": "integer"},
-            ]
-        },
-        "stats": {
-            "hash": "f71969080b27963b937ca28cdd5f63b9",
-            "bytes": 58,
-            "fields": 2,
-            "rows": 3,
-        },
-    }
+    if IS_UNIX:
+        assert resource == {
+            "path": "data/table.csvformat",
+            "format": "csv",
+            "profile": "tabular-data-resource",
+            "name": "table",
+            "scheme": "file",
+            "hashing": "md5",
+            "encoding": "utf-8",
+            "schema": {
+                "fields": [
+                    {"name": "city", "type": "string"},
+                    {"name": "population", "type": "integer"},
+                ]
+            },
+            "stats": {
+                "hash": "f71969080b27963b937ca28cdd5f63b9",
+                "bytes": 58,
+                "fields": 2,
+                "rows": 3,
+            },
+        }

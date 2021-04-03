@@ -5,51 +5,48 @@ sidebar_label: S3
 
 > This functionality requires an experimental `s3` plugin. [Read More](../../references/plugins-reference.md)
 
-Frictionless supports reading data from S3 cloud source. You can read file in any format that is available in your bucket.
+Frictionless supports data from S3 cloud source. You can read and write files in any format that is available in your bucket.
 
-```bash
-! pip install frictionless[s3]
+```bash title="CLI"
+pip install frictionless[s3]
 ```
 
+## Reading Data
 
-## Reading from S3
+You can read from this source using `Package/Resource`, for example:
 
-You can read from this source using `Package/Resource` or `Table` API, for example:
-
-```python
+```python title="Python"
+from pprint import pprint
 from frictionless import Resource
 
 resource = Resource(path='s3://bucket/table.csv')
-print(resource.read_rows())
+pprint(resource.read_rows())
 ```
-
 
 For reading from a private bucket you need to setup AWS creadentials as it's described in [Boto3 documentation](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/credentials.html#environment-variables).
 
-## Writing to S3
+## Writing Data
 
 The same is actual for writing:
 
-```python
+```python title="Python"
 from frictionless import Resource
 
 resource = Resource(path='data/table.csv')
 resource.write('s3://bucket/table.csv')
 ```
 
-
-## Configuring S3
+## Configuring Data
 
 There is a control to configure how Frictionless read files in this storage. For example:
 
-```python
+```python title="Python"
 from frictionless import Resource
 from frictionless.plugins.s3 import S3Control
 
 resource = Resource(data=[['id', 'name'], [1, 'english'], [2, 'german']])
 resource.write('table.new.csv', control=controls.S3Control(endpoint_url='<url>'))
 ```
-
 
 References:
 - [S3 Control](../../references/schemes-reference.md#s3)

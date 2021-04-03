@@ -1,21 +1,21 @@
-import pytest
 from typer.testing import CliRunner
 from frictionless import program, helpers
 
 runner = CliRunner()
+IS_UNIX = not helpers.is_platform("windows")
 
 
 # General
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
-def test_transform():
+def test_program_transform():
     result = runner.invoke(program, "transform data/pipeline.yaml")
     assert result.exit_code == 0
-    assert result.stdout.count("success: data/pipeline.yaml")
+    if IS_UNIX:
+        assert result.stdout.count("success: data/pipeline.yaml")
 
 
-def test_transform_error_not_found():
+def test_program_transform_error_not_found():
     result = runner.invoke(program, "transform data/bad.yaml")
     assert result.exit_code == 1
     assert result.stdout.count("No such file or directory: 'data/bad.yaml'")

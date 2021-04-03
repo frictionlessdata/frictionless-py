@@ -1,11 +1,12 @@
-import pytest
 from frictionless import Detector, Layout, describe, helpers
+
+
+IS_UNIX = not helpers.is_platform("windows")
 
 
 # General
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_describe_resource():
     resource = describe("data/table.csv")
     assert resource.metadata_valid
@@ -26,31 +27,31 @@ def test_describe_resource():
     }
 
 
-@pytest.mark.skipif(helpers.is_platform("windows"), reason="It doesn't work for Windows")
 def test_describe_resource_with_stats():
     resource = describe("data/table.csv", stats=True)
     assert resource.metadata_valid
-    assert resource == {
-        "profile": "tabular-data-resource",
-        "name": "table",
-        "path": "data/table.csv",
-        "scheme": "file",
-        "format": "csv",
-        "hashing": "md5",
-        "encoding": "utf-8",
-        "schema": {
-            "fields": [
-                {"name": "id", "type": "integer"},
-                {"name": "name", "type": "string"},
-            ]
-        },
-        "stats": {
-            "hash": "6c2c61dd9b0e9c6876139a449ed87933",
-            "bytes": 30,
-            "fields": 2,
-            "rows": 2,
-        },
-    }
+    if IS_UNIX:
+        assert resource == {
+            "profile": "tabular-data-resource",
+            "name": "table",
+            "path": "data/table.csv",
+            "scheme": "file",
+            "format": "csv",
+            "hashing": "md5",
+            "encoding": "utf-8",
+            "schema": {
+                "fields": [
+                    {"name": "id", "type": "integer"},
+                    {"name": "name", "type": "string"},
+                ]
+            },
+            "stats": {
+                "hash": "6c2c61dd9b0e9c6876139a449ed87933",
+                "bytes": 30,
+                "fields": 2,
+                "rows": 2,
+            },
+        }
 
 
 def test_describe_resource_schema():

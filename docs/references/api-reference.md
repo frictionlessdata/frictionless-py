@@ -999,6 +999,28 @@ Public   | `from frictionless import Field`
 
 - `Schema?` - parent schema
 
+### field.array\_item
+
+```python
+ | @Metadata.property
+ | array_item()
+```
+
+**Returns**:
+
+- `dict` - field descriptor
+
+### field.array\_item\_field
+
+```python
+ | @Metadata.property(write=False)
+ | array_item_field()
+```
+
+**Returns**:
+
+- `dict` - field descriptor
+
 ### field.true\_values
 
 ```python
@@ -4565,13 +4587,57 @@ Write this resource to the target resource
 - `target` _any|Resource_ - target or target resource instance
 - `**options` _dict_ - Resource constructor options
 
+### resource.to\_dict
+
+```python
+ | to_dict()
+```
+
+Create a dict from the resource
+
+Returns
+    dict: dict representation
+
 ### resource.to\_copy
 
 ```python
  | to_copy(**options)
 ```
 
-Create a copy of the resource
+Create a copy from the resource
+
+Returns
+    Resource: resource copy
+
+### resource.to\_view
+
+```python
+ | to_view(type="look", **options)
+```
+
+Create a view from the resource
+
+See PETL's docs for more information:
+https://petl.readthedocs.io/en/stable/util.html#visualising-tables
+
+**Arguments**:
+
+- `type` _look|lookall|see|display|displayall_ - view's type
+- `**options` _dict_ - options to be passed to PETL
+  
+  Returns
+- `str` - resource's view
+
+### resource.to\_snap
+
+```python
+ | to_snap()
+```
+
+Create a snapshot from the resource
+
+Returns
+    list: resource's data
 
 ### resource.to\_inline
 
@@ -4601,10 +4667,10 @@ Create a resource from PETL view
 ### resource.to\_petl
 
 ```python
- | to_petl()
+ | to_petl(normalize=False)
 ```
 
-Export resource as a PETL view
+Export resource as a PETL table
 
 ## Row
 
@@ -5201,8 +5267,10 @@ Public   | `from frictionless.plugins.sql import SqlDialect`
 **Arguments**:
 
 - `descriptor?` _str|dict_ - descriptor
-- `table` _str_ - table
-- `order_by?` _str_ - order_by
+- `table` _str_ - table name
+- `prefix` _str_ - prefix for all table names
+- `order_by?` _str_ - order_by statement passed to SQL
+- `namespace?` _str_ - SQL schema
   
 
 **Raises**:

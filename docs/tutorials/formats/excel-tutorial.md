@@ -1,68 +1,61 @@
 ---
 title: Excel Tutorial
 sidebar_label: Excel
+goodread:
+  cleanup:
+    - rm table.xlsx
 ---
 
 Excel is a very popular tabular data format that usually has `xlsx` (newer) and `xls` (older) file extensions. Frictionless supports Excel files extensively.
 
-```bash
-!pip install frictionless[excel]
+```bash title="CLI"
+pip install frictionless[excel]
 ```
 
+## Reading Data
 
-## Reading Excel
+You can read this format using `Package/Resource`, for example:
 
-You can read this format using `Package/Resource` or `Table` API, for example:
-
-
-```python
+```python goodread title="python"
+from pprint import pprint
 from frictionless import Resource
 
 resource = Resource(path='data/table.xlsx')
-print(resource.read_rows())
+pprint(resource.read_rows())
+```
+```
+[{'id': 1, 'name': 'english'}, {'id': 2, 'name': '中国人'}]
 ```
 
-    [Row([('id', 1), ('name', 'english')]), Row([('id', 2), ('name', '中国人')])]
-
-
-## Writing Excel
+## Writing Data
 
 The same is actual for writing:
 
-
-```python
+```python goodread title="python"
+from pprint import pprint
 from frictionless import Resource
 
-resource = Resource(data=[['id', 'name'], [1, 'english'], [2, 'german']])
-resource.write('tmp/table.xlsx')
+source = Resource(data=[['id', 'name'], [1, 'english'], [2, 'german']])
+target = source.write('table.xlsx')
+pprint(target)
+pprint(target.read_rows())
+```
+```
+{'path': 'table.xlsx'}
+[{'id': 1, 'name': 'english'}, {'id': 2, 'name': 'german'}]
 ```
 
-
-
-
-    'tmp/table.xlsx'
-
-
-
-## Configuring Excel
+## Configuring Data
 
 There is a dialect to configure how Frictionless read and write files in this format. For example:
 
-
-```python
+```python title="Python"
 from frictionless import Resource
 from frictionless.plugins.excel import ExcelDialect
 
 resource = Resource(data=[['id', 'name'], [1, 'english'], [2, 'german']])
 resource.write('tmp/table.xlsx', dialect=ExcelDialect(sheet='My Table'))
 ```
-
-
-
-
-    'tmp/table.xlsx'
-
-
 
 References:
 - [Excel Dialect](../../references/formats-reference.md#excel)

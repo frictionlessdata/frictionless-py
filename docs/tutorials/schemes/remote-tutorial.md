@@ -3,51 +3,50 @@ title: Remote Tutorial
 sidebar_label: Remote
 ---
 
-You can read files remotely with Frictionless. It's basic functionality.
+You can use remote files with Frictionless. It's basic functionality.
 
-## Reading Remote Data
+## Reading Data
 
-You can read using `Package/Resource` or `Table` API, for example:
+You can read using `Package/Resource`, for example:
 
-
-```python
+```python goodread title="Python"
+from pprint import pprint
 from frictionless import Resource
 
 resource = Resource(path='https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/table.csv')
-print(resource.read_rows())
+pprint(resource.read_rows())
+```
+```
+[{'id': 1, 'name': 'english'}, {'id': 2, 'name': '中国人'}]
 ```
 
-    [Row([('id', 1), ('name', 'english')]), Row([('id', 2), ('name', '中国人')])]
+## Writing Data
 
+The same is actual for writing:
 
-## Writing Remote Data
-
-The save is actual for writing:
-
-```py
+```python title="Python"
 from frictionless import Resource
 
 resource = Resource(path='data/table.csv')
 resource.write('https://example.com/data/table.csv') # will POST the file to the server
 ```
 
-
-## Configuring Remote Data
+## Configuring Data
 
 There is a control to configure remote data, for example:
 
-
-```python
+```python goodread title="Python"
+from pprint import pprint
 from frictionless import Resource
 from frictionless.plugins.remote import RemoteControl
 
 control = RemoteControl(http_timeout=10)
 resource = Resource(path='https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/table.csv', control=control)
-print(resource.read_rows())
+pprint(resource.read_rows())
 ```
-
-    [Row([('id', 1), ('name', 'english')]), Row([('id', 2), ('name', '中国人')])]
-
+```
+[{'id': 1, 'name': 'english'}, {'id': 2, 'name': '中国人'}]
+```
 
 References:
 - [Remote Control](../../references/schemes-reference.md#remote)
