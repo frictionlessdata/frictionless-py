@@ -25,7 +25,7 @@ pprint(resource.read_rows())
 
 ## Writing Data
 
-The same can be done for writing data:
+A similiar approach can be used for writing:
 
 ```python goodread title="Python"
 from pprint import pprint
