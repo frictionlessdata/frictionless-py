@@ -7,7 +7,7 @@ Frictionless supports using data stored as File-Like objects in Python.
 
 ## Reading Data
 
-> It's recommended to open files in byte-mode. If it's opened in text-mode, Frictionless will try re-open it in byte-mode.
+> It's recommended to open files in byte-mode. If the file is opened in text-mode, Frictionless will try to re-open it in byte-mode.
 
 You can read Stream using `Package/Resource`, for example:
 
@@ -25,7 +25,7 @@ with open('data/table.csv', 'rb') as file:
 
 ## Writing Data
 
-The same is actual for writing:
+A similiar approach can be used for writing:
 
 ```python goodread title="Python"
 from frictionless import Resource

@@ -3,7 +3,7 @@ title: Remote Tutorial
 sidebar_label: Remote
 ---
 
-You can use remote files with Frictionless. It's basic functionality.
+You can read files remotely with Frictionless. This is a basic functionality of Frictionless.
 
 ## Reading Data
 
@@ -22,7 +22,7 @@ pprint(resource.read_rows())
 
 ## Writing Data
 
-The same is actual for writing:
+A similar approach can be used for writing:
 
 ```python title="Python"
 from frictionless import Resource
@@ -33,7 +33,7 @@ resource.write('https://example.com/data/table.csv') # will POST the file to the
 
 ## Configuring Data
 
-There is a control to configure remote data, for example:
+There is a `Control` to configure remote data, for example:
 
 ```python goodread title="Python"
 from pprint import pprint

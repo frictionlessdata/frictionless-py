@@ -24,7 +24,7 @@ pprint(resource.read_rows())
 
 ## Writing Data
 
-The actual for writing:
+A similiar approach can be used for writing:
 
 ```python title="Python"
 from frictionless import Resource
@@ -35,7 +35,7 @@ resource.write('tmp/table{number}.json', scheme="multipart", control={"chunkSize
 
 ## Configuring Data
 
-There is a control to configure how Frictionless handle files using this scheme. For example:
+There is a `Control` to configure how Frictionless reads files using this scheme. For example:
 
 ```python title="Python"
 from frictionless import Resource

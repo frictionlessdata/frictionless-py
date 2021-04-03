@@ -22,7 +22,7 @@ pprint(resource.read_rows())
 
 ## Writing Data
 
-The same is actual for writing Buffer Data:
+A similiar approach can be used for writing:
 
 ```python goodread title="Python"
 from pprint import pprint

@@ -6,7 +6,7 @@ goodread:
     - rm table.csv
 ---
 
-You can read and write files locally with Frictionless. It's basic functionality.
+You can read and write files locally with Frictionless. This is a basic functionality of Frictionless.
 
 ## Reading Data
 
@@ -25,7 +25,7 @@ pprint(resource.read_rows())
 
 ## Writing Data
 
-The same is actual for writing:
+A similiar approach can be used for writing:
 
 ```python goodread title="Python"
 from pprint import pprint
