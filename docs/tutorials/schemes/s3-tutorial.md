@@ -27,7 +27,7 @@ For reading from a private bucket you need to setup AWS creadentials as it's des
 
 ## Writing Data
 
-The same can be done for writing:
+A similiar approach can be used for writing:
 
 ```python title="Python"
 from frictionless import Resource
