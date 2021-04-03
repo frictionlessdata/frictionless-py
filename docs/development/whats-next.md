@@ -1,5 +1,5 @@
 ---
-title: What's next?
+title: What's Next?
 ---
 
 Based on your familiarity level and your tasks you can continue with one of the following sections:

@@ -11,20 +11,21 @@ Frictionless supports reading data from an S3 cloud source. You can read files i
 pip install frictionless[s3]
 ```
 
-## Reading from S3
+## Reading Data
 
-You can read from this source using `Package/Resource` or `Table` [API](/docs/references/api-reference), for example:
+You can read from this source using `Package/Resource`, for example:
 
 ```python title="Python"
+from pprint import pprint
 from frictionless import Resource
 
 resource = Resource(path='s3://bucket/table.csv')
-print(resource.read_rows())
+pprint(resource.read_rows())
 ```
 
 For reading from a private bucket you need to setup AWS creadentials as it's described in the [Boto3 documentation](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/credentials.html#environment-variables).
 
-## Writing to S3
+## Writing Data
 
 The same can be done for writing:
 
@@ -35,7 +36,7 @@ resource = Resource(path='data/table.csv')
 resource.write('s3://bucket/table.csv')
 ```
 
-## Configuring S3
+## Configuring Data
 
 There is a `Control` to configure how Frictionless read files in this storage. For example:
 
