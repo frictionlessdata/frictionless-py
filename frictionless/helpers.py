@@ -176,6 +176,7 @@ def write_file(path, text):
         file.write(text)
         file.flush()
     move_file(file.name, path)
+    os.chmod(path, 0o644)
 
 
 def create_byte_stream(bytes):
