@@ -81,11 +81,6 @@ module.exports = {
           position: "left",
         },
         {
-          to: "docs/references/references-overview",
-          label: "References",
-          position: "left",
-        },
-        {
           label: "Notebooks",
           position: "left",
           items: [
@@ -100,6 +95,11 @@ module.exports = {
                 "https://colab.research.google.com/drive/1iIrTed-d056VXtl9t1WLQnLMC2KeK9Ul",
             },
           ],
+        },
+        {
+          to: "docs/references/references-overview",
+          label: "References",
+          position: "left",
         },
         {
           to: "docs/development/development",
