@@ -392,6 +392,10 @@ class SqlStorage(Storage):
                 if const == "minLength":
                     checks.append(Check("LENGTH(%s) >= %s" % (quoted_name, value)))
                 elif const == "maxLength":
+                    # Only Postgresql and Sqlite support TEXT to be a Primary Key
+                    # https://github.com/frictionlessdata/frictionless-py/issues/777
+                    if self.__connection.engine.dialect.name in ["mysql", "db2"]:
+                        column_type = sa.VARCHAR(length=value)
                     checks.append(Check("LENGTH(%s) <= %s" % (quoted_name, value)))
                 elif const == "minimum":
                     checks.append(Check("%s >= %s" % (quoted_name, value)))
