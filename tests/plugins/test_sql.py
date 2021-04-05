@@ -117,6 +117,49 @@ def test_sql_parser_write_timezone_mysql(mysql_url):
         ]
 
 
+def test_sql_parser_write_string_pk_issue_777_sqlite(sqlite_url):
+    source = Resource("data/table.csv")
+    source.infer()
+    source.schema.primary_key = ["name"]
+    target = source.write(sqlite_url, dialect=SqlDialect(table="name"))
+    with target:
+        assert target.schema.primary_key == ["name"]
+        assert target.header == ["id", "name"]
+        assert target.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
+
+
+def test_sql_parser_write_string_pk_issue_777_postgresql(postgresql_url):
+    source = Resource("data/table.csv")
+    source.infer()
+    source.schema.primary_key = ["name"]
+    target = source.write(postgresql_url, dialect=SqlDialect(table="name"))
+    with target:
+        assert target.schema.primary_key == ["name"]
+        assert target.header == ["id", "name"]
+        assert target.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
+
+
+def test_sql_parser_write_string_pk_issue_777_mysql(mysql_url):
+    source = Resource("data/table.csv")
+    source.infer()
+    source.schema.primary_key = ["name"]
+    source.schema.get_field("name").constraints["maxLength"] = 100
+    target = source.write(mysql_url, dialect=SqlDialect(table="name"))
+    with target:
+        assert target.schema.primary_key == ["name"]
+        assert target.header == ["id", "name"]
+        assert target.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
+
+
 # Storage (Sqlite)
 
 
