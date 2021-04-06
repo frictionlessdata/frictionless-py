@@ -4903,6 +4903,24 @@ Write a list of cells (normalize/uncast)
 
 - `any[]` - list of processed cells
 
+### schema.from\_jsonschema
+
+```python
+ | @staticmethod
+ | from_jsonschema(profile)
+```
+
+Create a Schema from JSONSchema profile
+
+**Arguments**:
+
+- `profile` _str|dict_ - path or dict with JSONSchema profile
+  
+
+**Returns**:
+
+- `Schema` - schema instance
+
 ## Server
 
 ```python
