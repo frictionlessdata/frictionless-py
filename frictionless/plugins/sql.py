@@ -14,6 +14,10 @@ from .. import helpers
 from .. import errors
 
 
+# NOTE:
+# Can we improve `engline.dialect.name.startswith()` checks?
+
+
 # Plugin
 
 
@@ -193,7 +197,7 @@ class SqlStorage(Storage):
 
         # Add regex support
         # It will fail silently if this function already exists
-        if self.__connection.engine.dialect.name == "sqlite":
+        if self.__connection.engine.dialect.name.startswith("sqlite"):
             self.__connection.connection.create_function("REGEXP", 2, regexp)
 
         # Create metadata and reflect
@@ -374,11 +378,12 @@ class SqlStorage(Storage):
         # Prepare
         columns = []
         constraints = []
+        engine = self.__connection.engine
         sql_name = self.__write_convert_name(resource.name)
 
         # Fields
         Check = sa.CheckConstraint
-        quote = self.__connection.engine.dialect.identifier_preparer.quote
+        quote = engine.dialect.identifier_preparer.quote
         for field in resource.schema.fields:
             checks = []
             nullable = not field.required
@@ -386,23 +391,24 @@ class SqlStorage(Storage):
             column_type = self.__write_convert_type(field.type)
             unique = field.constraints.get("unique", False)
             # https://stackoverflow.com/questions/1827063/mysql-error-key-specification-without-a-key-length
-            if self.__connection.engine.dialect.name == "mysql":
+            if engine.dialect.name.startswith("mysql"):
                 unique = unique and field.type != "string"
             for const, value in field.constraints.items():
                 if const == "minLength":
                     checks.append(Check("LENGTH(%s) >= %s" % (quoted_name, value)))
                 elif const == "maxLength":
-                    # Only Postgresql and Sqlite support TEXT to be a Primary Key
+                    # Some databases don't support TEXT as a Primary Key
                     # https://github.com/frictionlessdata/frictionless-py/issues/777
-                    if self.__connection.engine.dialect.name in ["mysql", "db2"]:
-                        column_type = sa.VARCHAR(length=value)
+                    for prefix in ["mysql", "db2", "ibm"]:
+                        if engine.dialect.name.startswith(prefix):
+                            column_type = sa.VARCHAR(length=value)
                     checks.append(Check("LENGTH(%s) <= %s" % (quoted_name, value)))
                 elif const == "minimum":
                     checks.append(Check("%s >= %s" % (quoted_name, value)))
                 elif const == "maximum":
                     checks.append(Check("%s <= %s" % (quoted_name, value)))
                 elif const == "pattern":
-                    if self.__connection.engine.dialect.name == "postgresql":
+                    if engine.dialect.name.startswith("postgresql"):
                         checks.append(Check("%s ~ '%s'" % (quoted_name, value)))
                     else:
                         check = Check("%s REGEXP '%s'" % (quoted_name, value))
@@ -492,7 +498,7 @@ class SqlStorage(Storage):
         }
 
         # Postgresql dialect
-        if self.__connection.engine.dialect.name == "postgresql":
+        if self.__connection.engine.dialect.name.startswith("postgresql"):
             mapping.update(
                 {
                     "array": sapg.JSONB,
