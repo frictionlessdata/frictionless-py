@@ -224,6 +224,51 @@ class Schema(Metadata):
             result_notes.append(notes)
         return result_cells, result_notes
 
+    # Import/Export
+
+    @staticmethod
+    def from_jsonschema(profile):
+        """Create a Schema from JSONSchema profile
+
+        Parameters:
+            profile (str|dict): path or dict with JSONSchema profile
+
+        Returns:
+            Schema: schema instance
+        """
+        schema = Schema()
+        profile = Metadata(profile).to_dict()
+        required = profile.get("required", [])
+        assert isinstance(required, list)
+        properties = profile.get("properties", {})
+        assert isinstance(properties, dict)
+        for name, prop in properties.items():
+
+            # Field
+            assert isinstance(name, str)
+            assert isinstance(prop, dict)
+            field = Field(name=name)
+            schema.add_field(field)
+
+            # Type
+            type = prop.get("type")
+            if type:
+                assert isinstance(type, str)
+                if type in ["string", "integer", "number", "boolean", "object", "array"]:
+                    field.type = type
+
+            # Description
+            description = prop.get("description")
+            if description:
+                assert isinstance(description, str)
+                field.description = description
+
+            # Required
+            if name in required:
+                field.constraints["required"] = True
+
+        return schema
+
     # Metadata
 
     metadata_duplicate = True

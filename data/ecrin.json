@@ -1,0 +1,385 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://ecrin.org/json_schemas/mdrstudy/v5.json",
+  "title": "XDC Study definition",
+  "description": "ECRIN Metadata Repository for clinical research objects, Study JSON definition, version 5 October 2020",
+  "type": "object",
+  "required": ["id", "display_title"],
+  "additionalProperties": false,
+  "properties": {
+
+    "file_type": {
+      "type": "string",
+      "description": "always 'study'"
+    },
+
+    "id": {
+      "type": "integer",
+      "description": "Internal accession number of the study within the MDR database"
+    },
+
+    "display_title": {
+      "type": "string",
+      "description": "By default the public or brief study title. If that is missing then the full scientific title, as used on the protocol document"
+    },
+
+    "brief_description": {
+      "type": "object",
+      "description": "Brief description, usually a few lines, of the study",
+      "properties": {
+        "text": {
+          "type": "string",
+          "description": "Text of the description. For some sources may need to be derived from key study features"
+        },
+        "contains_html": {
+          "type": "boolean",
+          "default": false,
+          "description": "Indicates if there are embedded html tags in the description text, as an aid to display management"
+        }
+      }
+    },
+
+    "data_sharing_statement": {
+      "type": "object",
+      "description": "A statement from the sponsor and / or study leads about their intentions for IPD sharing",
+      "properties": {
+        "text": {
+          "type": "string",
+          "description": "Text of the statement (may be structured in some sources)"
+        },
+        "contains_html": {
+          "type": "boolean",
+          "default": false,
+          "description": "Indicates if there are embedded html tags in the data sharing text, as an aid to display management"
+        }
+      }
+    },
+
+    "study_type": {
+      "type": "object",
+      "description": "Categorisation of study type, e.g. 'Interventional', or 'Observational'",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "description": "An integer referencing the relevant record in the study_types enumeration / lookup table"
+        },
+        "name": {
+          "type": "string",
+          "description": "One of the types listed in the study_types enumeration"
+        }
+      }
+    },
+
+    "study_status": {
+      "type": "object",
+      "description": "Categorisation of study status, e.g. 'Active, not recruiting', or 'Completed'",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "description": "An integer referencing the relevant record in the study_statuses enumeration / lookup table"
+        },
+        "name": {
+          "type": "string",
+          "description": "One of the statuses listed in the study_statuses enumeration"
+        }
+      }
+    },
+
+    "study_enrolment": {
+      "type": "integer",
+      "description": "The anticipated or actual total number of participants in the clinical study."
+    },
+
+    "study_gender_elig": {
+      "type": "object",
+      "description": "Whether the study is open to all genders, or just male or female",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "description": "An integer referencing the relevant record in the gender_eligibility_types enumeration / lookup table"
+        },
+        "name": {
+          "type": "string",
+          "description": "One of the types from the gender_eligibility_types enumeration"
+        }
+      }
+    },
+
+    "min_age": {
+      "type": "object",
+      "description": "The minimum age, if any, for a study participant",
+      "properties": {
+        "value": {
+          "type": "integer",
+          "description": "The numerical value of the age"
+        },
+        "unit_id": {
+          "type": "integer",
+          "description": "An integer referencing the relevant record in the time_units enumeration / lookup table"
+        },
+        "unit_name": {
+          "type": "string",
+          "description": "One of the allowed types, from the time_units enumeration, e.g. 'Months', or 'Years'"
+        }
+      }
+    },
+
+    "max_age": {
+      "type": "object",
+      "description": "The maximum age, if any, for a study participant",
+      "properties": {
+        "value": {
+          "type": "integer",
+          "description": "The numerical value of the age"
+        },
+        "unit_id": {
+          "type": "integer",
+          "description": "An integer referencing the relevant record in the time_units enumeration / lookup table"
+        },
+        "unit_name": {
+          "type": "string",
+          "description": "One of the allowed types, from the time_units enumeration, e.g. 'Months', or 'Years'"
+        }
+      }
+    },
+
+    "study_identifiers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "description": "A composite object that indicates the value and type of the identifier, and optionally its date and organisation of origin",
+        "required": ["id", "value", "type"],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Study identifier record primary key, generated automatically in database"
+          },
+          "identifier_value": {
+            "type": "string",
+            "description": "The identifier value, in a standardised format (for each identifier type)"
+          },
+          "identifier_type": {
+            "type": "object",
+            "description": "The category of the identifier, e.g. 'Trial Registry ID', or 'Sponsor ID'",
+            "properties": {
+              "id": {
+                "type": "integer",
+                "description": "An integer referencing the relevant record in the identifier_types enumeration / lookup table"
+              },
+              "name": {
+                "type": "string",
+                "description": "One of the types in the identifier_types enumeration."
+              }
+            }
+          },
+          "identifier_org": {
+            "type": "object",
+            "description": "The organisation providing the identifier",
+            "properties": {
+              "id": {
+                "type": "integer",
+                "description": "The id of the organisation within the ECRIN context database, if that id exists"
+              },
+              "name": {
+                "type": "string",
+                "description": "The default name of the organisation within the ECRIN context database, if it exists, or the name of the organisation as supplied by the source data"
+              }
+            }
+          },
+          "identifier_date": {
+            "type": "string",
+            "description": "The date the identifier was allocated, if known, in a string 'yyyy  MMM dd' format, e.g. '2015 Dec 12'"
+          },
+          "identifier_link": {
+            "type": "string",
+            "description": "Any URL associated with the identifier"
+          }
+        }
+      }
+    },
+
+    "study_titles": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "description": "A composite object that indicates the type and value of any study title",
+        "required": ["id", "title_type", "title_text"],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "study title record primary key, generated automatically in database"
+          },
+          "title_type": {
+            "type": "object",
+            "description": "Type of the title, e.g. 'Abbreviation or Acronym', or 'Translated Title'",
+            "properties": {
+              "id": {
+                "type": "integer",
+                "description": "An integer referencing the relevant record in the title_types enumeration / lookup table"
+              },
+              "name": {
+                "type": "string",
+                "description": "One of the types listed in the title_types enumeration"
+              }
+            }
+          },
+          "title_text": {
+            "type": "string",
+            "description": "The text of the title, verbatim"
+          },
+          "lang_code": {
+            "type": "string",
+            "description": "A two letter ISO 369-1 code indicating the language of the title"
+          },
+          "comments": {
+            "type": "string",
+            "description": "Any additional comments regaring the souce or derivation of the title"
+          }
+        }
+      }
+    },
+
+    "study_features": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "description": "A composite object that indicates the type and value of any study feature - usually a design feature, often used for filtering",
+        "required": ["id"],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Study feature record primary key, generated automatically in database"
+          },
+          "feature_type": {
+            "type": "object",
+            "description": "The type of study feature, e.g. 'Phase', or 'Masking'",
+            "properties": {
+              "id": {
+                "type": "integer",
+                "description": "An integer referencing the relevant record in the study_feature_types enumeration / lookup table"
+              },
+              "name": {
+                "type": "string",
+                "description": "One of the features listed in the study_feature_types enumeration"
+              }
+            }
+          },
+          "feature_value": {
+            "type": "object",
+            "description": "The value of the feature, as taken from a pre-defined list, e.g. 'Phase 3', or 'Double'",
+            "properties": {
+              "id": {
+                "type": "integer",
+                "description": "An integer referencing the relevant record in the study_feature_categories enumeration / lookup table"
+              },
+              "name": {
+                "type": "string",
+                "description": "One of the allowed values listed in the relevant part of the  study_feature_categories enumeration"
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "study_topics": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "description": "A composite object that indicates the topic name or keyword, and - where available - the MESH coding for that term",
+        "required": ["id", "value"],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Study topic record primary key, generated automatically in database"
+          },
+          "topic_type": {
+            "type": "object",
+            "description": "How the topic was categorised in the source data, e.g. 'Condition', or 'Organism'",
+            "properties": {
+              "id": {
+                "type": "integer",
+                "description": "An integer referencing the relevant record in the topic_source_types enumeration / lookup table"
+              },
+              "name": {
+                "type": "string",
+                "description": "One of the allowed types listed in the topic_source_types enumeration"
+              }
+            }
+          },
+          "mesh_coded": {
+            "type": "boolean",
+            "description": "Whether or not the topic has been MESH coded"
+          },
+          "topic_code": {
+            "type": "string",
+            "description": "The MESH code for the topic if one exists"
+          },
+          "topic_value": {
+            "type": "string",
+            "description": "The topic or keyword value or name, as a MESH term if coded, otherwise as provided in the source data"
+          },
+          "topic_qualcode": {
+            "type": "string",
+            "description": "Any MESH qualifier code, if one has been applied"
+          },
+          "topic_qualvalue": {
+            "type": "string",
+            "description": "Any MESH qualifier term, if one has been applied"
+          },
+          "original_value": {
+            "type": "string",
+            "description": "The original value of the term, whether coded or not"
+          }
+        }
+      }
+    },
+
+    "study_relationships": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "description": "A composite object that indicates any related study and the nature of the relationship",
+        "required": ["id", "relationship_type", "target_study_id"],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Study relationships record primary key, generated automatically in database"
+          },
+          "relationship_type": {
+            "type": "object",
+            "description": "The nature of the relationship, e.g. 'Is a sub-study of', or 'has an expanded access version",
+            "properties": {
+              "id": {
+                "type": "integer",
+                "description": "An integer referencing the relevant record in the study_relationship_types enumeration / lookup table"
+              },
+              "name": {
+                "type": "string",
+                "description": "One of the allowed types from the study_relationship_types enumeration"
+              }
+            }
+          },
+          "target_study_id": {
+            "type": "integer",
+            "description": "The id, i.e. internal accession number, of the related study"
+          }
+        }
+      }
+    },
+
+    "linked_data_objects": {
+      "type": "array",
+      "items": {
+        "type": "integer",
+        "description": "The id, i.e. internal accession number, of the linked data object"
+      }
+    },
+
+    "provenance_string": {
+      "type": "string",
+      "description": "A listing of the source or sources (usually a trial registry) from which the data for the study has been drawn, and the date-time(s) when the data was last downloaded"
+    }
+  }
+
+}
