@@ -4,7 +4,7 @@ title: FAQ
 
 ## Can I use Frictionless Data with tabular data in Pandas dataframes?
 
-Yes. Please read the [Pandas Tutorial](tutorials/formats/pandas-tutorial.md)
+Yes. Please read the [Pandas Tutorial](tutorials/formats/pandas-tutorial.md).
 
 ## Why am I getting the error: "cannot extract tabular data from JSON"?
 
@@ -28,7 +28,7 @@ Yes, your resource can have `resource.layout.header = False` in Python.
 
 ## Can I handle a two-line header with Frictionless Data?
 
-Yes, you need to use `resource.layout.header_rows = [1,2,3]` in Python or `--header-rows 1,2,3` in CLI. Also, Here is an example of a more complex use case: https://replit.com/@rollninja/Frictionless-meta-in-the-2nd-row#main.py
+Yes, you need to use `resource.layout.header_rows = [1,2,3]` in Python or `--header-rows 1,2,3` in CLI. Also, Here is an example of a [More Complex Use Case](https://replit.com/@rollninja/Frictionless-meta-in-the-2nd-row#main.py).
 
 ## What is the relationship between a Frictionless JSON file and something that's indexed by e.g. Google Datasets? Are they compatible?
 
@@ -38,7 +38,7 @@ The main difference is that Google datasets search use schema.org, which support
 
 > Currently, Parguet data is not supported but it's on our roadmap.
 
-Yes, please follow the [Describe Guide](guides/describe.md) but instead of local CSV path provide a SQLite url or Pandas dataframe object. For more information about individual data formats please take a look at [Formats Tutorials](tutorials/formats/sql.md).
+Yes, please follow the [Describe Guide](guides/describing-data.md) but instead of local CSV path provide a SQLite url or Pandas dataframe object. For more information about individual data formats please take a look at [Formats Tutorials](tutorials/formats/sql-tutorial.md).
 
 ## What is the relationship between JSON Schema and the Frictionless Data json format?
 
