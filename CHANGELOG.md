@@ -2,6 +2,11 @@
 
 Here described only the breaking and most significant changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/frictionless-py/commits/master).
 
+## v4.6.0
+
+- Implemented `describe_dialect` and `describe(path, type="dialect")`
+- Support `--dialect` argument in CLI
+
 ## v4.5.0
 
 - Implemented `Schema.from_jsonschema` (#797)

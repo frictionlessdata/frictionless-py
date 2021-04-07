@@ -5809,6 +5809,28 @@ Public   | `from frictionless import describe`
 
 - `Package|Resource|Schema` - metadata
 
+## describe\_dialect
+
+```python
+describe_dialect(source, **options)
+```
+
+Describe the given source as a dialect
+
+API      | Usage
+-------- | --------
+Public   | `from frictionless import describe_dialect`
+
+**Arguments**:
+
+- `source` _any_ - data source
+- `**options` _dict_ - describe resource options
+  
+
+**Returns**:
+
+- `Dialect` - file dialect
+
 ## describe\_package
 
 ```python
