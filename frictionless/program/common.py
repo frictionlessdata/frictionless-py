@@ -45,6 +45,13 @@ compression = Option(
     help="Specify compression  [default: inferred]",
 )
 
+# Dialect
+
+dialect = Option(
+    default=None,
+    help="Specify a path to a dialect",
+)
+
 # Layout
 
 header_rows = Option(

@@ -24,6 +24,8 @@ def program_extract(
     encoding: str = common.encoding,
     innerpath: str = common.innerpath,
     compression: str = common.compression,
+    # Dialect
+    dialect: str = common.dialect,
     # Layout
     header_rows: str = common.header_rows,
     header_join: str = common.header_join,
@@ -119,6 +121,7 @@ def program_extract(
             encoding=encoding,
             innerpath=innerpath,
             compression=compression,
+            dialect=dialect,
             layout=layout,
             schema=schema,
             # Extra
