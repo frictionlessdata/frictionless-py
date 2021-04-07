@@ -83,6 +83,16 @@ class Metadata(helpers.ControlledDict):
         if value is not None:
             dict.__setitem__(self, key, value)
 
+    # Expand
+
+    def expand(self):
+        pass
+
+    # Infer
+
+    def infer(self):
+        pass
+
     # Import/Export
 
     def to_copy(self):

@@ -422,8 +422,8 @@ class Package(Metadata):
 
         It will add default values to the package.
         """
-        self.setdefault("resources", [])
-        self.setdefault("profile", config.DEFAULT_PACKAGE_PROFILE)
+        self.setdefault("resources", self.resources)
+        self.setdefault("profile", self.profile)
         for resource in self.resources:
             resource.expand()
 

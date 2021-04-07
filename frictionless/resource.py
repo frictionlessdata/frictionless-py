@@ -8,8 +8,6 @@ from itertools import zip_longest, chain
 from .exception import FrictionlessException
 from .detector import Detector
 from .metadata import Metadata
-from .control import Control
-from .dialect import Dialect
 from .layout import Layout
 from .schema import Schema
 from .header import Header
@@ -672,14 +670,21 @@ class Resource(Metadata):
 
     def expand(self):
         """Expand metadata"""
-        self.setdefault("profile", config.DEFAULT_RESOURCE_PROFILE)
-        if isinstance(self.get("control"), Control):
-            self.control.expand()
-        if isinstance(self.get("dialect"), Dialect):
-            self.dialect.expand()
-        if isinstance(self.get("layout"), Layout):
+        self.setdefault("profile", self.profile)
+        self.setdefault("scheme", self.scheme)
+        self.setdefault("format", self.format)
+        self.setdefault("hashing", self.hashing)
+        self.setdefault("encoding", self.encoding)
+        self.setdefault("innerpath", self.innerpath)
+        self.setdefault("compression", self.compression)
+        self.setdefault("control", self.control)
+        self.setdefault("dialect", self.dialect)
+        self.control.expand()
+        self.dialect.expand()
+        if self.tabular:
+            self.setdefault("layout", self.layout)
+            self.setdefault("schema", self.schema)
             self.layout.expand()
-        if isinstance(self.get("schema"), Schema):
             self.schema.expand()
 
     # Infer

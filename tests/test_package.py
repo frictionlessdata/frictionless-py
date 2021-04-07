@@ -552,10 +552,38 @@ def test_resource_onerror_row_raise():
 def test_package_expand():
     package = Package("data/package.json")
     package.expand()
+    print(package)
     assert package == {
         "name": "name",
+        "resources": [
+            {
+                "name": "name",
+                "path": "table.csv",
+                "profile": "tabular-data-resource",
+                "scheme": "file",
+                "format": "csv",
+                "hashing": "md5",
+                "encoding": "utf-8",
+                "innerpath": "",
+                "compression": "",
+                "control": {},
+                "dialect": {
+                    "delimiter": ",",
+                    "lineTerminator": "\r\n",
+                    "quoteChar": '"',
+                    "doubleQuote": True,
+                    "skipInitialSpace": False,
+                },
+                "layout": {
+                    "header": True,
+                    "headerRows": [1],
+                    "headerJoin": " ",
+                    "headerCase": True,
+                },
+                "schema": {"fields": [], "missingValues": [""]},
+            }
+        ],
         "profile": "data-package",
-        "resources": [{"name": "name", "path": "table.csv", "profile": "data-resource"}],
     }
 
 
@@ -590,7 +618,27 @@ def test_package_expand_resource_schema():
                     ],
                     "missingValues": [""],
                 },
-                "profile": "data-resource",
+                "profile": "tabular-data-resource",
+                "scheme": "file",
+                "format": "csv",
+                "hashing": "md5",
+                "encoding": "utf-8",
+                "innerpath": "",
+                "compression": "",
+                "control": {},
+                "dialect": {
+                    "delimiter": ",",
+                    "lineTerminator": "\r\n",
+                    "quoteChar": '"',
+                    "doubleQuote": True,
+                    "skipInitialSpace": False,
+                },
+                "layout": {
+                    "header": True,
+                    "headerRows": [1],
+                    "headerJoin": " ",
+                    "headerCase": True,
+                },
             }
         ],
         "profile": "data-package",
@@ -612,7 +660,21 @@ def test_package_expand_resource_dialect():
                     "doubleQuote": True,
                     "skipInitialSpace": False,
                 },
-                "profile": "data-resource",
+                "profile": "tabular-data-resource",
+                "scheme": "file",
+                "format": "csv",
+                "hashing": "md5",
+                "encoding": "utf-8",
+                "innerpath": "",
+                "compression": "",
+                "control": {},
+                "layout": {
+                    "header": True,
+                    "headerRows": [1],
+                    "headerJoin": " ",
+                    "headerCase": True,
+                },
+                "schema": {"fields": [], "missingValues": [""]},
             }
         ],
         "profile": "data-package",

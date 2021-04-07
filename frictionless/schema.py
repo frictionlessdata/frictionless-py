@@ -177,8 +177,8 @@ class Schema(Metadata):
 
     def expand(self):
         """Expand the schema"""
-        self.setdefault("fields", [])
-        self.setdefault("missingValues", config.DEFAULT_MISSING_VALUES)
+        self.setdefault("fields", self.fields)
+        self.setdefault("missingValues", self.missing_values)
         for field in self.fields:
             field.expand()
 

@@ -1994,10 +1994,32 @@ def test_resource_onerror_row_raise():
 def test_resource_expand():
     resource = Resource({"name": "name", "path": "data/table.csv"})
     resource.expand()
+    print(resource)
     assert resource == {
         "name": "name",
         "path": "data/table.csv",
-        "profile": "data-resource",
+        "profile": "tabular-data-resource",
+        "scheme": "file",
+        "format": "csv",
+        "hashing": "md5",
+        "encoding": "utf-8",
+        "innerpath": "",
+        "compression": "",
+        "control": {},
+        "dialect": {
+            "delimiter": ",",
+            "lineTerminator": "\r\n",
+            "quoteChar": '"',
+            "doubleQuote": True,
+            "skipInitialSpace": False,
+        },
+        "layout": {
+            "header": True,
+            "headerRows": [1],
+            "headerJoin": " ",
+            "headerCase": True,
+        },
+        "schema": {"fields": [], "missingValues": [""]},
     }
 
 
@@ -2008,14 +2030,28 @@ def test_resource_expand_with_dialect():
     assert resource == {
         "name": "name",
         "path": "data/table.csv",
-        "profile": "data-resource",
         "dialect": {
             "delimiter": "custom",
             "lineTerminator": "\r\n",
-            "doubleQuote": True,
             "quoteChar": '"',
+            "doubleQuote": True,
             "skipInitialSpace": False,
         },
+        "profile": "tabular-data-resource",
+        "scheme": "file",
+        "format": "csv",
+        "hashing": "md5",
+        "encoding": "utf-8",
+        "innerpath": "",
+        "compression": "",
+        "control": {},
+        "layout": {
+            "header": True,
+            "headerRows": [1],
+            "headerJoin": " ",
+            "headerCase": True,
+        },
+        "schema": {"fields": [], "missingValues": [""]},
     }
 
 
@@ -2031,7 +2067,6 @@ def test_resource_expand_with_schema():
     assert resource == {
         "name": "name",
         "path": "data/table.csv",
-        "profile": "data-resource",
         "schema": {
             "fields": [
                 {
@@ -2043,6 +2078,27 @@ def test_resource_expand_with_schema():
                 {"name": "name", "type": "string", "format": "default"},
             ],
             "missingValues": [""],
+        },
+        "profile": "tabular-data-resource",
+        "scheme": "file",
+        "format": "csv",
+        "hashing": "md5",
+        "encoding": "utf-8",
+        "innerpath": "",
+        "compression": "",
+        "control": {},
+        "dialect": {
+            "delimiter": ",",
+            "lineTerminator": "\r\n",
+            "quoteChar": '"',
+            "doubleQuote": True,
+            "skipInitialSpace": False,
+        },
+        "layout": {
+            "header": True,
+            "headerRows": [1],
+            "headerJoin": " ",
+            "headerCase": True,
         },
     }
 

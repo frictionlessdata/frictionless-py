@@ -264,9 +264,9 @@ class Field(Metadata):
 
     def expand(self):
         """Expand metadata"""
-        self.setdefault("name", "field")
-        self.setdefault("type", "any")
-        self.setdefault("format", "default")
+        self.setdefault("name", self.name)
+        self.setdefault("type", self.type)
+        self.setdefault("format", self.format)
 
         # Boolean
         if self.type == "boolean":
