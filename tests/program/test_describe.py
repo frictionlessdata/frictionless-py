@@ -25,6 +25,12 @@ def test_program_describe_type_schema():
     assert json.loads(result.stdout) == describe("data/table.csv", type="schema")
 
 
+def test_program_describe_type_dialect():
+    result = runner.invoke(program, "describe data/delimiter.csv --json --type dialect")
+    assert result.exit_code == 0
+    assert json.loads(result.stdout) == describe("data/delimiter.csv", type="dialect")
+
+
 def test_program_describe_header_rows():
     result = runner.invoke(program, "describe data/table.csv --json --header-rows '1,2'")
     assert result.exit_code == 0
