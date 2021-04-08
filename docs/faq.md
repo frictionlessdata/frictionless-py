@@ -36,7 +36,7 @@ The main difference is that Google datasets search use schema.org, which support
 
 ## Is there a way to directly infer/describe SQLite/Pandas/Parquet files?
 
-> Currently, Parguet data is not supported but it's on our roadmap.
+> Currently, Parquet data is not supported but it's on our roadmap.
 
 Yes, please follow the [Describe Guide](guides/describing-data.md) but instead of local CSV path provide a SQLite url or Pandas dataframe object. For more information about individual data formats please take a look at [Formats Tutorials](tutorials/formats/sql-tutorial.md).
 
@@ -60,7 +60,7 @@ If the spec doesn't have (yet) this attribute, you can add it. For an examaple, 
 
 ## Is it possible to validate a single resource from a datapackage.json?
 
-> We're planning to add this functionality to the CLI either.
+> We're planning to add this functionality to the CLI as well.
 
 It's possible using Python:
 
