@@ -114,20 +114,21 @@ class resource_update(Step):
 
     def __init__(self, descriptor=None, *, name=None, **options):
         self.setinitial("name", name)
-        self.setinitial("options", options)
+        for key, value in helpers.create_descriptor(**options).items():
+            self.setinitial(key, value)
         super().__init__(descriptor)
 
     # Transform
 
     def transform_package(self, package):
-        name = self.get("name")
-        options = self.get("options")
+        descriptor = self.to_dict()
+        descriptor.pop("code", None)
+        name = descriptor.pop("name", None)
         resource = package.get_resource(name)
         if not resource:
             error = errors.ResourceError(note=f'No resource "{name}"')
             raise FrictionlessException(error=error)
-        for name, value in options.items():
-            setattr(resource, name, value)
+        resource.update(descriptor)
 
     # Metadata
 
