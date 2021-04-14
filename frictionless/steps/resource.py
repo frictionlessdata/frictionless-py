@@ -2,6 +2,7 @@ from ..step import Step
 from ..resource import Resource
 from ..transform import transform_resource
 from ..exception import FrictionlessException
+from .. import helpers
 from .. import errors
 
 
@@ -17,16 +18,17 @@ class resource_add(Step):
 
     def __init__(self, descriptor=None, *, name=None, **options):
         self.setinitial("name", name)
-        self.setinitial("options", options)
+        for key, value in helpers.create_descriptor(**options).items():
+            self.setinitial(key, value)
         super().__init__(descriptor)
         self.__options = options
 
     # Transform
 
     def transform_package(self, package):
-        name = self.get("name")
-        options = self.get("options")
-        resource = Resource(name=name, basepath=package.basepath, **options)
+        descriptor = self.to_dict()
+        descriptor.pop("code", None)
+        resource = Resource(descriptor, basepath=package.basepath)
         resource.infer()
         package.add_resource(resource)
 
@@ -112,20 +114,21 @@ class resource_update(Step):
 
     def __init__(self, descriptor=None, *, name=None, **options):
         self.setinitial("name", name)
-        self.setinitial("options", options)
+        for key, value in helpers.create_descriptor(**options).items():
+            self.setinitial(key, value)
         super().__init__(descriptor)
 
     # Transform
 
     def transform_package(self, package):
-        name = self.get("name")
-        options = self.get("options")
+        descriptor = self.to_dict()
+        descriptor.pop("code", None)
+        name = descriptor.pop("name", None)
         resource = package.get_resource(name)
         if not resource:
             error = errors.ResourceError(note=f'No resource "{name}"')
             raise FrictionlessException(error=error)
-        for name, value in options.items():
-            setattr(resource, name, value)
+        resource.update(descriptor)
 
     # Metadata
 
