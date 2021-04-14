@@ -41,7 +41,7 @@ class Package(Metadata):
         descriptor (dict|str): A resource descriptor provided explicitly.
             Keyword arguments will patch this descriptor if provided.
 
-        descriptor_innerpath (str): A ZIP datapackage inner path.
+        descriptor_innerpath? (str): A ZIP datapackage descriptor inner path.
             Path to the package descriptor inside the ZIP datapackage.
             Example: some/folder/datapackage.yaml
             Default: datapackage.json
