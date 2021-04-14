@@ -2,6 +2,10 @@
 
 Here described only the breaking and most significant changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/frictionless-py/commits/master).
 
+## v4.7.0
+
+- Support control/dialect as JSON in CLI (#806)
+
 ## v4.6.0
 
 - Implemented `describe_dialect` and `describe(path, type="dialect")`
