@@ -71,6 +71,8 @@ def program_extract(
 
     # Normalize parameters
     source = list(source) if len(source) > 1 else source[0]
+    control = helpers.parse_json_string(control)
+    dialect = helpers.parse_json_string(dialect)
     header_rows = helpers.parse_csv_string(header_rows, convert=int)
     pick_fields = helpers.parse_csv_string(pick_fields, convert=int, fallback=True)
     skip_fields = helpers.parse_csv_string(skip_fields, convert=int, fallback=True)
