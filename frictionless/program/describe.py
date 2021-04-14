@@ -21,6 +21,10 @@ def program_describe(
     encoding: str = common.encoding,
     innerpath: str = common.innerpath,
     compression: str = common.compression,
+    # Control
+    control: str = common.control,
+    # Dialect
+    dialect: str = common.dialect,
     # Layout
     header_rows: str = common.header_rows,
     header_join: str = common.header_join,
@@ -114,6 +118,8 @@ def program_describe(
             encoding=encoding,
             innerpath=innerpath,
             compression=compression,
+            control=control,
+            dialect=dialect,
             layout=layout,
             # Extra
             detector=detector,
