@@ -73,7 +73,7 @@ def program_validate(
     is_stdin = False
     if not source:
         is_stdin = True
-        source = [helpers.create_byte_stream(sys.stdin.buffer.read())]
+        source = [sys.stdin.buffer.read()]
 
     # Normalize parameters
     source = list(source) if len(source) > 1 else source[0]

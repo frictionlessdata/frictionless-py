@@ -2,7 +2,6 @@ import sys
 import typer
 from ..transform import transform
 from .main import program
-from .. import helpers
 from . import common
 
 
@@ -21,7 +20,7 @@ def program_transform(
     is_stdin = False
     if not source:
         is_stdin = True
-        source = helpers.create_byte_stream(sys.stdin.buffer.read())
+        source = [sys.stdin.buffer.read()]
 
     # Transform source
     try:
