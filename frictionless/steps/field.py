@@ -288,21 +288,22 @@ class field_update(Step):
         self.setinitial("value", value)
         self.setinitial("formula", formula)
         self.setinitial("function", function)
-        self.setinitial("options", options)
+        for key, value in helpers.create_descriptor(**options).items():
+            self.setinitial(key, value)
         super().__init__(descriptor)
 
     # Transform
 
     def transform_resource(self, resource):
         table = resource.to_petl()
-        name = self.get("name")
-        value = self.get("value")
-        formula = self.get("formula")
-        function = self.get("function")
-        options = self.get("options")
+        descriptor = self.to_dict()
+        descriptor.pop("code", None)
+        name = descriptor.pop("name", None)
+        value = descriptor.pop("value", None)
+        formula = descriptor.pop("formula", None)
+        function = descriptor.pop("function", None)
         field = resource.schema.get_field(name)
-        for item in options.items():
-            setattr(field, item[0], item[1])
+        field.update(descriptor)
         if formula:
             function = lambda val, row: simpleeval.simple_eval(formula, names=row)
         if function:
