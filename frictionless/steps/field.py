@@ -2,6 +2,7 @@ import petl
 import simpleeval
 from ..step import Step
 from ..field import Field
+from .. import helpers
 
 
 # NOTE:
@@ -32,21 +33,23 @@ class field_add(Step):
         self.setinitial("function", function)
         self.setinitial("position", position if not incremental else 1)
         self.setinitial("incremental", incremental)
-        self.setinitial("options", options)
+        for key, value in helpers.create_descriptor(**options).items():
+            self.setinitial(key, value)
         super().__init__(descriptor)
 
     # Transform
 
     def transform_resource(self, resource):
         table = resource.to_petl()
-        name = self.get("name")
-        value = self.get("value")
-        formula = self.get("formula")
-        function = self.get("function")
-        position = self.get("position")
-        incremental = self.get("incremental")
-        options = self.get("options")
-        field = Field(name=name, **options)
+        descriptor = self.to_dict()
+        descriptor.pop("code", None)
+        name = descriptor.pop("name", None)
+        value = descriptor.pop("value", None)
+        formula = descriptor.pop("formula", None)
+        function = descriptor.pop("function", None)
+        position = descriptor.pop("position", None)
+        incremental = descriptor.pop("incremental", None)
+        field = Field(descriptor, name=name)
         index = position - 1 if position else None
         if index is None:
             resource.schema.add_field(field)
