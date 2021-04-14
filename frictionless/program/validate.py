@@ -22,6 +22,8 @@ def program_validate(
     encoding: str = common.encoding,
     innerpath: str = common.innerpath,
     compression: str = common.compression,
+    # Control
+    control: str = common.control,
     # Dialect
     dialect: str = common.dialect,
     # Layout
@@ -77,6 +79,8 @@ def program_validate(
 
     # Normalize parameters
     source = list(source) if len(source) > 1 else source[0]
+    control = helpers.parse_json_string(control)
+    dialect = helpers.parse_json_string(dialect)
     header_rows = helpers.parse_csv_string(header_rows, convert=int)
     pick_fields = helpers.parse_csv_string(pick_fields, convert=int, fallback=True)
     skip_fields = helpers.parse_csv_string(skip_fields, convert=int, fallback=True)
@@ -144,6 +148,7 @@ def program_validate(
             encoding=encoding,
             innerpath=innerpath,
             compression=compression,
+            control=control,
             dialect=dialect,
             layout=layout,
             schema=schema,

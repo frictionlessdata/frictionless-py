@@ -21,6 +21,10 @@ def program_describe(
     encoding: str = common.encoding,
     innerpath: str = common.innerpath,
     compression: str = common.compression,
+    # Control
+    control: str = common.control,
+    # Dialect
+    dialect: str = common.dialect,
     # Layout
     header_rows: str = common.header_rows,
     header_join: str = common.header_join,
@@ -63,6 +67,8 @@ def program_describe(
 
     # Normalize parameters
     source = list(source) if len(source) > 1 else source[0]
+    control = helpers.parse_json_string(control)
+    dialect = helpers.parse_json_string(dialect)
     header_rows = helpers.parse_csv_string(header_rows, convert=int)
     pick_fields = helpers.parse_csv_string(pick_fields, convert=int, fallback=True)
     skip_fields = helpers.parse_csv_string(skip_fields, convert=int, fallback=True)
@@ -114,6 +120,8 @@ def program_describe(
             encoding=encoding,
             innerpath=innerpath,
             compression=compression,
+            control=control,
+            dialect=dialect,
             layout=layout,
             # Extra
             detector=detector,

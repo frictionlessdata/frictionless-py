@@ -2,6 +2,7 @@ import io
 import re
 import os
 import csv
+import json
 import glob
 import atexit
 import shutil
@@ -266,6 +267,14 @@ def is_platform(name):
     elif name == "windows":
         return current == "Windows"
     return False
+
+
+def parse_json_string(string):
+    if string is None:
+        return None
+    if string.startswith("{") and string.endswith("}"):
+        return json.loads(string)
+    return string
 
 
 def parse_csv_string(string, *, convert=str, fallback=False):

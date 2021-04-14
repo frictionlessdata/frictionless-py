@@ -45,6 +45,13 @@ compression = Option(
     help="Specify compression  [default: inferred]",
 )
 
+# Controls
+
+control = Option(
+    default=None,
+    help="Specify a path to a control",
+)
+
 # Dialect
 
 dialect = Option(
