@@ -1,4 +1,3 @@
-import pytest
 from frictionless import validate, checks
 
 
@@ -155,7 +154,6 @@ def test_validate_row_constraint_incorrect_constraint():
     ]
 
 
-@pytest.mark.xfail
 def test_validate_row_constraint_list_in_formula_issue_817():
     data = [["val"], ["one"], ["two"]]
     report = validate(
