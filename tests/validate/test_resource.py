@@ -1145,8 +1145,13 @@ def test_validate_missing_local_file_raises_scheme_error_issue_315():
     ]
 
 
-# Text streams are not supported
 def test_validate_inline_not_a_binary_issue_349():
     with open("data/table.csv") as source:
         report = validate(source)
         assert report.valid
+
+
+@pytest.mark.xfail
+def test_validate_newline_inside_label_issue_811():
+    report = validate('data/issue-811.csv')
+    assert report.valid
