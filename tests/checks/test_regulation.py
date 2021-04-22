@@ -1,3 +1,4 @@
+import pytest
 from frictionless import validate, checks
 
 
@@ -152,3 +153,16 @@ def test_validate_row_constraint_incorrect_constraint():
         [2, None, "row-constraint"],
         [2, None, "row-constraint"],
     ]
+
+
+@pytest.mark.xfail
+def test_validate_row_constraint_list_in_formula_issue_817():
+    data = [["val"], ["one"], ["two"]]
+    report = validate(
+        data,
+        checks=[
+            checks.duplicate_row(),
+            checks.row_constraint(formula="val in ['one', 'two']"),
+        ],
+    )
+    assert report.valid
