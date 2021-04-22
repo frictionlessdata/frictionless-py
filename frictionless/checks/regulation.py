@@ -149,7 +149,9 @@ class row_constraint(Check):
         try:
             # This call should be considered as a safe expression evaluation
             # https://github.com/danthedeckie/simpleeval
-            assert simpleeval.simple_eval(self.__formula, names=row)
+            # NOTE: review EvalWithCompoundTypes/sync with steps
+            evalclass = simpleeval.EvalWithCompoundTypes
+            assert evalclass(names=row).eval(self.__formula)
         except Exception:
             yield errors.RowConstraintError.from_row(
                 row,
