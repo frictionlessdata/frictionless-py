@@ -184,6 +184,8 @@ These steps are meant to be used on a table level of a resource. This includes v
 
 ### Aggregate Table
 
+The `table_aggregate` aggregates one or more fields, using an accumulator (sum, count, ecc.).
+
 ```python goodread title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
