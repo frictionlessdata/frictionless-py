@@ -160,6 +160,14 @@ def test_sql_parser_write_string_pk_issue_777_mysql(mysql_url):
         ]
 
 
+# The resource.to_yaml call was failing before the fix (see the issue)
+def test_sql_parser_describe_to_yaml_issue_821(database_url):
+    dialect = SqlDialect(table="table")
+    resource = Resource(database_url, dialect=dialect)
+    resource.infer()
+    assert resource.to_yaml()
+
+
 # Storage (Sqlite)
 
 
