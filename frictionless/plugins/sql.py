@@ -247,7 +247,7 @@ class SqlStorage(Storage):
         # Fields
         for column in sql_table.columns:
             field_type = self.__read_convert_type(column.type)
-            field = Field(name=column.name, type=field_type)
+            field = Field(name=str(column.name), type=field_type)
             if not column.nullable:
                 field.required = True
             if column.comment:
@@ -258,7 +258,7 @@ class SqlStorage(Storage):
         for constraint in sql_table.constraints:
             if isinstance(constraint, sa.PrimaryKeyConstraint):
                 for column in constraint.columns:
-                    schema.primary_key.append(column.name)
+                    schema.primary_key.append(str(column.name))
 
         # Foreign keys
         for constraint in sql_table.constraints:
@@ -271,7 +271,7 @@ class SqlStorage(Storage):
                     if element.column.table.name != sql_table.name:
                         res_name = element.column.table.name
                         resource = self.__read_convert_name(res_name)
-                    foreign_fields.append(element.column.name)
+                    foreign_fields.append(str(element.column.name))
                 ref = {"resource": resource, "fields": foreign_fields}
                 schema.foreign_keys.append({"fields": own_fields, "reference": ref})
 
