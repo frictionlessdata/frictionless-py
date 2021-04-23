@@ -4,6 +4,10 @@ title: Changelog
 
 Here described only the breaking and most significant changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/frictionless-py/commits/master).
 
+## v4.8.0
+
+- Added support for `Package(innerpath)` argument for unzipping a data package's descriptor
+
 ## v4.7.0
 
 - Support control/dialect as JSON in CLI (#806)
