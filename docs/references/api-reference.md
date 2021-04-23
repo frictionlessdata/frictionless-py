@@ -3762,7 +3762,12 @@ with Resource("data/table.csv") as resource:
   
 - `descriptor` _dict|str_ - A resource descriptor provided explicitly.
   Keyword arguments will patch this descriptor if provided.
-  
+
+- `descriptor_innerpath?` _str_ - A ZIP datapackage descriptor inner path.
+  Path to the package descriptor inside the ZIP datapackage.
+  Example: `some/folder/datapackage.yaml`
+  Default: `datapackage.json`
+
 - `name?` _str_ - A Resource name according to the specs.
   It should be a slugified name of the resource.
   

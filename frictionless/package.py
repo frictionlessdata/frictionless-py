@@ -41,6 +41,11 @@ class Package(Metadata):
         descriptor (dict|str): A resource descriptor provided explicitly.
             Keyword arguments will patch this descriptor if provided.
 
+        descriptor_innerpath? (str): A ZIP datapackage descriptor inner path.
+            Path to the package descriptor inside the ZIP datapackage.
+            Example: some/folder/datapackage.yaml
+            Default: datapackage.json
+
         resources? (dict|Resource[]): A list of resource descriptors.
             It can be dicts or Resource instances.
 
@@ -117,6 +122,7 @@ class Package(Metadata):
         source=None,
         *,
         descriptor=None,
+        descriptor_innerpath=None,
         # Spec
         resources=None,
         id=None,
@@ -162,7 +168,10 @@ class Package(Metadata):
 
         # Handle zip
         if helpers.is_zip_descriptor(descriptor):
-            descriptor = helpers.unzip_descriptor(descriptor, "datapackage.json")
+            if descriptor_innerpath is None:
+                descriptor = helpers.unzip_descriptor(descriptor, "datapackage.json")
+            else:
+                descriptor = helpers.unzip_descriptor(descriptor, descriptor_innerpath)
 
         # Set attributes
         self.setinitial("resources", resources)
