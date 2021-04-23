@@ -19,3 +19,9 @@ def test_program_transform_error_not_found():
     result = runner.invoke(program, "transform data/bad.yaml")
     assert result.exit_code == 1
     assert result.stdout.count("No such file or directory: 'data/bad.yaml'")
+
+
+def test_program_transform_error_not_found_source_issue_814():
+    result = runner.invoke(program, "transform data/issue-814.yaml")
+    assert result.exit_code == 1
+    assert result.stdout.count("No such file or directory: 'bad.csv'")

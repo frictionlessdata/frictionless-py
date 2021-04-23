@@ -217,7 +217,9 @@ class Header(list):
             # Incorrect Label
             if label:
                 name = field.name
-                if name.lower() != label.lower() if self.__ignore_case else name != label:
+                # NOTE: review where we normalize the label/name
+                lname = label.replace("\n", " ").strip()
+                if name.lower() != lname.lower() if self.__ignore_case else name != lname:
                     self.__errors.append(
                         errors.IncorrectLabelError(
                             note="",

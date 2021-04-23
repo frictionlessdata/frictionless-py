@@ -184,6 +184,8 @@ These steps are meant to be used on a table level of a resource. This includes v
 
 ### Aggregate Table
 
+Group rows under the given group_name then apply aggregation functions provided as aggregation dictionary (see example)
+
 ```python goodread title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
@@ -410,6 +412,29 @@ pprint(target.read_rows())
  {'id': 2, 'name': 'france', 'population': 66, 'note': None},
  {'id': 3, 'name': 'spain', 'population': 47, 'note': None},
  {'id': 4, 'name': 'malta', 'population': None, 'note': 'island'}]
+```
+
+### Normalize Table
+
+The `table_normalize` step normalizes an underlaying tabular stream (cast types and fix dimensions) according to a provided or inferred schema. If your data is not really big it's recommended to normalize a table before any others steps.
+
+```python goodread title="Python"
+from pprint import pprint
+from frictionless import Package, Resource, transform, steps
+
+source = Resource("data/table.csv")
+target = transform(
+    source,
+    steps=[
+        steps.table_normalize(),
+    ]
+)
+pprint(source.read_lists())
+pprint(target.read_lists())
+```
+```
+[['id', 'name'], ['1', 'english'], ['2', '中国人']]
+[['id', 'name'], [1, 'english'], [2, '中国人']]
 ```
 
 ### Pivot Table
