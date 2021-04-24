@@ -267,7 +267,7 @@ class SqlStorage(Storage):
                 own_fields = []
                 foreign_fields = []
                 for element in constraint.elements:
-                    own_fields.append(element.parent.name)
+                    own_fields.append(str(element.parent.name))
                     if element.column.table.name != sql_table.name:
                         res_name = element.column.table.name
                         resource = self.__read_convert_name(res_name)
