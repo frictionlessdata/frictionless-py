@@ -1,3 +1,13 @@
+# NOTE:
+# We might consider reducing this API to something like
+# Storage.read/write_package although I have already made
+# a few attempts using parser.write_row_stream to achieve this goal
+# and this doesn't seem to work as storage.write_package needs to
+# handle transactions and relation order in e.g. SQL plugin.
+# So, as for now, we will continue to call Storage API
+# from Parser API for plugin where there is a storage.
+
+
 class Storage:
     def __init__(self, source, **options):
         raise NotImplementedError()
