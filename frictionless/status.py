@@ -124,7 +124,7 @@ class Status(Metadata):
 
 
 class StatusTask(Metadata):
-    """ Status Task representation"""
+    """Status Task representation"""
 
     def __init__(
         self,

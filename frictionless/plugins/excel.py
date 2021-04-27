@@ -336,7 +336,7 @@ class XlsParser(Parser):
             raise FrictionlessException(error)
 
         def type_value(ctype, value):
-            """ Detects boolean value, int value, datetime """
+            """Detects boolean value, int value, datetime"""
 
             # Boolean
             if ctype == xlrd.XL_CELL_BOOLEAN:
