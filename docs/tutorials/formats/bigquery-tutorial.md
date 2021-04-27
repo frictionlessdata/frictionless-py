@@ -1,5 +1,5 @@
 ---
-title: BugQuery Tutorial
+title: BigQuery Tutorial
 sidebar_label: BigQuery
 ---
 
