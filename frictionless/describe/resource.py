@@ -1,7 +1,7 @@
 from ..resource import Resource
 
 
-def describe_resource(source, *, expand=False, stats=False, **options):
+def describe_resource(source=None, *, expand=False, stats=False, **options):
     """Describe the given source as a resource
 
     API      | Usage

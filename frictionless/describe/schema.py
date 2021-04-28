@@ -1,7 +1,7 @@
 from .resource import describe_resource
 
 
-def describe_schema(source, **options):
+def describe_schema(source=None, **options):
     """Describe the given source as a schema
 
     API      | Usage

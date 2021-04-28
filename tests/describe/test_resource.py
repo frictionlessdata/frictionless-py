@@ -176,3 +176,8 @@ def test_describe_resource_compression_gzip_issue_606():
     assert resource.name == "table"
     assert resource.stats["hash"] == "edf56ce48e402d83eb08d5dac6aa2ad9"
     assert resource.stats["bytes"] == 61
+
+
+def test_describe_resource_with_json_format_issue_827():
+    resource = describe(path="data/table.json")
+    assert resource.name == "table"

@@ -1,7 +1,7 @@
 from .resource import describe_resource
 
 
-def describe_dialect(source, **options):
+def describe_dialect(source=None, **options):
     """Describe the given source as a dialect
 
     API      | Usage
