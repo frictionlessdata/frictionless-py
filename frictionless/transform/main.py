@@ -4,7 +4,7 @@ from ..system import system
 from .. import errors
 
 
-def transform(source, type=None, **options):
+def transform(source=None, type=None, **options):
     """Transform resource
 
     API      | Usage

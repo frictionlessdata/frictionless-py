@@ -7,7 +7,7 @@ from ..exception import FrictionlessException
 from .. import errors
 
 
-def transform_resource(source, *, steps, **options):
+def transform_resource(source=None, *, steps, **options):
     """Transform resource
 
     API      | Usage

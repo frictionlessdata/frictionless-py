@@ -9,7 +9,7 @@ from .. import helpers
 
 
 @Report.from_validate
-def validate_package(source, original=False, parallel=False, **options):
+def validate_package(source=None, original=False, parallel=False, **options):
     """Validate package
 
     API      | Usage

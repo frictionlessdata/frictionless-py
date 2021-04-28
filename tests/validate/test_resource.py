@@ -1154,3 +1154,8 @@ def test_validate_inline_not_a_binary_issue_349():
 def test_validate_newline_inside_label_issue_811():
     report = validate("data/issue-811.csv")
     assert report.valid
+
+
+def test_extract_resource_from_json_format_issue_827():
+    report = validate(path="data/table.json")
+    assert report.valid

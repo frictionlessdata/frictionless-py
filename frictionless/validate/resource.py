@@ -11,7 +11,7 @@ from .. import config
 
 @Report.from_validate
 def validate_resource(
-    source,
+    source=None,
     *,
     # Validation
     checks=None,
