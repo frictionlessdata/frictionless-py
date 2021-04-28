@@ -4,7 +4,7 @@ from ..system import system
 from .. import errors
 
 
-def extract(source, *, type=None, process=None, stream=False, **options):
+def extract(source=None, *, type=None, process=None, stream=False, **options):
     """Extract resource rows
 
     API      | Usage

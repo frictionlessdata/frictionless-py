@@ -79,3 +79,11 @@ def test_extract_resource_from_file_process_and_stream():
         [1, "english"],
         [2, "中国人"],
     ]
+
+
+def test_extract_resource_from_json_format_issue_827():
+    rows = extract(path="data/table.json")
+    assert rows == [
+        {"id": 1, "name": "english"},
+        {"id": 2, "name": "中国人"},
+    ]
