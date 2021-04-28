@@ -15,6 +15,7 @@ def program_describe(
     source: List[str] = common.source,
     type: str = common.type,
     # File
+    path: str = common.path,
     scheme: str = common.scheme,
     format: str = common.format,
     hashing: str = common.hashing,
@@ -61,12 +62,12 @@ def program_describe(
 
     # Support stdin
     is_stdin = False
-    if not source:
+    if not source and not path:
         is_stdin = True
         source = [sys.stdin.buffer.read()]
 
     # Normalize parameters
-    source = list(source) if len(source) > 1 else source[0]
+    source = list(source) if len(source) > 1 else (source[0] if source else None)
     control = helpers.parse_json_string(control)
     dialect = helpers.parse_json_string(dialect)
     header_rows = helpers.parse_csv_string(header_rows, convert=int)
@@ -114,6 +115,7 @@ def program_describe(
         dict(
             type=type,
             # Spec
+            path=path,
             scheme=scheme,
             format=format,
             hashing=hashing,

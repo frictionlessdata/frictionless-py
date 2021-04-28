@@ -6,7 +6,7 @@ from .. import errors
 
 
 @Report.from_validate
-def validate(source, type=None, **options):
+def validate(source=None, type=None, **options):
     """Validate resource
 
     API      | Usage

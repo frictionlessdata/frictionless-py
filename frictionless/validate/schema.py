@@ -5,7 +5,7 @@ from ..schema import Schema
 
 
 @Report.from_validate
-def validate_schema(source, **options):
+def validate_schema(source=None, **options):
     """Validate schema
 
     API      | Usage

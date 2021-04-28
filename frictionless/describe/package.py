@@ -1,7 +1,7 @@
 from ..package import Package
 
 
-def describe_package(source, *, expand=False, stats=False, **options):
+def describe_package(source=None, *, expand=False, stats=False, **options):
     """Describe the given source as a package
 
     API      | Usage

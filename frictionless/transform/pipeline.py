@@ -1,7 +1,7 @@
 from ..pipeline import Pipeline
 
 
-def transform_pipeline(source, *, parallel=False, **options):
+def transform_pipeline(source=None, *, parallel=False, **options):
     """Transform package
 
     API      | Usage

@@ -7,7 +7,7 @@ from ..exception import FrictionlessException
 from .. import errors
 
 
-def transform_package(source, *, steps, **options):
+def transform_package(source=None, *, steps, **options):
     """Transform package
 
     API      | Usage

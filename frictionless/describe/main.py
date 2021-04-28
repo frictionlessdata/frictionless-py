@@ -4,7 +4,7 @@ from ..system import system
 from .. import errors
 
 
-def describe(source, *, type=None, **options):
+def describe(source=None, *, type=None, **options):
     """Describe the data source
 
     API      | Usage

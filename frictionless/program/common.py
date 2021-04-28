@@ -15,6 +15,11 @@ type = Option(
 
 # File
 
+path = Option(
+    default=None,
+    help="Specify the data path explicetly (e.g. you need to use it if your data is JSON)",
+)
+
 scheme = Option(
     default=None,
     help="Specify scheme  [default: inferred]",

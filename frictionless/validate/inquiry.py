@@ -3,7 +3,7 @@ from ..report import Report
 
 
 @Report.from_validate
-def validate_inquiry(source, *, parallel=False, **options):
+def validate_inquiry(source=None, *, parallel=False, **options):
     """Validate inquiry
 
     API      | Usage

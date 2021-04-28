@@ -1,7 +1,7 @@
 from ..resource import Resource
 
 
-def extract_resource(source, *, process=None, stream=False, **options):
+def extract_resource(source=None, *, process=None, stream=False, **options):
     """Extract resource rows
 
     API      | Usage
