@@ -71,3 +71,20 @@ package = Package('datapackage.json')
 resource = package.get_resource('name')
 report = validate(resource)
 ```
+
+## Why am I getting the error: “zsh: no matches found: frictionless[sql]” after pip install frictionless[sql]?
+
+If you're using zsh linux terminal instead of bash, is good to know that zsh [uses square brackets for globbing / pattern matching](http://zsh.sourceforge.net/Guide/zshguide05.html#l137)
+
+That means that if you need to pass literal square brackets as an argument to a command, you either need to escape them or quote the argument like this:
+
+```
+pip install 'requests[security]'
+```
+So, I this case:
+
+```
+pip install 'frictionless[sql]'
+```
+
+[Stackoverflow reference](https://stackoverflow.com/questions/30539798/zsh-no-matches-found-requestssecurity)
