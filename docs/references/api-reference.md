@@ -5794,7 +5794,7 @@ for the `validate` function.
 ## describe
 
 ```python
-describe(source, *, type=None, **options)
+describe(source=None, *, type=None, **options)
 ```
 
 Describe the data source
@@ -5817,7 +5817,7 @@ Public   | `from frictionless import describe`
 ## describe\_dialect
 
 ```python
-describe_dialect(source, **options)
+describe_dialect(source=None, **options)
 ```
 
 Describe the given source as a dialect
@@ -5839,7 +5839,7 @@ Public   | `from frictionless import describe_dialect`
 ## describe\_package
 
 ```python
-describe_package(source, *, expand=False, stats=False, **options)
+describe_package(source=None, *, expand=False, stats=False, **options)
 ```
 
 Describe the given source as a package
@@ -5863,7 +5863,7 @@ Public   | `from frictionless import describe_package`
 ## describe\_resource
 
 ```python
-describe_resource(source, *, expand=False, stats=False, **options)
+describe_resource(source=None, *, expand=False, stats=False, **options)
 ```
 
 Describe the given source as a resource
@@ -5887,7 +5887,7 @@ Public   | `from frictionless import describe_resource`
 ## describe\_schema
 
 ```python
-describe_schema(source, **options)
+describe_schema(source=None, **options)
 ```
 
 Describe the given source as a schema
@@ -6037,7 +6037,7 @@ Create an error from a row
 ## extract
 
 ```python
-extract(source, *, type=None, process=None, stream=False, **options)
+extract(source=None, *, type=None, process=None, stream=False, **options)
 ```
 
 Extract resource rows
@@ -6062,7 +6062,7 @@ Public   | `from frictionless import extract`
 ## extract\_package
 
 ```python
-extract_package(source, *, process=None, stream=False, **options)
+extract_package(source=None, *, process=None, stream=False, **options)
 ```
 
 Extract package rows
@@ -6086,7 +6086,7 @@ Public   | `from frictionless import extract_package`
 ## extract\_resource
 
 ```python
-extract_resource(source, *, process=None, stream=False, **options)
+extract_resource(source=None, *, process=None, stream=False, **options)
 ```
 
 Extract resource rows
@@ -6421,7 +6421,7 @@ Write table
 ## transform
 
 ```python
-transform(source, type=None, **options)
+transform(source=None, type=None, **options)
 ```
 
 Transform resource
@@ -6444,7 +6444,7 @@ Public   | `from frictionless import transform`
 ## transform\_package
 
 ```python
-transform_package(source, *, steps, **options)
+transform_package(source=None, *, steps, **options)
 ```
 
 Transform package
@@ -6467,7 +6467,7 @@ Public   | `from frictionless import transform_package`
 ## transform\_pipeline
 
 ```python
-transform_pipeline(source, *, parallel=False, **options)
+transform_pipeline(source=None, *, parallel=False, **options)
 ```
 
 Transform package
@@ -6489,7 +6489,7 @@ Public   | `from frictionless import transform_package`
 ## transform\_resource
 
 ```python
-transform_resource(source, *, steps, **options)
+transform_resource(source=None, *, steps, **options)
 ```
 
 Transform resource
@@ -6693,7 +6693,7 @@ Public   | `from frictionless import types`
 
 ```python
 @Report.from_validate
-validate(source, type=None, **options)
+validate(source=None, type=None, **options)
 ```
 
 Validate resource
@@ -6717,7 +6717,7 @@ Public   | `from frictionless import validate`
 
 ```python
 @Report.from_validate
-validate_inquiry(source, *, parallel=False, **options)
+validate_inquiry(source=None, *, parallel=False, **options)
 ```
 
 Validate inquiry
@@ -6740,7 +6740,7 @@ Public   | `from frictionless import validate_inquiry`
 
 ```python
 @Report.from_validate
-validate_package(source, original=False, parallel=False, **options)
+validate_package(source=None, original=False, parallel=False, **options)
 ```
 
 Validate package
@@ -6767,7 +6767,7 @@ Public   | `from frictionless import validate_package`
 
 ```python
 @Report.from_validate
-validate_resource(source, *, checks=None, original=False, pick_errors=None, skip_errors=None, limit_errors=config.DEFAULT_LIMIT_ERRORS, limit_memory=config.DEFAULT_LIMIT_MEMORY, **options, ,)
+validate_resource(source=None, *, checks=None, original=False, pick_errors=None, skip_errors=None, limit_errors=config.DEFAULT_LIMIT_ERRORS, limit_memory=config.DEFAULT_LIMIT_MEMORY, **options, ,)
 ```
 
 Validate table
@@ -6796,7 +6796,7 @@ Public   | `from frictionless import validate_table`
 
 ```python
 @Report.from_validate
-validate_schema(source, **options)
+validate_schema(source=None, **options)
 ```
 
 Validate schema
