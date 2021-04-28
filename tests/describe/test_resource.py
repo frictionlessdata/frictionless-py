@@ -181,3 +181,8 @@ def test_describe_resource_compression_gzip_issue_606():
 def test_describe_resource_with_json_format_issue_827():
     resource = describe(path="data/table.json")
     assert resource.name == "table"
+
+
+def test_describe_resource_with_years_in_the_header_issue_825():
+    resource = describe("data/issue-825.csv")
+    assert resource.schema.field_names == ["Musei", "2011", "2010"]

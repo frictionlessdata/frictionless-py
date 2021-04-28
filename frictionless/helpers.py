@@ -248,7 +248,9 @@ def is_only_strings(cells):
             return False
         try:
             float(cell)
-            return False
+            # We assume that a year might be a header label
+            if len(cell) != 4:
+                return False
         except Exception:
             pass
     return True
