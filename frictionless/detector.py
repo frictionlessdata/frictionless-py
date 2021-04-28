@@ -115,9 +115,12 @@ class Detector:
 
         # Detect encoding
         if not encoding:
-            result = chardet.detect(buffer)
-            encoding = result["encoding"] or config.DEFAULT_ENCODING
-            confidence = result["confidence"] or 0
+            detector = chardet.UniversalDetector()
+            for line in buffer.splitlines():
+                detector.feed(line)
+            detector.close()
+            encoding = detector.result["encoding"] or config.DEFAULT_ENCODING
+            confidence = detector.result["confidence"] or 0
             if confidence < self.__encoding_confidence:
                 encoding = config.DEFAULT_ENCODING
             if encoding == "ascii":
