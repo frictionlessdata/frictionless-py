@@ -62,6 +62,8 @@ frictionless describe your-table.csv --type resource
 frictionless describe your-table.csv --type package
 ```
 
+Please take into account that file names might be used by Frictionless to detect a metadata type for furhter data extraction or validation. It's recommended to use corresponding suffixes when you save your metadata to the disc, for example, you might name your Table Schema as `table.schema.yaml`, Data Resource - `table.resource.yaml`, and Data Package - `table.package.yaml`. If there is no hint in the file name Frictionless will assume that it's a resource descriptor by default.
+
 For example, if we want a Data Package descriptor for a single file:
 
 > Download [`table.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/table.csv) to reproduce the examples (right-click and "Save link as").
