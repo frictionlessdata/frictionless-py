@@ -1,10 +1,11 @@
+import pytest
 from frictionless import validate, helpers
 
 
 IS_UNIX = not helpers.is_platform("windows")
 
 
-# Report
+# General
 
 
 def test_report():
@@ -83,3 +84,22 @@ def test_report_expand():
         ],
         "missingValues": [""],
     }
+
+
+# Import/Export
+
+
+@pytest.mark.xfail
+def test_report_to_json_with_bytes_serialization_issue_836():
+    source = b"header1,header2\nvalue1,value2\nvalue3,value4"
+    report = validate(source)
+    descriptor = report.to_json()
+    assert descriptor
+
+
+@pytest.mark.xfail
+def test_report_to_yaml_with_bytes_serialization_issue_836():
+    source = b"header1,header2\nvalue1,value2\nvalue3,value4"
+    report = validate(source)
+    descriptor = report.to_yaml()
+    assert "binary" not in descriptor
