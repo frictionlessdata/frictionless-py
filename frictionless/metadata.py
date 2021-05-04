@@ -109,7 +109,7 @@ class Metadata(helpers.ControlledDict):
         Returns:
             dict: metadata as a plain dict
         """
-        return helpers.deepfork(self)
+        return metadata_to_dict(self)
 
     def to_json(self, path=None, encoder_class=None):
         """Save metadata as a json
@@ -194,7 +194,7 @@ class Metadata(helpers.ControlledDict):
                 if not self.metadata_duplicate:
                     return descriptor
                 try:
-                    return helpers.deepfork(descriptor)
+                    return metadata_to_dict(descriptor)
                 except Exception:
                     note = "descriptor is not serializable"
                     errors = import_module("frictionless.errors")
@@ -274,6 +274,17 @@ class Metadata(helpers.ControlledDict):
 
 
 # Internal
+
+
+def metadata_to_dict(value):
+    process = lambda value: value.to_dict() if hasattr(value, "to_dict") else value
+    if isinstance(value, dict):
+        value = {key: metadata_to_dict(process(value)) for key, value in value.items()}
+    elif isinstance(value, list):
+        value = [metadata_to_dict(process(value)) for value in value]
+    elif isinstance(value, set):
+        value = {metadata_to_dict(process(value)) for value in value}
+    return value
 
 
 def metadata_attach(self, name, value):

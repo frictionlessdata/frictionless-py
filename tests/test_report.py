@@ -1,4 +1,3 @@
-import pytest
 from frictionless import validate, helpers
 
 
@@ -89,7 +88,6 @@ def test_report_expand():
 # Import/Export
 
 
-@pytest.mark.xfail
 def test_report_to_json_with_bytes_serialization_issue_836():
     source = b"header1,header2\nvalue1,value2\nvalue3,value4"
     report = validate(source)
@@ -97,7 +95,6 @@ def test_report_to_json_with_bytes_serialization_issue_836():
     assert descriptor
 
 
-@pytest.mark.xfail
 def test_report_to_yaml_with_bytes_serialization_issue_836():
     source = b"header1,header2\nvalue1,value2\nvalue3,value4"
     report = validate(source)

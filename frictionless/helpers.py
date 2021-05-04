@@ -67,16 +67,6 @@ def rows_to_data(rows):
     return data
 
 
-def deepfork(value):
-    if isinstance(value, dict):
-        value = {key: deepfork(value) for key, value in value.items()}
-    elif isinstance(value, list):
-        value = [deepfork(value) for value in value]
-    elif isinstance(value, set):
-        value = {deepfork(value) for value in value}
-    return value
-
-
 def import_from_plugin(name, *, plugin):
     try:
         return import_module(name)
@@ -361,6 +351,9 @@ def get_current_memory_usage():
 
 
 # Collections
+
+
+# NOTE: we might need to move ControlledList/Dict to Metadata to incapsulate its behaviour
 
 
 class ControlledDict(dict):
