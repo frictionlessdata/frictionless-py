@@ -192,7 +192,7 @@ field_missing_values = Option(
 
 schema_sync = Option(
     default=None,
-    help="Sync the schema based on headers",
+    help="Sync the schema based on the data's header row",
 )
 
 # Command
