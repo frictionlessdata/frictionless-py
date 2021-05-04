@@ -593,7 +593,7 @@ class Package(Metadata):
                         if not isinstance(resource.data, list):
                             path = f"{resource.name}.csv"
                             descriptor["path"] = path
-                            del descriptor["data"]
+                            descriptor.pop("data", None)
                             with tempfile.NamedTemporaryFile() as file:
                                 tgt = Resource(path=file.name, format="csv", trusted=True)
                                 resource.write(tgt)
