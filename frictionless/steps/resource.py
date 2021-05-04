@@ -126,12 +126,9 @@ class resource_update(Step):
         descriptor.pop("code", None)
         name = descriptor.pop("name", None)
         new_name = descriptor.pop("newName", None)
-        resource = package.get_resource(name)
-        if not resource:
-            error = errors.ResourceError(note=f'No resource "{name}"')
-            raise FrictionlessException(error=error)
         if new_name:
             descriptor["name"] = new_name
+        resource = package.get_resource(name)
         resource.update(descriptor)
 
     # Metadata
@@ -141,5 +138,6 @@ class resource_update(Step):
         "required": ["name"],
         "properties": {
             "name": {"type": "string"},
+            "newName": {"type": "string"},
         },
     }

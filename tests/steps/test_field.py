@@ -393,3 +393,20 @@ def test_step_field_update_with_exact_value():
         {"id": "x", "name": "france", "population": 66},
         {"id": "x", "name": "spain", "population": 47},
     ]
+
+
+def test_step_field_update_new_name():
+    source = Resource(path="data/transform.csv")
+    target = transform(
+        source,
+        steps=[
+            steps.field_update(name="id", new_name="new-name"),
+        ],
+    )
+    assert target.schema == {
+        "fields": [
+            {"name": "new-name", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+        ]
+    }

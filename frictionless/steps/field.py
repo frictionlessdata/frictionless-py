@@ -282,12 +282,14 @@ class field_update(Step):
         value=None,
         formula=None,
         function=None,
+        new_name=None,
         **options,
     ):
         self.setinitial("name", name)
         self.setinitial("value", value)
         self.setinitial("formula", formula)
         self.setinitial("function", function)
+        self.setinitial("newName", new_name)
         for key, value in helpers.create_descriptor(**options).items():
             self.setinitial(key, value)
         super().__init__(descriptor)
@@ -302,6 +304,9 @@ class field_update(Step):
         value = descriptor.pop("value", None)
         formula = descriptor.pop("formula", None)
         function = descriptor.pop("function", None)
+        new_name = descriptor.pop("newName", None)
+        if new_name:
+            descriptor["name"] = new_name
         field = resource.schema.get_field(name)
         field.update(descriptor)
         if formula:
@@ -318,6 +323,6 @@ class field_update(Step):
         "required": ["name"],
         "properties": {
             "name": {"type": "string"},
-            "value": {},
+            "newName": {"type": "string"},
         },
     }
