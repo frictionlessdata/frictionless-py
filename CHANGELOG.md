@@ -2,6 +2,10 @@
 
 Here described only the breaking and most significant changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/frictionless-py/commits/main).
 
+## v4.10.0
+
+- Support resource/field renaming in transform (#843)
+
 ## v4.9.0
 
 - Support `--path` CLI argument (#829)
