@@ -20,8 +20,15 @@ def program_transform(
     # Support stdin
     is_stdin = False
     if not source:
-        is_stdin = True
-        source = [sys.stdin.buffer.read()]
+        if not sys.stdin.isatty():
+            is_stdin = True
+            source = [sys.stdin.buffer.read()]
+
+    # Validate input
+    if not source:
+        message = 'Providing "source" is required'
+        typer.secho(message, err=True, fg=typer.colors.RED, bold=True)
+        raise typer.Exit(1)
 
     # Transform source
     try:

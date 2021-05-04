@@ -75,8 +75,15 @@ def program_validate(
     # Support stdin
     is_stdin = False
     if not source and not path:
-        is_stdin = True
-        source = [sys.stdin.buffer.read()]
+        if not sys.stdin.isatty():
+            is_stdin = True
+            source = [sys.stdin.buffer.read()]
+
+    # Validate input
+    if not source and not path:
+        message = 'Providing "source" or "path" is required'
+        typer.secho(message, err=True, fg=typer.colors.RED, bold=True)
+        raise typer.Exit(1)
 
     # Normalize parameters
     source = list(source) if len(source) > 1 else (source[0] if source else None)
