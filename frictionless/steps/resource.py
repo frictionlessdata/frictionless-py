@@ -112,8 +112,9 @@ class resource_update(Step):
 
     code = "resource-update"
 
-    def __init__(self, descriptor=None, *, name=None, **options):
+    def __init__(self, descriptor=None, *, name=None, new_name=None, **options):
         self.setinitial("name", name)
+        self.setinitial("newName", new_name)
         for key, value in helpers.create_descriptor(**options).items():
             self.setinitial(key, value)
         super().__init__(descriptor)
@@ -124,10 +125,13 @@ class resource_update(Step):
         descriptor = self.to_dict()
         descriptor.pop("code", None)
         name = descriptor.pop("name", None)
+        new_name = descriptor.pop("newName", None)
         resource = package.get_resource(name)
         if not resource:
             error = errors.ResourceError(note=f'No resource "{name}"')
             raise FrictionlessException(error=error)
+        if new_name:
+            descriptor["name"] = new_name
         resource.update(descriptor)
 
     # Metadata
