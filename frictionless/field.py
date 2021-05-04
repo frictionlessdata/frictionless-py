@@ -307,7 +307,7 @@ class Field(Metadata):
                     constraint = self.constraints[name]
                     notes[name] = f'constraint "{name}" is "{constraint}"'
         # NOTE: we might want to move this logic to types.array when possible
-        if not notes and self.array_item_field:
+        if cell is not None and not notes and self.array_item_field:
             field = self.array_item_field
             for index, item in enumerate(cell):
                 item = field.read_cell_convert(item)
