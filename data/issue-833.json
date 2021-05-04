@@ -1,0 +1,18 @@
+{
+  "fields": [
+    {
+      "name": "id",
+      "type": "number"
+    },
+    {
+      "name": "value",
+      "type": "array",
+      "arrayItem": {
+        "type": "string",
+        "constraints": {
+          "enum": ["a", "b", "c"]
+        }
+      }
+    }
+  ]
+}

@@ -1156,6 +1156,11 @@ def test_validate_newline_inside_label_issue_811():
     assert report.valid
 
 
-def test_extract_resource_from_json_format_issue_827():
+def test_validate_resource_from_json_format_issue_827():
     report = validate(path="data/table.json")
+    assert report.valid
+
+
+def test_validate_resource_none_is_not_iterable_enum_constraint_issue_833():
+    report = validate("data/issue-833.csv", schema='data/issue-833.json')
     assert report.valid
