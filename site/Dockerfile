@@ -1,11 +1,11 @@
-# DESCRIPTION: Frictionless Documentation Portal
+# DESCRIPTION: Frictionless Documentation Site
 # BUILD: docker build --rm -t frictionless-docs .
-# 
-# If you want to just build the documentation portal locally, do:
+#
+# If you want to just build the documentation site locally, do:
 #   docker build --rm -t frictionless-docs .
 # to build the container, then run
 #   docker-compose up
-# open http://localhost:3000 on your browser to see the portal.
+# open http://localhost:3000 on your browser to see the site.
 
 FROM node:12
 
@@ -21,9 +21,9 @@ ENV PATH=$PATH:/home/node/.npm-global/bin
 USER node
 
 # install dependencies
-RUN mkdir -p /home/node/portal
-COPY ./package.json /home/node/portal/package.json
-WORKDIR /home/node/portal
+RUN mkdir -p /home/node/site
+COPY ./package.json /home/node/site/package.json
+WORKDIR /home/node/site
 RUN npm install
 
 # port Docusaurus runs on

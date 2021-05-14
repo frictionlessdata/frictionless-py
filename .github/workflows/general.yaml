@@ -110,17 +110,17 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 14
-      - name: Install and build portal
+      - name: Install and build site
         run: |
-          cd portal
+          cd site
           npm install
           npm run build
       - name: Publush to Github Pages
         uses: JamesIves/github-pages-deploy-action@3.7.1
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH: portal
-          FOLDER: portal/build
+          BRANCH: site
+          FOLDER: site/build
           CLEAN: true
 
   # Release

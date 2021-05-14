@@ -4,9 +4,9 @@ services:
     image: frictionless-docs:latest
     restart: 'no'
     volumes:
-      - ./:/home/node/portal
+      - ./:/home/node/site
       - ../docs:/home/node/docs
     ports:
       - "3000:3000"
-    working_dir: /home/node/portal
-    command: 'npm start -- --host 0.0.0.0' 
+    working_dir: /home/node/site
+    command: 'npm start -- --host 0.0.0.0'
