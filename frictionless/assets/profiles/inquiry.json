@@ -18,8 +18,7 @@
       "description": "Inquiry tasks",
       "items": {
         "title": "Task",
-        "type": "object",
-        "required": ["source"]
+        "type": "object"
       }
     }
   }
