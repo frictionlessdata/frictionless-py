@@ -94,11 +94,6 @@ module.exports = {
               href:
                 "https://colab.research.google.com/drive/1iIrTed-d056VXtl9t1WLQnLMC2KeK9Ul",
             },
-            {
-              label: "Frictionless Describe and Extract",
-              href:
-                "https://colab.research.google.com/drive/12RmGajHamGP5wOoAhy8N7Gchn9TmVnG-",
-            },
           ],
         },
         {
