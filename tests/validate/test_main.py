@@ -27,3 +27,8 @@ def test_validate_from_resource_instance():
     resource = Resource("data/table.csv")
     report = validate(resource)
     assert report.valid
+
+
+def test_validate_multiple_files_issue_850():
+    report = validate("data/package/*.csv")
+    assert report.stats["tasks"] == 2

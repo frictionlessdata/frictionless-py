@@ -23,8 +23,9 @@ def validate(source=None, type=None, **options):
     """
     if not type:
         file = system.create_file(source, basepath=options.get("basepath", ""))
-        if file.type in ["table", "schema", "resource", "package", "inquiry"]:
-            type = "resource" if file.type == "table" else file.type
+        type = "package" if file.multipart else file.type
+        if type == "table":
+            type = "resource"
     module = import_module("frictionless.validate")
     validate = getattr(module, "validate_%s" % type, None)
     if validate is None:
