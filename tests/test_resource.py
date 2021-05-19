@@ -2530,6 +2530,13 @@ def test_to_yaml_with_resource_data_is_not_a_list_issue_693():
     assert text == "{}\n"
 
 
+def test_to_yaml_allow_unicode_issue_844():
+    resource = Resource("data/issue-844.csv", encoding="utf-8")
+    resource.infer()
+    text = resource.to_yaml()
+    assert "età" in text
+
+
 def test_resource_to_view():
     resource = Resource("data/table.csv")
     assert resource.to_view()
