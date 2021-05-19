@@ -165,7 +165,7 @@ def program_extract(
 
     # Return YAML
     if yaml:
-        content = pyyaml.safe_dump(data).strip()
+        content = pyyaml.safe_dump(data, allow_unicode=True).strip()
         typer.secho(content)
         raise typer.Exit()
 
