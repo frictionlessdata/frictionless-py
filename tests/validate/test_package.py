@@ -2,7 +2,7 @@ import json
 import pytest
 import pathlib
 from copy import deepcopy
-from frictionless import validate, helpers
+from frictionless import Package, Resource, Schema, Field, Detector, validate, helpers
 
 
 IS_UNIX = not helpers.is_platform("windows")
@@ -449,3 +449,19 @@ def test_validate_package_uppercase_format_issue_494():
         report = validate("data/issue-494.package.json")
         assert report.valid
         assert report.stats["tasks"] == 1
+
+
+# See also: https://github.com/frictionlessdata/project/discussions/678
+def test_validate_package_using_detector_schema_sync_issue_847():
+    package = Package(
+        resources=[
+            Resource(
+                data=[["f1"], ["v1"], ["v2"], ["v3"]],
+                schema=Schema(fields=[Field(name="f1"), Field(name="f2")]),
+            ),
+        ]
+    )
+    for resource in package.resources:
+        resource.detector = Detector(schema_sync=True)
+    report = validate(package)
+    assert report.valid

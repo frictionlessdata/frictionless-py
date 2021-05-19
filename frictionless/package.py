@@ -89,13 +89,13 @@ class Package(Metadata):
         created? (str): The datetime on which this was created.
             The datetime must conform to the string formats for RFC3339 datetime,
 
-        basepath? (str): A basepath of the resource
-            The fullpath of the resource is joined `basepath` and /path`
-
         innerpath? (str): A ZIP datapackage descriptor inner path.
             Path to the package descriptor inside the ZIP datapackage.
             Example: some/folder/datapackage.yaml
             Default: datapackage.json
+
+        basepath? (str): A basepath of the resource
+            The fullpath of the resource is joined `basepath` and /path`
 
         detector? (Detector): File/table detector.
             For more information, please check the Detector documentation.
@@ -138,8 +138,8 @@ class Package(Metadata):
         image=None,
         created=None,
         # Extra
-        basepath="",
         innerpath="datapackage.json",
+        basepath="",
         detector=None,
         onerror="ignore",
         trusted=False,
@@ -470,6 +470,7 @@ class Package(Metadata):
             descriptor,
             resources=resources,
             basepath=self.__basepath,
+            detector=self.__detector,
             onerror=self.__onerror,
             trusted=self.__trusted,
         )
