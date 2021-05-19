@@ -271,6 +271,8 @@ class Resource(Metadata):
     def __setattr__(self, name, value):
         if name == "basepath":
             self.__basepath = value
+        elif name == "detector":
+            self.__detector = value
         elif name == "onerror":
             self.__onerror = value
         elif name == "trusted":
@@ -1105,6 +1107,7 @@ class Resource(Metadata):
             descriptor,
             data=self.data,
             basepath=self.__basepath,
+            detector=self.__detector,
             onerror=self.__onerror,
             trusted=self.__trusted,
             package=self.__package,
