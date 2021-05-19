@@ -2481,13 +2481,13 @@ package.get_resoure('table').read_rows() == [
 - `created?` _str_ - The datetime on which this was created.
   The datetime must conform to the string formats for RFC3339 datetime,
   
-- `basepath?` _str_ - A basepath of the resource
-  The fullpath of the resource is joined `basepath` and /path`
-  
 - `innerpath?` _str_ - A ZIP datapackage descriptor inner path.
   Path to the package descriptor inside the ZIP datapackage.
 - `Example` - some/folder/datapackage.yaml
 - `Default` - datapackage.json
+  
+- `basepath?` _str_ - A basepath of the resource
+  The fullpath of the resource is joined `basepath` and /path`
   
 - `detector?` _Detector_ - File/table detector.
   For more information, please check the Detector documentation.
