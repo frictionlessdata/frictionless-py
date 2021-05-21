@@ -281,7 +281,7 @@ class System:
         for item in pkgutil.iter_modules():
             if item.name.startswith("frictionless_"):
                 module = import_module(item.name)
-                modules[item.name] = module
+                modules[item.name.replace("frictionless_", "")] = module
         module = import_module("frictionless.plugins")
         for _, name, _ in pkgutil.iter_modules([os.path.dirname(module.__file__)]):
             module = import_module(f"frictionless.plugins.{name}")
