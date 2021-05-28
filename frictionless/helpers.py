@@ -188,7 +188,7 @@ def is_remote_path(path):
 
 
 def join_path(basepath, path):
-    if not is_remote_path(path):
+    if not is_remote_path(path) and not os.path.isabs(path):
         if basepath:
             separator = os.path.sep
             if is_remote_path(basepath):
