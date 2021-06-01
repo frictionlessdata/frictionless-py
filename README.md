@@ -2,10 +2,10 @@
 
 [![Build](https://img.shields.io/github/workflow/status/frictionlessdata/frictionless-py/general/main)](https://github.com/frictionlessdata/frictionless-py/actions)
 [![Coverage](https://img.shields.io/codecov/c/github/frictionlessdata/frictionless-py/main)](https://codecov.io/gh/frictionlessdata/frictionless-py)
-[![Registry](https://img.shields.io/pypi/v/frictionless.svg)](https://pypi.python.org/pypi/frictionless)
+[![Release](https://img.shields.io/pypi/v/frictionless.svg)](https://pypi.python.org/pypi/frictionless)
 [![Citation](https://zenodo.org/badge/28409905.svg)](https://zenodo.org/badge/latestdoi/28409905)
-[![Codebase](https://img.shields.io/badge/github-main-brightgreen)](https://github.com/frictionlessdata/frictionless-py)
-[![Support](https://img.shields.io/badge/chat-discord-brightgreen)](https://discord.com/channels/695635777199145130/695635777199145133)
+[![Codebase](https://img.shields.io/badge/codebase-github-brightgreen)](https://github.com/frictionlessdata/frictionless-py)
+[![Support](https://img.shields.io/badge/support-discord-brightgreen)](https://discord.com/channels/695635777199145130/695635777199145133)
 
 Frictionless is a framework to describe, extract, validate, and transform tabular data (DEVT Framework). It supports a great deal of data schemes and formats, as well as provides popular platforms integrations. The framework is powered by the lightweight yet comprehensive [Frictionless Data Specifications](https://specs.frictionlessdata.io/).
 
