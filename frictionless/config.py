@@ -10,7 +10,8 @@ import zipfile
 
 def read_asset(*paths):
     dirname = os.path.dirname(__file__)
-    return io.open(os.path.join(dirname, "assets", *paths)).read().strip()
+    with open(os.path.join(dirname, "assets", *paths)) as file:
+        return file.read().strip()
 
 
 # General
