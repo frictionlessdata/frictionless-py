@@ -31,7 +31,7 @@ module.exports = {
           path: "../docs",
           sidebarPath: require.resolve("./sidebars.js"),
           editUrl:
-            "https://github.com/frictionlessdata/frictionless-py/edit/master/docs/",
+            "https://github.com/frictionlessdata/frictionless-py/edit/main/docs/",
           showLastUpdateAuthor: true,
           showLastUpdateTime: true,
           remarkPlugins: [require("./src/plugins/remark-npm2yarn")],
