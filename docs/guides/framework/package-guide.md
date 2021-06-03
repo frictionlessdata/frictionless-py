@@ -23,7 +23,7 @@ package = Package({'resources': {'path': 'data/table.csv'}}) # from a descriptor
 package = Package(resources=[Resource(path='data/table.csv')]) # from arguments
 ```
 
-As you can see it's possible to create a package providing different kinds of sources which will be detector to have some type automatically (e.g. whether it's a glob or a path). It's possible to make this step more explicit:
+As you can see it's possible to create a package providing different kinds of sources which will be detected to have some type automatically (e.g. whether it's a glob or a path). It's possible to make this step more explicit:
 
 ```python title="Python"
 from frictionless import Package, Resource
@@ -72,7 +72,7 @@ package.description = 'New Description'
 # and others
 ```
 
-## Resoure Management
+## Resource Management
 
 The core purpose of having a package is to provide an ability to have a set of resources. The Package class provides useful methods to manage resources:
 
@@ -106,7 +106,7 @@ package.to_yaml('package.yaml') # Save as YAML
 
 ## Package Options
 
-The Package consturctor accept a few additional options to tweak how it and the underlaying resoures will work:
+The Package constructor accept a few additional options to tweak how it and the underlaying resources will work:
 
 ### Basepath
 
@@ -125,11 +125,11 @@ There are 3 possible values for reacting on tabular errors:
 
 ### Trusted
 
-By default an error will be reaised on [unsafe paths](https://specs.frictionlessdata.io/data-resource/#url-or-path). Setting `trusted` to `True` will disable this behaviour.
+By default an error will be raised on [unsafe paths](https://specs.frictionlessdata.io/data-resource/#url-or-path). Setting `trusted` to `True` will disable this behaviour.
 
 ### Hashing
 
-Will be passed to underlaying resources as a default hasing algorithm.
+Will be passed to underlaying resources as a default hashing algorithm.
 
 [Detector](detector-guide.md) object to tweak metadata detection.
 
