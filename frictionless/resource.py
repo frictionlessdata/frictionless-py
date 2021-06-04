@@ -1131,8 +1131,11 @@ class Resource(Metadata):
         view = str(getattr(self.to_petl(normalize=True), type)(**options))
         return view
 
-    def to_snap(self):
+    def to_snap(self, *, json=False):
         """Create a snapshot from the resource
+
+        Parameters:
+            json (bool): make data types compatible with JSON format
 
         Returns
             list: resource's data
@@ -1141,7 +1144,7 @@ class Resource(Metadata):
         with helpers.ensure_open(self):
             snap.append(self.header.to_list())
             for row in self.row_stream:
-                snap.append(row.to_list())
+                snap.append(row.to_list(json=json))
         return snap
 
     def to_inline(self, *, dialect=None):
