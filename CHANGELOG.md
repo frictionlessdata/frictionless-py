@@ -2,6 +2,10 @@
 
 Here described only the breaking and most significant changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/frictionless-py/commits/main).
 
+## v4.11.0
+
+- Added `json` argument to `resource.to_snap`
+
 ## v4.10.0
 
 - Support resource/field renaming in transform (#843)

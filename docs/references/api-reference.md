@@ -4415,13 +4415,17 @@ https://petl.readthedocs.io/en/stable/util.html#visualising-tables
 ### resource.to\_snap
 
 ```python
- | to_snap()
+ | to_snap(*, json=False)
 ```
 
 Create a snapshot from the resource
 
-Returns
-    list: resource's data
+**Arguments**:
+
+- `json` _bool_ - make data types compatible with JSON format
+  
+  Returns
+- `list` - resource's data
 
 ### resource.to\_inline
 
