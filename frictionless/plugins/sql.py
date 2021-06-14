@@ -382,7 +382,6 @@ def regexp(expr, item):
 
 
 class SqlConverter:
-
     def __init__(self, sadialect=None, dialect=None):
         sa = helpers.import_from_plugin("sqlalchemy", plugin="sql")
         self.sadialect = sadialect or sa.engine.default.DefaultDialect()
@@ -563,7 +562,7 @@ class SqlConverter:
                 *checks,
                 nullable=not field.required,
                 unique=unique,
-                comment=field.description
+                comment=field.description,
             )
             columns.append(column)
 
