@@ -191,9 +191,9 @@ class SqlStorage(Storage):
 
         # Set attributes
         dialect = dialect or SqlDialect()
-        self.__prefix = dialect.prefix
         self.__namespace = dialect.namespace
         self.__connection = engine.connect()
+        self.__converter = SqlConverter(engine.dialect, dialect)
 
         # Add regex support
         # It will fail silently if this function already exists
@@ -207,7 +207,7 @@ class SqlStorage(Storage):
     def __iter__(self):
         names = []
         for sql_table in self.__metadata.sorted_tables:
-            name = self.__read_convert_name(sql_table.name)
+            name = self.__converter._read_convert_name(sql_table.name)
             if name is not None:
                 names.append(name)
         return iter(names)
@@ -223,9 +223,10 @@ class SqlStorage(Storage):
         if sql_table is None:
             note = f'Resource "{name}" does not exist'
             raise FrictionlessException(errors.StorageError(note=note))
-        schema = self.__read_convert_schema(sql_table)
-        data = partial(self.__read_convert_data, name, order_by=order_by)
-        resource = Resource(name=name, schema=schema, data=data)
+        resource = self.__converter.sql_table_to_resource(sql_table)
+        # TODO: Check if necessary
+        resource.name = name
+        resource.data = partial(self.__read_convert_data, name, order_by=order_by)
         return resource
 
     def read_package(self):
@@ -234,49 +235,6 @@ class SqlStorage(Storage):
             resource = self.read_resource(name)
             package.resources.append(resource)
         return package
-
-    def __read_convert_name(self, sql_name):
-        if sql_name.startswith(self.__prefix):
-            return sql_name.replace(self.__prefix, "", 1)
-        return None
-
-    def __read_convert_schema(self, sql_table):
-        sa = helpers.import_from_plugin("sqlalchemy", plugin="sql")
-        schema = Schema()
-
-        # Fields
-        for column in sql_table.columns:
-            field_type = self.__read_convert_type(column.type)
-            field = Field(name=str(column.name), type=field_type)
-            if not column.nullable:
-                field.required = True
-            if column.comment:
-                field.description = column.comment
-            schema.fields.append(field)
-
-        # Primary key
-        for constraint in sql_table.constraints:
-            if isinstance(constraint, sa.PrimaryKeyConstraint):
-                for column in constraint.columns:
-                    schema.primary_key.append(str(column.name))
-
-        # Foreign keys
-        for constraint in sql_table.constraints:
-            if isinstance(constraint, sa.ForeignKeyConstraint):
-                resource = ""
-                own_fields = []
-                foreign_fields = []
-                for element in constraint.elements:
-                    own_fields.append(str(element.parent.name))
-                    if element.column.table.name != sql_table.name:
-                        res_name = element.column.table.name
-                        resource = self.__read_convert_name(res_name)
-                    foreign_fields.append(str(element.column.name))
-                ref = {"resource": resource, "fields": foreign_fields}
-                schema.foreign_keys.append({"fields": own_fields, "reference": ref})
-
-        # Return schema
-        return schema
 
     def __read_convert_data(self, name, *, order_by=None):
         sa = helpers.import_from_plugin("sqlalchemy", plugin="sql")
@@ -293,43 +251,8 @@ class SqlStorage(Storage):
                 cells = list(item)
                 yield cells
 
-    def __read_convert_type(self, sql_type=None):
-        sa = helpers.import_from_plugin("sqlalchemy", plugin="sql")
-        sapg = helpers.import_from_plugin("sqlalchemy.dialects.postgresql", plugin="sql")
-        sams = helpers.import_from_plugin("sqlalchemy.dialects.mysql", plugin="sql")
-
-        # Create mapping
-        mapping = {
-            sapg.ARRAY: "array",
-            sams.BIT: "string",
-            sa.Boolean: "boolean",
-            sa.Date: "date",
-            sa.DateTime: "datetime",
-            sa.Float: "number",
-            sa.Integer: "integer",
-            sapg.JSONB: "object",
-            sapg.JSON: "object",
-            sa.Numeric: "number",
-            sa.Text: "string",
-            sa.Time: "time",
-            sams.VARBINARY: "string",
-            sams.VARCHAR: "string",
-            sa.VARCHAR: "string",
-            sapg.UUID: "string",
-        }
-
-        # Return type
-        if sql_type:
-            for key, value in mapping.items():
-                if isinstance(sql_type, key):
-                    return value
-            return "string"
-
-        # Return mapping
-        return mapping
-
     def __read_sql_table(self, name):
-        sql_name = self.__write_convert_name(name)
+        sql_name = self.__converter._write_convert_name(name)
         if self.__namespace:
             sql_name = ".".join((self.__namespace, sql_name))
         return self.__metadata.tables.get(sql_name)
@@ -361,7 +284,9 @@ class SqlStorage(Storage):
             for resource in package.resources:
                 if not resource.schema:
                     resource.infer()
-                sql_table = self.__write_convert_schema(resource)
+                sql_table = self.__converter.resource_to_sql_table(
+                    resource, self.__metadata
+                )
                 sql_tables.append(sql_table)
             self.__metadata.create_all(tables=sql_tables)
 
@@ -369,89 +294,11 @@ class SqlStorage(Storage):
             for resource in package.resources:
                 self.__write_convert_data(resource)
 
-    def __write_convert_name(self, name):
-        return self.__prefix + name
-
-    def __write_convert_schema(self, resource):
-        sa = helpers.import_from_plugin("sqlalchemy", plugin="sql")
-
-        # Prepare
-        columns = []
-        constraints = []
-        engine = self.__connection.engine
-        sql_name = self.__write_convert_name(resource.name)
-
-        # Fields
-        Check = sa.CheckConstraint
-        quote = engine.dialect.identifier_preparer.quote
-        for field in resource.schema.fields:
-            checks = []
-            nullable = not field.required
-            quoted_name = quote(field.name)
-            column_type = self.__write_convert_type(field.type)
-            unique = field.constraints.get("unique", False)
-            # https://stackoverflow.com/questions/1827063/mysql-error-key-specification-without-a-key-length
-            if engine.dialect.name.startswith("mysql"):
-                unique = unique and field.type != "string"
-            for const, value in field.constraints.items():
-                if const == "minLength":
-                    checks.append(Check("LENGTH(%s) >= %s" % (quoted_name, value)))
-                elif const == "maxLength":
-                    # Some databases don't support TEXT as a Primary Key
-                    # https://github.com/frictionlessdata/frictionless-py/issues/777
-                    for prefix in ["mysql", "db2", "ibm"]:
-                        if engine.dialect.name.startswith(prefix):
-                            column_type = sa.VARCHAR(length=value)
-                    checks.append(Check("LENGTH(%s) <= %s" % (quoted_name, value)))
-                elif const == "minimum":
-                    checks.append(Check("%s >= %s" % (quoted_name, value)))
-                elif const == "maximum":
-                    checks.append(Check("%s <= %s" % (quoted_name, value)))
-                elif const == "pattern":
-                    if engine.dialect.name.startswith("postgresql"):
-                        checks.append(Check("%s ~ '%s'" % (quoted_name, value)))
-                    else:
-                        check = Check("%s REGEXP '%s'" % (quoted_name, value))
-                        checks.append(check)
-                elif const == "enum":
-                    # NOTE: https://github.com/frictionlessdata/frictionless-py/issues/778
-                    if field.type == "string":
-                        enum_name = "%s_%s_enum" % (sql_name, field.name)
-                        column_type = sa.Enum(*value, name=enum_name)
-            column_args = [field.name, column_type] + checks
-            column_kwargs = {"nullable": nullable, "unique": unique}
-            if field.description:
-                column_kwargs["comment"] = field.description
-            column = sa.Column(*column_args, **column_kwargs)
-            columns.append(column)
-
-        # Primary key
-        if resource.schema.primary_key is not None:
-            constraint = sa.PrimaryKeyConstraint(*resource.schema.primary_key)
-            constraints.append(constraint)
-
-        # Foreign keys
-        for fk in resource.schema.foreign_keys:
-            fields = fk["fields"]
-            resource = fk["reference"]["resource"]
-            foreign_fields = fk["reference"]["fields"]
-            table_name = sql_name
-            if resource != "":
-                table_name = self.__write_convert_name(resource)
-            composer = lambda field: ".".join([table_name, field])
-            foreign_fields = list(map(composer, foreign_fields))
-            constraint = sa.ForeignKeyConstraint(fields, foreign_fields)
-            constraints.append(constraint)
-
-        # Create sql table
-        sql_table = sa.Table(sql_name, self.__metadata, *(columns + constraints))
-        return sql_table
-
     def __write_convert_data(self, resource):
 
         # Fallback fields
         fallback_fields = []
-        mapping = self.__write_convert_type()
+        mapping = self.__converter._write_convert_type()
         for field in resource.schema.fields:
             if not mapping.get(field.type):
                 fallback_fields.append(field)
@@ -479,41 +326,6 @@ class SqlStorage(Storage):
                     buffer = []
             if len(buffer):
                 self.__connection.execute(sql_table.insert().values(buffer))
-
-    def __write_convert_type(self, type=None):
-        sa = helpers.import_from_plugin("sqlalchemy", plugin="sql")
-        sapg = helpers.import_from_plugin("sqlalchemy.dialects.postgresql", plugin="sql")
-
-        # Default dialect
-        mapping = {
-            "any": sa.Text,
-            "boolean": sa.Boolean,
-            "date": sa.Date,
-            "datetime": sa.DateTime,
-            "integer": sa.Integer,
-            "number": sa.Float,
-            "string": sa.Text,
-            "time": sa.Time,
-            "year": sa.Integer,
-        }
-
-        # Postgresql dialect
-        if self.__connection.engine.dialect.name.startswith("postgresql"):
-            mapping.update(
-                {
-                    "array": sapg.JSONB,
-                    "geojson": sapg.JSONB,
-                    "number": sa.Numeric,
-                    "object": sapg.JSONB,
-                }
-            )
-
-        # Return type
-        if type:
-            return mapping.get(type, sa.Text)
-
-        # Return mapping
-        return mapping
 
     # Delete
 
@@ -567,3 +379,225 @@ SCHEME_PREFIXES = [
 def regexp(expr, item):
     reg = re.compile(expr)
     return reg.search(item) is not None
+
+
+class SqlConverter:
+
+    def __init__(self, sadialect=None, dialect=None):
+        sa = helpers.import_from_plugin("sqlalchemy", plugin="sql")
+        self.sadialect = sadialect or sa.engine.default.DefaultDialect()
+        self.dialect = dialect or SqlDialect()
+
+    # Read
+
+    def _read_convert_name(self, sql_name):
+        if sql_name.startswith(self.dialect.prefix):
+            return sql_name.replace(self.dialect.prefix, "", 1)
+        return None
+
+    def _read_convert_type(self, sql_type=None):
+        sa = helpers.import_from_plugin("sqlalchemy", plugin="sql")
+        sapg = helpers.import_from_plugin("sqlalchemy.dialects.postgresql", plugin="sql")
+        sams = helpers.import_from_plugin("sqlalchemy.dialects.mysql", plugin="sql")
+
+        # Create mapping
+        mapping = {
+            sapg.ARRAY: "array",
+            sams.BIT: "string",
+            sa.Boolean: "boolean",
+            sa.Date: "date",
+            sa.DateTime: "datetime",
+            sa.Float: "number",
+            sa.Integer: "integer",
+            sapg.JSONB: "object",
+            sapg.JSON: "object",
+            sa.Numeric: "number",
+            sa.Text: "string",
+            sa.Time: "time",
+            sams.VARBINARY: "string",
+            sams.VARCHAR: "string",
+            sa.VARCHAR: "string",
+            sapg.UUID: "string",
+        }
+
+        # Return type
+        if sql_type:
+            for key, value in mapping.items():
+                if isinstance(sql_type, key):
+                    return value
+            return "string"
+
+        # Return mapping
+        return mapping
+
+    def sql_table_to_resource(self, sql_table):
+        sa = helpers.import_from_plugin("sqlalchemy", plugin="sql")
+        schema = Schema()
+
+        # Fields
+        for column in sql_table.columns:
+            field_type = self._read_convert_type(column.type)
+            field = Field(name=str(column.name), type=field_type)
+            if not column.nullable:
+                field.required = True
+            if column.comment:
+                field.description = column.comment
+            schema.fields.append(field)
+
+        # Primary key
+        for constraint in sql_table.constraints:
+            if isinstance(constraint, sa.PrimaryKeyConstraint):
+                for column in constraint.columns:
+                    schema.primary_key.append(str(column.name))
+
+        # Foreign keys
+        for constraint in sql_table.constraints:
+            if isinstance(constraint, sa.ForeignKeyConstraint):
+                resource = ""
+                own_fields = []
+                foreign_fields = []
+                for element in constraint.elements:
+                    own_fields.append(str(element.parent.name))
+                    if element.column.table.name != sql_table.name:
+                        res_name = element.column.table.name
+                        resource = self._read_convert_name(res_name)
+                    foreign_fields.append(str(element.column.name))
+                ref = {"resource": resource, "fields": foreign_fields}
+                schema.foreign_keys.append({"fields": own_fields, "reference": ref})
+
+        # Return resource
+        return Resource(name=sql_table.name, schema=schema)
+
+    def sql_metadata_to_package(self, sql_metadata):
+        package = Package()
+        for sql_table in sql_metadata.tables:
+            package.resources.append(self.sql_table_to_resource(sql_table))
+        return package
+
+    # Write
+
+    def _write_convert_name(self, name):
+        return self.dialect.prefix + name
+
+    def _write_convert_type(self, type=None):
+        sa = helpers.import_from_plugin("sqlalchemy", plugin="sql")
+        sapg = helpers.import_from_plugin("sqlalchemy.dialects.postgresql", plugin="sql")
+
+        # Default dialect
+        mapping = {
+            "any": sa.Text,
+            "boolean": sa.Boolean,
+            "date": sa.Date,
+            "datetime": sa.DateTime,
+            "integer": sa.Integer,
+            "number": sa.Float,
+            "string": sa.Text,
+            "time": sa.Time,
+            "year": sa.Integer,
+        }
+
+        # Postgresql dialect
+        if self.sadialect.name.startswith("postgresql"):
+            mapping.update(
+                {
+                    "array": sapg.JSONB,
+                    "geojson": sapg.JSONB,
+                    "number": sa.Numeric,
+                    "object": sapg.JSONB,
+                }
+            )
+
+        # Return type
+        if type:
+            return mapping.get(type, sa.Text)
+
+        # Return mapping
+        return mapping
+
+    def resource_to_sql_table(self, resource, metadata=None):
+        sa = helpers.import_from_plugin("sqlalchemy", plugin="sql")
+
+        # Prepare
+        columns = []
+        constraints = []
+        sql_name = self._write_convert_name(resource.name)
+
+        # Fields
+        Check = sa.CheckConstraint
+        for field in resource.schema.fields:
+            checks = []
+            quoted_name = self.sadialect.identifier_preparer.quote(field.name)
+            column_type = self._write_convert_type(field.type)
+            unique = field.constraints.get("unique", False)
+            # https://stackoverflow.com/questions/1827063/mysql-error-key-specification-without-a-key-length
+            if self.sadialect.name.startswith("mysql"):
+                unique = unique and field.type != "string"
+            for const, value in field.constraints.items():
+                if const == "minLength":
+                    checks.append(Check("LENGTH(%s) >= %s" % (quoted_name, value)))
+                elif const == "maxLength":
+                    # Some databases don't support TEXT as a Primary Key
+                    # https://github.com/frictionlessdata/frictionless-py/issues/777
+                    for prefix in ["mysql", "db2", "ibm"]:
+                        if self.sadialect.name.startswith(prefix):
+                            column_type = sa.VARCHAR(length=value)
+                    checks.append(Check("LENGTH(%s) <= %s" % (quoted_name, value)))
+                elif const == "minimum":
+                    checks.append(Check("%s >= %s" % (quoted_name, value)))
+                elif const == "maximum":
+                    checks.append(Check("%s <= %s" % (quoted_name, value)))
+                elif const == "pattern":
+                    if self.sadialect.name.startswith("postgresql"):
+                        checks.append(Check("%s ~ '%s'" % (quoted_name, value)))
+                    else:
+                        check = Check("%s REGEXP '%s'" % (quoted_name, value))
+                        checks.append(check)
+                elif const == "enum":
+                    # NOTE: https://github.com/frictionlessdata/frictionless-py/issues/778
+                    if field.type == "string":
+                        enum_name = "%s_%s_enum" % (sql_name, field.name)
+                        column_type = sa.Enum(*value, name=enum_name)
+            column = sa.Column(
+                field.name,
+                column_type,
+                *checks,
+                nullable=not field.required,
+                unique=unique,
+                comment=field.description
+            )
+            columns.append(column)
+
+        # Primary key
+        if resource.schema.primary_key is not None:
+            constraint = sa.PrimaryKeyConstraint(*resource.schema.primary_key)
+            constraints.append(constraint)
+
+        # Foreign keys
+        for fk in resource.schema.foreign_keys:
+            fields = fk["fields"]
+            foreign_name = fk["reference"]["resource"]
+            foreign_fields = fk["reference"]["fields"]
+            table_name = sql_name
+            if foreign_name != "":
+                table_name = self._write_convert_name(foreign_name)
+            composer = lambda field: ".".join([table_name, field])
+            foreign_fields = list(map(composer, foreign_fields))
+            constraint = sa.ForeignKeyConstraint(fields, foreign_fields)
+            constraints.append(constraint)
+
+        # Create sql table
+        return sa.Table(
+            sql_name,
+            metadata or sa.MetaData(),
+            *columns,
+            *constraints,
+            comment=resource.description,
+        )
+
+    def package_to_sql_metadata(self, package):
+        sa = helpers.import_from_plugin("sqlalchemy", plugin="sql")
+
+        metadata = sa.MetaData()
+        for resource in package.resources:
+            _ = self.resource_to_sql_table(resource, metadata=metadata)
+        return metadata
