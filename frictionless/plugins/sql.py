@@ -587,7 +587,7 @@ class SqlConverter:
         # Create sql table
         return sa.Table(
             sql_name,
-            metadata or sa.MetaData(),
+            metadata or sa.MetaData(schema=self.dialect.namespace),
             *columns,
             *constraints,
             comment=resource.description,
@@ -596,7 +596,7 @@ class SqlConverter:
     def package_to_sql_metadata(self, package):
         sa = helpers.import_from_plugin("sqlalchemy", plugin="sql")
 
-        metadata = sa.MetaData()
+        metadata = sa.MetaData(schema=self.dialect.namespace)
         for resource in package.resources:
             _ = self.resource_to_sql_table(resource, metadata=metadata)
         return metadata
