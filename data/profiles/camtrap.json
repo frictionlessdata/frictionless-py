@@ -1,0 +1,290 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Camera Trap Data Package Profile",
+  "description": "This is the profile of standardized camera trap data package.",
+  "type": "object",
+  "definitions": {
+    "organization": {
+      "description": "Basic information about an organization related to this data package.",
+      "type": "object",
+      "required": [
+        "title",
+        "url"
+      ],
+      "properties": {
+        "title": {
+          "description": "Organization name.",
+          "type": "string",
+          "format": "default"
+        },
+        "path": {
+          "description": "Organization website.",
+          "type": "string",
+          "format": "uri"
+        },
+        "email": {
+          "description": "Organization contact email.",
+          "type": "string",
+          "format": "email"
+        }
+      }
+    },
+    "species": {
+      "description": "",
+      "type": "object",
+      "required": [
+        "taxon_id",
+        "scientific_name"
+      ],
+      "properties": {
+        "taxon_id": {
+          "description": "Taxon ID of the species according to a taxonomic reference list defined by `taxon_id_reference`.",
+          "type": "string",
+          "format": "default"
+        },
+        "scientific_name": {
+          "description": "Scientific name of the species.",
+          "type": "string",
+          "format": "default"
+        },
+        "vernacular_name": {
+          "description": "Common name of the species, preferably in English.",
+          "type": "string",
+          "format": "default"
+        },
+        "count": {
+          "description": "Number of observations for that species in the data package.",
+          "type": "integer"
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "$ref": "https://frictionlessdata.io/schemas/data-package.json"
+    },
+    {
+      "required": [
+        "multimedia_access",
+        "project",
+        "spatial",
+        "temporal",
+        "taxonomic"
+      ],
+      "properties": {
+        "multimedia_access": {
+          "description": "Information about the accessibilty of the multimedia files listed in `multimedia.csv`.",
+          "type": "object",
+          "required": [
+            "remote",
+            "public"
+          ],
+          "properties": {
+            "remote": {
+              "description": "`true` if multimedia files are stored remotely (e.g. in the cloud) and `false` if these are part of the data package. In the latter case, relative paths in `multimedia.csv` start from the root of the data package.",
+              "type": "boolean"
+            },
+            "public": {
+              "description": "`true` if URLs to multimedia files in `multimedia.csv` are publicly accessible. Additional information about the required authentication process should be provided in the `auth_type` field if `false`.",
+              "type": "boolean"
+            },
+            "auth_type": {
+              "description": "Type of authentication required to get access to multimedia files.",
+              "type": "string",
+              "format": "default",
+              "enum": [
+                "basic",
+                "token",
+                "ldap"
+              ]
+            }
+          }
+        },
+        "organizations": {
+          "description": "List of organizations related to this data package.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/organization"
+          }
+        },
+        "project": {
+          "description": "Camera trap project that generated the data in this data package.",
+          "type": "object",
+          "required": [
+            "title",
+            "sampling_design",
+            "sensor_method",
+            "animal_types",
+            "bait_use",
+            "classification_level",
+            "sequence_interval"
+          ],
+          "properties": {
+            "title": {
+              "description": "Title of the project.",
+              "type": "string",
+              "format": "default"
+            },
+            "acronym": {
+              "description": "Short and human-readable identifier of the project.",
+              "type": "string",
+              "format": "default"
+            },
+            "description": {
+              "description": "Description of the project, ideally expressed in Markdown format. To describe the data package itself, use <https://specs.frictionlessdata.io/data-package/#description>.",
+              "type": "string",
+              "format": "default"
+            },
+            "sampling_design": {
+              "description": "Type of a sampling design/layout. The values are based on Wearn & Glover-Kapfer (2017, <https://doi.org/10.13140/RG.2.2.23409.17767>), pages 80-82: `simple random`: random distribution of sampling locations; `systematic random`: random distribution of sampling locations, but arranged in a regular pattern; `clustered random`: random distribution of sampling locations, but clustered in arrays; `experimental`: non-random distribution aimed to study an effect, including the before-after control-impact (BACI) design; `targeted`: non-random distribution optimized for capturing specific target species (often using various bait types); `opportunistic`: opportunistic camera trapping (usually with a small number of cameras).",
+              "type": "string",
+              "format": "default",
+              "enum": [
+                "simple random",
+                "systematic random",
+                "clustered random",
+                "experimental",
+                "targeted",
+                "opportunistic"
+              ]
+            },
+            "sensor_method": {
+              "description": "Method of triggering a camera.",
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "motion detection",
+                  "time lapse"
+                ]
+              },
+              "uniqueItems": true,
+              "minItems": 1
+            },
+            "animal_types": {
+              "description": "Type of observed animals. `marked` indicates specific animal individuals can be recognized.",
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "unmarked",
+                  "marked"
+                ]
+              },
+              "uniqueItems": true,
+              "minItems": 1
+            },
+            "bait_use": {
+              "type": "array",
+              "description": "Type of bait (if any) that was used with cameras.",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "none",
+                  "scent",
+                  "food",
+                  "visual",
+                  "acoustic",
+                  "other"
+                ]
+              },
+              "uniqueItems": true,
+              "minItems": 1
+            },
+            "classification_level": {
+              "type": "string",
+              "format": "default",
+              "description": "Information about a focal level of the classification process. `sequence`: classifications (i.e. rows in `observations.csv` table) are provided at a sequence level (multiple multimedia files can be part of one sequence); `multimedia`: classifications are available for each single multimedia file.",
+              "enum": [
+                "sequence",
+                "multimedia"
+              ]
+            },
+            "sequence_interval": {
+              "description": "Maximum number of seconds between timestamps of successive multimedia files to be considered part of a single sequence and be assigned the same `sequence_id`.",
+              "type": "integer"
+            },
+            "methods": {
+              "description": "Description of the methodology used to collect and process data.",
+              "type": "string",
+              "format": "default"
+            },
+            "references": {
+              "description": "List of references related to the project.",
+              "type": "array",
+              "items": {
+                "url": {
+                  "description": "URL to a reference.",
+                  "type": "string",
+                  "format": "uri"
+                }
+              }
+            },
+            "_id": {
+              "description": "Internal attribute of data management system or data packages catalogue: ID of the project.",
+              "type": "string",
+              "format": "default"
+            }
+          }
+        },
+        "spatial": {
+          "description": "Spatial coverage for this data package specified as GeoJSON. Term borrowed from [Dublin Core](http://purl.org/dc/terms/spatial).",
+          "$ref": "http://json.schemastore.org/geojson.json"
+        },
+        "temporal": {
+          "description": "Temporal coverage for this data package, based on the included deployments. Term borrowed from [Dublin Core](http://purl.org/dc/terms/temporal).",
+          "type": "object",
+          "required": [
+            "start",
+            "end"
+          ],
+          "properties": {
+            "start": {
+              "description": "Start date of the first deployment, as an ISO 8601 formatted string (`YYYY-MM-DD`).",
+              "type": "string",
+              "format": "date"
+            },
+            "end": {
+              "description": "End date of the last (completed) deployment, as an ISO 8601 formatted string (`YYYY-MM-DD`).",
+              "type": "string",
+              "format": "date"
+            }
+          }
+        },
+        "taxonomic": {
+          "description": "Taxonomic coverage for this data package. It is based on a set of unique values from `scientific_name` field in `observations.csv` table.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/species"
+          }
+        },
+        "taxon_id_reference": {
+          "description": "URL of the source (reference list) of the `taxon_id`s in taxonomic coverage.",
+          "example": "http://www.catalogueoflife.org/annual-checklist/2019/",
+          "type": "string",
+          "format": "uri"
+        },
+        "_platform_title": {
+          "description": "Internal attribute of data management or repository system: platform name.",
+          "type": "string",
+          "format": "default"
+        },
+        "_platform_path": {
+          "description": "Internal attribute of data management or repository system: platform URL.",
+          "type": "string",
+          "format": "uri"
+        },
+        "_platform_version": {
+          "description": "Internal attribute of data management or repository system: platform version.",
+          "type": "string",
+          "format": "default"
+        },
+        "_platform_package_id": {
+          "description": "Internal attribute of data management or repository system: package ID.",
+          "type": "string",
+          "format": "default"
+        }
+      }
+    }
+  ]
+}
