@@ -950,8 +950,9 @@ def test_package_external_profile_invalid_local_from_descriptor_unsafe():
     profile = "data/../data/profiles/camtrap.json"
     resource = Resource(name="table", path="data/table.csv")
     package = Package({"resources": [resource.to_dict()], "profile": profile})
-    with pytest.raises(FrictionlessException):
-        package.metadata_errors
+    if IS_UNIX:
+        with pytest.raises(FrictionlessException):
+            package.metadata_errors
 
 
 def test_package_external_profile_invalid_local_from_descriptor_unsafe_trusted():
