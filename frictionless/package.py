@@ -668,10 +668,11 @@ class Package(Metadata):
                 dict.__setitem__(self, "resources", resources)
 
     def metadata_validate(self):
-        yield from super().metadata_validate()
 
-        # Extensions
-        if self.profile == "fiscal-data-package":
+        # Package
+        if self.profile == "data-package":
+            yield from super().metadata_validate()
+        elif self.profile == "fiscal-data-package":
             yield from super().metadata_validate(config.FISCAL_PACKAGE_PROFILE)
 
         # Resources
