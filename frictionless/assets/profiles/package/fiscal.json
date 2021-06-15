@@ -15,7 +15,8 @@
       "properties": {
         "profile": {
           "enum": [
-            "tabular-data-package"
+            "tabular-data-package",
+            "fiscal-data-package"
           ],
           "propertyOrder": 10,
           "title": "Profile",
