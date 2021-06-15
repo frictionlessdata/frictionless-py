@@ -674,6 +674,14 @@ class Package(Metadata):
             yield from super().metadata_validate()
         elif self.profile == "fiscal-data-package":
             yield from super().metadata_validate(config.FISCAL_PACKAGE_PROFILE)
+        else:
+            if not self.trusted:
+                if not helpers.is_safe_path(self.profile):
+                    note = f'path "{self.profile}" is not safe'
+                    error = errors.PackageError(note=note)
+                    raise FrictionlessException(error)
+            profile = Metadata(self.profile).to_dict()
+            yield from super().metadata_validate(profile)
 
         # Resources
         for resource in self.resources:
