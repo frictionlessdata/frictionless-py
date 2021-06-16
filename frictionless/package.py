@@ -668,11 +668,22 @@ class Package(Metadata):
                 dict.__setitem__(self, "resources", resources)
 
     def metadata_validate(self):
-        yield from super().metadata_validate()
 
-        # Extensions
-        if self.profile == "fiscal-data-package":
+        # Package
+        if self.profile == "data-package":
+            yield from super().metadata_validate()
+        elif self.profile == "fiscal-data-package":
             yield from super().metadata_validate(config.FISCAL_PACKAGE_PROFILE)
+        elif self.profile == "tabular-data-package":
+            yield from super().metadata_validate(config.TABULAR_PACKAGE_PROFILE)
+        else:
+            if not self.trusted:
+                if not helpers.is_safe_path(self.profile):
+                    note = f'path "{self.profile}" is not safe'
+                    error = errors.PackageError(note=note)
+                    raise FrictionlessException(error)
+            profile = Metadata(self.profile).to_dict()
+            yield from super().metadata_validate(profile)
 
         # Resources
         for resource in self.resources:
