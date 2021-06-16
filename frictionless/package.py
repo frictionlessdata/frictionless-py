@@ -674,6 +674,8 @@ class Package(Metadata):
             yield from super().metadata_validate()
         elif self.profile == "fiscal-data-package":
             yield from super().metadata_validate(config.FISCAL_PACKAGE_PROFILE)
+        elif self.profile == "tabular-data-package":
+            yield from super().metadata_validate(config.TABULAR_PACKAGE_PROFILE)
         else:
             if not self.trusted:
                 if not helpers.is_safe_path(self.profile):
