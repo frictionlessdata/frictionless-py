@@ -17,7 +17,7 @@ type = Option(
 
 path = Option(
     default=None,
-    help="Specify the data path explicetly (e.g. you need to use it if your data is JSON)",
+    help="Specify the data path explicitly (e.g. you need to use it if your data is JSON)",
 )
 
 scheme = Option(
@@ -54,15 +54,34 @@ compression = Option(
 
 control = Option(
     default=None,
-    help="Specify a path to a control",
+    help="An inline JSON object or a path to a JSON file that provides the control (configuration for the data Loader)",
 )
 
 # Dialect
 
 dialect = Option(
     default=None,
-    help="Specify a path to a dialect",
+    help="An inline JSON object or a path to a JSON file that provides the dialect (configuration for the parser)",
 )
+
+
+sheet = Option(
+    default=None,
+    help="The sheet to use from the input data (only with XLS and ODS files/plugins)",
+)
+
+
+keys = Option(
+    default=None,
+    help="The keys to use as column names for the Inline or JSON data plugins",
+)
+
+
+keyed = Option(
+    default=None,
+    help="Whether the input data is keyed for the Inline or JSON data plugins",
+)
+
 
 # Layout
 
