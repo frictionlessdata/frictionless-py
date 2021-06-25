@@ -998,3 +998,9 @@ def test_package_dialect_no_header_issue_167():
     rows = resource.read_rows()
     assert rows[0]["score"] == 1
     assert rows[1]["score"] == 1
+
+
+@pytest.mark.xfail
+def test_package_validation_is_not_strict_enough_issue_869():
+    package = Package("data/issue-869.json")
+    assert len(package.metadata_errors) == 2
