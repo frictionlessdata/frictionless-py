@@ -1,0 +1,17 @@
+{
+  "created": "not_a_datetime",
+  "contributors": [
+    {
+      "title": "Peter Desmet",
+      "email": "not_an_email"
+    }
+  ],
+  "resources": [
+    {
+      "name": "test",
+      "data": [
+        { "a": 1, "b": 2 }
+      ]
+    }
+  ]
+}
