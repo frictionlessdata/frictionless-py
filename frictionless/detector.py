@@ -157,24 +157,39 @@ class Detector:
         layout = layout or Layout()
 
         # Infer header
-        row_number = 0
         widths = [len(cells) for cells in sample]
         if layout.get("header") is None and layout.get("headerRows") is None and widths:
-            layout["header"] = False
+
+            # This algorithm tries to find a header row that:
+            # - is close to average sample width
+            # - doesn't have bad labels (non-string cells) OR
+            # - have less bad labels (non-string cells) than the next row
+
+            # Get header rows
+            row_number = 0
+            bad_labels = 0
+            header_rows = None
             width = round(sum(widths) / len(widths))
             drift = max(round(width * 0.1), 1)
             match = list(range(width - drift, width + drift + 1))
             for row_position, cells in enumerate(sample, start=1):
                 if layout.read_filter_rows(cells, row_position=row_position):
                     row_number += 1
-                    if len(cells) not in match:
-                        continue
-                    if not helpers.is_only_strings(cells):
-                        continue
-                    del layout["header"]
-                    if row_number != config.DEFAULT_HEADER_ROWS[0]:
-                        layout["headerRows"] = [row_number]
-                    break
+                    if len(cells) in match:
+                        row_bad_labels = helpers.count_bad_labels(cells)
+                        if not row_bad_labels:
+                            header_rows = [row_number]
+                            break
+                        elif bad_labels and bad_labels < row_bad_labels:
+                            header_rows = [row_number - 1]
+                            break
+                        bad_labels = row_bad_labels
+
+            # Set header rows
+            if not header_rows:
+                layout["header"] = False
+            elif header_rows != config.DEFAULT_HEADER_ROWS:
+                layout["headerRows"] = header_rows
 
         return layout
 
