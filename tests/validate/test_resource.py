@@ -1164,3 +1164,8 @@ def test_validate_resource_from_json_format_issue_827():
 def test_validate_resource_none_is_not_iterable_enum_constraint_issue_833():
     report = validate("data/issue-833.csv", schema="data/issue-833.json")
     assert report.valid
+
+
+def test_validate_resource_header_row_has_first_number_issue_870():
+    report = validate("data/issue-870.xlsx", layout={"limitRows": 5})
+    assert report.valid
