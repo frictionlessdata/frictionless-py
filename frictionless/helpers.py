@@ -230,22 +230,6 @@ def is_zip_descriptor(descriptor):
         return format == "zip"
 
 
-def is_only_strings(cells):
-    for cell in cells:
-        if cell is None:
-            continue
-        if not isinstance(cell, str):
-            return False
-        try:
-            float(cell)
-            # We assume that a year might be a header label
-            if len(cell) != 4:
-                return False
-        except Exception:
-            pass
-    return True
-
-
 def is_type(object, name):
     return type(object).__name__ == name
 
@@ -259,6 +243,25 @@ def is_platform(name):
     elif name == "windows":
         return current == "Windows"
     return False
+
+
+def count_bad_labels(cells):
+    count = 0
+    for cell in cells:
+        if cell is None:
+            continue
+        if not isinstance(cell, str):
+            count += 1
+            continue
+        try:
+            float(cell)
+            # We assume that a year might be a header label
+            if len(cell) == 4:
+                continue
+            count += 1
+        except Exception:
+            pass
+    return count
 
 
 def parse_json_string(string):

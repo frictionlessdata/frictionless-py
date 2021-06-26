@@ -12,6 +12,7 @@ from .layout import Layout
 from .schema import Schema
 from .header import Header
 from .system import system
+from .field import Field
 from .row import Row
 from . import helpers
 from . import errors
@@ -1247,3 +1248,13 @@ class Resource(Metadata):
             yield from self.layout.metadata_errors
         if self.schema:
             yield from self.schema.metadata_errors
+
+        # Contributors/Sources
+        for name in ["contributors", "sources"]:
+            for item in self.get(name, []):
+                if item.get("email"):
+                    field = Field(type="string", format="email")
+                    cell = field.read_cell(item.get("email"))[0]
+                    if not cell:
+                        note = f'property "{name}[].email" is not valid "email"'
+                        yield errors.PackageError(note=note)
