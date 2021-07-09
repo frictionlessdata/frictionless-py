@@ -134,6 +134,7 @@ def program_describe(
             layout=layout,
             # Extra
             detector=detector,
+            basepath=basepath,
             expand=expand,
             stats=stats,
         )
