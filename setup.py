@@ -28,7 +28,7 @@ TESTS_REQUIRE = [
     "pytest",
     "ipython",
     "pymysql",
-    "goodread",
+    "livemark",
     "psycopg2",
     "pytest-cov",
     "pytest-vcr",

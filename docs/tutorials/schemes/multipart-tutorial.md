@@ -11,7 +11,7 @@ You can read and write files split into chunks with Frictionless.
 
 You can read using `Package/Resource`, for example:
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Resource
 

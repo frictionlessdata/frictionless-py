@@ -1,9 +1,8 @@
 ---
 title: Local Tutorial
 sidebar_label: Local
-goodread:
-  cleanup:
-    - rm table.csv
+cleanup:
+  - rm table.csv
 ---
 
 You can read and write files locally with Frictionless. This is a basic functionality of Frictionless.
@@ -12,7 +11,7 @@ You can read and write files locally with Frictionless. This is a basic function
 
 You can read using `Package/Resource`, for example:
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Resource
 
@@ -27,7 +26,7 @@ pprint(resource.read_rows())
 
 A similiar approach can be used for writing:
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Resource
 

@@ -1,14 +1,13 @@
 ---
 title: Extracting Data
-goodread:
-  prepare:
-    - cp data/country-3.csv country-3.csv
-    - cp data/capital-3.csv capital-3.csv
-  cleanup:
-    - rm country-3.csv
-    - rm capital-3.csv
-    - rm country.package.json
-    - rm capital.resource.yaml
+prepare:
+  - cp data/country-3.csv country-3.csv
+  - cp data/capital-3.csv capital-3.csv
+cleanup:
+  - rm country-3.csv
+  - rm capital-3.csv
+  - rm country.package.json
+  - rm capital.resource.yaml
 ---
 
 > This guide assumes basic familiarity with the Frictionless Framework. To learn more, please read the [Introduction](https://framework.frictionlessdata.io/docs/guides/introduction) and [Quick Start](https://framework.frictionlessdata.io/docs/guides/quick-start).
@@ -19,7 +18,7 @@ Let's see this with some real files:
 
 > Download [`country-3.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/country-3.csv) to reproduce the examples (right-click and "Save link as").
 
-```bash goodread title="CLI"
+```bash script title="CLI"
 cat country-3.csv
 ```
 ```csv title="country-3.csv"
@@ -33,7 +32,7 @@ id,capital_id,name,population
 
 > Download [`capital-3.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/capital-3.csv) to reproduce the examples (right-click and "Save link as").
 
-```bash goodread title="CLI"
+```bash script title="CLI"
 cat capital-3.csv
 ```
 ```csv title="capital-3.csv"
@@ -47,7 +46,7 @@ id,name
 
 To start, we will use the command-line interface:
 
-```bash goodread title="CLI"
+```bash script title="CLI"
 frictionless extract country-3.csv
 ```
 ```
@@ -68,7 +67,7 @@ id  capital_id  name     population
 
 The same can be done in Python:
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import extract
 
@@ -106,7 +105,7 @@ The `extract` functions always reads data in the form of rows, into memory. The 
 
 A resource contains only one file. To extract a resource, we have three options. First, we can use the same approach as above, extracting from the data file itself:
 
-```python goodread title="Python"
+```python script title="Python"
 from frictionless import extract
 
 rows = extract('capital-3.csv')
@@ -124,7 +123,7 @@ Our second option is to extract the resource from a descriptor file by using the
 
 As an example of how to use `extract_resource`, let's first create a descriptor file (note: this example uses YAML for the descriptor, but Frictionless also supports JSON):
 
-```python goodread title="Python"
+```python script title="Python"
 from frictionless import Resource
 
 resource = Resource('capital-3.csv')
@@ -144,7 +143,7 @@ data = extract('capital.resource.yaml')
 ```
 This can also be done on the command-line:
 
-```bash goodread title="CLI"
+```bash script title="CLI"
 frictionless extract capital.resource.yaml
 ```
 ```
@@ -173,7 +172,7 @@ The third way we can extract information is from a package, which is a set of tw
 
 As a primary example, we provide two data files to the `extract` command which will be enough to detect that it's a dataset. Let's start by using the command-line interface:
 
-```bash goodread title="CLI"
+```bash script title="CLI"
 frictionless extract *-3.csv
 ```
 ```
@@ -254,7 +253,7 @@ The Resource class provides metadata about a resource with read and stream funct
 
 It's a byte representation of the contents:
 
-```python goodread title="Python"
+```python script title="Python"
 from frictionless import Resource
 
 resource = Resource('country-3.csv')
@@ -269,7 +268,7 @@ pprint(resource.read_bytes())
 
 It's a textual representation of the contents:
 
-```python goodread title="Python"
+```python script title="Python"
 from frictionless import Resource
 
 resource = Resource('country-3.csv')
@@ -288,7 +287,7 @@ pprint(resource.read_text())
 
 For a tabular data there are raw representaion of the tabular contents:
 
-```python goodread title="Python"
+```python script title="Python"
 from frictionless import Resource
 
 resource = Resource('country-3.csv')
@@ -307,7 +306,7 @@ pprint(resource.read_lists())
 
 For a tabular data there are row available which is are normalized lists presented as dictionaries:
 
-```python goodread title="Python"
+```python script title="Python"
 from frictionless import Resource
 
 resource = Resource('country-3.csv')
@@ -325,7 +324,7 @@ pprint(resource.read_rows())
 
 For a tabular data there is the Header object available:
 
-```python goodread title="Python"
+```python script title="Python"
 from frictionless import Resource
 
 with Resource('country-3.csv') as resource:
@@ -339,7 +338,7 @@ with Resource('country-3.csv') as resource:
 
 It's really handy to read all your data into memory but it's not always possible if a file is very big. For such cases, Frictionless provides streaming functions:
 
-```python goodread title="Python"
+```python script title="Python"
 from frictionless import Resource
 
 with Resource('country-3.csv') as resource:
@@ -353,14 +352,14 @@ with Resource('country-3.csv') as resource:
 
 The Package class provides functions to read the contents of a package. First of all, let's create a package descriptor:
 
-```bash goodread title="CLI"
+```bash script title="CLI"
 frictionless describe *-3.csv --json > country.package.json
 ```
 Note that --json is used here to output the descriptor in JSON format. Without this, the default output is in YAML format as we saw above.
 
 We can create a package from data files (using their paths) and then read the package's resources:
 
-```python goodread title="Python"
+```python script title="Python"
 from frictionless import Package
 
 package = Package('*-3.csv')
@@ -386,7 +385,7 @@ The package by itself doesn't provide any read functions directly because it's j
 
 After opening a resource you get access to a `resource.header` object which describes the resource in more detail. This is a list of normalized labels but also provides some additional functionality. Let's take a look:
 
-```python goodread title="Python"
+```python script title="Python"
 from frictionless import Resource
 
 with Resource('capital-3.csv') as resource:
@@ -412,7 +411,7 @@ As List: ['id', 'name']
 
 The example above shows a case when a header is valid. For a header that contains errors in its tabular structure, this information can be very useful, revealing discrepancies, duplicates or missing cell information:
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Resource
 
@@ -442,7 +441,7 @@ Please read the [API Reference](../references/api-reference#header) for more det
 
 The `extract`, `resource.read_rows()` and other functions return or yield row objects. In Python, this returns a dictionary with the following information. Note: this example uses the [Detector object](/docs/guides/framework/detector-guide), which tweaks how different aspects of metadata are detected.
 
-```python goodread title="Python"
+```python script title="Python"
 from frictionless import Resource, Detector
 
 detector = Detector(schema_patch={'missingValues': ['1']})
@@ -483,7 +482,7 @@ As List: [None, 'London']
 
 As we can see, this output provides a lot of information which is especially useful when a row is not valid. Our row is valid but we demonstrated how it can preserve data about missing values. It also preserves data about all cells that contain errors:
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Resource
 

@@ -1,9 +1,8 @@
 ---
 title: HTML Tutorial
 sidebar_label: HTML
-goodread:
-  cleanup:
-    - rm table.html
+cleanup:
+  - rm table.html
 ---
 
 > This functionality requires an experimental `html` plugin. [Read More](../../references/plugins-reference.md)
@@ -18,7 +17,7 @@ pip install frictionless[html]
 
 You can this file format using `Package/Resource`, for example:
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Resource
 
@@ -33,7 +32,7 @@ pprint(resource.read_rows())
 
 The same is actual for writing:
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Resource
 

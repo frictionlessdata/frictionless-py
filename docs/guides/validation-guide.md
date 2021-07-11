@@ -1,16 +1,15 @@
 ---
 title: Validation Guide
-goodread:
-  prepare:
-    - cp data/capital-invalid.csv capital-invalid.csv
-    - cp data/capital-valid.csv capital-valid.csv
-  cleanup:
-    - rm capital-invalid.csv
-    - rm capital-valid.csv
-    - rm capital.schema.yaml
-    - rm capital.resource.yaml
-    - rm capital.package.yaml
-    - rm capital.inquiry.yaml
+prepare:
+  - cp data/capital-invalid.csv capital-invalid.csv
+  - cp data/capital-valid.csv capital-valid.csv
+cleanup:
+  - rm capital-invalid.csv
+  - rm capital-valid.csv
+  - rm capital.schema.yaml
+  - rm capital.resource.yaml
+  - rm capital.package.yaml
+  - rm capital.inquiry.yaml
 ---
 
 > This guide assumes basic familiarity with the Frictionless Framework. To learn more, please read the [Introduction](https://framework.frictionlessdata.io/docs/guides/introduction) and [Quick Start](https://framework.frictionlessdata.io/docs/guides/quick-start).
@@ -19,7 +18,7 @@ Tabular data validation is a process of identifying problems that have occured i
 
 > Download [`capital-invalid.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/capital-invalid.csv) to reproduce the examples (right-click and "Save link as")..
 
-```bash goodread title="CLI"
+```bash script title="CLI"
 cat capital-invalid.csv
 ```
 ```csv title="capital-valid.csv"
@@ -39,7 +38,7 @@ x,Tokio,Japan,review
 
 We can validate this file by using the command-line interface. Frictionless provides comprehensive error details so that errors can be understood by the user. Continue reading to learn the validation process in detail.
 
-```bash goodread title="CLI"
+```bash script title="CLI"
 frictionless validate capital-invalid.csv
 ```
 ```
@@ -83,7 +82,7 @@ As a reminder, in the Frictionless ecosystem, a resource is a single file, such 
 
 The `validate_schema` function is the only function validating solely metadata. To see this work, let's create an invalid table schema:
 
-```python goodread title="Python"
+```python script title="Python"
 from frictionless import Schema
 
 schema = Schema()
@@ -93,7 +92,7 @@ schema.to_yaml('capital.schema.yaml')
 
 And let's validate this schema using the command-line interface:
 
-```bash goodread title="CLI"
+```bash script title="CLI"
 frictionless validate capital.schema.yaml
 ```
 ```
@@ -113,7 +112,7 @@ We see that the schema is invalid and the error is displayed. Schema validation 
 
 As was shown in the ["Describing Data" guide](https://framework.frictionlessdata.io/docs/guides/describing-data), a resource is a container having both metadata and data. We need to create a resource descriptor and then we can validate it:
 
-```bash goodread title="CLI"
+```bash script title="CLI"
 frictionless describe capital-invalid.csv > capital.resource.yaml
 ```
 
@@ -121,7 +120,7 @@ Note: this example uses JSON for the resource descriptor format, but Frictionles
 
 Let's now use the command-line interface to ensure that we are getting the same result that we got without using a resource:
 
-```bash goodread title="CLI"
+```bash script title="CLI"
 frictionless validate capital.resource.yaml
 ```
 ```
@@ -142,7 +141,7 @@ row  field  code             message
 
 Okay, why do we need to use a resource descriptor if the result is the same? The reason is metadata + data packaging. Let's extend our resource descriptor to show how you can edit and validate metadata:
 
-```python goodread title="Python"
+```python script title="Python"
 from frictionless import describe
 
 resource = describe('capital-invalid.csv')
@@ -153,7 +152,7 @@ resource.to_yaml('capital.resource.yaml')
 
 We have added a few incorrect, made up attributes to our resource descriptor as an example. Now, the validation below reports these errors in addition to all the errors we had before. This example shows how concepts like Data Resource can be extremely useful when working with data.
 
-```bash goodread title="CLI"
+```bash script title="CLI"
 frictionless validate capital.resource.yaml
 ```
 ```
@@ -180,7 +179,7 @@ A package is a set of resources + additional metadata. To showcase a package val
 
 > Download [`capital-valid.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/capital-valid.csv) to reproduce the examples (right-click and "Save link as").
 
-```bash goodread title="CLI"
+```bash script title="CLI"
 cat capital-valid.csv
 ```
 ```csv title="capital-valid.csv"
@@ -194,7 +193,7 @@ id,name
 
 Now let's describe and validate a package which contains the data files we have seen so far:
 
-```bash goodread title="CLI"
+```bash script title="CLI"
 frictionless describe capital-*id.csv > capital.package.yaml
 frictionless validate capital.package.yaml
 ```
@@ -229,7 +228,7 @@ Inquiry is a declarative representation of a validation job. It gives you an abi
 
 Let's create an Inquiry that includes an individual file validation and a resource validation. In this example we will use the data file, `capital-valid.csv` and the resource, `capital.resource.json` which describes the invalid data file we have already seen:
 
-```python goodread title="Python"
+```python script title="Python"
 from frictionless import Inquiry
 
 inquiry = Inquiry({'tasks': [
@@ -240,7 +239,7 @@ inquiry.to_yaml('capital.inquiry.yaml')
 ```
 As usual, let's run validation:
 
-```bash goodread title="CLI"
+```bash script title="CLI"
 frictionless validate capital.inquiry.yaml
 ```
 ```
@@ -272,7 +271,7 @@ At first sight, it might not be clear why such a construct exists, but when your
 
 All the `validate` functions return a Validation Report. This is a unified object containing information about a validation: source details, the error, etc. Let's explore a report:
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import validate
 
@@ -326,7 +325,7 @@ pprint(report)
 
 As we can see, there is a lot of information; you can find a detailed description of the Validation Report in the [API Reference](../references/api-reference.md#report). Errors are grouped by tasks (i.e. data files); for some validation there can be dozens of tasks. Let's use the `report.flatten` function to simplify the representation of errors. This function helps to represent a report as a list of errors:
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import validate
 
@@ -343,7 +342,7 @@ pprint(report.flatten(["rowPosition", "fieldPosition", "code", "message"]))
 
 In some situations, an error can't be associated with a task; then it goes to the top-level `report.errors` property:
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import validate_schema
 
@@ -371,7 +370,7 @@ pprint(report)
 
 The Error object is at the heart of the validation process. The Report has `report.errors` and `report.tasks[].errors`, properties that can contain the Error object. Let's explore it by taking a deeper look at the `duplicate-label` error:
 
-```python goodread title="Python"
+```python script title="Python"
 from frictionless import validate
 
 report = validate("capital-invalid.csv", pick_errors=["duplicate-label"])
@@ -394,7 +393,7 @@ Description: "Two columns in the header row have the same value. Column names sh
 
 Above, we have listed universal error properties. Depending on the type of an error there can be additional ones. For example, for our `duplicate-label` error:
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import validate
 
@@ -429,7 +428,7 @@ There are various validation checks included in the core Frictionless Framework 
 
 See [Validation Checks](validation-checks.md) for a list of available checks.
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import validate, checks
 
@@ -451,7 +450,7 @@ pprint(report.flatten(["rowPosition", "fieldPosition", "code", "note"]))
 
 There are many cases when built-in Frictionless checks are not enough. For instance, you might want to create a business logic rule or specific quality requirement for the data. With Frictionless it's very easy to use your own custom checks. Let's see with an example:
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import validate, errors
 
@@ -478,7 +477,7 @@ Learn more about custom checks in the [Check Guide](extension/check-guide.md).
 
 We can pick or skip errors by providing a list of error codes. This is useful when you already know your data has some errors, but you want to ignore them for now. For instance, if you have a data table with repeating header names. Let's see an example of how to pick and skip errors:
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import validate
 
@@ -497,7 +496,7 @@ pprint(report2.flatten(["rowPosition", "fieldPosition", "code"]))
 
 It's also possible to use error tags (for more information please consult the [Errors Reference](../references/errors-reference.md)):
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import validate
 
@@ -515,7 +514,7 @@ pprint(report2.flatten(["rowPosition", "fieldPosition", "code"]))
 
 This option allows you to limit the amount of errors, and can be used when you need to do a quick check or want to "fail fast". For instance, here we use `limit_errors` to find just the 1st error and add it to our report:
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import validate
 

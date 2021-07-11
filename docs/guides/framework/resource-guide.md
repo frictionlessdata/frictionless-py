@@ -1,9 +1,8 @@
 ---
 title: Resource Guide
-goodread:
-  cleanup:
-    - rm resource.json
-    - rm resource.yaml
+cleanup:
+  - rm resource.json
+  - rm resource.yaml
 ---
 
 The Resource class is arguable the most important class of the whole Frictionless Framework. It's based on [Data Resource Spec](https://specs.frictionlessdata.io/data-resource/) and  [Tabular Data Resource Spec](https://specs.frictionlessdata.io/data-resource/)
@@ -12,7 +11,7 @@ The Resource class is arguable the most important class of the whole Frictionles
 
 Let's create a data resource:
 
-```python goodread title="Python"
+```python script title="Python"
 from frictionless import Resource
 
 resource = Resource('data/table.csv') # from a resource path
@@ -23,7 +22,7 @@ resource = Resource(path='data/table.csv') # from arguments
 
 As you can see it's possible to create a resource providing different kinds of sources which will be detector to have some type automatically (e.g. whether it's a descriptor or a path). It's possible to make this step more explicit:
 
-```python goodread title="Python"
+```python script title="Python"
 from frictionless import Resource
 
 resource = Resource(path='data/table.csv') # from a path
@@ -34,7 +33,7 @@ resource = Resource(descriptor='data/resource.json') # from a descriptor
 
 The specs support a great deal of resource metadata which is possible to have with Frictionless Framework too:
 
-```python goodread title="Python"
+```python script title="Python"
 from frictionless import Resource
 
 resource = Resource(
@@ -48,7 +47,7 @@ resource = Resource(
 
 If you have created a resource, for example, from a descriptor you can access this properties:
 
-```python goodread title="Python"
+```python script title="Python"
 from frictionless import Resource
 
 resource = Resource('data/resource.json')
@@ -60,7 +59,7 @@ resource.description
 
 And edit them:
 
-```python goodread title="Python"
+```python script title="Python"
 from frictionless import Resource
 
 resource = Resource('data/resource.json')
@@ -74,7 +73,7 @@ resource.description = 'New Description'
 
 As any of the Metadata classes the Resource class can be saved as JSON or YAML:
 
-```python goodread title="Python"
+```python script title="Python"
 from frictionless import Resource
 resource = Resource('data/table.csv')
 resource.to_json('resource.json') # Save as JSON
@@ -85,7 +84,7 @@ resource.to_yaml('resource.yaml') # Save as YAML
 
 You might have noticed that we had to duplicate the `with Resource(...)` statement in some examples. The reason is that Resource is a streaming interface. Once it's read you need to open it again. Let's show it in an example:
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Resource
 
@@ -115,7 +114,7 @@ resource.close()
 
 At the same you can read data for a resource without opening and closing it explicitly. In this case Frictionless Framework will open and close the resource for you so it will be basically a one-time operation:
 
-```python goodread title="Python"
+```python script title="Python"
 from frictionless import Resource
 
 resource = Resource('data/capital-3.csv')
@@ -133,7 +132,7 @@ pprint(resource.read_rows())
 
 The Resource class is also a metadata class which provides various read and stream functions. The `extract` functions always read rows into memory; Resource can do the same but it also gives a choice regarding output data. It can be `rows`, `data`, `text`, or `bytes`. Let's try reading all of them:
 
-```python goodread title="Python"
+```python script title="Python"
 from frictionless import Resource
 
 resource = Resource('data/country-3.csv')
@@ -166,7 +165,7 @@ pprint(resource.read_rows())
 
 It's really handy to read all your data into memory but it's not always possible if a file is really big. For such cases, Frictionless provides streaming functions:
 
-```python goodread title="Python"
+```python script title="Python"
 from frictionless import Resource
 
 with Resource('data/country-3.csv') as resource:
@@ -197,7 +196,7 @@ Let's overview the details we can specify for a file. Usually you don't need to 
 
 The scheme also know as protocol indicates which loader Frictionless should use to read or write data. It can be `file` (default), `text`, `http`, `https`, `s3`, and others.
 
-```python goodread title="Python"
+```python script title="Python"
 from frictionless import Resource
 
 with Resource(b'header1,header2\nvalue1,value2', format='csv') as resource:
@@ -213,7 +212,7 @@ buffer
 
 The format or as it's also called extension helps Frictionless to choose a proper parser to handle the file. Popular formats are `csv`, `xlsx`, `json` and others
 
-```python goodread title="Python"
+```python script title="Python"
 from frictionless import Resource
 
 with Resource(b'header1,header2\nvalue1,value2.csv', format='csv') as resource:
@@ -229,7 +228,7 @@ csv
 
 The hashing option controls which hashing algorithm should be used for generating the `hash` property. It doesn't affect the `extract` function but can be used with the `Resource` class:
 
-```python goodread title="Python"
+```python script title="Python"
 from frictionless import Resource
 
 with Resource('data/country-3.csv', hashing='sha256') as resource:
@@ -246,7 +245,7 @@ sha256
 
 Frictionless automatically detects encoding of files but sometimes it can be inaccurate. It's possible to provide an encoding manually:
 
-```python goodread title="Python"
+```python script title="Python"
 from frictionless import Resource
 
 with Resource('data/country-3.csv', encoding='utf-8') as resource:
@@ -262,7 +261,7 @@ data/country-3.csv
 
 By default, Frictionless uses the first file found in a zip archive. It's possible to adjust this behaviour:
 
-```python goodread title="Python"
+```python script title="Python"
 from frictionless import Resource
 
 with Resource('data/table-multiple-files.zip', innerpath='table-reverse.csv') as resource:
@@ -280,7 +279,7 @@ table-reverse.csv
 
 It's possible to adjust compression detection by providing the algorithm explicitly. For the example below it's not required as it would be detected anyway:
 
-```python goodread title="Python"
+```python script title="Python"
 from frictionless import Resource
 
 with Resource('data/table.csv.zip', compression='zip') as resource:
@@ -296,7 +295,7 @@ zip
 
 The Control object allows you to manage the loader used by the Resource class. In most cases, you don't need to provide any Control settings but sometimes it can be useful:
 
-```python goodread title="Python"
+```python script title="Python"
 from frictionless import Resource
 from frictionless.plugins.remote import RemoteControl
 
@@ -317,7 +316,7 @@ Exact parameters depend on schemes and can be found in the "Schemes Reference". 
 
 The Dialect adjusts the way the parsers work. The concept is similar to the Control above. Let's use the CSV Dialect to adjust the delimiter configuration:
 
-```python goodread title="Python"
+```python script title="Python"
 from frictionless import Resource
 from frictionless.plugins.csv import CsvDialect
 
@@ -350,7 +349,7 @@ Please read [Schema Guide](schema-guide.md) for more information.
 
 Resource's stats can be accessed with `resource.stats`:
 
-```python goodread title="Python"
+```python script title="Python"
 from frictionless import Resource
 
 resource = Resource('data/table.csv')

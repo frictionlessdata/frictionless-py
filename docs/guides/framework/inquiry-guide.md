@@ -1,8 +1,7 @@
 ---
 title: Inquiry Guide
-goodread:
-  cleanup:
-    - rm capital.inquiry.yaml
+cleanup:
+  - rm capital.inquiry.yaml
 ---
 
 The Inquiry gives you an ability to create arbitrary validation jobs containing a set of individual validation tasks.
@@ -11,7 +10,7 @@ The Inquiry gives you an ability to create arbitrary validation jobs containing 
 
 Let's create an inquiry that includes an individual file validation and a resource validation:
 
-```python goodread title="Python"
+```python script title="Python"
 from frictionless import Inquiry
 
 inquiry = Inquiry({'tasks': [
@@ -25,7 +24,7 @@ inquiry.to_yaml('capital.inquiry.yaml')
 
 Tasks in the Inquiry accept the same arguments written in camelCase as the corresponding `validate` functions have. As usual, let' run validation:
 
-```bash goodread title="CLI"
+```bash script title="CLI"
 frictionless validate capital.inquiry.yaml
 ```
 ```

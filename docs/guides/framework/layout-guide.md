@@ -4,7 +4,7 @@ title: Layout Guide
 
 The Layout concept give us an ability to manage table header and pick/skip arbitrary fields and rows from the raw data stream.
 
-```bash goodread title="CLI"
+```bash script title="CLI"
 cat data/matrix.csv
 ```
 ```csv
@@ -35,7 +35,7 @@ Let's list all the available Layout options with simple usage examples:
 
 It's a boolean flag which defaults to `True` indicating whether the data has a header row or not. In the following example the header row will be treated as a data row:
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Resource, Layout
 
@@ -58,7 +58,7 @@ with Resource('data/capital-3.csv', layout=layout) as resource:
 
 If header is `True` which is default, this parameters indicates where to find the header row or header rows for a multiline header. Let's see on example how the first two data rows can be treated as a part of a header:
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Resource, Layout
 
@@ -78,7 +78,7 @@ with Resource('data/capital-3.csv', layout=layout) as resource:
 
 If there are multiple header rows which is managed by `header_rows` parameter, we can set a string to be a separator for a header's cell join operation. Usually it's very handy for some "fancy" Excel files. For the sake of simplicity, we will show on a CSV file:
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Resource, Layout
 
@@ -98,7 +98,7 @@ with Resource('data/capital-3.csv', layout=layout) as resource:
 
 By default a header is validated in a case sensitive mode. To disable this behaviour we can set the `header_case` parameter to `False`. This option is accepted by any Layout and a dialect can be passed to `extract`, `validate` and other functions. Please note that it doesn't affect a resulting header it only affects how it's validated:
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Resource, Schema, Field, Layout
 
@@ -117,7 +117,7 @@ Valid: True
 
 We can pick and skip arbitrary fields based on a header row. These options accept a list of field numbers, a list of strings or a regex to match. All the queries below do the same thing for this file:
 
-```python goodread title="Python"
+```python script title="Python"
 from frictionless import extract, Layout
 
 print(extract('data/matrix.csv', layout=Layout(pick_fields=[2, 3])))
@@ -140,7 +140,7 @@ print(extract('data/matrix.csv', layout=Layout(skip_fields=['<regex>f[14]'])))
 
 There are two options that provide an ability to limit amount of fields similar to SQL's directives:
 
-```python goodread title="Python"
+```python script title="Python"
 from frictionless import extract, Layout
 
 print(extract('data/matrix.csv', layout=Layout(limit_fields=2)))
@@ -155,7 +155,7 @@ print(extract('data/matrix.csv', layout=Layout(offset_fields=2)))
 
 It's alike the field counterparts but it will be compared to the first cell of a row. All the queries below do the same thing for this file but take into account that when picking we need to also pick a header row. In addition, there is special value `<blank>` that matches a row if it's completely blank:
 
-```python goodread title="Python"
+```python script title="Python"
 from frictionless import extract, Layout
 
 print(extract('data/matrix.csv', layout=Layout(pick_rows=[1, 3, 4])))
@@ -180,7 +180,7 @@ print(extract('data/matrix.csv', layout=Layout(pick_rows=['<blank>'])))
 
 This is a quite popular option used to limit amount of rows to read:
 
-```python goodread title="Python"
+```python script title="Python"
 from frictionless import extract, Layout
 
 print(extract('data/matrix.csv', layout=Layout(limit_rows=2)))

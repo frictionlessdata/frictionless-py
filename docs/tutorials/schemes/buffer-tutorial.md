@@ -9,7 +9,7 @@ Frictionless supports working with bytes loaded into memory.
 
 You can read Buffer Data using `Package/Resource` API, for example:
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Resource
 
@@ -24,7 +24,7 @@ pprint(resource.read_rows())
 
 A similiar approach can be used for writing:
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Resource
 

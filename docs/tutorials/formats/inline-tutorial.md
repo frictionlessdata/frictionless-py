@@ -9,7 +9,7 @@ Frictionless supports working with Inline Data from memory.
 
 You can read data in this format using `Package/Resource`, for example:
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Resource
 
@@ -24,7 +24,7 @@ pprint(resource.read_rows())
 
 The same is actual for writing:
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Resource
 
@@ -42,7 +42,7 @@ pprint(target.read_rows())
 
 There is a dialect to configure this format, for example:
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Resource
 from frictionless.plugins.inline import InlineDialect

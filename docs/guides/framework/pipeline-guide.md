@@ -11,7 +11,7 @@ A pipeline is a metadata object having one of these types:
 
 For resource and package types it's basically the same functionality as we have seen above but written declaratively. So let's just run the same resource transformation as we did in the `Tranforming Resource` section:
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Pipeline, transform, steps
 
@@ -33,7 +33,7 @@ pipeline = Pipeline({
 
 Let's run this pipeline:
 
-```python goodread title="Python"
+```python script title="Python"
 status = transform(pipeline)
 pprint(status.task.target.schema)
 pprint(status.task.target.read_rows())
