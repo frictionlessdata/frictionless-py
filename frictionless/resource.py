@@ -480,6 +480,9 @@ class Resource(Metadata):
             schema = self.metadata_attach("schema", schema)
         return schema
 
+    # NOTE: updating this Metadata.propertyc reates a huge overheader
+    # Once it's fixed we might return to stats updating during reading
+    # See: https://github.com/frictionlessdata/frictionless-py/issues/879
     @Metadata.property
     def stats(self):
         """
