@@ -20,8 +20,7 @@ from . import config
 
 
 # NOTE:
-# Consider making resource.stats unavailable until it's fully calculated
-# Also, review the situation with describe function removing stats (move to infer?)
+# Review the situation with describe function removing stats (move to infer?)
 
 
 class Resource(Metadata):
@@ -909,7 +908,6 @@ class Resource(Metadata):
 
                 # Create row
                 self.__row_number += 1
-                self.stats["rows"] = self.__row_number
                 row = Row(
                     cells,
                     field_info=field_info,
@@ -970,6 +968,9 @@ class Resource(Metadata):
 
                 # Yield row
                 yield row
+
+            # Update stats
+            self.stats["rows"] = self.__row_number
 
         # Return row stream
         return row_stream()
