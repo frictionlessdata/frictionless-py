@@ -160,7 +160,6 @@ class InlineParser(Parser):
             yield headers
             yield [item.get(header) for header in headers]
             for item in data:
-                # NOTE: we need to profile and optimize this check if needed
                 if not isinstance(item, dict):
                     error = errors.SourceError(note="unsupported inline data")
                     raise FrictionlessException(error)
@@ -170,7 +169,6 @@ class InlineParser(Parser):
         elif isinstance(item, (list, tuple)):
             yield item
             for item in data:
-                # NOTE: we need to profile and optimize this check if needed
                 if not isinstance(item, (list, tuple)):
                     error = errors.SourceError(note="unsupported inline data")
                     raise FrictionlessException(error)
