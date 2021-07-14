@@ -465,3 +465,8 @@ def test_validate_package_using_detector_schema_sync_issue_847():
         resource.detector = Detector(schema_sync=True)
     report = validate(package)
     assert report.valid
+
+
+def test_validate_package_descriptor_type():
+    report = validate(descriptor="data/package/datapackage.json")
+    assert report.valid

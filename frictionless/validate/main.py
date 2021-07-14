@@ -26,6 +26,11 @@ def validate(source=None, type=None, **options):
         type = "package" if file.multipart else file.type
         if type == "table":
             type = "resource"
+        if "descriptor" in options:
+            file = system.create_file(
+                options.get("descriptor"), basepath=options.get("basepath", "")
+            )
+            type = file.type
     module = import_module("frictionless.validate")
     validate = getattr(module, "validate_%s" % type, None)
     if validate is None:
