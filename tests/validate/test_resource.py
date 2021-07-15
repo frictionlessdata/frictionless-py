@@ -1169,3 +1169,10 @@ def test_validate_resource_none_is_not_iterable_enum_constraint_issue_833():
 def test_validate_resource_header_row_has_first_number_issue_870():
     report = validate("data/issue-870.xlsx", layout={"limitRows": 5})
     assert report.valid
+
+
+def test_validate_resource_descriptor_type_invalid():
+    report = validate(descriptor="data/table.csv")
+    assert report.flatten() == [
+        [1, None, None, 'resource-error']
+    ]

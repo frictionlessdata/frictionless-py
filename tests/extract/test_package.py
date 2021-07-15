@@ -47,3 +47,7 @@ def test_extract_package_process_and_stream():
         [1, "english"],
         [2, "中国人"],
     ]
+
+def test_extract_package_descriptor_type_package():
+    data = extract(descriptor="data/package/datapackage.json")
+    assert isinstance(data, dict)
