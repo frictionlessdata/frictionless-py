@@ -475,7 +475,7 @@ def test_validate_package_descriptor_type_package():
 def test_validate_package_descriptor_type_package_invalid():
     report = validate(descriptor="data/invalid/datapackage.json")
     assert report.flatten() == [
-        [1, 3, None, 'blank-row'],
-        [1, 3, None, 'primary-key-error'],
-        [2, 4, None, 'blank-row']
+        [1, 3, None, "blank-row"],
+        [1, 3, None, "primary-key-error"],
+        [2, 4, None, "blank-row"],
     ]
