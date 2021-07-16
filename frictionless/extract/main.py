@@ -22,15 +22,12 @@ def extract(source=None, *, type=None, process=None, stream=False, **options):
         Row[]|{path: Row[]}: rows in a form depending on the source type
     """
     if not type:
-        type = "resource"
-        file = system.create_file(source, basepath=options.get("basepath", ""))
-        if file.type == "package" or file.multipart:
-            type = "package"
-        if "descriptor" in options:
-            file = system.create_file(
-                options.get("descriptor"), basepath=options.get("basepath", "")
-            )
-            type = file.type if file.type == "package" else "resource"
+        basepath = options.get("basepath", "")
+        descriptor = options.get("descriptor")
+        file = system.create_file(descriptor or source, basepath=basepath)
+        type = "package" if file.multipart else file.type
+        if type == "table":
+            type = "resource"
     module = import_module("frictionless.extract")
     extract = getattr(module, "extract_%s" % type, None)
     if extract is None:
