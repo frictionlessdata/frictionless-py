@@ -46,7 +46,7 @@ There is a dialect to configure how Frictionless read and write files in this fo
 from frictionless import Resource
 from frictionless.plugins.sql import SqlDialect
 
-dialect = SqlDialect(table='table', order_by='field')
+dialect = SqlDialect(table='table', order_by='field', where='field > 20')
 resource = Resource('postgresql://database', dialect=dialect)
 ```
 

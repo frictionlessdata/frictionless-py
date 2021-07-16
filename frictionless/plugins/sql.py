@@ -68,6 +68,7 @@ class SqlDialect(Dialect):
         table (str): table name
         prefix (str): prefix for all table names
         order_by? (str): order_by statement passed to SQL
+        where? (str): where statement passed to SQL
         namespace? (str): SQL schema
 
     Raises:
@@ -82,11 +83,13 @@ class SqlDialect(Dialect):
         table=None,
         prefix=None,
         order_by=None,
+        where=None,
         namespace=None,
     ):
         self.setinitial("table", table)
         self.setinitial("prefix", prefix)
         self.setinitial("order_by", order_by)
+        self.setinitial("where", where)
         self.setinitial("namespace", namespace)
         super().__init__(descriptor)
 
@@ -103,6 +106,10 @@ class SqlDialect(Dialect):
         return self.get("order_by")
 
     @Metadata.property
+    def where(self):
+        return self.get("where")
+
+    @Metadata.property
     def namespace(self):
         return self.get("namespace")
 
@@ -116,6 +123,7 @@ class SqlDialect(Dialect):
             "table": {"type": "string"},
             "prefix": {"type": "string"},
             "order_by": {"type": "string"},
+            "where": {"type": "string"},
             "namespace": {"type": "string"},
         },
     }
@@ -148,7 +156,9 @@ class SqlParser(Parser):
     def read_list_stream_create(self):
         dialect = self.resource.dialect
         storage = SqlStorage(self.resource.fullpath, dialect=dialect)
-        resource = storage.read_resource(dialect.table, order_by=dialect.order_by)
+        resource = storage.read_resource(
+            dialect.table, order_by=dialect.order_by, where=dialect.where
+        )
         self.resource.schema = resource.schema
         with resource:
             yield from resource.list_stream
@@ -218,13 +228,13 @@ class SqlStorage(Storage):
 
     # Read
 
-    def read_resource(self, name, *, order_by=None):
+    def read_resource(self, name, *, order_by=None, where=None):
         sql_table = self.__read_sql_table(name)
         if sql_table is None:
             note = f'Resource "{name}" does not exist'
             raise FrictionlessException(errors.StorageError(note=note))
         schema = self.__read_convert_schema(sql_table)
-        data = partial(self.__read_convert_data, name, order_by=order_by)
+        data = partial(self.__read_convert_data, name, order_by=order_by, where=where)
         resource = Resource(name=name, schema=schema, data=data)
         return resource
 
@@ -278,7 +288,7 @@ class SqlStorage(Storage):
         # Return schema
         return schema
 
-    def __read_convert_data(self, name, *, order_by=None):
+    def __read_convert_data(self, name, *, order_by=None, where=None, columns=None):
         sa = helpers.import_from_plugin("sqlalchemy", plugin="sql")
         sql_table = self.__read_sql_table(name)
         with self.__connection.begin():
@@ -287,6 +297,8 @@ class SqlStorage(Storage):
             select = sql_table.select().execution_options(stream_results=True)
             if order_by:
                 select = select.order_by(sa.sql.text(order_by))
+            if where:
+                select = select.where(sa.sql.text(where))
             result = select.execute()
             yield list(result.keys())
             for item in result:
