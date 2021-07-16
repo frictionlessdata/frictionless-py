@@ -288,7 +288,7 @@ class SqlStorage(Storage):
         # Return schema
         return schema
 
-    def __read_convert_data(self, name, *, order_by=None, where=None, columns=None):
+    def __read_convert_data(self, name, *, order_by=None, where=None):
         sa = helpers.import_from_plugin("sqlalchemy", plugin="sql")
         sql_table = self.__read_sql_table(name)
         with self.__connection.begin():
