@@ -2,6 +2,10 @@
 
 Here described only the breaking and most significant changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/frictionless-py/commits/main).
 
+## v4.13.0
+
+- Implemented descriptor type detection for `extract/validate` (#881)
+
 ## v4.12.0
 
 - Support external profiles for data package (#864)
