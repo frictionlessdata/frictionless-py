@@ -26,6 +26,11 @@ def extract(source=None, *, type=None, process=None, stream=False, **options):
         file = system.create_file(source, basepath=options.get("basepath", ""))
         if file.type == "package" or file.multipart:
             type = "package"
+        if "descriptor" in options:
+            file = system.create_file(
+                options.get("descriptor"), basepath=options.get("basepath", "")
+            )
+            type = file.type if file.type == "package" else "resource"
     module = import_module("frictionless.extract")
     extract = getattr(module, "extract_%s" % type, None)
     if extract is None:
