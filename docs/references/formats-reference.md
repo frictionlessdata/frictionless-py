@@ -267,6 +267,12 @@ Prefix for all table names
 
 Order_by statement passed to sql
 
+### Where
+
+> Type: str
+
+Where statement passed to sql
+
 ### Namespace
 
 > Type: str

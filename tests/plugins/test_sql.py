@@ -45,6 +45,15 @@ def test_sql_parser_order_by_desc(database_url):
         ]
 
 
+def test_sql_parser_where(database_url):
+    dialect = SqlDialect(table="table", where="name = '中国人'")
+    with Resource(database_url, dialect=dialect) as resource:
+        assert resource.header == ["id", "name"]
+        assert resource.read_rows() == [
+            {"id": 2, "name": "中国人"},
+        ]
+
+
 def test_sql_parser_table_is_required_error(database_url):
     resource = Resource(database_url)
     with pytest.raises(FrictionlessException) as excinfo:
@@ -74,6 +83,18 @@ def test_sql_parser_write(database_url):
         assert target.header == ["id", "name"]
         assert target.read_rows() == [
             {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
+
+
+def test_sql_parser_write_where(database_url):
+    source = Resource("data/table.csv")
+    target = source.write(
+        database_url, dialect=SqlDialect(table="name", where="name = '中国人'")
+    )
+    with target:
+        assert target.header == ["id", "name"]
+        assert target.read_rows() == [
             {"id": 2, "name": "中国人"},
         ]
 
