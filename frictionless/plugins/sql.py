@@ -309,6 +309,7 @@ class SqlStorage(Storage):
         sa = helpers.import_from_plugin("sqlalchemy", plugin="sql")
         sapg = helpers.import_from_plugin("sqlalchemy.dialects.postgresql", plugin="sql")
         sams = helpers.import_from_plugin("sqlalchemy.dialects.mysql", plugin="sql")
+        ga = helpers.import_from_plugin("geoalchemy2", plugin="sql")
 
         # Create mapping
         mapping = {
@@ -328,6 +329,7 @@ class SqlStorage(Storage):
             sams.VARCHAR: "string",
             sa.VARCHAR: "string",
             sapg.UUID: "string",
+            ga.types.Geometry: "string",
         }
 
         # Return type
