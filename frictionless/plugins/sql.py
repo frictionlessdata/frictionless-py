@@ -430,8 +430,13 @@ class SqlConverter:
         return mapping
 
     def sql_column_to_field(self, sql_column):
+        sa = helpers.import_from_plugin("sqlalchemy", plugin="sql")
         field_type = self._read_convert_type(sql_column.type)
         field = Field(name=str(sql_column.name), type=field_type)
+        if isinstance(sql_column.type, (sa.CHAR, sa.VARCHAR)):
+            field.constraints["maxLength"] = sql_column.type.length
+        if isinstance(sql_column.type, sa.CHAR):
+            field.constraints["minLength"] = sql_column.type.length
         if not sql_column.nullable:
             field.required = True
         if sql_column.comment:

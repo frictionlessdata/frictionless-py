@@ -289,9 +289,9 @@ def test_sql_storage_sqlite_constraints(sqlite_url):
         "fields": [
             {"name": "required", "type": "string", "constraints": {"required": True}},
             {"name": "minLength", "type": "string"},  # constraint removal
-            {"name": "maxLength", "type": "string"},  # constraint removal
+            {"name": "maxLength", "type": "string", "constraints": {"maxLength": 8}},
             {"name": "pattern", "type": "string"},  # constraint removal
-            {"name": "enum", "type": "string"},  # constraint removal
+            {"name": "enum", "type": "string", "constraints": {"maxLength": 7}},  # constraint removal
             {"name": "minimum", "type": "integer"},  # constraint removal
             {"name": "maximum", "type": "integer"},  # constraint removal
         ],
@@ -556,7 +556,7 @@ def test_sql_storage_postgresql_constraints(postgresql_url):
         "fields": [
             {"name": "required", "type": "string", "constraints": {"required": True}},
             {"name": "minLength", "type": "string"},  # constraint removal
-            {"name": "maxLength", "type": "string"},  # constraint removal
+            {"name": "maxLength", "type": "string", "constraints": {"maxLength": 8}},
             {"name": "pattern", "type": "string"},  # constraint removal
             {"name": "enum", "type": "string"},  # constraint removal
             {"name": "minimum", "type": "integer"},  # constraint removal
@@ -773,7 +773,7 @@ def test_sql_storage_mysql_constraints(mysql_url):
         "fields": [
             {"name": "required", "type": "string", "constraints": {"required": True}},
             {"name": "minLength", "type": "string"},  # constraint removal
-            {"name": "maxLength", "type": "string"},  # constraint removal
+            {"name": "maxLength", "type": "string", "constraints": {"maxLength": 8}},
             {"name": "pattern", "type": "string"},  # constraint removal
             {"name": "enum", "type": "string"},  # constraint removal
             {"name": "minimum", "type": "integer"},  # constraint removal
