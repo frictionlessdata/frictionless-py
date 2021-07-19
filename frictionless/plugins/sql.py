@@ -553,6 +553,8 @@ class SqlConverter:
                     pattern = re.sub(r'\$*$', '$', pattern)
                     if self.sadialect.name.startswith("postgresql"):
                         check = Check("%s ~ '%s'" % (quoted_name, pattern))
+                    elif self.sadialect.name.startswith("oracle"):
+                        check = Check("REGEXP_LIKE(%s, %s)" % (quoted_name, pattern))
                     else:
                         check = Check("%s REGEXP '%s'" % (quoted_name, pattern))
                     checks.append(check)
