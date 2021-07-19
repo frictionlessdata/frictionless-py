@@ -546,11 +546,13 @@ class SqlConverter:
                 elif const == "maximum":
                     checks.append(Check("%s <= %s" % (quoted_name, value)))
                 elif const == "pattern":
+                    # Single quotes (') are escaped by doubling them ('')
+                    pattern = re.sub(r"'", "''", value)
                     if self.sadialect.name.startswith("postgresql"):
-                        checks.append(Check("%s ~ '%s'" % (quoted_name, value)))
+                        check = Check("%s ~ '%s'" % (quoted_name, pattern))
                     else:
-                        check = Check("%s REGEXP '%s'" % (quoted_name, value))
-                        checks.append(check)
+                        check = Check("%s REGEXP '%s'" % (quoted_name, pattern))
+                    checks.append(check)
                 elif const == "enum":
                     # NOTE: https://github.com/frictionlessdata/frictionless-py/issues/778
                     if field.type == "string":
