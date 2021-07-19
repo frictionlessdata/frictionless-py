@@ -429,19 +429,22 @@ class SqlConverter:
         # Return mapping
         return mapping
 
+    def sql_column_to_field(self, sql_column):
+        field_type = self._read_convert_type(sql_column.type)
+        field = Field(name=str(sql_column.name), type=field_type)
+        if not sql_column.nullable:
+            field.required = True
+        if sql_column.comment:
+            field.description = sql_column.comment
+        return field
+
     def sql_table_to_resource(self, sql_table):
         sa = helpers.import_from_plugin("sqlalchemy", plugin="sql")
         schema = Schema()
 
         # Fields
         for column in sql_table.columns:
-            field_type = self._read_convert_type(column.type)
-            field = Field(name=str(column.name), type=field_type)
-            if not column.nullable:
-                field.required = True
-            if column.comment:
-                field.description = column.comment
-            schema.fields.append(field)
+            schema.fields.append(self.sql_column_to_field(column))
 
         # Primary key
         for constraint in sql_table.constraints:
@@ -513,6 +516,62 @@ class SqlConverter:
         # Return mapping
         return mapping
 
+    def field_to_sql_column(self, field, resource_name=None):
+        sa = helpers.import_from_plugin("sqlalchemy", plugin="sql")
+        Check = sa.CheckConstraint
+        checks = []
+        quoted_name = self.sadialect.identifier_preparer.quote(field.name)
+        column_type = self._write_convert_type(field.type)
+        unique = field.constraints.get("unique", False)
+        # https://stackoverflow.com/questions/1827063/mysql-error-key-specification-without-a-key-length
+        if self.sadialect.name.startswith("mysql"):
+            unique = unique and field.type != "string"
+        for const, value in field.constraints.items():
+            if const == "minLength":
+                checks.append(Check("LENGTH(%s) >= %s" % (quoted_name, value)))
+            elif const == "maxLength":
+                # Some databases don't support TEXT as a Primary Key
+                # https://github.com/frictionlessdata/frictionless-py/issues/777
+                for prefix in ["mysql", "db2", "ibm"]:
+                    if self.sadialect.name.startswith(prefix):
+                        column_type = sa.VARCHAR(length=value)
+                checks.append(Check("LENGTH(%s) <= %s" % (quoted_name, value)))
+            elif const == "minimum":
+                checks.append(Check("%s >= %s" % (quoted_name, value)))
+            elif const == "maximum":
+                checks.append(Check("%s <= %s" % (quoted_name, value)))
+            elif const == "pattern":
+                # Single quotes (') are escaped by doubling them ('')
+                pattern = re.sub(r"'", "''", value)
+                # Explicit string anchors are needed to match to full string
+                pattern = re.sub(r"^\^*", "^", pattern)
+                pattern = re.sub(r'\$*$', '$', pattern)
+                if self.sadialect.name.startswith("postgresql"):
+                    expression = "%s ~ '%s'" % (quoted_name, pattern)
+                elif self.sadialect.name.startswith("oracle"):
+                    expression = "REGEXP_LIKE(%s, %s)" % (quoted_name, pattern)
+                else:
+                    expression = "%s REGEXP '%s'" % (quoted_name, pattern)
+                checks.append(Check(expression))
+            elif const == "enum":
+                # NOTE: https://github.com/frictionlessdata/frictionless-py/issues/778
+                if field.type == "string":
+                    if resource_name:
+                        enum_name = "%s_%s_enum" % (
+                            self._write_convert_name(resource_name), field.name
+                        )
+                    else:
+                        enum_name = "%s_enum" % (field.name)
+                    column_type = sa.Enum(*value, name=enum_name)
+        return sa.Column(
+            field.name,
+            column_type,
+            *checks,
+            nullable=not field.required,
+            unique=unique,
+            comment=field.description,
+        )
+
     def resource_to_sql_table(self, resource, metadata=None):
         sa = helpers.import_from_plugin("sqlalchemy", plugin="sql")
 
@@ -522,56 +581,8 @@ class SqlConverter:
         sql_name = self._write_convert_name(resource.name)
 
         # Fields
-        Check = sa.CheckConstraint
         for field in resource.schema.fields:
-            checks = []
-            quoted_name = self.sadialect.identifier_preparer.quote(field.name)
-            column_type = self._write_convert_type(field.type)
-            unique = field.constraints.get("unique", False)
-            # https://stackoverflow.com/questions/1827063/mysql-error-key-specification-without-a-key-length
-            if self.sadialect.name.startswith("mysql"):
-                unique = unique and field.type != "string"
-            for const, value in field.constraints.items():
-                if const == "minLength":
-                    checks.append(Check("LENGTH(%s) >= %s" % (quoted_name, value)))
-                elif const == "maxLength":
-                    # Some databases don't support TEXT as a Primary Key
-                    # https://github.com/frictionlessdata/frictionless-py/issues/777
-                    for prefix in ["mysql", "db2", "ibm"]:
-                        if self.sadialect.name.startswith(prefix):
-                            column_type = sa.VARCHAR(length=value)
-                    checks.append(Check("LENGTH(%s) <= %s" % (quoted_name, value)))
-                elif const == "minimum":
-                    checks.append(Check("%s >= %s" % (quoted_name, value)))
-                elif const == "maximum":
-                    checks.append(Check("%s <= %s" % (quoted_name, value)))
-                elif const == "pattern":
-                    # Single quotes (') are escaped by doubling them ('')
-                    pattern = re.sub(r"'", "''", value)
-                    # Explicit string anchors are needed to match to full string
-                    pattern = re.sub(r"^\^*", "^", pattern)
-                    pattern = re.sub(r'\$*$', '$', pattern)
-                    if self.sadialect.name.startswith("postgresql"):
-                        expression = "%s ~ '%s'" % (quoted_name, pattern)
-                    elif self.sadialect.name.startswith("oracle"):
-                        expression = "REGEXP_LIKE(%s, %s)" % (quoted_name, pattern)
-                    else:
-                        expression = "%s REGEXP '%s'" % (quoted_name, pattern)
-                    checks.append(Check(expression))
-                elif const == "enum":
-                    # NOTE: https://github.com/frictionlessdata/frictionless-py/issues/778
-                    if field.type == "string":
-                        enum_name = "%s_%s_enum" % (sql_name, field.name)
-                        column_type = sa.Enum(*value, name=enum_name)
-            column = sa.Column(
-                field.name,
-                column_type,
-                *checks,
-                nullable=not field.required,
-                unique=unique,
-                comment=field.description,
-            )
-            columns.append(column)
+            columns.append(self.field_to_sql_column(field, resource.name))
 
         # Primary key
         if resource.schema.primary_key is not None:
