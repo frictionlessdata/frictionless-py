@@ -548,6 +548,9 @@ class SqlConverter:
                 elif const == "pattern":
                     # Single quotes (') are escaped by doubling them ('')
                     pattern = re.sub(r"'", "''", value)
+                    # Explicit string anchors are needed to match to full string
+                    pattern = re.sub(r"^\^*", "^", pattern)
+                    pattern = re.sub(r'\$*$', '$', pattern)
                     if self.sadialect.name.startswith("postgresql"):
                         check = Check("%s ~ '%s'" % (quoted_name, pattern))
                     else:
