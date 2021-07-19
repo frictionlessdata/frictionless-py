@@ -552,12 +552,12 @@ class SqlConverter:
                     pattern = re.sub(r"^\^*", "^", pattern)
                     pattern = re.sub(r'\$*$', '$', pattern)
                     if self.sadialect.name.startswith("postgresql"):
-                        check = Check("%s ~ '%s'" % (quoted_name, pattern))
+                        expression = "%s ~ '%s'" % (quoted_name, pattern)
                     elif self.sadialect.name.startswith("oracle"):
-                        check = Check("REGEXP_LIKE(%s, %s)" % (quoted_name, pattern))
+                        expression = "REGEXP_LIKE(%s, %s)" % (quoted_name, pattern)
                     else:
-                        check = Check("%s REGEXP '%s'" % (quoted_name, pattern))
-                    checks.append(check)
+                        expression = "%s REGEXP '%s'" % (quoted_name, pattern)
+                    checks.append(Check(expression))
                 elif const == "enum":
                     # NOTE: https://github.com/frictionlessdata/frictionless-py/issues/778
                     if field.type == "string":
