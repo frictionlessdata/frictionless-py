@@ -522,21 +522,34 @@ class SqlConverter:
         checks = []
         quoted_name = self.sadialect.identifier_preparer.quote(field.name)
         column_type = self._write_convert_type(field.type)
+        # String length
+        if field.type == "string":
+            min_length = field.constraints.get("minLength", None)
+            max_length = field.constraints.get("maxLength", None)
+            if (
+                min_length is not None
+                and max_length is not None
+                and min_length == max_length
+            ):
+                column_type = sa.CHAR(max_length)
+            if max_length is not None:
+                if column_type is sa.Text:
+                    column_type = sa.VARCHAR(length=max_length)
+                if self.sadialect.name.startswith("sqlite"):
+                    checks.append(Check("LENGTH(%s) <= %s" % (quoted_name, max_length)))
+            if min_length is not None:
+                if not isinstance(column_type, sa.CHAR) or self.sadialect.name.startswith(
+                    "sqlite"
+                ):
+                    checks.append(Check("LENGTH(%s) >= %s" % (quoted_name, min_length)))
+        # Field uniqueness
         unique = field.constraints.get("unique", False)
-        # https://stackoverflow.com/questions/1827063/mysql-error-key-specification-without-a-key-length
         if self.sadialect.name.startswith("mysql"):
-            unique = unique and field.type != "string"
+            # MySQL requires keys to have an explicit maximum length
+            # https://stackoverflow.com/questions/1827063/mysql-error-key-specification-without-a-key-length
+            unique = unique and column_type is not sa.Text
         for const, value in field.constraints.items():
-            if const == "minLength":
-                checks.append(Check("LENGTH(%s) >= %s" % (quoted_name, value)))
-            elif const == "maxLength":
-                # Some databases don't support TEXT as a Primary Key
-                # https://github.com/frictionlessdata/frictionless-py/issues/777
-                for prefix in ["mysql", "db2", "ibm"]:
-                    if self.sadialect.name.startswith(prefix):
-                        column_type = sa.VARCHAR(length=value)
-                checks.append(Check("LENGTH(%s) <= %s" % (quoted_name, value)))
-            elif const == "minimum":
+            if const == "minimum":
                 checks.append(Check("%s >= %s" % (quoted_name, value)))
             elif const == "maximum":
                 checks.append(Check("%s <= %s" % (quoted_name, value)))
@@ -545,7 +558,7 @@ class SqlConverter:
                 pattern = re.sub(r"'", "''", value)
                 # Explicit string anchors are needed to match to full string
                 pattern = re.sub(r"^\^*", "^", pattern)
-                pattern = re.sub(r'\$*$', '$', pattern)
+                pattern = re.sub(r"\$*$", "$", pattern)
                 if self.sadialect.name.startswith("postgresql"):
                     expression = "%s ~ '%s'" % (quoted_name, pattern)
                 elif self.sadialect.name.startswith("oracle"):
@@ -558,7 +571,8 @@ class SqlConverter:
                 if field.type == "string":
                     if resource_name:
                         enum_name = "%s_%s_enum" % (
-                            self._write_convert_name(resource_name), field.name
+                            self._write_convert_name(resource_name),
+                            field.name,
                         )
                     else:
                         enum_name = "%s_enum" % (field.name)
