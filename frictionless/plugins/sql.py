@@ -1,5 +1,8 @@
+import packaging.version
 import re
 from functools import partial
+
+from sqlalchemy.sql.sqltypes import SmallInteger
 from ..exception import FrictionlessException
 from ..metadata import Metadata
 from ..resource import Resource
@@ -400,23 +403,35 @@ class SqlConverter:
         sams = helpers.import_from_plugin("sqlalchemy.dialects.mysql", plugin="sql")
 
         # Create mapping
+        json_types = {sa.JSON: "object"}
+        if packaging.version.parse(sa.__version__) < packaging.version.parse("1.3.11"):
+            json_types = {sapg.JSON: "object", sapg.JSONB: "object"}
         mapping = {
-            sapg.ARRAY: "array",
+            sa.ARRAY: "array",
+            sa.BINARY: "string",
             sams.BIT: "string",
+            # Includes: sa.BOOLEAN
             sa.Boolean: "boolean",
+            # Includes: sa.DATE
             sa.Date: "date",
+            # Includes: sa.DATETIME, sa.TIMESTAMP
             sa.DateTime: "datetime",
-            sa.Float: "number",
+            # Includes: sa.SmallInteger, sa.BigInteger, sa.SMALLINT, sa.BIGINT,
+            # sa.INTEGER, sa.INT
             sa.Integer: "integer",
-            sapg.JSONB: "object",
-            sapg.JSON: "object",
+            **json_types,
+            sa.Interval: "duration",
+            # Includes: sa.BLOB, sapg.BYTEA
+            sa.LargeBinary: "string",
+            # Includes: sa.Float, sa.FLOAT, sa.NUMERIC, sa.DECIMAL, sa.REAL
             sa.Numeric: "number",
-            sa.Text: "string",
+            # Includes: sa.Text, sa.TEXT, sa.Unicode, sa.UnicodeText, sa.VARCHAR
+            # sa.CHAR, sa.CLOB, sa.NCHAR, sa.NVARCHAR
+            sa.String: "string",
+            # Includes: sa.TIME
             sa.Time: "time",
-            sams.VARBINARY: "string",
-            sams.VARCHAR: "string",
-            sa.VARCHAR: "string",
             sapg.UUID: "string",
+            sa.VARBINARY: "string",
         }
 
         # Return type
@@ -424,6 +439,11 @@ class SqlConverter:
             for key, value in mapping.items():
                 if isinstance(sql_type, key):
                     return value
+            if isinstance(sql_type, sa.Enum):
+                type_map = {str: "string", int: "integer", bool: "boolean"}
+                types = [type(x) for x in sql_type.enums]
+                if types and all(x == types[0] for x in types):
+                    return type_map.get(types[0], "string")
             return "string"
 
         # Return mapping
@@ -437,6 +457,8 @@ class SqlConverter:
             field.constraints["maxLength"] = sql_column.type.length
         if isinstance(sql_column.type, sa.CHAR):
             field.constraints["minLength"] = sql_column.type.length
+        if isinstance(sql_column.type, sa.Enum):
+            field.constraints["enum"] = sql_column.type.enums
         if not sql_column.nullable:
             field.required = True
         if sql_column.comment:
