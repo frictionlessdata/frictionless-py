@@ -11,7 +11,7 @@ Frictionless supports using data stored as File-Like objects in Python.
 
 You can read Stream using `Package/Resource`, for example:
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Resource
 
@@ -27,7 +27,7 @@ with open('data/table.csv', 'rb') as file:
 
 A similiar approach can be used for writing:
 
-```python goodread title="Python"
+```python script title="Python"
 from frictionless import Resource
 
 source = Resource(data=[['id', 'name'], [1, 'english'], [2, 'german']])

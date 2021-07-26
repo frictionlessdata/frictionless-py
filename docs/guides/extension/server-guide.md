@@ -8,7 +8,7 @@ The Server concept is quite simple. A server needs to have a two functions:
 
 ## Server Example
 
-```python goodread title="Python"
+```python script title="Python"
 from frictionless import Server
 
 class ApiServer(Server):

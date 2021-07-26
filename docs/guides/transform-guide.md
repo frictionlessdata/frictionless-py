@@ -1,10 +1,9 @@
 ---
 title: Transform Guide
-goodread:
-  prepare:
-    - cp data/transform.csv transform.csv
-  cleanup:
-    - rm transform.csv
+prepare:
+  - cp data/transform.csv transform.csv
+cleanup:
+  - rm transform.csv
 ---
 
 > This guide assumes basic familiarity with the Frictionless Framework. To learn more, please read the [Introduction](https://framework.frictionlessdata.io/docs/guides/introduction) and [Quick Start](https://framework.frictionlessdata.io/docs/guides/quick-start).
@@ -49,7 +48,7 @@ The main difference between these is that resource and package transforms are im
 
 > Download [`transform.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/transform.csv) to reproduce the examples (right-click and "Save link as". You might need to change the file extension from .txt to .csv).
 
-```bash goodread title="CLI"
+```bash script title="CLI"
 cat transform.csv
 ```
 ```csv title="transform.csv"
@@ -71,7 +70,7 @@ We'll see examples of these functions in the next few sections.
 
 Let's write our first transformation. Here, we will transform a data file (a resource) by defining a source resource, applying transform steps and getting back a resulting target resource:
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Resource, transform, steps
 
@@ -111,7 +110,7 @@ There are many more available steps that we will cover below.
 
 A package is a set of resources. Transforming a package means adding or removing resources and/or transforming those resources themselves. This example shows how transforming a package is similar to transforming a single resource:
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -158,7 +157,7 @@ A pipeline is a declarative way to write out metadata transform steps. With a pi
 
 For resource and package types it's mostly the same functionality as we have seen above, but written declaratively. So let's run the same resource transformation as we did in the [Transforming a Resource](#transforming-a-resource) section:
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Pipeline, transform
 
@@ -213,7 +212,7 @@ See [Transform Steps](transform-steps.md) for a list of all available steps. It 
 
 Here is an example of a custom step written as a Python function. This example step removes a field from a data table (note: Frictionless already has a built-in function that does this same thing: `steps.field_remove`).
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -254,7 +253,7 @@ As you can see you can implement any custom steps within a Pyhton script. To mak
 
 In some cases, it's better to use a lower-level API to achieve your goal. A resource can be exported as a PETL table. For more information please visit PETL's [documentation portal](https://petl.readthedocs.io/en/stable/).
 
-```python goodread title="Python"
+```python script title="Python"
 from frictionless import Resource
 
 resource = Resource(path='transform.csv')

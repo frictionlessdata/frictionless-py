@@ -8,7 +8,7 @@ The Status class instance is a result of a Pipeline execution.
 
 We need to run a pipeline to get a status:
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Pipeline, transform, steps
 
@@ -31,7 +31,7 @@ status = transform(pipeline)
 
 Let's explore the execution status:
 
-```python goodread title="Python"
+```python script title="Python"
 pprint(status.valid)
 pprint(status.task.target.schema)
 pprint(status.task.target.read_rows())

@@ -998,3 +998,11 @@ def test_package_dialect_no_header_issue_167():
     rows = resource.read_rows()
     assert rows[0]["score"] == 1
     assert rows[1]["score"] == 1
+
+
+def test_package_validation_is_not_strict_enough_issue_869():
+    package = Package("data/issue-869.json")
+    errors = package.metadata_errors
+    assert len(errors) == 2
+    assert errors[0].note == 'property "created" is not valid "datetime"'
+    assert errors[1].note == 'property "contributors[].email" is not valid "email"'

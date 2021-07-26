@@ -1,10 +1,9 @@
 ---
 title: Quick Start
-goodread:
-  prepare:
-    - cp data/invalid.csv invalid.csv
-  cleanup:
-    - rm invalid.csv
+prepare:
+  - cp data/invalid.csv invalid.csv
+cleanup:
+  - rm invalid.csv
 ---
 
 import Tabs from '@theme/Tabs';
@@ -82,7 +81,7 @@ defaultValue="cli"
 values={[{ label: 'CLI', value: 'cli'}, { label: 'Python', value: 'python'}]}>
 <TabItem value="cli">
 
-```bash goodread
+```bash script
 cat invalid.csv
 ```
 ```csv title="invalid.csv"
@@ -97,7 +96,7 @@ id,name,,name
 <TabItem value="python">
 
 
-```python goodread
+```python script
 with open('invalid.csv') as file:
     print(file.read())
 ```
@@ -120,7 +119,7 @@ defaultValue="cli"
 values={[{ label: 'CLI', value: 'cli'}, { label: 'Python', value: 'python'}]}>
 <TabItem value="cli">
 
-```bash goodread
+```bash script
 frictionless describe invalid.csv
 ```
 ```yaml
@@ -153,7 +152,7 @@ scheme: file
 <TabItem value="python">
 
 
-```python goodread
+```python script
 from pprint import pprint
 from frictionless import describe
 
@@ -185,7 +184,7 @@ defaultValue="cli"
 values={[{ label: 'CLI', value: 'cli'}, { label: 'Python', value: 'python'}]}>
 <TabItem value="cli">
 
-```bash goodread
+```bash script
 frictionless extract invalid.csv
 ```
 ```yaml
@@ -207,7 +206,7 @@ id  name     field3  name2
 <TabItem value="python">
 
 
-```python goodread
+```python script
 from pprint import pprint
 from frictionless import extract
 
@@ -232,7 +231,7 @@ defaultValue="cli"
 values={[{ label: 'CLI', value: 'cli'}, { label: 'Python', value: 'python'}]}>
 <TabItem value="cli">
 
-```bash goodread title="CLI"
+```bash script title="CLI"
 frictionless validate invalid.csv
 ```
 ```yaml
@@ -258,7 +257,7 @@ row  field  code             message
 <TabItem value="python">
 
 
-```python goodread
+```python script
 from pprint import pprint
 from frictionless import validate
 

@@ -9,7 +9,7 @@ You can read files remotely with Frictionless. This is a basic functionality of 
 
 You can read using `Package/Resource`, for example:
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Resource
 
@@ -35,7 +35,7 @@ resource.write('https://example.com/data/table.csv') # will POST the file to the
 
 There is a `Control` to configure remote data, for example:
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Resource
 from frictionless.plugins.remote import RemoteControl

@@ -292,13 +292,14 @@ class Loader:
 
 class ByteStreamWithStatsHandling:
     def __init__(self, byte_stream, *, resource):
+        self.__byte_stream = byte_stream
+        self.__resource = resource
+        self.__counter = 0
         try:
             self.__hasher = hashlib.new(resource.hashing) if resource.hashing else None
         except Exception as exception:
             error = errors.HashingError(note=str(exception))
             raise FrictionlessException(error)
-        self.__byte_stream = byte_stream
-        self.__stats = resource.stats
 
     def __getattr__(self, name):
         return getattr(self.__byte_stream, name)
@@ -317,8 +318,11 @@ class ByteStreamWithStatsHandling:
     def read1(self, size=-1):
         size = -1 if size is None else size
         chunk = self.__byte_stream.read1(size)
-        self.__stats["bytes"] += len(chunk)
+        self.__counter += len(chunk)
         if self.__hasher:
             self.__hasher.update(chunk)
-            self.__stats["hash"] = self.__hasher.hexdigest()
+        # End of file
+        if size == -1 or not chunk:
+            self.__resource.stats["bytes"] = self.__counter
+            self.__resource.stats["hash"] = self.__hasher.hexdigest()
         return chunk

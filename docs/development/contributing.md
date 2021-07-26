@@ -18,14 +18,14 @@ Some documentation is auto-generated (for more information see `docs/build.py`).
 - `docs/references` (from the codebase's docstrings)
 - `docs/development` (from the repository root's docs)
 
-You can test this documentation using [Goodread](https://github.com/roll/goodread-py). Goodread executes Python and Bash codeblocks in Markdown and writes the results back. Here is a quick example:
+You can test this documentation using [Livemark](https://livemark.frictionlessdata.io). Livemark in a sync mode executes Python and Bash codeblocks in Markdown and writes the results back. Here is a quick example:
 
-> Run `goodread` against an article only if you consider the article to be a trusted source.It will execute codeblocks marked by the `goodread` property.
+> Run `livemark` against an article only if you consider the article to be a trusted source.It will execute codeblocks marked by the `script` header.
 
 ```bash
-goodread docs/guides/basic-examples.md --diff # get the diff
-goodread docs/guides/basic-examples.md --print # print the doc
-goodread docs/guides/basic-examples.md # update inline
+livemark sync docs/guides/basic-examples.md --diff # get the diff
+livemark sync docs/guides/basic-examples.md --print # print the doc
+livemark sync docs/guides/basic-examples.md # update inline
 ```
 
 It's possible to run this documentation portal locally. This requires Node.js 12+ installed on your computer, and can be run with the following code:

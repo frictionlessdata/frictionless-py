@@ -31,7 +31,7 @@ First of all, we need to create a `frictionless_csv2k` module containing a Plugi
 
 > frictionless_csv2k.py
 
-```python goodread title="Python"
+```python script title="Python"
 from frictionless import Plugin, system
 from frictionless.plugins.csv import CsvParser
 

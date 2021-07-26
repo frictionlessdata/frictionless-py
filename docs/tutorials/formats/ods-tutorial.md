@@ -1,9 +1,8 @@
 ---
 title: ODS Tutorial
 sidebar_label: ODS
-goodread:
-  cleanup:
-    - rm table.ods
+cleanup:
+  - rm table.ods
 ---
 
 Frictionless supports ODS parsing.
@@ -16,7 +15,7 @@ pip install frictionless[ods]
 
 You can read this format using `Package/Resource`, for example:
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Resource
 
@@ -31,7 +30,7 @@ pprint(resource.read_rows())
 
 The same is actual for writing:
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Resource
 

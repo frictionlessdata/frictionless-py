@@ -12,6 +12,7 @@ from .layout import Layout
 from .schema import Schema
 from .header import Header
 from .system import system
+from .field import Field
 from .row import Row
 from . import helpers
 from . import errors
@@ -19,8 +20,7 @@ from . import config
 
 
 # NOTE:
-# Consider making resource.stats unavailable until it's fully calculated
-# Also, review the situation with describe function removing stats (move to infer?)
+# Review the situation with describe function removing stats (move to infer?)
 
 
 class Resource(Metadata):
@@ -480,6 +480,9 @@ class Resource(Metadata):
             schema = self.metadata_attach("schema", schema)
         return schema
 
+    # NOTE: updating this Metadata.propertyc reates a huge overheader
+    # Once it's fixed we might return to stats updating during reading
+    # See: https://github.com/frictionlessdata/frictionless-py/issues/879
     @Metadata.property
     def stats(self):
         """
@@ -908,7 +911,6 @@ class Resource(Metadata):
 
                 # Create row
                 self.__row_number += 1
-                self.stats["rows"] = self.__row_number
                 row = Row(
                     cells,
                     field_info=field_info,
@@ -969,6 +971,9 @@ class Resource(Metadata):
 
                 # Yield row
                 yield row
+
+            # Update stats
+            self.stats["rows"] = self.__row_number
 
         # Return row stream
         return row_stream()
@@ -1247,3 +1252,13 @@ class Resource(Metadata):
             yield from self.layout.metadata_errors
         if self.schema:
             yield from self.schema.metadata_errors
+
+        # Contributors/Sources
+        for name in ["contributors", "sources"]:
+            for item in self.get(name, []):
+                if item.get("email"):
+                    field = Field(type="string", format="email")
+                    cell = field.read_cell(item.get("email"))[0]
+                    if not cell:
+                        note = f'property "{name}[].email" is not valid "email"'
+                        yield errors.PackageError(note=note)

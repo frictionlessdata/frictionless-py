@@ -8,6 +8,7 @@ from .exception import FrictionlessException
 from .metadata import Metadata
 from .detector import Detector
 from .resource import Resource
+from .field import Field
 from .system import system
 from . import helpers
 from . import errors
@@ -674,6 +675,8 @@ class Package(Metadata):
             yield from super().metadata_validate()
         elif self.profile == "fiscal-data-package":
             yield from super().metadata_validate(config.FISCAL_PACKAGE_PROFILE)
+        elif self.profile == "tabular-data-package":
+            yield from super().metadata_validate(config.TABULAR_PACKAGE_PROFILE)
         else:
             if not self.trusted:
                 if not helpers.is_safe_path(self.profile):
@@ -686,3 +689,21 @@ class Package(Metadata):
         # Resources
         for resource in self.resources:
             yield from resource.metadata_errors
+
+        # Created
+        if self.get("created"):
+            field = Field(type="datetime")
+            cell = field.read_cell(self.get("created"))[0]
+            if not cell:
+                note = 'property "created" is not valid "datetime"'
+                yield errors.PackageError(note=note)
+
+        # Contributors/Sources
+        for name in ["contributors", "sources"]:
+            for item in self.get(name, []):
+                if item.get("email"):
+                    field = Field(type="string", format="email")
+                    cell = field.read_cell(item.get("email"))[0]
+                    if not cell:
+                        note = f'property "{name}[].email" is not valid "email"'
+                        yield errors.PackageError(note=note)

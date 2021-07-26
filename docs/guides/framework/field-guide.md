@@ -8,7 +8,7 @@ Field is a lower level object that helps describe and convert tabular data.
 
 Let's create a field:
 
-```python goodread title="Python"
+```python script title="Python"
 from frictionless import Field
 
 field = Field(name='name', type='integer')
@@ -16,7 +16,7 @@ field = Field(name='name', type='integer')
 
 Usually we work with fields which were already created by a schema:
 
-```python goodread title="Python"
+```python script title="Python"
 from frictionless import describe
 
 resource = describe('data/table.csv')
@@ -29,7 +29,7 @@ Frictionless Framework supports all the [Table Schema Spec](https://specs.fricti
 
 For some types there are additional properties available:
 
-```python goodread title="Python"
+```python script title="Python"
 from frictionless import describe
 
 resource = describe('data/table.csv')
@@ -41,7 +41,7 @@ field.bare_number
 
 During the process of data reading a schema uses a field internally. If needed a user can convert their data using this interface:
 
-```python goodread title="Python"
+```python script title="Python"
 from frictionless import Field
 
 field = Field(name='name', type='integer')
@@ -52,7 +52,7 @@ field.read_cell('3') # 3
 
 During the process of data writing a schema uses a field internally. The same as with reasing a user can convert their data using this interface:
 
-```python goodread title="Python"
+```python script title="Python"
 from frictionless import Field
 
 field = Field(name='name', type='integer')

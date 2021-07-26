@@ -1,11 +1,10 @@
 ---
 title: Basic Examples
-goodread:
-  prepare:
-    - cp data/countries.csv countries.csv
-  cleanup:
-    - rm countries.csv
-    - rm countries.resource.yaml
+prepare:
+  - cp data/countries.csv countries.csv
+cleanup:
+  - rm countries.csv
+  - rm countries.resource.yaml
 ---
 
 import Tabs from '@theme/Tabs';
@@ -22,7 +21,7 @@ defaultValue="cli"
 values={[{ label: 'CLI', value: 'cli'}, { label: 'Python', value: 'python'}]}>
 <TabItem value="cli">
 
-```bash goodread
+```bash script
 cat countries.csv
 ```
 ```csv title="countries.csv"
@@ -39,7 +38,7 @@ id,neighbor_id,name,population
 <TabItem value="python">
 
 
-```python goodread
+```python script
 with open('countries.csv') as file:
     print(file.read())
 ```
@@ -74,7 +73,7 @@ defaultValue="cli"
 values={[{ label: 'CLI', value: 'cli'}, { label: 'Python', value: 'python'}]}>
 <TabItem value="cli">
 
-```bash goodread
+```bash script
 frictionless describe countries.csv # add --stats to get statistics
 ```
 ```yaml
@@ -108,7 +107,7 @@ scheme: file
 <TabItem value="python">
 
 
-```python goodread
+```python script
 from pprint import pprint
 from frictionless import describe
 
@@ -158,7 +157,7 @@ editor countries.resource.yaml
 <TabItem value="python">
 
 
-```python goodread
+```python script
 from frictionless import Detector, describe
 
 detector = Detector(field_missing_values=["", "n/a"])
@@ -181,7 +180,7 @@ defaultValue="cli"
 values={[{ label: 'CLI', value: 'cli'}, { label: 'Python', value: 'python'}]}>
 <TabItem value="cli">
 
-```bash goodread
+```bash script
 cat countries.resource.yaml
 ```
 ```yaml
@@ -221,7 +220,7 @@ scheme: file
 <TabItem value="python">
 
 
-```python goodread
+```python script
 with open('countries.resource.yaml') as file:
     print(file.read())
 ```
@@ -273,7 +272,7 @@ defaultValue="cli"
 values={[{ label: 'CLI', value: 'cli'}, { label: 'Python', value: 'python'}]}>
 <TabItem value="cli">
 
-```bash goodread
+```bash script
 frictionless extract countries.csv
 ```
 ```
@@ -296,7 +295,7 @@ id  neighbor_id  name     population
 <TabItem value="python">
 
 
-```python goodread
+```python script
 from pprint import pprint
 from frictionless import extract
 
@@ -327,7 +326,7 @@ defaultValue="cli"
 values={[{ label: 'CLI', value: 'cli'}, { label: 'Python', value: 'python'}]}>
 <TabItem value="cli">
 
-```bash goodread
+```bash script
 frictionless extract countries.resource.yaml
 ```
 ```
@@ -350,7 +349,7 @@ id  neighbor_id  name     population
 <TabItem value="python">
 
 
-```python goodread
+```python script
 from pprint import pprint
 from frictionless import extract
 
@@ -380,7 +379,7 @@ defaultValue="cli"
 values={[{ label: 'CLI', value: 'cli'}, { label: 'Python', value: 'python'}]}>
 <TabItem value="cli">
 
-```bash goodread
+```bash script
 frictionless validate countries.csv
 ```
 ```
@@ -402,7 +401,7 @@ row  field  code          message
 <TabItem value="python">
 
 
-```python goodread
+```python script
 from pprint import pprint
 from frictionless import validate
 
@@ -427,7 +426,7 @@ defaultValue="cli"
 values={[{ label: 'CLI', value: 'cli'}, { label: 'Python', value: 'python'}]}>
 <TabItem value="cli">
 
-```bash goodread title="CLI"
+```bash script title="CLI"
 frictionless validate countries.resource.yaml
 ```
 ```
@@ -451,7 +450,7 @@ row  field  code               message
 <TabItem value="python">
 
 
-```python goodread
+```python script
 from pprint import pprint
 from frictionless import validate
 
@@ -522,7 +521,7 @@ $ frictionless transform countries.pipeline.yaml
 </TabItem>
 <TabItem value="python">
 
-```python goodread
+```python script
 from frictionless import Resource, describe, transform, steps
 
 def clean(resource):
@@ -563,7 +562,7 @@ defaultValue="cli"
 values={[{ label: 'CLI', value: 'cli'}, { label: 'Python', value: 'python'}]}>
 <TabItem value="cli">
 
-```bash goodread
+```bash script
 cat countries.csv
 ```
 ```
@@ -578,7 +577,7 @@ id,neighbor_id,name,population
 <TabItem value="python">
 
 
-```python goodread
+```python script
 with open('countries.csv') as file:
     print(file.read())
 ```
@@ -601,7 +600,7 @@ defaultValue="cli"
 values={[{ label: 'CLI', value: 'cli'}, { label: 'Python', value: 'python'}]}>
 <TabItem value="cli">
 
-```bash goodread
+```bash script
 ls countries.*
 ```
 ```
@@ -613,7 +612,7 @@ countries.resource.yaml
 <TabItem value="python">
 
 
-```python goodread
+```python script
 import subprocess
 
 output = subprocess.check_output('ls countries.*', shell=True)

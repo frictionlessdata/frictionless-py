@@ -10,7 +10,7 @@ The Loader is responsible for loading data from/to different data sources as tho
 
 ## Loader Example
 
-```python goodread title="Python"
+```python script title="Python"
 from frictionless import Loader
 
 class S3Loader(Loader):
@@ -40,7 +40,7 @@ class S3Loader(Loader):
 
 ## Control Example
 
-```python goodread title="Python"
+```python script title="Python"
 from frictionless import Control
 
 class S3Control(Control):

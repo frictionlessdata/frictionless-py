@@ -1,9 +1,8 @@
 ---
 title: CSV Tutorial
 sidebar_label: CSV
-goodread:
-  cleanup:
-    - rm table.csv
+cleanup:
+  - rm table.csv
 ---
 
 CSV is a file format which you can you in Frictionless for reading and writing. Arguable it's the main Open Data format so it's supported very well in Frictionless.
@@ -12,7 +11,7 @@ CSV is a file format which you can you in Frictionless for reading and writing. 
 
 You can read this format using `Package/Resource`, for example:
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Resource
 
@@ -27,7 +26,7 @@ pprint(resource.read_rows())
 
 The same is actual for writing:
 
-```python goodread title="Python"
+```python script title="Python"
 from frictionless import Resource
 
 source = Resource(data=[['id', 'name'], [1, 'english'], [2, 'german']])

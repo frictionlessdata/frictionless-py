@@ -5037,6 +5037,7 @@ Public   | `from frictionless.plugins.sql import SqlDialect`
 - `table` _str_ - table name
 - `prefix` _str_ - prefix for all table names
 - `order_by?` _str_ - order_by statement passed to SQL
+- `where?` _str_ - where statement passed to SQL
 - `namespace?` _str_ - SQL schema
   
 

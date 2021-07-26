@@ -15,7 +15,7 @@ pip install frictionless[gsheets]
 
 You can read from Google Sheets using `Package/Resource`, for example:
 
-```python goodread title="python"
+```python script title="python"
 from pprint import pprint
 from frictionless import Resource
 

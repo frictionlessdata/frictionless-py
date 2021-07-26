@@ -1,9 +1,8 @@
 ---
 title: JSON Tutorial
 sidebar_label: JSON
-goodread:
-  cleanup:
-    - rm table.json
+cleanup:
+  - rm table.json
 ---
 
 Frictionless supports parsing JSON tables (JSON and JSONL/NDJSON).
@@ -16,7 +15,7 @@ pip install frictionless[json]
 
 You can read this format using `Package/Resource`, for example:
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Resource
 
@@ -33,7 +32,7 @@ pprint(resource.read_rows())
 
 The same is actual for writing:
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Resource
 

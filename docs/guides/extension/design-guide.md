@@ -36,7 +36,7 @@ type = system.create_type(resource.get_field('id'))
 
 As an extension author you might use the `system` object in various cases. For example, take a look at this `MultipartLoader` excerpts:
 
-```python goodread title="Python"
+```python script title="Python"
 def read_line_stream(self):
     for number, path in enumerate(self.__path, start=1):
         with system.create_loader(Resource(path=path)) as loader:

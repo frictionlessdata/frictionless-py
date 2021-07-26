@@ -1,14 +1,13 @@
 ---
 title: Transform Steps
-goodread:
-  prepare:
-    - cp data/transform.csv transform.csv
-    - cp data/transform-groups.csv transform-groups.csv
-    - cp data/transform-pivot.csv transform-pivot.csv
-  cleanup:
-    - rm transform.csv
-    - rm transform-groups.csv
-    - rm transform-pivot.csv
+prepare:
+  - cp data/transform.csv transform.csv
+  - cp data/transform-groups.csv transform-groups.csv
+  - cp data/transform-pivot.csv transform-pivot.csv
+cleanup:
+  - rm transform.csv
+  - rm transform-groups.csv
+  - rm transform-pivot.csv
 ---
 
 > This guide assumes basic familiarity with the Frictionless Framework. To learn more, please read the [Introduction](https://framework.frictionlessdata.io/docs/guides/introduction) and [Quick Start](https://framework.frictionlessdata.io/docs/guides/quick-start).
@@ -69,7 +68,7 @@ The Resource steps are only available for a package transformation. This include
 
 ### Add Resource
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -96,7 +95,7 @@ pprint(target.get_resource('extra').read_rows())
 
 ### Remove Resource
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -115,7 +114,7 @@ pprint(target)
 
 ### Transform Resource
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -150,7 +149,7 @@ pprint(target.get_resource('main').read_rows())
 
 ### Update Resource
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -186,7 +185,7 @@ These steps are meant to be used on a table level of a resource. This includes v
 
 Group rows under the given group_name then apply aggregation functions provided as aggregation dictionary (see example)
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -212,7 +211,7 @@ pprint(target.read_rows())
 
 ### Attach Tables
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -238,7 +237,7 @@ pprint(target.read_rows())
 
 ### Debug Table
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -262,7 +261,7 @@ pprint(target.read_rows())
 
 ### Diff Tables
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -295,7 +294,7 @@ pprint(target.read_rows())
 
 ### Intersect Tables
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -329,7 +328,7 @@ pprint(target.read_rows())
 
 ### Join Tables
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -358,7 +357,7 @@ pprint(target.read_rows())
 
 ### Melt Table
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -387,7 +386,7 @@ pprint(target.read_rows())
 
 ### Merge Tables
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -418,7 +417,7 @@ pprint(target.read_rows())
 
 The `table_normalize` step normalizes an underlaying tabular stream (cast types and fix dimensions) according to a provided or inferred schema. If your data is not really big it's recommended to normalize a table before any others steps.
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -439,7 +438,7 @@ pprint(target.read_lists())
 
 ### Pivot Table
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -464,7 +463,7 @@ pprint(target.read_rows())
 
 ### Print Table
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -489,7 +488,7 @@ id  name     population
 
 ### Recast Table
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -516,7 +515,7 @@ pprint(target.read_rows())
 
 ### Transpose Table
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -541,7 +540,7 @@ pprint(target.read_rows())
 
 ### Validate Table
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -568,7 +567,7 @@ FrictionlessException('[step-error] Step is not valid: "table_validate" raises "
 
 ### Write Table
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -615,7 +614,7 @@ The Field steps are responsible for managing a Table Schema's fields. You can ad
 
 ### Add Field
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -641,7 +640,7 @@ pprint(target.read_rows())
 
 ### Filter Fields
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -665,7 +664,7 @@ pprint(target.read_rows())
 
 ### Move Field
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -690,7 +689,7 @@ pprint(target.read_rows())
 
 ### Remove Field
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -714,7 +713,7 @@ pprint(target.read_rows())
 
 ### Split Field
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -740,7 +739,7 @@ pprint(target.read_rows())
 
 ### Unpack Field
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -767,7 +766,7 @@ pprint(target.read_rows())
 
 ### Update Field
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -796,7 +795,7 @@ These steps are row-based including row filtering, slicing, and many more.
 
 ### Filter Rows
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -821,7 +820,7 @@ pprint(target.read_rows())
 
 ### Search Rows
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -844,7 +843,7 @@ pprint(target.read_rows())
 
 ### Slice Rows
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -868,7 +867,7 @@ pprint(target.read_rows())
 
 ### Sort Rows
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -893,7 +892,7 @@ pprint(target.read_rows())
 
 ### Split Rows
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -921,7 +920,7 @@ pprint(target.read_rows())
 
 ### Subset Rows
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -947,7 +946,7 @@ pprint(target.read_rows())
 
 ### Ungroup Rows
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -977,7 +976,7 @@ The Cell steps are responsible for cell operations like converting, replacing, o
 
 ### Convert Cells
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -1002,7 +1001,7 @@ pprint(target.read_rows())
 
 ### Fill Cells
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -1028,7 +1027,7 @@ pprint(target.read_rows())
 
 ### Format Cells
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -1053,7 +1052,7 @@ pprint(target.read_rows())
 
 ### Interpolate Cells
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -1078,7 +1077,7 @@ pprint(target.read_rows())
 
 ### Replace Cells
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
@@ -1103,7 +1102,7 @@ pprint(target.read_rows())
 
 ### Set Cells
 
-```python goodread title="Python"
+```python script title="Python"
 from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 

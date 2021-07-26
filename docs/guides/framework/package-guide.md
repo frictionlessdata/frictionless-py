@@ -1,9 +1,8 @@
 ---
 title: Package Guide
-goodread:
-  cleanup:
-    - rm package.json
-    - rm package.yaml
+cleanup:
+  - rm package.json
+  - rm package.yaml
 ---
 
 The Data Package is a core Frictionless Data concept meaning a set of resources with additional metadata provided. You can read [Data Package Spec](https://specs.frictionlessdata.io/data-package/) for more information.
@@ -12,7 +11,7 @@ The Data Package is a core Frictionless Data concept meaning a set of resources 
 
 Let's create a data package:
 
-```python goodread title="Python"
+```python script title="Python"
 from frictionless import Package, Resource
 
 package = Package('data/table.csv') # from a resource path
@@ -36,7 +35,7 @@ package = Package(descriptor='data/package/datapackage.json') # from a descripto
 
 The specs support a great deal of package metadata which is possible to have with Frictionless Framework too:
 
-```python goodread title="Python"
+```python script title="Python"
 from frictionless import Package, Resource
 
 package = Package(
@@ -50,7 +49,7 @@ package = Package(
 
 If you have created a package, for example, from a descriptor you can access this properties:
 
-```python goodread title="Python"
+```python script title="Python"
 from frictionless import Package
 
 package = Package('data/package/datapackage.json')
@@ -62,7 +61,7 @@ package.description
 
 And edit them:
 
-```python goodread title="Python"
+```python script title="Python"
 from frictionless import Package
 
 package = Package('data/package/datapackage.json')
@@ -76,7 +75,7 @@ package.description = 'New Description'
 
 The core purpose of having a package is to provide an ability to have a set of resources. The Package class provides useful methods to manage resources:
 
-```python goodread title="Python"
+```python script title="Python"
 from frictionless import Package, Resource
 
 package = Package('data/package/datapackage.json')
@@ -97,7 +96,7 @@ True
 
 As any of the Metadata classes the Package class can be saved as JSON or YAML:
 
-```python goodread title="Python"
+```python script title="Python"
 from frictionless import Package
 package = Package('data/tables/*')
 package.to_json('package.json') # Save as JSON

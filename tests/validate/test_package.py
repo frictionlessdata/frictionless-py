@@ -465,3 +465,17 @@ def test_validate_package_using_detector_schema_sync_issue_847():
         resource.detector = Detector(schema_sync=True)
     report = validate(package)
     assert report.valid
+
+
+def test_validate_package_descriptor_type_package():
+    report = validate(descriptor="data/package/datapackage.json")
+    assert report.valid
+
+
+def test_validate_package_descriptor_type_package_invalid():
+    report = validate(descriptor="data/invalid/datapackage.json")
+    assert report.flatten() == [
+        [1, 3, None, "blank-row"],
+        [1, 3, None, "primary-key-error"],
+        [2, 4, None, "blank-row"],
+    ]

@@ -1,9 +1,8 @@
 ---
 title: Excel Tutorial
 sidebar_label: Excel
-goodread:
-  cleanup:
-    - rm table.xlsx
+cleanup:
+  - rm table.xlsx
 ---
 
 Excel is a very popular tabular data format that usually has `xlsx` (newer) and `xls` (older) file extensions. Frictionless supports Excel files extensively.
@@ -16,7 +15,7 @@ pip install frictionless[excel]
 
 You can read this format using `Package/Resource`, for example:
 
-```python goodread title="python"
+```python script title="python"
 from pprint import pprint
 from frictionless import Resource
 
@@ -31,7 +30,7 @@ pprint(resource.read_rows())
 
 The same is actual for writing:
 
-```python goodread title="python"
+```python script title="python"
 from pprint import pprint
 from frictionless import Resource
 

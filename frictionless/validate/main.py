@@ -22,7 +22,9 @@ def validate(source=None, type=None, **options):
         Report: validation report
     """
     if not type:
-        file = system.create_file(source, basepath=options.get("basepath", ""))
+        basepath = options.get("basepath", "")
+        descriptor = options.get("descriptor")
+        file = system.create_file(descriptor or source, basepath=basepath)
         type = "package" if file.multipart else file.type
         if type == "table":
             type = "resource"

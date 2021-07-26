@@ -8,7 +8,7 @@ The Error class is a metadata with no behavior. It's used to describe an error t
 
 To create a custom error you basically just need to fill the required class fields:
 
-```python goodread title="Python"
+```python script title="Python"
 from frictionless import errors
 
 class DuplicateRowError(errors.RowError):

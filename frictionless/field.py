@@ -349,6 +349,8 @@ class Field(Metadata):
             if constraint is not None:
                 if name in ["minimum", "maximum"]:
                     constraint = self.__type.read_cell(constraint)
+                if name == "pattern":
+                    constraint = re.compile("^{0}$".format(constraint))
                 if name == "enum":
                     constraint = list(map(self.__type.read_cell, constraint))
                 checks[name] = partial(globals().get(f"check_{name}"), constraint)
@@ -481,11 +483,7 @@ def check_maximum(constraint, cell):
 def check_pattern(constraint, cell):
     if cell is None:
         return True
-    if not isinstance(constraint, COMPILED_RE):
-        regex = re.compile("^{0}$".format(constraint))
-    else:
-        regex = constraint
-    match = regex.match(cell)
+    match = constraint.match(cell)
     if match:
         return True
     return False
