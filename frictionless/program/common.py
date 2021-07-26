@@ -70,6 +70,10 @@ sheet = Option(
     help="The sheet to use from the input data (only with XLS and ODS files/plugins)",
 )
 
+table = Option(
+    default=None,
+    help="The table to use from the SQL database (SQL plugin)",
+)
 
 keys = Option(
     default=None,
