@@ -87,12 +87,15 @@ def program_extract(
     # TODO: clean this up
     new_dialect = None
     if isinstance(dialect, dict) or dialect == None:
-        if dialect == None: 
+        if dialect == None:
             dialect = {}
         dialect_cli_options = {}
-        if sheet: dialect_cli_options["sheet"] = sheet
-        if keys: dialect_cli_options["keys"] = keys
-        if keyed: dialect_cli_options["keyed"] = keyed
+        if sheet:
+            dialect_cli_options["sheet"] = sheet
+        if keys:
+            dialect_cli_options["keys"] = keys
+        if keyed:
+            dialect_cli_options["keyed"] = keyed
         new_dialect = {**dialect, **dialect_cli_options}
     header_rows = helpers.parse_csv_string(header_rows, convert=int)
     pick_fields = helpers.parse_csv_string(pick_fields, convert=int, fallback=True)
