@@ -748,7 +748,7 @@ Public   | `from frictionless import Field`
 - `descriptor?` _str|dict_ - field descriptor
 - `name?` _str_ - field name (for machines)
 - `title?` _str_ - field title (for humans)
-- `descriptor?` _str_ - field descriptor
+- `description?` _str_ - field description
 - `type?` _str_ - field type e.g. `string`
 - `format?` _str_ - field format e.g. `default`
 - `missing_values?` _str[]_ - missing values
@@ -2722,14 +2722,15 @@ package.get_resoure('table').read_rows() == [
 ### package.add\_resource
 
 ```python
- | add_resource(descriptor)
+ | add_resource(source=None, **options)
 ```
 
-Add new resource to package.
+Add new resource to the package.
 
 **Arguments**:
 
-- `descriptor` _dict_ - resource descriptor
+- `source` _dict|str_ - a data source
+- `**options` _dict_ - options of the Resource class
   
 
 **Returns**:
@@ -4791,21 +4792,20 @@ schema.add_fied(Field(name='name', type='string'))
 ### schema.add\_field
 
 ```python
- | add_field(descriptor)
+ | add_field(source=None, **options)
 ```
 
-Add new field to schema.
-
-The schema descriptor will be validated with newly added field descriptor.
+Add new field to the package.
 
 **Arguments**:
 
-- `descriptor` _dict_ - field descriptor
+- `source` _dict|str_ - a field source
+- `**options` _dict_ - options of the Field class
   
 
 **Returns**:
 
-- `Field/None` - added `Field` instance or `None` if not added
+- `Resource/None` - added `Resource` instance or `None` if not added
 
 ### schema.get\_field
 
