@@ -1998,11 +1998,7 @@
             "propertyOrder": 50,
             "title": "CSV Dialect",
             "description": "The CSV dialect descriptor.",
-            "type": "object",
-            "required": [
-              "delimiter",
-              "doubleQuote"
-            ],
+            "type": ["string", "object"],
             "properties": {
               "csvddfVersion": {
                 "title": "CSV Dialect schema version",
