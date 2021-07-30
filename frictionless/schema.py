@@ -119,7 +119,7 @@ class Schema(Metadata):
             Resource/None: added `Resource` instance or `None` if not added
         """
         native = isinstance(source, Field)
-        field = source.to_copy() if native else Field(source, **options)
+        field = source if native else Field(source, **options)
         self.setdefault("fields", [])
         self["fields"].append(field)
         return self.fields[-1]
@@ -286,8 +286,9 @@ class Schema(Metadata):
                 if not isinstance(field, Field):
                     if not isinstance(field, dict):
                         field = {"name": f"field{index+1}", "type": "any"}
-                    field = Field(field, schema=self)
+                    field = Field(field)
                     list.__setitem__(fields, index, field)
+                field.schema = self
             if not isinstance(fields, helpers.ControlledList):
                 fields = helpers.ControlledList(fields)
                 fields.__onchange__(self.metadata_process)

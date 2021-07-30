@@ -372,7 +372,7 @@ class Package(Metadata):
             Resource/None: added `Resource` instance or `None` if not added
         """
         native = isinstance(source, Resource)
-        resource = source.to_copy() if native else Resource(source, **options)
+        resource = source if native else Resource(source, **options)
         self.setdefault("resources", [])
         self["resources"].append(resource)
         return self.resources[-1]

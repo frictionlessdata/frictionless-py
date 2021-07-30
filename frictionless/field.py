@@ -87,6 +87,13 @@ class Field(Metadata):
             warnings.warn(message, UserWarning)
             self["format"] = format.replace("fmt:", "")
 
+    def __setattr__(self, name, value):
+        if name == "schema":
+            self.__schema = value
+        else:
+            return super().__setattr__(name, value)
+        self.metadata_process()
+
     @Metadata.property
     def name(self):
         """
