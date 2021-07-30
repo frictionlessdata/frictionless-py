@@ -361,17 +361,20 @@ class Package(Metadata):
         """
         return [resource.name for resource in self.resources]
 
-    def add_resource(self, descriptor):
-        """Add new resource to package.
+    def add_resource(self, source=None, **options):
+        """Add new resource to the package.
 
         Parameters:
-            descriptor (dict): resource descriptor
+            source (dict|str): a data source
+            **options (dict): options of the Resource class
 
         Returns:
             Resource/None: added `Resource` instance or `None` if not added
         """
+        native = isinstance(source, Resource)
+        resource = source.to_copy() if native else Resource(source, **options)
         self.setdefault("resources", [])
-        self["resources"].append(descriptor)
+        self["resources"].append(resource)
         return self.resources[-1]
 
     def get_resource(self, name):
