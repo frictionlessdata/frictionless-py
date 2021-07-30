@@ -108,19 +108,20 @@ class Schema(Metadata):
         """
         return [field.name for field in self.fields]
 
-    def add_field(self, descriptor):
-        """Add new field to schema.
-
-        The schema descriptor will be validated with newly added field descriptor.
+    def add_field(self, source=None, **options):
+        """Add new field to the package.
 
         Parameters:
-            descriptor (dict): field descriptor
+            source (dict|str): a field source
+            **options (dict): options of the Field class
 
         Returns:
-            Field/None: added `Field` instance or `None` if not added
+            Resource/None: added `Resource` instance or `None` if not added
         """
+        native = isinstance(source, Field)
+        field = source.to_copy() if native else Field(source, **options)
         self.setdefault("fields", [])
-        self["fields"].append(descriptor)
+        self["fields"].append(field)
         return self.fields[-1]
 
     def get_field(self, name):

@@ -24,7 +24,7 @@ class Field(Metadata):
         descriptor? (str|dict): field descriptor
         name? (str): field name (for machines)
         title? (str): field title (for humans)
-        descriptor? (str): field descriptor
+        description? (str): field description
         type? (str): field type e.g. `string`
         format? (str): field format e.g. `default`
         missing_values? (str[]): missing values
