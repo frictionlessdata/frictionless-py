@@ -24,7 +24,7 @@ class Field(Metadata):
         descriptor? (str|dict): field descriptor
         name? (str): field name (for machines)
         title? (str): field title (for humans)
-        descriptor? (str): field descriptor
+        description? (str): field description
         type? (str): field type e.g. `string`
         format? (str): field format e.g. `default`
         missing_values? (str[]): missing values
@@ -86,6 +86,13 @@ class Field(Metadata):
             message = 'Format "fmt:<PATTERN>" is deprecated. Please remove "fmt:" prefix.'
             warnings.warn(message, UserWarning)
             self["format"] = format.replace("fmt:", "")
+
+    def __setattr__(self, name, value):
+        if name == "schema":
+            self.__schema = value
+        else:
+            return super().__setattr__(name, value)
+        self.metadata_process()
 
     @Metadata.property
     def name(self):
