@@ -5568,6 +5568,42 @@ Create checks
 
 - `Type` - type
 
+### system.get\_http\_session
+
+```python
+ | get_http_session()
+```
+
+Return a HTTP session
+
+This method will return a new session or the session
+from `system.use_http_session` context manager
+
+**Returns**:
+
+- `requests.Session` - a HTTP session
+
+### system.use\_http\_session
+
+```python
+ | @contextmanager
+ | use_http_session(http_session=None)
+```
+
+HTTP session context manager
+
+
+```
+session = requests.Session(...)
+with system.use_http_session(session):
+    # work with frictionless using a user defined HTTP session
+    report = validate(...)
+```
+
+**Arguments**:
+
+- `http_session?` _requests.Session_ - a session; will create a new if omitted
+
 ## Type
 
 ```python
