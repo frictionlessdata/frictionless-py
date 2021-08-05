@@ -6931,7 +6931,7 @@ Public   | `from frictionless import validate_package`
 
 ```python
 @Report.from_validate
-validate_resource(source=None, *, checks=None, original=False, pick_errors=None, skip_errors=None, limit_errors=config.DEFAULT_LIMIT_ERRORS, limit_memory=config.DEFAULT_LIMIT_MEMORY, **options, ,)
+validate_resource(source=None, *, checks=None, original=False, pick_errors=None, skip_errors=None, limit_errors=settings.DEFAULT_LIMIT_ERRORS, limit_memory=settings.DEFAULT_LIMIT_MEMORY, **options, ,)
 ```
 
 Validate table
