@@ -12,7 +12,6 @@ class YearType(Type):
 
     code = "year"
     builtin = True
-    priority = 20
     constraints = [
         "required",
         "minimum",

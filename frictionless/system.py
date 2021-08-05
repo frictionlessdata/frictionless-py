@@ -49,6 +49,7 @@ class System:
     # Actions
 
     actions = [
+        "create_candidates",
         "create_check",
         "create_control",
         "create_dialect",
@@ -61,6 +62,19 @@ class System:
         "create_storage",
         "create_type",
     ]
+
+    # Detection
+
+    def create_candidates(self):
+        """Create candidates
+
+        Returns:
+            dict[]: a list of type descriptors for type detection
+        """
+        candidates = config.DEFAULT_CANDIDATES.copy()
+        for func in self.methods["create_candidates"].values():
+            func(candidates)
+        return candidates
 
     def create_check(self, descriptor):
         """Create check

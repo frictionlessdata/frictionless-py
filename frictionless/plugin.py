@@ -13,6 +13,14 @@ class Plugin:
     code = "plugin"
     status = "stable"
 
+    def create_candidates(self):
+        """Create candidates
+
+        Returns:
+            dict[]: a list of type descriptors for type detection
+        """
+        pass
+
     def create_check(self, name, *, descriptor=None):
         """Create check
 

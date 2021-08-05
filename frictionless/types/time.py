@@ -15,7 +15,6 @@ class TimeType(Type):
 
     code = "time"
     builtin = True
-    priority = 70
     constraints = [
         "required",
         "minimum",

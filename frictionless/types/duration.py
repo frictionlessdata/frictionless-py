@@ -14,7 +14,6 @@ class DurationType(Type):
 
     code = "duration"
     builtin = True
-    priority = 120
     constraints = [
         "required",
         "enum",
