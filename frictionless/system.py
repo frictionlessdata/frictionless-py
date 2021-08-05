@@ -46,6 +46,17 @@ class System:
             del self.__dict__["plugins"]
             del self.__dict__["methods"]
 
+    def deregister(self, name):
+        """Deregister a plugin
+
+        Parameters:
+            name (str): plugin name
+        """
+        self.__dynamic_plugins.pop(name, None)
+        if "methods" in self.__dict__:
+            del self.__dict__["plugins"]
+            del self.__dict__["methods"]
+
     # Actions
 
     actions = [
@@ -69,7 +80,7 @@ class System:
         """Create candidates
 
         Returns:
-            dict[]: a list of type descriptors for type detection
+            dict[]: an ordered by priority list of type descriptors for type detection
         """
         candidates = config.DEFAULT_CANDIDATES.copy()
         for func in self.methods["create_candidates"].values():
