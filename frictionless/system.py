@@ -46,9 +46,21 @@ class System:
             del self.__dict__["plugins"]
             del self.__dict__["methods"]
 
+    def deregister(self, name):
+        """Deregister a plugin
+
+        Parameters:
+            name (str): plugin name
+        """
+        self.__dynamic_plugins.pop(name, None)
+        if "methods" in self.__dict__:
+            del self.__dict__["plugins"]
+            del self.__dict__["methods"]
+
     # Actions
 
     actions = [
+        "create_candidates",
         "create_check",
         "create_control",
         "create_dialect",
@@ -62,8 +74,21 @@ class System:
         "create_type",
     ]
 
+    # Detection
+
+    def create_candidates(self):
+        """Create candidates
+
+        Returns:
+            dict[]: an ordered by priority list of type descriptors for type detection
+        """
+        candidates = config.DEFAULT_CANDIDATES.copy()
+        for func in self.methods["create_candidates"].values():
+            func(candidates)
+        return candidates
+
     def create_check(self, descriptor):
-        """Create checks
+        """Create check
 
         Parameters:
             descriptor (dict): check descriptor
@@ -117,7 +142,7 @@ class System:
         return Dialect(descriptor)
 
     def create_error(self, descriptor):
-        """Create errors
+        """Create error
 
         Parameters:
             descriptor (dict): error descriptor
@@ -208,7 +233,7 @@ class System:
         raise FrictionlessException(errors.GeneralError(note=note))
 
     def create_step(self, descriptor):
-        """Create steps
+        """Create step
 
         Parameters:
             descriptor (dict): step descriptor
@@ -245,7 +270,7 @@ class System:
         raise FrictionlessException(errors.GeneralError(note=note))
 
     def create_type(self, field):
-        """Create checks
+        """Create type
 
         Parameters:
             field (Field): corresponding field

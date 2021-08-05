@@ -16,6 +16,7 @@ def read_asset(*paths):
 # General
 
 
+UNDEFINED = object()
 VERSION = read_asset("VERSION")
 COMPRESSION_FORMATS = ["zip", "gz"]
 REMOTE_SCHEMES = ["http", "https", "ftp", "ftps"]
@@ -31,7 +32,6 @@ FISCAL_PACKAGE_PROFILE = json.loads(read_asset("profiles", "package", "fiscal.js
 TABULAR_PACKAGE_PROFILE = json.loads(read_asset("profiles", "package", "tabular.json"))
 GEOJSON_PROFILE = json.loads(read_asset("profiles", "geojson", "general.json"))
 TOPOJSON_PROFILE = json.loads(read_asset("profiles", "geojson", "topojson.json"))
-UNDEFINED = object()
 
 
 # Defaults
@@ -77,6 +77,22 @@ DEFAULT_HTTP_HEADERS = {
         "Chrome/54.0.2840.87 Safari/537.36"
     )
 }
+DEFAULT_CANDIDATES = [
+    {"type": "yearmonth"},
+    {"type": "geopoint"},
+    {"type": "duration"},
+    {"type": "geojson"},
+    {"type": "object"},
+    {"type": "array"},
+    {"type": "datetime"},
+    {"type": "time"},
+    {"type": "date"},
+    {"type": "integer"},
+    {"type": "number"},
+    {"type": "boolean"},
+    {"type": "year"},
+    {"type": "string"},
+]
 
 
 # Backports

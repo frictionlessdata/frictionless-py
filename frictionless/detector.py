@@ -2,6 +2,7 @@ import codecs
 import chardet
 from copy import copy, deepcopy
 from .exception import FrictionlessException
+from .system import system
 from .layout import Layout
 from .schema import Schema
 from .field import Field
@@ -245,9 +246,9 @@ class Detector:
             max_score = [len(fragment)] * len(names)
             for index, name in enumerate(names):
                 runners.append([])
-                for type in FIELD_TYPES:
-                    field = Field(name=name, type=type, schema=schema)
-                    if type == "number" and self.__field_float_numbers:
+                for candidate in system.create_candidates():
+                    field = Field(candidate, name=name, schema=schema)
+                    if field.type == "number" and self.__field_float_numbers:
                         field.float_number = True
                     runners[index].append({"field": field, "score": 0})
                 schema.fields.append(Field(name=name, type="any", schema=schema))
@@ -295,23 +296,3 @@ class Detector:
             raise FrictionlessException(errors.SchemaError(note=note))
 
         return schema
-
-
-# Internal
-
-FIELD_TYPES = [
-    "yearmonth",
-    "geopoint",
-    "duration",
-    "geojson",
-    "object",
-    "array",
-    "datetime",
-    "time",
-    "date",
-    "integer",
-    "number",
-    "boolean",
-    "year",
-    "string",
-]
