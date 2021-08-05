@@ -1,13 +1,16 @@
 import os
 import pkgutil
+import requests
 from collections import OrderedDict
 from importlib import import_module
+from contextlib import contextmanager
 from .exception import FrictionlessException
 from .helpers import cached_property
 from .control import Control
 from .dialect import Dialect
 from .file import File
 from . import errors
+from . import config
 
 
 # NOTE:
@@ -29,6 +32,7 @@ class System:
 
     def __init__(self):
         self.__dynamic_plugins = OrderedDict()
+        self.__http_session = None
 
     def register(self, name, plugin):
         """Register a plugin
@@ -259,6 +263,44 @@ class System:
                 return Class(field)
         note = f'cannot create type "{code}". Try installing "frictionless-{code}"'
         raise FrictionlessException(errors.FieldError(note=note))
+
+    # Requests
+
+    def get_http_session(self):
+        """Return a HTTP session
+
+        This method will return a new session or the session
+        from `system.use_http_session` context manager
+
+        Returns:
+            requests.Session: a HTTP session
+        """
+        if self.__http_session:
+            return self.__http_session
+        http_session = requests.Session()
+        http_session.headers.update(config.DEFAULT_HTTP_HEADERS)
+        return http_session
+
+    @contextmanager
+    def use_http_session(self, http_session=None):
+        """HTTP session context manager
+
+        ```
+        session = requests.Session(...)
+        with system.use_http_session(session):
+            # work with frictionless using a user defined HTTP session
+            report = validate(...)
+        ```
+
+        Parameters:
+            http_session? (requests.Session): a session; will create a new if omitted
+        """
+        if self.__http_session:
+            note = f"There is already HTTP session in use: {self.__http_session}"
+            raise FrictionlessException(errors.Error(note=note))
+        self.__http_session = http_session or self.get_http_session()
+        yield self.__http_session
+        self.__http_session = None
 
     # Methods
 

@@ -4,6 +4,7 @@ from ..metadata import Metadata
 from ..control import Control
 from ..plugin import Plugin
 from ..loader import Loader
+from ..system import system
 from .. import config
 
 
@@ -72,8 +73,7 @@ class RemoteControl(Control):
         """
         http_session = self.get("httpSession")
         if not http_session:
-            http_session = requests.Session()
-            http_session.headers.update(config.DEFAULT_HTTP_HEADERS)
+            http_session = system.get_http_session()
         return http_session
 
     @Metadata.property
@@ -145,7 +145,7 @@ class RemoteLoader(Loader):
     def write_byte_stream_save(self, byte_stream):
         file = f"{self.resource.name}.{self.resource.format}"
         url = self.resource.fullpath.replace(file, "")
-        response = requests.post(url, files={file: byte_stream})
+        response = self.resource.control.http_session.post(url, files={file: byte_stream})
         response.raise_for_status()
         return response
 
