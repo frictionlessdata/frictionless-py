@@ -7,8 +7,8 @@ import hashlib
 import zipfile
 import tempfile
 from .exception import FrictionlessException
+from . import settings
 from . import errors
-from . import config
 
 
 # NOTE:
@@ -131,7 +131,7 @@ class Loader:
         except (LookupError, UnicodeDecodeError) as exception:
             error = errors.EncodingError(note=str(exception))
             raise FrictionlessException(error) from exception
-        except config.COMPRESSION_EXCEPTIONS as exception:
+        except settings.COMPRESSION_EXCEPTIONS as exception:
             error = errors.CompressionError(note=str(exception))
             raise FrictionlessException(error)
         except IOError as exception:
@@ -306,7 +306,7 @@ class ByteStreamWithStatsHandling:
 
     def __iter__(self):
         while True:
-            bytes = self.read1(config.DEFAULT_BUFFER_SIZE)
+            bytes = self.read1(settings.DEFAULT_BUFFER_SIZE)
             if not bytes:
                 break
             yield from bytes.splitlines(keepends=True)

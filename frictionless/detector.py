@@ -6,9 +6,9 @@ from .system import system
 from .layout import Layout
 from .schema import Schema
 from .field import Field
+from . import settings
 from . import helpers
 from . import errors
-from . import config
 
 
 # NOTE:
@@ -66,15 +66,15 @@ class Detector:
 
     def __init__(
         self,
-        buffer_size=config.DEFAULT_BUFFER_SIZE,
-        sample_size=config.DEFAULT_SAMPLE_SIZE,
+        buffer_size=settings.DEFAULT_BUFFER_SIZE,
+        sample_size=settings.DEFAULT_SAMPLE_SIZE,
         encoding_function=None,
-        encoding_confidence=config.DEFAULT_ENCODING_CONFIDENCE,
+        encoding_confidence=settings.DEFAULT_ENCODING_CONFIDENCE,
         field_type=None,
         field_names=None,
-        field_confidence=config.DEFAULT_FIELD_CONFIDENCE,
-        field_float_numbers=config.DEFAULT_FLOAT_NUMBERS,
-        field_missing_values=config.DEFAULT_MISSING_VALUES,
+        field_confidence=settings.DEFAULT_FIELD_CONFIDENCE,
+        field_float_numbers=settings.DEFAULT_FLOAT_NUMBERS,
+        field_missing_values=settings.DEFAULT_MISSING_VALUES,
         schema_sync=False,
         schema_patch=None,
     ):
@@ -120,12 +120,12 @@ class Detector:
             for line in buffer.splitlines():
                 detector.feed(line)
             detector.close()
-            encoding = detector.result["encoding"] or config.DEFAULT_ENCODING
+            encoding = detector.result["encoding"] or settings.DEFAULT_ENCODING
             confidence = detector.result["confidence"] or 0
             if confidence < self.__encoding_confidence:
-                encoding = config.DEFAULT_ENCODING
+                encoding = settings.DEFAULT_ENCODING
             if encoding == "ascii":
-                encoding = config.DEFAULT_ENCODING
+                encoding = settings.DEFAULT_ENCODING
             if encoding is None:
                 encoding = self.resource.detector.detect_encoding(buffer)
 
@@ -189,7 +189,7 @@ class Detector:
             # Set header rows
             if not header_rows:
                 layout["header"] = False
-            elif header_rows != config.DEFAULT_HEADER_ROWS:
+            elif header_rows != settings.DEFAULT_HEADER_ROWS:
                 layout["headerRows"] = header_rows
 
         return layout
@@ -211,7 +211,7 @@ class Detector:
             schema = Schema()
 
             # Missing values
-            if self.__field_missing_values != config.DEFAULT_MISSING_VALUES:
+            if self.__field_missing_values != settings.DEFAULT_MISSING_VALUES:
                 schema.missing_values = self.__field_missing_values
 
             # Prepare names

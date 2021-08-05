@@ -8,8 +8,8 @@ from collections import OrderedDict
 from .exception import FrictionlessException
 from .metadata import Metadata
 from .system import system
+from . import settings
 from . import errors
-from . import config
 from . import types
 
 
@@ -142,7 +142,9 @@ class Field(Metadata):
             str[]: missing values
         """
         schema = self.__schema
-        default = schema.missing_values if schema else copy(config.DEFAULT_MISSING_VALUES)
+        default = (
+            schema.missing_values if schema else copy(settings.DEFAULT_MISSING_VALUES)
+        )
         missing_values = self.get("missingValues", default)
         return self.metadata_attach("missingValues", missing_values)
 
@@ -221,7 +223,7 @@ class Field(Metadata):
         Returns:
             str[]: true values
         """
-        true_values = self.get("trueValues", config.DEFAULT_TRUE_VALUES)
+        true_values = self.get("trueValues", settings.DEFAULT_TRUE_VALUES)
         return self.metadata_attach("trueValues", true_values)
 
     @Metadata.property
@@ -230,7 +232,7 @@ class Field(Metadata):
         Returns:
             str[]: false values
         """
-        false_values = self.get("falseValues", config.DEFAULT_FALSE_VALUES)
+        false_values = self.get("falseValues", settings.DEFAULT_FALSE_VALUES)
         return self.metadata_attach("falseValues", false_values)
 
     # Integer/Number
@@ -241,7 +243,7 @@ class Field(Metadata):
         Returns:
             bool: if a bare number
         """
-        return self.get("bareNumber", config.DEFAULT_BARE_NUMBER)
+        return self.get("bareNumber", settings.DEFAULT_BARE_NUMBER)
 
     @Metadata.property
     def float_number(self):
@@ -249,7 +251,7 @@ class Field(Metadata):
         Returns:
             bool: whether it's a floating point number
         """
-        return self.get("floatNumber", config.DEFAULT_FLOAT_NUMBER)
+        return self.get("floatNumber", settings.DEFAULT_FLOAT_NUMBER)
 
     @Metadata.property
     def decimal_char(self):
@@ -257,7 +259,7 @@ class Field(Metadata):
         Returns:
             str: decimal char
         """
-        return self.get("decimalChar", config.DEFAULT_DECIMAL_CHAR)
+        return self.get("decimalChar", settings.DEFAULT_DECIMAL_CHAR)
 
     @Metadata.property
     def group_char(self):
@@ -265,7 +267,7 @@ class Field(Metadata):
         Returns:
             str: group char
         """
-        return self.get("groupChar", config.DEFAULT_GROUP_CHAR)
+        return self.get("groupChar", settings.DEFAULT_GROUP_CHAR)
 
     # Expand
 
@@ -408,7 +410,7 @@ class Field(Metadata):
         """
         if self.missing_values:
             return self.missing_values[0]
-        return config.DEFAULT_MISSING_VALUES[0]
+        return settings.DEFAULT_MISSING_VALUES[0]
 
     # Metadata
 
@@ -432,7 +434,7 @@ class Field(Metadata):
     # Metadata
 
     metadata_Error = errors.FieldError  # type: ignore
-    metadata_profile = config.SCHEMA_PROFILE["properties"]["fields"]["items"]
+    metadata_profile = settings.SCHEMA_PROFILE["properties"]["fields"]["items"]
     metadata_duplicate = True
 
 

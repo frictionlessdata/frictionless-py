@@ -4,8 +4,8 @@ from .resource import Resource
 from .metadata import Metadata
 from .errors import Error, TaskError, ReportError
 from .exception import FrictionlessException
+from . import settings
 from . import helpers
-from . import config
 
 
 # NOTE:
@@ -34,7 +34,7 @@ class Report(Metadata):
     def __init__(self, descriptor=None, *, time=None, errors=None, tasks=None):
 
         # Store provided
-        self.setinitial("version", config.VERSION)
+        self.setinitial("version", settings.VERSION)
         self.setinitial("time", time)
         self.setinitial("errors", errors)
         self.setinitial("tasks", tasks)
@@ -166,7 +166,7 @@ class Report(Metadata):
     # Metadata
 
     metadata_Error = ReportError
-    metadata_profile = deepcopy(config.REPORT_PROFILE)
+    metadata_profile = deepcopy(settings.REPORT_PROFILE)
     metadata_profile["properties"]["tasks"] = {"type": "array"}
 
     def metadata_process(self):
@@ -331,7 +331,7 @@ class ReportTask(Metadata):
     # Metadata
 
     metadata_Error = ReportError
-    metadata_profile = config.REPORT_PROFILE["properties"]["tasks"]["items"]
+    metadata_profile = settings.REPORT_PROFILE["properties"]["tasks"]["items"]
 
     def metadata_process(self):
 

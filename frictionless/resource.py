@@ -14,9 +14,9 @@ from .header import Header
 from .system import system
 from .field import Field
 from .row import Row
+from . import settings
 from . import helpers
 from . import errors
-from . import config
 
 
 # NOTE:
@@ -248,7 +248,7 @@ class Resource(Metadata):
             if value:
                 if name == "hash":
                     hashing, value = helpers.parse_resource_hash(value)
-                    if hashing != config.DEFAULT_HASHING:
+                    if hashing != settings.DEFAULT_HASHING:
                         self["hashing"] = hashing
                 self.setdefault("stats", {})
                 self["stats"][name] = value
@@ -349,9 +349,9 @@ class Resource(Metadata):
         Returns
             str?: resource profile
         """
-        default = config.DEFAULT_RESOURCE_PROFILE
+        default = settings.DEFAULT_RESOURCE_PROFILE
         if self.tabular:
-            default = config.DEFAULT_TABULAR_RESOURCE_PROFILE
+            default = settings.DEFAULT_TABULAR_RESOURCE_PROFILE
         return self.get("profile", default)
 
     @Metadata.property
@@ -392,7 +392,7 @@ class Resource(Metadata):
         Returns
             str?: resource hashing
         """
-        return self.get("hashing", config.DEFAULT_HASHING).lower()
+        return self.get("hashing", settings.DEFAULT_HASHING).lower()
 
     @Metadata.property
     def encoding(self):
@@ -400,7 +400,7 @@ class Resource(Metadata):
         Returns
             str?: resource encoding
         """
-        return self.get("encoding", config.DEFAULT_ENCODING).lower()
+        return self.get("encoding", settings.DEFAULT_ENCODING).lower()
 
     @Metadata.property
     def innerpath(self):
@@ -1189,7 +1189,7 @@ class Resource(Metadata):
 
     metadata_duplicate = True
     metadata_Error = errors.ResourceError
-    metadata_profile = deepcopy(config.RESOURCE_PROFILE)
+    metadata_profile = deepcopy(settings.RESOURCE_PROFILE)
     metadata_profile["properties"]["control"] = {"type": ["string", "object"]}
     metadata_profile["properties"]["dialect"] = {"type": ["string", "object"]}
     metadata_profile["properties"]["layout"] = {"type": ["string", "object"]}

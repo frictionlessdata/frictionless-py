@@ -5,7 +5,7 @@ from ..control import Control
 from ..plugin import Plugin
 from ..loader import Loader
 from ..system import system
-from .. import config
+from .. import settings
 
 
 # Plugin
@@ -23,11 +23,11 @@ class RemotePlugin(Plugin):
     code = "remote"
 
     def create_control(self, resource, *, descriptor):
-        if resource.scheme in config.REMOTE_SCHEMES:
+        if resource.scheme in settings.REMOTE_SCHEMES:
             return RemoteControl(descriptor)
 
     def create_loader(self, resource):
-        if resource.scheme in config.REMOTE_SCHEMES:
+        if resource.scheme in settings.REMOTE_SCHEMES:
             return RemoteLoader(resource)
 
 
@@ -90,7 +90,7 @@ class RemoteControl(Control):
         Returns:
             int: HTTP timeout in minutes
         """
-        return self.get("httpTimeout", config.DEFAULT_HTTP_TIMEOUT)
+        return self.get("httpTimeout", settings.DEFAULT_HTTP_TIMEOUT)
 
     # Expand
 

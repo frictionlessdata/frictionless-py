@@ -1,7 +1,7 @@
 from datetime import datetime
 from dateutil import parser
 from ..type import Type
-from .. import config
+from .. import settings
 
 
 class DatetimeType(Type):
@@ -45,7 +45,7 @@ class DatetimeType(Type):
     # Write
 
     def write_cell(self, cell):
-        format = self.field.get("format", config.DEFAULT_DATETIME_PATTERN)
+        format = self.field.get("format", settings.DEFAULT_DATETIME_PATTERN)
         cell = cell.strftime(format)
         cell = cell.replace("+0000", "Z")
         return cell

@@ -4,8 +4,8 @@ from ..control import Control
 from ..plugin import Plugin
 from ..loader import Loader
 from ..system import system
+from .. import settings
 from .. import helpers
-from .. import config
 
 
 # NOTE:
@@ -66,7 +66,7 @@ class MultipartControl(Control):
 
     @property
     def chunk_size(self):
-        return self.get("chunkSize", config.DEFAULT_MULTIPART_CHUNK_SIZE)
+        return self.get("chunkSize", settings.DEFAULT_MULTIPART_CHUNK_SIZE)
 
     # Expand
 

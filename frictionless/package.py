@@ -10,9 +10,9 @@ from .detector import Detector
 from .resource import Resource
 from .field import Field
 from .system import system
+from . import settings
 from . import helpers
 from . import errors
-from . import config
 
 
 class Package(Metadata):
@@ -236,7 +236,7 @@ class Package(Metadata):
         Returns:
             str: package profile
         """
-        return self.get("profile", config.DEFAULT_PACKAGE_PROFILE)
+        return self.get("profile", settings.DEFAULT_PACKAGE_PROFILE)
 
     @Metadata.property
     def title(self):
@@ -447,7 +447,7 @@ class Package(Metadata):
         """
 
         # General
-        self.setdefault("profile", config.DEFAULT_PACKAGE_PROFILE)
+        self.setdefault("profile", settings.DEFAULT_PACKAGE_PROFILE)
         for resource in self.resources:
             resource.infer(stats=stats)
 
@@ -644,7 +644,7 @@ class Package(Metadata):
 
     metadata_duplicate = True
     metadata_Error = errors.PackageError  # type: ignore
-    metadata_profile = deepcopy(config.PACKAGE_PROFILE)
+    metadata_profile = deepcopy(settings.PACKAGE_PROFILE)
     metadata_profile["properties"]["resources"] = {"type": "array"}
 
     def metadata_process(self):
@@ -677,9 +677,9 @@ class Package(Metadata):
         if self.profile == "data-package":
             yield from super().metadata_validate()
         elif self.profile == "fiscal-data-package":
-            yield from super().metadata_validate(config.FISCAL_PACKAGE_PROFILE)
+            yield from super().metadata_validate(settings.FISCAL_PACKAGE_PROFILE)
         elif self.profile == "tabular-data-package":
-            yield from super().metadata_validate(config.TABULAR_PACKAGE_PROFILE)
+            yield from super().metadata_validate(settings.TABULAR_PACKAGE_PROFILE)
         else:
             if not self.trusted:
                 if not helpers.is_safe_path(self.profile):

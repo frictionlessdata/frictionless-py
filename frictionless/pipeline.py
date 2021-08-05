@@ -6,8 +6,8 @@ from .status import Status, StatusTask
 from .metadata import Metadata
 from .resource import Resource
 from .package import Package
+from . import settings
 from . import helpers
-from . import config
 
 
 class Pipeline(Metadata):
@@ -72,7 +72,7 @@ class Pipeline(Metadata):
     # Metadata
 
     metadata_Error = PipelineError
-    metadata_profile = deepcopy(config.PIPELINE_PROFILE)
+    metadata_profile = deepcopy(settings.PIPELINE_PROFILE)
     metadata_profile["properties"]["tasks"] = {"type": "array"}
 
     def metadata_process(self):
@@ -144,7 +144,7 @@ class PipelineTask(Metadata):
     # Metadata
 
     metadata_Error = PipelineError
-    metadata_profile = config.PIPELINE_PROFILE["properties"]["tasks"]["items"]
+    metadata_profile = settings.PIPELINE_PROFILE["properties"]["tasks"]["items"]
 
     def metadata_process(self):
 

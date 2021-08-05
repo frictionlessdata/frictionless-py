@@ -9,8 +9,8 @@ from .helpers import cached_property
 from .control import Control
 from .dialect import Dialect
 from .file import File
+from . import settings
 from . import errors
-from . import config
 
 
 # NOTE:
@@ -82,7 +82,7 @@ class System:
         Returns:
             dict[]: an ordered by priority list of type descriptors for type detection
         """
-        candidates = config.DEFAULT_CANDIDATES.copy()
+        candidates = settings.DEFAULT_CANDIDATES.copy()
         for func in self.methods["create_candidates"].values():
             func(candidates)
         return candidates
@@ -303,7 +303,7 @@ class System:
         if self.__http_session:
             return self.__http_session
         http_session = requests.Session()
-        http_session.headers.update(config.DEFAULT_HTTP_HEADERS)
+        http_session.headers.update(settings.DEFAULT_HTTP_HEADERS)
         return http_session
 
     @contextmanager

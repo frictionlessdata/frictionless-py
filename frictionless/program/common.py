@@ -1,5 +1,5 @@
 from typer import Argument, Option
-from .. import config
+from .. import settings
 
 # Source
 
@@ -153,12 +153,12 @@ stats_rows = Option(
 # Detector
 
 buffer_size = Option(
-    default=config.DEFAULT_BUFFER_SIZE,
+    default=settings.DEFAULT_BUFFER_SIZE,
     help="Limit the amount of bytes to be extracted as a buffer",
 )
 
 sample_size = Option(
-    default=config.DEFAULT_SAMPLE_SIZE,
+    default=settings.DEFAULT_SAMPLE_SIZE,
     help="Limit the number of rows to be extracted as a sample",
 )
 
@@ -173,7 +173,7 @@ field_names = Option(
 )
 
 field_confidence = Option(
-    default=config.DEFAULT_FIELD_CONFIDENCE,
+    default=settings.DEFAULT_FIELD_CONFIDENCE,
     help=(
         "Infer confidence. A float from 0 to 1. "
         "If 1, (sampled) data is guaranteed to be valid against the inferred schema"
@@ -181,12 +181,12 @@ field_confidence = Option(
 )
 
 field_float_numbers = Option(
-    default=config.DEFAULT_FLOAT_NUMBERS,
+    default=settings.DEFAULT_FLOAT_NUMBERS,
     help="Make number floats instead of decimals",
 )
 
 field_missing_values = Option(
-    default=f'"{",".join(config.DEFAULT_MISSING_VALUES)}"',
+    default=f'"{",".join(settings.DEFAULT_MISSING_VALUES)}"',
     help="Comma-separated list of missing values",
 )
 
