@@ -1,0 +1,18 @@
+`{{name}}`|
+{{~intlGet (append "type." type)}}|
+{{~title}}|
+{{~#if example}}`{{example}}`{{/if}}|{{"\n"~}}
+{{~#if constraints}}{{> constraintTableProperties constraints=constraints arrayItem=false}}{{/if}}|{{"\n"~}}
+{{~#if arrayItem}}
+{{~#with arrayItem}}
+{{~#if type}}
+<p>{{{formatMessage (intlGet "messages.definitionList.keyValue")
+                             key=(intlGet "fieldProperties.type")
+                             value=(intlGet (append "type." type))
+                         }}}{{#if format}}{{#isnt format "default"}} ({{format}}){{/isnt}}{{/if}}</p>{{"\n"~}}
+{{/if}}
+{{> constraintTableProperties constraints=constraints arrayItem=true}}
+{{/with}}
+{{else}}
+<p>{{intlGet "messages.na"}}</p>{{"\n"~}}
+{{/if~}}|

@@ -1,0 +1,17 @@
+# {{{title}}}
+
+{{#if image}}
+![{{formatMessage (intlGet "messages.schemaImageAlt")}}]({{{image}}})
+{{/if}}
+
+{{#if description}}
+{{{description}}}
+{{/if}}
+
+{{> properties }}
+
+## {{ intlGet "messages.dataModel" }}
+
+{{ formatMessage (intlGet "messages.dataModelIntro") count=(formatNumber fields.length) }}
+
+{{> schemaFields }}

@@ -1,0 +1,47 @@
+{{#unless arrayItem}}
+    {{#if constraints.required}}
+- {{{intlGet "fieldProperties.constraints.required"}}}
+    {{else}}
+- {{{intlGet "fieldProperties.constraints.notRequired"}}}
+    {{/if}}
+{{/unless}}
+{{#if constraints.unique}}
+{{ formatIndent arrayItem }}- {{{intlGet "fieldProperties.constraints.unique"}}}
+{{/if}}
+{{#if constraints.minLength}}
+{{ formatIndent arrayItem }}- {{{formatMessage (intlGet "messages.definitionList.keyValue")
+                                  key=(intlGet "fieldProperties.constraints.minLength")
+                                  value=(formatNumber constraints.minLength)
+                              }}}
+{{/if}}
+{{#if constraints.maxLength}}
+{{ formatIndent arrayItem }}- {{{formatMessage (intlGet "messages.definitionList.keyValue")
+                                  key=(intlGet "fieldProperties.constraints.maxLength")
+                                  value=(formatNumber constraints.maxLength)
+                              }}}
+{{/if}}
+{{#if constraints.minimum}}
+{{ formatIndent arrayItem }}- {{{formatMessage (intlGet "messages.definitionList.keyValue")
+                                  key=(intlGet "fieldProperties.constraints.minimum")
+                                  value=(formatNumber constraints.minimum)
+                              }}}
+{{/if}}
+{{#if constraints.maximum}}
+{{ formatIndent arrayItem }}- {{{formatMessage (intlGet "messages.definitionList.keyValue")
+                                  key=(intlGet "fieldProperties.constraints.maximum")
+                                  value=(formatNumber constraints.maximum)
+                              }}}
+{{/if}}
+{{#if constraints.pattern}}
+{{ formatIndent arrayItem }}- {{{formatMessage (intlGet "messages.definitionList.keyValue")
+                                  key=(intlGet "fieldProperties.constraints.pattern")
+                                  value=(formatMarkdownCode constraints.pattern)
+                              }}}
+{{/if}}
+{{#if constraints.enum}}
+{{ formatIndent arrayItem }}- {{{formatMessage (intlGet "messages.definitionList.keyValue")
+                                  key=(intlGet "fieldProperties.constraints.enum")
+                                  value=(join (formatMarkdownCodeList constraints.enum) (intlGet "separators.inlineEnumeration"))
+                              }}}
+{{/if ~}}
+

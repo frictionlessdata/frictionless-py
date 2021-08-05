@@ -1,0 +1,88 @@
+{
+  "fieldProperties": {
+    "arrayItem": "array item",
+    "bareNumber": "the number can contain extra characters (e.g. « € », « % » ...)",
+    "constraints": {
+      "enum": "allowed values",
+      "label": "constraints",
+      "maximum": "maximal value",
+      "maxLength": "maximal length",
+      "minimum": "minimal value",
+      "minLength": "minimal length",
+      "notRequired": "optional value",
+      "pattern": "pattern",
+      "required": "required value",
+      "unique": "unique value"
+    },
+    "contributors": {
+      "role": {
+        "author": "author",
+        "contributor": "contributor",
+        "maintainer": "maintainer",
+        "publisher": "publisher",
+        "wrangler": "wrangler"
+      }
+    },
+    "decimalChar": "decimal separator",
+    "description": "description",
+    "example": "example",
+    "falseValues": "values considered false",
+    "groupChar": "digit group separator",
+    "name": "name",
+    "rdfType": "RDF type",
+    "title": "title",
+    "trueValues": "values considered true",
+    "type": "type"
+  },
+  "format": {
+    "email": "email address",
+    "uri": "URI",
+    "binary": "binary data encoded in base64",
+    "uuid": "unique identifier UUID"
+  },
+  "messages": {
+    "dataModel": "Data model",
+    "dataModelIntro": "This data model relies on the {count} following fields corresponding to the columns of the tabular file.",
+    "definitionList": {
+      "key": "{key}:",
+      "keyValue": "{key}: {value}"
+    },
+    "link": "link",
+    "na": "n/a",
+    "schemaImageAlt": "schema image",
+    "unknownRole": "unknown role"
+  },
+  "schemaProperties": {
+    "contributors": "contributors",
+    "created": "creation date",
+    "countryCode": "relates to the country",
+    "homepage": "homepage",
+    "keywords": "keywords",
+    "lastModified": "last modification date",
+    "licenses": "licenses",
+    "missingValues": "missing values represented by",
+    "name": "name",
+    "path": "schema URL",
+    "resources": "resources",
+    "sources": "sources",
+    "version": "version"
+  },
+  "separators": {
+    "inlineEnumeration": ", "
+  },
+  "type": {
+    "array": "array",
+    "boolean": "boolean",
+    "date": "date",
+    "datetime": "date and time",
+    "duration": "duration",
+    "geopoint": "geographical point",
+    "integer": "integer number",
+    "number": "real number",
+    "object": "object",
+    "string": "string",
+    "time": "time",
+    "year": "year",
+    "yearmonth": "year and month"
+  }
+}

@@ -1,0 +1,88 @@
+{
+  "fieldProperties": {
+    "arrayItem": "élément de liste",
+    "bareNumber": "le nombre peut contenir des caractères supplémentaires (e.g. « € », « % » ...)",
+    "constraints": {
+      "enum": "valeurs autorisées",
+      "label": "contraintes",
+      "maximum": "valeur maximale",
+      "maxLength": "taille maximale",
+      "minimum": "valeur minimale",
+      "minLength": "taille minimale",
+      "notRequired": "valeur optionnelle",
+      "pattern": "motif",
+      "required": "valeur obligatoire",
+      "unique": "valeur unique"
+    },
+    "contributors": {
+      "role": {
+        "author": "auteur",
+        "contributor": "contributeur",
+        "maintainer": "mainteneur",
+        "publisher": "éditeur",
+        "wrangler": "bricoleur"
+      }
+    },
+    "decimalChar": "séparateur décimal",
+    "description": "description",
+    "example": "exemple",
+    "falseValues": "valeurs considérées comme fausses",
+    "groupChar": "séparateur de groupes de chiffres",
+    "name": "nom",
+    "rdfType": "type RDF",
+    "title": "titre",
+    "trueValues": "valeurs considérées comme vraies",
+    "type": "type"
+  },
+  "format": {
+    "email": "adresse de courriel",
+    "uri": "URI",
+    "binary": "données binaires encodées en base64",
+    "uuid": "identifiant unique UUID"
+  },
+  "messages": {
+    "dataModel": "Modèle de données",
+    "dataModelIntro": "Ce modèle de données repose sur les {count} champs suivants correspondant aux colonnes du fichier tabulaire.",
+    "definitionList": {
+      "key": "{key} :",
+      "keyValue": "{key} : {value}"
+    },
+    "link": "lien",
+    "na": "s/o",
+    "schemaImageAlt": "image du schéma",
+    "unknownRole": "rôle inconnu"
+  },
+  "schemaProperties": {
+    "contributors": "contributeurs",
+    "created": "date de création",
+    "countryCode": "concerne le pays",
+    "homepage": "page d'accueil",
+    "keywords": "mots clés",
+    "lastModified": "date de dernière modification",
+    "licenses": "licences",
+    "missingValues": "valeurs manquantes représentées par",
+    "name": "nom",
+    "path": "URL du schéma",
+    "resources": "ressources",
+    "sources": "sources",
+    "version": "version"
+  },
+  "separators": {
+    "inlineEnumeration": ", "
+  },
+  "type": {
+    "array": "liste",
+    "boolean": "booléen",
+    "date": "date",
+    "datetime": "date et heure",
+    "duration": "durée",
+    "geopoint": "point géographique",
+    "integer": "nombre entier",
+    "number": "nombre réel",
+    "object": "objet",
+    "string": "chaîne de caractères",
+    "time": "heure",
+    "year": "année",
+    "yearmonth": "année et mois"
+  }
+}
