@@ -15,6 +15,7 @@ class NumberType(Type):
 
     code = "number"
     builtin = True
+    priority = 40
     constraints = [
         "required",
         "minimum",

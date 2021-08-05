@@ -15,6 +15,7 @@ class StringType(Type):
 
     code = "string"
     builtin = True
+    priority = 10
     constraints = [
         "required",
         "minLength",

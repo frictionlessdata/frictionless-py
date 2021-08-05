@@ -13,6 +13,7 @@ class BooleanType(Type):
 
     code = "boolean"
     builtin = True
+    priority = 30
     constraints = [
         "required",
         "enum",

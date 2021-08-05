@@ -15,6 +15,7 @@ class IntegerType(Type):
 
     code = "integer"
     builtin = True
+    priority = 50
     constraints = [
         "required",
         "minimum",

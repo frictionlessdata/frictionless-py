@@ -15,6 +15,7 @@ class GeopointType(Type):
 
     code = "geopoint"
     builtin = True
+    priority = 130
     constraints = [
         "required",
         "enum",

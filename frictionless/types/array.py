@@ -13,6 +13,7 @@ class ArrayType(Type):
 
     code = "array"
     builtin = True
+    priority = 90
     constraints = [
         "required",
         "minLength",

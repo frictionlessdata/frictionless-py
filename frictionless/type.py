@@ -16,6 +16,11 @@ class Type:
 
     code = "type"
     builtin = False
+    priority = 0
+    """
+    Returns:
+        int: type detection priority
+    """
     constraints = []
     """
     Returns:

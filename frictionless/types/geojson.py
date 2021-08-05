@@ -15,6 +15,7 @@ class GeojsonType(Type):
 
     code = "geojson"
     builtin = True
+    priority = 110
     constraints = [
         "required",
         "enum",

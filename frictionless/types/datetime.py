@@ -15,6 +15,7 @@ class DatetimeType(Type):
 
     code = "datetime"
     builtin = True
+    priority = 80
     constraints = [
         "required",
         "minimum",

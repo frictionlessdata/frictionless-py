@@ -13,6 +13,7 @@ class ObjectType(Type):
 
     code = "object"
     builtin = True
+    priority = 100
     constraints = [
         "required",
         "minLength",
