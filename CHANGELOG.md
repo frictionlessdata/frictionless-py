@@ -2,6 +2,10 @@
 
 Here described only the breaking and most significant changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/frictionless-py/commits/main).
 
+## v4.15.0
+
+- Implemented `system.get/use_http_session` (#892)
+
 ## v4.14.0
 
 - SQL Where Clause (#882)
