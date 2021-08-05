@@ -19,7 +19,6 @@ def read_asset(*paths):
 UNDEFINED = object()
 VERSION = read_asset("VERSION")
 COMPRESSION_FORMATS = ["zip", "gz"]
-REMOTE_SCHEMES = ["http", "https", "ftp", "ftps"]
 INQUIRY_PROFILE = json.loads(read_asset("profiles", "inquiry.json"))
 PIPELINE_PROFILE = json.loads(read_asset("profiles", "pipeline.json"))
 REPORT_PROFILE = json.loads(read_asset("profiles", "report.json"))
@@ -68,14 +67,6 @@ DEFAULT_FLOAT_NUMBER = False
 DEFAULT_GROUP_CHAR = ""
 DEFAULT_DECIMAL_CHAR = "."
 DEFAULT_SERVER_PORT = 8000
-DEFAULT_HTTP_TIMEOUT = 10
-DEFAULT_HTTP_HEADERS = {
-    "User-Agent": (
-        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) "
-        "AppleWebKit/537.36 (KHTML, like Gecko) "
-        "Chrome/54.0.2840.87 Safari/537.36"
-    )
-}
 DEFAULT_CANDIDATES = [
     {"type": "yearmonth"},
     {"type": "geopoint"},

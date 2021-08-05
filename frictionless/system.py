@@ -1,6 +1,5 @@
 import os
 import pkgutil
-import requests
 from collections import OrderedDict
 from importlib import import_module
 from contextlib import contextmanager
@@ -302,9 +301,7 @@ class System:
         """
         if self.__http_session:
             return self.__http_session
-        http_session = requests.Session()
-        http_session.headers.update(settings.DEFAULT_HTTP_HEADERS)
-        return http_session
+        return self.plugins["remote"].create_http_session()
 
     @contextmanager
     def use_http_session(self, http_session=None):
