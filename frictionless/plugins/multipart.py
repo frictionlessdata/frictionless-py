@@ -4,7 +4,6 @@ from ..control import Control
 from ..plugin import Plugin
 from ..loader import Loader
 from ..system import system
-from .. import settings
 from .. import helpers
 
 
@@ -66,7 +65,7 @@ class MultipartControl(Control):
 
     @property
     def chunk_size(self):
-        return self.get("chunkSize", settings.DEFAULT_MULTIPART_CHUNK_SIZE)
+        return self.get("chunkSize", DEFAULT_CHUNK_SIZE)
 
     # Expand
 
@@ -123,6 +122,9 @@ class MultipartLoader(Loader):
 
 
 # Internal
+
+
+DEFAULT_CHUNK_SIZE = 100000000
 
 
 class MultipartByteStream:
