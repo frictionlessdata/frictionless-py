@@ -14,7 +14,7 @@ class Plugin:
     status = "stable"
 
     def create_check(self, name, *, descriptor=None):
-        """Create checks
+        """Create check
 
         Parameters:
             name (str): check name
@@ -49,6 +49,29 @@ class Plugin:
         """
         pass
 
+    def create_error(self, descriptor):
+        """Create error
+
+        Parameters:
+            descriptor (dict): error descriptor
+
+        Returns:
+            Error: error
+        """
+        pass
+
+    def create_file(self, source, **options):
+        """Create file
+
+        Parameters:
+            source (any): file source
+            options (dict): file options
+
+        Returns:
+            File: file
+        """
+        pass
+
     def create_loader(self, file):
         """Create loader
 
@@ -79,5 +102,39 @@ class Plugin:
 
         Returns:
             Server: server
+        """
+        pass
+
+    def create_step(self, descriptor):
+        """Create step
+
+        Parameters:
+            descriptor (dict): step descriptor
+
+        Returns:
+            Step: step
+        """
+        pass
+
+    def create_storage(self, name, source, **options):
+        """Create storage
+
+        Parameters:
+            name (str): storage name
+            options (str): storage options
+
+        Returns:
+            Storage: storage
+        """
+        pass
+
+    def create_type(self, field):
+        """Create type
+
+        Parameters:
+            field (Field): corresponding field
+
+        Returns:
+            Type: type
         """
         pass

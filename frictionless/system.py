@@ -63,7 +63,7 @@ class System:
     ]
 
     def create_check(self, descriptor):
-        """Create checks
+        """Create check
 
         Parameters:
             descriptor (dict): check descriptor
@@ -117,7 +117,7 @@ class System:
         return Dialect(descriptor)
 
     def create_error(self, descriptor):
-        """Create errors
+        """Create error
 
         Parameters:
             descriptor (dict): error descriptor
@@ -208,7 +208,7 @@ class System:
         raise FrictionlessException(errors.GeneralError(note=note))
 
     def create_step(self, descriptor):
-        """Create steps
+        """Create step
 
         Parameters:
             descriptor (dict): step descriptor
@@ -245,7 +245,7 @@ class System:
         raise FrictionlessException(errors.GeneralError(note=note))
 
     def create_type(self, field):
-        """Create checks
+        """Create type
 
         Parameters:
             field (Field): corresponding field
