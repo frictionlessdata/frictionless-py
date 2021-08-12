@@ -1217,10 +1217,6 @@
               },
               "format": {
                 "description": "There are no format keyword options for `array`: only `default` is allowed.",
-                "enum": [
-                  "default",
-                  ", "
-                ],
                 "default": "default"
               },
               "constraints": {
