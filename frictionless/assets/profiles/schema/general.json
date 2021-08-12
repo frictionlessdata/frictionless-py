@@ -1216,8 +1216,8 @@
                 ]
               },
               "format": {
-                "description": "There are no format keyword options for `array`: only `default` is allowed.",
-                "default": "default"
+                "description": "The value assigned to `\"format\"` will be used as the array delimiter, the default delimiter is `\";\"`",
+                "default": ";"
               },
               "constraints": {
                 "title": "Constraints",
