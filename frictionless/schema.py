@@ -2,9 +2,9 @@ from copy import copy, deepcopy
 from .exception import FrictionlessException
 from .metadata import Metadata
 from .field import Field
+from . import settings
 from . import helpers
 from . import errors
-from . import config
 
 
 class Schema(Metadata):
@@ -55,7 +55,7 @@ class Schema(Metadata):
         Returns:
             str[]: missing values
         """
-        missing_values = self.get("missingValues", copy(config.DEFAULT_MISSING_VALUES))
+        missing_values = self.get("missingValues", copy(settings.DEFAULT_MISSING_VALUES))
         return self.metadata_attach("missingValues", missing_values)
 
     @Metadata.property
@@ -274,7 +274,7 @@ class Schema(Metadata):
 
     metadata_duplicate = True
     metadata_Error = errors.SchemaError  # type: ignore
-    metadata_profile = deepcopy(config.SCHEMA_PROFILE)
+    metadata_profile = deepcopy(settings.SCHEMA_PROFILE)
     metadata_profile["properties"]["fields"] = {"type": "array"}
 
     def metadata_process(self):

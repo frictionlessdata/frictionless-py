@@ -3251,13 +3251,25 @@ Public   | `from frictionless import Plugin`
 It's an interface for writing Frictionless plugins.
 You can implement one or more methods to hook into Frictionless system.
 
+### plugin.create\_candidates
+
+```python
+ | create_candidates(candidates)
+```
+
+Create candidates
+
+**Returns**:
+
+- `dict[]` - an ordered by priority list of type descriptors for type detection
+
 ### plugin.create\_check
 
 ```python
  | create_check(name, *, descriptor=None)
 ```
 
-Create checks
+Create check
 
 **Arguments**:
 
@@ -3304,6 +3316,41 @@ Create dialect
 **Returns**:
 
 - `Dialect` - dialect
+
+### plugin.create\_error
+
+```python
+ | create_error(descriptor)
+```
+
+Create error
+
+**Arguments**:
+
+- `descriptor` _dict_ - error descriptor
+  
+
+**Returns**:
+
+- `Error` - error
+
+### plugin.create\_file
+
+```python
+ | create_file(source, **options)
+```
+
+Create file
+
+**Arguments**:
+
+- `source` _any_ - file source
+- `options` _dict_ - file options
+  
+
+**Returns**:
+
+- `File` - file
 
 ### plugin.create\_loader
 
@@ -3355,6 +3402,58 @@ Create server
 **Returns**:
 
 - `Server` - server
+
+### plugin.create\_step
+
+```python
+ | create_step(descriptor)
+```
+
+Create step
+
+**Arguments**:
+
+- `descriptor` _dict_ - step descriptor
+  
+
+**Returns**:
+
+- `Step` - step
+
+### plugin.create\_storage
+
+```python
+ | create_storage(name, source, **options)
+```
+
+Create storage
+
+**Arguments**:
+
+- `name` _str_ - storage name
+- `options` _str_ - storage options
+  
+
+**Returns**:
+
+- `Storage` - storage
+
+### plugin.create\_type
+
+```python
+ | create_type(field)
+```
+
+Create type
+
+**Arguments**:
+
+- `field` _Field_ - corresponding field
+  
+
+**Returns**:
+
+- `Type` - type
 
 ## RemoteControl
 
@@ -5376,13 +5475,37 @@ Register a plugin
 - `name` _str_ - plugin name
 - `plugin` _Plugin_ - plugin to register
 
+### system.deregister
+
+```python
+ | deregister(name)
+```
+
+Deregister a plugin
+
+**Arguments**:
+
+- `name` _str_ - plugin name
+
+### system.create\_candidates
+
+```python
+ | create_candidates()
+```
+
+Create candidates
+
+**Returns**:
+
+- `dict[]` - an ordered by priority list of type descriptors for type detection
+
 ### system.create\_check
 
 ```python
  | create_check(descriptor)
 ```
 
-Create checks
+Create check
 
 **Arguments**:
 
@@ -5435,7 +5558,7 @@ Create dialect
  | create_error(descriptor)
 ```
 
-Create errors
+Create error
 
 **Arguments**:
 
@@ -5522,7 +5645,7 @@ Create server
  | create_step(descriptor)
 ```
 
-Create steps
+Create step
 
 **Arguments**:
 
@@ -5557,7 +5680,7 @@ Create storage
  | create_type(field)
 ```
 
-Create checks
+Create type
 
 **Arguments**:
 
@@ -5567,6 +5690,42 @@ Create checks
 **Returns**:
 
 - `Type` - type
+
+### system.get\_http\_session
+
+```python
+ | get_http_session()
+```
+
+Return a HTTP session
+
+This method will return a new session or the session
+from `system.use_http_session` context manager
+
+**Returns**:
+
+- `requests.Session` - a HTTP session
+
+### system.use\_http\_session
+
+```python
+ | @contextmanager
+ | use_http_session(http_session=None)
+```
+
+HTTP session context manager
+
+
+```
+session = requests.Session(...)
+with system.use_http_session(session):
+    # work with frictionless using a user defined HTTP session
+    report = validate(...)
+```
+
+**Arguments**:
+
+- `http_session?` _requests.Session_ - a session; will create a new if omitted
 
 ## Type
 
@@ -6772,7 +6931,7 @@ Public   | `from frictionless import validate_package`
 
 ```python
 @Report.from_validate
-validate_resource(source=None, *, checks=None, original=False, pick_errors=None, skip_errors=None, limit_errors=config.DEFAULT_LIMIT_ERRORS, limit_memory=config.DEFAULT_LIMIT_MEMORY, **options, ,)
+validate_resource(source=None, *, checks=None, original=False, pick_errors=None, skip_errors=None, limit_errors=settings.DEFAULT_LIMIT_ERRORS, limit_memory=settings.DEFAULT_LIMIT_MEMORY, **options, ,)
 ```
 
 Validate table

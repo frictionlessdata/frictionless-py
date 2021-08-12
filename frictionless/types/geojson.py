@@ -1,6 +1,6 @@
 import json
 from jsonschema.validators import validator_for
-from .. import config
+from .. import settings
 from ..type import Type
 
 
@@ -47,6 +47,6 @@ class GeojsonType(Type):
 
 
 VALIDATORS = {
-    "default": validator_for(config.GEOJSON_PROFILE)(config.GEOJSON_PROFILE),
-    "topojson": validator_for(config.TOPOJSON_PROFILE)(config.TOPOJSON_PROFILE),
+    "default": validator_for(settings.GEOJSON_PROFILE)(settings.GEOJSON_PROFILE),
+    "topojson": validator_for(settings.TOPOJSON_PROFILE)(settings.TOPOJSON_PROFILE),
 }

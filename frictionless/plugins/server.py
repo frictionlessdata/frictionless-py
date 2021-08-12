@@ -5,8 +5,8 @@ from ..validate import validate
 from ..transform import transform
 from ..plugin import Plugin
 from ..server import Server
+from .. import settings
 from .. import helpers
-from .. import config
 
 
 # Plugin
@@ -59,7 +59,7 @@ def create_api():
     @app.route("/")
     def api_main():
         options = ["/describe", "/extract", "/validate", "/transform"]
-        return flask.jsonify({"version": config.VERSION, "options": options})
+        return flask.jsonify({"version": settings.VERSION, "options": options})
 
     @app.route("/describe", methods=["POST"])
     def api_describe():

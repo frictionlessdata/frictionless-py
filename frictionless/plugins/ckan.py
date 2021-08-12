@@ -1,6 +1,5 @@
 import os
 import json
-import requests
 from functools import partial
 from ..exception import FrictionlessException
 from ..metadata import Metadata
@@ -11,6 +10,7 @@ from ..dialect import Dialect
 from ..parser import Parser
 from ..plugin import Plugin
 from ..schema import Schema
+from ..system import system
 from ..field import Field
 from .. import errors
 
@@ -400,7 +400,8 @@ def make_ckan_request(url, method="GET", headers=None, apikey=None, **options):
         headers.update({"Authorization": apikey})
 
     # Make a request
-    return requests.request(
+    http_session = system.get_http_session()
+    return http_session.request(
         method=method, url=url, headers=headers, allow_redirects=True, **options
     ).json()
 

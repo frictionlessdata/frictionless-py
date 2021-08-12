@@ -16,9 +16,9 @@ def read_asset(*paths):
 # General
 
 
+UNDEFINED = object()
 VERSION = read_asset("VERSION")
 COMPRESSION_FORMATS = ["zip", "gz"]
-REMOTE_SCHEMES = ["http", "https", "ftp", "ftps"]
 INQUIRY_PROFILE = json.loads(read_asset("profiles", "inquiry.json"))
 PIPELINE_PROFILE = json.loads(read_asset("profiles", "pipeline.json"))
 REPORT_PROFILE = json.loads(read_asset("profiles", "report.json"))
@@ -31,7 +31,6 @@ FISCAL_PACKAGE_PROFILE = json.loads(read_asset("profiles", "package", "fiscal.js
 TABULAR_PACKAGE_PROFILE = json.loads(read_asset("profiles", "package", "tabular.json"))
 GEOJSON_PROFILE = json.loads(read_asset("profiles", "geojson", "general.json"))
 TOPOJSON_PROFILE = json.loads(read_asset("profiles", "geojson", "topojson.json"))
-UNDEFINED = object()
 
 
 # Defaults
@@ -55,7 +54,6 @@ DEFAULT_BUFFER_SIZE = 10000
 DEFAULT_SAMPLE_SIZE = 100
 DEFAULT_ENCODING_CONFIDENCE = 0.5
 DEFAULT_FIELD_CONFIDENCE = 0.9
-DEFAULT_MULTIPART_CHUNK_SIZE = 100000000
 DEFAULT_PACKAGE_PROFILE = "data-package"
 DEFAULT_RESOURCE_PROFILE = "data-resource"
 DEFAULT_TABULAR_RESOURCE_PROFILE = "tabular-data-resource"
@@ -69,14 +67,22 @@ DEFAULT_FLOAT_NUMBER = False
 DEFAULT_GROUP_CHAR = ""
 DEFAULT_DECIMAL_CHAR = "."
 DEFAULT_SERVER_PORT = 8000
-DEFAULT_HTTP_TIMEOUT = 10
-DEFAULT_HTTP_HEADERS = {
-    "User-Agent": (
-        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) "
-        "AppleWebKit/537.36 (KHTML, like Gecko) "
-        "Chrome/54.0.2840.87 Safari/537.36"
-    )
-}
+DEFAULT_CANDIDATES = [
+    {"type": "yearmonth"},
+    {"type": "geopoint"},
+    {"type": "duration"},
+    {"type": "geojson"},
+    {"type": "object"},
+    {"type": "array"},
+    {"type": "datetime"},
+    {"type": "time"},
+    {"type": "date"},
+    {"type": "integer"},
+    {"type": "number"},
+    {"type": "boolean"},
+    {"type": "year"},
+    {"type": "string"},
+]
 
 
 # Backports

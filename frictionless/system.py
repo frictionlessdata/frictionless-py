@@ -2,11 +2,13 @@ import os
 import pkgutil
 from collections import OrderedDict
 from importlib import import_module
+from contextlib import contextmanager
 from .exception import FrictionlessException
 from .helpers import cached_property
 from .control import Control
 from .dialect import Dialect
 from .file import File
+from . import settings
 from . import errors
 
 
@@ -29,6 +31,7 @@ class System:
 
     def __init__(self):
         self.__dynamic_plugins = OrderedDict()
+        self.__http_session = None
 
     def register(self, name, plugin):
         """Register a plugin
@@ -42,9 +45,21 @@ class System:
             del self.__dict__["plugins"]
             del self.__dict__["methods"]
 
+    def deregister(self, name):
+        """Deregister a plugin
+
+        Parameters:
+            name (str): plugin name
+        """
+        self.__dynamic_plugins.pop(name, None)
+        if "methods" in self.__dict__:
+            del self.__dict__["plugins"]
+            del self.__dict__["methods"]
+
     # Actions
 
     actions = [
+        "create_candidates",
         "create_check",
         "create_control",
         "create_dialect",
@@ -58,8 +73,21 @@ class System:
         "create_type",
     ]
 
+    # Detection
+
+    def create_candidates(self):
+        """Create candidates
+
+        Returns:
+            dict[]: an ordered by priority list of type descriptors for type detection
+        """
+        candidates = settings.DEFAULT_CANDIDATES.copy()
+        for func in self.methods["create_candidates"].values():
+            func(candidates)
+        return candidates
+
     def create_check(self, descriptor):
-        """Create checks
+        """Create check
 
         Parameters:
             descriptor (dict): check descriptor
@@ -113,7 +141,7 @@ class System:
         return Dialect(descriptor)
 
     def create_error(self, descriptor):
-        """Create errors
+        """Create error
 
         Parameters:
             descriptor (dict): error descriptor
@@ -204,7 +232,7 @@ class System:
         raise FrictionlessException(errors.GeneralError(note=note))
 
     def create_step(self, descriptor):
-        """Create steps
+        """Create step
 
         Parameters:
             descriptor (dict): step descriptor
@@ -241,7 +269,7 @@ class System:
         raise FrictionlessException(errors.GeneralError(note=note))
 
     def create_type(self, field):
-        """Create checks
+        """Create type
 
         Parameters:
             field (Field): corresponding field
@@ -259,6 +287,42 @@ class System:
                 return Class(field)
         note = f'cannot create type "{code}". Try installing "frictionless-{code}"'
         raise FrictionlessException(errors.FieldError(note=note))
+
+    # Requests
+
+    def get_http_session(self):
+        """Return a HTTP session
+
+        This method will return a new session or the session
+        from `system.use_http_session` context manager
+
+        Returns:
+            requests.Session: a HTTP session
+        """
+        if self.__http_session:
+            return self.__http_session
+        return self.plugins["remote"].create_http_session()
+
+    @contextmanager
+    def use_http_session(self, http_session=None):
+        """HTTP session context manager
+
+        ```
+        session = requests.Session(...)
+        with system.use_http_session(session):
+            # work with frictionless using a user defined HTTP session
+            report = validate(...)
+        ```
+
+        Parameters:
+            http_session? (requests.Session): a session; will create a new if omitted
+        """
+        if self.__http_session:
+            note = f"There is already HTTP session in use: {self.__http_session}"
+            raise FrictionlessException(errors.Error(note=note))
+        self.__http_session = http_session or self.get_http_session()
+        yield self.__http_session
+        self.__http_session = None
 
     # Methods
 
