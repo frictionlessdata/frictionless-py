@@ -48,13 +48,18 @@ class ArrayType(Type):
     # Read
 
     def read_cell(self, cell, strip_trailing_whitespace=True):
+        flatten_list = lambda list_: [item for sublist in list_ for item in sublist]
+
         if not isinstance(cell, list):
             if hasattr(self.field, "format"):
                 cell = cell.split(self.field.format)
 
-            elif any(sep in cell for sep in default_separators):
-                for sep in default_separators:
-                    cell = cell.split(sep)
+            elif any(sep in cell for sep in self.default_separators):
+                cell = [cell]
+
+                for sep in self.default_separators:
+                    cell = [cell_item.split(sep) for cell_item in cell]
+                    cell = flatten_list(cell)
 
             else:
                 return None
