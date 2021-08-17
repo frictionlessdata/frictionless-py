@@ -890,8 +890,7 @@ class Resource(Metadata):
 
         # Create iterator
         iterator = chain(
-            zip(self.__fragment_positions, self.__fragment),
-            self.__read_list_stream(),
+            zip(self.__fragment_positions, self.__fragment), self.__read_list_stream(),
         )
 
         # Create row stream
@@ -1049,7 +1048,9 @@ class Resource(Metadata):
             source_key = tuple(fk["reference"]["fields"])
             if source_name != "" and not self.__package:
                 continue
-            if source_name:
+            if "package" in fk["reference"].keys():
+                continue
+            elif source_name:
                 if not self.__package.has_resource(source_name):
                     note = f'Failed to handle a foreign key for resource "{self.name}" as resource "{source_name}" does not exist'
                     raise FrictionlessException(errors.ResourceError(note=note))
