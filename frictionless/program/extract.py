@@ -3,13 +3,14 @@ import petl
 import typer
 import json as pyjson
 import yaml as pyyaml
-from typing import List, Union
+from typing import List
 from ..detector import Detector
 from ..extract import extract
 from ..layout import Layout
 from .main import program
 from .. import helpers
 from . import common
+from frictionless import Dialect
 
 
 @program.command(name="extract")
@@ -30,6 +31,7 @@ def program_extract(
     # Dialect
     dialect: str = common.dialect,
     sheet: str = common.sheet,
+    table: str = common.table,
     keys: str = common.keys,
     keyed: bool = common.keyed,
     # Layout
@@ -82,21 +84,20 @@ def program_extract(
 
     # Normalize parameters
     source = list(source) if len(source) > 1 else (source[0] if source else None)
-    control: Union[dict, str] = helpers.parse_json_string(control)
-    dialect: Union[dict, str] = helpers.parse_json_string(dialect)
-    # TODO: clean this up
-    new_dialect = None
-    if isinstance(dialect, dict) or dialect == None:
-        if dialect == None:
-            dialect = {}
-        dialect_cli_options = {}
-        if sheet:
-            dialect_cli_options["sheet"] = sheet
-        if keys:
-            dialect_cli_options["keys"] = keys
-        if keyed:
-            dialect_cli_options["keyed"] = keyed
-        new_dialect = {**dialect, **dialect_cli_options}
+    control = helpers.parse_json_string(control)
+    dialect = helpers.parse_json_string(dialect)
+
+    dialect = Dialect(dialect)
+
+    if sheet:
+        dialect["sheet"] = sheet
+    if table:
+        dialect["table"] = table
+    if keys:
+        dialect["keys"] = keys
+    if keyed:
+        dialect["keyed"] = keyed
+
     header_rows = helpers.parse_csv_string(header_rows, convert=int)
     pick_fields = helpers.parse_csv_string(pick_fields, convert=int, fallback=True)
     skip_fields = helpers.parse_csv_string(skip_fields, convert=int, fallback=True)
@@ -151,7 +152,7 @@ def program_extract(
             innerpath=innerpath,
             compression=compression,
             control=control,
-            dialect=new_dialect if new_dialect else dialect,
+            dialect=dialect,
             layout=layout,
             schema=schema,
             # Extra
