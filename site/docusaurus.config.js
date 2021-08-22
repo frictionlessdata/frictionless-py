@@ -64,10 +64,10 @@ module.exports = {
     },
     navbar: {
       hideOnScroll: true,
-      title: "Frictionless Framework",
       logo: {
-        alt: "Frictionless Framework Logo",
-        src: "img/logo.png",
+        alt: "Frictionless Framework",
+        src: "img/logo-bright.png",
+        srcDark: "img/logo-dark.png",
       },
       items: [
         {

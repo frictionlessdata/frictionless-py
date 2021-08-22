@@ -1,5 +1,9 @@
 /* Header */
 
+.navbar__logo {
+  height: 50px;
+}
+
 .header-mainsite-link {
   opacity: 0.5;
   padding-right: 0;

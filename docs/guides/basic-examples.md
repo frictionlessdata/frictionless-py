@@ -56,14 +56,14 @@ id,neighbor_id,name,population
 </Tabs>
 
 
-As we can see, it's a data containing information about European countries and their populations. Also, it's easy to notice that there are two fields having a relationship based on a country's identifier: neighbor_id is a Foreign Key to id.
+As we can see, this is data containing information about European countries and their populations. Also, it looks like there are two fields having a relationship based on a country's identifier: neighbor_id is a Foreign Key to id.
 
 ## Describing Data
 
-First of all, we're going to describe our dataset. Frictionless uses powerful [Frictionless Data Specifications](https://specs.frictionlessdata.io/). They are very handy to describe:
-- a data table - [Table Schema](https://specs.frictionlessdata.io/table-schema/)
-- a data resource - [Data Resource](https://specs.frictionlessdata.io/data-resource/)
-- a data package - [Data Package](https://specs.frictionlessdata.io/data-package/)
+First of all, we're going to describe our dataset. Frictionless uses the powerful [Frictionless Data Specifications](https://specs.frictionlessdata.io/). They are very handy to describe:
+- a data table - using [Table Schema](https://specs.frictionlessdata.io/table-schema/)
+- a data resource - using [Data Resource](https://specs.frictionlessdata.io/data-resource/)
+- a data package - using [Data Package](https://specs.frictionlessdata.io/data-package/)
 - and other objects
 
 Let's describe the `countries` table:
@@ -74,7 +74,7 @@ values={[{ label: 'CLI', value: 'cli'}, { label: 'Python', value: 'python'}]}>
 <TabItem value="cli">
 
 ```bash script
-frictionless describe countries.csv # add --stats to get statistics
+frictionless describe countries.csv # optionally add --stats to get statistics
 ```
 ```yaml
 # --------
@@ -317,7 +317,7 @@ pprint(rows)
 Actually, it doesn't look terrible, but in reality, data like this is not quite useful:
 - it's not possible to export this data e.g., to SQL because integers are mixed with strings
 - there is still a basically empty row we don't want to have
-- there is a clear mistake in Germany's neighborhood!
+- there are some mistakes in the neighbor_id column
 
 Let's use the metadata we save to try extracting data with the help of Frictionless Data specifications:
 
@@ -593,7 +593,7 @@ id,neighbor_id,name,population
 </Tabs>
 
 
-Basically, that's it; now, we have a valid data file and a corresponding metadata file. It can be shared with other people or stored without fear of type errors or other problems making data research not reproducible.
+Basically, that's it; now, we have a valid data file and a corresponding metadata file. It can be shared with other people or stored without fear of type errors or other problems making research data not reproducible.
 
 <Tabs
 defaultValue="cli"
@@ -627,4 +627,4 @@ countries.resource.yaml
 </Tabs>
 
 
-In the next articles, we will explore more advanced Frictionless' functionality.
+In the next articles, we will explore more advanced Frictionless functionality.
