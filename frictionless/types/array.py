@@ -1,4 +1,5 @@
 import json
+import copy
 from ..type import Type
 
 # retrieving type classes
@@ -67,10 +68,19 @@ class ArrayType(Type):
         if strip_trailing_whitespace == True:
             cell = [elem.strip() for elem in cell]
 
-        if hasattr(self.field, "array_item"):
-            if hasattr(self.field.array_item, "type"):
-                array_item_class = type_to_class[self.field.array_item.type]
-                cell = [array_item_class().read_cell(cell_item) for cell_item in cell]
+        if "array_item" in self.field.keys():
+            if "type" in self.field["array_item"].keys():
+                array_item_type = self.field["array_item"]["type"]
+                array_item_class = type_to_class[array_item_type]
+
+                field_descriptor = copy.deepcopy(self.field)
+                if "format" in field_descriptor.keys():
+                    field_descriptor.pop("format")
+                field_descriptor.update(field_descriptor["array_item"])
+                field_descriptor.pop("array_item")
+
+                field = array_item_class(field_descriptor)
+                cell = [field.read_cell(cell_item) for cell_item in cell]
 
         return cell
 
