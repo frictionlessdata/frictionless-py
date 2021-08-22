@@ -107,8 +107,9 @@ class PandasParser(Parser):
                     value = pk[schema.primary_key.index(field.name)]
                 else:
                     value = item[field.name]
+
                 if field.type == "number" and np.isnan(value):
-                    value = None
+                    value = np.nan
                 elif field.type == "datetime":
                     value = value.to_pydatetime()
                 cells.append(value)
@@ -230,22 +231,24 @@ class PandasParser(Parser):
                 columns.append(field.name)
 
         # Create/set dataframe
-        array = np.array(data_rows, dtype=dtypes)
-        dataframe = pd.DataFrame(array, index=index, columns=columns)
+        dataframe = pd.DataFrame(data_rows, index=index, columns=columns).astype(
+            dict(dtypes)
+        )
         target.data = dataframe
 
     def __write_convert_type(self, type=None):
         np = helpers.import_from_plugin("numpy", plugin="pandas")
+        pd = helpers.import_from_plugin("pandas", plugin="pandas")
 
         # Mapping
         mapping = {
             "array": np.dtype(list),
             "boolean": np.dtype(bool),
             "datetime": np.dtype("datetime64[ns]"),
-            "integer": np.dtype(int),
+            "integer": "Int64",
             "number": np.dtype(float),
             "object": np.dtype(dict),
-            "year": np.dtype(int),
+            "year": "Int64",
         }
 
         # Return type
