@@ -106,6 +106,9 @@ def program_validate(
     if keyed:
         dialect["keyed"] = keyed
 
+    if len(dialect.to_dict()) < 1:
+        dialect = None
+
     header_rows = helpers.parse_csv_string(header_rows, convert=int)
     pick_fields = helpers.parse_csv_string(pick_fields, convert=int, fallback=True)
     skip_fields = helpers.parse_csv_string(skip_fields, convert=int, fallback=True)
