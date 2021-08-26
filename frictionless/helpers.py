@@ -17,7 +17,7 @@ from importlib import import_module
 from contextlib import contextmanager
 from urllib.parse import urlparse, parse_qs
 from _thread import RLock  # type: ignore
-from . import config
+from . import settings
 
 
 # General
@@ -131,7 +131,7 @@ def parse_scheme_and_format(source):
         parsed = urlparse(f"//{source}", scheme=scheme)
     scheme = parsed.scheme.lower()
     if len(scheme) < 2:
-        scheme = config.DEFAULT_SCHEME
+        scheme = settings.DEFAULT_SCHEME
     format = os.path.splitext(parsed.path or parsed.netloc)[1][1:].lower()
     if not format:
         # Test if query string contains a "format=" parameter.
@@ -316,10 +316,10 @@ def unzip_descriptor(path, innerpath):
 
 def parse_resource_hash(hash):
     if not hash:
-        return (config.DEFAULT_HASHING, "")
+        return (settings.DEFAULT_HASHING, "")
     parts = hash.split(":", maxsplit=1)
     if len(parts) == 1:
-        return (config.DEFAULT_HASHING, parts[0])
+        return (settings.DEFAULT_HASHING, parts[0])
     return parts
 
 
@@ -502,12 +502,12 @@ class cached_property:
                 f"instance to cache {self.attrname!r} property."
             )
             raise TypeError(msg) from None
-        val = cache.get(self.attrname, config.UNDEFINED)
-        if val is config.UNDEFINED:
+        val = cache.get(self.attrname, settings.UNDEFINED)
+        if val is settings.UNDEFINED:
             with self.lock:
                 # check if another thread filled cache while we awaited lock
-                val = cache.get(self.attrname, config.UNDEFINED)
-                if val is config.UNDEFINED:
+                val = cache.get(self.attrname, settings.UNDEFINED)
+                if val is settings.UNDEFINED:
                     val = self.func(instance)
                     try:
                         cache[self.attrname] = val

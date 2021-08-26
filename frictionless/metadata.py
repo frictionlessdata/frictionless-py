@@ -1,7 +1,6 @@
 import io
 import json
 import yaml
-import requests
 import jsonschema
 import stringcase
 from pathlib import Path
@@ -203,7 +202,9 @@ class Metadata(helpers.ControlledDict):
                 if isinstance(descriptor, Path):
                     descriptor = str(descriptor)
                 if helpers.is_remote_path(descriptor):
-                    response = requests.get(descriptor)
+                    system = import_module("frictionless.system").system
+                    http_session = system.get_http_session()
+                    response = http_session.get(descriptor)
                     response.raise_for_status()
                     content = response.text
                 else:

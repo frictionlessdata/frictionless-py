@@ -1,5 +1,4 @@
 from .check import Check
-from .config import VERSION as __version__
 from .control import Control
 from .describe import *
 from .detector import Detector
@@ -23,6 +22,7 @@ from .report import Report, ReportTask
 from .resource import Resource
 from .row import Row
 from .schema import Schema
+from .settings import VERSION as __version__
 from .server import Server
 from .status import Status, StatusTask
 from .step import Step

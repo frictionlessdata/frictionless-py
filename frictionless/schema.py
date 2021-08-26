@@ -2,9 +2,9 @@ from copy import copy, deepcopy
 from .exception import FrictionlessException
 from .metadata import Metadata
 from .field import Field
+from . import settings
 from . import helpers
 from . import errors
-from . import config
 
 
 class Schema(Metadata):
@@ -55,7 +55,7 @@ class Schema(Metadata):
         Returns:
             str[]: missing values
         """
-        missing_values = self.get("missingValues", copy(config.DEFAULT_MISSING_VALUES))
+        missing_values = self.get("missingValues", copy(settings.DEFAULT_MISSING_VALUES))
         return self.metadata_attach("missingValues", missing_values)
 
     @Metadata.property
@@ -108,19 +108,20 @@ class Schema(Metadata):
         """
         return [field.name for field in self.fields]
 
-    def add_field(self, descriptor):
-        """Add new field to schema.
-
-        The schema descriptor will be validated with newly added field descriptor.
+    def add_field(self, source=None, **options):
+        """Add new field to the package.
 
         Parameters:
-            descriptor (dict): field descriptor
+            source (dict|str): a field source
+            **options (dict): options of the Field class
 
         Returns:
-            Field/None: added `Field` instance or `None` if not added
+            Resource/None: added `Resource` instance or `None` if not added
         """
+        native = isinstance(source, Field)
+        field = source if native else Field(source, **options)
         self.setdefault("fields", [])
-        self["fields"].append(descriptor)
+        self["fields"].append(field)
         return self.fields[-1]
 
     def get_field(self, name):
@@ -273,7 +274,7 @@ class Schema(Metadata):
 
     metadata_duplicate = True
     metadata_Error = errors.SchemaError  # type: ignore
-    metadata_profile = deepcopy(config.SCHEMA_PROFILE)
+    metadata_profile = deepcopy(settings.SCHEMA_PROFILE)
     metadata_profile["properties"]["fields"] = {"type": "array"}
 
     def metadata_process(self):
@@ -285,8 +286,9 @@ class Schema(Metadata):
                 if not isinstance(field, Field):
                     if not isinstance(field, dict):
                         field = {"name": f"field{index+1}", "type": "any"}
-                    field = Field(field, schema=self)
+                    field = Field(field)
                     list.__setitem__(fields, index, field)
+                field.schema = self
             if not isinstance(fields, helpers.ControlledList):
                 fields = helpers.ControlledList(fields)
                 fields.__onchange__(self.metadata_process)

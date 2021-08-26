@@ -1,6 +1,6 @@
 import typer
 from typing import Optional
-from .. import config
+from .. import settings
 
 
 # Program
@@ -13,7 +13,7 @@ program = typer.Typer()
 
 def version(value: bool):
     if value:
-        typer.echo(config.VERSION)
+        typer.echo(settings.VERSION)
         raise typer.Exit()
 
 

@@ -1,8 +1,8 @@
 from itertools import chain
 from .exception import FrictionlessException
 from .system import system
+from . import settings
 from . import errors
-from . import config
 
 
 class Parser:
@@ -176,7 +176,7 @@ class ListStreamWithErrorHandling:
             raise
         except FrictionlessException:
             raise
-        except config.COMPRESSION_EXCEPTIONS as exception:
+        except settings.COMPRESSION_EXCEPTIONS as exception:
             error = errors.CompressionError(note=str(exception))
             raise FrictionlessException(error)
         except UnicodeDecodeError as exception:

@@ -2,8 +2,8 @@ import os
 import glob
 from pathlib import Path
 from .helpers import cached_property
+from . import settings
 from . import helpers
-from . import config
 
 
 # NOTE:
@@ -177,7 +177,7 @@ class File:
         detection_path = fullpath[0] if multipart else fullpath
         if not memory:
             scheme, format = helpers.parse_scheme_and_format(detection_path)
-            if format in config.COMPRESSION_FORMATS:
+            if format in settings.COMPRESSION_FORMATS:
                 if not multipart:
                     compression = format
                 detection_path = detection_path[: -len(format) - 1]

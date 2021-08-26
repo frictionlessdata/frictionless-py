@@ -6,8 +6,8 @@ from .metadata import Metadata
 from .errors import InquiryError
 from .system import system
 from .report import Report
+from . import settings
 from . import helpers
-from . import config
 
 
 class Inquiry(Metadata):
@@ -70,7 +70,7 @@ class Inquiry(Metadata):
     # Metadata
 
     metadata_Error = InquiryError
-    metadata_profile = deepcopy(config.INQUIRY_PROFILE)
+    metadata_profile = deepcopy(settings.INQUIRY_PROFILE)
     metadata_profile["properties"]["tasks"] = {"type": "array"}
 
     def metadata_process(self):
@@ -139,7 +139,7 @@ class InquiryTask(Metadata):
     # Metadata
 
     metadata_Error = InquiryError
-    metadata_profile = config.INQUIRY_PROFILE["properties"]["tasks"]["items"]
+    metadata_profile = settings.INQUIRY_PROFILE["properties"]["tasks"]["items"]
 
 
 # Internal

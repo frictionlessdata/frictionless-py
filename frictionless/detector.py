@@ -2,12 +2,13 @@ import codecs
 import chardet
 from copy import copy, deepcopy
 from .exception import FrictionlessException
+from .system import system
 from .layout import Layout
 from .schema import Schema
 from .field import Field
+from . import settings
 from . import helpers
 from . import errors
-from . import config
 
 
 # NOTE:
@@ -65,15 +66,15 @@ class Detector:
 
     def __init__(
         self,
-        buffer_size=config.DEFAULT_BUFFER_SIZE,
-        sample_size=config.DEFAULT_SAMPLE_SIZE,
+        buffer_size=settings.DEFAULT_BUFFER_SIZE,
+        sample_size=settings.DEFAULT_SAMPLE_SIZE,
         encoding_function=None,
-        encoding_confidence=config.DEFAULT_ENCODING_CONFIDENCE,
+        encoding_confidence=settings.DEFAULT_ENCODING_CONFIDENCE,
         field_type=None,
         field_names=None,
-        field_confidence=config.DEFAULT_FIELD_CONFIDENCE,
-        field_float_numbers=config.DEFAULT_FLOAT_NUMBERS,
-        field_missing_values=config.DEFAULT_MISSING_VALUES,
+        field_confidence=settings.DEFAULT_FIELD_CONFIDENCE,
+        field_float_numbers=settings.DEFAULT_FLOAT_NUMBERS,
+        field_missing_values=settings.DEFAULT_MISSING_VALUES,
         schema_sync=False,
         schema_patch=None,
     ):
@@ -119,12 +120,12 @@ class Detector:
             for line in buffer.splitlines():
                 detector.feed(line)
             detector.close()
-            encoding = detector.result["encoding"] or config.DEFAULT_ENCODING
+            encoding = detector.result["encoding"] or settings.DEFAULT_ENCODING
             confidence = detector.result["confidence"] or 0
             if confidence < self.__encoding_confidence:
-                encoding = config.DEFAULT_ENCODING
+                encoding = settings.DEFAULT_ENCODING
             if encoding == "ascii":
-                encoding = config.DEFAULT_ENCODING
+                encoding = settings.DEFAULT_ENCODING
             if encoding is None:
                 encoding = self.resource.detector.detect_encoding(buffer)
 
@@ -188,7 +189,7 @@ class Detector:
             # Set header rows
             if not header_rows:
                 layout["header"] = False
-            elif header_rows != config.DEFAULT_HEADER_ROWS:
+            elif header_rows != settings.DEFAULT_HEADER_ROWS:
                 layout["headerRows"] = header_rows
 
         return layout
@@ -210,7 +211,7 @@ class Detector:
             schema = Schema()
 
             # Missing values
-            if self.__field_missing_values != config.DEFAULT_MISSING_VALUES:
+            if self.__field_missing_values != settings.DEFAULT_MISSING_VALUES:
                 schema.missing_values = self.__field_missing_values
 
             # Prepare names
@@ -245,9 +246,9 @@ class Detector:
             max_score = [len(fragment)] * len(names)
             for index, name in enumerate(names):
                 runners.append([])
-                for type in FIELD_TYPES:
-                    field = Field(name=name, type=type, schema=schema)
-                    if type == "number" and self.__field_float_numbers:
+                for candidate in system.create_candidates():
+                    field = Field(candidate, name=name, schema=schema)
+                    if field.type == "number" and self.__field_float_numbers:
                         field.float_number = True
                     runners[index].append({"field": field, "score": 0})
                 schema.fields.append(Field(name=name, type="any", schema=schema))
@@ -295,23 +296,3 @@ class Detector:
             raise FrictionlessException(errors.SchemaError(note=note))
 
         return schema
-
-
-# Internal
-
-FIELD_TYPES = [
-    "yearmonth",
-    "geopoint",
-    "duration",
-    "geojson",
-    "object",
-    "array",
-    "datetime",
-    "time",
-    "date",
-    "integer",
-    "number",
-    "boolean",
-    "year",
-    "string",
-]
