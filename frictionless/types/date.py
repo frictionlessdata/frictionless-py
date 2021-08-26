@@ -1,7 +1,7 @@
 from datetime import datetime, date
 from dateutil.parser import parse
 from ..type import Type
-from .. import config
+from .. import settings
 
 
 class DateType(Type):
@@ -41,7 +41,7 @@ class DateType(Type):
         # Parse string date
         try:
             if self.field.format == "default":
-                cell = datetime.strptime(cell, config.DEFAULT_DATE_PATTERN).date()
+                cell = datetime.strptime(cell, settings.DEFAULT_DATE_PATTERN).date()
             elif self.field.format == "any":
                 cell = parse(cell).date()
             else:
@@ -54,5 +54,5 @@ class DateType(Type):
     # Write
 
     def write_cell(self, cell):
-        format = self.field.get("format", config.DEFAULT_DATE_PATTERN)
+        format = self.field.get("format", settings.DEFAULT_DATE_PATTERN)
         return cell.strftime(format)

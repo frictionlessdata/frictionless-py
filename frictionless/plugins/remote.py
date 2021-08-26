@@ -4,7 +4,7 @@ from ..metadata import Metadata
 from ..control import Control
 from ..plugin import Plugin
 from ..loader import Loader
-from .. import config
+from ..system import system
 
 
 # Plugin
@@ -22,12 +22,20 @@ class RemotePlugin(Plugin):
     code = "remote"
 
     def create_control(self, resource, *, descriptor):
-        if resource.scheme in config.REMOTE_SCHEMES:
+        if resource.scheme in DEFAULT_SCHEMES:
             return RemoteControl(descriptor)
 
     def create_loader(self, resource):
-        if resource.scheme in config.REMOTE_SCHEMES:
+        if resource.scheme in DEFAULT_SCHEMES:
             return RemoteLoader(resource)
+
+    # Helpers
+
+    @staticmethod
+    def create_http_session():
+        http_session = requests.Session()
+        http_session.headers.update(DEFAULT_HTTP_HEADERS)
+        return http_session
 
 
 # Control
@@ -72,8 +80,7 @@ class RemoteControl(Control):
         """
         http_session = self.get("httpSession")
         if not http_session:
-            http_session = requests.Session()
-            http_session.headers.update(config.DEFAULT_HTTP_HEADERS)
+            http_session = system.get_http_session()
         return http_session
 
     @Metadata.property
@@ -90,7 +97,7 @@ class RemoteControl(Control):
         Returns:
             int: HTTP timeout in minutes
         """
-        return self.get("httpTimeout", config.DEFAULT_HTTP_TIMEOUT)
+        return self.get("httpTimeout", DEFAULT_HTTP_TIMEOUT)
 
     # Expand
 
@@ -145,12 +152,23 @@ class RemoteLoader(Loader):
     def write_byte_stream_save(self, byte_stream):
         file = f"{self.resource.name}.{self.resource.format}"
         url = self.resource.fullpath.replace(file, "")
-        response = requests.post(url, files={file: byte_stream})
+        response = self.resource.control.http_session.post(url, files={file: byte_stream})
         response.raise_for_status()
         return response
 
 
 # Internal
+
+
+DEFAULT_SCHEMES = ["http", "https", "ftp", "ftps"]
+DEFAULT_HTTP_TIMEOUT = 10
+DEFAULT_HTTP_HEADERS = {
+    "User-Agent": (
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/54.0.2840.87 Safari/537.36"
+    )
+}
 
 
 class RemoteByteStream:

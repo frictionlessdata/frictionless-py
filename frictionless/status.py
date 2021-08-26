@@ -4,8 +4,8 @@ from .errors import Error, StatusError
 from .metadata import Metadata
 from .resource import Resource
 from .package import Package
+from . import settings
 from . import helpers
-from . import config
 
 
 class Status(Metadata):
@@ -22,7 +22,7 @@ class Status(Metadata):
     def __init__(self, descriptor=None, *, time=None, errors=None, tasks=None):
 
         # Store provided
-        self.setinitial("version", config.VERSION)
+        self.setinitial("version", settings.VERSION)
         self.setinitial("time", time)
         self.setinitial("errors", errors)
         self.setinitial("tasks", tasks)
@@ -98,7 +98,7 @@ class Status(Metadata):
     # Metadata
 
     metadata_Error = StatusError
-    metadata_profile = deepcopy(config.STATUS_PROFILE)
+    metadata_profile = deepcopy(settings.STATUS_PROFILE)
     metadata_profile["properties"]["tasks"] = {"type": "array"}
 
     def metadata_process(self):
@@ -198,7 +198,7 @@ class StatusTask(Metadata):
     # Metadata
 
     metadata_Error = StatusError
-    metadata_profile = config.STATUS_PROFILE["properties"]["tasks"]["items"]
+    metadata_profile = settings.STATUS_PROFILE["properties"]["tasks"]["items"]
 
     def metadata_process(self):
 

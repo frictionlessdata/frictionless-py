@@ -6,7 +6,7 @@ from ..exception import FrictionlessException
 from ..report import Report, ReportTask
 from ..errors import TaskError
 from .. import helpers
-from .. import config
+from .. import settings
 
 
 @Report.from_validate
@@ -18,8 +18,8 @@ def validate_resource(
     original=False,
     pick_errors=None,
     skip_errors=None,
-    limit_errors=config.DEFAULT_LIMIT_ERRORS,
-    limit_memory=config.DEFAULT_LIMIT_MEMORY,
+    limit_errors=settings.DEFAULT_LIMIT_ERRORS,
+    limit_memory=settings.DEFAULT_LIMIT_MEMORY,
     **options,
 ):
     """Validate table

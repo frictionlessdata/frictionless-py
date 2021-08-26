@@ -4016,11 +4016,7 @@
                 "propertyOrder": 50,
                 "title": "CSV Dialect",
                 "description": "The CSV dialect descriptor.",
-                "type": "object",
-                "required": [
-                  "delimiter",
-                  "doubleQuote"
-                ],
+                "type": ["string", "object"],
                 "properties": {
                   "delimiter": {
                     "title": "Delimiter",

@@ -1,8 +1,8 @@
 import typing
 from .metadata import Metadata
+from . import settings
 from . import helpers
 from . import errors
-from . import config
 
 
 class Layout(Metadata):
@@ -61,7 +61,7 @@ class Layout(Metadata):
         Returns:
             bool: if there is a header row
         """
-        return self.get("header", config.DEFAULT_HEADER)
+        return self.get("header", settings.DEFAULT_HEADER)
 
     @Metadata.property
     def header_rows(self):
@@ -71,7 +71,7 @@ class Layout(Metadata):
         """
         if not self.header:
             return []
-        return self.get("headerRows", config.DEFAULT_HEADER_ROWS)
+        return self.get("headerRows", settings.DEFAULT_HEADER_ROWS)
 
     @Metadata.property
     def header_join(self):
@@ -79,7 +79,7 @@ class Layout(Metadata):
         Returns:
             str: header joiner
         """
-        return self.get("headerJoin", config.DEFAULT_HEADER_JOIN)
+        return self.get("headerJoin", settings.DEFAULT_HEADER_JOIN)
 
     @Metadata.property
     def header_case(self):
@@ -87,7 +87,7 @@ class Layout(Metadata):
         Returns:
             str: header case sensitive
         """
-        return self.get("headerCase", config.DEFAULT_HEADER_CASE)
+        return self.get("headerCase", settings.DEFAULT_HEADER_CASE)
 
     @Metadata.property
     def pick_fields(self):
