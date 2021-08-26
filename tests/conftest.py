@@ -70,6 +70,11 @@ def database_url(sqlite_url):
     conn = engine.connect()
     conn.execute("CREATE TABLE 'table' (id INTEGER PRIMARY KEY, name TEXT)")
     conn.execute("INSERT INTO 'table' VALUES (1, 'english'), (2, '中国人')")
+
+    conn.execute(
+        "CREATE TABLE 'fruits' (uid INTEGER PRIMARY KEY, fruit_name TEXT, calories INTEGER)"
+    )
+    conn.execute("INSERT INTO 'fruits' VALUES (1, 'Apples', 200), (2, 'Oranges中国人', 350)")
     yield sqlite_url
     conn.close()
 

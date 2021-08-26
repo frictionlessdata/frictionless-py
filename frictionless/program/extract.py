@@ -32,7 +32,7 @@ def program_extract(
     dialect: str = common.dialect,
     sheet: str = common.sheet,
     table: str = common.table,
-    keys: str = common.keys,
+    keys: List[str] = common.keys,
     keyed: bool = common.keyed,
     # Layout
     header_rows: str = common.header_rows,
@@ -94,7 +94,7 @@ def program_extract(
     if table:
         dialect["table"] = table
     if keys:
-        dialect["keys"] = keys
+        dialect["keys"] = list(keys)
     if keyed:
         dialect["keyed"] = keyed
 
