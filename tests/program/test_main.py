@@ -1,4 +1,3 @@
-import pytest
 from typer.testing import CliRunner
 from frictionless import program, __version__
 
