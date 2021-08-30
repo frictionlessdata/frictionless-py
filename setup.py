@@ -64,10 +64,7 @@ INSTALL_REQUIRES = [
     "jsonschema>=2.5",
     "simpleeval>=0.9",
     "stringcase>=1.2",
-    # NOTE: Remove click after this issue is resolved:
-    # https://github.com/tiangolo/typer/issues/280
-    "click>=7.1.1,<7.2.0",
-    "typer[all]>=0.3",
+    "typer[all]>=0.4",
     "validators>=0.18",
     "python-slugify>=1.2",
     "python-dateutil>=2.8",
