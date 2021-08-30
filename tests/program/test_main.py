@@ -10,7 +10,7 @@ runner = CliRunner()
 
 def test_program():
     result = runner.invoke(program)
-    assert result.exit_code == 0
+    assert result.exit_code == 2
     assert result.stdout.count("Usage")
 
 
@@ -26,7 +26,6 @@ def test_program_help():
     assert result.stdout.count("Usage")
 
 
-@pytest.mark.skip
 def test_program_error_bad_command():
     result = runner.invoke(program, "bad")
     assert result.exit_code == 2
