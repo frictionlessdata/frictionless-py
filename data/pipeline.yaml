@@ -1,8 +1,9 @@
 name: pipeline
-type: dataflows
 tasks:
-  - type: resource
+  - name: task
+    type: resource
     source:
+      # FD resource descriptor
       path: data/transform.csv
     steps:
       - code: cell-set

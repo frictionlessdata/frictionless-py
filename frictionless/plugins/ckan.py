@@ -219,7 +219,12 @@ class CkanStorage(Storage):
     def read_package(self, **options):
         package = Package()
         for name in self:
-            resource = self.read_resource(name)
+            try:
+                resource = self.read_resource(name)
+            # We skip not tabular resources
+            except FrictionlessException as exception:
+                if not exception.error.note.count("Not Found Error"):
+                    raise
             package.resources.append(resource)
         return package
 

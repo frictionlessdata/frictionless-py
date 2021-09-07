@@ -1,4 +1,4 @@
-recursive-include frictionless/assets *
+recursive-include frictionless *
 include LICENSE.md
 include Makefile
 include pylama.ini
