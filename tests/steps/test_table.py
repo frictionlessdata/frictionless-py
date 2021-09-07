@@ -86,6 +86,27 @@ def test_step_table_attach():
     ]
 
 
+def test_step_table_attach_from_dict():
+    source = Resource("data/transform.csv")
+    target = transform(
+        source,
+        steps=[steps.table_attach(resource=dict(data=[["note"], ["large"], ["mid"]]))],
+    )
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+            {"name": "note", "type": "string"},
+        ]
+    }
+    assert target.read_rows() == [
+        {"id": 1, "name": "germany", "population": 83, "note": "large"},
+        {"id": 2, "name": "france", "population": 66, "note": "mid"},
+        {"id": 3, "name": "spain", "population": 47, "note": None},
+    ]
+
+
 # Diff
 
 
@@ -97,6 +118,36 @@ def test_step_table_diff():
             steps.table_normalize(),
             steps.table_diff(
                 resource=Resource(
+                    data=[
+                        ["id", "name", "population"],
+                        [1, "germany", 83],
+                        [2, "france", 50],
+                        [3, "spain", 47],
+                    ]
+                )
+            ),
+        ],
+    )
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+        ]
+    }
+    assert target.read_rows() == [
+        {"id": 2, "name": "france", "population": 66},
+    ]
+
+
+def test_step_table_diff_from_dict():
+    source = Resource("data/transform.csv")
+    target = transform(
+        source,
+        steps=[
+            steps.table_normalize(),
+            steps.table_diff(
+                resource=dict(
                     data=[
                         ["id", "name", "population"],
                         [1, "germany", 83],
@@ -214,6 +265,37 @@ def test_step_table_intersect():
     ]
 
 
+def test_step_table_intersect_from_dict():
+    source = Resource("data/transform.csv")
+    target = transform(
+        source,
+        steps=[
+            steps.table_normalize(),
+            steps.table_intersect(
+                resource=dict(
+                    data=[
+                        ["id", "name", "population"],
+                        [1, "germany", 83],
+                        [2, "france", 50],
+                        [3, "spain", 47],
+                    ]
+                )
+            ),
+        ],
+    )
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+        ]
+    }
+    assert target.read_rows() == [
+        {"id": 1, "name": "germany", "population": 83},
+        {"id": 3, "name": "spain", "population": 47},
+    ]
+
+
 def test_step_table_intersect_with_use_hash():
     source = Resource("data/transform.csv")
     target = transform(
@@ -257,6 +339,32 @@ def test_step_table_join():
             steps.table_normalize(),
             steps.table_join(
                 resource=Resource(data=[["id", "note"], [1, "beer"], [2, "vine"]]),
+                field_name="id",
+            ),
+        ],
+    )
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+            {"name": "note", "type": "string"},
+        ]
+    }
+    assert target.read_rows() == [
+        {"id": 1, "name": "germany", "population": 83, "note": "beer"},
+        {"id": 2, "name": "france", "population": 66, "note": "vine"},
+    ]
+
+
+def test_step_table_join_from_dict():
+    source = Resource("data/transform.csv")
+    target = transform(
+        source,
+        steps=[
+            steps.table_normalize(),
+            steps.table_join(
+                resource=dict(data=[["id", "note"], [1, "beer"], [2, "vine"]]),
                 field_name="id",
             ),
         ],
@@ -554,6 +662,32 @@ def test_step_table_merge():
         steps=[
             steps.table_merge(
                 resource=Resource(data=[["id", "name", "note"], [4, "malta", "island"]])
+            ),
+        ],
+    )
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+            {"name": "note", "type": "string"},
+        ]
+    }
+    assert target.read_rows() == [
+        {"id": 1, "name": "germany", "population": 83, "note": None},
+        {"id": 2, "name": "france", "population": 66, "note": None},
+        {"id": 3, "name": "spain", "population": 47, "note": None},
+        {"id": 4, "name": "malta", "population": None, "note": "island"},
+    ]
+
+
+def test_step_table_merge_from_dict():
+    source = Resource("data/transform.csv")
+    target = transform(
+        source,
+        steps=[
+            steps.table_merge(
+                resource=dict(data=[["id", "name", "note"], [4, "malta", "island"]])
             ),
         ],
     )
