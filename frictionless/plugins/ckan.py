@@ -13,7 +13,6 @@ from ..schema import Schema
 from ..system import system
 from ..field import Field
 from .. import errors
-from frictionless import dialect
 
 
 # Plugin
@@ -58,9 +57,10 @@ class CkanDialect(Dialect):
         resource? (str): resource
         dataset? (str): dataset
         apikey? (str): apikey
-        limit? (int): limit
-        sort? (str): sort
-        filters? (dict): filters
+        fields? (array): limit ckan query to certain fields
+        limit? (int): limit number of returned entries
+        sort? (str): sort returned entries, e.g. by date descending: `date desc`
+        filters? (dict): filter data, e.g. field with value: `{ "key": "value" }`
 
     Raises:
         FrictionlessException: raise any error that occurs during the process
@@ -73,6 +73,7 @@ class CkanDialect(Dialect):
         dataset=None,
         resource=None,
         apikey=None,
+        fields=None,
         limit=None,
         sort=None,
         filters=None,
@@ -80,6 +81,7 @@ class CkanDialect(Dialect):
         self.setinitial("resource", resource)
         self.setinitial("dataset", dataset)
         self.setinitial("apikey", apikey)
+        self.setinitial("fields", fields)
         self.setinitial("limit", limit)
         self.setinitial("sort", sort)
         self.setinitial("filters", filters)
@@ -96,6 +98,10 @@ class CkanDialect(Dialect):
     @Metadata.property
     def apikey(self):
         return self.get("apikey")
+
+    @Metadata.property
+    def fields(self):
+        return self.get("fields")
 
     @Metadata.property
     def limit(self):
@@ -119,6 +125,7 @@ class CkanDialect(Dialect):
             "resource": {"type": "string"},
             "dataset": {"type": "string"},
             "apikey": {"type": "string"},
+            "fields": {"type": "array"},
             "limit": {"type": "integer"},
             "sort": {"type": "string"},
             "filters": {"type": "object"},
@@ -187,9 +194,12 @@ class CkanStorage(Storage):
         self.__endpoint = f"{self.__url}/api/3/action"
         self.__dataset = dialect.dataset
         self.__apikey = dialect.apikey
-        self.__limit = dialect.limit
-        self.__sort = dialect.sort
-        self.__filters = dialect.filters
+        self.__queryoptions = {
+            "fields": dialect.fields,
+            "limit": dialect.limit,
+            "sort": dialect.sort,
+            "filters": dialect.filters,
+        }
 
     def __iter__(self):
         names = []
@@ -243,19 +253,24 @@ class CkanStorage(Storage):
 
     def __read_convert_data(self, ckan_table):
         endpoint = f"{self.__endpoint}/datastore_search"
+        for key, option in self.__queryoptions.copy().items():
+            if option is None or option == 0:
+                self.__queryoptions.pop(key)
+            if type(option) == list:
+                self.__queryoptions[key] = ", ".join(self.__queryoptions[key])
+            if type(option) == dict:
+                self.__queryoptions[key] = json.dumps(self.__queryoptions[key])
         params = {
             "resource_id": ckan_table["resource_id"],
             "include_total": False,
-            "limit": self.__limit,
-            "sort": self.__sort,
-            "filters": json.dumps(self.__filters),
+            **self.__queryoptions,
         }
 
         response = self.__make_ckan_request(endpoint, params=params)
         while response["result"]["records"]:
             for row in response["result"]["records"]:
                 yield row
-            if not self.__limit:
+            if "limit" not in self.__queryoptions:
                 next_url = self.__url + response["result"]["_links"]["next"]
                 response = self.__make_ckan_request(next_url)
             else:

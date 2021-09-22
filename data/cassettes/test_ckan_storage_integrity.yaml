@@ -850,7 +850,7 @@ interactions:
       User-Agent:
       - python-requests/2.25.0
     method: GET
-    uri: https://demo.ckan.org/api/3/action/datastore_search?resource_id=f99f2621-2136-451b-afef-a1eeb2e66f87
+    uri: https://demo.ckan.org/api/3/action/datastore_search?resource_id=f99f2621-2136-451b-afef-a1eeb2e66f87&include_total=False
   response:
     body:
       string: !!binary |
@@ -961,7 +961,7 @@ interactions:
       User-Agent:
       - python-requests/2.25.0
     method: GET
-    uri: https://demo.ckan.org/api/3/action/datastore_search?resource_id=e24ccb9d-f0e6-44a6-9b9e-dde50241f424
+    uri: https://demo.ckan.org/api/3/action/datastore_search?resource_id=e24ccb9d-f0e6-44a6-9b9e-dde50241f424&include_total=False
   response:
     body:
       string: !!binary |
