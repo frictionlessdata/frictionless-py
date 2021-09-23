@@ -5397,6 +5397,7 @@ Create a Schema from JSONSchema profile
 
 - `Schema` - schema instance
 
+
 ## Server
 
 ```python
@@ -7461,7 +7462,6 @@ Public   | `from frictionless import validate_table`
 **Returns**:
 
 - `Report` - validation report
-
 
 ## validate\_schema
 
