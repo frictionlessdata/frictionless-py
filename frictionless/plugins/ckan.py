@@ -57,15 +57,34 @@ class CkanDialect(Dialect):
         resource? (str): resource
         dataset? (str): dataset
         apikey? (str): apikey
+        fields? (array): limit ckan query to certain fields
+        limit? (int): limit number of returned entries
+        sort? (str): sort returned entries, e.g. by date descending: `date desc`
+        filters? (dict): filter data, e.g. field with value: `{ "key": "value" }`
 
     Raises:
         FrictionlessException: raise any error that occurs during the process
     """
 
-    def __init__(self, descriptor=None, *, dataset=None, resource=None, apikey=None):
+    def __init__(
+        self,
+        descriptor=None,
+        *,
+        dataset=None,
+        resource=None,
+        apikey=None,
+        fields=None,
+        limit=None,
+        sort=None,
+        filters=None,
+    ):
         self.setinitial("resource", resource)
         self.setinitial("dataset", dataset)
         self.setinitial("apikey", apikey)
+        self.setinitial("fields", fields)
+        self.setinitial("limit", limit)
+        self.setinitial("sort", sort)
+        self.setinitial("filters", filters)
         super().__init__(descriptor)
 
     @Metadata.property
@@ -80,6 +99,22 @@ class CkanDialect(Dialect):
     def apikey(self):
         return self.get("apikey")
 
+    @Metadata.property
+    def fields(self):
+        return self.get("fields")
+
+    @Metadata.property
+    def limit(self):
+        return self.get("limit")
+
+    @Metadata.property
+    def sort(self):
+        return self.get("sort")
+
+    @Metadata.property
+    def filters(self):
+        return self.get("filters")
+
     # Metadata
 
     metadata_profile = {  # type: ignore
@@ -90,6 +125,10 @@ class CkanDialect(Dialect):
             "resource": {"type": "string"},
             "dataset": {"type": "string"},
             "apikey": {"type": "string"},
+            "fields": {"type": "array"},
+            "limit": {"type": "integer"},
+            "sort": {"type": "string"},
+            "filters": {"type": "object"},
         },
     }
 
@@ -155,6 +194,12 @@ class CkanStorage(Storage):
         self.__endpoint = f"{self.__url}/api/3/action"
         self.__dataset = dialect.dataset
         self.__apikey = dialect.apikey
+        self.__queryoptions = {
+            "fields": dialect.fields,
+            "limit": dialect.limit,
+            "sort": dialect.sort,
+            "filters": dialect.filters,
+        }
 
     def __iter__(self):
         names = []
@@ -208,13 +253,28 @@ class CkanStorage(Storage):
 
     def __read_convert_data(self, ckan_table):
         endpoint = f"{self.__endpoint}/datastore_search"
-        params = {"resource_id": ckan_table["resource_id"]}
+        for key, option in self.__queryoptions.copy().items():
+            if option is None or option == 0:
+                self.__queryoptions.pop(key)
+            if type(option) == list:
+                self.__queryoptions[key] = ", ".join(self.__queryoptions[key])
+            if type(option) == dict:
+                self.__queryoptions[key] = json.dumps(self.__queryoptions[key])
+        params = {
+            "resource_id": ckan_table["resource_id"],
+            "include_total": False,
+            **self.__queryoptions,
+        }
+
         response = self.__make_ckan_request(endpoint, params=params)
         while response["result"]["records"]:
             for row in response["result"]["records"]:
                 yield row
-            next_url = self.__url + response["result"]["_links"]["next"]
-            response = self.__make_ckan_request(next_url)
+            if "limit" not in self.__queryoptions:
+                next_url = self.__url + response["result"]["_links"]["next"]
+                response = self.__make_ckan_request(next_url)
+            else:
+                response = dict(result=dict(records=[]))
 
     def __read_convert_type(self, ckan_type=None):
 
@@ -259,7 +319,10 @@ class CkanStorage(Storage):
         for resource in response["result"]["resources"]:
             if name == resource.get("name", resource["id"]):
                 endpoint = f"{self.__endpoint}/datastore_search"
-                params = {"limit": 0, "resource_id": resource["id"]}
+                params = {
+                    "resource_id": resource["id"],
+                    "limit": 0,
+                }
                 response = self.__make_ckan_request(endpoint, params=params)
                 return response["result"]
 

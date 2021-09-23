@@ -50,5 +50,23 @@ dialect = CkanDialect(resource='resource', dataset='dataset', apikey='apikey')
 resource = Resource('https://ckan-portal.com', format='ckan', dialect=dialect)
 ```
 
+For more control on the CKAN query you can use `fields`, `limit`, `sort` and `filter` in the dialect. For example:
+
+```python
+from frictionless import Resource
+from frictionless.plugins.ckan import CkanDialect
+
+dialect = CkanDialect(
+  resource='resource',
+  dataset='dataset',
+  apikey='apikey',
+  fields=['date','key','value'],
+  limit=10,
+  sort='date desc',
+  filter={'key': 'value'}
+)
+resource = Resource('https://ckan-portal.com', format='ckan', dialect=dialect)
+```
+
 References:
 - [Ckan Dialect](../../references/formats-reference.md#ckan)

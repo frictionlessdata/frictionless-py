@@ -245,6 +245,10 @@ Public   | `from frictionless.plugins.ckan import CkanDialect`
 - `resource?` _str_ - resource
 - `dataset?` _str_ - dataset
 - `apikey?` _str_ - apikey
+- `fields?` _array_ - limit ckan query to certain fields
+- `limit?` _int_ - limit number of returned entries
+- `sort?` _str_ - sort returned entries, e.g. by date descending: `date desc`
+- `filters?` _dict_ - filter data, e.g. field with value: `{ "key": "value" }`
   
 
 **Raises**:
@@ -5393,7 +5397,6 @@ Create a Schema from JSONSchema profile
 
 - `Schema` - schema instance
 
-
 ## Server
 
 ```python
@@ -7458,6 +7461,7 @@ Public   | `from frictionless import validate_table`
 **Returns**:
 
 - `Report` - validation report
+
 
 ## validate\_schema
 
