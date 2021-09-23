@@ -51,6 +51,30 @@ Dataset
 
 Apikey
 
+### Fields
+
+> Type: array
+
+Limit ckan query to certain fields
+
+### Limit
+
+> Type: int
+
+Limit number of returned entries
+
+### Sort
+
+> Type: str
+
+Sort returned entries, e.g. by date descending: `date desc`
+
+### Filters
+
+> Type: dict
+
+Filter data, e.g. field with value: `{ "key": "value" }`
+
 
 
 ## Csv
