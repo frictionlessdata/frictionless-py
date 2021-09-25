@@ -1,5 +1,4 @@
 import csv
-import sys
 import tempfile
 import stringcase
 from itertools import chain
