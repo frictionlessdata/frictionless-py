@@ -286,4 +286,5 @@ def extract_samle(text_stream):
 
 # System
 
-csv.field_size_limit(sys.maxsize)
+# https://stackoverflow.com/a/54515177
+csv.field_size_limit(2147483646)
