@@ -1,4 +1,5 @@
 import csv
+import sys
 import tempfile
 import stringcase
 from itertools import chain
@@ -281,3 +282,8 @@ def extract_samle(text_stream):
         if len(sample) >= INFER_DIALECT_VOLUME:
             break
     return sample
+
+
+# System
+
+csv.field_size_limit(sys.maxsize)
