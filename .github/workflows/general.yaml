@@ -146,7 +146,7 @@ jobs:
         run: |
           python setup.py sdist bdist_wheel
       - name: Publish to PYPI
-        uses: pypa/gh-action-pypi-publish@master
+        uses: pypa/gh-action-pypi-publish@release/v1
         with:
           password: ${{ secrets.PYPI_API_KEY }}
       - name: Release to GitHub

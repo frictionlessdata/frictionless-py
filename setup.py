@@ -62,10 +62,7 @@ INSTALL_REQUIRES = [
     "chardet>=3.0",
     "requests>=2.10",
     "jsonschema>=2.5",
-    # TODO: recover when the issue is resolved:
-    # https://github.com/danthedeckie/simpleeval/issues/90
-    #  "simpleeval>=0.9",
-    "simpleeval@https://github.com/roll/simpleeval/archive/e2b37a96169a219613e1ffff3f38769d682e8596.zip",
+    "simpleeval>=0.9",
     "stringcase>=1.2",
     "typer[all]>=0.4",
     "validators>=0.18",
