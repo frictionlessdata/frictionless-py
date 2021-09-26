@@ -14,6 +14,7 @@ API      | Usage
 -------- | --------
 Public   | `from frictionless.plugins.server import ApiParser`
 
+
 ## BigqueryDialect
 
 ```python
@@ -38,6 +39,7 @@ Public   | `from frictionless.plugins.bigquery import BigqueryDialect`
 
 - `FrictionlessException` - raise any error that occurs during the process
 
+
 ## BigqueryParser
 
 ```python
@@ -50,6 +52,7 @@ API      | Usage
 -------- | --------
 Public   | `from frictionless.plugins.bigquery import BigqueryParser`
 
+
 ## BigqueryPlugin
 
 ```python
@@ -61,6 +64,7 @@ Plugin for BigQuery
 API      | Usage
 -------- | --------
 Public   | `from frictionless.plugins.bigquery import BigqueryPlugin`
+
 
 ## BigqueryStorage
 
@@ -80,6 +84,7 @@ Public   | `from frictionless.plugins.bigquery import BigqueryStorage`
 - `project` _str_ - BigQuery project name
 - `dataset` _str_ - BigQuery dataset name
 - `prefix?` _str_ - prefix for all names
+
 
 ## BufferControl
 
@@ -102,6 +107,7 @@ Public   | `from frictionless.plugins.buffer import BufferControl`
 
 - `FrictionlessException` - raise any error that occurs during the process
 
+
 ## BufferLoader
 
 ```python
@@ -114,6 +120,7 @@ API      | Usage
 -------- | --------
 Public   | `from frictionless.plugins.buffer import BufferLoader`
 
+
 ## BufferPlugin
 
 ```python
@@ -125,6 +132,7 @@ Plugin for Buffer Data
 API      | Usage
 -------- | --------
 Public   | `from frictionless.plugins.local import BufferPlugin`
+
 
 ## Check
 
@@ -149,21 +157,23 @@ It's an interface for writing Frictionless checks.
 
 - `FrictionlessException` - raise if metadata is invalid
 
+
 ### check.resource
 
 ```python
- | @property
- | resource()
+@property
+def resource()
 ```
 
 **Returns**:
 
 - `Resource?` - resource object available after the `check.connect` call
 
+
 ### check.connect
 
 ```python
- | connect(resource)
+def connect(resource)
 ```
 
 Connect to the given resource
@@ -172,10 +182,11 @@ Connect to the given resource
 
 - `resource` _Resource_ - data resource
 
+
 ### check.validate\_start
 
 ```python
- | validate_start()
+def validate_start()
 ```
 
 Called to validate the resource after opening
@@ -184,10 +195,11 @@ Called to validate the resource after opening
 
 - `Error` - found errors
 
+
 ### check.validate\_row
 
 ```python
- | validate_row(row)
+def validate_row(row)
 ```
 
 Called to validate the given row (on every row)
@@ -201,10 +213,11 @@ Called to validate the given row (on every row)
 
 - `Error` - found errors
 
+
 ### check.validate\_end
 
 ```python
- | validate_end()
+def validate_end()
 ```
 
 Called to validate the resource before closing
@@ -212,6 +225,7 @@ Called to validate the resource before closing
 **Yields**:
 
 - `Error` - found errors
+
 
 ## CkanDialect
 
@@ -231,11 +245,16 @@ Public   | `from frictionless.plugins.ckan import CkanDialect`
 - `resource?` _str_ - resource
 - `dataset?` _str_ - dataset
 - `apikey?` _str_ - apikey
+- `fields?` _array_ - limit ckan query to certain fields
+- `limit?` _int_ - limit number of returned entries
+- `sort?` _str_ - sort returned entries, e.g. by date descending: `date desc`
+- `filters?` _dict_ - filter data, e.g. field with value: `{ "key": "value" }`
   
 
 **Raises**:
 
 - `FrictionlessException` - raise any error that occurs during the process
+
 
 ## CkanParser
 
@@ -249,6 +268,7 @@ API      | Usage
 -------- | --------
 Public   | `from frictionless.plugins.ckan import CkanParser`
 
+
 ## CkanPlugin
 
 ```python
@@ -260,6 +280,7 @@ Plugin for CKAN
 API      | Usage
 -------- | --------
 Public   | `from frictionless.plugins.ckan import CkanPlugin`
+
 
 ## CkanStorage
 
@@ -279,6 +300,7 @@ Ckan storage implementation
   API      | Usage
   -------- | --------
   Public   | `from frictionless.plugins.ckan import CkanStorage`
+
 
 ## Control
 
@@ -300,6 +322,7 @@ Public   | `from frictionless import Control`
 **Raises**:
 
 - `FrictionlessException` - raise any error that occurs during the process
+
 
 ## CsvDialect
 
@@ -330,109 +353,120 @@ Public   | `from frictionless.plugins.csv import CsvDialect`
 
 - `FrictionlessException` - raise any error that occurs during the process
 
+
 ### csvDialect.delimiter
 
 ```python
- | @Metadata.property
- | delimiter()
+@Metadata.property
+def delimiter()
 ```
 
 **Returns**:
 
 - `str` - delimiter
 
+
 ### csvDialect.line\_terminator
 
 ```python
- | @Metadata.property
- | line_terminator()
+@Metadata.property
+def line_terminator()
 ```
 
 **Returns**:
 
 - `str` - line terminator
 
+
 ### csvDialect.quote\_char
 
 ```python
- | @Metadata.property
- | quote_char()
+@Metadata.property
+def quote_char()
 ```
 
 **Returns**:
 
 - `str` - quote char
 
+
 ### csvDialect.double\_quote
 
 ```python
- | @Metadata.property
- | double_quote()
+@Metadata.property
+def double_quote()
 ```
 
 **Returns**:
 
 - `bool` - double quote
 
+
 ### csvDialect.escape\_char
 
 ```python
- | @Metadata.property
- | escape_char()
+@Metadata.property
+def escape_char()
 ```
 
 **Returns**:
 
 - `str?` - escape char
 
+
 ### csvDialect.null\_sequence
 
 ```python
- | @Metadata.property
- | null_sequence()
+@Metadata.property
+def null_sequence()
 ```
 
 **Returns**:
 
 - `str?` - null sequence
 
+
 ### csvDialect.skip\_initial\_space
 
 ```python
- | @Metadata.property
- | skip_initial_space()
+@Metadata.property
+def skip_initial_space()
 ```
 
 **Returns**:
 
 - `bool` - if skipping initial space
 
+
 ### csvDialect.comment\_char
 
 ```python
- | @Metadata.property
- | comment_char()
+@Metadata.property
+def comment_char()
 ```
 
 **Returns**:
 
 - `str?` - comment char
 
+
 ### csvDialect.expand
 
 ```python
- | expand()
+def expand()
 ```
 
 Expand metadata
 
+
 ### csvDialect.to\_python
 
 ```python
- | to_python()
+def to_python()
 ```
 
 Conver to Python's `csv.Dialect`
+
 
 ## CsvParser
 
@@ -446,6 +480,7 @@ API      | Usage
 -------- | --------
 Public   | `from frictionless.plugins.csv import CsvPlugins
 
+
 ## CsvPlugin
 
 ```python
@@ -457,6 +492,7 @@ Plugin for Pandas
 API      | Usage
 -------- | --------
 Public   | `from frictionless.plugins.csv import CsvPlugin`
+
 
 ## Detector
 
@@ -511,10 +547,11 @@ Public   | `from frictionless import Detector`
   key named after a field name and the values being a field patch.
   For more information, please check "Extracting Data" guide.
 
+
 ### detector.detect\_encoding
 
 ```python
- | detect_encoding(buffer, *, encoding=None)
+def detect_encoding(buffer, *, encoding=None)
 ```
 
 Detect encoding from buffer
@@ -528,10 +565,11 @@ Detect encoding from buffer
 
 - `str` - encoding
 
+
 ### detector.detect\_layout
 
 ```python
- | detect_layout(sample, *, layout=None)
+def detect_layout(sample, *, layout=None)
 ```
 
 Detect layout from sample
@@ -546,10 +584,11 @@ Detect layout from sample
 
 - `Layout` - layout
 
+
 ### detector.detect\_schema
 
 ```python
- | detect_schema(fragment, *, labels=None, schema=None)
+def detect_schema(fragment, *, labels=None, schema=None)
 ```
 
 Detect schema from fragment
@@ -564,6 +603,7 @@ Detect schema from fragment
 **Returns**:
 
 - `Schema` - schema
+
 
 ## Dialect
 
@@ -585,6 +625,7 @@ Public   | `from frictionless import Dialect`
 **Raises**:
 
 - `FrictionlessException` - raise any error that occurs during the process
+
 
 ## Error
 
@@ -608,27 +649,30 @@ Public   | `from frictionless import errors`
 
 - `FrictionlessException` - raise any error that occurs during the process
 
+
 ### error.note
 
 ```python
- | @property
- | note()
+@property
+def note()
 ```
 
 **Returns**:
 
 - `str` - note
 
+
 ### error.message
 
 ```python
- | @property
- | message()
+@property
+def message()
 ```
 
 **Returns**:
 
 - `str` - message
+
 
 ## ExcelDialect
 
@@ -656,68 +700,75 @@ Public   | `from frictionless.plugins.excel import ExcelDialect`
 
 - `FrictionlessException` - raise any error that occurs during the process
 
+
 ### excelDialect.sheet
 
 ```python
- | @Metadata.property
- | sheet()
+@Metadata.property
+def sheet()
 ```
 
 **Returns**:
 
 - `str|int` - sheet
 
+
 ### excelDialect.workbook\_cache
 
 ```python
- | @Metadata.property
- | workbook_cache()
+@Metadata.property
+def workbook_cache()
 ```
 
 **Returns**:
 
 - `dict` - workbook cache
 
+
 ### excelDialect.fill\_merged\_cells
 
 ```python
- | @Metadata.property
- | fill_merged_cells()
+@Metadata.property
+def fill_merged_cells()
 ```
 
 **Returns**:
 
 - `bool` - fill merged cells
 
+
 ### excelDialect.preserve\_formatting
 
 ```python
- | @Metadata.property
- | preserve_formatting()
+@Metadata.property
+def preserve_formatting()
 ```
 
 **Returns**:
 
 - `bool` - preserve formatting
 
+
 ### excelDialect.adjust\_floating\_point\_error
 
 ```python
- | @Metadata.property
- | adjust_floating_point_error()
+@Metadata.property
+def adjust_floating_point_error()
 ```
 
 **Returns**:
 
 - `bool` - adjust floating point error
 
+
 ### excelDialect.expand
 
 ```python
- | expand()
+def expand()
 ```
 
 Expand metadata
+
 
 ## ExcelPlugin
 
@@ -730,6 +781,7 @@ Plugin for Excel
 API      | Usage
 -------- | --------
 Public   | `from frictionless.plugins.excel import ExcelPlugin`
+
 
 ## Field
 
@@ -761,229 +813,250 @@ Public   | `from frictionless import Field`
 
 - `FrictionlessException` - raise any error that occurs during the process
 
+
 ### field.name
 
 ```python
- | @Metadata.property
- | name()
+@Metadata.property
+def name()
 ```
 
 **Returns**:
 
 - `str` - name
 
+
 ### field.title
 
 ```python
- | @Metadata.property
- | title()
+@Metadata.property
+def title()
 ```
 
 **Returns**:
 
 - `str?` - title
 
+
 ### field.description
 
 ```python
- | @Metadata.property
- | description()
+@Metadata.property
+def description()
 ```
 
 **Returns**:
 
 - `str?` - description
 
+
 ### field.type
 
 ```python
- | @Metadata.property
- | type()
+@Metadata.property
+def type()
 ```
 
 **Returns**:
 
 - `str` - type
 
+
 ### field.format
 
 ```python
- | @Metadata.property
- | format()
+@Metadata.property
+def format()
 ```
 
 **Returns**:
 
 - `str` - format
 
+
 ### field.missing\_values
 
 ```python
- | @Metadata.property
- | missing_values()
+@Metadata.property
+def missing_values()
 ```
 
 **Returns**:
 
 - `str[]` - missing values
 
+
 ### field.constraints
 
 ```python
- | @Metadata.property
- | constraints()
+@Metadata.property
+def constraints()
 ```
 
 **Returns**:
 
 - `dict` - constraints
 
+
 ### field.rdf\_type
 
 ```python
- | @Metadata.property
- | rdf_type()
+@Metadata.property
+def rdf_type()
 ```
 
 **Returns**:
 
 - `str?` - RDF Type
 
+
 ### field.required
 
 ```python
- | @Metadata.property(
- |         write=lambda self, value: setitem(self.constraints, "required", value)
- |     )
- | required()
+@Metadata.property(
+        write=lambda self, value: setitem(self.constraints, "required", value)
+    )
+def required()
 ```
 
 **Returns**:
 
 - `bool` - if field is requried
 
+
 ### field.builtin
 
 ```python
- | @property
- | builtin()
+@property
+def builtin()
 ```
 
 **Returns**:
 
 - `bool` - returns True is the type is not custom
 
+
 ### field.schema
 
 ```python
- | @property
- | schema()
+@property
+def schema()
 ```
 
 **Returns**:
 
 - `Schema?` - parent schema
 
+
 ### field.array\_item
 
 ```python
- | @Metadata.property
- | array_item()
+@Metadata.property
+def array_item()
 ```
 
 **Returns**:
 
 - `dict` - field descriptor
+
 
 ### field.array\_item\_field
 
 ```python
- | @Metadata.property(write=False)
- | array_item_field()
+@Metadata.property(write=False)
+def array_item_field()
 ```
 
 **Returns**:
 
 - `dict` - field descriptor
 
+
 ### field.true\_values
 
 ```python
- | @Metadata.property
- | true_values()
+@Metadata.property
+def true_values()
 ```
 
 **Returns**:
 
 - `str[]` - true values
 
+
 ### field.false\_values
 
 ```python
- | @Metadata.property
- | false_values()
+@Metadata.property
+def false_values()
 ```
 
 **Returns**:
 
 - `str[]` - false values
 
+
 ### field.bare\_number
 
 ```python
- | @Metadata.property
- | bare_number()
+@Metadata.property
+def bare_number()
 ```
 
 **Returns**:
 
 - `bool` - if a bare number
 
+
 ### field.float\_number
 
 ```python
- | @Metadata.property
- | float_number()
+@Metadata.property
+def float_number()
 ```
 
 **Returns**:
 
 - `bool` - whether it's a floating point number
 
+
 ### field.decimal\_char
 
 ```python
- | @Metadata.property
- | decimal_char()
+@Metadata.property
+def decimal_char()
 ```
 
 **Returns**:
 
 - `str` - decimal char
 
+
 ### field.group\_char
 
 ```python
- | @Metadata.property
- | group_char()
+@Metadata.property
+def group_char()
 ```
 
 **Returns**:
 
 - `str` - group char
 
+
 ### field.expand
 
 ```python
- | expand()
+def expand()
 ```
 
 Expand metadata
 
+
 ### field.read\_cell
 
 ```python
- | read_cell(cell)
+def read_cell(cell)
 ```
 
 Read cell
@@ -997,10 +1070,11 @@ Read cell
 
   (any, OrderedDict): processed cell and dict of notes
 
+
 ### field.read\_cell\_convert
 
 ```python
- | read_cell_convert(cell)
+def read_cell_convert(cell)
 ```
 
 Read cell (convert only)
@@ -1014,11 +1088,12 @@ Read cell (convert only)
 
 - `any/None` - processed cell or None if an error
 
+
 ### field.read\_cell\_checks
 
 ```python
- | @Metadata.property(write=False)
- | read_cell_checks()
+@Metadata.property(write=False)
+def read_cell_checks()
 ```
 
 Read cell (checks only)
@@ -1027,10 +1102,11 @@ Read cell (checks only)
 
 - `OrderedDict` - dictionlary of check function by a constraint name
 
+
 ### field.write\_cell
 
 ```python
- | write_cell(cell, *, ignore_missing=False)
+def write_cell(cell, *, ignore_missing=False)
 ```
 
 Write cell
@@ -1045,10 +1121,11 @@ Write cell
 
   (any, OrderedDict): processed cell and dict of notes
 
+
 ### field.write\_cell\_convert
 
 ```python
- | write_cell_convert(cell)
+def write_cell_convert(cell)
 ```
 
 Write cell (convert only)
@@ -1062,11 +1139,12 @@ Write cell (convert only)
 
 - `any/None` - processed cell or None if an error
 
+
 ### field.write\_cell\_missing\_value
 
 ```python
- | @Metadata.property(write=False)
- | write_cell_missing_value()
+@Metadata.property(write=False)
+def write_cell_missing_value()
 ```
 
 Write cell (missing value only)
@@ -1075,6 +1153,7 @@ Write cell (missing value only)
 
 - `str` - a value to replace None cells
 
+
 ## File
 
 ```python
@@ -1082,6 +1161,7 @@ class File()
 ```
 
 File representation
+
 
 ## FrictionlessException
 
@@ -1099,16 +1179,18 @@ Public   | `from frictionless import FrictionlessException`
 
 - `error` _Error_ - an underlaying error
 
+
 ### frictionlessException.error
 
 ```python
- | @property
- | error()
+@property
+def error()
 ```
 
 **Returns**:
 
 - `Error` - error
+
 
 ## GsheetsDialect
 
@@ -1131,16 +1213,18 @@ Public   | `from frictionless.plugins.gsheets import GsheetsDialect`
 
 - `FrictionlessException` - raise any error that occurs during the process
 
+
 ### gsheetsDialect.credentials
 
 ```python
- | @Metadata.property
- | credentials()
+@Metadata.property
+def credentials()
 ```
 
 **Returns**:
 
 - `str` - credentials
+
 
 ## GsheetsParser
 
@@ -1154,6 +1238,7 @@ API      | Usage
 -------- | --------
 Public   | `from frictionless.plugins.gsheets import GsheetsParser`
 
+
 ## GsheetsPlugin
 
 ```python
@@ -1165,6 +1250,7 @@ Plugin for Google Sheets
 API      | Usage
 -------- | --------
 Public   | `from frictionless.plugins.gsheets import GsheetsPlugin`
+
 
 ## Header
 
@@ -1188,111 +1274,122 @@ Public   | `from frictionless import Header`
 - `row_positions` _int[]_ - row positions
 - `ignore_case` _bool_ - ignore case
 
+
 ### header.labels
 
 ```python
- | @cached_property
- | labels()
+@cached_property
+def labels()
 ```
 
 **Returns**:
 
 - `Schema` - table labels
 
+
 ### header.fields
 
 ```python
- | @cached_property
- | fields()
+@cached_property
+def fields()
 ```
 
 **Returns**:
 
 - `Schema` - table fields
 
+
 ### header.field\_names
 
 ```python
- | @cached_property
- | field_names()
+@cached_property
+def field_names()
 ```
 
 **Returns**:
 
 - `str[]` - table field names
 
+
 ### header.field\_positions
 
 ```python
- | @cached_property
- | field_positions()
+@cached_property
+def field_positions()
 ```
 
 **Returns**:
 
 - `int[]` - table field positions
 
+
 ### header.row\_positions
 
 ```python
- | @cached_property
- | row_positions()
+@cached_property
+def row_positions()
 ```
 
 **Returns**:
 
 - `int[]` - table row positions
 
+
 ### header.missing
 
 ```python
- | @cached_property
- | missing()
+@cached_property
+def missing()
 ```
 
 **Returns**:
 
 - `bool` - if there is not header
 
+
 ### header.errors
 
 ```python
- | @cached_property
- | errors()
+@cached_property
+def errors()
 ```
 
 **Returns**:
 
 - `Error[]` - header errors
 
+
 ### header.valid
 
 ```python
- | @cached_property
- | valid()
+@cached_property
+def valid()
 ```
 
 **Returns**:
 
 - `bool` - if header valid
 
+
 ### header.to\_str
 
 ```python
- | to_str()
+def to_str()
 ```
 
 **Returns**:
 
 - `str` - a row as a CSV string
 
+
 ### header.to\_list
 
 ```python
- | to_list()
+def to_list()
 ```
 
 Convert to a list
+
 
 ## HtmlDialect
 
@@ -1316,24 +1413,27 @@ Public   | `from frictionless.plugins.html import HtmlDialect`
 
 - `FrictionlessException` - raise any error that occurs during the process
 
+
 ### htmlDialect.selector
 
 ```python
- | @Metadata.property
- | selector()
+@Metadata.property
+def selector()
 ```
 
 **Returns**:
 
 - `str` - selector
 
+
 ### htmlDialect.expand
 
 ```python
- | expand()
+def expand()
 ```
 
 Expand metadata
+
 
 ## HtmlParser
 
@@ -1347,6 +1447,7 @@ API      | Usage
 -------- | --------
 Public   | `from frictionless.plugins.html import HtmlParser`
 
+
 ## HtmlPlugin
 
 ```python
@@ -1358,6 +1459,7 @@ Plugin for HTML
 API      | Usage
 -------- | --------
 Public   | `from frictionless.plugins.html import HtmlPlugin`
+
 
 ## InlineDialect
 
@@ -1382,35 +1484,39 @@ Public   | `from frictionless.plugins.inline import InlineDialect`
 
 - `FrictionlessException` - raise any error that occurs during the process
 
+
 ### inlineDialect.keys
 
 ```python
- | @Metadata.property
- | keys()
+@Metadata.property
+def keys()
 ```
 
 **Returns**:
 
 - `str[]?` - keys
 
+
 ### inlineDialect.keyed
 
 ```python
- | @Metadata.property
- | keyed()
+@Metadata.property
+def keyed()
 ```
 
 **Returns**:
 
 - `bool` - keyed
 
+
 ### inlineDialect.expand
 
 ```python
- | expand()
+def expand()
 ```
 
 Expand metadata
+
 
 ## InlineParser
 
@@ -1424,6 +1530,7 @@ API      | Usage
 -------- | --------
 Public   | `from frictionless.plugins.inline import InlineParser
 
+
 ## InlinePlugin
 
 ```python
@@ -1435,6 +1542,7 @@ Plugin for Inline
 API      | Usage
 -------- | --------
 Public   | `from frictionless.plugins.inline import InlinePlugin`
+
 
 ## Inquiry
 
@@ -1453,16 +1561,18 @@ Inquiry representation.
 
 - `FrictionlessException` - raise any error that occurs during the process
 
+
 ### inquiry.tasks
 
 ```python
- | @property
- | tasks()
+@property
+def tasks()
 ```
 
 **Returns**:
 
 - `dict[]` - tasks
+
 
 ## InquiryTask
 
@@ -1481,27 +1591,30 @@ Inquiry task representation.
 
 - `FrictionlessException` - raise any error that occurs during the process
 
+
 ### inquiryTask.source
 
 ```python
- | @property
- | source()
+@property
+def source()
 ```
 
 **Returns**:
 
 - `any` - source
 
+
 ### inquiryTask.type
 
 ```python
- | @property
- | type()
+@property
+def type()
 ```
 
 **Returns**:
 
 - `string?` - type
+
 
 ## JsonDialect
 
@@ -1527,46 +1640,51 @@ Public   | `from frictionless.plugins.json import JsonDialect`
 
 - `FrictionlessException` - raise any error that occurs during the process
 
+
 ### jsonDialect.keys
 
 ```python
- | @Metadata.property
- | keys()
+@Metadata.property
+def keys()
 ```
 
 **Returns**:
 
 - `str[]?` - keys
 
+
 ### jsonDialect.keyed
 
 ```python
- | @Metadata.property
- | keyed()
+@Metadata.property
+def keyed()
 ```
 
 **Returns**:
 
 - `bool` - keyed
 
+
 ### jsonDialect.property
 
 ```python
- | @Metadata.property
- | property()
+@Metadata.property
+def property()
 ```
 
 **Returns**:
 
 - `str?` - property
 
+
 ### jsonDialect.expand
 
 ```python
- | expand()
+def expand()
 ```
 
 Expand metadata
+
 
 ## JsonParser
 
@@ -1580,6 +1698,7 @@ API      | Usage
 -------- | --------
 Public   | `from frictionless.plugins.json import JsonParser
 
+
 ## JsonPlugin
 
 ```python
@@ -1592,6 +1711,7 @@ API      | Usage
 -------- | --------
 Public   | `from frictionless.plugins.json import JsonPlugin`
 
+
 ## JsonlParser
 
 ```python
@@ -1603,6 +1723,7 @@ JSONL parser implementation.
 API      | Usage
 -------- | --------
 Public   | `from frictionless.plugins.json import JsonlParser
+
 
 ## Layout
 
@@ -1628,200 +1749,219 @@ Public   | `from frictionless import Layout`
 - `limit_rows?` _int_ - amount of rows
 - `offset_rows?` _int_ - from what row to start
 
+
 ### layout.header
 
 ```python
- | @Metadata.property
- | header()
+@Metadata.property
+def header()
 ```
 
 **Returns**:
 
 - `bool` - if there is a header row
 
+
 ### layout.header\_rows
 
 ```python
- | @Metadata.property
- | header_rows()
+@Metadata.property
+def header_rows()
 ```
 
 **Returns**:
 
 - `int[]` - header rows
 
+
 ### layout.header\_join
 
 ```python
- | @Metadata.property
- | header_join()
+@Metadata.property
+def header_join()
 ```
 
 **Returns**:
 
 - `str` - header joiner
 
+
 ### layout.header\_case
 
 ```python
- | @Metadata.property
- | header_case()
+@Metadata.property
+def header_case()
 ```
 
 **Returns**:
 
 - `str` - header case sensitive
 
+
 ### layout.pick\_fields
 
 ```python
- | @Metadata.property
- | pick_fields()
+@Metadata.property
+def pick_fields()
 ```
 
 **Returns**:
 
 - `(str|int)[]?` - pick fields
 
+
 ### layout.skip\_fields
 
 ```python
- | @Metadata.property
- | skip_fields()
+@Metadata.property
+def skip_fields()
 ```
 
 **Returns**:
 
 - `(str|int)[]?` - skip fields
 
+
 ### layout.limit\_fields
 
 ```python
- | @Metadata.property
- | limit_fields()
+@Metadata.property
+def limit_fields()
 ```
 
 **Returns**:
 
 - `int?` - limit fields
 
+
 ### layout.offset\_fields
 
 ```python
- | @Metadata.property
- | offset_fields()
+@Metadata.property
+def offset_fields()
 ```
 
 **Returns**:
 
 - `int?` - offset fields
 
+
 ### layout.pick\_rows
 
 ```python
- | @Metadata.property
- | pick_rows()
+@Metadata.property
+def pick_rows()
 ```
 
 **Returns**:
 
 - `(str|int)[]?` - pick rows
 
+
 ### layout.skip\_rows
 
 ```python
- | @Metadata.property
- | skip_rows()
+@Metadata.property
+def skip_rows()
 ```
 
 **Returns**:
 
 - `(str|int)[]?` - skip rows
 
+
 ### layout.limit\_rows
 
 ```python
- | @Metadata.property
- | limit_rows()
+@Metadata.property
+def limit_rows()
 ```
 
 **Returns**:
 
 - `int?` - limit rows
 
+
 ### layout.offset\_rows
 
 ```python
- | @Metadata.property
- | offset_rows()
+@Metadata.property
+def offset_rows()
 ```
 
 **Returns**:
 
 - `int?` - offset rows
 
+
 ### layout.is\_field\_filtering
 
 ```python
- | @Metadata.property(write=False)
- | is_field_filtering()
+@Metadata.property(write=False)
+def is_field_filtering()
 ```
 
 **Returns**:
 
 - `bool` - whether there is a field filtering
 
+
 ### layout.pick\_fields\_compiled
 
 ```python
- | @Metadata.property(write=False)
- | pick_fields_compiled()
+@Metadata.property(write=False)
+def pick_fields_compiled()
 ```
 
 **Returns**:
 
 - `re?` - compiled pick fields
 
+
 ### layout.skip\_fields\_compiled
 
 ```python
- | @Metadata.property(write=False)
- | skip_fields_compiled()
+@Metadata.property(write=False)
+def skip_fields_compiled()
 ```
 
 **Returns**:
 
 - `re?` - compiled skip fields
 
+
 ### layout.pick\_rows\_compiled
 
 ```python
- | @Metadata.property(write=False)
- | pick_rows_compiled()
+@Metadata.property(write=False)
+def pick_rows_compiled()
 ```
 
 **Returns**:
 
 - `re?` - compiled pick rows
 
+
 ### layout.skip\_rows\_compiled
 
 ```python
- | @Metadata.property(write=False)
- | skip_rows_compiled()
+@Metadata.property(write=False)
+def skip_rows_compiled()
 ```
 
 **Returns**:
 
 - `re?` - compiled skip fields
 
+
 ### layout.expand
 
 ```python
- | expand()
+def expand()
 ```
 
 Expand metadata
+
 
 ## Loader
 
@@ -1839,33 +1979,36 @@ Public   | `from frictionless import Loader`
 
 - `resource` _Resource_ - resource
 
+
 ### loader.resource
 
 ```python
- | @property
- | resource()
+@property
+def resource()
 ```
 
 **Returns**:
 
 - `resource` _Resource_ - resource
 
+
 ### loader.buffer
 
 ```python
- | @property
- | buffer()
+@property
+def buffer()
 ```
 
 **Returns**:
 
 - `Loader` - buffer
 
+
 ### loader.byte\_stream
 
 ```python
- | @property
- | byte_stream()
+@property
+def byte_stream()
 ```
 
 Resource byte stream
@@ -1876,11 +2019,12 @@ The stream is available after opening the loader
 
 - `io.ByteStream` - resource byte stream
 
+
 ### loader.text\_stream
 
 ```python
- | @property
- | text_stream()
+@property
+def text_stream()
 ```
 
 Resource text stream
@@ -1891,27 +2035,30 @@ The stream is available after opening the loader
 
 - `io.TextStream` - resource text stream
 
+
 ### loader.open
 
 ```python
- | open()
+def open()
 ```
 
 Open the loader as "io.open" does
 
+
 ### loader.close
 
 ```python
- | close()
+def close()
 ```
 
 Close the loader as "filelike.close" does
 
+
 ### loader.closed
 
 ```python
- | @property
- | closed()
+@property
+def closed()
 ```
 
 Whether the loader is closed
@@ -1920,10 +2067,11 @@ Whether the loader is closed
 
 - `bool` - if closed
 
+
 ### loader.read\_byte\_stream
 
 ```python
- | read_byte_stream()
+def read_byte_stream()
 ```
 
 Read bytes stream
@@ -1932,10 +2080,11 @@ Read bytes stream
 
 - `io.ByteStream` - resource byte stream
 
+
 ### loader.read\_byte\_stream\_create
 
 ```python
- | read_byte_stream_create()
+def read_byte_stream_create()
 ```
 
 Create bytes stream
@@ -1944,10 +2093,11 @@ Create bytes stream
 
 - `io.ByteStream` - resource byte stream
 
+
 ### loader.read\_byte\_stream\_process
 
 ```python
- | read_byte_stream_process(byte_stream)
+def read_byte_stream_process(byte_stream)
 ```
 
 Process byte stream
@@ -1961,10 +2111,11 @@ Process byte stream
 
 - `io.ByteStream` - resource byte stream
 
+
 ### loader.read\_byte\_stream\_decompress
 
 ```python
- | read_byte_stream_decompress(byte_stream)
+def read_byte_stream_decompress(byte_stream)
 ```
 
 Decompress byte stream
@@ -1978,10 +2129,11 @@ Decompress byte stream
 
 - `io.ByteStream` - resource byte stream
 
+
 ### loader.read\_byte\_stream\_buffer
 
 ```python
- | read_byte_stream_buffer(byte_stream)
+def read_byte_stream_buffer(byte_stream)
 ```
 
 Buffer byte stream
@@ -1995,10 +2147,11 @@ Buffer byte stream
 
 - `bytes` - buffer
 
+
 ### loader.read\_byte\_stream\_analyze
 
 ```python
- | read_byte_stream_analyze(buffer)
+def read_byte_stream_analyze(buffer)
 ```
 
 Detect metadta using sample
@@ -2007,10 +2160,11 @@ Detect metadta using sample
 
 - `buffer` _bytes_ - byte buffer
 
+
 ### loader.read\_text\_stream
 
 ```python
- | read_text_stream()
+def read_text_stream()
 ```
 
 Read text stream
@@ -2019,10 +2173,11 @@ Read text stream
 
 - `io.TextStream` - resource text stream
 
+
 ### loader.write\_byte\_stream
 
 ```python
- | write_byte_stream(path)
+def write_byte_stream(path)
 ```
 
 Write from a temporary file
@@ -2036,10 +2191,11 @@ Write from a temporary file
 
 - `any` - result of writing e.g. resulting path
 
+
 ### loader.write\_byte\_stream\_create
 
 ```python
- | write_byte_stream_create(path)
+def write_byte_stream_create(path)
 ```
 
 Create byte stream for writing
@@ -2053,13 +2209,15 @@ Create byte stream for writing
 
 - `io.ByteStream` - byte stream
 
+
 ### loader.write\_byte\_stream\_save
 
 ```python
- | write_byte_stream_save(byte_stream)
+def write_byte_stream_save(byte_stream)
 ```
 
 Store byte stream
+
 
 ## LocalControl
 
@@ -2082,6 +2240,7 @@ Public   | `from frictionless.plugins.local import LocalControl`
 
 - `FrictionlessException` - raise any error that occurs during the process
 
+
 ## LocalLoader
 
 ```python
@@ -2094,6 +2253,7 @@ API      | Usage
 -------- | --------
 Public   | `from frictionless.plugins.local import LocalLoader`
 
+
 ## LocalPlugin
 
 ```python
@@ -2105,6 +2265,7 @@ Plugin for Local Data
 API      | Usage
 -------- | --------
 Public   | `from frictionless.plugins.local import LocalPlugin`
+
 
 ## Metadata
 
@@ -2127,10 +2288,11 @@ Public   | `from frictionless import Metadata`
 
 - `FrictionlessException` - raise any error that occurs during the process
 
+
 ### metadata.setinitial
 
 ```python
- | setinitial(key, value)
+def setinitial(key, value)
 ```
 
 Set an initial item in a subclass' constructor
@@ -2140,10 +2302,11 @@ Set an initial item in a subclass' constructor
 - `key` _str_ - key
 - `value` _any_ - value
 
+
 ### metadata.to\_copy
 
 ```python
- | to_copy()
+def to_copy()
 ```
 
 Create a copy of the metadata
@@ -2152,10 +2315,11 @@ Create a copy of the metadata
 
 - `Metadata` - a copy of the metadata
 
+
 ### metadata.to\_dict
 
 ```python
- | to_dict()
+def to_dict()
 ```
 
 Convert metadata to a plain dict
@@ -2164,10 +2328,11 @@ Convert metadata to a plain dict
 
 - `dict` - metadata as a plain dict
 
+
 ### metadata.to\_json
 
 ```python
- | to_json(path=None, encoder_class=None)
+def to_json(path=None, encoder_class=None)
 ```
 
 Save metadata as a json
@@ -2181,10 +2346,11 @@ Save metadata as a json
 
 - `FrictionlessException` - on any error
 
+
 ### metadata.to\_yaml
 
 ```python
- | to_yaml(path=None)
+def to_yaml(path=None)
 ```
 
 Save metadata as a yaml
@@ -2198,32 +2364,35 @@ Save metadata as a yaml
 
 - `FrictionlessException` - on any error
 
+
 ### metadata.metadata\_valid
 
 ```python
- | @property
- | metadata_valid()
+@property
+def metadata_valid()
 ```
 
 **Returns**:
 
 - `bool` - whether the metadata is valid
 
+
 ### metadata.metadata\_errors
 
 ```python
- | @property
- | metadata_errors()
+@property
+def metadata_errors()
 ```
 
 **Returns**:
 
 - `Errors[]` - a list of the metadata errors
 
+
 ### metadata.metadata\_attach
 
 ```python
- | metadata_attach(name, value)
+def metadata_attach(name, value)
 ```
 
 Helper method for attaching a value to  the metadata
@@ -2233,10 +2402,11 @@ Helper method for attaching a value to  the metadata
 - `name` _str_ - name
 - `value` _any_ - value
 
+
 ### metadata.metadata\_extract
 
 ```python
- | metadata_extract(descriptor)
+def metadata_extract(descriptor)
 ```
 
 Helper method called during the metadata extraction
@@ -2245,18 +2415,20 @@ Helper method called during the metadata extraction
 
 - `descriptor` _any_ - descriptor
 
+
 ### metadata.metadata\_process
 
 ```python
- | metadata_process()
+def metadata_process()
 ```
 
 Helper method called on any metadata change
 
+
 ### metadata.metadata\_validate
 
 ```python
- | metadata_validate(profile=None)
+def metadata_validate(profile=None)
 ```
 
 Helper method called on any metadata change
@@ -2265,11 +2437,12 @@ Helper method called on any metadata change
 
 - `profile` _dict_ - a profile to validate against of
 
+
 ### metadata.property
 
 ```python
- | @staticmethod
- | property(func=None, *, cache=True, reset=True, write=True)
+@staticmethod
+def property(func=None, *, cache=True, reset=True, write=True)
 ```
 
 Create a metadata property
@@ -2280,6 +2453,7 @@ Create a metadata property
 - `cache?` _bool_ - cache
 - `reset?` _bool_ - reset
 - `write?` _func_ - write
+
 
 ## MultipartControl
 
@@ -2302,13 +2476,15 @@ Public   | `from frictionless.plugins.multipart import MultipartControl`
 
 - `FrictionlessException` - raise any error that occurs during the process
 
+
 ### multipartControl.expand
 
 ```python
- | expand()
+def expand()
 ```
 
 Expand metadata
+
 
 ## MultipartLoader
 
@@ -2322,6 +2498,7 @@ API      | Usage
 -------- | --------
 Public   | `from frictionless.plugins.multipart import MultipartLoader`
 
+
 ## MultipartPlugin
 
 ```python
@@ -2333,6 +2510,7 @@ Plugin for Multipart Data
 API      | Usage
 -------- | --------
 Public   | `from frictionless.plugins.multipart import MultipartPlugin`
+
 
 ## OdsDialect
 
@@ -2356,24 +2534,27 @@ Public   | `from frictionless.plugins.ods import OdsDialect`
 
 - `FrictionlessException` - raise any error that occurs during the process
 
+
 ### odsDialect.sheet
 
 ```python
- | @Metadata.property
- | sheet()
+@Metadata.property
+def sheet()
 ```
 
 **Returns**:
 
 - `int|str` - sheet
 
+
 ### odsDialect.expand
 
 ```python
- | expand()
+def expand()
 ```
 
 Expand metadata
+
 
 ## OdsParser
 
@@ -2387,6 +2568,7 @@ API      | Usage
 -------- | --------
 Public   | `from frictionless.plugins.ods import OdsParser`
 
+
 ## OdsPlugin
 
 ```python
@@ -2398,6 +2580,7 @@ Plugin for ODS
 API      | Usage
 -------- | --------
 Public   | `from frictionless.plugins.ods import OdsPlugin`
+
 
 ## Package
 
@@ -2510,219 +2693,239 @@ package.get_resoure('table').read_rows() == [
 
 - `FrictionlessException` - raise any error that occurs during the process
 
+
 ### package.name
 
 ```python
- | @Metadata.property
- | name()
+@Metadata.property
+def name()
 ```
 
 **Returns**:
 
 - `str?` - package name
 
+
 ### package.id
 
 ```python
- | @Metadata.property
- | id()
+@Metadata.property
+def id()
 ```
 
 **Returns**:
 
 - `str?` - package id
 
+
 ### package.licenses
 
 ```python
- | @Metadata.property
- | licenses()
+@Metadata.property
+def licenses()
 ```
 
 **Returns**:
 
 - `dict?` - package licenses
 
+
 ### package.profile
 
 ```python
- | @Metadata.property
- | profile()
+@Metadata.property
+def profile()
 ```
 
 **Returns**:
 
 - `str` - package profile
 
+
 ### package.title
 
 ```python
- | @Metadata.property
- | title()
+@Metadata.property
+def title()
 ```
 
 **Returns**:
 
 - `str?` - package title
 
+
 ### package.description
 
 ```python
- | @Metadata.property
- | description()
+@Metadata.property
+def description()
 ```
 
 **Returns**:
 
 - `str?` - package description
 
+
 ### package.homepage
 
 ```python
- | @Metadata.property
- | homepage()
+@Metadata.property
+def homepage()
 ```
 
 **Returns**:
 
 - `str?` - package homepage
 
+
 ### package.version
 
 ```python
- | @Metadata.property
- | version()
+@Metadata.property
+def version()
 ```
 
 **Returns**:
 
 - `str?` - package version
 
+
 ### package.sources
 
 ```python
- | @Metadata.property
- | sources()
+@Metadata.property
+def sources()
 ```
 
 **Returns**:
 
 - `dict[]?` - package sources
 
+
 ### package.contributors
 
 ```python
- | @Metadata.property
- | contributors()
+@Metadata.property
+def contributors()
 ```
 
 **Returns**:
 
 - `dict[]?` - package contributors
 
+
 ### package.keywords
 
 ```python
- | @Metadata.property
- | keywords()
+@Metadata.property
+def keywords()
 ```
 
 **Returns**:
 
 - `str[]?` - package keywords
 
+
 ### package.image
 
 ```python
- | @Metadata.property
- | image()
+@Metadata.property
+def image()
 ```
 
 **Returns**:
 
 - `str?` - package image
 
+
 ### package.created
 
 ```python
- | @Metadata.property
- | created()
+@Metadata.property
+def created()
 ```
 
 **Returns**:
 
 - `str?` - package created
 
+
 ### package.hashing
 
 ```python
- | @Metadata.property(cache=False, write=False)
- | hashing()
+@Metadata.property(cache=False, write=False)
+def hashing()
 ```
 
 **Returns**:
 
 - `str` - package hashing
 
+
 ### package.basepath
 
 ```python
- | @Metadata.property(cache=False, write=False)
- | basepath()
+@Metadata.property(cache=False, write=False)
+def basepath()
 ```
 
 **Returns**:
 
 - `str` - package basepath
 
+
 ### package.onerror
 
 ```python
- | @Metadata.property(cache=False, write=False)
- | onerror()
+@Metadata.property(cache=False, write=False)
+def onerror()
 ```
 
 **Returns**:
 
 - `ignore|warn|raise` - on error bahaviour
 
+
 ### package.trusted
 
 ```python
- | @Metadata.property(cache=False, write=False)
- | trusted()
+@Metadata.property(cache=False, write=False)
+def trusted()
 ```
 
 **Returns**:
 
 - `str` - package trusted
 
+
 ### package.resources
 
 ```python
- | @Metadata.property
- | resources()
+@Metadata.property
+def resources()
 ```
 
 **Returns**:
 
 - `Resources[]` - package resource
 
+
 ### package.resource\_names
 
 ```python
- | @Metadata.property(cache=False, write=False)
- | resource_names()
+@Metadata.property(cache=False, write=False)
+def resource_names()
 ```
 
 **Returns**:
 
 - `str[]` - package resource names
 
+
 ### package.add\_resource
 
 ```python
- | add_resource(source=None, **options)
+def add_resource(source=None, **options)
 ```
 
 Add new resource to the package.
@@ -2737,10 +2940,11 @@ Add new resource to the package.
 
 - `Resource/None` - added `Resource` instance or `None` if not added
 
+
 ### package.get\_resource
 
 ```python
- | get_resource(name)
+def get_resource(name)
 ```
 
 Get resource by name.
@@ -2759,10 +2963,11 @@ Get resource by name.
 
 - `Resource/None` - `Resource` instance or `None` if not found
 
+
 ### package.has\_resource
 
 ```python
- | has_resource(name)
+def has_resource(name)
 ```
 
 Check if a resource is present
@@ -2776,10 +2981,11 @@ Check if a resource is present
 
 - `bool` - whether there is the resource
 
+
 ### package.remove\_resource
 
 ```python
- | remove_resource(name)
+def remove_resource(name)
 ```
 
 Remove resource by name.
@@ -2798,20 +3004,22 @@ Remove resource by name.
 
 - `Resource/None` - removed `Resource` instances or `None` if not found
 
+
 ### package.expand
 
 ```python
- | expand()
+def expand()
 ```
 
 Expand metadata
 
 It will add default values to the package.
 
+
 ### package.infer
 
 ```python
- | infer(*, stats=False)
+def infer(*, stats=False)
 ```
 
 Infer package's attributes
@@ -2820,19 +3028,21 @@ Infer package's attributes
 
 - `stats?` _bool_ - stream files completely and infer stats
 
+
 ### package.to\_copy
 
 ```python
- | to_copy()
+def to_copy()
 ```
 
 Create a copy of the package
 
+
 ### package.from\_bigquery
 
 ```python
- | @staticmethod
- | from_bigquery(source, *, dialect=None)
+@staticmethod
+def from_bigquery(source, *, dialect=None)
 ```
 
 Import package from Bigquery
@@ -2847,10 +3057,11 @@ Import package from Bigquery
 
 - `Package` - package
 
+
 ### package.to\_bigquery
 
 ```python
- | to_bigquery(target, *, dialect=None)
+def to_bigquery(target, *, dialect=None)
 ```
 
 Export package to Bigquery
@@ -2865,11 +3076,12 @@ Export package to Bigquery
 
 - `BigqueryStorage` - storage
 
+
 ### package.from\_ckan
 
 ```python
- | @staticmethod
- | from_ckan(source, *, dialect=None)
+@staticmethod
+def from_ckan(source, *, dialect=None)
 ```
 
 Import package from CKAN
@@ -2884,10 +3096,11 @@ Import package from CKAN
 
 - `Package` - package
 
+
 ### package.to\_ckan
 
 ```python
- | to_ckan(target, *, dialect=None)
+def to_ckan(target, *, dialect=None)
 ```
 
 Export package to CKAN
@@ -2902,11 +3115,12 @@ Export package to CKAN
 
 - `CkanStorage` - storage
 
+
 ### package.from\_sql
 
 ```python
- | @staticmethod
- | from_sql(source, *, dialect=None)
+@staticmethod
+def from_sql(source, *, dialect=None)
 ```
 
 Import package from SQL
@@ -2921,10 +3135,11 @@ Import package from SQL
 
 - `Package` - package
 
+
 ### package.to\_sql
 
 ```python
- | to_sql(target, *, dialect=None)
+def to_sql(target, *, dialect=None)
 ```
 
 Export package to SQL
@@ -2939,11 +3154,12 @@ Export package to SQL
 
 - `SqlStorage` - storage
 
+
 ### package.from\_zip
 
 ```python
- | @staticmethod
- | from_zip(path, **options)
+@staticmethod
+def from_zip(path, **options)
 ```
 
 Create a package from ZIP
@@ -2953,10 +3169,11 @@ Create a package from ZIP
 - `path(str)` - file path
 - `**options(dict)` - resouce options
 
+
 ### package.to\_zip
 
 ```python
- | to_zip(path, *, encoder_class=None)
+def to_zip(path, *, encoder_class=None)
 ```
 
 Save package to a zip
@@ -2970,6 +3187,7 @@ Save package to a zip
 **Raises**:
 
 - `FrictionlessException` - on any error
+
 
 ## PandasDialect
 
@@ -2992,6 +3210,7 @@ Public   | `from frictionless.plugins.pandas import PandasDialect`
 
 - `FrictionlessException` - raise any error that occurs during the process
 
+
 ## PandasParser
 
 ```python
@@ -3004,6 +3223,7 @@ API      | Usage
 -------- | --------
 Public   | `from frictionless.plugins.pandas import PandasParser`
 
+
 ## PandasPlugin
 
 ```python
@@ -3015,6 +3235,7 @@ Plugin for Pandas
 API      | Usage
 -------- | --------
 Public   | `from frictionless.plugins.pandas import PandasPlugin`
+
 
 ## Parser
 
@@ -3032,71 +3253,78 @@ Public   | `from frictionless import Parser`
 
 - `resource` _Resource_ - resource
 
+
 ### parser.resource
 
 ```python
- | @property
- | resource()
+@property
+def resource()
 ```
 
 **Returns**:
 
 - `Resource` - resource
 
+
 ### parser.loader
 
 ```python
- | @property
- | loader()
+@property
+def loader()
 ```
 
 **Returns**:
 
 - `Loader` - loader
 
+
 ### parser.sample
 
 ```python
- | @property
- | sample()
+@property
+def sample()
 ```
 
 **Returns**:
 
 - `Loader` - sample
 
+
 ### parser.list\_stream
 
 ```python
- | @property
- | list_stream()
+@property
+def list_stream()
 ```
 
 **Yields**:
 
 - `any[][]` - list stream
 
+
 ### parser.open
 
 ```python
- | open()
+def open()
 ```
 
 Open the parser as "io.open" does
 
+
 ### parser.close
 
 ```python
- | close()
+def close()
 ```
 
 Close the parser as "filelike.close" does
 
+
 ### parser.closed
 
 ```python
- | @property
- | closed()
+@property
+def closed()
 ```
 
 Whether the parser is closed
@@ -3105,10 +3333,11 @@ Whether the parser is closed
 
 - `bool` - if closed
 
+
 ### parser.read\_loader
 
 ```python
- | read_loader()
+def read_loader()
 ```
 
 Create and open loader
@@ -3117,10 +3346,11 @@ Create and open loader
 
 - `Loader` - loader
 
+
 ### parser.read\_list\_stream
 
 ```python
- | read_list_stream()
+def read_list_stream()
 ```
 
 Read list stream
@@ -3129,10 +3359,11 @@ Read list stream
 
 - `gen<any[][]>` - list stream
 
+
 ### parser.read\_list\_stream\_create
 
 ```python
- | read_list_stream_create()
+def read_list_stream_create()
 ```
 
 Create list stream from loader
@@ -3146,10 +3377,11 @@ Create list stream from loader
 
 - `gen<any[][]>` - list stream
 
+
 ### parser.read\_list\_stream\_handle\_errors
 
 ```python
- | read_list_stream_handle_errors(list_stream)
+def read_list_stream_handle_errors(list_stream)
 ```
 
 Wrap list stream into error handler
@@ -3163,10 +3395,11 @@ Wrap list stream into error handler
 
 - `gen<any[][]>` - list stream
 
+
 ### parser.write\_row\_stream
 
 ```python
- | write_row_stream(resource)
+def write_row_stream(resource)
 ```
 
 Write row stream from the source resource
@@ -3174,6 +3407,7 @@ Write row stream from the source resource
 **Arguments**:
 
 - `source` _Resource_ - source resource
+
 
 ## Pipeline
 
@@ -3192,24 +3426,27 @@ Pipeline representation.
 
 - `FrictionlessException` - raise any error that occurs during the process
 
+
 ### pipeline.tasks
 
 ```python
- | @property
- | tasks()
+@property
+def tasks()
 ```
 
 **Returns**:
 
 - `dict[]` - tasks
 
+
 ### pipeline.run
 
 ```python
- | run(*, parallel=False)
+def run(*, parallel=False)
 ```
 
 Run the pipeline
+
 
 ## PipelineTask
 
@@ -3228,13 +3465,15 @@ Pipeline task representation.
 
 - `FrictionlessException` - raise any error that occurs during the process
 
+
 ### pipelineTask.run
 
 ```python
- | run()
+def run()
 ```
 
 Run the task
+
 
 ## Plugin
 
@@ -3251,10 +3490,11 @@ Public   | `from frictionless import Plugin`
 It's an interface for writing Frictionless plugins.
 You can implement one or more methods to hook into Frictionless system.
 
+
 ### plugin.create\_candidates
 
 ```python
- | create_candidates(candidates)
+def create_candidates(candidates)
 ```
 
 Create candidates
@@ -3263,10 +3503,11 @@ Create candidates
 
 - `dict[]` - an ordered by priority list of type descriptors for type detection
 
+
 ### plugin.create\_check
 
 ```python
- | create_check(name, *, descriptor=None)
+def create_check(name, *, descriptor=None)
 ```
 
 Create check
@@ -3281,10 +3522,11 @@ Create check
 
 - `Check` - check
 
+
 ### plugin.create\_control
 
 ```python
- | create_control(file, *, descriptor)
+def create_control(file, *, descriptor)
 ```
 
 Create control
@@ -3299,10 +3541,11 @@ Create control
 
 - `Control` - control
 
+
 ### plugin.create\_dialect
 
 ```python
- | create_dialect(file, *, descriptor)
+def create_dialect(file, *, descriptor)
 ```
 
 Create dialect
@@ -3317,10 +3560,11 @@ Create dialect
 
 - `Dialect` - dialect
 
+
 ### plugin.create\_error
 
 ```python
- | create_error(descriptor)
+def create_error(descriptor)
 ```
 
 Create error
@@ -3334,10 +3578,11 @@ Create error
 
 - `Error` - error
 
+
 ### plugin.create\_file
 
 ```python
- | create_file(source, **options)
+def create_file(source, **options)
 ```
 
 Create file
@@ -3352,10 +3597,11 @@ Create file
 
 - `File` - file
 
+
 ### plugin.create\_loader
 
 ```python
- | create_loader(file)
+def create_loader(file)
 ```
 
 Create loader
@@ -3369,10 +3615,11 @@ Create loader
 
 - `Loader` - loader
 
+
 ### plugin.create\_parser
 
 ```python
- | create_parser(file)
+def create_parser(file)
 ```
 
 Create parser
@@ -3386,10 +3633,11 @@ Create parser
 
 - `Parser` - parser
 
+
 ### plugin.create\_server
 
 ```python
- | create_server(name)
+def create_server(name)
 ```
 
 Create server
@@ -3403,10 +3651,11 @@ Create server
 
 - `Server` - server
 
+
 ### plugin.create\_step
 
 ```python
- | create_step(descriptor)
+def create_step(descriptor)
 ```
 
 Create step
@@ -3420,10 +3669,11 @@ Create step
 
 - `Step` - step
 
+
 ### plugin.create\_storage
 
 ```python
- | create_storage(name, source, **options)
+def create_storage(name, source, **options)
 ```
 
 Create storage
@@ -3438,10 +3688,11 @@ Create storage
 
 - `Storage` - storage
 
+
 ### plugin.create\_type
 
 ```python
- | create_type(field)
+def create_type(field)
 ```
 
 Create type
@@ -3454,6 +3705,7 @@ Create type
 **Returns**:
 
 - `Type` - type
+
 
 ## RemoteControl
 
@@ -3479,46 +3731,51 @@ Public   | `from frictionless.plugins.remote import RemoteControl`
 
 - `FrictionlessException` - raise any error that occurs during the process
 
+
 ### remoteControl.http\_session
 
 ```python
- | @Metadata.property
- | http_session()
+@Metadata.property
+def http_session()
 ```
 
 **Returns**:
 
 - `requests.Session` - HTTP session
 
+
 ### remoteControl.http\_preload
 
 ```python
- | @Metadata.property
- | http_preload()
+@Metadata.property
+def http_preload()
 ```
 
 **Returns**:
 
 - `bool` - if not streaming
 
+
 ### remoteControl.http\_timeout
 
 ```python
- | @Metadata.property
- | http_timeout()
+@Metadata.property
+def http_timeout()
 ```
 
 **Returns**:
 
 - `int` - HTTP timeout in minutes
 
+
 ### remoteControl.expand
 
 ```python
- | expand()
+def expand()
 ```
 
 Expand metadata
+
 
 ## RemoteLoader
 
@@ -3532,6 +3789,7 @@ API      | Usage
 -------- | --------
 Public   | `from frictionless.plugins.remote import RemoteLoader`
 
+
 ## RemotePlugin
 
 ```python
@@ -3543,6 +3801,7 @@ Plugin for Remote Data
 API      | Usage
 -------- | --------
 Public   | `from frictionless.plugins.remote import RemotePlugin`
+
 
 ## Report
 
@@ -3568,77 +3827,84 @@ Public   | `from frictionless import Report`
 
 - `FrictionlessException` - raise any error that occurs during the process
 
+
 ### report.version
 
 ```python
- | @property
- | version()
+@property
+def version()
 ```
 
 **Returns**:
 
 - `str` - frictionless version
 
+
 ### report.time
 
 ```python
- | @property
- | time()
+@property
+def time()
 ```
 
 **Returns**:
 
 - `float` - validation time
 
+
 ### report.valid
 
 ```python
- | @property
- | valid()
+@property
+def valid()
 ```
 
 **Returns**:
 
 - `bool` - validation result
 
+
 ### report.stats
 
 ```python
- | @property
- | stats()
+@property
+def stats()
 ```
 
 **Returns**:
 
 - `dict` - validation stats
 
+
 ### report.errors
 
 ```python
- | @property
- | errors()
+@property
+def errors()
 ```
 
 **Returns**:
 
 - `Error[]` - validation errors
 
+
 ### report.tasks
 
 ```python
- | @property
- | tasks()
+@property
+def tasks()
 ```
 
 **Returns**:
 
 - `ReportTask[]` - validation tasks
 
+
 ### report.task
 
 ```python
- | @property
- | task()
+@property
+def task()
 ```
 
 **Returns**:
@@ -3650,18 +3916,20 @@ Public   | `from frictionless import Report`
 
 - `FrictionlessException` - if there are more that 1 task
 
+
 ### report.expand
 
 ```python
- | expand()
+def expand()
 ```
 
 Expand metadata
 
+
 ### report.flatten
 
 ```python
- | flatten(spec=["taskPosition", "rowPosition", "fieldPosition", "code"])
+def flatten(spec=["taskPosition", "rowPosition", "fieldPosition", "code"])
 ```
 
 Flatten the report
@@ -3673,11 +3941,12 @@ spec (any[]): flatten specification
 
 - `any[]` - flatten report
 
+
 ### report.from\_validate
 
 ```python
- | @staticmethod
- | from_validate(validate)
+@staticmethod
+def from_validate(validate)
 ```
 
 Validate function wrapper
@@ -3690,6 +3959,7 @@ Validate function wrapper
 **Returns**:
 
 - `func` - wrapped validate
+
 
 ## ReportTask
 
@@ -3715,88 +3985,96 @@ Public   | `from frictionless import ReportTask`
   # Raises
 - `FrictionlessException` - raise any error that occurs during the process
 
+
 ### reportTask.resource
 
 ```python
- | @property
- | resource()
+@property
+def resource()
 ```
 
 **Returns**:
 
 - `Resource` - resource
 
+
 ### reportTask.time
 
 ```python
- | @property
- | time()
+@property
+def time()
 ```
 
 **Returns**:
 
 - `float` - validation time
 
+
 ### reportTask.valid
 
 ```python
- | @property
- | valid()
+@property
+def valid()
 ```
 
 **Returns**:
 
 - `bool` - validation result
 
+
 ### reportTask.scope
 
 ```python
- | @property
- | scope()
+@property
+def scope()
 ```
 
 **Returns**:
 
 - `str[]` - validation scope
 
+
 ### reportTask.partial
 
 ```python
- | @property
- | partial()
+@property
+def partial()
 ```
 
 **Returns**:
 
 - `bool` - if validation partial
 
+
 ### reportTask.stats
 
 ```python
- | @property
- | stats()
+@property
+def stats()
 ```
 
 **Returns**:
 
 - `dict` - validation stats
 
+
 ### reportTask.errors
 
 ```python
- | @property
- | errors()
+@property
+def errors()
 ```
 
 **Returns**:
 
 - `Error[]` - validation errors
 
+
 ### reportTask.error
 
 ```python
- | @property
- | error()
+@property
+def error()
 ```
 
 **Returns**:
@@ -3808,18 +4086,20 @@ Public   | `from frictionless import ReportTask`
 
 - `FrictionlessException` - if more than one errors
 
+
 ### reportTask.expand
 
 ```python
- | expand()
+def expand()
 ```
 
 Expand metadata
 
+
 ### reportTask.flatten
 
 ```python
- | flatten(spec=["rowPosition", "fieldPosition", "code"])
+def flatten(spec=["rowPosition", "fieldPosition", "code"])
 ```
 
 Flatten the report
@@ -3830,6 +4110,7 @@ spec (any[]): flatten specification
 **Returns**:
 
 - `any[]` - flatten task report
+
 
 ## Resource
 
@@ -3949,212 +4230,233 @@ with Resource("data/table.csv") as resource:
 
 - `FrictionlessException` - raise any error that occurs during the process
 
+
 ### resource.name
 
 ```python
- | @Metadata.property
- | name()
+@Metadata.property
+def name()
 ```
 
 Returns
     str: resource name
 
+
 ### resource.title
 
 ```python
- | @Metadata.property
- | title()
+@Metadata.property
+def title()
 ```
 
 Returns
     str: resource title
 
+
 ### resource.description
 
 ```python
- | @Metadata.property
- | description()
+@Metadata.property
+def description()
 ```
 
 Returns
     str: resource description
 
+
 ### resource.mediatype
 
 ```python
- | @Metadata.property
- | mediatype()
+@Metadata.property
+def mediatype()
 ```
 
 Returns
     str: resource mediatype
 
+
 ### resource.licenses
 
 ```python
- | @Metadata.property
- | licenses()
+@Metadata.property
+def licenses()
 ```
 
 Returns
     dict[]: resource licenses
 
+
 ### resource.sources
 
 ```python
- | @Metadata.property
- | sources()
+@Metadata.property
+def sources()
 ```
 
 Returns
     dict[]: resource sources
 
+
 ### resource.profile
 
 ```python
- | @Metadata.property
- | profile()
+@Metadata.property
+def profile()
 ```
 
 Returns
     str?: resource profile
 
+
 ### resource.path
 
 ```python
- | @Metadata.property
- | path()
+@Metadata.property
+def path()
 ```
 
 Returns
     str?: resource path
 
+
 ### resource.data
 
 ```python
- | @Metadata.property
- | data()
+@Metadata.property
+def data()
 ```
 
 Returns
     any[][]?: resource data
 
+
 ### resource.scheme
 
 ```python
- | @Metadata.property
- | scheme()
+@Metadata.property
+def scheme()
 ```
 
 Returns
     str?: resource scheme
 
+
 ### resource.format
 
 ```python
- | @Metadata.property
- | format()
+@Metadata.property
+def format()
 ```
 
 Returns
     str?: resource format
 
+
 ### resource.hashing
 
 ```python
- | @Metadata.property
- | hashing()
+@Metadata.property
+def hashing()
 ```
 
 Returns
     str?: resource hashing
 
+
 ### resource.encoding
 
 ```python
- | @Metadata.property
- | encoding()
+@Metadata.property
+def encoding()
 ```
 
 Returns
     str?: resource encoding
 
+
 ### resource.innerpath
 
 ```python
- | @Metadata.property
- | innerpath()
+@Metadata.property
+def innerpath()
 ```
 
 Returns
     str?: resource compression path
 
+
 ### resource.compression
 
 ```python
- | @Metadata.property
- | compression()
+@Metadata.property
+def compression()
 ```
 
 Returns
     str?: resource compression
 
+
 ### resource.control
 
 ```python
- | @Metadata.property
- | control()
+@Metadata.property
+def control()
 ```
 
 Returns
     Control?: resource control
 
+
 ### resource.dialect
 
 ```python
- | @Metadata.property
- | dialect()
+@Metadata.property
+def dialect()
 ```
 
 Returns
     Dialect?: resource dialect
 
+
 ### resource.layout
 
 ```python
- | @Metadata.property
- | layout()
+@Metadata.property
+def layout()
 ```
 
 **Returns**:
 
 - `Layout?` - table layout
 
+
 ### resource.schema
 
 ```python
- | @Metadata.property
- | schema()
+@Metadata.property
+def schema()
 ```
 
 Returns
     Schema: resource schema
 
+
 ### resource.stats
 
 ```python
- | @Metadata.property
- | stats()
+@Metadata.property
+def stats()
 ```
 
 Returns
     dict?: resource stats
 
+
 ### resource.buffer
 
 ```python
- | @property
- | buffer()
+@property
+def buffer()
 ```
 
 File's bytes used as a sample
@@ -4166,11 +4468,12 @@ source file (e.g. encoding, ...).
 
 - `bytes?` - file buffer
 
+
 ### resource.sample
 
 ```python
- | @property
- | sample()
+@property
+def sample()
 ```
 
 Table's lists used as sample.
@@ -4182,22 +4485,24 @@ source file (e.g. schema, ...).
 
 - `list[]?` - table sample
 
+
 ### resource.labels
 
 ```python
- | @property
- | labels()
+@property
+def labels()
 ```
 
 **Returns**:
 
 - `str[]?` - table labels
 
+
 ### resource.fragment
 
 ```python
- | @property
- | fragment()
+@property
+def fragment()
 ```
 
 Table's lists used as fragment.
@@ -4209,95 +4514,104 @@ source file (e.g. schema, ...).
 
 - `list[]?` - table fragment
 
+
 ### resource.header
 
 ```python
- | @property
- | header()
+@property
+def header()
 ```
 
 **Returns**:
 
 - `str[]?` - table header
 
+
 ### resource.basepath
 
 ```python
- | @Metadata.property(cache=False, write=False)
- | basepath()
+@Metadata.property(cache=False, write=False)
+def basepath()
 ```
 
 Returns
     str: resource basepath
 
+
 ### resource.fullpath
 
 ```python
- | @Metadata.property(cache=False, write=False)
- | fullpath()
+@Metadata.property(cache=False, write=False)
+def fullpath()
 ```
 
 Returns
     str: resource fullpath
 
+
 ### resource.detector
 
 ```python
- | @Metadata.property(cache=False, write=False)
- | detector()
+@Metadata.property(cache=False, write=False)
+def detector()
 ```
 
 Returns
     str: resource detector
 
+
 ### resource.onerror
 
 ```python
- | @Metadata.property(cache=False, write=False)
- | onerror()
+@Metadata.property(cache=False, write=False)
+def onerror()
 ```
 
 **Returns**:
 
 - `ignore|warn|raise` - on error bahaviour
 
+
 ### resource.trusted
 
 ```python
- | @Metadata.property(cache=False, write=False)
- | trusted()
+@Metadata.property(cache=False, write=False)
+def trusted()
 ```
 
 **Returns**:
 
 - `bool` - don't raise an exception on unsafe paths
 
+
 ### resource.package
 
 ```python
- | @Metadata.property(cache=False, write=False)
- | package()
+@Metadata.property(cache=False, write=False)
+def package()
 ```
 
 **Returns**:
 
 - `Package?` - parent package
 
+
 ### resource.tabular
 
 ```python
- | @Metadata.property(write=False)
- | tabular()
+@Metadata.property(write=False)
+def tabular()
 ```
 
 Returns
     bool: if resource is tabular
 
+
 ### resource.byte\_stream
 
 ```python
- | @property
- | byte_stream()
+@property
+def byte_stream()
 ```
 
 Byte stream in form of a generator
@@ -4306,11 +4620,12 @@ Byte stream in form of a generator
 
 - `gen<bytes>?` - byte stream
 
+
 ### resource.text\_stream
 
 ```python
- | @property
- | text_stream()
+@property
+def text_stream()
 ```
 
 Text stream in form of a generator
@@ -4319,11 +4634,12 @@ Text stream in form of a generator
 
 - `gen<str[]>?` - text stream
 
+
 ### resource.list\_stream
 
 ```python
- | @property
- | list_stream()
+@property
+def list_stream()
 ```
 
 List stream in form of a generator
@@ -4332,11 +4648,12 @@ List stream in form of a generator
 
 - `gen<any[][]>?` - list stream
 
+
 ### resource.row\_stream
 
 ```python
- | @property
- | row_stream()
+@property
+def row_stream()
 ```
 
 Row stream in form of a generator of Row objects
@@ -4345,18 +4662,20 @@ Row stream in form of a generator of Row objects
 
 - `gen<Row[]>?` - row stream
 
+
 ### resource.expand
 
 ```python
- | expand()
+def expand()
 ```
 
 Expand metadata
 
+
 ### resource.infer
 
 ```python
- | infer(*, stats=False)
+def infer(*, stats=False)
 ```
 
 Infer metadata
@@ -4365,10 +4684,11 @@ Infer metadata
 
 - `stats?` _bool_ - stream file completely and infer stats
 
+
 ### resource.open
 
 ```python
- | open()
+def open()
 ```
 
 Open the resource as "io.open" does
@@ -4377,19 +4697,21 @@ Open the resource as "io.open" does
 
 - `FrictionlessException` - any exception that occurs
 
+
 ### resource.close
 
 ```python
- | close()
+def close()
 ```
 
 Close the table as "filelike.close" does
 
+
 ### resource.closed
 
 ```python
- | @property
- | closed()
+@property
+def closed()
 ```
 
 Whether the table is closed
@@ -4398,10 +4720,11 @@ Whether the table is closed
 
 - `bool` - if closed
 
+
 ### resource.read\_bytes
 
 ```python
- | read_bytes(*, size=None)
+def read_bytes(*, size=None)
 ```
 
 Read bytes into memory
@@ -4410,10 +4733,11 @@ Read bytes into memory
 
 - `any[][]` - resource bytes
 
+
 ### resource.read\_text
 
 ```python
- | read_text(*, size=None)
+def read_text(*, size=None)
 ```
 
 Read text into memory
@@ -4422,10 +4746,11 @@ Read text into memory
 
 - `str` - resource text
 
+
 ### resource.read\_data
 
 ```python
- | read_data(*, size=None)
+def read_data(*, size=None)
 ```
 
 Read data into memory
@@ -4434,10 +4759,11 @@ Read data into memory
 
 - `any` - resource data
 
+
 ### resource.read\_lists
 
 ```python
- | read_lists(*, size=None)
+def read_lists(*, size=None)
 ```
 
 Read lists into memory
@@ -4446,10 +4772,11 @@ Read lists into memory
 
 - `any[][]` - table lists
 
+
 ### resource.read\_rows
 
 ```python
- | read_rows(*, size=None)
+def read_rows(*, size=None)
 ```
 
 Read rows into memory
@@ -4458,10 +4785,11 @@ Read rows into memory
 
 - `Row[]` - table rows
 
+
 ### resource.write
 
 ```python
- | write(target=None, **options)
+def write(target=None, **options)
 ```
 
 Write this resource to the target resource
@@ -4471,10 +4799,11 @@ Write this resource to the target resource
 - `target` _any|Resource_ - target or target resource instance
 - `**options` _dict_ - Resource constructor options
 
+
 ### resource.to\_dict
 
 ```python
- | to_dict()
+def to_dict()
 ```
 
 Create a dict from the resource
@@ -4482,10 +4811,11 @@ Create a dict from the resource
 Returns
     dict: dict representation
 
+
 ### resource.to\_copy
 
 ```python
- | to_copy(**options)
+def to_copy(**options)
 ```
 
 Create a copy from the resource
@@ -4493,10 +4823,11 @@ Create a copy from the resource
 Returns
     Resource: resource copy
 
+
 ### resource.to\_view
 
 ```python
- | to_view(type="look", **options)
+def to_view(type="look", **options)
 ```
 
 Create a view from the resource
@@ -4512,10 +4843,11 @@ https://petl.readthedocs.io/en/stable/util.html#visualising-tables
   Returns
 - `str` - resource's view
 
+
 ### resource.to\_snap
 
 ```python
- | to_snap(*, json=False)
+def to_snap(*, json=False)
 ```
 
 Create a snapshot from the resource
@@ -4527,38 +4859,43 @@ Create a snapshot from the resource
   Returns
 - `list` - resource's data
 
+
 ### resource.to\_inline
 
 ```python
- | to_inline(*, dialect=None)
+def to_inline(*, dialect=None)
 ```
 
 Helper to export resource as an inline data
 
+
 ### resource.to\_pandas
 
 ```python
- | to_pandas(*, dialect=None)
+def to_pandas(*, dialect=None)
 ```
 
 Helper to export resource as an Pandas dataframe
 
+
 ### resource.from\_petl
 
 ```python
- | @staticmethod
- | from_petl(view, **options)
+@staticmethod
+def from_petl(view, **options)
 ```
 
 Create a resource from PETL view
 
+
 ### resource.to\_petl
 
 ```python
- | to_petl(normalize=False)
+def to_petl(normalize=False)
 ```
 
 Export resource as a PETL table
+
 
 ## Row
 
@@ -4590,77 +4927,84 @@ for row in rows:
 - `row_position` _int_ - row position from 1
 - `row_number` _int_ - row number from 1
 
+
 ### row.cells
 
 ```python
- | @cached_property
- | cells()
+@cached_property
+def cells()
 ```
 
 **Returns**:
 
 - `Field[]` - table schema fields
+
 
 ### row.fields
 
 ```python
- | @cached_property
- | fields()
+@cached_property
+def fields()
 ```
 
 **Returns**:
 
 - `Field[]` - table schema fields
 
+
 ### row.field\_names
 
 ```python
- | @cached_property
- | field_names()
+@cached_property
+def field_names()
 ```
 
 **Returns**:
 
 - `Schema` - table schema
 
+
 ### row.field\_positions
 
 ```python
- | @cached_property
- | field_positions()
+@cached_property
+def field_positions()
 ```
 
 **Returns**:
 
 - `int[]` - table field positions
 
+
 ### row.row\_position
 
 ```python
- | @cached_property
- | row_position()
+@cached_property
+def row_position()
 ```
 
 **Returns**:
 
 - `int` - row position from 1
 
+
 ### row.row\_number
 
 ```python
- | @cached_property
- | row_number()
+@cached_property
+def row_number()
 ```
 
 **Returns**:
 
 - `int` - row number from 1
 
+
 ### row.blank\_cells
 
 ```python
- | @cached_property
- | blank_cells()
+@cached_property
+def blank_cells()
 ```
 
 A mapping indexed by a field name with blank cells before parsing
@@ -4669,11 +5013,12 @@ A mapping indexed by a field name with blank cells before parsing
 
 - `dict` - row blank cells
 
+
 ### row.error\_cells
 
 ```python
- | @cached_property
- | error_cells()
+@cached_property
+def error_cells()
 ```
 
 A mapping indexed by a field name with error cells before parsing
@@ -4682,42 +5027,46 @@ A mapping indexed by a field name with error cells before parsing
 
 - `dict` - row error cells
 
+
 ### row.errors
 
 ```python
- | @cached_property
- | errors()
+@cached_property
+def errors()
 ```
 
 **Returns**:
 
 - `Error[]` - row errors
 
+
 ### row.valid
 
 ```python
- | @cached_property
- | valid()
+@cached_property
+def valid()
 ```
 
 **Returns**:
 
 - `bool` - if row valid
 
+
 ### row.to\_str
 
 ```python
- | to_str()
+def to_str()
 ```
 
 **Returns**:
 
 - `str` - a row as a CSV string
 
+
 ### row.to\_list
 
 ```python
- | to_list(*, json=False, types=None)
+def to_list(*, json=False, types=None)
 ```
 
 **Arguments**:
@@ -4730,10 +5079,11 @@ A mapping indexed by a field name with error cells before parsing
 
 - `dict` - a row as a list
 
+
 ### row.to\_dict
 
 ```python
- | to_dict(*, json=False, types=None)
+def to_dict(*, json=False, types=None)
 ```
 
 **Arguments**:
@@ -4744,6 +5094,7 @@ A mapping indexed by a field name with error cells before parsing
 **Returns**:
 
 - `dict` - a row as a dictionary
+
 
 ## S3Control
 
@@ -4767,13 +5118,15 @@ Public   | `from frictionless.plugins.s3 import S3Control`
 
 - `FrictionlessException` - raise any error that occurs during the process
 
+
 ### s3Control.expand
 
 ```python
- | expand()
+def expand()
 ```
 
 Expand metadata
+
 
 ## S3Loader
 
@@ -4787,6 +5140,7 @@ API      | Usage
 -------- | --------
 Public   | `from frictionless.plugins.s3 import S3Loader`
 
+
 ## S3Plugin
 
 ```python
@@ -4798,6 +5152,7 @@ Plugin for S3
 API      | Usage
 -------- | --------
 Public   | `from frictionless.plugins.s3 import S3Plugin`
+
 
 ## Schema
 
@@ -4833,65 +5188,71 @@ schema.add_fied(Field(name='name', type='string'))
 
 - `FrictionlessException` - raise any error that occurs during the process
 
+
 ### schema.missing\_values
 
 ```python
- | @Metadata.property
- | missing_values()
+@Metadata.property
+def missing_values()
 ```
 
 **Returns**:
 
 - `str[]` - missing values
 
+
 ### schema.primary\_key
 
 ```python
- | @Metadata.property
- | primary_key()
+@Metadata.property
+def primary_key()
 ```
 
 **Returns**:
 
 - `str[]` - primary key field names
 
+
 ### schema.foreign\_keys
 
 ```python
- | @Metadata.property
- | foreign_keys()
+@Metadata.property
+def foreign_keys()
 ```
 
 **Returns**:
 
 - `dict[]` - foreign keys
 
+
 ### schema.fields
 
 ```python
- | @Metadata.property
- | fields()
+@Metadata.property
+def fields()
 ```
 
 **Returns**:
 
 - `Field[]` - an array of field instances
 
+
 ### schema.field\_names
 
 ```python
- | @Metadata.property(cache=False, write=False)
- | field_names()
+@Metadata.property(cache=False, write=False)
+def field_names()
 ```
 
 **Returns**:
 
 - `str[]` - an array of field names
 
+
 ### schema.add\_field
 
 ```python
- | add_field(source=None, **options)
+def add_field(source=None, **options)
 ```
 
 Add new field to the package.
@@ -4906,10 +5267,11 @@ Add new field to the package.
 
 - `Resource/None` - added `Resource` instance or `None` if not added
 
+
 ### schema.get\_field
 
 ```python
- | get_field(name)
+def get_field(name)
 ```
 
 Get schema's field by name.
@@ -4928,10 +5290,11 @@ Get schema's field by name.
 
 - `Field` - `Field` instance or `None` if not found
 
+
 ### schema.has\_field
 
 ```python
- | has_field(name)
+def has_field(name)
 ```
 
 Check if a field is present
@@ -4945,10 +5308,11 @@ Check if a field is present
 
 - `bool` - whether there is the field
 
+
 ### schema.remove\_field
 
 ```python
- | remove_field(name)
+def remove_field(name)
 ```
 
 Remove field by name.
@@ -4969,18 +5333,20 @@ The schema descriptor will be validated after field descriptor removal.
 
 - `Field/None` - removed `Field` instances or `None` if not found
 
+
 ### schema.expand
 
 ```python
- | expand()
+def expand()
 ```
 
 Expand the schema
 
+
 ### schema.read\_cells
 
 ```python
- | read_cells(cells)
+def read_cells(cells)
 ```
 
 Read a list of cells (normalize/cast)
@@ -4994,10 +5360,11 @@ Read a list of cells (normalize/cast)
 
 - `any[]` - list of processed cells
 
+
 ### schema.write\_cells
 
 ```python
- | write_cells(cells, *, types=[])
+def write_cells(cells, *, types=[])
 ```
 
 Write a list of cells (normalize/uncast)
@@ -5011,11 +5378,12 @@ Write a list of cells (normalize/uncast)
 
 - `any[]` - list of processed cells
 
+
 ### schema.from\_jsonschema
 
 ```python
- | @staticmethod
- | from_jsonschema(profile)
+@staticmethod
+def from_jsonschema(profile)
 ```
 
 Create a Schema from JSONSchema profile
@@ -5029,6 +5397,7 @@ Create a Schema from JSONSchema profile
 
 - `Schema` - schema instance
 
+
 ## Server
 
 ```python
@@ -5041,10 +5410,11 @@ API      | Usage
 -------- | --------
 Public   | `from frictionless import Schema`
 
+
 ### server.start
 
 ```python
- | start(port)
+def start(port)
 ```
 
 Start the server
@@ -5053,13 +5423,15 @@ Start the server
 
 - `port` _int_ - HTTP port
 
+
 ### server.stop
 
 ```python
- | stop()
+def stop()
 ```
 
 Stop the server
+
 
 ## ServerPlugin
 
@@ -5072,6 +5444,7 @@ Plugin for Server
 API      | Usage
 -------- | --------
 Public   | `from frictionless.plugins.server import ServerPlugin`
+
 
 ## SpssDialect
 
@@ -5094,6 +5467,7 @@ Public   | `from frictionless.plugins.spss import SpssDialect`
 
 - `FrictionlessException` - raise any error that occurs during the process
 
+
 ## SpssParser
 
 ```python
@@ -5106,6 +5480,7 @@ API      | Usage
 -------- | --------
 Public   | `from frictionless.plugins.spss import SpssParser`
 
+
 ## SpssPlugin
 
 ```python
@@ -5117,6 +5492,7 @@ Plugin for SPSS
 API      | Usage
 -------- | --------
 Public   | `from frictionless.plugins.spss import SpssPlugin`
+
 
 ## SqlDialect
 
@@ -5144,6 +5520,7 @@ Public   | `from frictionless.plugins.sql import SqlDialect`
 
 - `FrictionlessException` - raise any error that occurs during the process
 
+
 ## SqlParser
 
 ```python
@@ -5156,6 +5533,7 @@ API      | Usage
 -------- | --------
 Public   | `from frictionless.plugins.sql import SqlParser`
 
+
 ## SqlPlugin
 
 ```python
@@ -5167,6 +5545,7 @@ Plugin for SQL
 API      | Usage
 -------- | --------
 Public   | `from frictionless.plugins.sql import SqlPlugin`
+
 
 ## SqlStorage
 
@@ -5187,6 +5566,7 @@ Public   | `from frictionless.plugins.sql import SqlStorage`
 - `prefix?` _str_ - prefix for all tables
 - `namespace?` _str_ - SQL scheme
 
+
 ## Status
 
 ```python
@@ -5204,77 +5584,84 @@ Status representation.
 
 - `FrictionlessException` - raise any error that occurs during the process
 
+
 ### status.version
 
 ```python
- | @property
- | version()
+@property
+def version()
 ```
 
 **Returns**:
 
 - `str` - frictionless version
 
+
 ### status.time
 
 ```python
- | @property
- | time()
+@property
+def time()
 ```
 
 **Returns**:
 
 - `float` - transformation time
 
+
 ### status.valid
 
 ```python
- | @property
- | valid()
+@property
+def valid()
 ```
 
 **Returns**:
 
 - `bool` - transformation result
 
+
 ### status.stats
 
 ```python
- | @property
- | stats()
+@property
+def stats()
 ```
 
 **Returns**:
 
 - `dict` - transformation stats
 
+
 ### status.errors
 
 ```python
- | @property
- | errors()
+@property
+def errors()
 ```
 
 **Returns**:
 
 - `Error[]` - transformation errors
 
+
 ### status.tasks
 
 ```python
- | @property
- | tasks()
+@property
+def tasks()
 ```
 
 **Returns**:
 
 - `ReportTable[]` - transformation tasks
 
+
 ### status.task
 
 ```python
- | @property
- | task()
+@property
+def task()
 ```
 
 **Returns**:
@@ -5286,6 +5673,7 @@ Status representation.
 
 - `FrictionlessException` - if there are more that 1 task
 
+
 ## StatusTask
 
 ```python
@@ -5294,71 +5682,78 @@ class StatusTask(Metadata)
 
 Status Task representation
 
+
 ### statusTask.time
 
 ```python
- | @property
- | time()
+@property
+def time()
 ```
 
 **Returns**:
 
 - `dict` - transformation time
 
+
 ### statusTask.valid
 
 ```python
- | @property
- | valid()
+@property
+def valid()
 ```
 
 **Returns**:
 
 - `bool` - transformation result
 
+
 ### statusTask.stats
 
 ```python
- | @property
- | stats()
+@property
+def stats()
 ```
 
 **Returns**:
 
 - `dict` - transformation stats
 
+
 ### statusTask.errors
 
 ```python
- | @property
- | errors()
+@property
+def errors()
 ```
 
 **Returns**:
 
 - `Error[]` - transformation errors
 
+
 ### statusTask.target
 
 ```python
- | @property
- | target()
+@property
+def target()
 ```
 
 **Returns**:
 
 - `any` - transformation target
+
 
 ### statusTask.type
 
 ```python
- | @property
- | type()
+@property
+def type()
 ```
 
 **Returns**:
 
 - `any` - transformation target
+
 
 ## Step
 
@@ -5368,10 +5763,11 @@ class Step(Metadata)
 
 Step representation
 
+
 ### step.transform\_resource
 
 ```python
- | transform_resource(resource)
+def transform_resource(resource)
 ```
 
 Transform resource
@@ -5385,10 +5781,11 @@ Transform resource
 
 - `resource` _Resource_ - resource
 
+
 ### step.transform\_package
 
 ```python
- | transform_package(resource)
+def transform_package(resource)
 ```
 
 Transform package
@@ -5401,6 +5798,7 @@ Transform package
 **Returns**:
 
 - `package` _Package_ - package
+
 
 ## StreamControl
 
@@ -5423,6 +5821,7 @@ Public   | `from frictionless.plugins.stream import StreamControl`
 
 - `FrictionlessException` - raise any error that occurs during the process
 
+
 ## StreamLoader
 
 ```python
@@ -5435,6 +5834,7 @@ API      | Usage
 -------- | --------
 Public   | `from frictionless.plugins.stream import StreamLoader`
 
+
 ## StreamPlugin
 
 ```python
@@ -5446,6 +5846,7 @@ Plugin for Local Data
 API      | Usage
 -------- | --------
 Public   | `from frictionless.plugins.stream import StreamPlugin`
+
 
 ## System
 
@@ -5462,10 +5863,11 @@ Public   | `from frictionless import system`
 This class provides an ability to make system Frictionless calls.
 It's available as `frictionless.system` singletone.
 
+
 ### system.register
 
 ```python
- | register(name, plugin)
+def register(name, plugin)
 ```
 
 Register a plugin
@@ -5475,10 +5877,11 @@ Register a plugin
 - `name` _str_ - plugin name
 - `plugin` _Plugin_ - plugin to register
 
+
 ### system.deregister
 
 ```python
- | deregister(name)
+def deregister(name)
 ```
 
 Deregister a plugin
@@ -5487,10 +5890,11 @@ Deregister a plugin
 
 - `name` _str_ - plugin name
 
+
 ### system.create\_candidates
 
 ```python
- | create_candidates()
+def create_candidates()
 ```
 
 Create candidates
@@ -5499,10 +5903,11 @@ Create candidates
 
 - `dict[]` - an ordered by priority list of type descriptors for type detection
 
+
 ### system.create\_check
 
 ```python
- | create_check(descriptor)
+def create_check(descriptor)
 ```
 
 Create check
@@ -5516,10 +5921,11 @@ Create check
 
 - `Check` - check
 
+
 ### system.create\_control
 
 ```python
- | create_control(resource, *, descriptor)
+def create_control(resource, *, descriptor)
 ```
 
 Create control
@@ -5534,10 +5940,11 @@ Create control
 
 - `Control` - control
 
+
 ### system.create\_dialect
 
 ```python
- | create_dialect(resource, *, descriptor)
+def create_dialect(resource, *, descriptor)
 ```
 
 Create dialect
@@ -5552,10 +5959,11 @@ Create dialect
 
 - `Dialect` - dialect
 
+
 ### system.create\_error
 
 ```python
- | create_error(descriptor)
+def create_error(descriptor)
 ```
 
 Create error
@@ -5569,10 +5977,11 @@ Create error
 
 - `Error` - error
 
+
 ### system.create\_file
 
 ```python
- | create_file(source, **options)
+def create_file(source, **options)
 ```
 
 Create file
@@ -5587,10 +5996,11 @@ Create file
 
 - `File` - file
 
+
 ### system.create\_loader
 
 ```python
- | create_loader(resource)
+def create_loader(resource)
 ```
 
 Create loader
@@ -5604,10 +6014,11 @@ Create loader
 
 - `Loader` - loader
 
+
 ### system.create\_parser
 
 ```python
- | create_parser(resource)
+def create_parser(resource)
 ```
 
 Create parser
@@ -5621,10 +6032,11 @@ Create parser
 
 - `Parser` - parser
 
+
 ### system.create\_server
 
 ```python
- | create_server(name, **options)
+def create_server(name, **options)
 ```
 
 Create server
@@ -5639,10 +6051,11 @@ Create server
 
 - `Server` - server
 
+
 ### system.create\_step
 
 ```python
- | create_step(descriptor)
+def create_step(descriptor)
 ```
 
 Create step
@@ -5656,10 +6069,11 @@ Create step
 
 - `Step` - step
 
+
 ### system.create\_storage
 
 ```python
- | create_storage(name, source, **options)
+def create_storage(name, source, **options)
 ```
 
 Create storage
@@ -5674,10 +6088,11 @@ Create storage
 
 - `Storage` - storage
 
+
 ### system.create\_type
 
 ```python
- | create_type(field)
+def create_type(field)
 ```
 
 Create type
@@ -5691,10 +6106,11 @@ Create type
 
 - `Type` - type
 
+
 ### system.get\_http\_session
 
 ```python
- | get_http_session()
+def get_http_session()
 ```
 
 Return a HTTP session
@@ -5706,11 +6122,12 @@ from `system.use_http_session` context manager
 
 - `requests.Session` - a HTTP session
 
+
 ### system.use\_http\_session
 
 ```python
- | @contextmanager
- | use_http_session(http_session=None)
+@contextmanager
+def use_http_session(http_session=None)
 ```
 
 HTTP session context manager
@@ -5726,6 +6143,7 @@ with system.use_http_session(session):
 **Arguments**:
 
 - `http_session?` _requests.Session_ - a session; will create a new if omitted
+
 
 ## Type
 
@@ -5745,27 +6163,30 @@ This class is for subclassing.
 
 - `field` _Field_ - field
 
+
 ### type.constraints
 
 **Returns**:
 
 - `str[]` - a list of supported constraints
 
+
 ### type.field
 
 ```python
- | @cached_property
- | field()
+@cached_property
+def field()
 ```
 
 **Returns**:
 
 - `Field` - field
 
+
 ### type.read\_cell
 
 ```python
- | read_cell(cell)
+def read_cell(cell)
 ```
 
 Convert cell (read direction)
@@ -5779,10 +6200,11 @@ Convert cell (read direction)
 
 - `any` - converted cell
 
+
 ### type.write\_cell
 
 ```python
- | write_cell(cell)
+def write_cell(cell)
 ```
 
 Convert cell (write direction)
@@ -5796,6 +6218,7 @@ Convert cell (write direction)
 
 - `any` - converted cell
 
+
 ## XlsParser
 
 ```python
@@ -5808,6 +6231,7 @@ API      | Usage
 -------- | --------
 Public   | `from frictionless.plugins.excel import XlsParser
 
+
 ## XlsxParser
 
 ```python
@@ -5819,6 +6243,7 @@ XLSX parser implementation.
 API      | Usage
 -------- | --------
 Public   | `from frictionless.plugins.excel import XlsxParser
+
 
 ## checks.baseline
 
@@ -5834,6 +6259,7 @@ Public   | `from frictionless import checks`
 Implicit | `validate(...)`
 
 Ths check is enabled by default for any `validate` function run.
+
 
 ## checks.deviated\_value
 
@@ -5858,6 +6284,7 @@ for the `validate` function.
 - `average?` _str_ - one of "mean", "median" or "mode" (default: "mean")
 - `interval?` _str_ - statistical interval (default: 3)
 
+
 ## checks.duplicate\_row
 
 ```python
@@ -5873,6 +6300,7 @@ Implicit | `validate(checks=[{"code": "duplicate-row"}])`
 
 This check can be enabled using the `checks` parameter
 for the `validate` function.
+
 
 ## checks.forbidden\_value
 
@@ -5896,6 +6324,7 @@ for the `validate` function.
 - `field_name` _str_ - a field name to look into
 - `forbidden` _any[]_ - a list of forbidden values
 
+
 ## checks.row\_constraint
 
 ```python
@@ -5918,6 +6347,7 @@ check can be found here - https://github.com/danthedeckie/simpleeval
 - `descriptor` _dict_ - check's descriptor
 - `formula` _str_ - a python expression to evaluate against a row
 
+
 ## checks.sequential\_value
 
 ```python
@@ -5939,6 +6369,7 @@ for the `validate` function.
 - `descriptor` _dict_ - check's descriptor
 - `field_name` _str_ - a field name to check
 
+
 ## checks.truncated\_value
 
 ```python
@@ -5955,10 +6386,11 @@ Implicit | `validate(checks=([{"code": "truncated-value"}])`
 This check can be enabled using the `checks` parameter
 for the `validate` function.
 
+
 ## describe
 
 ```python
-describe(source=None, *, type=None, **options)
+def describe(source=None, *, type=None, **options)
 ```
 
 Describe the data source
@@ -5978,10 +6410,11 @@ Public   | `from frictionless import describe`
 
 - `Package|Resource|Schema` - metadata
 
+
 ## describe\_dialect
 
 ```python
-describe_dialect(source=None, **options)
+def describe_dialect(source=None, **options)
 ```
 
 Describe the given source as a dialect
@@ -6000,10 +6433,11 @@ Public   | `from frictionless import describe_dialect`
 
 - `Dialect` - file dialect
 
+
 ## describe\_package
 
 ```python
-describe_package(source=None, *, expand=False, stats=False, **options)
+def describe_package(source=None, *, expand=False, stats=False, **options)
 ```
 
 Describe the given source as a package
@@ -6024,10 +6458,11 @@ Public   | `from frictionless import describe_package`
 
 - `Package` - data package
 
+
 ## describe\_resource
 
 ```python
-describe_resource(source=None, *, expand=False, stats=False, **options)
+def describe_resource(source=None, *, expand=False, stats=False, **options)
 ```
 
 Describe the given source as a resource
@@ -6048,10 +6483,11 @@ Public   | `from frictionless import describe_resource`
 
 - `Resource` - data resource
 
+
 ## describe\_schema
 
 ```python
-describe_schema(source=None, **options)
+def describe_schema(source=None, **options)
 ```
 
 Describe the given source as a schema
@@ -6069,6 +6505,7 @@ Public   | `from frictionless import describe_schema`
 **Returns**:
 
 - `Schema` - table schema
+
 
 ## errors.CellError
 
@@ -6093,11 +6530,12 @@ Cell error representation
   # Raises
 - `FrictionlessException` - raise any error that occurs during the process
 
+
 ### errors.CellError.from\_row
 
 ```python
- | @classmethod
- | from_row(cls, row, *, note, field_name)
+@classmethod
+def from_row(cls, row, *, note, field_name)
 ```
 
 Create and error from a cell
@@ -6112,6 +6550,7 @@ Create and error from a cell
 **Returns**:
 
 - `CellError` - error
+
 
 ## errors.HeaderError
 
@@ -6136,6 +6575,7 @@ Header error representation
 
 - `FrictionlessException` - raise any error that occurs during the process
 
+
 ## errors.LabelError
 
 ```python
@@ -6159,6 +6599,7 @@ Label error representation
 
 - `FrictionlessException` - raise any error that occurs during the process
 
+
 ## errors.RowError
 
 ```python
@@ -6179,11 +6620,12 @@ Row error representation
 
 - `FrictionlessException` - raise any error that occurs during the process
 
+
 ### errors.RowError.from\_row
 
 ```python
- | @classmethod
- | from_row(cls, row, *, note)
+@classmethod
+def from_row(cls, row, *, note)
 ```
 
 Create an error from a row
@@ -6198,10 +6640,11 @@ Create an error from a row
 
 - `RowError` - error
 
+
 ## extract
 
 ```python
-extract(source=None, *, type=None, process=None, stream=False, **options)
+def extract(source=None, *, type=None, process=None, stream=False, **options)
 ```
 
 Extract resource rows
@@ -6223,10 +6666,11 @@ Public   | `from frictionless import extract`
 
 - `Row[]|{path` - Row[]}: rows in a form depending on the source type
 
+
 ## extract\_package
 
 ```python
-extract_package(source=None, *, process=None, stream=False, **options)
+def extract_package(source=None, *, process=None, stream=False, **options)
 ```
 
 Extract package rows
@@ -6247,10 +6691,11 @@ Public   | `from frictionless import extract_package`
 
 - `{path` - Row[]}: a dictionary of arrays/streams of rows
 
+
 ## extract\_resource
 
 ```python
-extract_resource(source=None, *, process=None, stream=False, **options)
+def extract_resource(source=None, *, process=None, stream=False, **options)
 ```
 
 Extract resource rows
@@ -6270,6 +6715,7 @@ Public   | `from frictionless import extract_resource`
 
 - `Row[]` - an array/stream of rows
 
+
 ## steps.cell\_convert
 
 ```python
@@ -6277,6 +6723,7 @@ class cell_convert(Step)
 ```
 
 Convert cell
+
 
 ## steps.cell\_fill
 
@@ -6286,6 +6733,7 @@ class cell_fill(Step)
 
 Fill cell
 
+
 ## steps.cell\_format
 
 ```python
@@ -6293,6 +6741,7 @@ class cell_format(Step)
 ```
 
 Format cell
+
 
 ## steps.cell\_interpolate
 
@@ -6302,6 +6751,7 @@ class cell_interpolate(Step)
 
 Interpolate cell
 
+
 ## steps.cell\_replace
 
 ```python
@@ -6309,6 +6759,7 @@ class cell_replace(Step)
 ```
 
 Replace cell
+
 
 ## steps.cell\_set
 
@@ -6318,6 +6769,7 @@ class cell_set(Step)
 
 Set cell
 
+
 ## steps.field\_add
 
 ```python
@@ -6325,6 +6777,7 @@ class field_add(Step)
 ```
 
 Add field
+
 
 ## steps.field\_filter
 
@@ -6334,6 +6787,7 @@ class field_filter(Step)
 
 Filter fields
 
+
 ## steps.field\_move
 
 ```python
@@ -6341,6 +6795,7 @@ class field_move(Step)
 ```
 
 Move field
+
 
 ## steps.field\_remove
 
@@ -6350,6 +6805,7 @@ class field_remove(Step)
 
 Remove field
 
+
 ## steps.field\_split
 
 ```python
@@ -6357,6 +6813,7 @@ class field_split(Step)
 ```
 
 Split field
+
 
 ## steps.field\_unpack
 
@@ -6366,6 +6823,7 @@ class field_unpack(Step)
 
 Unpack field
 
+
 ## steps.field\_update
 
 ```python
@@ -6373,6 +6831,7 @@ class field_update(Step)
 ```
 
 Update field
+
 
 ## steps.resource\_add
 
@@ -6382,6 +6841,7 @@ class resource_add(Step)
 
 Add resource
 
+
 ## steps.resource\_remove
 
 ```python
@@ -6389,6 +6849,7 @@ class resource_remove(Step)
 ```
 
 Remove resource
+
 
 ## steps.resource\_transform
 
@@ -6398,6 +6859,7 @@ class resource_transform(Step)
 
 Transform resource
 
+
 ## steps.resource\_update
 
 ```python
@@ -6405,6 +6867,7 @@ class resource_update(Step)
 ```
 
 Update resource
+
 
 ## steps.row\_filter
 
@@ -6414,6 +6877,7 @@ class row_filter(Step)
 
 Filter rows
 
+
 ## steps.row\_search
 
 ```python
@@ -6421,6 +6885,7 @@ class row_search(Step)
 ```
 
 Search rows
+
 
 ## steps.row\_slice
 
@@ -6430,6 +6895,7 @@ class row_slice(Step)
 
 Slice rows
 
+
 ## steps.row\_sort
 
 ```python
@@ -6437,6 +6903,7 @@ class row_sort(Step)
 ```
 
 Sort rows
+
 
 ## steps.row\_split
 
@@ -6446,6 +6913,7 @@ class row_split(Step)
 
 Split rows
 
+
 ## steps.row\_subset
 
 ```python
@@ -6453,6 +6921,7 @@ class row_subset(Step)
 ```
 
 Subset rows
+
 
 ## steps.row\_ungroup
 
@@ -6462,6 +6931,7 @@ class row_ungroup(Step)
 
 Ungroup rows
 
+
 ## steps.table\_aggregate
 
 ```python
@@ -6469,6 +6939,7 @@ class table_aggregate(Step)
 ```
 
 Aggregate table
+
 
 ## steps.table\_attach
 
@@ -6478,6 +6949,7 @@ class table_attach(Step)
 
 Attach table
 
+
 ## steps.table\_debug
 
 ```python
@@ -6485,6 +6957,7 @@ class table_debug(Step)
 ```
 
 Debug table
+
 
 ## steps.table\_diff
 
@@ -6494,6 +6967,7 @@ class table_diff(Step)
 
 Diff tables
 
+
 ## steps.table\_intersect
 
 ```python
@@ -6501,6 +6975,7 @@ class table_intersect(Step)
 ```
 
 Intersect tables
+
 
 ## steps.table\_join
 
@@ -6510,6 +6985,7 @@ class table_join(Step)
 
 Join tables
 
+
 ## steps.table\_melt
 
 ```python
@@ -6517,6 +6993,7 @@ class table_melt(Step)
 ```
 
 Melt tables
+
 
 ## steps.table\_merge
 
@@ -6526,6 +7003,7 @@ class table_merge(Step)
 
 Merge tables
 
+
 ## steps.table\_normalize
 
 ```python
@@ -6533,6 +7011,7 @@ class table_normalize(Step)
 ```
 
 Normalize table
+
 
 ## steps.table\_pivot
 
@@ -6542,6 +7021,7 @@ class table_pivot(Step)
 
 Pivot table
 
+
 ## steps.table\_print
 
 ```python
@@ -6549,6 +7029,7 @@ class table_print(Step)
 ```
 
 Print table
+
 
 ## steps.table\_recast
 
@@ -6558,6 +7039,7 @@ class table_recast(Step)
 
 Recast table
 
+
 ## steps.table\_transpose
 
 ```python
@@ -6565,6 +7047,7 @@ class table_transpose(Step)
 ```
 
 Transpose table
+
 
 ## steps.table\_validate
 
@@ -6574,6 +7057,7 @@ class table_validate(Step)
 
 Validate table
 
+
 ## steps.table\_write
 
 ```python
@@ -6582,10 +7066,11 @@ class table_write(Step)
 
 Write table
 
+
 ## transform
 
 ```python
-transform(source=None, type=None, **options)
+def transform(source=None, type=None, **options)
 ```
 
 Transform resource
@@ -6605,10 +7090,11 @@ Public   | `from frictionless import transform`
 
 - `any` - the transform result
 
+
 ## transform\_package
 
 ```python
-transform_package(source=None, *, steps, **options)
+def transform_package(source=None, *, steps, **options)
 ```
 
 Transform package
@@ -6628,10 +7114,11 @@ Public   | `from frictionless import transform_package`
 
 - `Package` - the transform result
 
+
 ## transform\_pipeline
 
 ```python
-transform_pipeline(source=None, *, parallel=False, **options)
+def transform_pipeline(source=None, *, parallel=False, **options)
 ```
 
 Transform package
@@ -6650,10 +7137,11 @@ Public   | `from frictionless import transform_package`
 
 - `any` - the pipeline output
 
+
 ## transform\_resource
 
 ```python
-transform_resource(source=None, *, steps, **options)
+def transform_resource(source=None, *, steps, **options)
 ```
 
 Transform resource
@@ -6673,6 +7161,7 @@ Public   | `from frictionless import transform_resource`
 
 - `Resource` - the transform result
 
+
 ## types.AnyType
 
 ```python
@@ -6684,6 +7173,7 @@ Any type implementation.
 API      | Usage
 -------- | --------
 Public   | `from frictionless import types`
+
 
 ## types.ArrayType
 
@@ -6697,6 +7187,7 @@ API      | Usage
 -------- | --------
 Public   | `from frictionless import types`
 
+
 ## types.BooleanType
 
 ```python
@@ -6708,6 +7199,7 @@ Boolean type implementation.
 API      | Usage
 -------- | --------
 Public   | `from frictionless import types`
+
 
 ## types.DateType
 
@@ -6721,6 +7213,7 @@ API      | Usage
 -------- | --------
 Public   | `from frictionless import types`
 
+
 ## types.DatetimeType
 
 ```python
@@ -6732,6 +7225,7 @@ Datetime type implementation.
 API      | Usage
 -------- | --------
 Public   | `from frictionless import types`
+
 
 ## types.DurationType
 
@@ -6745,6 +7239,7 @@ API      | Usage
 -------- | --------
 Public   | `from frictionless import types`
 
+
 ## types.GeojsonType
 
 ```python
@@ -6756,6 +7251,7 @@ Geojson type implementation.
 API      | Usage
 -------- | --------
 Public   | `from frictionless import types`
+
 
 ## types.GeopointType
 
@@ -6769,6 +7265,7 @@ API      | Usage
 -------- | --------
 Public   | `from frictionless import types`
 
+
 ## types.IntegerType
 
 ```python
@@ -6780,6 +7277,7 @@ Integer type implementation.
 API      | Usage
 -------- | --------
 Public   | `from frictionless import types`
+
 
 ## types.NumberType
 
@@ -6793,6 +7291,7 @@ API      | Usage
 -------- | --------
 Public   | `from frictionless import types`
 
+
 ## types.ObjectType
 
 ```python
@@ -6804,6 +7303,7 @@ Object type implementation.
 API      | Usage
 -------- | --------
 Public   | `from frictionless import types`
+
 
 ## types.StringType
 
@@ -6817,6 +7317,7 @@ API      | Usage
 -------- | --------
 Public   | `from frictionless import types`
 
+
 ## types.TimeType
 
 ```python
@@ -6828,6 +7329,7 @@ Time type implementation.
 API      | Usage
 -------- | --------
 Public   | `from frictionless import types`
+
 
 ## types.YearType
 
@@ -6841,6 +7343,7 @@ API      | Usage
 -------- | --------
 Public   | `from frictionless import types`
 
+
 ## types.YearmonthType
 
 ```python
@@ -6853,11 +7356,12 @@ API      | Usage
 -------- | --------
 Public   | `from frictionless import types`
 
+
 ## validate
 
 ```python
 @Report.from_validate
-validate(source=None, type=None, **options)
+def validate(source=None, type=None, **options)
 ```
 
 Validate resource
@@ -6877,11 +7381,12 @@ Public   | `from frictionless import validate`
 
 - `Report` - validation report
 
+
 ## validate\_inquiry
 
 ```python
 @Report.from_validate
-validate_inquiry(source=None, *, parallel=False, **options)
+def validate_inquiry(source=None, *, parallel=False, **options)
 ```
 
 Validate inquiry
@@ -6900,11 +7405,12 @@ Public   | `from frictionless import validate_inquiry`
 
 - `Report` - validation report
 
+
 ## validate\_package
 
 ```python
 @Report.from_validate
-validate_package(source=None, original=False, parallel=False, **options)
+def validate_package(source=None, original=False, parallel=False, **options)
 ```
 
 Validate package
@@ -6927,11 +7433,12 @@ Public   | `from frictionless import validate_package`
 
 - `Report` - validation report
 
+
 ## validate\_resource
 
 ```python
 @Report.from_validate
-validate_resource(source=None, *, checks=None, original=False, pick_errors=None, skip_errors=None, limit_errors=settings.DEFAULT_LIMIT_ERRORS, limit_memory=settings.DEFAULT_LIMIT_MEMORY, **options, ,)
+def validate_resource(source=None, *, checks=None, original=False, pick_errors=None, skip_errors=None, limit_errors=settings.DEFAULT_LIMIT_ERRORS, limit_memory=settings.DEFAULT_LIMIT_MEMORY, **options, ,)
 ```
 
 Validate table
@@ -6960,7 +7467,7 @@ Public   | `from frictionless import validate_table`
 
 ```python
 @Report.from_validate
-validate_schema(source=None, **options)
+def validate_schema(source=None, **options)
 ```
 
 Validate schema
@@ -6977,4 +7484,5 @@ Public   | `from frictionless import validate_schema`
 **Returns**:
 
 - `Report` - validation report
+
 

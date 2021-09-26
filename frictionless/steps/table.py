@@ -66,6 +66,8 @@ class table_attach(Step):
         source = self.get("resource")
         if isinstance(source, str):
             source = target.package.get_resource(source)
+        elif isinstance(source, dict):
+            source = Resource(source)
         source.infer()
         view1 = target.to_petl()
         view2 = source.to_petl()
@@ -147,6 +149,8 @@ class table_diff(Step):
         use_hash = self.get("useHash")
         if isinstance(source, str):
             source = target.package.get_resource(source)
+        elif isinstance(source, dict):
+            source = Resource(source)
         source.infer()
         view1 = target.to_petl()
         view2 = source.to_petl()
@@ -187,6 +191,8 @@ class table_intersect(Step):
         use_hash = self.get("useHash")
         if isinstance(source, str):
             source = target.package.get_resource(source)
+        elif isinstance(source, dict):
+            source = Resource(source)
         source.infer()
         view1 = target.to_petl()
         view2 = source.to_petl()
@@ -236,6 +242,8 @@ class table_join(Step):
         mode = self.get("mode")
         if isinstance(source, str):
             source = target.package.get_resource(source)
+        elif isinstance(source, dict):
+            source = Resource(source)
         source.infer()
         view1 = target.to_petl()
         view2 = source.to_petl()
@@ -355,6 +363,8 @@ class table_merge(Step):
         sort_by_field = self.get("sortByField")
         if isinstance(source, str):
             source = target.package.get_resource(source)
+        elif isinstance(source, dict):
+            source = Resource(source)
         source.infer()
         view1 = target.to_petl()
         view2 = source.to_petl()

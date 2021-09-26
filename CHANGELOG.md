@@ -2,6 +2,10 @@
 
 Here described only the breaking and most significant changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/frictionless-py/commits/main).
 
+## v4.17.0
+
+- Add fields, limit, sort and filter options to CkanDialect (#912)
+
 ## v4.16.0
 
 - Implemented `system/plugin.create_candidates` (#893)
