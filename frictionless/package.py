@@ -228,7 +228,8 @@ class Package(Metadata):
         Returns:
             dict?: package licenses
         """
-        return self.get("licenses")
+        licenses = self.get("licenses", [])
+        return self.metadata_attach("licenses", licenses)
 
     @Metadata.property
     def profile(self):
@@ -274,25 +275,28 @@ class Package(Metadata):
     def sources(self):
         """
         Returns:
-            dict[]?: package sources
+            dict[]: package sources
         """
-        return self.get("sources")
+        sources = self.get("sources", [])
+        return self.metadata_attach("sources", sources)
 
     @Metadata.property
     def contributors(self):
         """
         Returns:
-            dict[]?: package contributors
+            dict[]: package contributors
         """
-        return self.get("contributors")
+        contributors = self.get("contributors", [])
+        return self.metadata_attach("contributors", contributors)
 
     @Metadata.property
     def keywords(self):
         """
         Returns:
-            str[]?: package keywords
+            str[]: package keywords
         """
-        return self.get("keywords")
+        keywords = self.get("keywords", [])
+        return self.metadata_attach("keywords", keywords)
 
     @Metadata.property
     def image(self):

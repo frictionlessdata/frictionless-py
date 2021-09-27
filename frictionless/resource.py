@@ -333,7 +333,8 @@ class Resource(Metadata):
         Returns
             dict[]: resource licenses
         """
-        return self.get("licenses")
+        licenses = self.get("licenses", [])
+        return self.metadata_attach("licenses", licenses)
 
     @Metadata.property
     def sources(self):
@@ -341,7 +342,8 @@ class Resource(Metadata):
         Returns
             dict[]: resource sources
         """
-        return self.get("sources")
+        sources = self.get("sources", [])
+        return self.metadata_attach("sources", sources)
 
     @Metadata.property
     def profile(self):
