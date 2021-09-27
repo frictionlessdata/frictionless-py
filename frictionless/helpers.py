@@ -13,6 +13,7 @@ import platform
 import textwrap
 import stringcase
 from inspect import signature
+from html.parser import HTMLParser
 from importlib import import_module
 from contextlib import contextmanager
 from urllib.parse import urlparse, parse_qs
@@ -321,6 +322,19 @@ def parse_resource_hash(hash):
     if len(parts) == 1:
         return (settings.DEFAULT_HASHING, parts[0])
     return parts
+
+
+def html_to_text(html):
+    class HTMLFilter(HTMLParser):
+        text = ""
+
+        def handle_data(self, data):
+            self.text += data
+            self.text += " "
+
+    parser = HTMLFilter()
+    parser.feed(html)
+    return parser.text.strip()
 
 
 # Measurements

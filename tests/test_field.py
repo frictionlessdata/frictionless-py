@@ -103,6 +103,18 @@ def test_field_description_html_not_set():
     assert field.description_html == ""
 
 
+def test_field_description_text():
+    field = Field(description="**test**\n\nline")
+    assert field.description == "**test**\n\nline"
+    assert field.description_text == "test line"
+
+
+def test_field_description_text_plain():
+    field = Field(description="It's just a plain text. Another sentence")
+    assert field.description == "It's just a plain text. Another sentence"
+    assert field.description_text == "It's just a plain text. Another sentence"
+
+
 # Constraints
 
 

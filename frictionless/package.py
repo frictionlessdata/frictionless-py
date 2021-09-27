@@ -267,6 +267,14 @@ class Package(Metadata):
         return html
 
     @Metadata.property
+    def description_text(self):
+        """
+        Returns:
+            str: package description
+        """
+        return helpers.html_to_text(self.description_html)
+
+    @Metadata.property
     def homepage(self):
         """
         Returns:

@@ -355,6 +355,18 @@ def test_resource_description_html_not_set():
     assert resource.description_html == ""
 
 
+def test_resource_description_text():
+    resource = Resource(description="**test**\n\nline")
+    assert resource.description == "**test**\n\nline"
+    assert resource.description_text == "test line"
+
+
+def test_resource_description_text_plain():
+    resource = Resource(description="It's just a plain text. Another sentence")
+    assert resource.description == "It's just a plain text. Another sentence"
+    assert resource.description_text == "It's just a plain text. Another sentence"
+
+
 # Scheme
 
 

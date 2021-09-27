@@ -10,6 +10,7 @@ from .exception import FrictionlessException
 from .metadata import Metadata
 from .system import system
 from . import settings
+from . import helpers
 from . import errors
 from . import types
 
@@ -123,11 +124,19 @@ class Field(Metadata):
     def description_html(self):
         """
         Returns:
-            str: package description
+            str: field description
         """
         html = marko.convert(self.description)
         html = html.replace("\n", "")
         return html
+
+    @Metadata.property
+    def description_text(self):
+        """
+        Returns:
+            str: field description
+        """
+        return helpers.html_to_text(self.description_html)
 
     @Metadata.property
     def type(self):

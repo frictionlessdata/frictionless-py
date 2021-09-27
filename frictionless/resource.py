@@ -324,11 +324,19 @@ class Resource(Metadata):
     def description_html(self):
         """
         Returns:
-            str?: package description
+            str?: resource description
         """
         html = marko.convert(self.description)
         html = html.replace("\n", "")
         return html
+
+    @Metadata.property
+    def description_text(self):
+        """
+        Returns:
+            str: resource description
+        """
+        return helpers.html_to_text(self.description_html)
 
     @Metadata.property
     def mediatype(self):
