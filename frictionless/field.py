@@ -1,5 +1,4 @@
 import re
-import marko
 import decimal
 import warnings
 from copy import copy
@@ -126,9 +125,7 @@ class Field(Metadata):
         Returns:
             str: field description
         """
-        html = marko.convert(self.description)
-        html = html.replace("\n", "")
-        return html
+        return helpers.md_to_html(self.description)
 
     @Metadata.property
     def description_text(self):

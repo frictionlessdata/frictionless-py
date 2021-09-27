@@ -1,6 +1,5 @@
 import os
 import json
-import marko
 import zipfile
 import tempfile
 from pathlib import Path
@@ -262,9 +261,7 @@ class Package(Metadata):
         Returns:
             str: package description
         """
-        html = marko.convert(self.description)
-        html = html.replace("\n", "")
-        return html
+        return helpers.md_to_html(self.description)
 
     @Metadata.property
     def description_text(self):

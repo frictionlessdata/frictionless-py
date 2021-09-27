@@ -1,7 +1,6 @@
 import os
 import json
 import petl
-import marko
 import warnings
 from pathlib import Path
 from copy import deepcopy
@@ -326,9 +325,7 @@ class Resource(Metadata):
         Returns:
             str?: resource description
         """
-        html = marko.convert(self.description)
-        html = html.replace("\n", "")
-        return html
+        return helpers.md_to_html(self.description)
 
     @Metadata.property
     def description_text(self):
