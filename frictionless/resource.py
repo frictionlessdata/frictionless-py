@@ -1,6 +1,7 @@
 import os
 import json
 import petl
+import marko
 import warnings
 from pathlib import Path
 from copy import deepcopy
@@ -318,6 +319,17 @@ class Resource(Metadata):
             str: resource description
         """
         return self.get("description")
+
+    @Metadata.property(cache=False, write=False)
+    def description_html(self):
+        """
+        Returns:
+            str?: package description
+        """
+        if self.description:
+            html = marko.convert(self.description)
+            html = html.replace("\n", "")
+            return html
 
     @Metadata.property
     def mediatype(self):

@@ -337,6 +337,18 @@ def test_resource_official_hash_bytes_rows_with_hashing_algorithm():
     }
 
 
+def test_resource_description_html():
+    resource = Resource(description="**test**")
+    assert resource.description == "**test**"
+    assert resource.description_html == "<p><strong>test</strong></p>"
+
+
+def test_resource_description_html_multiline():
+    resource = Resource(description="**test**\n\nline")
+    assert resource.description == "**test**\n\nline"
+    assert resource.description_html == "<p><strong>test</strong></p><p>line</p>"
+
+
 # Scheme
 
 
