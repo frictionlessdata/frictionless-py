@@ -349,6 +349,12 @@ def test_resource_description_html_multiline():
     assert resource.description_html == "<p><strong>test</strong></p><p>line</p>"
 
 
+def test_resource_description_html_not_set():
+    resource = Resource()
+    assert resource.description == ""
+    assert resource.description_html == ""
+
+
 # Scheme
 
 

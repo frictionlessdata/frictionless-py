@@ -85,6 +85,24 @@ def test_field_standard_specs_properties(create_descriptor):
     assert field.rdf_type == "rdf"
 
 
+def test_field_description_html():
+    field = Field(description="**test**")
+    assert field.description == "**test**"
+    assert field.description_html == "<p><strong>test</strong></p>"
+
+
+def test_field_description_html_multiline():
+    field = Field(description="**test**\n\nline")
+    assert field.description == "**test**\n\nline"
+    assert field.description_html == "<p><strong>test</strong></p><p>line</p>"
+
+
+def test_field_description_html_not_set():
+    field = Field()
+    assert field.description == ""
+    assert field.description_html == ""
+
+
 # Constraints
 
 

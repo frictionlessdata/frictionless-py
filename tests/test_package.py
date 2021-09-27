@@ -217,6 +217,12 @@ def test_package_description_html_multiline():
     assert package.description_html == "<p><strong>test</strong></p><p>line</p>"
 
 
+def test_resource_description_html_not_set():
+    packages = Package()
+    assert packages.description == ""
+    assert packages.description_html == ""
+
+
 # Resources
 
 

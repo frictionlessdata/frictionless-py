@@ -310,7 +310,7 @@ class Resource(Metadata):
         Returns
             str: resource title
         """
-        return self.get("title")
+        return self.get("title", "")
 
     @Metadata.property
     def description(self):
@@ -318,7 +318,7 @@ class Resource(Metadata):
         Returns
             str: resource description
         """
-        return self.get("description")
+        return self.get("description", "")
 
     @Metadata.property(cache=False, write=False)
     def description_html(self):
@@ -326,10 +326,9 @@ class Resource(Metadata):
         Returns:
             str?: package description
         """
-        if self.description:
-            html = marko.convert(self.description)
-            html = html.replace("\n", "")
-            return html
+        html = marko.convert(self.description)
+        html = html.replace("\n", "")
+        return html
 
     @Metadata.property
     def mediatype(self):
@@ -337,7 +336,7 @@ class Resource(Metadata):
         Returns
             str: resource mediatype
         """
-        return self.get("mediatype")
+        return self.get("mediatype", "")
 
     @Metadata.property
     def licenses(self):
@@ -361,7 +360,7 @@ class Resource(Metadata):
     def profile(self):
         """
         Returns
-            str?: resource profile
+            str: resource profile
         """
         default = settings.DEFAULT_RESOURCE_PROFILE
         if self.tabular:
@@ -372,7 +371,7 @@ class Resource(Metadata):
     def path(self):
         """
         Returns
-            str?: resource path
+            str: resource path
         """
         return self.get("path", self.__file.path)
 
@@ -388,7 +387,7 @@ class Resource(Metadata):
     def scheme(self):
         """
         Returns
-            str?: resource scheme
+            str: resource scheme
         """
         return self.get("scheme", self.__file.scheme).lower()
 
@@ -396,7 +395,7 @@ class Resource(Metadata):
     def format(self):
         """
         Returns
-            str?: resource format
+            str: resource format
         """
         return self.get("format", self.__file.format).lower()
 
@@ -404,7 +403,7 @@ class Resource(Metadata):
     def hashing(self):
         """
         Returns
-            str?: resource hashing
+            str: resource hashing
         """
         return self.get("hashing", settings.DEFAULT_HASHING).lower()
 
@@ -412,7 +411,7 @@ class Resource(Metadata):
     def encoding(self):
         """
         Returns
-            str?: resource encoding
+            str: resource encoding
         """
         return self.get("encoding", settings.DEFAULT_ENCODING).lower()
 
@@ -420,7 +419,7 @@ class Resource(Metadata):
     def innerpath(self):
         """
         Returns
-            str?: resource compression path
+            str: resource compression path
         """
         return self.get("innerpath", self.__file.innerpath)
 
@@ -428,7 +427,7 @@ class Resource(Metadata):
     def compression(self):
         """
         Returns
-            str?: resource compression
+            str: resource compression
         """
         return self.get("compression", self.__file.compression).lower()
 
@@ -436,7 +435,7 @@ class Resource(Metadata):
     def control(self):
         """
         Returns
-            Control?: resource control
+            Control: resource control
         """
         control = self.get("control")
         if control is None:
@@ -452,7 +451,7 @@ class Resource(Metadata):
     def dialect(self):
         """
         Returns
-            Dialect?: resource dialect
+            Dialect: resource dialect
         """
         dialect = self.get("dialect")
         if dialect is None:
@@ -468,7 +467,7 @@ class Resource(Metadata):
     def layout(self):
         """
         Returns:
-            Layout?: table layout
+            Layout: table layout
         """
         layout = self.get("layout")
         if layout is None:
@@ -501,7 +500,7 @@ class Resource(Metadata):
     def stats(self):
         """
         Returns
-            dict?: resource stats
+            dict: resource stats
         """
         stats = self.get("stats")
         if stats is None:

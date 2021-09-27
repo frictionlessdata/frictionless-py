@@ -1,4 +1,5 @@
 import re
+import marko
 import decimal
 import warnings
 from copy import copy
@@ -106,17 +107,27 @@ class Field(Metadata):
     def title(self):
         """
         Returns:
-            str?: title
+            str: title
         """
-        return self.get("title")
+        return self.get("title", "")
 
     @Metadata.property
     def description(self):
         """
         Returns:
-            str?: description
+            str: description
         """
-        return self.get("description")
+        return self.get("description", "")
+
+    @Metadata.property(cache=False, write=False)
+    def description_html(self):
+        """
+        Returns:
+            str: package description
+        """
+        html = marko.convert(self.description)
+        html = html.replace("\n", "")
+        return html
 
     @Metadata.property
     def type(self):
@@ -162,9 +173,9 @@ class Field(Metadata):
     def rdf_type(self):
         """
         Returns:
-            str?: RDF Type
+            str: RDF Type
         """
-        return self.get("rdfType")
+        return self.get("rdfType", "")
 
     @Metadata.property(
         write=lambda self, value: setitem(self.constraints, "required", value)

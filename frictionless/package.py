@@ -211,23 +211,23 @@ class Package(Metadata):
     def name(self):
         """
         Returns:
-            str?: package name
+            str: package name
         """
-        return self.get("name")
+        return self.get("name", "")
 
     @Metadata.property
     def id(self):
         """
         Returns:
-            str?: package id
+            str: package id
         """
-        return self.get("id")
+        return self.get("id", "")
 
     @Metadata.property
     def licenses(self):
         """
         Returns:
-            dict?: package licenses
+            dict[]: package licenses
         """
         licenses = self.get("licenses", [])
         return self.metadata_attach("licenses", licenses)
@@ -244,44 +244,43 @@ class Package(Metadata):
     def title(self):
         """
         Returns:
-            str?: package title
+            str: package title
         """
-        return self.get("title")
+        return self.get("title", "")
 
     @Metadata.property
     def description(self):
         """
         Returns:
-            str?: package description
+            str: package description
         """
-        return self.get("description")
+        return self.get("description", "")
 
     @Metadata.property(cache=False, write=False)
     def description_html(self):
         """
         Returns:
-            str?: package description
+            str: package description
         """
-        if self.description:
-            html = marko.convert(self.description)
-            html = html.replace("\n", "")
-            return html
+        html = marko.convert(self.description)
+        html = html.replace("\n", "")
+        return html
 
     @Metadata.property
     def homepage(self):
         """
         Returns:
-            str?: package homepage
+            str: package homepage
         """
-        return self.get("homepage")
+        return self.get("homepage", "")
 
     @Metadata.property
     def version(self):
         """
         Returns:
-            str?: package version
+            str: package version
         """
-        return self.get("version")
+        return self.get("version", "")
 
     @Metadata.property
     def sources(self):
@@ -314,17 +313,17 @@ class Package(Metadata):
     def image(self):
         """
         Returns:
-            str?: package image
+            str: package image
         """
-        return self.get("image")
+        return self.get("image", "")
 
     @Metadata.property
     def created(self):
         """
         Returns:
-            str?: package created
+            str: package created
         """
-        return self.get("created")
+        return self.get("created", "")
 
     @Metadata.property(cache=False, write=False)
     def hashing(self):
@@ -332,7 +331,7 @@ class Package(Metadata):
         Returns:
             str: package hashing
         """
-        return self.__hashing
+        return self.__hashing or settings.DEFAULT_HASHING
 
     @Metadata.property(cache=False, write=False)
     def basepath(self):
