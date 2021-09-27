@@ -835,7 +835,7 @@ def title()
 
 **Returns**:
 
-- `str?` - title
+- `str` - title
 
 
 ### field.description
@@ -847,7 +847,31 @@ def description()
 
 **Returns**:
 
-- `str?` - description
+- `str` - description
+
+
+### field.description\_html
+
+```python
+@Metadata.property(cache=False, write=False)
+def description_html()
+```
+
+**Returns**:
+
+- `str` - field description
+
+
+### field.description\_text
+
+```python
+@Metadata.property
+def description_text()
+```
+
+**Returns**:
+
+- `str` - field description
 
 
 ### field.type
@@ -907,7 +931,7 @@ def rdf_type()
 
 **Returns**:
 
-- `str?` - RDF Type
+- `str` - RDF Type
 
 
 ### field.required
@@ -2703,7 +2727,7 @@ def name()
 
 **Returns**:
 
-- `str?` - package name
+- `str` - package name
 
 
 ### package.id
@@ -2715,7 +2739,7 @@ def id()
 
 **Returns**:
 
-- `str?` - package id
+- `str` - package id
 
 
 ### package.licenses
@@ -2727,7 +2751,7 @@ def licenses()
 
 **Returns**:
 
-- `dict?` - package licenses
+- `dict[]` - package licenses
 
 
 ### package.profile
@@ -2751,7 +2775,7 @@ def title()
 
 **Returns**:
 
-- `str?` - package title
+- `str` - package title
 
 
 ### package.description
@@ -2763,7 +2787,31 @@ def description()
 
 **Returns**:
 
-- `str?` - package description
+- `str` - package description
+
+
+### package.description\_html
+
+```python
+@Metadata.property(cache=False, write=False)
+def description_html()
+```
+
+**Returns**:
+
+- `str` - package description
+
+
+### package.description\_text
+
+```python
+@Metadata.property
+def description_text()
+```
+
+**Returns**:
+
+- `str` - package description
 
 
 ### package.homepage
@@ -2775,7 +2823,7 @@ def homepage()
 
 **Returns**:
 
-- `str?` - package homepage
+- `str` - package homepage
 
 
 ### package.version
@@ -2787,7 +2835,7 @@ def version()
 
 **Returns**:
 
-- `str?` - package version
+- `str` - package version
 
 
 ### package.sources
@@ -2799,7 +2847,7 @@ def sources()
 
 **Returns**:
 
-- `dict[]?` - package sources
+- `dict[]` - package sources
 
 
 ### package.contributors
@@ -2811,7 +2859,7 @@ def contributors()
 
 **Returns**:
 
-- `dict[]?` - package contributors
+- `dict[]` - package contributors
 
 
 ### package.keywords
@@ -2823,7 +2871,7 @@ def keywords()
 
 **Returns**:
 
-- `str[]?` - package keywords
+- `str[]` - package keywords
 
 
 ### package.image
@@ -2835,7 +2883,7 @@ def image()
 
 **Returns**:
 
-- `str?` - package image
+- `str` - package image
 
 
 ### package.created
@@ -2847,7 +2895,7 @@ def created()
 
 **Returns**:
 
-- `str?` - package created
+- `str` - package created
 
 
 ### package.hashing
@@ -4264,6 +4312,30 @@ Returns
     str: resource description
 
 
+### resource.description\_html
+
+```python
+@Metadata.property(cache=False, write=False)
+def description_html()
+```
+
+**Returns**:
+
+- `str?` - resource description
+
+
+### resource.description\_text
+
+```python
+@Metadata.property
+def description_text()
+```
+
+**Returns**:
+
+- `str` - resource description
+
+
 ### resource.mediatype
 
 ```python
@@ -4305,7 +4377,7 @@ def profile()
 ```
 
 Returns
-    str?: resource profile
+    str: resource profile
 
 
 ### resource.path
@@ -4316,7 +4388,7 @@ def path()
 ```
 
 Returns
-    str?: resource path
+    str: resource path
 
 
 ### resource.data
@@ -4338,7 +4410,7 @@ def scheme()
 ```
 
 Returns
-    str?: resource scheme
+    str: resource scheme
 
 
 ### resource.format
@@ -4349,7 +4421,7 @@ def format()
 ```
 
 Returns
-    str?: resource format
+    str: resource format
 
 
 ### resource.hashing
@@ -4360,7 +4432,7 @@ def hashing()
 ```
 
 Returns
-    str?: resource hashing
+    str: resource hashing
 
 
 ### resource.encoding
@@ -4371,7 +4443,7 @@ def encoding()
 ```
 
 Returns
-    str?: resource encoding
+    str: resource encoding
 
 
 ### resource.innerpath
@@ -4382,7 +4454,7 @@ def innerpath()
 ```
 
 Returns
-    str?: resource compression path
+    str: resource compression path
 
 
 ### resource.compression
@@ -4393,7 +4465,7 @@ def compression()
 ```
 
 Returns
-    str?: resource compression
+    str: resource compression
 
 
 ### resource.control
@@ -4404,7 +4476,7 @@ def control()
 ```
 
 Returns
-    Control?: resource control
+    Control: resource control
 
 
 ### resource.dialect
@@ -4415,7 +4487,7 @@ def dialect()
 ```
 
 Returns
-    Dialect?: resource dialect
+    Dialect: resource dialect
 
 
 ### resource.layout
@@ -4427,7 +4499,7 @@ def layout()
 
 **Returns**:
 
-- `Layout?` - table layout
+- `Layout` - table layout
 
 
 ### resource.schema
@@ -4449,7 +4521,7 @@ def stats()
 ```
 
 Returns
-    dict?: resource stats
+    dict: resource stats
 
 
 ### resource.buffer
