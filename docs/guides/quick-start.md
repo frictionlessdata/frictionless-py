@@ -156,7 +156,7 @@ scheme: file
 from pprint import pprint
 from frictionless import describe
 
-resource = describe('data/invalid.csv')
+resource = describe('invalid.csv')
 pprint(resource)
 ```
 ```
@@ -164,7 +164,7 @@ pprint(resource)
  'format': 'csv',
  'hashing': 'md5',
  'name': 'invalid',
- 'path': 'data/invalid.csv',
+ 'path': 'invalid.csv',
  'profile': 'tabular-data-resource',
  'schema': {'fields': [{'name': 'id', 'type': 'integer'},
                        {'name': 'name', 'type': 'string'},
