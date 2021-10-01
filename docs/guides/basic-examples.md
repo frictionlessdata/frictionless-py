@@ -613,14 +613,13 @@ countries.resource.yaml
 
 
 ```python script
-import subprocess
+import os
 
-output = subprocess.check_output('ls countries.*', shell=True)
-print(output.decode('utf-8'))
+files = [f for f in os.listdir('.') if os.path.isfile(f) and f.startswith('countries.')]
+print(files)
 ```
 ```
-countries.csv
-countries.resource.yaml
+['countries.csv', 'countries.resource.yaml']
 ```
 
 </TabItem>
