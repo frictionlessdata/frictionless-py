@@ -491,7 +491,7 @@ values={[{ label: 'CLI', value: 'cli'}, { label: 'Python', value: 'python'}]}>
 $ cat > countries.pipeline.yaml <<EOF
 tasks:
   - type: resource
-    source: data/countries.csv
+    source: countries.csv
     steps:
       - code: cell-replace
         fieldName: neighbor_id
