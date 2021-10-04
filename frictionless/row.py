@@ -222,10 +222,14 @@ class Row(dict):
         if types is not None:
             for index, field in enumerate(self.__field_info["objects"]):
                 # Here we can optimize performance if we use a types mapping
-                if field.type not in types:
-                    cell = result[index]
-                    cell, notes = field.write_cell(cell, ignore_missing=True)
-                    result[index] = cell
+                if field.type in types:
+                    continue
+                # NOTE: Move somehow to be in the json plugin
+                if json is True and field.type == "number" and field.float_number:
+                    continue
+                cell = result[index]
+                cell, notes = field.write_cell(cell, ignore_missing=True)
+                result[index] = cell
 
         # Return
         return result
