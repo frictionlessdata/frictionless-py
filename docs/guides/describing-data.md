@@ -61,7 +61,7 @@ frictionless describe your-table.csv --type resource
 frictionless describe your-table.csv --type package
 ```
 
-Please take into account that file names might be used by Frictionless to detect a metadata type for furhter data extraction or validation. It's recommended to use corresponding suffixes when you save your metadata to the disc, for example, you might name your Table Schema as `table.schema.yaml`, Data Resource - `table.resource.yaml`, and Data Package - `table.package.yaml`. If there is no hint in the file name Frictionless will assume that it's a resource descriptor by default.
+Please take into account that file names might be used by Frictionless to detect a metadata type for data extraction or validation. It's recommended to use corresponding suffixes when you save your metadata to the disk. For example, you might name your Table Schema as `table.schema.yaml`, Data Resource as `table.resource.yaml`, and Data Package as `table.package.yaml`. If there is no hint in the file name Frictionless will assume that it's a resource descriptor by default.
 
 For example, if we want a Data Package descriptor for a single file:
 
@@ -96,7 +96,7 @@ resources:
 
 Table Schema is a specification for providing a "schema" (similar to a database schema) for tabular data. This information includes the expected data type for each value in a column ("string", "number", "date", etc.), constraints on the value ("this string can only be at most 10 characters long"), and the expected format of the data ("this field should only contain strings that look like email addresses"). Table Schema can also specify relations between data tables.
 
-We're going to use this file for the examples in this section. For this guide, we only use CSV files because of their demonstrativeness, but in-general Frictionless can handle data in Excel, JSON, SQL, and many other formats:
+We're going to use this file for the examples in this section. For this guide, we only use CSV files because of their demonstrativeness, but in general Frictionless can handle data in Excel, JSON, SQL, and many other formats:
 
 > Download [`country-1.csv`](https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/country-1.csv) to reproduce the examples (right-click and "Save link as").
 
@@ -258,7 +258,7 @@ resource.to_yaml("country.resource.yaml")
 So what we did here:
 - we set the header rows to be row number 2; as humans, we can easily see that was the proper row
 - we set the CSV Delimiter to be ";"
-- we reuse the schema we created [earlier](#describing-schema) as the data has the same structure and meaning
+- we reuse the schema we created [earlier](#describing-a-schema) as the data has the same structure and meaning
 
 ```bash script title="CLI"
 cat country.resource.yaml
