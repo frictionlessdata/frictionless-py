@@ -26,6 +26,8 @@ class StringType(Type):
     # Read
 
     def read_cell(self, cell):
+        if isinstance(cell, int) or isinstance(cell, float):
+            cell = str(cell)
         if not isinstance(cell, str):
             return None
         if self.field.format == "default":
