@@ -8,6 +8,7 @@ from . import errors
 # It might make custom transform steps more eloquent
 # This change probably not even breaking because it will be a new
 # mode supported by the system (function emiting data instead of returning None)
+# We might consider adding `process_schema/row` etc to the Step class
 
 
 class Step(Metadata):
