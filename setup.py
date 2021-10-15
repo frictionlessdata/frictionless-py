@@ -63,7 +63,10 @@ INSTALL_REQUIRES = [
     "chardet>=3.0",
     "requests>=2.10",
     "jsonschema>=2.5",
-    "simpleeval>=0.9",
+    # NOTE:
+    # We can get back to original "simpleeval" when the issue is resolved:
+    # https://github.com/danthedeckie/simpleeval/issues/90
+    "reportbro-simpleeval>=0.9",
     "stringcase>=1.2",
     "typer[all]>=0.4",
     "validators>=0.18",
