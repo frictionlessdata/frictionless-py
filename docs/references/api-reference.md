@@ -1509,11 +1509,11 @@ Public   | `from frictionless.plugins.inline import InlineDialect`
 - `FrictionlessException` - raise any error that occurs during the process
 
 
-### inlineDialect.keys
+### inlineDialect.data\_keys
 
 ```python
 @Metadata.property
-def keys()
+def data_keys()
 ```
 
 **Returns**:
