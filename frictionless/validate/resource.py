@@ -35,7 +35,7 @@ def validate_resource(
         skip_errors? ((str|int)[]): skip errors
         limit_errors? (int): limit errors
         limit_memory? (int): limit memory
-        original? (bool): validate resource as it is
+        original? (bool): validate metadata as it is (without inferring)
         **options? (dict): Resource constructor options
 
     Returns:
@@ -56,13 +56,12 @@ def validate_resource(
     except FrictionlessException as exception:
         errors.append(exception.error)
 
-    # Prepare resource
+    # Check resource
     if not errors:
-        if not original:
-            resource.infer()
-        if resource.metadata_errors:
-            for error in resource.metadata_errors:
-                errors.append(error)
+        if original:
+            if resource.metadata_errors:
+                for error in resource.metadata_errors:
+                    errors.append(error)
 
     # Open resource
     if not errors:

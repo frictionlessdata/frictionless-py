@@ -20,7 +20,7 @@ def validate_package(source=None, original=False, parallel=False, **options):
         source (dict|str): a package descriptor
         basepath? (str): package basepath
         trusted? (bool): don't raise an exception on unsafe paths
-        original? (bool): don't call `package.infer`
+        original? (bool): validate metadata as it is (without inferring)
         parallel? (bool): enable multiprocessing
         **options (dict): Package constructor options
 
@@ -51,10 +51,9 @@ def validate_package(source=None, original=False, parallel=False, **options):
         return Report(time=timer.time, errors=[exception.error], tasks=[])
 
     # Prepare package
-    if not original:
-        package.infer()
-    if package.metadata_errors:
-        return Report(time=timer.time, errors=package.metadata_errors, tasks=[])
+    if original:
+        if package.metadata_errors:
+            return Report(time=timer.time, errors=package.metadata_errors, tasks=[])
 
     # Validate sequentially
     if not parallel:
