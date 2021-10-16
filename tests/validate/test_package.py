@@ -479,3 +479,9 @@ def test_validate_package_descriptor_type_package_invalid():
         [1, 3, None, "primary-key-error"],
         [2, 4, None, "blank-row"],
     ]
+
+
+@pytest.mark.xfail
+def test_validate_package_with_diacritic_symbol_issue_905():
+    report = validate(descriptor="data/issue-905/datapackage.json")
+    assert report.valid
