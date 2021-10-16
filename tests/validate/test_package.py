@@ -99,7 +99,7 @@ def test_validate_package_invalid_package_original():
     assert report.flatten(["code", "note"]) == [
         [
             "resource-error",
-            '"{\'path\': \'data/table.csv\'} is not valid under any of the given schemas" at "" in metadata and at "oneOf" in profile',
+            "\"{'path': 'data/table.csv', 'stats': {}} is not valid under any of the given schemas\" at \"\" in metadata and at \"oneOf\" in profile",
         ]
     ]
 

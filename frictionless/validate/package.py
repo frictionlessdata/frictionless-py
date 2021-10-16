@@ -50,10 +50,13 @@ def validate_package(source=None, original=False, parallel=False, **options):
     except FrictionlessException as exception:
         return Report(time=timer.time, errors=[exception.error], tasks=[])
 
-    # Prepare package
-    if original:
-        if package.metadata_errors:
-            return Report(time=timer.time, errors=package.metadata_errors, tasks=[])
+    # Validate metadata
+    metadata_errors = []
+    for error in package.metadata_errors:
+        if error.code == "package-error":
+            metadata_errors.append(error)
+        if metadata_errors:
+            return Report(time=timer.time, errors=metadata_errors, tasks=[])
 
     # Validate sequentially
     if not parallel:
