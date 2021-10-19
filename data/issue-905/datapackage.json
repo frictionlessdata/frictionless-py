@@ -1,0 +1,18 @@
+{
+    "profile": "data-package",
+    "name": "encoding-test",
+    "resources": [
+        {
+            "name": "ok1",
+            "path": "ok1.csv"
+        },
+        {
+            "name": "ok2",
+            "path": "ok2.csv"
+        },
+        {
+            "name": "bad",
+            "path": "bad.csv"
+        }
+    ]
+}

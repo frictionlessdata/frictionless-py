@@ -218,7 +218,7 @@ def program_validate(
         if number != 1 and prev_invalid:
             typer.secho("")
         prefix = "valid" if task.valid else "invalid"
-        source = task.resource.path
+        source = task.resource.path or task.resource.name
         if is_stdin:
             source = "stdin"
         typer.secho(f"# {'-'*len(prefix)}", bold=True)

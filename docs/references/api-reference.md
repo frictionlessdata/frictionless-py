@@ -1509,11 +1509,11 @@ Public   | `from frictionless.plugins.inline import InlineDialect`
 - `FrictionlessException` - raise any error that occurs during the process
 
 
-### inlineDialect.keys
+### inlineDialect.data\_keys
 
 ```python
 @Metadata.property
-def keys()
+def data_keys()
 ```
 
 **Returns**:
@@ -7496,7 +7496,7 @@ Public   | `from frictionless import validate_package`
 - `source` _dict|str_ - a package descriptor
 - `basepath?` _str_ - package basepath
 - `trusted?` _bool_ - don't raise an exception on unsafe paths
-- `original?` _bool_ - don't call `package.infer`
+- `original?` _bool_ - validate metadata as it is (without inferring)
 - `parallel?` _bool_ - enable multiprocessing
 - `**options` _dict_ - Package constructor options
   
@@ -7527,7 +7527,7 @@ Public   | `from frictionless import validate_table`
   skip_errors? ((str|int)[]): skip errors
 - `limit_errors?` _int_ - limit errors
 - `limit_memory?` _int_ - limit memory
-- `original?` _bool_ - validate resource as it is
+- `original?` _bool_ - validate metadata as it is (without inferring)
 - `**options?` _dict_ - Resource constructor options
   
 
