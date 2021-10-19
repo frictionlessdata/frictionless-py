@@ -628,7 +628,8 @@ def convert_excel_number_format_string(excel_number, value):
 
 
 def extract_row_values(row, preserve_formatting=False, adjust_floating_point_error=False):
-    if preserve_formatting:
+    # if preserve_formatting:
+    if True:
         values = []
         for cell in row:
             number_format = cell.number_format or ""
