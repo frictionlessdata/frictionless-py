@@ -6,7 +6,7 @@ We welcome contributions from anyone! Please read the following guidelines, and 
 
 ## General Guidelines
 
-We use Github as a code and issues hosting platform. To report a bug or propose a new feature, please open an issue. For pull requests, we would ask you initially create an issue and then create a pull requests linked to this issue.
+We use Github as a code and issues hosting platform. To report a bug or propose a new feature, please open an issue. For pull requests, we would ask you initially create an issue and then create a pull requests linked to this issue. If you'd like to write a tutorial, we recommend you first read this [how-to article](https://docs.google.com/document/d/1zbWMmIeU8DUwzGaEih0JGJ-DMGug5-2UksRN1x4fvj8/edit?usp=sharing) by Frictionless contributor Meyrele.
 
 ## Docs Contribution
 
@@ -31,7 +31,7 @@ livemark sync docs/guides/basic-examples.md # update inline
 It's possible to run this documentation portal locally. This requires Node.js 12+ installed on your computer, and can be run with the following code:
 
 ```bash
-cd portal
+cd site
 npm install
 npm start
 ```
