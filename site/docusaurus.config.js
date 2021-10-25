@@ -99,6 +99,11 @@ module.exports = {
               href:
                 "https://colab.research.google.com/drive/12RmGajHamGP5wOoAhy8N7Gchn9TmVnG-",
             },
+            {
+              label: "Frictionless Excel",
+              href:
+                "https://colab.research.google.com/drive/1QHO1r0f670YOYVqODltTP7bnA9qlur-t?usp=sharing",
+            },
           ],
         },
         {
