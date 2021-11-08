@@ -842,7 +842,7 @@ def test_step_table_recast():
 
 
 def test_step_table_transpose():
-    source = Resource("data/transform.csv")
+    source = Resource("data/transpose.csv")
     target = transform(
         source,
         steps=[
@@ -852,14 +852,16 @@ def test_step_table_transpose():
     )
     assert target.schema == {
         "fields": [
+            {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},
-            {"name": "germany", "type": "integer"},
-            {"name": "france", "type": "integer"},
-            {"name": "spain", "type": "integer"},
+            {"name": "population", "type": "integer"},
         ]
     }
+
     assert target.read_rows() == [
-        {"name": "population", "germany": 83, "france": 66, "spain": 47}
+        {"id": 1, "name": "germany", "population": 83},
+        {"id": 2, "name": "france", "population": 66},
+        {"id": 3, "name": "spain", "population": 47},
     ]
 
 

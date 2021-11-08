@@ -247,25 +247,6 @@ def is_platform(name):
     return False
 
 
-def count_bad_labels(cells):
-    count = 0
-    for cell in cells:
-        if cell is None:
-            continue
-        if not isinstance(cell, str):
-            count += 1
-            continue
-        try:
-            float(cell)
-            # We assume that a year might be a header label
-            if len(cell) == 4:
-                continue
-            count += 1
-        except Exception:
-            pass
-    return count
-
-
 def parse_json_string(string):
     if string is None:
         return None

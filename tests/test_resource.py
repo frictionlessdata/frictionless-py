@@ -2350,7 +2350,8 @@ def test_resource_open_without_rows():
 
 
 def test_resource_open_without_headers():
-    with Resource("data/without-headers.csv") as resource:
+    layout = Layout(header=False)
+    with Resource("data/without-headers.csv", layout=layout) as resource:
         assert resource.labels == []
         assert resource.header.missing
         assert resource.header == ["field1", "field2"]

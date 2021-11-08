@@ -7,7 +7,6 @@ from .layout import Layout
 from .schema import Schema
 from .field import Field
 from . import settings
-from . import helpers
 from . import errors
 
 
@@ -161,15 +160,13 @@ class Detector:
         widths = [len(cells) for cells in sample]
         if layout.get("header") is None and layout.get("headerRows") is None and widths:
 
-            # This algorithm tries to find a header row that:
-            # - is close to average sample width
-            # - doesn't have bad labels (non-string cells) OR
-            # - have less bad labels (non-string cells) than the next row
+            # This algorithm tries to find a header row
+            # that is close to average sample width or use default one
+            # We use it to eleminate initial rows that are comments/etc
 
             # Get header rows
             row_number = 0
-            bad_labels = 0
-            header_rows = None
+            header_rows = settings.DEFAULT_HEADER_ROWS
             width = round(sum(widths) / len(widths))
             drift = max(round(width * 0.1), 1)
             match = list(range(width - drift, width + drift + 1))
@@ -177,14 +174,8 @@ class Detector:
                 if layout.read_filter_rows(cells, row_position=row_position):
                     row_number += 1
                     if len(cells) in match:
-                        row_bad_labels = helpers.count_bad_labels(cells)
-                        if not row_bad_labels:
-                            header_rows = [row_number]
-                            break
-                        elif bad_labels and bad_labels < row_bad_labels:
-                            header_rows = [row_number - 1]
-                            break
-                        bad_labels = row_bad_labels
+                        header_rows = [row_number]
+                        break
 
             # Set header rows
             if not header_rows:
