@@ -324,6 +324,7 @@ To continue learning about data resources please read:
 A Data Package consists of:
 - Metadata that describes the structure and contents of the package
 - Resources such as data files that form the contents of the package
+
 The Data Package metadata is stored in a "descriptor". This descriptor is what makes a collection of data a Data Package. The structure of this descriptor is the main content of the specification below.
 
 In addition to this descriptor, a data package will include other resources such as data files. The Data Package specification does NOT impose any requirements on their form or structure and can, therefore, be used for packaging any kind of data.
