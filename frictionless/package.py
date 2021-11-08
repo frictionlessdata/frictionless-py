@@ -712,6 +712,9 @@ class Package(Metadata):
         # Resources
         for resource in self.resources:
             yield from resource.metadata_errors
+        if len(self.resource_names) != len(set(self.resource_names)):
+            note = "names of the resources are not unique"
+            yield errors.PackageError(note=note)
 
         # Created
         if self.get("created"):

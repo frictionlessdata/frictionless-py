@@ -1030,3 +1030,15 @@ def test_package_validation_is_not_strict_enough_issue_869():
     assert len(errors) == 2
     assert errors[0].note == 'property "created" is not valid "datetime"'
     assert errors[1].note == 'property "contributors[].email" is not valid "email"'
+
+
+def test_package_validation_duplicate_resource_names_issue_942():
+    package = Package(
+        resources=[
+            Resource(name="name", path="data/table.csv"),
+            Resource(name="name", path="data/table.csv"),
+        ]
+    )
+    errors = package.metadata_errors
+    assert len(errors) == 1
+    assert errors[0].note == "names of the resources are not unique"
