@@ -135,10 +135,7 @@ class PipelineTask(Metadata):
         timer = helpers.Timer()
         try:
             transform = import_module("frictionless").transform
-            # NOTE: review usage of trusted
-            target = transform(
-                self.source, type=self.type, steps=self.steps, trusted=True
-            )
+            target = transform(self.source, type=self.type, steps=self.steps)
         except Exception as exception:
             errors.append(TaskError(note=str(exception)))
         task = StatusTask(time=timer.time, errors=errors, target=target, type=self.type)
@@ -154,7 +151,12 @@ class PipelineTask(Metadata):
         # Source
         source = self.get("source")
         if not isinstance(source, Metadata):
-            source = Resource(source) if self.type == "resource" else Package(source)
+            # NOTE: review usage of trusted
+            source = (
+                Resource(source, trusted=True)
+                if self.type == "resource"
+                else Package(source, trusted=True)
+            )
             dict.__setitem__(self, "source", source)
 
 
