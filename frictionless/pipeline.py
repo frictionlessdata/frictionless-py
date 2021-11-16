@@ -135,7 +135,10 @@ class PipelineTask(Metadata):
         timer = helpers.Timer()
         try:
             transform = import_module("frictionless").transform
-            target = transform(self.source, type=self.type, steps=self.steps)
+            # NOTE: review usage of trusted
+            target = transform(
+                self.source, type=self.type, steps=self.steps, trusted=True
+            )
         except Exception as exception:
             errors.append(TaskError(note=str(exception)))
         task = StatusTask(time=timer.time, errors=errors, target=target, type=self.type)
