@@ -237,6 +237,11 @@ limit_memory = Option(
     help="Limit memory by this integer in MB",
 )
 
+trusted = Option(
+    default=None,
+    help="Follow unsafe paths",
+)
+
 yaml = Option(
     default=False,
     help="Return in pure YAML format",

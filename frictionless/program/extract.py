@@ -53,6 +53,7 @@ def program_extract(
     schema_sync: bool = common.schema_sync,
     # Command
     basepath: str = common.basepath,
+    trusted: bool = common.trusted,
     yaml: bool = common.yaml,
     json: bool = common.json,
     csv: bool = common.csv,
@@ -141,6 +142,7 @@ def program_extract(
             # Extra
             basepath=basepath,
             detector=detector,
+            trusted=trusted,
         )
     )
 
