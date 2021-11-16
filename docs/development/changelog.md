@@ -4,6 +4,10 @@ title: Changelog
 
 Here described only the breaking and most significant changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/frictionless-py/commits/main).
 
+## v4.22.0
+
+- Added "extract --trusged" flag
+
 ## v4.21.0
 
 - Added "--json/yaml" CLI options for transform
