@@ -8,7 +8,7 @@ module.exports = {
   favicon: "img/logo.png",
   customFields: {
     description:
-      "Frictionless is a framework to describe, extract, validate, and transform tabular data.",
+      "Data management framework for Python that provides functionality to describe, extract, validate, and transform tabular data",
   },
   themes: ["@docusaurus/theme-live-codeblock"],
   // stylesheets: ["https://fonts.googleapis.com/css?family=Roboto&display=swap"],

@@ -91,7 +91,7 @@ setup(
     zip_safe=False,
     long_description=README,
     long_description_content_type="text/markdown",
-    description="Frictionless is a framework to describe, extract, validate, and transform tabular data",
+    description="Data management framework for Python that provides functionality to describe, extract, validate, and transform tabular data",
     author="Open Knowledge Foundation",
     author_email="info@okfn.org",
     url="https://github.com/frictionlessdata/frictionless-py",
