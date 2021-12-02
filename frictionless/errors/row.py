@@ -42,7 +42,7 @@ class RowError(TableError):
         """
         return cls(
             note=note,
-            cells=list(map(str, row)),
+            cells=list(map(str, row.values())),
             row_number=row.row_number,
             row_position=row.row_position,
         )
