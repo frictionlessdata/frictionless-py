@@ -1198,7 +1198,7 @@ class Resource(Metadata):
                         yield from (row.to_list() for row in resource.row_stream)
                         return
                     if not resource.header.missing:
-                        yield resource.header.labels
+                        yield resource.header.field_names
                     yield from (row.cells for row in resource.row_stream)
 
         return ResourceView()
