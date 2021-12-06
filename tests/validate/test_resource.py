@@ -587,8 +587,8 @@ def test_validate_schema_foreign_key_error_self_referencing_invalid():
         },
     }
     report = validate(source)
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [6, None, "foreign-key-error"],
+    assert report.flatten(["rowPosition", "fieldPosition", "code", "cells"]) == [
+        [6, None, "foreign-key-error", ["5", "6", "Rome"]],
     ]
 
 
