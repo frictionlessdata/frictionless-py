@@ -276,6 +276,7 @@ class Row(dict):
 
         # Prepare context
         cells = self.__cells
+        to_str = lambda v: str(v) if v is not None else ""
         fields = self.__field_info["objects"]
         field_mapping = self.__field_info["mapping"]
         field_positions = self.__field_info["positions"]
@@ -311,7 +312,7 @@ class Row(dict):
                 self.__errors.append(
                     errors.TypeError(
                         note=type_note,
-                        cells=list(map(str, cells)),
+                        cells=list(map(to_str, cells)),
                         row_number=self.__row_number,
                         row_position=self.__row_position,
                         cell=str(source),
@@ -327,7 +328,7 @@ class Row(dict):
                     self.__errors.append(
                         errors.ConstraintError(
                             note=note,
-                            cells=list(map(str, cells)),
+                            cells=list(map(to_str, cells)),
                             row_number=self.__row_number,
                             row_position=self.__row_position,
                             cell=str(source),
@@ -350,7 +351,7 @@ class Row(dict):
                 self.__errors.append(
                     errors.ExtraCellError(
                         note="",
-                        cells=list(map(str, cells)),
+                        cells=list(map(to_str, cells)),
                         row_number=self.__row_number,
                         row_position=self.__row_position,
                         cell=str(cell),
@@ -369,7 +370,7 @@ class Row(dict):
                     self.__errors.append(
                         errors.MissingCellError(
                             note="",
-                            cells=list(map(str, cells)),
+                            cells=list(map(to_str, cells)),
                             row_number=self.__row_number,
                             row_position=self.__row_position,
                             cell="",
@@ -385,7 +386,7 @@ class Row(dict):
             self.__errors = [
                 errors.BlankRowError(
                     note="",
-                    cells=list(map(str, cells)),
+                    cells=list(map(to_str, cells)),
                     row_number=self.__row_number,
                     row_position=self.__row_position,
                 )

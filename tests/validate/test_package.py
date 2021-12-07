@@ -216,7 +216,7 @@ def test_validate_package_schema_foreign_key_internal_resource_violation():
     del descriptor["resources"][1]["data"][4]
     report = validate(descriptor)
     assert report.flatten(["rowPosition", "fieldPosition", "code", "cells"]) == [
-        [5, None, "foreign-key-error", ["4", "rio", "None"]],
+        [5, None, "foreign-key-error", ["4", "rio", ""]],
     ]
 
 
@@ -228,7 +228,7 @@ def test_validate_package_schema_foreign_key_internal_resource_violation_non_exi
         [2, None, "foreign-key-error", ["1", "london", "2"]],
         [3, None, "foreign-key-error", ["2", "paris", "3"]],
         [4, None, "foreign-key-error", ["3", "rome", "4"]],
-        [5, None, "foreign-key-error", ["4", "rio", "None"]],
+        [5, None, "foreign-key-error", ["4", "rio", ""]],
     ]
 
 

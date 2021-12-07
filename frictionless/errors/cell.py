@@ -73,9 +73,10 @@ class CellError(RowError):
             if field_name == name:
                 cell = row[field_name]
                 field_position = row.field_positions[field_number - 1]
+                to_str = lambda v: str(v) if v is not None else ""
                 return cls(
                     note=note,
-                    cells=list(map(str, row.values())),
+                    cells=list(map(to_str, row.cells)),
                     row_number=row.row_number,
                     row_position=row.row_position,
                     cell=str(cell),
