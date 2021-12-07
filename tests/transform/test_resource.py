@@ -41,7 +41,6 @@ def test_transform_resource_rename_move_field():
             steps.field_move(name="country", position=3)
         ],
     )
-    print(target.schema)
     assert target.schema == {
         "fields": [
             {"name": "id", "type": "integer"},
