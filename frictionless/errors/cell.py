@@ -76,7 +76,7 @@ class CellError(RowError):
                 to_str = lambda v: str(v) if v is not None else ""
                 return cls(
                     note=note,
-                    cells=list(map(to_str, row.cells)),
+                    cells=list(map(to_str, row.values())),
                     row_number=row.row_number,
                     row_position=row.row_position,
                     cell=str(cell),
