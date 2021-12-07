@@ -30,6 +30,7 @@ def test_transform_resource():
         {"id": 3, "variable": "population", "value": 47},
     ]
 
+
 def test_transform_resource_rename_move_field():
     source = Resource(path="data/transform.csv")
     source.infer()
@@ -38,14 +39,14 @@ def test_transform_resource_rename_move_field():
         steps=[
             steps.table_normalize(),
             steps.field_update(name="name", new_name="country"),
-            steps.field_move(name="country", position=3)
+            steps.field_move(name="country", position=3),
         ],
     )
     assert target.schema == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "population", "type": "integer"},
-            {"name": "country", "type": "string"}
+            {"name": "country", "type": "string"},
         ]
     }
     assert target.read_rows() == [
