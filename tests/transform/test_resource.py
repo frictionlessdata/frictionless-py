@@ -29,3 +29,28 @@ def test_transform_resource():
         {"id": 3, "variable": "name", "value": "spain"},
         {"id": 3, "variable": "population", "value": 47},
     ]
+
+def test_transform_resource_rename_move_field():
+    source = Resource(path="data/transform.csv")
+    source.infer()
+    target = transform(
+        source,
+        steps=[
+            steps.table_normalize(),
+            steps.field_update(name="name", new_name="country"),
+            steps.field_move(name="country", position=3)
+        ],
+    )
+    print(target.schema)
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "population", "type": "integer"},
+            {"name": "country", "type": "string"}
+        ]
+    }
+    assert target.read_rows() == [
+        {"id": 1, "population": 83, "country": "germany"},
+        {"id": 2, "population": 66, "country": "france"},
+        {"id": 3, "population": 47, "country": "spain"},
+    ]
