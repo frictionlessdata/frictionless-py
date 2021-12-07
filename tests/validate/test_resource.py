@@ -587,8 +587,8 @@ def test_validate_schema_foreign_key_error_self_referencing_invalid():
         },
     }
     report = validate(source)
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [6, None, "foreign-key-error"],
+    assert report.flatten(["rowPosition", "fieldPosition", "code", "cells"]) == [
+        [6, None, "foreign-key-error", ["5", "6", "Rome"]],
     ]
 
 
@@ -609,6 +609,8 @@ def test_validate_schema_unique_error_and_type_error():
         ["a1", 100],
         ["a2", "bad"],
         ["a3", 100],
+        ["a4", 0],
+        ["a5", 0],
     ]
     schema = {
         "fields": [
@@ -617,9 +619,10 @@ def test_validate_schema_unique_error_and_type_error():
         ]
     }
     report = validate(source, schema=schema)
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [3, 2, "type-error"],
-        [4, 2, "unique-error"],
+    assert report.flatten(["rowPosition", "fieldPosition", "code", "cells"]) == [
+        [3, 2, "type-error", ["a2", "bad"]],
+        [4, 2, "unique-error", ["a3", "100"]],
+        [6, 2, "unique-error", ["a5", "0"]],
     ]
 
 
@@ -835,8 +838,8 @@ def test_validate_detector_headers_errors():
     }
     detector = Detector(schema_sync=True)
     report = validate(source, schema=schema, detector=detector)
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [4, 4, "constraint-error"],
+    assert report.flatten(["rowPosition", "fieldPosition", "code", "cells"]) == [
+        [4, 4, "constraint-error", ["3", "Smith", "Paul", ""]],
     ]
 
 

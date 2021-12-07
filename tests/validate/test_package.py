@@ -206,8 +206,8 @@ def test_validate_package_schema_foreign_key_self_referenced_resource_violation(
     descriptor = deepcopy(DESCRIPTOR_FK)
     del descriptor["resources"][0]["data"][4]
     report = validate(descriptor)
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [4, None, "foreign-key-error"],
+    assert report.flatten(["rowPosition", "fieldPosition", "code", "cells"]) == [
+        [4, None, "foreign-key-error", ["3", "rome", "4"]],
     ]
 
 
@@ -215,8 +215,8 @@ def test_validate_package_schema_foreign_key_internal_resource_violation():
     descriptor = deepcopy(DESCRIPTOR_FK)
     del descriptor["resources"][1]["data"][4]
     report = validate(descriptor)
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [5, None, "foreign-key-error"],
+    assert report.flatten(["rowPosition", "fieldPosition", "code", "cells"]) == [
+        [5, None, "foreign-key-error", ["4", "rio", ""]],
     ]
 
 
@@ -224,11 +224,11 @@ def test_validate_package_schema_foreign_key_internal_resource_violation_non_exi
     descriptor = deepcopy(DESCRIPTOR_FK)
     descriptor["resources"][1]["data"] = [["label", "population"], [10, 10]]
     report = validate(descriptor)
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [2, None, "foreign-key-error"],
-        [3, None, "foreign-key-error"],
-        [4, None, "foreign-key-error"],
-        [5, None, "foreign-key-error"],
+    assert report.flatten(["rowPosition", "fieldPosition", "code", "cells"]) == [
+        [2, None, "foreign-key-error", ["1", "london", "2"]],
+        [3, None, "foreign-key-error", ["2", "paris", "3"]],
+        [4, None, "foreign-key-error", ["3", "rome", "4"]],
+        [5, None, "foreign-key-error", ["4", "rio", ""]],
     ]
 
 
