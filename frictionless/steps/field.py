@@ -231,7 +231,7 @@ class field_unpack(Step):
 
     code = "field-unpack"
 
-    def __init__(self, descriptor=None, *, name, to_names, preserve=False):
+    def __init__(self, descriptor=None, *, name=None, to_names=None, preserve=False):
         self.setinitial("name", name)
         self.setinitial("toNames", to_names)
         self.setinitial("preserve", preserve)
