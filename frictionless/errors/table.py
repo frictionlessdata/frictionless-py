@@ -33,7 +33,9 @@ class RowsMinimumError(TableError):
 class RowsMaximumError(TableError):
     code = "rows-maximum-error"
     name = "Rows Maximum Count Error"
-    template = "The data source does have more rows than the maximum number of rows: {note}"
+    template = (
+        "The data source does have more rows than the maximum number of rows: {note}"
+    )
     description = "This error can happen if the data is corrupted."
 
 

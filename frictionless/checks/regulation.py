@@ -58,6 +58,7 @@ class forbidden_value(Check):
         },
     }
 
+
 class number_rows(Check):
     """Check for forbidden values in a field
 
@@ -82,18 +83,19 @@ class number_rows(Check):
         self.__limit_max = self["limit_max"]
         self.__number_rows = 0
 
-
     # Validate
 
     def validate_row(self, row):
         self.__number_rows += 1
-        if self.__limit_min > 0 and self.__number_rows <  self.__limit_min:
+        if self.__limit_min > 0 and self.__number_rows < self.__limit_min:
             yield errors.RowsMinimumError(
-                note='Current number of rows is %s, the minimum is %s' % (number_rows, self.__limit_min)
+                note="Current number of rows is %s, the minimum is %s"
+                % (number_rows, self.__limit_min)
             )
         if self.__limit_max > 0 and self.__number_rows > self.__limit_max:
             yield errors.RowsMaximumError(
-                note='Current number of rows is %s, the maximum is %s' % (number_rows, self.__limit_max)
+                note="Current number of rows is %s, the maximum is %s"
+                % (number_rows, self.__limit_max)
             )
 
     # Metadata
