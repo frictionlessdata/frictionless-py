@@ -80,17 +80,18 @@ class number_rows(Check):
         super().__init__(descriptor)
         self.__limit_min = self["limit_min"]
         self.__limit_max = self["limit_max"]
+        self.__number_rows = 0
 
 
     # Validate
 
-    def validate_start(self):
-        number_rows = self.resource.count_rows()
-        if self.__limit_min > 0 and number_rows <  self.__limit_min:
+    def validate_row(self, row):
+        self.__number_rows += 1
+        if self.__limit_min > 0 and self.__number_rows <  self.__limit_min:
             yield errors.RowsMinimumError(
                 note='Current number of rows is %s, the minimum is %s' % (number_rows, self.__limit_min)
             )
-        if self.__limit_max > 0 and number_rows > self.__limit_max:
+        if self.__limit_max > 0 and self.__number_rows > self.__limit_max:
             yield errors.RowsMaximumError(
                 note='Current number of rows is %s, the maximum is %s' % (number_rows, self.__limit_max)
             )
