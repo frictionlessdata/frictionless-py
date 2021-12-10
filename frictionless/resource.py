@@ -854,6 +854,18 @@ class Resource(Metadata):
                     break
             return lists
 
+    def count_rows(self):
+        """Read rows into memory
+
+        Returns:
+            Row[]: table rows
+        """
+        rows_count = 0
+        with helpers.ensure_open(self):
+            for row in self.row_stream:
+                rows_count += 1 
+            return rows_count
+
     def read_rows(self, *, size=None):
         """Read rows into memory
 

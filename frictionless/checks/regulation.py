@@ -58,6 +58,54 @@ class forbidden_value(Check):
         },
     }
 
+class number_rows(Check):
+    """Check for forbidden values in a field
+
+    API      | Usage
+    -------- | --------
+    Public   | `from frictionless import checks`
+    Implicit | `validate(checks=[{"code": "number-rows", **limits}])`
+
+    Parameters:
+       descriptor (dict): check's descriptor
+
+    """
+
+    code = "number-rows"
+    Errors = [errors.ForbiddenValueError]
+
+    def __init__(self, descriptor=None, *, limit_min=None, limit_max=None):
+        self.setinitial("limit_min", limit_min)
+        self.setinitial("limit_max", limit_max)
+        super().__init__(descriptor)
+        self.__limit_min = self["limit_min"]
+        self.__limit_max = self["limit_max"]
+
+
+    # Validate
+
+    def validate_start(self):
+        number_rows = self.resource.count_rows()
+        if number_rows <  self.__limit_min:
+            yield errors.RowsMinimumError(
+                note='Current number of rows is %s, the minimum is %s' % (number_rows, self.__limit_min)
+            )
+        if number_rows > self.__limit_max:
+            yield errors.RowsMaximumError(
+                note='Current number of rows is %s, the maximum is %s' % (number_rows, self.__limit_max)
+            )
+
+    # Metadata
+
+    metadata_profile = {  # type: ignore
+        "type": "object",
+        "requred": ["limit_min", "limit_max"],
+        "properties": {
+            "limit_min": {"type": "number"},
+            "limit_max": {"type": "number"},
+        },
+    }
+
 
 class sequential_value(Check):
     """Check that a column having sequential values
