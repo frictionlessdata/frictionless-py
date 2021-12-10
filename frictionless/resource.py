@@ -855,10 +855,10 @@ class Resource(Metadata):
             return lists
 
     def count_rows(self):
-        """Read rows into memory
+        """Count number of rows from the table
 
         Returns:
-            Row[]: table rows
+            rows_count: Number of table rows
         """
         rows_count = 0
         with helpers.ensure_open(self):
