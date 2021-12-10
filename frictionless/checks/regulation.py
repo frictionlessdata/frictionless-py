@@ -64,7 +64,7 @@ class number_rows(Check):
     API      | Usage
     -------- | --------
     Public   | `from frictionless import checks`
-    Implicit | `validate(checks=[{"code": "number-rows", **limits}])`
+    Implicit | `validate(checks=[{"code": "number-rows", limit_min, limit_max}])`
 
     Parameters:
        descriptor (dict): check's descriptor
@@ -72,9 +72,9 @@ class number_rows(Check):
     """
 
     code = "number-rows"
-    Errors = [errors.ForbiddenValueError]
+    Errors = [errors.RowsMinimumError, errors.RowsMaximumError]
 
-    def __init__(self, descriptor=None, *, limit_min=None, limit_max=None):
+    def __init__(self, descriptor=None, *, limit_min=-1, limit_max=-1):
         self.setinitial("limit_min", limit_min)
         self.setinitial("limit_max", limit_max)
         super().__init__(descriptor)
@@ -86,11 +86,11 @@ class number_rows(Check):
 
     def validate_start(self):
         number_rows = self.resource.count_rows()
-        if number_rows <  self.__limit_min:
+        if self.__limit_min > 0 and number_rows <  self.__limit_min:
             yield errors.RowsMinimumError(
                 note='Current number of rows is %s, the minimum is %s' % (number_rows, self.__limit_min)
             )
-        if number_rows > self.__limit_max:
+        if self.__limit_max > 0 and number_rows > self.__limit_max:
             yield errors.RowsMaximumError(
                 note='Current number of rows is %s, the maximum is %s' % (number_rows, self.__limit_max)
             )
