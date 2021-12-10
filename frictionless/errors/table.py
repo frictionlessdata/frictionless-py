@@ -23,18 +23,11 @@ class RowCountError(TableError):
     description = "This error can happen if the data is corrupted."
 
 
-class RowsMinimumError(TableError):
-    code = "rows-minimum-error"
-    name = "Rows Minimum Count Error"
-    template = "The data source does not have the minimum number of rows: {note}"
-    description = "This error can happen if the data is corrupted."
-
-
-class RowsMaximumError(TableError):
-    code = "rows-maximum-error"
-    name = "Rows Maximum Count Error"
+class TableDimensionsError(TableError):
+    code = "table-dimensions-error"
+    name = "Table dimensions error"
     template = (
-        "The data source does have more rows than the maximum number of rows: {note}"
+        "The data source does not have the required dimensions: {note}"
     )
     description = "This error can happen if the data is corrupted."
 

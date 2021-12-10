@@ -59,53 +59,77 @@ class forbidden_value(Check):
     }
 
 
-class number_rows(Check):
-    """Check for forbidden values in a field
+class table_dimensions(Check):
+    """Check for minimum and maximum table dimensions
 
     API      | Usage
     -------- | --------
     Public   | `from frictionless import checks`
-    Implicit | `validate(checks=[{"code": "number-rows", limit_min, limit_max}])`
+    Implicit | `validate(checks=[{"code": "table-dimensions", min_rows, max_rows, min_fields, max_fields}])`
 
     Parameters:
        descriptor (dict): check's descriptor
 
     """
 
-    code = "number-rows"
-    Errors = [errors.RowsMinimumError, errors.RowsMaximumError]
+    code = "table-dimensions"
+    Errors = [errors.TableDimensionsError]
 
-    def __init__(self, descriptor=None, *, limit_min=-1, limit_max=-1):
-        self.setinitial("limit_min", limit_min)
-        self.setinitial("limit_max", limit_max)
+    def __init__(self, descriptor=None, *, min_rows=-1, max_rows=-1, min_fields=-1, max_fields=-1):
+        self.setinitial("min_rows", min_rows)
+        self.setinitial("max_rows", max_rows)
+        self.setinitial("min_fields", min_fields)
+        self.setinitial("max_fields", max_fields)
         super().__init__(descriptor)
-        self.__limit_min = self["limit_min"]
-        self.__limit_max = self["limit_max"]
-        self.__number_rows = 0
+        self.__min_rows = self["min_rows"]
+        self.__max_rows = self["max_rows"]
+        self.__min_fields = self["min_fields"]
+        self.__max_fields = self["max_fields"]
+
 
     # Validate
 
+    def validate_start(self):
+        number_fields = len(self.resource.schema.fields)
+        if number_fields < self.__min_fields:
+            yield errors.TableDimensionsError(
+                note="Current number of fields is %s, the minimum is %s"
+                % (number_fields, self.__min_fields)
+            )
+        if number_fields > self.__max_fields:
+            yield errors.TableDimensionsError(
+                note="Current number of fields is %s, the maximum is %s"
+                % (number_fields, self.__max_fields)
+            )
+
     def validate_row(self, row):
-        self.__number_rows += 1
-        if self.__limit_min > 0 and self.__number_rows < self.__limit_min:
-            yield errors.RowsMinimumError(
-                note="Current number of rows is %s, the minimum is %s"
-                % (number_rows, self.__limit_min)
-            )
-        if self.__limit_max > 0 and self.__number_rows > self.__limit_max:
-            yield errors.RowsMaximumError(
+        self.__last_row = row
+        if self.__max_rows > 0 and self.__last_row.row_number > self.__max_rows:
+            yield errors.TableDimensionsError(
                 note="Current number of rows is %s, the maximum is %s"
-                % (number_rows, self.__limit_max)
+                % (self.__last_row.row_number, self.__max_rows)
             )
+
+
+    def validate_end(self):
+        number_rows = self.__last_row.row_number
+        if self.__min_rows > 0 and number_rows < self.__min_rows:
+            yield errors.TableDimensionsError(
+                note="Current number of rows is %s, the minimum is %s"
+                % (number_rows, self.__min_rows)
+            )
+
 
     # Metadata
 
     metadata_profile = {  # type: ignore
         "type": "object",
-        "requred": ["limit_min", "limit_max"],
+        "requred": ["min_rows", "max_rows", "min_fields", "max_fields"],
         "properties": {
-            "limit_min": {"type": "number"},
-            "limit_max": {"type": "number"},
+            "min_rows": {"type": "number"},
+            "max_rows": {"type": "number"},
+            "min_fields": {"type": "number"},
+            "max_fields": {"type": "number"},
         },
     }
 
