@@ -75,7 +75,9 @@ class table_dimensions(Check):
     code = "table-dimensions"
     Errors = [errors.TableDimensionsError]
 
-    def __init__(self, descriptor=None, *, min_rows=-1, max_rows=-1, min_fields=-1, max_fields=-1):
+    def __init__(
+        self, descriptor=None, *, min_rows=-1, max_rows=-1, min_fields=-1, max_fields=-1
+    ):
         self.setinitial("min_rows", min_rows)
         self.setinitial("max_rows", max_rows)
         self.setinitial("min_fields", min_fields)
@@ -85,7 +87,6 @@ class table_dimensions(Check):
         self.__max_rows = self["max_rows"]
         self.__min_fields = self["min_fields"]
         self.__max_fields = self["max_fields"]
-
 
     # Validate
 
@@ -110,7 +111,6 @@ class table_dimensions(Check):
                 % (self.__last_row.row_number, self.__max_rows)
             )
 
-
     def validate_end(self):
         number_rows = self.__last_row.row_number
         if self.__min_rows > 0 and number_rows < self.__min_rows:
@@ -118,7 +118,6 @@ class table_dimensions(Check):
                 note="Current number of rows is %s, the minimum is %s"
                 % (number_rows, self.__min_rows)
             )
-
 
     # Metadata
 
