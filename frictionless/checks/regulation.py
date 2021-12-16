@@ -110,7 +110,7 @@ class table_dimensions(Check):
                 note="Current number of fields is %s, the required number is %s"
                 % (number_fields, self.__num_fields),
                 limits={
-                    "required_number_fields": self.__num_fields,
+                    "required_num_fields": self.__num_fields,
                     "number_fields": number_fields,
                 },
             )
