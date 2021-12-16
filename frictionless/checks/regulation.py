@@ -105,6 +105,7 @@ class table_dimensions(Check):
     def validate_start(self):
         number_fields = len(self.resource.schema.fields)
 
+        # Check if there is a different number of fields as required
         if self.__num_fields > 0 and number_fields != self.__num_fields:
             yield errors.TableDimensionsError(
                 note="Current number of fields is %s, the required number is %s"
@@ -114,12 +115,16 @@ class table_dimensions(Check):
                     "number_fields": number_fields,
                 },
             )
+
+        # Check if there is less field than the minimum
         if self.__min_fields > 0 and number_fields < self.__min_fields:
             yield errors.TableDimensionsError(
                 note="Current number of fields is %s, the minimum is %s"
                 % (number_fields, self.__min_fields),
                 limits={"min_fields": self.__min_fields, "number_fields": number_fields},
             )
+
+        # Check if there is more field than the maximum
         if self.__max_fields > 0 and number_fields > self.__max_fields:
             yield errors.TableDimensionsError(
                 note="Current number of fields is %s, the maximum is %s"
@@ -130,6 +135,7 @@ class table_dimensions(Check):
     def validate_row(self, row):
         self.__last_row = row
         number_rows = self.__last_row.row_number
+        # Check if exceed the max number of rows
         if self.__max_rows > 0 and self.__last_row.row_number > self.__max_rows:
             yield errors.TableDimensionsError(
                 note="Current number of rows is %s, the maximum is %s"
@@ -139,6 +145,8 @@ class table_dimensions(Check):
 
     def validate_end(self):
         number_rows = self.__last_row.row_number
+
+        # Check if doesn't have the exact number of rows
         if self.__num_rows > 0 and number_rows != self.__num_rows:
             yield errors.TableDimensionsError(
                 note="Current number of rows is %s, the required is %s"
@@ -146,6 +154,7 @@ class table_dimensions(Check):
                 limits={"required_num_rows": self.__num_rows, "number_rows": number_rows},
             )
 
+        # Check if has less rows than the required
         if self.__min_rows > 0 and number_rows < self.__min_rows:
             yield errors.TableDimensionsError(
                 note="Current number of rows is %s, the minimum is %s"
