@@ -232,3 +232,22 @@ def test_validate_table_dimensions_no_limits():
         checks=[checks.regulation.table_dimensions()],
     )
     assert report.flatten(["limits", "code"]) == []
+
+
+def test_validate_table_dimensions_num_fields_num_rows_wrong():
+    report = validate(
+        "data/table-limits.csv",
+        checks=[checks.regulation.table_dimensions(num_fields=3, num_rows=2)],
+    )
+    assert report.flatten(["limits", "code"]) == [
+        [{"required_num_fields": 3, "number_fields": 4}, "table-dimensions-error"],
+        [{"required_num_rows": 2, "number_rows": 3}, "table-dimensions-error"],
+    ]
+
+
+def test_validate_table_dimensions_num_fields_num_rows_correct():
+    report = validate(
+        "data/table-limits.csv",
+        checks=[checks.regulation.table_dimensions(num_fields=4, num_rows=3)],
+    )
+    assert report.flatten(["limits", "code"]) == []
