@@ -251,3 +251,14 @@ def test_validate_table_dimensions_num_fields_num_rows_correct():
         checks=[checks.regulation.table_dimensions(num_fields=4, num_rows=3)],
     )
     assert report.flatten(["limits", "code"]) == []
+
+
+def test_validate_table_dimensions_min_fields_max_rows_wrong():
+    report = validate(
+        "data/table-limits.csv",
+        checks=[checks.regulation.table_dimensions(min_fields=5, max_rows=2)],
+    )
+    assert report.flatten(["limits", "code"]) == [
+        [{"min_fields": 5, "number_fields": 4}, "table-dimensions-error"],
+        [{"max_rows": 2, "number_rows": 3}, "table-dimensions-error"],
+    ]
