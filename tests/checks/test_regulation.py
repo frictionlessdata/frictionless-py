@@ -172,17 +172,17 @@ def test_validate_table_dimensions_num_rows():
         checks=[checks.regulation.table_dimensions(num_rows=42)],
     )
     assert report.flatten(["limits", "code"]) == [
-        [{"required_num_rows": 42, "number_rows": 3}, "table-dimensions-error"]
+        [{"requiredNumRows": 42, "numberRows": 3}, "table-dimensions-error"]
     ]
 
 
 def test_validate_table_dimensions_num_rows_declarative():
     report = validate(
         "data/table-limits.csv",
-        checks=[{"code": "table-dimensions", "num_rows": 42}],
+        checks=[{"code": "table-dimensions", "numRows": 42}],
     )
     assert report.flatten(["limits", "code"]) == [
-        [{"required_num_rows": 42, "number_rows": 3}, "table-dimensions-error"]
+        [{"requiredNumRows": 42, "numberRows": 3}, "table-dimensions-error"]
     ]
 
 
@@ -192,17 +192,17 @@ def test_validate_table_dimensions_min_rows():
         checks=[checks.regulation.table_dimensions(min_rows=42)],
     )
     assert report.flatten(["limits", "code"]) == [
-        [{"min_rows": 42, "number_rows": 3}, "table-dimensions-error"]
+        [{"minRows": 42, "numberRows": 3}, "table-dimensions-error"]
     ]
 
 
 def test_validate_table_dimensions_min_rows_declarative():
     report = validate(
         "data/table-limits.csv",
-        checks=[{"code": "table-dimensions", "min_rows": 42}],
+        checks=[{"code": "table-dimensions", "minRows": 42}],
     )
     assert report.flatten(["limits", "code"]) == [
-        [{"min_rows": 42, "number_rows": 3}, "table-dimensions-error"]
+        [{"minRows": 42, "numberRows": 3}, "table-dimensions-error"]
     ]
 
 
@@ -212,17 +212,17 @@ def test_validate_table_dimensions_max_rows():
         checks=[checks.regulation.table_dimensions(max_rows=2)],
     )
     assert report.flatten(["limits", "code"]) == [
-        [{"max_rows": 2, "number_rows": 3}, "table-dimensions-error"]
+        [{"maxRows": 2, "numberRows": 3}, "table-dimensions-error"]
     ]
 
 
 def test_validate_table_dimensions_max_rows_declarative():
     report = validate(
         "data/table-limits.csv",
-        checks=[{"code": "table-dimensions", "max_rows": 2}],
+        checks=[{"code": "table-dimensions", "maxRows": 2}],
     )
     assert report.flatten(["limits", "code"]) == [
-        [{"max_rows": 2, "number_rows": 3}, "table-dimensions-error"]
+        [{"maxRows": 2, "numberRows": 3}, "table-dimensions-error"]
     ]
 
 
@@ -232,17 +232,17 @@ def test_validate_table_dimensions_num_fields():
         checks=[checks.regulation.table_dimensions(num_fields=42)],
     )
     assert report.flatten(["limits", "code"]) == [
-        [{"required_num_fields": 42, "number_fields": 4}, "table-dimensions-error"]
+        [{"requiredNumFields": 42, "numberFields": 4}, "table-dimensions-error"]
     ]
 
 
 def test_validate_table_dimensions_num_fields_declarative():
     report = validate(
-        "data/table-limits.csv", checks=[{"code": "table-dimensions", "num_fields": 42}]
+        "data/table-limits.csv", checks=[{"code": "table-dimensions", "numFields": 42}]
     )
 
     assert report.flatten(["limits", "code"]) == [
-        [{"required_num_fields": 42, "number_fields": 4}, "table-dimensions-error"]
+        [{"requiredNumFields": 42, "numberFields": 4}, "table-dimensions-error"]
     ]
 
 
@@ -252,17 +252,17 @@ def test_validate_table_dimensions_min_fields():
         checks=[checks.regulation.table_dimensions(min_fields=42)],
     )
     assert report.flatten(["limits", "code"]) == [
-        [{"min_fields": 42, "number_fields": 4}, "table-dimensions-error"]
+        [{"minFields": 42, "numberFields": 4}, "table-dimensions-error"]
     ]
 
 
 def test_validate_table_dimensions_min_fields_declarative():
     report = validate(
         "data/table-limits.csv",
-        checks=[{"code": "table-dimensions", "min_fields": 42}],
+        checks=[{"code": "table-dimensions", "minFields": 42}],
     )
     assert report.flatten(["limits", "code"]) == [
-        [{"min_fields": 42, "number_fields": 4}, "table-dimensions-error"]
+        [{"minFields": 42, "numberFields": 4}, "table-dimensions-error"]
     ]
 
 
@@ -272,17 +272,17 @@ def test_validate_table_dimensions_max_fields():
         checks=[checks.regulation.table_dimensions(max_fields=2)],
     )
     assert report.flatten(["limits", "code"]) == [
-        [{"max_fields": 2, "number_fields": 4}, "table-dimensions-error"]
+        [{"maxFields": 2, "numberFields": 4}, "table-dimensions-error"]
     ]
 
 
 def test_validate_table_dimensions_max_fields_declarative():
     report = validate(
         "data/table-limits.csv",
-        checks=[{"code": "table-dimensions", "max_fields": 2}],
+        checks=[{"code": "table-dimensions", "maxFields": 2}],
     )
     assert report.flatten(["limits", "code"]) == [
-        [{"max_fields": 2, "number_fields": 4}, "table-dimensions-error"]
+        [{"maxFields": 2, "numberFields": 4}, "table-dimensions-error"]
     ]
 
 
@@ -308,19 +308,19 @@ def test_validate_table_dimensions_num_fields_num_rows_wrong():
         checks=[checks.regulation.table_dimensions(num_fields=3, num_rows=2)],
     )
     assert report.flatten(["limits", "code"]) == [
-        [{"required_num_fields": 3, "number_fields": 4}, "table-dimensions-error"],
-        [{"required_num_rows": 2, "number_rows": 3}, "table-dimensions-error"],
+        [{"requiredNumFields": 3, "numberFields": 4}, "table-dimensions-error"],
+        [{"requiredNumRows": 2, "numberRows": 3}, "table-dimensions-error"],
     ]
 
 
 def test_validate_table_dimensions_num_fields_num_rows_wrong_declarative():
     report = validate(
         "data/table-limits.csv",
-        checks=[{"code": "table-dimensions", "num_fields": 3, "num_rows": 2}],
+        checks=[{"code": "table-dimensions", "numFields": 3, "numRows": 2}],
     )
     assert report.flatten(["limits", "code"]) == [
-        [{"required_num_fields": 3, "number_fields": 4}, "table-dimensions-error"],
-        [{"required_num_rows": 2, "number_rows": 3}, "table-dimensions-error"],
+        [{"requiredNumFields": 3, "numberFields": 4}, "table-dimensions-error"],
+        [{"requiredNumRows": 2, "numberRows": 3}, "table-dimensions-error"],
     ]
 
 
@@ -335,7 +335,7 @@ def test_validate_table_dimensions_num_fields_num_rows_correct():
 def test_validate_table_dimensions_num_fields_num_rows_correct_declarative():
     report = validate(
         "data/table-limits.csv",
-        checks=[{"code": "table-dimensions", "num_fields": 4, "num_rows": 3}],
+        checks=[{"code": "table-dimensions", "numFields": 4, "numRows": 3}],
     )
     assert report.flatten(["limits", "code"]) == []
 
@@ -346,19 +346,19 @@ def test_validate_table_dimensions_min_fields_max_rows_wrong():
         checks=[checks.regulation.table_dimensions(min_fields=5, max_rows=2)],
     )
     assert report.flatten(["limits", "code"]) == [
-        [{"min_fields": 5, "number_fields": 4}, "table-dimensions-error"],
-        [{"max_rows": 2, "number_rows": 3}, "table-dimensions-error"],
+        [{"minFields": 5, "numberFields": 4}, "table-dimensions-error"],
+        [{"maxRows": 2, "numberRows": 3}, "table-dimensions-error"],
     ]
 
 
 def test_validate_table_dimensions_min_fields_max_rows_wrong_declarative():
     report = validate(
         "data/table-limits.csv",
-        checks=[{"code": "table-dimensions", "min_fields": 5, "max_rows": 2}],
+        checks=[{"code": "table-dimensions", "minFields": 5, "maxRows": 2}],
     )
     assert report.flatten(["limits", "code"]) == [
-        [{"min_fields": 5, "number_fields": 4}, "table-dimensions-error"],
-        [{"max_rows": 2, "number_rows": 3}, "table-dimensions-error"],
+        [{"minFields": 5, "numberFields": 4}, "table-dimensions-error"],
+        [{"maxRows": 2, "numberRows": 3}, "table-dimensions-error"],
     ]
 
 
@@ -373,6 +373,6 @@ def test_validate_table_dimensions_min_fields_max_rows_correct():
 def test_validate_table_dimensions_min_fields_max_rows_correct_declarative():
     report = validate(
         "data/table-limits.csv",
-        checks=[{"code": "table-dimensions", "min_fields": 4, "max_rows": 3}],
+        checks=[{"code": "table-dimensions", "minFields": 4, "maxRows": 3}],
     )
     assert report.flatten(["limits", "code"]) == []
