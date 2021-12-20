@@ -166,10 +166,21 @@ class table_dimensions(Check):
 
     metadata_profile = {  # type: ignore
         "type": "object",
-        "requred": {"oneOf": ["minRows", "maxRows", "minFields", "maxFields"]},
+        "requred": {
+            "oneOf": [
+                "numRows",
+                "minRows",
+                "maxRows",
+                "numFields",
+                "minFields",
+                "maxFields",
+            ]
+        },
         "properties": {
+            "numRows": {"type": "number"},
             "minRows": {"type": "number"},
             "maxRows": {"type": "number"},
+            "numFields": {"type": "number"},
             "minFields": {"type": "number"},
             "maxFields": {"type": "number"},
         },
