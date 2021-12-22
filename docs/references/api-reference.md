@@ -604,7 +604,6 @@ Detect schema from fragment
 
 - `Schema` - schema
 
-
 ## Dialect
 
 ```python
@@ -7552,6 +7551,7 @@ Public   | `from frictionless import validate_table`
 **Returns**:
 
 - `Report` - validation report
+
 
 ## validate\_schema
 
