@@ -6442,6 +6442,24 @@ for the `validate` function.
 - `field_name` _str_ - a field name to check
 
 
+## checks.table\_dimensions
+
+```python
+class table_dimensions(Check)
+```
+
+Check for minimum and maximum table dimensions
+
+API      | Usage
+-------- | --------
+Public   | `from frictionless import checks`
+Implicit | `validate(checks=[{"code": "table-dimensions", numRows, minRows, maxRows, numFields, minFields, maxFields}])`
+
+**Arguments**:
+
+- `descriptor` _dict_ - check's descriptor
+
+
 ## checks.truncated\_value
 
 ```python

@@ -422,6 +422,14 @@ Template: `The data source does not match the expected row count: {note}` <br/>
 Description: `This error can happen if the data is corrupted.` <br/>
 
 
+## Table dimensions error
+
+Code: `table-dimensions-error` <br/>
+Tags: `#table` <br/>
+Template: `The data source does not have the required dimensions: {note}` <br/>
+Description: `This error can happen if the data is corrupted.` <br/>
+
+
 ## Deviated Value
 
 Code: `deviated-value` <br/>

@@ -2,9 +2,13 @@
 
 Here described only the breaking and most significant changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/frictionless-py/commits/main).
 
+## v4.23.0
+
+- Added table dimensions check (#985)
+
 ## v4.22.0
 
-- Added "extract --trusged" flag
+- Added "extract --trusted" flag
 
 ## v4.21.0
 
