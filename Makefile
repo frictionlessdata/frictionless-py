@@ -15,10 +15,6 @@ docs:
 format:
 	black $(PACKAGE) tests
 
-github:
-	sed -i -E "s/@(\w*)/@$(LEAD)/" .github/issue_template.md
-	sed -i -E "s/@(\w*)/@$(LEAD)/" .github/pull_request_template.md
-
 install:
 	pip install --upgrade -e .[bigquery,ckan,excel,gsheets,html,json,ods,pandas,s3,server,spss,sql,dev]
 	test -f '.git/hooks/pre-commit' || cp .gitverify .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
