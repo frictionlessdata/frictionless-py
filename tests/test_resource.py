@@ -3,11 +3,13 @@ import sys
 import json
 import yaml
 import pytest
+from urllib.parse import urlparse
 from frictionless import Resource, Schema, Field, Layout, Detector, helpers
 from frictionless import FrictionlessException, describe_resource
 from frictionless.plugins.remote import RemoteControl
 from frictionless.plugins.excel import ExcelDialect
 from frictionless.plugins.json import JsonDialect
+from frictionless.plugins.sql import SqlDialect
 
 
 IS_UNIX = not helpers.is_platform("windows")
@@ -60,6 +62,27 @@ def test_resource_from_path_yaml():
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
+
+
+def test_resource_from_sqlite_issue_964(tmpdir, database_url):
+    dialect = SqlDialect(table="table")
+    for basepath in ("", tmpdir):
+        parsed = urlparse(database_url)
+        if basepath:
+            path = os.path.relpath(parsed.path, tmpdir)
+            database_url = "{scheme}:///{path}".format(scheme=parsed.scheme, path=path)
+        resource = Resource(
+            database_url,
+            basepath=str(basepath),
+            name="table",
+            scheme="sqlite",
+            dialect=dialect,
+        )
+        assert resource.basepath == str(basepath)
+        assert resource.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
+        ]
 
 
 def test_resource_from_path_yml_issue_644():
