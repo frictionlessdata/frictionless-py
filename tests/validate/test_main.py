@@ -32,3 +32,11 @@ def test_validate_from_resource_instance():
 def test_validate_multiple_files_issue_850():
     report = validate("data/package/*.csv")
     assert report.stats["tasks"] == 2
+
+
+# Issues
+
+
+@pytest.xfail
+def test_validate_with_302_redirect():
+    assert False
