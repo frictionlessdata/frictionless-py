@@ -7,9 +7,9 @@ import zipfile
 # Helpers
 
 
-def read_asset(*paths):
+def read_asset(*paths, encoding="utf-8"):
     dirname = os.path.dirname(__file__)
-    with open(os.path.join(dirname, "assets", *paths)) as file:
+    with open(os.path.join(dirname, "assets", *paths), encoding=encoding) as file:
         return file.read().strip()
 
 
