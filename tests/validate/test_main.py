@@ -1,3 +1,4 @@
+import pytest
 from frictionless import Resource, validate
 
 
@@ -37,6 +38,6 @@ def test_validate_multiple_files_issue_850():
 # Issues
 
 
-@pytest.xfail
+@pytest.mark.xfail
 def test_validate_with_302_redirect():
     assert False
