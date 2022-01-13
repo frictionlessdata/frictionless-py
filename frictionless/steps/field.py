@@ -313,6 +313,8 @@ class field_update(Step):
             function = lambda val, row: simpleeval.simple_eval(formula, names=row)
         if function:
             resource.data = table.convert(name, function)
+        elif new_name:
+            resource.data = table.rename({name: new_name})
         elif "value" in self:
             resource.data = table.update(name, value)
 
