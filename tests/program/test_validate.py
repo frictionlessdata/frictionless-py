@@ -210,7 +210,7 @@ def test_program_validate_json():
 def test_program_validate_error_not_found():
     result = runner.invoke(program, "validate data/bad.csv")
     assert result.exit_code == 1
-    assert result.stdout.count("No such file or directory: 'data/bad.csv'")
+    assert result.stdout.count("[Errno 2]") and result.stdout.count("data/bad.csv")
 
 
 # Helpers

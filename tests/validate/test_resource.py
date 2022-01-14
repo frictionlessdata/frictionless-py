@@ -16,22 +16,18 @@ def test_validate():
 
 def test_validate_invalid_source():
     report = validate("bad.json", type="resource")
-    assert report.flatten(["code", "note"]) == [
-        [
-            "resource-error",
-            'cannot extract metadata "bad.json" because "[Errno 2] No such file or directory: \'bad.json\'"',
-        ]
-    ]
+    assert report["stats"]["errors"] == 1
+    [[code, note]] = report.flatten(["code", "note"])
+    assert code == "resource-error"
+    assert note.count("[Errno 2]") and note.count("bad.json")
 
 
 def test_validate_invalid_resource():
     report = validate({"path": "data/table.csv", "schema": "bad"})
-    assert report.flatten(["code", "note"]) == [
-        [
-            "schema-error",
-            'cannot extract metadata "bad" because "[Errno 2] No such file or directory: \'bad\'"',
-        ]
-    ]
+    assert report["stats"]["errors"] == 1
+    [[code, note]] = report.flatten(["code", "note"])
+    assert code == "schema-error"
+    assert note.count("[Errno 2]") and note.count("bad")
 
 
 def test_validate_invalid_resource_original():
@@ -1143,9 +1139,10 @@ def test_validate_order_fields_issue_313():
 
 def test_validate_missing_local_file_raises_scheme_error_issue_315():
     report = validate("bad-path.csv")
-    assert report.flatten(["code", "note"]) == [
-        ["scheme-error", "[Errno 2] No such file or directory: 'bad-path.csv'"],
-    ]
+    assert report["stats"]["errors"] == 1
+    [[code, note]] = report.flatten(["code", "note"])
+    assert code == "scheme-error"
+    assert note.count("[Errno 2]") and note.count("bad-path.csv")
 
 
 def test_validate_inline_not_a_binary_issue_349():

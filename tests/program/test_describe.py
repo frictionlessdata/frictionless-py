@@ -160,7 +160,11 @@ def test_program_describe_json():
 def test_program_describe_error_not_found():
     result = runner.invoke(program, "describe data/bad.csv")
     assert result.exit_code == 1
-    assert result.stdout.count("No such file or directory: 'data/bad.csv'")
+    assert (
+        result.stdout.count("[scheme-error]")
+        and result.stdout.count("[Errno 2]")
+        and result.stdout.count("data/bad.csv")
+    )
 
 
 def test_program_describe_basepath():

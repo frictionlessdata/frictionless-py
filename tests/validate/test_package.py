@@ -76,22 +76,20 @@ def test_validate_package_with_non_tabular():
 
 def test_validate_package_invalid_descriptor_path():
     report = validate("bad/datapackage.json")
-    assert report.flatten(["code", "note"]) == [
-        [
-            "package-error",
-            'cannot extract metadata "bad/datapackage.json" because "[Errno 2] No such file or directory: \'bad/datapackage.json\'"',
-        ]
-    ]
+    assert report["stats"]["errors"] == 1
+    error = report["errors"][0]
+    assert error["code"] == "package-error"
+    assert error["note"].count("[Errno 2]") and error["note"].count(
+        "bad/datapackage.json"
+    )
 
 
 def test_validate_package_invalid_package():
     report = validate({"resources": [{"path": "data/table.csv", "schema": "bad"}]})
-    assert report.flatten(["code", "note"]) == [
-        [
-            "schema-error",
-            'cannot extract metadata "bad" because "[Errno 2] No such file or directory: \'bad\'"',
-        ]
-    ]
+    assert report["stats"]["errors"] == 1
+    error = report["errors"][0]
+    assert error["code"] == "schema-error"
+    assert error["note"].count("[Errno 2]") and error["note"].count("'bad'")
 
 
 def test_validate_package_invalid_package_original():
