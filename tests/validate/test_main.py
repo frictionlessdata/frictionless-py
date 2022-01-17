@@ -1,4 +1,4 @@
-from frictionless import Resource, validate
+from frictionless import Resource, Field, validate, describe
 
 
 # Table
@@ -29,6 +29,22 @@ def test_validate_from_resource_instance():
     assert report.valid
 
 
+# Issues
+
+
 def test_validate_multiple_files_issue_850():
     report = validate("data/package/*.csv")
     assert report.stats["tasks"] == 2
+
+
+def test_validate_less_actual_fields_with_required_constraint_issue_950():
+    schema = describe("data/table.csv", type="schema")
+    schema.add_field(Field(name="bad", constraints={"required": True}))
+    report = validate("data/table.csv", schema=schema)
+    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
+        [None, 3, "missing-label"],
+        [2, None, "constraint-error"],
+        [2, 3, "missing-cell"],
+        [3, None, "constraint-error"],
+        [3, 3, "missing-cell"],
+    ]
