@@ -55,6 +55,15 @@ def pass_through(iterator):
         pass
 
 
+def safe_format(text, data):
+    return text.format_map(SafeFormatDict(data))
+
+
+class SafeFormatDict(dict):
+    def __missing__(self, key):
+        return ""
+
+
 def remove_non_values(mapping):
     return {key: value for key, value in mapping.items() if value is not None}
 

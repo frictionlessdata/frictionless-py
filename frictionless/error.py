@@ -1,4 +1,5 @@
 from .metadata import Metadata
+from . import helpers
 
 
 # NOTE:
@@ -37,7 +38,7 @@ class Error(Metadata):
         self.setinitial("name", self.name)
         self.setinitial("tags", self.tags)
         self.setinitial("note", note)
-        self.setinitial("message", self.template.format(**self))
+        self.setinitial("message", helpers.safe_format(self.template, self))
         self.setinitial("description", self.description)
 
     @property

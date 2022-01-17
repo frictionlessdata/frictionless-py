@@ -297,7 +297,7 @@ class Row(dict):
             if field_mapping is None:
                 break
             field, field_number, field_position = field_mapping
-            if not is_empty and not is_empty and super().__contains__(field.name):
+            if not is_empty and super().__contains__(field.name):
                 continue
 
             # Read cell
@@ -322,21 +322,26 @@ class Row(dict):
                     )
                 )
 
-            # Constraint errors
-            if notes:
-                for note in notes.values():
-                    self.__errors.append(
-                        errors.ConstraintError(
-                            note=note,
-                            cells=list(map(to_str, cells)),
-                            row_number=self.__row_number,
-                            row_position=self.__row_position,
-                            cell=str(source),
-                            field_name=field.name,
-                            field_number=field_number,
-                            field_position=field_position,
+            # NOTE: review this logic (why we can't skip reading also?)
+            # Check constriants if there is an existent cell
+            # Otherwise we emit only "missing-cell" which is enough
+            if field_position:
+
+                # Constraint errors
+                if notes:
+                    for note in notes.values():
+                        self.__errors.append(
+                            errors.ConstraintError(
+                                note=note,
+                                cells=list(map(to_str, cells)),
+                                row_number=self.__row_number,
+                                row_position=self.__row_position,
+                                cell=str(source),
+                                field_name=field.name,
+                                field_number=field_number,
+                                field_position=field_position,
+                            )
                         )
-                    )
 
             # Set/return value
             super().__setitem__(field.name, target)
