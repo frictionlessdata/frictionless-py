@@ -89,7 +89,7 @@ def test_multipart_loader_resource_error_bad_path():
         resource.read_rows()
     error = excinfo.value.error
     assert error.code == "scheme-error"
-    assert error.note == "[Errno 2] No such file or directory: 'chunk1.csv'"
+    assert error.note.count("[Errno 2]") and error.note.count("chunk1.csv")
 
 
 def test_multipart_loader_resource_error_bad_path_not_safe_absolute():

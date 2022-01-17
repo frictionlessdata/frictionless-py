@@ -217,7 +217,7 @@ def test_resource_source_path_error_bad_path():
         resource.read_rows()
     error = excinfo.value.error
     assert error.code == "scheme-error"
-    assert error.note == "[Errno 2] No such file or directory: 'table.csv'"
+    assert error.note.count("[Errno 2]") and error.note.count("table.csv")
 
 
 def test_resource_source_path_error_bad_path_not_safe_absolute():
@@ -416,7 +416,7 @@ def test_resource_scheme_error_file_not_found():
         resource.open()
     error = excinfo.value.error
     assert error.code == "scheme-error"
-    assert error.note == "[Errno 2] No such file or directory: 'bad.csv'"
+    assert error.note.count("[Errno 2]") and error.note.count("bad.csv")
 
 
 @pytest.mark.vcr
@@ -435,7 +435,7 @@ def test_resource_scheme_error_file_not_found_bad_format():
         resource.open()
     error = excinfo.value.error
     assert error.code == "scheme-error"
-    assert error.note == "[Errno 2] No such file or directory: 'bad.bad'"
+    assert error.note.count("[Errno 2]") and error.note.count("bad.bad")
 
 
 def test_resource_scheme_error_file_not_found_bad_compression():
@@ -444,7 +444,7 @@ def test_resource_scheme_error_file_not_found_bad_compression():
         resource.open()
     error = excinfo.value.error
     assert error.code == "scheme-error"
-    assert error.note == "[Errno 2] No such file or directory: 'bad.csv'"
+    assert error.note.count("[Errno 2]") and error.note.count("bad.csv")
 
 
 # Format
@@ -2626,7 +2626,7 @@ def test_resource_not_existent_local_file_with_no_format_issue_287():
         resource.open()
     error = excinfo.value.error
     assert error.code == "scheme-error"
-    assert error.note == "[Errno 2] No such file or directory: 'bad'"
+    assert error.note.count("[Errno 2]") and error.note.count("bad")
 
 
 @pytest.mark.vcr
