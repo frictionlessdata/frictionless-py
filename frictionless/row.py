@@ -324,7 +324,7 @@ class Row(dict):
 
             # NOTE: review this logic (why we can't skip reading also?)
             # Check constriants if there is an existent cell
-            # Otherwise we emit "missing-cell" which is enough
+            # Otherwise we emit only "missing-cell" which is enough
             if field_position:
 
                 # Constraint errors
