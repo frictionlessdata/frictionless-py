@@ -43,8 +43,6 @@ def test_validate_less_actual_fields_with_required_constraint_issue_950():
     report = validate("data/table.csv", schema=schema)
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [None, 3, "missing-label"],
-        [2, None, "constraint-error"],
         [2, 3, "missing-cell"],
-        [3, None, "constraint-error"],
         [3, 3, "missing-cell"],
     ]
