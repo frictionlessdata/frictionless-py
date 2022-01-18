@@ -378,8 +378,10 @@ class SqlStorage(Storage):
             self.__metadata.create_all(tables=sql_tables)
 
             # Write data
-            for resource in package.resources:
-                self.__write_convert_data(resource)
+            existent_names = list(self)
+            for name in existent_names:
+                if package.has_resource(name):
+                    self.__write_convert_data(package.get_resource(name))
 
     def __write_convert_name(self, name):
         return self.__prefix + name
