@@ -1,3 +1,5 @@
-# Overview
+- fixes #<issue-number>
 
-Please replace this line with full information about your pull request. Make sure that tests pass before publishing it
+---
+
+Please make sure that all the checks pass. Please add here any additional information regarding this pull request. It's highly recommended that you link this PR to an issue (please create one if it doesn't exist for this PR)
