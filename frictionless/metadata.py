@@ -293,6 +293,20 @@ def metadata_attach(self, name, value):
     return setitem(self, name, value)
 
 
+def get_metadata_intersection(meta1, meta2):
+    shared_meta = {}
+    for shared_key in meta1.keys() & meta2.keys():
+        value1 = meta1[shared_key]
+        value2 = meta2[shared_key]
+        if isinstance(value1, dict) and isinstance(value2, dict):
+            shared_meta[shared_key] = get_metadata_intersection(value1, value2)
+        elif isinstance(value1, list):
+            shared_meta[shared_key] = [val for val in value1 if val in value2]
+        elif value1 == value2:
+            shared_meta[shared_key] = value1
+    return Metadata(shared_meta)
+
+
 class IndentDumper(yaml.SafeDumper):
     def increase_indent(self, flow=False, indentless=False):
         return super().increase_indent(flow, False)

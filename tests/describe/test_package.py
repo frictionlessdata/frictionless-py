@@ -128,3 +128,20 @@ def test_describe_package_expand():
     package = describe("data/chunk*.csv", expand=True)
     assert package.get_resource("chunk1").layout.header is True
     assert package.get_resource("chunk1").schema.missing_values == [""]
+
+
+def test_summarized_resources_shared_values():
+    package = describe("data/mixed_schemas/", stats=True)
+    assert package.summarize_resources(strategy="shared_values") == {
+        "profile": "tabular-data-resource",
+        "scheme": "file",
+        "format": "csv",
+        "hashing": "md5",
+        "encoding": "utf-8",
+        "schema": {
+            "fields": [
+                {"name": "id", "type": "integer"},
+            ]
+        },
+        "stats": {"fields": 2, "rows": 1},
+    }

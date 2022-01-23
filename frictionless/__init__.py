@@ -12,7 +12,7 @@ from .header import Header
 from .inquiry import Inquiry, InquiryTask
 from .layout import Layout
 from .loader import Loader
-from .metadata import Metadata
+from .metadata import Metadata, get_metadata_intersection
 from .package import Package
 from .plugin import Plugin
 from .parser import Parser

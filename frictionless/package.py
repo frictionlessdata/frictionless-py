@@ -4,8 +4,9 @@ import zipfile
 import tempfile
 from pathlib import Path
 from copy import deepcopy
+from collections import Counter
 from .exception import FrictionlessException
-from .metadata import Metadata
+from .metadata import Metadata, get_metadata_intersection
 from .detector import Detector
 from .resource import Resource
 from .field import Field
@@ -444,6 +445,24 @@ class Package(Metadata):
         resource = self.get_resource(name)
         self.resources.remove(resource)
         return resource
+
+    def summarize_resources(self, strategy="most_common"):
+        def most_common():
+            resource_counter = Counter(list(self.resources))
+            return resource_counter.most_common(1)[0][0]
+
+        def shared_values():
+            base_resource = self.resources[0]
+            for resource in self.resources:
+                base_resource = get_metadata_intersection(base_resource, resource)
+            return base_resource
+
+        if strategy == "most_common":
+            return most_common()
+        if strategy == "shared_values":
+            return shared_values()
+
+        raise ValueError("strategy must be one of 'most_common', 'shared_values'")
 
     # Expand
 
