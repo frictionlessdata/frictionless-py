@@ -116,6 +116,13 @@ offset_rows = Option(
     help='Offset rows by this integer e.g. "50"',
 )
 
+# Summarization
+
+resource_summarization_strategy = Option(
+    default=None,
+    help="Strategy to use for summarizing a Package's Resources",
+)
+
 # Schema
 
 schema = Option(

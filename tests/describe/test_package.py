@@ -185,7 +185,6 @@ def test_summarized_resources_present():
             ]
         },
     }
-    assert package.to_dict()["summarized_resources"]
 
 
 def test_summarized_resources_not_present():
@@ -195,8 +194,6 @@ def test_summarized_resources_not_present():
     )
     assert not package.resource_summarization_strategy
     assert not package.summarized_resources
-    with pytest.raises(KeyError):
-        package.to_dict()["summarized_resources"]
 
 
 def test_raises_on_unknown_summarization_strategy():

@@ -37,6 +37,8 @@ def program_describe(
     skip_rows: str = common.skip_rows,
     limit_rows: int = common.limit_rows,
     offset_rows: int = common.offset_rows,
+    # Summarization
+    resource_summarization_strategy: str = common.resource_summarization_strategy,
     # Stats
     stats: bool = common.stats,
     # Detector
@@ -132,6 +134,7 @@ def program_describe(
             control=control,
             dialect=dialect,
             layout=layout,
+            resource_summarization_strategy=resource_summarization_strategy,
             # Extra
             detector=detector,
             basepath=basepath,
@@ -143,6 +146,8 @@ def program_describe(
     # Describe source
     try:
         metadata = describe(source, **options)
+        # import pdb
+        # pdb.set_trace()
     except Exception as exception:
         typer.secho(str(exception), err=True, fg=typer.colors.RED, bold=True)
         raise typer.Exit(1)

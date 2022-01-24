@@ -563,6 +563,8 @@ class Package(Metadata):
         for resource in self.resources:
             resource.infer(stats=stats)
 
+        self.summarized_resources
+
         # Deduplicate names
         if len(self.resource_names) != len(set(self.resource_names)):
             seen_names = []
