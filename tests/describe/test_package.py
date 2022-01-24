@@ -145,3 +145,20 @@ def test_summarized_resources_shared_values():
         },
         "stats": {"fields": 2, "rows": 1},
     }
+
+
+def test_summarized_resources_most_common():
+    package = describe("data/mixed_schemas/", stats=True)
+    assert package.summarize_resources(strategy="most_common") == {
+        "profile": "tabular-data-resource",
+        "scheme": "file",
+        "format": "csv",
+        "hashing": "md5",
+        "encoding": "utf-8",
+        "schema": {
+            "fields": [
+                {"type": "integer", "name": "id"},
+                {"type": "string", "name": "name"},
+            ]
+        },
+    }

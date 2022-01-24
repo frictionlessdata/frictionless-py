@@ -448,8 +448,23 @@ class Package(Metadata):
 
     def summarize_resources(self, strategy="most_common"):
         def most_common():
-            resource_counter = Counter(list(self.resources))
-            return resource_counter.most_common(1)[0][0]
+            resource_jsons = []
+            for resource in self.resources:
+                # Certain keys will inherently always be unique - need
+                # to disregard them when comparing for equality
+                filtered_resource = Resource(
+                    {
+                        key: value
+                        for key, value in resource.items()
+                        if key not in ["name", "path", "stats"]
+                    }
+                )
+                resource_json = filtered_resource.to_json()
+                resource_jsons.append(resource_json)
+
+            resource_json_counter = Counter(resource_jsons)
+            most_common_resource_json = resource_json_counter.most_common(1)[0][0]
+            return Resource(json.loads(most_common_resource_json))
 
         def shared_values():
             base_resource = self.resources[0]
