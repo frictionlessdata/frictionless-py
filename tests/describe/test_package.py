@@ -1,3 +1,4 @@
+import pytest
 from frictionless import describe, helpers
 
 
@@ -170,6 +171,7 @@ def test_summarized_resources_present():
         stats=True,
         resource_summarization_strategy="most_common",
     )
+    assert package.resource_summarization_strategy == "most_common"
     assert package.summarized_resources == {
         "profile": "tabular-data-resource",
         "scheme": "file",
@@ -183,6 +185,7 @@ def test_summarized_resources_present():
             ]
         },
     }
+    assert package.to_dict()["summarized_resources"]
 
 
 def test_summarized_resources_not_present():
@@ -190,4 +193,16 @@ def test_summarized_resources_not_present():
         "data/mixed_schemas/",
         stats=True,
     )
+    assert not package.resource_summarization_strategy
     assert not package.summarized_resources
+    with pytest.raises(KeyError):
+        package.to_dict()["summarized_resources"]
+
+
+def test_raises_on_unknown_summarization_strategy():
+    with pytest.raises(ValueError):
+        describe(
+            "data/mixed_schemas/",
+            stats=True,
+            resource_summarization_strategy="fake_strategy",
+        )

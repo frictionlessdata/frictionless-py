@@ -180,7 +180,7 @@ class Package(Metadata):
         self.setinitial("resources", resources)
         self.setinitial(
             "resource_summarization_strategy",
-            self.get_resource_summarization_strategy(resource_summarization_strategy),
+            self.parse_resource_summarization_strategy(resource_summarization_strategy),
         )
         self.setinitial("name", name)
         self.setinitial("id", id)
@@ -382,7 +382,11 @@ class Package(Metadata):
         resources = self.get("resources", [])
         return self.metadata_attach("resources", resources)
 
-    def get_resource_summarization_strategy(self, strategy):
+    def parse_resource_summarization_strategy(self, strategy):
+        self.get_callable_resource_summarization_strategy(strategy)
+        return strategy
+
+    def get_callable_resource_summarization_strategy(self, strategy):
         """Get the callable strategy used to create a summarized view of `self.resources`"""
 
         strategies = {
@@ -396,9 +400,7 @@ class Package(Metadata):
         try:
             return strategies[strategy]
         except KeyError as e:
-            raise ValueError(
-                "strategy must be one of 'most_common', 'shared_values'"
-            ) from e
+            raise ValueError(f"strategy must be in {list(strategies.keys())}") from e
 
     def resource_summarization_most_common(self):
         """The `most_common` strategy returns a `Resource` that is representative
@@ -437,7 +439,7 @@ class Package(Metadata):
     def resource_summarization_strategy(self):
         """
         Returns:
-            Callable: resource summarization strategy
+            str: resource summarization strategy
         """
         resource_summarization_strategy = self.get("resource_summarization_strategy")
         return self.metadata_attach(
@@ -451,10 +453,17 @@ class Package(Metadata):
             Resource/None: The summarized view of `self.resources`, if summarization
             strategy exists.
         """
-        if not self.resource_summarization_strategy:
+
+        callable_strategy = self.get_callable_resource_summarization_strategy(
+            self.resource_summarization_strategy
+        )
+
+        if not callable_strategy:
             return
 
-        return self.resource_summarization_strategy()
+        summarized_resources = callable_strategy()
+        self.setdefault("summarized_resources", summarized_resources)
+        return self.metadata_attach("summarized_resources", summarized_resources)
 
     @Metadata.property(cache=False, write=False)
     def resource_names(self):
