@@ -46,6 +46,9 @@ class Package(Metadata):
         resources? (dict|Resource[]): A list of resource descriptors.
             It can be dicts or Resource instances.
 
+        resource_summarization_strategy? (str): The strategy to use when summarizing resources.
+            It MUST be one of "most_common", "shared_values".
+
         id? (str): A property reserved for globally unique identifiers.
             Examples of identifiers that are unique include UUIDs and DOIs.
 
@@ -126,6 +129,7 @@ class Package(Metadata):
         descriptor=None,
         # Spec
         resources=None,
+        resource_summarization_strategy=None,
         id=None,
         name=None,
         title=None,
@@ -174,6 +178,10 @@ class Package(Metadata):
 
         # Set attributes
         self.setinitial("resources", resources)
+        self.setinitial(
+            "resource_summarization_strategy",
+            self.get_resource_summarization_strategy(resource_summarization_strategy),
+        )
         self.setinitial("name", name)
         self.setinitial("id", id)
         self.setinitial("licenses", licenses)
@@ -374,6 +382,80 @@ class Package(Metadata):
         resources = self.get("resources", [])
         return self.metadata_attach("resources", resources)
 
+    def get_resource_summarization_strategy(self, strategy):
+        """Get the callable strategy used to create a summarized view of `self.resources`"""
+
+        strategies = {
+            "most_common": self.resource_summarization_most_common,
+            "shared_values": self.resource_summarization_shared_values,
+        }
+
+        if not strategy:
+            return
+
+        try:
+            return strategies[strategy]
+        except KeyError as e:
+            raise ValueError(
+                "strategy must be one of 'most_common', 'shared_values'"
+            ) from e
+
+    def resource_summarization_most_common(self):
+        """The `most_common` strategy returns a `Resource` that is representative
+        of the majority resource - meaning if `self.resources` contains
+        `Resource`s `[x,x,y,z]`, a view of `Resource` `x` will be returned.
+        """
+
+        # Certain keys will inherently always be unique - need
+        # to disregard them when comparing for equality
+        FILTER_KEYS = {"name", "path", "stats"}
+        resource_jsons = []
+        for resource in self.resources:
+            filtered_resource = Resource(
+                {key: value for key, value in resource.items() if key not in FILTER_KEYS}
+            )
+            resource_json = filtered_resource.to_json()
+            resource_jsons.append(resource_json)
+
+        resource_json_counter = Counter(resource_jsons)
+        most_common_resource_json = resource_json_counter.most_common(1)[0][0]
+        return Resource(json.loads(most_common_resource_json))
+
+    def resource_summarization_shared_values(self):
+        """The `shared_values` strategy returns a `Resource` that is representative
+        of the shared values contained in all `self.resources` - meaning if
+        `self.resources` contains `Resource`s `[{x: 1, y: 2},{x: 1, z: 2}]`,
+        then `Resource` `{x:1}` will be returned.
+        """
+
+        base_resource = self.resources[0]
+        for resource in self.resources:
+            base_resource = get_metadata_intersection(base_resource, resource)
+        return base_resource
+
+    @Metadata.property
+    def resource_summarization_strategy(self):
+        """
+        Returns:
+            Callable: resource summarization strategy
+        """
+        resource_summarization_strategy = self.get("resource_summarization_strategy")
+        return self.metadata_attach(
+            "resource_summarization_strategy", resource_summarization_strategy
+        )
+
+    @Metadata.property
+    def summarized_resources(self):
+        """
+        Returns:
+            Resource/None: The summarized view of `self.resources`, if summarization
+            strategy exists.
+        """
+        if not self.resource_summarization_strategy:
+            return
+
+        return self.resource_summarization_strategy()
+
     @Metadata.property(cache=False, write=False)
     def resource_names(self):
         """
@@ -445,61 +527,6 @@ class Package(Metadata):
         resource = self.get_resource(name)
         self.resources.remove(resource)
         return resource
-
-    def summarize_resources(self, strategy="most_common"):
-        """Creates a summarized view of `self.resources`, using a given
-        summarization strategy.
-
-        The `most_common` strategy returns a `Resource` that is representative
-        of the majority resource - meaning if `self.resources` contains
-        `Resource`s `[x,x,y,z]`, a view of `Resource` `x` will be returned.
-
-        The 'shared_values' strategy returns a `Resource` that is representative
-        of the shared values contained in all `self.resources` - meaning if
-        `self.resources` contains `Resource`s `[{x: 1, y: 2},{x: 1, z: 2}]`,
-        then `Resource` `{x:1}` will be returned.
-
-        Args:
-            strategy (str, optional): [description]. Defaults to "most_common".
-
-        Raises:
-            ValueError: If `strategy` arg is invalid.
-
-        Returns:
-            Resource: The summarized `Resource` produced from the given strategy.
-        """
-
-        def most_common():
-            resource_jsons = []
-            for resource in self.resources:
-                # Certain keys will inherently always be unique - need
-                # to disregard them when comparing for equality
-                filtered_resource = Resource(
-                    {
-                        key: value
-                        for key, value in resource.items()
-                        if key not in ["name", "path", "stats"]
-                    }
-                )
-                resource_json = filtered_resource.to_json()
-                resource_jsons.append(resource_json)
-
-            resource_json_counter = Counter(resource_jsons)
-            most_common_resource_json = resource_json_counter.most_common(1)[0][0]
-            return Resource(json.loads(most_common_resource_json))
-
-        def shared_values():
-            base_resource = self.resources[0]
-            for resource in self.resources:
-                base_resource = get_metadata_intersection(base_resource, resource)
-            return base_resource
-
-        if strategy == "most_common":
-            return most_common()
-        if strategy == "shared_values":
-            return shared_values()
-
-        raise ValueError("strategy must be one of 'most_common', 'shared_values'")
 
     # Expand
 

@@ -132,7 +132,7 @@ def test_describe_package_expand():
 
 def test_summarized_resources_shared_values():
     package = describe("data/mixed_schemas/", stats=True)
-    assert package.summarize_resources(strategy="shared_values") == {
+    assert package.resource_summarization_shared_values() == {
         "profile": "tabular-data-resource",
         "scheme": "file",
         "format": "csv",
@@ -149,7 +149,7 @@ def test_summarized_resources_shared_values():
 
 def test_summarized_resources_most_common():
     package = describe("data/mixed_schemas/", stats=True)
-    assert package.summarize_resources(strategy="most_common") == {
+    assert package.resource_summarization_most_common() == {
         "profile": "tabular-data-resource",
         "scheme": "file",
         "format": "csv",
@@ -162,3 +162,32 @@ def test_summarized_resources_most_common():
             ]
         },
     }
+
+
+def test_summarized_resources_present():
+    package = describe(
+        "data/mixed_schemas/",
+        stats=True,
+        resource_summarization_strategy="most_common",
+    )
+    assert package.summarized_resources == {
+        "profile": "tabular-data-resource",
+        "scheme": "file",
+        "format": "csv",
+        "hashing": "md5",
+        "encoding": "utf-8",
+        "schema": {
+            "fields": [
+                {"type": "integer", "name": "id"},
+                {"type": "string", "name": "name"},
+            ]
+        },
+    }
+
+
+def test_summarized_resources_not_present():
+    package = describe(
+        "data/mixed_schemas/",
+        stats=True,
+    )
+    assert not package.summarized_resources
