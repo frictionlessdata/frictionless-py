@@ -447,6 +447,28 @@ class Package(Metadata):
         return resource
 
     def summarize_resources(self, strategy="most_common"):
+        """Creates a summarized view of `self.resources`, using a given
+        summarization strategy.
+
+        The `most_common` strategy returns a `Resource` that is representative
+        of the majority resource - meaning if `self.resources` contains
+        `Resource`s `[x,x,y,z]`, a view of `Resource` `x` will be returned.
+
+        The 'shared_values' strategy returns a `Resource` that is representative
+        of the shared values contained in all `self.resources` - meaning if
+        `self.resources` contains `Resource`s `[{x: 1, y: 2},{x: 1, z: 2}]`,
+        then `Resource` `{x:1}` will be returned.
+
+        Args:
+            strategy (str, optional): [description]. Defaults to "most_common".
+
+        Raises:
+            ValueError: If `strategy` arg is invalid.
+
+        Returns:
+            Resource: The summarized `Resource` produced from the given strategy.
+        """
+
         def most_common():
             resource_jsons = []
             for resource in self.resources:
