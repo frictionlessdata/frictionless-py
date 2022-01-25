@@ -454,6 +454,16 @@ def test_sql_storage_sqlite_integer_enum_issue_776(sqlite_url):
     ]
 
 
+def test_sql_storage_dialect_basepath_issue_964(sqlite_url):
+    dialect = SqlDialect(table="test_table", basepath='data')
+    with Resource(path="sqlite:///sqlite.db", dialect=dialect) as resource:
+        assert resource.read_rows() == [
+            {"id": 1, "name": "foo"},
+            {"id": 2, "name": "bar"},
+            {"id": 3, "name": "baz"},
+        ]
+
+
 # Storage (PostgreSQL)
 
 
