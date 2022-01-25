@@ -5586,6 +5586,7 @@ Public   | `from frictionless.plugins.sql import SqlDialect`
 - `order_by?` _str_ - order_by statement passed to SQL
 - `where?` _str_ - where statement passed to SQL
 - `namespace?` _str_ - SQL schema
+- `basepath?` _str_ - a basepath, for example, for SQLite path
   
 
 **Raises**:

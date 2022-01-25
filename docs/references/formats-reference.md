@@ -302,3 +302,9 @@ Where statement passed to sql
 > Type: str
 
 Sql schema
+
+### Basepath
+
+> Type: str
+
+A basepath, for example, for sqlite path
