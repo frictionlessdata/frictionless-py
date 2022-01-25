@@ -208,14 +208,13 @@ class SqlStorage(Storage):
         sa = helpers.import_from_plugin("sqlalchemy", plugin="sql")
 
         # Create engine
-        if dialect.basepath:
-            parts = urlsplit(source)
+        if dialect and dialect.basepath:
+            url = urlsplit(source)
             basepath = dialect.basepath
             if isinstance(source, str) and source.startswith("sqlite"):
-                basepath = "/" + basepath
-            source = urlunsplit(
-                (parts.scheme, basepath, parts.path, parts.query, parts.fragment)
-            )
+                # Path for sqlite looks like this 'sqlite:///path' (unix/windows)
+                basepath = f"/{basepath}"
+            source = urlunsplit((url.scheme, basepath, url.path, url.query, url.fragment))
         engine = sa.create_engine(source) if isinstance(source, str) else source
 
         # Set attributes
