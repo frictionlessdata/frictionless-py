@@ -211,9 +211,11 @@ class SqlStorage(Storage):
         if dialect.basepath:
             parts = urlsplit(source)
             basepath = dialect.basepath
-            if isinstance(source, str) and source.startswith('sqlite'):
-                basepath = '/' + basepath
-            source = urlunsplit((parts.scheme, basepath, parts.path, parts.query, parts.fragment))
+            if isinstance(source, str) and source.startswith("sqlite"):
+                basepath = "/" + basepath
+            source = urlunsplit(
+                (parts.scheme, basepath, parts.path, parts.query, parts.fragment)
+            )
         engine = sa.create_engine(source) if isinstance(source, str) else source
 
         # Set attributes
