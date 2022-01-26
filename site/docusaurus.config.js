@@ -57,7 +57,7 @@ module.exports = {
     // },
     algolia: {
       appId: "DAAB4D8UQI",
-      apiKey: "3ed990418fb8f89f4ec3c3cf115813b7",
+      apiKey: "5ccb002c78316a793c9324bf4f661051",
       indexName: "frictionless-py",
       algoliaOptions: {
         // facetFilters: [`version:${versions[0]}`],
