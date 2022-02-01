@@ -946,6 +946,7 @@ def test_package_to_zip_resource_multipart(tmpdir, database_url):
 # Validate
 
 
+@pytest.mark.skip
 def test_package_external_profile():
     profile = "frictionless/assets/profiles/package/general.json"
     resource = Resource(name="table", path="data/table.csv")
