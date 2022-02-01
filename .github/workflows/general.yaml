@@ -28,8 +28,12 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
+      # NOTE: remove upgrage pip?
+      # https://stackoverflow.com/questions/67296563/github-actions-stays-stuck-on-a-task-and-finally-fail-on-timeout
       - name: Install dependencies
-        run: make install
+        run: |
+             python -m pip install --upgrade pip
+             make install
       - name: Prepare environment
         run: cp .env.example .env
       - name: Prepare secrets
