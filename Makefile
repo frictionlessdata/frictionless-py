@@ -38,4 +38,4 @@ test:
 
 test-ci:
 	make lint
-	pytest --cov ${PACKAGE} --cov-report term-missing --cov-fail-under 80 --ci
+	pytest -vv --cov ${PACKAGE} --cov-report term-missing --cov-fail-under 80 --ci
