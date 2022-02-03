@@ -36,6 +36,7 @@ TESTS_REQUIRE = [
     "oauth2client",
     "requests-mock",
     "python-dotenv",
+    "pytest-timeout",
     "pydoc-markdown",
     "docstring-parser",
 ]
