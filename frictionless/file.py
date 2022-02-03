@@ -1,5 +1,6 @@
 import os
 import glob
+from collections.abc import Mapping
 from pathlib import Path
 from .helpers import cached_property
 from . import settings
@@ -148,7 +149,7 @@ class File:
         # Detect type
         type = "table"
         if not multipart:
-            if memory and isinstance(data, dict):
+            if memory and isinstance(data, Mapping):
                 type = "resource"
                 if data.get("fields") is not None:
                     type = "schema"
