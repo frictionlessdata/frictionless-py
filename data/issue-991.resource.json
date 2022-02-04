@@ -1,0 +1,54 @@
+{
+  "encoding": "utf-8-sig",
+  "format": "csv",
+  "hashing": "md5",
+  "name": "a_b_c_1_s",
+  "profile": "tabular-data-resource",
+  "scheme": "file",
+  "path": [
+    "issue-991.csv"
+  ],
+  "layout": {
+    "headerRows": [
+      4
+    ]
+  },
+  "schema": {
+    "primaryKey": "Excel time",
+    "fields": [
+      {
+        "name": "Excel time",
+        "type": "number",
+        "constraints": {
+          "required": true
+        }
+      },
+      {
+        "name": "resource1_1_s_mean (°C)",
+        "type": "number",
+        "constraints": {
+          "required": true
+        },
+        "properties": {
+          "Unit": "°C",
+          "Groups:0": "group1"
+        }
+      },
+      {
+        "name": "resource1_1_s_max (°C)",
+        "type": "number",
+        "constraints": {
+          "required": true
+        },
+        "properties": {
+          "Unit": "°C",
+          "Groups:0": "group1"
+        }
+      }
+    ],
+    "properties": {
+      "my-custom-parameter1": "my-custom-value1",
+      "my-custom-parameter2": "my-custom-value2"
+    }
+  }
+}

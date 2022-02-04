@@ -1061,6 +1061,11 @@ def test_validate_custom_check_bad_name():
     ]
 
 
+def test_validate_resource_descriptor_type_invalid():
+    report = validate(descriptor="data/table.csv")
+    assert report.flatten() == [[1, None, None, "resource-error"]]
+
+
 # Issues
 
 
@@ -1171,6 +1176,11 @@ def test_validate_resource_header_row_has_first_number_issue_870():
     assert report.valid
 
 
-def test_validate_resource_descriptor_type_invalid():
-    report = validate(descriptor="data/table.csv")
-    assert report.flatten() == [[1, None, None, "resource-error"]]
+def test_validate_resource_array_path_issue_991():
+    report = validate("data/issue-991.resource.json")
+    assert report.flatten(["code", "note"]) == [
+        [
+            "scheme-error",
+            'Multipart resource requires "multipart" scheme but "file" is set',
+        ],
+    ]
