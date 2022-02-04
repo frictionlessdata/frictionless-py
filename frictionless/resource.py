@@ -396,7 +396,7 @@ class Resource(Metadata):
         """
         scheme = self.get("scheme", self.__file.scheme).lower()
         # NOTE: review this approach (see #991)
-        # NOTE: move to plugins.multipart when plugin.priority is implemented
+        # NOTE: move to plugins.multipart when plugin.priority/create_resource is implemented
         if self.multipart and scheme != "multipart":
             note = f'Multipart resource requires "multipart" scheme but "{scheme}" is set'
             raise FrictionlessException(errors.SchemeError(note=note))
