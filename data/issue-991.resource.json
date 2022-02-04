@@ -6,7 +6,7 @@
   "profile": "tabular-data-resource",
   "scheme": "file",
   "path": [
-    "A.csv"
+    "issue-991.csv"
   ],
   "layout": {
     "headerRows": [

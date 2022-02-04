@@ -1,10 +1,12 @@
 import tempfile
+from ..exception import FrictionlessException
 from ..resource import Resource
 from ..control import Control
 from ..plugin import Plugin
 from ..loader import Loader
 from ..system import system
 from .. import helpers
+from .. import errors
 
 
 # NOTE:
@@ -39,6 +41,9 @@ class MultipartPlugin(Plugin):
     def create_loader(self, resource):
         if resource.scheme == "multipart":
             return MultipartLoader(resource)
+        elif resource.multipart:
+            note = f'Multipart resource requires "multipart" scheme but "{resource.scheme}" is set'
+            raise FrictionlessException(errors.SchemeError(note=note))
 
 
 # Control
