@@ -41,9 +41,6 @@ class MultipartPlugin(Plugin):
     def create_loader(self, resource):
         if resource.scheme == "multipart":
             return MultipartLoader(resource)
-        elif resource.multipart:
-            note = f'Multipart resource requires "multipart" scheme but "{resource.scheme}" is set'
-            raise FrictionlessException(errors.SchemeError(note=note))
 
 
 # Control
