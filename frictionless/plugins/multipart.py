@@ -1,12 +1,10 @@
 import tempfile
-from ..exception import FrictionlessException
 from ..resource import Resource
 from ..control import Control
 from ..plugin import Plugin
 from ..loader import Loader
 from ..system import system
 from .. import helpers
-from .. import errors
 
 
 # NOTE:
