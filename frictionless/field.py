@@ -289,12 +289,16 @@ class Field(Metadata):
         return self.get("groupChar", settings.DEFAULT_GROUP_CHAR)
 
     @Metadata.property
+    def has_example(self):
+        return self.example != settings.DEFAULT_EXAMPLE
+
+    @Metadata.property
     def example(self):
         """
         Returns:
             any: example value
         """
-        return self.get("example", None)
+        return self.get("example", settings.DEFAULT_EXAMPLE)
 
     # Expand
 

@@ -303,7 +303,7 @@ class Schema(Metadata):
                 yield from field.metadata_errors
 
         # Examples
-        for field in [f for f in self.fields if field.example]:
+        for field in [f for f in self.fields if field.has_example]:
             _, notes = field.read_cell(field.example)
             if notes is not None:
                 note = 'example value for field "%s" is not valid' % field.name

@@ -264,11 +264,23 @@ def test_schema_valid_examples():
             ]
         }
     )
+    assert schema.get_field("name").example == "John"
     assert len(schema.metadata_errors) == 0
 
 
 def test_schema_invalid_example():
-    schema = Schema({"fields": [{"name": "name", "type": "string", "example": 42}]})
+    schema = Schema(
+        {
+            "fields": [
+                {
+                    "name": "name",
+                    "type": "string",
+                    "example": None,
+                    "constraints": {"required": True},
+                }
+            ]
+        }
+    )
     note = schema.metadata_errors[0]["note"]
     assert len(schema.metadata_errors) == 1
     assert 'example value for field "name" is not valid' == note
