@@ -255,6 +255,18 @@ def test_schema_metadata_error_message():
     assert "is not valid under any of the given schema" in note
 
 
+def test_schema_valid_examples():
+    schema = Schema(
+        {
+            "fields": [
+                {"name": "name", "type": "string", "example": "John"},
+                {"name": "age", "type": "integer", "example": 42},
+            ]
+        }
+    )
+    assert len(schema.metadata_errors) == 0
+
+
 def test_schema_invalid_example():
     schema = Schema({"fields": [{"name": "name", "type": "string", "example": 42}]})
     note = schema.metadata_errors[0]["note"]
