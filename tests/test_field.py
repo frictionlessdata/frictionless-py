@@ -22,7 +22,6 @@ def test_field():
     assert field.missing_values == ["-"]
     assert field.constraints == {"required": True}
     assert field.required is True
-    assert not field.has_example
 
 
 def test_field_defaults():
@@ -325,7 +324,6 @@ def test_field_read_cell_multiple_constraints():
 @pytest.mark.parametrize("example_value", [(None), (42), ("foo")])
 def test_field_with_example_set(example_value):
     field = Field({"name": "name", "type": "string", "example": example_value})
-    assert field.has_example
     assert field.example == example_value
 
 

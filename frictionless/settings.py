@@ -83,7 +83,6 @@ DEFAULT_CANDIDATES = [
     {"type": "year"},
     {"type": "string"},
 ]
-DEFAULT_EXAMPLE = "@@default-dummy-example@@"
 
 
 # Backports

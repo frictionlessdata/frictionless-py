@@ -58,7 +58,7 @@ class Field(Metadata):
         float_number=None,
         decimal_char=None,
         group_char=None,
-        example=settings.DEFAULT_EXAMPLE,
+        example=None,
         # Extra
         schema=None,
     ):
@@ -78,8 +78,7 @@ class Field(Metadata):
         self.setinitial("decimalChar", decimal_char)
         self.setinitial("groupChar", group_char)
         self.setinitial("rdfType", rdf_type)
-        if example != settings.DEFAULT_EXAMPLE:
-            self["example"] = example
+        self.setinitial("example", example)
         self.__schema = schema
         self.__type = None
         super().__init__(descriptor)
@@ -290,16 +289,12 @@ class Field(Metadata):
         return self.get("groupChar", settings.DEFAULT_GROUP_CHAR)
 
     @Metadata.property
-    def has_example(self):
-        return self.example != settings.DEFAULT_EXAMPLE
-
-    @Metadata.property
     def example(self):
         """
         Returns:
             any: example value
         """
-        return self.get("example", settings.DEFAULT_EXAMPLE)
+        return self.get("example", None)
 
     # Expand
 
