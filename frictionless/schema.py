@@ -302,6 +302,13 @@ class Schema(Metadata):
             if field.builtin:
                 yield from field.metadata_errors
 
+        # Examples
+        for field in [f for f in self.fields if "example" in field]:
+            _, notes = field.read_cell(field.example)
+            if notes is not None:
+                note = 'example value for field "%s" is not valid' % field.name
+                yield errors.SchemaError(note=note)
+
         # Primary Key
         for name in self.primary_key:
             if name not in self.field_names:

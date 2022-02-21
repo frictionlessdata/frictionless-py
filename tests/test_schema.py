@@ -255,6 +255,37 @@ def test_schema_metadata_error_message():
     assert "is not valid under any of the given schema" in note
 
 
+def test_schema_valid_examples():
+    schema = Schema(
+        {
+            "fields": [
+                {"name": "name", "type": "string", "example": "John"},
+                {"name": "age", "type": "integer", "example": 42},
+            ]
+        }
+    )
+    assert schema.get_field("name").example == "John"
+    assert len(schema.metadata_errors) == 0
+
+
+def test_schema_invalid_example():
+    schema = Schema(
+        {
+            "fields": [
+                {
+                    "name": "name",
+                    "type": "string",
+                    "example": None,
+                    "constraints": {"required": True},
+                }
+            ]
+        }
+    )
+    note = schema.metadata_errors[0]["note"]
+    assert len(schema.metadata_errors) == 1
+    assert 'example value for field "name" is not valid' == note
+
+
 @pytest.mark.parametrize("create_descriptor", [(False,), (True,)])
 def test_schema_standard_specs_properties(create_descriptor):
     options = dict(
