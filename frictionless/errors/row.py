@@ -78,14 +78,18 @@ class ForeignKeyError(RowError):
 
     @classmethod
     def from_row(cls, row, *, target_keys,  source_keys, source_name, missing_values, note):
-        """Create an error from a row
+        """Create an foreign-key-error from a row
 
         Parameters:
             row (Row): row
+            target_keys (tuple): target keys
+            source_keys (tuple): source keys
+            source_name: (str): source name
+            missing_values (tuple): missing values
             note (str): note
 
         Returns:
-            RowError: error
+            ForeignKeyError: error
         """
         to_str = lambda v: str(v) if v is not None else ""
         return cls(
