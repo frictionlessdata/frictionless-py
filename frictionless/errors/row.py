@@ -69,6 +69,34 @@ class ForeignKeyError(RowError):
     template = 'Row at position "{rowPosition}" violates the foreign key: {note}'
     description = "Values in the foreign key fields should exist in the reference table"
 
+    def __init__(self, descriptor=None, *, note, cells, row_number, row_position, target_keys,  source_keys, source_name):
+        self.setinitial("targetKeys", target_keys)
+        self.setinitial("sourceKeys", source_keys)
+        self.setinitial("sourceName", source_name)
+        super().__init__(descriptor, note=note, cells=cells, row_number=row_number, row_position=row_position)
+
+    @classmethod
+    def from_row(cls, row, *, target_keys,  source_keys, source_name, note):
+        """Create an error from a row
+
+        Parameters:
+            row (Row): row
+            note (str): note
+
+        Returns:
+            RowError: error
+        """
+        to_str = lambda v: str(v) if v is not None else ""
+        return cls(
+            note=note,
+            cells=list(map(to_str, row.cells)),
+            row_number=row.row_number,
+            row_position=row.row_position,
+            target_keys=target_keys,
+            source_keys=source_keys,
+            source_name=source_name
+        )
+
 
 class DuplicateRowError(RowError):
     code = "duplicate-row"
