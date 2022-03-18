@@ -1068,6 +1068,18 @@ def group_char()
 - `str` - group char
 
 
+### field.example
+
+```python
+@Metadata.property
+def example()
+```
+
+**Returns**:
+
+- `any` - example value
+
+
 ### field.expand
 
 ```python

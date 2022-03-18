@@ -49,15 +49,8 @@ module.exports = {
       theme: require("prism-react-renderer/themes/github"),
       darkTheme: require("prism-react-renderer/themes/dracula"),
     },
-    gtag: {
-      trackingID: "G-NFPR61ZC0X",
-    },
-    // googleAnalytics: {
-    //   trackingID: 'UA-141789564-1',
-    // },
     algolia: {
-      appId: "DAAB4D8UQI",
-      apiKey: "5ccb002c78316a793c9324bf4f661051",
+      apiKey: "0632881f114cfc50b94e4bc7b970cbce",
       indexName: "frictionless-py",
       algoliaOptions: {
         // facetFilters: [`version:${versions[0]}`],

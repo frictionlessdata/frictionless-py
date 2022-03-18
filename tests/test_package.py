@@ -3,6 +3,7 @@ import json
 import yaml
 import pytest
 import zipfile
+from collections.abc import Mapping
 from pathlib import Path
 from frictionless import Package, Resource, Layout, describe_package, helpers
 from frictionless import FrictionlessException
@@ -28,6 +29,28 @@ def test_package():
 
 def test_package_from_dict():
     package = Package({"name": "name", "profile": "data-package"})
+    assert package == {
+        "name": "name",
+        "profile": "data-package",
+    }
+
+
+class NotADict(Mapping):
+    def __init__(self, **kwargs):
+        self.__dict__.update(**kwargs)
+
+    def __getitem__(self, key):
+        return self.__dict__[key]
+
+    def __iter__(self):
+        return iter(self.__dict__)
+
+    def __len__(self):
+        return len(self.__dict__)
+
+
+def test_package_from_mapping():
+    package = Package(NotADict(name="name", profile="data-package"))
     assert package == {
         "name": "name",
         "profile": "data-package",
@@ -878,6 +901,7 @@ def test_package_to_zip_resource_path(tmpdir):
     ]
 
 
+@pytest.mark.vcr
 def test_package_to_zip_resource_remote_path(tmpdir):
     path = os.path.join(tmpdir, "package.zip")
     source = Package(resources=[Resource(path=BASEURL % "data/table.csv")])
@@ -945,6 +969,7 @@ def test_package_to_zip_resource_multipart(tmpdir, database_url):
 # Validate
 
 
+@pytest.mark.vcr
 def test_package_external_profile():
     profile = "frictionless/assets/profiles/package/general.json"
     resource = Resource(name="table", path="data/table.csv")
@@ -952,6 +977,7 @@ def test_package_external_profile():
     assert package.metadata_valid
 
 
+@pytest.mark.vcr
 def test_package_external_profile_invalid_local():
     profile = "data/profiles/camtrap.json"
     resource = Resource(name="table", path="data/table.csv")
@@ -961,6 +987,7 @@ def test_package_external_profile_invalid_local():
         assert "required" in error.message
 
 
+@pytest.mark.vcr
 def test_package_external_profile_invalid_local_from_descriptor():
     profile = "data/profiles/camtrap.json"
     resource = Resource(name="table", path="data/table.csv")
@@ -970,6 +997,7 @@ def test_package_external_profile_invalid_local_from_descriptor():
         assert "required" in error.message
 
 
+@pytest.mark.vcr
 def test_package_external_profile_invalid_local_from_descriptor_unsafe():
     profile = "data/../data/profiles/camtrap.json"
     resource = Resource(name="table", path="data/table.csv")
@@ -979,6 +1007,7 @@ def test_package_external_profile_invalid_local_from_descriptor_unsafe():
             package.metadata_errors
 
 
+@pytest.mark.vcr
 def test_package_external_profile_invalid_local_from_descriptor_unsafe_trusted():
     profile = "data/../data/profiles/camtrap.json"
     resource = Resource(name="table", path="data/table.csv")

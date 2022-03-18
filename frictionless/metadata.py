@@ -3,6 +3,7 @@ import json
 import yaml
 import jsonschema
 import stringcase
+from collections.abc import Mapping
 from pathlib import Path
 from operator import setitem
 from functools import partial
@@ -189,7 +190,7 @@ class Metadata(helpers.ControlledDict):
         try:
             if descriptor is None:
                 return {}
-            if isinstance(descriptor, dict):
+            if isinstance(descriptor, Mapping):
                 if not self.metadata_duplicate:
                     return descriptor
                 try:
@@ -279,7 +280,7 @@ class Metadata(helpers.ControlledDict):
 
 def metadata_to_dict(value):
     process = lambda value: value.to_dict() if hasattr(value, "to_dict") else value
-    if isinstance(value, dict):
+    if isinstance(value, Mapping):
         value = {key: metadata_to_dict(process(value)) for key, value in value.items()}
     elif isinstance(value, list):
         value = [metadata_to_dict(process(value)) for value in value]

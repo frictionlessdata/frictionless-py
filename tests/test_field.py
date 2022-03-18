@@ -321,6 +321,12 @@ def test_field_read_cell_multiple_constraints():
     assert read("") == (None, None)
 
 
+@pytest.mark.parametrize("example_value", [(None), (42), ("foo")])
+def test_field_with_example_set(example_value):
+    field = Field({"name": "name", "type": "string", "example": example_value})
+    assert field.example == example_value
+
+
 # Import/Export
 
 

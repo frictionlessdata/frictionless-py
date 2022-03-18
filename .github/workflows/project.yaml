@@ -21,4 +21,4 @@ jobs:
           resource_node_id: ${{ github.event_name == 'issues' && github.event.issue.node_id || github.event.pull_request.node_id }}
           organization: frictionlessdata
           project_id: 16
-          status_value: no
+          status_value: Inbox
