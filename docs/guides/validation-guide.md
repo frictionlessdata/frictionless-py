@@ -224,7 +224,7 @@ As we can see, the result is in a similar format to what we have already seen, a
 
 > The Inquiry is an advanced concept mostly used by software integrators. For example, under the hood, Frictionless Framework uses inquiries to implement client-server validation within the built-in API. Please skip this section if this information feels unnecessary for you.
 
-Inquiry is a declarative representation of a validation job. It gives you an ability to create, export, ans share arbitrary validation jobs containing a set of individual validation tasks. Tasks in the Inquiry accept the same arguments written in camelCase as the corresponding `validate` functions.
+Inquiry is a declarative representation of a validation job. It gives you an ability to create, export, and share arbitrary validation jobs containing a set of individual validation tasks. Tasks in the Inquiry accept the same arguments written in camelCase as the corresponding `validate` functions.
 
 Let's create an Inquiry that includes an individual file validation and a resource validation. In this example we will use the data file, `capital-valid.csv` and the resource, `capital.resource.json` which describes the invalid data file we have already seen:
 
