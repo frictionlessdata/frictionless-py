@@ -137,7 +137,7 @@ class row_sort(Step):
 
     code = "row-sort"
 
-    def __init__(self, descriptor=None, *, field_names=None, reverse=False):
+    def __init__(self, descriptor=None, *, field_names=None, reverse=None):
         self.setinitial("fieldNames", field_names)
         self.setinitial("reverse", reverse)
         super().__init__(descriptor)
@@ -147,7 +147,7 @@ class row_sort(Step):
     def transform_resource(self, resource):
         table = resource.to_petl()
         field_names = self.get("fieldNames")
-        reverse = self.get("reverse")
+        reverse = self.get("reverse", False)
         resource.data = table.sort(field_names, reverse=reverse)
 
     # Metadata
