@@ -238,7 +238,7 @@ class table_join(Step):
         source = self.get("resource")
         field_name = self.get("fieldName")
         use_hash = self.get("useHash", False)
-        mode = self.get("mode", 'inner')
+        mode = self.get("mode", "inner")
         if isinstance(source, str):
             source = target.package.get_resource(source)
         elif isinstance(source, dict):
