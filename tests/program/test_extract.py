@@ -178,13 +178,11 @@ def test_program_extract_dialect_sheet_option():
 def test_program_extract_dialect_table_option_sql(database_url):
     table = "fruits"
     result = runner.invoke(program, f"extract {database_url} --table {table} --json")
-    assert result.exit_code == 0
-
-    dialect = SqlDialect(table=table)
-    with Resource(database_url, dialect=dialect) as resource:
-        assert json.loads(result.stdout) == extract(
-            resource,
-        )
+    if IS_UNIX:
+        assert result.exit_code == 0
+        dialect = SqlDialect(table=table)
+        with Resource(database_url, dialect=dialect) as resource:
+            assert json.loads(result.stdout) == extract(resource)
 
 
 def test_program_extract_dialect_keyed_option():
