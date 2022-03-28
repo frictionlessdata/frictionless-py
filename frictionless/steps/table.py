@@ -295,10 +295,8 @@ class table_melt(Step):
         *,
         variables=None,
         field_name=None,
-        # TODO: make it work if descriptor provided
-        to_field_names=["variable", "value"],
+        to_field_names=None,
     ):
-        assert len(to_field_names) == 2
         self.setinitial("variables", variables)
         self.setinitial("fieldName", field_name)
         self.setinitial("toFieldNames", to_field_names)
@@ -310,7 +308,7 @@ class table_melt(Step):
         table = resource.to_petl()
         variables = self.get("variables")
         field_name = self.get("fieldName")
-        to_field_names = self.get("toFieldNames")
+        to_field_names = self.get("toFieldNames", ["variable", "value"])
         field = resource.schema.get_field(field_name)
         resource.schema.fields.clear()
         resource.schema.add_field(field)
@@ -331,7 +329,7 @@ class table_melt(Step):
         "properties": {
             "fieldName": {"type": "string"},
             "variables": {"type": "array"},
-            "toFieldNames": {},
+            "toFieldNames": {"type": "array", "minItems": 2, "maxItems": 2},
         },
     }
 
