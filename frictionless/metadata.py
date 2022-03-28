@@ -139,9 +139,9 @@ class Metadata(helpers.ControlledDict):
         """
         text = yaml.dump(
             self.to_dict(),
+            sort_keys=False,
             allow_unicode=True,
             Dumper=IndentDumper,
-            sort_keys=False,
         )
         if path:
             try:
