@@ -17,7 +17,7 @@ class CellError(RowError):
         field_number (int): field number
         field_position (int): field position
 
-    # Raises
+    Raises
         FrictionlessException: raise any error that occurs during the process
 
     """
