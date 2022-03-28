@@ -491,10 +491,8 @@ class table_recast(Step):
         descriptor=None,
         *,
         field_name,
-        # TODO: make it work if descriptor provided
-        from_field_names=["variable", "value"],
+        from_field_names=None,
     ):
-        assert len(from_field_names) == 2
         self.setinitial("fieldName", field_name)
         self.setinitial("fromFieldNames", from_field_names)
         super().__init__(descriptor)
@@ -504,7 +502,7 @@ class table_recast(Step):
     def transform_resource(self, resource):
         table = resource.to_petl()
         field_name = self.get("fieldName")
-        from_field_names = self.get("fromFieldNames")
+        from_field_names = self.get("fromFieldNames", ["variable", "value"])
         resource.pop("schema", None)
         resource.data = table.recast(
             key=field_name,
@@ -520,7 +518,7 @@ class table_recast(Step):
         "required": ["fieldName"],
         "properties": {
             "fieldName": {"type": "string"},
-            "fromFieldNames": {},
+            "fromFieldNames": {"type": "array", "minItems": 2, "maxItems": 2},
         },
     }
 
