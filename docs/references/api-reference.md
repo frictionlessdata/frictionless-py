@@ -6630,7 +6630,7 @@ Cell error representation
 - `field_number` _int_ - field number
 - `field_position` _int_ - field position
   
-  # Raises
+  Raises
 - `FrictionlessException` - raise any error that occurs during the process
 
 
