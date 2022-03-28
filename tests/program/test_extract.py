@@ -197,10 +197,8 @@ def test_program_extract_dialect_keyed_option():
 
 def test_program_extract_dialect_keys_option():
     file = "data/table.keyed.json"
-    keys = ["name", "id"]
-    delim = " --keys "
-    result = runner.invoke(
-        program, f"extract --path {file} --keys {delim.join(keys)} --json"
-    )
+    result = runner.invoke(program, f"extract --path {file} --keys 'name,id' --json")
     assert result.exit_code == 0
-    assert json.loads(result.stdout) == extract(path=file, dialect={"keys": keys})
+    assert json.loads(result.stdout) == extract(
+        path=file, dialect={"keys": ["name", "id"]}
+    )

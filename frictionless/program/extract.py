@@ -32,7 +32,7 @@ def program_extract(
     dialect: str = common.dialect,
     sheet: str = common.sheet,
     table: str = common.table,
-    keys: List[str] = common.keys,
+    keys: str = common.keys,
     keyed: bool = common.keyed,
     # Layout
     header_rows: str = common.header_rows,
@@ -88,20 +88,6 @@ def program_extract(
     control = helpers.parse_json_string(control)
     dialect = helpers.parse_json_string(dialect)
 
-    dialect = Dialect(dialect)
-
-    if sheet:
-        dialect["sheet"] = sheet
-    if table:
-        dialect["table"] = table
-    if keys:
-        dialect["keys"] = list(keys)
-    if keyed:
-        dialect["keyed"] = keyed
-
-    if len(dialect.to_dict()) < 1:
-        dialect = None
-
     header_rows = helpers.parse_csv_string(header_rows, convert=int)
     pick_fields = helpers.parse_csv_string(pick_fields, convert=int, fallback=True)
     skip_fields = helpers.parse_csv_string(skip_fields, convert=int, fallback=True)
@@ -109,6 +95,20 @@ def program_extract(
     skip_rows = helpers.parse_csv_string(skip_rows, convert=int, fallback=True)
     field_names = helpers.parse_csv_string(field_names)
     field_missing_values = helpers.parse_csv_string(field_missing_values)
+
+    # TODO: rework after Dialect class is reworked
+    # Prepare dialect
+    dialect = Dialect(dialect)
+    if sheet:
+        dialect["sheet"] = sheet
+    if table:
+        dialect["table"] = table
+    if keys:
+        dialect["keys"] = helpers.parse_csv_string(keys)
+    if keyed:
+        dialect["keyed"] = keyed
+    if len(dialect.to_dict()) < 1:
+        dialect = None
 
     # Prepare layout
     layout = (
