@@ -137,7 +137,12 @@ class Metadata(helpers.ControlledDict):
         Raises:
             FrictionlessException: on any error
         """
-        text = yaml.dump(self.to_dict(), allow_unicode=True, Dumper=IndentDumper)
+        text = yaml.dump(
+            self.to_dict(),
+            allow_unicode=True,
+            Dumper=IndentDumper,
+            sort_keys=False,
+        )
         if path:
             try:
                 helpers.write_file(path, text)
