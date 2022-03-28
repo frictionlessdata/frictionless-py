@@ -295,6 +295,7 @@ class table_melt(Step):
         *,
         variables=None,
         field_name=None,
+        # TODO: make it work if descriptor provided
         to_field_names=["variable", "value"],
     ):
         assert len(to_field_names) == 2
@@ -492,6 +493,7 @@ class table_recast(Step):
         descriptor=None,
         *,
         field_name,
+        # TODO: make it work if descriptor provided
         from_field_names=["variable", "value"],
     ):
         assert len(from_field_names) == 2
