@@ -52,7 +52,6 @@ class cell_fill(Step):
     code = "cell-fill"
 
     def __init__(self, descriptor=None, *, value=None, field_name=None, direction=None):
-        assert direction in [None, "down", "right", "left"]
         self.setinitial("value", value)
         self.setinitial("fieldName", field_name)
         self.setinitial("direction", direction)
@@ -85,7 +84,10 @@ class cell_fill(Step):
         "properties": {
             "fieldName": {"type": "string"},
             "value": {},
-            "direction": {},
+            "direction": {
+                "type": "string",
+                "enum": ["down", "right", "left"],
+            },
         },
     }
 

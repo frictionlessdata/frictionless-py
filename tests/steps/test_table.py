@@ -438,6 +438,33 @@ def test_step_table_join_mode_left():
     ]
 
 
+def test_step_table_join_mode_left_from_descriptor_issue_996():
+    source = Resource("data/transform.csv")
+    target = transform(
+        source,
+        steps=[
+            steps.table_normalize(),
+            steps.table_join(
+                {"fieldName": "id", "mode": "left"},
+                resource=Resource(data=[["id", "note"], [1, "beer"], [2, "vine"]]),
+            ),
+        ],
+    )
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+            {"name": "note", "type": "string"},
+        ]
+    }
+    assert target.read_rows() == [
+        {"id": 1, "name": "germany", "population": 83, "note": "beer"},
+        {"id": 2, "name": "france", "population": 66, "note": "vine"},
+        {"id": 3, "name": "spain", "population": 47, "note": None},
+    ]
+
+
 def test_step_table_join_mode_right():
     source = Resource("data/transform.csv")
     target = transform(
