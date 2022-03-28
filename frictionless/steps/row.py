@@ -245,7 +245,6 @@ class row_ungroup(Step):
         group_name=None,
         value_name=None,
     ):
-        assert selection in ["first", "last", "min", "max"]
         self.setinitial("selection", selection)
         self.setinitial("groupName", group_name)
         self.setinitial("valueName", value_name)
@@ -268,7 +267,10 @@ class row_ungroup(Step):
         "type": "object",
         "required": ["groupName", "selection"],
         "properties": {
-            "selection": {"type": "string"},
+            "selection": {
+                "type": "string",
+                "enum": ["first", "last", "min", "max"],
+            },
             "groupName": {"type": "string"},
             "valueName": {"type": "string"},
         },
