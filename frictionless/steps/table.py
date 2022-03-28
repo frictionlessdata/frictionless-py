@@ -222,10 +222,9 @@ class table_join(Step):
         *,
         resource=None,
         field_name=None,
-        use_hash=False,
-        mode="inner",
+        use_hash=None,
+        mode=None,
     ):
-        assert mode in ["inner", "left", "right", "outer", "cross", "negate"]
         self.setinitial("resource", resource)
         self.setinitial("fieldName", field_name)
         self.setinitial("useHash", use_hash)
@@ -238,8 +237,8 @@ class table_join(Step):
         target = resource
         source = self.get("resource")
         field_name = self.get("fieldName")
-        use_hash = self.get("useHash")
-        mode = self.get("mode")
+        use_hash = self.get("useHash", False)
+        mode = self.get("mode", 'inner')
         if isinstance(source, str):
             source = target.package.get_resource(source)
         elif isinstance(source, dict):
@@ -276,7 +275,10 @@ class table_join(Step):
         "properties": {
             "resource": {},
             "fieldName": {"type": "string"},
-            "mode": {"type": "string"},
+            "mode": {
+                "type": "string",
+                "enum": ["inner", "left", "right", "outer", "cross", "negate"],
+            },
             "hash": {},
         },
     }
