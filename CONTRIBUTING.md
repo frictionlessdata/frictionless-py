@@ -71,6 +71,8 @@ make install
 alias "frictionless=python -m frictionless"
 ```
 
+Note: You may need to run `sudo apt-get install postgresql libpq-dev` on a Debian-based system, because the python Postgres module depends on some postgres CLI tools.
+
 Then you can run various make commands:
 - `make docs` - build the docs
 - `make format` - format source code
