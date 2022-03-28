@@ -281,3 +281,9 @@ def extract_samle(text_stream):
         if len(sample) >= INFER_DIALECT_VOLUME:
             break
     return sample
+
+
+# System
+
+# https://stackoverflow.com/a/54515177
+csv.field_size_limit(2147483646)

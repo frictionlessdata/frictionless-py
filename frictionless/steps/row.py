@@ -137,7 +137,7 @@ class row_sort(Step):
 
     code = "row-sort"
 
-    def __init__(self, descriptor=None, *, field_names=None, reverse=False):
+    def __init__(self, descriptor=None, *, field_names=None, reverse=None):
         self.setinitial("fieldNames", field_names)
         self.setinitial("reverse", reverse)
         super().__init__(descriptor)
@@ -147,7 +147,7 @@ class row_sort(Step):
     def transform_resource(self, resource):
         table = resource.to_petl()
         field_names = self.get("fieldNames")
-        reverse = self.get("reverse")
+        reverse = self.get("reverse", False)
         resource.data = table.sort(field_names, reverse=reverse)
 
     # Metadata
@@ -198,7 +198,6 @@ class row_subset(Step):
     code = "row-subset"
 
     def __init__(self, descriptor=None, *, subset=None, field_name=None):
-        assert subset in ["conflicts", "distinct", "duplicates", "unique"]
         self.setinitial("subset", subset)
         self.setinitial("fieldName", field_name)
         super().__init__(descriptor)
@@ -224,7 +223,10 @@ class row_subset(Step):
         "type": "object",
         "required": ["subset"],
         "properties": {
-            "subset": {"type": "string"},
+            "subset": {
+                "type": "string",
+                "enum": ["conflicts", "distinct", "duplicates", "unique"],
+            },
             "fieldName": {"type": "string"},
         },
     }
@@ -243,7 +245,6 @@ class row_ungroup(Step):
         group_name=None,
         value_name=None,
     ):
-        assert selection in ["first", "last", "min", "max"]
         self.setinitial("selection", selection)
         self.setinitial("groupName", group_name)
         self.setinitial("valueName", value_name)
@@ -266,7 +267,10 @@ class row_ungroup(Step):
         "type": "object",
         "required": ["groupName", "selection"],
         "properties": {
-            "selection": {"type": "string"},
+            "selection": {
+                "type": "string",
+                "enum": ["first", "last", "min", "max"],
+            },
             "groupName": {"type": "string"},
             "valueName": {"type": "string"},
         },

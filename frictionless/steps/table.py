@@ -66,6 +66,8 @@ class table_attach(Step):
         source = self.get("resource")
         if isinstance(source, str):
             source = target.package.get_resource(source)
+        elif isinstance(source, dict):
+            source = Resource(source)
         source.infer()
         view1 = target.to_petl()
         view2 = source.to_petl()
@@ -147,6 +149,8 @@ class table_diff(Step):
         use_hash = self.get("useHash")
         if isinstance(source, str):
             source = target.package.get_resource(source)
+        elif isinstance(source, dict):
+            source = Resource(source)
         source.infer()
         view1 = target.to_petl()
         view2 = source.to_petl()
@@ -187,6 +191,8 @@ class table_intersect(Step):
         use_hash = self.get("useHash")
         if isinstance(source, str):
             source = target.package.get_resource(source)
+        elif isinstance(source, dict):
+            source = Resource(source)
         source.infer()
         view1 = target.to_petl()
         view2 = source.to_petl()
@@ -216,10 +222,9 @@ class table_join(Step):
         *,
         resource=None,
         field_name=None,
-        use_hash=False,
-        mode="inner",
+        use_hash=None,
+        mode=None,
     ):
-        assert mode in ["inner", "left", "right", "outer", "cross", "negate"]
         self.setinitial("resource", resource)
         self.setinitial("fieldName", field_name)
         self.setinitial("useHash", use_hash)
@@ -232,10 +237,12 @@ class table_join(Step):
         target = resource
         source = self.get("resource")
         field_name = self.get("fieldName")
-        use_hash = self.get("useHash")
-        mode = self.get("mode")
+        use_hash = self.get("useHash", False)
+        mode = self.get("mode", "inner")
         if isinstance(source, str):
             source = target.package.get_resource(source)
+        elif isinstance(source, dict):
+            source = Resource(source)
         source.infer()
         view1 = target.to_petl()
         view2 = source.to_petl()
@@ -268,7 +275,10 @@ class table_join(Step):
         "properties": {
             "resource": {},
             "fieldName": {"type": "string"},
-            "mode": {"type": "string"},
+            "mode": {
+                "type": "string",
+                "enum": ["inner", "left", "right", "outer", "cross", "negate"],
+            },
             "hash": {},
         },
     }
@@ -285,9 +295,8 @@ class table_melt(Step):
         *,
         variables=None,
         field_name=None,
-        to_field_names=["variable", "value"],
+        to_field_names=None,
     ):
-        assert len(to_field_names) == 2
         self.setinitial("variables", variables)
         self.setinitial("fieldName", field_name)
         self.setinitial("toFieldNames", to_field_names)
@@ -299,7 +308,7 @@ class table_melt(Step):
         table = resource.to_petl()
         variables = self.get("variables")
         field_name = self.get("fieldName")
-        to_field_names = self.get("toFieldNames")
+        to_field_names = self.get("toFieldNames", ["variable", "value"])
         field = resource.schema.get_field(field_name)
         resource.schema.fields.clear()
         resource.schema.add_field(field)
@@ -320,7 +329,7 @@ class table_melt(Step):
         "properties": {
             "fieldName": {"type": "string"},
             "variables": {"type": "array"},
-            "toFieldNames": {},
+            "toFieldNames": {"type": "array", "minItems": 2, "maxItems": 2},
         },
     }
 
@@ -355,6 +364,8 @@ class table_merge(Step):
         sort_by_field = self.get("sortByField")
         if isinstance(source, str):
             source = target.package.get_resource(source)
+        elif isinstance(source, dict):
+            source = Resource(source)
         source.infer()
         view1 = target.to_petl()
         view2 = source.to_petl()
@@ -480,9 +491,8 @@ class table_recast(Step):
         descriptor=None,
         *,
         field_name,
-        from_field_names=["variable", "value"],
+        from_field_names=None,
     ):
-        assert len(from_field_names) == 2
         self.setinitial("fieldName", field_name)
         self.setinitial("fromFieldNames", from_field_names)
         super().__init__(descriptor)
@@ -492,7 +502,7 @@ class table_recast(Step):
     def transform_resource(self, resource):
         table = resource.to_petl()
         field_name = self.get("fieldName")
-        from_field_names = self.get("fromFieldNames")
+        from_field_names = self.get("fromFieldNames", ["variable", "value"])
         resource.pop("schema", None)
         resource.data = table.recast(
             key=field_name,
@@ -508,7 +518,7 @@ class table_recast(Step):
         "required": ["fieldName"],
         "properties": {
             "fieldName": {"type": "string"},
-            "fromFieldNames": {},
+            "fromFieldNames": {"type": "array", "minItems": 2, "maxItems": 2},
         },
     }
 

@@ -11,7 +11,7 @@ from frictionless.plugins.ckan import CkanStorage, CkanDialect
 def test_ckan_parser(options):
     url = options.pop("url")
     dialect = CkanDialect(resource="table", **options)
-    source = Resource("data/timezone.csv")
+    source = Resource("data/table.csv")
     target = source.write(url, format="ckan", dialect=dialect)
     with target:
         assert target.header == ["id", "name"]

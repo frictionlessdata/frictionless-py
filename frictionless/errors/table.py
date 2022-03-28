@@ -23,6 +23,17 @@ class RowCountError(TableError):
     description = "This error can happen if the data is corrupted."
 
 
+class TableDimensionsError(TableError):
+    code = "table-dimensions-error"
+    name = "Table dimensions error"
+    template = "The data source does not have the required dimensions: {note}"
+    description = "This error can happen if the data is corrupted."
+
+    def __init__(self, note, limits):
+        self.setinitial("limits", limits)
+        super().__init__(note=note)
+
+
 class DeviatedValueError(TableError):
     code = "deviated-value"
     name = "Deviated Value"

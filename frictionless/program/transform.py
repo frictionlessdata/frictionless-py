@@ -10,6 +10,9 @@ from . import common
 def program_transform(
     # Source
     source: str = common.source,
+    # Command
+    yaml: bool = common.yaml,
+    json: bool = common.json,
 ):
     """Transform data using a provided pipeline.
 
@@ -42,6 +45,18 @@ def program_transform(
     except Exception as exception:
         typer.secho(str(exception), err=True, fg=typer.colors.RED, bold=True)
         raise typer.Exit(1)
+
+    # Return JSON
+    if json:
+        content = status.to_json()
+        typer.secho(content)
+        raise typer.Exit()
+
+    # Return YAML
+    if yaml:
+        content = status.to_yaml().strip()
+        typer.secho(content)
+        raise typer.Exit()
 
     # Return default
     if is_stdin:

@@ -9,6 +9,10 @@ from .. import helpers
 from .. import settings
 
 
+# NOTE:
+# Shall metadata validation be a part of BaselineCheck?
+
+
 @Report.from_validate
 def validate_resource(
     source=None,
@@ -35,7 +39,7 @@ def validate_resource(
         skip_errors? ((str|int)[]): skip errors
         limit_errors? (int): limit errors
         limit_memory? (int): limit memory
-        original? (bool): validate resource as it is
+        original? (bool): validate metadata as it is (without inferring)
         **options? (dict): Resource constructor options
 
     Returns:
@@ -53,16 +57,9 @@ def validate_resource(
         native = isinstance(source, Resource)
         resource = source.to_copy() if native else Resource(source, **options)
         stats = {key: val for key, val in resource.stats.items() if val}
+        original_resource = resource.to_copy()
     except FrictionlessException as exception:
         errors.append(exception.error)
-
-    # Prepare resource
-    if not errors:
-        if not original:
-            resource.infer()
-        if resource.metadata_errors:
-            for error in resource.metadata_errors:
-                errors.append(error)
 
     # Open resource
     if not errors:
@@ -91,7 +88,13 @@ def validate_resource(
                 for error in check.metadata_errors:
                     errors.append(error)
 
-    # Validate resource
+    # Validate metadata
+    if not errors:
+        metadata_resource = original_resource if original else resource
+        for error in metadata_resource.metadata_errors:
+            errors.append(error)
+
+    # Validate data
     if not errors:
         with resource:
 

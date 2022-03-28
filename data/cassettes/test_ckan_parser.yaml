@@ -424,7 +424,7 @@ interactions:
       User-Agent:
       - python-requests/2.25.0
     method: GET
-    uri: https://demo.ckan.org/api/3/action/datastore_search?resource_id=711069ae-b409-4584-843a-3d6f5a47e129
+    uri: https://demo.ckan.org/api/3/action/datastore_search?resource_id=711069ae-b409-4584-843a-3d6f5a47e129&include_total=False
   response:
     body:
       string: !!binary |

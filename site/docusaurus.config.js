@@ -8,7 +8,7 @@ module.exports = {
   favicon: "img/logo.png",
   customFields: {
     description:
-      "Frictionless is a framework to describe, extract, validate, and transform tabular data.",
+      "Data management framework for Python that provides functionality to describe, extract, validate, and transform tabular data",
   },
   themes: ["@docusaurus/theme-live-codeblock"],
   // stylesheets: ["https://fonts.googleapis.com/css?family=Roboto&display=swap"],
@@ -49,12 +49,6 @@ module.exports = {
       theme: require("prism-react-renderer/themes/github"),
       darkTheme: require("prism-react-renderer/themes/dracula"),
     },
-    gtag: {
-      trackingID: "G-NFPR61ZC0X",
-    },
-    // googleAnalytics: {
-    //   trackingID: 'UA-141789564-1',
-    // },
     algolia: {
       apiKey: "0632881f114cfc50b94e4bc7b970cbce",
       indexName: "frictionless-py",
@@ -98,6 +92,11 @@ module.exports = {
               label: "Frictionless Describe and Extract",
               href:
                 "https://colab.research.google.com/drive/12RmGajHamGP5wOoAhy8N7Gchn9TmVnG-",
+            },
+            {
+              label: "Frictionless Excel",
+              href:
+                "https://colab.research.google.com/drive/1QHO1r0f670YOYVqODltTP7bnA9qlur-t?usp=sharing",
             },
           ],
         },

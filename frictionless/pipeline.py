@@ -151,7 +151,12 @@ class PipelineTask(Metadata):
         # Source
         source = self.get("source")
         if not isinstance(source, Metadata):
-            source = Resource(source) if self.type == "resource" else Package(source)
+            # NOTE: review usage of trusted
+            source = (
+                Resource(source, trusted=True)
+                if self.type == "resource"
+                else Package(source, trusted=True)
+            )
             dict.__setitem__(self, "source", source)
 
 

@@ -85,6 +85,36 @@ def test_field_standard_specs_properties(create_descriptor):
     assert field.rdf_type == "rdf"
 
 
+def test_field_description_html():
+    field = Field(description="**test**")
+    assert field.description == "**test**"
+    assert field.description_html == "<p><strong>test</strong></p>"
+
+
+def test_field_description_html_multiline():
+    field = Field(description="**test**\n\nline")
+    assert field.description == "**test**\n\nline"
+    assert field.description_html == "<p><strong>test</strong></p><p>line</p>"
+
+
+def test_field_description_html_not_set():
+    field = Field()
+    assert field.description == ""
+    assert field.description_html == ""
+
+
+def test_field_description_text():
+    field = Field(description="**test**\n\nline")
+    assert field.description == "**test**\n\nline"
+    assert field.description_text == "test line"
+
+
+def test_field_description_text_plain():
+    field = Field(description="It's just a plain text. Another sentence")
+    assert field.description == "It's just a plain text. Another sentence"
+    assert field.description_text == "It's just a plain text. Another sentence"
+
+
 # Constraints
 
 
@@ -289,6 +319,12 @@ def test_field_read_cell_multiple_constraints():
     )
     # Null value passes
     assert read("") == (None, None)
+
+
+@pytest.mark.parametrize("example_value", [(None), (42), ("foo")])
+def test_field_with_example_set(example_value):
+    field = Field({"name": "name", "type": "string", "example": example_value})
+    assert field.example == example_value
 
 
 # Import/Export

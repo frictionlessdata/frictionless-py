@@ -7,6 +7,10 @@ from ..parser import Parser
 from .. import errors
 
 
+# NOTE:
+# Consider renaming keys/data_keys to labels due to dict.keys conflict
+
+
 # Plugin
 
 
@@ -65,7 +69,7 @@ class InlineDialect(Dialect):
         super().__init__(descriptor)
 
     @Metadata.property
-    def keys(self):
+    def data_keys(self):
         """
         Returns:
             str[]?: keys
@@ -156,7 +160,7 @@ class InlineParser(Parser):
         # Keyed
         elif isinstance(item, dict):
             dialect["keyed"] = True
-            headers = dialect.keys or list(item.keys())
+            headers = dialect.data_keys or list(item.keys())
             yield headers
             yield [item.get(header) for header in headers]
             for item in data:

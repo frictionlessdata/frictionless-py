@@ -56,8 +56,8 @@ function Home() {
       </div>
       <div className={classnames(styles.announcement, styles.announcementDark)}>
         <div className={styles.announcementInner}>
-          Frictionless is a framework to describe, extract, validate, and
-          transform tabular data in Python.
+          Data management framework for Python to describe, extract, validate,
+          and transform tabular data.
         </div>
       </div>
       <div className={styles.section}>

@@ -16,22 +16,18 @@ def test_validate():
 
 def test_validate_invalid_source():
     report = validate("bad.json", type="resource")
-    assert report.flatten(["code", "note"]) == [
-        [
-            "resource-error",
-            'cannot extract metadata "bad.json" because "[Errno 2] No such file or directory: \'bad.json\'"',
-        ]
-    ]
+    assert report["stats"]["errors"] == 1
+    [[code, note]] = report.flatten(["code", "note"])
+    assert code == "resource-error"
+    assert note.count("[Errno 2]") and note.count("bad.json")
 
 
 def test_validate_invalid_resource():
     report = validate({"path": "data/table.csv", "schema": "bad"})
-    assert report.flatten(["code", "note"]) == [
-        [
-            "schema-error",
-            'cannot extract metadata "bad" because "[Errno 2] No such file or directory: \'bad\'"',
-        ]
-    ]
+    assert report["stats"]["errors"] == 1
+    [[code, note]] = report.flatten(["code", "note"])
+    assert code == "schema-error"
+    assert note.count("[Errno 2]") and note.count("bad")
 
 
 def test_validate_invalid_resource_original():
@@ -587,8 +583,8 @@ def test_validate_schema_foreign_key_error_self_referencing_invalid():
         },
     }
     report = validate(source)
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [6, None, "foreign-key-error"],
+    assert report.flatten(["rowPosition", "fieldPosition", "code", "cells"]) == [
+        [6, None, "foreign-key-error", ["5", "6", "Rome"]],
     ]
 
 
@@ -609,6 +605,8 @@ def test_validate_schema_unique_error_and_type_error():
         ["a1", 100],
         ["a2", "bad"],
         ["a3", 100],
+        ["a4", 0],
+        ["a5", 0],
     ]
     schema = {
         "fields": [
@@ -617,9 +615,10 @@ def test_validate_schema_unique_error_and_type_error():
         ]
     }
     report = validate(source, schema=schema)
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [3, 2, "type-error"],
-        [4, 2, "unique-error"],
+    assert report.flatten(["rowPosition", "fieldPosition", "code", "cells"]) == [
+        [3, 2, "type-error", ["a2", "bad"]],
+        [4, 2, "unique-error", ["a3", "100"]],
+        [6, 2, "unique-error", ["a5", "0"]],
     ]
 
 
@@ -835,8 +834,8 @@ def test_validate_detector_headers_errors():
     }
     detector = Detector(schema_sync=True)
     report = validate(source, schema=schema, detector=detector)
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [4, 4, "constraint-error"],
+    assert report.flatten(["rowPosition", "fieldPosition", "code", "cells"]) == [
+        [4, 4, "constraint-error", ["3", "Smith", "Paul", ""]],
     ]
 
 
@@ -1062,6 +1061,11 @@ def test_validate_custom_check_bad_name():
     ]
 
 
+def test_validate_resource_descriptor_type_invalid():
+    report = validate(descriptor="data/table.csv")
+    assert report.flatten() == [[1, None, None, "resource-error"]]
+
+
 # Issues
 
 
@@ -1140,9 +1144,10 @@ def test_validate_order_fields_issue_313():
 
 def test_validate_missing_local_file_raises_scheme_error_issue_315():
     report = validate("bad-path.csv")
-    assert report.flatten(["code", "note"]) == [
-        ["scheme-error", "[Errno 2] No such file or directory: 'bad-path.csv'"],
-    ]
+    assert report["stats"]["errors"] == 1
+    [[code, note]] = report.flatten(["code", "note"])
+    assert code == "scheme-error"
+    assert note.count("[Errno 2]") and note.count("bad-path.csv")
 
 
 def test_validate_inline_not_a_binary_issue_349():
@@ -1171,6 +1176,11 @@ def test_validate_resource_header_row_has_first_number_issue_870():
     assert report.valid
 
 
-def test_validate_resource_descriptor_type_invalid():
-    report = validate(descriptor="data/table.csv")
-    assert report.flatten() == [[1, None, None, "resource-error"]]
+def test_validate_resource_array_path_issue_991():
+    report = validate("data/issue-991.resource.json")
+    assert report.flatten(["code", "note"]) == [
+        [
+            "scheme-error",
+            'Multipart resource requires "multipart" scheme but "file" is set',
+        ],
+    ]

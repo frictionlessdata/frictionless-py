@@ -56,7 +56,7 @@ Yes, you can use `package.resources[].schema.foreign_keys` in Python [to add for
 
 ## Can I add a custom attribute (e.g. to indicate the datetime a package was updated)?
 
-If the spec doesn't have (yet) this attribute, you can add it. For an examaple, please take a look at [Describe Guide](guides/describing-data#transforming-metadata)
+If the spec doesn't have (yet) this attribute, you can add it. For an examaple, please take a look at [Describe Guide](guides/describing-data/#transforming-metadata)
 
 ## Is it possible to validate a single resource from a datapackage.json?
 

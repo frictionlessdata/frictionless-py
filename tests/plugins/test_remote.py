@@ -1,5 +1,5 @@
 import pytest
-from frictionless import Resource
+from frictionless import Resource, Layout
 
 
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
@@ -28,7 +28,8 @@ def test_remote_loader_latin1():
 @pytest.mark.ci
 @pytest.mark.vcr
 def test_remote_loader_big_file():
-    with Resource(BASEURL % "data/table1.csv") as resource:
+    layout = Layout(header=False)
+    with Resource(BASEURL % "data/table1.csv", layout=layout) as resource:
         assert resource.read_rows()
         assert resource.stats == {
             "hash": "78ea269458be04a0e02816c56fc684ef",

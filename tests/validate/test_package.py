@@ -76,22 +76,20 @@ def test_validate_package_with_non_tabular():
 
 def test_validate_package_invalid_descriptor_path():
     report = validate("bad/datapackage.json")
-    assert report.flatten(["code", "note"]) == [
-        [
-            "package-error",
-            'cannot extract metadata "bad/datapackage.json" because "[Errno 2] No such file or directory: \'bad/datapackage.json\'"',
-        ]
-    ]
+    assert report["stats"]["errors"] == 1
+    error = report["errors"][0]
+    assert error["code"] == "package-error"
+    assert error["note"].count("[Errno 2]") and error["note"].count(
+        "bad/datapackage.json"
+    )
 
 
 def test_validate_package_invalid_package():
     report = validate({"resources": [{"path": "data/table.csv", "schema": "bad"}]})
-    assert report.flatten(["code", "note"]) == [
-        [
-            "schema-error",
-            'cannot extract metadata "bad" because "[Errno 2] No such file or directory: \'bad\'"',
-        ]
-    ]
+    assert report["stats"]["errors"] == 1
+    error = report["errors"][0]
+    assert error["code"] == "schema-error"
+    assert error["note"].count("[Errno 2]") and error["note"].count("'bad'")
 
 
 def test_validate_package_invalid_package_original():
@@ -99,7 +97,7 @@ def test_validate_package_invalid_package_original():
     assert report.flatten(["code", "note"]) == [
         [
             "resource-error",
-            '"{\'path\': \'data/table.csv\'} is not valid under any of the given schemas" at "" in metadata and at "oneOf" in profile',
+            "\"{'path': 'data/table.csv', 'stats': {}} is not valid under any of the given schemas\" at \"\" in metadata and at \"oneOf\" in profile",
         ]
     ]
 
@@ -188,6 +186,24 @@ DESCRIPTOR_FK = {
     ],
 }
 
+MULTI_FK_RESSOURCE = {
+    "name": "travel_time",
+    "data": [["from", "to", "hours"], [1, 2, 1.5], [2, 3, 8], [3, 4, 18]],
+    "schema": {
+        "fields": [
+            {"name": "from", "type": "integer"},
+            {"name": "to", "type": "integer"},
+            {"name": "hours", "type": "number"},
+        ],
+        "foreignKeys": [
+            {
+                "fields": ["from", "to"],
+                "reference": {"resource": "cities", "fields": ["id", "next_id"]},
+            }
+        ],
+    },
+}
+
 
 def test_validate_package_schema_foreign_key_error():
     descriptor = deepcopy(DESCRIPTOR_FK)
@@ -206,8 +222,8 @@ def test_validate_package_schema_foreign_key_self_referenced_resource_violation(
     descriptor = deepcopy(DESCRIPTOR_FK)
     del descriptor["resources"][0]["data"][4]
     report = validate(descriptor)
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [4, None, "foreign-key-error"],
+    assert report.flatten(["rowPosition", "fieldPosition", "code", "cells"]) == [
+        [4, None, "foreign-key-error", ["3", "rome", "4"]],
     ]
 
 
@@ -215,8 +231,8 @@ def test_validate_package_schema_foreign_key_internal_resource_violation():
     descriptor = deepcopy(DESCRIPTOR_FK)
     del descriptor["resources"][1]["data"][4]
     report = validate(descriptor)
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [5, None, "foreign-key-error"],
+    assert report.flatten(["rowPosition", "fieldPosition", "code", "cells"]) == [
+        [5, None, "foreign-key-error", ["4", "rio", ""]],
     ]
 
 
@@ -224,11 +240,35 @@ def test_validate_package_schema_foreign_key_internal_resource_violation_non_exi
     descriptor = deepcopy(DESCRIPTOR_FK)
     descriptor["resources"][1]["data"] = [["label", "population"], [10, 10]]
     report = validate(descriptor)
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [2, None, "foreign-key-error"],
-        [3, None, "foreign-key-error"],
-        [4, None, "foreign-key-error"],
-        [5, None, "foreign-key-error"],
+    assert report.flatten(["rowPosition", "fieldPosition", "code", "cells"]) == [
+        [2, None, "foreign-key-error", ["1", "london", "2"]],
+        [3, None, "foreign-key-error", ["2", "paris", "3"]],
+        [4, None, "foreign-key-error", ["3", "rome", "4"]],
+        [5, None, "foreign-key-error", ["4", "rio", ""]],
+    ]
+
+
+def test_validate_package_schema_multiple_foreign_key():
+    descriptor = deepcopy(DESCRIPTOR_FK)
+    descriptor["resources"].append(MULTI_FK_RESSOURCE)
+    report = validate(descriptor)
+    assert report.valid
+
+
+def test_validate_package_schema_multiple_foreign_key_resource_violation_non_existent():
+    descriptor = deepcopy(DESCRIPTOR_FK)
+    # remove London
+    del descriptor["resources"][0]["data"][1]
+    descriptor["resources"].append(MULTI_FK_RESSOURCE)
+    report = validate(descriptor)
+    assert report.flatten(["rowPosition", "fieldPosition", "code", "cells", "note"]) == [
+        [
+            2,
+            None,
+            "foreign-key-error",
+            ["1", "2", "1.5"],
+            'for "from, to": values "1, 2" not found in the lookup table "cities" as "id, next_id"',
+        ],
     ]
 
 
@@ -479,3 +519,8 @@ def test_validate_package_descriptor_type_package_invalid():
         [1, 3, None, "primary-key-error"],
         [2, 4, None, "blank-row"],
     ]
+
+
+def test_validate_package_with_diacritic_symbol_issue_905():
+    report = validate(descriptor="data/issue-905/datapackage.json")
+    assert report.stats["tasks"] == 3

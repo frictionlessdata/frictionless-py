@@ -3,6 +3,7 @@ import json
 import yaml
 import pytest
 import zipfile
+from collections.abc import Mapping
 from pathlib import Path
 from frictionless import Package, Resource, Layout, describe_package, helpers
 from frictionless import FrictionlessException
@@ -28,6 +29,28 @@ def test_package():
 
 def test_package_from_dict():
     package = Package({"name": "name", "profile": "data-package"})
+    assert package == {
+        "name": "name",
+        "profile": "data-package",
+    }
+
+
+class NotADict(Mapping):
+    def __init__(self, **kwargs):
+        self.__dict__.update(**kwargs)
+
+    def __getitem__(self, key):
+        return self.__dict__[key]
+
+    def __iter__(self):
+        return iter(self.__dict__)
+
+    def __len__(self):
+        return len(self.__dict__)
+
+
+def test_package_from_mapping():
+    package = Package(NotADict(name="name", profile="data-package"))
     assert package == {
         "name": "name",
         "profile": "data-package",
@@ -203,6 +226,30 @@ def test_package_standard_specs_properties(create_descriptor):
     assert package.keywords == ["keyword"]
     assert package.image == "image"
     assert package.created == "created"
+
+
+def test_package_description_html():
+    package = Package(description="**test**")
+    assert package.description == "**test**"
+    assert package.description_html == "<p><strong>test</strong></p>"
+
+
+def test_package_description_html_multiline():
+    package = Package(description="**test**\n\nline")
+    assert package.description == "**test**\n\nline"
+    assert package.description_html == "<p><strong>test</strong></p><p>line</p>"
+
+
+def test_package_description_text():
+    package = Package(description="**test**\n\nline")
+    assert package.description == "**test**\n\nline"
+    assert package.description_text == "test line"
+
+
+def test_package_description_text_plain():
+    package = Package(description="It's just a plain text. Another sentence")
+    assert package.description == "It's just a plain text. Another sentence"
+    assert package.description_text == "It's just a plain text. Another sentence"
 
 
 # Resources
@@ -854,6 +901,7 @@ def test_package_to_zip_resource_path(tmpdir):
     ]
 
 
+@pytest.mark.vcr
 def test_package_to_zip_resource_remote_path(tmpdir):
     path = os.path.join(tmpdir, "package.zip")
     source = Package(resources=[Resource(path=BASEURL % "data/table.csv")])
@@ -921,6 +969,7 @@ def test_package_to_zip_resource_multipart(tmpdir, database_url):
 # Validate
 
 
+@pytest.mark.vcr
 def test_package_external_profile():
     profile = "frictionless/assets/profiles/package/general.json"
     resource = Resource(name="table", path="data/table.csv")
@@ -928,6 +977,7 @@ def test_package_external_profile():
     assert package.metadata_valid
 
 
+@pytest.mark.vcr
 def test_package_external_profile_invalid_local():
     profile = "data/profiles/camtrap.json"
     resource = Resource(name="table", path="data/table.csv")
@@ -937,6 +987,7 @@ def test_package_external_profile_invalid_local():
         assert "required" in error.message
 
 
+@pytest.mark.vcr
 def test_package_external_profile_invalid_local_from_descriptor():
     profile = "data/profiles/camtrap.json"
     resource = Resource(name="table", path="data/table.csv")
@@ -946,6 +997,7 @@ def test_package_external_profile_invalid_local_from_descriptor():
         assert "required" in error.message
 
 
+@pytest.mark.vcr
 def test_package_external_profile_invalid_local_from_descriptor_unsafe():
     profile = "data/../data/profiles/camtrap.json"
     resource = Resource(name="table", path="data/table.csv")
@@ -955,6 +1007,7 @@ def test_package_external_profile_invalid_local_from_descriptor_unsafe():
             package.metadata_errors
 
 
+@pytest.mark.vcr
 def test_package_external_profile_invalid_local_from_descriptor_unsafe_trusted():
     profile = "data/../data/profiles/camtrap.json"
     resource = Resource(name="table", path="data/table.csv")
@@ -1006,3 +1059,15 @@ def test_package_validation_is_not_strict_enough_issue_869():
     assert len(errors) == 2
     assert errors[0].note == 'property "created" is not valid "datetime"'
     assert errors[1].note == 'property "contributors[].email" is not valid "email"'
+
+
+def test_package_validation_duplicate_resource_names_issue_942():
+    package = Package(
+        resources=[
+            Resource(name="name", path="data/table.csv"),
+            Resource(name="name", path="data/table.csv"),
+        ]
+    )
+    errors = package.metadata_errors
+    assert len(errors) == 1
+    assert errors[0].note == "names of the resources are not unique"

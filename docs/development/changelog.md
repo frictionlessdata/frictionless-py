@@ -4,6 +4,46 @@ title: Changelog
 
 Here described only the breaking and most significant changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/frictionless-py/commits/main).
 
+## v4.26.0
+
+- Validate 'schema.fields[].example' (#998)
+
+## v4.25.0
+
+- Allows descriptors that subclass collections.abc.Mapping (#985)
+
+## v4.24.0
+
+- Added support for `SqlDialect.basepath` (#982) (https://framework.frictionlessdata.io/docs/tutorials/formats/sql-tutorial)
+
+## v4.23.0
+
+- Added table dimensions check (#985)
+
+## v4.22.0
+
+- Added "extract --trusted" flag
+
+## v4.21.0
+
+- Added "--json/yaml" CLI options for transform
+
+## v4.20.0
+
+- Improved layout/schema detection algorithms (#945)
+
+## v4.19.0
+
+- Renamed `inlineDialect.keys` to `inlineDialect.data_keys` due to a conflict with `dict.keys` property
+
+## v4.18.0
+
+- Normalized metadata properties (increased type safety)
+
+## v4.17.0
+
+- Add fields, limit, sort and filter options to CkanDialect (#912)
+
 ## v4.16.0
 
 - Implemented `system/plugin.create_candidates` (#893)

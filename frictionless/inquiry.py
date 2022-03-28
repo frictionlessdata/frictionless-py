@@ -133,7 +133,8 @@ class InquiryTask(Metadata):
 
     def run(self):
         validate = import_module("frictionless").validate
-        report = validate(**helpers.create_options(self))
+        # NOTE: review usage of trusted
+        report = validate(trusted=True, **helpers.create_options(self))
         return report
 
     # Metadata

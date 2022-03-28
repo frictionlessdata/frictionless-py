@@ -3,7 +3,7 @@ import pytest
 import string
 import random
 from moto import mock_s3
-from frictionless import Resource, validate, helpers
+from frictionless import Resource, Layout, validate, helpers
 
 
 IS_UNIX = not helpers.is_platform("windows")
@@ -51,7 +51,8 @@ def test_s3_loader_big_file(bucket_name):
     )
 
     # Read
-    with Resource("s3://%s/table1.csv" % bucket_name) as resource:
+    layout = Layout(header=False)
+    with Resource("s3://%s/table1.csv" % bucket_name, layout=layout) as resource:
         assert resource.read_rows()
         if IS_UNIX:
             assert resource.stats == {

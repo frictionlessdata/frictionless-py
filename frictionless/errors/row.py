@@ -40,9 +40,10 @@ class RowError(TableError):
         Returns:
             RowError: error
         """
+        to_str = lambda v: str(v) if v is not None else ""
         return cls(
             note=note,
-            cells=list(map(str, row)),
+            cells=list(map(to_str, row.cells)),
             row_number=row.row_number,
             row_position=row.row_position,
         )

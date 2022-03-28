@@ -9,6 +9,7 @@ from .exception import FrictionlessException
 from .metadata import Metadata
 from .system import system
 from . import settings
+from . import helpers
 from . import errors
 from . import types
 
@@ -57,6 +58,7 @@ class Field(Metadata):
         float_number=None,
         decimal_char=None,
         group_char=None,
+        example=None,
         # Extra
         schema=None,
     ):
@@ -76,6 +78,7 @@ class Field(Metadata):
         self.setinitial("decimalChar", decimal_char)
         self.setinitial("groupChar", group_char)
         self.setinitial("rdfType", rdf_type)
+        self.setinitial("example", example)
         self.__schema = schema
         self.__type = None
         super().__init__(descriptor)
@@ -106,17 +109,33 @@ class Field(Metadata):
     def title(self):
         """
         Returns:
-            str?: title
+            str: title
         """
-        return self.get("title")
+        return self.get("title", "")
 
     @Metadata.property
     def description(self):
         """
         Returns:
-            str?: description
+            str: description
         """
-        return self.get("description")
+        return self.get("description", "")
+
+    @Metadata.property(cache=False, write=False)
+    def description_html(self):
+        """
+        Returns:
+            str: field description
+        """
+        return helpers.md_to_html(self.description)
+
+    @Metadata.property
+    def description_text(self):
+        """
+        Returns:
+            str: field description
+        """
+        return helpers.html_to_text(self.description_html)
 
     @Metadata.property
     def type(self):
@@ -162,9 +181,9 @@ class Field(Metadata):
     def rdf_type(self):
         """
         Returns:
-            str?: RDF Type
+            str: RDF Type
         """
-        return self.get("rdfType")
+        return self.get("rdfType", "")
 
     @Metadata.property(
         write=lambda self, value: setitem(self.constraints, "required", value)
@@ -268,6 +287,14 @@ class Field(Metadata):
             str: group char
         """
         return self.get("groupChar", settings.DEFAULT_GROUP_CHAR)
+
+    @Metadata.property
+    def example(self):
+        """
+        Returns:
+            any: example value
+        """
+        return self.get("example", None)
 
     # Expand
 

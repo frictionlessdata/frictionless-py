@@ -222,10 +222,14 @@ class Row(dict):
         if types is not None:
             for index, field in enumerate(self.__field_info["objects"]):
                 # Here we can optimize performance if we use a types mapping
-                if field.type not in types:
-                    cell = result[index]
-                    cell, notes = field.write_cell(cell, ignore_missing=True)
-                    result[index] = cell
+                if field.type in types:
+                    continue
+                # NOTE: Move somehow to be in the json plugin
+                if json is True and field.type == "number" and field.float_number:
+                    continue
+                cell = result[index]
+                cell, notes = field.write_cell(cell, ignore_missing=True)
+                result[index] = cell
 
         # Return
         return result
@@ -272,6 +276,7 @@ class Row(dict):
 
         # Prepare context
         cells = self.__cells
+        to_str = lambda v: str(v) if v is not None else ""
         fields = self.__field_info["objects"]
         field_mapping = self.__field_info["mapping"]
         field_positions = self.__field_info["positions"]
@@ -292,7 +297,7 @@ class Row(dict):
             if field_mapping is None:
                 break
             field, field_number, field_position = field_mapping
-            if not is_empty and not is_empty and super().__contains__(field.name):
+            if not is_empty and super().__contains__(field.name):
                 continue
 
             # Read cell
@@ -307,7 +312,7 @@ class Row(dict):
                 self.__errors.append(
                     errors.TypeError(
                         note=type_note,
-                        cells=list(map(str, cells)),
+                        cells=list(map(to_str, cells)),
                         row_number=self.__row_number,
                         row_position=self.__row_position,
                         cell=str(source),
@@ -317,21 +322,26 @@ class Row(dict):
                     )
                 )
 
-            # Constraint errors
-            if notes:
-                for note in notes.values():
-                    self.__errors.append(
-                        errors.ConstraintError(
-                            note=note,
-                            cells=list(map(str, cells)),
-                            row_number=self.__row_number,
-                            row_position=self.__row_position,
-                            cell=str(source),
-                            field_name=field.name,
-                            field_number=field_number,
-                            field_position=field_position,
+            # NOTE: review this logic (why we can't skip reading also?)
+            # Check constriants if there is an existent cell
+            # Otherwise we emit only "missing-cell" which is enough
+            if field_position:
+
+                # Constraint errors
+                if notes:
+                    for note in notes.values():
+                        self.__errors.append(
+                            errors.ConstraintError(
+                                note=note,
+                                cells=list(map(to_str, cells)),
+                                row_number=self.__row_number,
+                                row_position=self.__row_position,
+                                cell=str(source),
+                                field_name=field.name,
+                                field_number=field_number,
+                                field_position=field_position,
+                            )
                         )
-                    )
 
             # Set/return value
             super().__setitem__(field.name, target)
@@ -346,7 +356,7 @@ class Row(dict):
                 self.__errors.append(
                     errors.ExtraCellError(
                         note="",
-                        cells=list(map(str, cells)),
+                        cells=list(map(to_str, cells)),
                         row_number=self.__row_number,
                         row_position=self.__row_position,
                         cell=str(cell),
@@ -365,7 +375,7 @@ class Row(dict):
                     self.__errors.append(
                         errors.MissingCellError(
                             note="",
-                            cells=list(map(str, cells)),
+                            cells=list(map(to_str, cells)),
                             row_number=self.__row_number,
                             row_position=self.__row_position,
                             cell="",
@@ -381,7 +391,7 @@ class Row(dict):
             self.__errors = [
                 errors.BlankRowError(
                     note="",
-                    cells=list(map(str, cells)),
+                    cells=list(map(to_str, cells)),
                     row_number=self.__row_number,
                     row_position=self.__row_position,
                 )

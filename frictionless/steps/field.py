@@ -231,7 +231,7 @@ class field_unpack(Step):
 
     code = "field-unpack"
 
-    def __init__(self, descriptor=None, *, name, to_names, preserve=False):
+    def __init__(self, descriptor=None, *, name=None, to_names=None, preserve=False):
         self.setinitial("name", name)
         self.setinitial("toNames", to_names)
         self.setinitial("preserve", preserve)
@@ -313,6 +313,8 @@ class field_update(Step):
             function = lambda val, row: simpleeval.simple_eval(formula, names=row)
         if function:
             resource.data = table.convert(name, function)
+        elif new_name:
+            resource.data = table.rename({name: new_name})
         elif "value" in self:
             resource.data = table.update(name, value)
 

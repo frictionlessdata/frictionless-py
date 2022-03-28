@@ -25,13 +25,26 @@ for resource in package.resources:
   pprint(resource.read_rows())
 ```
 
+### SQLite
+
+Here is a example of reading a table from a SQLite database using basepath:
+
+```python title="Python"
+from frictionless import Resource
+from frictionless.plugins.sql import SqlDialect
+
+dialect = SqlDialect(table="test_table", basepath='data')
+with Resource(path="sqlite:///sqlite.db", dialect=dialect) as resource:
+    print(resource.read_rows())
+```
+
 ## Writing Data
 
 > **[NOTE]** Timezone information is ignored for `datetime` and `time` types.
 
 You can write SQL databases:
 
-```python
+```python title="Python"
 from frictionless import Package
 
 package = Package('path/to/datapackage.json')

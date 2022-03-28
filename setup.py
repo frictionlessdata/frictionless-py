@@ -36,6 +36,7 @@ TESTS_REQUIRE = [
     "oauth2client",
     "requests-mock",
     "python-dotenv",
+    "pytest-timeout",
     "pydoc-markdown",
     "docstring-parser",
 ]
@@ -56,18 +57,16 @@ EXTRAS_REQUIRE = {
 }
 INSTALL_REQUIRES = [
     "petl>=1.6",
+    "marko>=1.0",
     "pyyaml>=5.3",
     "isodate>=0.6",
     "rfc3986>=1.4",
     "chardet>=3.0",
     "requests>=2.10",
     "jsonschema>=2.5",
-    "simpleeval>=0.9",
+    "simpleeval>=0.9.11",
     "stringcase>=1.2",
-    # NOTE: Remove click after this issue is resolved:
-    # https://github.com/tiangolo/typer/issues/280
-    "click>=7.1.1,<7.2.0",
-    "typer[all]>=0.3",
+    "typer[all]>=0.4",
     "validators>=0.18",
     "python-slugify>=1.2",
     "python-dateutil>=2.8",
@@ -93,7 +92,7 @@ setup(
     zip_safe=False,
     long_description=README,
     long_description_content_type="text/markdown",
-    description="Frictionless is a framework to describe, extract, validate, and transform tabular data",
+    description="Data management framework for Python that provides functionality to describe, extract, validate, and transform tabular data",
     author="Open Knowledge Foundation",
     author_email="info@okfn.org",
     url="https://github.com/frictionlessdata/frictionless-py",

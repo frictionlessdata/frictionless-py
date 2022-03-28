@@ -4,6 +4,7 @@ import os
 import csv
 import json
 import glob
+import marko
 import atexit
 import shutil
 import zipfile
@@ -13,6 +14,7 @@ import platform
 import textwrap
 import stringcase
 from inspect import signature
+from html.parser import HTMLParser
 from importlib import import_module
 from contextlib import contextmanager
 from urllib.parse import urlparse, parse_qs
@@ -51,6 +53,15 @@ def get_name(value):
 def pass_through(iterator):
     for item in iterator:
         pass
+
+
+def safe_format(text, data):
+    return text.format_map(SafeFormatDict(data))
+
+
+class SafeFormatDict(dict):
+    def __missing__(self, key):
+        return ""
 
 
 def remove_non_values(mapping):
@@ -245,25 +256,6 @@ def is_platform(name):
     return False
 
 
-def count_bad_labels(cells):
-    count = 0
-    for cell in cells:
-        if cell is None:
-            continue
-        if not isinstance(cell, str):
-            count += 1
-            continue
-        try:
-            float(cell)
-            # We assume that a year might be a header label
-            if len(cell) == 4:
-                continue
-            count += 1
-        except Exception:
-            pass
-    return count
-
-
 def parse_json_string(string):
     if string is None:
         return None
@@ -321,6 +313,28 @@ def parse_resource_hash(hash):
     if len(parts) == 1:
         return (settings.DEFAULT_HASHING, parts[0])
     return parts
+
+
+def md_to_html(md):
+    try:
+        html = marko.convert(md)
+        html = html.replace("\n", "")
+        return html
+    except Exception:
+        return ""
+
+
+def html_to_text(html):
+    class HTMLFilter(HTMLParser):
+        text = ""
+
+        def handle_data(self, data):
+            self.text += data
+            self.text += " "
+
+    parser = HTMLFilter()
+    parser.feed(html)
+    return parser.text.strip()
 
 
 # Measurements

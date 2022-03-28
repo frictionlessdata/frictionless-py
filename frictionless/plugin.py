@@ -1,3 +1,6 @@
+# NOTE: implement create_resource so plugins can validate it (see #991)?
+
+
 class Plugin:
     """Plugin representation
 

@@ -9,7 +9,7 @@ runner = CliRunner()
 
 def test_program():
     result = runner.invoke(program)
-    assert result.exit_code == 0
+    assert result.exit_code == 2
     assert result.stdout.count("Usage")
 
 

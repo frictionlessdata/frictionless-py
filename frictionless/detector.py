@@ -7,7 +7,6 @@ from .layout import Layout
 from .schema import Schema
 from .field import Field
 from . import settings
-from . import helpers
 from . import errors
 
 
@@ -161,15 +160,13 @@ class Detector:
         widths = [len(cells) for cells in sample]
         if layout.get("header") is None and layout.get("headerRows") is None and widths:
 
-            # This algorithm tries to find a header row that:
-            # - is close to average sample width
-            # - doesn't have bad labels (non-string cells) OR
-            # - have less bad labels (non-string cells) than the next row
+            # This algorithm tries to find a header row
+            # that is close to average sample width or use default one
+            # We use it to eleminate initial rows that are comments/etc
 
             # Get header rows
             row_number = 0
-            bad_labels = 0
-            header_rows = None
+            header_rows = settings.DEFAULT_HEADER_ROWS
             width = round(sum(widths) / len(widths))
             drift = max(round(width * 0.1), 1)
             match = list(range(width - drift, width + drift + 1))
@@ -177,14 +174,8 @@ class Detector:
                 if layout.read_filter_rows(cells, row_position=row_position):
                     row_number += 1
                     if len(cells) in match:
-                        row_bad_labels = helpers.count_bad_labels(cells)
-                        if not row_bad_labels:
-                            header_rows = [row_number]
-                            break
-                        elif bad_labels and bad_labels < row_bad_labels:
-                            header_rows = [row_number - 1]
-                            break
-                        bad_labels = row_bad_labels
+                        header_rows = [row_number]
+                        break
 
             # Set header rows
             if not header_rows:
@@ -241,23 +232,26 @@ class Detector:
                 schema.fields = [{"name": name, "type": type or "any"} for name in names]
                 return schema
 
-            # Prepare fields
+            # Prepare runners
             runners = []
-            max_score = [len(fragment)] * len(names)
+            runner_fields = []  # we use shared fields
+            for candidate in system.create_candidates():
+                field = Field(candidate)
+                if field.type == "number" and self.__field_float_numbers:
+                    field.float_number = True
+                runner_fields.append(field)
             for index, name in enumerate(names):
                 runners.append([])
-                for candidate in system.create_candidates():
-                    field = Field(candidate, name=name, schema=schema)
-                    if field.type == "number" and self.__field_float_numbers:
-                        field.float_number = True
+                for field in runner_fields:
                     runners[index].append({"field": field, "score": 0})
-                schema.fields.append(Field(name=name, type="any", schema=schema))
 
             # Infer fields
+            fields = [None] * len(names)
+            max_score = [len(fragment)] * len(names)
             treshold = len(fragment) * (self.__field_confidence - 1)
             for cells in fragment:
                 for index, name in enumerate(names):
-                    if schema.fields[index].type != "any":
+                    if fields[index] is not None:
                         continue
                     source = cells[index] if len(cells) > index else None
                     if source in self.__field_missing_values:
@@ -269,8 +263,18 @@ class Detector:
                         target, notes = runner["field"].read_cell(source)
                         runner["score"] += 1 if not notes else -1
                         if runner["score"] >= max_score[index] * self.__field_confidence:
-                            schema.fields[index] = runner["field"]
+                            field = runner["field"].to_copy()
+                            field.name = name
+                            field.schema = schema
+                            fields[index] = field
                             break
+
+            # Fill/set fields
+            # For not inferred fields we use the "any" type field as a default
+            for index, name in enumerate(names):
+                if fields[index] is None:
+                    fields[index] = Field(name=name, type="any", schema=schema)
+            schema.fields = fields
 
         # Sync schema
         if self.__schema_sync:
