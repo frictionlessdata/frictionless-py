@@ -198,7 +198,6 @@ class row_subset(Step):
     code = "row-subset"
 
     def __init__(self, descriptor=None, *, subset=None, field_name=None):
-        assert subset in ["conflicts", "distinct", "duplicates", "unique"]
         self.setinitial("subset", subset)
         self.setinitial("fieldName", field_name)
         super().__init__(descriptor)
@@ -224,7 +223,10 @@ class row_subset(Step):
         "type": "object",
         "required": ["subset"],
         "properties": {
-            "subset": {"type": "string"},
+            "subset": {
+                "type": "string",
+                "enum": ["conflicts", "distinct", "duplicates", "unique"],
+            },
             "fieldName": {"type": "string"},
         },
     }

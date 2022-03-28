@@ -782,6 +782,24 @@ def test_step_row_subset_conflicts():
     assert target.read_rows() == []
 
 
+def test_step_row_subset_conflicts_from_descriptor_issue_996():
+    source = Resource("data/transform.csv")
+    target = transform(
+        source,
+        steps=[
+            steps.row_subset({"subset": "conflicts", "fieldName": "id"}),
+        ],
+    )
+    assert target.schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
+            {"name": "population", "type": "integer"},
+        ]
+    }
+    assert target.read_rows() == []
+
+
 def test_step_row_subset_conflicts_with_duplicates():
     source = Resource("data/transform.csv")
     target = transform(
