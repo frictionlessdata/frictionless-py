@@ -70,6 +70,10 @@ INSTALL_REQUIRES = [
     "validators>=0.18",
     "python-slugify>=1.2",
     "python-dateutil>=2.8",
+
+    # TODO: revome after this issue is resolved
+    # https://github.com/frictionlessdata/frictionless-py/issues/1011
+    "click<8.1",
 ]
 README = read("README.md")
 VERSION = read(PACKAGE, "assets", "VERSION")
