@@ -66,14 +66,10 @@ INSTALL_REQUIRES = [
     "jsonschema>=2.5",
     "simpleeval>=0.9.11",
     "stringcase>=1.2",
-    "typer[all]>=0.4",
+    "typer[all]>=0.4.1",
     "validators>=0.18",
     "python-slugify>=1.2",
     "python-dateutil>=2.8",
-
-    # TODO: revome after this issue is resolved
-    # https://github.com/frictionlessdata/frictionless-py/issues/1011
-    "click<8.1",
 ]
 README = read("README.md")
 VERSION = read(PACKAGE, "assets", "VERSION")
