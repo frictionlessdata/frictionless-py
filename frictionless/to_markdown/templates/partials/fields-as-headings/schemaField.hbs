@@ -1,0 +1,68 @@
+### `{{name}}`
+
+- {{{formatMessage (intlGet "messages.definitionList.keyValue")
+      key=(intlGet "fieldProperties.title")
+      value=title
+  }}}
+- {{{formatMessage (intlGet "messages.definitionList.keyValue")
+      key=(intlGet "fieldProperties.description")
+      value=description
+  }}}
+- {{{formatMessage (intlGet "messages.definitionList.keyValue")
+      key=(intlGet "fieldProperties.type")
+      value=(intlGet (append "type." type))
+  }}}{{#isnt format "default"}} ({{format}}){{/isnt}}
+{{#if arrayItem}}
+- {{{formatMessage (intlGet "messages.definitionList.key")
+      key=(intlGet "fieldProperties.arrayItem")
+  }}}
+{{#with arrayItem}}
+{{#if type}}
+{{ formatIndent true }}- {{{formatMessage (intlGet "messages.definitionList.keyValue")
+                             key=(intlGet "fieldProperties.type")
+                             value=(intlGet (append "type." type))
+                         }}}{{#if format}}{{#isnt format "default"}} ({{format}}){{/isnt}}{{/if}}
+{{/if}}
+{{> constraintHeadingProperties constraints=constraints arrayItem=true}}
+{{/with}}
+{{/if}}
+{{#if decimalChar}}
+- {{{formatMessage (intlGet "messages.definitionList.keyValue")
+      key=(intlGet "fieldProperties.decimalChar")
+      value=decimalChar
+  }}}
+{{/if}}
+{{#if groupChar}}
+- {{{formatMessage (intlGet "messages.definitionList.keyValue")
+      key=(intlGet "fieldProperties.groupChar")
+      value=groupChar
+  }}}
+{{/if}}
+{{#if trueValues}}
+- {{{formatMessage (intlGet "messages.definitionList.keyValue")
+      key=(intlGet "fieldProperties.trueValues")
+      value=(join trueValues (intlGet "separators.inlineEnumeration"))
+  }}}
+{{/if}}
+{{#if falseValues}}
+- {{{formatMessage (intlGet "messages.definitionList.keyValue")
+      key=(intlGet "fieldProperties.falseValues")
+      value=(join falseValues (intlGet "separators.inlineEnumeration"))
+  }}}
+{{/if}}
+{{#if bareNumber}}
+- {{{intlGet "fieldProperties.bareNumber"}}}
+{{/if}}
+{{#if rdfType}}
+- {{{formatMessage (intlGet "messages.definitionList.keyValue")
+      key=(intlGet "fieldProperties.rdfType")
+      value=rdfType
+  }}}
+{{/if}}
+{{#if example}}
+- {{{formatMessage (intlGet "messages.definitionList.keyValue")
+      key=(intlGet "fieldProperties.example")
+      value=(formatMarkdownCode example)
+  }}}
+{{/if}}
+{{> constraintHeadingProperties constraints=constraints arrayItem=false}}

@@ -1,0 +1,6 @@
+{{#if values}}
+- {{{formatMessage (intlGet "messages.definitionList.key") key=name}}}
+{{#each values}}
+  - {{> @partial-block }}
+{{/each}}
+{{/if}}

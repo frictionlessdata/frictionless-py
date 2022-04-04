@@ -1,0 +1,8 @@
+{{#unless arrayItem}}{{~#if constraints.required}}<p>{{intlGet "fieldProperties.constraints.required"}}</p>{{else}}<p>{{intlGet "fieldProperties.constraints.notRequired"}}</p>{{/if}}{{/unless}}
+{{~#if constraints.unique}}<p>{{intlGet "fieldProperties.constraints.unique"}}</p>{{/if}}
+{{~#if constraints.minLength}}<p>{{{formatMessage (intlGet "messages.definitionList.keyValue") key=(intlGet "fieldProperties.constraints.minLength") value=(formatNumber constraints.minLength)}}}</p>{{/if}}
+{{~#if constraints.maxLength}}<p>{{{formatMessage (intlGet "messages.definitionList.keyValue") key=(intlGet "fieldProperties.constraints.maxLength") value=(formatNumber constraints.maxLength)}}}</p>{{/if}}
+{{~#if constraints.minimum}}<p>{{{formatMessage (intlGet "messages.definitionList.keyValue") key=(intlGet "fieldProperties.constraints.minimum") value=(formatNumber constraints.minimum)}}}</p>{{/if}}
+{{~#if constraints.maximum}}<p>{{{formatMessage (intlGet "messages.definitionList.keyValue") key=(intlGet "fieldProperties.constraints.maximum") value=(formatNumber constraints.maximum)}}}</p>{{/if}}
+{{~#if constraints.pattern}}<p>{{{formatMessage (intlGet "messages.definitionList.keyValue") key=(intlGet "fieldProperties.constraints.pattern") value=(formatMarkdownCode constraints.pattern)}}}</p>{{/if}}
+{{~#if constraints.enum}}<p>{{{formatMessage (intlGet "messages.definitionList.keyValue") key=(intlGet "fieldProperties.constraints.enum") value=(join (formatMarkdownCodeList constraints.enum) (intlGet "separators.inlineEnumeration"))}}}</p>{{/if}}

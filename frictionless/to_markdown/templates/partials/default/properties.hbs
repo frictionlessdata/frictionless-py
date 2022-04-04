@@ -1,0 +1,46 @@
+{{> propertyListItemIfValue name=(intlGet "schemaProperties.name") value=name ~}}
+
+{{> propertyListItemIfValue name=(intlGet "schemaProperties.homepage") value=homepage ~}}
+
+{{> propertyListItemIfValue name=(intlGet "schemaProperties.path") value=path ~}}
+
+{{> propertyListItemIfValue name=(intlGet "schemaProperties.version") value=version ~}}
+
+{{> propertyListItemIfValue name=(intlGet "schemaProperties.keywords") value=(join keywords (intlGet "separators.inlineEnumeration")) ~}}
+
+{{#if created}}
+- {{> property name=(intlGet "schemaProperties.created") value=(formatDate created)}}
+{{/if ~}}
+
+{{#if lastModified}}
+- {{> property name=(intlGet "schemaProperties.lastModified") value=(formatDate lastModified)}}
+{{/if ~}}
+
+{{> propertyListItemIfValue name=(intlGet "schemaProperties.countryCode") value=countryCode ~}}
+
+{{> propertyListItemIfValue name=(intlGet "schemaProperties.missingValues") value=(formatMarkdownCode (JSONstringify missingValues)) ~}}
+
+{{#> propertyListItemArrayIfValue name=(intlGet "schemaProperties.contributors") values=contributors}}
+{{title ~}}
+{{#if organisation}}
+, {{organisation}}
+{{~/if}}
+{{#if role}}
+ ({{intlGet (append "fieldProperties.contributors.role." role)}})
+{{~/if}}
+{{#if email}}
+ [{{{email}}}]({{{email}}})
+{{~/if}}
+{{/propertyListItemArrayIfValue ~}}
+
+{{#> propertyListItemArrayIfValue name=(intlGet "schemaProperties.licenses") values=licenses}}
+{{> titleNamePath}}
+{{~/propertyListItemArrayIfValue ~}}
+
+{{#> propertyListItemArrayIfValue name=(intlGet "schemaProperties.resources") values=resources}}
+{{> titleNamePath}}
+{{~/propertyListItemArrayIfValue ~}}
+
+{{#> propertyListItemArrayIfValue name=(intlGet "schemaProperties.sources") values=sources}}
+{{> titleNamePath}}
+{{/propertyListItemArrayIfValue}}
