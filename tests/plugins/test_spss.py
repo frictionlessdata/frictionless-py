@@ -1,3 +1,5 @@
+import sys
+import pytest
 import datetime
 from frictionless import Package, Resource, helpers
 
@@ -8,6 +10,7 @@ IS_MACOS = helpers.is_platform("macos")
 # Parser
 
 
+@pytest.mark.skipif(sys.version_info >= (3, 10), reason="Not supported Python3.10")
 def test_spss_parser_write(tmpdir):
     source = Resource("data/table.csv")
     if not IS_MACOS:
@@ -20,6 +23,7 @@ def test_spss_parser_write(tmpdir):
             ]
 
 
+@pytest.mark.skipif(sys.version_info >= (3, 10), reason="Not supported Python3.10")
 def test_spss_parser_write_types(tmpdir):
     source = Package("data/storage/types.json").get_resource("types")
     if not IS_MACOS:
@@ -71,6 +75,7 @@ def test_spss_parser_write_types(tmpdir):
             ]
 
 
+@pytest.mark.skipif(sys.version_info >= (3, 10), reason="Not supported Python3.10")
 def test_spss_storage_constraints(tmpdir):
     source = Package("data/storage/constraints.json").get_resource("constraints")
     if not IS_MACOS:
@@ -104,6 +109,7 @@ def test_spss_storage_constraints(tmpdir):
             ]
 
 
+@pytest.mark.skipif(sys.version_info >= (3, 10), reason="Not supported Python3.10")
 def test_spss_parser_write_timezone(tmpdir):
     source = Resource("data/timezone.csv")
     if not IS_MACOS:
