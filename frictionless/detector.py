@@ -93,7 +93,7 @@ class Detector:
         if name == "buffer_size":
             self.__buffer_size = value
         elif name == "sample_size":
-            self.__buffer_size = value
+            self.__sample_size = value
         elif name == "field_type":
             self.__field_type = value
         elif name == "field_names":
@@ -101,7 +101,6 @@ class Detector:
         # other properties
         else:
             return super().__setattr__(name, value)
-
 
     @property
     def buffer_size(self):
