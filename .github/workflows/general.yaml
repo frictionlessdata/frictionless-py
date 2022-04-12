@@ -17,7 +17,7 @@ jobs:
   # Test (Linux)
 
   test-linux:
-    if: (github.event_name != 'schedule' || github.repository_owner == 'frictionlessdata')
+    if: github.event_name != 'schedule' || github.repository_owner == 'frictionlessdata'
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -71,7 +71,7 @@ jobs:
   # Test (MacOS)
 
   test-macos:
-    if: (github.event_name != 'schedule' || github.repository_owner == 'frictionlessdata')
+    if: github.event_name != 'schedule' || github.repository_owner == 'frictionlessdata'
     runs-on: macos-latest
     steps:
       - name: Checkout repository
@@ -89,7 +89,7 @@ jobs:
   # Test (Windows)
 
   test-windows:
-    if: (github.event_name != 'schedule' || github.repository_owner == 'frictionlessdata')
+    if: github.event_name != 'schedule' || github.repository_owner == 'frictionlessdata'
     runs-on: windows-latest
     steps:
       - name: Checkout repository
