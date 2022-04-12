@@ -89,6 +89,20 @@ class Detector:
         self.__schema_sync = schema_sync
         self.__schema_patch = schema_patch
 
+    def __setattr__(self, name, value):
+        if name == "buffer_size":
+            self.__buffer_size = value
+        elif name == "sample_size":
+            self.__buffer_size = value
+        elif name == "field_type":
+            self.__field_type = value
+        elif name == "field_names":
+            self.__field_names = value
+        # other properties
+        else:
+            return super().__setattr__(name, value)
+
+
     @property
     def buffer_size(self):
         return self.__buffer_size
@@ -96,6 +110,14 @@ class Detector:
     @property
     def sample_size(self):
         return self.__sample_size
+
+    @property
+    def field_type(self):
+        return self.__field_type
+
+    @property
+    def field_names(self):
+        return self.__field_names
 
     # Detect
 

@@ -68,3 +68,31 @@ def test_schema_infer_no_names():
     assert schema == {
         "fields": [{"name": "field1", "type": "integer"}],
     }
+
+
+def test_detector_set_buffer_size():
+    detector = Detector(buffer_size=10)
+    assert detector.buffer_size == 10
+    detector.buffer_size = 20
+    assert detector.buffer_size == 20
+
+
+def test_detector_set_sample_size():
+    detector = Detector(sample_size=1000)
+    assert detector.sample_size == 1000
+    detector.sample_size = 1000
+    assert detector.sample_size == 1000
+
+
+def test_detector_set_field_type():
+    detector = Detector(field_type="string")
+    assert detector.field_type == "string"
+    detector.field_type = "string"
+    assert detector.field_type == "string"
+
+
+def test_detector_set_field_names():
+    detector = Detector(field_names=["f1", "f2", "f3"])
+    assert detector.field_names == ["f1", "f2", "f3"]
+    detector.field_names = ["f1", "f2", "f3"]
+    assert detector.field_names == ["f1", "f2", "f3"]
