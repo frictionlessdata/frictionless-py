@@ -96,8 +96,22 @@ class Detector:
             self.__sample_size = value
         elif name == "field_type":
             self.__field_type = value
+        elif name == "encoding_function":
+            self.__encoding_function = value
+        elif name == "encoding_confidence":
+            self.__encoding_confidence = value
         elif name == "field_names":
             self.__field_names = value
+        elif name == "field_confidence":
+            self.__field_confidence = value
+        elif name == "field_float_numbers":
+            self.__field_float_numbers = value
+        elif name == "field_missing_values":
+            self.__field_missing_values = value
+        elif name == "schema_sync":
+            self.__schema_sync = value
+        elif name == "schema_patch":
+            self.__schema_patch = value
         # other properties
         else:
             return super().__setattr__(name, value)
@@ -111,12 +125,40 @@ class Detector:
         return self.__sample_size
 
     @property
+    def encoding_function(self):
+        return self.__encoding_function
+
+    @property
+    def encoding_confidence(self):
+        return self.__encoding_confidence
+
+    @property
     def field_type(self):
         return self.__field_type
 
     @property
     def field_names(self):
         return self.__field_names
+
+    @property
+    def field_confidence(self):
+        return self.__field_confidence
+
+    @property
+    def field_float_numbers(self):
+        return self.__field_float_numbers
+
+    @property
+    def field_missing_values(self):
+        return self.__field_missing_values
+
+    @property
+    def schema_sync(self):
+        return self.__schema_sync
+
+    @property
+    def schema_patch(self):
+        return self.__schema_patch
 
     # Detect
 
