@@ -205,11 +205,19 @@ class Field(Metadata):
 
     @property
     def schema(self):
-        """
+        """Return schema object for the field
         Returns:
             Schema?: parent schema
         """
         return self.__schema
+
+    @schema.setter
+    def schema(self, value: any):
+        """Sets the schema object of the field
+        Args:
+            value (Schema): Schema object
+        """
+        self.__schema = value
 
     # Array
 

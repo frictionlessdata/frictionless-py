@@ -3,7 +3,7 @@ import sys
 import json
 import yaml
 import pytest
-from frictionless import Resource, Schema, Field, Layout, Detector, helpers
+from frictionless import Package, Resource, Schema, Field, Layout, Detector, helpers
 from frictionless import FrictionlessException, describe_resource
 from frictionless.plugins.remote import RemoteControl
 from frictionless.plugins.excel import ExcelDialect
@@ -2709,3 +2709,47 @@ def test_resource_preserve_format_from_descriptor_on_infer_issue_188():
                 "rows": 3,
             },
         }
+
+
+def test_package_set_base_path():
+    resource = Resource(basepath="/data")
+    assert resource.basepath == "/data"
+
+    resource.basepath = "/data/csv"
+    assert resource.basepath == "/data/csv"
+
+
+def test_package_set_detector():
+    detector_set_init = Detector(field_missing_values=["na"])
+    resource = Resource("data/table.csv", detector=detector_set_init)
+    assert resource.detector == detector_set_init
+
+    detector_set = Detector(sample_size=3)
+    resource.detector = detector_set
+    assert resource.detector == detector_set
+
+
+def test_package_set_onerror():
+    resource = Resource(onerror="raise")
+    assert resource.onerror == "raise"
+
+    resource.onerror = "ignore"
+    assert resource.onerror == "ignore"
+
+
+def test_package_set_trusted():
+    resource = Resource(trusted=True)
+    assert resource.trusted is True
+
+    resource.trusted = False
+    assert resource.trusted is False
+
+
+def test_package_set_package():
+    test_package_1 = Package()
+    resource = Resource(package=test_package_1)
+    assert resource.package == test_package_1
+
+    test_package_2 = Package()
+    resource.package = test_package_2
+    assert resource.package == test_package_2

@@ -1071,3 +1071,35 @@ def test_package_validation_duplicate_resource_names_issue_942():
     errors = package.metadata_errors
     assert len(errors) == 1
     assert errors[0].note == "names of the resources are not unique"
+
+
+def test_package_set_hashing():
+    package = Package(hashing="SHA-1")
+    assert package.hashing == "SHA-1"
+
+    package.hashing = "MD5"
+    assert package.hashing == "MD5"
+
+
+def test_package_set_base_path():
+    package = Package(basepath="/data")
+    assert package.basepath == "/data"
+
+    package.basepath = "/data/csv"
+    assert package.basepath == "/data/csv"
+
+
+def test_package_set_onerror():
+    package = Package(onerror="raise")
+    assert package.onerror == "raise"
+
+    package.onerror = "ignore"
+    assert package.onerror == "ignore"
+
+
+def test_package_set_trusted():
+    package = Package(trusted=True)
+    assert package.trusted is True
+
+    package.trusted = False
+    assert package.trusted is False

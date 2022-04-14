@@ -1,6 +1,8 @@
 import codecs
 import chardet
 from copy import copy, deepcopy
+from typing import List, Dict
+
 from .exception import FrictionlessException
 from .system import system
 from .layout import Layout
@@ -122,47 +124,180 @@ class Detector:
 
     @property
     def buffer_size(self):
+        """Returns buffer size of the detector. Default value is 10000.
+        Returns:
+            int: detector buffer size
+        """
         return self.__buffer_size
+
+    @buffer_size.setter
+    def buffer_size(self, value: int):
+        """Sets buffer size for detector.
+        Args:
+            value (int): detector buffer size
+        """
+        self.__buffer_size = value
 
     @property
     def sample_size(self):
+        """Returns sample size of the detector. Default value is 100.
+        Returns:
+            int: detector sample size
+        """
         return self.__sample_size
+
+    @sample_size.setter
+    def sample_size(self, value: int):
+        """Sets sample size for detector.
+        Args:
+            value (int): detector sample size
+        """
+        self.__sample_size = value
 
     @property
     def encoding_function(self):
+        """Returns detector custom encoding function
+        Returns:
+            func: detector custom encoding function
+        """
         return self.__encoding_function
+
+    @encoding_function.setter
+    def encoding_function(self, value: any):
+        """Sets detector custom encoding function for the resource to be read.
+        Args:
+            value (any): detector custom encoding function
+        """
+        self.__encoding_function = value
 
     @property
     def encoding_confidence(self):
+        """Returns confidence value for detector encoding function.
+        Returns:
+            float: detector encoding function confidence
+        """
         return self.__encoding_confidence
+
+    @encoding_confidence.setter
+    def encoding_confidence(self, value: float):
+        """Sets confidence value for detector encoding function. Default value is None.
+        Args:
+            value (float): detector encoding function confidence
+        """
+        self.__encoding_confidence = value
 
     @property
     def field_type(self):
+        """Returns field type of the detector. Default value is None.
+        Returns:
+            str: detector inferred field types
+        """
         return self.__field_type
+
+    @field_type.setter
+    def field_type(self, value: str):
+        """Sets field type for all inferred fields by the detector.
+        Args:
+            value (str): detector inferred field types
+        """
+        self.__field_type = value
 
     @property
     def field_names(self):
+        """Returns inferred field names list
+        Returns:
+            str[]: detector inferred field names
+        """
         return self.__field_names
+
+    @field_names.setter
+    def field_names(self, value: List[str]):
+        """Sets field names for all inferred fields by the detector.
+        Args:
+            value (str[]): detector inferred field names
+        """
+        self.__field_names = value
 
     @property
     def field_confidence(self):
+        """Returns detector inference confidence value. Default value is 0.9.
+        Returns:
+            float: detector inference confidence value
+        """
         return self.__field_confidence
+
+    @field_confidence.setter
+    def field_confidence(self, value: float):
+        """Sets inference confidence value for detector. Default value is 0.9.
+        Args:
+            value (float): detector inference confidence value
+        """
+        self.__field_confidence = value
 
     @property
     def field_float_numbers(self):
+        """Returns detector convert decimal to float flag value.
+        Returns:
+            bool: detector convert decimal to float flag
+        """
         return self.__field_float_numbers
+
+    @field_float_numbers.setter
+    def field_float_numbers(self, value: bool):
+        """Sets detector convert decimal to float flag.
+        Args:
+            value (bool): detector convert decimal to float flag
+        """
+        self.__field_float_numbers = value
 
     @property
     def field_missing_values(self):
+        """Returns detector fields missing values list
+        Returns:
+            str[]: detector fields missing values list
+        """
         return self.__field_missing_values
+
+    @field_missing_values.setter
+    def field_missing_values(self, value: List[str]):
+        """Sets detector fields missing values list.
+        Args:
+            value (str[]): detector fields missing values list
+        """
+        self.__field_missing_values = value
 
     @property
     def schema_sync(self):
+        """Returns detector schema_sync flag value
+        Returns:
+            bool: detector schema_sync flag value
+        """
         return self.__schema_sync
+
+    @schema_sync.setter
+    def schema_sync(self, value: bool):
+        """Sets detector schema_sync flag value. If set to true, it syncs provided schema's field order based on the header's
+        field order.
+        Args:
+            value (bool): detector schema_sync flag value
+        """
+        self.__schema_sync = value
 
     @property
     def schema_patch(self):
+        """Returns detector resource fields to change.
+        Returns:
+            Dict: detector resource fields to change
+        """
         return self.__schema_patch
+
+    @schema_patch.setter
+    def schema_patch(self, value: Dict):
+        """Sets detector resource fields to change.
+        Args:
+            value (Dict): detector resource fields to change
+        """
+        self.__schema_patch = value
 
     # Detect
 

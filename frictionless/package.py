@@ -330,37 +330,72 @@ class Package(Metadata):
         """
         return self.get("created", "")
 
-    @Metadata.property(cache=False, write=False)
+    @property
     def hashing(self):
-        """
+        """Returns hashing function. If user has not set the custom one, default hashing function it returns is md5.
         Returns:
             str: package hashing
         """
         return self.__hashing or settings.DEFAULT_HASHING
 
-    @Metadata.property(cache=False, write=False)
-    def basepath(self):
+    @hashing.setter
+    def hashing(self, value: str):
+        """Sets hashing function.
+
+        Args:
+            value (str): hashing function
         """
+        self.__hashing = value
+
+    @property
+    def basepath(self):
+        """Returns basepath of the package. All other paths are used relative to this path.
         Returns:
             str: package basepath
         """
         return self.__basepath
 
-    @Metadata.property(cache=False, write=False)
-    def onerror(self):
+    @basepath.setter
+    def basepath(self, value: str):
+        """Sets package basepath.
+        Args:
+            value (str): package basepath
         """
-        Returns:
-            ignore|warn|raise: on error bahaviour
-        """
-        return self.__onerror
+        self.__basepath = value
 
-    @Metadata.property(cache=False, write=False)
-    def trusted(self):
-        """
+    @property
+    def onerror(self):
+        """Returns the onerror behaviour/action of the package. Default value is 'ignore'.
         Returns:
-            str: package trusted
+            str: package on error behaviour/action(ignore|warn|raise)
+        """
+        return self.__onerror or settings.DEFAULT_ONERROR
+
+    @onerror.setter
+    def onerror(self, value: str):
+        """Sets onerror behaviour/action.
+        Args:
+            value (str): package onerror behaviour/action
+        """
+        self.__onerror = value
+
+    @property
+    def trusted(self):
+        """Returns the trusted property of the package. Default value is 'False'. If set to 'True' no error is
+        raised for unsafe paths.
+        Returns:
+            bool: package action to take for unsafe paths
         """
         return self.__trusted
+
+    @trusted.setter
+    def trusted(self, value: bool):
+        """Sets trusted property of package for unsafe paths. If set to true, it
+        does not raise an exception on unsafe paths.
+        Args:
+            value (bool): package action to take for unsafe paths
+        """
+        self.__trusted = value
 
     # Resources
 
