@@ -14,6 +14,9 @@ class Layout(Metadata):
 
     Parameters:
         descriptor? (str|dict): layout descriptor
+        header_rows? (int[]): row numbers to form header (list all of them not only from/to)
+        header_join? (str): a string to be used as a joiner for multiline header
+        header_case? (bool): whether to respect header case (default: True)
         pick_fields? ((str|int)[]): what fields to pick
         skip_fields? ((str|int)[]): what fields to skip
         limit_fields? (int): amount of fields
