@@ -55,7 +55,11 @@ class NumberType(Type):
 
             def processor(cell):
                 cell = cell.replace(self.field.group_char, "")
-                cell = cell.replace(self.field.decimal_char, ".")
+                if self.field.decimal_char != ".":
+                    if "." in cell:
+                        cell = cell.replace(".", "|")
+                    else:
+                        cell = cell.replace(self.field.decimal_char, ".")
                 if self.read_cell_pattern:
                     cell = self.read_cell_pattern.sub("", cell)
                 return cell
