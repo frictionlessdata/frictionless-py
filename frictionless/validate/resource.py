@@ -24,7 +24,11 @@ def validate_resource(
     skip_errors=None,
     limit_errors=settings.DEFAULT_LIMIT_ERRORS,
     limit_memory=settings.DEFAULT_LIMIT_MEMORY,
-    **options,
+    # We ignore this line because of a problem with `make docs`:
+    # https://github.com/frictionlessdata/frictionless-py/issues/1031
+    # fmt: off
+    **options
+    # fmt: on
 ):
     """Validate table
 
