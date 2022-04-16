@@ -27,8 +27,12 @@ class Detector:
         buffer_size? (int): The amount of bytes to be extracted as a buffer.
             It defaults to 10000
 
-        sample_size? (int): The amount of rows to be extracted as a samle.
+        sample_size? (int): The amount of rows to be extracted as a sample.
             It defaults to 100
+
+        encoding_function? (func): A custom encoding function for the file.
+
+        encoding_confidence? (float): Confidence value for encoding function.
 
         field_type? (str): Enforce all the inferred types to be this type.
             For more information, please check "Describing  Data" guide.
@@ -89,6 +93,33 @@ class Detector:
         self.__schema_sync = schema_sync
         self.__schema_patch = schema_patch
 
+    def __setattr__(self, name, value):
+        if name == "buffer_size":
+            self.__buffer_size = value
+        elif name == "sample_size":
+            self.__sample_size = value
+        elif name == "field_type":
+            self.__field_type = value
+        elif name == "encoding_function":
+            self.__encoding_function = value
+        elif name == "encoding_confidence":
+            self.__encoding_confidence = value
+        elif name == "field_names":
+            self.__field_names = value
+        elif name == "field_confidence":
+            self.__field_confidence = value
+        elif name == "field_float_numbers":
+            self.__field_float_numbers = value
+        elif name == "field_missing_values":
+            self.__field_missing_values = value
+        elif name == "schema_sync":
+            self.__schema_sync = value
+        elif name == "schema_patch":
+            self.__schema_patch = value
+        # other properties
+        else:
+            return super().__setattr__(name, value)
+
     @property
     def buffer_size(self):
         return self.__buffer_size
@@ -96,6 +127,42 @@ class Detector:
     @property
     def sample_size(self):
         return self.__sample_size
+
+    @property
+    def encoding_function(self):
+        return self.__encoding_function
+
+    @property
+    def encoding_confidence(self):
+        return self.__encoding_confidence
+
+    @property
+    def field_type(self):
+        return self.__field_type
+
+    @property
+    def field_names(self):
+        return self.__field_names
+
+    @property
+    def field_confidence(self):
+        return self.__field_confidence
+
+    @property
+    def field_float_numbers(self):
+        return self.__field_float_numbers
+
+    @property
+    def field_missing_values(self):
+        return self.__field_missing_values
+
+    @property
+    def schema_sync(self):
+        return self.__schema_sync
+
+    @property
+    def schema_patch(self):
+        return self.__schema_patch
 
     # Detect
 
@@ -109,7 +176,7 @@ class Detector:
             str: encoding
         """
 
-        # Use defined
+        # User defined
         if self.__encoding_function:
             return self.__encoding_function(buffer)
 

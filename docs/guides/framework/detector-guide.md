@@ -65,6 +65,24 @@ detector = Detector(sample_size=1000)
 resource = describe("data/country-1.csv", detector=detector)
 ```
 
+
+### Encoding Function
+
+By default, Frictionless encoding_function is None and user can use built in encoding functions. But user has option to implement their own encoding using this feature. The following example simply returns utf-8 encoding but user can add more complex logic to the encoding function.
+
+```python script title="Python"
+from frictionless import Detector
+from frictionless import Resource
+
+detector = Detector(encoding_function=lambda sample: "utf-8")
+with Resource("data/table.csv", detector=detector) as resource:
+  assert resource.encoding == "utf-8"
+  assert resource.sample == [["id", "name"], ["1", "english"], ["2", "中国人"]]
+  assert resource.fragment == [["1", "english"], ["2", "中国人"]]
+  assert resource.header == ["id", "name"]
+```
+
+
 ### Field Type
 
 This option allows manually setting all the field types to a given type. It's useful when you need to skip data casting (setting `any` type) or have everything as a string (setting `string` type):

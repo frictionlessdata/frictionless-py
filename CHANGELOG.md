@@ -2,6 +2,10 @@
 
 Here described only the breaking and most significant changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/frictionless-py/commits/main).
 
+## v4.29.0
+
+- Made Detector's private properties public and writable (#1025)
+
 ## v4.28.0
 
 - Improved an order of the metadata in YAML representation
