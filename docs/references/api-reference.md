@@ -512,8 +512,12 @@ Public   | `from frictionless import Detector`
 - `buffer_size?` _int_ - The amount of bytes to be extracted as a buffer.
   It defaults to 10000
   
-- `sample_size?` _int_ - The amount of rows to be extracted as a samle.
+- `sample_size?` _int_ - The amount of rows to be extracted as a sample.
   It defaults to 100
+  
+- `encoding_function?` _func_ - A custom encoding function for the file.
+  
+- `encoding_confidence?` _float_ - Confidence value for encoding function.
   
 - `field_type?` _str_ - Enforce all the inferred types to be this type.
   For more information, please check "Describing  Data" guide.
@@ -938,8 +942,7 @@ def rdf_type()
 
 ```python
 @Metadata.property(
-        write=lambda self, value: setitem(self.constraints, "required", value)
-    )
+    write=lambda self, value: setitem(self.constraints, "required", value))
 def required()
 ```
 
@@ -1776,6 +1779,9 @@ Public   | `from frictionless import Layout`
 **Arguments**:
 
 - `descriptor?` _str|dict_ - layout descriptor
+- `header_rows?` _int[]_ - row numbers to form header (list all of them not only from/to)
+- `header_join?` _str_ - a string to be used as a joiner for multiline header
+- `header_case?` _bool_ - whether to respect header case (default: True)
   pick_fields? ((str|int)[]): what fields to pick
   skip_fields? ((str|int)[]): what fields to skip
 - `limit_fields?` _int_ - amount of fields
@@ -7541,7 +7547,15 @@ Public   | `from frictionless import validate_package`
 
 ```python
 @Report.from_validate
-def validate_resource(source=None, *, checks=None, original=False, pick_errors=None, skip_errors=None, limit_errors=settings.DEFAULT_LIMIT_ERRORS, limit_memory=settings.DEFAULT_LIMIT_MEMORY, **options, ,)
+def validate_resource(source=None,
+                      *,
+                      checks=None,
+                      original=False,
+                      pick_errors=None,
+                      skip_errors=None,
+                      limit_errors=settings.DEFAULT_LIMIT_ERRORS,
+                      limit_memory=settings.DEFAULT_LIMIT_MEMORY,
+                      **options)
 ```
 
 Validate table
@@ -7565,6 +7579,7 @@ Public   | `from frictionless import validate_table`
 **Returns**:
 
 - `Report` - validation report
+
 
 ## validate\_schema
 

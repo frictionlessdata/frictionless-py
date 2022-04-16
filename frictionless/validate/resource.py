@@ -24,7 +24,7 @@ def validate_resource(
     skip_errors=None,
     limit_errors=settings.DEFAULT_LIMIT_ERRORS,
     limit_memory=settings.DEFAULT_LIMIT_MEMORY,
-    **options,
+    **options
 ):
     """Validate table
 
