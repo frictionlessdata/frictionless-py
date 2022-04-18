@@ -88,7 +88,6 @@ def test_detector_set_encoding_function():
     enc_func = lambda sample: "utf-8"
     detector = Detector(encoding_function=enc_func)
     assert detector.encoding_function == enc_func
-
     enc_func = lambda sample: "utf-16"
     detector.encoding_function = enc_func
     assert detector.encoding_function == enc_func
@@ -132,8 +131,8 @@ def test_detector_set_field_float_numbers():
 def test_detector_set_field_missing_values():
     detector = Detector(field_missing_values=["", "67"])
     assert detector.field_missing_values == ["", "67"]
-    detector.field_missing_values = ["", "n/a"]
-    assert detector.field_missing_values == ["", "n/a"]
+    detector.field_missing_values = ["", "70"]
+    assert detector.field_missing_values == ["", "70"]
 
 
 def test_detector_set_schema_sync():

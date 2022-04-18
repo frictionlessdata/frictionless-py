@@ -92,8 +92,7 @@ class Field(Metadata):
 
     def __setattr__(self, name, value):
         if name == "schema":
-            # skip Parent.__setattr__
-            super(Metadata, self).__setattr__(name, value)
+            self.__schema = value
         else:
             return super().__setattr__(name, value)
         self.metadata_process()
@@ -206,19 +205,11 @@ class Field(Metadata):
 
     @property
     def schema(self):
-        """Return schema object for the field
+        """
         Returns:
             Schema?: parent schema
         """
         return self.__schema
-
-    @schema.setter
-    def schema(self, value: any):
-        """Sets the schema object of the field
-        Args:
-            value (Schema): Schema object
-        """
-        self.__schema = value
 
     # Array
 

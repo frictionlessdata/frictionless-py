@@ -576,21 +576,13 @@ class Resource(Metadata):
         """
         return self.__header
 
-    @property
+    @Metadata.property(cache=False, write=False)
     def basepath(self):
-        """Returns resource basepath. All other paths are used relative to this path.
-        Returns:
+        """
+        Returns
             str: resource basepath
         """
-        return self.__basepath
-
-    @basepath.setter
-    def basepath(self, value: str):
-        """Setsresource basepath.
-        Args:
-            value (str): resource basepath
-        """
-        self.__basepath = value
+        return self.__file.basepath
 
     @Metadata.property(cache=False, write=False)
     def fullpath(self):
@@ -600,71 +592,37 @@ class Resource(Metadata):
         """
         return self.__file.fullpath
 
-    @property
+    @Metadata.property(cache=False, write=False)
     def detector(self):
-        """Returns resource detector
+        """
         Returns
-            any: resource detector
+            str: resource detector
         """
         return self.__detector
 
-    @detector.setter
-    def detector(self, value: any):
-        """Sets resource detector
-        Args:
-            value (any): resource detector
-        """
-        self.__detector = value
-
-    @property
+    @Metadata.property(cache=False, write=False)
     def onerror(self):
-        """Returns the onerror behaviour/action of the package. Default value is 'ignore'.
+        """
         Returns:
-            str: resource onerror behaviour/action(ignore|warn|raise)
+            ignore|warn|raise: on error bahaviour
         """
         return self.__onerror
 
-    @onerror.setter
-    def onerror(self, value: str):
-        """Sets onerror behaviour/action.
-        Args:
-            value (str): resource onerror behaviour/action
-        """
-        self.__onerror = value
-
-    @property
+    @Metadata.property(cache=False, write=False)
     def trusted(self):
-        """Returns the trusted property of the resource. Default value is 'False'. If set to 'True' no error is
-        raised for unsafe paths.
+        """
         Returns:
-            bool: resource action to take for unsafe paths
+            bool: don't raise an exception on unsafe paths
         """
         return self.__trusted
 
-    @trusted.setter
-    def trusted(self, value: bool):
-        """Sets trusted property of package for unsafe paths. If set to true, it
-        does not raise an exception on unsafe paths.
-        Args:
-            value (bool): resource action to take for unsafe paths
-        """
-        self.__trusted = value
-
-    @property
+    @Metadata.property(cache=False, write=False)
     def package(self):
-        """Returns parent package
+        """
         Returns:
-            any: parent package
+            Package?: parent package
         """
         return self.__package
-
-    @package.setter
-    def package(self, value: any):
-        """Sets parent package
-        Args:
-            value (any): parent package
-        """
-        self.__package = value
 
     @Metadata.property(write=False)
     def memory(self):

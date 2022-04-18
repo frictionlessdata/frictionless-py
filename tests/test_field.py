@@ -337,7 +337,7 @@ def test_field_to_copy():
     assert source == target
 
 
-def test_package_set_schema():
+def test_field_set_schema():
     test_schema_init = Schema(
         fields=[
             Field(
@@ -349,12 +349,11 @@ def test_package_set_schema():
     )
     field = Field(schema=test_schema_init)
     assert field.schema == test_schema_init
-
     test_schema_property = Schema({"fields": [{"name": "name", "type": "other"}]})
     field.schema = test_schema_property
     assert field.schema == test_schema_property
 
 
-def test_package_set_type():
+def test_field_set_type():
     field = Field(type="int")
     assert field.type == "int"
