@@ -360,3 +360,14 @@ def test_xls_parser_write_sheet_name(tmpdir):
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
         ]
+
+
+# Issues
+
+
+def test_xlsx_parser_multiline_header_with_merged_cells_issue_1024():
+    layout = Layout(header_rows=[10, 11, 12])
+    dialect = ExcelDialect(sheet="IPC", fill_merged_cells=True)
+    with Resource("data/issue-1024.xlsx", dialect=dialect, layout=layout) as resource:
+        assert resource.header
+        assert resource.header[21] == "Current Phase P3+ #"
