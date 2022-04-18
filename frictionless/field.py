@@ -92,7 +92,8 @@ class Field(Metadata):
 
     def __setattr__(self, name, value):
         if name == "schema":
-            self.__schema = value
+            # skip Parent.__setattr__
+            super(Metadata, self).__setattr__(name, value)
         else:
             return super().__setattr__(name, value)
         self.metadata_process()
