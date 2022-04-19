@@ -41,7 +41,7 @@ jobs:
       - name: Test software
         run: make test-ci
       - name: Report coverage
-        uses: codecov/codecov-action@v1
+        uses: codecov/codecov-action@v2
     services:
       postgres:
         image: postgres:12
