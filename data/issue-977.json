@@ -1,0 +1,10 @@
+{
+    "profile": "tabular-data-package",
+    "resources": [
+        {
+            "profile": "tabular-data-resource",
+            "name": "my_inline_data",
+            "data": "MY_INLINE_DATA"
+        }
+    ]
+}
