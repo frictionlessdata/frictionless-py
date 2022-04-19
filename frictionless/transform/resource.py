@@ -81,6 +81,9 @@ class DataWithErrorHandling:
         self.data = data
         self.step = step
 
+    def __repr__(self):
+        return '<transformed-data>'
+
     def __iter__(self):
         try:
             yield from self.data() if callable(self.data) else self.data
