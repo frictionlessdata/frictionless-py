@@ -524,3 +524,11 @@ def test_validate_package_descriptor_type_package_invalid():
 def test_validate_package_with_diacritic_symbol_issue_905():
     report = validate(descriptor="data/issue-905/datapackage.json")
     assert report.stats["tasks"] == 3
+
+
+def test_validate_package_with_resource_data_is_a_string_issue_977():
+    report = validate(descriptor="data/issue-977.json", type="package")
+    print(report)
+    assert report.flatten() == [
+        [None, None, None, "package-error"],
+    ]

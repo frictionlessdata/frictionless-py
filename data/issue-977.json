@@ -1,8 +1,8 @@
 {
-    "profile": "data-package",
+    "profile": "tabular-data-package",
     "resources": [
         {
-            "profile": "data-resource",
+            "profile": "tabular-data-resource",
             "name": "my_inline_data",
             "data": "MY_INLINE_DATA"
         }
