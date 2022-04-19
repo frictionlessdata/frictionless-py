@@ -82,7 +82,7 @@ class DataWithErrorHandling:
         self.step = step
 
     def __repr__(self):
-        return '<transformed-data>'
+        return "<transformed-data>"
 
     def __iter__(self):
         try:
