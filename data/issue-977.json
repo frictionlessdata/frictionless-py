@@ -1,0 +1,10 @@
+{
+    "profile": "data-package",
+    "resources": [
+        {
+            "profile": "data-resource",
+            "name": "my_inline_data",
+            "data": "MY_INLINE_DATA"
+        }
+    ]
+}
