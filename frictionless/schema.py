@@ -270,6 +270,20 @@ class Schema(Metadata):
 
         return schema
 
+    def to_excel_template(self, path: str) -> any:
+        """Export schema as an excel template
+
+        Parameters:
+            path: path of excel file to create with ".xlsx" extension
+
+        Returns:
+            any: excel template
+        """
+        tableschema_to_template = helpers.import_from_plugin(
+            "tableschema_to_template", plugin="excel"
+        )
+        return tableschema_to_template.create_xlsx(self, path)
+
     # Metadata
 
     metadata_duplicate = True

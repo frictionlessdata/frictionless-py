@@ -38,12 +38,12 @@ TESTS_REQUIRE = [
     "python-dotenv",
     "pytest-timeout",
     "pydoc-markdown",
-    "docstring-parser",
+    "docstring-parser"    
 ]
 EXTRAS_REQUIRE = {
     "bigquery": ["google-api-python-client>=1.12.1"],
     "ckan": ["ckanapi>=4.3"],
-    "excel": ["openpyxl>=3.0", "xlrd>=1.2", "xlwt>=1.2"],
+    "excel": ["openpyxl>=3.0", "xlrd>=1.2", "xlwt>=1.2", "yattag>=1.14.0"],
     "gsheets": ["pygsheets>=2.0"],
     "html": ["pyquery>=1.4"],
     "json": ["ijson>=3.0", "jsonlines>=1.2"],
@@ -53,7 +53,7 @@ EXTRAS_REQUIRE = {
     "server": ["gunicorn>=20.0", "flask>=1.1"],
     "spss": ["savReaderWriter>=3.0"],
     "sql": ["sqlalchemy>=1.3"],
-    "dev": TESTS_REQUIRE,
+    "dev": TESTS_REQUIRE
 }
 INSTALL_REQUIRES = [
     "petl>=1.6",

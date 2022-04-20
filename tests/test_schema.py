@@ -1,7 +1,11 @@
 import io
 import json
+import os
+from pathlib import Path
+from zipfile import ZipFile
 import yaml
 import pytest
+from yaml import safe_load
 import requests
 from decimal import Decimal
 from frictionless import Schema, Field, describe_schema, helpers
@@ -467,3 +471,45 @@ def test_schema_not_supported_type_issue_goodatbles_304():
     schema = Schema({"fields": [{"name": "name"}, {"name": "age", "type": "bad"}]})
     assert schema.metadata_valid is False
     assert schema.fields[1] == {"name": "age", "type": "bad"}
+
+
+unzipped_dir = "tests/fixtures/output-unzipped"
+
+
+@pytest.mark.parametrize(
+    "zip_path",
+    [
+        str((Path(base) / file).relative_to(unzipped_dir))
+        for (base, dirs, files) in os.walk(unzipped_dir)
+        for file in files
+    ],
+)
+def test_schema_tableschema_to_excel_584(zip_path):
+    # This code section was used from library tableschema-to-template
+    # https://github.com/hubmapconsortium/tableschema-to-template/blob/main/tests/test_create_xlsx.py
+
+    # zipfile.Path is introduced in Python3.8, and could make this cleaner:
+    # xml_string = zipfile.Path(xlsx_path, zip_path).read_text()
+
+    schema_path = Path(__file__).parent / "fixtures/schema.yaml"
+    schema = Schema(safe_load(schema_path.read_text()))
+    # Use /tmp rather than TemporaryDirectory so it can be inspected if tests fail.
+    xlsx_tmp_path = "/tmp/template.xlsx"
+    schema.to_excel_template(xlsx_tmp_path)
+
+    with ZipFile(xlsx_tmp_path) as zip_handle:
+        with zip_handle.open(zip_path) as file_handle:
+            xml_string = file_handle.read().decode("utf-8")
+
+    # Before Python3.8, attribute order is not stable in minidom,
+    # so we need to use an outside library.
+    yattag = helpers.import_from_plugin("yattag", plugin="excel")
+    pretty_xml = yattag.indent(xml_string)
+    pretty_xml_fixture_path = (
+        Path(__file__).parent / "fixtures/output-unzipped" / zip_path
+    )
+
+    pretty_xml_tmp_path = Path("/tmp") / Path(zip_path).name
+    pretty_xml_tmp_path.write_text(pretty_xml)
+
+    assert pretty_xml.strip() == pretty_xml_fixture_path.read_text().strip()

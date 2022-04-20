@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<sst xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" count="12" uniqueCount="12">
+  <si>
+    <t>abc</t>
+  </si>
+  <si>
+    <t>A</t>
+  </si>
+  <si>
+    <t>B</t>
+  </si>
+  <si>
+    <t>C</t>
+  </si>
+  <si>
+    <t>xyz</t>
+  </si>
+  <si>
+    <t>X</t>
+  </si>
+  <si>
+    <t>Y</t>
+  </si>
+  <si>
+    <t>Z</t>
+  </si>
+  <si>
+    <t>string</t>
+  </si>
+  <si>
+    <t>number</t>
+  </si>
+  <si>
+    <t>integer</t>
+  </si>
+  <si>
+    <t>boolean</t>
+  </si>
+</sst>
