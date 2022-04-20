@@ -467,3 +467,18 @@ def test_schema_not_supported_type_issue_goodatbles_304():
     schema = Schema({"fields": [{"name": "name"}, {"name": "age", "type": "bad"}]})
     assert schema.metadata_valid is False
     assert schema.fields[1] == {"name": "age", "type": "bad"}
+
+
+def test_schema_pprint_1029():
+    descriptor = {
+        "fields": [
+            {"name": "test_1", "type": "string", "format": "default"},
+            {"name": "test_2", "type": "string", "format": "default"},
+            {"name": "test_3", "type": "string", "format": "default"},
+        ]
+    }
+    schema = Schema(descriptor)
+    expected = """{'fields': [{'format': 'default', 'name': 'test_1', 'type': 'string'},
+            {'format': 'default', 'name': 'test_2', 'type': 'string'},
+            {'format': 'default', 'name': 'test_3', 'type': 'string'}]}"""
+    assert repr(schema) == expected

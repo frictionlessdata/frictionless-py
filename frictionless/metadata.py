@@ -11,6 +11,7 @@ from importlib import import_module
 from .exception import FrictionlessException
 from .helpers import cached_property
 from . import helpers
+import pprint as pp
 
 
 # NOTE:
@@ -82,6 +83,10 @@ class Metadata(helpers.ControlledDict):
         """
         if value is not None:
             dict.__setitem__(self, key, value)
+
+    def __repr__(self) -> str:
+        """Returns string representation for metadata."""
+        return pp.pformat(self.to_dict())
 
     # Expand
 

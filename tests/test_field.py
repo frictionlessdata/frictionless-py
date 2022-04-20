@@ -357,3 +357,12 @@ def test_field_set_schema():
 def test_field_set_type():
     field = Field(type="int")
     assert field.type == "int"
+
+
+# Issues
+
+
+def test_field_pprint_1029():
+    field = Field({"name": "name", "type": "string", "constraints": {"maxLength": 2}})
+    expected = """{'constraints': {'maxLength': 2}, 'name': 'name', 'type': 'string'}"""
+    assert repr(field) == expected
