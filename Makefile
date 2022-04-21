@@ -38,4 +38,4 @@ test:
 
 test-ci:
 	make lint
-	pytest --cov ${PACKAGE} --cov-report term-missing --cov-fail-under 80 --timeout=300 --ci
+	pytest --cov ${PACKAGE} --cov-report term-missing --cov-report xml --cov-fail-under 80 --timeout=300 --ci
