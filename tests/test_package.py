@@ -1099,3 +1099,11 @@ def test_package_set_trusted():
     assert package.trusted is True
     package.trusted = False
     assert package.trusted is False
+
+
+def test_package_pprint_1029():
+    data = [["id", "name"], ["1", "english"], ["2", "中国人"]]
+    package = Package({"resources": [{"name": "name", "data": data}]})
+    expected = """{'resources': [{'data': [['id', 'name'], ['1', 'english'], ['2', '中国人']],
+                'name': 'name'}]}"""
+    assert repr(package) == expected

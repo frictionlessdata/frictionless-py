@@ -2748,3 +2748,17 @@ def test_resource_set_package():
     test_package_2 = Package()
     resource.package = test_package_2
     assert resource.package == test_package_2
+
+
+def test_resource_pprint_1029():
+    resource = Resource(
+        name="resource",
+        title="My Resource",
+        description="My Resource for the Guide",
+        path="data/table.csv",
+    )
+    expected = """{'description': 'My Resource for the Guide',
+ 'name': 'resource',
+ 'path': 'data/table.csv',
+ 'title': 'My Resource'}"""
+    assert repr(resource) == expected
