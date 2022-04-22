@@ -513,3 +513,18 @@ def test_schema_tableschema_to_excel_584(zip_path):
     pretty_xml_tmp_path.write_text(pretty_xml)
 
     assert pretty_xml.strip() == pretty_xml_fixture_path.read_text().strip()
+
+    
+def test_schema_pprint_1029():
+    descriptor = {
+        "fields": [
+            {"name": "test_1", "type": "string", "format": "default"},
+            {"name": "test_2", "type": "string", "format": "default"},
+            {"name": "test_3", "type": "string", "format": "default"},
+        ]
+    }
+    schema = Schema(descriptor)
+    expected = """{'fields': [{'format': 'default', 'name': 'test_1', 'type': 'string'},
+            {'format': 'default', 'name': 'test_2', 'type': 'string'},
+            {'format': 'default', 'name': 'test_3', 'type': 'string'}]}"""
+    assert repr(schema) == expected

@@ -49,3 +49,28 @@ def test_pipeline_package():
     )
     status = pipeline.run()
     assert status.task.target.resource_names == ["data"]
+
+
+# Issues
+
+
+def test_pipeline_pprint_1029():
+    pipeline = Pipeline(
+        {
+            "tasks": [
+                {
+                    "type": "resource",
+                    "source": {"path": "../data/transform.csv"},
+                    "steps": [
+                        {"code": "table-normalize"},
+                        {"code": "table-melt", "fieldName": "name"},
+                    ],
+                }
+            ]
+        }
+    )
+    expected = """{'tasks': [{'source': {'path': '../data/transform.csv'},
+            'steps': [{'code': 'table-normalize'},
+                      {'code': 'table-melt', 'fieldName': 'name'}],
+            'type': 'resource'}]}"""
+    assert repr(pipeline) == expected
