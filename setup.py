@@ -38,12 +38,13 @@ TESTS_REQUIRE = [
     "python-dotenv",
     "pytest-timeout",
     "pydoc-markdown",
-    "docstring-parser"    
+    "docstring-parser",
+    "yattag"    
 ]
 EXTRAS_REQUIRE = {
     "bigquery": ["google-api-python-client>=1.12.1"],
     "ckan": ["ckanapi>=4.3"],
-    "excel": ["openpyxl>=3.0", "xlrd>=1.2", "xlwt>=1.2", "yattag>=1.14.0"],
+    "excel": ["openpyxl>=3.0", "xlrd>=1.2", "xlwt>=1.2", "tableschema-to-template>=0.0.12"],
     "gsheets": ["pygsheets>=2.0"],
     "html": ["pyquery>=1.4"],
     "json": ["ijson>=3.0", "jsonlines>=1.2"],
