@@ -484,7 +484,7 @@ unzipped_dir = "tests/fixtures/output-unzipped"
         for file in files
     ],
 )
-def test_schema_tableschema_to_excel_584(zip_path):
+def test_schema_tableschema_to_excel_584(tmpdir, zip_path):
     # This code section was used from library tableschema-to-template
     # https://github.com/hubmapconsortium/tableschema-to-template/blob/main/tests/test_create_xlsx.py
 
@@ -493,8 +493,7 @@ def test_schema_tableschema_to_excel_584(zip_path):
 
     schema_path = Path(__file__).parent / "fixtures/schema.yaml"
     schema = Schema(safe_load(schema_path.read_text()))
-    # Use /tmp rather than TemporaryDirectory so it can be inspected if tests fail.
-    xlsx_tmp_path = "/tmp/template.xlsx"
+    xlsx_tmp_path = os.path.join(tmpdir, "template.xlsx")
     schema.to_excel_template(xlsx_tmp_path)
 
     with ZipFile(xlsx_tmp_path) as zip_handle:
@@ -509,7 +508,7 @@ def test_schema_tableschema_to_excel_584(zip_path):
         Path(__file__).parent / "fixtures/output-unzipped" / zip_path
     )
 
-    pretty_xml_tmp_path = Path("/tmp") / Path(zip_path).name
+    pretty_xml_tmp_path = Path(tmpdir) / Path(zip_path).name
     pretty_xml_tmp_path.write_text(pretty_xml)
 
     assert pretty_xml.strip() == pretty_xml_fixture_path.read_text().strip()
