@@ -514,7 +514,7 @@ def test_schema_tableschema_to_excel_584(zip_path):
 
     assert pretty_xml.strip() == pretty_xml_fixture_path.read_text().strip()
 
-    
+
 def test_schema_pprint_1029():
     descriptor = {
         "fields": [
