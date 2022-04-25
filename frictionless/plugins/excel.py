@@ -2,6 +2,7 @@ import os
 import sys
 import shutil
 import atexit
+import hashlib
 import tempfile
 import datetime
 from itertools import chain
@@ -252,6 +253,23 @@ class XlsxParser(Parser):
             yield extract_row_values(
                 cells, dialect.preserve_formatting, dialect.adjust_floating_point_error
             )
+
+        # Calculate stats
+        # TODO: remove when the proper implementation is in-place:
+        # https://github.com/frictionlessdata/frictionless-py/issues/438
+        if self.resource.scheme == "file":
+            stat = os.stat(self.resource.fullpath)
+            self.resource.stats["bytes"] = stat.st_size
+            if self.resource.hashing:
+                try:
+                    hasher = hashlib.new(self.resource.hashing)
+                    with open(self.resource.fullpath, "rb") as file:
+                        for chunk in iter(lambda: file.read(4096), b""):
+                            hasher.update(chunk)
+                        self.resource.stats["hash"] = hasher.hexdigest()
+                except Exception as exception:
+                    error = errors.HashingError(note=str(exception))
+                    raise FrictionlessException(error)
 
     # Write
 
