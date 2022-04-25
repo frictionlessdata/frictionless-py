@@ -1185,9 +1185,14 @@ def test_validate_resource_array_path_issue_991():
         ],
     ]
 
+
 def test_validate_resource_duplicate_labels_with_sync_schema_issue_910():
     detector = Detector(schema_sync=True)
-    report = validate('data/duplicate-column.csv', schema='data/duplicate-column-schema.json', detector=detector)
+    report = validate(
+        "data/duplicate-column.csv",
+        schema="data/duplicate-column-schema.json",
+        detector=detector,
+    )
     assert report.flatten(["code", "note"]) == [
         [
             "general-error",
