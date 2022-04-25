@@ -479,9 +479,19 @@ unzipped_dir = "tests/fixtures/output-unzipped"
 @pytest.mark.parametrize(
     "zip_path",
     [
-        str(Path("/".join([base, file])).relative_to(unzipped_dir))
-        for (base, dirs, files) in os.walk(unzipped_dir)
-        for file in files
+        "docProps/app.xml",
+        "xl/comments1.xml",
+        "xl/sharedStrings.xml",
+        "xl/styles.xml",
+        "xl/workbook.xml",
+        "xl/drawings/vmlDrawing1.vml",
+        "xl/theme/theme1.xml",
+        "xl/worksheets/sheet1.xml",
+        "xl/worksheets/sheet2.xml",
+        "xl/worksheets/sheet3.xml",
+        "xl/worksheets/_rels/sheet1.xml.rels",
+        "xl/_rels/workbook.xml.rels",
+        "_rels/.rels",
     ],
 )
 def test_schema_tableschema_to_excel_584(tmpdir, zip_path):
@@ -509,9 +519,11 @@ def test_schema_tableschema_to_excel_584(tmpdir, zip_path):
     )
 
     pretty_xml_tmp_path = Path(Path(tmpdir), Path(zip_path).name)
-    pretty_xml_tmp_path.write_text(pretty_xml)
+    pretty_xml_tmp_path.write_text(pretty_xml, encoding="utf-8")
 
-    assert pretty_xml.strip() == pretty_xml_fixture_path.read_text().strip()
+    assert (
+        pretty_xml.strip() == pretty_xml_fixture_path.read_text(encoding="utf-8").strip()
+    )
 
 
 def test_schema_pprint_1029():
