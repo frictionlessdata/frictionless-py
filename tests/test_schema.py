@@ -479,7 +479,7 @@ unzipped_dir = "tests/fixtures/output-unzipped"
 @pytest.mark.parametrize(
     "zip_path",
     [
-        str((Path(base, file)).relative_to(unzipped_dir))
+        str(Path("/".join([base, file])).relative_to(unzipped_dir))
         for (base, dirs, files) in os.walk(unzipped_dir)
         for file in files
     ],
