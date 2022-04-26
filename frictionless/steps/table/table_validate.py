@@ -1,4 +1,3 @@
-import petl
 from ...step import Step
 from ...exception import FrictionlessException
 
