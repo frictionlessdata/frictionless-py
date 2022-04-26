@@ -1,6 +1,6 @@
 import statistics
-from .. import errors
-from ..check import Check
+from ... import errors
+from ...check import Check
 
 
 class deviated_value(Check):

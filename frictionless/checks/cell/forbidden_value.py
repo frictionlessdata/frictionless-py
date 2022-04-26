@@ -1,5 +1,5 @@
-from .. import errors
-from ..check import Check
+from ... import errors
+from ...check import Check
 
 
 class forbidden_value(Check):

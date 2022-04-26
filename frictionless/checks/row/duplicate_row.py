@@ -1,6 +1,6 @@
 import hashlib
-from .. import errors
-from ..check import Check
+from ... import errors
+from ...check import Check
 
 
 class duplicate_row(Check):

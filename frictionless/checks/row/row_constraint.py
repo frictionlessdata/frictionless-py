@@ -1,6 +1,6 @@
 import simpleeval
-from .. import errors
-from ..check import Check
+from ... import errors
+from ...check import Check
 
 
 class row_constraint(Check):
