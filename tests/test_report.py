@@ -1,4 +1,5 @@
 import sys
+import pprint
 import pytest
 from frictionless import validate, helpers
 
@@ -107,21 +108,6 @@ def test_report_to_yaml_with_bytes_serialization_issue_836():
 # Issues
 
 
-@pytest.mark.skipif(sys.version_info >= (3, 10), reason="Another error in Python3.10")
 def test_report_pprint_1029():
-    report = validate(
-        "data/capital-invalid.csv", pick_errors=["duplicate-label"], time=None
-    )
-    expected = """{'errors': [{'code': 'task-error',
-             'description': 'General task-level error.',
-             'message': 'The task has an error: __init__() got an unexpected '
-                        "keyword argument 'time'",
-             'name': 'Task Error',
-             'note': "__init__() got an unexpected keyword argument 'time'",
-             'tags': []}],
- 'stats': {'errors': 1, 'tasks': 0},
- 'tasks': [],
- 'time': 0.0,
- 'valid': False,
- 'version': '4.29.0'}"""
-    assert repr(report) == expected
+    report = validate("data/capital-invalid.csv", pick_errors=["duplicate-label"])
+    assert repr(report) == pprint.pformat(report)
