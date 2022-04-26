@@ -1,8 +1,8 @@
 from .baseline import baseline
-from .heuristic import duplicate_row, deviated_value, truncated_value
-from .regulation import (
-    forbidden_value,
-    sequential_value,
-    row_constraint,
-    table_dimensions,
-)
+from .deviated_value import deviated_value
+from .duplicate_row import duplicate_row
+from .forbidden_value import forbidden_value
+from .row_constraint import row_constraint
+from .sequential_value import sequential_value
+from .table_dimensions import table_dimensions
+from .truncated_value import truncated_value
