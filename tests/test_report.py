@@ -1,6 +1,4 @@
-import sys
 import pprint
-import pytest
 from frictionless import validate, helpers
 
 

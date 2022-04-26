@@ -1,22 +1,7 @@
 from frictionless import validate, checks
 
 
-# Duplicate Row
-
-
-def test_validate_duplicate_row():
-    report = validate("data/duplicate-rows.csv", checks=[checks.duplicate_row()])
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [4, None, "duplicate-row"],
-    ]
-
-
-def test_validate_duplicate_row_valid():
-    report = validate("data/table.csv", checks=[{"code": "duplicate-row"}])
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == []
-
-
-# Deviated Value
+# General
 
 
 def test_validate_deviated_value():
@@ -91,30 +76,3 @@ def test_validate_deviated_value_incorrect_average():
             'deviated value check supports only average functions "mean, median, mode"',
         ],
     ]
-
-
-# Truncated value
-
-
-def test_validate_truncated_values():
-    source = [
-        ["int", "str"],
-        ["a" * 255, 32767],
-        ["good", 2147483647],
-    ]
-    report = validate(source, checks=[checks.truncated_value()])
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [2, 1, "truncated-value"],
-        [2, 2, "truncated-value"],
-        [3, 2, "truncated-value"],
-    ]
-
-
-def test_validate_truncated_values_close_to_errors():
-    source = [
-        ["int", "str"],
-        ["a" * 254, 32766],
-        ["good", 2147483646],
-    ]
-    report = validate(source, checks=[{"code": "truncated-value"}])
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == []
