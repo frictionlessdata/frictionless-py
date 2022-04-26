@@ -534,3 +534,103 @@ def test_schema_pprint_1029():
             {'format': 'default', 'name': 'test_2', 'type': 'string'},
             {'format': 'default', 'name': 'test_3', 'type': 'string'}]}"""
     assert repr(schema) == expected
+
+
+def test_schema_to_markdown_837():
+    descriptor = {
+        "fields": [
+            {
+                "name": "id",
+                "description": "Any positive integer",
+                "type": "integer",
+                "constraints": {"minimum": 1},
+            },
+            {
+                "name": "age",
+                "title": "Age",
+                "description": "Any number >= 1",
+                "type": "number",
+                "constraints": {"minimum": 1},
+            },
+        ]
+    }
+    schema = Schema(descriptor)
+    expected = """## `schema`
+
+### `id`
+  - `description` Any positive integer
+  - `type` integer
+  - `constraints`:
+    - `minimum` 1
+### `age` Age
+  - `description` Any number >= 1
+  - `type` number
+  - `constraints`:
+    - `minimum` 1"""
+    assert schema.to_markdown().strip() == expected
+
+
+def test_schema_to_markdown_table_837():
+    descriptor = {
+        "fields": [
+            {
+                "name": "id",
+                "description": "Any positive integer",
+                "type": "integer",
+                "constraints": {"minimum": 1},
+            },
+            {
+                "name": "age",
+                "title": "Age",
+                "description": "Any number >= 1",
+                "type": "number",
+                "constraints": {"minimum": 1},
+            },
+        ]
+    }
+    schema = Schema(descriptor)
+    expected = """## `schema`
+
+| name   | description          | type    | constraints    | title   |
+|:-------|:---------------------|:--------|:---------------|:--------|
+| id     | Any positive integer | integer | {'minimum': 1} |         |
+| age    | Any number >= 1      | number  | {'minimum': 1} | Age     |"""
+    assert schema.to_markdown(table=True).strip() == expected
+
+
+def test_schema_to_markdown_file_837(tmpdir):
+    descriptor = {
+        "fields": [
+            {
+                "name": "id",
+                "description": "Any positive integer",
+                "type": "integer",
+                "constraints": {"minimum": 1},
+            },
+            {
+                "name": "age",
+                "title": "Age",
+                "description": "Any number >= 1",
+                "type": "number",
+                "constraints": {"minimum": 1},
+            },
+        ]
+    }
+    expected = """## `schema`
+
+### `id`
+  - `description` Any positive integer
+  - `type` integer
+  - `constraints`:
+    - `minimum` 1
+### `age` Age
+  - `description` Any number >= 1
+  - `type` number
+  - `constraints`:
+    - `minimum` 1"""
+    target = str(tmpdir.join("schema.md"))
+    schema = Schema(descriptor)
+    schema.to_markdown(path=target).strip()
+    with open(target, encoding="utf-8") as file:
+        output = file.read()
+    assert expected == output

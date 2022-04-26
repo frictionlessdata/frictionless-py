@@ -49,7 +49,7 @@ EXTRAS_REQUIRE = {
     "html": ["pyquery>=1.4"],
     "json": ["ijson>=3.0", "jsonlines>=1.2"],
     "ods": ["ezodf>=0.3", "lxml>=4.0"],
-    "pandas": ["pandas>=1.0"],
+    "pandas": ["pandas>=1.0", "tabulate>=0.8.9"],
     "s3": ["boto3>=1.9"],
     "server": ["gunicorn>=20.0", "flask>=1.1"],
     "spss": ["savReaderWriter>=3.0"],

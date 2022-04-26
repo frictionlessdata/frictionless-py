@@ -1107,3 +1107,273 @@ def test_package_pprint_1029():
     expected = """{'resources': [{'data': [['id', 'name'], ['1', 'english'], ['2', '中国人']],
                 'name': 'name'}]}"""
     assert repr(package) == expected
+
+
+def test_package_to_markdown_837():
+    descriptor = {
+        "name": "package",
+        "resources": [
+            {
+                "name": "main",
+                "schema": {
+                    "fields": [
+                        {
+                            "name": "id",
+                            "description": "Any positive integer",
+                            "type": "integer",
+                            "constraints": {"minimum": 1},
+                        },
+                        {
+                            "name": "integer_minmax",
+                            "description": "An integer between 1 and 10",
+                            "type": "integer",
+                            "constraints": {"minimum": 1, "maximum": 10},
+                        },
+                        {
+                            "name": "boolean",
+                            "description": "Any boolean",
+                            "type": "boolean",
+                        },
+                    ],
+                    "primaryKey": ["id"],
+                },
+            },
+            {
+                "name": "secondary",
+                "schema": {
+                    "fields": [
+                        {
+                            "name": "main_id",
+                            "description": "Any value in main.id",
+                            "type": "integer",
+                        },
+                        {
+                            "name": "string",
+                            "description": "Any string of up to 3 characters",
+                            "type": "string",
+                            "constraints": {"maxLength": 3},
+                        },
+                    ],
+                    "foreignKeys": [
+                        {
+                            "fields": ["main_id"],
+                            "reference": {"resource": "main", "fields": ["id"]},
+                        }
+                    ],
+                },
+            },
+        ],
+    }
+    package = Package(descriptor)
+    expected = """# `package`
+## `main`
+  - `schema`
+      - `primaryKey` ['id']
+### `id`
+  - `description` Any positive integer
+  - `type` integer
+  - `constraints`:
+    - `minimum` 1
+### `integer_minmax`
+  - `description` An integer between 1 and 10
+  - `type` integer
+  - `constraints`:
+    - `minimum` 1
+    - `maximum` 10
+### `boolean`
+  - `description` Any boolean
+  - `type` boolean
+## `secondary`
+  - `schema`
+      - `foreignKeys`
+      - [1]
+        - `fields` ['main_id']
+        - `reference`
+          - `resource` main
+          - `fields` ['id']
+### `main_id`
+  - `description` Any value in main.id
+  - `type` integer
+### `string`
+  - `description` Any string of up to 3 characters
+  - `type` string
+  - `constraints`:
+    - `maxLength` 3"""
+    assert package.to_markdown().strip() == expected
+
+
+def test_package_to_markdown_table_837():
+    descriptor = {
+        "name": "package",
+        "resources": [
+            {
+                "name": "main",
+                "schema": {
+                    "fields": [
+                        {
+                            "name": "id",
+                            "description": "Any positive integer",
+                            "type": "integer",
+                            "constraints": {"minimum": 1},
+                        },
+                        {
+                            "name": "integer_minmax",
+                            "description": "An integer between 1 and 10",
+                            "type": "integer",
+                            "constraints": {"minimum": 1, "maximum": 10},
+                        },
+                        {
+                            "name": "boolean",
+                            "description": "Any boolean",
+                            "type": "boolean",
+                        },
+                    ],
+                    "primaryKey": ["id"],
+                },
+            },
+            {
+                "name": "secondary",
+                "schema": {
+                    "fields": [
+                        {
+                            "name": "main_id",
+                            "description": "Any value in main.id",
+                            "type": "integer",
+                        },
+                        {
+                            "name": "string",
+                            "description": "Any string of up to 3 characters",
+                            "type": "string",
+                            "constraints": {"maxLength": 3},
+                        },
+                    ],
+                    "foreignKeys": [
+                        {
+                            "fields": ["main_id"],
+                            "reference": {"resource": "main", "fields": ["id"]},
+                        }
+                    ],
+                },
+            },
+        ],
+    }
+    package = Package(descriptor)
+    expected = """# `package`
+## `main`
+  - `schema`
+      - `primaryKey` ['id']
+  | name           | description                 | type    | constraints                   |
+|:---------------|:----------------------------|:--------|:------------------------------|
+| id             | Any positive integer        | integer | {'minimum': 1}                |
+| integer_minmax | An integer between 1 and 10 | integer | {'minimum': 1, 'maximum': 10} |
+| boolean        | Any boolean                 | boolean |                               |
+## `secondary`
+  - `schema`
+      - `foreignKeys`
+      - [1]
+        - `fields` ['main_id']
+        - `reference`
+          - `resource` main
+          - `fields` ['id']
+  | name    | description                      | type    | constraints      |
+|:--------|:---------------------------------|:--------|:-----------------|
+| main_id | Any value in main.id             | integer |                  |
+| string  | Any string of up to 3 characters | string  | {'maxLength': 3} |"""
+    assert package.to_markdown(table=True).strip() == expected
+
+
+def test_package_to_markdown_file_837(tmpdir):
+    descriptor = descriptor = descriptor = {
+        "name": "package",
+        "resources": [
+            {
+                "name": "main",
+                "schema": {
+                    "fields": [
+                        {
+                            "name": "id",
+                            "description": "Any positive integer",
+                            "type": "integer",
+                            "constraints": {"minimum": 1},
+                        },
+                        {
+                            "name": "integer_minmax",
+                            "description": "An integer between 1 and 10",
+                            "type": "integer",
+                            "constraints": {"minimum": 1, "maximum": 10},
+                        },
+                        {
+                            "name": "boolean",
+                            "description": "Any boolean",
+                            "type": "boolean",
+                        },
+                    ],
+                    "primaryKey": ["id"],
+                },
+            },
+            {
+                "name": "secondary",
+                "schema": {
+                    "fields": [
+                        {
+                            "name": "main_id",
+                            "description": "Any value in main.id",
+                            "type": "integer",
+                        },
+                        {
+                            "name": "string",
+                            "description": "Any string of up to 3 characters",
+                            "type": "string",
+                            "constraints": {"maxLength": 3},
+                        },
+                    ],
+                    "foreignKeys": [
+                        {
+                            "fields": ["main_id"],
+                            "reference": {"resource": "main", "fields": ["id"]},
+                        }
+                    ],
+                },
+            },
+        ],
+    }
+    expected = """# `package`
+## `main`
+  - `schema`
+      - `primaryKey` ['id']
+### `id`
+  - `description` Any positive integer
+  - `type` integer
+  - `constraints`:
+    - `minimum` 1
+### `integer_minmax`
+  - `description` An integer between 1 and 10
+  - `type` integer
+  - `constraints`:
+    - `minimum` 1
+    - `maximum` 10
+### `boolean`
+  - `description` Any boolean
+  - `type` boolean
+## `secondary`
+  - `schema`
+      - `foreignKeys`
+      - [1]
+        - `fields` ['main_id']
+        - `reference`
+          - `resource` main
+          - `fields` ['id']
+### `main_id`
+  - `description` Any value in main.id
+  - `type` integer
+### `string`
+  - `description` Any string of up to 3 characters
+  - `type` string
+  - `constraints`:
+    - `maxLength` 3"""
+    target = str(tmpdir.join("package.md"))
+    package = Package(descriptor)
+    package.to_markdown(path=target).strip()
+    with open(target, encoding="utf-8") as file:
+        output = file.read()
+    assert expected == output
