@@ -9,6 +9,7 @@ Frictionless supports reading and writing Pandas dataframes.
 
 ```bash title="CLI"
 pip install frictionless[pandas]
+pip install 'frictionless[pandas]' # for zsh shell
 ```
 
 ## Reading Data

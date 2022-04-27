@@ -9,6 +9,7 @@ Frictionless supports reading and writing SQL databases.
 
 ```bash title="CLI"
 pip install frictionless[sql]
+pip install 'frictionless[sql]' # for zsh shell
 ```
 
 ## Reading Data

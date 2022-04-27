@@ -11,6 +11,7 @@ Frictionless supports parsing HTML format:
 
 ```bash title="CLI"
 pip install frictionless[html]
+pip install 'frictionless[html]' # for zsh shell
 ```
 
 ## Reading Data
