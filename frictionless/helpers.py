@@ -11,7 +11,6 @@ import shutil
 import zipfile
 import tempfile
 import datetime
-import pandas as pd
 import platform
 import textwrap
 import stringcase
@@ -565,7 +564,16 @@ def dicts_to_markdown_table(dicts: List[dict], **kwargs) -> str:
 
     if kwargs:
         dicts = [filter_dict(x, **kwargs) for x in dicts]
-    df = pd.DataFrame(dicts)
+    try:
+        pandas = import_module("pandas")
+        # dependency for pandas
+        import_module("tabulate")
+        df = pandas.DataFrame(dicts)
+    except ImportError:
+        module = import_module("frictionless.exception")
+        errors = import_module("frictionless.errors")
+        error = errors.GeneralError(note="Please install modules pandas and tabulate")
+        raise module.FrictionlessException(error)
     return df.where(df.notnull(), None).to_markdown(index=False)
 
 
