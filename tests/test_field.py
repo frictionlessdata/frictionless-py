@@ -1,5 +1,5 @@
 import pytest
-from frictionless import Field, helpers
+from frictionless import Schema, Field, helpers
 
 
 # General
@@ -335,3 +335,34 @@ def test_field_to_copy():
     target = source.to_copy()
     assert source is not target
     assert source == target
+
+
+def test_field_set_schema():
+    test_schema_init = Schema(
+        fields=[
+            Field(
+                name="name",
+                type="boolean",
+                format={"trueValues": "Yes", "falseValues": "No"},
+            )
+        ]
+    )
+    field = Field(schema=test_schema_init)
+    assert field.schema == test_schema_init
+    test_schema_property = Schema({"fields": [{"name": "name", "type": "other"}]})
+    field.schema = test_schema_property
+    assert field.schema == test_schema_property
+
+
+def test_field_set_type():
+    field = Field(type="int")
+    assert field.type == "int"
+
+
+# Issues
+
+
+def test_field_pprint_1029():
+    field = Field({"name": "name", "type": "string", "constraints": {"maxLength": 2}})
+    expected = """{'constraints': {'maxLength': 2}, 'name': 'name', 'type': 'string'}"""
+    assert repr(field) == expected

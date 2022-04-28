@@ -93,6 +93,7 @@
     "data": {
       "propertyOrder": 230,
       "title": "Data",
+      "type": "array",
       "description": "Inline data for this resource."
     },
     "schema": {

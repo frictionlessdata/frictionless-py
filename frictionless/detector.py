@@ -1,6 +1,7 @@
 import codecs
 import chardet
 from copy import copy, deepcopy
+from typing import List, Dict
 from .exception import FrictionlessException
 from .system import system
 from .layout import Layout
@@ -93,76 +94,206 @@ class Detector:
         self.__schema_sync = schema_sync
         self.__schema_patch = schema_patch
 
-    def __setattr__(self, name, value):
-        if name == "buffer_size":
-            self.__buffer_size = value
-        elif name == "sample_size":
-            self.__sample_size = value
-        elif name == "field_type":
-            self.__field_type = value
-        elif name == "encoding_function":
-            self.__encoding_function = value
-        elif name == "encoding_confidence":
-            self.__encoding_confidence = value
-        elif name == "field_names":
-            self.__field_names = value
-        elif name == "field_confidence":
-            self.__field_confidence = value
-        elif name == "field_float_numbers":
-            self.__field_float_numbers = value
-        elif name == "field_missing_values":
-            self.__field_missing_values = value
-        elif name == "schema_sync":
-            self.__schema_sync = value
-        elif name == "schema_patch":
-            self.__schema_patch = value
-        # other properties
-        else:
-            return super().__setattr__(name, value)
-
     @property
-    def buffer_size(self):
+    def buffer_size(self) -> int:
+        """Returns buffer size of the detector. Default value is 10000.
+
+        Returns:
+            int: detector buffer size
+        """
         return self.__buffer_size
 
+    @buffer_size.setter
+    def buffer_size(self, value: int):
+        """Sets buffer size for detector.
+
+        Parameters:
+            value (int): detector buffer size
+        """
+        self.__buffer_size = value
+
     @property
-    def sample_size(self):
+    def sample_size(self) -> int:
+        """Returns sample size of the detector. Default value is 100.
+
+        Returns:
+            int: detector sample size
+        """
         return self.__sample_size
 
+    @sample_size.setter
+    def sample_size(self, value: int):
+        """Sets sample size for detector.
+
+        Parameters:
+            value (int): detector sample size
+        """
+        self.__sample_size = value
+
     @property
-    def encoding_function(self):
+    def encoding_function(self) -> any:
+        """Returns detector custom encoding function
+
+        Returns:
+            any: detector custom encoding function
+        """
         return self.__encoding_function
 
+    @encoding_function.setter
+    def encoding_function(self, value: any):
+        """Sets detector custom encoding function for the resource to be read.
+
+        Parameters:
+            value (any): detector custom encoding function
+        """
+        self.__encoding_function = value
+
     @property
-    def encoding_confidence(self):
+    def encoding_confidence(self) -> float:
+        """Returns confidence value for detector encoding function.
+
+        Returns:
+            float: detector encoding function confidence
+        """
         return self.__encoding_confidence
 
+    @encoding_confidence.setter
+    def encoding_confidence(self, value: float):
+        """Sets confidence value for detector encoding function. Default value
+        is None.
+
+        Parameters:
+            value (float): detector encoding function confidence
+        """
+        self.__encoding_confidence = value
+
     @property
-    def field_type(self):
+    def field_type(self) -> str:
+        """Returns field type of the detector. Default value is None.
+
+        Returns:
+            str: detector inferred field types
+        """
         return self.__field_type
 
+    @field_type.setter
+    def field_type(self, value: str):
+        """Sets field type for all inferred fields by the detector.
+
+        Parameters:
+            value (str): detector inferred field types
+        """
+        self.__field_type = value
+
     @property
-    def field_names(self):
+    def field_names(self) -> List[str]:
+        """Returns inferred field names list.
+
+        Returns:
+            str[]: detector inferred field names
+        """
         return self.__field_names
 
+    @field_names.setter
+    def field_names(self, value: List[str]):
+        """Sets field names for all inferred fields by the detector.
+
+        Parameters:
+            value (str[]): detector inferred field names
+        """
+        self.__field_names = value
+
     @property
-    def field_confidence(self):
+    def field_confidence(self) -> float:
+        """Returns detector inference confidence value. Default value is 0.9.
+
+        Returns:
+            float: detector inference confidence value
+        """
         return self.__field_confidence
 
+    @field_confidence.setter
+    def field_confidence(self, value: float):
+        """Sets inference confidence value for detector. Default value is 0.9.
+
+        Parameters:
+            value (float): detector inference confidence value
+        """
+        self.__field_confidence = value
+
     @property
-    def field_float_numbers(self):
+    def field_float_numbers(self) -> bool:
+        """Returns detector convert decimal to float flag value.
+
+        Returns:
+            bool: detector convert decimal to float flag
+        """
         return self.__field_float_numbers
 
+    @field_float_numbers.setter
+    def field_float_numbers(self, value: bool):
+        """Sets detector convert decimal to float flag.
+
+        Parameters:
+            value (bool): detector convert decimal to float flag
+        """
+        self.__field_float_numbers = value
+
     @property
-    def field_missing_values(self):
+    def field_missing_values(self) -> List[str]:
+        """Returns detector fields missing values list.
+
+        Returns:
+            str[]: detector fields missing values list
+        """
         return self.__field_missing_values
 
-    @property
-    def schema_sync(self):
-        return self.__schema_sync
+    @field_missing_values.setter
+    def field_missing_values(self, value: List[str]):
+        """Sets detector fields missing values list.
+
+        Parameters:
+            value (str[]): detector fields missing values list
+        """
+        self.__field_missing_values = value
 
     @property
-    def schema_patch(self):
+    def schema_sync(self) -> bool:
+        """Returns detector schema_sync flag value.
+
+        Returns:
+            bool: detector schema_sync flag value
+        """
+        return self.__schema_sync
+
+    @schema_sync.setter
+    def schema_sync(self, value: bool):
+        """Sets detector schema_sync flag value. If set to true, it
+        syncs provided schema's field order based on the header's
+        field order.
+
+        Parameters:
+            value (bool): detector schema_sync flag value
+        """
+        self.__schema_sync = value
+
+    @property
+    def schema_patch(self) -> Dict:
+        """Returns detector resource fields to change.
+
+        Returns:
+            Dict: detector resource fields to change
+        """
         return self.__schema_patch
+
+    @schema_patch.setter
+    def schema_patch(self, value: Dict):
+        """Sets detector resource fields to change.
+
+        Parameters:
+            value (Dict): detector resource fields to change
+        """
+        self.__schema_patch = value
 
     # Detect
 
@@ -363,6 +494,9 @@ class Detector:
         # Validate schema
         # NOTE: at some point we might need to remove it for transform needs
         if len(schema.field_names) != len(set(schema.field_names)):
+            if self.__schema_sync:
+                note = 'Duplicate labels in header is not supported with "schema_sync"'
+                raise FrictionlessException(errors.GeneralError(note=note))
             note = "Schemas with duplicate field names are not supported"
             raise FrictionlessException(errors.SchemaError(note=note))
 

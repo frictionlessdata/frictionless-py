@@ -87,22 +87,22 @@ module.exports = {
             {
               label: "Frictionless Cars",
               href:
-                "https://colab.research.google.com/drive/1x5tbNm-i_kbCnBbK42GD1ogDcHTCAAbj",
+                "https://colab.research.google.com/github/frictionlessdata/frictionless-py/blob/main/docs/tutorials/notebooks/frictionless-cars.ipynb"
             },
             {
               label: "Frictionless Biology",
               href:
-                "https://colab.research.google.com/drive/1iIrTed-d056VXtl9t1WLQnLMC2KeK9Ul",
+              "https://colab.research.google.com/github/frictionlessdata/frictionless-py/blob/main/docs/tutorials/notebooks/reshaping-data-frictionless.ipynb",
             },
             {
               label: "Frictionless Describe and Extract",
               href:
-                "https://colab.research.google.com/drive/12RmGajHamGP5wOoAhy8N7Gchn9TmVnG-",
+                "https://colab.research.google.com/github/frictionlessdata/frictionless-py/blob/main/docs/tutorials/notebooks/frictionless-tutorial-describe-extract.ipynb",
             },
             {
               label: "Frictionless Excel",
               href:
-                "https://colab.research.google.com/drive/1QHO1r0f670YOYVqODltTP7bnA9qlur-t?usp=sharing",
+              "https://colab.research.google.com/github/frictionlessdata/frictionless-py/blob/main/docs/tutorials/notebooks/frictionless-excel.ipynb",
             },
           ],
         },

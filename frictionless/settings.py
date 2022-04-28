@@ -39,6 +39,7 @@ TOPOJSON_PROFILE = json.loads(read_asset("profiles", "geojson", "topojson.json")
 DEFAULT_SCHEME = "file"
 DEFAULT_FORMAT = "csv"
 DEFAULT_HASHING = "md5"
+DEFAULT_ONERROR = "ignore"
 DEFAULT_ENCODING = "utf-8"
 DEFAULT_INNERPATH = ""
 DEFAULT_COMPRESSION = ""

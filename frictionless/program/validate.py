@@ -234,14 +234,16 @@ def program_validate(
     # Return tables
     prev_invalid = False
     for number, task in enumerate(report.tasks, start=1):
+        tabular = task.resource.profile == "tabular-data-resource"
         if number != 1 and prev_invalid:
             typer.secho("")
         prefix = "valid" if task.valid else "invalid"
+        suffix = "" if tabular else "(non-tabular)"
         source = task.resource.path or task.resource.name
         if is_stdin:
             source = "stdin"
         typer.secho(f"# {'-'*len(prefix)}", bold=True)
-        typer.secho(f"# {prefix}: {source}", bold=True)
+        typer.secho(f"# {prefix}: {source} {suffix}", bold=True)
         typer.secho(f"# {'-'*len(prefix)}", bold=True)
         if task.errors:
             prev_invalid = True

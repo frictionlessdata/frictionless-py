@@ -88,6 +88,7 @@ def test_detector_set_encoding_function():
     enc_func = lambda sample: "utf-8"
     detector = Detector(encoding_function=enc_func)
     assert detector.encoding_function == enc_func
+    enc_func = lambda sample: "utf-16"
     detector.encoding_function = enc_func
     assert detector.encoding_function == enc_func
 
