@@ -9,6 +9,7 @@ Frictionless supports both reading tables from BigQuery source and treating a Bi
 
 ```bash title="CLI"
 pip install frictionless[bigquery]
+pip install 'frictionless[bigquery]' # for zsh shell
 ```
 
 ## Reading Data

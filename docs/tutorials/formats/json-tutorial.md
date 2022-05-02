@@ -9,6 +9,7 @@ Frictionless supports parsing JSON tables (JSON and JSONL/NDJSON).
 
 ```bash title="CLI"
 pip install frictionless[json]
+pip install 'frictionless[json]' # for zsh shell
 ```
 
 ## Reading Data
