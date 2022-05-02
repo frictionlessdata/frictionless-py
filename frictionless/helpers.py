@@ -4,6 +4,7 @@ import os
 import csv
 import json
 import glob
+import jinja2
 import marko
 import atexit
 import shutil
@@ -13,6 +14,7 @@ import datetime
 import platform
 import textwrap
 import stringcase
+from typing import List, Union
 from inspect import signature
 from html.parser import HTMLParser
 from importlib import import_module
@@ -532,3 +534,106 @@ class cached_property:
                         )
                         raise TypeError(msg) from None
         return val
+
+
+# Markdown
+
+
+def render_markdown(path: str, data: dict) -> str:
+    """Render any JSON-like object as Markdown, using jinja2 template"""
+
+    template_dir = os.path.join(os.path.dirname(__file__), "assets/templates")
+    environ = jinja2.Environment(
+        loader=jinja2.FileSystemLoader(template_dir), lstrip_blocks=True, trim_blocks=True
+    )
+    environ.filters["filter_dict"] = filter_dict
+    environ.filters["dict_to_markdown"] = json_to_markdown
+    environ.filters["tabulate"] = dicts_to_markdown_table
+    template = environ.get_template(path)
+    return template.render(**data)
+
+
+def filter_dict(
+    x: dict, include: list = None, exclude: list = None, order: list = None
+) -> dict:
+    """Filter and order dictionary by key names,
+    credit: Ethan Welty @ezwelty https://github.com/frictionlessdata/frictionless-py/issues/837#issuecomment-906246975"""
+
+    if include:
+        x = {key: x[key] for key in x if key in include}
+    if exclude:
+        x = {key: x[key] for key in x if key not in exclude}
+    if order:
+        index = [
+            (order.index(key) if key in order else len(order), i)
+            for i, key in enumerate(x)
+        ]
+        sorted_keys = [key for _, key in sorted(zip(index, x.keys()))]
+        x = {key: x[key] for key in sorted_keys}
+    return x
+
+
+def json_to_markdown(
+    x: Union[dict, list, int, float, str, bool],
+    level: int = 0,
+    tab: int = 2,
+    flatten_scalar_lists: bool = True,
+) -> str:
+    """Render any JSON-like object as Markdown, using nested bulleted lists,
+    credit: Ethan Welty @ezwelty https://github.com/frictionlessdata/frictionless-py/issues/837#issuecomment-1108604310"""
+
+    def _scalar_list(x) -> bool:
+        return isinstance(x, list) and all(not isinstance(xi, (dict, list)) for xi in x)
+
+    def _iter(x: Union[dict, list, int, float, str, bool], level: int = 0) -> str:
+        if isinstance(x, (dict, list)):
+            if isinstance(x, dict):
+                labels = [f"- `{key}`" for key in x]
+            elif isinstance(x, list):
+                labels = [f"- [{i + 1}]" for i in range(len(x))]
+            values = x if isinstance(x, list) else list(x.values())
+            if isinstance(x, list) and flatten_scalar_lists:
+                scalar = [not isinstance(value, (dict, list)) for value in values]
+                if all(scalar):
+                    values = [f"{values}"]
+            lines = []
+            for label, value in zip(labels, values):
+                if isinstance(value, (dict, list)) and (
+                    not flatten_scalar_lists or not _scalar_list(value)
+                ):
+                    lines.append(f"{label}\n{_iter(value, level=level + 1)}")
+                else:
+                    if isinstance(value, str):
+                        # Indent to align following lines with '- '
+                        value = jinja2.filters.do_indent(value, width=2, first=False)
+                    lines.append(f"{label} {value}")
+            txt = "\n".join(lines)
+        else:
+            txt = str(x)
+        if level > 0:
+            txt = jinja2.filters.do_indent(txt, width=tab, first=True, blank=False)
+        return txt
+
+    return jinja2.filters.do_indent(
+        _iter(x, level=0), width=tab * level, first=True, blank=False
+    )
+
+
+def dicts_to_markdown_table(dicts: List[dict], **kwargs) -> str:
+    """Tabulate dictionaries and render as a Markdown table,
+    credit: Ethan Welty @ezwelty https://github.com/frictionlessdata/frictionless-py/issues/837#issuecomment-906246975
+    """
+
+    if kwargs:
+        dicts = [filter_dict(x, **kwargs) for x in dicts]
+    try:
+        pandas = import_module("pandas")
+        # dependency for pandas
+        import_module("tabulate")
+        df = pandas.DataFrame(dicts)
+    except ImportError:
+        module = import_module("frictionless.exception")
+        errors = import_module("frictionless.errors")
+        error = errors.GeneralError(note="Please install modules pandas and tabulate")
+        raise module.FrictionlessException(error)
+    return df.where(df.notnull(), None).to_markdown(index=False)

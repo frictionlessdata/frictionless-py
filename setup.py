@@ -23,7 +23,6 @@ TESTS_REQUIRE = [
     "mypy",
     "moto",
     "black",
-    "jinja2",
     "pylama",
     "pytest",
     "ipython",
@@ -71,7 +70,9 @@ INSTALL_REQUIRES = [
     "validators>=0.18",
     "python-slugify>=1.2",
     "python-dateutil>=2.8",
-    "tableschema-to-template>=0.0.12"
+    "tableschema-to-template>=0.0.12",
+    "tabulate>=0.8.9",
+    "jinja2>=3.0.3"
 ]
 README = read("README.md")
 VERSION = read(PACKAGE, "assets", "VERSION")

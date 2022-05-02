@@ -9,7 +9,7 @@ from operator import setitem
 from functools import partial
 from importlib import import_module
 from .exception import FrictionlessException
-from .helpers import cached_property
+from .helpers import cached_property, render_markdown
 from . import helpers
 import pprint as pp
 
@@ -154,6 +154,27 @@ class Metadata(helpers.ControlledDict):
             except Exception as exc:
                 raise FrictionlessException(self.__Error(note=str(exc))) from exc
         return text
+
+    def to_markdown(self, path: str = None, table: bool = False) -> str:
+        """Convert metadata as a markdown
+
+        Parameters:
+            path (str): target path
+            table (bool): if true converts markdown to tabular format
+
+        Raises:
+            FrictionlessException: on any error
+        """
+
+        filename = self.__class__.__name__.lower()
+        template = f"{filename}-table.md" if table is True else f"{filename}.md"
+        md_output = render_markdown(f"{template}", {filename: self}).strip()
+        if path:
+            try:
+                helpers.write_file(path, md_output)
+            except Exception as exc:
+                raise FrictionlessException(self.__Error(note=str(exc))) from exc
+        return md_output
 
     # Metadata
 

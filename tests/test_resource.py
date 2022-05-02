@@ -3,6 +3,7 @@ import sys
 import json
 import yaml
 import pytest
+from pathlib import Path
 from frictionless import Package, Resource, Schema, Field, Layout, Detector, helpers
 from frictionless import FrictionlessException, describe_resource
 from frictionless.plugins.remote import RemoteControl
@@ -2759,3 +2760,93 @@ def test_resource_pprint_1029():
  'path': 'data/table.csv',
  'title': 'My Resource'}"""
     assert repr(resource) == expected
+
+
+def test_resource_to_markdown_path_schema_837():
+    descriptor = {
+        "name": "main",
+        "schema": {
+            "fields": [
+                {
+                    "name": "id",
+                    "description": "Any positive integer",
+                    "type": "integer",
+                    "constraints": {"minimum": 1},
+                },
+                {
+                    "name": "integer_minmax",
+                    "description": "An integer between 1 and 10",
+                    "type": "integer",
+                    "constraints": {"minimum": 1, "maximum": 10},
+                },
+            ],
+            "primaryKey": ["id"],
+        },
+    }
+    resource = Resource(descriptor)
+    md_file_path = Path(Path(__file__).parent, "fixtures/output-markdown/resource.md")
+    with open(md_file_path, encoding="utf-8") as file:
+        expected = file.read()
+    assert resource.to_markdown().strip() == expected
+
+
+def test_resource_to_markdown_path_schema_table_837():
+    descriptor = {
+        "name": "main",
+        "schema": {
+            "fields": [
+                {
+                    "name": "id",
+                    "description": "Any positive integer",
+                    "type": "integer",
+                    "constraints": {"minimum": 1},
+                },
+                {
+                    "name": "integer_minmax",
+                    "description": "An integer between 1 and 10",
+                    "type": "integer",
+                    "constraints": {"minimum": 1, "maximum": 10},
+                },
+            ],
+            "primaryKey": ["id"],
+        },
+    }
+    resource = Resource(descriptor)
+    md_file_path = Path(
+        Path(__file__).parent, "fixtures/output-markdown/resource-table.md"
+    )
+    with open(md_file_path, encoding="utf-8") as file:
+        expected = file.read()
+    assert resource.to_markdown(table=True).strip() == expected
+
+
+def test_resource_to_markdown_file_837(tmpdir):
+    descriptor = descriptor = {
+        "name": "main",
+        "schema": {
+            "fields": [
+                {
+                    "name": "id",
+                    "description": "Any positive integer",
+                    "type": "integer",
+                    "constraints": {"minimum": 1},
+                },
+                {
+                    "name": "integer_minmax",
+                    "description": "An integer between 1 and 10",
+                    "type": "integer",
+                    "constraints": {"minimum": 1, "maximum": 10},
+                },
+            ],
+            "primaryKey": ["id"],
+        },
+    }
+    md_file_path = Path(Path(__file__).parent, "fixtures/output-markdown/resource.md")
+    with open(md_file_path, encoding="utf-8") as file:
+        expected = file.read()
+    target = str(tmpdir.join("resource.md"))
+    resource = Resource(descriptor)
+    resource.to_markdown(path=target).strip()
+    with open(target, encoding="utf-8") as file:
+        output = file.read()
+    assert expected == output

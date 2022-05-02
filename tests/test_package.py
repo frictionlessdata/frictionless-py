@@ -1107,3 +1107,195 @@ def test_package_pprint_1029():
     expected = """{'resources': [{'data': [['id', 'name'], ['1', 'english'], ['2', '中国人']],
                 'name': 'name'}]}"""
     assert repr(package) == expected
+
+
+def test_package_to_markdown_837():
+    descriptor = {
+        "name": "package",
+        "resources": [
+            {
+                "name": "main",
+                "schema": {
+                    "fields": [
+                        {
+                            "name": "id",
+                            "description": "Any positive integer",
+                            "type": "integer",
+                            "constraints": {"minimum": 1},
+                        },
+                        {
+                            "name": "integer_minmax",
+                            "description": "An integer between 1 and 10",
+                            "type": "integer",
+                            "constraints": {"minimum": 1, "maximum": 10},
+                        },
+                        {
+                            "name": "boolean",
+                            "description": "Any boolean",
+                            "type": "boolean",
+                        },
+                    ],
+                    "primaryKey": ["id"],
+                },
+            },
+            {
+                "name": "secondary",
+                "schema": {
+                    "fields": [
+                        {
+                            "name": "main_id",
+                            "description": "Any value in main.id",
+                            "type": "integer",
+                        },
+                        {
+                            "name": "string",
+                            "description": "Any string of up to 3 characters",
+                            "type": "string",
+                            "constraints": {"maxLength": 3},
+                        },
+                    ],
+                    "foreignKeys": [
+                        {
+                            "fields": ["main_id"],
+                            "reference": {"resource": "main", "fields": ["id"]},
+                        }
+                    ],
+                },
+            },
+        ],
+    }
+    package = Package(descriptor)
+    md_file_path = Path(Path(__file__).parent, "fixtures/output-markdown/package.md")
+    with open(md_file_path, encoding="utf-8") as file:
+        expected = file.read()
+    assert package.to_markdown().strip() == expected
+
+
+def test_package_to_markdown_table_837():
+    descriptor = {
+        "name": "package",
+        "resources": [
+            {
+                "name": "main",
+                "schema": {
+                    "fields": [
+                        {
+                            "name": "id",
+                            "description": "Any positive integer",
+                            "type": "integer",
+                            "constraints": {"minimum": 1},
+                        },
+                        {
+                            "name": "integer_minmax",
+                            "description": "An integer between 1 and 10",
+                            "type": "integer",
+                            "constraints": {"minimum": 1, "maximum": 10},
+                        },
+                        {
+                            "name": "boolean",
+                            "description": "Any boolean",
+                            "type": "boolean",
+                        },
+                    ],
+                    "primaryKey": ["id"],
+                },
+            },
+            {
+                "name": "secondary",
+                "schema": {
+                    "fields": [
+                        {
+                            "name": "main_id",
+                            "description": "Any value in main.id",
+                            "type": "integer",
+                        },
+                        {
+                            "name": "string",
+                            "description": "Any string of up to 3 characters",
+                            "type": "string",
+                            "constraints": {"maxLength": 3},
+                        },
+                    ],
+                    "foreignKeys": [
+                        {
+                            "fields": ["main_id"],
+                            "reference": {"resource": "main", "fields": ["id"]},
+                        }
+                    ],
+                },
+            },
+        ],
+    }
+    package = Package(descriptor)
+    md_file_path = Path(
+        Path(__file__).parent, "fixtures/output-markdown/package-table.md"
+    )
+    with open(md_file_path, encoding="utf-8") as file:
+        expected = file.read()
+    assert package.to_markdown(table=True).strip() == expected
+
+
+def test_package_to_markdown_file_837(tmpdir):
+    descriptor = descriptor = descriptor = {
+        "name": "package",
+        "resources": [
+            {
+                "name": "main",
+                "schema": {
+                    "fields": [
+                        {
+                            "name": "id",
+                            "description": "Any positive integer",
+                            "type": "integer",
+                            "constraints": {"minimum": 1},
+                        },
+                        {
+                            "name": "integer_minmax",
+                            "description": "An integer between 1 and 10",
+                            "type": "integer",
+                            "constraints": {"minimum": 1, "maximum": 10},
+                        },
+                        {
+                            "name": "boolean",
+                            "description": "Any boolean",
+                            "type": "boolean",
+                        },
+                    ],
+                    "primaryKey": ["id"],
+                },
+            },
+            {
+                "name": "secondary",
+                "schema": {
+                    "fields": [
+                        {
+                            "name": "main_id",
+                            "description": "Any value in main.id",
+                            "type": "integer",
+                        },
+                        {
+                            "name": "string",
+                            "description": "Any string of up to 3 characters",
+                            "type": "string",
+                            "constraints": {"maxLength": 3},
+                        },
+                    ],
+                    "foreignKeys": [
+                        {
+                            "fields": ["main_id"],
+                            "reference": {"resource": "main", "fields": ["id"]},
+                        }
+                    ],
+                },
+            },
+        ],
+    }
+    md_file_path = Path(Path(__file__).parent, "fixtures/output-markdown/package.md")
+    with open(md_file_path, encoding="utf-8") as file:
+        expected = file.read()
+    target = str(tmpdir.join("package.md"))
+    package = Package(descriptor)
+    package.to_markdown(path=target).strip()
+    with open(target, encoding="utf-8") as file:
+        output = file.read()
+    assert expected == output

@@ -534,3 +534,82 @@ def test_schema_pprint_1029():
             {'format': 'default', 'name': 'test_2', 'type': 'string'},
             {'format': 'default', 'name': 'test_3', 'type': 'string'}]}"""
     assert repr(schema) == expected
+
+
+def test_schema_to_markdown_837(tmpdir):
+    descriptor = {
+        "fields": [
+            {
+                "name": "id",
+                "description": "Any positive integer",
+                "type": "integer",
+                "constraints": {"minimum": 1},
+            },
+            {
+                "name": "age",
+                "title": "Age",
+                "description": "Any number >= 1",
+                "type": "number",
+                "constraints": {"minimum": 1},
+            },
+        ]
+    }
+    schema = Schema(descriptor)
+    md_file_path = Path(Path(__file__).parent, "fixtures/output-markdown/schema.md")
+    with open(md_file_path, encoding="utf-8") as file:
+        expected = file.read()
+    assert schema.to_markdown().strip() == expected
+
+
+def test_schema_to_markdown_table_837():
+    descriptor = {
+        "fields": [
+            {
+                "name": "id",
+                "description": "Any positive integer",
+                "type": "integer",
+                "constraints": {"minimum": 1},
+            },
+            {
+                "name": "age",
+                "title": "Age",
+                "description": "Any number >= 1",
+                "type": "number",
+                "constraints": {"minimum": 1},
+            },
+        ]
+    }
+    schema = Schema(descriptor)
+    md_file_path = Path(Path(__file__).parent, "fixtures/output-markdown/schema-table.md")
+    with open(md_file_path, encoding="utf-8") as file:
+        expected = file.read()
+    assert schema.to_markdown(table=True).strip() == expected
+
+
+def test_schema_to_markdown_file_837(tmpdir):
+    descriptor = {
+        "fields": [
+            {
+                "name": "id",
+                "description": "Any positive integer",
+                "type": "integer",
+                "constraints": {"minimum": 1},
+            },
+            {
+                "name": "age",
+                "title": "Age",
+                "description": "Any number >= 1",
+                "type": "number",
+                "constraints": {"minimum": 1},
+            },
+        ]
+    }
+    md_file_path = Path(Path(__file__).parent, "fixtures/output-markdown/schema.md")
+    with open(md_file_path, encoding="utf-8") as file:
+        expected = file.read()
+    target = str(tmpdir.join("schema.md"))
+    schema = Schema(descriptor)
+    schema.to_markdown(path=target).strip()
+    with open(target, encoding="utf-8") as file:
+        output = file.read()
+    assert expected == output
