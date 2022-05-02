@@ -9,6 +9,7 @@ Frictionless supports parsing Google Sheets data as a file format.
 
 ```bash title="CLI"
 pip install frictionless[gsheets]
+pip install 'frictionless[gsheets]' # for zsh shell
 ```
 
 ## Reading Data

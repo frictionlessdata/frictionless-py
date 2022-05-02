@@ -9,6 +9,7 @@ Excel is a very popular tabular data format that usually has `xlsx` (newer) and 
 
 ```bash title="CLI"
 pip install frictionless[excel]
+pip install 'frictionless[excel]' # for zsh shell
 ```
 
 ## Reading Data

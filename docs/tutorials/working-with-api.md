@@ -12,6 +12,7 @@ The API server are shipped as plugin so you need to install it with the core fra
 
 ```bash title="CLI"
 pip install frictionless[server]
+pip install 'frictionless[server]' # for zsh shell
 ```
 
 ## Server

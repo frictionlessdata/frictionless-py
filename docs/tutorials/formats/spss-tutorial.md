@@ -9,6 +9,7 @@ Frictionless supports reading and writing SPSS files.
 
 ```bash title="CLI"
 pip install frictionless[spss]
+pip install 'frictionless[spss]' # for zsh shell
 ```
 
 ## Reading Data
