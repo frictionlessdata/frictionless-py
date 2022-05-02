@@ -556,8 +556,7 @@ def render_markdown(path: str, data: dict) -> str:
 def filter_dict(
     x: dict, include: list = None, exclude: list = None, order: list = None
 ) -> dict:
-    """Filter and order dictionary by key names
-    """
+    """Filter and order dictionary by key names"""
 
     if include:
         x = {key: x[key] for key in x if key in include}
@@ -579,8 +578,7 @@ def json_to_markdown(
     tab: int = 2,
     flatten_scalar_lists: bool = True,
 ) -> str:
-    """Render any JSON-like object as Markdown, using nested bulleted lists
-    """
+    """Render any JSON-like object as Markdown, using nested bulleted lists"""
 
     def _scalar_list(x) -> bool:
         return isinstance(x, list) and all(not isinstance(xi, (dict, list)) for xi in x)
@@ -620,8 +618,7 @@ def json_to_markdown(
 
 
 def dicts_to_markdown_table(dicts: List[dict], **kwargs) -> str:
-    """Tabulate dictionaries and render as a Markdown table
-    """
+    """Tabulate dictionaries and render as a Markdown table"""
 
     if kwargs:
         dicts = [filter_dict(x, **kwargs) for x in dicts]
