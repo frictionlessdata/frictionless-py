@@ -18,6 +18,7 @@ Let's get started with Frictionless! We will learn how to install and use the fr
 ```bash title="CLI"
 pip install frictionless
 pip install frictionless[sql] # to install a core plugin (optional)
+pip install 'frictionless[sql]' # for zsh shell
 ```
 
 The framework supports CSV, Excel, and JSON formats by default. The second command above installs a plugin for SQL support. There are plugins for SQL, Pandas, HTML, and others (check the [list of Frictionless Framework plugins and their status](https://framework.frictionlessdata.io/docs/references/plugins-reference)). Usually, you don't need to think about it in advance–frictionless will display a useful error message about a missing plugin with installation instructions.

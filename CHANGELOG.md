@@ -2,6 +2,14 @@
 
 Here described only the breaking and most significant changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/frictionless-py/commits/main).
 
+## v4.31.0
+
+- Added a feature that allows to export table schema as excel  (#1040)
+- Added nontabular note to validation results to indicate nontabular file  (#1046)
+- Excel stats now shows bytes and hash  (#1045)
+- Added pprint feature which displays metadata in a readable and pretty way  (#1039)
+- Improved error message if resource.data is not a string  (#1036)
+
 ## v4.29.0
 
 - Made Detector's private properties public and writable (#1025)

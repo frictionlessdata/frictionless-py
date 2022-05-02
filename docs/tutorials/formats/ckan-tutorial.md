@@ -9,6 +9,7 @@ Frictionless supports reading and writing CKAN datasets.
 
 ```bash title="CLI"
 pip install frictionless[ckan]
+pip install 'frictionless[ckan]' # for zsh shell
 ```
 
 ## Reading Data
