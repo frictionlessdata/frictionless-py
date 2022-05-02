@@ -158,6 +158,9 @@ class Metadata(helpers.ControlledDict):
     def to_markdown(self, path: str = None, table: bool = False) -> str:
         """Convert metadata as a markdown
 
+        This feature has been contributed to the framwork by Ethan Welty (@ezwelty):
+        - https://github.com/frictionlessdata/frictionless-py/issues/837
+
         Parameters:
             path (str): target path
             table (bool): if true converts markdown to tabular format
