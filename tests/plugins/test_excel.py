@@ -106,18 +106,16 @@ def test_xlsx_parser_adjust_floating_point_error():
         adjust_floating_point_error=True,
     )
     layout = Layout(skip_fields=["<blank>"])
-    with pytest.warns(UserWarning):
-        with Resource(source, dialect=dialect, layout=layout) as resource:
-            assert resource.read_rows()[1].cells[2] == 274.66
+    with Resource(source, dialect=dialect, layout=layout) as resource:
+        assert resource.read_rows()[1].cells[2] == 274.66
 
 
 def test_xlsx_parser_adjust_floating_point_error_default():
     source = "data/adjust-floating-point-error.xlsx"
     dialect = ExcelDialect(preserve_formatting=True)
     layout = Layout(skip_fields=["<blank>"])
-    with pytest.warns(UserWarning):
-        with Resource(source, dialect=dialect, layout=layout) as resource:
-            assert resource.read_rows()[1].cells[2] == 274.65999999999997
+    with Resource(source, dialect=dialect, layout=layout) as resource:
+        assert resource.read_rows()[1].cells[2] == 274.65999999999997
 
 
 def test_xlsx_parser_preserve_formatting():
