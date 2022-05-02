@@ -5,6 +5,7 @@ import atexit
 import hashlib
 import tempfile
 import datetime
+import warnings
 from itertools import chain
 from ..exception import FrictionlessException
 from ..metadata import Metadata
@@ -211,6 +212,7 @@ class XlsxParser(Parser):
         # To fill merged cells we can't use read-only because
         # `sheet.merged_cell_ranges` is not available in this mode
         try:
+            warnings.filterwarnings("ignore", category=UserWarning, module="openpyxl")
             book = openpyxl.load_workbook(
                 self.loader.byte_stream,
                 read_only=not dialect.fill_merged_cells,

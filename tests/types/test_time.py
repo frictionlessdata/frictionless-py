@@ -49,10 +49,9 @@ from frictionless import Field
         ("fmt:%H:%M", "", None),
     ],
 )
-def test_time_read_cell(format, source, target):
-    with pytest.warns(None) as recorded:
-        field = Field({"name": "name", "type": "time", "format": format})
-        cell, notes = field.read_cell(source)
-        assert cell == target
+def test_time_read_cell(format, source, target, recwarn):
+    field = Field({"name": "name", "type": "time", "format": format})
+    cell, notes = field.read_cell(source)
+    assert cell == target
     if not format.startswith("fmt:"):
-        assert recorded.list == []
+        assert recwarn.list == []
