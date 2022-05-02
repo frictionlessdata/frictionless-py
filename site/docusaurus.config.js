@@ -104,6 +104,11 @@ module.exports = {
               href:
               "https://colab.research.google.com/github/frictionlessdata/frictionless-py/blob/main/docs/tutorials/notebooks/frictionless-excel.ipynb",
             },
+            {
+              label: "Frictionless Research Data Management Workflows",
+              href:
+                "https://colab.research.google.com/github/frictionlessdata/frictionless-py/blob/main/docs/tutorials/notebooks/frictionless-RDM-workflows.ipynb",
+            },
           ],
         },
         {
