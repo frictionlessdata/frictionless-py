@@ -3,6 +3,7 @@ import sys
 import json
 import yaml
 import pytest
+from pathlib import Path
 from frictionless import Package, Resource, Schema, Field, Layout, Detector, helpers
 from frictionless import FrictionlessException, describe_resource
 from frictionless.plugins.remote import RemoteControl
@@ -2783,20 +2784,9 @@ def test_resource_to_markdown_path_schema_837():
         },
     }
     resource = Resource(descriptor)
-    expected = """## `main`
-  - `schema`
-      - `primaryKey` ['id']
-### `id`
-  - `description` Any positive integer
-  - `type` integer
-  - `constraints`:
-    - `minimum` 1
-### `integer_minmax`
-  - `description` An integer between 1 and 10
-  - `type` integer
-  - `constraints`:
-    - `minimum` 1
-    - `maximum` 10"""
+    md_file_path = Path(Path(__file__).parent, "fixtures/output-markdown/resource.md")
+    with open(md_file_path, encoding="utf-8") as file:
+        expected = file.read()
     assert resource.to_markdown().strip() == expected
 
 
@@ -2822,13 +2812,11 @@ def test_resource_to_markdown_path_schema_table_837():
         },
     }
     resource = Resource(descriptor)
-    expected = """## `main`
-  - `schema`
-      - `primaryKey` ['id']
-  | name           | description                 | type    | constraints                   |
-|:---------------|:----------------------------|:--------|:------------------------------|
-| id             | Any positive integer        | integer | {'minimum': 1}                |
-| integer_minmax | An integer between 1 and 10 | integer | {'minimum': 1, 'maximum': 10} |"""
+    md_file_path = Path(
+        Path(__file__).parent, "fixtures/output-markdown/resource-table.md"
+    )
+    with open(md_file_path, encoding="utf-8") as file:
+        expected = file.read()
     assert resource.to_markdown(table=True).strip() == expected
 
 
@@ -2853,20 +2841,9 @@ def test_resource_to_markdown_file_837(tmpdir):
             "primaryKey": ["id"],
         },
     }
-    expected = """## `main`
-  - `schema`
-      - `primaryKey` ['id']
-### `id`
-  - `description` Any positive integer
-  - `type` integer
-  - `constraints`:
-    - `minimum` 1
-### `integer_minmax`
-  - `description` An integer between 1 and 10
-  - `type` integer
-  - `constraints`:
-    - `minimum` 1
-    - `maximum` 10"""
+    md_file_path = Path(Path(__file__).parent, "fixtures/output-markdown/resource.md")
+    with open(md_file_path, encoding="utf-8") as file:
+        expected = file.read()
     target = str(tmpdir.join("resource.md"))
     resource = Resource(descriptor)
     resource.to_markdown(path=target).strip()

@@ -1165,40 +1165,9 @@ def test_package_to_markdown_837():
         ],
     }
     package = Package(descriptor)
-    expected = """# `package`
-## `main`
-  - `schema`
-      - `primaryKey` ['id']
-### `id`
-  - `description` Any positive integer
-  - `type` integer
-  - `constraints`:
-    - `minimum` 1
-### `integer_minmax`
-  - `description` An integer between 1 and 10
-  - `type` integer
-  - `constraints`:
-    - `minimum` 1
-    - `maximum` 10
-### `boolean`
-  - `description` Any boolean
-  - `type` boolean
-## `secondary`
-  - `schema`
-      - `foreignKeys`
-      - [1]
-        - `fields` ['main_id']
-        - `reference`
-          - `resource` main
-          - `fields` ['id']
-### `main_id`
-  - `description` Any value in main.id
-  - `type` integer
-### `string`
-  - `description` Any string of up to 3 characters
-  - `type` string
-  - `constraints`:
-    - `maxLength` 3"""
+    md_file_path = Path(Path(__file__).parent, "fixtures/output-markdown/package.md")
+    with open(md_file_path, encoding="utf-8") as file:
+        expected = file.read()
     assert package.to_markdown().strip() == expected
 
 
@@ -1258,27 +1227,11 @@ def test_package_to_markdown_table_837():
         ],
     }
     package = Package(descriptor)
-    expected = """# `package`
-## `main`
-  - `schema`
-      - `primaryKey` ['id']
-  | name           | description                 | type    | constraints                   |
-|:---------------|:----------------------------|:--------|:------------------------------|
-| id             | Any positive integer        | integer | {'minimum': 1}                |
-| integer_minmax | An integer between 1 and 10 | integer | {'minimum': 1, 'maximum': 10} |
-| boolean        | Any boolean                 | boolean |                               |
-## `secondary`
-  - `schema`
-      - `foreignKeys`
-      - [1]
-        - `fields` ['main_id']
-        - `reference`
-          - `resource` main
-          - `fields` ['id']
-  | name    | description                      | type    | constraints      |
-|:--------|:---------------------------------|:--------|:-----------------|
-| main_id | Any value in main.id             | integer |                  |
-| string  | Any string of up to 3 characters | string  | {'maxLength': 3} |"""
+    md_file_path = Path(
+        Path(__file__).parent, "fixtures/output-markdown/package-table.md"
+    )
+    with open(md_file_path, encoding="utf-8") as file:
+        expected = file.read()
     assert package.to_markdown(table=True).strip() == expected
 
 
@@ -1337,40 +1290,9 @@ def test_package_to_markdown_file_837(tmpdir):
             },
         ],
     }
-    expected = """# `package`
-## `main`
-  - `schema`
-      - `primaryKey` ['id']
-### `id`
-  - `description` Any positive integer
-  - `type` integer
-  - `constraints`:
-    - `minimum` 1
-### `integer_minmax`
-  - `description` An integer between 1 and 10
-  - `type` integer
-  - `constraints`:
-    - `minimum` 1
-    - `maximum` 10
-### `boolean`
-  - `description` Any boolean
-  - `type` boolean
-## `secondary`
-  - `schema`
-      - `foreignKeys`
-      - [1]
-        - `fields` ['main_id']
-        - `reference`
-          - `resource` main
-          - `fields` ['id']
-### `main_id`
-  - `description` Any value in main.id
-  - `type` integer
-### `string`
-  - `description` Any string of up to 3 characters
-  - `type` string
-  - `constraints`:
-    - `maxLength` 3"""
+    md_file_path = Path(Path(__file__).parent, "fixtures/output-markdown/package.md")
+    with open(md_file_path, encoding="utf-8") as file:
+        expected = file.read()
     target = str(tmpdir.join("package.md"))
     package = Package(descriptor)
     package.to_markdown(path=target).strip()

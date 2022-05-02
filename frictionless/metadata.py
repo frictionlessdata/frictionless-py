@@ -156,10 +156,11 @@ class Metadata(helpers.ControlledDict):
         return text
 
     def to_markdown(self, path: str = None, table: bool = False) -> str:
-        """Save metadata as a markdown
+        """Convert metadata as a markdown
 
         Parameters:
             path (str): target path
+            table (bool): if true converts markdown to tabular format
 
         Raises:
             FrictionlessException: on any error

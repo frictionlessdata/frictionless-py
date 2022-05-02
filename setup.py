@@ -23,7 +23,6 @@ TESTS_REQUIRE = [
     "mypy",
     "moto",
     "black",
-    "jinja2",
     "pylama",
     "pytest",
     "ipython",
@@ -49,7 +48,7 @@ EXTRAS_REQUIRE = {
     "html": ["pyquery>=1.4"],
     "json": ["ijson>=3.0", "jsonlines>=1.2"],
     "ods": ["ezodf>=0.3", "lxml>=4.0"],
-    "pandas": ["pandas>=1.0", "tabulate>=0.8.9"],
+    "pandas": ["pandas>=1.0"],
     "s3": ["boto3>=1.9"],
     "server": ["gunicorn>=20.0", "flask>=1.1"],
     "spss": ["savReaderWriter>=3.0"],
@@ -71,7 +70,9 @@ INSTALL_REQUIRES = [
     "validators>=0.18",
     "python-slugify>=1.2",
     "python-dateutil>=2.8",
-    "tableschema-to-template>=0.0.12"
+    "tableschema-to-template>=0.0.12",
+    "tabulate>=0.8.9",
+    "jinja2>=3.0.3"
 ]
 README = read("README.md")
 VERSION = read(PACKAGE, "assets", "VERSION")
