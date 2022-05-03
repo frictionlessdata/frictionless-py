@@ -1,7 +1,7 @@
 from frictionless import Resource
 
 
-# Loader
+# General
 
 
 def test_buffer_loader():
