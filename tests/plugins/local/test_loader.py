@@ -2,7 +2,7 @@ from frictionless import Resource
 from importlib import import_module
 
 
-# Loader
+# General
 
 
 def test_local_loader():
