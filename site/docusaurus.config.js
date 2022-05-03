@@ -87,7 +87,7 @@ module.exports = {
             {
               label: "Frictionless Cars",
               href:
-                "https://colab.research.google.com/github/frictionlessdata/frictionless-py/blob/main/docs/tutorials/notebooks/frictionless-cars.ipynb"
+              "https://colab.research.google.com/github/frictionlessdata/frictionless-py/blob/main/docs/tutorials/notebooks/frictionless-cars.ipynb"
             },
             {
               label: "Frictionless Biology",
@@ -97,7 +97,7 @@ module.exports = {
             {
               label: "Frictionless Describe and Extract",
               href:
-                "https://colab.research.google.com/github/frictionlessdata/frictionless-py/blob/main/docs/tutorials/notebooks/frictionless-tutorial-describe-extract.ipynb",
+              "https://colab.research.google.com/github/frictionlessdata/frictionless-py/blob/main/docs/tutorials/notebooks/frictionless-tutorial-describe-extract.ipynb",
             },
             {
               label: "Frictionless Excel",
@@ -107,7 +107,12 @@ module.exports = {
             {
               label: "Frictionless Research Data Management Workflows",
               href:
-                "https://colab.research.google.com/github/frictionlessdata/frictionless-py/blob/main/docs/tutorials/notebooks/frictionless-RDM-workflows.ipynb",
+              "https://colab.research.google.com/github/frictionlessdata/frictionless-py/blob/main/docs/tutorials/notebooks/frictionless-RDM-workflows.ipynb",
+            },
+            {
+              label: "Frictionless Export, Markdown and Other",
+              href:
+              "https://colab.research.google.com/github/frictionlessdata/frictionless-py/blob/main/docs/tutorials/notebooks/tutorial-markdown-export-feature.ipynb",
             },
           ],
         },
