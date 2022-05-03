@@ -2,6 +2,10 @@
 
 Here described only the breaking and most significant changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/frictionless-py/commits/main).
 
+## v4.32.0
+
+- Added to_markdown() feature to metadata  (#1052)
+
 ## v4.31.0
 
 - Added a feature that allows to export table schema as excel  (#1040)
