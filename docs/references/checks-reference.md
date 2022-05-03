@@ -9,19 +9,9 @@ This document provides a full reference to the Frictionless checks.
 Code: `baseline` <br/>
 
 
-## duplicate_row
-
-Code: `duplicate-row` <br/>
-
-
 ## deviated_value
 
 Code: `deviated-value` <br/>
-
-
-## truncated_value
-
-Code: `truncated-value` <br/>
 
 
 ## forbidden_value
@@ -32,6 +22,16 @@ Code: `forbidden-value` <br/>
 ## sequential_value
 
 Code: `sequential-value` <br/>
+
+
+## truncated_value
+
+Code: `truncated-value` <br/>
+
+
+## duplicate_row
+
+Code: `duplicate-row` <br/>
 
 
 ## row_constraint

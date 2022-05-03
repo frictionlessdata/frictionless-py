@@ -552,6 +552,317 @@ Public   | `from frictionless import Detector`
   For more information, please check "Extracting Data" guide.
 
 
+### detector.buffer\_size
+
+```python
+@property
+def buffer_size() -> int
+```
+
+Returns buffer size of the detector. Default value is 10000.
+
+**Returns**:
+
+- `int` - detector buffer size
+
+
+### detector.buffer\_size
+
+```python
+@buffer_size.setter
+def buffer_size(value: int)
+```
+
+Sets buffer size for detector.
+
+**Arguments**:
+
+- `value` _int_ - detector buffer size
+
+
+### detector.sample\_size
+
+```python
+@property
+def sample_size() -> int
+```
+
+Returns sample size of the detector. Default value is 100.
+
+**Returns**:
+
+- `int` - detector sample size
+
+
+### detector.sample\_size
+
+```python
+@sample_size.setter
+def sample_size(value: int)
+```
+
+Sets sample size for detector.
+
+**Arguments**:
+
+- `value` _int_ - detector sample size
+
+
+### detector.encoding\_function
+
+```python
+@property
+def encoding_function() -> any
+```
+
+Returns detector custom encoding function
+
+**Returns**:
+
+- `any` - detector custom encoding function
+
+
+### detector.encoding\_function
+
+```python
+@encoding_function.setter
+def encoding_function(value: any)
+```
+
+Sets detector custom encoding function for the resource to be read.
+
+**Arguments**:
+
+- `value` _any_ - detector custom encoding function
+
+
+### detector.encoding\_confidence
+
+```python
+@property
+def encoding_confidence() -> float
+```
+
+Returns confidence value for detector encoding function.
+
+**Returns**:
+
+- `float` - detector encoding function confidence
+
+
+### detector.encoding\_confidence
+
+```python
+@encoding_confidence.setter
+def encoding_confidence(value: float)
+```
+
+Sets confidence value for detector encoding function. Default value
+is None.
+
+**Arguments**:
+
+- `value` _float_ - detector encoding function confidence
+
+
+### detector.field\_type
+
+```python
+@property
+def field_type() -> str
+```
+
+Returns field type of the detector. Default value is None.
+
+**Returns**:
+
+- `str` - detector inferred field types
+
+
+### detector.field\_type
+
+```python
+@field_type.setter
+def field_type(value: str)
+```
+
+Sets field type for all inferred fields by the detector.
+
+**Arguments**:
+
+- `value` _str_ - detector inferred field types
+
+
+### detector.field\_names
+
+```python
+@property
+def field_names() -> List[str]
+```
+
+Returns inferred field names list.
+
+**Returns**:
+
+- `str[]` - detector inferred field names
+
+
+### detector.field\_names
+
+```python
+@field_names.setter
+def field_names(value: List[str])
+```
+
+Sets field names for all inferred fields by the detector.
+
+**Arguments**:
+
+- `value` _str[]_ - detector inferred field names
+
+
+### detector.field\_confidence
+
+```python
+@property
+def field_confidence() -> float
+```
+
+Returns detector inference confidence value. Default value is 0.9.
+
+**Returns**:
+
+- `float` - detector inference confidence value
+
+
+### detector.field\_confidence
+
+```python
+@field_confidence.setter
+def field_confidence(value: float)
+```
+
+Sets inference confidence value for detector. Default value is 0.9.
+
+**Arguments**:
+
+- `value` _float_ - detector inference confidence value
+
+
+### detector.field\_float\_numbers
+
+```python
+@property
+def field_float_numbers() -> bool
+```
+
+Returns detector convert decimal to float flag value.
+
+**Returns**:
+
+- `bool` - detector convert decimal to float flag
+
+
+### detector.field\_float\_numbers
+
+```python
+@field_float_numbers.setter
+def field_float_numbers(value: bool)
+```
+
+Sets detector convert decimal to float flag.
+
+**Arguments**:
+
+- `value` _bool_ - detector convert decimal to float flag
+
+
+### detector.field\_missing\_values
+
+```python
+@property
+def field_missing_values() -> List[str]
+```
+
+Returns detector fields missing values list.
+
+**Returns**:
+
+- `str[]` - detector fields missing values list
+
+
+### detector.field\_missing\_values
+
+```python
+@field_missing_values.setter
+def field_missing_values(value: List[str])
+```
+
+Sets detector fields missing values list.
+
+**Arguments**:
+
+- `value` _str[]_ - detector fields missing values list
+
+
+### detector.schema\_sync
+
+```python
+@property
+def schema_sync() -> bool
+```
+
+Returns detector schema_sync flag value.
+
+**Returns**:
+
+- `bool` - detector schema_sync flag value
+
+
+### detector.schema\_sync
+
+```python
+@schema_sync.setter
+def schema_sync(value: bool)
+```
+
+Sets detector schema_sync flag value. If set to true, it
+syncs provided schema's field order based on the header's
+field order.
+
+**Arguments**:
+
+- `value` _bool_ - detector schema_sync flag value
+
+
+### detector.schema\_patch
+
+```python
+@property
+def schema_patch() -> Dict
+```
+
+Returns detector resource fields to change.
+
+**Returns**:
+
+- `Dict` - detector resource fields to change
+
+
+### detector.schema\_patch
+
+```python
+@schema_patch.setter
+def schema_patch(value: Dict)
+```
+
+Sets detector resource fields to change.
+
+**Arguments**:
+
+- `value` _Dict_ - detector resource fields to change
+
+
 ### detector.detect\_encoding
 
 ```python
@@ -2345,6 +2656,15 @@ Set an initial item in a subclass' constructor
 - `value` _any_ - value
 
 
+### metadata.\_\_repr\_\_
+
+```python
+def __repr__() -> str
+```
+
+Returns string representation for metadata.
+
+
 ### metadata.to\_copy
 
 ```python
@@ -2400,6 +2720,28 @@ Save metadata as a yaml
 **Arguments**:
 
 - `path` _str_ - target path
+  
+
+**Raises**:
+
+- `FrictionlessException` - on any error
+
+
+### metadata.to\_markdown
+
+```python
+def to_markdown(path: str = None, table: bool = False) -> str
+```
+
+Convert metadata as a markdown
+
+This feature has been contributed to the framwork by Ethan Welty (@ezwelty):
+- https://github.com/frictionlessdata/frictionless-py/issues/837
+
+**Arguments**:
+
+- `path` _str_ - target path
+- `table` _bool_ - if true converts markdown to tabular format
   
 
 **Raises**:
@@ -5488,6 +5830,24 @@ Create a Schema from JSONSchema profile
 - `Schema` - schema instance
 
 
+### schema.to\_excel\_template
+
+```python
+def to_excel_template(path: str) -> any
+```
+
+Export schema as an excel template
+
+**Arguments**:
+
+- `path` - path of excel file to create with ".xlsx" extension
+  
+
+**Returns**:
+
+- `any` - excel template
+
+
 ## Server
 
 ```python
@@ -6616,6 +6976,15 @@ Public   | `from frictionless import describe_schema`
 - `Schema` - table schema
 
 
+## dicts\_to\_markdown\_table
+
+```python
+def dicts_to_markdown_table(dicts: List[dict], **kwargs) -> str
+```
+
+Tabulate dictionaries and render as a Markdown table
+
+
 ## errors.CellError
 
 ```python
@@ -6823,6 +7192,39 @@ Public   | `from frictionless import extract_resource`
 **Returns**:
 
 - `Row[]` - an array/stream of rows
+
+
+## filter\_dict
+
+```python
+def filter_dict(x: dict,
+                include: list = None,
+                exclude: list = None,
+                order: list = None) -> dict
+```
+
+Filter and order dictionary by key names
+
+
+## json\_to\_markdown
+
+```python
+def json_to_markdown(x: Union[dict, list, int, float, str, bool],
+                     level: int = 0,
+                     tab: int = 2,
+                     flatten_scalar_lists: bool = True) -> str
+```
+
+Render any JSON-like object as Markdown, using nested bulleted lists
+
+
+## render\_markdown
+
+```python
+def render_markdown(path: str, data: dict) -> str
+```
+
+Render any JSON-like object as Markdown, using jinja2 template
 
 
 ## steps.cell\_convert

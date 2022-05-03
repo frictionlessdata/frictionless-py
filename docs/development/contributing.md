@@ -31,7 +31,7 @@ livemark sync docs/guides/basic-examples.md # update inline
 It's possible to run this documentation portal locally. This requires Node.js 12+ installed on your computer, and can be run with the following code:
 
 ```bash
-cd portal
+cd site
 npm install
 npm start
 ```
