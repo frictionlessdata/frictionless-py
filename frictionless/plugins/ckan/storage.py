@@ -1,177 +1,18 @@
 import os
 import json
 from functools import partial
-from ..exception import FrictionlessException
-from ..metadata import Metadata
-from ..resource import Resource
-from ..package import Package
-from ..storage import Storage
-from ..dialect import Dialect
-from ..parser import Parser
-from ..plugin import Plugin
-from ..schema import Schema
-from ..system import system
-from ..field import Field
-from .. import errors
+from ...exception import FrictionlessException
+from ...resource import Resource
+from ...package import Package
+from ...storage import Storage
+from ...schema import Schema
+from ...system import system
+from ...field import Field
+from ... import errors
+from .dialect import CkanDialect
 
 
-# Plugin
-
-
-class CkanPlugin(Plugin):
-    """Plugin for CKAN
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless.plugins.ckan import CkanPlugin`
-    """
-
-    code = "ckan"
-    status = "experimental"
-
-    def create_dialect(self, resource, *, descriptor):
-        if resource.format == "ckan":
-            return CkanDialect(descriptor)
-
-    def create_parser(self, resource):
-        if resource.format == "ckan":
-            return CkanParser(resource)
-
-    def create_storage(self, name, source, **options):
-        if name == "ckan":
-            return CkanStorage(source, **options)
-
-
-# Dialect
-
-
-class CkanDialect(Dialect):
-    """Ckan dialect representation
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless.plugins.ckan import CkanDialect`
-
-    Parameters:
-        descriptor? (str|dict): descriptor
-        resource? (str): resource
-        dataset? (str): dataset
-        apikey? (str): apikey
-        fields? (array): limit ckan query to certain fields
-        limit? (int): limit number of returned entries
-        sort? (str): sort returned entries, e.g. by date descending: `date desc`
-        filters? (dict): filter data, e.g. field with value: `{ "key": "value" }`
-
-    Raises:
-        FrictionlessException: raise any error that occurs during the process
-    """
-
-    def __init__(
-        self,
-        descriptor=None,
-        *,
-        dataset=None,
-        resource=None,
-        apikey=None,
-        fields=None,
-        limit=None,
-        sort=None,
-        filters=None,
-    ):
-        self.setinitial("resource", resource)
-        self.setinitial("dataset", dataset)
-        self.setinitial("apikey", apikey)
-        self.setinitial("fields", fields)
-        self.setinitial("limit", limit)
-        self.setinitial("sort", sort)
-        self.setinitial("filters", filters)
-        super().__init__(descriptor)
-
-    @Metadata.property
-    def resource(self):
-        return self.get("resource")
-
-    @Metadata.property
-    def dataset(self):
-        return self.get("dataset")
-
-    @Metadata.property
-    def apikey(self):
-        return self.get("apikey")
-
-    @Metadata.property
-    def fields(self):
-        return self.get("fields")
-
-    @Metadata.property
-    def limit(self):
-        return self.get("limit")
-
-    @Metadata.property
-    def sort(self):
-        return self.get("sort")
-
-    @Metadata.property
-    def filters(self):
-        return self.get("filters")
-
-    # Metadata
-
-    metadata_profile = {  # type: ignore
-        "type": "object",
-        "required": ["resource", "dataset"],
-        "additionalProperties": False,
-        "properties": {
-            "resource": {"type": "string"},
-            "dataset": {"type": "string"},
-            "apikey": {"type": "string"},
-            "fields": {"type": "array"},
-            "limit": {"type": "integer"},
-            "sort": {"type": "string"},
-            "filters": {"type": "object"},
-        },
-    }
-
-
-# Parser
-
-
-class CkanParser(Parser):
-    """Ckan parser implementation.
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless.plugins.ckan import CkanParser`
-    """
-
-    supported_types = [
-        "string",
-    ]
-
-    # Read
-
-    def read_list_stream_create(self):
-        storage = CkanStorage(self.resource.fullpath, dialect=self.resource.dialect)
-        resource = storage.read_resource(self.resource.dialect.resource)
-        self.resource.schema = resource.schema
-        with resource:
-            yield from resource.list_stream
-
-    # Write
-
-    # NOTE: this approach is questionable
-    def write_row_stream(self, resource):
-        source = resource
-        target = self.resource
-        storage = CkanStorage(target.fullpath, dialect=target.dialect)
-        if not target.dialect.resource:
-            note = 'Please provide "dialect.resource" for writing'
-            raise FrictionlessException(errors.StorageError(note=note))
-        source.name = target.dialect.resource
-        storage.write_resource(source, force=True)
-
-
-# Storage
+# General
 
 
 class CkanStorage(Storage):

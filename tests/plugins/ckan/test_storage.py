@@ -4,7 +4,7 @@ from frictionless import Package, Resource, FrictionlessException
 from frictionless.plugins.ckan import CkanStorage, CkanDialect
 
 
-# Parser
+# General
 
 
 @pytest.mark.vcr
@@ -217,15 +217,3 @@ def test_ckan_storage_delete_resource_not_existent_error(options):
     error = excinfo.value.error
     assert error.code == "storage-error"
     assert error.note.count("does not exist")
-
-
-# Fixtures
-
-
-@pytest.fixture
-def options():
-    return {
-        "url": "https://demo.ckan.org/",
-        "dataset": "frictionless",
-        "apikey": "51912f57-a657-4caa-b2a7-0a1c16821f4b",
-    }
