@@ -1,90 +1,13 @@
 import tempfile
-from ..resource import Resource
-from ..control import Control
-from ..plugin import Plugin
-from ..loader import Loader
-from ..system import system
-from .. import helpers
+from ...resource import Resource
+from ...loader import Loader
+from ...system import system
+from ... import helpers
 
 
 # NOTE:
 # Curretnly the situation with header/no-header concatenation is complicated
 # We need to review it and add more tests for general/tabular edge cases
-
-
-# Plugin
-
-
-class MultipartPlugin(Plugin):
-    """Plugin for Multipart Data
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless.plugins.multipart import MultipartPlugin`
-
-    """
-
-    code = "multipart"
-    status = "experimental"
-
-    def create_file(self, file):
-        if file.multipart:
-            file.scheme = "multipart"
-            return file
-
-    def create_control(self, resource, *, descriptor):
-        if resource.scheme == "multipart":
-            return MultipartControl(descriptor)
-
-    def create_loader(self, resource):
-        if resource.scheme == "multipart":
-            return MultipartLoader(resource)
-
-
-# Control
-
-
-class MultipartControl(Control):
-    """Multipart control representation
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless.plugins.multipart import MultipartControl`
-
-    Parameters:
-        descriptor? (str|dict): descriptor
-
-    Raises:
-        FrictionlessException: raise any error that occurs during the process
-
-    """
-
-    def __init__(self, descriptor=None, chunk_size=None):
-        self.setinitial("chunkSize", chunk_size)
-        super().__init__(descriptor)
-
-    @property
-    def chunk_size(self):
-        return self.get("chunkSize", DEFAULT_CHUNK_SIZE)
-
-    # Expand
-
-    def expand(self):
-        """Expand metadata"""
-        self.setdefault("chunkSize", self.chunk_size)
-
-    # Metadata
-
-    metadata_profile = {  # type: ignore
-        "type": "object",
-        "additionalProperties": False,
-        "properties": {
-            "chunkSize": {"type": "number"},
-        },
-    }
-
-
-# Loader
 
 
 class MultipartLoader(Loader):
@@ -122,9 +45,6 @@ class MultipartLoader(Loader):
 
 
 # Internal
-
-
-DEFAULT_CHUNK_SIZE = 100000000
 
 
 class MultipartByteStream:

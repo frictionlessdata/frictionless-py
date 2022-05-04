@@ -9,7 +9,7 @@ IS_UNIX = not helpers.is_platform("windows")
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
 
 
-# Loader
+# General
 
 
 def test_multipart_loader():
