@@ -1,76 +1,9 @@
 import isodate
 import datetime
-from ..dialect import Dialect
-from ..plugin import Plugin
-from ..parser import Parser
-from ..schema import Schema
-from ..field import Field
-from .. import helpers
-
-
-# NOTE:
-# We need to ensure that the way we detect pandas dataframe is good enough.
-# We don't want to be importing pandas and checking the type without a good reason
-
-
-# Plugin
-
-
-class PandasPlugin(Plugin):
-    """Plugin for Pandas
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless.plugins.pandas import PandasPlugin`
-
-    """
-
-    code = "pandas"
-    status = "experimental"
-
-    def create_file(self, file):
-        if not file.scheme and not file.format and file.memory:
-            if helpers.is_type(file.data, "DataFrame"):
-                file.scheme = ""
-                file.format = "pandas"
-                return file
-
-    def create_dialect(self, resource, *, descriptor):
-        if resource.format == "pandas":
-            return PandasDialect(descriptor)
-
-    def create_parser(self, resource):
-        if resource.format == "pandas":
-            return PandasParser(resource)
-
-
-# Dialect
-
-
-class PandasDialect(Dialect):
-    """Pandas dialect representation
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless.plugins.pandas import PandasDialect`
-
-    Parameters:
-        descriptor? (str|dict): descriptor
-
-    Raises:
-        FrictionlessException: raise any error that occurs during the process
-
-    """
-
-    # Metadata
-
-    metadata_profile = {  # type: ignore
-        "type": "object",
-        "additionalProperties": False,
-    }
-
-
-# Parser
+from ...parser import Parser
+from ...schema import Schema
+from ...field import Field
+from ... import helpers
 
 
 class PandasParser(Parser):

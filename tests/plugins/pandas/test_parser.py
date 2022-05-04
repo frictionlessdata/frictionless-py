@@ -6,7 +6,7 @@ from decimal import Decimal
 from frictionless import Package, Resource
 
 
-# Parser
+# Read
 
 
 def test_pandas_parser():
@@ -17,6 +17,9 @@ def test_pandas_parser():
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
         ]
+
+
+# Write
 
 
 def test_pandas_parser_write():
