@@ -7,7 +7,7 @@ from frictionless import Resource, FrictionlessException
 # https://vcrpy.readthedocs.io/en/latest/advanced.html#filter-sensitive-data-from-the-request
 
 
-# Parser
+# General
 
 
 @pytest.mark.ci
