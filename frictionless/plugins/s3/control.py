@@ -1,5 +1,6 @@
 import os
 from ...control import Control
+from . import settings
 
 
 class S3Control(Control):
@@ -27,7 +28,7 @@ class S3Control(Control):
         return (
             self.get("endpointUrl")
             or os.environ.get("S3_ENDPOINT_URL")
-            or DEFAULT_ENDPOINT_URL
+            or settings.DEFAULT_ENDPOINT_URL
         )
 
     # Expand
@@ -45,9 +46,3 @@ class S3Control(Control):
             "endpointUrl": {"type": "string"},
         },
     }
-
-
-# Internal
-
-
-DEFAULT_ENDPOINT_URL = "https://s3.amazonaws.com"

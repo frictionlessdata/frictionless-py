@@ -12,6 +12,7 @@ from ....parser import Parser
 from ....system import system
 from .... import helpers
 from .... import errors
+from .. import settings
 
 
 class XlsxParser(Parser):
@@ -165,61 +166,6 @@ class XlsxParser(Parser):
 # Internal
 
 
-EXCEL_CODES = {
-    "yyyy": "%Y",
-    "yy": "%y",
-    "dddd": "%A",
-    "ddd": "%a",
-    "dd": "%d",
-    "d": "%-d",
-    # Different from excel as there is no J-D in strftime
-    "mmmmmm": "%b",
-    "mmmm": "%B",
-    "mmm": "%b",
-    "hh": "%H",
-    "h": "%-H",
-    "ss": "%S",
-    "s": "%-S",
-    # Possibly different from excel as there is no am/pm in strftime
-    "am/pm": "%p",
-    # Different from excel as there is no A/P or a/p in strftime
-    "a/p": "%p",
-}
-
-EXCEL_MINUTE_CODES = {
-    "mm": "%M",
-    "m": "%-M",
-}
-EXCEL_MONTH_CODES = {
-    "mm": "%m",
-    "m": "%-m",
-}
-
-EXCEL_MISC_CHARS = [
-    "$",
-    "+",
-    "(",
-    ":",
-    "^",
-    "'",
-    "{",
-    "<",
-    "=",
-    "-",
-    "/",
-    ")",
-    "!",
-    "&",
-    "~",
-    "}",
-    ">",
-    " ",
-]
-
-EXCEL_ESCAPE_CHAR = "\\"
-EXCEL_SECTION_DIVIDER = ";"
-
-
 def extract_row_values(row, preserve_formatting=False, adjust_floating_point_error=False):
     if preserve_formatting:
         values = []
@@ -342,13 +288,15 @@ def convert_excel_date_format_string(excel_date):
         if c == '"':
             quotation_block = True
             continue
-        if c == EXCEL_SECTION_DIVIDER:
+        if c == settings.EXCEL_SECTION_DIVIDER:
             # We ignore excel sections for datetimes
             break
 
-        is_escape_char = c == EXCEL_ESCAPE_CHAR
+        is_escape_char = c == settings.EXCEL_ESCAPE_CHAR
         # The am/pm and a/p code add some complications, need to make sure we are not that code
-        is_misc_char = c in EXCEL_MISC_CHARS and (c != "/" or (ec != "am" and ec != "a"))
+        is_misc_char = c in settings.EXCEL_MISC_CHARS and (
+            c != "/" or (ec != "am" and ec != "a")
+        )
         new_excel_code = False
 
         # Handle a new code without a different characeter in between
@@ -371,24 +319,24 @@ def convert_excel_date_format_string(excel_date):
                 if ec == "ss" or ec == "s":
                     # It should be a minute!
                     minute_or_month_buffer = (
-                        EXCEL_MINUTE_CODES[prev_code] + minute_or_month_buffer
+                        settings.EXCEL_MINUTE_CODES[prev_code] + minute_or_month_buffer
                     )
                 else:
                     # It should be a months!
                     minute_or_month_buffer = (
-                        EXCEL_MONTH_CODES[prev_code] + minute_or_month_buffer
+                        settings.EXCEL_MONTH_CODES[prev_code] + minute_or_month_buffer
                     )
                 python_date += minute_or_month_buffer
                 checking_minute_or_month = False
                 minute_or_month_buffer = ""
 
-            if ec in EXCEL_CODES:
-                python_date += EXCEL_CODES[ec]
+            if ec in settings.EXCEL_CODES:
+                python_date += settings.EXCEL_CODES[ec]
             # Handle months/minutes differently
-            elif ec in EXCEL_MINUTE_CODES:
+            elif ec in settings.EXCEL_MINUTE_CODES:
                 # If preceded by hours, we know this is referring to minutes
                 if prev_code == "h" or prev_code == "hh":
-                    python_date += EXCEL_MINUTE_CODES[ec]
+                    python_date += settings.EXCEL_MINUTE_CODES[ec]
                 else:
                     # Have to check if the next code is ss or s
                     checking_minute_or_month = True
@@ -413,17 +361,19 @@ def convert_excel_date_format_string(excel_date):
     # Complete, check if there is still a buffer
     if checking_minute_or_month:
         # We know it's a month because there were no more codes after
-        minute_or_month_buffer = EXCEL_MONTH_CODES[prev_code] + minute_or_month_buffer
+        minute_or_month_buffer = (
+            settings.EXCEL_MONTH_CODES[prev_code] + minute_or_month_buffer
+        )
         python_date += minute_or_month_buffer
     if excel_code:
         ec = excel_code.lower()
-        if ec in EXCEL_CODES:
-            python_date += EXCEL_CODES[ec]
-        elif ec in EXCEL_MINUTE_CODES:
+        if ec in settings.EXCEL_CODES:
+            python_date += settings.EXCEL_CODES[ec]
+        elif ec in settings.EXCEL_MINUTE_CODES:
             if prev_code == "h" or prev_code == "hh":
-                python_date += EXCEL_MINUTE_CODES[ec]
+                python_date += settings.EXCEL_MINUTE_CODES[ec]
             else:
-                python_date += EXCEL_MONTH_CODES[ec]
+                python_date += settings.EXCEL_MONTH_CODES[ec]
         else:
             return None
     return python_date

@@ -14,6 +14,7 @@ from ...field import Field
 from ... import helpers
 from ... import errors
 from .dialect import BigqueryDialect
+from . import settings
 
 
 class BigqueryStorage(Storage):
@@ -245,7 +246,7 @@ class BigqueryStorage(Storage):
                     if row[field.name] is not None:
                         row[field.name] = row[field.name].replace(tzinfo=None)
                 buffer.append(row.to_list())
-                if len(buffer) > BUFFER_SIZE:
+                if len(buffer) > settings.BUFFER_SIZE:
                     self.__write_convert_data_start_job(resource.name, buffer)
                     buffer = []
             if len(buffer) > 0:
@@ -362,8 +363,6 @@ class BigqueryStorage(Storage):
 
 
 # Internal
-
-BUFFER_SIZE = 1000
 
 
 def _slugify_name(name):

@@ -4,6 +4,7 @@ import stringcase
 from itertools import chain
 from ...parser import Parser
 from ...system import system
+from . import settings
 
 
 class CsvParser(Parser):
@@ -99,4 +100,4 @@ def extract_samle(text_stream):
 # System
 
 # https://stackoverflow.com/a/54515177
-csv.field_size_limit(2147483646)
+csv.field_size_limit(settings.FIELD_SIZE_LIMIT)

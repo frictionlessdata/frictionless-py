@@ -32,7 +32,7 @@ class GeojsonType(Type):
             return None
         if self.field.format in ["default", "topojson"]:
             try:
-                VALIDATORS[self.field.format].validate(cell)
+                validators[self.field.format].validate(cell)
             except Exception:
                 return None
         return cell
@@ -46,7 +46,7 @@ class GeojsonType(Type):
 # Internal
 
 
-VALIDATORS = {
+validators = {
     "default": validator_for(settings.GEOJSON_PROFILE)(settings.GEOJSON_PROFILE),
     "topojson": validator_for(settings.TOPOJSON_PROFILE)(settings.TOPOJSON_PROFILE),
 }
