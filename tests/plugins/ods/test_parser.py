@@ -6,7 +6,7 @@ from frictionless.plugins.ods import OdsDialect
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
 
 
-# Parser
+# General
 
 
 def test_ods_parser():
@@ -92,7 +92,7 @@ def test_ods_parser_with_ints_floats_dates():
         ]
 
 
-def test_table_write_ods(tmpdir):
+def test_ods_parser_write(tmpdir):
     source = Resource("data/table.csv")
     # NOTE: ezodf writer creates more cells than we ask (remove limits)
     layout = Layout(limit_fields=2, limit_rows=2)

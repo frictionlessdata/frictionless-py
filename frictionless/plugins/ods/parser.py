@@ -1,88 +1,11 @@
 import io
 import tempfile
 from datetime import datetime
-from ..exception import FrictionlessException
-from ..metadata import Metadata
-from ..dialect import Dialect
-from ..plugin import Plugin
-from ..parser import Parser
-from ..system import system
-from .. import helpers
-from .. import errors
-
-
-# Plugin
-
-
-class OdsPlugin(Plugin):
-    """Plugin for ODS
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless.plugins.ods import OdsPlugin`
-
-    """
-
-    code = "ods"
-
-    def create_dialect(self, resource, *, descriptor):
-        if resource.format == "ods":
-            return OdsDialect(descriptor)
-
-    def create_parser(self, resource):
-        if resource.format == "ods":
-            return OdsParser(resource)
-
-
-# Dialect
-
-
-class OdsDialect(Dialect):
-    """Ods dialect representation
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless.plugins.ods import OdsDialect`
-
-    Parameters:
-        descriptor? (str|dict): descriptor
-        sheet? (str): sheet
-
-    Raises:
-        FrictionlessException: raise any error that occurs during the process
-
-    """
-
-    def __init__(self, descriptor=None, *, sheet=None):
-        self.setinitial("sheet", sheet)
-        super().__init__(descriptor)
-
-    @Metadata.property
-    def sheet(self):
-        """
-        Returns:
-            int|str: sheet
-        """
-        return self.get("sheet", 1)
-
-    # Expand
-
-    def expand(self):
-        """Expand metadata"""
-        self.setdefault("sheet", self.sheet)
-
-    # Metadata
-
-    metadata_profile = {  # type: ignore
-        "type": "object",
-        "additionalProperties": False,
-        "properties": {
-            "sheet": {"type": ["number", "string"]},
-        },
-    }
-
-
-# Parser
+from ...exception import FrictionlessException
+from ...parser import Parser
+from ...system import system
+from ... import helpers
+from ... import errors
 
 
 class OdsParser(Parser):
