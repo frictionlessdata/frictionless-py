@@ -1,192 +1,15 @@
 import re
 from functools import partial
 from urllib.parse import urlsplit, urlunsplit
-from ..exception import FrictionlessException
-from ..metadata import Metadata
-from ..resource import Resource
-from ..dialect import Dialect
-from ..storage import Storage
-from ..package import Package
-from ..plugin import Plugin
-from ..parser import Parser
-from ..schema import Schema
-from ..field import Field
-from .. import helpers
-from .. import errors
-
-
-# NOTE:
-# Can we improve `engline.dialect.name.startswith()` checks?
-
-
-# Plugin
-
-
-class SqlPlugin(Plugin):
-    """Plugin for SQL
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless.plugins.sql import SqlPlugin`
-
-    """
-
-    code = "sql"
-    status = "experimental"
-
-    def create_file(self, file):
-        for prefix in SCHEME_PREFIXES:
-            if file.scheme.startswith(prefix):
-                file.scheme = ""
-                file.format = "sql"
-                return file
-
-    def create_dialect(self, resource, *, descriptor):
-        if resource.format == "sql":
-            return SqlDialect(descriptor)
-
-    def create_parser(self, resource):
-        if resource.format == "sql":
-            return SqlParser(resource)
-
-    def create_storage(self, name, source, **options):
-        if name == "sql":
-            return SqlStorage(source, **options)
-
-
-# Dialect
-
-
-class SqlDialect(Dialect):
-    """SQL dialect representation
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless.plugins.sql import SqlDialect`
-
-    Parameters:
-        descriptor? (str|dict): descriptor
-        table (str): table name
-        prefix (str): prefix for all table names
-        order_by? (str): order_by statement passed to SQL
-        where? (str): where statement passed to SQL
-        namespace? (str): SQL schema
-        basepath? (str): a basepath, for example, for SQLite path
-
-    Raises:
-        FrictionlessException: raise any error that occurs during the process
-
-    """
-
-    def __init__(
-        self,
-        descriptor=None,
-        *,
-        table=None,
-        prefix=None,
-        order_by=None,
-        where=None,
-        namespace=None,
-        basepath=None,
-    ):
-        self.setinitial("table", table)
-        self.setinitial("prefix", prefix)
-        self.setinitial("order_by", order_by)
-        self.setinitial("where", where)
-        self.setinitial("namespace", namespace)
-        self.setinitial("basepath", basepath)
-        super().__init__(descriptor)
-
-    @Metadata.property
-    def table(self):
-        return self.get("table")
-
-    @Metadata.property
-    def prefix(self):
-        return self.get("prefix") or ""
-
-    @Metadata.property
-    def order_by(self):
-        return self.get("order_by")
-
-    @Metadata.property
-    def where(self):
-        return self.get("where")
-
-    @Metadata.property
-    def namespace(self):
-        return self.get("namespace")
-
-    @Metadata.property
-    def basepath(self):
-        return self.get("basepath")
-
-    # Metadata
-
-    metadata_profile = {  # type: ignore
-        "type": "object",
-        "required": ["table"],
-        "additionalProperties": False,
-        "properties": {
-            "table": {"type": "string"},
-            "prefix": {"type": "string"},
-            "order_by": {"type": "string"},
-            "where": {"type": "string"},
-            "namespace": {"type": "string"},
-            "basepath": {"type": "string"},
-        },
-    }
-
-
-# Parser
-
-
-class SqlParser(Parser):
-    """SQL parser implementation.
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless.plugins.sql import SqlParser`
-
-    """
-
-    supported_types = [
-        "boolean",
-        "date",
-        "datetime",
-        "integer",
-        "number",
-        "string",
-        "time",
-    ]
-
-    # Read
-
-    def read_list_stream_create(self):
-        dialect = self.resource.dialect
-        storage = SqlStorage(self.resource.fullpath, dialect=dialect)
-        resource = storage.read_resource(
-            dialect.table, order_by=dialect.order_by, where=dialect.where
-        )
-        self.resource.schema = resource.schema
-        with resource:
-            yield from resource.list_stream
-
-    # Write
-
-    # NOTE: this approach is questionable
-    def write_row_stream(self, resource):
-        source = resource
-        target = self.resource
-        if not target.dialect.table:
-            note = 'Please provide "dialect.table" for writing'
-            raise FrictionlessException(errors.StorageError(note=note))
-        source.name = target.dialect.table
-        storage = SqlStorage(target.fullpath, dialect=target.dialect)
-        storage.write_resource(source, force=True)
-
-
-# Storage
+from ...exception import FrictionlessException
+from ...resource import Resource
+from ...storage import Storage
+from ...package import Package
+from ...schema import Schema
+from ...field import Field
+from ... import helpers
+from ... import errors
+from .dialect import SqlDialect
 
 
 class SqlStorage(Storage):
@@ -580,20 +403,6 @@ class SqlStorage(Storage):
 
 
 # Internal
-
-# https://docs.sqlalchemy.org/en/13/core/engines.html
-# https://docs.sqlalchemy.org/en/13/dialects/index.html
-SCHEME_PREFIXES = [
-    "postgresql",
-    "mysql",
-    "oracle",
-    "mssql",
-    "sqlite",
-    "firebird",
-    "sybase",
-    "db2",
-    "ibm",
-]
 
 
 def regexp(expr, item):
