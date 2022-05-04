@@ -6,7 +6,7 @@ from frictionless.plugins.csv import CsvDialect
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
 
 
-# Parser
+# General
 
 
 def test_csv_parser():
