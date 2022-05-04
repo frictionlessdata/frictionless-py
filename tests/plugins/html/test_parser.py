@@ -3,7 +3,7 @@ from frictionless import Resource
 from frictionless.plugins.html import HtmlDialect
 
 
-# Parser
+# General
 
 
 @pytest.mark.parametrize(
