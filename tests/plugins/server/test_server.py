@@ -1,7 +1,7 @@
 from frictionless import system
 
 
-# API
+# General
 
 
 def test_server_api():

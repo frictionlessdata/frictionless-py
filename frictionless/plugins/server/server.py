@@ -1,35 +1,11 @@
 import multiprocessing
-from ..describe import describe
-from ..extract import extract
-from ..validate import validate
-from ..transform import transform
-from ..plugin import Plugin
-from ..server import Server
-from .. import settings
-from .. import helpers
-
-
-# Plugin
-
-
-class ServerPlugin(Plugin):
-    """Plugin for Server
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless.plugins.server import ServerPlugin`
-
-    """
-
-    code = "server"
-    status = "experimental"
-
-    def create_server(self, name):
-        if name == "api":
-            return ApiServer()
-
-
-# Servers
+from ...describe import describe
+from ...extract import extract
+from ...validate import validate
+from ...transform import transform
+from ...server import Server
+from ... import settings
+from ... import helpers
 
 
 class ApiServer(Server):
