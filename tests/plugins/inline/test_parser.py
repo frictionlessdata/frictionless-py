@@ -3,7 +3,7 @@ from frictionless import Resource
 from frictionless.plugins.inline import InlineDialect
 
 
-# Parser
+# General
 
 
 def test_inline_parser():
