@@ -2,7 +2,6 @@ from ...exception import FrictionlessException
 from ...parser import Parser
 from .storage import SqlStorage
 from ... import errors
-from . import settings
 
 
 class SqlParser(Parser):

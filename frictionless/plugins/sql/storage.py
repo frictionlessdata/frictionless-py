@@ -10,7 +10,6 @@ from ...field import Field
 from .dialect import SqlDialect
 from ... import helpers
 from ... import errors
-from . import settings
 
 
 class SqlStorage(Storage):
