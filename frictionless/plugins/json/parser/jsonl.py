@@ -1,9 +1,9 @@
 import tempfile
-from ...plugins.inline import InlineDialect
-from ...resource import Resource
-from ...parser import Parser
-from ...system import system
-from ... import helpers
+from ....plugins.inline import InlineDialect
+from ....resource import Resource
+from ....parser import Parser
+from ....system import system
+from .... import helpers
 
 
 class JsonlParser(Parser):

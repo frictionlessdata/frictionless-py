@@ -1,7 +1,6 @@
 from ...plugin import Plugin
 from .dialect import JsonDialect
-from .parser_json import JsonParser
-from .parser_jsonl import JsonlParser
+from .parser import JsonParser, JsonlParser
 
 
 class JsonPlugin(Plugin):

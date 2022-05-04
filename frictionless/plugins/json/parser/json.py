@@ -1,21 +1,18 @@
 import json
 import tempfile
-from ...plugins.inline import InlineDialect
-from ...exception import FrictionlessException
-from ...resource import Resource
-from ...parser import Parser
-from ...system import system
-from ... import helpers
-from ... import errors
+from ....exception import FrictionlessException
+from ....plugins.inline import InlineDialect
+from ....resource import Resource
+from ....parser import Parser
+from ....system import system
+from .... import helpers
 
 
 class JsonParser(Parser):
     """JSON parser implementation.
-
     API      | Usage
     -------- | --------
     Public   | `from frictionless.plugins.json import JsonParser
-
     """
 
     requires_loader = True
