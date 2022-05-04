@@ -5,7 +5,7 @@ from frictionless import Resource, Layout
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
 
 
-# Loader
+# General
 
 
 @pytest.mark.vcr
