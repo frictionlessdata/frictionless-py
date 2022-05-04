@@ -7,7 +7,7 @@ from frictionless import Package, Resource, helpers
 IS_MACOS = helpers.is_platform("macos")
 
 
-# Parser
+# General
 
 
 @pytest.mark.skipif(sys.version_info >= (3, 10), reason="Not supported Python3.10")

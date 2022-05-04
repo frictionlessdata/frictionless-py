@@ -1,63 +1,9 @@
 import re
 import warnings
-from ..dialect import Dialect
-from ..parser import Parser
-from ..plugin import Plugin
-from ..schema import Schema
-from ..field import Field
-from .. import helpers
-
-
-# Plugin
-
-
-class SpssPlugin(Plugin):
-    """Plugin for SPSS
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless.plugins.spss import SpssPlugin`
-    """
-
-    code = "spss"
-    status = "experimental"
-
-    def create_dialect(self, resource, *, descriptor):
-        if resource.format in ["sav", "zsav"]:
-            return SpssDialect(descriptor)
-
-    def create_parser(self, resource):
-        if resource.format in ["sav", "zsav"]:
-            return SpssParser(resource)
-
-
-# Dialect
-
-
-class SpssDialect(Dialect):
-    """Spss dialect representation
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless.plugins.spss import SpssDialect`
-
-    Parameters:
-        descriptor? (str|dict): descriptor
-
-    Raises:
-        FrictionlessException: raise any error that occurs during the process
-
-    """
-
-    # Metadata
-
-    metadata_profile = {  # type: ignore
-        "type": "object",
-        "additionalProperties": False,
-    }
-
-
-# Parser
+from ...parser import Parser
+from ...schema import Schema
+from ...field import Field
+from ... import helpers
 
 
 class SpssParser(Parser):
