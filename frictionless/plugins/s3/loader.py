@@ -1,85 +1,7 @@
 import io
-import os
 from urllib.parse import urlparse
-from ..control import Control
-from ..plugin import Plugin
-from ..loader import Loader
-from .. import helpers
-
-
-# Plugin
-
-
-class S3Plugin(Plugin):
-    """Plugin for S3
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless.plugins.s3 import S3Plugin`
-
-    """
-
-    code = "s3"
-    status = "experimental"
-
-    def create_control(self, resource, *, descriptor):
-        if resource.scheme == "s3":
-            return S3Control(descriptor)
-
-    def create_loader(self, resource):
-        if resource.scheme == "s3":
-            return S3Loader(resource)
-
-
-# Control
-
-
-class S3Control(Control):
-    """S3 control representation
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless.plugins.s3 import S3Control`
-
-    Parameters:
-        descriptor? (str|dict): descriptor
-        endpoint_url? (string): endpoint url
-
-    Raises:
-        FrictionlessException: raise any error that occurs during the process
-
-    """
-
-    def __init__(self, descriptor=None, endpoint_url=None):
-        self.setinitial("endpointUrl", endpoint_url)
-        super().__init__(descriptor)
-
-    @property
-    def endpoint_url(self):
-        return (
-            self.get("endpointUrl")
-            or os.environ.get("S3_ENDPOINT_URL")
-            or DEFAULT_ENDPOINT_URL
-        )
-
-    # Expand
-
-    def expand(self):
-        """Expand metadata"""
-        self.setdefault("endpointUrl", self.endpoint_url)
-
-    # Metadata
-
-    metadata_profile = {  # type: ignore
-        "type": "object",
-        "additionalProperties": False,
-        "properties": {
-            "endpointUrl": {"type": "string"},
-        },
-    }
-
-
-# Loader
+from ...loader import Loader
+from ... import helpers
 
 
 class S3Loader(Loader):
@@ -116,9 +38,6 @@ class S3Loader(Loader):
 
 
 # Internal
-
-
-DEFAULT_ENDPOINT_URL = "https://s3.amazonaws.com"
 
 
 # https://alexwlchan.net/2019/02/working-with-large-s3-objects/

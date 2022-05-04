@@ -9,7 +9,7 @@ from frictionless import Resource, Layout, validate, helpers
 IS_UNIX = not helpers.is_platform("windows")
 
 
-# Loader
+# General
 
 
 @mock_s3
