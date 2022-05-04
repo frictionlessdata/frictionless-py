@@ -1,7 +1,7 @@
 from frictionless import Resource, validate
 
 
-# Loader
+# General
 
 
 def test_stream_loader():
