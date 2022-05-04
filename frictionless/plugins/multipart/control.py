@@ -1,4 +1,5 @@
 from ...control import Control
+from . import settings
 
 
 class MultipartControl(Control):
@@ -22,7 +23,7 @@ class MultipartControl(Control):
 
     @property
     def chunk_size(self):
-        return self.get("chunkSize", DEFAULT_CHUNK_SIZE)
+        return self.get("chunkSize", settings.DEFAULT_CHUNK_SIZE)
 
     # Expand
 
@@ -39,9 +40,3 @@ class MultipartControl(Control):
             "chunkSize": {"type": "number"},
         },
     }
-
-
-# Internal
-
-
-DEFAULT_CHUNK_SIZE = 100000000

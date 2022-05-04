@@ -4,6 +4,7 @@ from ...parser import Parser
 from ...schema import Schema
 from ...field import Field
 from ... import helpers
+from . import settings
 
 
 class SpssParser(Parser):
@@ -42,7 +43,7 @@ class SpssParser(Parser):
                         if field.type == "integer":
                             value = int(float(value))
                         elif field.type in ["datetime", "date", "time"]:
-                            format = FORMAT_READ[field.type]
+                            format = settings.FORMAT_READ[field.type]
                             value = reader.spss2strDate(value, format, None)
                     cells.append(value)
                 yield cells
@@ -106,7 +107,7 @@ class SpssParser(Parser):
                     for field in source.schema.fields:
                         cell = row[field.name]
                         if field.type in ["datetime", "date", "time"]:
-                            format = FORMAT_WRITE[field.type]
+                            format = settings.FORMAT_WRITE[field.type]
                             cell = cell.strftime(format).encode()
                             cell = writer.spssDateTime(cell, format)
                         elif field.type not in mapping:
@@ -165,18 +166,3 @@ class SpssParser(Parser):
 
         # Return mapping
         return mapping
-
-
-# Internal
-
-FORMAT_READ = {
-    "date": "%Y-%m-%d",
-    "datetime": "%Y-%m-%d %H:%M:%S",
-    "time": "%H:%M:%S.%f",
-}
-
-FORMAT_WRITE = {
-    "date": "%Y-%m-%d",
-    "datetime": "%Y-%m-%d %H:%M:%S",
-    "time": "%H:%M:%S.%f",
-}

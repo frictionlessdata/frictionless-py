@@ -2,6 +2,7 @@ from ...plugin import Plugin
 from .dialect import SqlDialect
 from .parser import SqlParser
 from .storage import SqlStorage
+from . import settings
 
 
 # NOTE:
@@ -21,7 +22,7 @@ class SqlPlugin(Plugin):
     status = "experimental"
 
     def create_file(self, file):
-        for prefix in SCHEME_PREFIXES:
+        for prefix in settings.SCHEME_PREFIXES:
             if file.scheme.startswith(prefix):
                 file.scheme = ""
                 file.format = "sql"
@@ -38,20 +39,3 @@ class SqlPlugin(Plugin):
     def create_storage(self, name, source, **options):
         if name == "sql":
             return SqlStorage(source, **options)
-
-
-# Internal
-
-# https://docs.sqlalchemy.org/en/13/core/engines.html
-# https://docs.sqlalchemy.org/en/13/dialects/index.html
-SCHEME_PREFIXES = [
-    "postgresql",
-    "mysql",
-    "oracle",
-    "mssql",
-    "sqlite",
-    "firebird",
-    "sybase",
-    "db2",
-    "ibm",
-]

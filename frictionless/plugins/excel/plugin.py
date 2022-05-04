@@ -3,9 +3,6 @@ from .dialect import ExcelDialect
 from .parser import XlsxParser, XlsParser
 
 
-# Plugin
-
-
 class ExcelPlugin(Plugin):
     """Plugin for Excel
 

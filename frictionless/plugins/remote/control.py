@@ -1,6 +1,7 @@
 from ...metadata import Metadata
 from ...control import Control
 from ...system import system
+from . import settings
 
 
 class RemoteControl(Control):
@@ -59,7 +60,7 @@ class RemoteControl(Control):
         Returns:
             int: HTTP timeout in minutes
         """
-        return self.get("httpTimeout", DEFAULT_HTTP_TIMEOUT)
+        return self.get("httpTimeout", settings.DEFAULT_HTTP_TIMEOUT)
 
     # Expand
 
@@ -79,9 +80,3 @@ class RemoteControl(Control):
             "httpTimeout": {"type": "number"},
         },
     }
-
-
-# Internal
-
-
-DEFAULT_HTTP_TIMEOUT = 10

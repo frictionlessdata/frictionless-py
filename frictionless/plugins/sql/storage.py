@@ -7,9 +7,10 @@ from ...storage import Storage
 from ...package import Package
 from ...schema import Schema
 from ...field import Field
+from .dialect import SqlDialect
 from ... import helpers
 from ... import errors
-from .dialect import SqlDialect
+from . import settings
 
 
 class SqlStorage(Storage):
