@@ -14,10 +14,10 @@ Data management framework for Python that provides functionality to describe, ex
 
 Generating insight and conclusions from data is often not a straightforward process. Data can be poorly structured, hard to find, archived in difficult to use formats, or incomplete. These issues create “friction” and make it difficult to use, publish and share data. The Frictionless Data project aims to reduce frictions while working with data, with a goal to make it effortless to transport data among different tools and platforms for further analysis. This project is a suite of open source software, tools, and specifications focused on improving data and metadata interoperability. The core software library is [Frictionless-py](https://github.com/frictionlessdata/frictionless-py), and this documentation will help you learn how to use this Frictionless Framework. Are you interested in learning more about the project as a whole? Read the overview section below.
 
-## Frictionless Specifications
+## Frictionless Standards
 
-The core of the Framework are the Frictionless Specifications. These specifications are a set of patterns for describing data including Data Package (for datasets), Data Resource (for files) and Table Schema (for tables). A Data Package is a simple container format used to describe and package a collection of data and metadata, including schemas. Frictionless-py lets users create data packages and schemas that conform to the Frictionless specifications.
-You can read more about the Frictionless specifications at https://specs.frictionlessdata.io/. The main concepts of the Frictionless Specifications are:
+The core of the Framework are the Frictionless Standards. These standards are a set of patterns for describing data including Data Package (for datasets), Data Resource (for files) and Table Schema (for tables). A Data Package is a simple container format used to describe and package a collection of data and metadata, including schemas. Frictionless-py lets users create data packages and schemas that conform to the Frictionless specifications.
+You can read more about the Frictionless standards at https://specs.frictionlessdata.io/. The main concepts of the Frictionless Standards are:
 
 **<big>Table Schema:</big>** a metadata file usually written in JSON or YAML that describes a tabular file by providing its dimension, field data types, relations, and constraints. One Table Schema can be used with many tabular files with the same structure.
 
