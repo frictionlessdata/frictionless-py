@@ -1,153 +1,17 @@
 import os
-import sys
 import shutil
 import atexit
 import hashlib
 import tempfile
-import datetime
 import warnings
+import datetime
 from itertools import chain
-from ..exception import FrictionlessException
-from ..metadata import Metadata
-from ..resource import Resource
-from ..dialect import Dialect
-from ..plugin import Plugin
-from ..parser import Parser
-from ..system import system
-from .. import helpers
-from .. import errors
-
-
-# Plugin
-
-
-class ExcelPlugin(Plugin):
-    """Plugin for Excel
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless.plugins.excel import ExcelPlugin`
-
-    """
-
-    code = "excel"
-
-    def create_dialect(self, resource, *, descriptor):
-        if resource.format in ["xlsx", "xls"]:
-            return ExcelDialect(descriptor)
-
-    def create_parser(self, resource):
-        if resource.format == "xlsx":
-            return XlsxParser(resource)
-        elif resource.format == "xls":
-            return XlsParser(resource)
-
-
-# Dialect
-
-
-class ExcelDialect(Dialect):
-    """Excel dialect representation
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless.plugins.excel import ExcelDialect`
-
-    Parameters:
-        descriptor? (str|dict): descriptor
-        sheet? (int|str): number from 1 or name of an excel sheet
-        workbook_cache? (dict): workbook cache
-        fill_merged_cells? (bool): whether to fill merged cells
-        preserve_formatting? (bool): whither to preserve formatting
-        adjust_floating_point_error? (bool): whether to adjust floating point error
-
-    Raises:
-        FrictionlessException: raise any error that occurs during the process
-
-    """
-
-    def __init__(
-        self,
-        descriptor=None,
-        *,
-        sheet=None,
-        workbook_cache=None,
-        fill_merged_cells=None,
-        preserve_formatting=None,
-        adjust_floating_point_error=None,
-    ):
-        self.setinitial("sheet", sheet)
-        self.setinitial("workbookCache", workbook_cache)
-        self.setinitial("fillMergedCells", fill_merged_cells)
-        self.setinitial("preserveFormatting", preserve_formatting)
-        self.setinitial("adjustFloatingPointError", adjust_floating_point_error)
-        super().__init__(descriptor)
-
-    @Metadata.property
-    def sheet(self):
-        """
-        Returns:
-            str|int: sheet
-        """
-        return self.get("sheet", 1)
-
-    @Metadata.property
-    def workbook_cache(self):
-        """
-        Returns:
-            dict: workbook cache
-        """
-        return self.get("workbookCache")
-
-    @Metadata.property
-    def fill_merged_cells(self):
-        """
-        Returns:
-            bool: fill merged cells
-        """
-        return self.get("fillMergedCells", False)
-
-    @Metadata.property
-    def preserve_formatting(self):
-        """
-        Returns:
-            bool: preserve formatting
-        """
-        return self.get("preserveFormatting", False)
-
-    @Metadata.property
-    def adjust_floating_point_error(self):
-        """
-        Returns:
-            bool: adjust floating point error
-        """
-        return self.get("adjustFloatingPointError", False)
-
-    # Expand
-
-    def expand(self):
-        """Expand metadata"""
-        self.setdefault("sheet", self.sheet)
-        self.setdefault("fillMergedCells", self.fill_merged_cells)
-        self.setdefault("preserveFormatting", self.preserve_formatting)
-        self.setdefault("adjustFloatingPointError", self.adjust_floating_point_error)
-
-    # Metadata
-
-    metadata_profile = {  # type: ignore
-        "type": "object",
-        "additionalProperties": False,
-        "properties": {
-            "sheet": {"type": ["number", "string"]},
-            "workbookCache": {"type": "object"},
-            "fillMergedCells": {"type": "boolean"},
-            "preserveFormatting": {"type": "boolean"},
-            "adjustFloatingPointError": {"type": "boolean"},
-        },
-    }
-
-
-# Parser
+from ....exception import FrictionlessException
+from ....resource import Resource
+from ....parser import Parser
+from ....system import system
+from .... import helpers
+from .... import errors
 
 
 class XlsxParser(Parser):
@@ -298,123 +162,8 @@ class XlsxParser(Parser):
         loader.write_byte_stream(file.name)
 
 
-class XlsParser(Parser):
-    """XLS parser implementation.
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless.plugins.excel import XlsParser
-
-    """
-
-    requires_loader = True
-    supported_types = [
-        "boolean",
-        "date",
-        "datetime",
-        "integer",
-        "number",
-        "string",
-        "time",
-        "year",
-    ]
-
-    # Read
-
-    def read_list_stream_create(self):
-        xlrd = helpers.import_from_plugin("xlrd", plugin="excel")
-        dialect = self.resource.dialect
-
-        # Get book
-        bytes = self.loader.byte_stream.read()
-        try:
-            book = xlrd.open_workbook(
-                file_contents=bytes,
-                encoding_override=self.resource.encoding,
-                formatting_info=True,
-                logfile=sys.stderr,
-            )
-        except NotImplementedError:
-            book = xlrd.open_workbook(
-                file_contents=bytes,
-                encoding_override=self.resource.encoding,
-                formatting_info=False,
-                logfile=sys.stderr,
-            )
-
-        # Get sheet
-        try:
-            if isinstance(dialect.sheet, str):
-                sheet = book.sheet_by_name(dialect.sheet)
-            else:
-                sheet = book.sheet_by_index(dialect.sheet - 1)
-        except (xlrd.XLRDError, IndexError):
-            note = 'Excel document "%s" does not have a sheet "%s"'
-            error = errors.FormatError(
-                note=note % (self.resource.fullpath, dialect.sheet)
-            )
-            raise FrictionlessException(error)
-
-        def type_value(ctype, value):
-            """Detects boolean value, int value, datetime"""
-
-            # Boolean
-            if ctype == xlrd.XL_CELL_BOOLEAN:
-                return bool(value)
-
-            # Excel numbers are only float
-            # Float with no decimals can be cast into int
-            if ctype == xlrd.XL_CELL_NUMBER and value == value // 1:
-                return int(value)
-
-            # Datetime
-            if ctype == xlrd.XL_CELL_DATE:
-                return xlrd.xldate.xldate_as_datetime(value, book.datemode)
-
-            return value
-
-        # Stream data
-        for x in range(0, sheet.nrows):
-            cells = []
-            for y, value in enumerate(sheet.row_values(x)):
-                value = type_value(sheet.cell(x, y).ctype, value)
-                if dialect.fill_merged_cells:
-                    for xlo, xhi, ylo, yhi in sheet.merged_cells:
-                        if x in range(xlo, xhi) and y in range(ylo, yhi):
-                            value = type_value(
-                                sheet.cell(xlo, ylo).ctype,
-                                sheet.cell_value(xlo, ylo),
-                            )
-                cells.append(value)
-            yield cells
-
-    # Write
-
-    def write_row_stream(self, resource):
-        xlwt = helpers.import_from_plugin("xlwt", plugin="excel")
-        source = resource
-        target = self.resource
-        book = xlwt.Workbook()
-        title = target.dialect.sheet
-        if isinstance(title, int):
-            title = f"Sheet {target.dialect.sheet}"
-        sheet = book.add_sheet(title)
-        with source:
-            for row_index, row in enumerate(source.row_stream):
-                if row.row_number == 1:
-                    for field_index, name in enumerate(row.field_names):
-                        sheet.write(0, field_index, name)
-                cells = row.to_list(types=self.supported_types)
-                for field_index, cell in enumerate(cells):
-                    sheet.write(row_index + 1, field_index, cell)
-        file = tempfile.NamedTemporaryFile(delete=False)
-        file.close()
-        book.save(file.name)
-        loader = system.create_loader(target)
-        loader.write_byte_stream(file.name)
-
-
 # Internal
+
 
 EXCEL_CODES = {
     "yyyy": "%Y",
@@ -469,6 +218,87 @@ EXCEL_MISC_CHARS = [
 
 EXCEL_ESCAPE_CHAR = "\\"
 EXCEL_SECTION_DIVIDER = ";"
+
+
+def extract_row_values(row, preserve_formatting=False, adjust_floating_point_error=False):
+    if preserve_formatting:
+        values = []
+        for cell in row:
+            number_format = cell.number_format or ""
+            value = cell.value
+
+            if isinstance(cell.value, datetime.datetime) or isinstance(
+                cell.value, datetime.time
+            ):
+                temporal_format = convert_excel_date_format_string(number_format)
+                if temporal_format:
+                    value = cell.value.strftime(temporal_format)
+            elif (
+                adjust_floating_point_error
+                and isinstance(cell.value, float)
+                and number_format == "General"
+            ):
+                # We have a float with format General
+                # Calculate the number of integer digits
+                integer_digits = len(str(int(cell.value)))
+                # Set the precision to 15 minus the number of integer digits
+                precision = 15 - (integer_digits)
+                value = round(cell.value, precision)
+            elif isinstance(cell.value, (int, float)):
+                new_value = convert_excel_number_format_string(number_format, cell.value)
+                if new_value:
+                    value = new_value
+            values.append(value)
+        return values
+    return list(cell.value for cell in row)
+
+
+def convert_excel_number_format_string(excel_number, value):
+    # A basic attempt to convert excel number_format to a number string
+    # The important goal here is to get proper amount of rounding
+    percentage = False
+    if excel_number.endswith("%"):
+        value = value * 100
+        excel_number = excel_number[:-1]
+        percentage = True
+    if excel_number == "General":
+        return value
+    multi_codes = excel_number.split(";")
+    if value < 0 and len(multi_codes) > 1:
+        excel_number = multi_codes[1]
+    else:
+        excel_number = multi_codes[0]
+
+    code = excel_number.split(".")
+
+    if len(code) > 2:
+        return None
+    if len(code) < 2:
+        # No decimals
+        new_value = "{0:.0f}".format(value)
+    else:
+        decimal_section = code[1]
+        # Only pay attention to the 0, # and ? characters as they provide precision information
+        decimal_section = "".join(d for d in decimal_section if d in ["0", "#", "?"])
+
+        # Count the number of hashes at the end of the decimal_section in order to know how
+        # the number should be truncated
+        number_hash = 0
+        for i in reversed(range(len(decimal_section))):
+            if decimal_section[i] == "#":
+                number_hash += 1
+            else:
+                break
+        string_format_code = "{0:." + str(len(decimal_section)) + "f}"
+        new_value = string_format_code.format(value)
+        if number_hash > 0:
+            for i in range(number_hash):
+                if new_value.endswith("0"):
+                    new_value = new_value[:-1]
+    if percentage:
+        return new_value + "%"
+
+    return new_value
 
 
 def convert_excel_date_format_string(excel_date):
@@ -597,84 +427,3 @@ def convert_excel_date_format_string(excel_date):
         else:
             return None
     return python_date
-
-
-def convert_excel_number_format_string(excel_number, value):
-    # A basic attempt to convert excel number_format to a number string
-    # The important goal here is to get proper amount of rounding
-    percentage = False
-    if excel_number.endswith("%"):
-        value = value * 100
-        excel_number = excel_number[:-1]
-        percentage = True
-    if excel_number == "General":
-        return value
-    multi_codes = excel_number.split(";")
-    if value < 0 and len(multi_codes) > 1:
-        excel_number = multi_codes[1]
-    else:
-        excel_number = multi_codes[0]
-
-    code = excel_number.split(".")
-
-    if len(code) > 2:
-        return None
-    if len(code) < 2:
-        # No decimals
-        new_value = "{0:.0f}".format(value)
-    else:
-        decimal_section = code[1]
-        # Only pay attention to the 0, # and ? characters as they provide precision information
-        decimal_section = "".join(d for d in decimal_section if d in ["0", "#", "?"])
-
-        # Count the number of hashes at the end of the decimal_section in order to know how
-        # the number should be truncated
-        number_hash = 0
-        for i in reversed(range(len(decimal_section))):
-            if decimal_section[i] == "#":
-                number_hash += 1
-            else:
-                break
-        string_format_code = "{0:." + str(len(decimal_section)) + "f}"
-        new_value = string_format_code.format(value)
-        if number_hash > 0:
-            for i in range(number_hash):
-                if new_value.endswith("0"):
-                    new_value = new_value[:-1]
-    if percentage:
-        return new_value + "%"
-
-    return new_value
-
-
-def extract_row_values(row, preserve_formatting=False, adjust_floating_point_error=False):
-    if preserve_formatting:
-        values = []
-        for cell in row:
-            number_format = cell.number_format or ""
-            value = cell.value
-
-            if isinstance(cell.value, datetime.datetime) or isinstance(
-                cell.value, datetime.time
-            ):
-                temporal_format = convert_excel_date_format_string(number_format)
-                if temporal_format:
-                    value = cell.value.strftime(temporal_format)
-            elif (
-                adjust_floating_point_error
-                and isinstance(cell.value, float)
-                and number_format == "General"
-            ):
-                # We have a float with format General
-                # Calculate the number of integer digits
-                integer_digits = len(str(int(cell.value)))
-                # Set the precision to 15 minus the number of integer digits
-                precision = 15 - (integer_digits)
-                value = round(cell.value, precision)
-            elif isinstance(cell.value, (int, float)):
-                new_value = convert_excel_number_format_string(number_format, cell.value)
-                if new_value:
-                    value = new_value
-            values.append(value)
-        return values
-    return list(cell.value for cell in row)

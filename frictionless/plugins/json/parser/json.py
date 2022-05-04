@@ -5,6 +5,7 @@ from ....plugins.inline import InlineDialect
 from ....resource import Resource
 from ....parser import Parser
 from ....system import system
+from .... import errors
 from .... import helpers
 
 
