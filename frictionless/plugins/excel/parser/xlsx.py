@@ -294,7 +294,9 @@ def convert_excel_date_format_string(excel_date):
 
         is_escape_char = c == settings.EXCEL_ESCAPE_CHAR
         # The am/pm and a/p code add some complications, need to make sure we are not that code
-        is_misc_char = c in settings.EXCEL_MISC_CHARS and (c != "/" or (ec != "am" and ec != "a"))
+        is_misc_char = c in settings.EXCEL_MISC_CHARS and (
+            c != "/" or (ec != "am" and ec != "a")
+        )
         new_excel_code = False
 
         # Handle a new code without a different characeter in between
@@ -359,7 +361,9 @@ def convert_excel_date_format_string(excel_date):
     # Complete, check if there is still a buffer
     if checking_minute_or_month:
         # We know it's a month because there were no more codes after
-        minute_or_month_buffer = settings.EXCEL_MONTH_CODES[prev_code] + minute_or_month_buffer
+        minute_or_month_buffer = (
+            settings.EXCEL_MONTH_CODES[prev_code] + minute_or_month_buffer
+        )
         python_date += minute_or_month_buffer
     if excel_code:
         ec = excel_code.lower()

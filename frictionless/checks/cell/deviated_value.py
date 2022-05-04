@@ -96,6 +96,7 @@ class deviated_value(Check):
 # Internal
 
 
+# TODO: move to root settings?
 AVERAGE_FUNCTIONS = {
     "mean": statistics.mean,
     "median": statistics.median,

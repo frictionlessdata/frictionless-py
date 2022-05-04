@@ -52,6 +52,7 @@ class truncated_value(Check):
 # Internal
 
 
+# TODO: move to root settings?
 TRUNCATED_STRING_LENGTHS = [
     255,
 ]
