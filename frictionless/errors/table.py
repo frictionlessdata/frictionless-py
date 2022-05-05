@@ -39,3 +39,10 @@ class DeviatedValueError(TableError):
     name = "Deviated Value"
     template = "There is a possible error because the value is deviated: {note}"
     description = "The value is deviated."
+
+
+class OutlierValueError(TableError):
+    code = "outlier-value"
+    name = "Outlier Value"
+    template = "There is a possible error because the value is deviated: {note}"
+    description = "The value is deviated."

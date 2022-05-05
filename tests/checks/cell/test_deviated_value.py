@@ -43,7 +43,7 @@ def test_validate_deviated_value_not_a_number():
     ]
     report = validate(source, checks=[{"code": "deviated-value", "fieldName": "name"}])
     assert report.flatten(["code", "note"]) == [
-        ["check-error", 'deviated value check requires field "name" to be numiric'],
+        ["check-error", 'deviated value check requires field "name" to be numeric'],
     ]
 
 
