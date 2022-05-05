@@ -1,5 +1,6 @@
 from ... import errors
 from ...check import Check
+from typing import Union, Iterator
 
 
 class ascii_value(Check):
@@ -14,21 +15,23 @@ class ascii_value(Check):
     for the `validate` function.
 
     Parameters:
-       forbidden_values (any[]): a list of forbidden values
+       forbidden_values? (any[]): a list of forbidden values
 
     """
 
     code = "ascii-value"
     Errors = [errors.ForbiddenValueError]
 
-    def __init__(self, descriptor=None, *, forbidden_values=[]):
+    def __init__(
+        self, descriptor: Union[list, None] = None, *, forbidden_values: list = []
+    ):
         self.setinitial("ForbiddenValues", forbidden_values)
         super().__init__(descriptor)
         self.__forbidden_values = self.get("ForbiddenValues", [])
 
     # Validate
 
-    def validate_row(self, row):
+    def validate_row(self, row: any) -> Iterator[any]:
         for field_name, cell in row.items():
             not_ascii = False
 
