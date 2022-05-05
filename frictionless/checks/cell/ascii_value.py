@@ -20,7 +20,7 @@ class ascii_value(Check):
     """
 
     code = "ascii-value"
-    Errors = [errors.ForbiddenValueError]
+    Errors = [errors.NotAscii]
 
     def __init__(
         self, descriptor: Union[list, None] = None, *, forbidden_values: list = []
