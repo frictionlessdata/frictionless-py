@@ -345,6 +345,7 @@ class Schema(Metadata):
 
 # Internal
 
+# TODO: move to settings
 INFER_TYPES = [
     "yearmonth",
     "geopoint",
