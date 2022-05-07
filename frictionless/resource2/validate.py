@@ -1,16 +1,15 @@
-from __future__ import annotations
+import types
 from typing import TYPE_CHECKING
+from ..check import Check
+from ..system import system
+from ..exception import FrictionlessException
+from ..report import Report, ReportTask
+from ..errors import TaskError
+from .. import helpers
+from .. import settings
+
 if TYPE_CHECKING:
     from ..resource import Resource
-
-import types
-from ...check import Check
-from ...system import system
-from ...exception import FrictionlessException
-from ...report import Report, ReportTask
-from ...errors import TaskError
-from ... import helpers
-from ... import settings
 
 
 # NOTE:
@@ -19,7 +18,7 @@ from ... import settings
 
 @Report.from_validate
 def validate(
-    resource: Resource,
+    resource: 'Resource',
     *,
     checks=None,
     original=False,

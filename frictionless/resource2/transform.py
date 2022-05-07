@@ -1,17 +1,16 @@
-from __future__ import annotations
-from typing import TYPE_CHECKING
-if TYPE_CHECKING:
-    from ..resource import Resource
-
 import types
-from ...step import Step
-from ...system import system
-from ...helpers import get_name
-from ...exception import FrictionlessException
-from ... import errors
+from typing import TYPE_CHECKING
+from ..step import Step
+from ..system import system
+from ..helpers import get_name
+from ..exception import FrictionlessException
+from .. import errors
+
+if TYPE_CHECKING:
+    from .resource import Resource
 
 
-def transform(resource: Resource, *, steps):
+def transform(resource: 'Resource', *, steps):
     """Transform resource
 
     Parameters:
