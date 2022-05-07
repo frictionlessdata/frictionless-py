@@ -17,6 +17,7 @@ from ..row import Row
 from .. import settings
 from .. import helpers
 from .. import errors
+from . import actions
 
 
 # NOTE:
@@ -694,6 +695,12 @@ class Resource(Metadata):
             gen<Row[]>?: row stream
         """
         return self.__row_stream
+
+    # Actions
+
+    extract = actions.extract
+    transform = actions.transform
+    validate = actions.validate
 
     # Expand
 
