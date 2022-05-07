@@ -9,7 +9,7 @@ from .. import helpers
 from .. import settings
 
 if TYPE_CHECKING:
-    from ..resource import Resource
+    from .resource import Resource
 
 
 # NOTE:
