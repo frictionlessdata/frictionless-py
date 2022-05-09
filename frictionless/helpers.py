@@ -14,12 +14,13 @@ import datetime
 import platform
 import textwrap
 import stringcase
-from typing import List, Union
+from typing import List, Union, Iterator
 from inspect import signature
 from html.parser import HTMLParser
 from importlib import import_module
 from contextlib import contextmanager
 from urllib.parse import urlparse, parse_qs
+from petl.compat import next, text_type
 from _thread import RLock  # type: ignore
 from . import settings
 
@@ -631,3 +632,107 @@ def dicts_to_markdown_table(dicts: List[dict], **kwargs) -> str:
         error = errors.GeneralError(note="Please install `pandas` package")
         raise module.FrictionlessException(error)
     return df.where(df.notnull(), None).to_markdown(index=False)
+
+
+# Pack/Unpack Field
+
+
+def iterpack(
+    source: any, name: str, from_names: list, preserve: bool = False
+) -> Iterator:
+    """Combines multiple columns as array
+    Code referenced from https://github.com/petl-developers/petl/blob/master/petl/transform/unpacks.py#L64
+    """
+    it = iter(source)
+
+    hdr = next(it)
+    field_indexes = list()
+    flds = list(map(text_type, hdr))
+
+    # determine output fields
+    outhdr = list(flds)
+    for field in from_names:
+        field_index = flds.index(field)
+        if not preserve:
+            outhdr.remove(field)
+        field_indexes.append(field_index)
+    outhdr.extend([name])
+    yield tuple(outhdr)
+
+    # construct the output data
+    for row in it:
+        value = [v for i, v in enumerate(row) if i in field_indexes]
+        if preserve:
+            out_row = list(row)
+        else:
+            out_row = [v for i, v in enumerate(row) if i not in field_indexes]
+        out_row.extend([value])
+        yield tuple(out_row)
+
+
+def iterpackdict(
+    source: any, name: str, from_names: list, preserve: bool = False
+) -> Iterator:
+    """Combines multiple columns as JSON Object
+    Code referenced from https://github.com/petl-developers/petl/blob/master/petl/transform/unpacks.py#L64
+    """
+    it = iter(source)
+
+    hdr = next(it)
+    field_indexes = list()
+    flds = list(map(text_type, hdr))
+
+    # determine output fields
+    outhdr = list(flds)
+    for field in from_names:
+        field_index = flds.index(field)
+        if not preserve:
+            outhdr.remove(field)
+        field_indexes.append(field_index)
+    outhdr.extend([name])
+    yield tuple(outhdr)
+
+    # construct the output data
+    for row in it:
+        value = dict(
+            (from_names[i - 1], v) for i, v in enumerate(row) if i in field_indexes
+        )
+        if preserve:
+            out_row = list(row)
+        else:
+            out_row = [v for i, v in enumerate(row) if i not in field_indexes]
+        out_row.extend([value])
+        yield tuple(out_row)
+
+
+# Merge Field
+
+
+def merge(
+    source: any, name: str, from_names: list, sep: str = "-", preserve: bool = True
+) -> Iterator:
+    it = iter(source)
+
+    hdr = next(it)
+    field_indexes = list()
+    flds = list(map(text_type, hdr))
+
+    # determine output fields
+    outhdr = list(flds)
+    for field in from_names:
+        field_index = flds.index(field)
+        if not preserve:
+            outhdr.remove(field)
+        field_indexes.append(field_index)
+    outhdr.extend([name])
+    yield tuple(outhdr)
+
+    # construct the output data
+    for row in it:
+        value = [v for i, v in enumerate(row) if i in field_indexes]
+        if preserve:
+            out_row = list(row)
+        else:
+            out_row = [v for i, v in enumerate(row) if i not in field_indexes]
+        out_row.extend([sep.join(value)])
+        yield tuple(out_row)
