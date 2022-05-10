@@ -446,21 +446,26 @@ class Detector:
             # Infer fields
             fields = [None] * len(names)
             max_score = [len(fragment)] * len(names)
-            treshold = len(fragment) * (self.__field_confidence - 1)
+            threshold = len(fragment) * (self.__field_confidence - 1)
             for cells in fragment:
                 for index, name in enumerate(names):
                     if fields[index] is not None:
                         continue
                     source = cells[index] if len(cells) > index else None
-                    if source in self.__field_missing_values:
+                    is_field_missing_value = source in self.__field_missing_values
+                    if is_field_missing_value:
                         max_score[index] -= 1
-                        continue
+
                     for runner in runners[index]:
-                        if runner["score"] < treshold:
+                        if runner["score"] < threshold:
                             continue
-                        target, notes = runner["field"].read_cell(source)
-                        runner["score"] += 1 if not notes else -1
-                        if runner["score"] >= max_score[index] * self.__field_confidence:
+                        if not is_field_missing_value:
+                            target, notes = runner["field"].read_cell(source)
+                            runner["score"] += 1 if not notes else -1
+
+                        if max_score[index] > 0 and runner["score"] >= (
+                            max_score[index] * self.__field_confidence
+                        ):
                             field = runner["field"].to_copy()
                             field.name = name
                             field.schema = schema
