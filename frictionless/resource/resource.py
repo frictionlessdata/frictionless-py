@@ -14,13 +14,10 @@ from ..header import Header
 from ..system import system
 from ..field import Field
 from ..row import Row
-from .describe import describe
-from .extract import extract
-from .transform import transform
-from .validate import validate
 from .. import settings
 from .. import helpers
 from .. import errors
+from . import actions
 
 
 # NOTE:
@@ -136,11 +133,6 @@ class Resource(Metadata):
     Raises:
         FrictionlessException: raise any error that occurs during the process
     """
-
-    describe = staticmethod(describe)
-    extract = extract
-    transform = transform
-    validate = validate
 
     def __init__(
         self,
@@ -703,6 +695,13 @@ class Resource(Metadata):
             gen<Row[]>?: row stream
         """
         return self.__row_stream
+
+    # Actions
+
+    describe = staticmethod(actions.describe)
+    extract = actions.extract
+    transform = actions.transform
+    validate = actions.validate
 
     # Expand
 

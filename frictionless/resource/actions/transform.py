@@ -1,14 +1,14 @@
 from __future__ import annotations
 import types
 from typing import TYPE_CHECKING
-from ..step import Step
-from ..system import system
-from ..helpers import get_name
-from ..exception import FrictionlessException
-from .. import errors
+from ...step import Step
+from ...system import system
+from ...helpers import get_name
+from ...exception import FrictionlessException
+from ... import errors
 
 if TYPE_CHECKING:
-    from .resource import Resource
+    from ..resource import Resource
 
 
 def transform(resource: Resource, *, steps):

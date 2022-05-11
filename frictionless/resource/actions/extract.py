@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from .resource import Resource
+    from ..resource import Resource
 
 
 def extract(resource: Resource, *, process=None, stream=False):
