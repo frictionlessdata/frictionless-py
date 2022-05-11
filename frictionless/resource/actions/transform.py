@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from ..resource import Resource
 
 
-def transform(resource: 'Resource', *, steps):
+def transform(resource: "Resource", *, steps):
     """Transform resource
 
     Parameters:

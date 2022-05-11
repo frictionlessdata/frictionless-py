@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 # TODO: shall we catch exceptions here or in global validate?
 @Report.from_validate
 def validate(
-    resource: 'Resource',
+    resource: "Resource",
     *,
     checks=None,
     original=False,

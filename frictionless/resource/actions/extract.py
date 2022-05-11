@@ -4,7 +4,7 @@ if TYPE_CHECKING:
     from ..resource import Resource
 
 
-def extract(resource: 'Resource', *, process=None, stream=False):
+def extract(resource: "Resource", *, process=None, stream=False):
     """Extract resource rows
 
     Parameters:
