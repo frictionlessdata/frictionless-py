@@ -1,3 +1,4 @@
+from __future__ import annotations
 import types
 from typing import TYPE_CHECKING
 from ..step import Step
@@ -10,7 +11,7 @@ if TYPE_CHECKING:
     from .resource import Resource
 
 
-def transform(resource: 'Resource', *, steps):
+def transform(resource: Resource, *, steps):
     """Transform resource
 
     Parameters:

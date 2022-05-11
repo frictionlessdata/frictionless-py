@@ -14,6 +14,7 @@ from ..header import Header
 from ..system import system
 from ..field import Field
 from ..row import Row
+from .describe import describe
 from .extract import extract
 from .transform import transform
 from .validate import validate
@@ -136,6 +137,7 @@ class Resource(Metadata):
         FrictionlessException: raise any error that occurs during the process
     """
 
+    describe = staticmethod(describe)
     extract = extract
     transform = transform
     validate = validate

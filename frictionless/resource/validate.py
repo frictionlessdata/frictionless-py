@@ -1,3 +1,4 @@
+from __future__ import annotations
 import types
 from typing import TYPE_CHECKING
 from ..check import Check
@@ -18,7 +19,7 @@ if TYPE_CHECKING:
 
 @Report.from_validate
 def validate(
-    resource: 'Resource',
+    resource: Resource,
     *,
     checks=None,
     original=False,
