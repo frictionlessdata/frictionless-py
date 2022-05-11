@@ -15,7 +15,7 @@ def describe(source=None, *, expand=False, stats=False, **options):
         Resource: data resource
 
     """
-    frictionless = import_module('frictionless')
+    frictionless = import_module("frictionless")
     resource = frictionless.Resource(source, **options)
     resource.infer(stats=stats)
     if expand:
