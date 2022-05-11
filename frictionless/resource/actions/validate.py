@@ -1,4 +1,3 @@
-from __future__ import annotations
 import types
 from typing import TYPE_CHECKING
 from ...check import Check
@@ -20,7 +19,7 @@ if TYPE_CHECKING:
 # TODO: shall we catch exceptions here or in global validate?
 @Report.from_validate
 def validate(
-    resource: Resource,
+    resource: 'Resource',
     *,
     checks=None,
     original=False,
