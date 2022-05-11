@@ -13,6 +13,7 @@ from ..system import system
 from .. import settings
 from .. import helpers
 from .. import errors
+from . import actions
 
 
 class Package(Metadata):
@@ -444,6 +445,13 @@ class Package(Metadata):
         resource = self.get_resource(name)
         self.resources.remove(resource)
         return resource
+
+    # Actions
+
+    describe = staticmethod(actions.describe)
+    extract = actions.extract
+    transform = actions.transform
+    validate = actions.validate
 
     # Expand
 
