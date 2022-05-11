@@ -145,8 +145,8 @@ class SequentialValueError(CellError):
     description = "The value is not sequential."
 
 
-class NotAscii(CellError):
-    code = "not-ascii"
-    name = "Not Ascii Value"
+class AsciiValueError(CellError):
+    code = "non-ascii"
+    name = "Non Ascii Value"
     template = "The cell {cell} in row at position {rowPosition} and field {fieldName} at position {fieldPosition} has an error: {note}"
-    description = "The value is not ascii."
+    description = "The cell contains non-ascii characters."
