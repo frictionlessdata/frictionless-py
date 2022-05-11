@@ -1,4 +1,4 @@
-from frictionless import Resource, transform, steps
+from frictionless import Resource, steps
 
 
 # General
@@ -7,8 +7,7 @@ from frictionless import Resource, transform, steps
 def test_transform_resource():
     source = Resource(path="data/transform.csv")
     source.infer()
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.table_normalize(),
             steps.table_melt(field_name="id"),
