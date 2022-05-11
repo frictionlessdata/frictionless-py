@@ -5,18 +5,19 @@ import warnings
 from pathlib import Path
 from copy import deepcopy
 from itertools import zip_longest, chain
-from .exception import FrictionlessException
-from .detector import Detector
-from .metadata import Metadata
-from .layout import Layout
-from .schema import Schema
-from .header import Header
-from .system import system
-from .field import Field
-from .row import Row
-from . import settings
-from . import helpers
-from . import errors
+from ..exception import FrictionlessException
+from ..detector import Detector
+from ..metadata import Metadata
+from ..layout import Layout
+from ..schema import Schema
+from ..header import Header
+from ..system import system
+from ..field import Field
+from ..row import Row
+from .. import settings
+from .. import helpers
+from .. import errors
+from . import actions
 
 
 # NOTE:
@@ -694,6 +695,13 @@ class Resource(Metadata):
             gen<Row[]>?: row stream
         """
         return self.__row_stream
+
+    # Actions
+
+    describe = staticmethod(actions.describe)
+    extract = actions.extract
+    transform = actions.transform
+    validate = actions.validate
 
     # Expand
 

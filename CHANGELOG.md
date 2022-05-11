@@ -2,6 +2,22 @@
 
 Here described only the breaking and most significant changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/frictionless-py/commits/main).
 
+## v4.34.0
+
+- Implemented package actions:
+  - `Package.describe` (will replace `package_describe` in v5)
+  - `package.extract` (will replace `package_extract` in v5)
+  - `package.validate` (will replace `package_validate` in v5)
+  - `package.transform` (will replace `package_transform` in v5)
+
+## v4.33.0
+
+- Implemented resource actions:
+  - `Resource.describe` (will replace `resource_describe` in v5)
+  - `resource.extract` (will replace `resource_extract` in v5)
+  - `resource.validate` (will replace `resource_validate` in v5)
+  - `resource.transform` (will replace `resource_transform` in v5)
+
 ## v4.32.0
 
 - Added to_markdown() feature to metadata  (#1052)
