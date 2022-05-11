@@ -4,15 +4,15 @@ import zipfile
 import tempfile
 from pathlib import Path
 from copy import deepcopy
-from .exception import FrictionlessException
-from .metadata import Metadata
-from .detector import Detector
-from .resource import Resource
-from .field import Field
-from .system import system
-from . import settings
-from . import helpers
-from . import errors
+from ..exception import FrictionlessException
+from ..metadata import Metadata
+from ..detector import Detector
+from ..resource import Resource
+from ..field import Field
+from ..system import system
+from .. import settings
+from .. import helpers
+from .. import errors
 
 
 class Package(Metadata):
