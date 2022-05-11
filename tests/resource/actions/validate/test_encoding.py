@@ -1,16 +1,18 @@
-from frictionless import validate, helpers
+from frictionless import Resource, helpers
 
 
 IS_UNIX = not helpers.is_platform("windows")
 
 
 def test_validate_encoding():
-    report = validate("data/table.csv", encoding="utf-8")
+    resource = Resource("data/table.csv", encoding="utf-8")
+    report = resource.validate()
     assert report.valid
 
 
 def test_validate_encoding_invalid():
-    report = validate("data/latin1.csv", encoding="utf-8")
+    resource = Resource("data/latin1.csv", encoding="utf-8")
+    report = resource.validate()
     assert not report.valid
     if IS_UNIX:
         assert report.flatten(["code", "note"]) == [

@@ -1,4 +1,4 @@
-from frictionless import Detector, validate, helpers
+from frictionless import Detector, Resource, helpers
 
 
 IS_UNIX = not helpers.is_platform("windows")
@@ -12,7 +12,8 @@ def test_validate_detector_sync_schema():
         ],
     }
     detector = Detector(schema_sync=True)
-    report = validate("data/sync-schema.csv", schema=schema, detector=detector)
+    resource = Resource("data/sync-schema.csv", schema=schema, detector=detector)
+    report = resource.validate()
     assert report.valid
     assert report.task.resource.schema == {
         "fields": [
@@ -26,7 +27,8 @@ def test_validate_detector_sync_schema_invalid():
     source = [["LastName", "FirstName", "Address"], ["Test", "Tester", "23 Avenue"]]
     schema = {"fields": [{"name": "id"}, {"name": "FirstName"}, {"name": "LastName"}]}
     detector = Detector(schema_sync=True)
-    report = validate(source, schema=schema, detector=detector)
+    resource = Resource(source, schema=schema, detector=detector)
+    report = resource.validate()
     assert report.valid
 
 
@@ -45,7 +47,8 @@ def test_validate_detector_headers_errors():
         ]
     }
     detector = Detector(schema_sync=True)
-    report = validate(source, schema=schema, detector=detector)
+    resource = Resource(source, schema=schema, detector=detector)
+    report = resource.validate()
     assert report.flatten(["rowPosition", "fieldPosition", "code", "cells"]) == [
         [4, 4, "constraint-error", ["3", "Smith", "Paul", ""]],
     ]
@@ -53,7 +56,8 @@ def test_validate_detector_headers_errors():
 
 def test_validate_detector_patch_schema():
     detector = Detector(schema_patch={"missingValues": ["-"]})
-    report = validate("data/table.csv", detector=detector)
+    resource = Resource("data/table.csv", detector=detector)
+    report = resource.validate()
     assert report.valid
     assert report.task.resource.schema == {
         "fields": [
@@ -68,7 +72,8 @@ def test_validate_detector_patch_schema_fields():
     detector = Detector(
         schema_patch={"fields": {"id": {"type": "string"}}, "missingValues": ["-"]}
     )
-    report = validate("data/table.csv", detector=detector)
+    resource = Resource("data/table.csv", detector=detector)
+    report = resource.validate()
     assert report.valid
     assert report.task.resource.schema == {
         "fields": [{"name": "id", "type": "string"}, {"name": "name", "type": "string"}],
@@ -78,7 +83,8 @@ def test_validate_detector_patch_schema_fields():
 
 def test_validate_detector_infer_type_string():
     detector = Detector(field_type="string")
-    report = validate("data/table.csv", detector=detector)
+    resource = Resource("data/table.csv", detector=detector)
+    report = resource.validate()
     assert report.valid
     assert report.task.resource.schema == {
         "fields": [{"name": "id", "type": "string"}, {"name": "name", "type": "string"}],
@@ -87,7 +93,8 @@ def test_validate_detector_infer_type_string():
 
 def test_validate_detector_infer_type_any():
     detector = Detector(field_type="any")
-    report = validate("data/table.csv", detector=detector)
+    resource = Resource("data/table.csv", detector=detector)
+    report = resource.validate()
     assert report.valid
     assert report.task.resource.schema == {
         "fields": [{"name": "id", "type": "any"}, {"name": "name", "type": "any"}],
@@ -96,11 +103,12 @@ def test_validate_detector_infer_type_any():
 
 def test_validate_detector_infer_names():
     detector = Detector(field_names=["id", "name"])
-    report = validate(
+    resource = Resource(
         "data/without-headers.csv",
         layout={"header": False},
         detector=detector,
     )
+    report = resource.validate()
     assert report.task.resource.schema["fields"][0]["name"] == "id"
     assert report.task.resource.schema["fields"][1]["name"] == "name"
     assert report.task.resource.stats["rows"] == 3

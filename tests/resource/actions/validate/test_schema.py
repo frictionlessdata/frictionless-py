@@ -1,4 +1,4 @@
-from frictionless import validate, helpers
+from frictionless import Resource, helpers
 
 
 IS_UNIX = not helpers.is_platform("windows")
@@ -7,7 +7,8 @@ IS_UNIX = not helpers.is_platform("windows")
 def test_validate_schema_invalid():
     source = [["name", "age"], ["Alex", "33"]]
     schema = {"fields": [{"name": "name"}, {"name": "age", "type": "bad"}]}
-    report = validate(source, schema=schema)
+    resource = Resource(source, schema=schema)
+    report = resource.validate()
     assert report.flatten(["code", "note"]) == [
         [
             "field-error",
@@ -17,7 +18,8 @@ def test_validate_schema_invalid():
 
 
 def test_validate_schema_invalid_json():
-    report = validate("data/table.csv", schema="data/invalid.json")
+    resource = Resource("data/table.csv", schema="data/invalid.json")
+    report = resource.validate()
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [None, None, "schema-error"],
     ]
@@ -25,7 +27,8 @@ def test_validate_schema_invalid_json():
 
 def test_validate_schema_extra_headers_and_cells():
     schema = {"fields": [{"name": "id", "type": "integer"}]}
-    report = validate("data/table.csv", schema=schema)
+    resource = Resource("data/table.csv", schema=schema)
+    report = resource.validate()
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [None, 2, "extra-label"],
         [2, 2, "extra-cell"],
@@ -36,7 +39,8 @@ def test_validate_schema_extra_headers_and_cells():
 def test_validate_schema_multiple_errors():
     source = "data/schema-errors.csv"
     schema = "data/schema-valid.json"
-    report = validate(source, schema=schema, pick_errors=["#row"], limit_errors=3)
+    resource = Resource(source, schema=schema)
+    report = resource.validate(pick_errors=["#row"], limit_errors=3)
     assert report.task.partial
     assert report.task.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [4, 1, "type-error"],
@@ -53,7 +57,8 @@ def test_validate_schema_min_length_constraint():
             {"name": "word", "type": "string", "constraints": {"minLength": 2}},
         ]
     }
-    report = validate(source, schema=schema, pick_errors=["constraint-error"])
+    resource = Resource(source, schema=schema)
+    report = resource.validate(pick_errors=["constraint-error"])
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [2, 2, "constraint-error"],
     ]
@@ -67,7 +72,8 @@ def test_validate_schema_max_length_constraint():
             {"name": "word", "type": "string", "constraints": {"maxLength": 2}},
         ]
     }
-    report = validate(source, schema=schema, pick_errors=["constraint-error"])
+    resource = Resource(source, schema=schema)
+    report = resource.validate(pick_errors=["constraint-error"])
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [4, 2, "constraint-error"],
         [5, 2, "constraint-error"],
@@ -82,7 +88,8 @@ def test_validate_schema_minimum_constraint():
             {"name": "score", "type": "integer", "constraints": {"minimum": 2}},
         ]
     }
-    report = validate(source, schema=schema, pick_errors=["constraint-error"])
+    resource = Resource(source, schema=schema)
+    report = resource.validate(pick_errors=["constraint-error"])
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [2, 2, "constraint-error"],
     ]
@@ -96,7 +103,8 @@ def test_validate_schema_maximum_constraint():
             {"name": "score", "type": "integer", "constraints": {"maximum": 2}},
         ]
     }
-    report = validate(source, schema=schema, pick_errors=["constraint-error"])
+    resource = Resource(source, schema=schema)
+    report = resource.validate(pick_errors=["constraint-error"])
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [4, 2, "constraint-error"],
         [5, 2, "constraint-error"],
@@ -117,7 +125,8 @@ def test_validate_schema_foreign_key_error_self_referencing():
             ],
         },
     }
-    report = validate(source)
+    resource = Resource(source)
+    report = resource.validate()
     assert report.valid
 
 
@@ -135,18 +144,16 @@ def test_validate_schema_foreign_key_error_self_referencing_invalid():
             ],
         },
     }
-    report = validate(source)
+    resource = Resource(source)
+    report = resource.validate()
     assert report.flatten(["rowPosition", "fieldPosition", "code", "cells"]) == [
         [6, None, "foreign-key-error", ["5", "6", "Rome"]],
     ]
 
 
 def test_validate_schema_unique_error():
-    report = validate(
-        "data/unique-field.csv",
-        schema="data/unique-field.json",
-        pick_errors=["unique-error"],
-    )
+    resource = Resource("data/unique-field.csv", schema="data/unique-field.json")
+    report = resource.validate(pick_errors=["unique-error"])
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [10, 1, "unique-error"],
     ]
@@ -167,7 +174,8 @@ def test_validate_schema_unique_error_and_type_error():
             {"name": "unique_number", "type": "number", "constraints": {"unique": True}},
         ]
     }
-    report = validate(source, schema=schema)
+    resource = Resource(source, schema=schema)
+    report = resource.validate()
     assert report.flatten(["rowPosition", "fieldPosition", "code", "cells"]) == [
         [3, 2, "type-error", ["a2", "bad"]],
         [4, 2, "unique-error", ["a3", "100"]],
@@ -176,21 +184,19 @@ def test_validate_schema_unique_error_and_type_error():
 
 
 def test_validate_schema_primary_key_error():
-    report = validate(
-        "data/unique-field.csv",
-        schema="data/unique-field.json",
-        pick_errors=["primary-key-error"],
-    )
+    resource = Resource("data/unique-field.csv", schema="data/unique-field.json")
+    report = resource.validate(pick_errors=["primary-key-error"])
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [10, None, "primary-key-error"],
     ]
 
 
 def test_validate_schema_primary_key_and_unique_error():
-    report = validate(
+    resource = Resource(
         "data/unique-field.csv",
         schema="data/unique-field.json",
     )
+    report = resource.validate()
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [10, 1, "unique-error"],
         [10, None, "primary-key-error"],
@@ -213,7 +219,8 @@ def test_validate_schema_primary_key_error_composite():
         ],
         "primaryKey": ["id", "name"],
     }
-    report = validate(source, schema=schema)
+    resource = Resource(source, schema=schema)
+    report = resource.validate()
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [5, None, "primary-key-error"],
         [6, None, "blank-row"],

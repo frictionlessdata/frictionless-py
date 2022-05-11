@@ -17,6 +17,7 @@ if TYPE_CHECKING:
 # Shall metadata validation be a part of BaselineCheck?
 
 
+# TODO: shall we catch exceptions here or in global validate?
 @Report.from_validate
 def validate(
     resource: Resource,

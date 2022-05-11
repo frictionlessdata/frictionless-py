@@ -1,21 +1,24 @@
-from frictionless import validate, helpers
+from frictionless import Resource, helpers
 
 
 IS_UNIX = not helpers.is_platform("windows")
 
 
 def test_validate_compression():
-    report = validate("data/table.csv.zip")
+    resource = Resource("data/table.csv.zip")
+    report = resource.validate()
     assert report.valid
 
 
 def test_validate_compression_explicit():
-    report = validate("data/table.csv.zip", compression="zip")
+    resource = Resource("data/table.csv.zip", compression="zip")
+    report = resource.validate()
     assert report.valid
 
 
 def test_validate_compression_invalid():
-    report = validate("data/table.csv.zip", compression="bad")
+    resource = Resource("data/table.csv.zip", compression="bad")
+    report = resource.validate()
     assert report.flatten(["code", "note"]) == [
         ["compression-error", 'compression "bad" is not supported'],
     ]

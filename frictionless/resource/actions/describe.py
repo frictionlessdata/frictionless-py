@@ -1,6 +1,7 @@
 from importlib import import_module
 
 
+# TODO: rebase from source to path/data
 def describe(source=None, *, expand=False, stats=False, **options):
     """Describe the given source as a resource
 
