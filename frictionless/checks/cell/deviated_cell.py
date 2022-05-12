@@ -5,7 +5,7 @@ from typing import List, Iterator
 
 
 class deviated_cell(Check):
-    """Check if the cell value is an outlier
+    """Check if the cell value is deviated
 
     API      | Usage
     -------- | --------
