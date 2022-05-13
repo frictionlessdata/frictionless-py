@@ -25,14 +25,11 @@ class ascii_value(Check):
         for field in row.fields:
             if field.type == "string":
                 cell = row[field.name]
-                if cell:
-                    try:
-                        cell.encode("ascii")
-                    except UnicodeEncodeError:
-                        note = "the value is not ascii"
-                        yield errors.AsciiValueError.from_row(
-                            row, note=note, field_name=field.name
-                        )
+                if cell and not cell.isascii():
+                    note = "the cell contains non-ascii characters"
+                    yield errors.AsciiValueError.from_row(
+                        row, note=note, field_name=field.name
+                    )
 
     # Metadata
 
