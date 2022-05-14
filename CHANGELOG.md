@@ -2,6 +2,14 @@
 
 Here described only the breaking and most significant changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/frictionless-py/commits/main).
 
+## v4.37.0
+
+- Deprecated high-level legacy actions (use class-based alternatives):
+  - `describe_*`
+  - `extract_*`
+  - `transform_*`
+  - `validate_*`
+
 ## v4.36.0
 
 - Implemented pipeline actions:
