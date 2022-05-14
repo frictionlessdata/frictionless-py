@@ -485,6 +485,11 @@ class Detector:
                 field = Field(candidate)
                 if field.type == "number" and self.__field_float_numbers:
                     field.float_number = True
+                elif field.type == "boolean":
+                    if self.__field_true_values != settings.DEFAULT_TRUE_VALUES:
+                        field.true_values = self.__field_true_values
+                    if self.__field_false_values != settings.DEFAULT_FALSE_VALUES:
+                        field.false_values = self.__field_false_values
                 runner_fields.append(field)
             for index, name in enumerate(names):
                 runners.append([])
@@ -503,21 +508,12 @@ class Detector:
                     is_field_missing_value = source in self.__field_missing_values
                     if is_field_missing_value:
                         max_score[index] -= 1
-
                     for runner in runners[index]:
                         if runner["score"] < threshold:
                             continue
-
-                        if runner["field"].type == "boolean":
-                            if self.__field_true_values != settings.DEFAULT_TRUE_VALUES:
-                                runner["field"].true_values = self.__field_true_values
-                            if self.__field_false_values != settings.DEFAULT_FALSE_VALUES:
-                                runner["field"].false_values = self.__field_false_values
-
                         if not is_field_missing_value:
                             target, notes = runner["field"].read_cell(source)
                             runner["score"] += 1 if not notes else -1
-
                         if max_score[index] > 0 and runner["score"] >= (
                             max_score[index] * self.__field_confidence
                         ):
