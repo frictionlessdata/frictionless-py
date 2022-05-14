@@ -5,6 +5,7 @@ from ..field import Field
 from .. import settings
 from .. import helpers
 from .. import errors
+from . import actions
 
 
 class Schema(Metadata):
@@ -173,6 +174,11 @@ class Schema(Metadata):
         field = self.get_field(name)
         self.fields.remove(field)
         return field
+
+    # Actions
+
+    describe = staticmethod(actions.describe)
+    validate = actions.validate
 
     # Expand
 
