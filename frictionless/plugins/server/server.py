@@ -1,5 +1,5 @@
 import multiprocessing
-from ...describe import describe
+from ...actions import describe
 from ...extract import extract
 from ...validate import validate
 from ...transform import transform

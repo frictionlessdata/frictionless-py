@@ -1,6 +1,6 @@
+from .actions import *
 from .check import Check
 from .control import Control
-from .describe import *
 from .detector import Detector
 from .dialect import Dialect
 from .error import Error
