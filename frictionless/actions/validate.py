@@ -48,11 +48,11 @@ def validate(source=None, type=None, **options):
     # We might resolve it when we convert Detector to be a metadata
     if type in ["inquiry", "schema"]:
         options.pop("detector", None)
-    return validate(source, **options)
+    return validate(source, deprecate=False, **options)
 
 
 @Report.from_validate
-def validate_inquiry(source=None, *, parallel=False, **options):
+def validate_inquiry(source=None, *, parallel=False, deprecate=True, **options):
     """Validate inquiry
 
     API      | Usage
@@ -67,13 +67,16 @@ def validate_inquiry(source=None, *, parallel=False, **options):
         Report: validation report
 
     """
+    if deprecate:
+        message = 'Function "validate_inquiry" is deprecated (use "inquiry.validate").'
+        warnings.warn(message, UserWarning)
     native = isinstance(source, Inquiry)
     inquiry = source.to_copy() if native else Inquiry(source, **options)
     return inquiry.run(parallel=parallel)
 
 
 @Report.from_validate
-def validate_package(source=None, original=False, parallel=False, **options):
+def validate_package(source=None, original=False, parallel=False, deprecate=True, **options):
     """Validate package
 
     API      | Usage
@@ -92,6 +95,9 @@ def validate_package(source=None, original=False, parallel=False, **options):
         Report: validation report
 
     """
+    if deprecate:
+        message = 'Function "validate_package" is deprecated (use "package.validate").'
+        warnings.warn(message, UserWarning)
 
     # Create state
     timer = helpers.Timer()
@@ -169,6 +175,7 @@ def validate_resource(
     skip_errors=None,
     limit_errors=settings.DEFAULT_LIMIT_ERRORS,
     limit_memory=settings.DEFAULT_LIMIT_MEMORY,
+    deprecate=True,
     # We ignore this line because of a problem with `make docs`:
     # https://github.com/frictionlessdata/frictionless-py/issues/1031
     # fmt: off
@@ -194,6 +201,9 @@ def validate_resource(
     Returns:
         Report: validation report
     """
+    if deprecate:
+        message = 'Function "validate_resource" is deprecated (use "resource.validate").'
+        warnings.warn(message, UserWarning)
 
     # Create state
     resource = None
@@ -303,7 +313,7 @@ def validate_resource(
 
 
 @Report.from_validate
-def validate_schema(source=None, **options):
+def validate_schema(source=None, deprecate=True, **options):
     """Validate schema
 
     API      | Usage
@@ -317,6 +327,9 @@ def validate_schema(source=None, **options):
         Report: validation report
 
     """
+    if deprecate:
+        message = 'Function "validate_schema" is deprecated (use "schema.validate").'
+        warnings.warn(message, UserWarning)
 
     # Create state
     timer = helpers.Timer()

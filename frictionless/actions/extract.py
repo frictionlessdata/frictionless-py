@@ -1,3 +1,4 @@
+import warnings
 from ..resource import Resource
 from ..package import Package
 from ..exception import FrictionlessException
@@ -33,10 +34,10 @@ def extract(source=None, *, type=None, process=None, stream=False, **options):
     if extract is None:
         note = f"Not supported extract type: {type}"
         raise FrictionlessException(errors.GeneralError(note=note))
-    return extract(source, process=process, stream=stream, **options)
+    return extract(source, process=process, stream=stream, deprecate=False, **options)
 
 
-def extract_package(source=None, *, process=None, stream=False, **options):
+def extract_package(source=None, *, process=None, stream=False, deprecate=True, **options):
     """Extract package rows
 
     API      | Usage
@@ -53,6 +54,9 @@ def extract_package(source=None, *, process=None, stream=False, **options):
         {path: Row[]}: a dictionary of arrays/streams of rows
 
     """
+    if deprecate:
+        message = 'Function "extract_package" is deprecated (use "package.extract").'
+        warnings.warn(message, UserWarning)
     result = {}
     native = isinstance(source, Package)
     package = source.to_copy() if native else Package(source, **options)
@@ -64,7 +68,7 @@ def extract_package(source=None, *, process=None, stream=False, **options):
     return result
 
 
-def extract_resource(source=None, *, process=None, stream=False, **options):
+def extract_resource(source=None, *, process=None, stream=False, deprecate=True, **options):
     """Extract resource rows
 
     API      | Usage
@@ -80,6 +84,9 @@ def extract_resource(source=None, *, process=None, stream=False, **options):
         Row[]: an array/stream of rows
 
     """
+    if deprecate:
+        message = 'Function "extract_resource" is deprecated (use "resource.extract").'
+        warnings.warn(message, UserWarning)
     native = isinstance(source, Resource)
     resource = source.to_copy() if native else Resource(source, **options)
     data = read_row_stream(resource)

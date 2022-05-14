@@ -1,4 +1,5 @@
 import types
+import warnings
 from ..step import Step
 from ..system import system
 from ..package import Package
@@ -36,10 +37,10 @@ def transform(source=None, type=None, **options):
     if transform is None:
         note = f"Not supported transform type: {type}"
         raise FrictionlessException(errors.GeneralError(note=note))
-    return transform(source, **options)
+    return transform(source, deprecate=False, **options)
 
 
-def transform_package(source=None, *, steps, **options):
+def transform_package(source=None, *, steps, deprecate=True, **options):
     """Transform package
 
     API      | Usage
@@ -54,6 +55,9 @@ def transform_package(source=None, *, steps, **options):
     Returns:
         Package: the transform result
     """
+    if deprecate:
+        message = 'Function "transform" is deprecated (use "Package.transform").'
+        warnings.warn(message, UserWarning)
 
     # Prepare package
     native = isinstance(source, Package)
@@ -87,7 +91,7 @@ def transform_package(source=None, *, steps, **options):
     return package
 
 
-def transform_pipeline(source=None, *, parallel=False, **options):
+def transform_pipeline(source=None, *, parallel=False, deprecate=True, **options):
     """Transform package
 
     API      | Usage
@@ -101,12 +105,15 @@ def transform_pipeline(source=None, *, parallel=False, **options):
     Returns:
         any: the pipeline output
     """
+    if deprecate:
+        message = 'Function "transform_pipeline" is deprecated (use "Pipeline.transform").'
+        warnings.warn(message, UserWarning)
     native = isinstance(source, Pipeline)
     pipeline = source if native else Pipeline(source)
     return pipeline.run(parallel=parallel)
 
 
-def transform_resource(source=None, *, steps, **options):
+def transform_resource(source=None, *, steps, deprecate=True, **options):
     """Transform resource
 
     API      | Usage
@@ -121,6 +128,9 @@ def transform_resource(source=None, *, steps, **options):
     Returns:
         Resource: the transform result
     """
+    if deprecate:
+        message = 'Function "transform_resource" is deprecated (use "Resource.transform").'
+        warnings.warn(message, UserWarning)
 
     # Prepare resource
     native = isinstance(source, Resource)

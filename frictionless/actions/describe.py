@@ -1,3 +1,4 @@
+import warnings
 from ..resource import Resource
 from ..package import Package
 from ..exception import FrictionlessException
@@ -27,10 +28,10 @@ def describe(source=None, *, type=None, **options):
     if describe is None:
         note = f"Not supported describe type: {type}"
         raise FrictionlessException(errors.GeneralError(note=note))
-    return describe(source, **options)
+    return describe(source, deprecate=False, **options)
 
 
-def describe_dialect(source=None, **options):
+def describe_dialect(source=None, deprecate=True, **options):
     """Describe the given source as a dialect
 
     API      | Usage
@@ -44,11 +45,14 @@ def describe_dialect(source=None, **options):
     Returns:
         Dialect: file dialect
     """
+    if deprecate:
+        message = 'Function "describe_dialect" is deprecated.'
+        warnings.warn(message, UserWarning)
     resource = describe_resource(source, **options)
     return resource.dialect
 
 
-def describe_package(source=None, *, expand=False, stats=False, **options):
+def describe_package(source=None, *, expand=False, stats=False, deprecate=True, **options):
     """Describe the given source as a package
 
     API      | Usage
@@ -65,6 +69,9 @@ def describe_package(source=None, *, expand=False, stats=False, **options):
         Package: data package
 
     """
+    if deprecate:
+        message = 'Function "describe_package" is deprecated (use "Package.describe").'
+        warnings.warn(message, UserWarning)
     package = Package(source, **options)
     package.infer(stats=stats)
     if expand:
@@ -72,7 +79,7 @@ def describe_package(source=None, *, expand=False, stats=False, **options):
     return package
 
 
-def describe_resource(source=None, *, expand=False, stats=False, **options):
+def describe_resource(source=None, *, expand=False, stats=False, deprecate=True, **options):
     """Describe the given source as a resource
 
     API      | Usage
@@ -89,6 +96,9 @@ def describe_resource(source=None, *, expand=False, stats=False, **options):
         Resource: data resource
 
     """
+    if deprecate:
+        message = 'Function "describe_resource" is deprecated (use "Resource.describe").'
+        warnings.warn(message, UserWarning)
     resource = Resource(source, **options)
     resource.infer(stats=stats)
     if expand:
@@ -96,7 +106,7 @@ def describe_resource(source=None, *, expand=False, stats=False, **options):
     return resource
 
 
-def describe_schema(source=None, **options):
+def describe_schema(source=None, deprecate=True, **options):
     """Describe the given source as a schema
 
     API      | Usage
@@ -110,5 +120,8 @@ def describe_schema(source=None, **options):
     Returns:
         Schema: table schema
     """
+    if deprecate:
+        message = 'Function "describe_schema" is deprecated (use "Schema.describe").'
+        warnings.warn(message, UserWarning)
     resource = describe_resource(source, **options)
     return resource.schema
