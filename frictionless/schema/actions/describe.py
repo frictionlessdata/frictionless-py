@@ -11,6 +11,6 @@ def describe(source=None, **options):
     Returns:
         Schema: table schema
     """
-    frictionless = import_module('frictionless')
+    frictionless = import_module("frictionless")
     resource = frictionless.Resource.describe(source, **options)
     return resource.schema
