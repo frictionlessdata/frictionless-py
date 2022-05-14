@@ -500,8 +500,8 @@ def test_schema_tableschema_to_excel_584(tmpdir, zip_path):
 
     # zipfile.Path is introduced in Python3.8, and could make this cleaner:
     # xml_string = zipfile.Path(xlsx_path, zip_path).read_text()
-    schema_path = Path(Path(__file__).parent, "fixtures/schema.yaml")
-    schema = Schema(safe_load(schema_path.read_text()))
+    schema_path = "tests/fixtures/schema.yaml"
+    schema = Schema(safe_load(schema_path))
     xlsx_tmp_path = os.path.join(tmpdir, "template.xlsx")
     schema.to_excel_template(xlsx_tmp_path)
     with ZipFile(xlsx_tmp_path) as zip_handle:
@@ -511,9 +511,7 @@ def test_schema_tableschema_to_excel_584(tmpdir, zip_path):
     # so we need to use an outside library.
     yattag = helpers.import_from_plugin("yattag", plugin="excel")
     pretty_xml = yattag.indent(xml_string)
-    pretty_xml_fixture_path = Path(
-        Path(__file__).parent, "fixtures/output-unzipped", zip_path
-    )
+    pretty_xml_fixture_path = Path("tests/fixtures/output-unzipped", zip_path)
     pretty_xml_tmp_path = Path(Path(tmpdir), Path(zip_path).name)
     pretty_xml_tmp_path.write_text(pretty_xml, encoding="utf-8")
     assert (
@@ -555,7 +553,7 @@ def test_schema_to_markdown_837(tmpdir):
         ]
     }
     schema = Schema(descriptor)
-    md_file_path = Path(Path(__file__).parent, "fixtures/output-markdown/schema.md")
+    md_file_path = "tests/fixtures/output-markdown/schema.md"
     with open(md_file_path, encoding="utf-8") as file:
         expected = file.read()
     assert schema.to_markdown().strip() == expected
@@ -580,7 +578,7 @@ def test_schema_to_markdown_table_837():
         ]
     }
     schema = Schema(descriptor)
-    md_file_path = Path(Path(__file__).parent, "fixtures/output-markdown/schema-table.md")
+    md_file_path = "tests/fixtures/output-markdown/schema-table.md"
     with open(md_file_path, encoding="utf-8") as file:
         expected = file.read()
     assert schema.to_markdown(table=True).strip() == expected
@@ -604,7 +602,7 @@ def test_schema_to_markdown_file_837(tmpdir):
             },
         ]
     }
-    md_file_path = Path(Path(__file__).parent, "fixtures/output-markdown/schema.md")
+    md_file_path = "tests/fixtures/output-markdown/schema.md"
     with open(md_file_path, encoding="utf-8") as file:
         expected = file.read()
     target = str(tmpdir.join("schema.md"))

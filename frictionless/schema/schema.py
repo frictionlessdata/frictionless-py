@@ -1,10 +1,10 @@
 from copy import copy, deepcopy
-from .exception import FrictionlessException
-from .metadata import Metadata
-from .field import Field
-from . import settings
-from . import helpers
-from . import errors
+from ..exception import FrictionlessException
+from ..metadata import Metadata
+from ..field import Field
+from .. import settings
+from .. import helpers
+from .. import errors
 
 
 class Schema(Metadata):
