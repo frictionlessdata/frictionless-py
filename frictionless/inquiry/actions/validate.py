@@ -8,7 +8,7 @@ if TYPE_CHECKING:
 # TODO: move run here?
 # TODO: move exception handling to other layer?
 @Report.from_validate
-def validate_inquiry(inquiry: "Inquiry", *, parallel=False):
+def validate(inquiry: "Inquiry", *, parallel=False):
     """Validate inquiry
 
     Parameters:
