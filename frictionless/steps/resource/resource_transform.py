@@ -1,5 +1,5 @@
 from ...step import Step
-from ...transform import transform_resource
+from ...actions import transform_resource
 from ...exception import FrictionlessException
 from ... import errors
 

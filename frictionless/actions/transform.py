@@ -1,10 +1,109 @@
 import types
 from ..step import Step
 from ..system import system
-from ..helpers import get_name
+from ..package import Package
 from ..resource import Resource
+from ..helpers import get_name
 from ..exception import FrictionlessException
+from ..pipeline import Pipeline
 from .. import errors
+
+
+def transform(source=None, type=None, **options):
+    """Transform resource
+
+    API      | Usage
+    -------- | --------
+    Public   | `from frictionless import transform`
+
+    Parameters:
+        source (any): data source
+        type (str): source type - package, resource or pipeline (default: infer)
+        **options (dict): options for the underlaying function
+
+    Returns:
+        any: the transform result
+    """
+    if not type:
+        type = "pipeline"
+        if options:
+            file = system.create_file(source, basepath=options.get("basepath", ""))
+            if file.type in ["table", "resource"]:
+                type = "resource"
+            elif file.type == "package":
+                type = "package"
+    transform = globals().get("transform_%s" % type, None)
+    if transform is None:
+        note = f"Not supported transform type: {type}"
+        raise FrictionlessException(errors.GeneralError(note=note))
+    return transform(source, **options)
+
+
+def transform_package(source=None, *, steps, **options):
+    """Transform package
+
+    API      | Usage
+    -------- | --------
+    Public   | `from frictionless import transform_package`
+
+    Parameters:
+        source (any): data source
+        steps (Step[]): transform steps
+        **options (dict): Package constructor options
+
+    Returns:
+        Package: the transform result
+    """
+
+    # Prepare package
+    native = isinstance(source, Package)
+    package = source.to_copy() if native else Package(source, **options)
+    package.infer()
+
+    # Prepare steps
+    for index, step in enumerate(steps):
+        if not isinstance(step, Step):
+            steps[index] = (
+                Step(function=step)
+                if isinstance(step, types.FunctionType)
+                else system.create_step(step)
+            )
+
+    # Validate steps
+    for step in steps:
+        if step.metadata_errors:
+            raise FrictionlessException(step.metadata_errors[0])
+
+    # Run transforms
+    for step in steps:
+
+        # Transform
+        try:
+            step.transform_package(package)
+        except Exception as exception:
+            error = errors.StepError(note=f'"{get_name(step)}" raises "{exception}"')
+            raise FrictionlessException(error) from exception
+
+    return package
+
+
+def transform_pipeline(source=None, *, parallel=False, **options):
+    """Transform package
+
+    API      | Usage
+    -------- | --------
+    Public   | `from frictionless import transform_package`
+
+    Parameters:
+        source (any): a pipeline descriptor
+        **options (dict): Pipeline constructor options
+
+    Returns:
+        any: the pipeline output
+    """
+    native = isinstance(source, Pipeline)
+    pipeline = source if native else Pipeline(source)
+    return pipeline.run(parallel=parallel)
 
 
 def transform_resource(source=None, *, steps, **options):
