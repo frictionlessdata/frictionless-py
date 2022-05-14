@@ -2,6 +2,14 @@
 
 Here described only the breaking and most significant changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/frictionless-py/commits/main).
 
+## v4.36.0
+
+- Implemented pipeline actions:
+  - `pipeline.validate` (will replace `validate_pipeline` in v5)
+  - `pipeline.transform` (will replace `transform_pipeline` in v5)
+- Implemented inqiury actions:
+  - `inqiury.validate` (will replace `validate_inqiury` in v5)
+
 ## v4.35.0
 
 - Implemented schema actions:
