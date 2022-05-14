@@ -4,7 +4,6 @@ from .control import Control
 from .detector import Detector
 from .dialect import Dialect
 from .error import Error
-from .extract import *
 from .exception import FrictionlessException
 from .field import Field
 from .file import File
