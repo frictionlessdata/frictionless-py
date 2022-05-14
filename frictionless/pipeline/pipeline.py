@@ -1,13 +1,14 @@
 from copy import deepcopy
 from multiprocessing import Pool
 from importlib import import_module
-from .errors import PipelineError, TaskError
-from .status import Status, StatusTask
-from .metadata import Metadata
-from .resource import Resource
-from .package import Package
-from . import settings
-from . import helpers
+from ..errors import PipelineError, TaskError
+from ..status import Status, StatusTask
+from ..metadata import Metadata
+from ..resource import Resource
+from ..package import Package
+from .. import settings
+from .. import helpers
+from . import actions
 
 
 class Pipeline(Metadata):
@@ -33,6 +34,11 @@ class Pipeline(Metadata):
         """
         tasks = self.get("tasks", [])
         return self.metadata_attach("tasks", tasks)
+
+    # Actions
+
+    transform = actions.transform
+    validate = actions.validate
 
     # Run
 
