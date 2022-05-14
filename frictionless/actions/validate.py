@@ -3,8 +3,6 @@ import inspect
 import warnings
 from ..check import Check
 from ..schema import Schema
-from ..system import system
-from ..inquiry import Inquiry
 from ..package import Package
 from ..inquiry import Inquiry, InquiryTask
 from ..system import system
@@ -14,6 +12,7 @@ from ..errors import TaskError
 from ..exception import FrictionlessException
 from .. import helpers
 from .. import settings
+from .. import errors
 
 
 @Report.from_validate
