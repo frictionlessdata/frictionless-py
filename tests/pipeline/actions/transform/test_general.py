@@ -6,17 +6,19 @@ from frictionless import Pipeline
 
 
 def test_transform_pipeline():
-    pipeline = Pipeline({
-        "tasks": [
-            {
-                "type": "resource",
-                "source": {"path": "data/transform.csv"},
-                "steps": [
-                    {"code": "cell-set", "fieldName": "population", "value": 100},
-                ],
-            }
-        ]
-    })
+    pipeline = Pipeline(
+        {
+            "tasks": [
+                {
+                    "type": "resource",
+                    "source": {"path": "data/transform.csv"},
+                    "steps": [
+                        {"code": "cell-set", "fieldName": "population", "value": 100},
+                    ],
+                }
+            ]
+        }
+    )
     status = pipeline.transform()
     assert status.valid
     assert status.task.valid
@@ -39,24 +41,26 @@ def test_transform_pipeline():
 
 @pytest.mark.ci
 def test_transform_pipeline_parallel():
-    pipeline = Pipeline({
-        "tasks": [
-            {
-                "type": "resource",
-                "source": {"path": "data/transform.csv"},
-                "steps": [
-                    {"code": "cell-set", "fieldName": "population", "value": 100},
-                ],
-            },
-            {
-                "type": "resource",
-                "source": {"path": "data/transform.csv"},
-                "steps": [
-                    {"code": "cell-set", "fieldName": "population", "value": 10000},
-                ],
-            },
-        ]
-    })
+    pipeline = Pipeline(
+        {
+            "tasks": [
+                {
+                    "type": "resource",
+                    "source": {"path": "data/transform.csv"},
+                    "steps": [
+                        {"code": "cell-set", "fieldName": "population", "value": 100},
+                    ],
+                },
+                {
+                    "type": "resource",
+                    "source": {"path": "data/transform.csv"},
+                    "steps": [
+                        {"code": "cell-set", "fieldName": "population", "value": 10000},
+                    ],
+                },
+            ]
+        }
+    )
     status = pipeline.transform(pipeline)
     assert status.valid
     assert status.tasks[0].valid
