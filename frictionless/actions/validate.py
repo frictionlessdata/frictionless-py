@@ -1,12 +1,164 @@
 import types
+import inspect
+import warnings
 from ..check import Check
+from ..schema import Schema
+from ..package import Package
+from ..inquiry import Inquiry, InquiryTask
 from ..system import system
 from ..resource import Resource
-from ..exception import FrictionlessException
 from ..report import Report, ReportTask
 from ..errors import TaskError
+from ..exception import FrictionlessException
 from .. import helpers
 from .. import settings
+from .. import errors
+
+
+@Report.from_validate
+def validate(source=None, type=None, **options):
+    """Validate resource
+
+    API      | Usage
+    -------- | --------
+    Public   | `from frictionless import validate`
+
+    Parameters:
+        source (dict|str): a data source
+        type (str): source type - inquiry, package, resource, schema or table
+        **options (dict): options for the underlaying function
+
+    Returns:
+        Report: validation report
+    """
+    if not type:
+        basepath = options.get("basepath", "")
+        descriptor = options.get("descriptor")
+        file = system.create_file(descriptor or source, basepath=basepath)
+        type = "package" if file.multipart else file.type
+        if type == "table":
+            type = "resource"
+    validate = globals().get("validate_%s" % type, None)
+    if validate is None:
+        note = f"Not supported validate type: {type}"
+        raise FrictionlessException(errors.GeneralError(note=note))
+    # NOTE:
+    # Review whether it's a proper place for this (program sends a detector)
+    # We might resolve it when we convert Detector to be a metadata
+    if type in ["inquiry", "schema"]:
+        options.pop("detector", None)
+    return validate(source, deprecate=False, **options)
+
+
+@Report.from_validate
+def validate_inquiry(source=None, *, parallel=False, deprecate=True, **options):
+    """Validate inquiry
+
+    API      | Usage
+    -------- | --------
+    Public   | `from frictionless import validate_inquiry`
+
+    Parameters:
+        source (dict|str): an inquiry descriptor
+        parallel? (bool): enable multiprocessing
+
+    Returns:
+        Report: validation report
+
+    """
+    if deprecate:
+        message = 'Function "validate_inquiry" is deprecated (use "inquiry.validate").'
+        warnings.warn(message, UserWarning)
+    native = isinstance(source, Inquiry)
+    inquiry = source.to_copy() if native else Inquiry(source, **options)
+    return inquiry.run(parallel=parallel)
+
+
+@Report.from_validate
+def validate_package(
+    source=None, original=False, parallel=False, deprecate=True, **options
+):
+    """Validate package
+
+    API      | Usage
+    -------- | --------
+    Public   | `from frictionless import validate_package`
+
+    Parameters:
+        source (dict|str): a package descriptor
+        basepath? (str): package basepath
+        trusted? (bool): don't raise an exception on unsafe paths
+        original? (bool): validate metadata as it is (without inferring)
+        parallel? (bool): enable multiprocessing
+        **options (dict): Package constructor options
+
+    Returns:
+        Report: validation report
+
+    """
+    if deprecate:
+        message = 'Function "validate_package" is deprecated (use "package.validate").'
+        warnings.warn(message, UserWarning)
+
+    # Create state
+    timer = helpers.Timer()
+
+    # Prepare options
+    package_options = {}
+    signature = inspect.signature(validate_resource)
+    for name, value in options.copy().items():
+        param = signature.parameters.get(name)
+        if not param or param.kind != param.KEYWORD_ONLY:
+            package_options[name] = options.pop(name)
+
+    # Create package
+    try:
+        native = isinstance(source, Package)
+        package = source.to_copy() if native else Package(source, **package_options)
+        package_stats = []
+        for resource in package.resources:
+            package_stats.append({key: val for key, val in resource.stats.items() if val})
+    except FrictionlessException as exception:
+        return Report(time=timer.time, errors=[exception.error], tasks=[])
+
+    # Validate metadata
+    metadata_errors = []
+    for error in package.metadata_errors:
+        if error.code == "package-error":
+            metadata_errors.append(error)
+        if metadata_errors:
+            return Report(time=timer.time, errors=metadata_errors, tasks=[])
+
+    # Validate sequentially
+    if not parallel:
+        tasks = []
+        errors = []
+        for resource, stats in zip(package.resources, package_stats):
+            resource.stats = stats
+            report = validate_resource(resource, original=original, **options)
+            tasks.extend(report.tasks)
+            errors.extend(report.errors)
+        return Report(time=timer.time, errors=errors, tasks=tasks)
+
+    # Validate in-parallel
+    else:
+        inquiry = Inquiry(tasks=[])
+        for resource, stats in zip(package.resources, package_stats):
+            for fk in resource.schema.foreign_keys:
+                if fk["reference"]["resource"]:
+                    message = "Foreign keys validation is ignored in the parallel mode"
+                    warnings.warn(message, UserWarning)
+                    break
+            resource.stats = stats
+            inquiry.tasks.append(
+                InquiryTask(
+                    source=resource,
+                    basepath=resource.basepath,
+                    original=original,
+                    **options,
+                )
+            )
+        return inquiry.run(parallel=parallel)
 
 
 # NOTE:
@@ -24,6 +176,7 @@ def validate_resource(
     skip_errors=None,
     limit_errors=settings.DEFAULT_LIMIT_ERRORS,
     limit_memory=settings.DEFAULT_LIMIT_MEMORY,
+    deprecate=True,
     # We ignore this line because of a problem with `make docs`:
     # https://github.com/frictionlessdata/frictionless-py/issues/1031
     # fmt: off
@@ -49,6 +202,9 @@ def validate_resource(
     Returns:
         Report: validation report
     """
+    if deprecate:
+        message = 'Function "validate_resource" is deprecated (use "resource.validate").'
+        warnings.warn(message, UserWarning)
 
     # Create state
     resource = None
@@ -155,6 +311,39 @@ def validate_resource(
             )
         ],
     )
+
+
+@Report.from_validate
+def validate_schema(source=None, deprecate=True, **options):
+    """Validate schema
+
+    API      | Usage
+    -------- | --------
+    Public   | `from frictionless import validate_schema`
+
+    Parameters:
+        source (dict|str): a schema descriptor
+
+    Returns:
+        Report: validation report
+
+    """
+    if deprecate:
+        message = 'Function "validate_schema" is deprecated (use "schema.validate").'
+        warnings.warn(message, UserWarning)
+
+    # Create state
+    timer = helpers.Timer()
+
+    # Create schema
+    try:
+        native = isinstance(source, Schema)
+        schema = source.to_copy() if native else Schema(source, **options)
+    except FrictionlessException as exception:
+        return Report(time=timer.time, errors=[exception.error], tasks=[])
+
+    # Return report
+    return Report(time=timer.time, errors=schema.metadata_errors, tasks=[])
 
 
 # Internal

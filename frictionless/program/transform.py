@@ -1,7 +1,7 @@
 import sys
 import typer
 from ..exception import FrictionlessException
-from ..transform import transform
+from ..actions import transform
 from .main import program
 from . import common
 

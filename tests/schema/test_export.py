@@ -1,6 +1,11 @@
+import os
 import json
 import yaml
-from frictionless import Schema, describe_schema
+import pytest
+from pathlib import Path
+from zipfile import ZipFile
+from yaml import safe_load
+from frictionless import Schema, describe_schema, helpers
 
 
 DESCRIPTOR_MIN = {"fields": [{"name": "id"}, {"name": "height", "type": "integer"}]}
@@ -99,3 +104,143 @@ def test_schema_from_jsonschema():
             },
         ]
     }
+
+
+unzipped_dir = "data/fixtures/output-unzipped"
+
+
+@pytest.mark.parametrize(
+    "zip_path",
+    [
+        "docProps/app.xml",
+        "xl/comments1.xml",
+        "xl/sharedStrings.xml",
+        "xl/styles.xml",
+        "xl/workbook.xml",
+        "xl/drawings/vmlDrawing1.vml",
+        "xl/theme/theme1.xml",
+        "xl/worksheets/sheet1.xml",
+        "xl/worksheets/sheet2.xml",
+        "xl/worksheets/sheet3.xml",
+        "xl/worksheets/_rels/sheet1.xml.rels",
+        "xl/_rels/workbook.xml.rels",
+        "_rels/.rels",
+    ],
+)
+def test_schema_tableschema_to_excel_584(tmpdir, zip_path):
+    # This code section was used from library tableschema-to-template
+    # https://github.com/hubmapconsortium/tableschema-to-template/blob/main/tests/test_create_xlsx.py
+
+    # zipfile.Path is introduced in Python3.8, and could make this cleaner:
+    # xml_string = zipfile.Path(xlsx_path, zip_path).read_text()
+    schema_path = "data/fixtures/schema.yaml"
+    schema = Schema(safe_load(schema_path))
+    xlsx_tmp_path = os.path.join(tmpdir, "template.xlsx")
+    schema.to_excel_template(xlsx_tmp_path)
+    with ZipFile(xlsx_tmp_path) as zip_handle:
+        with zip_handle.open(zip_path) as file_handle:
+            xml_string = file_handle.read().decode("utf-8")
+    # Before Python3.8, attribute order is not stable in minidom,
+    # so we need to use an outside library.
+    yattag = helpers.import_from_plugin("yattag", plugin="excel")
+    pretty_xml = yattag.indent(xml_string)
+    pretty_xml_fixture_path = Path("data/fixtures/output-unzipped", zip_path)
+    pretty_xml_tmp_path = Path(Path(tmpdir), Path(zip_path).name)
+    pretty_xml_tmp_path.write_text(pretty_xml, encoding="utf-8")
+    assert (
+        pretty_xml.strip() == pretty_xml_fixture_path.read_text(encoding="utf-8").strip()
+    )
+
+
+def test_schema_pprint_1029():
+    descriptor = {
+        "fields": [
+            {"name": "test_1", "type": "string", "format": "default"},
+            {"name": "test_2", "type": "string", "format": "default"},
+            {"name": "test_3", "type": "string", "format": "default"},
+        ]
+    }
+    schema = Schema(descriptor)
+    expected = """{'fields': [{'format': 'default', 'name': 'test_1', 'type': 'string'},
+            {'format': 'default', 'name': 'test_2', 'type': 'string'},
+            {'format': 'default', 'name': 'test_3', 'type': 'string'}]}"""
+    assert repr(schema) == expected
+
+
+def test_schema_to_markdown_837(tmpdir):
+    descriptor = {
+        "fields": [
+            {
+                "name": "id",
+                "description": "Any positive integer",
+                "type": "integer",
+                "constraints": {"minimum": 1},
+            },
+            {
+                "name": "age",
+                "title": "Age",
+                "description": "Any number >= 1",
+                "type": "number",
+                "constraints": {"minimum": 1},
+            },
+        ]
+    }
+    schema = Schema(descriptor)
+    md_file_path = "data/fixtures/output-markdown/schema.md"
+    with open(md_file_path, encoding="utf-8") as file:
+        expected = file.read()
+    assert schema.to_markdown().strip() == expected
+
+
+def test_schema_to_markdown_table_837():
+    descriptor = {
+        "fields": [
+            {
+                "name": "id",
+                "description": "Any positive integer",
+                "type": "integer",
+                "constraints": {"minimum": 1},
+            },
+            {
+                "name": "age",
+                "title": "Age",
+                "description": "Any number >= 1",
+                "type": "number",
+                "constraints": {"minimum": 1},
+            },
+        ]
+    }
+    schema = Schema(descriptor)
+    md_file_path = "data/fixtures/output-markdown/schema-table.md"
+    with open(md_file_path, encoding="utf-8") as file:
+        expected = file.read()
+    assert schema.to_markdown(table=True).strip() == expected
+
+
+def test_schema_to_markdown_file_837(tmpdir):
+    descriptor = {
+        "fields": [
+            {
+                "name": "id",
+                "description": "Any positive integer",
+                "type": "integer",
+                "constraints": {"minimum": 1},
+            },
+            {
+                "name": "age",
+                "title": "Age",
+                "description": "Any number >= 1",
+                "type": "number",
+                "constraints": {"minimum": 1},
+            },
+        ]
+    }
+    md_file_path = "data/fixtures/output-markdown/schema.md"
+    with open(md_file_path, encoding="utf-8") as file:
+        expected = file.read()
+    target = str(tmpdir.join("schema.md"))
+    schema = Schema(descriptor)
+    schema.to_markdown(path=target).strip()
+    with open(target, encoding="utf-8") as file:
+        output = file.read()
+    assert expected == output

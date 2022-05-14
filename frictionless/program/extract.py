@@ -5,7 +5,7 @@ import json as pyjson
 import yaml as pyyaml
 from typing import List
 from ..detector import Detector
-from ..extract import extract
+from ..actions import extract
 from ..layout import Layout
 from .main import program
 from .. import helpers
