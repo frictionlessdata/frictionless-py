@@ -1,18 +1,15 @@
 import io
-import json
 import os
+import json
+import pytest
+import requests
 from pathlib import Path
 from zipfile import ZipFile
-import yaml
-import pytest
 from yaml import safe_load
-import requests
 from decimal import Decimal
-from frictionless import Schema, Field, describe_schema, helpers
+from frictionless import Schema, helpers
 from frictionless import FrictionlessException
 
-
-# General
 
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
 DESCRIPTOR_MIN = {"fields": [{"name": "id"}, {"name": "height", "type": "integer"}]}
@@ -30,6 +27,9 @@ DESCRIPTOR_MAX = {
     ],
     "missingValues": ["", "-", "null"],
 }
+
+
+# General
 
 
 def test_schema():
@@ -307,136 +307,6 @@ def test_schema_standard_specs_properties(create_descriptor):
     assert schema.missing_values == []
     assert schema.primary_key == []
     assert schema.foreign_keys == []
-
-
-# Expand
-
-
-def test_schema_descriptor_expand():
-    schema = Schema(DESCRIPTOR_MIN)
-    schema.expand()
-    schema == {
-        "fields": [
-            {"name": "id", "type": "string", "format": "default"},
-            {"name": "height", "type": "integer", "format": "default"},
-        ],
-        "missingValues": [""],
-    }
-
-
-# Import/export
-
-
-def test_schema_to_copy():
-    source = describe_schema("data/table.csv")
-    target = source.to_copy()
-    assert source is not target
-    assert source == target
-
-
-def test_schema_to_json(tmpdir):
-    target = str(tmpdir.join("schema.json"))
-    schema = Schema(DESCRIPTOR_MIN)
-    schema.to_json(target)
-    with open(target, encoding="utf-8") as file:
-        assert schema == json.load(file)
-
-
-def test_schema_to_yaml(tmpdir):
-    target = str(tmpdir.join("schema.yaml"))
-    schema = Schema(DESCRIPTOR_MIN)
-    schema.to_yaml(target)
-    with open(target, encoding="utf-8") as file:
-        assert schema == yaml.safe_load(file)
-
-
-def test_schema_from_jsonschema():
-    schema = Schema.from_jsonschema("data/ecrin.json")
-    assert schema == {
-        "fields": [
-            {"name": "file_type", "type": "string", "description": "always 'study'"},
-            {
-                "name": "id",
-                "type": "integer",
-                "description": "Internal accession number of the study within the MDR database",
-                "constraints": {"required": True},
-            },
-            {
-                "name": "display_title",
-                "type": "string",
-                "description": "By default the public or brief study title. If that is missing then the full scientific title, as used on the protocol document",
-                "constraints": {"required": True},
-            },
-            {
-                "name": "brief_description",
-                "type": "object",
-                "description": "Brief description, usually a few lines, of the study",
-            },
-            {
-                "name": "data_sharing_statement",
-                "type": "object",
-                "description": "A statement from the sponsor and / or study leads about their intentions for IPD sharing",
-            },
-            {
-                "name": "study_type",
-                "type": "object",
-                "description": "Categorisation of study type, e.g. 'Interventional', or 'Observational'",
-            },
-            {
-                "name": "study_status",
-                "type": "object",
-                "description": "Categorisation of study status, e.g. 'Active, not recruiting', or 'Completed'",
-            },
-            {
-                "name": "study_enrolment",
-                "type": "integer",
-                "description": "The anticipated or actual total number of participants in the clinical study.",
-            },
-            {
-                "name": "study_gender_elig",
-                "type": "object",
-                "description": "Whether the study is open to all genders, or just male or female",
-            },
-            {
-                "name": "min_age",
-                "type": "object",
-                "description": "The minimum age, if any, for a study participant",
-            },
-            {
-                "name": "max_age",
-                "type": "object",
-                "description": "The maximum age, if any, for a study participant",
-            },
-            {"name": "study_identifiers", "type": "array"},
-            {"name": "study_titles", "type": "array"},
-            {"name": "study_features", "type": "array"},
-            {"name": "study_topics", "type": "array"},
-            {"name": "study_relationships", "type": "array"},
-            {"name": "linked_data_objects", "type": "array"},
-            {
-                "name": "provenance_string",
-                "type": "string",
-                "description": "A listing of the source or sources (usually a trial registry) from which the data for the study has been drawn, and the date-time(s) when the data was last downloaded",
-            },
-        ]
-    }
-
-
-# Metadata
-
-
-def test_schema_metadata_bad_schema_format():
-    schema = Schema(
-        fields=[
-            Field(
-                name="name",
-                type="boolean",
-                format={"trueValues": "Yes", "falseValues": "No"},
-            )
-        ]
-    )
-    assert schema.metadata_valid is False
-    assert schema.metadata_errors[0].code == "field-error"
 
 
 # Issues
