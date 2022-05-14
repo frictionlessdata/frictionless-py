@@ -61,7 +61,7 @@ def test_transform_pipeline_parallel():
             ]
         }
     )
-    status = pipeline.transform(pipeline)
+    status = pipeline.transform()
     assert status.valid
     assert status.tasks[0].valid
     assert status.tasks[0].target.schema == {
