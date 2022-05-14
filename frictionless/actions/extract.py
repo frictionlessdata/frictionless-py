@@ -37,7 +37,9 @@ def extract(source=None, *, type=None, process=None, stream=False, **options):
     return extract(source, process=process, stream=stream, deprecate=False, **options)
 
 
-def extract_package(source=None, *, process=None, stream=False, deprecate=True, **options):
+def extract_package(
+    source=None, *, process=None, stream=False, deprecate=True, **options
+):
     """Extract package rows
 
     API      | Usage
@@ -68,7 +70,9 @@ def extract_package(source=None, *, process=None, stream=False, deprecate=True, 
     return result
 
 
-def extract_resource(source=None, *, process=None, stream=False, deprecate=True, **options):
+def extract_resource(
+    source=None, *, process=None, stream=False, deprecate=True, **options
+):
     """Extract resource rows
 
     API      | Usage

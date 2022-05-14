@@ -76,7 +76,9 @@ def validate_inquiry(source=None, *, parallel=False, deprecate=True, **options):
 
 
 @Report.from_validate
-def validate_package(source=None, original=False, parallel=False, deprecate=True, **options):
+def validate_package(
+    source=None, original=False, parallel=False, deprecate=True, **options
+):
     """Validate package
 
     API      | Usage

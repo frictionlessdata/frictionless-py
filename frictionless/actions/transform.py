@@ -106,7 +106,9 @@ def transform_pipeline(source=None, *, parallel=False, deprecate=True, **options
         any: the pipeline output
     """
     if deprecate:
-        message = 'Function "transform_pipeline" is deprecated (use "Pipeline.transform").'
+        message = (
+            'Function "transform_pipeline" is deprecated (use "Pipeline.transform").'
+        )
         warnings.warn(message, UserWarning)
     native = isinstance(source, Pipeline)
     pipeline = source if native else Pipeline(source)
@@ -129,7 +131,9 @@ def transform_resource(source=None, *, steps, deprecate=True, **options):
         Resource: the transform result
     """
     if deprecate:
-        message = 'Function "transform_resource" is deprecated (use "Resource.transform").'
+        message = (
+            'Function "transform_resource" is deprecated (use "Resource.transform").'
+        )
         warnings.warn(message, UserWarning)
 
     # Prepare resource

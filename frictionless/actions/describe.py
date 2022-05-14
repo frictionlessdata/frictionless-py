@@ -52,7 +52,9 @@ def describe_dialect(source=None, deprecate=True, **options):
     return resource.dialect
 
 
-def describe_package(source=None, *, expand=False, stats=False, deprecate=True, **options):
+def describe_package(
+    source=None, *, expand=False, stats=False, deprecate=True, **options
+):
     """Describe the given source as a package
 
     API      | Usage
@@ -79,7 +81,9 @@ def describe_package(source=None, *, expand=False, stats=False, deprecate=True, 
     return package
 
 
-def describe_resource(source=None, *, expand=False, stats=False, deprecate=True, **options):
+def describe_resource(
+    source=None, *, expand=False, stats=False, deprecate=True, **options
+):
     """Describe the given source as a resource
 
     API      | Usage
