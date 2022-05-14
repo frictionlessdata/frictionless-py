@@ -81,7 +81,7 @@ def test_resource_to_markdown_path_schema_837():
         },
     }
     resource = Resource(descriptor)
-    md_file_path = "tests/fixtures/output-markdown/resource.md"
+    md_file_path = "data/fixtures/output-markdown/resource.md"
     with open(md_file_path, encoding="utf-8") as file:
         expected = file.read()
     assert resource.to_markdown().strip() == expected
@@ -109,7 +109,7 @@ def test_resource_to_markdown_path_schema_table_837():
         },
     }
     resource = Resource(descriptor)
-    md_file_path = "tests/fixtures/output-markdown/resource-table.md"
+    md_file_path = "data/fixtures/output-markdown/resource-table.md"
     with open(md_file_path, encoding="utf-8") as file:
         expected = file.read()
     assert resource.to_markdown(table=True).strip() == expected
@@ -136,7 +136,7 @@ def test_resource_to_markdown_file_837(tmpdir):
             "primaryKey": ["id"],
         },
     }
-    md_file_path = "tests/fixtures/output-markdown/resource.md"
+    md_file_path = "data/fixtures/output-markdown/resource.md"
     with open(md_file_path, encoding="utf-8") as file:
         expected = file.read()
     target = str(tmpdir.join("resource.md"))
