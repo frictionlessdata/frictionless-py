@@ -2,13 +2,13 @@ import sys
 import petl
 import typer
 from typing import List
-from ..validate import validate
+from ..actions import validate
 from ..detector import Detector
+from ..dialect import Dialect
 from ..layout import Layout
 from .main import program
 from .. import helpers
 from . import common
-from frictionless import Dialect
 
 
 @program.command(name="validate")

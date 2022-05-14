@@ -1,9 +1,8 @@
 import multiprocessing
-from ...actions import describe, extract, transform
-from ...validate import validate
 from ...server import Server
 from ... import helpers
 from ... import settings
+from ... import actions
 
 
 class ApiServer(Server):
@@ -38,26 +37,26 @@ def create_api():
     @app.route("/describe", methods=["POST"])
     def api_describe():
         options = helpers.create_options(flask.request.json)
-        metadata = describe(**options)
+        metadata = actions.describe(**options)
         return flask.jsonify(metadata)
 
     @app.route("/extract", methods=["POST"])
     def api_extract():
         options = helpers.create_options(flask.request.json)
         options["process"] = lambda row: row.to_dict(json=True)
-        data = extract(**options)
+        data = actions.extract(**options)
         return flask.jsonify(data)
 
     @app.route("/validate", methods=["POST"])
     def api_validate():
         options = helpers.create_options(flask.request.json)
-        report = validate(**options)
+        report = actions.validate(**options)
         return flask.jsonify(report)
 
     @app.route("/transform", methods=["POST"])
     def api_transform():
         options = helpers.create_options(flask.request.json)
-        transform(**options)
+        actions.transform(**options)
         return flask.jsonify({"success": True})
 
     return app

@@ -1,4 +1,4 @@
-from .actions import describe, extract, transform
+from .actions import describe, extract, transform, validate
 # TODO: remove in v5
 from .actions import *
 from .check import Check
@@ -30,7 +30,6 @@ from .step import Step
 from .storage import Storage
 from .system import system
 from .type import Type
-from .validate import *
 from . import errors
 from . import checks
 from . import steps
