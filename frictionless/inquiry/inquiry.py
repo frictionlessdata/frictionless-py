@@ -2,12 +2,13 @@ import stringcase
 from copy import deepcopy
 from multiprocessing import Pool
 from importlib import import_module
-from .metadata import Metadata
-from .errors import InquiryError
-from .system import system
-from .report import Report
-from . import settings
-from . import helpers
+from ..metadata import Metadata
+from ..errors import InquiryError
+from ..system import system
+from ..report import Report
+from .. import settings
+from .. import helpers
+from . import actions
 
 
 class Inquiry(Metadata):
@@ -32,6 +33,10 @@ class Inquiry(Metadata):
             dict[]: tasks
         """
         return self["tasks"]
+
+    # Actions
+
+    validate = actions.validate
 
     # Run
 
