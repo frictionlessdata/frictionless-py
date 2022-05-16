@@ -1,5 +1,4 @@
-from frictionless import Detector
-
+from frictionless import Detector, Resource
 
 # General
 
@@ -166,3 +165,16 @@ def test_detector_set_schema_patch():
     assert detector.schema_patch == {"fields": {"id": {"type": "string"}}}
     detector.schema_patch = {"fields": {"age": {"type": "int"}}}
     assert detector.schema_patch == {"fields": {"age": {"type": "int"}}}
+
+
+def test_detector_true_false_values():
+    detector = Detector(field_true_values=["yes"], field_false_values=["no"])
+    with Resource(
+        "data/countries-truefalsevalues.csv",
+        detector=detector,
+    ) as resource:
+        assert resource.schema.get_field("value").type == "boolean"
+        assert resource.read_rows() == [
+            {"id": 1, "value": True},
+            {"id": 2, "value": False},
+        ]

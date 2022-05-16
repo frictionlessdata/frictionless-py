@@ -55,6 +55,14 @@ class Detector:
             For more information, please check "Describing  Data" guide.
             It defaults to `['']`
 
+        field_true_values? (str[]): String to be considered as true values.
+            For more information, please check "Describing  Data" guide.
+            It defaults to `["true", "True", "TRUE", "1"]`
+
+        field_false_values? (str[]): String to be considered as false values.
+            For more information, please check "Describing  Data" guide.
+            It defaults to `["false", "False", "FALSE", "0"]`
+
         schema_sync? (bool): Whether to sync the schema.
             If it sets to `True` the provided schema will be mapped to
             the inferred schema. It means that, for example, you can
@@ -79,6 +87,8 @@ class Detector:
         field_confidence=settings.DEFAULT_FIELD_CONFIDENCE,
         field_float_numbers=settings.DEFAULT_FLOAT_NUMBERS,
         field_missing_values=settings.DEFAULT_MISSING_VALUES,
+        field_true_values=settings.DEFAULT_TRUE_VALUES,
+        field_false_values=settings.DEFAULT_FALSE_VALUES,
         schema_sync=False,
         schema_patch=None,
     ):
@@ -91,6 +101,8 @@ class Detector:
         self.__field_confidence = field_confidence
         self.__field_float_numbers = field_float_numbers
         self.__field_missing_values = field_missing_values
+        self.__field_true_values = field_true_values
+        self.__field_false_values = field_false_values
         self.__schema_sync = schema_sync
         self.__schema_patch = schema_patch
 
@@ -256,6 +268,42 @@ class Detector:
             value (str[]): detector fields missing values list
         """
         self.__field_missing_values = value
+
+    @property
+    def field_true_values(self) -> List[str]:
+        """Returns detector fields true values list.
+
+        Returns:
+            str[]: detector fields true values list
+        """
+        return self.__field_true_values
+
+    @field_true_values.setter
+    def field_true_values(self, value: List[str]):
+        """Sets detector fields true values list.
+
+        Parameters:
+            value (str[]): detector fields true values list
+        """
+        self.__field_true_values = value
+
+    @property
+    def field_false_values(self) -> List[str]:
+        """Returns detector fields false values list.
+
+        Returns:
+            str[]: detector fields false values list
+        """
+        return self.__field_false_values
+
+    @field_false_values.setter
+    def field_false_values(self, value: List[str]):
+        """Sets detector fields false values list.
+
+        Parameters:
+            value (str[]): detector fields false values list
+        """
+        self.__field_false_values = value
 
     @property
     def schema_sync(self) -> bool:
@@ -437,6 +485,11 @@ class Detector:
                 field = Field(candidate)
                 if field.type == "number" and self.__field_float_numbers:
                     field.float_number = True
+                elif field.type == "boolean":
+                    if self.__field_true_values != settings.DEFAULT_TRUE_VALUES:
+                        field.true_values = self.__field_true_values
+                    if self.__field_false_values != settings.DEFAULT_FALSE_VALUES:
+                        field.false_values = self.__field_false_values
                 runner_fields.append(field)
             for index, name in enumerate(names):
                 runners.append([])
@@ -455,14 +508,12 @@ class Detector:
                     is_field_missing_value = source in self.__field_missing_values
                     if is_field_missing_value:
                         max_score[index] -= 1
-
                     for runner in runners[index]:
                         if runner["score"] < threshold:
                             continue
                         if not is_field_missing_value:
                             target, notes = runner["field"].read_cell(source)
                             runner["score"] += 1 if not notes else -1
-
                         if max_score[index] > 0 and runner["score"] >= (
                             max_score[index] * self.__field_confidence
                         ):
