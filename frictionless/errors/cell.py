@@ -143,3 +143,10 @@ class SequentialValueError(CellError):
     name = "Sequential Value"
     template = "The cell {cell} in row at position {rowPosition} and field {fieldName} at position {fieldPosition} has an error: {note}"
     description = "The value is not sequential."
+
+
+class AsciiValueError(CellError):
+    code = "non-ascii"
+    name = "Non Ascii Value"
+    template = "The cell {cell} in row at position {rowPosition} and field {fieldName} at position {fieldPosition} has an error: {note}"
+    description = "The cell contains non-ascii characters."

@@ -1,6 +1,6 @@
 import functools
 from copy import deepcopy
-from .resource import Resource
+from importlib import import_module
 from .metadata import Metadata
 from .errors import Error, TaskError, ReportError
 from .exception import FrictionlessException
@@ -334,6 +334,7 @@ class ReportTask(Metadata):
     metadata_profile = settings.REPORT_PROFILE["properties"]["tasks"]["items"]
 
     def metadata_process(self):
+        Resource = import_module("frictionless.resource").Resource
 
         # Resource
         resource = self.get("resource")

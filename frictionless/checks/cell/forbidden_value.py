@@ -16,7 +16,7 @@ class forbidden_value(Check):
     Parameters:
        descriptor (dict): check's descriptor
        field_name (str): a field name to look into
-       forbidden (any[]): a list of forbidden values
+       values (any[]): a list of forbidden values
 
     """
 

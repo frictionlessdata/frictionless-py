@@ -191,7 +191,7 @@ def test_package_to_markdown_837():
         ],
     }
     package = Package(descriptor)
-    md_file_path = "tests/fixtures/output-markdown/package.md"
+    md_file_path = "data/fixtures/output-markdown/package.md"
     with open(md_file_path, encoding="utf-8") as file:
         expected = file.read()
     assert package.to_markdown().strip() == expected
@@ -253,7 +253,7 @@ def test_package_to_markdown_table_837():
         ],
     }
     package = Package(descriptor)
-    md_file_path = "tests/fixtures/output-markdown/package-table.md"
+    md_file_path = "data/fixtures/output-markdown/package-table.md"
     with open(md_file_path, encoding="utf-8") as file:
         expected = file.read()
     assert package.to_markdown(table=True).strip() == expected
@@ -314,7 +314,7 @@ def test_package_to_markdown_file_837(tmpdir):
             },
         ],
     }
-    md_file_path = "tests/fixtures/output-markdown/package.md"
+    md_file_path = "data/fixtures/output-markdown/package.md"
     with open(md_file_path, encoding="utf-8") as file:
         expected = file.read()
     target = str(tmpdir.join("package.md"))

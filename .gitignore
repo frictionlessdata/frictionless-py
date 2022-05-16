@@ -90,3 +90,4 @@ datapackage
 .google.json
 tmp
 .vscode/
+coverage/
