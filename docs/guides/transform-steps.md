@@ -789,6 +789,63 @@ pprint(target.read_rows())
  {'id': None, 'name': 'spain', 'population': 47}]
 ```
 
+### Merge Cells
+
+```python script title="Python"
+from pprint import pprint
+from frictionless import Package, Resource, transform, steps
+
+source = Resource(path="transform.csv")
+target = transform(
+     source,
+     steps=[
+     	 # seperator argument can be used to set delimeter. Default value is '-'
+    	 # preserve argument keeps the original fields
+         steps.field_merge(name="details", from_names=["name", "population"], preserve=True)
+     ],
+)
+pprint(target.schema)
+pprint(target.read_rows())
+```
+```
+{'fields': [{'name': 'id', 'type': 'integer'},
+            {'name': 'name', 'type': 'string'},
+            {'name': 'population', 'type': 'integer'},
+            {'name': 'details', 'type': 'string'}]}
+[{'details': 'germany-83', 'id': 1, 'name': 'germany', 'population': 83}]
+ ```
+
+
+### Pack Cells
+
+```python script title="Python"
+from pprint import pprint
+from frictionless import Package, Resource, transform, steps
+
+source = Resource(path="transform.csv")
+target = transform(
+    source,
+    steps=[
+    	# field_type returns packed fields as JSON Object. Default value for field_type is array
+    	# preserve argument keeps the original fields
+        steps.field_pack(name="details", from_names=["name", "population"], field_type="object", preserve=True)
+    ]
+)
+pprint(target.schema)
+pprint(target.read_rows())
+```
+```
+{'fields': [{'name': 'id', 'type': 'integer'},
+            {'name': 'name', 'type': 'string'},
+            {'name': 'population', 'type': 'integer'},
+            {'name': 'details', 'type': 'object'}]}
+[{'details': {'name': 'germany', 'population': '83'},
+  'id': 1,
+  'name': 'germany',
+  'population': 83}]
+```
+
+
 ## Row Steps
 
 These steps are row-based including row filtering, slicing, and many more.
