@@ -67,6 +67,31 @@ pprint(report.flatten(["code", "message"]))
   'Row at position 3 is duplicated: the same as row at position "2"']]
 ```
 
+### Deviated Cell
+
+This check identifies deviated cells from the normal ones. To flag the deviated cell, the check compares the length of the characters in each cell with a threshold value. The threshold value is either 5000 or value calculated using Python's built-in `statistics` module which is average plus(+) three standard deviation. The exact algorithm can be found [here](https://github.com/frictionlessdata/frictionless-py/blob/main/frictionless/checks/cell/deviated_value.py). For example:
+
+```python script title="Python"
+from pprint import pprint
+from frictionless import validate, checks
+
+report = validate(
+        "data/issue-1066.csv",
+        checks=[
+            checks.deviated_cell(
+                ignore_fields=[
+                    "Latitudine",
+                    "Longitudine",
+                ]
+            )
+        ],
+    )
+pprint(report.flatten(["code", "message"]))
+```
+```
+[['deviated-cell', 'cell at row "35" and field "Gestore" has deviated size']]
+```
+
 ### Deviated Value
 
 This check uses Python's built-in `statistics` module to check a field's data for deviations. By default, deviated values are outside of the average +- three standard deviations. Take a look at the [API Reference](https://github.com/frictionlessdata/frictionless-py/blob/master/docs/target/api-reference/README.md#deviatedvaluecheck) for more details about available options and default values. The exact algorithm can be found [here](https://github.com/frictionlessdata/frictionless-py/blob/7ae8bae9a9197adbfe443233a6bad8a94e065ece/frictionless/checks/heuristic.py#L94). For example:
