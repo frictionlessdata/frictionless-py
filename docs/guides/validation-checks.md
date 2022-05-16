@@ -67,6 +67,26 @@ pprint(report.flatten(["code", "message"]))
   'Row at position 3 is duplicated: the same as row at position "2"']]
 ```
 
+### ASCII Value
+
+If you want to skip non-ascii characters, this check helps to notify if there are any in data during validation. Here is how we can use this check:
+
+```python script title="Python"
+from pprint import pprint
+from frictionless import validate, checks
+
+source=[["s.no","code"],[1,"ssµ"]]
+report = validate(
+        source,
+        checks=[checks.ascii_value()],
+    )
+print(report.flatten(["code", "message"]))
+```
+```
+[['non-ascii', 'The cell ssµ in row at position 2 and field code at position 2 has an error: the cell contains non-ascii characters']]
+```
+
+
 ### Deviated Value
 
 This check uses Python's built-in `statistics` module to check a field's data for deviations. By default, deviated values are outside of the average +- three standard deviations. Take a look at the [API Reference](https://github.com/frictionlessdata/frictionless-py/blob/master/docs/target/api-reference/README.md#deviatedvaluecheck) for more details about available options and default values. The exact algorithm can be found [here](https://github.com/frictionlessdata/frictionless-py/blob/7ae8bae9a9197adbfe443233a6bad8a94e065ece/frictionless/checks/heuristic.py#L94). For example:
