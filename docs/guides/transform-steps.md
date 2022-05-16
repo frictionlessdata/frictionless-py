@@ -826,7 +826,7 @@ source = Resource(path="transform.csv")
 target = transform(
     source,
     steps=[
-    	# field_type returns packed fields as JSON Object. Default value for field_type is array
+    	# field_type returns packed fields as JSON Object. Default value for field_type is 'array'
     	# preserve argument keeps the original fields
         steps.field_pack(name="details", from_names=["name", "population"], field_type="object", preserve=True)
     ]
