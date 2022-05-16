@@ -5,7 +5,7 @@ from typing import List, Iterator
 
 
 class deviated_cell(Check):
-    """Check if the cell value is deviated
+    """Check if the cell size is deviated
 
     API      | Usage
     -------- | --------
@@ -49,20 +49,22 @@ class deviated_cell(Check):
         yield from []
 
     def validate_end(self) -> Iterator:
+        threshold = 5000
         for field_idx, col_cell_sizes in self.__cell_sizes.items():
             if len(col_cell_sizes) < 2:
                 continue
-            # Prepare interval
+            # Prepare maximum value
             try:
                 stdev = statistics.stdev(col_cell_sizes.values())
                 average = statistics.median(col_cell_sizes.values())
-                minimum = average - stdev * self.__interval
                 maximum = average + stdev * self.__interval
             except Exception as exception:
                 note = 'calculation issue "%s"' % exception
                 yield errors.DeviatedCellError(note=note)
+            # Use threshold or maximum value whichever is higher
+            threshold = threshold if threshold > maximum else maximum
             for row_position, cell in col_cell_sizes.items():
-                if not (minimum <= cell <= maximum):
+                if cell > threshold:
                     note = 'cell at row "%s" and field "%s" has deviated size'
                     note = note % (row_position, self.__fields[field_idx])
                     yield errors.DeviatedCellError(note=note)

@@ -10,12 +10,6 @@ def test_validate_deviated_cell_1066():
         checks=[
             checks.deviated_cell(
                 ignore_fields=[
-                    "Bandiera",
-                    "Tipo Impianto",
-                    "Nome Impianto",
-                    "Indirizzo",
-                    "Comune",
-                    "Provincia",
                     "Latitudine",
                     "Longitudine",
                 ]
