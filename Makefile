@@ -1,4 +1,4 @@
-.PHONY: all docs install format github lint release test test-ci
+.PHONY: all coverage docs install format github lint release test test-ci
 
 
 PACKAGE := $(shell grep '^PACKAGE =' setup.py | cut -d '"' -f2)
@@ -8,6 +8,9 @@ LEAD := $(shell head -n 1 LEAD.md)
 
 all:
 	@grep '^\.PHONY' Makefile | cut -d' ' -f2- | tr ' ' '\n'
+
+coverage:
+	sensible-browser coverage/index.html
 
 docs:
 	python docs/build.py
@@ -34,7 +37,7 @@ release:
 
 test:
 	make lint
-	pytest --cov ${PACKAGE} --cov-report term-missing --cov-fail-under 70 --timeout=300
+	pytest --cov ${PACKAGE} --cov-report term-missing --cov-report html:coverage --cov-fail-under 70 --timeout=300
 
 test-ci:
 	make lint
