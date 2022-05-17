@@ -5,3 +5,5 @@ from .field_remove import field_remove
 from .field_split import field_split
 from .field_unpack import field_unpack
 from .field_update import field_update
+from .field_pack import field_pack
+from .field_merge import field_merge

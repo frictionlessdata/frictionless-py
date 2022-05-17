@@ -1,7 +1,7 @@
 import sys
 import typer
 from typing import List
-from ..describe import describe
+from ..actions import describe
 from ..detector import Detector
 from ..layout import Layout
 from .main import program

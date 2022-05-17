@@ -7,6 +7,8 @@ from .field import (
     field_split,
     field_unpack,
     field_update,
+    field_pack,
+    field_merge,
 )
 from .resource import (
     resource_add,

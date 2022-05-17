@@ -2,6 +2,47 @@
 
 Here described only the breaking and most significant changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/frictionless-py/commits/main).
 
+## v4.37.0
+
+- Deprecated high-level legacy actions (use class-based alternatives):
+  - `describe_*`
+  - `extract_*`
+  - `transform_*`
+  - `validate_*`
+
+## v4.36.0
+
+- Implemented pipeline actions:
+  - `pipeline.validate` (will replace `validate_pipeline` in v5)
+  - `pipeline.transform` (will replace `transform_pipeline` in v5)
+- Implemented inqiury actions:
+  - `inqiury.validate` (will replace `validate_inqiury` in v5)
+
+## v4.35.0
+
+- Implemented schema actions:
+  - `Schema.describe` (will replace `describe_schema` in v5)
+  - `schema.validate` (will replace `validate_schema` in v5)
+- Implemented new transform steps:
+  - `steps.field_merge`
+  - `steps.field_pack`
+
+## v4.34.0
+
+- Implemented package actions:
+  - `Package.describe` (will replace `describe_package` in v5)
+  - `package.extract` (will replace `extract_package` in v5)
+  - `package.validate` (will replace `validate_package` in v5)
+  - `package.transform` (will replace `transform_package` in v5)
+
+## v4.33.0
+
+- Implemented resource actions:
+  - `Resource.describe` (will replace `describe_resource` in v5)
+  - `resource.extract` (will replace `extract_resource` in v5)
+  - `resource.validate` (will replace `validate_resource` in v5)
+  - `resource.transform` (will replace `transform_resource` in v5)
+
 ## v4.32.0
 
 - Added to_markdown() feature to metadata  (#1052)

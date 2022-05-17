@@ -31,6 +31,8 @@ class Field(Metadata):
         missing_values? (str[]): missing values
         constraints? (dict): constraints
         rdf_type? (str): RDF type
+        true_values? (str[]): true values
+        false_values? (str[]): false values
         schema? (Schema): parent schema object
 
     Raises:

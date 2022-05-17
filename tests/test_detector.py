@@ -1,5 +1,4 @@
-from frictionless import Detector
-
+from frictionless import Detector, Resource
 
 # General
 
@@ -56,6 +55,25 @@ def test_schema_from_sample_confidence_full():
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "age", "type": "string"},
+            {"name": "name", "type": "string"},
+        ],
+    }
+
+
+def test_schema_from_sparse_sample():
+    labels = ["id", "age", "name"]
+    sample = [
+        ["1", "39", "Paul"],
+        ["2", "23", "Jimmy"],
+        ["3", "", "Jane"],
+        ["4", "", "Judy"],
+    ]
+    detector = Detector(field_confidence=1)
+    schema = detector.detect_schema(sample, labels=labels)
+    assert schema == {
+        "fields": [
+            {"name": "id", "type": "integer"},
+            {"name": "age", "type": "integer"},
             {"name": "name", "type": "string"},
         ],
     }
@@ -147,3 +165,16 @@ def test_detector_set_schema_patch():
     assert detector.schema_patch == {"fields": {"id": {"type": "string"}}}
     detector.schema_patch = {"fields": {"age": {"type": "int"}}}
     assert detector.schema_patch == {"fields": {"age": {"type": "int"}}}
+
+
+def test_detector_true_false_values():
+    detector = Detector(field_true_values=["yes"], field_false_values=["no"])
+    with Resource(
+        "data/countries-truefalsevalues.csv",
+        detector=detector,
+    ) as resource:
+        assert resource.schema.get_field("value").type == "boolean"
+        assert resource.read_rows() == [
+            {"id": 1, "value": True},
+            {"id": 2, "value": False},
+        ]
