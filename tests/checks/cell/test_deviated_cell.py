@@ -66,3 +66,21 @@ def test_validate_deviated_cell_large_cell_size_with_deviation():
     assert report.flatten(["code", "note"]) == [
         ["deviated-cell", 'cell at row "5" and field "Description" has deviated size']
     ]
+
+
+def test_validate_deviated_cell_small_cell_size():
+    report = validate(
+        "data/issue-1066-smallcellsize.csv",
+        checks=[checks.deviated_cell()],
+    )
+    assert report.flatten(["code", "note"]) == []
+
+
+def test_validate_deviated_cell_small_cell_size_with_deviation():
+    report = validate(
+        "data/issue-1066-smallcellsizewithdeviation.csv",
+        checks=[checks.deviated_cell()],
+    )
+    assert report.flatten(["code", "note"]) == [
+        ["deviated-cell", 'cell at row "13" and field "Description" has deviated size']
+    ]
