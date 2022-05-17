@@ -45,7 +45,7 @@ class deviated_value(Check):
             note = 'deviated value check requires field "%s" to exist'
             yield errors.CheckError(note=note % self.__field_name)
         elif self.resource.schema.get_field(self.__field_name).type not in numeric:
-            note = 'deviated value check requires field "%s" to be numiric'
+            note = 'deviated value check requires field "%s" to be numeric'
             yield errors.CheckError(note=note % self.__field_name)
         if not self.__average_function:
             note = 'deviated value check supports only average functions "%s"'

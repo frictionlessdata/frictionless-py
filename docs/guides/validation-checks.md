@@ -86,6 +86,30 @@ print(report.flatten(["code", "message"]))
 [['non-ascii', 'The cell ssµ in row at position 2 and field code at position 2 has an error: the cell contains non-ascii characters']]
 ```
 
+### Deviated Cell
+
+This check identifies deviated cells from the normal ones. To flag the deviated cell, the check compares the length of the characters in each cell with a threshold value. The threshold value is either 5000 or value calculated using Python's built-in `statistics` module which is average plus(+) three standard deviation. The exact algorithm can be found [here](https://github.com/frictionlessdata/frictionless-py/blob/main/frictionless/checks/cell/deviated_value.py). For example:
+
+```python script title="Python"
+from pprint import pprint
+from frictionless import validate, checks
+
+report = validate(
+        "data/issue-1066.csv",
+        checks=[
+            checks.deviated_cell(
+                ignore_fields=[
+                    "Latitudine",
+                    "Longitudine",
+                ]
+            )
+        ],
+    )
+pprint(report.flatten(["code", "message"]))
+```
+```
+[['deviated-cell', 'cell at row "35" and field "Gestore" has deviated size']]
+```
 
 ### Deviated Value
 
