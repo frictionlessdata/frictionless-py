@@ -2,6 +2,12 @@
 
 Here described only the breaking and most significant changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/frictionless-py/commits/main).
 
+## v4.38.0
+
+- Implemented `checks.ascii_value` (#1064)
+- Implemented `checks.deviated_cell` (#1069)
+- Implemented `detector.field_true/false_values` (#1074)
+
 ## v4.37.0
 
 - Deprecated high-level legacy actions (use class-based alternatives):
