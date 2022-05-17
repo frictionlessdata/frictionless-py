@@ -4,15 +4,7 @@ from frictionless import validate, checks
 def test_validate_deviated_cell_1066():
     report = validate(
         "data/issue-1066.csv",
-        checks=[
-            checks.deviated_cell(
-                ignore_fields=[
-                    "Latitudine",
-                    "Longitudine",
-                ],
-                interval=3,
-            )
-        ],
+        checks=[checks.deviated_cell()],
     )
     assert report.flatten(["code", "note"]) == [
         ["deviated-cell", 'cell at row "35" and field "Gestore" has deviated size']
