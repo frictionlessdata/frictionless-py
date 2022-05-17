@@ -33,13 +33,13 @@ class deviated_cell(Check):
         super().__init__(descriptor)
         self.__cell_sizes = {}
         self.__fields = {}
-        self.__ignore_fields = self.get("ignoreFields", [])
+        self.__ignore_fields = self.get("ignoreFields")
         self.__interval = self.get("interval", 3)
 
     def validate_row(self, row: any) -> Iterator:
         for field_idx, field in enumerate(row.fields):
             cell = row[field.name]
-            if field.name in self.__ignore_fields:
+            if self.__ignore_fields and field.name in self.__ignore_fields:
                 continue
             if cell and field.type == "string":
                 if field_idx not in self.__cell_sizes:
@@ -49,8 +49,8 @@ class deviated_cell(Check):
         yield from []
 
     def validate_end(self) -> Iterator:
-        threshold = 5000
         for field_idx, col_cell_sizes in self.__cell_sizes.items():
+            threshold = 5000
             if len(col_cell_sizes) < 2:
                 continue
             # Prepare maximum value
