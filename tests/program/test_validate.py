@@ -213,6 +213,17 @@ def test_program_validate_error_not_found():
     assert result.stdout.count("[Errno 2]") and result.stdout.count("data/bad.csv")
 
 
+def test_program_validate_zipped_resources_979():
+    result = runner.invoke(program, "validate data/zipped-resources/datapackage.json")
+    assert result.exit_code == 1
+    assert result.stdout.count("valid: ogd10_energieforschungstatistik_ch.csv")
+    assert result.stdout.count("valid: ogd10_catalogs.zip => finanzquellen.csv")
+    assert result.stdout.count("invalid: ogd10_catalogs.zip => capital-invalid.csv")
+    assert result.stdout.count(
+        "Schema is not valid: Schemas with duplicate field names are not supported"
+    )
+
+
 # Helpers
 
 

@@ -240,6 +240,9 @@ def program_validate(
         prefix = "valid" if task.valid else "invalid"
         suffix = "" if tabular else "(non-tabular)"
         source = task.resource.path or task.resource.name
+        # for zipped resources append file name
+        if task.resource.innerpath:
+            source = f"{source} => {task.resource.innerpath}"
         if is_stdin:
             source = "stdin"
         typer.secho(f"# {'-'*len(prefix)}", bold=True)
