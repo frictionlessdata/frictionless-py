@@ -277,6 +277,12 @@ class Metadata(helpers.ControlledDict):
                 metadata_path = "/".join(map(str, error.path))
                 profile_path = "/".join(map(str, error.schema_path))
                 note = '"%s" at "%s" in metadata and at "%s" in profile'
+                # Reduce size of messages greater than 90
+                end_start_index = len(error.message) - 50
+                if len(error.message) > 90:
+                    error.message = "{} ... {}".format(
+                        error.message[:40], error.message[end_start_index:]
+                    )
                 note = note % (error.message, metadata_path, profile_path)
                 yield self.__Error(note=note)
         yield from []

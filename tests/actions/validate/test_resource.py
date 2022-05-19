@@ -1199,3 +1199,14 @@ def test_validate_resource_duplicate_labels_with_sync_schema_issue_910():
             'Duplicate labels in header is not supported with "schema_sync"',
         ],
     ]
+
+
+def test_validate_invalid_resource_long_error_messages():
+    report = validate("data/datapackage.json", type="resource")
+    print(report.flatten(["code", "note"]))
+    assert report.flatten(["code", "note"]) == [
+        [
+            "resource-error",
+            "\"{'format': 'inline',\n 'hashing': 'md5',\n ... ': 0}} is not valid under any of the given schemas\" at \"\" in metadata and at \"oneOf\" in profile",
+        ]
+    ]
