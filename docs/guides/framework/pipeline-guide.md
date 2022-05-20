@@ -35,17 +35,20 @@ Let's run this pipeline:
 
 ```python script title="Python"
 status = transform(pipeline)
-pprint(status.task.target.schema)
-pprint(status.task.target.read_rows())
+print(status.task.target.schema)
+print(status.task.target.to_view())
 ```
 ```
 {'fields': [{'name': 'name', 'type': 'string'},
             {'name': 'variable'},
             {'name': 'value'}]}
-[{'name': 'germany', 'variable': 'id', 'value': 1},
- {'name': 'germany', 'variable': 'population', 'value': 83},
- {'name': 'france', 'variable': 'id', 'value': 2},
- {'name': 'france', 'variable': 'population', 'value': 66},
- {'name': 'spain', 'variable': 'id', 'value': 3},
- {'name': 'spain', 'variable': 'population', 'value': 47}]
++----+-----------+------------+------+
+| id | name      | population | cars |
++====+===========+============+======+
+|  1 | 'germany' |         83 |  166 |
++----+-----------+------------+------+
+|  2 | 'france'  |         66 |  132 |
++----+-----------+------------+------+
+|  3 | 'spain'   |         47 |   94 |
++----+-----------+------------+------+
 ```
