@@ -39,7 +39,13 @@ pprint(target.read_rows())
 {'data': <_io.BufferedReader name='/tmp/tmpaxbiv_8_'>,
  'format': 'csv',
  'scheme': 'stream'}
-[{'id': 1, 'name': 'english'}, {'id': 2, 'name': 'german'}]
++----+-----------+
+| id | name      |
++====+===========+
+|  1 | 'english' |
++----+-----------+
+|  2 | 'german'  |
++----+-----------+
 ```
 
 ## Configuring Data
