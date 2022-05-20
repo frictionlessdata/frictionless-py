@@ -88,16 +88,22 @@ target = transform(
 
 # Print resulting schema and data
 pprint(target.schema)
-pprint(target.read_rows())
+print(target.to_view())
 ```
 ```
 {'fields': [{'name': 'id', 'type': 'integer'},
             {'name': 'name', 'type': 'string'},
             {'name': 'population', 'type': 'integer'},
             {'name': 'cars', 'type': 'integer'}]}
-[{'id': 1, 'name': 'germany', 'population': 83, 'cars': 166},
- {'id': 2, 'name': 'france', 'population': 66, 'cars': 132},
- {'id': 3, 'name': 'spain', 'population': 47, 'cars': 94}]
++----+-----------+------------+------+
+| id | name      | population | cars |
++====+===========+============+======+
+|  1 | 'germany' |         83 |  166 |
++----+-----------+------------+------+
+|  2 | 'france'  |         66 |  132 |
++----+-----------+------------+------+
+|  3 | 'spain'   |         47 |   94 |
++----+-----------+------------+------+
 ```
 
 Let's break down the transforming steps we applied:
@@ -136,7 +142,7 @@ target = transform(
 # Print resulting resources, schema and data
 pprint(target.resource_names)
 pprint(target.get_resource("main").schema)
-pprint(target.get_resource("main").read_rows())
+print(target.get_resource("main").to_view())
 ```
 ```
 ['main']
@@ -144,9 +150,15 @@ pprint(target.get_resource("main").read_rows())
             {'name': 'name', 'type': 'string'},
             {'name': 'population', 'type': 'integer'},
             {'name': 'cars', 'type': 'integer'}]}
-[{'id': 1, 'name': 'germany', 'population': 83, 'cars': 166},
- {'id': 2, 'name': 'france', 'population': 66, 'cars': 132},
- {'id': 3, 'name': 'spain', 'population': 47, 'cars': 94}]
++----+-----------+------------+------+
+| id | name      | population | cars |
++====+===========+============+======+
+|  1 | 'germany' |         83 |  166 |
++----+-----------+------------+------+
+|  2 | 'france'  |         66 |  132 |
++----+-----------+------------+------+
+|  3 | 'spain'   |         47 |   94 |
++----+-----------+------------+------+
 ```
 
 We have basically done the same as in [Transforming a Resource](#transforming-a-resource) section. This example is quite artificial and created only to show how to join two resources, but hopefully it provides a basic understanding of how flexible package transformations can be.
@@ -182,16 +194,22 @@ pipeline = Pipeline(
 )
 status = transform(pipeline)
 pprint(status.task.target.schema)
-pprint(status.task.target.read_rows())
+print(status.task.target.to_view())
 ```
 ```
 {'fields': [{'name': 'id', 'type': 'integer'},
             {'name': 'name', 'type': 'string'},
             {'name': 'population', 'type': 'integer'},
             {'name': 'cars'}]}
-[{'id': 1, 'name': 'germany', 'population': 83, 'cars': 166},
- {'id': 2, 'name': 'france', 'population': 66, 'cars': 132},
- {'id': 3, 'name': 'spain', 'population': 47, 'cars': 94}]
++----+-----------+------------+------+
+| id | name      | population | cars |
++====+===========+============+======+
+|  1 | 'germany' |         83 |  166 |
++----+-----------+------------+------+
+|  2 | 'france'  |         66 |  132 |
++----+-----------+------------+------+
+|  3 | 'spain'   |         47 |   94 |
++----+-----------+------------+------+
 ```
 
 This returns the same result as in the [Transforming a Resource](#transforming-a-resource). So what's the reason to use declarative pipelines if it works the same as the Python code? The main difference is that pipelines can be saved as JSON files which can be shared among different users and used with CLI and API. For example, if you implement your own UI based on Frictionless Framework you can serialize the whole pipeline as a JSON file and send it to the server. This is the same for CLI - if your colleague has  given you a `pipeline.json` file, you can run `frictionless transform pipeline.json` in the CLI to get the same results as they got.
@@ -233,14 +251,20 @@ def step(resource):
 source = Resource("transform.csv")
 target = transform(source, steps=[step])
 pprint(target.schema)
-pprint(target.read_rows())
+print(target.to_view())
 ```
 ```
 {'fields': [{'name': 'name', 'type': 'string'},
             {'name': 'population', 'type': 'integer'}]}
-[{'name': 'germany', 'population': 83},
- {'name': 'france', 'population': 66},
- {'name': 'spain', 'population': 47}]
++-----------+------------+
+| name      | population |
++===========+============+
+| 'germany' |         83 |
++-----------+------------+
+| 'france'  |         66 |
++-----------+------------+
+| 'spain'   |         47 |
++-----------+------------+
 ```
 
 As you can see you can implement any custom steps within a Pyhton script. To make it work within a declarative pipeline you need to implement a plugin. Learn more about [Custom Steps](extension/step-guide.md) and [Plugins](extension/plugin-guide.md).
