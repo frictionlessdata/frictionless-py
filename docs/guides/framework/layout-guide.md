@@ -41,17 +41,24 @@ from frictionless import Resource, Layout
 
 layout = Layout(header=False)
 with Resource('data/capital-3.csv', layout=layout) as resource:
-  pprint(resource.header.labels)
-  pprint(resource.read_rows())
+      print(resource.header.labels)
+      print(resource.to_view())
 ```
 ```
 []
-[{'field1': 'id', 'field2': 'name'},
- {'field1': '1', 'field2': 'London'},
- {'field1': '2', 'field2': 'Berlin'},
- {'field1': '3', 'field2': 'Paris'},
- {'field1': '4', 'field2': 'Madrid'},
- {'field1': '5', 'field2': 'Rome'}]
++--------+----------+
+| field1 | field2   |
++========+==========+
+| 'id'   | 'name'   |
++--------+----------+
+| '1'    | 'London' |
++--------+----------+
+| '2'    | 'Berlin' |
++--------+----------+
+| '3'    | 'Paris'  |
++--------+----------+
+| '4'    | 'Madrid' |
++--------+----------+
 ```
 
 ### Header Rows
@@ -64,14 +71,20 @@ from frictionless import Resource, Layout
 
 layout = Layout(header_rows=[1, 2, 3])
 with Resource('data/capital-3.csv', layout=layout) as resource:
-  pprint(resource.header)
-  pprint(resource.read_rows())
+    print(resource.header)
+    print(resource.to_view())
 ```
 ```
 ['id 1 2', 'name London Berlin']
-[{'id 1 2': 3, 'name London Berlin': 'Paris'},
- {'id 1 2': 4, 'name London Berlin': 'Madrid'},
- {'id 1 2': 5, 'name London Berlin': 'Rome'}]
++--------+--------------------+
+| id 1 2 | name London Berlin |
++========+====================+
+|      3 | 'Paris'            |
++--------+--------------------+
+|      4 | 'Madrid'           |
++--------+--------------------+
+|      5 | 'Rome'             |
++--------+--------------------+
 ```
 
 ### Header Join
@@ -84,14 +97,20 @@ from frictionless import Resource, Layout
 
 layout = Layout(header_rows=[1, 2, 3], header_join='/')
 with Resource('data/capital-3.csv', layout=layout) as resource:
-  pprint(resource.header)
-  pprint(resource.read_rows())
+    print(resource.header)
+    print(resource.to_view())
 ```
 ```
 ['id/1/2', 'name/London/Berlin']
-[{'id/1/2': 3, 'name/London/Berlin': 'Paris'},
- {'id/1/2': 4, 'name/London/Berlin': 'Madrid'},
- {'id/1/2': 5, 'name/London/Berlin': 'Rome'}]
++--------+--------------------+
+| id/1/2 | name/London/Berlin |
++========+====================+
+|      3 | 'Paris'            |
++--------+--------------------+
+|      4 | 'Madrid'           |
++--------+--------------------+
+|      5 | 'Rome'             |
++--------+--------------------+
 ```
 
 ### Header Case
