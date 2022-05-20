@@ -14,16 +14,10 @@ from pprint import pprint
 from frictionless import Resource
 
 resource = Resource(data=[['id', 'name'], [1, 'english'], [2, 'german']])
-print(resource.to_view())
+pprint(resource.read_rows())
 ```
 ```
-+----+-----------+
-| id | name      |
-+====+===========+
-|  1 | 'english' |
-+----+-----------+
-|  2 | 'german'  |
-+----+-----------+
+[{'id': 1, 'name': 'english'}, {'id': 2, 'name': 'german'}]
 ```
 
 ## Writing Data
@@ -31,7 +25,6 @@ print(resource.to_view())
 The same is actual for writing:
 
 ```python script title="Python"
-from pprint import pprint
 from frictionless import Resource
 
 source = Resource('data/table.csv')
@@ -55,7 +48,6 @@ print(target.to_view())
 There is a dialect to configure this format, for example:
 
 ```python script title="Python"
-from pprint import pprint
 from frictionless import Resource
 from frictionless.plugins.inline import InlineDialect
 

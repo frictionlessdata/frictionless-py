@@ -36,7 +36,6 @@ Let's list all the available Layout options with simple usage examples:
 It's a boolean flag which defaults to `True` indicating whether the data has a header row or not. In the following example the header row will be treated as a data row:
 
 ```python script title="Python"
-from pprint import pprint
 from frictionless import Resource, Layout
 
 layout = Layout(header=False)
@@ -66,7 +65,6 @@ with Resource('data/capital-3.csv', layout=layout) as resource:
 If header is `True` which is default, this parameters indicates where to find the header row or header rows for a multiline header. Let's see on example how the first two data rows can be treated as a part of a header:
 
 ```python script title="Python"
-from pprint import pprint
 from frictionless import Resource, Layout
 
 layout = Layout(header_rows=[1, 2, 3])
@@ -92,7 +90,6 @@ with Resource('data/capital-3.csv', layout=layout) as resource:
 If there are multiple header rows which is managed by `header_rows` parameter, we can set a string to be a separator for a header's cell join operation. Usually it's very handy for some "fancy" Excel files. For the sake of simplicity, we will show on a CSV file:
 
 ```python script title="Python"
-from pprint import pprint
 from frictionless import Resource, Layout
 
 layout = Layout(header_rows=[1, 2, 3], header_join='/')
@@ -118,7 +115,6 @@ with Resource('data/capital-3.csv', layout=layout) as resource:
 By default a header is validated in a case sensitive mode. To disable this behaviour we can set the `header_case` parameter to `False`. This option is accepted by any Layout and a dialect can be passed to `extract`, `validate` and other functions. Please note that it doesn't affect a resulting header it only affects how it's validated:
 
 ```python script title="Python"
-from pprint import pprint
 from frictionless import Resource, Schema, Field, Layout
 
 layout = Layout(header_case=False)

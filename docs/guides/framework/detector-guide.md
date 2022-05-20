@@ -140,7 +140,6 @@ resource = describe("data/country-1.csv", detector=detector)
 Missing Values is an important concept in data description. It provides information about what cell values should be considered as nulls. We can customize the defaults:
 
 ```python script title="Python"
-from pprint import pprint
 from frictionless import Detector, describe
 
 detector = Detector(field_missing_values=["", "67"])

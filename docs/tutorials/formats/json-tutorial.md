@@ -21,16 +21,10 @@ from pprint import pprint
 from frictionless import Resource
 
 resource = Resource(path='data/table.json')
-print(resource.to_view())
+pprint(resource.read_rows())
 ```
 ```
-+----+-----------+
-| id | name      |
-+====+===========+
-|  1 | 'english' |
-+----+-----------+
-|  2 | '中国人'     |
-+----+-----------+
+[{'id': 1, 'name': 'english'}, {'id': 2, 'name': '中国人'}]
 ```
 
 ## Writing Data
@@ -40,7 +34,6 @@ print(resource.to_view())
 The same is actual for writing:
 
 ```python script title="Python"
-from pprint import pprint
 from frictionless import Resource
 
 source = Resource(data=[['id', 'name'], [1, 'english'], [2, 'german']])

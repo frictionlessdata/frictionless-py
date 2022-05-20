@@ -32,8 +32,8 @@ from frictionless import Resource
 
 source = Resource(data=[['id', 'name'], [1, 'english'], [2, 'german']])
 target = source.write(scheme='stream', format='csv')
-pprint(target)
-pprint(target.read_rows())
+print(target)
+print(target.to_view())
 ```
 ```
 {'data': <_io.BufferedReader name='/tmp/tmpaxbiv_8_'>,

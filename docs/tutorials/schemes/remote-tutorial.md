@@ -36,7 +36,6 @@ resource.write('https://example.com/data/table.csv') # will POST the file to the
 There is a `Control` to configure remote data, for example:
 
 ```python script title="Python"
-from pprint import pprint
 from frictionless import Resource
 from frictionless.plugins.remote import RemoteControl
 

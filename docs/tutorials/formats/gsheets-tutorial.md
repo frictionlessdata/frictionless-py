@@ -21,16 +21,10 @@ from pprint import pprint
 from frictionless import Resource
 
 resource = Resource(path='https://docs.google.com/spreadsheets/d/1mHIWnDvW9cALRMq9OdNfRwjAthCUFUOACPp0Lkyl7b4/edit?usp=sharing')
-print(resource.to_view())
+pprint(resource.read_rows())
 ```
 ```
-+----+-----------+
-| id | name      |
-+====+===========+
-|  1 | 'english' |
-+----+-----------+
-|  2 | '中国人'     |
-+----+-----------+
+[{'id': 1, 'name': 'english'}, {'id': 2, 'name': '中国人'}]
 ```
 
 ## Writing Data

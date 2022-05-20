@@ -27,7 +27,6 @@ pprint(resource.read_rows())
 A similiar approach can be used for writing:
 
 ```python script title="Python"
-from pprint import pprint
 from frictionless import Resource
 
 source = Resource(data=[['id', 'name'], [1, 'english'], [2, 'german']])

@@ -9,7 +9,6 @@ The Status class instance is a result of a Pipeline execution.
 We need to run a pipeline to get a status:
 
 ```python script title="Python"
-from pprint import pprint
 from frictionless import Pipeline, transform, steps
 
 pipeline = Pipeline({

@@ -71,7 +71,6 @@ We'll see examples of these functions in the next few sections.
 Let's write our first transformation. Here, we will transform a data file (a resource) by defining a source resource, applying transform steps and getting back a resulting target resource:
 
 ```python script title="Python"
-from pprint import pprint
 from frictionless import Resource, transform, steps
 
 # Define source resource
@@ -87,7 +86,7 @@ target = transform(
 )
 
 # Print resulting schema and data
-pprint(target.schema)
+print(target.schema)
 print(target.to_view())
 ```
 ```
@@ -117,7 +116,6 @@ There are many more available steps that we will cover below.
 A package is a set of resources. Transforming a package means adding or removing resources and/or transforming those resources themselves. This example shows how transforming a package is similar to transforming a single resource:
 
 ```python script title="Python"
-from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
 # Define source package
@@ -140,8 +138,8 @@ target = transform(
 )
 
 # Print resulting resources, schema and data
-pprint(target.resource_names)
-pprint(target.get_resource("main").schema)
+print(target.resource_names)
+print(target.get_resource("main").schema)
 print(target.get_resource("main").to_view())
 ```
 ```
@@ -170,7 +168,6 @@ A pipeline is a declarative way to write out metadata transform steps. With a pi
 For resource and package types it's mostly the same functionality as we have seen above, but written declaratively. So let's run the same resource transformation as we did in the [Transforming a Resource](#transforming-a-resource) section:
 
 ```python script title="Python"
-from pprint import pprint
 from frictionless import Pipeline, transform
 
 pipeline = Pipeline(
@@ -193,7 +190,7 @@ pipeline = Pipeline(
     }
 )
 status = transform(pipeline)
-pprint(status.task.target.schema)
+print(status.task.target.schema)
 print(status.task.target.to_view())
 ```
 ```
@@ -231,7 +228,6 @@ See [Transform Steps](transform-steps.md) for a list of all available steps. It 
 Here is an example of a custom step written as a Python function. This example step removes a field from a data table (note: Frictionless already has a built-in function that does this same thing: `steps.field_remove`).
 
 ```python script title="Python"
-from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
 def step(resource):
@@ -250,7 +246,7 @@ def step(resource):
 
 source = Resource("transform.csv")
 target = transform(source, steps=[step])
-pprint(target.schema)
+print(target.schema)
 print(target.to_view())
 ```
 ```

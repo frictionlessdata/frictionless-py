@@ -14,16 +14,10 @@ from pprint import pprint
 from frictionless import Resource
 
 resource = Resource(b'id,name\n1,english\n2,german', format='csv')
-pprint(resource.to_view())
+pprint(resource.read_rows())
 ```
 ```
-+----+-----------+
-| id | name      |
-+====+===========+
-|  1 | 'english' |
-+----+-----------+
-|  2 | 'german'  |
-+----+-----------+
+[{'id': 1, 'name': 'english'}, {'id': 2, 'name': 'german'}]
 ```
 
 ## Writing Data
@@ -31,7 +25,6 @@ pprint(resource.to_view())
 A similiar approach can be used for writing:
 
 ```python script title="Python"
-from pprint import pprint
 from frictionless import Resource
 
 source = Resource(data=[['id', 'name'], [1, 'english'], [2, 'german']])
