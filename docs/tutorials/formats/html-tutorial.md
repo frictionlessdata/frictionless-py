@@ -23,10 +23,16 @@ from pprint import pprint
 from frictionless import Resource
 
 resource = Resource(path='data/table1.html')
-pprint(resource.read_rows())
+print(resource.to_view())
 ```
 ```
-[{'id': 1, 'name': 'english'}, {'id': 2, 'name': '中国人'}]
++----+-----------+
+| id | name      |
++====+===========+
+|  1 | 'english' |
++----+-----------+
+|  2 | '中国人'     |
++----+-----------+
 ```
 
 ## Writing Data
@@ -39,12 +45,18 @@ from frictionless import Resource
 
 source = Resource(data=[['id', 'name'], [1, 'english'], [2, 'german']])
 target = source.write('table.html')
-pprint(target)
-pprint(target.read_rows())
+print(target)
+print(target.to_view())
 ```
 ```
 {'path': 'table.html'}
-[{'id': 1, 'name': 'english'}, {'id': 2, 'name': 'german'}]
++----+-----------+
+| id | name      |
++====+===========+
+|  1 | 'english' |
++----+-----------+
+|  2 | 'german'  |
++----+-----------+
 ```
 
 ## Configuring Data
