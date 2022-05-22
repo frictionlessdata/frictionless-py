@@ -2,6 +2,7 @@ import sys
 import petl
 import typer
 from typing import List
+from tabulate import tabulate
 from ..actions import validate
 from ..detector import Detector
 from ..dialect import Dialect
@@ -263,10 +264,10 @@ def program_validate(
                 )
             typer.secho(
                 str(
-                    petl.util.vis.lookall(
-                        [["row", "field", "code", "message"]] + content,
-                        vrepr=str,
-                        style="simple",
+                    tabulate(
+                        content,
+                        headers=["row", "field", "code", "message"],
+                        tablefmt="simple",
                     )
                 )
             )
