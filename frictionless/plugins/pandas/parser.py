@@ -126,8 +126,6 @@ class PandasParser(Parser):
                     if value is None and field.type in ("number", "integer"):
                         fixed_types[field.name] = "number"
                         value = np.NaN
-                    if field.type in ["datetime", "time"] and value is not None:
-                        value = value.replace(tzinfo=None)
                     if field.name in source.schema.primary_key:
                         index_values.append(value)
                     else:
@@ -154,17 +152,13 @@ class PandasParser(Parser):
                 )
 
         # Create dtypes/columns
-        dtypes = []
         columns = []
         for field in source.schema.fields:
             if field.name not in source.schema.primary_key:
-                dtype = self.__write_convert_type(fixed_types.get(field.name, field.type))
-                dtypes.append((field.name, dtype))
                 columns.append(field.name)
 
         # Create/set dataframe
-        array = np.array(data_rows, dtype=dtypes)
-        dataframe = pd.DataFrame(array, index=index, columns=columns)
+        dataframe = pd.DataFrame(data_rows, index=index, columns=columns)
         target.data = dataframe
 
     def __write_convert_type(self, type=None):
