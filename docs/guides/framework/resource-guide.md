@@ -201,11 +201,15 @@ from frictionless import Resource
 
 with Resource(b'header1,header2\nvalue1,value2', format='csv') as resource:
   print(resource.scheme)
-  print(resource.read_rows())
+  print(resource.to_view())
 ```
 ```
 buffer
-[{'header1': 'value1', 'header2': 'value2'}]
++----------+----------+
+| header1  | header2  |
++==========+==========+
+| 'value1' | 'value2' |
++----------+----------+
 ```
 
 ### Format
@@ -217,11 +221,15 @@ from frictionless import Resource
 
 with Resource(b'header1,header2\nvalue1,value2.csv', format='csv') as resource:
   print(resource.format)
-  print(resource.read_rows())
+  print(resource.to_view())
 ```
 ```
 csv
-[{'header1': 'value1', 'header2': 'value2.csv'}]
++----------+--------------+
+| header1  | header2      |
++==========+==============+
+| 'value1' | 'value2.csv' |
++----------+--------------+
 ```
 
 ### Hashing
@@ -267,12 +275,18 @@ from frictionless import Resource
 with Resource('data/table-multiple-files.zip', innerpath='table-reverse.csv') as resource:
   print(resource.compression)
   print(resource.innerpath)
-  print(resource.read_rows())
+  print(resource.to_view())
 ```
 ```
 zip
 table-reverse.csv
-[{'id': 1, 'name': '中国人'}, {'id': 2, 'name': 'english'}]
++----+-----------+
+| id | name      |
++====+===========+
+|  1 | '中国人'     |
++----+-----------+
+|  2 | 'english' |
++----+-----------+
 ```
 
 ### Compression
@@ -284,11 +298,17 @@ from frictionless import Resource
 
 with Resource('data/table.csv.zip', compression='zip') as resource:
   print(resource.compression)
-  print(resource.read_rows())
+  print(resource.to_view())
 ```
 ```
 zip
-[{'id': 1, 'name': 'english'}, {'id': 2, 'name': '中国人'}]
++----+-----------+
+| id | name      |
++====+===========+
+|  1 | 'english' |
++----+-----------+
+|  2 | '中国人'     |
++----+-----------+
 ```
 
 ### Control
@@ -303,11 +323,17 @@ source = 'https://raw.githubusercontent.com/frictionlessdata/frictionless-py/mas
 control = RemoteControl(http_timeout=10)
 with Resource(source, control=control) as resource:
   print(resource.control)
-  print(resource.read_rows())
+  print(resource.to_view())
 ```
 ```
 {'httpTimeout': 10}
-[{'id': 1, 'name': 'english'}, {'id': 2, 'name': '中国人'}]
++----+-----------+
+| id | name      |
++====+===========+
+|  1 | 'english' |
++----+-----------+
+|  2 | '中国人'     |
++----+-----------+
 ```
 
 Exact parameters depend on schemes and can be found in the "Schemes Reference". For example, the Remote Control provides `http_timeout`, `http_session`, and others but there is only one option available for all controls:
@@ -324,11 +350,15 @@ source = b'header1;header2\nvalue1;value2'
 dialect = CsvDialect(delimiter=';')
 with Resource(source, format='csv', dialect=dialect) as resource:
   print(resource.dialect)
-  print(resource.read_rows())
+  print(resource.to_view())
 ```
 ```
 {'delimiter': ';'}
-[{'header1': 'value1', 'header2': 'value2'}]
++----------+----------+
+| header1  | header2  |
++==========+==========+
+| 'value1' | 'value2' |
++----------+----------+
 ```
 
 There are a great deal of options available for different dialects that can be found in "Formats Reference". We will list the properties that can be used with every dialect:

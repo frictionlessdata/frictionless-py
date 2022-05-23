@@ -140,21 +140,28 @@ resource = describe("data/country-1.csv", detector=detector)
 Missing Values is an important concept in data description. It provides information about what cell values should be considered as nulls. We can customize the defaults:
 
 ```python script title="Python"
-from pprint import pprint
 from frictionless import Detector, describe
 
 detector = Detector(field_missing_values=["", "67"])
 resource = describe("data/country-1.csv", detector=detector)
-pprint(resource.schema.missing_values)
-pprint(resource.read_rows())
+print(resource.schema.missing_values)
+print(resource.to_view())
 ```
 ```
 ['', '67']
-[{'id': 1, 'neighbor_id': None, 'name': 'Britain', 'population': None},
- {'id': 2, 'neighbor_id': 3, 'name': 'France', 'population': None},
- {'id': 3, 'neighbor_id': 2, 'name': 'Germany', 'population': 83},
- {'id': 4, 'neighbor_id': 5, 'name': 'Italy', 'population': 60},
- {'id': 5, 'neighbor_id': 4, 'name': 'Spain', 'population': 47}]
++----+-------------+-----------+------------+
+| id | neighbor_id | name      | population |
++====+=============+===========+============+
+|  1 | None        | 'Britain' | None       |
++----+-------------+-----------+------------+
+|  2 |           3 | 'France'  | None       |
++----+-------------+-----------+------------+
+|  3 |           2 | 'Germany' |         83 |
++----+-------------+-----------+------------+
+|  4 |           5 | 'Italy'   |         60 |
++----+-------------+-----------+------------+
+|  5 |           4 | 'Spain'   |         47 |
++----+-------------+-----------+------------+
 ```
 
 As we can see, the textual values equal to "67" are now considered nulls. Usually, it's handy when you have data with values like: '-', 'n/a', and similar.
@@ -170,17 +177,25 @@ from frictionless import Detector, Resource, Schema, Field
 detector = Detector(schema_sync=True)
 schema = Schema(fields=[Field(name='name', type='string'), Field(name='id', type='string')])
 with Resource('data/capital-3.csv', schema=schema, detector=detector) as resource:
-  pprint(resource.schema)
-  pprint(resource.read_rows())
+    print(resource.schema)
+    print(resource.read_rows())
 ```
 ```
 {'fields': [{'name': 'id', 'type': 'string'},
             {'name': 'name', 'type': 'string'}]}
-[{'id': '1', 'name': 'London'},
- {'id': '2', 'name': 'Berlin'},
- {'id': '3', 'name': 'Paris'},
- {'id': '4', 'name': 'Madrid'},
- {'id': '5', 'name': 'Rome'}]
++-----+----------+
+| id  | name     |
++=====+==========+
+| '1' | 'London' |
++-----+----------+
+| '2' | 'Berlin' |
++-----+----------+
+| '3' | 'Paris'  |
++-----+----------+
+| '4' | 'Madrid' |
++-----+----------+
+| '5' | 'Rome'   |
++-----+----------+
 ```
 
 ### Schema Patch
@@ -192,15 +207,23 @@ from frictionless import Detector, Resource
 
 detector = Detector(schema_patch={'fields': {'id': {'type': 'string'}}})
 with Resource('data/capital-3.csv', detector=detector) as resource:
-  pprint(resource.schema)
-  pprint(resource.read_rows())
+    print(resource.schema)
+    print(resource.to_view())
 ```
 ```
 {'fields': [{'name': 'id', 'type': 'string'},
             {'name': 'name', 'type': 'string'}]}
-[{'id': '1', 'name': 'London'},
- {'id': '2', 'name': 'Berlin'},
- {'id': '3', 'name': 'Paris'},
- {'id': '4', 'name': 'Madrid'},
- {'id': '5', 'name': 'Rome'}]
++-----+----------+
+| id  | name     |
++=====+==========+
+| '1' | 'London' |
++-----+----------+
+| '2' | 'Berlin' |
++-----+----------+
+| '3' | 'Paris'  |
++-----+----------+
+| '4' | 'Madrid' |
++-----+----------+
+| '5' | 'Rome'   |
++-----+----------+
 ```

@@ -71,7 +71,6 @@ We'll see examples of these functions in the next few sections.
 Let's write our first transformation. Here, we will transform a data file (a resource) by defining a source resource, applying transform steps and getting back a resulting target resource:
 
 ```python script title="Python"
-from pprint import pprint
 from frictionless import Resource, transform, steps
 
 # Define source resource
@@ -87,17 +86,23 @@ target = transform(
 )
 
 # Print resulting schema and data
-pprint(target.schema)
-pprint(target.read_rows())
+print(target.schema)
+print(target.to_view())
 ```
 ```
 {'fields': [{'name': 'id', 'type': 'integer'},
             {'name': 'name', 'type': 'string'},
             {'name': 'population', 'type': 'integer'},
             {'name': 'cars', 'type': 'integer'}]}
-[{'id': 1, 'name': 'germany', 'population': 83, 'cars': 166},
- {'id': 2, 'name': 'france', 'population': 66, 'cars': 132},
- {'id': 3, 'name': 'spain', 'population': 47, 'cars': 94}]
++----+-----------+------------+------+
+| id | name      | population | cars |
++====+===========+============+======+
+|  1 | 'germany' |         83 |  166 |
++----+-----------+------------+------+
+|  2 | 'france'  |         66 |  132 |
++----+-----------+------------+------+
+|  3 | 'spain'   |         47 |   94 |
++----+-----------+------------+------+
 ```
 
 Let's break down the transforming steps we applied:
@@ -111,7 +116,6 @@ There are many more available steps that we will cover below.
 A package is a set of resources. Transforming a package means adding or removing resources and/or transforming those resources themselves. This example shows how transforming a package is similar to transforming a single resource:
 
 ```python script title="Python"
-from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
 # Define source package
@@ -134,9 +138,9 @@ target = transform(
 )
 
 # Print resulting resources, schema and data
-pprint(target.resource_names)
-pprint(target.get_resource("main").schema)
-pprint(target.get_resource("main").read_rows())
+print(target.resource_names)
+print(target.get_resource("main").schema)
+print(target.get_resource("main").to_view())
 ```
 ```
 ['main']
@@ -144,9 +148,15 @@ pprint(target.get_resource("main").read_rows())
             {'name': 'name', 'type': 'string'},
             {'name': 'population', 'type': 'integer'},
             {'name': 'cars', 'type': 'integer'}]}
-[{'id': 1, 'name': 'germany', 'population': 83, 'cars': 166},
- {'id': 2, 'name': 'france', 'population': 66, 'cars': 132},
- {'id': 3, 'name': 'spain', 'population': 47, 'cars': 94}]
++----+-----------+------------+------+
+| id | name      | population | cars |
++====+===========+============+======+
+|  1 | 'germany' |         83 |  166 |
++----+-----------+------------+------+
+|  2 | 'france'  |         66 |  132 |
++----+-----------+------------+------+
+|  3 | 'spain'   |         47 |   94 |
++----+-----------+------------+------+
 ```
 
 We have basically done the same as in [Transforming a Resource](#transforming-a-resource) section. This example is quite artificial and created only to show how to join two resources, but hopefully it provides a basic understanding of how flexible package transformations can be.
@@ -158,7 +168,6 @@ A pipeline is a declarative way to write out metadata transform steps. With a pi
 For resource and package types it's mostly the same functionality as we have seen above, but written declaratively. So let's run the same resource transformation as we did in the [Transforming a Resource](#transforming-a-resource) section:
 
 ```python script title="Python"
-from pprint import pprint
 from frictionless import Pipeline, transform
 
 pipeline = Pipeline(
@@ -181,17 +190,23 @@ pipeline = Pipeline(
     }
 )
 status = transform(pipeline)
-pprint(status.task.target.schema)
-pprint(status.task.target.read_rows())
+print(status.task.target.schema)
+print(status.task.target.to_view())
 ```
 ```
 {'fields': [{'name': 'id', 'type': 'integer'},
             {'name': 'name', 'type': 'string'},
             {'name': 'population', 'type': 'integer'},
             {'name': 'cars'}]}
-[{'id': 1, 'name': 'germany', 'population': 83, 'cars': 166},
- {'id': 2, 'name': 'france', 'population': 66, 'cars': 132},
- {'id': 3, 'name': 'spain', 'population': 47, 'cars': 94}]
++----+-----------+------------+------+
+| id | name      | population | cars |
++====+===========+============+======+
+|  1 | 'germany' |         83 |  166 |
++----+-----------+------------+------+
+|  2 | 'france'  |         66 |  132 |
++----+-----------+------------+------+
+|  3 | 'spain'   |         47 |   94 |
++----+-----------+------------+------+
 ```
 
 This returns the same result as in the [Transforming a Resource](#transforming-a-resource). So what's the reason to use declarative pipelines if it works the same as the Python code? The main difference is that pipelines can be saved as JSON files which can be shared among different users and used with CLI and API. For example, if you implement your own UI based on Frictionless Framework you can serialize the whole pipeline as a JSON file and send it to the server. This is the same for CLI - if your colleague has  given you a `pipeline.json` file, you can run `frictionless transform pipeline.json` in the CLI to get the same results as they got.
@@ -213,7 +228,6 @@ See [Transform Steps](transform-steps.md) for a list of all available steps. It 
 Here is an example of a custom step written as a Python function. This example step removes a field from a data table (note: Frictionless already has a built-in function that does this same thing: `steps.field_remove`).
 
 ```python script title="Python"
-from pprint import pprint
 from frictionless import Package, Resource, transform, steps
 
 def step(resource):
@@ -232,15 +246,21 @@ def step(resource):
 
 source = Resource("transform.csv")
 target = transform(source, steps=[step])
-pprint(target.schema)
-pprint(target.read_rows())
+print(target.schema)
+print(target.to_view())
 ```
 ```
 {'fields': [{'name': 'name', 'type': 'string'},
             {'name': 'population', 'type': 'integer'}]}
-[{'name': 'germany', 'population': 83},
- {'name': 'france', 'population': 66},
- {'name': 'spain', 'population': 47}]
++-----------+------------+
+| name      | population |
++===========+============+
+| 'germany' |         83 |
++-----------+------------+
+| 'france'  |         66 |
++-----------+------------+
+| 'spain'   |         47 |
++-----------+------------+
 ```
 
 As you can see you can implement any custom steps within a Pyhton script. To make it work within a declarative pipeline you need to implement a plugin. Learn more about [Custom Steps](extension/step-guide.md) and [Plugins](extension/plugin-guide.md).

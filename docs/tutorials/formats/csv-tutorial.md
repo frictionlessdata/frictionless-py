@@ -31,12 +31,18 @@ from frictionless import Resource
 
 source = Resource(data=[['id', 'name'], [1, 'english'], [2, 'german']])
 target = source.write('table.csv')
-pprint(target)
-pprint(target.read_rows())
+print(target)
+print(target.to_view())
 ```
 ```
 {'path': 'table.csv'}
-[{'id': 1, 'name': 'english'}, {'id': 2, 'name': 'german'}]
++----+-----------+
+| id | name      |
++====+===========+
+|  1 | 'english' |
++----+-----------+
+|  2 | 'german'  |
++----+-----------+
 ```
 
 ## Configuring Data
