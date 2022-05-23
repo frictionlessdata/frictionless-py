@@ -88,6 +88,8 @@ from frictionless import Field
         ("default", "", None, {}),
         # Issue 1005
         ("default", "1.234", None, {"decimalChar": ","}),
+        ("default", "1.234.", None, {"decimalChar": ",", "bareNumber": False}),
+        ("default", "1234.", Decimal(1234), {"decimalChar": ",", "bareNumber": False}),
     ],
 )
 def test_number_read_cell(format, source, target, options):
