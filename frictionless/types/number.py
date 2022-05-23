@@ -58,7 +58,7 @@ class NumberType(Type):
                     cell = self.read_cell_pattern.sub("", cell)
                 cell = cell.replace(self.field.group_char, "")
                 if self.field.decimal_char != "." and "." in cell:
-                   return None
+                    return None
                 cell = cell.replace(self.field.decimal_char, ".")
                 return cell
 
