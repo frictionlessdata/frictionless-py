@@ -270,7 +270,8 @@ class Metadata(helpers.ControlledDict):
         if profile:
             validator_class = jsonschema.validators.validator_for(profile)
             validator = validator_class(profile)
-            for error in validator.iter_errors(self):
+            # Validate as a dict for better formatted errors (see #1093)
+            for error in validator.iter_errors(self.to_dict()):
                 # Withouth this resource with both path/data is invalid
                 if "is valid under each of" in error.message:
                     continue
