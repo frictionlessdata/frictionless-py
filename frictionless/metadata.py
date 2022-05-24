@@ -1,4 +1,5 @@
 import io
+import re
 import json
 import yaml
 import jsonschema
@@ -276,8 +277,10 @@ class Metadata(helpers.ControlledDict):
                     continue
                 metadata_path = "/".join(map(str, error.path))
                 profile_path = "/".join(map(str, error.schema_path))
+                # We need it because of the metadata.__repr__ overriding
+                message = re.sub(r"\s+", " ", error.message)
                 note = '"%s" at "%s" in metadata and at "%s" in profile'
-                note = note % (error.message, metadata_path, profile_path)
+                note = note % (message, metadata_path, profile_path)
                 yield self.__Error(note=note)
         yield from []
 
