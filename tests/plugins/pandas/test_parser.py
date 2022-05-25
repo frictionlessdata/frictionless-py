@@ -1,6 +1,8 @@
 import pytz
 import isodate
 import datetime
+from dateutil.tz import tzutc
+from dateutil.tz import tzoffset
 import pandas as pd
 from decimal import Decimal
 from frictionless import Package, Resource
@@ -129,9 +131,22 @@ def test_pandas_parser_write_timezone():
         # Assert rows
         assert target.read_rows() == [
             {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
-            {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
-            {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
-            {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
+            {
+                "datetime": datetime.datetime(2020, 1, 1, 15, 0, tzinfo=tzutc()),
+                "time": datetime.time(15, 0, tzinfo=tzutc()),
+            },
+            {
+                "datetime": datetime.datetime(
+                    2020, 1, 1, 15, 0, tzinfo=tzoffset(None, 10800)
+                ),
+                "time": datetime.time(15, 0, tzinfo=tzoffset(None, 10800)),
+            },
+            {
+                "datetime": datetime.datetime(
+                    2020, 1, 1, 15, 0, tzinfo=tzoffset(None, -10800)
+                ),
+                "time": datetime.time(15, 0, tzinfo=tzoffset(None, -10800)),
+            },
         ]
 
 
