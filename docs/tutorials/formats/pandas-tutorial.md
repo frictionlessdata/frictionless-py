@@ -17,7 +17,7 @@ pip install 'frictionless[pandas]' # for zsh shell
 You can read a Pandas dataframe:
 
 ```python title="Python"
-from frictionless import Package
+from frictionless import Resource
 
 resource = Resource(df)
 pprint(resource.read_rows())

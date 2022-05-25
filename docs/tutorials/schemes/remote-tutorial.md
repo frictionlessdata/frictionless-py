@@ -36,16 +36,21 @@ resource.write('https://example.com/data/table.csv') # will POST the file to the
 There is a `Control` to configure remote data, for example:
 
 ```python script title="Python"
-from pprint import pprint
 from frictionless import Resource
 from frictionless.plugins.remote import RemoteControl
 
 control = RemoteControl(http_timeout=10)
 resource = Resource(path='https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/data/table.csv', control=control)
-pprint(resource.read_rows())
+print(resource.to_view())
 ```
 ```
-[{'id': 1, 'name': 'english'}, {'id': 2, 'name': '中国人'}]
++----+-----------+
+| id | name      |
++====+===========+
+|  1 | 'english' |
++----+-----------+
+|  2 | '中国人'     |
++----+-----------+
 ```
 
 References:

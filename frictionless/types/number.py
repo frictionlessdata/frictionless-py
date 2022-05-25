@@ -54,10 +54,12 @@ class NumberType(Type):
         ):
 
             def processor(cell):
-                cell = cell.replace(self.field.group_char, "")
-                cell = cell.replace(self.field.decimal_char, ".")
                 if self.read_cell_pattern:
                     cell = self.read_cell_pattern.sub("", cell)
+                cell = cell.replace(self.field.group_char, "")
+                if self.field.decimal_char != "." and "." in cell:
+                    return None
+                cell = cell.replace(self.field.decimal_char, ".")
                 return cell
 
             return processor

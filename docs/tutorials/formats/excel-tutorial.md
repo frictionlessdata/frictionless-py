@@ -32,17 +32,22 @@ pprint(resource.read_rows())
 The same is actual for writing:
 
 ```python script title="python"
-from pprint import pprint
 from frictionless import Resource
 
 source = Resource(data=[['id', 'name'], [1, 'english'], [2, 'german']])
 target = source.write('table.xlsx')
-pprint(target)
-pprint(target.read_rows())
+print(target)
+print(target.to_view())
 ```
 ```
 {'path': 'table.xlsx'}
-[{'id': 1, 'name': 'english'}, {'id': 2, 'name': 'german'}]
++----+-----------+
+| id | name      |
++====+===========+
+|  1 | 'english' |
++----+-----------+
+|  2 | 'german'  |
++----+-----------+
 ```
 
 ## Configuring Data

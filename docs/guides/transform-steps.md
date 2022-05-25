@@ -79,18 +79,24 @@ target = transform(
         steps.resource_add(name='extra', path='transform.csv'),
     ],
 )
-pprint(target.resource_names)
-pprint(target.get_resource('extra').schema)
-pprint(target.get_resource('extra').read_rows())
+print(target.resource_names)
+print(target.get_resource('extra').schema)
+print(target.get_resource('extra').to_view())
 ```
 ```
 ['main', 'extra']
 {'fields': [{'name': 'id', 'type': 'integer'},
             {'name': 'name', 'type': 'string'},
             {'name': 'population', 'type': 'integer'}]}
-[{'id': 1, 'name': 'germany', 'population': 83},
- {'id': 2, 'name': 'france', 'population': 66},
- {'id': 3, 'name': 'spain', 'population': 47}]
++----+-----------+------------+
+| id | name      | population |
++====+===========+============+
+|  1 | 'germany' |         83 |
++----+-----------+------------+
+|  2 | 'france'  |         66 |
++----+-----------+------------+
+|  3 | 'spain'   |         47 |
++----+-----------+------------+
 ```
 
 ### Remove Resource
@@ -130,21 +136,28 @@ target = transform(
         steps.resource_remove(name="extra"),
     ],
 )
-pprint(target.resource_names)
-pprint(target.get_resource('main').schema)
-pprint(target.get_resource('main').read_rows())
+print(target.resource_names)
+print(target.get_resource('main').schema)
+print(target.get_resource('main').to_view())
 ```
 ```
 ['main']
 {'fields': [{'name': 'id', 'type': 'integer'},
             {'name': 'name', 'type': 'string'},
             {'name': 'population', 'type': 'integer'}]}
-[{'id': 1, 'name': 'germany', 'population': 83},
- {'id': 1, 'name': 'germany', 'population': 83},
- {'id': 2, 'name': 'france', 'population': 66},
- {'id': 2, 'name': 'france', 'population': 66},
- {'id': 3, 'name': 'spain', 'population': 47},
- {'id': 3, 'name': 'spain', 'population': 47}]
++----+-----------+------------+
+| id | name      | population |
++====+===========+============+
+|  1 | 'germany' |         83 |
++----+-----------+------------+
+|  1 | 'germany' |         83 |
++----+-----------+------------+
+|  2 | 'france'  |         66 |
++----+-----------+------------+
+|  2 | 'france'  |         66 |
++----+-----------+------------+
+|  3 | 'spain'   |         47 |
++----+-----------+------------+
 ```
 
 ### Update Resource
@@ -199,14 +212,20 @@ target = transform(
         ),
     ],
 )
-pprint(target.schema)
-pprint(target.read_rows())
+print(target.schema)
+print(target.to_view())
 ```
 ```
 {'fields': [{'name': 'name', 'type': 'string'}, {'name': 'sum'}]}
-[{'name': 'france', 'sum': 120},
- {'name': 'germany', 'sum': 160},
- {'name': 'spain', 'sum': 80}]
++-----------+-----+
+| name      | sum |
++===========+=====+
+| 'france'  | 120 |
++-----------+-----+
+| 'germany' | 160 |
++-----------+-----+
+| 'spain'   |  80 |
++-----------+-----+
 ```
 
 ### Attach Tables
@@ -222,17 +241,24 @@ target = transform(
       steps.table_attach(resource=Resource(data=[["note"], ["large"], ["mid"]])),
     ],
 )
-pprint(target.schema)
-pprint(target.read_rows())
+print(target.schema)
+print(target.to_view())
 ```
 ```
 {'fields': [{'name': 'id', 'type': 'integer'},
             {'name': 'name', 'type': 'string'},
             {'name': 'population', 'type': 'integer'},
             {'name': 'note', 'type': 'string'}]}
-[{'id': 1, 'name': 'germany', 'population': 83, 'note': 'large'},
- {'id': 2, 'name': 'france', 'population': 66, 'note': 'mid'},
- {'id': 3, 'name': 'spain', 'population': 47, 'note': None}]
++----+-----------+------------+---------+
+| id | name      | population | note    |
++====+===========+============+=========+
+|  1 | 'germany' |         83 | 'large' |
++----+-----------+------------+---------+
+|  2 | 'france'  |         66 | 'mid'   |
++----+-----------+------------+---------+
+|  3 | 'spain'   |         47 | None    |
++----+-----------+------------+---------+
+
 ```
 
 ### Debug Table
@@ -248,15 +274,21 @@ target = transform(
       steps.table_debug(function=print),
     ],
 )
-pprint(target.read_rows())
+print(target.to_view())
 ```
 ```
 {'id': 1, 'name': 'germany', 'population': 83}
 {'id': 2, 'name': 'france', 'population': 66}
 {'id': 3, 'name': 'spain', 'population': 47}
-[{'id': 1, 'name': 'germany', 'population': 83},
- {'id': 2, 'name': 'france', 'population': 66},
- {'id': 3, 'name': 'spain', 'population': 47}]
++----+-----------+------------+
+| id | name      | population |
++====+===========+============+
+|  1 | 'germany' |         83 |
++----+-----------+------------+
+|  2 | 'france'  |         66 |
++----+-----------+------------+
+|  3 | 'spain'   |         47 |
++----+-----------+------------+
 ```
 
 ### Diff Tables
@@ -282,14 +314,18 @@ target = transform(
         ),
     ]
 )
-pprint(target.schema)
-pprint(target.read_rows())
+print(target.schema)
+print(target.to_view())
 ```
 ```
 {'fields': [{'name': 'id', 'type': 'integer'},
             {'name': 'name', 'type': 'string'},
             {'name': 'population', 'type': 'integer'}]}
-[{'id': 2, 'name': 'france', 'population': 66}]
++----+----------+------------+
+| id | name     | population |
++====+==========+============+
+|  2 | 'france' |         66 |
++----+----------+------------+
 ```
 
 ### Intersect Tables
@@ -315,15 +351,20 @@ target = transform(
         ),
     ]
 )
-pprint(target.schema)
-pprint(target.read_rows())
+print(target.schema)
+print(target.to_view())
 ```
 ```
 {'fields': [{'name': 'id', 'type': 'integer'},
             {'name': 'name', 'type': 'string'},
             {'name': 'population', 'type': 'integer'}]}
-[{'id': 1, 'name': 'germany', 'population': 83},
- {'id': 3, 'name': 'spain', 'population': 47}]
++----+-----------+------------+
+| id | name      | population |
++====+===========+============+
+|  1 | 'germany' |         83 |
++----+-----------+------------+
+|  3 | 'spain'   |         47 |
++----+-----------+------------+
 ```
 
 ### Join Tables
@@ -343,16 +384,21 @@ target = transform(
         ),
     ]
 )
-pprint(target.schema)
-pprint(target.read_rows())
+print(target.schema)
+print(target.to_view())
 ```
 ```
 {'fields': [{'name': 'id', 'type': 'integer'},
             {'name': 'name', 'type': 'string'},
             {'name': 'population', 'type': 'integer'},
             {'name': 'note', 'type': 'string'}]}
-[{'id': 1, 'name': 'germany', 'population': 83, 'note': 'beer'},
- {'id': 2, 'name': 'france', 'population': 66, 'note': 'vine'}]
++----+-----------+------------+--------+
+| id | name      | population | note   |
++====+===========+============+========+
+|  1 | 'germany' |         83 | 'beer' |
++----+-----------+------------+--------+
+|  2 | 'france'  |         66 | 'vine' |
++----+-----------+------------+--------+
 ```
 
 ### Melt Table
@@ -369,19 +415,26 @@ target = transform(
         steps.table_melt(field_name="name"),
     ]
 )
-pprint(target.schema)
-pprint(target.read_rows())
+print(target.schema)
+print(target.to_view())
 ```
 ```
 {'fields': [{'name': 'name', 'type': 'string'},
             {'name': 'variable'},
             {'name': 'value'}]}
-[{'name': 'germany', 'variable': 'id', 'value': 1},
- {'name': 'germany', 'variable': 'population', 'value': 83},
- {'name': 'france', 'variable': 'id', 'value': 2},
- {'name': 'france', 'variable': 'population', 'value': 66},
- {'name': 'spain', 'variable': 'id', 'value': 3},
- {'name': 'spain', 'variable': 'population', 'value': 47}]
++-----------+--------------+-------+
+| name      | variable     | value |
++===========+==============+=======+
+| 'germany' | 'id'         |     1 |
++-----------+--------------+-------+
+| 'germany' | 'population' |    83 |
++-----------+--------------+-------+
+| 'france'  | 'id'         |     2 |
++-----------+--------------+-------+
+| 'france'  | 'population' |    66 |
++-----------+--------------+-------+
+| 'spain'   | 'id'         |     3 |
++-----------+--------------+-------+
 ```
 
 ### Merge Tables
@@ -399,18 +452,25 @@ target = transform(
         ),
     ]
 )
-pprint(target.schema)
-pprint(target.read_rows())
+print(target.schema)
+print(target.to_view())
 ```
 ```
 {'fields': [{'name': 'id', 'type': 'integer'},
             {'name': 'name', 'type': 'string'},
             {'name': 'population', 'type': 'integer'},
             {'name': 'note', 'type': 'string'}]}
-[{'id': 1, 'name': 'germany', 'population': 83, 'note': None},
- {'id': 2, 'name': 'france', 'population': 66, 'note': None},
- {'id': 3, 'name': 'spain', 'population': 47, 'note': None},
- {'id': 4, 'name': 'malta', 'population': None, 'note': 'island'}]
++----+-----------+------------+----------+
+| id | name      | population | note     |
++====+===========+============+==========+
+|  1 | 'germany' |         83 | None     |
++----+-----------+------------+----------+
+|  2 | 'france'  |         66 | None     |
++----+-----------+------------+----------+
+|  3 | 'spain'   |         47 | None     |
++----+-----------+------------+----------+
+|  4 | 'malta'   | None       | 'island' |
++----+-----------+------------+----------+
 ```
 
 ### Normalize Table
@@ -428,12 +488,25 @@ target = transform(
         steps.table_normalize(),
     ]
 )
-pprint(source.read_lists())
-pprint(target.read_lists())
+print(source.to_view())
+print(target.to_view())
 ```
 ```
-[['id', 'name'], ['1', 'english'], ['2', '中国人']]
-[['id', 'name'], [1, 'english'], [2, '中国人']]
++----+-----------+
+| id | name      |
++====+===========+
+|  1 | 'english' |
++----+-----------+
+|  2 | '中国人'     |
++----+-----------+
+
++----+-----------+
+| id | name      |
++====+===========+
+|  1 | 'english' |
++----+-----------+
+|  2 | '中国人'     |
++----+-----------+
 ```
 
 ### Pivot Table
@@ -450,15 +523,20 @@ target = transform(
         steps.table_pivot(f1="region", f2="gender", f3="units", aggfun=sum),
     ]
 )
-pprint(target.schema)
-pprint(target.read_rows())
+print(target.schema)
+print(target.to_view())
 ```
 ```
 {'fields': [{'name': 'region', 'type': 'string'},
             {'name': 'boy', 'type': 'integer'},
             {'name': 'girl', 'type': 'integer'}]}
-[{'region': 'east', 'boy': 33, 'girl': 29},
- {'region': 'west', 'boy': 35, 'girl': 23}]
++--------+-----+------+
+| region | boy | girl |
++========+=====+======+
+| 'east' |  33 |   29 |
++--------+-----+------+
+| 'west' |  35 |   23 |
++--------+-----+------+
 ```
 
 ### Print Table
@@ -501,16 +579,22 @@ target = transform(
         steps.table_recast(field_name="id"),
     ]
 )
-pprint(target.schema)
-pprint(target.read_rows())
+print(target.schema)
+print(target.to_view())
 ```
 ```
 {'fields': [{'name': 'id', 'type': 'integer'},
             {'name': 'name', 'type': 'string'},
             {'name': 'population', 'type': 'integer'}]}
-[{'id': 1, 'name': 'germany', 'population': 83},
- {'id': 2, 'name': 'france', 'population': 66},
- {'id': 3, 'name': 'spain', 'population': 47}]
++----+-----------+------------+
+| id | name      | population |
++====+===========+============+
+|  1 | 'germany' |         83 |
++----+-----------+------------+
+|  2 | 'france'  |         66 |
++----+-----------+------------+
+|  3 | 'spain'   |         47 |
++----+-----------+------------+
 ```
 
 ### Transpose Table
@@ -527,15 +611,21 @@ target = transform(
         steps.table_transpose(),
     ]
 )
-pprint(target.schema)
-pprint(target.read_rows())
+print(target.schema)
+print(target.to_view())
 ```
 ```
 {'fields': [{'name': 'name', 'type': 'string'},
             {'name': 'germany', 'type': 'integer'},
             {'name': 'france', 'type': 'integer'},
             {'name': 'spain', 'type': 'integer'}]}
-[{'name': 'population', 'germany': 83, 'france': 66, 'spain': 47}]
++--------------+-----------+----------+---------+
+| id           | 1         | 2        | 3       |
++==============+===========+==========+=========+
+| 'name'       | 'germany' | 'france' | 'spain' |
++--------------+-----------+----------+---------+
+| 'population' |        83 |       66 |      47 |
++--------------+-----------+----------+---------+
 ```
 
 ### Validate Table
@@ -554,7 +644,7 @@ target = transform(
 )
 pprint(target.schema)
 try:
-  pprint(target.read_rows())
+  pprint(target.to_view())
 except Exception as exception:
   pprint(exception)
 ```
@@ -625,17 +715,23 @@ target = transform(
         steps.field_add(name="note", type="string", value="eu"),
     ]
 )
-pprint(target.schema)
-pprint(target.read_rows())
+print(target.schema)
+print(target.to_view())
 ```
 ```
 {'fields': [{'name': 'id', 'type': 'integer'},
             {'name': 'name', 'type': 'string'},
             {'name': 'population', 'type': 'integer'},
             {'name': 'note', 'type': 'string'}]}
-[{'id': 1, 'name': 'germany', 'population': 83, 'note': 'eu'},
- {'id': 2, 'name': 'france', 'population': 66, 'note': 'eu'},
- {'id': 3, 'name': 'spain', 'population': 47, 'note': 'eu'}]
++----+-----------+------------+------+
+| id | name      | population | note |
++====+===========+============+======+
+|  1 | 'germany' |         83 | 'eu' |
++----+-----------+------------+------+
+|  2 | 'france'  |         66 | 'eu' |
++----+-----------+------------+------+
+|  3 | 'spain'   |         47 | 'eu' |
++----+-----------+------------+------+
 ```
 
 ### Filter Fields
@@ -651,15 +747,21 @@ target = transform(
         steps.field_filter(names=["id", "name"]),
     ]
 )
-pprint(target.schema)
-pprint(target.read_rows())
+print(target.schema)
+print(target.to_view())
 ```
 ```
 {'fields': [{'name': 'id', 'type': 'integer'},
             {'name': 'name', 'type': 'string'}]}
-[{'id': 1, 'name': 'germany'},
- {'id': 2, 'name': 'france'},
- {'id': 3, 'name': 'spain'}]
++----+-----------+
+| id | name      |
++====+===========+
+|  1 | 'germany' |
++----+-----------+
+|  2 | 'france'  |
++----+-----------+
+|  3 | 'spain'   |
++----+-----------+
 ```
 
 ### Move Field
@@ -675,16 +777,22 @@ target = transform(
         steps.field_move(name="id", position=3),
     ]
 )
-pprint(target.schema)
-pprint(target.read_rows())
+print(target.schema)
+print(target.to_view())
 ```
 ```
 {'fields': [{'name': 'name', 'type': 'string'},
             {'name': 'population', 'type': 'integer'},
             {'name': 'id', 'type': 'integer'}]}
-[{'name': 'germany', 'population': 83, 'id': 1},
- {'name': 'france', 'population': 66, 'id': 2},
- {'name': 'spain', 'population': 47, 'id': 3}]
++-----------+------------+----+
+| name      | population | id |
++===========+============+====+
+| 'germany' |         83 |  1 |
++-----------+------------+----+
+| 'france'  |         66 |  2 |
++-----------+------------+----+
+| 'spain'   |         47 |  3 |
++-----------+------------+----+
 ```
 
 ### Remove Field
@@ -700,15 +808,21 @@ target = transform(
         steps.field_remove(names=["id"]),
     ]
 )
-pprint(target.schema)
-pprint(target.read_rows())
+print(target.schema)
+print(target.to_view())
 ```
 ```
 {'fields': [{'name': 'name', 'type': 'string'},
             {'name': 'population', 'type': 'integer'}]}
-[{'name': 'germany', 'population': 83},
- {'name': 'france', 'population': 66},
- {'name': 'spain', 'population': 47}]
++-----------+------------+
+| name      | population |
++===========+============+
+| 'germany' |         83 |
++-----------+------------+
+| 'france'  |         66 |
++-----------+------------+
+| 'spain'   |         47 |
++-----------+------------+
 ```
 
 ### Split Field
@@ -724,17 +838,23 @@ target = transform(
         steps.field_split(name="name", to_names=["name1", "name2"], pattern="a"),
     ]
 )
-pprint(target.schema)
-pprint(target.read_rows())
+print(target.schema)
+print(target.to_view())
 ```
 ```
 {'fields': [{'name': 'id', 'type': 'integer'},
             {'name': 'population', 'type': 'integer'},
             {'name': 'name1', 'type': 'string'},
             {'name': 'name2', 'type': 'string'}]}
-[{'id': 1, 'population': 83, 'name1': 'germ', 'name2': 'ny'},
- {'id': 2, 'population': 66, 'name1': 'fr', 'name2': 'nce'},
- {'id': 3, 'population': 47, 'name1': 'sp', 'name2': 'in'}]
++----+------------+--------+-------+
+| id | population | name1  | name2 |
++====+============+========+=======+
+|  1 |         83 | 'germ' | 'ny'  |
++----+------------+--------+-------+
+|  2 |         66 | 'fr'   | 'nce' |
++----+------------+--------+-------+
+|  3 |         47 | 'sp'   | 'in'  |
++----+------------+--------+-------+
 ```
 
 ### Unpack Field
@@ -751,17 +871,23 @@ target = transform(
         steps.field_unpack(name="id", to_names=["id2", "id3"]),
     ]
 )
-pprint(target.schema)
-pprint(target.read_rows())
+print(target.schema)
+print(target.to_view())
 ```
 ```
 {'fields': [{'name': 'name', 'type': 'string'},
             {'name': 'population', 'type': 'integer'},
             {'name': 'id2'},
             {'name': 'id3'}]}
-[{'name': 'germany', 'population': 83, 'id2': 1, 'id3': 1},
- {'name': 'france', 'population': 66, 'id2': 1, 'id3': 1},
- {'name': 'spain', 'population': 47, 'id2': 1, 'id3': 1}]
++-----------+------------+-----+-----+
+| name      | population | id2 | id3 |
++===========+============+=====+=====+
+| 'germany' |         83 |   1 |   1 |
++-----------+------------+-----+-----+
+| 'france'  |         66 |   1 |   1 |
++-----------+------------+-----+-----+
+| 'spain'   |         47 |   1 |   1 |
++-----------+------------+-----+-----+
 ```
 
 ### Update Field
@@ -777,16 +903,22 @@ target = transform(
         steps.field_update(name="id", type="string", value=str),
     ]
 )
-pprint(target.schema)
-pprint(target.read_rows())
+print(target.schema)
+print(target.to_view())
 ```
 ```
 {'fields': [{'name': 'id', 'type': 'string'},
             {'name': 'name', 'type': 'string'},
             {'name': 'population', 'type': 'integer'}]}
-[{'id': None, 'name': 'germany', 'population': 83},
- {'id': None, 'name': 'france', 'population': 66},
- {'id': None, 'name': 'spain', 'population': 47}]
++------+-----------+------------+
+| id   | name      | population |
++======+===========+============+
+| None | 'germany' |         83 |
++------+-----------+------------+
+| None | 'france'  |         66 |
++------+-----------+------------+
+| None | 'spain'   |         47 |
++------+-----------+------------+
 ```
 
 ### Merge Cells
@@ -804,15 +936,23 @@ target = transform(
          steps.field_merge(name="details", from_names=["name", "population"], preserve=True)
      ],
 )
-pprint(target.schema)
-pprint(target.read_rows())
+print(target.schema)
+print(target.to_view())
 ```
 ```
 {'fields': [{'name': 'id', 'type': 'integer'},
             {'name': 'name', 'type': 'string'},
             {'name': 'population', 'type': 'integer'},
             {'name': 'details', 'type': 'string'}]}
-[{'details': 'germany-83', 'id': 1, 'name': 'germany', 'population': 83}]
++----+-----------+------------+--------------+
+| id | name      | population | details      |
++====+===========+============+==============+
+|  1 | 'germany' |         83 | 'germany-83' |
++----+-----------+------------+--------------+
+|  2 | 'france'  |         66 | 'france-66'  |
++----+-----------+------------+--------------+
+|  3 | 'spain'   |         47 | 'spain-47'   |
++----+-----------+------------+--------------+
  ```
 
 
@@ -831,18 +971,23 @@ target = transform(
         steps.field_pack(name="details", from_names=["name", "population"], field_type="object", preserve=True)
     ]
 )
-pprint(target.schema)
-pprint(target.read_rows())
+print(target.schema)
+print(target.to_view())
 ```
 ```
 {'fields': [{'name': 'id', 'type': 'integer'},
             {'name': 'name', 'type': 'string'},
             {'name': 'population', 'type': 'integer'},
             {'name': 'details', 'type': 'object'}]}
-[{'details': {'name': 'germany', 'population': '83'},
-  'id': 1,
-  'name': 'germany',
-  'population': 83}]
++----+-----------+------------+-----------------------------------------+
+| id | name      | population | details                                 |
++====+===========+============+=========================================+
+|  1 | 'germany' |         83 | {'name': 'germany', 'population': '83'} |
++----+-----------+------------+-----------------------------------------+
+|  2 | 'france'  |         66 | {'name': 'france', 'population': '66'}  |
++----+-----------+------------+-----------------------------------------+
+|  3 | 'spain'   |         47 | {'name': 'spain', 'population': '47'}   |
++----+-----------+------------+-----------------------------------------+
 ```
 
 
@@ -864,15 +1009,20 @@ target = transform(
         steps.row_filter(formula="id > 1"),
     ]
 )
-pprint(target.schema)
-pprint(target.read_rows())
+print(target.schema)
+print(target.to_view())
 ```
 ```
 {'fields': [{'name': 'id', 'type': 'integer'},
             {'name': 'name', 'type': 'string'},
             {'name': 'population', 'type': 'integer'}]}
-[{'id': 2, 'name': 'france', 'population': 66},
- {'id': 3, 'name': 'spain', 'population': 47}]
++----+----------+------------+
+| id | name     | population |
++====+==========+============+
+|  2 | 'france' |         66 |
++----+----------+------------+
+|  3 | 'spain'  |         47 |
++----+----------+------------+
 ```
 
 ### Search Rows
@@ -888,14 +1038,18 @@ target = transform(
         steps.row_search(regex=r"^f.*"),
     ]
 )
-pprint(target.schema)
-pprint(target.read_rows())
+print(target.schema)
+print(target.to_view())
 ```
 ```
 {'fields': [{'name': 'id', 'type': 'integer'},
             {'name': 'name', 'type': 'string'},
             {'name': 'population', 'type': 'integer'}]}
-[{'id': 2, 'name': 'france', 'population': 66}]
++----+----------+------------+
+| id | name     | population |
++====+==========+============+
+|  2 | 'france' |         66 |
++----+----------+------------+
 ```
 
 ### Slice Rows
@@ -911,15 +1065,20 @@ target = transform(
         steps.row_slice(head=2),
     ]
 )
-pprint(target.schema)
-pprint(target.read_rows())
+print(target.schema)
+print(target.to_view())
 ```
 ```
 {'fields': [{'name': 'id', 'type': 'integer'},
             {'name': 'name', 'type': 'string'},
             {'name': 'population', 'type': 'integer'}]}
-[{'id': 1, 'name': 'germany', 'population': 83},
- {'id': 2, 'name': 'france', 'population': 66}]
++----+-----------+------------+
+| id | name      | population |
++====+===========+============+
+|  1 | 'germany' |         83 |
++----+-----------+------------+
+|  2 | 'france'  |         66 |
++----+-----------+------------+
 ```
 
 ### Sort Rows
@@ -935,16 +1094,22 @@ target = transform(
         steps.row_sort(field_names=["name"]),
     ]
 )
-pprint(target.schema)
-pprint(target.read_rows())
+print(target.schema)
+print(target.to_view())
 ```
 ```
 {'fields': [{'name': 'id', 'type': 'integer'},
             {'name': 'name', 'type': 'string'},
             {'name': 'population', 'type': 'integer'}]}
-[{'id': 2, 'name': 'france', 'population': 66},
- {'id': 1, 'name': 'germany', 'population': 83},
- {'id': 3, 'name': 'spain', 'population': 47}]
++----+-----------+------------+
+| id | name      | population |
++====+===========+============+
+|  2 | 'france'  |         66 |
++----+-----------+------------+
+|  1 | 'germany' |         83 |
++----+-----------+------------+
+|  3 | 'spain'   |         47 |
++----+-----------+------------+
 ```
 
 ### Split Rows
@@ -960,19 +1125,26 @@ target = transform(
         steps.row_split(field_name="name", pattern="a"),
     ]
 )
-pprint(target.schema)
-pprint(target.read_rows())
+print(target.schema)
+print(target.to_view())
 ```
 ```
 {'fields': [{'name': 'id', 'type': 'integer'},
             {'name': 'name', 'type': 'string'},
             {'name': 'population', 'type': 'integer'}]}
-[{'id': 1, 'name': 'germ', 'population': 83},
- {'id': 1, 'name': 'ny', 'population': 83},
- {'id': 2, 'name': 'fr', 'population': 66},
- {'id': 2, 'name': 'nce', 'population': 66},
- {'id': 3, 'name': 'sp', 'population': 47},
- {'id': 3, 'name': 'in', 'population': 47}]
++----+--------+------------+
+| id | name   | population |
++====+========+============+
+|  1 | 'germ' |         83 |
++----+--------+------------+
+|  1 | 'ny'   |         83 |
++----+--------+------------+
+|  2 | 'fr'   |         66 |
++----+--------+------------+
+|  2 | 'nce'  |         66 |
++----+--------+------------+
+|  3 | 'sp'   |         47 |
++----+--------+------------+
 ```
 
 ### Subset Rows
@@ -989,16 +1161,22 @@ target = transform(
         steps.row_subset(subset="conflicts", field_name="id"),
     ]
 )
-pprint(target.schema)
-pprint(target.read_rows())
+print(target.schema)
+print(target.to_view())
 ```
 ```
 {'fields': [{'name': 'id', 'type': 'integer'},
             {'name': 'name', 'type': 'string'},
             {'name': 'population', 'type': 'integer'}]}
-[{'id': 1, 'name': 'germany', 'population': 83},
- {'id': 1, 'name': 'france', 'population': 66},
- {'id': 1, 'name': 'spain', 'population': 47}]
++----+-----------+------------+
+| id | name      | population |
++====+===========+============+
+|  1 | 'germany' |         83 |
++----+-----------+------------+
+|  1 | 'france'  |         66 |
++----+-----------+------------+
+|  1 | 'spain'   |         47 |
++----+-----------+------------+
 ```
 
 ### Ungroup Rows
@@ -1014,17 +1192,23 @@ target = transform(
         steps.row_ungroup(group_name="name", selection="first"),
     ]
 )
-pprint(target.schema)
-pprint(target.read_rows())
+print(target.schema)
+print(target.to_view())
 ```
 ```
 {'fields': [{'name': 'id', 'type': 'integer'},
             {'name': 'name', 'type': 'string'},
             {'name': 'population', 'type': 'integer'},
             {'name': 'year', 'type': 'integer'}]}
-[{'id': 3, 'name': 'france', 'population': 66, 'year': 2020},
- {'id': 1, 'name': 'germany', 'population': 83, 'year': 2020},
- {'id': 5, 'name': 'spain', 'population': 47, 'year': 2020}]
++----+-----------+------------+------+
+| id | name      | population | year |
++====+===========+============+======+
+|  3 | 'france'  |         66 | 2020 |
++----+-----------+------------+------+
+|  1 | 'germany' |         83 | 2020 |
++----+-----------+------------+------+
+|  5 | 'spain'   |         47 | 2020 |
++----+-----------+------------+------+
 ```
 
 ## Cell Steps
@@ -1044,16 +1228,22 @@ target = transform(
         steps.cell_convert(value="n/a", field_name="name"),
     ]
 )
-pprint(target.schema)
-pprint(target.read_rows())
+print(target.schema)
+print(target.to_view())
 ```
 ```
 {'fields': [{'name': 'id', 'type': 'integer'},
             {'name': 'name', 'type': 'string'},
             {'name': 'population', 'type': 'integer'}]}
-[{'id': 1, 'name': 'n/a', 'population': 83},
- {'id': 2, 'name': 'n/a', 'population': 66},
- {'id': 3, 'name': 'n/a', 'population': 47}]
++----+-------+------------+
+| id | name  | population |
++====+=======+============+
+|  1 | 'n/a' |         83 |
++----+-------+------------+
+|  2 | 'n/a' |         66 |
++----+-------+------------+
+|  3 | 'n/a' |         47 |
++----+-------+------------+
 ```
 
 ### Fill Cells
@@ -1070,16 +1260,22 @@ target = transform(
         steps.cell_fill(field_name="name", value="FRANCE"),
     ]
 )
-pprint(target.schema)
-pprint(target.read_rows())
+print(target.schema)
+print(target.to_view())
 ```
 ```
 {'fields': [{'name': 'id', 'type': 'integer'},
             {'name': 'name', 'type': 'string'},
             {'name': 'population', 'type': 'integer'}]}
-[{'id': 1, 'name': 'germany', 'population': 83},
- {'id': 2, 'name': 'FRANCE', 'population': 66},
- {'id': 3, 'name': 'spain', 'population': 47}]
++----+-----------+------------+
+| id | name      | population |
++====+===========+============+
+|  1 | 'germany' |         83 |
++----+-----------+------------+
+|  2 | 'FRANCE'  |         66 |
++----+-----------+------------+
+|  3 | 'spain'   |         47 |
++----+-----------+------------+
 ```
 
 ### Format Cells
@@ -1095,16 +1291,22 @@ target = transform(
         steps.cell_format(template="Prefix: {0}", field_name="name"),
     ]
 )
-pprint(target.schema)
-pprint(target.read_rows())
+print(target.schema)
+print(target.to_view())
 ```
 ```
 {'fields': [{'name': 'id', 'type': 'integer'},
             {'name': 'name', 'type': 'string'},
             {'name': 'population', 'type': 'integer'}]}
-[{'id': 1, 'name': 'Prefix: germany', 'population': 83},
- {'id': 2, 'name': 'Prefix: france', 'population': 66},
- {'id': 3, 'name': 'Prefix: spain', 'population': 47}]
++----+-------------------+------------+
+| id | name              | population |
++====+===================+============+
+|  1 | 'Prefix: germany' |         83 |
++----+-------------------+------------+
+|  2 | 'Prefix: france'  |         66 |
++----+-------------------+------------+
+|  3 | 'Prefix: spain'   |         47 |
++----+-------------------+------------+
 ```
 
 ### Interpolate Cells
@@ -1145,16 +1347,22 @@ target = transform(
         steps.cell_replace(pattern="france", replace="FRANCE"),
     ]
 )
-pprint(target.schema)
-pprint(target.read_rows())
+print(target.schema)
+print(target.to_view())
 ```
 ```
 {'fields': [{'name': 'id', 'type': 'integer'},
             {'name': 'name', 'type': 'string'},
             {'name': 'population', 'type': 'integer'}]}
-[{'id': 1, 'name': 'germany', 'population': 83},
- {'id': 2, 'name': 'FRANCE', 'population': 66},
- {'id': 3, 'name': 'spain', 'population': 47}]
++----+-------------------+------------+
+| id | name              | population |
++====+===================+============+
+|  1 | 'Prefix: germany' |         83 |
++----+-------------------+------------+
+|  2 | 'Prefix: france'  |         66 |
++----+-------------------+------------+
+|  3 | 'Prefix: spain'   |         47 |
++----+-------------------+------------+
 ```
 
 ### Set Cells
@@ -1170,14 +1378,20 @@ target = transform(
           steps.cell_set(field_name="population", value=100),
     ]
 )
-pprint(target.schema)
-pprint(target.read_rows())
+print(target.schema)
+print(target.to_view())
 ```
 ```
 {'fields': [{'name': 'id', 'type': 'integer'},
             {'name': 'name', 'type': 'string'},
             {'name': 'population', 'type': 'integer'}]}
-[{'id': 1, 'name': 'germany', 'population': 100},
- {'id': 2, 'name': 'france', 'population': 100},
- {'id': 3, 'name': 'spain', 'population': 100}]
++----+-----------+------------+
+| id | name      | population |
++====+===========+============+
+|  1 | 'germany' |        100 |
++----+-----------+------------+
+|  2 | 'france'  |        100 |
++----+-----------+------------+
+|  3 | 'spain'   |        100 |
++----+-----------+------------+
 ```

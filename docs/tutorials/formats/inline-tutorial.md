@@ -25,17 +25,22 @@ pprint(resource.read_rows())
 The same is actual for writing:
 
 ```python script title="Python"
-from pprint import pprint
 from frictionless import Resource
 
 source = Resource('data/table.csv')
 target = source.write(format='inline')
-pprint(target)
-pprint(target.read_rows())
+print(target)
+print(target.to_view())
 ```
 ```
 {'data': [['id', 'name'], [1, 'english'], [2, '中国人']], 'format': 'inline'}
-[{'id': 1, 'name': 'english'}, {'id': 2, 'name': '中国人'}]
++----+-----------+
+| id | name      |
++====+===========+
+|  1 | 'english' |
++----+-----------+
+|  2 | '中国人'     |
++----+-----------+
 ```
 
 ## Configuring Data
@@ -43,16 +48,21 @@ pprint(target.read_rows())
 There is a dialect to configure this format, for example:
 
 ```python script title="Python"
-from pprint import pprint
 from frictionless import Resource
 from frictionless.plugins.inline import InlineDialect
 
 dialect = InlineDialect(keyed=True, keys=['name', 'id'])
 resource = Resource(data=[{'id': 1, 'name': 'english'}, {'id': 2, 'name': 'german'}], dialect=dialect)
-pprint(resource.read_rows())
+print(resource.to_view())
 ```
 ```
-[{'name': 'english', 'id': 1}, {'name': 'german', 'id': 2}]
++-----------+----+
+| name      | id |
++===========+====+
+| 'english' |  1 |
++-----------+----+
+| 'german'  |  2 |
++-----------+----+
 ```
 
 References:
