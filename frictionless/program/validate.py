@@ -27,7 +27,6 @@ def _wrap_text_to_colwidths(
         List: list of lines with wrapped text
 
     """
-    colwidths = [5, 5, 10, 50]
     result = []
     for row in list_of_lists:
         new_row = []
