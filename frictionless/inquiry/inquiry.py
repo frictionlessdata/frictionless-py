@@ -6,9 +6,9 @@ from ..metadata import Metadata
 from ..errors import InquiryError
 from ..system import system
 from ..report import Report
+from .validate import validate
 from .. import settings
 from .. import helpers
-from . import actions
 
 
 class Inquiry(Metadata):
@@ -21,6 +21,7 @@ class Inquiry(Metadata):
         FrictionlessException: raise any error that occurs during the process
 
     """
+    validate = validate
 
     def __init__(self, descriptor=None, *, tasks=None):
         self.setinitial("tasks", tasks)
@@ -33,10 +34,6 @@ class Inquiry(Metadata):
             dict[]: tasks
         """
         return self["tasks"]
-
-    # Actions
-
-    validate = actions.validate
 
     # Run
 
