@@ -1,9 +1,9 @@
 from typing import TYPE_CHECKING
-from ...report import Report
-from ... import helpers
+from ..report import Report
+from .. import helpers
 
 if TYPE_CHECKING:
-    from ..pipeline import Pipeline
+    from .pipeline import Pipeline
 
 
 # TODO: move exception handling to high-level actions?

@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING
 from ..report import Report
 
 if TYPE_CHECKING:
-    from ..inquiry import Inquiry
+    from .inquiry import Inquiry
 
 
 # TODO: move run here?
