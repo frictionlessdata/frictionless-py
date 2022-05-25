@@ -215,40 +215,24 @@ def test_program_validate_error_not_found():
 
 def test_program_validate_zipped_resources_979():
     result = runner.invoke(program, "validate data/zipped-resources/datapackage.json")
+    output_file_path = "data/fixtures/cli/zipped-resources-979.txt"
+    with open(output_file_path, encoding="utf-8") as file:
+        expected = file.read()
     assert result.exit_code == 1
     assert result.stdout.count("valid: ogd10_energieforschungstatistik_ch.csv")
     assert result.stdout.count("valid: ogd10_catalogs.zip => finanzquellen.csv")
     assert result.stdout.count("invalid: ogd10_catalogs.zip => capital-invalid.csv")
     assert result.stdout.count("Schema is not valid")
-    assert result.stdout.count(
-        """row    field    code     message
------  -------  -------  -------------------------------------------------
-                schema-  Schema is not valid: Schemas with duplicate field
-                error    names are not supported"""
-    )
+    assert result.stdout.strip() == expected.strip()
 
 
-def test_program_validate_long_error_messages():
+def test_program_validate_long_error_messages_976():
     result = runner.invoke(program, "validate data/datapackage.json --type resource")
-    expected = """row    field    code       message
------  -------  ---------  --------------------------------------------------
-                resource-  The data resource has an error: "{'format':
-                error      'inline',  'hashing': 'md5',  'name': 'test-
-                           tabulator',  'profile': 'tabular-data-resource',
-                           'resources': [{'name': 'first-resource',
-                           'path': 'table.xls',                 'schema':
-                           {'fields': [{'name': 'id', 'type': 'number'},
-                           {'name': 'name', 'type': 'string'}]}},
-                           {'name': 'number-two',                 'path':
-                           'table-reverse.csv',                 'schema':
-                           {'fields': [{'name': 'id', 'type': 'integer'},
-                           {'name': 'name', 'type': 'string'}]}}],  'scheme':
-                           '',  'stats': {'bytes': 0, 'fields': 0, 'hash':
-                           '', 'rows': 0}} is not valid under any of the
-                           given schemas" at "" in metadata and at "oneOf" in
-                           profile"""
+    output_file_path = "data/fixtures/cli/long-error-messages-976.txt"
+    with open(output_file_path, encoding="utf-8") as file:
+        expected = file.read()
     assert result.exit_code == 1
-    assert result.stdout.count(expected)
+    assert result.stdout.strip() == expected.strip()
 
 
 # Helpers
