@@ -31,6 +31,15 @@ def test_pandas_parser_write():
     ]
 
 
+def test_pandas_parser_write_bug_1100():
+    datapackage = Package("data/issue-1100.package.json")
+    target = datapackage.resources[0].to_pandas()
+    assert target.data.to_dict("records") == [
+        {"id": 0, "timestamp": "2022-05-25 10.39.15"},
+        {"id": 1, "timestamp": "2022-05-25 10.39.15"},
+    ]
+
+
 def test_pandas_parser_write_types():
     source = Package("data/storage/types.json").get_resource("types")
     target = source.write(format="pandas")
