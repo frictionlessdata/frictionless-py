@@ -6,6 +6,7 @@ from frictionless.plugins.sql import SqlDialect
 # General
 
 
+# TODO: add timezone support or document if it's not possible
 def test_sql_parser_write_timezone_postgresql(postgresql_url):
     source = Resource("data/timezone.csv")
     target = source.write(postgresql_url, dialect=SqlDialect(table="timezone"))

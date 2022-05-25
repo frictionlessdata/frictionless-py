@@ -27,6 +27,7 @@ def test_bigquery_parser_write(options):
         ]
 
 
+# TODO: add timezone support or document if it's not possible
 @pytest.mark.ci
 def test_bigquery_parser_write_timezone(options):
     prefix = options.pop("prefix")

@@ -21,6 +21,7 @@ def test_ckan_parser(options):
         ]
 
 
+# TODO: add timezone support or document if it's not possible
 @pytest.mark.vcr
 def test_ckan_parser_timezone(options):
     url = options.pop("url")

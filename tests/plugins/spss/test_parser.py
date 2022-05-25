@@ -109,6 +109,7 @@ def test_spss_storage_constraints(tmpdir):
             ]
 
 
+# TODO: add timezone support or document if it's not possible
 @pytest.mark.skipif(sys.version_info >= (3, 10), reason="Not supported Python3.10")
 def test_spss_parser_write_timezone(tmpdir):
     source = Resource("data/timezone.csv")

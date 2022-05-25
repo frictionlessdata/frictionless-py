@@ -98,6 +98,7 @@ def test_sql_parser_write_where(database_url):
         ]
 
 
+# TODO: add timezone support or document if it's not possible
 def test_sql_parser_write_timezone(sqlite_url):
     source = Resource("data/timezone.csv")
     target = source.write(sqlite_url, dialect=SqlDialect(table="timezone"))
