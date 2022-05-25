@@ -121,6 +121,7 @@ class Package(Metadata):
     Raises:
         FrictionlessException: raise any error that occurs during the process
     """
+
     describe = staticmethod(describe)
     extract = extract
     transform = transform

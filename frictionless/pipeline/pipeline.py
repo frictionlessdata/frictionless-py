@@ -22,6 +22,7 @@ class Pipeline(Metadata):
         FrictionlessException: raise any error that occurs during the process
 
     """
+
     transform = transform
     validate = validate
 

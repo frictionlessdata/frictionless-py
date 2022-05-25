@@ -21,6 +21,7 @@ class Inquiry(Metadata):
         FrictionlessException: raise any error that occurs during the process
 
     """
+
     validate = validate
 
     def __init__(self, descriptor=None, *, tasks=None):

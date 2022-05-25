@@ -76,6 +76,7 @@ class Detector:
             key named after a field name and the values being a field patch.
             For more information, please check "Extracting Data" guide.
     """
+
     validate = validate
 
     def __init__(

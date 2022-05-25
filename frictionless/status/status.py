@@ -19,6 +19,7 @@ class Status(Metadata):
         FrictionlessException: raise any error that occurs during the process
 
     """
+
     validate = validate
 
     def __init__(self, descriptor=None, *, time=None, errors=None, tasks=None):

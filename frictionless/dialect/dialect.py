@@ -16,6 +16,7 @@ class Dialect(Metadata):
     Raises:
         FrictionlessException: raise any error that occurs during the process
     """
+
     validate = validate
 
     # Metadata
