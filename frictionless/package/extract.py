@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ..package import Package
+    from .package import Package
 
 
 def extract(package: "Package", *, process=None, stream=False):

@@ -1,12 +1,12 @@
 import warnings
 from typing import TYPE_CHECKING
-from ...report import Report
-from ...inquiry import Inquiry, InquiryTask
-from ...exception import FrictionlessException
-from ... import helpers
+from ..report import Report
+from ..inquiry import Inquiry, InquiryTask
+from ..exception import FrictionlessException
+from .. import helpers
 
 if TYPE_CHECKING:
-    from ..package import Package
+    from .package import Package
 
 
 # TODO: move exception catching to high-level validate?

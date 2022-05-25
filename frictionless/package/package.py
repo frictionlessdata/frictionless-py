@@ -10,10 +10,13 @@ from ..detector import Detector
 from ..resource import Resource
 from ..field import Field
 from ..system import system
+from .describe import describe
+from .extract import extract
+from .transform import transform
+from .validate import validate
 from .. import settings
 from .. import helpers
 from .. import errors
-from . import actions
 
 
 class Package(Metadata):
@@ -118,6 +121,10 @@ class Package(Metadata):
     Raises:
         FrictionlessException: raise any error that occurs during the process
     """
+    describe = staticmethod(describe)
+    extract = extract
+    transform = transform
+    validate = validate
 
     def __init__(
         self,
@@ -445,13 +452,6 @@ class Package(Metadata):
         resource = self.get_resource(name)
         self.resources.remove(resource)
         return resource
-
-    # Actions
-
-    describe = staticmethod(actions.describe)
-    extract = actions.extract
-    transform = actions.transform
-    validate = actions.validate
 
     # Expand
 
