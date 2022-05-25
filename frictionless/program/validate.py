@@ -1,6 +1,7 @@
 import sys
 import petl
 import typer
+import textwrap
 from typing import List
 from tabulate import tabulate
 from ..actions import validate
@@ -10,6 +11,32 @@ from ..layout import Layout
 from .main import program
 from .. import helpers
 from . import common
+
+
+def _wrap_text_to_colwidths(
+    list_of_lists: List, colwidths: List = [5, 5, 10, 50]
+) -> List:
+    """Create new list with wrapped text with different column width. This is a
+    temporary function to use with tabulate as tabulate 0.8.9 does not support
+    text wrap.
+    Args:
+        list_of_lists (List): List of lines
+        colwidths (List): width for each column
+
+    Returns:
+        List: list of lines with wrapped text
+
+    """
+    colwidths = [5, 5, 10, 50]
+    result = []
+    for row in list_of_lists:
+        new_row = []
+        for cell, width in zip(row, colwidths):
+            cell = str(cell)
+            wrapped = textwrap.wrap(cell, width=width)
+            new_row.append("\n".join(wrapped))
+        result.append(new_row)
+    return result
 
 
 @program.command(name="validate")
@@ -262,6 +289,7 @@ def program_validate(
                         error.message,
                     ]
                 )
+            content = _wrap_text_to_colwidths(content)
             typer.secho(
                 str(
                     tabulate(

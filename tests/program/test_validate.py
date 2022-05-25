@@ -219,8 +219,9 @@ def test_program_validate_zipped_resources_979():
     assert result.stdout.count("valid: ogd10_energieforschungstatistik_ch.csv")
     assert result.stdout.count("valid: ogd10_catalogs.zip => finanzquellen.csv")
     assert result.stdout.count("invalid: ogd10_catalogs.zip => capital-invalid.csv")
+    assert result.stdout.count("Schema is not valid")
     assert result.stdout.count(
-        "Schema is not valid: Schemas with duplicate field names are not supported"
+        "Schemas with duplicate field\n                error    names are not supported\n\n"
     )
 
 
