@@ -2,13 +2,14 @@ import codecs
 import chardet
 from copy import copy, deepcopy
 from typing import List, Dict
-from .exception import FrictionlessException
-from .system import system
-from .layout import Layout
-from .schema import Schema
-from .field import Field
-from . import settings
-from . import errors
+from ..exception import FrictionlessException
+from ..system import system
+from ..layout import Layout
+from ..schema import Schema
+from ..field import Field
+from .validate import validate
+from .. import settings
+from .. import errors
 
 
 # NOTE:
@@ -75,6 +76,8 @@ class Detector:
             key named after a field name and the values being a field patch.
             For more information, please check "Extracting Data" guide.
     """
+
+    validate = validate
 
     def __init__(
         self,

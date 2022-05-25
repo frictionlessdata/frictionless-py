@@ -1,9 +1,9 @@
 from typing import TYPE_CHECKING
-from ...report import Report
-from ... import helpers
+from ..report import Report
+from .. import helpers
 
 if TYPE_CHECKING:
-    from ..schema import Schema
+    from .schema import Schema
 
 
 # TODO: move exception handling to high-level actions?

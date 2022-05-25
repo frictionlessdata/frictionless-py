@@ -1,11 +1,12 @@
 from copy import deepcopy
-from .exception import FrictionlessException
-from .errors import Error, StatusError
-from .metadata import Metadata
-from .resource import Resource
-from .package import Package
-from . import settings
-from . import helpers
+from ..exception import FrictionlessException
+from ..errors import Error, StatusError
+from ..metadata import Metadata
+from ..resource import Resource
+from ..package import Package
+from .validate import validate
+from .. import settings
+from .. import helpers
 
 
 class Status(Metadata):
@@ -18,6 +19,8 @@ class Status(Metadata):
         FrictionlessException: raise any error that occurs during the process
 
     """
+
+    validate = validate
 
     def __init__(self, descriptor=None, *, time=None, errors=None, tasks=None):
 

@@ -2,10 +2,11 @@ from copy import copy, deepcopy
 from ..exception import FrictionlessException
 from ..metadata import Metadata
 from ..field import Field
+from .describe import describe
+from .validate import validate
 from .. import settings
 from .. import helpers
 from .. import errors
-from . import actions
 
 
 class Schema(Metadata):
@@ -33,6 +34,9 @@ class Schema(Metadata):
     Raises:
         FrictionlessException: raise any error that occurs during the process
     """
+
+    describe = staticmethod(describe)
+    validate = validate
 
     def __init__(
         self,
@@ -174,11 +178,6 @@ class Schema(Metadata):
         field = self.get_field(name)
         self.fields.remove(field)
         return field
-
-    # Actions
-
-    describe = staticmethod(actions.describe)
-    validate = actions.validate
 
     # Expand
 

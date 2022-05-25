@@ -6,9 +6,10 @@ from ..status import Status, StatusTask
 from ..metadata import Metadata
 from ..resource import Resource
 from ..package import Package
+from .transform import transform
+from .validate import validate
 from .. import settings
 from .. import helpers
-from . import actions
 
 
 class Pipeline(Metadata):
@@ -22,6 +23,9 @@ class Pipeline(Metadata):
 
     """
 
+    transform = transform
+    validate = validate
+
     def __init__(self, descriptor, tasks=None):
         self.setinitial("tasks", tasks)
         super().__init__(descriptor)
@@ -34,11 +38,6 @@ class Pipeline(Metadata):
         """
         tasks = self.get("tasks", [])
         return self.metadata_attach("tasks", tasks)
-
-    # Actions
-
-    transform = actions.transform
-    validate = actions.validate
 
     # Run
 
