@@ -32,7 +32,7 @@ class Report(Metadata):
 
     """
 
-    validte = validate
+    validate = validate
 
     def __init__(self, descriptor=None, *, time=None, errors=None, tasks=None):
 
