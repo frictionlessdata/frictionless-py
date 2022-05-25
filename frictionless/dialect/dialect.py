@@ -1,5 +1,6 @@
-from .metadata import Metadata
-from . import errors
+from ..metadata import Metadata
+from .validate import validate
+from .. import errors
 
 
 class Dialect(Metadata):
@@ -15,6 +16,7 @@ class Dialect(Metadata):
     Raises:
         FrictionlessException: raise any error that occurs during the process
     """
+    validate = validate
 
     # Metadata
 
