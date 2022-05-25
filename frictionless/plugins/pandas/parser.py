@@ -1,5 +1,6 @@
 import isodate
 import datetime
+import decimal
 from ...parser import Parser
 from ...schema import Schema
 from ...field import Field
@@ -42,8 +43,6 @@ class PandasParser(Parser):
                     value = item[field.name]
                 if field.type == "number" and np.isnan(value):
                     value = None
-                elif field.type == "datetime":
-                    value = value.to_pydatetime()
                 cells.append(value)
             yield cells
 
@@ -88,6 +87,8 @@ class PandasParser(Parser):
         if sample is not None:
             if isinstance(sample, (list, tuple)):
                 return "array"
+            elif isinstance(sample, datetime.datetime):
+                return "datetime"
             elif isinstance(sample, datetime.date):
                 return "date"
             elif isinstance(sample, isodate.Duration):
@@ -122,16 +123,17 @@ class PandasParser(Parser):
                     value = row[field.name]
                     if isinstance(value, float) and np.isnan(value):
                         value = None
+                    if isinstance(value, decimal.Decimal):
+                        value = float(value)
                     # http://pandas.pydata.org/pandas-docs/stable/gotchas.html#support-for-integer-na
                     if value is None and field.type in ("number", "integer"):
                         fixed_types[field.name] = "number"
                         value = np.NaN
-                    if field.type in ["datetime", "time"] and value is not None:
-                        value = value.replace(tzinfo=None)
                     if field.name in source.schema.primary_key:
                         index_values.append(value)
                     else:
                         data_values.append(value)
+
                 if len(source.schema.primary_key) == 1:
                     index_rows.append(index_values[0])
                 elif len(source.schema.primary_key) > 1:
@@ -154,17 +156,13 @@ class PandasParser(Parser):
                 )
 
         # Create dtypes/columns
-        dtypes = []
         columns = []
         for field in source.schema.fields:
             if field.name not in source.schema.primary_key:
-                dtype = self.__write_convert_type(fixed_types.get(field.name, field.type))
-                dtypes.append((field.name, dtype))
                 columns.append(field.name)
 
         # Create/set dataframe
-        array = np.array(data_rows, dtype=dtypes)
-        dataframe = pd.DataFrame(array, index=index, columns=columns)
+        dataframe = pd.DataFrame(data_rows, index=index, columns=columns)
         target.data = dataframe
 
     def __write_convert_type(self, type=None):
