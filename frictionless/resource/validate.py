@@ -1,15 +1,15 @@
 import types
 from typing import TYPE_CHECKING
-from ...check import Check
-from ...system import system
-from ...exception import FrictionlessException
-from ...report import Report, ReportTask
-from ...errors import TaskError
-from ... import helpers
-from ... import settings
+from ..check import Check
+from ..system import system
+from ..exception import FrictionlessException
+from ..report import Report, ReportTask
+from ..errors import TaskError
+from .. import helpers
+from .. import settings
 
 if TYPE_CHECKING:
-    from ..resource import Resource
+    from .resource import Resource
 
 
 # NOTE:
