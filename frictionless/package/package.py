@@ -602,7 +602,7 @@ class Package(Metadata):
         """
         return Package(descriptor=path, **options)
 
-    def to_zip(self, path, *, encoder_class=None):
+    def to_zip(self, path, *, encoder_class=None, compression=zipfile.ZIP_DEFLATED):
         """Save package to a zip
 
         Parameters:
@@ -613,7 +613,7 @@ class Package(Metadata):
             FrictionlessException: on any error
         """
         try:
-            with zipfile.ZipFile(path, "w") as archive:
+            with zipfile.ZipFile(path, "w", compression=compression) as archive:
                 package_descriptor = self.to_dict()
                 for index, resource in enumerate(self.resources):
                     descriptor = package_descriptor["resources"][index]
