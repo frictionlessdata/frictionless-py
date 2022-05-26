@@ -14,6 +14,7 @@ import tempfile
 import datetime
 import platform
 import textwrap
+import functools
 import stringcase
 from typing import List, Union
 from inspect import signature
@@ -486,7 +487,7 @@ def slugify(text, **options):
     return slug
 
 
-class cached_property:
+class cached_property_backport:
     # It can be removed after dropping support for Python 3.6 and Python 3.7
 
     def __init__(self, func):
@@ -535,6 +536,12 @@ class cached_property:
                         )
                         raise TypeError(msg) from None
         return val
+
+
+try:
+    cached_property = functools.cached_property
+except Exception:
+    cached_property = cached_property_backport
 
 
 # Markdown
