@@ -20,11 +20,12 @@ def read(*paths):
 PACKAGE = "frictionless"
 NAME = PACKAGE.replace("_", "-")
 TESTS_REQUIRE = [
-    "mypy",
     "moto",
     "black",
+    "yattag",
     "pylama",
     "pytest",
+    "pyright",
     "ipython",
     "pymysql",
     "livemark",
@@ -38,12 +39,16 @@ TESTS_REQUIRE = [
     "pytest-timeout",
     "pydoc-markdown",
     "docstring-parser",
-    "yattag"    
 ]
 EXTRAS_REQUIRE = {
     "bigquery": ["google-api-python-client>=1.12.1"],
     "ckan": ["ckanapi>=4.3"],
-    "excel": ["openpyxl>=3.0", "xlrd>=1.2", "xlwt>=1.2", "tableschema-to-template>=0.0.12"],
+    "excel": [
+        "openpyxl>=3.0",
+        "xlrd>=1.2",
+        "xlwt>=1.2",
+        "tableschema-to-template>=0.0.12",
+    ],
     "gsheets": ["pygsheets>=2.0"],
     "html": ["pyquery>=1.4"],
     "json": ["ijson>=3.0", "jsonlines>=1.2"],
@@ -53,7 +58,7 @@ EXTRAS_REQUIRE = {
     "server": ["gunicorn>=20.0", "flask>=1.1"],
     "spss": ["savReaderWriter>=3.0"],
     "sql": ["sqlalchemy>=1.3"],
-    "dev": TESTS_REQUIRE
+    "dev": TESTS_REQUIRE,
 }
 INSTALL_REQUIRES = [
     "petl>=1.6",
@@ -72,7 +77,7 @@ INSTALL_REQUIRES = [
     "python-dateutil>=2.8",
     "tableschema-to-template>=0.0.12",
     "tabulate>=0.8.9",
-    "jinja2>=3.0.3"
+    "jinja2>=3.0.3",
 ]
 README = read("README.md")
 VERSION = read(PACKAGE, "assets", "VERSION")
