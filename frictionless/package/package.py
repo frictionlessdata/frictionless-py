@@ -608,6 +608,9 @@ class Package(Metadata):
         Parameters:
             path (str): target path
             encoder_class (object): json encoder class
+            compression (int): the ZIP compression method to use when
+                writing the archive. Possible values are the ones supported
+                by Python's `zipfile` module.
 
         Raises:
             FrictionlessException: on any error
