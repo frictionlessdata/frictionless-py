@@ -1,4 +1,5 @@
 from frictionless import Detector, Resource
+import pytest
 
 # General
 
@@ -79,7 +80,8 @@ def test_schema_from_sparse_sample():
     }
 
 
-def test_schema_from_synthetic_sparse_sample():
+@pytest.mark.parametrize("confidence", [0.6, 0.7, 0.8])
+def test_schema_from_synthetic_sparse_sample(confidence):
 
     # For each type (integer, number, string) there are example of
     # the type ("is") and examples of other type ("not")
@@ -113,19 +115,18 @@ def test_schema_from_synthetic_sparse_sample():
         return rows
 
     sample = generate_rows(columns=columns)
-    for conf in [0.6, 0.7, 0.8]:
-        detector = Detector(field_confidence=conf)
-        labels = [f"field{i}" for i in range(1, 4)]
-        schema = detector.detect_schema(sample, labels=labels)
-        assert schema == {
-            "fields": [
-                {
-                    "name": f"field{i + 1}",
-                    "type": columns[i]["type"] if columns[i]["conf"] >= conf else "any",
-                }
-                for i in range(len(columns))
-            ],
-        }
+    detector = Detector(field_confidence=confidence)
+    labels = [f"field{i}" for i in range(1, 4)]
+    schema = detector.detect_schema(sample, labels=labels)
+    assert schema == {
+        "fields": [
+            {
+                "name": f"field{i + 1}",
+                "type": columns[i]["type"] if columns[i]["conf"] >= confidence else "any",
+            }
+            for i in range(len(columns))
+        ],
+    }
 
 
 def test_schema_infer_no_names():
