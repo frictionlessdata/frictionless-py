@@ -1,5 +1,6 @@
 import json
 import yaml
+import re
 from typer.testing import CliRunner
 from frictionless import Metadata, Detector, program, validate
 
@@ -223,7 +224,9 @@ def test_program_validate_zipped_resources_979():
     assert result.stdout.count("valid: ogd10_catalogs.zip => finanzquellen.csv")
     assert result.stdout.count("invalid: ogd10_catalogs.zip => capital-invalid.csv")
     assert result.stdout.count("Schema is not valid")
-    assert result.stdout.strip() == expected.strip()
+    # remove timetaken floating point number which varies
+    output = re.sub(r"(\d+)\.(.*)\d", "", result.stdout)
+    assert output.strip() == expected.strip()
 
 
 def test_program_validate_long_error_messages_976():
@@ -231,8 +234,25 @@ def test_program_validate_long_error_messages_976():
     output_file_path = "data/fixtures/cli/long-error-messages-976.txt"
     with open(output_file_path, encoding="utf-8") as file:
         expected = file.read()
+    output = re.sub(r"(\d+)\.(.*)\d", "", result.stdout)
     assert result.exit_code == 1
-    assert result.stdout.strip() == expected.strip()
+    assert output.strip() == expected.strip()
+
+
+def test_program_validate_partial_validation_info_933():
+    result = runner.invoke(program, "validate data/countries.csv --limit-errors 2")
+    assert result.exit_code == 1
+    assert result.stdout.count("(Partial)") == 2
+    assert result.stdout.count("Rows Checked(Partial)**")
+
+
+def test_program_validate_summary_1094():
+    result = runner.invoke(program, "validate data/datapackage.json --type resource")
+    assert result.exit_code == 1
+    assert result.stdout.count("Summary")
+    assert result.stdout.count("File name")
+    assert result.stdout.count("File size")
+    assert result.stdout.count("Total Time Taken (sec)")
 
 
 # Helpers

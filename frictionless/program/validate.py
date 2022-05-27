@@ -1,5 +1,4 @@
 import sys
-import petl
 import typer
 import textwrap
 from typing import List
@@ -105,6 +104,9 @@ def program_validate(
     field_missing_values = helpers.parse_csv_string(field_missing_values)
     pick_errors = helpers.parse_csv_string(pick_errors)
     skip_errors = helpers.parse_csv_string(skip_errors)
+
+    # Summary
+    timer = helpers.Timer()
 
     # TODO: rework after Dialect class is reworked
     # Prepare dialect
@@ -226,11 +228,7 @@ def program_validate(
         for error in report.errors:
             content.append([error.code, error.message])
         typer.secho(
-            str(
-                petl.util.vis.lookall(
-                    [["code", "message"]] + content, vrepr=str, style="simple"
-                )
-            )
+            str(tabulate(content, headers=["code", "message"], tablefmt="simple"))
         )
 
     # Return tables
@@ -250,6 +248,7 @@ def program_validate(
         typer.secho(f"# {'-'*len(prefix)}", bold=True)
         typer.secho(f"# {prefix}: {source} {suffix}", bold=True)
         typer.secho(f"# {'-'*len(prefix)}", bold=True)
+        error_list = {}
         if task.errors:
             prev_invalid = True
             typer.secho("")
@@ -263,7 +262,38 @@ def program_validate(
                         error.message,
                     ]
                 )
+                # error list for summary
+                error_title = f"{error.name} ({error.code})"
+                if error_title not in error_list:
+                    error_list[error_title] = 0
+                error_list[error_title] += 1
+                if task.partial:
+                    last_row_checked = error.get("rowPosition", "")
             content = _wrap_text_to_colwidths(content)
+        # summary
+        rows_checked = last_row_checked if task.partial else None
+        summary_content = helpers.validation_summary(
+            source,
+            basepath=task.resource.basepath,
+            timer=timer,
+            rows_checked=rows_checked,
+            error_list=error_list,
+        )
+        typer.echo("\n# Summary \n")
+        if task.partial:
+            typer.echo("(Partial)")
+        typer.secho(
+            str(
+                tabulate(
+                    summary_content,
+                    headers=["Description", "Size/Name/Count"],
+                    tablefmt="simple",
+                )
+            )
+        )
+        # errors
+        if task.errors:
+            typer.echo("\n# Errors \n")
             typer.secho(
                 str(
                     tabulate(
