@@ -1,4 +1,5 @@
 from frictionless import Detector, Resource
+import pytest
 
 # General
 
@@ -75,6 +76,55 @@ def test_schema_from_sparse_sample():
             {"name": "id", "type": "integer"},
             {"name": "age", "type": "integer"},
             {"name": "name", "type": "string"},
+        ],
+    }
+
+
+@pytest.mark.parametrize("confidence", [0.6, 0.7, 0.8])
+def test_schema_from_synthetic_sparse_sample(confidence):
+
+    # For each type (integer, number, string) there are example of
+    # the type ("is") and examples of other type ("not")
+    type_sample = {
+        "integer": {"is": 1, "not": "string"},
+        "number": {"is": 3.14, "not": "string"},
+        "string": {"is": "string", "not": 1},
+    }
+
+    # Columns with type and confidence
+    columns = [
+        {"type": "integer", "conf": 0.7},
+        {"type": "number", "conf": 1},
+        {"type": "string", "conf": 1},
+    ]
+
+    def generate_rows(num_rows=100, columns=[]):
+        rows = []
+        num_per_type = [num_rows * c["conf"] for c in columns]
+
+        for i in range(num_rows):
+            row = []
+            for ci, col in enumerate(columns):
+                if i < num_per_type[ci]:
+                    row.append(type_sample[col["type"]]["is"])
+                else:
+                    row.append(type_sample[col["type"]]["not"])
+
+            rows.append(row)
+
+        return rows
+
+    sample = generate_rows(columns=columns)
+    detector = Detector(field_confidence=confidence)
+    labels = [f"field{i}" for i in range(1, 4)]
+    schema = detector.detect_schema(sample, labels=labels)
+    assert schema == {
+        "fields": [
+            {
+                "name": f"field{i + 1}",
+                "type": columns[i]["type"] if columns[i]["conf"] >= confidence else "any",
+            }
+            for i in range(len(columns))
         ],
     }
 
