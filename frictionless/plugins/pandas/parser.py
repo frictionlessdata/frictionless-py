@@ -147,7 +147,7 @@ class PandasParser(Parser):
                 index_class = pd.Index
                 index_field = source.schema.get_field(source.schema.primary_key[0])
                 index_dtype = self.__write_convert_type(index_field.type)
-                if field.type in ["datetime", "date"]:
+                if index_field.type in ["datetime", "date"]:
                     index_class = pd.DatetimeIndex
                 index = index_class(index_rows, name=index_field.name, dtype=index_dtype)
             elif len(source.schema.primary_key) > 1:
