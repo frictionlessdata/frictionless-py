@@ -141,6 +141,8 @@ class PandasParser(Parser):
                 data_rows.append(tuple(data_values))
 
         # Create index
+        pd = helpers.import_from_plugin("pandas", plugin="pandas")
+
         index = None
         if source.schema.primary_key:
             if len(source.schema.primary_key) == 1:
@@ -149,7 +151,9 @@ class PandasParser(Parser):
                 index_dtype = self.__write_convert_type(index_field.type)
                 if index_field.type in ["datetime", "date"]:
                     index_class = pd.DatetimeIndex
+                    index_rows = pd.to_datetime(index_rows, utc=True)
                 index = index_class(index_rows, name=index_field.name, dtype=index_dtype)
+
             elif len(source.schema.primary_key) > 1:
                 index = pd.MultiIndex.from_tuples(
                     index_rows, names=source.schema.primary_key
@@ -167,12 +171,13 @@ class PandasParser(Parser):
 
     def __write_convert_type(self, type=None):
         np = helpers.import_from_plugin("numpy", plugin="pandas")
+        pd = helpers.import_from_plugin("pandas", plugin="pandas")
 
         # Mapping
         mapping = {
             "array": np.dtype(list),
             "boolean": np.dtype(bool),
-            "datetime": np.dtype("datetime64[ns]"),
+            "datetime": pd.DatetimeTZDtype(tz="UTC"),
             "integer": np.dtype(int),
             "number": np.dtype(float),
             "object": np.dtype(dict),
