@@ -85,6 +85,8 @@ def transform_package(source=None, *, steps, deprecate=True, **options):
         try:
             step.transform_package(package)
         except Exception as exception:
+            if os.environ.get("DEBUG", 0) == "1":
+                raise
             error = errors.StepError(note=f'"{get_name(step)}" raises "{exception}"')
             raise FrictionlessException(error) from exception
 
@@ -163,6 +165,8 @@ def transform_resource(source=None, *, steps, deprecate=True, **options):
         try:
             step.transform_resource(resource)
         except Exception as exception:
+            if os.environ.get("DEBUG", 0) == "1":
+                raise
             error = errors.StepError(note=f'"{get_name(step)}" raises "{exception}"')
             raise FrictionlessException(error) from exception
 
@@ -201,8 +205,13 @@ class DataWithErrorHandling:
         try:
             yield from self.data() if callable(self.data) else self.data
         except Exception as exception:
+            if os.environ.get("DEBUG", 0) == "1":
+                raise
             if isinstance(exception, FrictionlessException):
                 if exception.error.code == "step-error":
                     raise
             error = errors.StepError(note=f'"{get_name(self.step)}" raises "{exception}"')
             raise FrictionlessException(error) from exception
+
+
+import os

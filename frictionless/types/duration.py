@@ -28,6 +28,8 @@ class DurationType(Type):
             try:
                 cell = isodate.parse_duration(cell)
             except Exception:
+                if os.environ.get("DEBUG", 0) == "1":
+                    raise
                 return None
         return cell
 
@@ -35,3 +37,6 @@ class DurationType(Type):
 
     def write_cell(self, cell):
         return isodate.duration_isoformat(cell)
+
+
+import os

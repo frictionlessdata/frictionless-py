@@ -665,6 +665,8 @@ class Package(Metadata):
                 )
 
         except Exception as exception:
+            if os.environ.get("DEBUG", 0) == "1":
+                raise
             error = errors.PackageError(note=str(exception))
             raise FrictionlessException(error) from exception
 

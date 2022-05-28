@@ -197,6 +197,8 @@ def program_validate(
     try:
         report = validate(source, **options)
     except Exception as exception:
+        if os.environ.get("DEBUG", 0) == "1":
+            raise
         typer.secho(str(exception), err=True, fg=typer.colors.RED, bold=True)
         raise typer.Exit(1)
 
@@ -273,3 +275,6 @@ def program_validate(
 
     # Return retcode
     raise typer.Exit(code=int(not report.valid))
+
+
+import os

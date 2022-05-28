@@ -35,6 +35,8 @@ class CsvParser(Parser):
         try:
             dialect = csv.Sniffer().sniff("".join(sample), delimiter)
         except csv.Error:
+            if os.environ.get("DEBUG", 0) == "1":
+                raise
             dialect = csv.excel()
         for name in INFER_DIALECT_NAMES:
             value = getattr(dialect, name.lower())
@@ -91,6 +93,8 @@ def extract_samle(text_stream):
         try:
             sample.append(next(text_stream))
         except StopIteration:
+            if os.environ.get("DEBUG", 0) == "1":
+                raise
             break
         if len(sample) >= INFER_DIALECT_VOLUME:
             break
@@ -101,3 +105,4 @@ def extract_samle(text_stream):
 
 # https://stackoverflow.com/a/54515177
 csv.field_size_limit(settings.FIELD_SIZE_LIMIT)
+import os

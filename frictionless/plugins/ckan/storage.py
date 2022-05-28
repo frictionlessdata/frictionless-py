@@ -74,6 +74,8 @@ class CkanStorage(Storage):
                 resource = self.read_resource(name)
             # We skip not tabular resources
             except FrictionlessException as exception:
+                if os.environ.get("DEBUG", 0) == "1":
+                    raise
                 if not exception.error.note.count("Not Found Error"):
                     raise
             package.resources.append(resource)
@@ -323,6 +325,8 @@ def get_ckan_error(response):
         if not response["success"] and response["error"]:
             ckan_error = response["error"]
     except TypeError:
+        if os.environ.get("DEBUG", 0) == "1":
+            raise
         ckan_error = response
 
     return ckan_error

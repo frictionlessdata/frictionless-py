@@ -131,6 +131,8 @@ class Metadata(helpers.ControlledDict):
             try:
                 helpers.write_file(path, text)
             except Exception as exc:
+                if os.environ.get("DEBUG", 0) == "1":
+                    raise
                 raise FrictionlessException(self.__Error(note=str(exc))) from exc
         return text
 
@@ -153,6 +155,8 @@ class Metadata(helpers.ControlledDict):
             try:
                 helpers.write_file(path, text)
             except Exception as exc:
+                if os.environ.get("DEBUG", 0) == "1":
+                    raise
                 raise FrictionlessException(self.__Error(note=str(exc))) from exc
         return text
 
@@ -177,6 +181,8 @@ class Metadata(helpers.ControlledDict):
             try:
                 helpers.write_file(path, md_output)
             except Exception as exc:
+                if os.environ.get("DEBUG", 0) == "1":
+                    raise
                 raise FrictionlessException(self.__Error(note=str(exc))) from exc
         return md_output
 
@@ -231,6 +237,8 @@ class Metadata(helpers.ControlledDict):
                 try:
                     return metadata_to_dict(descriptor)
                 except Exception:
+                    if os.environ.get("DEBUG", 0) == "1":
+                        raise
                     note = "descriptor is not serializable"
                     errors = import_module("frictionless.errors")
                     raise FrictionlessException(errors.GeneralError(note=note))
@@ -254,6 +262,8 @@ class Metadata(helpers.ControlledDict):
                 return metadata
             raise TypeError("descriptor type is not supported")
         except Exception as exception:
+            if os.environ.get("DEBUG", 0) == "1":
+                raise
             note = f'cannot extract metadata "{descriptor}" because "{exception}"'
             raise FrictionlessException(self.__Error(note=note)) from exception
 
@@ -334,3 +344,6 @@ def metadata_attach(self, name, value):
 class IndentDumper(yaml.SafeDumper):
     def increase_indent(self, flow=False, indentless=False):
         return super().increase_indent(flow, False)
+
+
+import os

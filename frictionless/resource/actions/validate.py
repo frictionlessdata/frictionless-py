@@ -53,6 +53,8 @@ def validate(
         stats = {key: val for key, val in resource.stats.items() if val}
         original_resource = resource.to_copy()
     except FrictionlessException as exception:
+        if os.environ.get("DEBUG", 0) == "1":
+            raise
         resource = None
         errors.append(exception.error)
 
@@ -61,6 +63,8 @@ def validate(
         try:
             resource.open()
         except FrictionlessException as exception:
+            if os.environ.get("DEBUG", 0) == "1":
+                raise
             errors.append(exception.error)
             resource.close()
 
@@ -200,3 +204,6 @@ class ManagedErrors(list):
             if Error.code in self.__scope:
                 continue
             self.__scope.append(Error.code)
+
+
+import os

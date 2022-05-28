@@ -119,6 +119,8 @@ def validate_package(
         for resource in package.resources:
             package_stats.append({key: val for key, val in resource.stats.items() if val})
     except FrictionlessException as exception:
+        if os.environ.get("DEBUG", 0) == "1":
+            raise
         return Report(time=timer.time, errors=[exception.error], tasks=[])
 
     # Validate metadata
@@ -219,6 +221,8 @@ def validate_resource(
         stats = {key: val for key, val in resource.stats.items() if val}
         original_resource = resource.to_copy()
     except FrictionlessException as exception:
+        if os.environ.get("DEBUG", 0) == "1":
+            raise
         errors.append(exception.error)
 
     # Open resource
@@ -226,6 +230,8 @@ def validate_resource(
         try:
             resource.open()
         except FrictionlessException as exception:
+            if os.environ.get("DEBUG", 0) == "1":
+                raise
             errors.append(exception.error)
             resource.close()
 
@@ -340,6 +346,8 @@ def validate_schema(source=None, deprecate=True, **options):
         native = isinstance(source, Schema)
         schema = source.to_copy() if native else Schema(source, **options)
     except FrictionlessException as exception:
+        if os.environ.get("DEBUG", 0) == "1":
+            raise
         return Report(time=timer.time, errors=[exception.error], tasks=[])
 
     # Return report
@@ -398,3 +406,6 @@ class ManagedErrors(list):
             if Error.code in self.__scope:
                 continue
             self.__scope.append(Error.code)
+
+
+import os

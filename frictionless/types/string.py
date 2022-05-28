@@ -35,6 +35,8 @@ class StringType(Type):
             try:
                 uri_validator.validate(uri)
             except rfc3986.exceptions.ValidationError:
+                if os.environ.get("DEBUG", 0) == "1":
+                    raise
                 return None
         elif self.field.format == "email":
             if not validators.email(cell):
@@ -46,6 +48,8 @@ class StringType(Type):
             try:
                 base64.b64decode(cell)
             except Exception:
+                if os.environ.get("DEBUG", 0) == "1":
+                    raise
                 return None
         return cell
 
@@ -58,3 +62,4 @@ class StringType(Type):
 # Internal
 
 uri_validator = rfc3986.validators.Validator().require_presence_of("scheme")
+import os

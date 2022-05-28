@@ -84,6 +84,8 @@ def import_from_plugin(name, *, plugin):
     try:
         return import_module(name)
     except ImportError:
+        if os.environ.get("DEBUG", 0) == "1":
+            raise
         module = import_module("frictionless.exception")
         errors = import_module("frictionless.errors")
         error = errors.GeneralError(note=f'Please install "frictionless[{plugin}]"')
@@ -276,6 +278,8 @@ def parse_csv_string(string, *, convert=str, fallback=False):
             try:
                 cell = convert(cell)
             except ValueError:
+                if os.environ.get("DEBUG", 0) == "1":
+                    raise
                 if not fallback:
                     raise
                 pass
@@ -323,6 +327,8 @@ def md_to_html(md):
         html = html.replace("\n", "")
         return html
     except Exception:
+        if os.environ.get("DEBUG", 0) == "1":
+            raise
         return ""
 
 
@@ -366,6 +372,8 @@ def get_current_memory_usage():
                 if key == "rss":
                     return int(parts[1]) / 1000
     except Exception:
+        if os.environ.get("DEBUG", 0) == "1":
+            raise
         pass
 
 
@@ -513,6 +521,8 @@ class cached_property:
         try:
             cache = instance.__dict__
         except AttributeError:  # not all objects have __dict__ (e.g. class defines slots)
+            if os.environ.get("DEBUG", 0) == "1":
+                raise
             msg = (
                 f"No '__dict__' attribute on {type(instance).__name__!r} "
                 f"instance to cache {self.attrname!r} property."
@@ -528,6 +538,8 @@ class cached_property:
                     try:
                         cache[self.attrname] = val
                     except TypeError:
+                        if os.environ.get("DEBUG", 0) == "1":
+                            raise
                         msg = (
                             f"The '__dict__' attribute on {type(instance).__name__!r} instance "
                             f"does not support item assignment for caching {self.attrname!r} property."
@@ -626,6 +638,8 @@ def dicts_to_markdown_table(dicts: List[dict], **kwargs) -> str:
         pandas = import_module("pandas")
         df = pandas.DataFrame(dicts)
     except ImportError:
+        if os.environ.get("DEBUG", 0) == "1":
+            raise
         module = import_module("frictionless.exception")
         errors = import_module("frictionless.errors")
         error = errors.GeneralError(note="Please install `pandas` package")

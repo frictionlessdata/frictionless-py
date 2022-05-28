@@ -24,6 +24,8 @@ class StreamLoader(Loader):
             try:
                 byte_stream = open(byte_stream.name, "rb")
             except Exception:
+                if os.environ.get("DEBUG", 0) == "1":
+                    raise
                 note = f"cannot open a stream in the byte mode: {byte_stream}"
                 raise FrictionlessException(errors.SchemeError(note=note))
         byte_stream = ReusableByteStream(byte_stream)
@@ -50,6 +52,8 @@ class ReusableByteStream:
             try:
                 self.__byte_stream = open(self.__byte_stream.name, "rb")
             except Exception:
+                if os.environ.get("DEBUG", 0) == "1":
+                    raise
                 note = "cannot re-open a byte stream: {self.__byte_stream}"
                 raise FrictionlessException(errors.SchemeError(note=note))
         return self.__byte_stream.read(size)

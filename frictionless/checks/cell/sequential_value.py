@@ -44,6 +44,8 @@ class sequential_value(Check):
                 assert self.__cursor == cell
                 self.__cursor += 1
             except Exception:
+                if os.environ.get("DEBUG", 0) == "1":
+                    raise
                 self.__exited = True
                 yield errors.SequentialValueError.from_row(
                     row,
@@ -58,3 +60,6 @@ class sequential_value(Check):
         "requred": ["fieldName"],
         "properties": {"fieldName": {"type": "string"}},
     }
+
+
+import os

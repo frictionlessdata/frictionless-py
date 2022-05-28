@@ -31,6 +31,8 @@ class IntegerType(Type):
             try:
                 return int(cell)
             except Exception:
+                if os.environ.get("DEBUG", 0) == "1":
+                    raise
                 return None
         elif cell is True or cell is False:
             return None
@@ -51,3 +53,6 @@ class IntegerType(Type):
 
     def write_cell(self, cell):
         return str(cell)
+
+
+import os

@@ -42,6 +42,8 @@ class GeopointType(Type):
                     lat = cell["lat"]
                 cell = geopoint(Decimal(lon), Decimal(lat))
             except Exception:
+                if os.environ.get("DEBUG", 0) == "1":
+                    raise
                 return None
 
         # Validate
@@ -52,6 +54,8 @@ class GeopointType(Type):
             if cell.lat > 90 or cell.lat < -90:
                 return None
         except Exception:
+            if os.environ.get("DEBUG", 0) == "1":
+                raise
             return None
 
         return cell
@@ -70,3 +74,4 @@ class GeopointType(Type):
 
 geopoint = namedtuple("geopoint", ["lon", "lat"])
 geopoint.__repr__ = lambda self: str([float(self[0]), float(self[1])])  # type: ignore
+import os

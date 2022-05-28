@@ -78,6 +78,8 @@ class BigqueryStorage(Storage):
                 .execute()
             )
         except google_errors.HttpError:
+            if os.environ.get("DEBUG", 0) == "1":
+                raise
             note = f'Resource "{name}" does not exist'
             raise FrictionlessException(errors.StorageError(note=note))
 
@@ -292,6 +294,8 @@ class BigqueryStorage(Storage):
         try:
             self.__write_convert_data_finish_job(response)
         except Exception as exception:
+            if os.environ.get("DEBUG", 0) == "1":
+                raise
             if "not found: job" in str(exception).lower():
                 note = "BigQuery plugin supports only the US location of datasets"
                 raise FrictionlessException(errors.StorageError(note=note))
@@ -384,3 +388,6 @@ def _uncast_value(value, field):
     else:
         value = str(value)
     return value
+
+
+import os

@@ -70,6 +70,8 @@ class deviated_value(Check):
             minimum = average - stdev * self.__interval
             maximum = average + stdev * self.__interval
         except Exception as exception:
+            if os.environ.get("DEBUG", 0) == "1":
+                raise
             note = 'calculation issue "%s"' % exception
             yield errors.DeviatedValueError(note=note)
 
@@ -102,3 +104,4 @@ AVERAGE_FUNCTIONS = {
     "median": statistics.median,
     "mode": statistics.mode,
 }
+import os

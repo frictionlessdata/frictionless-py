@@ -27,6 +27,8 @@ class GeojsonType(Type):
             try:
                 cell = json.loads(cell)
             except Exception:
+                if os.environ.get("DEBUG", 0) == "1":
+                    raise
                 return None
         if not isinstance(cell, dict):
             return None
@@ -34,6 +36,8 @@ class GeojsonType(Type):
             try:
                 validators[self.field.format].validate(cell)
             except Exception:
+                if os.environ.get("DEBUG", 0) == "1":
+                    raise
                 return None
         return cell
 
@@ -50,3 +54,4 @@ validators = {
     "default": validator_for(settings.GEOJSON_PROFILE)(settings.GEOJSON_PROFILE),
     "topojson": validator_for(settings.TOPOJSON_PROFILE)(settings.TOPOJSON_PROFILE),
 }
+import os

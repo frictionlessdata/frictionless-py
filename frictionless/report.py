@@ -156,6 +156,8 @@ class Report(Metadata):
             try:
                 return validate(*args, **kwargs)
             except Exception as exception:
+                if os.environ.get("DEBUG", 0) == "1":
+                    raise
                 error = TaskError(note=str(exception))
                 if isinstance(exception, FrictionlessException):
                     error = exception.error
@@ -341,3 +343,6 @@ class ReportTask(Metadata):
         if not isinstance(resource, Resource):
             resource = Resource(resource)
             dict.__setitem__(self, "resource", resource)
+
+
+import os

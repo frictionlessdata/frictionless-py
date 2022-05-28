@@ -29,6 +29,8 @@ class ObjectType(Type):
             try:
                 cell = json.loads(cell)
             except Exception:
+                if os.environ.get("DEBUG", 0) == "1":
+                    raise
                 return None
             if not isinstance(cell, dict):
                 return None
@@ -38,3 +40,6 @@ class ObjectType(Type):
 
     def write_cell(self, cell):
         return json.dumps(cell)
+
+
+import os

@@ -45,6 +45,8 @@ def transform(resource: "Resource", *, steps):
         try:
             step.transform_resource(resource)
         except Exception as exception:
+            if os.environ.get("DEBUG", 0) == "1":
+                raise
             error = errors.StepError(note=f'"{get_name(step)}" raises "{exception}"')
             raise FrictionlessException(error) from exception
 
@@ -83,8 +85,13 @@ class DataWithErrorHandling:
         try:
             yield from self.data() if callable(self.data) else self.data
         except Exception as exception:
+            if os.environ.get("DEBUG", 0) == "1":
+                raise
             if isinstance(exception, FrictionlessException):
                 if exception.error.code == "step-error":
                     raise
             error = errors.StepError(note=f'"{get_name(self.step)}" raises "{exception}"')
             raise FrictionlessException(error) from exception
+
+
+import os

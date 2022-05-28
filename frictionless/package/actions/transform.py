@@ -46,7 +46,12 @@ def transform(package: "Package", *, steps):
         try:
             step.transform_package(package)
         except Exception as exception:
+            if os.environ.get("DEBUG", 0) == "1":
+                raise
             error = errors.StepError(note=f'"{get_name(step)}" raises "{exception}"')
             raise FrictionlessException(error) from exception
 
     return package
+
+
+import os

@@ -39,6 +39,8 @@ class TimeType(Type):
                 else:
                     cell = datetime.strptime(cell, self.field.format).timetz()
             except Exception:
+                if os.environ.get("DEBUG", 0) == "1":
+                    raise
                 return None
         return cell
 
@@ -49,3 +51,6 @@ class TimeType(Type):
         cell = cell.strftime(format)
         cell = cell.replace("+0000", "Z")
         return cell
+
+
+import os

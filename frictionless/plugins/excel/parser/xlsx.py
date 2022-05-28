@@ -84,6 +84,8 @@ class XlsxParser(Parser):
                 data_only=True,
             )
         except Exception as exception:
+            if os.environ.get("DEBUG", 0) == "1":
+                raise
             error = errors.FormatError(note=f'invalid excel file "{self.resource.path}"')
             raise FrictionlessException(error) from exception
 
@@ -94,6 +96,8 @@ class XlsxParser(Parser):
             else:
                 sheet = book.worksheets[dialect.sheet - 1]
         except (KeyError, IndexError):
+            if os.environ.get("DEBUG", 0) == "1":
+                raise
             note = 'Excel document "%s" does not have a sheet "%s"'
             error = errors.FormatError(
                 note=note % (self.resource.fullpath, dialect.sheet)
@@ -135,6 +139,8 @@ class XlsxParser(Parser):
                             hasher.update(chunk)
                         self.resource.stats["hash"] = hasher.hexdigest()
                 except Exception as exception:
+                    if os.environ.get("DEBUG", 0) == "1":
+                        raise
                     error = errors.HashingError(note=str(exception))
                     raise FrictionlessException(error)
 

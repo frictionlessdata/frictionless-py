@@ -76,6 +76,8 @@ class Parser:
             self.__list_stream = self.read_list_stream()
             return self
         except Exception:
+            if os.environ.get("DEBUG", 0) == "1":
+                raise
             self.close()
             raise
 
@@ -173,15 +175,28 @@ class ListStreamWithErrorHandling:
         try:
             return self.list_stream.__next__()
         except StopIteration:
+            if os.environ.get("DEBUG", 0) == "1":
+                raise
             raise
         except FrictionlessException:
+            if os.environ.get("DEBUG", 0) == "1":
+                raise
             raise
         except settings.COMPRESSION_EXCEPTIONS as exception:
+            if os.environ.get("DEBUG", 0) == "1":
+                raise
             error = errors.CompressionError(note=str(exception))
             raise FrictionlessException(error)
         except UnicodeDecodeError as exception:
+            if os.environ.get("DEBUG", 0) == "1":
+                raise
             error = errors.EncodingError(note=str(exception))
             raise FrictionlessException(error) from exception
         except Exception as exception:
+            if os.environ.get("DEBUG", 0) == "1":
+                raise
             error = errors.SourceError(note=str(exception))
             raise FrictionlessException(error) from exception
+
+
+import os

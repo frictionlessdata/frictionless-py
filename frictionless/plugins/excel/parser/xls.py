@@ -44,6 +44,8 @@ class XlsParser(Parser):
                 logfile=sys.stderr,
             )
         except NotImplementedError:
+            if os.environ.get("DEBUG", 0) == "1":
+                raise
             book = xlrd.open_workbook(
                 file_contents=bytes,
                 encoding_override=self.resource.encoding,
@@ -58,6 +60,8 @@ class XlsParser(Parser):
             else:
                 sheet = book.sheet_by_index(dialect.sheet - 1)
         except (xlrd.XLRDError, IndexError):
+            if os.environ.get("DEBUG", 0) == "1":
+                raise
             note = 'Excel document "%s" does not have a sheet "%s"'
             error = errors.FormatError(
                 note=note % (self.resource.fullpath, dialect.sheet)
@@ -121,3 +125,6 @@ class XlsParser(Parser):
         book.save(file.name)
         loader = system.create_loader(target)
         loader.write_byte_stream(file.name)
+
+
+import os

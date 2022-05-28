@@ -36,6 +36,8 @@ class YearmonthType(Type):
                     return None
                 cell = yearmonth(year, month)
             except Exception:
+                if os.environ.get("DEBUG", 0) == "1":
+                    raise
                 return None
         else:
             return None
@@ -50,3 +52,4 @@ class YearmonthType(Type):
 # Internal
 
 yearmonth = namedtuple("yearmonth", ["year", "month"])
+import os

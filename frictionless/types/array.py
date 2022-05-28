@@ -28,6 +28,8 @@ class ArrayType(Type):
                 try:
                     cell = json.loads(cell)
                 except Exception:
+                    if os.environ.get("DEBUG", 0) == "1":
+                        raise
                     return None
                 if not isinstance(cell, list):
                     return None
@@ -41,3 +43,6 @@ class ArrayType(Type):
 
     def write_cell(self, cell):
         return json.dumps(cell)
+
+
+import os

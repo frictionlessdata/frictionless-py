@@ -143,6 +143,8 @@ class PipelineTask(Metadata):
             transform = import_module("frictionless").transform
             target = transform(self.source, type=self.type, steps=self.steps)
         except Exception as exception:
+            if os.environ.get("DEBUG", 0) == "1":
+                raise
             errors.append(TaskError(note=str(exception)))
         task = StatusTask(time=timer.time, errors=errors, target=target, type=self.type)
         return Status(tasks=[task], time=timer.time, errors=[])
@@ -174,3 +176,6 @@ def run_task_in_parallel(task_descriptor):
     status = task.run()
     status_descriptor = status.to_dict()
     return status_descriptor
+
+
+import os

@@ -144,6 +144,8 @@ def program_describe(
     try:
         metadata = describe(source, **options)
     except Exception as exception:
+        if os.environ.get("DEBUG", 0) == "1":
+            raise
         typer.secho(str(exception), err=True, fg=typer.colors.RED, bold=True)
         raise typer.Exit(1)
 
@@ -171,3 +173,6 @@ def program_describe(
     typer.secho("")
     typer.secho(metadata.to_yaml().strip())
     typer.secho("")
+
+
+import os

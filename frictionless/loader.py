@@ -95,6 +95,8 @@ class Loader:
             self.__byte_stream = self.read_byte_stream()
             return self
         except Exception:
+            if os.environ.get("DEBUG", 0) == "1":
+                raise
             self.close()
             raise
 
@@ -129,12 +131,18 @@ class Loader:
             self.read_byte_stream_analyze(buffer)
             self.__buffer = buffer
         except (LookupError, UnicodeDecodeError) as exception:
+            if os.environ.get("DEBUG", 0) == "1":
+                raise
             error = errors.EncodingError(note=str(exception))
             raise FrictionlessException(error) from exception
         except settings.COMPRESSION_EXCEPTIONS as exception:
+            if os.environ.get("DEBUG", 0) == "1":
+                raise
             error = errors.CompressionError(note=str(exception))
             raise FrictionlessException(error)
         except IOError as exception:
+            if os.environ.get("DEBUG", 0) == "1":
+                raise
             error = errors.SchemeError(note=str(exception))
             raise FrictionlessException(error)
         return byte_stream
@@ -298,6 +306,8 @@ class ByteStreamWithStatsHandling:
         try:
             self.__hasher = hashlib.new(resource.hashing) if resource.hashing else None
         except Exception as exception:
+            if os.environ.get("DEBUG", 0) == "1":
+                raise
             error = errors.HashingError(note=str(exception))
             raise FrictionlessException(error)
 

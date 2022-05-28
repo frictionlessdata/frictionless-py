@@ -72,6 +72,8 @@ class Detector:
         schema_patch? (dict): A dictionary to be used as an inferred schema patch.
             The form of this dictionary should follow the Schema descriptor form
             except for the `fields` property which should be a mapping with the
+                if os.environ.get("DEBUG", 0) == "1":
+                    raise
             key named after a field name and the values being a field patch.
             For more information, please check "Extracting Data" guide.
     """

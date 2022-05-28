@@ -45,6 +45,8 @@ class OdsParser(Parser):
             else:
                 sheet = book.sheets[dialect.sheet - 1]
         except (KeyError, IndexError):
+            if os.environ.get("DEBUG", 0) == "1":
+                raise
             note = 'OpenOffice document "%s" does not have a sheet "%s"'
             note = note % (self.resource.fullpath, dialect.sheet)
             raise FrictionlessException(errors.FormatError(note=note))
@@ -97,3 +99,6 @@ class OdsParser(Parser):
             book.save()
         loader = system.create_loader(target)
         loader.write_byte_stream(file.name)
+
+
+import os

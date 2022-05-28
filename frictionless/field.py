@@ -449,6 +449,8 @@ class Field(Metadata):
         try:
             self.__type = system.create_type(self)
         except FrictionlessException:
+            if os.environ.get("DEBUG", 0) == "1":
+                raise
             self.__type = types.AnyType(self)
 
     def metadata_validate(self):
@@ -499,6 +501,8 @@ def check_minimum(constraint, cell):
         if cell >= constraint:
             return True
     except decimal.InvalidOperation:
+        if os.environ.get("DEBUG", 0) == "1":
+            raise
         # For non-finite numbers NaN, INF and -INF
         # the constraint always is not satisfied
         return False
@@ -512,6 +516,8 @@ def check_maximum(constraint, cell):
         if cell <= constraint:
             return True
     except decimal.InvalidOperation:
+        if os.environ.get("DEBUG", 0) == "1":
+            raise
         # For non-finite numbers NaN, INF and -INF
         # the constraint always is not satisfied
         return False
@@ -536,3 +542,4 @@ def check_enum(constraint, cell):
 
 
 COMPILED_RE = type(re.compile(""))
+import os

@@ -30,6 +30,8 @@ class YearType(Type):
             try:
                 cell = int(cell)
             except Exception:
+                if os.environ.get("DEBUG", 0) == "1":
+                    raise
                 return None
         if cell < 0 or cell > 9999:
             return None
@@ -39,3 +41,6 @@ class YearType(Type):
 
     def write_cell(self, cell):
         return str(cell)
+
+
+import os

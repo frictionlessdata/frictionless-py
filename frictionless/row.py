@@ -67,6 +67,8 @@ class Row(dict):
         try:
             field, field_number, field_position = self.__field_info["mapping"][key]
         except KeyError:
+            if os.environ.get("DEBUG", 0) == "1":
+                raise
             raise KeyError(f"Row does not have a field {key}")
         if len(self.__cells) < field_number:
             self.__cells.extend([None] * (field_number - len(self.__cells)))
@@ -286,6 +288,8 @@ class Row(dict):
             try:
                 field, field_number, field_position = self.__field_info["mapping"][key]
             except KeyError:
+                if os.environ.get("DEBUG", 0) == "1":
+                    raise
                 raise KeyError(f"Row does not have a field {key}")
             cell = cells[field_number - 1] if len(cells) >= field_number else None
             iterator = zip([(field, field_number, field_position)], [cell])
@@ -399,3 +403,6 @@ class Row(dict):
 
         # Set processed
         self.__processed = True
+
+
+import os

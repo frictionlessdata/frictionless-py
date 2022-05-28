@@ -42,6 +42,8 @@ class JsonParser(Parser):
             try:
                 yield next(parser.list_stream)
             except StopIteration:
+                if os.environ.get("DEBUG", 0) == "1":
+                    raise
                 note = f'cannot extract JSON tabular data from "{self.resource.fullpath}"'
                 raise FrictionlessException(errors.SourceError(note=note))
             if parser.resource.dialect.keyed:
@@ -66,3 +68,6 @@ class JsonParser(Parser):
             json.dump(data, file, indent=2)
         loader = system.create_loader(target)
         loader.write_byte_stream(file.name)
+
+
+import os

@@ -36,6 +36,8 @@ def validate(package: "Package", original=False, parallel=False, **options):
         for resource in package.resources:
             package_stats.append({key: val for key, val in resource.stats.items() if val})
     except FrictionlessException as exception:
+        if os.environ.get("DEBUG", 0) == "1":
+            raise
         return Report(time=timer.time, errors=[exception.error], tasks=[])
 
     # Validate metadata
@@ -76,3 +78,6 @@ def validate(package: "Package", original=False, parallel=False, **options):
                 )
             )
         return inquiry.run(parallel=parallel)
+
+
+import os

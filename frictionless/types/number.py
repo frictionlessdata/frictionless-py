@@ -36,6 +36,8 @@ class NumberType(Type):
             try:
                 return Primary(cell)
             except Exception:
+                if os.environ.get("DEBUG", 0) == "1":
+                    raise
                 return None
         elif isinstance(cell, Primary):
             return cell
@@ -79,3 +81,6 @@ class NumberType(Type):
         if "decimalChar" in self.field:
             cell = cell.replace(".", self.field.decimal_char)
         return cell
+
+
+import os

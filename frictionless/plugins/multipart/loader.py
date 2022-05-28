@@ -96,6 +96,8 @@ class MultipartByteStream:
             try:
                 res += next(self.__line_stream)
             except StopIteration:
+                if os.environ.get("DEBUG", 0) == "1":
+                    raise
                 break
             if len(res) > size:
                 break
@@ -108,3 +110,6 @@ class MultipartByteStream:
                     if not self.__headless and number > 1 and line_number == 1:
                         continue
                     yield line
+
+
+import os

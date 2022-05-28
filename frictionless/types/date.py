@@ -47,6 +47,8 @@ class DateType(Type):
             else:
                 cell = datetime.strptime(cell, self.field.format).date()
         except Exception:
+            if os.environ.get("DEBUG", 0) == "1":
+                raise
             return None
 
         return cell
@@ -56,3 +58,6 @@ class DateType(Type):
     def write_cell(self, cell):
         format = self.field.get("format", settings.DEFAULT_DATE_PATTERN)
         return cell.strftime(format)
+
+
+import os

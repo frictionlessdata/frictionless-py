@@ -649,6 +649,8 @@ class Resource(Metadata):
             system.create_parser(self)
             return True
         except Exception:
+            if os.environ.get("DEBUG", 0) == "1":
+                raise
             return False
 
     @property
@@ -796,6 +798,8 @@ class Resource(Metadata):
 
         # Error
         except Exception:
+            if os.environ.get("DEBUG", 0) == "1":
+                raise
             self.close()
             raise
 

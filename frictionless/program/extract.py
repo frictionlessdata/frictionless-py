@@ -171,6 +171,8 @@ def program_extract(
         process = (lambda row: row.to_dict(json=True)) if json or yaml else None
         data = extract(source, process=process, **options)
     except Exception as exception:
+        if os.environ.get("DEBUG", 0) == "1":
+            raise
         typer.secho(str(exception), err=True, fg=typer.colors.RED, bold=True)
         raise typer.Exit(1)
 
@@ -215,3 +217,6 @@ def program_extract(
         typer.secho(str(petl.util.vis.lookall(subdata, vrepr=str, style="simple")))
         if number < len(normdata):
             typer.secho("")
+
+
+import os

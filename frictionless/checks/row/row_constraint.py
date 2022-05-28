@@ -39,6 +39,8 @@ class row_constraint(Check):
             evalclass = simpleeval.EvalWithCompoundTypes
             assert evalclass(names=row).eval(self.__formula)
         except Exception:
+            if os.environ.get("DEBUG", 0) == "1":
+                raise
             yield errors.RowConstraintError.from_row(
                 row,
                 note='the row constraint to conform is "%s"' % self.__formula,
@@ -51,3 +53,6 @@ class row_constraint(Check):
         "requred": ["formula"],
         "properties": {"formula": {"type": "string"}},
     }
+
+
+import os

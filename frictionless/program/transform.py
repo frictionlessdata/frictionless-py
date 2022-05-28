@@ -43,6 +43,8 @@ def program_transform(
                 for error in group:
                     raise FrictionlessException(error)
     except Exception as exception:
+        if os.environ.get("DEBUG", 0) == "1":
+            raise
         typer.secho(str(exception), err=True, fg=typer.colors.RED, bold=True)
         raise typer.Exit(1)
 
@@ -65,3 +67,6 @@ def program_transform(
     typer.secho(f"# {'-'*len(prefix)}", bold=True)
     typer.secho(f"# {prefix}: {source}", bold=True)
     typer.secho(f"# {'-'*len(prefix)}", bold=True)
+
+
+import os

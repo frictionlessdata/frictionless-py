@@ -44,6 +44,8 @@ class InlineParser(Parser):
         try:
             item = next(data)
         except StopIteration:
+            if os.environ.get("DEBUG", 0) == "1":
+                raise
             yield from []
             return
 
@@ -94,3 +96,6 @@ class InlineParser(Parser):
                     data.append(row.field_names)
                 data.append(item)
         target.data = data
+
+
+import os

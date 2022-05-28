@@ -59,6 +59,8 @@ class deviated_cell(Check):
                 average = statistics.median(col_cell_sizes.values())
                 maximum = average + stdev * self.__interval
             except Exception as exception:
+                if os.environ.get("DEBUG", 0) == "1":
+                    raise
                 note = 'calculation issue "%s"' % exception
                 yield errors.DeviatedCellError(note=note)
             # Use threshold or maximum value whichever is higher
@@ -78,3 +80,6 @@ class deviated_cell(Check):
             "interval": {"type": ["number", "null"]},
         },
     }
+
+
+import os
