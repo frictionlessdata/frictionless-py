@@ -1,6 +1,7 @@
 import re
 from functools import partial
 from urllib.parse import urlsplit, urlunsplit
+from datetime import timezone
 from ...exception import FrictionlessException
 from ...resource import Resource
 from ...storage import Storage
@@ -327,7 +328,16 @@ class SqlStorage(Storage):
                     row[field.name], notes = field.write_cell(row[field.name])
                 for field in timezone_fields:
                     if row[field.name] is not None:
-                        row[field.name] = row[field.name].replace(tzinfo=None)
+                        # TODO: Understand why when the timestamp has no timezone offset
+                        # the astimezone returns a wrong result
+                        if (
+                            field.type == "datetime"
+                            and row[field.name].tzinfo is not None
+                        ):
+                            row[field.name] = row[field.name].astimezone(timezone.utc)
+                        else:
+                            # TODO: Convert time to UTC
+                            row[field.name] = row[field.name]
                 buffer.append(row)
                 if len(buffer) > buffer_size:
                     self.__connection.execute(sql_table.insert().values(buffer))
@@ -344,7 +354,7 @@ class SqlStorage(Storage):
             "any": sa.Text,
             "boolean": sa.Boolean,
             "date": sa.Date,
-            "datetime": sa.DateTime,
+            "datetime": sa.DateTime(timezone=True),
             "integer": sa.Integer,
             "number": sa.Float,
             "string": sa.Text,

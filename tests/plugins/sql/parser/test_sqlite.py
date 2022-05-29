@@ -107,8 +107,8 @@ def test_sql_parser_write_timezone(sqlite_url):
         assert target.read_rows() == [
             {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
             {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
-            {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
-            {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
+            {"datetime": datetime.datetime(2020, 1, 1, 12), "time": datetime.time(15)},
+            {"datetime": datetime.datetime(2020, 1, 1, 18), "time": datetime.time(15)},
         ]
 
 
