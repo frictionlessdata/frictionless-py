@@ -2,6 +2,19 @@
 # invalid: test-tabulator 
 # -------
 
+
+# Summary 
+
+Description                      Size/Name/Count
+-------------------------------  -----------------
+File name (Not Found)            test-tabulator
+File size                        N/A
+Total Time Taken (sec)           
+Total Errors                     1
+Resource Error (resource-error)  1
+
+# Errors 
+
 row    field    code       message
 -----  -------  ---------  -------------------------------------------------
                 resource-  The data resource has an error: "{'format':
