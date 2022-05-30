@@ -47,6 +47,8 @@ def validate(source=None, type=None, **options):
     # We might resolve it when we convert Detector to be a metadata
     if type in ["inquiry", "schema"]:
         options.pop("detector", None)
+    if type != "package":
+        options.pop("resource_name", None)
     return validate(source, deprecate=False, **options)
 
 
@@ -103,6 +105,12 @@ def validate_package(
     # Create state
     timer = helpers.Timer()
 
+    # Read resource name for single resource validation
+    resource_name = None
+    if "resource_name" in options:
+        resource_name = options["resource_name"]
+        del options["resource_name"]
+
     # Prepare options
     package_options = {}
     signature = inspect.signature(validate_resource)
@@ -115,6 +123,10 @@ def validate_package(
     try:
         native = isinstance(source, Package)
         package = source.to_copy() if native else Package(source, **package_options)
+        if resource_name:
+            package.resources = list(
+                filter(lambda resource: resource.name == resource_name, package.resources)
+            )
         package_stats = []
         for resource in package.resources:
             package_stats.append({key: val for key, val in resource.stats.items() if val})

@@ -279,3 +279,10 @@ csv = Option(
     default=False,
     help="Return in CSV format",
 )
+
+# Resource
+
+resource_name = Option(
+    default=None,
+    help="Name of resource to validate",
+)

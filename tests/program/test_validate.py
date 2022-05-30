@@ -235,6 +235,17 @@ def test_program_validate_long_error_messages_976():
     assert result.stdout.strip() == expected.strip()
 
 
+def test_program_validate_single_resource_221():
+    result = runner.invoke(
+        program, "validate data/datapackage.json --resource-name number-two"
+    )
+    output_file_path = "data/fixtures/cli/single-resource-221.txt"
+    with open(output_file_path, encoding="utf-8") as file:
+        expected = file.read()
+    assert result.exit_code == 0
+    assert result.stdout.strip() == expected.strip()
+
+
 # Helpers
 
 
