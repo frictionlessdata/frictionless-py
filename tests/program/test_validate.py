@@ -264,7 +264,19 @@ def test_program_validate_single_resource_221():
     output_file_path = "data/fixtures/cli/single-resource-221.txt"
     with open(output_file_path, encoding="utf-8") as file:
         expected = file.read()
+    output = re.sub(r"(\d+)\.(.*)\d", "", result.stdout)
     assert result.exit_code == 0
+    assert output.strip() == expected.strip()
+
+
+def test_program_validate_single_invalid_resource_221():
+    result = runner.invoke(
+        program, "validate data/datapackage.json --resource-name number-twoo"
+    )
+    output_file_path = "data/fixtures/cli/single-resource-invalid-221.txt"
+    with open(output_file_path, encoding="utf-8") as file:
+        expected = file.read()
+    assert result.exit_code == 1
     assert result.stdout.strip() == expected.strip()
 
 

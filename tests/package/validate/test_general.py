@@ -294,3 +294,18 @@ def test_validate_package_with_resource_data_is_a_string_issue_977():
     assert report.flatten() == [
         [None, None, None, "package-error"],
     ]
+
+
+def test_validate_package_single_resource_221():
+    report = validate("data/datapackage.json", resource_name="number-two")
+    assert report.valid
+
+
+def test_validate_package_single_resource_wrong_resource_name_221():
+    report = validate("data/datapackage.json", resource_name="number-twoo")
+    assert report.flatten(["code", "message"]) == [
+        [
+            "package-error",
+            'The data package has an error: resource "number-twoo" does not exist',
+        ]
+    ]
