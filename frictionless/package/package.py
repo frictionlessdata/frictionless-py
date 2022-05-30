@@ -602,18 +602,21 @@ class Package(Metadata):
         """
         return Package(descriptor=path, **options)
 
-    def to_zip(self, path, *, encoder_class=None):
+    def to_zip(self, path, *, encoder_class=None, compression=zipfile.ZIP_DEFLATED):
         """Save package to a zip
 
         Parameters:
             path (str): target path
             encoder_class (object): json encoder class
+            compression (int): the ZIP compression method to use when
+                writing the archive. Possible values are the ones supported
+                by Python's `zipfile` module.
 
         Raises:
             FrictionlessException: on any error
         """
         try:
-            with zipfile.ZipFile(path, "w") as archive:
+            with zipfile.ZipFile(path, "w", compression=compression) as archive:
                 package_descriptor = self.to_dict()
                 for index, resource in enumerate(self.resources):
                     descriptor = package_descriptor["resources"][index]
