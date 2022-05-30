@@ -167,6 +167,21 @@ class PandasParser(Parser):
 
         # Create/set dataframe
         dataframe = pd.DataFrame(data_rows, index=index, columns=columns)
+
+        # This step see if there is some column where in the schema is defined
+        # as 'integer' but Pandas infered as a float. This can happen if there
+        # is a empty value (represented as Not a Number) is the integer column.
+        # If there is a float column instead of integer, convert it to the type
+        # Int64 from pandas that supports NaN.
+        # Bug: #1109
+        for field in source.schema.fields:
+            if (
+                field["type"] == "integer"
+                and field["name"] in dataframe.dtypes
+                and str(dataframe.dtypes[field["name"]]) != "int64"
+            ):
+                dataframe[field["name"]] = dataframe[field["name"]].astype("Int64")
+
         target.data = dataframe
 
     def __write_convert_type(self, type=None):
