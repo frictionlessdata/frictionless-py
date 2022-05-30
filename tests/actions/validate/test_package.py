@@ -541,5 +541,8 @@ def test_validate_package_single_resource_221():
 def test_validate_package_single_resource_wrong_resource_name_221():
     report = validate("data/datapackage.json", resource_name="number-twoo")
     assert report.flatten(["code", "message"]) == [
-        ["task-error", "The task has an error: No resource found with name number-twoo"]
+        [
+            "package-error",
+            'The data package has an error: resource "number-twoo" does not exist',
+        ]
     ]

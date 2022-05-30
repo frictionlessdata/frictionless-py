@@ -1,7 +1,6 @@
 import types
 import inspect
 import warnings
-from typing import List
 from ..check import Check
 from ..schema import Schema
 from ..package import Package
@@ -121,11 +120,9 @@ def validate_package(
     try:
         native = isinstance(source, Package)
         package = source.to_copy() if native else Package(source, **package_options)
-        # Remove other resources except user provided one for single resource validation
+        # For single resource validation
         if "resource_name" in options:
-            package.resources = _filter_resource(
-                package.resources, options["resource_name"]
-            )
+            return validate_resource(package.get_resource(options["resource_name"]))
         package_stats = []
         for resource in package.resources:
             package_stats.append({key: val for key, val in resource.stats.items() if val})
@@ -409,29 +406,3 @@ class ManagedErrors(list):
             if Error.code in self.__scope:
                 continue
             self.__scope.append(Error.code)
-
-
-def _filter_resource(resources: List, resource_name: str) -> List:
-    """Filters resource name from list of resources
-
-    Args:
-        resources (List): resource list
-        resource_name (str): resource name to filter
-
-    Raises:
-        FrictionlessException: TaskError exception if no resource found
-
-    Returns:
-        List: filtered resource list
-    """
-    resources = list(
-        filter(
-            lambda resource: resource.name == resource_name,
-            resources,
-        )
-    )
-    if len(resources) == 0:
-        note = f"No resource found with name {resource_name}"
-        error = TaskError(note=note)
-        raise FrictionlessException(error)
-    return resources
