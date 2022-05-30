@@ -634,39 +634,10 @@ def dicts_to_markdown_table(dicts: List[dict], **kwargs) -> str:
     return df.where(df.notnull(), None).to_markdown(index=False)
 
 
-def validation_summary(
-    source: str,
-    timer: object,
-    basepath: str = None,
-    rows_checked: int = None,
-    error_list: List = None,
-):
-    """Generate summary for validation task"""
-    file_path = os.path.join(basepath, source) if basepath else source
-    file_size = "N/A"
-    unit = None
-    if os.path.exists(file_path):
-        file_size = os.path.getsize(file_path)
-        unit = format_bytes(file_size)
-    content = [
-        [f"File name { '' if unit else '(Not Found)' }", source],
-        [f"File size { f'({unit})' if unit else '' }", file_size],
-        ["Total Time Taken (sec)", timer.time],
-    ]
-    if rows_checked:
-        content.append(["Rows Checked(Partial)**", rows_checked])
-    if error_list:
-        content.append(["Total Errors", sum(error_list.values())])
-    for code, count in error_list.items():
-        content.append([code, count])
-
-    return content
-
-
-def format_bytes(size: int):
+def format_bytes(size: int) -> str:
     """Format bytes to larger units"""
     units = ["bytes", "KB", "MB", "GB", "TB"]
     index = math.floor(math.log2(size) / 10)
     if index > len(units):
-        index = len(units)
+        index = len(units) - 1
     return units[index]
