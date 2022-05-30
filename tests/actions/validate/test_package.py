@@ -528,7 +528,6 @@ def test_validate_package_with_diacritic_symbol_issue_905():
 
 def test_validate_package_with_resource_data_is_a_string_issue_977():
     report = validate(descriptor="data/issue-977.json", type="package")
-    print(report)
     assert report.flatten() == [
         [None, None, None, "package-error"],
     ]
@@ -537,3 +536,10 @@ def test_validate_package_with_resource_data_is_a_string_issue_977():
 def test_validate_package_single_resource_221():
     report = validate("data/datapackage.json", resource_name="number-two")
     assert report.valid
+
+
+def test_validate_package_single_resource_wrong_resource_name_221():
+    report = validate("data/datapackage.json", resource_name="number-twoo")
+    assert report.flatten(["code", "message"]) == [
+        ["task-error", "The task has an error: No resource found with name number-twoo"]
+    ]

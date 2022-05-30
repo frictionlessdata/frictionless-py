@@ -1,6 +1,7 @@
 import types
 import inspect
 import warnings
+from typing import List
 from ..check import Check
 from ..schema import Schema
 from ..package import Package
@@ -105,16 +106,13 @@ def validate_package(
     # Create state
     timer = helpers.Timer()
 
-    # Read resource name for single resource validation
-    resource_name = None
-    if "resource_name" in options:
-        resource_name = options["resource_name"]
-        del options["resource_name"]
-
     # Prepare options
     package_options = {}
     signature = inspect.signature(validate_resource)
     for name, value in options.copy().items():
+        # Exclude resource_name from package_options
+        if name == "resource_name":
+            continue
         param = signature.parameters.get(name)
         if not param or param.kind != param.KEYWORD_ONLY:
             package_options[name] = options.pop(name)
@@ -123,9 +121,10 @@ def validate_package(
     try:
         native = isinstance(source, Package)
         package = source.to_copy() if native else Package(source, **package_options)
-        if resource_name:
-            package.resources = list(
-                filter(lambda resource: resource.name == resource_name, package.resources)
+        # Remove other resources except user provided one for single resource validation
+        if "resource_name" in options:
+            package.resources = _filter_resource(
+                package.resources, options["resource_name"]
             )
         package_stats = []
         for resource in package.resources:
@@ -410,3 +409,29 @@ class ManagedErrors(list):
             if Error.code in self.__scope:
                 continue
             self.__scope.append(Error.code)
+
+
+def _filter_resource(resources: List, resource_name: str) -> List:
+    """Filters resource name from list of resources
+
+    Args:
+        resources (List): resource list
+        resource_name (str): resource name to filter
+
+    Raises:
+        FrictionlessException: TaskError exception if no resource found
+
+    Returns:
+        List: filtered resource list
+    """
+    resources = list(
+        filter(
+            lambda resource: resource.name == resource_name,
+            resources,
+        )
+    )
+    if len(resources) == 0:
+        note = f"No resource found with name {resource_name}"
+        error = TaskError(note=note)
+        raise FrictionlessException(error)
+    return resources
