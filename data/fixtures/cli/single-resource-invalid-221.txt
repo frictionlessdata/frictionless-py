@@ -1,6 +1,0 @@
-# -------
-# invalid: data/datapackage.json
-# -------
-code           message
--------------  --------------------------------------------------------------------
-package-error  The data package has an error: resource "number-twoo" does not exist
