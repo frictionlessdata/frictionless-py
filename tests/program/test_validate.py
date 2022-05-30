@@ -242,8 +242,10 @@ def test_program_validate_long_error_messages_976():
 def test_program_validate_partial_validation_info_933():
     result = runner.invoke(program, "validate data/countries.csv --limit-errors 2")
     assert result.exit_code == 1
-    assert result.stdout.count("(Partial)") == 2
-    assert result.stdout.count("Rows Checked(Partial)**")
+    assert result.stdout.count(
+        "The document was partially validated because of one of the limits"
+    )
+    assert result.stdout.count("Rows Checked(Partial)")
 
 
 def test_program_validate_summary_1094():

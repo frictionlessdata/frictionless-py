@@ -281,7 +281,11 @@ def program_validate(
         )
         typer.echo("\n# Summary \n")
         if task.partial:
-            typer.echo("(Partial)")
+            typer.echo(
+                "The document was partially validated because of one of the limits"
+            )
+            typer.echo("* limit errors")
+            typer.echo("* memomry Limit \n")
         typer.secho(
             str(
                 tabulate(
