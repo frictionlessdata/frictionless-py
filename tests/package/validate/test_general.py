@@ -348,10 +348,11 @@ def test_validate_package_with_resource_data_is_a_string_issue_977():
 
 
 def test_validate_package_with_missing_values_993():
-    report = validate(descriptor="data/package-with-missingvalues.json")
+    package = Package(descriptor="data/package-with-missingvalues.json")
+    report = package.validate()
     assert report.flatten(["code", "message"]) == [
         [
             "resource-error",
-            "The data resource has an error: missingValues should be part of schema/fields not resource.",
+            "The data resource has an error: missingValues should be part of schema/fields not package.",
         ]
     ]
