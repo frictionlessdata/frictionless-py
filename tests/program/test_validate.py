@@ -257,6 +257,22 @@ def test_program_validate_summary_1094():
     assert result.stdout.count("Total Time Taken (sec)")
 
 
+def test_program_validate_single_resource_221():
+    result = runner.invoke(
+        program, "validate data/datapackage.json --resource-name number-two"
+    )
+    assert result.exit_code == 0
+    assert result.stdout.count("valid: table-reverse.csv")
+
+
+def test_program_validate_single_invalid_resource_221():
+    result = runner.invoke(
+        program, "validate data/datapackage.json --resource-name number-twoo"
+    )
+    assert result.exit_code == 1
+    assert result.stdout.count("invalid: data/datapackage.json")
+
+
 # Helpers
 
 

@@ -71,6 +71,8 @@ def program_validate(
     parallel: bool = common.parallel,
     yaml: bool = common.yaml,
     json: bool = common.json,
+    # Resource
+    resource_name: str = common.resource_name,
 ):
     """
     Validate a data source.
@@ -192,6 +194,7 @@ def program_validate(
             limit_memory=limit_memory,
             original=original,
             parallel=parallel,
+            resource_name=resource_name,
         )
     )
 

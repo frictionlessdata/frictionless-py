@@ -32,6 +32,10 @@ def validate(package: "Package", original=False, parallel=False, **options):
 
     # Prepare package
     try:
+        # For single resource validation
+        if "resource_name" in options:
+            resource = package.get_resource(options["resource_name"])
+            return resource.validate()
         package_stats = []
         for resource in package.resources:
             package_stats.append({key: val for key, val in resource.stats.items() if val})
