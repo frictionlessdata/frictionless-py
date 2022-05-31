@@ -11,13 +11,18 @@ if TYPE_CHECKING:
 
 # TODO: move exception catching to high-level validate?
 @Report.from_validate
-def validate(package: "Package", original=False, parallel=False, **options):
+def validate(
+    package: "Package",
+    resource_name=None,
+    original=False,
+    parallel=False,
+    **options,
+):
     """Validate package
 
     Parameters:
         source (dict|str): a package descriptor
-        basepath? (str): package basepath
-        trusted? (bool): don't raise an exception on unsafe paths
+        resource_name (str): validate only selected resource
         original? (bool): validate metadata as it is (without inferring)
         parallel? (bool): enable multiprocessing
         **options (dict): resource validateion options
@@ -30,12 +35,13 @@ def validate(package: "Package", original=False, parallel=False, **options):
     # Create state
     timer = helpers.Timer()
 
+    # Validate resource
+    if resource_name:
+        resource = package.get_resource(resource_name)
+        return resource.validate()
+
     # Prepare package
     try:
-        # For single resource validation
-        if "resource_name" in options:
-            resource = package.get_resource(options["resource_name"])
-            return resource.validate()
         package_stats = []
         for resource in package.resources:
             package_stats.append({key: val for key, val in resource.stats.items() if val})
