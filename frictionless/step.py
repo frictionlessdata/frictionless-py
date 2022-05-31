@@ -1,5 +1,11 @@
+from typing import TYPE_CHECKING, Optional, Union, List, Any
+from typing_extensions import Protocol
 from .metadata import Metadata
 from . import errors
+
+if TYPE_CHECKING:
+    from .package import Package
+    from .resource import Resource
 
 
 # NOTE:
@@ -16,14 +22,14 @@ class Step(Metadata):
 
     code = "step"
 
-    def __init__(self, descriptor=None, *, function=None):
+    def __init__(self, descriptor=None, *, function: Optional["StepFunction"] = None):
         super().__init__(descriptor)
         self.setinitial("code", self.code)
         self.__function = function
 
     # Transform
 
-    def transform_resource(self, resource):
+    def transform_resource(self, resource: Resource) -> None:
         """Transform resource
 
         Parameters:
@@ -35,7 +41,7 @@ class Step(Metadata):
         if self.__function:
             return self.__function(resource)
 
-    def transform_package(self, resource):
+    def transform_package(self, package: Package) -> None:
         """Transform package
 
         Parameters:
@@ -45,8 +51,16 @@ class Step(Metadata):
             package (Package): package
         """
         if self.__function:
-            return self.__function(resource)
+            return self.__function(package)
 
     # Metadata
 
     metadata_Error = errors.StepError
+
+
+# Internal
+
+
+class StepFunction(Protocol):
+    def __call__(self, source: Union[Resource, Package]) -> None:
+        pass
