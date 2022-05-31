@@ -1,4 +1,8 @@
+from typing import TYPE_CHECKING, List, Any
 from .helpers import cached_property
+
+if TYPE_CHECKING:
+    from .field import Field
 
 
 class Type:
@@ -16,13 +20,13 @@ class Type:
 
     code = "type"
     builtin = False
-    constraints = []
+    constraints: List[str] = []
     """
     Returns:
         str[]: a list of supported constraints
     """
 
-    def __init__(self, field):
+    def __init__(self, field: Field):
         self.__field = field
 
     @cached_property
@@ -35,7 +39,7 @@ class Type:
 
     # Read
 
-    def read_cell(self, cell):
+    def read_cell(self, cell: Any) -> Any:
         """Convert cell (read direction)
 
         Parameters:
@@ -48,7 +52,7 @@ class Type:
 
     # Write
 
-    def write_cell(self, cell):
+    def write_cell(self, cell: Any) -> Any:
         """Convert cell (write direction)
 
         Parameters:

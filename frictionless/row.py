@@ -49,7 +49,7 @@ class Row(dict):
         self.__processed = False
         self.__blank_cells = {}
         self.__error_cells = {}
-        self.__errors = []
+        self.__errors: list[errors.RowError] = []
 
     def __eq__(self, other):
         self.__process()
