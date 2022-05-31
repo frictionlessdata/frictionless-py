@@ -519,3 +519,25 @@ def test_validate_resource_duplicate_labels_with_sync_schema_issue_910():
             'Duplicate labels in header is not supported with "schema_sync"',
         ],
     ]
+
+
+def test_validate_resource_with_missing_values_993():
+    resource = Resource("data/resource-with-missingvalues.json")
+    report = resource.validate()
+    assert report.flatten(["code", "message"]) == [
+        [
+            "resource-error",
+            "The data resource has an error: missingValues should be part of schema/fields not resource.",
+        ]
+    ]
+
+
+def test_validate_resource_fields_without_schema_993():
+    resource = Resource("data/resource-fields-without-schema.json")
+    report = resource.validate()
+    assert report.flatten(["code", "message"]) == [
+        [
+            "resource-error",
+            "The data resource has an error: fields should be part of schema not resource.",
+        ]
+    ]

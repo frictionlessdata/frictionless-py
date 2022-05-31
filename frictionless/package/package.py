@@ -701,6 +701,13 @@ class Package(Metadata):
                 dict.__setitem__(self, "resources", resources)
 
     def metadata_validate(self):
+        # Check invalid properties
+        invalid_fields = {"missingValues": "schema/fields"}
+        for invalid_field, resource in invalid_fields.items():
+            if invalid_field in self:
+                note = f"{invalid_field} should be part of {resource} not package."
+                error = errors.ResourceError(note=note)
+                raise FrictionlessException(error)
 
         # Package
         if self.profile == "data-package":
