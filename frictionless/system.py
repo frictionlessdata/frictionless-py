@@ -17,6 +17,7 @@ from . import errors
 # Also, we might cosider having plugin.name although module based naming might be enough
 
 
+# TODO: add types
 class System:
     """System representation
 

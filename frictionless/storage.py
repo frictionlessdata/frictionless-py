@@ -1,3 +1,10 @@
+from typing import TYPE_CHECKING, List, Any
+from .helpers import cached_property
+
+if TYPE_CHECKING:
+    from .package import Package
+    from .resource import Resource
+
 # NOTE:
 # We might consider reducing this API to something like
 # Storage.read/write_package although I have already made
@@ -17,24 +24,24 @@ class Storage:
 
     # Read
 
-    def read_resource(self, name, **options):
+    def read_resource(self, name: str, **options) -> Resource:
         raise NotImplementedError()
 
-    def read_package(self, **options):
+    def read_package(self, **options) -> Package:
         raise NotImplementedError()
 
     # Write
 
-    def write_resource(self, resource, *, force=False, **options):
+    def write_resource(self, resource: Resource, *, force=False, **options):
         raise NotImplementedError()
 
-    def write_package(self, package, *, force=False, **options):
+    def write_package(self, package: Package, *, force=False, **options):
         raise NotImplementedError()
 
     # Delete
 
-    def delete_resource(self, name, *, ignore=False, **options):
+    def delete_resource(self, name: str, *, ignore=False, **options):
         raise NotImplementedError()
 
-    def delete_package(self, names, *, ignore=False, **options):
+    def delete_package(self, names: List[str], *, ignore=False, **options):
         raise NotImplementedError()
