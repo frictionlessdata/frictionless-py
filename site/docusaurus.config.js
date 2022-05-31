@@ -50,7 +50,7 @@ module.exports = {
   ],
   themeConfig: {
     sidebarCollapsible: true,
-    image: "img/docusaurus.png",
+    image: "img/logo-bright2.png",
     prism: {
       theme: require("prism-react-renderer/themes/github"),
       darkTheme: require("prism-react-renderer/themes/dracula"),

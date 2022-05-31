@@ -1,9 +1,30 @@
 # -----
 # valid: ogd10_energieforschungstatistik_ch.csv 
 # -----
+
+# Summary 
+
+Description             Size/Name/Count
+----------------------  --------------------------------------
+File name               ogd10_energieforschungstatistik_ch.csv
+File size (KB)          88541
+Total Time Taken (sec)  
 # -------
 # invalid: ogd10_catalogs.zip => capital-invalid.csv 
 # -------
+
+
+# Summary 
+
+Description                  Size/Name/Count
+---------------------------  -----------------------------------------
+File name (Not Found)        ogd10_catalogs.zip => capital-invalid.csv
+File size                    N/A
+Total Time Taken (sec)       
+Total Errors                 1
+Schema Error (schema-error)  1
+
+# Errors 
 
 row    field    code     message
 -----  -------  -------  -------------------------------------------------
@@ -13,3 +34,11 @@ row    field    code     message
 # -----
 # valid: ogd10_catalogs.zip => finanzquellen.csv 
 # -----
+
+# Summary 
+
+Description             Size/Name/Count
+----------------------  ---------------------------------------
+File name (Not Found)   ogd10_catalogs.zip => finanzquellen.csv
+File size               N/A
+Total Time Taken (sec)  
