@@ -7,7 +7,7 @@ class Server:
 
     """
 
-    def start(self, port):
+    def start(self, port: int) -> None:
         """Start the server
 
         Parameters:
@@ -15,6 +15,6 @@ class Server:
         """
         raise NotImplementedError()
 
-    def stop(self):
+    def stop(self) -> None:
         """Stop the server"""
         raise NotImplementedError()

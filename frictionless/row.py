@@ -10,6 +10,7 @@ from . import errors
 # We can consider adding row.header property to provide more comprehensive API
 
 
+# TODO: add types
 class Row(dict):
     """Row representation
 
