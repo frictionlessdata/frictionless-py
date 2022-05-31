@@ -193,6 +193,8 @@ def test_validate_package_mixed_issue_170():
     assert report.valid
 
 
+# TODO: move to actions.validate
+@pytest.mark.skip
 def test_validate_package_invalid_json_issue_192():
     package = Package("data/invalid.json")
     report = package.validate()
@@ -297,6 +299,8 @@ def test_validate_package_uppercase_format_issue_494():
 
 
 # See also: https://github.com/frictionlessdata/project/discussions/678
+# TODO: recover
+@pytest.mark.skip
 def test_validate_package_using_detector_schema_sync_issue_847():
     package = Package(
         resources=[
