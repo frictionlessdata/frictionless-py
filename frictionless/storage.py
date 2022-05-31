@@ -5,6 +5,7 @@ if TYPE_CHECKING:
     from .package import Package
     from .resource import Resource
 
+
 # NOTE:
 # We might consider reducing this API to something like
 # Storage.read/write_package although I have already made

@@ -1,3 +1,20 @@
+from typing import TYPE_CHECKING, Optional, Union, List, Any
+
+if TYPE_CHECKING:
+    from .file import File
+    from .check import Check
+    from .control import Control
+    from .dialect import Dialect
+    from .error import Error
+    from .field import Field
+    from .loader import Loader
+    from .parser import Parser
+    from .server import Server
+    from .step import Step
+    from .storage import Storage
+    from .type import Type
+
+
 # NOTE: implement create_resource so plugins can validate it (see #991)?
 
 
@@ -24,7 +41,7 @@ class Plugin:
         """
         pass
 
-    def create_check(self, name, *, descriptor=None):
+    def create_check(self, descriptor: dict) -> Optional[Check]:
         """Create check
 
         Parameters:
@@ -36,7 +53,7 @@ class Plugin:
         """
         pass
 
-    def create_control(self, file, *, descriptor):
+    def create_control(self, file: File, *, descriptor: dict) -> Optional[Control]:
         """Create control
 
         Parameters:
@@ -48,7 +65,7 @@ class Plugin:
         """
         pass
 
-    def create_dialect(self, file, *, descriptor):
+    def create_dialect(self, file: File, *, descriptor: dict) -> Optional[Dialect]:
         """Create dialect
 
         Parameters:
@@ -60,7 +77,7 @@ class Plugin:
         """
         pass
 
-    def create_error(self, descriptor):
+    def create_error(self, descriptor: dict) -> Optional[Error]:
         """Create error
 
         Parameters:
@@ -71,7 +88,7 @@ class Plugin:
         """
         pass
 
-    def create_file(self, source, **options):
+    def create_file(self, source: Any, **options) -> Optional[File]:
         """Create file
 
         Parameters:
@@ -83,7 +100,7 @@ class Plugin:
         """
         pass
 
-    def create_loader(self, file):
+    def create_loader(self, file: File) -> Optional[Loader]:
         """Create loader
 
         Parameters:
@@ -94,7 +111,7 @@ class Plugin:
         """
         pass
 
-    def create_parser(self, file):
+    def create_parser(self, file: File) -> Optional[Parser]:
         """Create parser
 
         Parameters:
@@ -105,7 +122,8 @@ class Plugin:
         """
         pass
 
-    def create_server(self, name):
+    # TODO: rebase from name to descriptor?
+    def create_server(self, name: str) -> Optional[Server]:
         """Create server
 
         Parameters:
@@ -116,7 +134,7 @@ class Plugin:
         """
         pass
 
-    def create_step(self, descriptor):
+    def create_step(self, descriptor: dict) -> Optional[Step]:
         """Create step
 
         Parameters:
@@ -127,7 +145,7 @@ class Plugin:
         """
         pass
 
-    def create_storage(self, name, source, **options):
+    def create_storage(self, name: str, source: Any, **options) -> Optional[Storage]:
         """Create storage
 
         Parameters:
@@ -139,7 +157,7 @@ class Plugin:
         """
         pass
 
-    def create_type(self, field):
+    def create_type(self, field: Field) -> Optional[Type]:
         """Create type
 
         Parameters:
