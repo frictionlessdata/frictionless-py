@@ -4,11 +4,12 @@ import json
 import yaml
 import jsonschema
 import stringcase
-from collections.abc import Mapping
 from pathlib import Path
 from operator import setitem
 from functools import partial
 from importlib import import_module
+from collections.abc import Mapping
+from typing import TYPE_CHECKING, Optional, Iterable, Union, List, Any
 from .exception import FrictionlessException
 from .helpers import cached_property, render_markdown
 from . import helpers
@@ -23,6 +24,7 @@ import pprint as pp
 # We might consider having something like `with metadata.disable_onchange`
 
 
+# TODO: add types
 class Metadata(helpers.ControlledDict):
     """Metadata representation
 
@@ -156,7 +158,7 @@ class Metadata(helpers.ControlledDict):
                 raise FrictionlessException(self.__Error(note=str(exc))) from exc
         return text
 
-    def to_markdown(self, path: str = None, table: bool = False) -> str:
+    def to_markdown(self, path: Optional[str] = None, table: bool = False) -> str:
         """Convert metadata as a markdown
 
         This feature has been contributed to the framwork by Ethan Welty (@ezwelty):
@@ -269,7 +271,7 @@ class Metadata(helpers.ControlledDict):
         """
         profile = profile or self.metadata_profile
         if profile:
-            validator_class = jsonschema.validators.validator_for(profile)
+            validator_class = jsonschema.validators.validator_for(profile)  # type: ignore
             validator = validator_class(profile)
             for error in validator.iter_errors(self):
                 # Withouth this resource with both path/data is invalid
