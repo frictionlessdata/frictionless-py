@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 class Step(Metadata):
     """Step representation"""
 
-    code = "step"
+    code: str = "step"
 
     def __init__(self, descriptor=None, *, function: Optional["StepFunction"] = None):
         super().__init__(descriptor)
@@ -63,4 +63,4 @@ class Step(Metadata):
 
 class StepFunction(Protocol):
     def __call__(self, source: Union[Resource, Package]) -> None:
-        pass
+        ...
