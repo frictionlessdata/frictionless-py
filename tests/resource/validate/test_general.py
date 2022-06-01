@@ -532,7 +532,7 @@ def test_validate_resource_with_missing_values_993():
     ]
 
 
-def test_validate_package_with_fields_993():
+def test_validate_resource_with_fields_993():
     resource = Resource("data/resource-fields-without-schema-993.json")
     report = resource.validate()
     assert report.flatten(["code", "message"]) == [
