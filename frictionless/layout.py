@@ -1,3 +1,4 @@
+# type: ignore
 import typing
 from .metadata import Metadata
 from . import settings
