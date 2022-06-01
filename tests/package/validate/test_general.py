@@ -347,31 +347,41 @@ def test_validate_package_with_resource_data_is_a_string_issue_977():
     ]
 
 
-def test_validate_package_with_missing_values_993():
+def test_validate_package_metadata_errors_with_missing_values_993():
     package = Package(descriptor="data/package-with-missingvalues-993.json")
-    output = list(
-        map(
-            lambda metadata_error: [metadata_error.code, metadata_error.note],
-            package.metadata_errors,
-        )
+    assert package.metadata_errors[0].code == "package-error"
+    assert (
+        package.metadata_errors[0].note
+        == '"missingValues" should be set as "resource.schema.missingValues" (not "package.missingValues").'
     )
-    assert output == [
+
+
+def test_validate_package_metadata_errors_with_fields_993():
+    package = Package(descriptor="data/package-with-fields-993.json")
+    assert package.metadata_errors[0].code == "package-error"
+    assert (
+        package.metadata_errors[0].note
+        == '"fields" should be set as "resource.schema.fields" (not "package.fields").'
+    )
+
+
+def test_validate_package_errors_with_missing_values_993():
+    package = Package(descriptor="data/package-with-missingvalues-993.json")
+    report = package.validate()
+    assert report.flatten(["code", "message"]) == [
         [
-            "resource-error",
-            '"missingValues" should be set as "resource.schema.missingValues" (not "package.missingValues").',
+            "package-error",
+            'The data package has an error: "missingValues" should be set as "resource.schema.missingValues" (not "package.missingValues").',
         ]
     ]
 
 
-def test_validate_package_with_fields_993():
+def test_validate_package_errors_with_fields_993():
     package = Package(descriptor="data/package-with-fields-993.json")
-    output = list(
-        map(
-            lambda metadata_error: [metadata_error.code, metadata_error.note],
-            package.metadata_errors,
-        )
-    )
-    assert output[0] == [
-        "resource-error",
-        '"fields" should be set as "resource.schema.fields" (not "package.fields").',
+    report = package.validate()
+    assert report.flatten(["code", "message"]) == [
+        [
+            "package-error",
+            'The data package has an error: "fields" should be set as "resource.schema.fields" (not "package.fields").',
+        ]
     ]

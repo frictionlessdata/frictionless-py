@@ -521,7 +521,25 @@ def test_validate_resource_duplicate_labels_with_sync_schema_issue_910():
     ]
 
 
-def test_validate_resource_with_missing_values_993():
+def test_validate_resource_metadata_errors_with_missing_values_993():
+    resource = Resource("data/resource-with-missingvalues-993.json")
+    assert resource.metadata_errors[0].code == "resource-error"
+    assert (
+        resource.metadata_errors[0].note
+        == '"missingValues" should be set as "resource.schema.missingValues" (not "resource.missingValues").'
+    )
+
+
+def test_validate_resource_metadata_errors_with_fields_993():
+    resource = Resource("data/resource-with-fields-993.json")
+    assert resource.metadata_errors[0].code == "resource-error"
+    assert (
+        resource.metadata_errors[0].note
+        == '"fields" should be set as "resource.schema.fields" (not "resource.fields").'
+    )
+
+
+def test_validate_resource_errors_with_missing_values_993():
     resource = Resource("data/resource-with-missingvalues-993.json")
     report = resource.validate()
     assert report.flatten(["code", "message"]) == [
@@ -532,8 +550,8 @@ def test_validate_resource_with_missing_values_993():
     ]
 
 
-def test_validate_resource_with_fields_993():
-    resource = Resource("data/resource-fields-without-schema-993.json")
+def test_validate_resource_errors_with_fields_993():
+    resource = Resource("data/resource-with-fields-993.json")
     report = resource.validate()
     assert report.flatten(["code", "message"]) == [
         [
