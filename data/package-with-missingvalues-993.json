@@ -3,7 +3,7 @@
    "resources":[
       {
          "name":"number-two",
-         "path":"993/table.csv",
+         "path":"table.csv",
          "schema":{
             "fields":[
                {

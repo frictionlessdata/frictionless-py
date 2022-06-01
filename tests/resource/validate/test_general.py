@@ -522,22 +522,22 @@ def test_validate_resource_duplicate_labels_with_sync_schema_issue_910():
 
 
 def test_validate_resource_with_missing_values_993():
-    resource = Resource("data/resource-with-missingvalues.json")
+    resource = Resource("data/resource-with-missingvalues-993.json")
     report = resource.validate()
     assert report.flatten(["code", "message"]) == [
         [
             "resource-error",
-            "The data resource has an error: missingValues should be part of schema/fields not resource.",
+            'The data resource has an error: "missingValues" should be set as "resource.schema.missingValues" (not "resource.missingValues").',
         ]
     ]
 
 
-def test_validate_resource_fields_without_schema_993():
-    resource = Resource("data/resource-fields-without-schema.json")
+def test_validate_package_with_fields_993():
+    resource = Resource("data/resource-fields-without-schema-993.json")
     report = resource.validate()
     assert report.flatten(["code", "message"]) == [
         [
             "resource-error",
-            "The data resource has an error: fields should be part of schema not resource.",
+            'The data resource has an error: "fields" should be set as "resource.schema.fields" (not "resource.fields").',
         ]
     ]

@@ -348,11 +348,30 @@ def test_validate_package_with_resource_data_is_a_string_issue_977():
 
 
 def test_validate_package_with_missing_values_993():
-    package = Package(descriptor="data/package-with-missingvalues.json")
-    report = package.validate()
-    assert report.flatten(["code", "message"]) == [
+    package = Package(descriptor="data/package-with-missingvalues-993.json")
+    output = list(
+        map(
+            lambda metadata_error: [metadata_error.code, metadata_error.note],
+            package.metadata_errors,
+        )
+    )
+    assert output == [
         [
             "resource-error",
-            "The data resource has an error: missingValues should be part of schema/fields not package.",
+            '"missingValues" should be set as "resource.schema.missingValues" (not "package.missingValues").',
         ]
+    ]
+
+
+def test_validate_package_with_fields_993():
+    package = Package(descriptor="data/package-with-fields-993.json")
+    output = list(
+        map(
+            lambda metadata_error: [metadata_error.code, metadata_error.note],
+            package.metadata_errors,
+        )
+    )
+    assert output[0] == [
+        "resource-error",
+        '"fields" should be set as "resource.schema.fields" (not "package.fields").',
     ]
