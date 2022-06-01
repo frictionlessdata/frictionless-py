@@ -14,6 +14,7 @@ from . import errors
 from . import types
 
 
+# TODO: add types
 class Field(Metadata):
     """Field representation
 

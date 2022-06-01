@@ -1,3 +1,9 @@
+from typing import TYPE_CHECKING, Protocol, Optional, Iterable, Union, List, Any
+
+if TYPE_CHECKING:
+    from .error import Error
+
+
 class FrictionlessException(Exception):
     """Main Frictionless exception
 
@@ -10,12 +16,12 @@ class FrictionlessException(Exception):
 
     """
 
-    def __init__(self, error):
+    def __init__(self, error: Error):
         self.__error = error
         super().__init__(f"[{error.code}] {error.message}")
 
     @property
-    def error(self):
+    def error(self) -> Error:
         """
         Returns:
             Error: error

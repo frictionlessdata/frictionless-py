@@ -1,3 +1,4 @@
+from typing import TYPE_CHECKING, Protocol, Optional, Iterable, Union, List, Any
 from .metadata import Metadata
 from . import helpers
 
@@ -26,13 +27,13 @@ class Error(Metadata):
 
     """
 
-    code = "error"
-    name = "Error"
-    tags = []  # type: ignore
-    template = "{note}"
-    description = "Error"
+    code: str = "error"
+    name: str = "Error"
+    tags: List[str] = []  # type: ignore
+    template: str = "{note}"
+    description: str = "Error"
 
-    def __init__(self, descriptor=None, *, note):
+    def __init__(self, descriptor=None, *, note: str):
         super().__init__(descriptor)
         self.setinitial("code", self.code)
         self.setinitial("name", self.name)
@@ -42,7 +43,7 @@ class Error(Metadata):
         self.setinitial("description", self.description)
 
     @property
-    def note(self):
+    def note(self) -> str:
         """
         Returns:
             str: note
@@ -50,7 +51,7 @@ class Error(Metadata):
         return self["note"]
 
     @property
-    def message(self):
+    def message(self) -> str:
         """
         Returns:
             str: message

@@ -12,6 +12,7 @@ from . import helpers
 # Exact set of file types needs to be reviewed
 
 
+# TODO: add types
 class File:
     """File representation"""
 

@@ -5,6 +5,7 @@ from . import helpers
 from . import errors
 
 
+# TODO: add types
 class Header(list):
     """Header representation
 
