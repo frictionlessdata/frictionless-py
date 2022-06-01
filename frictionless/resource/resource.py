@@ -1282,6 +1282,16 @@ class Resource(Metadata):
                     raise FrictionlessException(error)
 
     def metadata_validate(self):
+        # Check invalid properties
+        invalid_fields = {
+            "missingValues": "resource.schema.missingValues",
+            "fields": "resource.schema.fields",
+        }
+        for invalid_field, object in invalid_fields.items():
+            if invalid_field in self:
+                note = f'"{invalid_field}" should be set as "{object}" (not "resource.{invalid_field}").'
+                yield errors.ResourceError(note=note)
+
         yield from super().metadata_validate()
 
         # Control/Dialect

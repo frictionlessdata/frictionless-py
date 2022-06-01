@@ -704,6 +704,15 @@ class Package(Metadata):
                 dict.__setitem__(self, "resources", resources)
 
     def metadata_validate(self):
+        # Check invalid properties
+        invalid_fields = {
+            "missingValues": "resource.schema.missingValues",
+            "fields": "resource.schema.fields",
+        }
+        for invalid_field, object in invalid_fields.items():
+            if invalid_field in self:
+                note = f'"{invalid_field}" should be set as "{object}" (not "package.{invalid_field}").'
+                yield errors.PackageError(note=note)
 
         # Package
         if self.profile == "data-package":

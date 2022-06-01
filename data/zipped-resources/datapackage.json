@@ -66,11 +66,11 @@
                    "description@de":"Beitrag der Finanzquelle zur Deckung des Aufwands der Forschungsstätte (in Schweizer Franken)",
                    "description@fr":"Contribution de la source de financement pour couvrir les dépenses de l'institution de recherche (en francs suisses)"
                 }
-             ]
+             ],
+            "missingValues":[
+               ""
+            ]
           },
-          "missingValues":[
-             ""
-          ],
           "title@de":"Energieforschungsstatistik (EFstat) gemäss Schweizer Klassifikation",
           "title@fr":"Statistique de la recherche énergétique selon classification de recherche CH",
           "format":"csv",
@@ -109,11 +109,11 @@
                    "type":"string",
                    "format":"default"
                 }
-             ]
+             ],
+            "missingValues":[
+               ""
+            ]
           },
-          "missingValues":[
-             ""
-          ],
           "title@de":"Forschungsstätten",
           "title@fr":"Institutions de recherche",
           "format":"csv",
@@ -202,11 +202,11 @@
                    "description@de":"Gruppierung der Finanzquelle",
                    "description@fr":"Groupement de la source de financement"
                 }
-             ]
-          },
-          "missingValues":[
-             ""
-          ],
+             ],
+            "missingValues":[
+               ""
+            ]
+          },          
           "title@de":"Finanzquellen",
           "title@fr":"Sources de financement",
           "format":"csv",
