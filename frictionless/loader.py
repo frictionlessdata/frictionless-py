@@ -6,9 +6,14 @@ import atexit
 import hashlib
 import zipfile
 import tempfile
+from typing import TYPE_CHECKING, Optional, Iterable, Union, List, Any
 from .exception import FrictionlessException
 from . import settings
 from . import errors
+
+if TYPE_CHECKING:
+    from .resource import Resource
+    from .interfaces import IListStream, IBuffer, ISample, IByteStream, ITextStream
 
 
 # NOTE:
@@ -30,13 +35,13 @@ class Loader:
 
     """
 
-    remote = False
+    remote: bool = False
 
-    def __init__(self, resource):
-        self.__resource = resource
-        self.__buffer = None
-        self.__byte_stream = None
-        self.__text_stream = None
+    def __init__(self, resource: Resource):
+        self.__resource: Resource = resource
+        self.__buffer: Optional[IBuffer] = None
+        self.__byte_stream: Optional[IByteStream] = None
+        self.__text_stream: Optional[ITextStream] = None
 
     def __enter__(self):
         if self.closed:
@@ -139,7 +144,7 @@ class Loader:
             raise FrictionlessException(error)
         return byte_stream
 
-    def read_byte_stream_create(self):
+    def read_byte_stream_create(self) -> IByteStream:
         """Create bytes stream
 
         Returns:
@@ -147,7 +152,7 @@ class Loader:
         """
         raise NotImplementedError()
 
-    def read_byte_stream_process(self, byte_stream):
+    def read_byte_stream_process(self, byte_stream: IByteStream):
         """Process byte stream
 
         Parameters:
@@ -186,7 +191,11 @@ class Loader:
             # Unzip
             with zipfile.ZipFile(byte_stream) as archive:
                 name = self.resource.innerpath or archive.namelist()[0]
-                with archive.open(name) as file:
+                if not name:
+                    error = errors.Error(note="the arhive is empty")
+                    raise FrictionlessException(error)
+                # TODO: enable typing when resource.innerpath is fixed
+                with archive.open(name) as file:  # type: ignore
                     target = tempfile.NamedTemporaryFile()
                     shutil.copyfileobj(file, target)
                     target.seek(0)
@@ -246,7 +255,8 @@ class Loader:
         """
         # NOTE: this solution might be improved using parser properties
         newline = "" if self.resource.format == "csv" else None
-        return io.TextIOWrapper(self.byte_stream, self.resource.encoding, newline=newline)
+        # TODO: enable typing when resource.encodign is fixed
+        return io.TextIOWrapper(self.byte_stream, self.resource.encoding, newline=newline)  # type: ignore
 
     # Write
 
@@ -324,5 +334,6 @@ class ByteStreamWithStatsHandling:
         # End of file
         if size == -1 or not chunk:
             self.__resource.stats["bytes"] = self.__counter
-            self.__resource.stats["hash"] = self.__hasher.hexdigest()
+            if self.__hasher:
+                self.__resource.stats["hash"] = self.__hasher.hexdigest()
         return chunk

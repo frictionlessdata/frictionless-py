@@ -5,6 +5,7 @@ import warnings
 from pathlib import Path
 from copy import deepcopy
 from itertools import zip_longest, chain
+from typing import Optional
 from ..exception import FrictionlessException
 from ..detector import Detector
 from ..metadata import Metadata
@@ -436,7 +437,7 @@ class Resource(Metadata):
         return self.get("encoding", settings.DEFAULT_ENCODING).lower()
 
     @Metadata.property
-    def innerpath(self):
+    def innerpath(self) -> Optional[str]:
         """
         Returns
             str: resource compression path
