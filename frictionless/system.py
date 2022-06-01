@@ -3,6 +3,7 @@ import pkgutil
 from collections import OrderedDict
 from importlib import import_module
 from contextlib import contextmanager
+from typing import TYPE_CHECKING, Optional, Union, List, Any
 from .exception import FrictionlessException
 from .helpers import cached_property
 from .control import Control
@@ -11,13 +12,29 @@ from .file import File
 from . import settings
 from . import errors
 
+if TYPE_CHECKING:
+    from .file import File
+    from .check import Check
+    from .control import Control
+    from .dialect import Dialect
+    from .error import Error
+    from .field import Field
+    from .loader import Loader
+    from .parser import Parser
+    from .plugin import Plugin
+    from .resource import Resource
+    from .server import Server
+    from .step import Step
+    from .storage import Storage
+    from .type import Type
+
 
 # NOTE:
 # On the next iteration we can improve the plugin system to provide prioritization
 # Also, we might cosider having plugin.name although module based naming might be enough
 
 
-# TODO: add types
+# TODO: finish typing
 class System:
     """System representation
 
@@ -87,7 +104,7 @@ class System:
             func(candidates)
         return candidates
 
-    def create_check(self, descriptor):
+    def create_check(self, descriptor: dict) -> Check:
         """Create check
 
         Parameters:
@@ -107,7 +124,7 @@ class System:
         note = f'cannot create check "{code}". Try installing "frictionless-{code}"'
         raise FrictionlessException(errors.CheckError(note=note))
 
-    def create_control(self, resource, *, descriptor):
+    def create_control(self, resource: Resource, *, descriptor: dict) -> Control:
         """Create control
 
         Parameters:
@@ -124,7 +141,7 @@ class System:
                 return control
         return Control(descriptor)
 
-    def create_dialect(self, resource, *, descriptor):
+    def create_dialect(self, resource: Resource, *, descriptor: dict) -> Dialect:
         """Create dialect
 
         Parameters:
@@ -141,7 +158,7 @@ class System:
                 return dialect
         return Dialect(descriptor)
 
-    def create_error(self, descriptor):
+    def create_error(self, descriptor: dict) -> Error:
         """Create error
 
         Parameters:
@@ -161,7 +178,7 @@ class System:
         note = f'cannot create error "{code}". Try installing "frictionless-{code}"'
         raise FrictionlessException(errors.Error(note=note))
 
-    def create_file(self, source, **options):
+    def create_file(self, source: Any, **options) -> File:
         """Create file
 
         Parameters:
@@ -178,7 +195,7 @@ class System:
                 return plugin_file
         return file
 
-    def create_loader(self, resource):
+    def create_loader(self, resource: Resource) -> Loader:
         """Create loader
 
         Parameters:
@@ -196,7 +213,7 @@ class System:
         note = f'cannot create loader "{name}". Try installing "frictionless-{name}"'
         raise FrictionlessException(errors.SchemeError(note=note))
 
-    def create_parser(self, resource):
+    def create_parser(self, resource: Resource) -> Parser:
         """Create parser
 
         Parameters:
@@ -214,7 +231,7 @@ class System:
         note = f'cannot create parser "{name}". Try installing "frictionless-{name}"'
         raise FrictionlessException(errors.FormatError(note=note))
 
-    def create_server(self, name, **options):
+    def create_server(self, name: str, **options) -> Server:
         """Create server
 
         Parameters:
@@ -232,7 +249,7 @@ class System:
         note = f'cannot create server "{name}". Try installing "frictionless-{name}"'
         raise FrictionlessException(errors.GeneralError(note=note))
 
-    def create_step(self, descriptor):
+    def create_step(self, descriptor: dict) -> Step:
         """Create step
 
         Parameters:
@@ -252,7 +269,7 @@ class System:
         note = f'cannot create check "{code}". Try installing "frictionless-{code}"'
         raise FrictionlessException(errors.StepError(note=note))
 
-    def create_storage(self, name, source, **options):
+    def create_storage(self, name: str, source: Any, **options) -> Storage:
         """Create storage
 
         Parameters:
@@ -269,7 +286,7 @@ class System:
         note = f'cannot create storage "{name}". Try installing "frictionless-{name}"'
         raise FrictionlessException(errors.GeneralError(note=note))
 
-    def create_type(self, field):
+    def create_type(self, field: Field) -> Type:
         """Create type
 
         Parameters:

@@ -1,8 +1,14 @@
 from itertools import chain
+from typing import TYPE_CHECKING, Optional, Iterable, Union, List, Any
 from .exception import FrictionlessException
 from .system import system
 from . import settings
 from . import errors
+
+if TYPE_CHECKING:
+    from .loader import Loader
+    from .resource import Resource
+    from .interfaces import IListStream, ISample
 
 
 class Parser:
@@ -17,14 +23,14 @@ class Parser:
 
     """
 
-    requires_loader = False
-    supported_types = []
+    requires_loader: bool = False
+    supported_types: List[str] = []
 
-    def __init__(self, resource):
-        self.__resource = resource
-        self.__loader = None
-        self.__sample = None
-        self.__list_stream = None
+    def __init__(self, resource: Resource):
+        self.__resource: Resource = resource
+        self.__loader: Optional[Loader] = None
+        self.__sample: Optional[ISample] = None
+        self.__list_stream: Optional[IListStream] = None
 
     def __enter__(self):
         if self.closed:
@@ -121,7 +127,7 @@ class Parser:
         list_stream = chain(self.__sample, list_stream)
         return list_stream
 
-    def read_list_stream_create(self):
+    def read_list_stream_create(self) -> IListStream:
         """Create list stream from loader
 
         Parameters:
@@ -145,7 +151,7 @@ class Parser:
 
     # Write
 
-    def write_row_stream(self, resource):
+    def write_row_stream(self, resource: Resource) -> None:
         """Write row stream from the source resource
 
         Parameters:

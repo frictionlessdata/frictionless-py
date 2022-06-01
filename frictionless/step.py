@@ -29,7 +29,7 @@ class Step(Metadata):
 
     # Transform
 
-    def transform_resource(self, resource: Resource) -> None:
+    def transform_resource(self, resource: Resource):
         """Transform resource
 
         Parameters:
@@ -41,7 +41,7 @@ class Step(Metadata):
         if self.__function:
             return self.__function(resource)
 
-    def transform_package(self, package: Package) -> None:
+    def transform_package(self, package: Package):
         """Transform package
 
         Parameters:
