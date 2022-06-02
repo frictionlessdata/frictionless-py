@@ -48,7 +48,7 @@ def describe_dialect(source=None, deprecate=True, **options):
     if deprecate:
         message = 'Function "describe_dialect" is deprecated.'
         warnings.warn(message, UserWarning)
-    resource = describe_resource(source, **options)
+    resource = describe_resource(source, deprecate=False, **options)
     return resource.dialect
 
 
@@ -127,5 +127,5 @@ def describe_schema(source=None, deprecate=True, **options):
     if deprecate:
         message = 'Function "describe_schema" is deprecated (use "Schema.describe").'
         warnings.warn(message, UserWarning)
-    resource = describe_resource(source, **options)
+    resource = describe_resource(source, deprecate=False, **options)
     return resource.schema

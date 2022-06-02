@@ -1,9 +1,9 @@
-from frictionless import describe_schema
+from frictionless import describe
 
 
 # General
 
 
 def test_describe_schema():
-    schema = describe_schema("data/leading-zeros.csv")
+    schema = describe("data/leading-zeros.csv", type="schema")
     assert schema == {"fields": [{"name": "value", "type": "integer"}]}
