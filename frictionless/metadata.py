@@ -10,7 +10,7 @@ from operator import setitem
 from functools import partial
 from importlib import import_module
 from collections.abc import Mapping
-from typing import TYPE_CHECKING, Optional, Iterable, Union, List, Any
+from typing import Optional
 from .exception import FrictionlessException
 from .helpers import cached_property, render_markdown
 from . import helpers

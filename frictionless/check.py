@@ -1,12 +1,11 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Protocol, Optional, Iterable, Union, List, Any
+from typing import TYPE_CHECKING, Protocol, Optional, Iterable, List
 from .metadata import Metadata
 from . import errors
 
 if TYPE_CHECKING:
     from .row import Row
     from .error import Error
-    from .package import Package
     from .resource import Resource
 
 

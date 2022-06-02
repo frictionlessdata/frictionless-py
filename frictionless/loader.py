@@ -7,14 +7,14 @@ import atexit
 import hashlib
 import zipfile
 import tempfile
-from typing import TYPE_CHECKING, Optional, Iterable, Union, List, Any
+from typing import TYPE_CHECKING, Optional
 from .exception import FrictionlessException
 from . import settings
 from . import errors
 
 if TYPE_CHECKING:
     from .resource import Resource
-    from .interfaces import IListStream, IBuffer, ISample, IByteStream, ITextStream
+    from .interfaces import IBuffer, IByteStream, ITextStream
 
 
 # NOTE:

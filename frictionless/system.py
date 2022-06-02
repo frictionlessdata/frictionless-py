@@ -4,7 +4,7 @@ import pkgutil
 from collections import OrderedDict
 from importlib import import_module
 from contextlib import contextmanager
-from typing import TYPE_CHECKING, Optional, Union, List, Any
+from typing import TYPE_CHECKING, Any
 from .exception import FrictionlessException
 from .helpers import cached_property
 from .control import Control
@@ -14,15 +14,11 @@ from . import settings
 from . import errors
 
 if TYPE_CHECKING:
-    from .file import File
     from .check import Check
-    from .control import Control
-    from .dialect import Dialect
     from .error import Error
     from .field import Field
     from .loader import Loader
     from .parser import Parser
-    from .plugin import Plugin
     from .resource import Resource
     from .server import Server
     from .step import Step

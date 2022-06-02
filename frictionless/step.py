@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Optional, Union, List, Any
+from typing import TYPE_CHECKING, Optional, Union
 from typing_extensions import Protocol
 from .metadata import Metadata
 from . import errors

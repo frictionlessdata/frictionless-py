@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import NewType, BinaryIO, TextIO, Iterable, List, Any
+from typing import BinaryIO, TextIO, Iterable, List, Any
 
 
 # General

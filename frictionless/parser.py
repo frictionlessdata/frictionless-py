@@ -1,6 +1,6 @@
 from __future__ import annotations
 from itertools import chain
-from typing import TYPE_CHECKING, Optional, Iterable, Union, List, Any
+from typing import TYPE_CHECKING, Optional, List
 from .exception import FrictionlessException
 from .system import system
 from . import settings
