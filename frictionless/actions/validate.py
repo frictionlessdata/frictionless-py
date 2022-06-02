@@ -289,7 +289,7 @@ def validate_resource(
                         break
 
                     # Limit memory
-                    if limit_memory and not row.row_number % 100000:  # type: ignore
+                    if limit_memory and not row.row_number % 100000:
                         memory = helpers.get_current_memory_usage()
                         if memory and memory > limit_memory:
                             note = f'exceeded memory limit "{limit_memory}MB"'
