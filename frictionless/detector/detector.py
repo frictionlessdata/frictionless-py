@@ -454,7 +454,7 @@ class Detector:
 
             # Missing values
             if self.__field_missing_values != settings.DEFAULT_MISSING_VALUES:
-                schema.missing_values = self.__field_missing_values
+                schema.missing_values = self.__field_missing_values  # type: ignore
 
             # Prepare names
             names = copy(self.__field_names or labels or [])
@@ -480,7 +480,7 @@ class Detector:
             # Handle type/empty
             if self.__field_type or not fragment:
                 type = self.__field_type
-                schema.fields = [{"name": name, "type": type or "any"} for name in names]
+                schema.fields = [{"name": name, "type": type or "any"} for name in names]  # type: ignore
                 return schema
 
             # Prepare runners
@@ -489,12 +489,12 @@ class Detector:
             for candidate in system.create_candidates():
                 field = Field(candidate)
                 if field.type == "number" and self.__field_float_numbers:
-                    field.float_number = True
+                    field.float_number = True  # type: ignore
                 elif field.type == "boolean":
                     if self.__field_true_values != settings.DEFAULT_TRUE_VALUES:
-                        field.true_values = self.__field_true_values
+                        field.true_values = self.__field_true_values  # type: ignore
                     if self.__field_false_values != settings.DEFAULT_FALSE_VALUES:
-                        field.false_values = self.__field_false_values
+                        field.false_values = self.__field_false_values  # type: ignore
                 runner_fields.append(field)
             for index, name in enumerate(names):
                 runners.append([])
@@ -532,29 +532,29 @@ class Detector:
             # For not inferred fields we use the "any" type field as a default
             for index, name in enumerate(names):
                 if fields[index] is None:
-                    fields[index] = Field(name=name, type="any", schema=schema)
-            schema.fields = fields
+                    fields[index] = Field(name=name, type="any", schema=schema)  # type: ignore
+            schema.fields = fields  # type: ignore
 
         # Sync schema
         if self.__schema_sync:
             if labels:
                 fields = []
-                mapping = {field.get("name"): field for field in schema.fields}
+                mapping = {field.get("name"): field for field in schema.fields}  # type: ignore
                 for name in labels:
                     fields.append(mapping.get(name, {"name": name, "type": "any"}))
-                schema.fields = fields
+                schema.fields = fields  # type: ignore
 
         # Patch schema
         if self.__schema_patch:
             schema_patch = deepcopy(self.__schema_patch)
             fields = schema_patch.pop("fields", {})
             schema.update(schema_patch)
-            for field in schema.fields:
+            for field in schema.fields:  # type: ignore
                 field.update((fields.get(field.get("name"), {})))
 
         # Validate schema
         # NOTE: at some point we might need to remove it for transform needs
-        if len(schema.field_names) != len(set(schema.field_names)):
+        if len(schema.field_names) != len(set(schema.field_names)):  # type: ignore
             if self.__schema_sync:
                 note = 'Duplicate labels in header is not supported with "schema_sync"'
                 raise FrictionlessException(errors.GeneralError(note=note))
