@@ -66,12 +66,13 @@ class deviated_value(Check):
         # Prepare interval
         try:
             stdev = statistics.stdev(self.__cells)
-            average = self.__average_function(self.__cells)
+            average = self.__average_function(self.__cells)  # type: ignore
             minimum = average - stdev * self.__interval
             maximum = average + stdev * self.__interval
         except Exception as exception:
             note = 'calculation issue "%s"' % exception
             yield errors.DeviatedValueError(note=note)
+            return
 
         # Check values
         for row_position, cell in zip(self.__row_positions, self.__cells):

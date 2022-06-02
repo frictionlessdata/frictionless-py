@@ -52,7 +52,7 @@ class baseline(Check):
         if self.resource.tabular:
             empty = not (self.resource.labels or self.resource.fragment)
             yield from [errors.SourceError(note="the source is empty")] if empty else []
-            yield from self.resource.header.errors
+            yield from self.resource.header.errors  # type: ignore
         yield from []
 
     def validate_row(self, row):
@@ -64,30 +64,30 @@ class baseline(Check):
         # Hash
         if stats.get("hash"):
             hashing = self.resource.hashing
-            if stats["hash"] != self.resource.stats["hash"]:
+            if stats["hash"] != self.resource.stats["hash"]:  # type: ignore
                 note = 'expected %s is "%s" and actual is "%s"'
-                note = note % (hashing, stats["hash"], self.resource.stats["hash"])
+                note = note % (hashing, stats["hash"], self.resource.stats["hash"])  # type: ignore
                 yield errors.HashCountError(note=note)
 
         # Bytes
         if stats.get("bytes"):
-            if stats["bytes"] != self.resource.stats["bytes"]:
+            if stats["bytes"] != self.resource.stats["bytes"]:  # type: ignore
                 note = 'expected is "%s" and actual is "%s"'
-                note = note % (stats["bytes"], self.resource.stats["bytes"])
+                note = note % (stats["bytes"], self.resource.stats["bytes"])  # type: ignore
                 yield errors.ByteCountError(note=note)
 
         # Fields
         if stats.get("fields"):
-            if stats["fields"] != self.resource.stats["fields"]:
+            if stats["fields"] != self.resource.stats["fields"]:  # type: ignore
                 note = 'expected is "%s" and actual is "%s"'
-                note = note % (stats["fields"], self.resource.stats["fields"])
+                note = note % (stats["fields"], self.resource.stats["fields"])  # type: ignore
                 yield errors.FieldCountError(note=note)
 
         # Rows
         if stats.get("rows"):
-            if stats["rows"] != self.resource.stats["rows"]:
+            if stats["rows"] != self.resource.stats["rows"]:  # type: ignore
                 note = 'expected is "%s" and actual is "%s"'
-                note = note % (stats["rows"], self.resource.stats["rows"])
+                note = note % (stats["rows"], self.resource.stats["rows"])  # type: ignore
                 yield errors.RowCountError(note=note)
 
     # Metadata

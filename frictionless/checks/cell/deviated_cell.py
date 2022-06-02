@@ -1,7 +1,11 @@
 import statistics
 from ... import errors
 from ...check import Check
-from typing import List, Iterator
+from typing import TYPE_CHECKING, List, Iterable, Optional
+
+if TYPE_CHECKING:
+    from ...row import Row
+    from ...error import Error
 
 
 class deviated_cell(Check):
@@ -26,7 +30,11 @@ class deviated_cell(Check):
     Errors = [errors.DeviatedCellError]
 
     def __init__(
-        self, descriptor=None, *, ignore_fields: List[str] = None, interval: int = None
+        self,
+        descriptor=None,
+        *,
+        ignore_fields: Optional[List[str]] = None,
+        interval: Optional[int] = None
     ):
         self.setinitial("ignoreFields", ignore_fields)
         self.setinitial("interval", interval)
@@ -36,7 +44,7 @@ class deviated_cell(Check):
         self.__ignore_fields = self.get("ignoreFields")
         self.__interval = self.get("interval", 3)
 
-    def validate_row(self, row: any) -> Iterator:
+    def validate_row(self, row: Row) -> Iterable[Error]:
         for field_idx, field in enumerate(row.fields):
             cell = row[field.name]
             if self.__ignore_fields and field.name in self.__ignore_fields:
@@ -48,7 +56,7 @@ class deviated_cell(Check):
                 self.__fields[field_idx] = field.name
         yield from []
 
-    def validate_end(self) -> Iterator:
+    def validate_end(self) -> Iterable[Error]:
         for field_idx, col_cell_sizes in self.__cell_sizes.items():
             threshold = 5000
             if len(col_cell_sizes) < 2:
@@ -58,16 +66,16 @@ class deviated_cell(Check):
                 stdev = statistics.stdev(col_cell_sizes.values())
                 average = statistics.median(col_cell_sizes.values())
                 maximum = average + stdev * self.__interval
+                # Use threshold or maximum value whichever is higher
+                threshold = threshold if threshold > maximum else maximum
+                for row_position, cell in col_cell_sizes.items():
+                    if cell > threshold:
+                        note = 'cell at row "%s" and field "%s" has deviated size'
+                        note = note % (row_position, self.__fields[field_idx])
+                        yield errors.DeviatedCellError(note=note)
             except Exception as exception:
                 note = 'calculation issue "%s"' % exception
                 yield errors.DeviatedCellError(note=note)
-            # Use threshold or maximum value whichever is higher
-            threshold = threshold if threshold > maximum else maximum
-            for row_position, cell in col_cell_sizes.items():
-                if cell > threshold:
-                    note = 'cell at row "%s" and field "%s" has deviated size'
-                    note = note % (row_position, self.__fields[field_idx])
-                    yield errors.DeviatedCellError(note=note)
 
     # Metadata
 

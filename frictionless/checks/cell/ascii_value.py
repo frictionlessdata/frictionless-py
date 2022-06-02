@@ -1,6 +1,10 @@
 from ... import errors
 from ...check import Check
-from typing import Iterator
+from typing import TYPE_CHECKING, Iterable
+
+if TYPE_CHECKING:
+    from ...row import Row
+    from ...error import Error
 
 
 class ascii_value(Check):
@@ -21,7 +25,7 @@ class ascii_value(Check):
 
     # Validate
 
-    def validate_row(self, row: any) -> Iterator[any]:
+    def validate_row(self, row: Row) -> Iterable[Error]:
         for field in row.fields:
             if field.type == "string":
                 cell = row[field.name]
