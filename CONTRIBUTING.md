@@ -53,7 +53,7 @@ To update a reference in `docs/references` and some other auto-generated documen
 
 ## Code Contribution
 
-Frictionless is a Python3.6+ framework, and it uses some common Python tools for the development process:
+Frictionless is a Python3.7+ framework, and it uses some common Python tools for the development process:
 - testing: `pytest`
 - linting: `pylama`
 - formatting: `black`
