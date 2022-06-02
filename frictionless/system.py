@@ -19,6 +19,7 @@ if TYPE_CHECKING:
     from .field import Field
     from .loader import Loader
     from .parser import Parser
+    from .plugin import Plugin
     from .resource import Resource
     from .server import Server
     from .step import Step
@@ -316,7 +317,7 @@ class System:
         """
         if self.__http_session:
             return self.__http_session
-        return self.plugins["remote"].create_http_session()
+        return self.plugins["remote"].create_http_session()  # type: ignore
 
     @contextmanager
     def use_http_session(self, http_session=None):
@@ -355,7 +356,7 @@ class System:
     # Plugins
 
     @cached_property
-    def plugins(self):
+    def plugins(self) -> OrderedDict[str, Plugin]:
         modules = OrderedDict()
         for item in pkgutil.iter_modules():
             if item.name.startswith("frictionless_"):
