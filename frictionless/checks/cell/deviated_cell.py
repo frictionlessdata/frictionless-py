@@ -46,7 +46,7 @@ class deviated_cell(Check):
         self.__interval = self.get("interval", 3)
 
     def validate_row(self, row: Row) -> Iterable[Error]:
-        for field_idx, field in enumerate(row.fields):
+        for field_idx, field in enumerate(row.fields):  # type: ignore
             cell = row[field.name]
             if self.__ignore_fields and field.name in self.__ignore_fields:
                 continue

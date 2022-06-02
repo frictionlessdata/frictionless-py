@@ -30,7 +30,7 @@ class table_validate(Step):
                 yield current.header
                 for row in current.row_stream:  # type: ignore
                     if not row.valid:
-                        raise FrictionlessException(error=row.errors[0])
+                        raise FrictionlessException(error=row.errors[0])  # type: ignore
                     yield row
 
         # Meta

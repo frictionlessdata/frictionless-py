@@ -72,10 +72,10 @@ class NumberType(Type):
     # Write
 
     def write_cell(self, cell):
-        if "groupChar" in self.field:
+        if "groupChar" in self.field:  # type: ignore
             cell = f"{cell:,}".replace(",", self.field.group_char)  # type: ignore
         else:
             cell = str(cell)
-        if "decimalChar" in self.field:
+        if "decimalChar" in self.field:  # type: ignore
             cell = cell.replace(".", self.field.decimal_char)  # type: ignore
         return cell

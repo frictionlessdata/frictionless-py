@@ -79,7 +79,7 @@ class table_dimensions(Check):
         self.__last_row = row
         number_rows = self.__last_row.row_number
         # Check if exceed the max number of rows
-        if self.__max_rows > 0 and self.__last_row.row_number > self.__max_rows:
+        if self.__max_rows > 0 and self.__last_row.row_number > self.__max_rows:  # type: ignore
             yield errors.TableDimensionsError(
                 note="Current number of rows is %s, the maximum is %s"
                 % (number_rows, self.__max_rows),
@@ -98,7 +98,7 @@ class table_dimensions(Check):
             )
 
         # Check if has less rows than the required
-        if self.__min_rows > 0 and number_rows < self.__min_rows:
+        if self.__min_rows > 0 and number_rows < self.__min_rows:  # type: ignore
             yield errors.TableDimensionsError(
                 note="Current number of rows is %s, the minimum is %s"
                 % (number_rows, self.__min_rows),

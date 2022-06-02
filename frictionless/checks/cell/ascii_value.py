@@ -27,7 +27,7 @@ class ascii_value(Check):
     # Validate
 
     def validate_row(self, row: Row) -> Iterable[Error]:
-        for field in row.fields:
+        for field in row.fields:  # type: ignore
             if field.type == "string":
                 cell = row[field.name]
                 if cell and not cell.isascii():

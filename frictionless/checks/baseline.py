@@ -56,7 +56,7 @@ class baseline(Check):
         yield from []
 
     def validate_row(self, row):
-        yield from row.errors
+        yield from row.errors  # type: ignore
 
     def validate_end(self):
         stats = self.get("stats", {})
