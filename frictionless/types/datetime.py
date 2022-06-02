@@ -37,7 +37,7 @@ class DatetimeType(Type):
                 elif self.field.format == "any":
                     cell = parser.parse(cell)
                 else:
-                    cell = datetime.strptime(cell, self.field.format)
+                    cell = datetime.strptime(cell, self.field.format)  # type: ignore
             except Exception:
                 return None
         return cell

@@ -40,7 +40,7 @@ class GeopointType(Type):
                         return None
                     lon = cell["lon"]
                     lat = cell["lat"]
-                cell = geopoint(Decimal(lon), Decimal(lat))
+                cell = geopoint(Decimal(lon), Decimal(lat))  # type: ignore
             except Exception:
                 return None
 

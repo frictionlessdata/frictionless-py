@@ -32,7 +32,7 @@ class NumberType(Type):
             Secondary = Decimal
         if isinstance(cell, str):
             if self.read_cell_processor:
-                cell = self.read_cell_processor(cell)
+                cell = self.read_cell_processor(cell)  # type: ignore
             try:
                 return Primary(cell)
             except Exception:
@@ -47,7 +47,7 @@ class NumberType(Type):
             return Primary(str(cell) if Primary is Decimal else cell)
         return None
 
-    @Metadata.property(write=False)
+    @Metadata.property(write=False)  # type: ignore
     def read_cell_processor(self):
         if set(["groupChar", "decimalChar", "bareNumber"]).intersection(
             self.field.keys()
@@ -64,7 +64,7 @@ class NumberType(Type):
 
             return processor
 
-    @Metadata.property(write=False)
+    @Metadata.property(write=False)  # type: ignore
     def read_cell_pattern(self):
         if not self.field.bare_number:
             return re.compile(r"((^\D*)|(\D*$))")
@@ -73,9 +73,9 @@ class NumberType(Type):
 
     def write_cell(self, cell):
         if "groupChar" in self.field:
-            cell = f"{cell:,}".replace(",", self.field.group_char)
+            cell = f"{cell:,}".replace(",", self.field.group_char)  # type: ignore
         else:
             cell = str(cell)
         if "decimalChar" in self.field:
-            cell = cell.replace(".", self.field.decimal_char)
+            cell = cell.replace(".", self.field.decimal_char)  # type: ignore
         return cell

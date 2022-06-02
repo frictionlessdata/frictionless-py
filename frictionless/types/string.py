@@ -34,13 +34,13 @@ class StringType(Type):
             uri = rfc3986.uri_reference(cell)
             try:
                 uri_validator.validate(uri)
-            except rfc3986.exceptions.ValidationError:
+            except rfc3986.exceptions.ValidationError:  # type: ignore
                 return None
         elif self.field.format == "email":
-            if not validators.email(cell):
+            if not validators.email(cell):  # type: ignore
                 return None
         elif self.field.format == "uuid":
-            if not validators.uuid(cell):
+            if not validators.uuid(cell):  # type: ignore
                 return None
         elif self.field.format == "binary":
             try:
@@ -57,4 +57,4 @@ class StringType(Type):
 
 # Internal
 
-uri_validator = rfc3986.validators.Validator().require_presence_of("scheme")
+uri_validator = rfc3986.validators.Validator().require_presence_of("scheme")  # type: ignore

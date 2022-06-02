@@ -28,13 +28,13 @@ class BooleanType(Type):
     @cached_property
     def read_cell_mapping(self):
         mapping = {}
-        for value in self.field.true_values:
+        for value in self.field.true_values:  # type: ignore
             mapping[value] = True
-        for value in self.field.false_values:
+        for value in self.field.false_values:  # type: ignore
             mapping[value] = False
         return mapping
 
     # Write
 
     def write_cell(self, cell):
-        return self.field.true_values[0] if cell else self.field.false_values[0]
+        return self.field.true_values[0] if cell else self.field.false_values[0]  # type: ignore

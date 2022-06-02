@@ -1,3 +1,4 @@
+# type: ignore
 import types
 from typing import TYPE_CHECKING
 from ..check import Check

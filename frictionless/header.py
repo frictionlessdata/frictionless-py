@@ -1,3 +1,4 @@
+# type: ignore
 from __future__ import annotations
 from itertools import zip_longest
 from importlib import import_module

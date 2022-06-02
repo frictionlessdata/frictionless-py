@@ -1,3 +1,4 @@
+# type: ignore
 import warnings
 from typing import TYPE_CHECKING
 from ..report import Report

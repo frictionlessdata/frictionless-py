@@ -42,7 +42,7 @@ class IntegerType(Type):
             return int(cell)
         return None
 
-    @Metadata.property(write=False)
+    @Metadata.property(write=False)  # type: ignore
     def read_cell_pattern(self):
         if not self.field.bare_number:
             return re.compile(r"((^\D*)|(\D*$))")

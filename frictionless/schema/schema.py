@@ -1,3 +1,4 @@
+# type: ignore
 from copy import copy, deepcopy
 from ..exception import FrictionlessException
 from ..metadata import Metadata

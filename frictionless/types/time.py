@@ -37,7 +37,7 @@ class TimeType(Type):
                 elif self.field.format == "any":
                     cell = parser.parse(cell).timetz()
                 else:
-                    cell = datetime.strptime(cell, self.field.format).timetz()
+                    cell = datetime.strptime(cell, self.field.format).timetz()  # type: ignore
             except Exception:
                 return None
         return cell

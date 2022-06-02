@@ -1,3 +1,4 @@
+# type: ignore
 import io
 import re
 import os

@@ -15,4 +15,5 @@ def validate(detector: "Detector"):
         Report: validation report
     """
     timer = helpers.Timer()
-    return Report(time=timer.time, errors=detector.metadata_errors, tasks=[])
+    # TODO: enable when Detector is Metadata
+    return Report(time=timer.time, errors=detector.metadata_errors, tasks=[])  # type: ignore
