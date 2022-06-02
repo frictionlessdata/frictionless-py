@@ -62,6 +62,7 @@ class Step(Metadata):
 # Internal
 
 
+# TODO: add to interfaces?
 class StepFunction(Protocol):
     def __call__(self, source: Union[Resource, Package]) -> None:
         ...

@@ -124,7 +124,7 @@ def validate_package(
         if "resource_name" in options:
             return validate_resource(package.get_resource(options["resource_name"]))
         package_stats = []
-        for resource in package.resources:
+        for resource in package.resources:  # type: ignore
             package_stats.append({key: val for key, val in resource.stats.items() if val})
     except FrictionlessException as exception:
         return Report(time=timer.time, errors=[exception.error], tasks=[])
@@ -141,7 +141,7 @@ def validate_package(
     if not parallel:
         tasks = []
         errors = []
-        for resource, stats in zip(package.resources, package_stats):
+        for resource, stats in zip(package.resources, package_stats):  # type: ignore
             resource.stats = stats
             report = validate_resource(resource, original=original, **options)
             tasks.extend(report.tasks)
@@ -151,7 +151,7 @@ def validate_package(
     # Validate in-parallel
     else:
         inquiry = Inquiry(tasks=[])
-        for resource, stats in zip(package.resources, package_stats):
+        for resource, stats in zip(package.resources, package_stats):  # type: ignore
             for fk in resource.schema.foreign_keys:
                 if fk["reference"]["resource"]:
                     message = "Foreign keys validation is ignored in the parallel mode"
@@ -232,15 +232,15 @@ def validate_resource(
     # Open resource
     if not errors:
         try:
-            resource.open()
+            resource.open()  # type: ignore
         except FrictionlessException as exception:
             errors.append(exception.error)
-            resource.close()
+            resource.close()  # type: ignore
 
     # Prepare checks
     if not errors:
         checks = checks or []
-        checks.insert(0, {"code": "baseline", "stats": stats})
+        checks.insert(0, {"code": "baseline", "stats": stats})  # type: ignore
         for index, check in enumerate(checks):
             if not isinstance(check, Check):
                 func = isinstance(check, types.FunctionType)
@@ -250,36 +250,36 @@ def validate_resource(
 
     # Validate checks
     if not errors:
-        for index, check in enumerate(checks.copy()):
+        for index, check in enumerate(checks.copy()):  # type: ignore
             if check.metadata_errors:
-                del checks[index]
+                del checks[index]  # type: ignore
                 for error in check.metadata_errors:
                     errors.append(error)
 
     # Validate metadata
     if not errors:
-        metadata_resource = original_resource if original else resource
-        for error in metadata_resource.metadata_errors:
+        metadata_resource = original_resource if original else resource  # type: ignore
+        for error in metadata_resource.metadata_errors:  # type: ignore
             errors.append(error)
 
     # Validate data
     if not errors:
-        with resource:
+        with resource:  # type: ignore
 
             # Validate start
-            for index, check in enumerate(checks.copy()):
+            for index, check in enumerate(checks.copy()):  # type: ignore
                 check.connect(resource)
                 for error in check.validate_start():
                     if error.code == "check-error":
-                        del checks[index]
+                        del checks[index]  # type: ignore
                     errors.append(error)
 
             # Validate rows
-            if resource.tabular:
-                for row in resource.row_stream:
+            if resource.tabular:  # type: ignore
+                for row in resource.row_stream:  # type: ignore
 
                     # Validate row
-                    for check in checks:
+                    for check in checks:  # type: ignore
                         for error in check.validate_row(row):
                             errors.append(error)
 
@@ -299,9 +299,9 @@ def validate_resource(
 
             # Validate end
             if not partial:
-                if not resource.tabular:
-                    helpers.pass_through(resource.byte_stream)
-                for check in checks:
+                if not resource.tabular:  # type: ignore
+                    helpers.pass_through(resource.byte_stream)  # type: ignore
+                for check in checks:  # type: ignore
                     for error in check.validate_end():
                         errors.append(error)
 

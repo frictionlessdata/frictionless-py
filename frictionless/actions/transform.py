@@ -168,12 +168,12 @@ def transform_resource(source=None, *, steps, deprecate=True, **options):
 
         # Postprocess
         if resource.data is not data:
-            resource.data = DataWithErrorHandling(resource.data, step=step)
+            resource.data = DataWithErrorHandling(resource.data, step=step)  # type: ignore
             # NOTE:
             # We need rework resource.data or move to resource.__setattr__
             # https://github.com/frictionlessdata/frictionless-py/issues/722
-            resource.scheme = ""
-            resource.format = "inline"
+            resource.scheme = ""  # type: ignore
+            resource.format = "inline"  # type: ignore
             dict.pop(resource, "path", None)
             dict.pop(resource, "hashing", None)
             dict.pop(resource, "encoding", None)

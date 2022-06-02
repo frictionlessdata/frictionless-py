@@ -567,6 +567,7 @@ class Detector:
 # Internal
 
 
+# TODO: add to interfaces?
 class EncodingFunction(Protocol):
     def __call__(self, buffer: IBuffer) -> str:
         ...

@@ -87,6 +87,7 @@ class Check(Metadata):
 # Internal
 
 
+# TODO: add to interfaces?
 class CheckFunction(Protocol):
     def __call__(self, row: Row) -> Iterable[Error]:
         ...

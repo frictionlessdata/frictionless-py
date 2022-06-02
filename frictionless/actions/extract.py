@@ -62,7 +62,7 @@ def extract_package(
     result = {}
     native = isinstance(source, Package)
     package = source.to_copy() if native else Package(source, **options)
-    for number, resource in enumerate(package.resources, start=1):
+    for number, resource in enumerate(package.resources, start=1):  # type: ignore
         key = resource.fullpath if not resource.memory else f"memory{number}"
         data = read_row_stream(resource)
         data = (process(row) for row in data) if process else data
