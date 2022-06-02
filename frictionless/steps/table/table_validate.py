@@ -25,10 +25,10 @@ class table_validate(Step):
         # Data
         def data():
             with current:
-                if not current.header.valid:
-                    raise FrictionlessException(error=current.header.errors[0])
+                if not current.header.valid:  # type: ignore
+                    raise FrictionlessException(error=current.header.errors[0])  # type: ignore
                 yield current.header
-                for row in current.row_stream:
+                for row in current.row_stream:  # type: ignore
                     if not row.valid:
                         raise FrictionlessException(error=row.errors[0])
                     yield row

@@ -23,13 +23,13 @@ class row_subset(Step):
         subset = self.get("subset")
         field_name = self.get("fieldName")
         if subset == "conflicts":
-            resource.data = table.conflicts(field_name)
+            resource.data = table.conflicts(field_name)  # type: ignore
         elif subset == "distinct":
-            resource.data = table.distinct(field_name)
+            resource.data = table.distinct(field_name)  # type: ignore
         elif subset == "duplicates":
-            resource.data = table.duplicates(field_name)
+            resource.data = table.duplicates(field_name)  # type: ignore
         elif subset == "unique":
-            resource.data = table.unique(field_name)
+            resource.data = table.unique(field_name)  # type: ignore
 
     # Metadata
 

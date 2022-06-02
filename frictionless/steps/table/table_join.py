@@ -45,29 +45,29 @@ class table_join(Step):
             source = target.package.get_resource(source)
         elif isinstance(source, dict):
             source = Resource(source)
-        source.infer()
+        source.infer()  # type: ignore
         view1 = target.to_petl()
-        view2 = source.to_petl()
+        view2 = source.to_petl()  # type: ignore
         if mode not in ["negate"]:
-            for field in source.schema.fields:
+            for field in source.schema.fields:  # type: ignore
                 if field.name != field_name:
                     target.schema.fields.append(field.to_copy())
         if mode == "inner":
             join = petl.hashjoin if use_hash else petl.join
-            resource.data = join(view1, view2, field_name)
+            resource.data = join(view1, view2, field_name)  # type: ignore
         elif mode == "left":
             leftjoin = petl.hashleftjoin if use_hash else petl.leftjoin
-            resource.data = leftjoin(view1, view2, field_name)
+            resource.data = leftjoin(view1, view2, field_name)  # type: ignore
         elif mode == "right":
             rightjoin = petl.hashrightjoin if use_hash else petl.rightjoin
-            resource.data = rightjoin(view1, view2, field_name)
+            resource.data = rightjoin(view1, view2, field_name)  # type: ignore
         elif mode == "outer":
-            resource.data = petl.outerjoin(view1, view2, field_name)
+            resource.data = petl.outerjoin(view1, view2, field_name)  # type: ignore
         elif mode == "cross":
-            resource.data = petl.crossjoin(view1, view2)
+            resource.data = petl.crossjoin(view1, view2)  # type: ignore
         elif mode == "negate":
             antijoin = petl.hashantijoin if use_hash else petl.antijoin
-            resource.data = antijoin(view1, view2, field_name)
+            resource.data = antijoin(view1, view2, field_name)  # type: ignore
 
     # Metadata
 

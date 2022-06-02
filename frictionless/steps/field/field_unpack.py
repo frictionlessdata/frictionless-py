@@ -26,15 +26,15 @@ class field_unpack(Step):
         to_names = self.get("toNames")
         preserve = self.get("preserve")
         field = resource.schema.get_field(name)
-        for to_name in to_names:
+        for to_name in to_names:  # type: ignore
             resource.schema.add_field(Field(name=to_name))
         if not preserve:
             resource.schema.remove_field(name)
         if field.type == "object":
-            processor = table.unpackdict
+            processor = table.unpackdict  # type: ignore
             resource.data = processor(name, to_names, includeoriginal=preserve)
         else:
-            processor = table.unpack
+            processor = table.unpack  # type: ignore
             resource.data = processor(name, to_names, include_original=preserve)
 
     # Metadata

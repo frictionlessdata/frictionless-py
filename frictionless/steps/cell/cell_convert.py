@@ -27,11 +27,11 @@ class cell_convert(Step):
         if not field_name:
             if not function:
                 function = lambda input: value
-            resource.data = table.convertall(function)
+            resource.data = table.convertall(function)  # type: ignore
         elif function:
-            resource.data = table.convert(field_name, function)
+            resource.data = table.convert(field_name, function)  # type: ignore
         else:
-            resource.data = table.update(field_name, value)
+            resource.data = table.update(field_name, value)  # type: ignore
 
     # Metadata
 

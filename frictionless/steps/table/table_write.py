@@ -27,7 +27,7 @@ class table_write(Step):
     def transform_resource(self, resource):
         path = self.get("path")
         options = self.get("options")
-        resource.write(Resource(path=path, **options))
+        resource.write(Resource(path=path, **options))  # type: ignore
 
     # Metadata
 

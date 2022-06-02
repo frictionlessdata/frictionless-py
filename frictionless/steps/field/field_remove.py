@@ -20,9 +20,9 @@ class field_remove(Step):
     def transform_resource(self, resource):
         table = resource.to_petl()
         names = self.get("names")
-        for name in names:
+        for name in names:  # type: ignore
             resource.schema.remove_field(name)
-        resource.data = table.cutout(*names)
+        resource.data = table.cutout(*names)  # type: ignore
 
     # Metadata
 

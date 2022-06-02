@@ -41,13 +41,13 @@ class field_add(Step):
     def transform_resource(self, resource):
         table = resource.to_petl()
         descriptor = self.to_dict()
-        descriptor.pop("code", None)
-        name = descriptor.pop("name", None)
-        value = descriptor.pop("value", None)
-        formula = descriptor.pop("formula", None)
-        function = descriptor.pop("function", None)
-        position = descriptor.pop("position", None)
-        incremental = descriptor.pop("incremental", None)
+        descriptor.pop("code", None)  # type: ignore
+        name = descriptor.pop("name", None)  # type: ignore
+        value = descriptor.pop("value", None)  # type: ignore
+        formula = descriptor.pop("formula", None)  # type: ignore
+        function = descriptor.pop("function", None)  # type: ignore
+        position = descriptor.pop("position", None)  # type: ignore
+        incremental = descriptor.pop("incremental", None)  # type: ignore
         field = Field(descriptor, name=name)
         index = position - 1 if position else None
         if index is None:
@@ -55,12 +55,12 @@ class field_add(Step):
         else:
             resource.schema.fields.insert(index, field)
         if incremental:
-            resource.data = table.addrownumbers(field=name)
+            resource.data = table.addrownumbers(field=name)  # type: ignore
         else:
             if formula:
                 function = lambda row: simpleeval.simple_eval(formula, names=row)
             value = value or function
-            resource.data = table.addfield(name, value=value, index=index)
+            resource.data = table.addfield(name, value=value, index=index)  # type: ignore
 
     # Metadata
 

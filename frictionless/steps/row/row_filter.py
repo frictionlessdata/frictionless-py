@@ -27,7 +27,7 @@ class row_filter(Step):
             # NOTE: review EvalWithCompoundTypes/sync with checks
             evalclass = simpleeval.EvalWithCompoundTypes
             function = lambda row: evalclass(names=row).eval(formula)
-        resource.data = table.select(function)
+        resource.data = table.select(function)  # type: ignore
 
     # Metadata
 

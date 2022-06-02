@@ -24,8 +24,8 @@ class table_normalize(Step):
         # Data
         def data():
             with current:
-                yield current.header.to_list()
-                for row in current.row_stream:
+                yield current.header.to_list()  # type: ignore
+                for row in current.row_stream:  # type: ignore
                     yield row.to_list()
 
         # Meta

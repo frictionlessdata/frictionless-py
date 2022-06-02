@@ -23,9 +23,9 @@ class cell_interpolate(Step):
         field_name = self.get("fieldName")
         table = resource.to_petl()
         if not field_name:
-            resource.data = table.interpolateall(template)
+            resource.data = table.interpolateall(template)  # type: ignore
         else:
-            resource.data = table.interpolate(field_name, template)
+            resource.data = table.interpolate(field_name, template)  # type: ignore
 
     # Metadata
 

@@ -38,24 +38,24 @@ class field_update(Step):
     def transform_resource(self, resource):
         table = resource.to_petl()
         descriptor = self.to_dict()
-        descriptor.pop("code", None)
-        name = descriptor.pop("name", None)
-        value = descriptor.pop("value", None)
-        formula = descriptor.pop("formula", None)
-        function = descriptor.pop("function", None)
-        new_name = descriptor.pop("newName", None)
+        descriptor.pop("code", None)  # type: ignore
+        name = descriptor.pop("name", None)  # type: ignore
+        value = descriptor.pop("value", None)  # type: ignore
+        formula = descriptor.pop("formula", None)  # type: ignore
+        function = descriptor.pop("function", None)  # type: ignore
+        new_name = descriptor.pop("newName", None)  # type: ignore
         if new_name:
-            descriptor["name"] = new_name
+            descriptor["name"] = new_name  # type: ignore
         field = resource.schema.get_field(name)
         field.update(descriptor)
         if formula:
             function = lambda val, row: simpleeval.simple_eval(formula, names=row)
         if function:
-            resource.data = table.convert(name, function)
+            resource.data = table.convert(name, function)  # type: ignore
         elif new_name:
-            resource.data = table.rename({name: new_name})
+            resource.data = table.rename({name: new_name})  # type: ignore
         elif "value" in self:
-            resource.data = table.update(name, value)
+            resource.data = table.update(name, value)  # type: ignore
 
     # Metadata
 

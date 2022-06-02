@@ -22,7 +22,7 @@ class row_sort(Step):
         table = resource.to_petl()
         field_names = self.get("fieldNames")
         reverse = self.get("reverse", False)
-        resource.data = table.sort(field_names, reverse=reverse)
+        resource.data = table.sort(field_names, reverse=reverse)  # type: ignore
 
     # Metadata
 

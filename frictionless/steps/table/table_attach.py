@@ -31,12 +31,12 @@ class table_attach(Step):
             source = target.package.get_resource(source)
         elif isinstance(source, dict):
             source = Resource(source)
-        source.infer()
+        source.infer()  # type: ignore
         view1 = target.to_petl()
-        view2 = source.to_petl()
-        for field in source.schema.fields:
+        view2 = source.to_petl()  # type: ignore
+        for field in source.schema.fields:  # type: ignore
             target.schema.fields.append(field.to_copy())
-        resource.data = petl.annex(view1, view2)
+        resource.data = petl.annex(view1, view2)  # type: ignore
 
     # Metadata
 

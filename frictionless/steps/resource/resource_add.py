@@ -24,7 +24,7 @@ class resource_add(Step):
 
     def transform_package(self, package):
         descriptor = self.to_dict()
-        descriptor.pop("code", None)
+        descriptor.pop("code", None)  # type: ignore
         resource = Resource(descriptor, basepath=package.basepath)
         resource.infer()
         package.add_resource(resource)

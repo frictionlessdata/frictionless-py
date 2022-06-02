@@ -23,7 +23,7 @@ class field_filter(Step):
         for name in resource.schema.field_names:
             if name not in names:
                 resource.schema.remove_field(name)
-        resource.data = table.cut(*names)
+        resource.data = table.cut(*names)  # type: ignore
 
     # Metadata
 

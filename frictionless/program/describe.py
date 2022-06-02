@@ -1,3 +1,4 @@
+# type: ignore
 import sys
 import typer
 from typing import List

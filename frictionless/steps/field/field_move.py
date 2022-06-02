@@ -23,8 +23,8 @@ class field_move(Step):
         name = self.get("name")
         position = self.get("position")
         field = resource.schema.remove_field(name)
-        resource.schema.fields.insert(position - 1, field)
-        resource.data = table.movefield(name, position - 1)
+        resource.schema.fields.insert(position - 1, field)  # type: ignore
+        resource.data = table.movefield(name, position - 1)  # type: ignore
 
     # Metadata
 

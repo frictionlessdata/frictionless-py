@@ -31,9 +31,9 @@ class table_aggregate(Step):
         field = resource.schema.get_field(group_name)
         resource.schema.fields.clear()
         resource.schema.add_field(field)
-        for name in aggregation.keys():
+        for name in aggregation.keys():  # type: ignore
             resource.schema.add_field(Field(name=name))
-        resource.data = table.aggregate(group_name, aggregation)
+        resource.data = table.aggregate(group_name, aggregation)  # type: ignore
 
     # Metadata
 

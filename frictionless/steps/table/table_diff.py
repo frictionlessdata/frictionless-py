@@ -42,14 +42,14 @@ class table_diff(Step):
             source = target.package.get_resource(source)
         elif isinstance(source, dict):
             source = Resource(source)
-        source.infer()
+        source.infer()  # type: ignore
         view1 = target.to_petl()
-        view2 = source.to_petl()
+        view2 = source.to_petl()  # type: ignore
         function = petl.recordcomplement if ignore_order else petl.complement
         # NOTE: we might raise an error for ignore/hash
         if use_hash and not ignore_order:
             function = petl.hashcomplement
-        resource.data = function(view1, view2)
+        resource.data = function(view1, view2)  # type: ignore
 
     # Metadata
 

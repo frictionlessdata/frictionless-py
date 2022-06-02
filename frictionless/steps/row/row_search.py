@@ -27,7 +27,7 @@ class row_search(Step):
         negate = self.get("negate")
         search = petl.searchcomplement if negate else petl.search
         if field_name:
-            resource.data = search(table, field_name, regex)
+            resource.data = search(table, field_name, regex)  # type: ignore
         else:
             resource.data = search(table, regex)
 

@@ -26,7 +26,7 @@ class table_pivot(Step):
         table = resource.to_petl()
         options = self.get("options")
         resource.pop("schema", None)
-        resource.data = table.pivot(**options)
+        resource.data = table.pivot(**options)  # type: ignore
         resource.infer()
 
     # Metadata

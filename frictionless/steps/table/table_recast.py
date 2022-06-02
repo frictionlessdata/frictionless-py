@@ -34,7 +34,7 @@ class table_recast(Step):
         field_name = self.get("fieldName")
         from_field_names = self.get("fromFieldNames", ["variable", "value"])
         resource.pop("schema", None)
-        resource.data = table.recast(
+        resource.data = table.recast(  # type: ignore
             key=field_name,
             variablefield=from_field_names[0],
             valuefield=from_field_names[1],

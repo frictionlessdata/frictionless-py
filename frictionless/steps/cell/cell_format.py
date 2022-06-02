@@ -23,9 +23,9 @@ class cell_format(Step):
         field_name = self.get("fieldName")
         template = self.get("template")
         if not field_name:
-            resource.data = table.formatall(template)
+            resource.data = table.formatall(template)  # type: ignore
         else:
-            resource.data = table.format(field_name, template)
+            resource.data = table.format(field_name, template)  # type: ignore
 
     # Metadata
 

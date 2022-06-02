@@ -1,3 +1,4 @@
+# type: ignore
 import sys
 import typer
 from ..exception import FrictionlessException

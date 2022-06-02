@@ -22,7 +22,7 @@ class row_split(Step):
         table = resource.to_petl()
         pattern = self.get("pattern")
         field_name = self.get("fieldName")
-        resource.data = table.splitdown(field_name, pattern)
+        resource.data = table.splitdown(field_name, pattern)  # type: ignore
 
     # Metadata
 

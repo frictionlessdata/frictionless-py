@@ -36,20 +36,20 @@ class field_split(Step):
         to_names = self.get("toNames")
         pattern = self.get("pattern")
         preserve = self.get("preserve")
-        for to_name in to_names:
+        for to_name in to_names:  # type: ignore
             resource.schema.add_field(Field(name=to_name, type="string"))
         if not preserve:
             resource.schema.remove_field(name)
         processor = petl.split
         # NOTE: this condition needs to be improved
-        if "(" in pattern:
+        if "(" in pattern:  # type: ignore
             processor = petl.capture
-        resource.data = processor(
+        resource.data = processor(  # type: ignore
             table,
             name,
             pattern,
             to_names,
-            include_original=preserve,
+            include_original=preserve,  # type: ignore
         )
 
     # Metadata

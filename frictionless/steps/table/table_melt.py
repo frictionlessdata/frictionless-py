@@ -42,7 +42,7 @@ class table_melt(Step):
         resource.schema.add_field(field)
         for name in to_field_names:
             resource.schema.add_field(Field(name=name))
-        resource.data = table.melt(
+        resource.data = table.melt(  # type: ignore
             key=field_name,
             variables=variables,
             variablefield=to_field_names[0],

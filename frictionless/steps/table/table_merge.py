@@ -45,19 +45,19 @@ class table_merge(Step):
             source = target.package.get_resource(source)
         elif isinstance(source, dict):
             source = Resource(source)
-        source.infer()
+        source.infer()  # type: ignore
         view1 = target.to_petl()
-        view2 = source.to_petl()
+        view2 = source.to_petl()  # type: ignore
 
         # Ignore fields
         if ignore_fields:
-            for field in source.schema.fields[len(target.schema.fields) :]:
+            for field in source.schema.fields[len(target.schema.fields) :]:  # type: ignore
                 target.schema.add_field(field)
-            resource.data = petl.stack(view1, view2)
+            resource.data = petl.stack(view1, view2)  # type: ignore
 
         # Default
         else:
-            for field in source.schema.fields:
+            for field in source.schema.fields:  # type: ignore
                 if field.name not in target.schema.field_names:
                     target.schema.add_field(field)
             if field_names:
@@ -66,9 +66,9 @@ class table_merge(Step):
                         target.schema.remove_field(field.name)
             if sort_by_field:
                 key = sort_by_field
-                resource.data = petl.mergesort(view1, view2, key=key, header=field_names)
+                resource.data = petl.mergesort(view1, view2, key=key, header=field_names)  # type: ignore
             else:
-                resource.data = petl.cat(view1, view2, header=field_names)
+                resource.data = petl.cat(view1, view2, header=field_names)  # type: ignore
 
     # Metadata
 

@@ -23,11 +23,11 @@ class resource_update(Step):
 
     def transform_package(self, package):
         descriptor = self.to_dict()
-        descriptor.pop("code", None)
-        name = descriptor.pop("name", None)
-        new_name = descriptor.pop("newName", None)
+        descriptor.pop("code", None)  # type: ignore
+        name = descriptor.pop("name", None)  # type: ignore
+        new_name = descriptor.pop("newName", None)  # type: ignore
         if new_name:
-            descriptor["name"] = new_name
+            descriptor["name"] = new_name  # type: ignore
         resource = package.get_resource(name)
         resource.update(descriptor)
 

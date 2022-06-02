@@ -26,14 +26,14 @@ class cell_replace(Step):
         replace = self.get("replace")
         field_name = self.get("fieldName")
         if not field_name:
-            resource.data = table.replaceall(pattern, replace)
+            resource.data = table.replaceall(pattern, replace)  # type: ignore
         else:
             pattern = pattern
             function = petl.replace
-            if pattern.startswith("<regex>"):
-                pattern = pattern.replace("<regex>", "")
+            if pattern.startswith("<regex>"):  # type: ignore
+                pattern = pattern.replace("<regex>", "")  # type: ignore
                 function = petl.sub
-            resource.data = function(table, field_name, pattern, replace)
+            resource.data = function(table, field_name, pattern, replace)  # type: ignore
 
     # Metadata
 

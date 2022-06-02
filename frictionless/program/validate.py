@@ -1,3 +1,4 @@
+# type: ignore
 import sys
 import os
 import typer

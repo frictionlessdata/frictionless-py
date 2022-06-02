@@ -20,7 +20,7 @@ class table_print(Step):
 
     def transform_resource(self, resource):
         table = resource.to_petl()
-        print(table.look(vrepr=str, style="simple"))
+        print(table.look(vrepr=str, style="simple"))  # type: ignore
 
     # Metadata
 

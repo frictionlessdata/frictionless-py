@@ -29,8 +29,8 @@ class table_debug(Step):
         # Data
         def data():
             with current:
-                for row in current.row_stream:
-                    function(row)
+                for row in current.row_stream:  # type: ignore
+                    function(row)  # type: ignore
                     yield row
 
         # Meta

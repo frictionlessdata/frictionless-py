@@ -20,7 +20,7 @@ class cell_set(Step):
         table = resource.to_petl()
         value = self.get("value")
         field_name = self.get("fieldName")
-        resource.data = table.update(field_name, value)
+        resource.data = table.update(field_name, value)  # type: ignore
 
     # Metadata
 

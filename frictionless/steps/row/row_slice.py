@@ -38,11 +38,11 @@ class row_slice(Step):
         head = self.get("head")
         tail = self.get("tail")
         if head:
-            resource.data = table.head(head)
+            resource.data = table.head(head)  # type: ignore
         elif tail:
-            resource.data = table.tail(tail)
+            resource.data = table.tail(tail)  # type: ignore
         else:
-            resource.data = table.rowslice(start, stop, step)
+            resource.data = table.rowslice(start, stop, step)  # type: ignore
 
     # Metadata
 

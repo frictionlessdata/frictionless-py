@@ -25,7 +25,7 @@ class cell_fill(Step):
         field_name = self.get("fieldName")
         direction = self.get("direction")
         if value:
-            resource.data = table.convert(field_name, {None: value})
+            resource.data = table.convert(field_name, {None: value})  # type: ignore
         elif direction == "down":
             if field_name:
                 resource.data = table.filldown(field_name)
