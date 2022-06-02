@@ -1,3 +1,4 @@
+from __future__ import annotations
 from ... import errors
 from ...check import Check
 from typing import TYPE_CHECKING, Iterable

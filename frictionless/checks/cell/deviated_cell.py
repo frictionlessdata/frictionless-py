@@ -1,3 +1,4 @@
+from __future__ import annotations
 import statistics
 from ... import errors
 from ...check import Check
@@ -34,7 +35,7 @@ class deviated_cell(Check):
         descriptor=None,
         *,
         ignore_fields: Optional[List[str]] = None,
-        interval: Optional[int] = None
+        interval: Optional[int] = None,
     ):
         self.setinitial("ignoreFields", ignore_fields)
         self.setinitial("interval", interval)

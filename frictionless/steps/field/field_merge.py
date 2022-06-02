@@ -1,6 +1,7 @@
+from __future__ import annotations
 from ...step import Step
 from ...field import Field
-from typing import TYPE_CHECKING, List, Iterator, Any, Optional
+from typing import TYPE_CHECKING, List, Any, Optional
 from petl.compat import next, text_type
 
 if TYPE_CHECKING:
@@ -38,7 +39,7 @@ class field_merge(Step):
         from_names: Optional[List[str]] = None,
         field_type: Optional[str] = None,
         separator: str = "-",
-        preserve: bool = False
+        preserve: bool = False,
     ):
         self.setinitial("name", name)
         self.setinitial("fromNames", from_names)

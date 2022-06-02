@@ -1,3 +1,4 @@
+from __future__ import annotations
 from ...step import Step
 from ...field import Field
 from typing import TYPE_CHECKING, Any, List, Iterator, Optional
@@ -36,7 +37,7 @@ class field_pack(Step):
         name: Optional[str] = None,
         from_names: Optional[List[str]] = None,
         field_type: Optional[str] = None,
-        preserve: bool = False
+        preserve: bool = False,
     ):
         self.setinitial("name", name)
         self.setinitial("fromNames", from_names)
