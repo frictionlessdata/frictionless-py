@@ -4,7 +4,7 @@ import pkgutil
 from collections import OrderedDict
 from importlib import import_module
 from contextlib import contextmanager
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Dict
 from .exception import FrictionlessException
 from .helpers import cached_property
 from .control import Control
@@ -343,7 +343,7 @@ class System:
     # Methods
 
     @cached_property
-    def methods(self):
+    def methods(self) -> Dict[str, Any]:  # TODO: improve type
         methods = {}
         for action in self.actions:
             methods[action] = OrderedDict()
