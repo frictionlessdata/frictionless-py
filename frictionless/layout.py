@@ -1,4 +1,5 @@
 # type: ignore
+from __future__ import annotations
 import typing
 from .metadata import Metadata
 from . import settings

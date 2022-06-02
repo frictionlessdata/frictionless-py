@@ -1,7 +1,8 @@
+from __future__ import annotations
 import codecs
 import chardet
 from copy import copy, deepcopy
-from typing import List, Dict
+from typing import TYPE_CHECKING, Protocol, Optional, Iterable, Union, List, Any
 from ..exception import FrictionlessException
 from ..system import system
 from ..layout import Layout
@@ -10,6 +11,9 @@ from ..field import Field
 from .validate import validate
 from .. import settings
 from .. import errors
+
+if TYPE_CHECKING:
+    from ..interfaces import IBuffer
 
 
 # NOTE:
@@ -81,19 +85,19 @@ class Detector:
 
     def __init__(
         self,
-        buffer_size=settings.DEFAULT_BUFFER_SIZE,
-        sample_size=settings.DEFAULT_SAMPLE_SIZE,
-        encoding_function=None,
-        encoding_confidence=settings.DEFAULT_ENCODING_CONFIDENCE,
-        field_type=None,
-        field_names=None,
-        field_confidence=settings.DEFAULT_FIELD_CONFIDENCE,
-        field_float_numbers=settings.DEFAULT_FLOAT_NUMBERS,
-        field_missing_values=settings.DEFAULT_MISSING_VALUES,
-        field_true_values=settings.DEFAULT_TRUE_VALUES,
-        field_false_values=settings.DEFAULT_FALSE_VALUES,
-        schema_sync=False,
-        schema_patch=None,
+        buffer_size: int = settings.DEFAULT_BUFFER_SIZE,
+        sample_size: int = settings.DEFAULT_SAMPLE_SIZE,
+        encoding_function: Optional[EncodingFunction] = None,
+        encoding_confidence: float = settings.DEFAULT_ENCODING_CONFIDENCE,
+        field_type: Optional[str] = None,
+        field_names: Optional[List[str]] = None,
+        field_confidence: float = settings.DEFAULT_FIELD_CONFIDENCE,
+        field_float_numbers: bool = settings.DEFAULT_FLOAT_NUMBERS,
+        field_missing_values: List[str] = settings.DEFAULT_MISSING_VALUES,
+        field_true_values: List[str] = settings.DEFAULT_TRUE_VALUES,
+        field_false_values: List[str] = settings.DEFAULT_FALSE_VALUES,
+        schema_sync: bool = False,
+        schema_patch: Optional[dict] = None,
     ):
         self.__buffer_size = buffer_size
         self.__sample_size = sample_size
@@ -146,7 +150,7 @@ class Detector:
         self.__sample_size = value
 
     @property
-    def encoding_function(self) -> any:
+    def encoding_function(self) -> Optional["EncodingFunction"]:
         """Returns detector custom encoding function
 
         Returns:
@@ -155,7 +159,7 @@ class Detector:
         return self.__encoding_function
 
     @encoding_function.setter
-    def encoding_function(self, value: any):
+    def encoding_function(self, value: "EncodingFunction"):
         """Sets detector custom encoding function for the resource to be read.
 
         Parameters:
@@ -183,7 +187,7 @@ class Detector:
         self.__encoding_confidence = value
 
     @property
-    def field_type(self) -> str:
+    def field_type(self) -> Optional[str]:
         """Returns field type of the detector. Default value is None.
 
         Returns:
@@ -201,7 +205,7 @@ class Detector:
         self.__field_type = value
 
     @property
-    def field_names(self) -> List[str]:
+    def field_names(self) -> Optional[List[str]]:
         """Returns inferred field names list.
 
         Returns:
@@ -329,7 +333,7 @@ class Detector:
         self.__schema_sync = value
 
     @property
-    def schema_patch(self) -> Dict:
+    def schema_patch(self) -> Optional[dict]:
         """Returns detector resource fields to change.
 
         Returns:
@@ -338,7 +342,7 @@ class Detector:
         return self.__schema_patch
 
     @schema_patch.setter
-    def schema_patch(self, value: Dict):
+    def schema_patch(self, value: dict):
         """Sets detector resource fields to change.
 
         Parameters:
@@ -348,7 +352,7 @@ class Detector:
 
     # Detect
 
-    def detect_encoding(self, buffer, *, encoding=None):
+    def detect_encoding(self, buffer: IBuffer, *, encoding: Optional[str] = None):
         """Detect encoding from buffer
 
         Parameters:
@@ -374,8 +378,6 @@ class Detector:
                 encoding = settings.DEFAULT_ENCODING
             if encoding == "ascii":
                 encoding = settings.DEFAULT_ENCODING
-            if encoding is None:
-                encoding = self.resource.detector.detect_encoding(buffer)
 
         # Normalize encoding
         encoding = codecs.lookup(encoding).name
@@ -560,3 +562,11 @@ class Detector:
             raise FrictionlessException(errors.SchemaError(note=note))
 
         return schema
+
+
+# Internal
+
+
+class EncodingFunction(Protocol):
+    def __call__(self, buffer: IBuffer) -> str:
+        ...

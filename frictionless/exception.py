@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import TYPE_CHECKING, Protocol, Optional, Iterable, Union, List, Any
 
 if TYPE_CHECKING:

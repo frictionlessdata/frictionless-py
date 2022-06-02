@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import NewType, BinaryIO, TextIO, Iterable, List, Any
 
 
