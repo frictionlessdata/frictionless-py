@@ -122,7 +122,10 @@ def validate_package(
         package = source.to_copy() if native else Package(source, **package_options)
         # For single resource validation
         if "resource_name" in options:
-            return validate_resource(package.get_resource(options["resource_name"]))
+            return validate_resource(
+                package.get_resource(options["resource_name"]),
+                deprecate=False,
+            )
         package_stats = []
         for resource in package.resources:  # type: ignore
             package_stats.append({key: val for key, val in resource.stats.items() if val})
@@ -143,7 +146,12 @@ def validate_package(
         errors = []
         for resource, stats in zip(package.resources, package_stats):  # type: ignore
             resource.stats = stats
-            report = validate_resource(resource, original=original, **options)
+            report = validate_resource(
+                resource,
+                original=original,
+                deprecate=False,
+                **options,
+            )
             tasks.extend(report.tasks)
             errors.extend(report.errors)
         return Report(time=timer.time, errors=errors, tasks=tasks)
