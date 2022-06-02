@@ -1,3 +1,4 @@
+# type: ignore
 import typing
 from ...plugin import Plugin
 from .dialect import InlineDialect

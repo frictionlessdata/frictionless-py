@@ -1,3 +1,4 @@
+# type: ignore
 from ...plugin import Plugin
 from .dialect import ExcelDialect
 from .parser import XlsxParser, XlsParser

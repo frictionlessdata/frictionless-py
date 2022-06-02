@@ -1,3 +1,4 @@
+# type: ignore
 import csv
 import tempfile
 import stringcase

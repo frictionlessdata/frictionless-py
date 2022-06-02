@@ -1,3 +1,4 @@
+# type: ignore
 from ...metadata import Metadata
 from ...control import Control
 from ...system import system

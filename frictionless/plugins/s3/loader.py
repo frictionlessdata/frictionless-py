@@ -1,3 +1,4 @@
+# type: ignore
 import io
 from urllib.parse import urlparse
 from ...loader import Loader

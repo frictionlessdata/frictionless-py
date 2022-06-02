@@ -1,3 +1,4 @@
+# type: ignore
 import os
 from ...loader import Loader
 from ...exception import FrictionlessException

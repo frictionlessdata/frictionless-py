@@ -1,3 +1,4 @@
+# type: ignore
 import os
 from ...control import Control
 from . import settings

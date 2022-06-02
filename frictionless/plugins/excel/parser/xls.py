@@ -1,3 +1,4 @@
+# type: ignore
 import sys
 import tempfile
 from ....exception import FrictionlessException

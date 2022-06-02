@@ -1,3 +1,4 @@
+# type: ignore
 import re
 from functools import partial
 from urllib.parse import urlsplit, urlunsplit

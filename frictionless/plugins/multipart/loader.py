@@ -1,3 +1,4 @@
+# type: ignore
 import tempfile
 from ...resource import Resource
 from ...loader import Loader

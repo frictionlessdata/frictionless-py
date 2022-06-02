@@ -1,3 +1,4 @@
+# type: ignore
 from ...plugin import Plugin
 from .control import MultipartControl
 from .loader import MultipartLoader

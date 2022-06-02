@@ -1,3 +1,4 @@
+# type: ignore
 from ...control import Control
 from . import settings
 

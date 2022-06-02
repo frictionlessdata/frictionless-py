@@ -1,3 +1,4 @@
+# type: ignore
 from ...plugin import Plugin
 from .dialect import HtmlDialect
 from .parser import HtmlParser

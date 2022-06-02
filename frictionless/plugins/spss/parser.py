@@ -1,3 +1,4 @@
+# type: ignore
 import re
 import warnings
 from ...parser import Parser

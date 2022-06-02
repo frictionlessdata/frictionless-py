@@ -1,3 +1,4 @@
+# type: ignore
 import re
 from ...parser import Parser
 from ...system import system

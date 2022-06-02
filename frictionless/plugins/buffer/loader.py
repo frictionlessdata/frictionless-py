@@ -1,3 +1,4 @@
+# type: ignore
 import io
 from ...loader import Loader
 

@@ -1,3 +1,4 @@
+# type: ignore
 import io
 import requests.utils
 from ...loader import Loader

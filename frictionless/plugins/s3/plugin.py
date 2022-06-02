@@ -1,3 +1,4 @@
+# type: ignore
 from ...plugin import Plugin
 from .control import S3Control
 from .loader import S3Loader

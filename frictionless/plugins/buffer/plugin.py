@@ -1,3 +1,4 @@
+# type: ignore
 from ...plugin import Plugin
 from .control import BufferControl
 from .loader import BufferLoader

@@ -1,3 +1,4 @@
+# type: ignore
 from ...plugin import Plugin
 from ... import helpers
 from .dialect import BigqueryDialect

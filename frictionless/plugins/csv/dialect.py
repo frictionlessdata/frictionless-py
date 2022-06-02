@@ -1,3 +1,4 @@
+# type: ignore
 import csv
 from ...metadata import Metadata
 from ...dialect import Dialect

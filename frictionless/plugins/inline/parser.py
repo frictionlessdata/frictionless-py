@@ -1,3 +1,4 @@
+# type: ignore
 from ...exception import FrictionlessException
 from ...parser import Parser
 from ... import errors

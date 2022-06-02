@@ -1,3 +1,4 @@
+# type: ignore
 from ...plugin import Plugin
 from .dialect import SpssDialect
 from .parser import SpssParser

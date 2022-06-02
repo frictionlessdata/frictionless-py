@@ -1,3 +1,4 @@
+# type: ignore
 from ...plugin import Plugin
 from .dialect import JsonDialect
 from .parser import JsonParser, JsonlParser

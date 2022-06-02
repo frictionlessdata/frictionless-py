@@ -1,3 +1,4 @@
+# type: ignore
 import tempfile
 from ....plugins.inline import InlineDialect
 from ....resource import Resource

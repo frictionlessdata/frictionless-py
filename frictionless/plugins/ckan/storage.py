@@ -1,3 +1,4 @@
+# type: ignore
 import os
 import json
 from functools import partial
