@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Protocol, Optional, Iterable, List
+from typing import TYPE_CHECKING, Protocol, Optional, Iterable, List, Type
 from .metadata import Metadata
 from . import errors
 
@@ -27,7 +27,7 @@ class Check(Metadata):
     """
 
     code: str = "check"
-    Errors: List[Error] = []  # type: ignore
+    Errors: List[Type[Error]] = []  # type: ignore
 
     def __init__(self, descriptor=None, *, function: Optional["CheckFunction"] = None):
         super().__init__(descriptor)
