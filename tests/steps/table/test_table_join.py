@@ -6,8 +6,7 @@ from frictionless import Resource, transform, steps
 
 def test_step_table_join():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.table_normalize(),
             steps.table_join(
@@ -32,8 +31,7 @@ def test_step_table_join():
 
 def test_step_table_join_from_dict():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.table_normalize(),
             steps.table_join(
@@ -58,8 +56,7 @@ def test_step_table_join_from_dict():
 
 def test_step_table_join_with_name_is_not_first_field():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.table_join(
                 resource=Resource(
@@ -85,8 +82,7 @@ def test_step_table_join_with_name_is_not_first_field():
 
 def test_step_table_join_mode_left():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.table_normalize(),
             steps.table_join(
@@ -113,8 +109,7 @@ def test_step_table_join_mode_left():
 
 def test_step_table_join_mode_left_from_descriptor_issue_996():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.table_normalize(),
             steps.table_join(
@@ -140,8 +135,7 @@ def test_step_table_join_mode_left_from_descriptor_issue_996():
 
 def test_step_table_join_mode_right():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.table_normalize(),
             steps.table_join(
@@ -167,8 +161,7 @@ def test_step_table_join_mode_right():
 
 def test_step_table_join_mode_outer():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.table_normalize(),
             steps.table_join(
@@ -196,8 +189,7 @@ def test_step_table_join_mode_outer():
 
 def test_step_table_join_mode_cross():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.table_join(
                 resource=Resource(data=[["id2", "note"], [1, "beer"], [4, "rum"]]),
@@ -226,8 +218,7 @@ def test_step_table_join_mode_cross():
 
 def test_step_table_join_mode_negate():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.table_join(
                 resource=Resource(data=[["id", "note"], ["1", "beer"], ["4", "rum"]]),
@@ -250,8 +241,7 @@ def test_step_table_join_mode_negate():
 
 def test_step_table_join_hash_is_true():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.table_normalize(),
             steps.table_join(

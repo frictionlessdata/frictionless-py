@@ -2,7 +2,7 @@ import os
 import json
 import yaml
 import pytest
-from frictionless import Package, Resource, describe_package, helpers
+from frictionless import Package, Resource, helpers
 from frictionless.plugins.sql import SqlDialect
 
 
@@ -14,7 +14,7 @@ BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/ma
 
 
 def test_package_to_copy():
-    source = describe_package("data/chunk*.csv")
+    source = Package.describe("data/chunk*.csv")
     target = source.to_copy()
     assert source is not target
     assert source == target

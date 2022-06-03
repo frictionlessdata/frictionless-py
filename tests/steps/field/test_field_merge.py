@@ -3,9 +3,10 @@ from frictionless import Resource, transform, steps
 
 def test_step_field_merge_907():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
-        steps=[steps.field_merge(name="details", from_names=["name", "population"])],
+    target = source.transform(
+        steps=[
+            steps.field_merge(name="details", from_names=["name", "population"]),
+        ],
     )
     assert target.schema == {
         "fields": [
@@ -21,8 +22,7 @@ def test_step_field_merge_907():
 
 def test_step_field_merge_preserve_907():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.field_merge(
                 name="details", from_names=["name", "population"], preserve=True

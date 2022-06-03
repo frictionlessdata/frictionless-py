@@ -6,8 +6,7 @@ from frictionless import Resource, transform, steps
 
 def test_step_field_update():
     source = Resource(path="data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.field_update(name="id", type="string", function=str),
         ],
@@ -28,8 +27,7 @@ def test_step_field_update():
 
 def test_step_field_update_with_exact_value():
     source = Resource(path="data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.field_update(name="id", type="string", value="x"),
         ],
@@ -50,8 +48,7 @@ def test_step_field_update_with_exact_value():
 
 def test_step_field_update_new_name():
     source = Resource(path="data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.field_update(name="id", new_name="new-name"),
         ],

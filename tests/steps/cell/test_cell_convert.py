@@ -6,8 +6,7 @@ from frictionless import Resource, transform, steps
 
 def test_step_cell_convert():
     source = Resource(path="data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.field_update(name="id", type="string"),
             steps.field_update(name="population", type="string"),
@@ -30,8 +29,7 @@ def test_step_cell_convert():
 
 def test_step_cell_convert_with_field_name():
     source = Resource(path="data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.cell_convert(value="n/a", field_name="name"),
         ],

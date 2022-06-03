@@ -1,4 +1,4 @@
-from frictionless import validate, checks
+from frictionless import Resource, checks
 
 
 # General
@@ -13,8 +13,8 @@ def test_validate_sequential_value():
         [5, 5, 6],
         [6],
     ]
-    report = validate(
-        source,
+    resource = Resource(source)
+    report = resource.validate(
         checks=[
             checks.sequential_value(field_name="index2"),
             checks.sequential_value(field_name="index3"),
@@ -34,8 +34,8 @@ def test_validate_sequential_value_non_existent_field():
         [2, "Alex"],
         [3, "Brad"],
     ]
-    report = validate(
-        source,
+    resource = Resource(source)
+    report = resource.validate(
         checks=[
             {"code": "sequential-value", "fieldName": "row"},
             {"code": "sequential-value", "fieldName": "bad"},

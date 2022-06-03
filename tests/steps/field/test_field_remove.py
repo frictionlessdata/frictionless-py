@@ -6,8 +6,7 @@ from frictionless import Resource, transform, steps
 
 def test_step_field_remove():
     source = Resource(path="data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.field_remove(names=["id"]),
         ],

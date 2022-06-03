@@ -6,8 +6,7 @@ from frictionless import Resource, transform, steps
 
 def test_step_cell_replace():
     source = Resource(path="data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.cell_replace(pattern="france", replace="FRANCE"),
         ],
@@ -28,8 +27,7 @@ def test_step_cell_replace():
 
 def test_step_cell_replace_with_field_name():
     source = Resource(path="data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.cell_replace(pattern="france", replace="FRANCE", field_name="id"),
         ],
@@ -50,8 +48,7 @@ def test_step_cell_replace_with_field_name():
 
 def test_step_cell_replace_using_regex():
     source = Resource(path="data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.cell_replace(
                 pattern="<regex>.*r.*", replace="center", field_name="name"

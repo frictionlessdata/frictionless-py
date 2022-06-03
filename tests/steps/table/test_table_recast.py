@@ -6,8 +6,7 @@ from frictionless import Resource, transform, steps
 
 def test_step_table_recast():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.table_normalize(),
             steps.table_melt(field_name="id"),

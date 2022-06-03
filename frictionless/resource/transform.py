@@ -1,6 +1,5 @@
-# type: ignore
 import types
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 from ..step import Step
 from ..system import system
 from ..helpers import get_name
@@ -8,10 +7,11 @@ from ..exception import FrictionlessException
 from .. import errors
 
 if TYPE_CHECKING:
+    from ..step import Step
     from .resource import Resource
 
 
-def transform(resource: "Resource", *, steps):
+def transform(resource: "Resource", *, steps: List[Step]):
     """Transform resource
 
     Parameters:
@@ -51,12 +51,12 @@ def transform(resource: "Resource", *, steps):
 
         # Postprocess
         if resource.data is not data:
-            resource.data = DataWithErrorHandling(resource.data, step=step)
+            resource.data = DataWithErrorHandling(resource.data, step=step)  # type: ignore
             # NOTE:
             # We need rework resource.data or move to resource.__setattr__
             # https://github.com/frictionlessdata/frictionless-py/issues/722
-            resource.scheme = ""
-            resource.format = "inline"
+            resource.scheme = ""  # type: ignore
+            resource.format = "inline"  # type: ignore
             dict.pop(resource, "path", None)
             dict.pop(resource, "hashing", None)
             dict.pop(resource, "encoding", None)

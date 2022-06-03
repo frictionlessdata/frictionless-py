@@ -6,8 +6,7 @@ from frictionless import Resource, transform, steps
 
 def test_step_table_aggregate():
     source = Resource("data/transform-groups.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.table_normalize(),
             steps.table_aggregate(
@@ -30,8 +29,7 @@ def test_step_table_aggregate():
 
 def test_step_table_aggregate_multiple():
     source = Resource("data/transform-groups.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.table_normalize(),
             steps.table_aggregate(

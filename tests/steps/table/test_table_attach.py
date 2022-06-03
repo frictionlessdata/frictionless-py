@@ -6,8 +6,7 @@ from frictionless import Resource, transform, steps
 
 def test_step_table_attach():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.table_attach(resource=Resource(data=[["note"], ["large"], ["mid"]]))
         ],
@@ -29,9 +28,10 @@ def test_step_table_attach():
 
 def test_step_table_attach_from_dict():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
-        steps=[steps.table_attach(resource=dict(data=[["note"], ["large"], ["mid"]]))],
+    target = source.transform(
+        steps=[
+            steps.table_attach(resource=dict(data=[["note"], ["large"], ["mid"]])),
+        ],
     )
     assert target.schema == {
         "fields": [

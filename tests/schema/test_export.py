@@ -5,14 +5,14 @@ import pytest
 from pathlib import Path
 from zipfile import ZipFile
 from yaml import safe_load
-from frictionless import Schema, describe_schema, helpers
+from frictionless import Schema, helpers
 
 
 DESCRIPTOR_MIN = {"fields": [{"name": "id"}, {"name": "height", "type": "integer"}]}
 
 
 def test_schema_to_copy():
-    source = describe_schema("data/table.csv")
+    source = Schema.describe("data/table.csv")
     target = source.to_copy()
     assert source is not target
     assert source == target

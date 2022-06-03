@@ -6,8 +6,7 @@ from frictionless import Resource, transform, steps
 
 def test_step_row_split():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.row_split(field_name="name", pattern="a"),
         ],

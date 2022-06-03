@@ -1,5 +1,5 @@
 import types
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 from ..step import Step
 from ..system import system
 from ..helpers import get_name
@@ -7,10 +7,11 @@ from ..exception import FrictionlessException
 from .. import errors
 
 if TYPE_CHECKING:
+    from ..step import Step
     from .package import Package
 
 
-def transform(package: "Package", *, steps):
+def transform(package: "Package", *, steps: List[Step]):
     """Transform package
 
     Parameters:

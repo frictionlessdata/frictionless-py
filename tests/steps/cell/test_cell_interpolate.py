@@ -6,8 +6,7 @@ from frictionless import Resource, transform, steps
 
 def test_step_cell_interpolate():
     source = Resource(path="data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.field_update(name="id", type="string"),
             steps.field_update(name="population", type="string"),
@@ -30,8 +29,7 @@ def test_step_cell_interpolate():
 
 def test_step_cell_interpolate_with_name():
     source = Resource(path="data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.cell_interpolate(template="Prefix: %s", field_name="name"),
         ],

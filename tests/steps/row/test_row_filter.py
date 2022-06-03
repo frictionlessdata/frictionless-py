@@ -6,8 +6,7 @@ from frictionless import Resource, transform, steps
 
 def test_step_row_filter():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.table_normalize(),
             steps.row_filter(formula="id > 1"),
@@ -28,8 +27,7 @@ def test_step_row_filter():
 
 def test_step_row_filter_with_function():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.table_normalize(),
             steps.row_filter(function=lambda row: row["id"] > 1),
@@ -50,8 +48,7 @@ def test_step_row_filter_with_function():
 
 def test_step_row_filter_petl_selectop():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.table_normalize(),
             steps.row_filter(formula="id == 1"),
@@ -71,8 +68,7 @@ def test_step_row_filter_petl_selectop():
 
 def test_step_row_filter_petl_selecteq():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.table_normalize(),
             steps.row_filter(formula="id == 1"),
@@ -92,8 +88,7 @@ def test_step_row_filter_petl_selecteq():
 
 def test_step_row_filter_petl_selectne():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.table_normalize(),
             steps.row_filter(formula="id != 1"),
@@ -114,8 +109,7 @@ def test_step_row_filter_petl_selectne():
 
 def test_step_row_filter_petl_selectlt():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.table_normalize(),
             steps.row_filter(formula="id < 2"),
@@ -135,8 +129,7 @@ def test_step_row_filter_petl_selectlt():
 
 def test_step_row_filter_petl_selectle():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.table_normalize(),
             steps.row_filter(formula="id <= 2"),
@@ -157,8 +150,7 @@ def test_step_row_filter_petl_selectle():
 
 def test_step_row_filter_petl_selectgt():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.table_normalize(),
             steps.row_filter(formula="id > 2"),
@@ -178,8 +170,7 @@ def test_step_row_filter_petl_selectgt():
 
 def test_step_row_filter_petl_selectge():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.table_normalize(),
             steps.row_filter(formula="id >= 2"),
@@ -200,8 +191,7 @@ def test_step_row_filter_petl_selectge():
 
 def test_step_row_filter_petl_selectrangeopen():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.table_normalize(),
             steps.row_filter(formula="1 <= id <= 3"),
@@ -223,8 +213,7 @@ def test_step_row_filter_petl_selectrangeopen():
 
 def test_step_row_filter_petl_selectrangeopenleft():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.table_normalize(),
             steps.row_filter(formula="1 <= id < 3"),
@@ -245,8 +234,7 @@ def test_step_row_filter_petl_selectrangeopenleft():
 
 def test_step_row_filter_petl_selectrangeopenright():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.table_normalize(),
             steps.row_filter(formula="1 < id <= 3"),
@@ -267,8 +255,7 @@ def test_step_row_filter_petl_selectrangeopenright():
 
 def test_step_row_filter_petl_selectrangeclosed():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.table_normalize(),
             steps.row_filter(formula="1 < id < 3"),
@@ -288,8 +275,7 @@ def test_step_row_filter_petl_selectrangeclosed():
 
 def test_step_row_filter_petl_selectcontains():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.row_filter(formula="'er' in name"),
         ],
@@ -308,8 +294,7 @@ def test_step_row_filter_petl_selectcontains():
 
 def test_step_row_filter_petl_selectin():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.table_normalize(),
             steps.row_filter(formula="id in [1]"),
@@ -329,8 +314,7 @@ def test_step_row_filter_petl_selectin():
 
 def test_step_row_filter_petl_selectnoin():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.table_normalize(),
             steps.row_filter(formula="id not in [2, 3]"),
@@ -350,8 +334,7 @@ def test_step_row_filter_petl_selectnoin():
 
 def test_step_row_filter_petl_selectis():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.table_normalize(),
             steps.row_filter(formula="id is 1"),
@@ -371,8 +354,7 @@ def test_step_row_filter_petl_selectis():
 
 def test_step_row_filter_petl_selectisnot():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.table_normalize(),
             steps.row_filter(formula="id is not 1"),
@@ -393,8 +375,7 @@ def test_step_row_filter_petl_selectisnot():
 
 def test_step_row_filter_petl_selectisinstance():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.table_normalize(),
             steps.row_filter(function=lambda row: isinstance(row["id"], int)),
@@ -416,8 +397,7 @@ def test_step_row_filter_petl_selectisinstance():
 
 def test_step_row_filter_petl_selectistrue():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.row_filter(function=lambda row: bool(row["id"])),
         ],
@@ -438,8 +418,7 @@ def test_step_row_filter_petl_selectistrue():
 
 def test_step_row_filter_petl_selectisfalse():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.row_filter(function=lambda row: not bool(row["id"])),
         ],
@@ -456,8 +435,7 @@ def test_step_row_filter_petl_selectisfalse():
 
 def test_step_row_filter_petl_selectnone():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.row_filter(formula="id is None"),
         ],
@@ -474,8 +452,7 @@ def test_step_row_filter_petl_selectnone():
 
 def test_step_row_filter_petl_selectisnone():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.row_filter(formula="id is not None"),
         ],
@@ -496,8 +473,7 @@ def test_step_row_filter_petl_selectisnone():
 
 def test_step_row_filter_petl_rowlenselect():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.row_filter(function=lambda row: len(row) == 3),
         ],

@@ -6,8 +6,7 @@ from frictionless import Resource, transform, steps
 
 def test_step_table_intersect():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.table_normalize(),
             steps.table_intersect(
@@ -37,8 +36,7 @@ def test_step_table_intersect():
 
 def test_step_table_intersect_from_dict():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.table_normalize(),
             steps.table_intersect(
@@ -68,8 +66,7 @@ def test_step_table_intersect_from_dict():
 
 def test_step_table_intersect_with_use_hash():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.table_normalize(),
             steps.table_intersect(

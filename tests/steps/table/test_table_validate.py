@@ -7,8 +7,7 @@ from frictionless import Resource, FrictionlessException, transform, steps
 
 def test_step_table_validate():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.cell_set(field_name="population", value="bad"),
             steps.table_validate(),

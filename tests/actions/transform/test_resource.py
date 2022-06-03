@@ -5,15 +5,14 @@ from frictionless import Resource, transform, steps
 
 
 def test_transform_resource():
-    source = Resource(path="data/transform.csv")
-    source.infer()
     target = transform(
-        source,
+        "data/transform.csv",
         steps=[
             steps.table_normalize(),
             steps.table_melt(field_name="id"),
         ],
     )
+    assert isinstance(target, Resource)
     assert target.schema == {
         "fields": [
             {"name": "id", "type": "integer"},

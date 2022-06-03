@@ -10,6 +10,8 @@ if TYPE_CHECKING:
     from .interfaces import CheckFunction
 
 
+# TODO: sync API with Step?
+# TODO: add support for validate_package?
 class Check(Metadata):
     """Check representation.
 

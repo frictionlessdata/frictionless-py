@@ -6,8 +6,7 @@ from frictionless import Package, transform, steps
 
 def test_step_resource_transform():
     source = Package("data/package/datapackage.json")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.resource_update(name="data", title="It's our data"),
             steps.resource_remove(name="data2"),

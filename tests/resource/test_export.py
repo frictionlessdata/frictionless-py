@@ -1,7 +1,7 @@
 import os
 import json
 import yaml
-from frictionless import Resource, describe_resource, helpers
+from frictionless import Resource, helpers
 
 
 IS_UNIX = not helpers.is_platform("windows")
@@ -12,7 +12,7 @@ BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/ma
 
 
 def test_resource_to_copy():
-    source = describe_resource("data/table.csv")
+    source = Resource.describe("data/table.csv")
     target = source.to_copy()
     assert source == target
 
