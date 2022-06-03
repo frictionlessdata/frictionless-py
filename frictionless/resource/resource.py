@@ -294,6 +294,7 @@ class Resource(Metadata):
             return super().__setattr__(name, value)
         self.metadata_process()
 
+    # TODO: maybe it's possible to do type narrowing here?
     def __enter__(self):
         if self.closed:
             self.open()

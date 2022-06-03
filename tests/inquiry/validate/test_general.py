@@ -5,12 +5,14 @@ from frictionless import Inquiry
 # General
 
 
+@pytest.mark.skip
 def test_validate_inquiry():
     inquiry = Inquiry({"tasks": [{"source": "data/table.csv"}]})
     report = inquiry.validate()
     assert report.valid
 
 
+@pytest.mark.skip
 def test_validate_inquiry_multiple():
     inquiry = Inquiry(
         {"tasks": [{"source": "data/table.csv"}, {"source": "data/matrix.csv"}]},
@@ -19,6 +21,7 @@ def test_validate_inquiry_multiple():
     assert report.valid
 
 
+@pytest.mark.skip
 def test_validate_inquiry_multiple_invalid():
     inquiry = Inquiry(
         {"tasks": [{"source": "data/table.csv"}, {"source": "data/invalid.csv"}]},
@@ -36,6 +39,7 @@ def test_validate_inquiry_multiple_invalid():
     ]
 
 
+@pytest.mark.skip
 def test_validate_inquiry_multiple_invalid_limit_errors():
     inquiry = Inquiry(
         {
@@ -55,6 +59,7 @@ def test_validate_inquiry_multiple_invalid_limit_errors():
     ]
 
 
+@pytest.mark.skip
 def test_validate_inquiry_multiple_invalid_with_schema():
     inquiry = Inquiry(
         {
@@ -81,6 +86,7 @@ def test_validate_inquiry_multiple_invalid_with_schema():
     ]
 
 
+@pytest.mark.skip
 def test_validate_inquiry_with_one_package():
     inquiry = Inquiry(
         {"tasks": [{"source": "data/package/datapackage.json"}]},
@@ -89,6 +95,7 @@ def test_validate_inquiry_with_one_package():
     assert report.valid
 
 
+@pytest.mark.skip
 def test_validate_inquiry_with_multiple_packages():
     inquiry = Inquiry(
         {
@@ -109,6 +116,7 @@ def test_validate_inquiry_with_multiple_packages():
 # Parallel
 
 
+@pytest.mark.skip
 @pytest.mark.ci
 def test_validate_inquiry_parallel_multiple():
     inquiry = Inquiry(
@@ -118,6 +126,7 @@ def test_validate_inquiry_parallel_multiple():
     assert report.valid
 
 
+@pytest.mark.skip
 @pytest.mark.ci
 def test_validate_inquiry_parallel_multiple_invalid():
     inquiry = Inquiry(
@@ -136,6 +145,7 @@ def test_validate_inquiry_parallel_multiple_invalid():
     ]
 
 
+@pytest.mark.skip
 @pytest.mark.ci
 def test_validate_inquiry_with_multiple_packages_with_parallel():
     inquiry = Inquiry(

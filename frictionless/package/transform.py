@@ -11,6 +11,7 @@ if TYPE_CHECKING:
     from .package import Package
 
 
+# TODO: save current status data into package.stats?
 def transform(package: "Package", *, steps: List[Step]):
     """Transform package
 

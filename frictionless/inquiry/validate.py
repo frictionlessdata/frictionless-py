@@ -1,13 +1,11 @@
 from typing import TYPE_CHECKING
 from ..report import Report
+from .. import helpers
 
 if TYPE_CHECKING:
     from .inquiry import Inquiry
 
 
-# TODO: make only metadata validation -- data validation in resource/package.validate
-# TODO: move run here?
-# TODO: move exception handling to other layer?
 @Report.from_validate
 def validate(inquiry: "Inquiry", *, parallel=False):
     """Validate inquiry
@@ -19,4 +17,5 @@ def validate(inquiry: "Inquiry", *, parallel=False):
         Report: validation report
 
     """
-    return inquiry.run(parallel=parallel)
+    timer = helpers.Timer()
+    return Report(time=timer.time, errors=inquiry.metadata_errors, tasks=[])
