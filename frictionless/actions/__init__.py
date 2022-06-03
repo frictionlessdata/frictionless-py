@@ -4,7 +4,6 @@ from .transform import transform
 from .validate import validate
 
 # TODO: remove these legacy imports in v5
-from .extract import extract_resource, extract_package
 from .transform import transform_resource, transform_package, transform_pipeline
 from .validate import (
     validate_inquiry,
