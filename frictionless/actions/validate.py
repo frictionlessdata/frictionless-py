@@ -17,6 +17,9 @@ from .. import settings
 from .. import errors
 
 
+# TODO: here we'd like to accept both inquiry + individual options
+
+
 @Report.from_validate
 def validate(
     source: Optional[Any] = None,

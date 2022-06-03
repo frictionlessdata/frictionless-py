@@ -14,6 +14,9 @@ if TYPE_CHECKING:
     from ..step import Step
 
 
+# TODO: here we'd like to accept both pipeline + individual options
+
+
 def transform(
     source: Optional[Any] = None,
     *,
