@@ -6,8 +6,7 @@ from frictionless import Resource, transform, steps
 
 def test_step_table_melt():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.table_normalize(),
             steps.table_melt(field_name="name"),
@@ -32,8 +31,7 @@ def test_step_table_melt():
 
 def test_step_table_melt_with_variables():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.table_normalize(),
             steps.table_melt(field_name="name", variables=["population"]),
@@ -55,8 +53,7 @@ def test_step_table_melt_with_variables():
 
 def test_step_table_melt_with_to_field_names():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.table_normalize(),
             steps.table_melt(

@@ -1,13 +1,15 @@
-from frictionless import validate, checks
+from frictionless import Resource, checks
 
 
 # General
 
 
 def test_validate_forbidden_value():
-    report = validate(
-        "data/table.csv",
-        checks=[checks.forbidden_value(field_name="id", values=[2])],
+    resource = Resource("data/table.csv")
+    report = resource.validate(
+        checks=[
+            checks.forbidden_value(field_name="id", values=[2]),
+        ]
     )
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [3, 1, "forbidden-value"],
@@ -15,8 +17,8 @@ def test_validate_forbidden_value():
 
 
 def test_validate_forbidden_value_task_error():
-    report = validate(
-        "data/table.csv",
+    resource = Resource("data/table.csv")
+    report = resource.validate(
         checks=[{"code": "forbidden-value", "fieldName": "bad", "forbidden": [2]}],
     )
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
@@ -33,8 +35,8 @@ def test_validate_forbidden_value_many_rules():
         [5, "error"],
         [6],
     ]
-    report = validate(
-        source,
+    resource = Resource(source)
+    report = resource.validate(
         checks=[
             {"code": "forbidden-value", "fieldName": "row", "values": [10]},
             {"code": "forbidden-value", "fieldName": "name", "values": ["mistake"]},
@@ -54,8 +56,8 @@ def test_validate_forbidden_value_many_rules_with_non_existent_field():
         ["row", "name"],
         [2, "Alex"],
     ]
-    report = validate(
-        source,
+    resource = Resource(source)
+    report = resource.validate(
         checks=[
             {"code": "forbidden-value", "fieldName": "row", "values": [10]},
             {"code": "forbidden-value", "fieldName": "bad", "values": ["mistake"]},

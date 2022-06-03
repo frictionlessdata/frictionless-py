@@ -1,12 +1,24 @@
+from __future__ import annotations
 import warnings
+from typing import TYPE_CHECKING, Optional, Any
 from ..resource import Resource
 from ..package import Package
 from ..exception import FrictionlessException
 from ..system import system
 from .. import errors
 
+if TYPE_CHECKING:
+    from ..interfaces import ProcessFunction
 
-def extract(source=None, *, type=None, process=None, stream=False, **options):
+
+def extract(
+    source: Optional[Any] = None,
+    *,
+    type: Optional[str] = None,
+    process: Optional[ProcessFunction] = None,
+    stream: bool = False,
+    **options,
+):
     """Extract resource rows
 
     API      | Usage
@@ -23,6 +35,8 @@ def extract(source=None, *, type=None, process=None, stream=False, **options):
     Returns:
         Row[]|{path: Row[]}: rows in a form depending on the source type
     """
+
+    # Infer type
     if not type:
         basepath = options.get("basepath", "")
         descriptor = options.get("descriptor")
@@ -30,78 +44,15 @@ def extract(source=None, *, type=None, process=None, stream=False, **options):
         type = "package" if file.multipart else file.type
         if type == "table":
             type = "resource"
-    extract = globals().get("extract_%s" % type, None)
-    if extract is None:
-        note = f"Not supported extract type: {type}"
-        raise FrictionlessException(errors.GeneralError(note=note))
-    return extract(source, process=process, stream=stream, deprecate=False, **options)
 
+    # Extract data
+    if type == "package":
+        package = Package(source, **options)
+        return package.extract(process=process, stream=stream)
+    elif type == "resource":
+        resource = Resource(source, **options)
+        return resource.extract(process=process, stream=stream)
 
-def extract_package(
-    source=None, *, process=None, stream=False, deprecate=True, **options
-):
-    """Extract package rows
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless import extract_package`
-
-    Parameters:
-        source (dict|str): data resource descriptor
-        process? (func): a row processor function
-        stream? (bool): return a row streams instead of loading into memory
-        **options (dict): Package constructor options
-
-    Returns:
-        {path: Row[]}: a dictionary of arrays/streams of rows
-
-    """
-    if deprecate:
-        message = 'Function "extract_package" is deprecated (use "package.extract").'
-        warnings.warn(message, UserWarning)
-    result = {}
-    native = isinstance(source, Package)
-    package = source.to_copy() if native else Package(source, **options)
-    for number, resource in enumerate(package.resources, start=1):  # type: ignore
-        key = resource.fullpath if not resource.memory else f"memory{number}"
-        data = read_row_stream(resource)
-        data = (process(row) for row in data) if process else data
-        result[key] = data if stream else list(data)
-    return result
-
-
-def extract_resource(
-    source=None, *, process=None, stream=False, deprecate=True, **options
-):
-    """Extract resource rows
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless import extract_resource`
-
-    Parameters:
-        source (any|Resource): data resource
-        process? (func): a row processor function
-        **options (dict): Resource constructor options
-
-    Returns:
-        Row[]: an array/stream of rows
-
-    """
-    if deprecate:
-        message = 'Function "extract_resource" is deprecated (use "resource.extract").'
-        warnings.warn(message, UserWarning)
-    native = isinstance(source, Resource)
-    resource = source.to_copy() if native else Resource(source, **options)
-    data = read_row_stream(resource)
-    data = (process(row) for row in data) if process else data
-    return data if stream else list(data)
-
-
-# Internal
-
-
-def read_row_stream(resource):
-    with resource:
-        for row in resource.row_stream:
-            yield row
+    # Not supported
+    note = f"Not supported extract type: {type}"
+    raise FrictionlessException(errors.GeneralError(note=note))

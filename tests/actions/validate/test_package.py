@@ -492,6 +492,7 @@ def test_validate_package_uppercase_format_issue_494():
 
 
 # See also: https://github.com/frictionlessdata/project/discussions/678
+@pytest.mark.skip
 def test_validate_package_using_detector_schema_sync_issue_847():
     package = Package(
         resources=[

@@ -1,4 +1,4 @@
-from frictionless import validate, checks
+from frictionless import Resource, checks
 
 
 # General
@@ -13,8 +13,9 @@ def test_validate_row_constraint():
         [5, 5000, 1000],
         [6],
     ]
-    report = validate(
-        source, checks=[checks.row_constraint(formula="salary == bonus * 5")]
+    resource = Resource(source)
+    report = resource.validate(
+        checks=[checks.row_constraint(formula="salary == bonus * 5")]
     )
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [4, None, "row-constraint"],
@@ -29,8 +30,8 @@ def test_validate_row_constraint_incorrect_constraint():
         ["row", "name"],
         [2, "Alex"],
     ]
-    report = validate(
-        source,
+    resource = Resource(source)
+    report = resource.validate(
         checks=[
             {"code": "row-constraint", "formula": "vars()"},
             {"code": "row-constraint", "formula": "import(os)"},
@@ -45,9 +46,9 @@ def test_validate_row_constraint_incorrect_constraint():
 
 
 def test_validate_row_constraint_list_in_formula_issue_817():
-    data = [["val"], ["one"], ["two"]]
-    report = validate(
-        data,
+    source = [["val"], ["one"], ["two"]]
+    resource = Resource(source)
+    report = resource.validate(
         checks=[
             checks.duplicate_row(),
             checks.row_constraint(formula="val in ['one', 'two']"),

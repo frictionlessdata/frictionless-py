@@ -6,8 +6,7 @@ from frictionless import Resource, transform, steps
 
 def test_step_cell_set():
     source = Resource(path="data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.cell_set(field_name="population", value=100),
         ],

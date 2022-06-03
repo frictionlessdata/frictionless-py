@@ -3,8 +3,7 @@ from frictionless import Resource, transform, steps
 
 def test_step_field_pack_907():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[steps.field_pack(name="details", from_names=["name", "population"])],
     )
     assert target.schema == {
@@ -21,8 +20,7 @@ def test_step_field_pack_907():
 
 def test_step_field_pack_header_preserve_907():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.field_pack(
                 name="details", from_names=["name", "population"], preserve=True
@@ -47,8 +45,7 @@ def test_step_field_pack_header_preserve_907():
 
 def test_step_field_pack_object_907():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.field_pack(
                 name="details",

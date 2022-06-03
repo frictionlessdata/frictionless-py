@@ -6,7 +6,6 @@ from ..status import Status, StatusTask
 from ..metadata import Metadata
 from ..resource import Resource
 from ..package import Package
-from .transform import transform
 from .validate import validate
 from .. import settings
 from .. import helpers
@@ -23,7 +22,6 @@ class Pipeline(Metadata):
 
     """
 
-    transform = transform
     validate = validate
 
     def __init__(self, descriptor, tasks=None):

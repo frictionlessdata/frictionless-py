@@ -6,8 +6,7 @@ from frictionless import Resource, transform, steps
 
 def test_step_field_unpack():
     source = Resource(path="data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.field_update(name="id", type="array", value=[1, 1]),
             steps.field_unpack(name="id", to_names=["id2", "id3"]),
@@ -30,8 +29,7 @@ def test_step_field_unpack():
 
 def test_step_field_unpack_with_preserve():
     source = Resource(path="data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.field_update(name="id", type="array", value=[1, 1]),
             steps.field_unpack(name="id", to_names=["id2", "id3"], preserve=True),
@@ -55,8 +53,7 @@ def test_step_field_unpack_with_preserve():
 
 def test_step_field_unpack_source_is_object():
     source = Resource(path="data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.field_update(name="id", type="object", value={"note": "eu"}),
             steps.field_unpack(name="id", to_names=["note"]),

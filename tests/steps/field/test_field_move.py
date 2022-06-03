@@ -6,8 +6,7 @@ from frictionless import Resource, transform, steps
 
 def test_step_field_move():
     source = Resource(path="data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.field_move(name="id", position=3),
         ],
@@ -30,12 +29,14 @@ def test_step_field_move():
 
 
 def test_transform_rename_move_field_issue_953():
-    target = transform(
-        data=[
+    source = Resource(
+        [
             {"id": 1, "name": "germany", "population": 83},
             {"id": 2, "name": "france", "population": 66},
             {"id": 3, "name": "spain", "population": 47},
-        ],
+        ]
+    )
+    target = source.transform(
         steps=[
             steps.table_normalize(),
             steps.field_update(name="name", new_name="country"),

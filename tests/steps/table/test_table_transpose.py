@@ -6,8 +6,7 @@ from frictionless import Resource, transform, steps
 
 def test_step_table_transpose():
     source = Resource("data/transpose.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.table_normalize(),
             steps.table_transpose(),

@@ -7,8 +7,11 @@ if TYPE_CHECKING:
     from .row import Row
     from .error import Error
     from .resource import Resource
+    from .interfaces import CheckFunction
 
 
+# TODO: sync API with Step?
+# TODO: add support for validate_package?
 class Check(Metadata):
     """Check representation.
 
@@ -82,12 +85,3 @@ class Check(Metadata):
     # Metadata
 
     metadata_Error = errors.CheckError
-
-
-# Internal
-
-
-# TODO: add to interfaces?
-class CheckFunction(Protocol):
-    def __call__(self, row: Row) -> Iterable[Error]:
-        ...

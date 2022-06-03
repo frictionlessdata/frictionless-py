@@ -5,15 +5,14 @@ from frictionless import Resource, transform, steps
 
 
 def test_transform():
-    source = Resource(path="data/transform.csv")
-    source.infer()
     target = transform(
-        source,
+        "data/transform.csv",
         steps=[
             steps.table_normalize(),
             steps.table_melt(field_name="id"),
         ],
     )
+    assert isinstance(target, Resource)
     assert target.schema == {
         "fields": [
             {"name": "id", "type": "integer"},
@@ -48,10 +47,16 @@ def test_transform_custom_step_function_based():
         resource.data = data
 
     # Transform resource
-    source = Resource(path="data/transform.csv")
-    source.infer()
-    target = transform(source, steps=[custom])
-    assert target.schema == source.schema
+    # TODO: add typing support for function-based steps
+    target = transform("data/transform.csv", steps=[custom])  # type: ignore
+    assert isinstance(target, Resource)
+    assert target.schema == {
+        "fields": [
+            {"type": "integer", "name": "id"},
+            {"type": "string", "name": "name"},
+            {"type": "integer", "name": "population"},
+        ]
+    }
     assert target.read_rows() == [
         {"id": 1, "name": "germany", "population": 83},
         {"id": 4, "name": "france", "population": 66},

@@ -1,4 +1,4 @@
-from frictionless import validate, checks
+from frictionless import Resource, checks
 
 
 # General
@@ -6,8 +6,8 @@ from frictionless import validate, checks
 
 def test_validate_deviated_value():
     source = [["temperature"], [1], [-2], [7], [0], [1], [2], [5], [-4], [100], [8], [3]]
-    report = validate(
-        source,
+    resource = Resource(source)
+    report = resource.validate(
         checks=[
             checks.deviated_value(
                 field_name="temperature",
@@ -29,9 +29,9 @@ def test_value_deviated_value_not_enough_data():
         ["temperature"],
         [1],
     ]
-    report = validate(
-        source,
-        checks=[{"code": "deviated-value", "fieldName": "temperature"}],
+    resource = Resource(source)
+    report = resource.validate(
+        checks=[{"code": "deviated-value", "fieldName": "temperature"}]
     )
     assert report.flatten(["code", "note"]) == []
 
@@ -41,7 +41,8 @@ def test_validate_deviated_value_not_a_number():
         ["row", "name"],
         [2, "Alex"],
     ]
-    report = validate(source, checks=[{"code": "deviated-value", "fieldName": "name"}])
+    resource = Resource(source)
+    report = resource.validate(checks=[{"code": "deviated-value", "fieldName": "name"}])
     assert report.flatten(["code", "note"]) == [
         ["check-error", 'deviated value check requires field "name" to be numeric'],
     ]
@@ -52,10 +53,8 @@ def test_validate_deviated_value_non_existent_field():
         ["row", "name"],
         [2, "Alex"],
     ]
-    report = validate(
-        source,
-        checks=[{"code": "deviated-value", "fieldName": "bad"}],
-    )
+    resource = Resource(source)
+    report = resource.validate(checks=[{"code": "deviated-value", "fieldName": "bad"}])
     assert report.flatten(["code", "note"]) == [
         ["check-error", 'deviated value check requires field "bad" to exist'],
     ]
@@ -66,9 +65,11 @@ def test_validate_deviated_value_incorrect_average():
         ["row", "name"],
         [2, "Alex"],
     ]
-    report = validate(
-        source,
-        checks=[{"code": "deviated-value", "fieldName": "row", "average": "bad"}],
+    resource = Resource(source)
+    report = resource.validate(
+        checks=[
+            {"code": "deviated-value", "fieldName": "row", "average": "bad"},
+        ]
     )
     assert report.flatten(["code", "note"]) == [
         [

@@ -1,10 +1,17 @@
-from typing import TYPE_CHECKING
+from __future__ import annotations
+from typing import TYPE_CHECKING, Optional
 
 if TYPE_CHECKING:
+    from ..interfaces import ProcessFunction
     from .resource import Resource
 
 
-def extract(resource: "Resource", *, process=None, stream=False):
+def extract(
+    resource: "Resource",
+    *,
+    process: Optional[ProcessFunction] = None,
+    stream: bool = False,
+):
     """Extract resource rows
 
     Parameters:

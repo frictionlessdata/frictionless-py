@@ -10,6 +10,7 @@ if TYPE_CHECKING:
     from .package import Package
 
 
+# TODO: only accept Inquiry as argument?
 # TODO: move exception catching to high-level validate?
 @Report.from_validate
 def validate(

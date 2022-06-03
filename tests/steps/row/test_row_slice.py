@@ -6,8 +6,7 @@ from frictionless import Resource, transform, steps
 
 def test_step_row_slice():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.row_slice(stop=2),
         ],
@@ -27,8 +26,7 @@ def test_step_row_slice():
 
 def test_step_row_slice_with_start():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.row_slice(start=1, stop=2),
         ],
@@ -47,8 +45,7 @@ def test_step_row_slice_with_start():
 
 def test_step_row_slice_with_start_and_step():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.row_slice(start=1, stop=3, step=2),
         ],
@@ -67,8 +64,7 @@ def test_step_row_slice_with_start_and_step():
 
 def test_step_row_slice_with_head():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.row_slice(head=2),
         ],
@@ -88,8 +84,7 @@ def test_step_row_slice_with_head():
 
 def test_step_row_slice_with_tail():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.row_slice(tail=2),
         ],

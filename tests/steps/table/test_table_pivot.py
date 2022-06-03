@@ -6,14 +6,12 @@ from frictionless import Resource, transform, steps
 
 def test_step_table_pivot():
     source = Resource("data/transform-pivot.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.table_normalize(),
             steps.table_pivot(f1="region", f2="gender", f3="units", aggfun=sum),
         ],
     )
-    print(target.schema)
     assert target.schema == {
         "fields": [
             {"name": "region", "type": "string"},

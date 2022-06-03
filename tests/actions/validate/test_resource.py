@@ -1061,6 +1061,7 @@ def test_validate_custom_check_bad_name():
     ]
 
 
+@pytest.mark.skip
 def test_validate_resource_descriptor_type_invalid():
     report = validate(descriptor="data/table.csv")
     assert report.flatten() == [[1, None, None, "resource-error"]]

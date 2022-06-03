@@ -6,8 +6,7 @@ from frictionless import Resource, transform, steps
 
 def test_step_row_subset_conflicts():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.row_subset(subset="conflicts", field_name="id"),
         ],
@@ -24,8 +23,7 @@ def test_step_row_subset_conflicts():
 
 def test_step_row_subset_conflicts_from_descriptor_issue_996():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.row_subset({"subset": "conflicts", "fieldName": "id"}),
         ],
@@ -42,8 +40,7 @@ def test_step_row_subset_conflicts_from_descriptor_issue_996():
 
 def test_step_row_subset_conflicts_with_duplicates():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.field_update(name="id", value=1),
             steps.row_subset(subset="conflicts", field_name="id"),
@@ -65,8 +62,7 @@ def test_step_row_subset_conflicts_with_duplicates():
 
 def test_step_row_subset_distinct():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.row_subset(subset="distinct", field_name="id"),
         ],
@@ -87,8 +83,7 @@ def test_step_row_subset_distinct():
 
 def test_step_row_subset_distinct_with_duplicates():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.field_update(name="id", value=1),
             steps.row_subset(subset="distinct", field_name="id"),
@@ -108,8 +103,7 @@ def test_step_row_subset_distinct_with_duplicates():
 
 def test_step_row_subset_duplicates():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.row_subset(subset="duplicates"),
         ],
@@ -126,8 +120,7 @@ def test_step_row_subset_duplicates():
 
 def test_step_row_subset_duplicates_with_name():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.field_update(name="id", value=1),
             steps.row_subset(subset="duplicates", field_name="id"),
@@ -149,8 +142,7 @@ def test_step_row_subset_duplicates_with_name():
 
 def test_step_row_subset_unique():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.row_subset(subset="unique"),
         ],
@@ -171,8 +163,7 @@ def test_step_row_subset_unique():
 
 def test_step_row_subset_unique_with_name():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.field_update(name="id", value=1),
             steps.row_subset(subset="unique", field_name="id"),

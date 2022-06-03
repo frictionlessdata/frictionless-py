@@ -6,8 +6,7 @@ from frictionless import Resource, transform, steps
 
 def test_step_table_merge():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.table_merge(
                 resource=Resource(data=[["id", "name", "note"], [4, "malta", "island"]])
@@ -32,8 +31,7 @@ def test_step_table_merge():
 
 def test_step_table_merge_from_dict():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.table_merge(
                 resource=dict(data=[["id", "name", "note"], [4, "malta", "island"]])
@@ -58,8 +56,7 @@ def test_step_table_merge_from_dict():
 
 def test_step_table_merge_with_field_names():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.table_merge(
                 resource=Resource(data=[["id", "name", "note"], [4, "malta", "island"]]),
@@ -83,8 +80,7 @@ def test_step_table_merge_with_field_names():
 
 def test_step_merge_ignore_fields():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.table_merge(
                 resource=Resource(data=[["id2", "name2"], [4, "malta"]]),
@@ -109,8 +105,7 @@ def test_step_merge_ignore_fields():
 
 def test_step_table_merge_with_sort():
     source = Resource("data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.table_merge(
                 resource=Resource(data=[["id", "name", "population"], [4, "malta", 1]]),

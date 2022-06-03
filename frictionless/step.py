@@ -7,6 +7,7 @@ from . import errors
 if TYPE_CHECKING:
     from .package import Package
     from .resource import Resource
+    from .interfaces import StepFunction
 
 
 # NOTE:
@@ -57,12 +58,3 @@ class Step(Metadata):
     # Metadata
 
     metadata_Error = errors.StepError
-
-
-# Internal
-
-
-# TODO: add to interfaces?
-class StepFunction(Protocol):
-    def __call__(self, source: Union[Resource, Package]) -> None:
-        ...

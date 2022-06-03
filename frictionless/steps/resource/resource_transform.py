@@ -1,5 +1,4 @@
 from ...step import Step
-from ...actions import transform_resource
 from ...exception import FrictionlessException
 from ... import errors
 
@@ -29,7 +28,7 @@ class resource_transform(Step):
         if not resource:
             error = errors.ResourceError(note=f'No resource "{name}"')
             raise FrictionlessException(error=error)
-        package.resources[index] = transform_resource(resource, steps=steps)  # type: ignore
+        package.resources[index] = resource.transform(steps=steps)  # type: ignore
 
     # Metadata
 

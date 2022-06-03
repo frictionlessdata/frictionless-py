@@ -1,9 +1,8 @@
 from importlib import import_module
-from os import sched_get_priority_max
 
 
 def describe(source=None, expand: bool = False, **options):
-    """Describe the given source as a schema
+    """Describe the given source as a dialect
 
     Parameters:
         source (any): data source
@@ -11,11 +10,11 @@ def describe(source=None, expand: bool = False, **options):
         **options (dict): describe resource options
 
     Returns:
-        Schema: table schema
+        Dialect: table dialect
     """
     frictionless = import_module("frictionless")
     resource = frictionless.Resource.describe(source, **options)
-    schema = resource.schema
+    dialect = resource.dialect
     if expand:
-        schema.expand()
-    return schema
+        dialect.expand()
+    return dialect

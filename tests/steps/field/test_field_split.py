@@ -6,8 +6,7 @@ from frictionless import Resource, transform, steps
 
 def test_step_field_split():
     source = Resource(path="data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.field_split(name="name", to_names=["name1", "name2"], pattern="a"),
         ],
@@ -29,8 +28,7 @@ def test_step_field_split():
 
 def test_step_field_split_with_preserve():
     source = Resource(path="data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.field_split(
                 name="name", to_names=["name1", "name2"], pattern="a", preserve=True
@@ -55,8 +53,7 @@ def test_step_field_split_with_preserve():
 
 def test_step_field_split_with_capturing_groups():
     source = Resource(path="data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.field_split(
                 name="name", to_names=["name1", "name2"], pattern=r"(.{2})(.*)"

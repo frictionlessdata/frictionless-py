@@ -6,8 +6,7 @@ from frictionless import Resource, transform, steps
 
 def test_step_cell_fill():
     source = Resource(path="data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.cell_replace(pattern="france", replace=None),
             steps.cell_fill(field_name="name", value="FRANCE"),
@@ -29,8 +28,7 @@ def test_step_cell_fill():
 
 def test_step_cell_fill_direction_down():
     source = Resource(path="data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.cell_replace(pattern="france", replace=None),
             steps.cell_fill(direction="down"),
@@ -52,8 +50,7 @@ def test_step_cell_fill_direction_down():
 
 def test_step_cell_fill_direction_right():
     source = Resource(path="data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.field_update(name="id", type="string"),
             steps.field_update(name="population", type="string"),
@@ -61,7 +58,6 @@ def test_step_cell_fill_direction_right():
             steps.cell_fill(direction="right"),
         ],
     )
-    print(target.read_rows())
     assert target.schema == {
         "fields": [
             {"name": "id", "type": "string"},
@@ -78,8 +74,7 @@ def test_step_cell_fill_direction_right():
 
 def test_step_cell_fill_direction_left():
     source = Resource(path="data/transform.csv")
-    target = transform(
-        source,
+    target = source.transform(
         steps=[
             steps.field_update(name="id", type="string"),
             steps.field_update(name="population", type="string"),

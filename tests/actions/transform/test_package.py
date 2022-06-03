@@ -1,13 +1,12 @@
-from frictionless import transform, describe, steps
+from frictionless import Package, transform, describe, steps
 
 
 # General
 
 
 def test_transform_package():
-    source = describe("data/tables/chunk*.csv")
     target = transform(
-        source,
+        "data/tables/chunk*.csv",
         steps=[
             steps.resource_transform(
                 name="chunk1",
@@ -18,6 +17,7 @@ def test_transform_package():
             steps.resource_remove(name="chunk2"),
         ],
     )
+    assert isinstance(target, Package)
     assert target.resource_names == ["chunk1"]
     assert target.get_resource("chunk1").read_rows() == [
         {"id": 1, "name": "english"},
