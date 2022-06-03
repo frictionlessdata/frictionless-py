@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from .resource import Resource
 
 
-# TODO: only accept Pipeline as argument?
+# TODO: only accept Pipeline as argument (+ steps as a helper)?
 # TODO: save current status data into resource.stats?
 def transform(resource: "Resource", *, steps: List[Step]):
     """Transform resource

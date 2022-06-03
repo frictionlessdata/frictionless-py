@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from .package import Package
 
 
-# TODO: only accept Pipeline as argument?
+# TODO: only accept Pipeline as argument (+ steps as a helper)?
 # TODO: save current status data into package.stats?
 def transform(package: "Package", *, steps: List[Step]):
     """Transform package
