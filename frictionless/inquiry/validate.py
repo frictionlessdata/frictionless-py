@@ -5,6 +5,7 @@ if TYPE_CHECKING:
     from .inquiry import Inquiry
 
 
+# TODO: make only metadata validation -- data validation in resource/package.validate
 # TODO: move run here?
 # TODO: move exception handling to other layer?
 @Report.from_validate
