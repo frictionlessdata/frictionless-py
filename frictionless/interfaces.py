@@ -1,8 +1,11 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Protocol, BinaryIO, TextIO, Iterable, List, Any
+from typing import TYPE_CHECKING, Protocol, BinaryIO, TextIO, Iterable, List, Any, Union
 
 if TYPE_CHECKING:
     from .row import Row
+    from .error import Error
+    from .package import Package
+    from .resource import Resource
 
 
 # General
@@ -18,6 +21,21 @@ ISample = List[List[Any]]
 # Functions
 
 
+class CheckFunction(Protocol):
+    def __call__(self, row: Row) -> Iterable[Error]:
+        ...
+
+
+class EncodingFunction(Protocol):
+    def __call__(self, buffer: IBuffer) -> str:
+        ...
+
+
 class ProcessFunction(Protocol):
     def __call__(self, row: Row) -> Iterable[Any]:
+        ...
+
+
+class StepFunction(Protocol):
+    def __call__(self, source: Union[Resource, Package]) -> None:
         ...

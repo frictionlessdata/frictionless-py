@@ -13,7 +13,7 @@ from .. import settings
 from .. import errors
 
 if TYPE_CHECKING:
-    from ..interfaces import IBuffer
+    from ..interfaces import IBuffer, EncodingFunction
 
 
 # NOTE:
@@ -562,12 +562,3 @@ class Detector:
             raise FrictionlessException(errors.SchemaError(note=note))
 
         return schema
-
-
-# Internal
-
-
-# TODO: add to interfaces?
-class EncodingFunction(Protocol):
-    def __call__(self, buffer: IBuffer) -> str:
-        ...
