@@ -31,161 +31,87 @@ def validate(
     """
 
     # Create state
+    errors = []
     partial = False
     timer = helpers.Timer()
     original_resource = resource.to_copy()
 
     # Prepare checklist
     if not checklist:
-        if not checks:
-            note = "checklist OR checks are required"
-            raise FrictionlessException(GeneralError(note=note))
         proc = lambda check: check if isinstance(check, Check) else Check(function=check)
-        checklist = Checklist(checks=list(map(proc, checks)))
+        checklist = Checklist(checks=list(map(proc, checks or [])))
+    connected_checks = checklist.connect(resource)
 
     # Validate checklist
     if not checklist.metadata_valid:
-        note = f"checklist is not valid: {checklist.metadata_errors[0]}"
-        raise FrictionlessException(GeneralError(note=note))
-
-    # Prepare check/errors
-    checks = checklist.connect(resource)
-    errors = ManagedErrors(checklist)
-    for check in checklist.checks:
-        errors.register(check)
+        return Report(errors=checklist.metadata_errors, time=timer.time)
 
     # Prepare resource
     try:
         resource.open()
     except FrictionlessException as exception:
-        errors.append(exception.error)
         resource.close()
+        errors = [exception.error]
+        return Report.from_task(resource, errors=errors, time=timer.time)
 
     # Validate metadata
-    if not errors:
-        metadata_resource = original_resource if checklist.original else resource
-        for error in metadata_resource.metadata_errors:
-            errors.append(error)
+    metadata = original_resource if checklist.original else resource
+    if not metadata.metadata_valid:
+        errors = metadata.metadata_errors
+        return Report.from_task(resource, errors=errors, time=timer.time)
 
     # Validate data
-    if not errors:
-        with resource:
+    with resource:
 
-            # Validate start
-            for index, check in enumerate(checks.copy()):
-                check.connect(resource)
-                for error in check.validate_start():
-                    if error.code == "check-error":
-                        del checks[index]
+        # Validate start
+        for index, check in enumerate(connected_checks):
+            for error in check.validate_start():
+                if error.code == "check-error":
+                    del connected_checks[index]
+                if error.code in checklist.scope:
                     errors.append(error)
 
-            # Validate rows
-            if resource.tabular:
-                for row in resource.row_stream:
+        # Validate rows
+        if resource.tabular:
+            for row in resource.row_stream:  # type: ignore
 
-                    # Validate row
-                    for check in checks:
-                        for error in check.validate_row(row):
+                # Validate row
+                for check in connected_checks:
+                    for error in check.validate_row(row):
+                        if error.code in checklist.scope:
                             errors.append(error)
 
-                    # Limit errors
-                    if limit_errors and len(errors) >= limit_errors:
+                # Limit errors
+                if checklist.limit_errors:
+                    if len(errors) >= checklist.limit_errors:
+                        errors = errors[: checklist.limit_errors]
                         partial = True
                         break
 
-                    # Limit memory
-                    if limit_memory and not row.row_number % 100000:
+                # Limit memory
+                if checklist.limit_memory:
+                    if not row.row_number % 100000:
                         memory = helpers.get_current_memory_usage()
-                        if memory and memory > limit_memory:
-                            note = f'exceeded memory limit "{limit_memory}MB"'
+                        if memory and memory > checklist.limit_memory:
+                            note = f'exceeded memory limit "{checklist.limit_memory}MB"'
                             errors.append(TaskError(note=note))
                             partial = True
                             break
 
-            # Validate end
-            if not partial:
-                if not resource.tabular:
-                    helpers.pass_through(resource.byte_stream)
-                for check in checks:
-                    for error in check.validate_end():
+        # Validate end
+        if not partial:
+            if not resource.tabular:
+                helpers.pass_through(resource.byte_stream)
+            for check in connected_checks:
+                for error in check.validate_end():
+                    if error.code in checklist.scope:
                         errors.append(error)
 
     # Return report
-    return Report(
+    return Report.from_task(
+        resource,
+        errors=errors,
+        partial=partial,
         time=timer.time,
-        errors=[],
-        tasks=[
-            ReportTask(
-                time=timer.time,
-                scope=errors.scope,
-                partial=partial,
-                errors=errors,
-                resource=resource,
-            )
-        ],
+        scope=checklist.scope,
     )
-
-
-# Internal
-
-
-def create_report(resource: Resource, *, partial, errors, time):
-    return Report(
-        time=time,
-        errors=[],
-        tasks=[
-            ReportTask(
-                time=time,
-                scope=errors.scope,
-                partial=partial,
-                errors=errors,
-                resource=resource,
-            )
-        ],
-    )
-
-
-# TODO: consider merging some logic into Checklist
-class ManagedErrors(list):
-    def __init__(self, checklist):
-        self.__pick_errors = set(checklist.pick_errors)
-        self.__skip_errors = set(checklist.skip_errors)
-        self.__limit_errors = checklist.limit_errors
-        self.__scope = []
-
-    @property
-    def scope(self):
-        return self.__scope
-
-    def append(self, error):
-        if "#general" not in error.tags:
-            if self.__limit_errors:
-                if len(self) >= self.__limit_errors:
-                    return
-            if not self.match(error):
-                return
-        super().append(error)
-
-    def match(self, error):
-        match = True
-        if self.__pick_errors:
-            match = False
-            if error.code in self.__pick_errors:
-                match = True
-            if self.__pick_errors.intersection(error.tags):
-                match = True
-        if self.__skip_errors:
-            match = True
-            if error.code in self.__skip_errors:
-                match = False
-            if self.__skip_errors.intersection(error.tags):
-                match = False
-        return match
-
-    def register(self, check):
-        for Error in check.Errors:
-            if not self.match(Error):
-                continue
-            if Error.code in self.__scope:
-                continue
-            self.__scope.append(Error.code)

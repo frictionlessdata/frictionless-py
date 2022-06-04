@@ -1,6 +1,7 @@
 import functools
 from copy import deepcopy
 from importlib import import_module
+from typing import TYPE_CHECKING, List
 from ..metadata import Metadata
 from ..errors import Error, TaskError, ReportError
 from ..exception import FrictionlessException
@@ -8,11 +9,13 @@ from .validate import validate
 from .. import settings
 from .. import helpers
 
+if TYPE_CHECKING:
+    from ..resource import Resource
+
 
 # NOTE:
 # We can allow some Report/ReportTask constructor kwargs be None
 # We need to review how we validate Report/ReportTask (strict mode is disabled)
-# Consider reworking Report -- reduce duplication / etc
 
 
 class Report(Metadata):
@@ -144,6 +147,19 @@ class Report(Metadata):
     # Import/Export
 
     @staticmethod
+    def from_task(
+        resource: Resource,
+        *,
+        time: float,
+        scope: List[str] = [],
+        errors: List[Error] = [],
+        partial: bool = False
+    ):
+        """Create a report from a task"""
+        task = ReportTask(resource=resource, errors=errors, scope=scope, time=time)
+        return Report(tasks=[task], time=time)
+
+    @staticmethod
     def from_validate(validate):
         """Validate function wrapper
 
@@ -204,11 +220,11 @@ class ReportTask(Metadata):
 
     Parameters:
         descriptor? (str|dict): schema descriptor
+        resource? (Resource): resource
         time (float): validation time
         scope (str[]): validation scope
         partial (bool): wehter validation was partial
         errors (Error[]): validation errors
-        task (Task): validation task
 
     # Raises
         FrictionlessException: raise any error that occurs during the process

@@ -1,4 +1,5 @@
 from typing import TYPE_CHECKING, Optional, List, Any
+from ..helpers import cached_property
 from ..metadata import Metadata
 from .validate import validate
 from ..checks import baseline
@@ -63,9 +64,21 @@ class Checklist(Metadata):
     def parallel(self):
         return self.get("parallel")
 
+    @cached_property
+    def scope(self):
+        scope = []
+        for check in self.checks:
+            for Error in check.Errors:
+                if Error.code in self.skip_errors:
+                    continue
+                if Error.code not in self.pick_errors and self.pick_errors:
+                    continue
+                scope.append(Error.code)
+        return scope
+
     # Connect
 
-    def connect(self, resource: Resource):
+    def connect(self, resource: Resource) -> List[Check]:
         checks = []
         for check in self.checks:
             if check.metadata_valid:
