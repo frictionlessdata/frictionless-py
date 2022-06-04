@@ -5,6 +5,7 @@ from .validate import validate
 from ..checks import baseline
 from ..check import Check
 from .. import settings
+from .. import helpers
 from .. import errors
 
 if TYPE_CHECKING:
@@ -92,9 +93,23 @@ class Checklist(Metadata):
     metadata_Error = errors.ChecklistError
     metadata_profile = settings.CHECKLIST_PROFILE
 
+    def metadata_process(self):
+
+        # Checks
+        checks = self.get("checks")
+        if isinstance(checks, list):
+            for index, check in enumerate(checks):
+                if not isinstance(check, Check):
+                    check = Check(check)
+                    list.__setitem__(checks, index, check)
+            if not isinstance(checks, helpers.ControlledList):
+                checks = helpers.ControlledList(checks)
+                checks.__onchange__(self.metadata_process)
+                dict.__setitem__(self, "checks", checks)
+
     def metadata_validate(self):
         yield from super().metadata_validate()
 
-        # Tasks
+        # Checks
         for check in self.checks:
             yield from check.metadata_errors

@@ -41,8 +41,6 @@ def validate(
         proc = lambda check: check if isinstance(check, Check) else Check(function=check)
         checklist = Checklist(checks=list(map(proc, checks or [])))
     connected_checks = checklist.connect(resource)
-
-    # Validate checklist
     if not checklist.metadata_valid:
         return Report(errors=checklist.metadata_errors, time=timer.time)
 
