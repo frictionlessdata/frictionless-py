@@ -1,46 +1,30 @@
-# type: ignore
 import types
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List, Union, Optional
 from ..check import Check
 from ..system import system
+from ..checklist import Checklist
 from ..exception import FrictionlessException
+from ..errors import GeneralError, TaskError
 from ..report import Report, ReportTask
-from ..errors import TaskError
-from .. import helpers
 from .. import settings
+from .. import helpers
 
 if TYPE_CHECKING:
+    from ..interfaces import CheckFunction
     from .resource import Resource
 
 
-# NOTE:
-# Shall metadata validation be a part of BaselineCheck?
-
-
-# TODO: only accept Inquiry as argument (+checks as a helper)?
-# TODO: checks should not accept descriptors only Check objects?
-# TODO: shall we catch exceptions here or in global validate?
-@Report.from_validate
 def validate(
     resource: "Resource",
+    checklist: Optional[Checklist] = None,
     *,
-    checks=None,
-    original=False,
-    pick_errors=None,
-    skip_errors=None,
-    limit_errors=settings.DEFAULT_LIMIT_ERRORS,
-    limit_memory=settings.DEFAULT_LIMIT_MEMORY,
+    checks: Optional[List[Union[Check, CheckFunction]]] = None,
 ):
-    """Validate table
+    """Validate resource
 
     Parameters:
+        checklist? (checklist): a Checklist object
         checks? (list): a list of checks
-        pick_errors? ((str|int)[]): pick errors
-        skip_errors? ((str|int)[]): skip errors
-        limit_errors? (int): limit errors
-        limit_memory? (int): limit memory
-        original? (bool): validate metadata as it is (without inferring)
-        **options? (dict): Resource constructor options
 
     Returns:
         Report: validation report
@@ -49,46 +33,37 @@ def validate(
     # Create state
     partial = False
     timer = helpers.Timer()
-    errors = ManagedErrors(pick_errors, skip_errors, limit_errors)
+    original_resource = resource.to_copy()
 
-    # Create resource
+    # Prepare checklist
+    if not checklist:
+        if not checks:
+            note = "checklist OR checks are required"
+            raise FrictionlessException(GeneralError(note=note))
+        proc = lambda check: check if isinstance(check, Check) else Check(function=check)
+        checklist = Checklist(checks=list(map(proc, checks)))
+
+    # Validate checklist
+    if not checklist.metadata_valid:
+        note = f"checklist is not valid: {checklist.metadata_errors[0]}"
+        raise FrictionlessException(GeneralError(note=note))
+
+    # Prepare check/errors
+    checks = checklist.connect(resource)
+    errors = ManagedErrors(checklist)
+    for check in checklist.checks:
+        errors.register(check)
+
+    # Prepare resource
     try:
-        stats = {key: val for key, val in resource.stats.items() if val}
-        original_resource = resource.to_copy()
+        resource.open()
     except FrictionlessException as exception:
-        resource = None
         errors.append(exception.error)
-
-    # Open resource
-    if not errors:
-        try:
-            resource.open()
-        except FrictionlessException as exception:
-            errors.append(exception.error)
-            resource.close()
-
-    # Prepare checks
-    if not errors:
-        checks = checks or []
-        checks.insert(0, {"code": "baseline", "stats": stats})
-        for index, check in enumerate(checks):
-            if not isinstance(check, Check):
-                func = isinstance(check, types.FunctionType)
-                check = Check(function=check) if func else system.create_check(check)
-                checks[index] = check
-            errors.register(check)
-
-    # Validate checks
-    if not errors:
-        for index, check in enumerate(checks.copy()):
-            if check.metadata_errors:
-                del checks[index]
-                for error in check.metadata_errors:
-                    errors.append(error)
+        resource.close()
 
     # Validate metadata
     if not errors:
-        metadata_resource = original_resource if original else resource
+        metadata_resource = original_resource if checklist.original else resource
         for error in metadata_resource.metadata_errors:
             errors.append(error)
 
@@ -154,17 +129,28 @@ def validate(
 # Internal
 
 
-# NOTE:
-# We might consider merging this code into ReportTask
-# It had been written much earlier that ReportTask was introduces
-# Also, we can use Report/ReportTask API instead of working with lists
+def create_report(resource: Resource, *, partial, errors, time):
+    return Report(
+        time=time,
+        errors=[],
+        tasks=[
+            ReportTask(
+                time=time,
+                scope=errors.scope,
+                partial=partial,
+                errors=errors,
+                resource=resource,
+            )
+        ],
+    )
 
 
+# TODO: consider merging some logic into Checklist
 class ManagedErrors(list):
-    def __init__(self, pick_errors, skip_errors, limit_errors):
-        self.__pick_errors = set(pick_errors or [])
-        self.__skip_errors = set(skip_errors or [])
-        self.__limit_errors = limit_errors
+    def __init__(self, checklist):
+        self.__pick_errors = set(checklist.pick_errors)
+        self.__skip_errors = set(checklist.skip_errors)
+        self.__limit_errors = checklist.limit_errors
         self.__scope = []
 
     @property

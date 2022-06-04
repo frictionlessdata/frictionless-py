@@ -3,9 +3,6 @@ import pathlib
 from frictionless import Resource, Detector, Layout, Check, errors, helpers
 
 
-IS_UNIX = not helpers.is_platform("windows")
-
-
 # General
 
 

@@ -1,4 +1,3 @@
-# type: ignore
 import warnings
 from typing import TYPE_CHECKING
 from ..report import Report
@@ -38,7 +37,7 @@ def validate(
     # Prepare package
     try:
         package_stats = []
-        for resource in package.resources:
+        for resource in package.resources:  # type: ignore
             package_stats.append({key: val for key, val in resource.stats.items() if val})
     except FrictionlessException as exception:
         return Report(time=timer.time, errors=[exception.error], tasks=[])
@@ -55,7 +54,7 @@ def validate(
     if not parallel:
         tasks = []
         errors = []
-        for resource, stats in zip(package.resources, package_stats):
+        for resource, stats in zip(package.resources, package_stats):  # type: ignore
             resource.stats = stats
             report = resource.validate(original=original, **options)
             tasks.extend(report.tasks)
@@ -65,7 +64,7 @@ def validate(
     # Validate in-parallel
     else:
         inquiry = Inquiry(tasks=[])
-        for resource, stats in zip(package.resources, package_stats):
+        for resource, stats in zip(package.resources, package_stats):  # type: ignore
             for fk in resource.schema.foreign_keys:
                 if fk["reference"]["resource"]:
                     message = "Foreign keys validation is ignored in the parallel mode"
