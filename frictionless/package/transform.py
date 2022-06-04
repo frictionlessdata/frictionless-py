@@ -7,7 +7,6 @@ from ..exception import FrictionlessException
 from .. import errors
 
 if TYPE_CHECKING:
-    from ..step import Step
     from .package import Package
 
 

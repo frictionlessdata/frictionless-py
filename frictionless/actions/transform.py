@@ -1,17 +1,10 @@
-import types
-import warnings
-from typing import TYPE_CHECKING, Optional, List, Any
+from typing import Optional, List, Any
 from ..step import Step
 from ..system import system
 from ..package import Package
 from ..resource import Resource
-from ..helpers import get_name
 from ..exception import FrictionlessException
-from ..pipeline import Pipeline
 from .. import errors
-
-if TYPE_CHECKING:
-    from ..step import Step
 
 
 # TODO: here we'd like to accept both pipeline + individual options

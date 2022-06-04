@@ -1,4 +1,4 @@
-from frictionless import Resource, transform, steps
+from frictionless import Resource, steps
 
 
 def test_step_field_merge_907():

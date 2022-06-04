@@ -2,7 +2,7 @@ from __future__ import annotations
 import codecs
 import chardet
 from copy import copy, deepcopy
-from typing import TYPE_CHECKING, Protocol, Optional, List
+from typing import TYPE_CHECKING, Optional, List
 from ..exception import FrictionlessException
 from ..system import system
 from ..layout import Layout

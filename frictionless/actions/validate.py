@@ -1,18 +1,13 @@
-import types
-import inspect
-import warnings
 from typing import Optional, List, Any
 from ..check import Check
 from ..schema import Schema
 from ..package import Package
 from ..pipeline import Pipeline
-from ..inquiry import Inquiry, InquiryTask
+from ..inquiry import Inquiry
 from ..system import system
 from ..resource import Resource
-from ..report import Report, ReportTask
-from ..errors import TaskError
+from ..report import Report
 from ..exception import FrictionlessException
-from .. import helpers
 from .. import settings
 from .. import errors
 

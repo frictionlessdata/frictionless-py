@@ -1,4 +1,4 @@
-from frictionless import Package, transform, steps
+from frictionless import Package, steps
 
 
 # General

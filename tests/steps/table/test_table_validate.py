@@ -1,5 +1,5 @@
 import pytest
-from frictionless import Resource, FrictionlessException, transform, steps
+from frictionless import Resource, FrictionlessException, steps
 
 
 # General

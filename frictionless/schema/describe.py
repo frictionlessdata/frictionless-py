@@ -1,5 +1,4 @@
 from importlib import import_module
-from os import sched_get_priority_max
 
 
 def describe(source=None, expand: bool = False, **options):

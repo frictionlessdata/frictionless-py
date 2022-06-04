@@ -1,4 +1,3 @@
-import warnings
 from typing import Any, Optional
 from ..dialect import Dialect
 from ..resource import Resource
