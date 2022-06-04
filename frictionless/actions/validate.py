@@ -62,10 +62,12 @@ def validate(
         return inquiry.validate()
     elif type == "package":
         package = Package(source, **options)
+        if resource_name:
+            resource = package.get_resource(resource_name)
+            return resource.validate(original=original)
         return package.validate(
             original=original,
             parallel=parallel,
-            resource_name=resource_name,
         )
     elif type == "pipeline":
         pipeline = Pipeline(source)

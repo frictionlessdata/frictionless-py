@@ -15,7 +15,6 @@ if TYPE_CHECKING:
 @Report.from_validate
 def validate(
     package: "Package",
-    resource_name=None,
     original=False,
     parallel=False,
     **options,
@@ -24,7 +23,6 @@ def validate(
 
     Parameters:
         source (dict|str): a package descriptor
-        resource_name (str): validate only selected resource
         original? (bool): validate metadata as it is (without inferring)
         parallel? (bool): enable multiprocessing
         **options (dict): resource validateion options
@@ -36,11 +34,6 @@ def validate(
 
     # Create state
     timer = helpers.Timer()
-
-    # Validate resource
-    if resource_name:
-        resource = package.get_resource(resource_name)
-        return resource.validate()
 
     # Prepare package
     try:

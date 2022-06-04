@@ -19,6 +19,7 @@ class Checklist(Metadata):
         limit_errors: int = settings.DEFAULT_LIMIT_ERRORS,
         limit_memory: int = settings.DEFAULT_LIMIT_MEMORY,
         original: bool = False,
+        parallel: bool = False,
     ):
         self.setinitial("checks", checks)
         self.setinitial("pickErrors", pick_errors)
@@ -26,6 +27,7 @@ class Checklist(Metadata):
         self.setinitial("limitErrors", limit_errors)
         self.setinitial("limitMemory", limit_memory)
         self.setinitial("original", original)
+        self.setinitial("parallel", parallel)
         super().__init__(descriptor)
 
     @property
@@ -51,6 +53,10 @@ class Checklist(Metadata):
     @property
     def original(self):
         return self.get("original")
+
+    @property
+    def parallel(self):
+        return self.get("parallel")
 
     # Metadata
 
