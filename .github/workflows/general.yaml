@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.8, 3.9, '3.10']  # TODO: add 3.11 when released
+        python-version: [3.8, 3.9, '3.10']
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
