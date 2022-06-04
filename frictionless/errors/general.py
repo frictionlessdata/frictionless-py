@@ -22,6 +22,13 @@ class ResourceError(GeneralError):
     description = "A validation cannot be processed."
 
 
+class ChecklistError(GeneralError):
+    code = "checklist-error"
+    name = "Checklist Error"
+    template = "Checklist is not valid: {note}"
+    description = "Provided checklist is not valid."
+
+
 class PipelineError(GeneralError):
     code = "pipeline-error"
     name = "Pipeline Error"

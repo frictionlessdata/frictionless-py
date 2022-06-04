@@ -21,6 +21,7 @@ UNDEFINED = object()
 VERSION = read_asset("VERSION")
 COMPRESSION_FORMATS = ["zip", "gz"]
 INQUIRY_PROFILE = json.loads(read_asset("profiles", "inquiry.json"))
+CHECKLIST_PROFILE = json.loads(read_asset("profiles", "checklist.json"))
 PIPELINE_PROFILE = json.loads(read_asset("profiles", "pipeline.json"))
 REPORT_PROFILE = json.loads(read_asset("profiles", "report.json"))
 STATUS_PROFILE = json.loads(read_asset("profiles", "status.json"))

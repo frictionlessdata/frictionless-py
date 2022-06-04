@@ -12,6 +12,7 @@ from .. import helpers
 # NOTE:
 # We can allow some Report/ReportTask constructor kwargs be None
 # We need to review how we validate Report/ReportTask (strict mode is disabled)
+# Consider reworking Report -- reduce duplication / etc
 
 
 class Report(Metadata):
