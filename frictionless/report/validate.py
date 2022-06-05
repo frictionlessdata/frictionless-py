@@ -11,6 +11,7 @@ def validate(report: "Report"):
     Returns:
         Report: validation report
     """
-    timer = helpers.Timer()
     Report = type(report)
-    return Report(time=timer.time, errors=report.metadata_errors, tasks=[])
+    timer = helpers.Timer()
+    errors = report.metadata_errors
+    return Report(errors=errors, time=timer.time)

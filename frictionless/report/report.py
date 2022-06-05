@@ -1,3 +1,4 @@
+from __future__ import annotations
 import functools
 from copy import deepcopy
 from importlib import import_module
@@ -153,7 +154,7 @@ class Report(Metadata):
         time: float,
         scope: List[str] = [],
         errors: List[Error] = [],
-        partial: bool = False
+        partial: bool = False,
     ):
         """Create a report from a task"""
         task = ReportTask(resource=resource, errors=errors, scope=scope, time=time)
@@ -239,7 +240,7 @@ class ReportTask(Metadata):
         time=None,
         scope=None,
         partial=None,
-        errors=None
+        errors=None,
     ):
 
         # Store provided

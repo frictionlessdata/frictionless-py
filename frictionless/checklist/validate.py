@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import TYPE_CHECKING
 from ..report import Report
 from .. import helpers
@@ -15,4 +16,5 @@ def validate(checklist: Checklist):
         Report: validation report
     """
     timer = helpers.Timer()
-    return Report(time=timer.time, errors=checklist.metadata_errors, tasks=[])
+    errors = checklist.metadata_errors
+    return Report(errors=errors, time=timer.time)

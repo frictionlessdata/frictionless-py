@@ -1,8 +1,10 @@
+from __future__ import annotations
 from typing import TYPE_CHECKING, Optional, List, Any
 from ..helpers import cached_property
 from ..metadata import Metadata
 from .validate import validate
 from ..checks import baseline
+from ..system import system
 from ..check import Check
 from .. import settings
 from .. import helpers
@@ -22,10 +24,10 @@ class Checklist(Metadata):
         checks: Optional[List[Check]] = None,
         pick_errors: Optional[List[str]] = None,
         skip_errors: Optional[List[str]] = None,
-        limit_errors: int = settings.DEFAULT_LIMIT_ERRORS,
-        limit_memory: int = settings.DEFAULT_LIMIT_MEMORY,
-        original: bool = False,
-        parallel: bool = False,
+        limit_errors: Optional[int] = None,
+        limit_memory: Optional[int] = None,
+        original: Optional[bool] = None,
+        parallel: Optional[bool] = None,
     ):
         self.setinitial("checks", checks)
         self.setinitial("pickErrors", pick_errors)
@@ -38,35 +40,39 @@ class Checklist(Metadata):
         super().__init__(descriptor)
 
     @property
-    def checks(self):
-        return [self.__baseline] + self.get("checks", [])
+    def checks(self) -> List[Check]:
+        return [self.__baseline] + self.get("checks", [])  # type: ignore
 
     @property
-    def pick_errors(self):
+    def check_codes(self) -> List[str]:
+        return [check.code for check in self.checks]
+
+    @property
+    def pick_errors(self) -> List[str]:
         return self.get("pickErrors", [])
 
     @property
-    def skip_errors(self):
+    def skip_errors(self) -> List[str]:
         return self.get("skipErrors", [])
 
     @property
-    def limit_errors(self):
-        return self.get("limitErrors")
+    def limit_errors(self) -> int:
+        return self.get("limitErrors", settings.DEFAULT_LIMIT_ERRORS)
 
     @property
-    def limit_memory(self):
-        return self.get("limitMemory")
+    def limit_memory(self) -> int:
+        return self.get("limitMemory", settings.DEFAULT_LIMIT_MEMORY)
 
     @property
-    def original(self):
-        return self.get("original")
+    def original(self) -> bool:
+        return self.get("original", False)
 
     @property
-    def parallel(self):
-        return self.get("parallel")
+    def parallel(self) -> bool:
+        return self.get("parallel", False)
 
     @cached_property
-    def scope(self):
+    def scope(self) -> List[str]:
         scope = []
         for check in self.checks:
             for Error in check.Errors:
@@ -100,7 +106,7 @@ class Checklist(Metadata):
         if isinstance(checks, list):
             for index, check in enumerate(checks):
                 if not isinstance(check, Check):
-                    check = Check(check)
+                    check = system.create_check(check)
                     list.__setitem__(checks, index, check)
             if not isinstance(checks, helpers.ControlledList):
                 checks = helpers.ControlledList(checks)
