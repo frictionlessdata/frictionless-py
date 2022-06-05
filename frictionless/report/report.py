@@ -48,6 +48,9 @@ class Report(Metadata):
         self.setinitial("tasks", tasks)
         super().__init__(descriptor)
 
+        # TODO: remove after metadata rework
+        self.setdefault("errors", [])
+
         # Store computed
         error_count = len(self.errors) + sum(task.stats["errors"] for task in self.tasks)
         self.setinitial("stats", {"errors": error_count, "tasks": len(self.tasks)})

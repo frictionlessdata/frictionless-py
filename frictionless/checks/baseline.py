@@ -46,7 +46,7 @@ class baseline(Check):
         super().__init__(descriptor)
 
     def connect(self, resource):
-        self.__stats = self.resource.stats.copy()
+        self.__stats = resource.stats.copy()
         super().connect(resource)
 
     # Validate
