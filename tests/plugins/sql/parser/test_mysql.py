@@ -13,10 +13,46 @@ def test_sql_parser_write_timezone_mysql(mysql_url):
     with target:
         assert target.header == ["datetime", "time"]
         assert target.read_rows() == [
-            {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
-            {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
-            {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
-            {"datetime": datetime.datetime(2020, 1, 1, 15), "time": datetime.time(15)},
+            {
+                "datetime": datetime.datetime(
+                    2020,
+                    1,
+                    1,
+                    15,
+                    tzinfo=datetime.timezone(datetime.timedelta(seconds=3600)),
+                ),
+                "time": datetime.time(15),
+            },
+            {
+                "datetime": datetime.datetime(
+                    2020,
+                    1,
+                    1,
+                    16,
+                    tzinfo=datetime.timezone(datetime.timedelta(seconds=3600)),
+                ),
+                "time": datetime.time(15),
+            },
+            {
+                "datetime": datetime.datetime(
+                    2020,
+                    1,
+                    1,
+                    13,
+                    tzinfo=datetime.timezone(datetime.timedelta(seconds=3600)),
+                ),
+                "time": datetime.time(15),
+            },
+            {
+                "datetime": datetime.datetime(
+                    2020,
+                    1,
+                    1,
+                    19,
+                    tzinfo=datetime.timezone(datetime.timedelta(seconds=3600)),
+                ),
+                "time": datetime.time(15),
+            },
         ]
 
 
