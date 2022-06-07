@@ -284,7 +284,7 @@ def program_validate(
                 "The document was partially validated because of one of the limits"
             )
             typer.echo("* limit errors")
-            typer.echo("* memomry Limit \n")
+            typer.echo("* memory Limit \n")
         typer.secho(
             str(
                 tabulate(
