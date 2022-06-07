@@ -2,7 +2,6 @@ import functools
 from copy import deepcopy
 from importlib import import_module
 from tabulate import tabulate
-from ..layout import Layout
 from ..metadata import Metadata
 from ..errors import Error, TaskError, ReportError
 from ..exception import FrictionlessException
@@ -168,6 +167,75 @@ class Report(Metadata):
 
         return wrapper
 
+    # Summary
+
+    def to_summary(self):
+        validation_content = None
+        for task in self.tasks:
+            tabular = task.resource.profile == "tabular-data-resource"
+            prefix = "valid" if task.valid else "invalid"
+            suffix = "" if tabular else "(non-tabular)"
+            source = task.resource.path or task.resource.name
+            # for zipped resources append file name
+            if task.resource.innerpath:
+                source = f"{source} => {task.resource.innerpath}"
+            validation_content = f"\n# {'-'*len(prefix)}\n"
+            validation_content += f"\n# {prefix}: {source} {suffix}\n"
+            validation_content += f"\n# {'-'*len(prefix)}\n"
+            error_list = {}
+            error_content = []
+            for error in task.errors:
+                if error.code == "scheme-error":
+                    return error
+                error_content.append(
+                    [
+                        error.get("rowPosition", ""),
+                        error.get("fieldPosition", ""),
+                        error.code,
+                        error.message,
+                    ]
+                )
+                # error list for summary
+                error_title = f"{error.name} ({error.code})"
+                if error_title not in error_list:
+                    error_list[error_title] = 0
+                error_list[error_title] += 1
+                if task.partial:
+                    last_row_checked = error.get("rowPosition", "")
+            # Validate
+            error_content = helpers.wrap_text_to_colwidths(error_content)
+            rows_checked = last_row_checked if task.partial else None
+            summary_content = helpers.validation_summary(
+                task.resource.path,
+                basepath=task.resource.basepath,
+                time_taken=self.time,
+                rows_checked=rows_checked,
+                error_list=error_list,
+            )
+            validation_content += "\n\n"
+            validation_content += "## Summary "
+            validation_content += "\n\n"
+            validation_content += str(
+                tabulate(
+                    summary_content,
+                    headers=["Description", "Size/Name/Count"],
+                    tablefmt="grid",
+                )
+            )
+            if len(error_content) > 0:
+                validation_content += "\n\n"
+                validation_content += "## Errors "
+                validation_content += "\n\n"
+                validation_content += str(
+                    tabulate(
+                        error_content,
+                        headers=["row", "field", "code", "message"],
+                        tablefmt="grid",
+                    )
+                )
+
+        return validation_content
+
     # Metadata
 
     metadata_Error = ReportError
@@ -332,82 +400,6 @@ class ReportTask(Metadata):
             context.update(error)
             result.append([context.get(prop) for prop in spec])
         return result
-
-    # Summary
-
-    def to_summary(self) -> dict:
-        """Summary of the resource
-
-        Raises:
-            FrictionlessException: on any error
-        """
-        # Process errors
-        summary = {}
-        error_list = {}
-        error_content = []
-        for error in self.errors:
-            if error.code == "scheme-error":
-                return error
-            error_content.append(
-                [
-                    error.get("rowPosition", ""),
-                    error.get("fieldPosition", ""),
-                    error.code,
-                    error.message,
-                ]
-            )
-            # error list for summary
-            error_title = f"{error.name} ({error.code})"
-            if error_title not in error_list:
-                error_list[error_title] = 0
-            error_list[error_title] += 1
-            if self.partial:
-                last_row_checked = error.get("rowPosition", "")
-        # Describe
-        try:
-            self.resource.infer()
-        except Exception as exception:
-            raise FrictionlessException(self.__Error(note=str(exception))) from exception
-        summary["describe"] = tabulate(
-            [
-                [field.name, field.type, True if field.required else ""]
-                for field in self.resource.schema.fields
-            ],
-            headers=["name", "type", "required"],
-            tablefmt="grid",
-        )
-        # Extract
-        # Copy of existing resource to reset the properties to only extract 5 rows
-        resource = self.resource.to_copy(layout=Layout(limit_rows=5))
-        try:
-            resource.extract()
-        except Exception as exception:
-            raise FrictionlessException(self.__Error(note=str(exception))) from exception
-        summary["extract"] = resource.to_view()
-        # Validate
-        summary["validate"] = {}
-        error_content = helpers.wrap_text_to_colwidths(error_content)
-        rows_checked = last_row_checked if self.partial else None
-        summary_content = helpers.validation_summary(
-            self.resource.path,
-            basepath=self.resource.basepath,
-            time_taken=self.time,
-            rows_checked=rows_checked,
-            error_list=error_list,
-        )
-        summary["validate"]["summary"] = tabulate(
-            summary_content,
-            headers=["Description", "Size/Name/Count"],
-            tablefmt="grid",
-        )
-        if len(error_content) > 0:
-            summary["validate"]["errors"] = tabulate(
-                error_content,
-                headers=["row", "field", "code", "message"],
-                tablefmt="grid",
-            )
-
-        return summary
 
     # Metadata
 

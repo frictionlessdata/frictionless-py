@@ -559,3 +559,42 @@ def test_validate_resource_errors_with_fields_993():
             'The data resource has an error: "fields" should be set as "resource.schema.fields" (not "resource.fields").',
         ]
     ]
+
+
+def test_validate_resource_summary_invalid():
+    resource = Resource("data/countries.csv")
+    report = resource.validate()
+    output = report.to_summary()
+    assert output.count("valid") and output.count("Summary") and output.count("Errors")
+
+
+def test_validate_resource_validate_summary():
+    resource = Resource("data/countries.csv")
+    report = resource.validate()
+    output = report.to_summary()
+    assert (
+        output.count("File name                   |")
+        and output.count("File size (bytes)           | 143")
+        and output.count("Total Time Taken (sec)      |")
+        and output.count("Total Errors                | 4")
+        and output.count("Extra Cell (extra-cell)     | 1")
+        and output.count("Missing Cell (missing-cell) | 3")
+    )
+
+
+def test_validate_resource_validate_errors():
+    resource = Resource("data/countries.csv")
+    report = resource.validate()
+    output = report.to_summary()
+    with open("data/fixtures/program/summary/errors.txt", encoding="utf-8") as file:
+        expected = file.read()
+    assert output.count(expected.strip())
+
+
+def test_validate_resource_summary_valid():
+    resource = Resource("data/capital-valid.csv")
+    report = resource.validate()
+    output = report.to_summary()
+    assert (
+        output.count("valid") and output.count("Summary") and not output.count("Errors")
+    )
