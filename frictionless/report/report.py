@@ -254,6 +254,9 @@ class ReportTask(Metadata):
         self.setinitial("errors", errors)
         super().__init__(descriptor)
 
+        # TODO: remove after metadata rework
+        self.setdefault("partial", False)
+
         # Store computed
         self.setinitial("stats", {"errors": len(self.errors)})
         self.setinitial("valid", not self.errors)
