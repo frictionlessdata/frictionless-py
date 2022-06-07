@@ -1,6 +1,15 @@
 from frictionless import validate
 
 
+def test_program_error_not_found():
+    report = validate("data/countriess.csv")
+    output = report.to_summary()
+    with open("data/fixtures/report/scheme-error.txt", encoding="utf-8") as file:
+        expected = file.read()
+    assert output.count(expected.strip())
+    assert output.count("File name (Not Found)")
+
+
 def test_report_summary():
     report = validate("data/countries.csv")
     output = report.to_summary()

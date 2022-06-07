@@ -185,8 +185,6 @@ class Report(Metadata):
             error_list = {}
             error_content = []
             for error in task.errors:
-                if error.code == "scheme-error":
-                    return error
                 error_content.append(
                     [
                         error.get("rowPosition", ""),
