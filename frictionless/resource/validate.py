@@ -54,7 +54,7 @@ def validate(
         return Report.from_task(resource, errors=errors, time=timer.time)
 
     # Validate metadata
-    metadata = original_resource if checklist.original else resource
+    metadata = original_resource if checklist.keep_original else resource
     if not metadata.metadata_valid:
         errors = metadata.metadata_errors
         return Report.from_task(resource, errors=errors, time=timer.time)

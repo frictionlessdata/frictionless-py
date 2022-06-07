@@ -26,16 +26,16 @@ class Checklist(Metadata):
         skip_errors: Optional[List[str]] = None,
         limit_errors: Optional[int] = None,
         limit_memory: Optional[int] = None,
-        original: Optional[bool] = None,
-        parallel: Optional[bool] = None,
+        keep_original: Optional[bool] = None,
+        allow_parallel: Optional[bool] = None,
     ):
         self.setinitial("checks", checks)
         self.setinitial("pickErrors", pick_errors)
         self.setinitial("skipErrors", skip_errors)
         self.setinitial("limitErrors", limit_errors)
         self.setinitial("limitMemory", limit_memory)
-        self.setinitial("original", original)
-        self.setinitial("parallel", parallel)
+        self.setinitial("keepOriginal", keep_original)
+        self.setinitial("allowParallel", allow_parallel)
         self.__baseline = baseline()
         super().__init__(descriptor)
 
@@ -64,12 +64,12 @@ class Checklist(Metadata):
         return self.get("limitMemory", settings.DEFAULT_LIMIT_MEMORY)
 
     @property
-    def original(self) -> bool:
-        return self.get("original", False)
+    def keep_original(self) -> bool:
+        return self.get("keepOriginal", False)
 
     @property
-    def parallel(self) -> bool:
-        return self.get("parallel", False)
+    def allow_parallel(self) -> bool:
+        return self.get("allowParallel", False)
 
     @cached_property
     def scope(self) -> List[str]:
