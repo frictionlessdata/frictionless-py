@@ -1,4 +1,4 @@
-from frictionless import Resource, checks
+from frictionless import Resource, Checklist, checks
 
 
 # General
@@ -31,13 +31,16 @@ def test_validate_row_constraint_incorrect_constraint():
         [2, "Alex"],
     ]
     resource = Resource(source)
-    report = resource.validate(
-        checks=[
-            {"code": "row-constraint", "formula": "vars()"},
-            {"code": "row-constraint", "formula": "import(os)"},
-            {"code": "row-constraint", "formula": "non_existent > 0"},
-        ],
+    checklist = Checklist(
+        {
+            "checks": [
+                {"code": "row-constraint", "formula": "vars()"},
+                {"code": "row-constraint", "formula": "import(os)"},
+                {"code": "row-constraint", "formula": "non_existent > 0"},
+            ]
+        }
     )
+    report = resource.validate(checklist)
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [2, None, "row-constraint"],
         [2, None, "row-constraint"],
