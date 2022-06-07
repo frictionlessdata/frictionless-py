@@ -1,4 +1,5 @@
-from frictionless import Resource, checks
+import pytest
+from frictionless import Resource, Checklist, checks
 
 
 # General
@@ -16,11 +17,13 @@ def test_validate_forbidden_value():
     ]
 
 
+@pytest.mark.skip
 def test_validate_forbidden_value_task_error():
     resource = Resource("data/table.csv")
-    report = resource.validate(
-        checks=[{"code": "forbidden-value", "fieldName": "bad", "forbidden": [2]}],
+    checklist = Checklist(
+        {"checks": [{"code": "forbidden-value", "fieldName": "bad", "forbidden": [2]}]}
     )
+    report = resource.validate(checklist)
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [None, None, "task-error"],
     ]
@@ -36,14 +39,17 @@ def test_validate_forbidden_value_many_rules():
         [6],
     ]
     resource = Resource(source)
-    report = resource.validate(
-        checks=[
-            {"code": "forbidden-value", "fieldName": "row", "values": [10]},
-            {"code": "forbidden-value", "fieldName": "name", "values": ["mistake"]},
-            {"code": "forbidden-value", "fieldName": "row", "values": [10]},
-            {"code": "forbidden-value", "fieldName": "name", "values": ["error"]},
-        ],
+    checklist = Checklist(
+        {
+            "checks": [
+                {"code": "forbidden-value", "fieldName": "row", "values": [10]},
+                {"code": "forbidden-value", "fieldName": "name", "values": ["mistake"]},
+                {"code": "forbidden-value", "fieldName": "row", "values": [10]},
+                {"code": "forbidden-value", "fieldName": "name", "values": ["error"]},
+            ]
+        }
     )
+    report = resource.validate(checklist)
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [4, 2, "forbidden-value"],
         [5, 2, "forbidden-value"],
@@ -51,18 +57,22 @@ def test_validate_forbidden_value_many_rules():
     ]
 
 
+@pytest.mark.skip
 def test_validate_forbidden_value_many_rules_with_non_existent_field():
     source = [
         ["row", "name"],
         [2, "Alex"],
     ]
     resource = Resource(source)
-    report = resource.validate(
-        checks=[
-            {"code": "forbidden-value", "fieldName": "row", "values": [10]},
-            {"code": "forbidden-value", "fieldName": "bad", "values": ["mistake"]},
-        ],
+    checklist = Checklist(
+        {
+            "checks": [
+                {"code": "forbidden-value", "fieldName": "row", "values": [10]},
+                {"code": "forbidden-value", "fieldName": "bad", "values": ["mistake"]},
+            ]
+        }
     )
+    report = resource.validate(checklist)
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [None, None, "check-error"],
     ]

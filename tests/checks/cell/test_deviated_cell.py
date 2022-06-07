@@ -1,4 +1,4 @@
-from frictionless import Resource, checks
+from frictionless import Resource, Checklist, checks
 
 
 # General
@@ -14,18 +14,21 @@ def test_validate_deviated_cell_1066():
 
 def test_validate_deviated_cell_using_descriptor():
     resource = Resource("data/issue-1066.csv")
-    report = resource.validate(
-        checks=[
-            {
-                "code": "deviated-cell",
-                "ignoreFields": [
-                    "Latitudine",
-                    "Longitudine",
-                ],
-                "interval": 3,
-            }
-        ],
+    checklist = Checklist(
+        {
+            "checks": [
+                {
+                    "code": "deviated-cell",
+                    "ignoreFields": [
+                        "Latitudine",
+                        "Longitudine",
+                    ],
+                    "interval": 3,
+                }
+            ]
+        }
     )
+    report = resource.validate(checklist)
     assert report.flatten(["code", "note"]) == [
         ["deviated-cell", 'cell at row "35" and field "Gestore" has deviated size']
     ]

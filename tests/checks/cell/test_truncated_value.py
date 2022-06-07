@@ -1,4 +1,4 @@
-from frictionless import Resource, checks
+from frictionless import Resource, Checklist, checks
 
 
 # General
@@ -26,5 +26,6 @@ def test_validate_truncated_values_close_to_errors():
         ["good", 2147483646],
     ]
     resource = Resource(source)
-    report = resource.validate(checks=[{"code": "truncated-value"}])
+    checklist = Checklist({"checks": [{"code": "truncated-value"}]})
+    report = resource.validate(checklist)
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == []

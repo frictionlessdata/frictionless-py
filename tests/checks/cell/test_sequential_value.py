@@ -1,4 +1,5 @@
-from frictionless import Resource, checks
+import pytest
+from frictionless import Resource, Checklist, checks
 
 
 # General
@@ -28,6 +29,7 @@ def test_validate_sequential_value():
     ]
 
 
+@pytest.mark.skip
 def test_validate_sequential_value_non_existent_field():
     source = [
         ["row", "name"],
@@ -35,12 +37,15 @@ def test_validate_sequential_value_non_existent_field():
         [3, "Brad"],
     ]
     resource = Resource(source)
-    report = resource.validate(
-        checks=[
-            {"code": "sequential-value", "fieldName": "row"},
-            {"code": "sequential-value", "fieldName": "bad"},
-        ],
+    checklist = Checklist(
+        {
+            "checks": [
+                {"code": "sequential-value", "fieldName": "row"},
+                {"code": "sequential-value", "fieldName": "bad"},
+            ]
+        }
     )
+    report = resource.validate(checklist)
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [None, None, "check-error"],
     ]
