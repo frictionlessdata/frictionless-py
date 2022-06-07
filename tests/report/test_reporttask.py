@@ -12,14 +12,14 @@ def test_report_task_error_not_found():
 
 def test_report_task_summary():
     report = validate("data/countries.csv")
-    assert report.valid == False and ["describe", "extract", "validate"] == list(
+    assert report.valid is False and ["describe", "extract", "validate"] == list(
         report.tasks[0].to_summary().keys()
     )
 
 
 def test_report_task_summary_valid():
     report = validate("data/capital-valid.csv")
-    assert report.valid == True and ["summary"] == list(
+    assert report.valid is True and ["summary"] == list(
         report.tasks[0].to_summary()["validate"].keys()
     )
 
