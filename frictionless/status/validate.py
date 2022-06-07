@@ -6,8 +6,6 @@ if TYPE_CHECKING:
     from .status import Status
 
 
-# TODO: move exception handling to high-level actions?
-@Report.from_validate
 def validate(status: "Status"):
     """Validate status
 
@@ -15,4 +13,5 @@ def validate(status: "Status"):
         Report: validation report
     """
     timer = helpers.Timer()
-    return Report(time=timer.time, errors=status.metadata_errors, tasks=[])
+    errors = status.metadata_errors
+    return Report(errors=errors, time=timer.time)

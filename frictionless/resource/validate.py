@@ -11,7 +11,6 @@ from .. import settings
 from .. import helpers
 
 if TYPE_CHECKING:
-    from ..interfaces import CheckFunction
     from .resource import Resource
 
 
@@ -19,7 +18,7 @@ def validate(
     resource: "Resource",
     checklist: Optional[Checklist] = None,
     *,
-    checks: Optional[List[Union[Check, CheckFunction]]] = None,
+    checks: Optional[List[Check]] = None,
 ):
     """Validate resource
 
@@ -30,6 +29,7 @@ def validate(
     Returns:
         Report: validation report
     """
+    assert not (checklist and checks), 'Expected "checkslist" OR "checks"'
 
     # Create state
     errors = []
@@ -38,9 +38,7 @@ def validate(
     original_resource = resource.to_copy()
 
     # Prepare checklist
-    if not checklist:
-        proc = lambda check: check if isinstance(check, Check) else Check(function=check)
-        checklist = Checklist(checks=list(map(proc, checks or [])))
+    checklist = checklist or Checklist(checks=checks)
     connected_checks = checklist.connect(resource)
     if not checklist.metadata_valid:
         return Report(errors=checklist.metadata_errors, time=timer.time)

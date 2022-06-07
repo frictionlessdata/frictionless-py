@@ -1,4 +1,4 @@
-from frictionless import Resource, checks
+from frictionless import Resource, Checklist, checks
 import pytest
 import sys
 
@@ -14,7 +14,8 @@ def test_validate_ascii_value_845():
 
 def test_validate_ascii_value_descriptor_845():
     resource = Resource("data/ascii.csv")
-    report = resource.validate(checks=[{"code": "ascii-value"}])
+    checklist = Checklist({"checks": [{"code": "ascii-value"}]})
+    report = resource.validate(checklist)
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == []
 
 

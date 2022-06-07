@@ -9,8 +9,8 @@ def test_checklist():
     assert checklist.check_codes == ["baseline", "ascii-value"]
     assert checklist.limit_errors == 1000
     assert checklist.limit_memory == 1000
-    assert checklist.original is False
-    assert checklist.parallel is False
+    assert checklist.keep_original is False
+    assert checklist.allow_parallel is False
     assert checklist.scope == [
         "hash-count-error",
         "byte-count-error",
@@ -40,14 +40,14 @@ def test_checklist_from_descriptor():
             "checks": [{"code": "ascii-value"}],
             "limitErrors": 100,
             "limitMemory": 100,
-            "original": True,
-            "parallel": True,
+            "keepOriginal": True,
+            "allowParallel": True,
         }
     )
     assert checklist.check_codes == ["baseline", "ascii-value"]
     assert checklist.limit_errors == 100
     assert checklist.limit_memory == 100
-    assert checklist.original is True
-    assert checklist.parallel is True
+    assert checklist.keep_original is True
+    assert checklist.allow_parallel is True
     assert checklist.scope.count("non-ascii")
     assert isinstance(checklist.checks[1], checks.ascii_value)

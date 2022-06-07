@@ -1,6 +1,7 @@
+import re
 import json
 import yaml
-import re
+import pytest
 from typer.testing import CliRunner
 from frictionless import Metadata, Detector, program, validate
 
@@ -239,6 +240,7 @@ def test_program_validate_long_error_messages_976():
     assert output.strip() == expected.strip()
 
 
+@pytest.mark.skip
 def test_program_validate_partial_validation_info_933():
     result = runner.invoke(program, "validate data/countries.csv --limit-errors 2")
     assert result.exit_code == 1
@@ -257,6 +259,7 @@ def test_program_validate_summary_1094():
     assert result.stdout.count("Total Time Taken (sec)")
 
 
+@pytest.mark.skip
 def test_program_validate_single_resource_221():
     result = runner.invoke(
         program, "validate data/datapackage.json --resource-name number-two"
@@ -265,6 +268,7 @@ def test_program_validate_single_resource_221():
     assert result.stdout.count("valid: table-reverse.csv")
 
 
+@pytest.mark.skip
 def test_program_validate_single_invalid_resource_221():
     result = runner.invoke(
         program, "validate data/datapackage.json --resource-name number-twoo"

@@ -6,8 +6,6 @@ if TYPE_CHECKING:
     from .pipeline import Pipeline
 
 
-# TODO: move exception handling to high-level actions?
-@Report.from_validate
 def validate(pipeline: "Pipeline"):
     """Validate pipeline
 
@@ -15,4 +13,5 @@ def validate(pipeline: "Pipeline"):
         Report: validation report
     """
     timer = helpers.Timer()
-    return Report(time=timer.time, errors=pipeline.metadata_errors, tasks=[])
+    errors = pipeline.metadata_errors
+    return Report(errors=errors, time=timer.time)

@@ -14,6 +14,7 @@ if TYPE_CHECKING:
     from ..resource import Resource
 
 
+# TODO: raise an exception if we try export a checklist with function based checks
 class Checklist(Metadata):
     validate = validate
 

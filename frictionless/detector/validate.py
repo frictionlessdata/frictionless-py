@@ -6,8 +6,6 @@ if TYPE_CHECKING:
     from .detector import Detector
 
 
-# TODO: move exception handling to high-level actions?
-@Report.from_validate
 def validate(detector: "Detector"):
     """Validate detector
 
@@ -16,4 +14,5 @@ def validate(detector: "Detector"):
     """
     timer = helpers.Timer()
     # TODO: enable when Detector is Metadata
-    return Report(time=timer.time, errors=detector.metadata_errors, tasks=[])  # type: ignore
+    errors = detector.metadata_errors  # type: ignore
+    return Report(errors=errors, time=timer.time)

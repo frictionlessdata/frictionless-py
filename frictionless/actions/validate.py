@@ -3,6 +3,7 @@ from ..check import Check
 from ..schema import Schema
 from ..package import Package
 from ..pipeline import Pipeline
+from ..checklist import Checklist
 from ..inquiry import Inquiry
 from ..system import system
 from ..resource import Resource
@@ -12,23 +13,19 @@ from .. import settings
 from .. import errors
 
 
-# TODO: here we'd like to accept both inquiry + individual options
-
-
-@Report.from_validate
 def validate(
     source: Optional[Any] = None,
     type: Optional[str] = None,
+    # Checklist
     checks: Optional[List[Check]] = None,
-    # TODO: don't provide as options only as a part of inquiry?
     pick_errors: Optional[List[str]] = None,
     skip_errors: Optional[List[str]] = None,
     limit_errors: int = settings.DEFAULT_LIMIT_ERRORS,
     limit_memory: int = settings.DEFAULT_LIMIT_MEMORY,
-    original: bool = False,
+    keep_original: bool = False,
+    allow_parallel: bool = False,
     # Package
     resource_name: Optional[str] = None,
-    parallel: bool = False,
     **options,
 ):
     """Validate resource
@@ -55,6 +52,17 @@ def validate(
         if type == "table":
             type = "resource"
 
+    # Create checklist
+    checklist = Checklist(
+        checks=checks,
+        pick_errors=pick_errors,
+        skip_errors=skip_errors,
+        limit_errors=limit_errors,
+        limit_memory=limit_memory,
+        keep_original=keep_original,
+        allow_parallel=allow_parallel,
+    )
+
     # TODO: support detector type when it's converted to metadata
     # Validate object
     if type == "inquiry":
@@ -64,24 +72,14 @@ def validate(
         package = Package(source, **options)
         if resource_name:
             resource = package.get_resource(resource_name)
-            return resource.validate(original=original)
-        return package.validate(
-            original=original,
-            parallel=parallel,
-        )
+            return resource.validate(checklist)
+        return package.validate(checklist)
     elif type == "pipeline":
         pipeline = Pipeline(source)
         return pipeline.validate()
     elif type == "resource":
         resource = Resource(source, **options)
-        return resource.validate(
-            original=original,
-            checks=checks,
-            pick_errors=pick_errors,
-            skip_errors=skip_errors,
-            limit_errors=limit_errors,
-            limit_memory=limit_memory,
-        )
+        return resource.validate(checklist)
     elif type == "schema":
         schema = Schema(source)
         return schema.validate()

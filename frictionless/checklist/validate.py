@@ -7,8 +7,6 @@ if TYPE_CHECKING:
     from .checklist import Checklist
 
 
-# TODO: move exception handling to high-level actions?
-@Report.from_validate
 def validate(checklist: Checklist):
     """Validate checklist
 

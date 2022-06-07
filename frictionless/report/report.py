@@ -50,6 +50,7 @@ class Report(Metadata):
 
         # TODO: remove after metadata rework
         self.setdefault("errors", [])
+        self.setdefault("tasks", [])
 
         # Store computed
         error_count = len(self.errors) + sum(task.stats["errors"] for task in self.tasks)
