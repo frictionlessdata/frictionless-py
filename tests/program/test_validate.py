@@ -226,7 +226,6 @@ def test_program_validate_zipped_resources_979():
     assert result.stdout.count("Schema is not valid")
     # remove timetaken floating point number which varies
     output = re.sub(r"(\d+)\.(.*)\d", "", result.stdout)
-    print(output)
     assert output.strip() == expected.strip()
 
 
