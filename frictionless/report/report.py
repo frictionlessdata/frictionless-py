@@ -1,7 +1,10 @@
+import os
 import functools
+import textwrap
 from copy import deepcopy
 from importlib import import_module
 from tabulate import tabulate
+from typing import List
 from ..metadata import Metadata
 from ..errors import Error, TaskError, ReportError
 from ..exception import FrictionlessException
@@ -170,7 +173,7 @@ class Report(Metadata):
     # Summary
 
     def to_summary(self):
-        validation_content = None
+        validation_content = ""
         for task in self.tasks:
             tabular = task.resource.profile == "tabular-data-resource"
             prefix = "valid" if task.valid else "invalid"
@@ -179,32 +182,33 @@ class Report(Metadata):
             # for zipped resources append file name
             if task.resource.innerpath:
                 source = f"{source} => {task.resource.innerpath}"
-            validation_content = f"\n# {'-'*len(prefix)}\n"
-            validation_content += f"\n# {prefix}: {source} {suffix}\n"
-            validation_content += f"\n# {'-'*len(prefix)}\n"
+            validation_content += f"\n# {'-'*len(prefix)}"
+            validation_content += f"\n# {prefix}: {source} {suffix}"
+            validation_content += f"\n# {'-'*len(prefix)}"
             error_list = {}
             error_content = []
-            for error in task.errors:
-                error_content.append(
-                    [
-                        error.get("rowPosition", ""),
-                        error.get("fieldPosition", ""),
-                        error.code,
-                        error.message,
-                    ]
-                )
-                # error list for summary
-                error_title = f"{error.name} ({error.code})"
-                if error_title not in error_list:
-                    error_list[error_title] = 0
-                error_list[error_title] += 1
-                if task.partial:
-                    last_row_checked = error.get("rowPosition", "")
+            if task.errors:
+                for error in task.errors:
+                    error_content.append(
+                        [
+                            error.get("rowPosition", ""),
+                            error.get("fieldPosition", ""),
+                            error.code,
+                            error.message,
+                        ]
+                    )
+                    # error list for summary
+                    error_title = f"{error.name} ({error.code})"
+                    if error_title not in error_list:
+                        error_list[error_title] = 0
+                    error_list[error_title] += 1
+                    if task.partial:
+                        last_row_checked = error.get("rowPosition", "")
             # Validate
-            error_content = helpers.wrap_text_to_colwidths(error_content)
+            error_content = _wrap_text_to_colwidths(error_content)
             rows_checked = last_row_checked if task.partial else None
-            summary_content = helpers.validation_summary(
-                task.resource.path,
+            summary_content = _validation_summary(
+                source,
                 basepath=task.resource.basepath,
                 time_taken=self.time,
                 rows_checked=rows_checked,
@@ -213,6 +217,14 @@ class Report(Metadata):
             validation_content += "\n\n"
             validation_content += "## Summary "
             validation_content += "\n\n"
+            if task.partial:
+                validation_content += "\n\n"
+                validation_content += (
+                    "The document was partially validated because of one of the limits\n"
+                )
+                validation_content += "* limit errors"
+                validation_content += "* memory Limit"
+                validation_content += "\n\n"
             validation_content += str(
                 tabulate(
                     summary_content,
@@ -220,8 +232,9 @@ class Report(Metadata):
                     tablefmt="grid",
                 )
             )
-            if len(error_content) > 0:
-                validation_content += "\n\n"
+            validation_content += "\n\n"
+            # errors
+            if task.errors:
                 validation_content += "## Errors "
                 validation_content += "\n\n"
                 validation_content += str(
@@ -231,6 +244,7 @@ class Report(Metadata):
                         tablefmt="grid",
                     )
                 )
+                validation_content += "\n\n"
 
         return validation_content
 
@@ -412,3 +426,57 @@ class ReportTask(Metadata):
         if not isinstance(resource, Resource):
             resource = Resource(resource)
             dict.__setitem__(self, "resource", resource)
+
+
+# TODO:This is a temporary function to use with tabulate as
+# tabulate 0.8.9 does not support text wrap
+def _wrap_text_to_colwidths(
+    list_of_lists: List, colwidths: List = [5, 5, 10, 50]
+) -> List:
+    """Create new list with wrapped text with different column width.
+    Args:
+        list_of_lists (List): List of lines
+        colwidths (List): width for each column
+
+    Returns:
+        List: list of lines with wrapped text
+
+    """
+    result = []
+    for row in list_of_lists:
+        new_row = []
+        for cell, width in zip(row, colwidths):
+            cell = str(cell)
+            wrapped = textwrap.wrap(cell, width=width)
+            new_row.append("\n".join(wrapped))
+        result.append(new_row)
+    return result
+
+
+def _validation_summary(
+    source: str,
+    time_taken: str,
+    basepath: str = None,
+    rows_checked: int = None,
+    error_list: List = None,
+) -> List:
+    """Generate summary for validation task"""
+    file_path = os.path.join(basepath, source) if basepath else source
+    file_size = "N/A"
+    unit = None
+    if os.path.exists(file_path):
+        file_size = os.path.getsize(file_path)
+        unit = helpers.format_bytes(file_size)
+    content = [
+        [f"File name { '' if unit else '(Not Found)' }", source],
+        [f"File size { f'({unit})' if unit else '' }", file_size],
+        ["Total Time Taken (sec)", time_taken],
+    ]
+    if rows_checked:
+        content.append(["Rows Checked(Partial)**", rows_checked])
+    if error_list:
+        content.append(["Total Errors", sum(error_list.values())])
+    for code, count in error_list.items():
+        content.append([code, count])
+
+    return content

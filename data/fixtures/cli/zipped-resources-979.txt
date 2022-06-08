@@ -2,43 +2,61 @@
 # valid: ogd10_energieforschungstatistik_ch.csv 
 # -----
 
-# Summary 
+## Summary 
 
-Description             Size/Name/Count
-----------------------  --------------------------------------
-File name               ogd10_energieforschungstatistik_ch.csv
-File size (KB)          88541
-Total Time Taken (sec)  
++------------------------+----------------------------------------+
+| Description            | Size/Name/Count                        |
++========================+========================================+
+| File name              | ogd10_energieforschungstatistik_ch.csv |
++------------------------+----------------------------------------+
+| File size (KB)         | 88541                                  |
++------------------------+----------------------------------------+
+| Total Time Taken (sec) |                                   |
++------------------------+----------------------------------------+
+
+
 # -------
 # invalid: ogd10_catalogs.zip => capital-invalid.csv 
 # -------
 
+## Summary 
 
-# Summary 
++-----------------------------+-------------------------------------------+
+| Description                 | Size/Name/Count                           |
++=============================+===========================================+
+| File name (Not Found)       | ogd10_catalogs.zip => capital-invalid.csv |
++-----------------------------+-------------------------------------------+
+| File size                   | N/A                                       |
++-----------------------------+-------------------------------------------+
+| Total Time Taken (sec)      |                                      |
++-----------------------------+-------------------------------------------+
+| Total Errors                | 1                                         |
++-----------------------------+-------------------------------------------+
+| Schema Error (schema-error) | 1                                         |
++-----------------------------+-------------------------------------------+
 
-Description                  Size/Name/Count
----------------------------  -----------------------------------------
-File name (Not Found)        ogd10_catalogs.zip => capital-invalid.csv
-File size                    N/A
-Total Time Taken (sec)       
-Total Errors                 1
-Schema Error (schema-error)  1
+## Errors 
 
-# Errors 
++-------+---------+---------+---------------------------------------------------+
+| row   | field   | code    | message                                           |
++=======+=========+=========+===================================================+
+|       |         | schema- | Schema is not valid: Schemas with duplicate field |
+|       |         | error   | names are not supported                           |
++-------+---------+---------+---------------------------------------------------+
 
-row    field    code     message
------  -------  -------  -------------------------------------------------
-                schema-  Schema is not valid: Schemas with duplicate field
-                error    names are not supported
 
 # -----
 # valid: ogd10_catalogs.zip => finanzquellen.csv 
 # -----
 
-# Summary 
+## Summary 
 
-Description             Size/Name/Count
-----------------------  ---------------------------------------
-File name (Not Found)   ogd10_catalogs.zip => finanzquellen.csv
-File size               N/A
-Total Time Taken (sec)  
++------------------------+-----------------------------------------+
+| Description            | Size/Name/Count                         |
++========================+=========================================+
+| File name (Not Found)  | ogd10_catalogs.zip => finanzquellen.csv |
++------------------------+-----------------------------------------+
+| File size              | N/A                                     |
++------------------------+-----------------------------------------+
+| Total Time Taken (sec) |                                    |
++------------------------+-----------------------------------------+
