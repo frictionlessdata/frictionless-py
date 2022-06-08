@@ -170,7 +170,7 @@ class PandasParser(Parser):
 
         # This step will see if there is any column for which the schema is defined
         # as 'integer' but Pandas inferred it as a float. This can happen if there
-        # is a empty value (represented as Not a Number) is the integer column.
+        # is an empty value (represented as Not a Number) is the integer column.
         # If there is a float column instead of integer, convert it to the type
         # Int64 from pandas that supports NaN.
         # Bug: #1109
