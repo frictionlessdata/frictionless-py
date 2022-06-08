@@ -14,9 +14,7 @@ if TYPE_CHECKING:
 # TODO: save transform info into package.stats?
 def transform(
     package: "Package",
-    pipeline: Optional[Pipeline] = None,
-    *,
-    steps: Optional[List[Step]] = None,
+    pipeline: Pipeline,
 ):
     """Transform package
 
@@ -33,8 +31,6 @@ def transform(
     package.infer()
 
     # Prepare pipeline
-    if not pipeline:
-        pipeline = Pipeline(steps=steps)
     if not pipeline.metadata_valid:
         raise FrictionlessException(pipeline.metadata_errors[0])
 
