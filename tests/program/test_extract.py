@@ -1,11 +1,12 @@
+import pytest
 from frictionless.plugins.sql import SqlDialect
 import json
 import yaml
 from typer.testing import CliRunner
 from frictionless import program, extract, Detector, helpers, Resource
 
+
 runner = CliRunner()
-IS_UNIX = not helpers.is_platform("windows")
 
 
 # General
@@ -159,12 +160,12 @@ def test_program_extract_json():
     assert json.loads(result.stdout) == extract("data/table.csv")
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="Fix on Windows")
 def test_program_extract_csv():
     result = runner.invoke(program, "extract data/table.csv --csv")
     assert result.exit_code == 0
-    if IS_UNIX:
-        with open("data/table.csv") as file:
-            assert result.stdout == file.read()
+    with open("data/table.csv") as file:
+        assert result.stdout == file.read()
 
 
 def test_program_extract_dialect_sheet_option():
@@ -175,14 +176,14 @@ def test_program_extract_dialect_sheet_option():
     assert json.loads(result.stdout) == extract(file, dialect={"sheet": sheet})
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="Fix on Windows")
 def test_program_extract_dialect_table_option_sql(database_url):
     table = "fruits"
     result = runner.invoke(program, f"extract {database_url} --table {table} --json")
-    if IS_UNIX:
-        assert result.exit_code == 0
-        dialect = SqlDialect(table=table)
-        with Resource(database_url, dialect=dialect) as resource:
-            assert json.loads(result.stdout) == extract(resource)
+    assert result.exit_code == 0
+    dialect = SqlDialect(table=table)
+    with Resource(database_url, dialect=dialect) as resource:
+        assert json.loads(result.stdout) == extract(resource)
 
 
 def test_program_extract_dialect_keyed_option():

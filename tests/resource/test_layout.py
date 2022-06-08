@@ -4,11 +4,7 @@ from frictionless import FrictionlessException
 from frictionless.plugins.excel import ExcelDialect
 
 
-IS_UNIX = not helpers.is_platform("windows")
-BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
-
-
-# Layout
+# General
 
 
 def test_resource_layout_header():

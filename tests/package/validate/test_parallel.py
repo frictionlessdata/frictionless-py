@@ -3,7 +3,7 @@ import pytest
 from frictionless import Package, Checklist, helpers
 
 
-IS_UNIX = not helpers.is_platform("windows")
+# General
 
 
 @pytest.mark.ci

@@ -11,6 +11,9 @@ from frictionless import Schema, helpers
 DESCRIPTOR_MIN = {"fields": [{"name": "id"}, {"name": "height", "type": "integer"}]}
 
 
+# General
+
+
 def test_schema_to_copy():
     source = Schema.describe("data/table.csv")
     target = source.to_copy()

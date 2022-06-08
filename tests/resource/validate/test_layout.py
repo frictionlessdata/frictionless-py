@@ -1,7 +1,7 @@
 from frictionless import Layout, Resource, helpers
 
 
-IS_UNIX = not helpers.is_platform("windows")
+# General
 
 
 def test_validate_layout_none():

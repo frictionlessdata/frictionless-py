@@ -1,11 +1,7 @@
 from frictionless import Resource, helpers
 
 
-IS_UNIX = not helpers.is_platform("windows")
-BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
-
-
-# Innerpath
+# General
 
 
 def test_resource_innerpath_local_csv_zip():

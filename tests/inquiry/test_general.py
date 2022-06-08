@@ -24,7 +24,7 @@ def test_inquiry_with_task_class():
     assert report.valid
 
 
-# Issues
+# Problems
 
 
 @pytest.mark.skip

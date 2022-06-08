@@ -1,22 +1,22 @@
 import json
 import yaml
+import pytest
 from typer.testing import CliRunner
 from frictionless import program, describe, Detector, helpers
 
 
 runner = CliRunner()
-IS_UNIX = not helpers.is_platform("windows")
 
 
 # General
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="Fix on Windows")
 def test_program_describe():
     result = runner.invoke(program, "describe data/table.csv --stats")
     assert result.exit_code == 0
-    if IS_UNIX:
-        assert result.stdout.count("metadata: data/table.csv")
-        assert result.stdout.count("hash: 6c2c61dd9b0e9c6876139a449ed87933")
+    assert result.stdout.count("metadata: data/table.csv")
+    assert result.stdout.count("hash: 6c2c61dd9b0e9c6876139a449ed87933")
 
 
 def test_program_describe_type_schema():

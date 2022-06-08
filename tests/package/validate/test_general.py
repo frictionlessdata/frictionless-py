@@ -4,9 +4,6 @@ import pathlib
 from frictionless import Package, Resource, Schema, Field, Detector, Checklist, helpers
 
 
-IS_UNIX = not helpers.is_platform("windows")
-
-
 # General
 
 

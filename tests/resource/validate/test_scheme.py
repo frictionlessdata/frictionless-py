@@ -1,7 +1,7 @@
 from frictionless import Resource, helpers
 
 
-IS_UNIX = not helpers.is_platform("windows")
+# General
 
 
 def test_validate_scheme():

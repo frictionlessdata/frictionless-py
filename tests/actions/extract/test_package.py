@@ -2,14 +2,11 @@ import types
 from frictionless import extract, helpers
 
 
-IS_UNIX = not helpers.is_platform("windows")
-
-
 # General
 
 
 def test_extract_package():
-    path = "data/table.csv" if IS_UNIX else "data\\table.csv"
+    path = "data/table.csv" if not helpers.is_platform("windows") else "data\\table.csv"
     assert extract("data/package.json") == {
         path: [{"id": 1, "name": "english"}, {"id": 2, "name": "中国人"}]
     }
@@ -17,7 +14,7 @@ def test_extract_package():
 
 def test_extract_package_process():
     process = lambda row: row.to_list()
-    path = "data/table.csv" if IS_UNIX else "data\\table.csv"
+    path = "data/table.csv" if not helpers.is_platform("windows") else "data\\table.csv"
     assert extract("data/package.json", process=process) == {
         path: [
             [1, "english"],
@@ -27,7 +24,7 @@ def test_extract_package_process():
 
 
 def test_extract_package_stream():
-    path = "data/table.csv" if IS_UNIX else "data\\table.csv"
+    path = "data/table.csv" if not helpers.is_platform("windows") else "data\\table.csv"
     row_streams = extract("data/package.json", stream=True)
     row_stream = row_streams[path]
     assert isinstance(row_stream, types.GeneratorType)
@@ -39,7 +36,7 @@ def test_extract_package_stream():
 
 def test_extract_package_process_and_stream():
     process = lambda row: row.to_list()
-    path = "data/table.csv" if IS_UNIX else "data\\table.csv"
+    path = "data/table.csv" if not helpers.is_platform("windows") else "data\\table.csv"
     list_streams = extract("data/package.json", process=process, stream=True)
     list_stream = list_streams[path]
     assert isinstance(list_stream, types.GeneratorType)

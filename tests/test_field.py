@@ -359,7 +359,7 @@ def test_field_set_type():
     assert field.type == "int"
 
 
-# Issues
+# Problems
 
 
 def test_field_pprint_1029():

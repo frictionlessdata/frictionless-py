@@ -3,7 +3,7 @@ from decimal import Decimal
 from frictionless import Field
 
 
-# Tests
+# General
 
 
 @pytest.mark.parametrize(

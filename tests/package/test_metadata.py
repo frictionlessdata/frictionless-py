@@ -3,11 +3,7 @@ from frictionless import Package, Resource, helpers
 from frictionless import FrictionlessException
 
 
-IS_UNIX = not helpers.is_platform("windows")
-BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
-
-
-# Metadata
+# General
 
 
 @pytest.mark.vcr
@@ -39,13 +35,13 @@ def test_package_external_profile_invalid_local_from_descriptor():
 
 
 @pytest.mark.vcr
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="Fix on Windows")
 def test_package_external_profile_invalid_local_from_descriptor_unsafe():
     profile = "data/../data/profiles/camtrap.json"
     resource = Resource(name="table", path="data/table.csv")
     package = Package({"resources": [resource.to_dict()], "profile": profile})
-    if IS_UNIX:
-        with pytest.raises(FrictionlessException):
-            package.metadata_errors
+    with pytest.raises(FrictionlessException):
+        package.metadata_errors
 
 
 @pytest.mark.vcr

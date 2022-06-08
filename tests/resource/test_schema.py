@@ -3,11 +3,10 @@ import pytest
 from frictionless import Resource, Detector, FrictionlessException, helpers
 
 
-IS_UNIX = not helpers.is_platform("windows")
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
 
 
-# Schema
+# General
 
 
 DESCRIPTOR_FK = {

@@ -1,7 +1,7 @@
 from frictionless import errors
 
 
-# From exception
+# General
 
 
 def test_error_from_exception():

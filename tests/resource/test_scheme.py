@@ -2,11 +2,10 @@ import pytest
 from frictionless import Resource, FrictionlessException, helpers
 
 
-IS_UNIX = not helpers.is_platform("windows")
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
 
 
-# Scheme
+# General
 
 
 def test_resource_scheme_file():

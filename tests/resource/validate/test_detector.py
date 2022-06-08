@@ -1,7 +1,7 @@
 from frictionless import Detector, Resource, helpers
 
 
-IS_UNIX = not helpers.is_platform("windows")
+# General
 
 
 def test_validate_detector_sync_schema():

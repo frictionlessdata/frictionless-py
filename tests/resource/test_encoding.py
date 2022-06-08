@@ -2,11 +2,7 @@ import pytest
 from frictionless import Resource, FrictionlessException, helpers
 
 
-IS_UNIX = not helpers.is_platform("windows")
-BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
-
-
-# Encoding
+# General
 
 
 def test_resource_encoding():
@@ -65,5 +61,5 @@ def test_resource_encoding_error_non_matching_encoding():
         resource.open()
     error = excinfo.value.error
     assert error.code == "encoding-error"
-    if IS_UNIX:
+    if not helpers.is_platform("windows"):
         assert error.note[:51] == "'ascii' codec can't decode byte 0xe4 in position 20"

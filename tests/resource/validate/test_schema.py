@@ -2,7 +2,7 @@ import pytest
 from frictionless import Resource, Checklist, helpers
 
 
-IS_UNIX = not helpers.is_platform("windows")
+# General
 
 
 def test_validate_schema_invalid():

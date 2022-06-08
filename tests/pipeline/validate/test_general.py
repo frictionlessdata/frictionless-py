@@ -1,6 +1,9 @@
 from frictionless import Pipeline
 
 
+# General
+
+
 def test_pipeline_resource():
     pipeline = Pipeline(
         {

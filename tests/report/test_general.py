@@ -2,9 +2,6 @@ import pprint
 from frictionless import validate, helpers
 
 
-IS_UNIX = not helpers.is_platform("windows")
-
-
 # General
 
 
@@ -33,7 +30,7 @@ def test_report():
             {"name": "name", "type": "string"},
         ],
     }
-    if IS_UNIX:
+    if not helpers.is_platform("windows"):
         assert report.task.resource.stats == {
             "hash": "6c2c61dd9b0e9c6876139a449ed87933",
             "bytes": 30,
@@ -86,7 +83,7 @@ def test_report_expand():
     }
 
 
-# Import/Export
+# Export/Import
 
 
 def test_report_to_json_with_bytes_serialization_issue_836():
@@ -103,7 +100,7 @@ def test_report_to_yaml_with_bytes_serialization_issue_836():
     assert "binary" not in descriptor
 
 
-# Issues
+# Problems
 
 
 def test_report_pprint_1029():

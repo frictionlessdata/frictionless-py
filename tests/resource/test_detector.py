@@ -1,11 +1,7 @@
 from frictionless import Resource, Detector, helpers
 
 
-IS_UNIX = not helpers.is_platform("windows")
-BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
-
-
-# Detector
+# General
 
 
 def test_resource_detector_field_type():

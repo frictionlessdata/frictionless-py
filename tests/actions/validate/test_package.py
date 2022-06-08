@@ -5,9 +5,6 @@ from copy import deepcopy
 from frictionless import Package, Resource, Schema, Field, Detector, validate, helpers
 
 
-IS_UNIX = not helpers.is_platform("windows")
-
-
 # General
 
 
@@ -291,11 +288,11 @@ DESCRIPTOR_SH = {
 }
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="Fix on Windows")
 def test_validate_package_stats():
     source = deepcopy(DESCRIPTOR_SH)
     report = validate(source)
-    if IS_UNIX:
-        assert report.valid
+    assert report.valid
 
 
 def test_validate_package_stats_invalid():
@@ -309,12 +306,12 @@ def test_validate_package_stats_invalid():
     ]
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="Fix on Windows")
 def test_validate_package_stats_size():
     source = deepcopy(DESCRIPTOR_SH)
     source["resources"][0]["stats"].pop("hash")
     report = validate(source)
-    if IS_UNIX:
-        assert report.valid
+    assert report.valid
 
 
 def test_validate_package_stats_size_invalid():
@@ -327,12 +324,12 @@ def test_validate_package_stats_size_invalid():
     ]
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="Fix on Windows")
 def test_validate_package_stats_hash():
     source = deepcopy(DESCRIPTOR_SH)
     source["resources"][0]["stats"].pop("bytes")
     report = validate(source)
-    if IS_UNIX:
-        assert report.valid
+    assert report.valid
 
 
 def test_check_file_package_stats_hash_invalid():
@@ -389,7 +386,7 @@ def test_validate_package_with_parallel():
     ]
 
 
-# Issues
+# Problems
 
 
 def test_validate_package_mixed_issue_170():

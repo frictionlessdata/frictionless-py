@@ -1,7 +1,5 @@
+import pytest
 from frictionless import Resource, Detector, Layout, helpers
-
-
-IS_UNIX = not helpers.is_platform("windows")
 
 
 # General
@@ -27,31 +25,31 @@ def test_describe_resource():
     }
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="Fix on Windows")
 def test_describe_resource_with_stats():
     resource = Resource.describe("data/table.csv", stats=True)
     assert resource.metadata_valid
-    if IS_UNIX:
-        assert resource == {
-            "profile": "tabular-data-resource",
-            "name": "table",
-            "path": "data/table.csv",
-            "scheme": "file",
-            "format": "csv",
-            "hashing": "md5",
-            "encoding": "utf-8",
-            "schema": {
-                "fields": [
-                    {"name": "id", "type": "integer"},
-                    {"name": "name", "type": "string"},
-                ]
-            },
-            "stats": {
-                "hash": "6c2c61dd9b0e9c6876139a449ed87933",
-                "bytes": 30,
-                "fields": 2,
-                "rows": 2,
-            },
-        }
+    assert resource == {
+        "profile": "tabular-data-resource",
+        "name": "table",
+        "path": "data/table.csv",
+        "scheme": "file",
+        "format": "csv",
+        "hashing": "md5",
+        "encoding": "utf-8",
+        "schema": {
+            "fields": [
+                {"name": "id", "type": "integer"},
+                {"name": "name", "type": "string"},
+            ]
+        },
+        "stats": {
+            "hash": "6c2c61dd9b0e9c6876139a449ed87933",
+            "bytes": 30,
+            "fields": 2,
+            "rows": 2,
+        },
+    }
 
 
 def test_describe_resource_schema():
@@ -131,7 +129,7 @@ def test_describe_resource_schema_check_type_boolean_string_tie():
     assert resource.schema.get_field("field").type == "string"
 
 
-# Issues
+# Problems
 
 
 def test_describe_resource_schema_xlsx_file_with_boolean_column_issue_203():

@@ -3,11 +3,10 @@ from frictionless import Resource, Detector, helpers, FrictionlessException
 from frictionless.plugins.remote import RemoteControl
 
 
-IS_UNIX = not helpers.is_platform("windows")
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
 
 
-# Control
+# General
 
 
 def test_resource_control():

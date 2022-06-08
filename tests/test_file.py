@@ -2,7 +2,6 @@ from pathlib import Path
 from frictionless import system, helpers
 
 
-IS_UNIX = not helpers.is_platform("windows")
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master"
 
 
@@ -132,7 +131,7 @@ def test_file_multipart_with_basepath():
     assert file.remote is False
     assert file.multipart is True
     assert file.basepath == "base"
-    if IS_UNIX:
+    if not helpers.is_platform("windows"):
         assert file.fullpath == ["base/data/chunk1.csv", "base/data/chunk2.csv"]
 
 
@@ -152,7 +151,7 @@ def test_file_multipart_from_glob():
     assert file.multipart is True
     assert file.expandable is True
     assert file.basepath == ""
-    if IS_UNIX:
+    if not helpers.is_platform("windows"):
         assert file.normpath == ["data/tables/chunk1.csv", "data/tables/chunk2.csv"]
         assert file.fullpath == ["data/tables/chunk1.csv", "data/tables/chunk2.csv"]
 
@@ -173,7 +172,7 @@ def test_file_multipart_from_glob_with_basepath():
     assert file.multipart is True
     assert file.expandable is True
     assert file.basepath == "data/tables"
-    if IS_UNIX:
+    if not helpers.is_platform("windows"):
         assert file.normpath == ["chunk1.csv", "chunk2.csv"]
         assert file.fullpath == ["data/tables/chunk1.csv", "data/tables/chunk2.csv"]
 
@@ -194,7 +193,7 @@ def test_file_multipart_from_dir():
     assert file.multipart is True
     assert file.expandable is True
     assert file.basepath == ""
-    if IS_UNIX:
+    if not helpers.is_platform("windows"):
         assert file.normpath == ["data/tables/chunk1.csv", "data/tables/chunk2.csv"]
         assert file.fullpath == ["data/tables/chunk1.csv", "data/tables/chunk2.csv"]
 
@@ -215,7 +214,7 @@ def test_file_multipart_from_dir_with_basepath():
     assert file.multipart is True
     assert file.expandable is True
     assert file.basepath == "data"
-    if IS_UNIX:
+    if not helpers.is_platform("windows"):
         assert file.normpath == ["tables/chunk1.csv", "tables/chunk2.csv"]
         assert file.fullpath == ["data/tables/chunk1.csv", "data/tables/chunk2.csv"]
 
@@ -289,5 +288,5 @@ def test_file_package_from_pathlib():
     assert file.remote is False
     assert file.multipart is False
     assert file.basepath == ""
-    if IS_UNIX:
+    if not helpers.is_platform("windows"):
         assert file.fullpath == "data/package.json"

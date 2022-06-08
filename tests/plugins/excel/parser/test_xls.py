@@ -3,7 +3,6 @@ from frictionless import Resource, Layout, FrictionlessException, helpers
 from frictionless.plugins.excel import ExcelDialect
 
 
-IS_UNIX = not helpers.is_platform("windows")
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
 
 

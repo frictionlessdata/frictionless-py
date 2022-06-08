@@ -1,8 +1,10 @@
+import pytest
 from copy import deepcopy
 from frictionless import Package, helpers
 
 
-IS_UNIX = not helpers.is_platform("windows")
+# General
+
 
 DESCRIPTOR_SH = {
     "resources": [
@@ -19,12 +21,12 @@ DESCRIPTOR_SH = {
 }
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="Fix on Windows")
 def test_validate_package_stats():
     source = deepcopy(DESCRIPTOR_SH)
     package = Package(source)
     report = package.validate()
-    if IS_UNIX:
-        assert report.valid
+    assert report.valid
 
 
 def test_validate_package_stats_invalid():
@@ -39,13 +41,13 @@ def test_validate_package_stats_invalid():
     ]
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="Fix on Windows")
 def test_validate_package_stats_size():
     source = deepcopy(DESCRIPTOR_SH)
     source["resources"][0]["stats"].pop("hash")
     package = Package(source)
     report = package.validate()
-    if IS_UNIX:
-        assert report.valid
+    assert report.valid
 
 
 def test_validate_package_stats_size_invalid():
@@ -59,13 +61,13 @@ def test_validate_package_stats_size_invalid():
     ]
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="Fix on Windows")
 def test_validate_package_stats_hash():
     source = deepcopy(DESCRIPTOR_SH)
     source["resources"][0]["stats"].pop("bytes")
     package = Package(source)
     report = package.validate()
-    if IS_UNIX:
-        assert report.valid
+    assert report.valid
 
 
 def test_check_file_package_stats_hash_invalid():

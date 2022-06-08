@@ -1,9 +1,6 @@
 from frictionless import Resource, extract, helpers
 
 
-IS_UNIX = not helpers.is_platform("windows")
-
-
 # General
 
 
@@ -15,7 +12,7 @@ def test_extract():
 
 
 def test_extract_type_package():
-    path = "data/table.csv" if IS_UNIX else "data\\table.csv"
+    path = "data/table.csv" if not helpers.is_platform("windows") else "data\\table.csv"
     assert extract("data/package.json", type="package") == {
         path: [
             {"id": 1, "name": "english"},

@@ -2,7 +2,7 @@ from copy import deepcopy
 from frictionless import Package, helpers
 
 
-IS_UNIX = not helpers.is_platform("windows")
+# General
 
 
 DESCRIPTOR_FK = {

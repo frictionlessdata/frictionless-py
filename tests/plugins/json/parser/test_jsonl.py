@@ -2,9 +2,6 @@ from frictionless import Resource
 from frictionless.plugins.json import JsonDialect
 
 
-BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
-
-
 # General
 
 

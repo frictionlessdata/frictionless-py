@@ -5,7 +5,6 @@ from frictionless import Resource, validate, helpers
 from frictionless import FrictionlessException
 
 
-IS_UNIX = not helpers.is_platform("windows")
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
 
 
@@ -110,32 +109,32 @@ def test_multipart_loader_resource_error_bad_path_not_safe_traversing():
     assert error.note.count("not safe")
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="Fix on Windows")
 def test_multipart_loader_resource_infer():
     descriptor = {"path": ["data/chunk1.csv", "data/chunk2.csv"]}
     resource = Resource(descriptor)
     resource.infer(stats=True)
-    if IS_UNIX:
-        assert resource == {
-            "path": ["data/chunk1.csv", "data/chunk2.csv"],
-            "profile": "tabular-data-resource",
-            "name": "chunk",
-            "scheme": "multipart",
-            "format": "csv",
-            "hashing": "md5",
-            "encoding": "utf-8",
-            "schema": {
-                "fields": [
-                    {"name": "id", "type": "integer"},
-                    {"name": "name", "type": "string"},
-                ]
-            },
-            "stats": {
-                "hash": "6c2c61dd9b0e9c6876139a449ed87933",
-                "bytes": 30,
-                "fields": 2,
-                "rows": 2,
-            },
-        }
+    assert resource == {
+        "path": ["data/chunk1.csv", "data/chunk2.csv"],
+        "profile": "tabular-data-resource",
+        "name": "chunk",
+        "scheme": "multipart",
+        "format": "csv",
+        "hashing": "md5",
+        "encoding": "utf-8",
+        "schema": {
+            "fields": [
+                {"name": "id", "type": "integer"},
+                {"name": "name", "type": "string"},
+            ]
+        },
+        "stats": {
+            "hash": "6c2c61dd9b0e9c6876139a449ed87933",
+            "bytes": 30,
+            "fields": 2,
+            "rows": 2,
+        },
+    }
 
 
 def test_multipart_loader_resource_validate():

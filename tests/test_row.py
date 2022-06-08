@@ -20,7 +20,7 @@ def test_basic():
     assert row.to_dict() == {"field1": 1, "field2": 2, "field3": 3}
 
 
-# Import/Export
+# Export/Import
 
 
 def test_to_str():

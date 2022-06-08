@@ -6,7 +6,6 @@ from frictionless import Package, Resource, helpers
 from frictionless import FrictionlessException
 
 
-IS_UNIX = not helpers.is_platform("windows")
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
 
 
@@ -248,7 +247,7 @@ def test_package_description_text_plain():
     assert package.description_text == "It's just a plain text. Another sentence"
 
 
-# Issues
+# Problems
 
 
 def test_package_dialect_no_header_issue_167():

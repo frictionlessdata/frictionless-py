@@ -1,6 +1,7 @@
 from frictionless import Detector, Resource
 import pytest
 
+
 # General
 
 
