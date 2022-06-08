@@ -49,13 +49,15 @@ def transform(
             allow_parallel=allow_parallel,
         )
 
-    # Transform object
+    # Transform source
     if type == "package":
-        package = Package(source, **options)
-        return package.transform(pipeline)
+        if not isinstance(source, Package):
+            source = Package(source, **options)
+        return source.transform(pipeline)
     elif type == "resource":
-        resource = Resource(source, **options)
-        return resource.transform(pipeline)
+        if not isinstance(source, Resource):
+            source = Resource(source, **options)
+        return source.transform(pipeline)
 
     # Not supported
     note = f"Not supported transform type: {type}"

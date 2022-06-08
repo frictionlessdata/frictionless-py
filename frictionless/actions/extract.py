@@ -44,13 +44,15 @@ def extract(
         if type == "table":
             type = "resource"
 
-    # Extract data
+    # Extract source
     if type == "package":
-        package = Package(source, **options)
-        return package.extract(process=process, stream=stream)
+        if not isinstance(source, Package):
+            source = Package(source, **options)
+        return source.extract(process=process, stream=stream)
     elif type == "resource":
-        resource = Resource(source, **options)
-        return resource.extract(process=process, stream=stream)
+        if not isinstance(source, Resource):
+            source = Resource(source, **options)
+        return source.extract(process=process, stream=stream)
 
     # Not supported
     note = f"Not supported extract type: {type}"

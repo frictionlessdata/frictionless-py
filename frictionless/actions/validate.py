@@ -68,24 +68,33 @@ def validate(
 
     # TODO: support detector type when it's converted to metadata
     # Validate object
-    if type == "inquiry":
-        inquiry = Inquiry(source)
-        return inquiry.validate()
+    if type == "checklist":
+        if not isinstance(source, Checklist):
+            source = Checklist(source, **options)
+        return source.validate()
+    elif type == "inquiry":
+        if not isinstance(source, Inquiry):
+            source = Inquiry(source, **options)
+        return source.validate()
     elif type == "package":
-        package = Package(source, **options)
+        if not isinstance(source, Package):
+            source = Package(source, **options)
         if resource_name:
-            resource = package.get_resource(resource_name)
+            resource = source.get_resource(resource_name)
             return resource.validate(checklist)
-        return package.validate(checklist)
+        return source.validate(checklist)
     elif type == "pipeline":
-        pipeline = Pipeline(source)
-        return pipeline.validate()
+        if not isinstance(source, Pipeline):
+            source = Pipeline(source, **options)
+        return source.validate()
     elif type == "resource":
-        resource = Resource(source, **options)
-        return resource.validate(checklist)
+        if not isinstance(source, Resource):
+            source = Resource(source, **options)
+        return source.validate(checklist)
     elif type == "schema":
-        schema = Schema(source)
-        return schema.validate()
+        if not isinstance(source, Schema):
+            source = Schema(source, **options)
+        return source.validate()
 
     # Not supported
     note = f"Not supported validate type: {type}"
