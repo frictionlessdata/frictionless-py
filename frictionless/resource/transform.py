@@ -1,8 +1,9 @@
 import types
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING, Optional, List
 from ..step import Step
 from ..system import system
 from ..helpers import get_name
+from ..pipeline import Pipeline
 from ..exception import FrictionlessException
 from .. import errors
 
@@ -10,9 +11,13 @@ if TYPE_CHECKING:
     from .resource import Resource
 
 
-# TODO: only accept Pipeline as argument (+ steps as a helper)?
-# TODO: save current status data into resource.stats?
-def transform(resource: "Resource", *, steps: List[Step]):
+# TODO: save transform info into resource.stats?
+def transform(
+    resource: "Resource",
+    pipeline: Optional[Pipeline] = None,
+    *,
+    steps: Optional[List[Step]] = None,
+):
     """Transform resource
 
     Parameters:
@@ -25,22 +30,14 @@ def transform(resource: "Resource", *, steps: List[Step]):
     # Prepare resource
     resource.infer()
 
-    # Prepare steps
-    for index, step in enumerate(steps):
-        if not isinstance(step, Step):
-            steps[index] = (
-                Step(function=step)
-                if isinstance(step, types.FunctionType)
-                else system.create_step(step)
-            )
-
-    # Validate steps
-    for step in steps:
-        if step.metadata_errors:
-            raise FrictionlessException(step.metadata_errors[0])
+    # Prepare pipeline
+    if not pipeline:
+        pipeline = Pipeline(steps=steps)
+    if not pipeline.metadata_valid:
+        raise FrictionlessException(pipeline.metadata_errors[0])
 
     # Run transforms
-    for step in steps:
+    for step in pipeline.steps:
         data = resource.data
 
         # Transform
@@ -73,6 +70,7 @@ def transform(resource: "Resource", *, steps: List[Step]):
 # Internal
 
 
+# TODO: do we need error handling here?
 class DataWithErrorHandling:
     def __init__(self, data, *, step):
         self.data = data

@@ -3,6 +3,7 @@ from ..step import Step
 from ..system import system
 from ..package import Package
 from ..resource import Resource
+from ..pipeline import Pipeline
 from ..exception import FrictionlessException
 from .. import errors
 
@@ -14,7 +15,10 @@ def transform(
     source: Optional[Any] = None,
     *,
     type: Optional[str] = None,
-    steps: List[Step],
+    pipeline: Optional[Pipeline] = None,
+    # Pipeline
+    steps: Optional[List[Step]] = None,
+    allow_parallel: Optional[bool] = False,
     **options,
 ):
     """Transform resource
@@ -38,13 +42,20 @@ def transform(
         file = system.create_file(source, basepath=options.get("basepath", ""))
         type = "package" if file.multipart else "resource"
 
+    # Create pipeline
+    if not pipeline:
+        pipeline = Pipeline(
+            steps=steps,
+            allow_parallel=allow_parallel,
+        )
+
     # Transform object
     if type == "package":
         package = Package(source, **options)
-        return package.transform(steps=steps)
+        return package.transform(pipeline)
     elif type == "resource":
         resource = Resource(source, **options)
-        return resource.transform(steps=steps)
+        return resource.transform(pipeline)
 
     # Not supported
     note = f"Not supported transform type: {type}"

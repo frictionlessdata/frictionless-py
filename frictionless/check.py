@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 
 # TODO: sync API with Step?
-# TODO: add support for validate_package?
+# TODO: add support for validate_package/etc?
 class Check(Metadata):
     """Check representation.
 

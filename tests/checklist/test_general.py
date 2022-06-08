@@ -6,7 +6,7 @@ from frictionless import Checklist, checks
 
 def test_checklist():
     checklist = Checklist(checks=[checks.ascii_value()])
-    assert checklist.check_codes == ["baseline", "ascii-value"]
+    assert checklist.check_codes == ["ascii-value"]
     assert checklist.limit_errors == 1000
     assert checklist.limit_memory == 1000
     assert checklist.keep_original is False
@@ -44,10 +44,10 @@ def test_checklist_from_descriptor():
             "allowParallel": True,
         }
     )
-    assert checklist.check_codes == ["baseline", "ascii-value"]
+    assert checklist.check_codes == ["ascii-value"]
     assert checklist.limit_errors == 100
     assert checklist.limit_memory == 100
     assert checklist.keep_original is True
     assert checklist.allow_parallel is True
     assert checklist.scope.count("non-ascii")
-    assert isinstance(checklist.checks[1], checks.ascii_value)
+    assert isinstance(checklist.checks[0], checks.ascii_value)

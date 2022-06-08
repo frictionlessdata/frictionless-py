@@ -16,6 +16,7 @@ from .. import errors
 def validate(
     source: Optional[Any] = None,
     type: Optional[str] = None,
+    checklist: Optional[Checklist] = None,
     # Checklist
     checks: Optional[List[Check]] = None,
     pick_errors: Optional[List[str]] = None,
@@ -53,15 +54,16 @@ def validate(
             type = "resource"
 
     # Create checklist
-    checklist = Checklist(
-        checks=checks,
-        pick_errors=pick_errors,
-        skip_errors=skip_errors,
-        limit_errors=limit_errors,
-        limit_memory=limit_memory,
-        keep_original=keep_original,
-        allow_parallel=allow_parallel,
-    )
+    if not checklist:
+        checklist = Checklist(
+            checks=checks,
+            pick_errors=pick_errors,
+            skip_errors=skip_errors,
+            limit_errors=limit_errors,
+            limit_memory=limit_memory,
+            keep_original=keep_original,
+            allow_parallel=allow_parallel,
+        )
 
     # TODO: support detector type when it's converted to metadata
     # Validate object

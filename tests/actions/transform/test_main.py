@@ -1,4 +1,4 @@
-from frictionless import Resource, transform, steps
+from frictionless import Resource, Step, transform, steps
 
 
 # General
@@ -33,13 +33,13 @@ def test_transform():
 def test_transform_custom_step_function_based():
 
     # Create step
-    def custom(resource):
+    def custom(resource: Resource):
         current = resource.to_copy()
 
         # Data
         def data():
             with current:
-                for row in current.row_stream:
+                for row in current.row_stream:  # type: ignore
                     row["id"] = row["id"] * row["id"]
                     yield row
 
@@ -48,7 +48,7 @@ def test_transform_custom_step_function_based():
 
     # Transform resource
     # TODO: add typing support for function-based steps
-    target = transform("data/transform.csv", steps=[custom])  # type: ignore
+    target = transform("data/transform.csv", steps=[Step(function=custom)])  # type: ignore
     assert isinstance(target, Resource)
     assert target.schema == {
         "fields": [

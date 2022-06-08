@@ -1,4 +1,5 @@
-from frictionless import Package, steps
+import pytest
+from frictionless import Package, Pipeline, steps
 
 
 # General
@@ -22,3 +23,16 @@ def test_transform_package():
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
     ]
+
+
+def test_pipeline_package():
+    source = Package("data/package/datapackage.json")
+    pipeline = Pipeline(
+        {
+            "steps": [
+                {"code": "resource-remove", "name": "data2"},
+            ],
+        }
+    )
+    target = source.transform(pipeline)
+    assert target.resource_names == ["data"]

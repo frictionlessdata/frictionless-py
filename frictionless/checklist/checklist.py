@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Optional, List, Any
+from typing import TYPE_CHECKING, Optional, List, Any, cast
 from ..helpers import cached_property
 from ..metadata import Metadata
 from .validate import validate
@@ -37,12 +37,11 @@ class Checklist(Metadata):
         self.setinitial("limitMemory", limit_memory)
         self.setinitial("keepOriginal", keep_original)
         self.setinitial("allowParallel", allow_parallel)
-        self.__baseline = baseline()
         super().__init__(descriptor)
 
     @property
     def checks(self) -> List[Check]:
-        return [self.__baseline] + self.get("checks", [])  # type: ignore
+        return self.get("checks", [])
 
     @property
     def check_codes(self) -> List[str]:
@@ -75,7 +74,8 @@ class Checklist(Metadata):
     @cached_property
     def scope(self) -> List[str]:
         scope = []
-        for check in self.checks:
+        basics: List[Check] = [baseline()]
+        for check in basics + self.checks:
             for Error in check.Errors:
                 if Error.code in self.skip_errors:
                     continue
@@ -88,7 +88,8 @@ class Checklist(Metadata):
 
     def connect(self, resource: Resource) -> List[Check]:
         checks = []
-        for check in self.checks:
+        basics: List[Check] = [baseline()]
+        for check in basics + self.checks:
             if check.metadata_valid:
                 check = check.to_copy()
                 check.connect(resource)
