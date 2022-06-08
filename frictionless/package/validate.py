@@ -14,8 +14,6 @@ if TYPE_CHECKING:
 def validate(
     package: "Package",
     checklist: Optional[Checklist] = None,
-    *,
-    checks: Optional[List[Check]] = None,
 ):
     """Validate package
 
@@ -40,8 +38,7 @@ def validate(
         return Report(time=timer.time, errors=[exception.error], tasks=[])
 
     # Prepare checklist
-    assert not (checklist and checks)
-    checklist = checklist or Checklist(checks=checks)
+    checklist = checklist or Checklist()
     if not checklist.metadata_valid:
         return Report(errors=checklist.metadata_errors, time=timer.time)
 
