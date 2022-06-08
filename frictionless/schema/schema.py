@@ -293,6 +293,12 @@ class Schema(Metadata):
     # Summary
 
     def to_summary(self):
+        """Summary of the schema in table format
+
+        Returns:
+            str: schema summary
+        """
+
         content = [
             [field.name, field.type, True if field.required else ""]
             for field in self.fields
