@@ -1046,26 +1046,6 @@ def test_validate_custom_check_with_arguments():
 
 
 @pytest.mark.skip
-def test_validate_custom_check_function_based():
-
-    # Create check
-    def custom(row):
-        yield errors.BlankRowError(
-            note="",
-            cells=list(map(str, row.values())),
-            row_number=row.row_number,
-            row_position=row.row_position,
-        )
-
-    # Validate resource
-    report = validate("data/table.csv", checks=[Check(function=custom)])
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [2, None, "blank-row"],
-        [3, None, "blank-row"],
-    ]
-
-
-@pytest.mark.skip
 def test_validate_custom_check_bad_name():
     report = validate("data/table.csv", checks=[{"code": "bad"}])  # type: ignore
     assert report.flatten(["code", "note"]) == [

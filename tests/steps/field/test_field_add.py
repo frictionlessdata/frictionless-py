@@ -1,4 +1,4 @@
-from frictionless import Resource, steps
+from frictionless import Resource, Pipeline, steps
 
 
 # General
@@ -6,11 +6,12 @@ from frictionless import Resource, steps
 
 def test_step_field_add():
     source = Resource(path="data/transform.csv")
-    target = source.transform(
+    pipeline = Pipeline(
         steps=[
             steps.field_add(name="note", type="string", value="eu"),
         ],
     )
+    target = source.transform(pipeline)
     assert target.schema == {
         "fields": [
             {"name": "id", "type": "integer"},
@@ -28,11 +29,12 @@ def test_step_field_add():
 
 def test_step_field_add_with_position():
     source = Resource(path="data/transform.csv")
-    target = source.transform(
+    pipeline = Pipeline(
         steps=[
             steps.field_add(name="note", position=1, value="eu"),
         ],
     )
+    target = source.transform(pipeline)
     assert target.schema == {
         "fields": [
             {"name": "note"},
@@ -50,12 +52,13 @@ def test_step_field_add_with_position():
 
 def test_step_field_add_with_formula():
     source = Resource(path="data/transform.csv")
-    target = source.transform(
+    pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
             steps.field_add(name="calc", formula="id * 100 + population"),
         ],
     )
+    target = source.transform(pipeline)
     assert target.schema == {
         "fields": [
             {"name": "id", "type": "integer"},
@@ -73,7 +76,7 @@ def test_step_field_add_with_formula():
 
 def test_step_field_add_with_function():
     source = Resource(path="data/transform.csv")
-    target = source.transform(
+    pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
             steps.field_add(
@@ -81,6 +84,7 @@ def test_step_field_add_with_function():
             ),
         ],
     )
+    target = source.transform(pipeline)
     assert target.schema == {
         "fields": [
             {"name": "id", "type": "integer"},
@@ -98,11 +102,12 @@ def test_step_field_add_with_function():
 
 def test_step_field_add_with_incremental():
     source = Resource(path="data/transform.csv")
-    target = source.transform(
+    pipeline = Pipeline(
         steps=[
             steps.field_add(name="number", incremental=True),
         ],
     )
+    target = source.transform(pipeline)
     assert target.schema == {
         "fields": [
             {"name": "number"},

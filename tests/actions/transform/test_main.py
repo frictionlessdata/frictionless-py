@@ -30,25 +30,25 @@ def test_transform():
     ]
 
 
-def test_transform_custom_step_function_based():
+def test_transform_custom_step():
 
     # Create step
-    def custom(resource: Resource):
-        current = resource.to_copy()
+    class custom(Step):
+        def transform_resource(self, resource: Resource):
+            current = resource.to_copy()
 
-        # Data
-        def data():
-            with current:
-                for row in current.row_stream:  # type: ignore
-                    row["id"] = row["id"] * row["id"]
-                    yield row
+            # Data
+            def data():
+                with current:
+                    for row in current.row_stream:  # type: ignore
+                        row["id"] = row["id"] * row["id"]
+                        yield row
 
-        # Meta
-        resource.data = data
+            # Meta
+            resource.data = data
 
     # Transform resource
-    # TODO: add typing support for function-based steps
-    target = transform("data/transform.csv", steps=[Step(function=custom)])  # type: ignore
+    target = transform("data/transform.csv", steps=[custom()])
     assert isinstance(target, Resource)
     assert target.schema == {
         "fields": [

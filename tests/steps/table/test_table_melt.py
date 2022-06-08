@@ -1,4 +1,4 @@
-from frictionless import Resource, steps
+from frictionless import Resource, Pipeline, steps
 
 
 # General
@@ -6,12 +6,13 @@ from frictionless import Resource, steps
 
 def test_step_table_melt():
     source = Resource("data/transform.csv")
-    target = source.transform(
+    pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
             steps.table_melt(field_name="name"),
         ],
     )
+    target = source.transform(pipeline)
     assert target.schema == {
         "fields": [
             {"name": "name", "type": "string"},
@@ -31,12 +32,13 @@ def test_step_table_melt():
 
 def test_step_table_melt_with_variables():
     source = Resource("data/transform.csv")
-    target = source.transform(
+    pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
             steps.table_melt(field_name="name", variables=["population"]),
         ],
     )
+    target = source.transform(pipeline)
     assert target.schema == {
         "fields": [
             {"name": "name", "type": "string"},
@@ -53,7 +55,7 @@ def test_step_table_melt_with_variables():
 
 def test_step_table_melt_with_to_field_names():
     source = Resource("data/transform.csv")
-    target = source.transform(
+    pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
             steps.table_melt(
@@ -61,6 +63,7 @@ def test_step_table_melt_with_to_field_names():
             ),
         ],
     )
+    target = source.transform(pipeline)
     assert target.schema == {
         "fields": [
             {"name": "name", "type": "string"},

@@ -1,4 +1,4 @@
-from frictionless import Resource, steps
+from frictionless import Resource, Pipeline, steps
 
 
 # General
@@ -6,11 +6,12 @@ from frictionless import Resource, steps
 
 def test_step_field_split():
     source = Resource(path="data/transform.csv")
-    target = source.transform(
+    pipeline = Pipeline(
         steps=[
             steps.field_split(name="name", to_names=["name1", "name2"], pattern="a"),
         ],
     )
+    target = source.transform(pipeline)
     assert target.schema == {
         "fields": [
             {"name": "id", "type": "integer"},
@@ -28,13 +29,14 @@ def test_step_field_split():
 
 def test_step_field_split_with_preserve():
     source = Resource(path="data/transform.csv")
-    target = source.transform(
+    pipeline = Pipeline(
         steps=[
             steps.field_split(
                 name="name", to_names=["name1", "name2"], pattern="a", preserve=True
             ),
         ],
     )
+    target = source.transform(pipeline)
     assert target.schema == {
         "fields": [
             {"name": "id", "type": "integer"},
@@ -53,13 +55,14 @@ def test_step_field_split_with_preserve():
 
 def test_step_field_split_with_capturing_groups():
     source = Resource(path="data/transform.csv")
-    target = source.transform(
+    pipeline = Pipeline(
         steps=[
             steps.field_split(
                 name="name", to_names=["name1", "name2"], pattern=r"(.{2})(.*)"
             ),
         ],
     )
+    target = source.transform(pipeline)
     assert target.schema == {
         "fields": [
             {"name": "id", "type": "integer"},

@@ -1,4 +1,4 @@
-from frictionless import Resource, steps
+from frictionless import Resource, Pipeline, steps
 
 
 # General
@@ -6,12 +6,13 @@ from frictionless import Resource, steps
 
 def test_step_cell_fill():
     source = Resource(path="data/transform.csv")
-    target = source.transform(
+    pipeline = Pipeline(
         steps=[
             steps.cell_replace(pattern="france", replace=None),
             steps.cell_fill(field_name="name", value="FRANCE"),
         ],
     )
+    target = source.transform(pipeline)
     assert target.schema == {
         "fields": [
             {"name": "id", "type": "integer"},
@@ -28,12 +29,13 @@ def test_step_cell_fill():
 
 def test_step_cell_fill_direction_down():
     source = Resource(path="data/transform.csv")
-    target = source.transform(
+    pipeline = Pipeline(
         steps=[
             steps.cell_replace(pattern="france", replace=None),
             steps.cell_fill(direction="down"),
         ],
     )
+    target = source.transform(pipeline)
     assert target.schema == {
         "fields": [
             {"name": "id", "type": "integer"},
@@ -50,7 +52,7 @@ def test_step_cell_fill_direction_down():
 
 def test_step_cell_fill_direction_right():
     source = Resource(path="data/transform.csv")
-    target = source.transform(
+    pipeline = Pipeline(
         steps=[
             steps.field_update(name="id", type="string"),
             steps.field_update(name="population", type="string"),
@@ -58,6 +60,7 @@ def test_step_cell_fill_direction_right():
             steps.cell_fill(direction="right"),
         ],
     )
+    target = source.transform(pipeline)
     assert target.schema == {
         "fields": [
             {"name": "id", "type": "string"},
@@ -74,7 +77,7 @@ def test_step_cell_fill_direction_right():
 
 def test_step_cell_fill_direction_left():
     source = Resource(path="data/transform.csv")
-    target = source.transform(
+    pipeline = Pipeline(
         steps=[
             steps.field_update(name="id", type="string"),
             steps.field_update(name="population", type="string"),
@@ -82,6 +85,7 @@ def test_step_cell_fill_direction_left():
             steps.cell_fill(direction="left"),
         ],
     )
+    target = source.transform(pipeline)
     assert target.schema == {
         "fields": [
             {"name": "id", "type": "string"},

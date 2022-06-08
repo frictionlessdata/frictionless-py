@@ -1,4 +1,4 @@
-from frictionless import Resource, steps
+from frictionless import Resource, Pipeline, steps
 
 
 # General
@@ -9,12 +9,13 @@ def test_step_table_write(tmpdir):
 
     # Write
     source = Resource("data/transform.csv")
-    source.transform(
+    pipeline = Pipeline(
         steps=[
             steps.cell_set(field_name="population", value=100),
             steps.table_write(path=path),
         ],
     )
+    source.transform(pipeline)
 
     # Read
     resource = Resource(path=path)

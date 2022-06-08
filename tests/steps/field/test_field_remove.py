@@ -1,4 +1,4 @@
-from frictionless import Resource, steps
+from frictionless import Resource, Pipeline, steps
 
 
 # General
@@ -6,11 +6,12 @@ from frictionless import Resource, steps
 
 def test_step_field_remove():
     source = Resource(path="data/transform.csv")
-    target = source.transform(
+    pipeline = Pipeline(
         steps=[
             steps.field_remove(names=["id"]),
         ],
     )
+    target = source.transform(pipeline)
     assert target.schema == {
         "fields": [
             {"name": "name", "type": "string"},

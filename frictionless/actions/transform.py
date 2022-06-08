@@ -15,8 +15,8 @@ def transform(
     source: Optional[Any] = None,
     *,
     type: Optional[str] = None,
-    pipeline: Optional[Pipeline] = None,
     # Pipeline
+    pipeline: Optional[Pipeline] = None,
     steps: Optional[List[Step]] = None,
     allow_parallel: Optional[bool] = False,
     **options,

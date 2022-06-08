@@ -1,4 +1,4 @@
-from frictionless import Resource, steps
+from frictionless import Resource, Pipeline, steps
 
 
 # General
@@ -6,13 +6,14 @@ from frictionless import Resource, steps
 
 def test_step_table_recast():
     source = Resource("data/transform.csv")
-    target = source.transform(
+    pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
             steps.table_melt(field_name="id"),
             steps.table_recast(field_name="id"),
         ],
     )
+    target = source.transform(pipeline)
     assert target.schema == {
         "fields": [
             {"name": "id", "type": "integer"},

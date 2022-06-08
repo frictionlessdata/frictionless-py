@@ -1,4 +1,4 @@
-from frictionless import Resource, steps
+from frictionless import Resource, Pipeline, steps
 
 
 # General
@@ -6,11 +6,12 @@ from frictionless import Resource, steps
 
 def test_step_row_subset_conflicts():
     source = Resource("data/transform.csv")
-    target = source.transform(
+    pipeline = Pipeline(
         steps=[
             steps.row_subset(subset="conflicts", field_name="id"),
         ],
     )
+    target = source.transform(pipeline)
     assert target.schema == {
         "fields": [
             {"name": "id", "type": "integer"},
@@ -23,11 +24,12 @@ def test_step_row_subset_conflicts():
 
 def test_step_row_subset_conflicts_from_descriptor_issue_996():
     source = Resource("data/transform.csv")
-    target = source.transform(
+    pipeline = Pipeline(
         steps=[
             steps.row_subset({"subset": "conflicts", "fieldName": "id"}),
         ],
     )
+    target = source.transform(pipeline)
     assert target.schema == {
         "fields": [
             {"name": "id", "type": "integer"},
@@ -40,12 +42,13 @@ def test_step_row_subset_conflicts_from_descriptor_issue_996():
 
 def test_step_row_subset_conflicts_with_duplicates():
     source = Resource("data/transform.csv")
-    target = source.transform(
+    pipeline = Pipeline(
         steps=[
             steps.field_update(name="id", value=1),
             steps.row_subset(subset="conflicts", field_name="id"),
         ],
     )
+    target = source.transform(pipeline)
     assert target.schema == {
         "fields": [
             {"name": "id", "type": "integer"},
@@ -62,11 +65,12 @@ def test_step_row_subset_conflicts_with_duplicates():
 
 def test_step_row_subset_distinct():
     source = Resource("data/transform.csv")
-    target = source.transform(
+    pipeline = Pipeline(
         steps=[
             steps.row_subset(subset="distinct", field_name="id"),
         ],
     )
+    target = source.transform(pipeline)
     assert target.schema == {
         "fields": [
             {"name": "id", "type": "integer"},
@@ -83,12 +87,13 @@ def test_step_row_subset_distinct():
 
 def test_step_row_subset_distinct_with_duplicates():
     source = Resource("data/transform.csv")
-    target = source.transform(
+    pipeline = Pipeline(
         steps=[
             steps.field_update(name="id", value=1),
             steps.row_subset(subset="distinct", field_name="id"),
         ],
     )
+    target = source.transform(pipeline)
     assert target.schema == {
         "fields": [
             {"name": "id", "type": "integer"},
@@ -103,11 +108,12 @@ def test_step_row_subset_distinct_with_duplicates():
 
 def test_step_row_subset_duplicates():
     source = Resource("data/transform.csv")
-    target = source.transform(
+    pipeline = Pipeline(
         steps=[
             steps.row_subset(subset="duplicates"),
         ],
     )
+    target = source.transform(pipeline)
     assert target.schema == {
         "fields": [
             {"name": "id", "type": "integer"},
@@ -120,12 +126,13 @@ def test_step_row_subset_duplicates():
 
 def test_step_row_subset_duplicates_with_name():
     source = Resource("data/transform.csv")
-    target = source.transform(
+    pipeline = Pipeline(
         steps=[
             steps.field_update(name="id", value=1),
             steps.row_subset(subset="duplicates", field_name="id"),
         ],
     )
+    target = source.transform(pipeline)
     assert target.schema == {
         "fields": [
             {"name": "id", "type": "integer"},
@@ -142,11 +149,12 @@ def test_step_row_subset_duplicates_with_name():
 
 def test_step_row_subset_unique():
     source = Resource("data/transform.csv")
-    target = source.transform(
+    pipeline = Pipeline(
         steps=[
             steps.row_subset(subset="unique"),
         ],
     )
+    target = source.transform(pipeline)
     assert target.schema == {
         "fields": [
             {"name": "id", "type": "integer"},
@@ -163,12 +171,13 @@ def test_step_row_subset_unique():
 
 def test_step_row_subset_unique_with_name():
     source = Resource("data/transform.csv")
-    target = source.transform(
+    pipeline = Pipeline(
         steps=[
             steps.field_update(name="id", value=1),
             steps.row_subset(subset="unique", field_name="id"),
         ],
     )
+    target = source.transform(pipeline)
     assert target.schema == {
         "fields": [
             {"name": "id", "type": "integer"},

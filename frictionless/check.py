@@ -7,10 +7,9 @@ if TYPE_CHECKING:
     from .row import Row
     from .error import Error
     from .resource import Resource
-    from .interfaces import CheckFunction
 
 
-# TODO: sync API with Step?
+# TODO: sync API with Step (like "check.validate_resource_row")?
 # TODO: add support for validate_package/etc?
 class Check(Metadata):
     """Check representation.
@@ -32,10 +31,9 @@ class Check(Metadata):
     code: str = "check"
     Errors: List[Type[Error]] = []  # type: ignore
 
-    def __init__(self, descriptor=None, *, function: Optional["CheckFunction"] = None):
+    def __init__(self, descriptor=None):
         super().__init__(descriptor)
         self.setinitial("code", self.code)
-        self.__function = function
 
     @property
     def resource(self) -> Resource:
@@ -72,7 +70,7 @@ class Check(Metadata):
         Yields:
             Error: found errors
         """
-        yield from self.__function(row) if self.__function else []
+        yield from []
 
     def validate_end(self) -> Iterable[Error]:
         """Called to validate the resource before closing

@@ -1,4 +1,4 @@
-from frictionless import Resource, steps
+from frictionless import Resource, Pipeline, steps
 
 
 # General
@@ -6,7 +6,7 @@ from frictionless import Resource, steps
 
 def test_step_table_aggregate():
     source = Resource("data/transform-groups.csv")
-    target = source.transform(
+    pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
             steps.table_aggregate(
@@ -14,6 +14,7 @@ def test_step_table_aggregate():
             ),
         ],
     )
+    target = source.transform(pipeline)
     assert target.schema == {
         "fields": [
             {"name": "name", "type": "string"},
@@ -29,7 +30,7 @@ def test_step_table_aggregate():
 
 def test_step_table_aggregate_multiple():
     source = Resource("data/transform-groups.csv")
-    target = source.transform(
+    pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
             steps.table_aggregate(
@@ -42,6 +43,7 @@ def test_step_table_aggregate_multiple():
             ),
         ],
     )
+    target = source.transform(pipeline)
     assert target.schema == {
         "fields": [
             {"name": "name", "type": "string"},

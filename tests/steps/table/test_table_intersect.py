@@ -1,4 +1,4 @@
-from frictionless import Resource, steps
+from frictionless import Resource, Pipeline, steps
 
 
 # General
@@ -6,7 +6,7 @@ from frictionless import Resource, steps
 
 def test_step_table_intersect():
     source = Resource("data/transform.csv")
-    target = source.transform(
+    pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
             steps.table_intersect(
@@ -21,6 +21,7 @@ def test_step_table_intersect():
             ),
         ],
     )
+    target = source.transform(pipeline)
     assert target.schema == {
         "fields": [
             {"name": "id", "type": "integer"},
@@ -36,7 +37,7 @@ def test_step_table_intersect():
 
 def test_step_table_intersect_from_dict():
     source = Resource("data/transform.csv")
-    target = source.transform(
+    pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
             steps.table_intersect(
@@ -51,6 +52,7 @@ def test_step_table_intersect_from_dict():
             ),
         ],
     )
+    target = source.transform(pipeline)
     assert target.schema == {
         "fields": [
             {"name": "id", "type": "integer"},
@@ -66,7 +68,7 @@ def test_step_table_intersect_from_dict():
 
 def test_step_table_intersect_with_use_hash():
     source = Resource("data/transform.csv")
-    target = source.transform(
+    pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
             steps.table_intersect(
@@ -82,6 +84,7 @@ def test_step_table_intersect_with_use_hash():
             ),
         ],
     )
+    target = source.transform(pipeline)
     assert target.schema == {
         "fields": [
             {"name": "id", "type": "integer"},

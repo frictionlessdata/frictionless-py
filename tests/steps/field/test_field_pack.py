@@ -1,11 +1,14 @@
-from frictionless import Resource, steps
+from frictionless import Resource, Pipeline, steps
 
 
 def test_step_field_pack_907():
     source = Resource("data/transform.csv")
-    target = source.transform(
-        steps=[steps.field_pack(name="details", from_names=["name", "population"])],
+    pipeline = Pipeline(
+        steps=[
+            steps.field_pack(name="details", from_names=["name", "population"]),
+        ],
     )
+    target = source.transform(pipeline)
     assert target.schema == {
         "fields": [
             {"name": "id", "type": "integer"},
@@ -20,13 +23,14 @@ def test_step_field_pack_907():
 
 def test_step_field_pack_header_preserve_907():
     source = Resource("data/transform.csv")
-    target = source.transform(
+    pipeline = Pipeline(
         steps=[
             steps.field_pack(
                 name="details", from_names=["name", "population"], preserve=True
             )
         ],
     )
+    target = source.transform(pipeline)
     assert target.schema == {
         "fields": [
             {"name": "id", "type": "integer"},
@@ -45,7 +49,7 @@ def test_step_field_pack_header_preserve_907():
 
 def test_step_field_pack_object_907():
     source = Resource("data/transform.csv")
-    target = source.transform(
+    pipeline = Pipeline(
         steps=[
             steps.field_pack(
                 name="details",
@@ -55,6 +59,7 @@ def test_step_field_pack_object_907():
             )
         ],
     )
+    target = source.transform(pipeline)
     assert target.schema == {
         "fields": [
             {"name": "id", "type": "integer"},

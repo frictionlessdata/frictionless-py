@@ -15,9 +15,10 @@ from .. import errors
 
 def validate(
     source: Optional[Any] = None,
+    *,
     type: Optional[str] = None,
-    checklist: Optional[Checklist] = None,
     # Checklist
+    checklist: Optional[Checklist] = None,
     checks: Optional[List[Check]] = None,
     pick_errors: Optional[List[str]] = None,
     skip_errors: Optional[List[str]] = None,
