@@ -164,30 +164,6 @@ class Report(Metadata):
         task = ReportTask(resource=resource, errors=errors, scope=scope, time=time)
         return Report(tasks=[task], time=time)
 
-    @staticmethod
-    def from_validate(validate):
-        """Validate function wrapper
-
-        Parameters:
-            validate (func): validate
-
-        Returns:
-            func: wrapped validate
-        """
-
-        @functools.wraps(validate)
-        def wrapper(*args, **kwargs):
-            timer = helpers.Timer()
-            try:
-                return validate(*args, **kwargs)
-            except Exception as exception:
-                error = TaskError(note=str(exception))
-                if isinstance(exception, FrictionlessException):
-                    error = exception.error
-                return Report(time=timer.time, errors=[error], tasks=[])
-
-        return wrapper
-
     # Metadata
 
     metadata_Error = ReportError
