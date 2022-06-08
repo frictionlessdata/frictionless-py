@@ -11,7 +11,8 @@ def test_validate_truncated_values():
         ["good", 2147483647],
     ]
     resource = Resource(source)
-    report = resource.validate(checks=[checks.truncated_value()])
+    checklist = Checklist(checks=[checks.truncated_value()])
+    report = resource.validate(checklist)
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [2, 1, "truncated-value"],
         [2, 2, "truncated-value"],

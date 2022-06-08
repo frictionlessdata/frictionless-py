@@ -14,12 +14,7 @@ if TYPE_CHECKING:
     from .resource import Resource
 
 
-def validate(
-    resource: "Resource",
-    checklist: Optional[Checklist] = None,
-    *,
-    checks: Optional[List[Check]] = None,
-):
+def validate(resource: "Resource", checklist: Optional[Checklist] = None):
     """Validate resource
 
     Parameters:
@@ -37,9 +32,8 @@ def validate(
     original_resource = resource.to_copy()
 
     # Prepare checklist
-    if not checklist:
-        checklist = Checklist(checks=checks)
-    connected_checks = checklist.connect(resource)
+    checklist = checklist or Checklist()
+    checks = checklist.connect(resource)
     if not checklist.metadata_valid:
         return Report(errors=checklist.metadata_errors, time=timer.time)
 
@@ -61,10 +55,10 @@ def validate(
     with resource:
 
         # Validate start
-        for index, check in enumerate(connected_checks):
+        for index, check in enumerate(checks):
             for error in check.validate_start():
                 if error.code == "check-error":
-                    del connected_checks[index]
+                    del checks[index]
                 if error.code in checklist.scope:
                     errors.append(error)
 
@@ -73,7 +67,7 @@ def validate(
             for row in resource.row_stream:  # type: ignore
 
                 # Validate row
-                for check in connected_checks:
+                for check in checks:
                     for error in check.validate_row(row):
                         if error.code in checklist.scope:
                             errors.append(error)
@@ -99,7 +93,7 @@ def validate(
         if not partial:
             if not resource.tabular:
                 helpers.pass_through(resource.byte_stream)
-            for check in connected_checks:
+            for check in checks:
                 for error in check.validate_end():
                     if error.code in checklist.scope:
                         errors.append(error)

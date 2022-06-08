@@ -15,12 +15,13 @@ def test_validate_sequential_value():
         [6],
     ]
     resource = Resource(source)
-    report = resource.validate(
+    checklist = Checklist(
         checks=[
             checks.sequential_value(field_name="index2"),
             checks.sequential_value(field_name="index3"),
         ],
     )
+    report = resource.validate(checklist)
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [3, 3, "sequential-value"],
         [5, 2, "sequential-value"],

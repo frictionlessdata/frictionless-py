@@ -318,17 +318,22 @@ def test_validate_custom_check():
 
     # Validate resource
     resource = Resource("data/table.csv")
-    report = resource.validate(checks=[custom()])
+    checklist = Checklist(checks=[custom()])
+    report = resource.validate(checklist)
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [2, None, "blank-row"],
         [3, None, "blank-row"],
     ]
 
 
+@pytest.mark.skip
 def test_validate_custom_check_with_arguments():
 
     # Create check
     class custom(Check):
+        code = "custom-check"
+        Errors = [errors.BlankRowError]
+
         def __init__(self, descriptor=None, *, row_position=None):
             self.setinitial("rowPosition", row_position)
             super().__init__(descriptor)
@@ -343,38 +348,19 @@ def test_validate_custom_check_with_arguments():
 
     # Validate resource
     resource = Resource("data/table.csv")
-    report = resource.validate(checks=[custom(row_position=1)])
+    checklist = Checklist(checks=[custom(row_position=1)])
+    report = resource.validate()
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [1, None, "blank-row"],
         [1, None, "blank-row"],
-    ]
-
-
-@pytest.mark.skip
-def test_validate_custom_check_function_based():
-
-    # Create check
-    def custom(row):
-        yield errors.BlankRowError(
-            note="",
-            cells=list(map(str, row.values())),
-            row_number=row.row_number,
-            row_position=row.row_position,
-        )
-
-    # Validate resource
-    resource = Resource("data/table.csv")
-    report = resource.validate(checks=[custom])
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [2, None, "blank-row"],
-        [3, None, "blank-row"],
     ]
 
 
 @pytest.mark.skip
 def test_validate_custom_check_bad_name():
     resource = Resource("data/table.csv")
-    report = resource.validate(checks=[{"code": "bad"}])
+    checklist = Checklist({"checks": [{"code": "bad"}]})
+    report = resource.validate(checklist)
     assert report.flatten(["code", "note"]) == [
         ["check-error", 'cannot create check "bad". Try installing "frictionless-bad"'],
     ]

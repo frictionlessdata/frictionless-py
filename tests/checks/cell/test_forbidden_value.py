@@ -7,11 +7,12 @@ from frictionless import Resource, Checklist, checks
 
 def test_validate_forbidden_value():
     resource = Resource("data/table.csv")
-    report = resource.validate(
+    checklist = Checklist(
         checks=[
             checks.forbidden_value(field_name="id", values=[2]),
         ]
     )
+    report = resource.validate(checklist)
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [3, 1, "forbidden-value"],
     ]

@@ -8,15 +8,16 @@ from frictionless import Resource, Checklist, checks
 def test_validate_deviated_value():
     source = [["temperature"], [1], [-2], [7], [0], [1], [2], [5], [-4], [100], [8], [3]]
     resource = Resource(source)
-    report = resource.validate(
+    checklist = Checklist(
         checks=[
             checks.deviated_value(
                 field_name="temperature",
                 average="median",
                 interval=3,
             )
-        ],
+        ]
     )
+    report = resource.validate(checklist)
     assert report.flatten(["code", "note"]) == [
         [
             "deviated-value",
