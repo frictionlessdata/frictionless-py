@@ -168,7 +168,7 @@ class PandasParser(Parser):
         # Create/set dataframe
         dataframe = pd.DataFrame(data_rows, index=index, columns=columns)
 
-        # This step see if there is some column where in the schema is defined
+        # This step will see if there is any column for which the schema is defined
         # as 'integer' but Pandas infered as a float. This can happen if there
         # is a empty value (represented as Not a Number) is the integer column.
         # If there is a float column instead of integer, convert it to the type
