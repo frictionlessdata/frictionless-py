@@ -7,13 +7,13 @@ from frictionless import Resource, Pipeline, steps
 
 def test_resource_transform():
     source = Resource(path="data/transform.csv")
-    source.infer()
-    target = source.transform(
+    pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
             steps.table_melt(field_name="id"),
         ],
     )
+    target = source.transform(pipeline)
     assert target.schema == {
         "fields": [
             {"name": "id", "type": "integer"},

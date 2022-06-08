@@ -12,12 +12,7 @@ if TYPE_CHECKING:
 
 
 # TODO: save transform info into resource.stats?
-def transform(
-    resource: "Resource",
-    pipeline: Optional[Pipeline] = None,
-    *,
-    steps: Optional[List[Step]] = None,
-):
+def transform(resource: "Resource", pipeline: Pipeline):
     """Transform resource
 
     Parameters:
@@ -31,8 +26,6 @@ def transform(
     resource.infer()
 
     # Prepare pipeline
-    if not pipeline:
-        pipeline = Pipeline(steps=steps)
     if not pipeline.metadata_valid:
         raise FrictionlessException(pipeline.metadata_errors[0])
 

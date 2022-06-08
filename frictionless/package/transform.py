@@ -12,10 +12,7 @@ if TYPE_CHECKING:
 
 
 # TODO: save transform info into package.stats?
-def transform(
-    package: "Package",
-    pipeline: Pipeline,
-):
+def transform(package: "Package", pipeline: Pipeline):
     """Transform package
 
     Parameters:
