@@ -10,7 +10,6 @@ if TYPE_CHECKING:
     from .field import Field
     from .loader import Loader
     from .parser import Parser
-    from .server import Server
     from .step import Step
     from .storage import Storage
     from .type import Type
@@ -120,18 +119,6 @@ class Plugin:
 
         Returns:
             Parser: parser
-        """
-        pass
-
-    # TODO: rebase from name to descriptor?
-    def create_server(self, name: str) -> Optional[Server]:
-        """Create server
-
-        Parameters:
-            name (str): server name
-
-        Returns:
-            Server: server
         """
         pass
 

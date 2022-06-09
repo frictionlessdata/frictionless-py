@@ -1,7 +1,6 @@
-from .main import program
+from .server import server
 
 # Register modules
-from . import api
 from . import describe
 from . import extract
 from . import transform

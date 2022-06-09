@@ -22,8 +22,8 @@ from .report import Report, ReportTask
 from .resource import Resource
 from .row import Row
 from .schema import Schema
+from .server import server
 from .settings import VERSION as __version__
-from .server import Server
 from .step import Step
 from .storage import Storage
 from .system import system

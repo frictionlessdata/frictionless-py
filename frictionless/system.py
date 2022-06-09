@@ -21,7 +21,6 @@ if TYPE_CHECKING:
     from .parser import Parser
     from .plugin import Plugin
     from .resource import Resource
-    from .server import Server
     from .step import Step
     from .storage import Storage
     from .type import Type
@@ -83,7 +82,6 @@ class System:
         "create_file",
         "create_loader",
         "create_parser",
-        "create_server",
         "create_step",
         "create_storage",
         "create_type",
@@ -228,24 +226,6 @@ class System:
                 return parser
         note = f'cannot create parser "{name}". Try installing "frictionless-{name}"'
         raise FrictionlessException(errors.FormatError(note=note))
-
-    def create_server(self, name: str, **options) -> Server:
-        """Create server
-
-        Parameters:
-            name (str): server name
-            options (str): server options
-
-        Returns:
-            Server: server
-        """
-        server = None
-        for func in self.methods["create_server"].values():
-            server = func(name, **options)
-            if server is not None:
-                return server
-        note = f'cannot create server "{name}". Try installing "frictionless-{name}"'
-        raise FrictionlessException(errors.GeneralError(note=note))
 
     def create_step(self, descriptor: dict) -> Step:
         """Create step

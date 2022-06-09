@@ -1,6 +1,8 @@
 from typer import Argument, Option
 from .. import settings
 
+# TODO: migrate to click options to encapsulate types (or we can set types here)?
+
 # Source
 
 source = Argument(
@@ -285,4 +287,11 @@ csv = Option(
 resource_name = Option(
     default=None,
     help="Name of resource to validate",
+)
+
+# Server
+
+port = Option(
+    settings.DEFAULT_SERVER_PORT,
+    help="Specify server port",
 )
