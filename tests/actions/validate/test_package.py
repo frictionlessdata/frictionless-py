@@ -26,7 +26,7 @@ def test_validate_package_from_dict_invalid():
             ["taskPosition", "rowPosition", "fieldPosition", "code"]
         ) == [
             [1, 3, None, "blank-row"],
-            [1, 3, None, "primary-key-error"],
+            [1, 3, None, "primary-key"],
             [2, 4, None, "blank-row"],
         ]
 
@@ -40,7 +40,7 @@ def test_validate_package_from_path_invalid():
     report = validate("data/invalid/datapackage.json")
     assert report.flatten(["taskPosition", "rowPosition", "fieldPosition", "code"]) == [
         [1, 3, None, "blank-row"],
-        [1, 3, None, "primary-key-error"],
+        [1, 3, None, "primary-key"],
         [2, 4, None, "blank-row"],
     ]
 
@@ -54,7 +54,7 @@ def test_validate_package_from_zip_invalid():
     report = validate("data/package-invalid.zip", type="package")
     assert report.flatten(["taskPosition", "rowPosition", "fieldPosition", "code"]) == [
         [1, 3, None, "blank-row"],
-        [1, 3, None, "primary-key-error"],
+        [1, 3, None, "primary-key"],
         [2, 4, None, "blank-row"],
     ]
 
@@ -222,7 +222,7 @@ def test_validate_package_schema_foreign_key_self_referenced_resource_violation(
     del descriptor["resources"][0]["data"][4]
     report = validate(descriptor)
     assert report.flatten(["rowPosition", "fieldPosition", "code", "cells"]) == [
-        [4, None, "foreign-key-error", ["3", "rome", "4"]],
+        [4, None, "foreign-key", ["3", "rome", "4"]],
     ]
 
 
@@ -231,7 +231,7 @@ def test_validate_package_schema_foreign_key_internal_resource_violation():
     del descriptor["resources"][1]["data"][4]
     report = validate(descriptor)
     assert report.flatten(["rowPosition", "fieldPosition", "code", "cells"]) == [
-        [5, None, "foreign-key-error", ["4", "rio", ""]],
+        [5, None, "foreign-key", ["4", "rio", ""]],
     ]
 
 
@@ -240,10 +240,10 @@ def test_validate_package_schema_foreign_key_internal_resource_violation_non_exi
     descriptor["resources"][1]["data"] = [["label", "population"], [10, 10]]
     report = validate(descriptor)
     assert report.flatten(["rowPosition", "fieldPosition", "code", "cells"]) == [
-        [2, None, "foreign-key-error", ["1", "london", "2"]],
-        [3, None, "foreign-key-error", ["2", "paris", "3"]],
-        [4, None, "foreign-key-error", ["3", "rome", "4"]],
-        [5, None, "foreign-key-error", ["4", "rio", ""]],
+        [2, None, "foreign-key", ["1", "london", "2"]],
+        [3, None, "foreign-key", ["2", "paris", "3"]],
+        [4, None, "foreign-key", ["3", "rome", "4"]],
+        [5, None, "foreign-key", ["4", "rio", ""]],
     ]
 
 
@@ -264,7 +264,7 @@ def test_validate_package_schema_multiple_foreign_key_resource_violation_non_exi
         [
             2,
             None,
-            "foreign-key-error",
+            "foreign-key",
             ["1", "2", "1.5"],
             'for "from, to": values "1, 2" not found in the lookup table "cities" as "id, next_id"',
         ],
@@ -301,8 +301,8 @@ def test_validate_package_stats_invalid():
     source["resources"][0]["stats"]["bytes"] += 1
     report = validate(source)
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [None, None, "hash-count-error"],
-        [None, None, "byte-count-error"],
+        [None, None, "hash-count"],
+        [None, None, "byte-count"],
     ]
 
 
@@ -320,7 +320,7 @@ def test_validate_package_stats_size_invalid():
     source["resources"][0]["stats"].pop("hash")
     report = validate(source)
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [None, None, "byte-count-error"],
+        [None, None, "byte-count"],
     ]
 
 
@@ -338,7 +338,7 @@ def test_check_file_package_stats_hash_invalid():
     source["resources"][0]["stats"]["hash"] += "a"
     report = validate(source)
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [None, None, "hash-count-error"],
+        [None, None, "hash-count"],
     ]
 
 
@@ -371,7 +371,7 @@ def test_validate_package_parallel_from_dict_invalid():
             ["taskPosition", "rowPosition", "fieldPosition", "code"]
         ) == [
             [1, 3, None, "blank-row"],
-            [1, 3, None, "primary-key-error"],
+            [1, 3, None, "primary-key"],
             [2, 4, None, "blank-row"],
         ]
 
@@ -381,7 +381,7 @@ def test_validate_package_with_parallel():
     report = validate("data/invalid/datapackage.json", parallel=True)
     assert report.flatten(["taskPosition", "rowPosition", "fieldPosition", "code"]) == [
         [1, 3, None, "blank-row"],
-        [1, 3, None, "primary-key-error"],
+        [1, 3, None, "primary-key"],
         [2, 4, None, "blank-row"],
     ]
 
@@ -437,7 +437,7 @@ def test_validate_package_composite_primary_key_not_unique_issue_215():
     }
     report = validate(descriptor, skip_errors=["duplicate-row"])
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [3, None, "primary-key-error"],
+        [3, None, "primary-key"],
     ]
 
 
@@ -517,7 +517,7 @@ def test_validate_package_descriptor_type_package_invalid():
     report = validate(descriptor="data/invalid/datapackage.json")
     assert report.flatten() == [
         [1, 3, None, "blank-row"],
-        [1, 3, None, "primary-key-error"],
+        [1, 3, None, "primary-key"],
         [2, 4, None, "blank-row"],
     ]
 

@@ -26,7 +26,7 @@ def test_validate_package_parallel_from_dict_invalid():
             ["taskPosition", "rowPosition", "fieldPosition", "code"]
         ) == [
             [1, 3, None, "blank-row"],
-            [1, 3, None, "primary-key-error"],
+            [1, 3, None, "primary-key"],
             [2, 4, None, "blank-row"],
         ]
 
@@ -38,6 +38,6 @@ def test_validate_package_with_parallel():
     report = package.validate(checklist)
     assert report.flatten(["taskPosition", "rowPosition", "fieldPosition", "code"]) == [
         [1, 3, None, "blank-row"],
-        [1, 3, None, "primary-key-error"],
+        [1, 3, None, "primary-key"],
         [2, 4, None, "blank-row"],
     ]

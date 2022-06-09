@@ -154,7 +154,7 @@ def test_validate_schema_foreign_key_error_self_referencing_invalid():
     resource = Resource(source)
     report = resource.validate()
     assert report.flatten(["rowPosition", "fieldPosition", "code", "cells"]) == [
-        [6, None, "foreign-key-error", ["5", "6", "Rome"]],
+        [6, None, "foreign-key", ["5", "6", "Rome"]],
     ]
 
 
@@ -193,10 +193,10 @@ def test_validate_schema_unique_error_and_type_error():
 
 def test_validate_schema_primary_key_error():
     resource = Resource("data/unique-field.csv", schema="data/unique-field.json")
-    checklist = Checklist(pick_errors=["primary-key-error"])
+    checklist = Checklist(pick_errors=["primary-key"])
     report = resource.validate(checklist)
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [10, None, "primary-key-error"],
+        [10, None, "primary-key"],
     ]
 
 
@@ -208,7 +208,7 @@ def test_validate_schema_primary_key_and_unique_error():
     report = resource.validate()
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [10, 1, "unique-error"],
-        [10, None, "primary-key-error"],
+        [10, None, "primary-key"],
     ]
 
 
@@ -231,7 +231,7 @@ def test_validate_schema_primary_key_error_composite():
     resource = Resource(source, schema=schema)
     report = resource.validate()
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [5, None, "primary-key-error"],
+        [5, None, "primary-key"],
         [6, None, "blank-row"],
-        [6, None, "primary-key-error"],
+        [6, None, "primary-key"],
     ]

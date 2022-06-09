@@ -43,7 +43,7 @@ def test_validate_baseline_stats_hash_invalid():
     resource = Resource("data/table.csv", stats={"hash": "bad"})
     report = resource.validate()
     assert report.flatten(["code", "note"]) == [
-        ["hash-count-error", 'expected md5 is "bad" and actual is "%s"' % hash],
+        ["hash-count", 'expected md5 is "bad" and actual is "%s"' % hash],
     ]
 
 
@@ -61,7 +61,7 @@ def test_validate_baseline_stats_hash_md5_invalid():
     resource = Resource("data/table.csv", stats={"hash": "bad"})
     report = resource.validate()
     assert report.flatten(["code", "note"]) == [
-        ["hash-count-error", 'expected md5 is "bad" and actual is "%s"' % hash],
+        ["hash-count", 'expected md5 is "bad" and actual is "%s"' % hash],
     ]
 
 
@@ -79,7 +79,7 @@ def test_validate_baseline_stats_hash_sha1_invalid():
     resource = Resource("data/table.csv", hashing="sha1", stats={"hash": "bad"})
     report = resource.validate()
     assert report.flatten(["code", "note"]) == [
-        ["hash-count-error", 'expected sha1 is "bad" and actual is "%s"' % hash],
+        ["hash-count", 'expected sha1 is "bad" and actual is "%s"' % hash],
     ]
 
 
@@ -98,7 +98,7 @@ def test_validate_baseline_stats_hash_sha256_invalid():
     report = resource.validate()
     assert report.flatten(["code", "note"]) == [
         [
-            "hash-count-error",
+            "hash-count",
             'expected sha256 is "bad" and actual is "%s"' % hash,
         ],
     ]
@@ -119,7 +119,7 @@ def test_validate_baseline_stats_hash_sha512_invalid():
     report = resource.validate()
     assert report.flatten(["code", "note"]) == [
         [
-            "hash-count-error",
+            "hash-count",
             'expected sha512 is "bad" and actual is "%s"' % hash,
         ],
     ]
@@ -139,7 +139,7 @@ def test_validate_baseline_stats_bytes_invalid():
     assert report.task.error.get("rowPosition") is None
     assert report.task.error.get("fieldPosition") is None
     assert report.flatten(["code", "note"]) == [
-        ["byte-count-error", 'expected is "40" and actual is "30"'],
+        ["byte-count", 'expected is "40" and actual is "30"'],
     ]
 
 
@@ -157,5 +157,5 @@ def test_validate_baseline_stats_rows_invalid():
     assert report.task.error.get("rowPosition") is None
     assert report.task.error.get("fieldPosition") is None
     assert report.flatten(["code", "note"]) == [
-        ["row-count-error", 'expected is "3" and actual is "2"'],
+        ["row-count", 'expected is "3" and actual is "2"'],
     ]

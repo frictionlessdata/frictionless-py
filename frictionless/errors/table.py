@@ -10,21 +10,21 @@ class TableError(Error):
 
 
 class FieldCountError(TableError):
-    code = "field-count-error"
+    code = "field-count"
     name = "Field Count Error"
     template = "The data source does not match the expected field count: {note}"
     description = "This error can happen if the data is corrupted."
 
 
 class RowCountError(TableError):
-    code = "row-count-error"
+    code = "row-count"
     name = "Row Count Error"
     template = "The data source does not match the expected row count: {note}"
     description = "This error can happen if the data is corrupted."
 
 
 class TableDimensionsError(TableError):
-    code = "table-dimensions-error"
+    code = "table-dimensions"
     name = "Table dimensions error"
     template = "The data source does not have the required dimensions: {note}"
     description = "This error can happen if the data is corrupted."

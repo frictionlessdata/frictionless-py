@@ -587,7 +587,7 @@ def test_validate_schema_foreign_key_error_self_referencing_invalid():
     }
     report = validate(source)
     assert report.flatten(["rowPosition", "fieldPosition", "code", "cells"]) == [
-        [6, None, "foreign-key-error", ["5", "6", "Rome"]],
+        [6, None, "foreign-key", ["5", "6", "Rome"]],
     ]
 
 
@@ -629,10 +629,10 @@ def test_validate_schema_primary_key_error():
     report = validate(
         "data/unique-field.csv",
         schema="data/unique-field.json",
-        pick_errors=["primary-key-error"],
+        pick_errors=["primary-key"],
     )
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [10, None, "primary-key-error"],
+        [10, None, "primary-key"],
     ]
 
 
@@ -643,7 +643,7 @@ def test_validate_schema_primary_key_and_unique_error():
     )
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [10, 1, "unique-error"],
-        [10, None, "primary-key-error"],
+        [10, None, "primary-key"],
     ]
 
 
@@ -665,9 +665,9 @@ def test_validate_schema_primary_key_error_composite():
     }
     report = validate(source, schema=schema)
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [5, None, "primary-key-error"],
+        [5, None, "primary-key"],
         [6, None, "blank-row"],
-        [6, None, "primary-key-error"],
+        [6, None, "primary-key"],
     ]
 
 
@@ -686,7 +686,7 @@ def test_validate_stats_hash_invalid():
     hash = "6c2c61dd9b0e9c6876139a449ed87933"
     report = validate("data/table.csv", stats={"hash": "bad"})
     assert report.flatten(["code", "note"]) == [
-        ["hash-count-error", 'expected md5 is "bad" and actual is "%s"' % hash],
+        ["hash-count", 'expected md5 is "bad" and actual is "%s"' % hash],
     ]
 
 
@@ -702,7 +702,7 @@ def test_validate_stats_hash_md5_invalid():
     hash = "6c2c61dd9b0e9c6876139a449ed87933"
     report = validate("data/table.csv", stats={"hash": "bad"})
     assert report.flatten(["code", "note"]) == [
-        ["hash-count-error", 'expected md5 is "bad" and actual is "%s"' % hash],
+        ["hash-count", 'expected md5 is "bad" and actual is "%s"' % hash],
     ]
 
 
@@ -718,7 +718,7 @@ def test_validate_stats_hash_sha1_invalid():
     hash = "db6ea2f8ff72a9e13e1d70c28ed1c6b42af3bb0e"
     report = validate("data/table.csv", hashing="sha1", stats={"hash": "bad"})
     assert report.flatten(["code", "note"]) == [
-        ["hash-count-error", 'expected sha1 is "bad" and actual is "%s"' % hash],
+        ["hash-count", 'expected sha1 is "bad" and actual is "%s"' % hash],
     ]
 
 
@@ -735,7 +735,7 @@ def test_validate_stats_hash_sha256_invalid():
     report = validate("data/table.csv", hashing="sha256", stats={"hash": "bad"})
     assert report.flatten(["code", "note"]) == [
         [
-            "hash-count-error",
+            "hash-count",
             'expected sha256 is "bad" and actual is "%s"' % hash,
         ],
     ]
@@ -754,7 +754,7 @@ def test_validate_stats_hash_sha512_invalid():
     report = validate("data/table.csv", hashing="sha512", stats={"hash": "bad"})
     assert report.flatten(["code", "note"]) == [
         [
-            "hash-count-error",
+            "hash-count",
             'expected sha512 is "bad" and actual is "%s"' % hash,
         ],
     ]
@@ -772,7 +772,7 @@ def test_validate_stats_bytes_invalid():
     assert report.task.error.get("rowPosition") is None
     assert report.task.error.get("fieldPosition") is None
     assert report.flatten(["code", "note"]) == [
-        ["byte-count-error", 'expected is "40" and actual is "30"'],
+        ["byte-count", 'expected is "40" and actual is "30"'],
     ]
 
 
@@ -788,7 +788,7 @@ def test_validate_stats_rows_invalid():
     assert report.task.error.get("rowPosition") is None
     assert report.task.error.get("fieldPosition") is None
     assert report.flatten(["code", "note"]) == [
-        ["row-count-error", 'expected is "3" and actual is "2"'],
+        ["row-count", 'expected is "3" and actual is "2"'],
     ]
 
 

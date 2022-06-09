@@ -41,11 +41,11 @@ def test_report():
     assert report.task.valid is True
     assert report.task.scope == [
         # File
-        "hash-count-error",
-        "byte-count-error",
+        "hash-count",
+        "byte-count",
         # Table
-        "field-count-error",
-        "row-count-error",
+        "field-count",
+        "row-count",
         # Header
         "blank-header",
         # Label
@@ -56,8 +56,8 @@ def test_report():
         "incorrect-label",
         # Row
         "blank-row",
-        "primary-key-error",
-        "foreign-key-error",
+        "primary-key",
+        "foreign-key",
         # Cell
         "extra-cell",
         "missing-cell",

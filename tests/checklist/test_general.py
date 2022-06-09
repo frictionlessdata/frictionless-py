@@ -12,10 +12,10 @@ def test_checklist():
     assert checklist.keep_original is False
     assert checklist.allow_parallel is False
     assert checklist.scope == [
-        "hash-count-error",
-        "byte-count-error",
-        "field-count-error",
-        "row-count-error",
+        "hash-count",
+        "byte-count",
+        "field-count",
+        "row-count",
         "blank-header",
         "extra-label",
         "missing-label",
@@ -23,14 +23,14 @@ def test_checklist():
         "duplicate-label",
         "incorrect-label",
         "blank-row",
-        "primary-key-error",
-        "foreign-key-error",
+        "primary-key",
+        "foreign-key",
         "extra-cell",
         "missing-cell",
         "type-error",
         "constraint-error",
         "unique-error",
-        "non-ascii",
+        "ascii-value",
     ]
 
 
@@ -49,5 +49,5 @@ def test_checklist_from_descriptor():
     assert checklist.limit_memory == 100
     assert checklist.keep_original is True
     assert checklist.allow_parallel is True
-    assert checklist.scope.count("non-ascii")
+    assert checklist.scope.count("ascii-value")
     assert isinstance(checklist.checks[0], checks.ascii_value)

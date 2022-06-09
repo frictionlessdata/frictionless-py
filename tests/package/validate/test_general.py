@@ -28,7 +28,7 @@ def test_validate_package_from_dict_invalid():
             ["taskPosition", "rowPosition", "fieldPosition", "code"]
         ) == [
             [1, 3, None, "blank-row"],
-            [1, 3, None, "primary-key-error"],
+            [1, 3, None, "primary-key"],
             [2, 4, None, "blank-row"],
         ]
 
@@ -44,7 +44,7 @@ def test_validate_package_from_path_invalid():
     report = package.validate()
     assert report.flatten(["taskPosition", "rowPosition", "fieldPosition", "code"]) == [
         [1, 3, None, "blank-row"],
-        [1, 3, None, "primary-key-error"],
+        [1, 3, None, "primary-key"],
         [2, 4, None, "blank-row"],
     ]
 
@@ -60,7 +60,7 @@ def test_validate_package_from_zip_invalid():
     report = package.validate()
     assert report.flatten(["taskPosition", "rowPosition", "fieldPosition", "code"]) == [
         [1, 3, None, "blank-row"],
-        [1, 3, None, "primary-key-error"],
+        [1, 3, None, "primary-key"],
         [2, 4, None, "blank-row"],
     ]
 
@@ -244,7 +244,7 @@ def test_validate_package_composite_primary_key_not_unique_issue_215():
     checklist = Checklist(skip_errors=["duplicate-row"])
     report = package.validate(checklist)
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [3, None, "primary-key-error"],
+        [3, None, "primary-key"],
     ]
 
 
@@ -332,7 +332,7 @@ def test_validate_package_descriptor_type_package_invalid():
     report = package.validate()
     assert report.flatten() == [
         [1, 3, None, "blank-row"],
-        [1, 3, None, "primary-key-error"],
+        [1, 3, None, "primary-key"],
         [2, 4, None, "blank-row"],
     ]
 

@@ -108,7 +108,7 @@ def test_validate_inquiry_with_multiple_packages():
     report = inquiry.validate()
     assert report.flatten(["taskPosition", "rowPosition", "fieldPosition", "code"]) == [
         [3, 3, None, "blank-row"],
-        [3, 3, None, "primary-key-error"],
+        [3, 3, None, "primary-key"],
         [4, 4, None, "blank-row"],
     ]
 
@@ -159,6 +159,6 @@ def test_validate_inquiry_with_multiple_packages_with_parallel():
     report = inquiry.validate(parallel=True)
     assert report.flatten(["taskPosition", "rowPosition", "fieldPosition", "code"]) == [
         [3, 3, None, "blank-row"],
-        [3, 3, None, "primary-key-error"],
+        [3, 3, None, "primary-key"],
         [4, 4, None, "blank-row"],
     ]

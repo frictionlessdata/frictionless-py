@@ -36,8 +36,8 @@ def test_validate_package_stats_invalid():
     package = Package(source)
     report = package.validate()
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [None, None, "hash-count-error"],
-        [None, None, "byte-count-error"],
+        [None, None, "hash-count"],
+        [None, None, "byte-count"],
     ]
 
 
@@ -57,7 +57,7 @@ def test_validate_package_stats_size_invalid():
     package = Package(source)
     report = package.validate()
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [None, None, "byte-count-error"],
+        [None, None, "byte-count"],
     ]
 
 
@@ -77,7 +77,7 @@ def test_check_file_package_stats_hash_invalid():
     package = Package(source)
     report = package.validate()
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [None, None, "hash-count-error"],
+        [None, None, "hash-count"],
     ]
 
 

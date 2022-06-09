@@ -26,6 +26,6 @@ def test_validate_ascii_not_valid_845():
     checklist = Checklist(checks=[checks.ascii_value()])
     report = resource.validate(checklist)
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [2, 2, "non-ascii"],
-        [2, 3, "non-ascii"],
+        [2, 2, "ascii-value"],
+        [2, 3, "ascii-value"],
     ]
