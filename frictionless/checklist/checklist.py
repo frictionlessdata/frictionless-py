@@ -103,11 +103,11 @@ class Checklist(Metadata):
                 checks.append(check)
         return checks
 
-    # Filter
+    # Match
 
-    def filter(self, error: Error) -> bool:
+    def match(self, error: Error) -> bool:
         if error.tags.count("#data"):
-            if not error.code in self.scope:
+            if error.code not in self.scope:
                 return False
         return True
 

@@ -96,7 +96,6 @@ class ExtraCellError(CellError):
 class MissingCellError(CellError):
     code = "missing-cell"
     name = "Missing Cell"
-    tags = ["#table", "#row", "#cell"]
     template = 'Row at position "{rowPosition}" has a missing cell in field "{fieldName}" at position "{fieldPosition}"'
     description = "This row has less values compared to the header row (the first row in the data source). A key concept is that all the rows in tabular data must have the same number of columns."
 

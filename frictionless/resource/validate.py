@@ -58,7 +58,7 @@ def validate(resource: "Resource", checklist: Optional[Checklist] = None):
             for error in check.validate_start():
                 if error.code == "check-error":
                     del checks[index]
-                if error.code in checklist.scope:
+                if checklist.match(error):
                     errors.append(error)
 
         # Validate rows
@@ -68,14 +68,14 @@ def validate(resource: "Resource", checklist: Optional[Checklist] = None):
                 # Validate row
                 for check in checks:
                     for error in check.validate_row(row):
-                        if error.code in checklist.scope:
+                        if checklist.match(error):
                             errors.append(error)
 
                 # Limit errors
                 if checklist.limit_errors:
                     if len(errors) >= checklist.limit_errors:
                         errors = errors[: checklist.limit_errors]
-                        partial = "error"
+                        partial = f'error limit: "{checklist.limit_errors}"'
                         break
 
                 # Limit memory
@@ -83,7 +83,7 @@ def validate(resource: "Resource", checklist: Optional[Checklist] = None):
                     if not row.row_number % 100000:
                         memory = helpers.get_current_memory_usage()
                         if memory and memory > checklist.limit_memory:
-                            partial = "memory"
+                            partial = f'memory limit: "{checklist.limit_memory}MB"'
                             break
 
         # Validate end
@@ -92,7 +92,7 @@ def validate(resource: "Resource", checklist: Optional[Checklist] = None):
                 helpers.pass_through(resource.byte_stream)
             for check in checks:
                 for error in check.validate_end():
-                    if error.code in checklist.scope:
+                    if checklist.match(error):
                         errors.append(error)
 
     # Return report

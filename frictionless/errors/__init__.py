@@ -7,3 +7,4 @@ from .package import *
 from .pipeline import *
 from .report import *
 from .resource import *
+from .schema import *

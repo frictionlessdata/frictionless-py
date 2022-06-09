@@ -32,6 +32,3 @@ from . import errors
 from . import checks
 from . import steps
 from . import types
-
-# TODO: remove in v5
-from .actions import *

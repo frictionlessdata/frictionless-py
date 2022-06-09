@@ -133,7 +133,6 @@ def test_validate_blank_cell_not_required():
     assert report.valid
 
 
-@pytest.mark.only
 def test_validate_no_data():
     resource = Resource("data/empty.csv")
     report = resource.validate()
@@ -495,6 +494,7 @@ def test_validate_resource_array_path_issue_991():
     ]
 
 
+# TODO: review if the error type is correct
 def test_validate_resource_duplicate_labels_with_sync_schema_issue_910():
     detector = Detector(schema_sync=True)
     resource = Resource(
@@ -505,7 +505,7 @@ def test_validate_resource_duplicate_labels_with_sync_schema_issue_910():
     report = resource.validate()
     assert report.flatten(["code", "note"]) == [
         [
-            "general-error",
+            "schema-error",
             'Duplicate labels in header is not supported with "schema_sync"',
         ],
     ]
