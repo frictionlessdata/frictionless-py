@@ -37,13 +37,14 @@ def test_validate_schema_extra_headers_and_cells():
     ]
 
 
-@pytest.mark.skip
 def test_validate_schema_multiple_errors():
     source = "data/schema-errors.csv"
     schema = "data/schema-valid.json"
     resource = Resource(source, schema=schema)
     checklist = Checklist(pick_errors=["#row"], limit_errors=3)
+    print(checklist.scope)
     report = resource.validate(checklist)
+    print(report.flatten(["code"]))
     assert report.task.partial
     assert report.task.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [4, 1, "type-error"],

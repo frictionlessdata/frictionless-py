@@ -77,10 +77,16 @@ class Checklist(Metadata):
         basics: List[Check] = [baseline()]
         for check in basics + self.checks:
             for Error in check.Errors:
-                if Error.code in self.skip_errors:
-                    continue
-                if Error.code not in self.pick_errors and self.pick_errors:
-                    continue
+                if self.pick_errors:
+                    if Error.code not in self.pick_errors and not set(
+                        self.pick_errors
+                    ).intersection(Error.tags):
+                        continue
+                if self.skip_errors:
+                    if Error.code in self.skip_errors or set(
+                        self.skip_errors
+                    ).intersection(Error.tags):
+                        continue
                 scope.append(Error.code)
         return scope
 

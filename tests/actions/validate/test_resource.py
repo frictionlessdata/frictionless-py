@@ -912,7 +912,6 @@ def test_validate_pick_errors():
     ]
 
 
-@pytest.mark.skip
 def test_validate_pick_errors_tags():
     report = validate("data/invalid.csv", pick_errors=["#header"])
     assert report.task.scope == [
@@ -941,7 +940,6 @@ def test_validate_skip_errors():
     ]
 
 
-@pytest.mark.skip
 def test_validate_skip_errors_tags():
     report = validate("data/invalid.csv", skip_errors=["#header"])
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [

@@ -12,17 +12,6 @@ def test_validate():
     assert report.valid
 
 
-# TODO: move to general validate
-@pytest.mark.skip
-def test_validate_invalid_source():
-    resource = Resource("bad.json")
-    report = resource.validate()
-    assert report["stats"]["errors"] == 1
-    [[code, note]] = report.flatten(["code", "note"])
-    assert code == "resource-error"
-    assert note.count("[Errno 2]") and note.count("bad.json")
-
-
 def test_validate_invalid_resource():
     resource = Resource({"path": "data/table.csv", "schema": "bad"})
     report = resource.validate()
@@ -203,7 +192,6 @@ def test_validate_pick_errors():
     ]
 
 
-@pytest.mark.skip
 def test_validate_pick_errors_tags():
     resource = Resource("data/invalid.csv")
     checklist = Checklist(pick_errors=["#header"])
@@ -237,7 +225,6 @@ def test_validate_skip_errors():
     ]
 
 
-@pytest.mark.skip
 def test_validate_skip_errors_tags():
     resource = Resource("data/invalid.csv")
     checklist = Checklist(skip_errors=["#header"])

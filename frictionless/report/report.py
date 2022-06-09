@@ -161,8 +161,18 @@ class Report(Metadata):
         partial: bool = False,
     ):
         """Create a report from a task"""
-        task = ReportTask(resource=resource, errors=errors, scope=scope, time=time)
-        return Report(tasks=[task], time=time)
+        return Report(
+            tasks=[
+                ReportTask(
+                    resource=resource,
+                    partial=partial,
+                    errors=errors,
+                    scope=scope,
+                    time=time,
+                )
+            ],
+            time=time,
+        )
 
     # Metadata
 
