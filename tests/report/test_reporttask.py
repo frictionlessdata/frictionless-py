@@ -1,12 +1,16 @@
-from frictionless import validate
+from frictionless import validate, helpers
+
+
+IS_UNIX = not helpers.is_platform("windows")
 
 
 def test_report_reporttask_summary_valid():
     report = validate("data/capital-valid.csv")
     output = report.tasks[0].to_summary()
+    file_size = 50 if IS_UNIX else 56
     assert (
         output.count("File name              | data/capital-valid.csv")
-        and output.count("File size (bytes)      | 50                    ")
+        and output.count(f"File size (bytes)      | {file_size}                    ")
         and output.count("Total Time Taken (sec) | ")
     )
 
@@ -14,9 +18,10 @@ def test_report_reporttask_summary_valid():
 def test_report_reporttask_summary_invalid():
     report = validate("data/capital-invalid.csv")
     output = report.tasks[0].to_summary()
+    file_size = 171 if IS_UNIX else 183
     assert (
         output.count("File name                         | data/capital-invalid.csv")
-        and output.count("File size (bytes)                 | 171                     ")
+        and output.count(f"File size (bytes)                 | {file_size}        ")
         and output.count("Total Time Taken (sec)            |")
         and output.count("Total Errors                      | 5          ")
         and output.count("Duplicate Label (duplicate-label) | 1          ")
