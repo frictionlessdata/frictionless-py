@@ -2,7 +2,6 @@
 from ...exception import FrictionlessException
 from ...parser import Parser
 from .storage import SqlStorage
-from ... import errors
 
 
 class SqlParser(Parser):
@@ -44,7 +43,7 @@ class SqlParser(Parser):
         target = self.resource
         if not target.dialect.table:
             note = 'Please provide "dialect.table" for writing'
-            raise FrictionlessException(errors.StorageError(note=note))
+            raise FrictionlessException(note)
         source.name = target.dialect.table
         storage = SqlStorage(target.fullpath, dialect=target.dialect)
         storage.write_resource(source, force=True)

@@ -17,7 +17,7 @@ class RowError(TableError):
 
     code = "row-error"
     name = "Row Error"
-    tags = ["#table", "#row"]
+    tags = ["#data", "#table", "#row"]
     template = "Row Error"
     description = "Row Error"
 

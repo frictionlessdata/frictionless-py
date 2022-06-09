@@ -60,5 +60,4 @@ def transform(
         return source.transform(pipeline)
 
     # Not supported
-    note = f"Not supported transform type: {type}"
-    raise FrictionlessException(errors.GeneralError(note=note))
+    raise FrictionlessException(f"Not supported transform type: {type}")

@@ -133,7 +133,7 @@ def test_validate_blank_cell_not_required():
     assert report.valid
 
 
-@pytest.mark.skip
+@pytest.mark.only
 def test_validate_no_data():
     resource = Resource("data/empty.csv")
     report = resource.validate()

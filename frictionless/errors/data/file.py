@@ -1,10 +1,10 @@
-from ..error import Error
+from .data import DataError
 
 
-class FileError(Error):
+class FileError(DataError):
     code = "file-error"
     name = "File Error"
-    tags = ["#file"]
+    tags = ["#data", "#file"]
     template = "General file error: {note}"
     description = "There is a file error."
 

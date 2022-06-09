@@ -88,9 +88,7 @@ def import_from_plugin(name, *, plugin):
         return import_module(name)
     except ImportError:
         module = import_module("frictionless.exception")
-        errors = import_module("frictionless.errors")
-        error = errors.GeneralError(note=f'Please install "frictionless[{plugin}]"')
-        raise module.FrictionlessException(error)
+        raise module.FrictionlessException(f'Please install "frictionless[{plugin}]"')
 
 
 @contextmanager
@@ -636,9 +634,7 @@ def dicts_to_markdown_table(dicts: List[dict], **kwargs) -> str:
         df = pandas.DataFrame(dicts)
     except ImportError:
         module = import_module("frictionless.exception")
-        errors = import_module("frictionless.errors")
-        error = errors.GeneralError(note="Please install `pandas` package")
-        raise module.FrictionlessException(error)
+        raise module.FrictionlessException("Please install `pandas` package")
     return df.where(df.notnull(), None).to_markdown(index=False)
 
 

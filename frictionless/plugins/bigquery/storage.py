@@ -13,7 +13,6 @@ from ...storage import Storage
 from ...schema import Schema
 from ...field import Field
 from ... import helpers
-from ... import errors
 from .dialect import BigqueryDialect
 from . import settings
 
@@ -79,8 +78,7 @@ class BigqueryStorage(Storage):
                 .execute()
             )
         except google_errors.HttpError:
-            note = f'Resource "{name}" does not exist'
-            raise FrictionlessException(errors.StorageError(note=note))
+            raise FrictionlessException(f'Resource "{name}" does not exist')
 
         # Create resource
         schema = self.__read_convert_schema(response["schema"])
@@ -172,8 +170,9 @@ class BigqueryStorage(Storage):
         for resource in package.resources:
             if resource.name in existent_names:
                 if not force:
-                    note = f'Resource "{resource.name}" already exists'
-                    raise FrictionlessException(errors.StorageError(note=note))
+                    raise FrictionlessException(
+                        f'Resource "{resource.name}" already exists'
+                    )
                 self.delete_resource(resource.name)
 
         # Write resource
@@ -295,7 +294,7 @@ class BigqueryStorage(Storage):
         except Exception as exception:
             if "not found: job" in str(exception).lower():
                 note = "BigQuery plugin supports only the US location of datasets"
-                raise FrictionlessException(errors.StorageError(note=note))
+                raise FrictionlessException(note)
             raise
 
     def __write_convert_data_finish_job(self, response):
@@ -312,7 +311,7 @@ class BigqueryStorage(Storage):
             if result["status"]["state"] == "DONE":
                 if result["status"].get("errors"):
                     note = "\n".join(er["message"] for er in result["status"]["errors"])
-                    raise FrictionlessException(errors.StorageError(note=note))
+                    raise FrictionlessException(note)
                 break
             time.sleep(1)
 
@@ -352,8 +351,7 @@ class BigqueryStorage(Storage):
             # Check existent
             if name not in existent_names:
                 if not ignore:
-                    note = f'Resource "{name}" does not exist'
-                    raise FrictionlessException(errors.StorageError(note=note))
+                    raise FrictionlessException(f'Resource "{name}" does not exist')
                 continue
 
             # Make delete request

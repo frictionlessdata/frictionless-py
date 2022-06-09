@@ -11,7 +11,6 @@ from .control import Control
 from .dialect import Dialect
 from .file import File
 from . import settings
-from . import errors
 
 if TYPE_CHECKING:
     from .check import Check
@@ -118,7 +117,7 @@ class System:
             if getattr(Class, "code", None) == code:
                 return Class(descriptor)
         note = f'cannot create check "{code}". Try installing "frictionless-{code}"'
-        raise FrictionlessException(errors.CheckError(note=note))
+        raise FrictionlessException(note)
 
     def create_control(self, resource: Resource, *, descriptor: dict) -> Control:
         """Create control
@@ -172,7 +171,7 @@ class System:
             if getattr(Class, "code", None) == code:
                 return Class(descriptor)
         note = f'cannot create error "{code}". Try installing "frictionless-{code}"'
-        raise FrictionlessException(errors.Error(note=note))
+        raise FrictionlessException(note)
 
     def create_file(self, source: Any, **options) -> File:
         """Create file
@@ -207,7 +206,7 @@ class System:
             if loader is not None:
                 return loader
         note = f'cannot create loader "{name}". Try installing "frictionless-{name}"'
-        raise FrictionlessException(errors.SchemeError(note=note))
+        raise FrictionlessException(note)
 
     def create_parser(self, resource: Resource) -> Parser:
         """Create parser
@@ -225,7 +224,7 @@ class System:
             if parser is not None:
                 return parser
         note = f'cannot create parser "{name}". Try installing "frictionless-{name}"'
-        raise FrictionlessException(errors.FormatError(note=note))
+        raise FrictionlessException(note)
 
     def create_step(self, descriptor: dict) -> Step:
         """Create step
@@ -245,7 +244,7 @@ class System:
             if getattr(Class, "code", None) == code:
                 return Class(descriptor)
         note = f'cannot create check "{code}". Try installing "frictionless-{code}"'
-        raise FrictionlessException(errors.StepError(note=note))
+        raise FrictionlessException(note)
 
     def create_storage(self, name: str, source: Any, **options) -> Storage:
         """Create storage
@@ -262,7 +261,7 @@ class System:
             if storage is not None:
                 return storage
         note = f'cannot create storage "{name}". Try installing "frictionless-{name}"'
-        raise FrictionlessException(errors.GeneralError(note=note))
+        raise FrictionlessException(note)
 
     def create_type(self, field: Field) -> Type:
         """Create type
@@ -282,7 +281,7 @@ class System:
             if getattr(Class, "code", None) == code:
                 return Class(field)
         note = f'cannot create type "{code}". Try installing "frictionless-{code}"'
-        raise FrictionlessException(errors.FieldError(note=note))
+        raise FrictionlessException(note)
 
     # Requests
 
@@ -315,7 +314,7 @@ class System:
         """
         if self.__http_session:
             note = f"There is already HTTP session in use: {self.__http_session}"
-            raise FrictionlessException(errors.Error(note=note))
+            raise FrictionlessException(note)
         self.__http_session = http_session or self.get_http_session()
         yield self.__http_session
         self.__http_session = None

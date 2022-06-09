@@ -55,5 +55,4 @@ def extract(
         return source.extract(process=process, stream=stream)
 
     # Not supported
-    note = f"Not supported extract type: {type}"
-    raise FrictionlessException(errors.GeneralError(note=note))
+    raise FrictionlessException(f"Not supported extract type: {type}")

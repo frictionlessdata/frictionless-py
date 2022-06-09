@@ -1,7 +1,6 @@
 # type: ignore
 from ...exception import FrictionlessException
 from ...parser import Parser
-from ... import errors
 from .storage import CkanStorage
 
 
@@ -35,6 +34,6 @@ class CkanParser(Parser):
         storage = CkanStorage(target.fullpath, dialect=target.dialect)
         if not target.dialect.resource:
             note = 'Please provide "dialect.resource" for writing'
-            raise FrictionlessException(errors.StorageError(note=note))
+            raise FrictionlessException(note)
         source.name = target.dialect.resource
         storage.write_resource(source, force=True)

@@ -30,7 +30,7 @@ class Error(Metadata):
 
     code: str = "error"
     name: str = "Error"
-    tags: List[str] = []  # type: ignore
+    tags: List[str] = []
     template: str = "{note}"
     description: str = "Error"
 

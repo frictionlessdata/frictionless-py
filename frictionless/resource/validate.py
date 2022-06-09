@@ -5,7 +5,6 @@ from ..check import Check
 from ..system import system
 from ..checklist import Checklist
 from ..exception import FrictionlessException
-from ..errors import GeneralError, TaskError
 from ..report import Report, ReportTask
 from .. import settings
 from .. import helpers
@@ -27,7 +26,7 @@ def validate(resource: "Resource", checklist: Optional[Checklist] = None):
 
     # Create state
     errors = []
-    partial = False
+    partial = None
     timer = helpers.Timer()
     original_resource = resource.to_copy()
 
@@ -76,7 +75,7 @@ def validate(resource: "Resource", checklist: Optional[Checklist] = None):
                 if checklist.limit_errors:
                     if len(errors) >= checklist.limit_errors:
                         errors = errors[: checklist.limit_errors]
-                        partial = True
+                        partial = "error"
                         break
 
                 # Limit memory
@@ -84,9 +83,7 @@ def validate(resource: "Resource", checklist: Optional[Checklist] = None):
                     if not row.row_number % 100000:
                         memory = helpers.get_current_memory_usage()
                         if memory and memory > checklist.limit_memory:
-                            note = f'exceeded memory limit "{checklist.limit_memory}MB"'
-                            errors.append(TaskError(note=note))
-                            partial = True
+                            partial = "memory"
                             break
 
         # Validate end

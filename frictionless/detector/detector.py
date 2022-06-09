@@ -557,7 +557,7 @@ class Detector:
         if len(schema.field_names) != len(set(schema.field_names)):  # type: ignore
             if self.__schema_sync:
                 note = 'Duplicate labels in header is not supported with "schema_sync"'
-                raise FrictionlessException(errors.GeneralError(note=note))
+                raise FrictionlessException(errors.SchemaError(note=note))
             note = "Schemas with duplicate field names are not supported"
             raise FrictionlessException(errors.SchemaError(note=note))
 

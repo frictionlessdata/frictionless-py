@@ -97,5 +97,4 @@ def validate(
         return source.validate()
 
     # Not supported
-    note = f"Not supported validate type: {type}"
-    raise FrictionlessException(errors.GeneralError(note=note))
+    raise FrictionlessException(f"Not supported validate type: {type}")

@@ -2,9 +2,9 @@ from __future__ import annotations
 import functools
 from copy import deepcopy
 from importlib import import_module
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING, Optional, List
 from ..metadata import Metadata
-from ..errors import Error, TaskError, ReportError
+from ..errors import Error, ReportError
 from ..exception import FrictionlessException
 from .validate import validate
 from .. import settings
@@ -158,7 +158,7 @@ class Report(Metadata):
         time: float,
         scope: List[str] = [],
         errors: List[Error] = [],
-        partial: bool = False,
+        partial: Optional[str] = None,
     ):
         """Create a report from a task"""
         return Report(
@@ -241,9 +241,6 @@ class ReportTask(Metadata):
         self.setinitial("errors", errors)
         super().__init__(descriptor)
 
-        # TODO: remove after metadata rework
-        self.setdefault("partial", False)
-
         # Store computed
         self.setinitial("stats", {"errors": len(self.errors)})
         self.setinitial("valid", not self.errors)
@@ -286,7 +283,7 @@ class ReportTask(Metadata):
         Returns:
             bool: if validation partial
         """
-        return self["partial"]
+        return self.get("partial")
 
     @property
     def stats(self):

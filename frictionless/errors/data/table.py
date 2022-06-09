@@ -1,10 +1,10 @@
-from ..error import Error
+from .data import DataError
 
 
-class TableError(Error):
+class TableError(DataError):
     code = "table-error"
     name = "Table Error"
-    tags = ["#table"]
+    tags = ["#data", "#table"]
     template = "General table error: {note}"
     description = "There is a table error."
 

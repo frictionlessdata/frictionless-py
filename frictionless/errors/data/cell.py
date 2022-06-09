@@ -1,5 +1,4 @@
-from ..exception import FrictionlessException
-from .general import GeneralError
+from ...exception import FrictionlessException
 from .row import RowError
 
 
@@ -24,7 +23,7 @@ class CellError(RowError):
 
     code = "cell-error"
     name = "Cell Error"
-    tags = ["#table", "#row", "#cell"]
+    tags = ["#data", "#table", "#row", "#cell"]
     template = "Cell Error"
     description = "Cell Error"
 
@@ -84,8 +83,7 @@ class CellError(RowError):
                     field_number=field_number,
                     field_position=field_position,
                 )
-        error = GeneralError(note=f"Field {field_name} is not in the row")
-        raise FrictionlessException(error)
+        raise FrictionlessException(f"Field {field_name} is not in the row")
 
 
 class ExtraCellError(CellError):

@@ -9,7 +9,6 @@ from ...storage import Storage
 from ...schema import Schema
 from ...system import system
 from ...field import Field
-from ... import errors
 from .dialect import CkanDialect
 
 
@@ -57,8 +56,7 @@ class CkanStorage(Storage):
     def read_resource(self, name):
         ckan_table = self.__read_ckan_table(name)
         if ckan_table is None:
-            note = f'Resource "{name}" does not exist'
-            raise FrictionlessException(errors.StorageError(note=note))
+            raise FrictionlessException(f'Resource "{name}" does not exist')
         schema = self.__read_convert_schema(ckan_table)
         resource = Resource(
             name=name,
@@ -182,7 +180,7 @@ class CkanStorage(Storage):
             if resource.name in existent_names:
                 if not force:
                     note = f'Resource "{resource.name}" already exists'
-                    raise FrictionlessException(errors.StorageError(note=note))
+                    raise FrictionlessException(note)
                 self.delete_resource(resource.name)
 
         # Write resources
@@ -266,7 +264,7 @@ class CkanStorage(Storage):
             if name not in existent_names:
                 if not ignore:
                     note = f'Resource "{name}" does not exist'
-                    raise FrictionlessException(errors.StorageError(note=note))
+                    raise FrictionlessException(note)
                 continue
 
             # Remove from CKAN
@@ -290,7 +288,7 @@ class CkanStorage(Storage):
         ckan_error = get_ckan_error(response)
         if ckan_error:
             note = "CKAN returned an error: " + json.dumps(ckan_error)
-            raise FrictionlessException(errors.StorageError(note=note))
+            raise FrictionlessException(note)
         return response
 
 

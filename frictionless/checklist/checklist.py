@@ -11,6 +11,7 @@ from .. import helpers
 from .. import errors
 
 if TYPE_CHECKING:
+    from ..error import Error
     from ..resource import Resource
 
 
@@ -101,6 +102,14 @@ class Checklist(Metadata):
                 check.connect(resource)
                 checks.append(check)
         return checks
+
+    # Filter
+
+    def filter(self, error: Error) -> bool:
+        if error.tags.count("#data"):
+            if not error.code in self.scope:
+                return False
+        return True
 
     # Metadata
 
