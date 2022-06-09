@@ -53,6 +53,27 @@ def test_pandas_parser_write_bug_1105():
     }
 
 
+def test_pandas_nan_in_integer_resource_column():
+    # see issue 1109
+    res = Resource(
+        [
+            ["int", "number", "string"],
+            ["1", "2.3", "string"],
+            ["", "4.3", "string"],
+            ["3", "3.14", "string"],
+        ]
+    )
+    df = res.to_pandas()
+    assert all(df.dtypes.values == pd.array([pd.Int64Dtype(), float, object]))
+
+
+def test_pandas_nan_in_integer_csv_column():
+    # see issue 1109
+    res = Resource("data/issue-1109.csv")
+    df = res.to_pandas()
+    assert all(df.dtypes.values == pd.array([pd.Int64Dtype(), float, object]))
+
+
 def test_pandas_parser_write_types():
     source = Package("data/storage/types.json").get_resource("types")
     target = source.write(format="pandas")
