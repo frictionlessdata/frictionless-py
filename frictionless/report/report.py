@@ -191,7 +191,6 @@ class Report(Metadata):
             validation_content += f"\n# {'-'*len(prefix)}"
             validation_content += f"\n# {prefix}: {source} {suffix}"
             validation_content += f"\n# {'-'*len(prefix)}"
-            error_list = {}
             error_content = []
             if task.errors:
                 for error in task.errors:
@@ -203,41 +202,19 @@ class Report(Metadata):
                             error.message,
                         ]
                     )
-                    # error list for summary
-                    error_title = f"{error.name} ({error.code})"
-                    if error_title not in error_list:
-                        error_list[error_title] = 0
-                    error_list[error_title] += 1
-                    if task.partial:
-                        last_row_checked = error.get("rowPosition", "")
             # Validate
             error_content = _wrap_text_to_colwidths(error_content)
-            rows_checked = last_row_checked if task.partial else None
-            summary_content = self.validation_summary(
-                source,
-                basepath=task.resource.basepath,
-                time_taken=self.time,
-                rows_checked=rows_checked,
-                error_list=error_list,
-            )
             validation_content += "\n\n"
             validation_content += "## Summary "
             validation_content += "\n\n"
             if task.partial:
-                validation_content += "\n\n"
                 validation_content += (
                     "The document was partially validated because of one of the limits\n"
                 )
-                validation_content += "* limit errors"
+                validation_content += "* limit errors \n"
                 validation_content += "* memory Limit"
                 validation_content += "\n\n"
-            validation_content += str(
-                tabulate(
-                    summary_content,
-                    headers=["Description", "Size/Name/Count"],
-                    tablefmt="grid",
-                )
-            )
+            validation_content += task.to_summary()
             validation_content += "\n\n"
             # errors
             if task.errors:
@@ -253,35 +230,6 @@ class Report(Metadata):
                 validation_content += "\n\n"
 
         return validation_content
-
-    def validation_summary(
-        self,
-        source: str,
-        time_taken: str,
-        basepath: str = None,
-        rows_checked: int = None,
-        error_list: List = None,
-    ) -> List:
-        """Generate summary for validation task"""
-        file_path = os.path.join(basepath, source) if basepath else source
-        file_size = "N/A"
-        unit = None
-        if os.path.exists(file_path):
-            file_size = os.path.getsize(file_path)
-            unit = helpers.format_bytes(file_size)
-        content = [
-            [f"File name { '' if unit else '(Not Found)' }", source],
-            [f"File size { f'({unit})' if unit else '' }", file_size],
-            ["Total Time Taken (sec)", time_taken],
-        ]
-        if rows_checked:
-            content.append(["Rows Checked(Partial)**", rows_checked])
-        if error_list:
-            content.append(["Total Errors", sum(error_list.values())])
-        for code, count in error_list.items():
-            content.append([code, count])
-
-        return content
 
     # Metadata
 
@@ -447,6 +395,63 @@ class ReportTask(Metadata):
             context.update(error)
             result.append([context.get(prop) for prop in spec])
         return result
+
+    # Summary
+
+    def to_summary(
+        self,
+    ) -> str:
+        """Generate summary for validation task"
+
+        Returns:
+            str: validation summary
+        """
+        source = self.resource.path or self.resource.name
+        # For zipped resources append file name
+        if self.resource.innerpath:
+            source = f"{source} => {self.resource.innerpath}"
+        file_path = (
+            os.path.join(self.resource.basepath, source)
+            if self.resource.basepath
+            else source
+        )
+        # Prepare error lists and last row checked(in case of partial validation)
+        error_list = {}
+        for error in self.errors:
+            error_title = f"{error.name} ({error.code})"
+            if error_title not in error_list:
+                error_list[error_title] = 0
+            error_list[error_title] += 1
+            if self.partial:
+                last_row_checked = error.get("rowPosition", "")
+        rows_checked = last_row_checked if self.partial else None
+        file_size = "N/A"
+        unit = None
+        if os.path.exists(file_path):
+            file_size = os.path.getsize(file_path)
+            unit = helpers.format_bytes(file_size)
+        not_found_text = ""
+        if not unit:
+            if not self.resource.innerpath:
+                not_found_text = "(Not Found)"
+        content = [
+            [f"File name {not_found_text}", source],
+            [f"File size { f'({unit})' if unit else '' }", file_size],
+            ["Total Time Taken (sec)", self.time],
+        ]
+        if rows_checked:
+            content.append(["Rows Checked(Partial)**", rows_checked])
+        if error_list:
+            content.append(["Total Errors", sum(error_list.values())])
+        for code, count in error_list.items():
+            content.append([code, count])
+        return str(
+            tabulate(
+                content,
+                headers=["Description", "Size/Name/Count"],
+                tablefmt="grid",
+            )
+        )
 
     # Metadata
 

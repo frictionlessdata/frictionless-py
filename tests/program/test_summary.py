@@ -6,7 +6,7 @@ runner = CliRunner()
 IS_UNIX = not helpers.is_platform("windows")
 
 
-def test_program_error_not_found():
+def test_program_summary_error_not_found():
     result = runner.invoke(program, "summary data/countriess.csv")
     assert result.exit_code == 1
     assert (
@@ -87,17 +87,12 @@ def test_program_summary_validate():
     assert result.stdout.count("# invalid:")
 
 
-def test_program_summary_validate_summary_header_row():
-    result = runner.invoke(program, "summary data/countries.csv")
-    assert result.exit_code == 1
-    assert result.stdout.count("Description                 | Size/Name/Count")
-
-
 def test_program_summary_validate_summary():
     result = runner.invoke(program, "summary data/countries.csv")
     assert result.exit_code == 1
     assert (
-        result.stdout.count("File name                   |")
+        result.stdout.count("Description                 | Size/Name/Count")
+        and result.stdout.count("File name                   | data/countries.csv")
         and result.stdout.count("File size (bytes)           | 143")
         and result.stdout.count("Total Time Taken (sec)      |")
         and result.stdout.count("Total Errors                | 4")
@@ -108,7 +103,7 @@ def test_program_summary_validate_summary():
 
 def test_program_summary_validate_errors():
     result = runner.invoke(program, "summary data/countries.csv")
-    output_file_path = "data/fixtures/program/summary/errors.txt"
+    output_file_path = "data/fixtures/summary/multiline-errors.txt"
     with open(output_file_path, encoding="utf-8") as file:
         expected = file.read()
     assert result.exit_code == 1

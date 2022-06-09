@@ -38,7 +38,6 @@ def program_summary(source: str = common.source):
         raise typer.Exit(1)
     typer.secho("")
     typer.secho("# Validate ", bold=True)
-    typer.secho("")
     typer.secho(str(report.to_summary()))
 
     # Return retcode

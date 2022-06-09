@@ -337,3 +337,69 @@ def test_schema_not_supported_type_issue_goodatbles_304():
     schema = Schema({"fields": [{"name": "name"}, {"name": "age", "type": "bad"}]})
     assert schema.metadata_valid is False
     assert schema.fields[1] == {"name": "age", "type": "bad"}
+
+
+def test_schema_summary():
+    schema = Schema(DESCRIPTOR_MAX)
+    output = schema.to_summary()
+    assert (
+        output.count("| name       | type    | required   |")
+        and output.count("| id         | string  | True       |")
+        and output.count("| height     | number  |            |")
+        and output.count("| age        | integer |            |")
+        and output.count("| name       | string  |            |")
+    )
+
+
+def test_schema_summary_without_required():
+    descriptor = {
+        "fields": [
+            {"name": "test_1", "type": "string", "format": "default"},
+            {"name": "test_2", "type": "string", "format": "default"},
+            {"name": "test_3", "type": "string", "format": "default"},
+        ]
+    }
+    schema = Schema(descriptor)
+    output = schema.to_summary()
+    assert (
+        output.count("| name   | type   | required   |")
+        and output.count("| test_1 | string |            |")
+        and output.count("| test_2 | string |            |")
+        and output.count("| test_3 | string |            |")
+    )
+
+
+def test_schema_summary_without_type_missing_for_some_fields():
+    descriptor = {
+        "fields": [
+            {"name": "id", "format": "default"},
+            {"name": "name", "type": "string", "format": "default"},
+            {"name": "age", "format": "default"},
+        ]
+    }
+    schema = Schema(descriptor)
+    output = schema.to_summary()
+    assert (
+        output.count("| name   | type   | required   |")
+        and output.count("| id     | any    |            |")
+        and output.count("| name   | string |            |")
+        and output.count("| age    | any    |            |")
+    )
+
+
+def test_schema_summary_with_name_missing_for_some_fields():
+    descriptor = {
+        "fields": [
+            {"type": "int", "format": "default"},
+            {"type": "int", "format": "default"},
+            {"name": "name", "type": "string", "format": "default"},
+        ]
+    }
+    schema = Schema(descriptor)
+    output = schema.to_summary()
+    assert (
+        output.count("| name   | type   | required   |")
+        and output.count("| int    | int    |            |")
+        and output.count("| int    | int    |            |")
+        and output.count("| name   | string |            |")
+    )

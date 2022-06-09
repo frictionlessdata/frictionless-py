@@ -1,6 +1,5 @@
 import json
 import yaml
-import re
 from typer.testing import CliRunner
 from frictionless import Metadata, Detector, program, validate
 
@@ -233,9 +232,8 @@ def test_program_validate_long_error_messages_976():
     output_file_path = "data/fixtures/cli/long-error-messages-976.txt"
     with open(output_file_path, encoding="utf-8") as file:
         expected = file.read()
-    output = re.sub(r"(\d+)\.(.*)\d", "", result.stdout)
     assert result.exit_code == 1
-    assert output.strip() == expected.strip()
+    assert result.stdout.count(expected.strip())
 
 
 def test_program_validate_partial_validation_info_933():
