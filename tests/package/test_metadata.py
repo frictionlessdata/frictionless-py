@@ -7,7 +7,7 @@ IS_UNIX = not helpers.is_platform("windows")
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
 
 
-# Validate
+# Metadata
 
 
 @pytest.mark.vcr

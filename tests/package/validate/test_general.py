@@ -1,7 +1,7 @@
 import json
 import pytest
 import pathlib
-from frictionless import Package, Resource, Schema, Field, Detector, validate, helpers
+from frictionless import Package, Resource, Schema, Field, Detector, helpers
 
 
 IS_UNIX = not helpers.is_platform("windows")
@@ -11,19 +11,22 @@ IS_UNIX = not helpers.is_platform("windows")
 
 
 def test_validate_package():
-    report = validate({"resources": [{"path": "data/table.csv"}]})
+    package = Package({"resources": [{"path": "data/table.csv"}]})
+    report = package.validate()
     assert report.valid
 
 
 def test_validate_package_from_dict():
     with open("data/package/datapackage.json") as file:
-        report = validate(json.load(file), basepath="data/package")
+        package = Package(json.load(file), basepath="data/package")
+        report = package.validate()
         assert report.valid
 
 
 def test_validate_package_from_dict_invalid():
     with open("data/invalid/datapackage.json") as file:
-        report = validate(json.load(file), basepath="data/invalid")
+        package = Package(json.load(file), basepath="data/invalid")
+        report = package.validate()
         assert report.flatten(
             ["taskPosition", "rowPosition", "fieldPosition", "code"]
         ) == [
@@ -34,12 +37,14 @@ def test_validate_package_from_dict_invalid():
 
 
 def test_validate_package_from_path():
-    report = validate("data/package/datapackage.json")
+    package = Package("data/package/datapackage.json")
+    report = package.validate()
     assert report.valid
 
 
 def test_validate_package_from_path_invalid():
-    report = validate("data/invalid/datapackage.json")
+    package = Package("data/invalid/datapackage.json")
+    report = package.validate()
     assert report.flatten(["taskPosition", "rowPosition", "fieldPosition", "code"]) == [
         [1, 3, None, "blank-row"],
         [1, 3, None, "primary-key-error"],
@@ -48,12 +53,14 @@ def test_validate_package_from_path_invalid():
 
 
 def test_validate_package_from_zip():
-    report = validate("data/package.zip", type="package")
+    package = Package("data/package.zip")
+    report = package.validate()
     assert report.valid
 
 
 def test_validate_package_from_zip_invalid():
-    report = validate("data/package-invalid.zip", type="package")
+    package = Package("data/package-invalid.zip")
+    report = package.validate()
     assert report.flatten(["taskPosition", "rowPosition", "fieldPosition", "code"]) == [
         [1, 3, None, "blank-row"],
         [1, 3, None, "primary-key-error"],
@@ -62,7 +69,7 @@ def test_validate_package_from_zip_invalid():
 
 
 def test_validate_package_with_non_tabular():
-    report = validate(
+    package = Package(
         {
             "resources": [
                 {"path": "data/table.csv"},
@@ -70,11 +77,15 @@ def test_validate_package_with_non_tabular():
             ]
         },
     )
+    report = package.validate()
     assert report.valid
 
 
+# TODO: move to actions.validate
+@pytest.mark.skip
 def test_validate_package_invalid_descriptor_path():
-    report = validate("bad/datapackage.json")
+    package = Package("bad/datapackage.json")
+    report = package.validate()
     assert report["stats"]["errors"] == 1
     error = report["errors"][0]
     assert error["code"] == "package-error"
@@ -84,7 +95,8 @@ def test_validate_package_invalid_descriptor_path():
 
 
 def test_validate_package_invalid_package():
-    report = validate({"resources": [{"path": "data/table.csv", "schema": "bad"}]})
+    package = Package({"resources": [{"path": "data/table.csv", "schema": "bad"}]})
+    report = package.validate()
     assert report["stats"]["errors"] == 1
     error = report["errors"][0]
     assert error["code"] == "schema-error"
@@ -92,7 +104,8 @@ def test_validate_package_invalid_package():
 
 
 def test_validate_package_invalid_package_original():
-    report = validate({"resources": [{"path": "data/table.csv"}]}, original=True)
+    package = Package({"resources": [{"path": "data/table.csv"}]})
+    report = package.validate(original=True)
     assert report.flatten(["code", "note"]) == [
         [
             "resource-error",
@@ -102,7 +115,8 @@ def test_validate_package_invalid_package_original():
 
 
 def test_validate_package_invalid_table():
-    report = validate({"resources": [{"path": "data/invalid.csv"}]})
+    package = Package({"resources": [{"path": "data/invalid.csv"}]})
+    report = package.validate()
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [None, 3, "blank-label"],
         [None, 4, "duplicate-label"],
@@ -116,12 +130,14 @@ def test_validate_package_invalid_table():
 
 
 def test_validate_package_pathlib_source():
-    report = validate(pathlib.Path("data/package/datapackage.json"))
+    package = Package(pathlib.Path("data/package/datapackage.json"))
+    report = package.validate()
     assert report.valid
 
 
 def test_validate_package_infer():
-    report = validate("data/infer/datapackage.json")
+    package = Package("data/infer/datapackage.json")
+    report = package.validate()
     assert report.valid
 
 
@@ -138,27 +154,50 @@ def test_validate_package_dialect_header_false():
             }
         ]
     }
-    report = validate(descriptor)
+    package = Package(descriptor)
+    report = package.validate()
     assert report.valid
 
 
 def test_validate_package_with_schema_as_string():
-    report = validate(
+    package = Package(
         {"resources": [{"path": "data/table.csv", "schema": "data/schema.json"}]}
     )
+    report = package.validate()
     assert report.valid
 
 
-# Issues
+def test_validate_package_single_resource():
+    package = Package("data/datapackage.json")
+    report = package.validate(resource_name="number-two")
+    assert report.valid
+
+
+def test_validate_package_single_resource_wrong_resource_name():
+    package = Package("data/datapackage.json")
+    report = package.validate(resource_name="number-twoo")
+    assert report.flatten(["code", "message"]) == [
+        [
+            "package-error",
+            'The data package has an error: resource "number-twoo" does not exist',
+        ]
+    ]
+
+
+# Problems
 
 
 def test_validate_package_mixed_issue_170():
-    report = validate("data/infer/datapackage.json")
+    package = Package("data/infer/datapackage.json")
+    report = package.validate()
     assert report.valid
 
 
+# TODO: move to actions.validate
+@pytest.mark.skip
 def test_validate_package_invalid_json_issue_192():
-    report = validate("data/invalid.json", type="package")
+    package = Package("data/invalid.json")
+    report = package.validate()
     assert report.flatten(["code", "note"]) == [
         [
             "package-error",
@@ -180,7 +219,8 @@ def test_validate_package_composite_primary_key_unique_issue_215():
             }
         ],
     }
-    report = validate(source)
+    package = Package(source)
+    report = package.validate()
     assert report.valid
 
 
@@ -197,7 +237,8 @@ def test_validate_package_composite_primary_key_not_unique_issue_215():
             }
         ],
     }
-    report = validate(descriptor, skip_errors=["duplicate-row"])
+    package = Package(descriptor)
+    report = package.validate(skip_errors=["duplicate-row"])
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [3, None, "primary-key-error"],
     ]
@@ -205,13 +246,15 @@ def test_validate_package_composite_primary_key_not_unique_issue_215():
 
 def test_validate_package_geopoint_required_constraint_issue_231():
     # We check here that it doesn't raise exceptions
-    report = validate("data/geopoint/datapackage.json")
+    package = Package("data/geopoint/datapackage.json")
+    report = package.validate()
     assert not report.valid
 
 
 def test_validate_package_number_test_issue_232():
     # We check here that it doesn't raise exceptions
-    report = validate("data/number/datapackage.json")
+    package = Package("data/number/datapackage.json")
+    report = package.validate()
     assert not report.valid
 
 
@@ -236,7 +279,8 @@ def test_validate_package_with_schema_issue_348():
             }
         ]
     }
-    report = validate(descriptor)
+    package = Package(descriptor)
+    report = package.validate()
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [None, 4, "missing-label"],
         [2, 4, "missing-cell"],
@@ -248,12 +292,15 @@ def test_validate_package_with_schema_issue_348():
 @pytest.mark.vcr
 def test_validate_package_uppercase_format_issue_494():
     with pytest.warns(UserWarning):
-        report = validate("data/issue-494.package.json")
+        package = Package("data/issue-494.package.json")
+        report = package.validate()
         assert report.valid
         assert report.stats["tasks"] == 1
 
 
 # See also: https://github.com/frictionlessdata/project/discussions/678
+# TODO: recover
+@pytest.mark.skip
 def test_validate_package_using_detector_schema_sync_issue_847():
     package = Package(
         resources=[
@@ -263,19 +310,22 @@ def test_validate_package_using_detector_schema_sync_issue_847():
             ),
         ]
     )
+    report = package.validate()
     for resource in package.resources:
         resource.detector = Detector(schema_sync=True)
-    report = validate(package)
+    package = Package(package)
     assert report.valid
 
 
 def test_validate_package_descriptor_type_package():
-    report = validate(descriptor="data/package/datapackage.json")
+    package = Package(descriptor="data/package/datapackage.json")
+    report = package.validate()
     assert report.valid
 
 
 def test_validate_package_descriptor_type_package_invalid():
-    report = validate(descriptor="data/invalid/datapackage.json")
+    package = Package(descriptor="data/invalid/datapackage.json")
+    report = package.validate()
     assert report.flatten() == [
         [1, 3, None, "blank-row"],
         [1, 3, None, "primary-key-error"],
@@ -284,13 +334,54 @@ def test_validate_package_descriptor_type_package_invalid():
 
 
 def test_validate_package_with_diacritic_symbol_issue_905():
-    report = validate(descriptor="data/issue-905/datapackage.json")
+    package = Package(descriptor="data/issue-905/datapackage.json")
+    report = package.validate()
     assert report.stats["tasks"] == 3
 
 
 def test_validate_package_with_resource_data_is_a_string_issue_977():
-    report = validate(descriptor="data/issue-977.json", type="package")
-    print(report)
+    package = Package(descriptor="data/issue-977.json")
+    report = package.validate()
     assert report.flatten() == [
         [None, None, None, "package-error"],
+    ]
+
+
+def test_validate_package_metadata_errors_with_missing_values_993():
+    package = Package(descriptor="data/package-with-missingvalues-993.json")
+    assert package.metadata_errors[0].code == "package-error"
+    assert (
+        package.metadata_errors[0].note
+        == '"missingValues" should be set as "resource.schema.missingValues" (not "package.missingValues").'
+    )
+
+
+def test_validate_package_metadata_errors_with_fields_993():
+    package = Package(descriptor="data/package-with-fields-993.json")
+    assert package.metadata_errors[0].code == "package-error"
+    assert (
+        package.metadata_errors[0].note
+        == '"fields" should be set as "resource.schema.fields" (not "package.fields").'
+    )
+
+
+def test_validate_package_errors_with_missing_values_993():
+    package = Package(descriptor="data/package-with-missingvalues-993.json")
+    report = package.validate()
+    assert report.flatten(["code", "message"]) == [
+        [
+            "package-error",
+            'The data package has an error: "missingValues" should be set as "resource.schema.missingValues" (not "package.missingValues").',
+        ]
+    ]
+
+
+def test_validate_package_errors_with_fields_993():
+    package = Package(descriptor="data/package-with-fields-993.json")
+    report = package.validate()
+    assert report.flatten(["code", "message"]) == [
+        [
+            "package-error",
+            'The data package has an error: "fields" should be set as "resource.schema.fields" (not "package.fields").',
+        ]
     ]
