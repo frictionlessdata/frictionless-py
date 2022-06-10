@@ -52,7 +52,7 @@ compression = Option(
     help="Specify compression  [default: inferred]",
 )
 
-# Controls
+# Control
 
 control = Option(
     default=None,
@@ -220,6 +220,34 @@ schema_sync = Option(
     help="Sync the schema based on the data's header row",
 )
 
+# Package
+
+resource_name = Option(
+    default=None,
+    help="Name of resource to validate",
+)
+
+# Checklist
+
+checklist = Option(
+    default=None,
+    help="An inline JSON object or a path to a JSON file that provides the checklist",
+)
+
+# Pipeline
+
+pipeline = Option(
+    default=None,
+    help="An inline JSON object or a path to a JSON file that provides the pipeline",
+)
+
+# Server
+
+port = Option(
+    settings.DEFAULT_SERVER_PORT,
+    help="Specify server port",
+)
+
 # Command
 
 basepath = Option(
@@ -280,18 +308,4 @@ json = Option(
 csv = Option(
     default=False,
     help="Return in CSV format",
-)
-
-# Resource
-
-resource_name = Option(
-    default=None,
-    help="Name of resource to validate",
-)
-
-# Server
-
-port = Option(
-    settings.DEFAULT_SERVER_PORT,
-    help="Specify server port",
 )

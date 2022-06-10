@@ -2,6 +2,7 @@
 import sys
 import typer
 from ..exception import FrictionlessException
+from ..pipeline import Pipeline
 from ..actions import transform
 from .main import program
 from . import common
@@ -11,6 +12,8 @@ from . import common
 def program_transform(
     # Source
     source: str = common.source,
+    # Pipeline
+    pipeline: str = common.pipeline,
     # Command
     yaml: bool = common.yaml,
     json: bool = common.json,
@@ -34,35 +37,14 @@ def program_transform(
         typer.secho(message, err=True, fg=typer.colors.RED, bold=True)
         raise typer.Exit(1)
 
+    # TODO: it's a dummy implemenation (we need a proper one)
+    # TODO: support for a package
     # Transform source
     try:
-        status = transform(source)
-        if not status.valid:
-            # NOTE: improve how we handle/present errors
-            groups = [status.errors] + list(map(lambda task: task.errors, status.tasks))
-            for group in groups:
-                for error in group:
-                    raise FrictionlessException(error)
+        pipeline = Pipeline(pipeline)
+        resource = transform(source, pipeline=pipeline)
+        typer.secho("")
+        typer.secho(resource.to_petl())
     except Exception as exception:
         typer.secho(str(exception), err=True, fg=typer.colors.RED, bold=True)
         raise typer.Exit(1)
-
-    # Return JSON
-    if json:
-        content = status.to_json()
-        typer.secho(content)
-        raise typer.Exit()
-
-    # Return YAML
-    if yaml:
-        content = status.to_yaml().strip()
-        typer.secho(content)
-        raise typer.Exit()
-
-    # Return default
-    if is_stdin:
-        source = "stdin"
-    prefix = "success"
-    typer.secho(f"# {'-'*len(prefix)}", bold=True)
-    typer.secho(f"# {prefix}: {source}", bold=True)
-    typer.secho(f"# {'-'*len(prefix)}", bold=True)
