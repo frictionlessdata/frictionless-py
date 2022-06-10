@@ -200,3 +200,87 @@ def test_program_extract_dialect_keys_option():
     assert json.loads(result.stdout) == extract(
         path=file, dialect={"keys": ["name", "id"]}
     )
+
+
+def test_program_extract_valid_rows_1004():
+    result = runner.invoke(program, "extract data/countries.csv --valid")
+    assert result.exit_code == 0
+    assert (
+        result.stdout.count("1  Ireland      Britain  67")
+        and result.stdout.count("3  22           Germany  83")
+        and result.stdout.count("4               Italy    60")
+    )
+
+
+def test_program_extract_invalid_rows_1004():
+    result = runner.invoke(program, "extract data/countries.csv --no-valid")
+    assert result.exit_code == 0
+    assert result.stdout.count("2  3            France  n/a") and result.stdout.count(
+        "5                          "
+    )
+
+
+# Here test with other existing args to ensure it works as expected with other arguments
+# def test_program_extract_without_valid_flag_1004():
+#     result = runner.invoke(program, "extract data/countries.csv")
+#     assert result.exit_code == 0
+#     assert (
+#         result.stdout.count("1  Ireland      Britain  67")
+#         and result.stdout.count("2  3            France   n/a")
+#         and result.stdout.count("3  22           Germany  83")
+#         and result.stdout.count("4               Italy    60")
+#     )
+
+
+def test_program_extract_valid_rows_with_no_valid_rows_1004():
+    result = runner.invoke(program, "extract data/invalid.csv --valid")
+    assert result.exit_code == 0
+    assert result.stdout.count("data: data/invalid.csv") and result.stdout.count(
+        "No valid rows"
+    )
+
+
+def test_program_extract_invalid_rows_with_no_invalid_rows_1004():
+    result = runner.invoke(program, "extract data/capital-valid.csv --no-valid")
+    assert result.exit_code == 0
+    assert result.stdout.count("data: data/capital-valid.csv") and result.stdout.count(
+        "No invalid rows"
+    )
+
+
+def test_program_extract_valid_rows_from_datapackage_with_multiple_resources_1004():
+    result = runner.invoke(
+        program, "extract data/issue-1004/issue-1004.package.json --valid"
+    )
+    assert result.exit_code == 0
+    assert (
+        result.stdout.count("data: data/issue-1004/issue-1004-data1.csv")
+        and result.stdout.count("id  neighbor_id  name     population")
+        and result.stdout.count("1  Ireland      Britain  67")
+        and result.stdout.count("3  22           Germany  83")
+        and result.stdout.count("4               Italy    60")
+    )
+    assert result.stdout.count(
+        "data: data/issue-1004/issue-1004-data2.csv"
+    ) and result.stdout.count("No valid rows")
+
+
+def test_program_extract_invalid_rows_from_datapackage_with_multiple_resources_1004():
+    result = runner.invoke(
+        program, "extract data/issue-1004/issue-1004.package.json --no-valid"
+    )
+    assert result.exit_code == 0
+    assert (
+        result.stdout.count("data: data/issue-1004/issue-1004-data1.csv")
+        and result.stdout.count("id  neighbor_id  name    population")
+        and result.stdout.count("2  3            France  n/a")
+        and result.stdout.count("5                          ")
+    )
+    assert (
+        result.stdout.count("data: data/issue-1004/issue-1004-data2.csv")
+        and result.stdout.count("id  name     country  city")
+        and result.stdout.count("1  english               ")
+        and result.stdout.count("1  english               ")
+        and result.stdout.count("                         ")
+        and result.stdout.count("2  german         1     2")
+    )

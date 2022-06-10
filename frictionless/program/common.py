@@ -286,3 +286,10 @@ resource_name = Option(
     default=None,
     help="Name of resource to validate",
 )
+
+# Row
+
+valid_rows = Option(
+    default=None,
+    help="Return valid or invalid rows",
+)

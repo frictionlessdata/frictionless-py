@@ -4,6 +4,7 @@ from ..package import Package
 from ..exception import FrictionlessException
 from ..system import system
 from .. import errors
+from .. import helpers
 
 
 def extract(source=None, *, type=None, process=None, stream=False, **options):
@@ -60,11 +61,13 @@ def extract_package(
         message = 'Function "extract_package" is deprecated (use "package.extract").'
         warnings.warn(message, UserWarning)
     result = {}
+    valid = options.pop("valid") if "valid" in options else None
+    row_options = helpers.remove_non_values(dict(valid=valid))
     native = isinstance(source, Package)
     package = source.to_copy() if native else Package(source, **options)
     for number, resource in enumerate(package.resources, start=1):
         key = resource.fullpath if not resource.memory else f"memory{number}"
-        data = read_row_stream(resource)
+        data = read_row_stream(resource, **row_options)
         data = (process(row) for row in data) if process else data
         result[key] = data if stream else list(data)
     return result
@@ -91,9 +94,11 @@ def extract_resource(
     if deprecate:
         message = 'Function "extract_resource" is deprecated (use "resource.extract").'
         warnings.warn(message, UserWarning)
+    valid = options.pop("valid") if "valid" in options else None
+    row_options = helpers.remove_non_values(dict(valid=valid))
     native = isinstance(source, Resource)
     resource = source.to_copy() if native else Resource(source, **options)
-    data = read_row_stream(resource)
+    data = read_row_stream(resource, **row_options)
     data = (process(row) for row in data) if process else data
     return data if stream else list(data)
 
@@ -101,7 +106,10 @@ def extract_resource(
 # Internal
 
 
-def read_row_stream(resource):
+def read_row_stream(resource, **options):
     with resource:
         for row in resource.row_stream:
+            if "valid" in options:
+                if options["valid"] != row.valid:
+                    continue
             yield row

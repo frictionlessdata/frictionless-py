@@ -62,6 +62,8 @@ def program_extract(
     yaml: bool = common.yaml,
     json: bool = common.json,
     csv: bool = common.csv,
+    # Row
+    valid: bool = common.valid_rows,
 ):
     """
     Extract a data source.
@@ -163,6 +165,8 @@ def program_extract(
             basepath=basepath,
             detector=detector,
             trusted=trusted,
+            # Row
+            valid=valid,
         )
     )
 
@@ -212,6 +216,10 @@ def program_extract(
         typer.secho(f"# {'-'*len(prefix)}", bold=True)
         typer.secho("")
         subdata = helpers.rows_to_data(rows)
+        if len(subdata) <= 0:
+            valid_text = "valid" if valid else "invalid"
+            typer.secho(str(f"No {valid_text} rows"))
+            continue
         typer.secho(str(petl.util.vis.lookall(subdata, vrepr=str, style="simple")))
         if number < len(normdata):
             typer.secho("")
