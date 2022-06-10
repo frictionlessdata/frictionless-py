@@ -208,7 +208,6 @@ def test_validate_pick_errors_tags():
     ]
 
 
-@pytest.mark.skip
 def test_validate_skip_errors():
     resource = Resource("data/invalid.csv")
     checklist = Checklist(skip_errors=["blank-label", "blank-row"])
@@ -237,7 +236,6 @@ def test_validate_skip_errors_tags():
     ]
 
 
-@pytest.mark.skip
 def test_validate_invalid_limit_errors():
     resource = Resource("data/invalid.csv")
     checklist = Checklist(limit_errors=3)
@@ -250,7 +248,6 @@ def test_validate_invalid_limit_errors():
     ]
 
 
-@pytest.mark.skip
 def test_validate_structure_errors_with_limit_errors():
     resource = Resource("data/structure-errors.csv")
     checklist = Checklist(limit_errors=3)
@@ -316,9 +313,6 @@ def test_validate_custom_check_with_arguments():
 
     # Create check
     class custom(Check):
-        code = "custom-check"
-        Errors = [errors.BlankRowError]
-
         def __init__(self, descriptor=None, *, row_position=None):
             self.setinitial("rowPosition", row_position)
             super().__init__(descriptor)
