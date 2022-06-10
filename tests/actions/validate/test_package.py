@@ -3,6 +3,7 @@ import pytest
 import pathlib
 from copy import deepcopy
 from frictionless import Package, Resource, Schema, Field, Detector, validate, helpers
+from frictionless import FrictionlessException
 
 
 # General
@@ -71,17 +72,18 @@ def test_validate_package_with_non_tabular():
     assert report.valid
 
 
+# TODO: figure out how to handle errors like this
 @pytest.mark.skip
 def test_validate_package_invalid_descriptor_path():
-    report = validate("bad/datapackage.json")
-    assert report["stats"]["errors"] == 1
-    error = report["errors"][0]
-    assert error["code"] == "package-error"
-    assert error["note"].count("[Errno 2]") and error["note"].count(
-        "bad/datapackage.json"
-    )
+    with pytest.raises(FrictionlessException) as excinfo:
+        report = validate("bad/datapackage.json")
+    error = excinfo.value.error
+    assert error.code == "package-error"
+    assert error.note.count("[Errno 2]")
+    assert error.note.count("bad/datapackage.json")
 
 
+# TODO: figure out how to handle errors like this (wrap into report or raise)
 @pytest.mark.skip
 def test_validate_package_invalid_package():
     report = validate({"resources": [{"path": "data/table.csv", "schema": "bad"}]})
@@ -394,6 +396,7 @@ def test_validate_package_mixed_issue_170():
     assert report.valid
 
 
+# TODO: figure out how to handle errors like this (wrap into report or raise)
 @pytest.mark.skip
 def test_validate_package_invalid_json_issue_192():
     report = validate("data/invalid.json", type="package")
@@ -492,7 +495,6 @@ def test_validate_package_uppercase_format_issue_494():
 
 
 # See also: https://github.com/frictionlessdata/project/discussions/678
-@pytest.mark.skip
 def test_validate_package_using_detector_schema_sync_issue_847():
     package = Package(
         resources=[
@@ -534,12 +536,12 @@ def test_validate_package_with_resource_data_is_a_string_issue_977():
     ]
 
 
-@pytest.mark.skip
 def test_validate_package_single_resource_221():
     report = validate("data/datapackage.json", resource_name="number-two")
     assert report.valid
 
 
+# TODO: figure out how to handle errors like this
 @pytest.mark.skip
 def test_validate_package_single_resource_wrong_resource_name_221():
     report = validate("data/datapackage.json", resource_name="number-twoo")

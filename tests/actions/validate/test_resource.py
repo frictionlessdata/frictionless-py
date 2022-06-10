@@ -11,6 +11,7 @@ def test_validate():
     assert report.valid
 
 
+# TODO: figure out how to handle errors like this
 @pytest.mark.skip
 def test_validate_invalid_source():
     report = validate("bad.json", type="resource")
@@ -28,6 +29,7 @@ def test_validate_invalid_resource():
     assert note.count("[Errno 2]") and note.count("bad")
 
 
+# TODO: figure out how to handle errors like this
 @pytest.mark.skip
 def test_validate_forbidden_value_task_error():
     report = validate(
@@ -143,7 +145,6 @@ def test_validate_blank_cell_not_required():
     assert report.valid
 
 
-@pytest.mark.skip
 def test_validate_no_data():
     report = validate("data/empty.csv")
     assert report.flatten(["code", "note"]) == [
@@ -161,6 +162,7 @@ def test_validate_no_rows_with_compression():
     assert report.valid
 
 
+# TODO: figure out how to handle errors like this
 @pytest.mark.skip
 def test_validate_task_error():
     report = validate("data/table.csv", limit_rows="bad")
@@ -169,7 +171,6 @@ def test_validate_task_error():
     ]
 
 
-@pytest.mark.skip
 def test_validate_source_invalid():
     # Reducing sample size to get raise on iter, not on open
     detector = Detector(sample_size=1)
@@ -195,7 +196,10 @@ def test_validate_scheme():
 def test_validate_scheme_invalid():
     report = validate("bad://data/table.csv")
     assert report.flatten(["code", "note"]) == [
-        ["scheme-error", 'cannot create loader "bad". Try installing "frictionless-bad"'],
+        [
+            "scheme-error",
+            'scheme "bad" is not supported. Try installing "frictionless-bad"',
+        ],
     ]
 
 
@@ -456,7 +460,6 @@ def test_validate_layout_invalid_limit_rows():
     ]
 
 
-@pytest.mark.skip
 def test_validate_layout_structure_errors_with_limit_rows():
     layout = Layout(limit_rows=3)
     report = validate("data/structure-errors.csv", layout=layout)
@@ -497,7 +500,6 @@ def test_validate_schema_extra_headers_and_cells():
     ]
 
 
-@pytest.mark.skip
 def test_validate_schema_multiple_errors():
     source = "data/schema-errors.csv"
     schema = "data/schema-valid.json"
@@ -967,7 +969,6 @@ def test_validate_skip_errors_tags():
     ]
 
 
-@pytest.mark.skip
 def test_validate_invalid_limit_errors():
     report = validate("data/invalid.csv", limit_errors=3)
     assert report.task.partial
@@ -978,7 +979,6 @@ def test_validate_invalid_limit_errors():
     ]
 
 
-@pytest.mark.skip
 def test_validate_structure_errors_with_limit_errors():
     report = validate("data/structure-errors.csv", limit_errors=3)
     assert report.task.partial
@@ -1055,6 +1055,7 @@ def test_validate_custom_check_with_arguments():
     ]
 
 
+# TODO: figure out how to handle errors like this
 @pytest.mark.skip
 def test_validate_custom_check_bad_name():
     report = validate("data/table.csv", checks=[{"code": "bad"}])  # type: ignore
@@ -1063,6 +1064,7 @@ def test_validate_custom_check_bad_name():
     ]
 
 
+# TODO: figure out how to handle errors like this
 @pytest.mark.skip
 def test_validate_resource_descriptor_type_invalid():
     report = validate(descriptor="data/table.csv")
@@ -1198,7 +1200,7 @@ def test_validate_resource_duplicate_labels_with_sync_schema_issue_910():
     )
     assert report.flatten(["code", "note"]) == [
         [
-            "general-error",
+            "schema-error",
             'Duplicate labels in header is not supported with "schema_sync"',
         ],
     ]
