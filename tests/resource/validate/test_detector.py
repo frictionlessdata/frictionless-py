@@ -15,7 +15,7 @@ def test_validate_detector_sync_schema():
     resource = Resource("data/sync-schema.csv", schema=schema, detector=detector)
     report = resource.validate()
     assert report.valid
-    assert report.task.resource.schema == {
+    assert resource.schema == {
         "fields": [
             {"name": "name", "type": "string"},
             {"name": "id", "type": "integer"},
@@ -59,7 +59,7 @@ def test_validate_detector_patch_schema():
     resource = Resource("data/table.csv", detector=detector)
     report = resource.validate()
     assert report.valid
-    assert report.task.resource.schema == {
+    assert resource.schema == {
         "fields": [
             {"name": "id", "type": "integer"},
             {"name": "name", "type": "string"},
@@ -75,7 +75,7 @@ def test_validate_detector_patch_schema_fields():
     resource = Resource("data/table.csv", detector=detector)
     report = resource.validate()
     assert report.valid
-    assert report.task.resource.schema == {
+    assert resource.schema == {
         "fields": [{"name": "id", "type": "string"}, {"name": "name", "type": "string"}],
         "missingValues": ["-"],
     }
@@ -86,7 +86,7 @@ def test_validate_detector_infer_type_string():
     resource = Resource("data/table.csv", detector=detector)
     report = resource.validate()
     assert report.valid
-    assert report.task.resource.schema == {
+    assert resource.schema == {
         "fields": [{"name": "id", "type": "string"}, {"name": "name", "type": "string"}],
     }
 
@@ -96,7 +96,7 @@ def test_validate_detector_infer_type_any():
     resource = Resource("data/table.csv", detector=detector)
     report = resource.validate()
     assert report.valid
-    assert report.task.resource.schema == {
+    assert resource.schema == {
         "fields": [{"name": "id", "type": "any"}, {"name": "name", "type": "any"}],
     }
 
@@ -109,9 +109,9 @@ def test_validate_detector_infer_names():
         detector=detector,
     )
     report = resource.validate()
-    assert report.task.resource.schema["fields"][0]["name"] == "id"
-    assert report.task.resource.schema["fields"][1]["name"] == "name"
-    assert report.task.resource.stats["rows"] == 3
-    assert report.task.resource.labels == []
-    assert report.task.resource.header == ["id", "name"]
     assert report.valid
+    assert resource.schema["fields"][0]["name"] == "id"  # type: ignore
+    assert resource.schema["fields"][1]["name"] == "name"  # type: ignore
+    assert resource.stats["rows"] == 3  # type: ignore
+    assert resource.labels == []
+    assert resource.header == ["id", "name"]

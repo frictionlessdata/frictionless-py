@@ -26,7 +26,7 @@ def validate(resource: "Resource", checklist: Optional[Checklist] = None):
 
     # Create state
     errors = []
-    partial = None
+    warning = None
     timer = helpers.Timer()
     original_resource = resource.to_copy()
 
@@ -42,13 +42,13 @@ def validate(resource: "Resource", checklist: Optional[Checklist] = None):
     except FrictionlessException as exception:
         resource.close()
         errors = [exception.error]
-        return Report.from_task(resource, errors=errors, time=timer.time)
+        return Report.from_resource(resource, errors=errors, time=timer.time)
 
     # Validate metadata
     metadata = original_resource if checklist.keep_original else resource
     if not metadata.metadata_valid:
         errors = metadata.metadata_errors
-        return Report.from_task(resource, errors=errors, time=timer.time)
+        return Report.from_resource(resource, errors=errors, time=timer.time)
 
     # Validate data
     with resource:
@@ -84,19 +84,19 @@ def validate(resource: "Resource", checklist: Optional[Checklist] = None):
                 if checklist.limit_errors:
                     if len(errors) >= checklist.limit_errors:
                         errors = errors[: checklist.limit_errors]
-                        partial = f'error limit: "{checklist.limit_errors}"'
+                        warning = f"reached error limit: {checklist.limit_errors}"
                         break
 
                 # Limit memory
                 if checklist.limit_memory:
                     if not row.row_number % 100000:
                         memory = helpers.get_current_memory_usage()
-                        if memory and memory > checklist.limit_memory:
-                            partial = f'memory limit: "{checklist.limit_memory}MB"'
+                        if memory and memory >= checklist.limit_memory:
+                            warning = f"reached memory limit: {checklist.limit_memory}MB"
                             break
 
         # Validate end
-        if not partial:
+        if not warning:
             if not resource.tabular:
                 helpers.pass_through(resource.byte_stream)
             for check in checks:
@@ -105,10 +105,10 @@ def validate(resource: "Resource", checklist: Optional[Checklist] = None):
                         errors.append(error)
 
     # Return report
-    return Report.from_task(
+    return Report.from_resource(
         resource,
         errors=errors,
-        partial=partial,
+        warning=warning,
         time=timer.time,
         scope=checklist.scope,
     )
