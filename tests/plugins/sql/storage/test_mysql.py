@@ -37,11 +37,12 @@ def test_sql_storage_mysql_types(mysql_url):
     }
 
     # Assert data
+    #    import pdb ; pdb.set_trace()
     assert target.get_resource("types").read_rows() == [
         {
             "any": "中国人",
             "array": '["Mike", "John"]',
-            "boolean": True,
+            "boolean": 1,
             "date": datetime.date(2015, 1, 1),
             "date_year": datetime.date(2015, 1, 1),
             "datetime": datetime.datetime(
@@ -50,7 +51,6 @@ def test_sql_storage_mysql_types(mysql_url):
                 1,
                 3,
                 0,
-                tzinfo=datetime.timezone(datetime.timedelta(seconds=3600)),
             ),
             "duration": "P1Y1M",
             "geojson": '{"type": "Point", "coordinates": [33, 33.33]}',
