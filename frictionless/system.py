@@ -4,7 +4,7 @@ import pkgutil
 from collections import OrderedDict
 from importlib import import_module
 from contextlib import contextmanager
-from typing import TYPE_CHECKING, Any, Dict
+from typing import TYPE_CHECKING, List, Any, Dict
 from .exception import FrictionlessException
 from .helpers import cached_property
 from .control import Control
@@ -70,14 +70,14 @@ class System:
             del self.__dict__["plugins"]
             del self.__dict__["methods"]
 
-    # Actions
+    # Hooks
 
-    actions = [
-        "create_candidates",
+    hooks = [
         "create_check",
         "create_control",
         "create_dialect",
         "create_error",
+        "create_field_candidates",
         "create_file",
         "create_loader",
         "create_parser",
@@ -85,19 +85,6 @@ class System:
         "create_storage",
         "create_type",
     ]
-
-    # Detection
-
-    def create_candidates(self):
-        """Create candidates
-
-        Returns:
-            dict[]: an ordered by priority list of type descriptors for type detection
-        """
-        candidates = settings.DEFAULT_CANDIDATES.copy()
-        for func in self.methods["create_candidates"].values():
-            func(candidates)
-        return candidates
 
     def create_check(self, descriptor: dict) -> Check:
         """Create check
@@ -172,6 +159,17 @@ class System:
                 return Class(descriptor)
         note = f'cannot create error "{code}". Try installing "frictionless-{code}"'
         raise FrictionlessException(note)
+
+    def create_field_candidates(self) -> List[dict]:
+        """Create candidates
+
+        Returns:
+            dict[]: an ordered by priority list of type descriptors for type detection
+        """
+        candidates = settings.DEFAULT_FIELD_CANDIDATES.copy()
+        for func in self.methods["create_candidates"].values():
+            func(candidates)
+        return candidates
 
     def create_file(self, source: Any, **options) -> File:
         """Create file
@@ -324,7 +322,7 @@ class System:
     @cached_property
     def methods(self) -> Dict[str, Any]:  # TODO: improve type
         methods = {}
-        for action in self.actions:
+        for action in self.hooks:
             methods[action] = OrderedDict()
             for name, plugin in self.plugins.items():
                 if action in vars(type(plugin)):

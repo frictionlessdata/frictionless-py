@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Optional, Any
+from typing import TYPE_CHECKING, Optional, List, Any
 
 if TYPE_CHECKING:
     from .file import File
@@ -33,13 +33,7 @@ class Plugin:
     code = "plugin"
     status = "stable"
 
-    def create_candidates(self, candidates):
-        """Create candidates
-
-        Returns:
-            dict[]: an ordered by priority list of type descriptors for type detection
-        """
-        pass
+    # Hooks
 
     def create_check(self, descriptor: dict) -> Optional[Check]:
         """Create check
@@ -85,6 +79,14 @@ class Plugin:
 
         Returns:
             Error: error
+        """
+        pass
+
+    def create_field_candidates(self, candidates: List[dict]) -> Optional[List[dict]]:
+        """Create candidates
+
+        Returns:
+            dict[]: an ordered by priority list of type descriptors for type detection
         """
         pass
 

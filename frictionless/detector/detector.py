@@ -486,7 +486,7 @@ class Detector:
             # Prepare runners
             runners = []
             runner_fields = []  # we use shared fields
-            for candidate in system.create_candidates():
+            for candidate in system.create_field_candidates():
                 field = Field(candidate)
                 if field.type == "number" and self.__field_float_numbers:
                     field.float_number = True  # type: ignore

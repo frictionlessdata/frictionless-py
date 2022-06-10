@@ -69,7 +69,7 @@ DEFAULT_FLOAT_NUMBER = False
 DEFAULT_GROUP_CHAR = ""
 DEFAULT_DECIMAL_CHAR = "."
 DEFAULT_SERVER_PORT = 8000
-DEFAULT_CANDIDATES = [
+DEFAULT_FIELD_CANDIDATES = [
     {"type": "yearmonth"},
     {"type": "geopoint"},
     {"type": "duration"},
