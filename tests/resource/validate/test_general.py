@@ -153,21 +153,20 @@ def test_validate_no_rows_with_compression():
     assert report.valid
 
 
-@pytest.mark.skip
-def test_validate_task_error():
-    resource = Resource("data/table.csv")
-    checklist = Checklist(limit_errors=3)
-    report = resource.validate(checklist)
-    assert report.flatten(["code"]) == [
-        ["task-error"],
-    ]
-
-
-@pytest.mark.skip
 def test_validate_source_invalid():
     # Reducing sample size to get raise on iter, not on open
     detector = Detector(sample_size=1)
     resource = Resource([["h"], [1], "bad"], detector=detector)
+    report = resource.validate()
+    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
+        [None, None, "source-error"],
+    ]
+
+
+def test_validate_source_invalid_many_rows():
+    # Reducing sample size to get raise on iter, not on open
+    detector = Detector(sample_size=1)
+    resource = Resource([["h"], [1], "bad", "bad"], detector=detector)
     report = resource.validate()
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [None, None, "source-error"],

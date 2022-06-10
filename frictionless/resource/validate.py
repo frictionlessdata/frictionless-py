@@ -63,7 +63,16 @@ def validate(resource: "Resource", checklist: Optional[Checklist] = None):
 
         # Validate rows
         if resource.tabular:
-            for row in resource.row_stream:  # type: ignore
+            while True:
+
+                # Emit row
+                try:
+                    row = next(resource.row_stream)  # type: ignore
+                except FrictionlessException as exception:
+                    errors.append(exception.error)
+                    continue
+                except StopIteration:
+                    break
 
                 # Validate row
                 for check in checks:
