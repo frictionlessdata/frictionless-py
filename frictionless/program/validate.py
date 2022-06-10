@@ -7,6 +7,7 @@ from typing import List
 from tabulate import tabulate
 from ..actions import validate
 from ..detector import Detector
+from ..checklist import Checklist
 from ..dialect import Dialect
 from ..layout import Layout
 from .main import program
@@ -62,6 +63,8 @@ def program_validate(
     field_float_numbers: bool = common.field_float_numbers,
     field_missing_values: str = common.field_missing_values,
     schema_sync: bool = common.schema_sync,
+    # Checklist
+    checklist: str = common.checklist,
     # Command
     basepath: str = common.basepath,
     pick_errors: str = common.pick_errors,
@@ -169,6 +172,10 @@ def program_validate(
         )
     )
 
+    # Prepare checklist
+    if checklist:
+        checklist = Checklist(checklist)
+
     # Prepare options
     options = helpers.remove_non_values(
         dict(
@@ -196,6 +203,7 @@ def program_validate(
             original=original,
             parallel=parallel,
             resource_name=resource_name,
+            checklist=checklist,
         )
     )
 
