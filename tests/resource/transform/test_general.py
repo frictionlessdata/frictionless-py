@@ -53,21 +53,3 @@ def test_resource_transform_cell_set():
         {"id": 2, "name": "france", "population": 100},
         {"id": 3, "name": "spain", "population": 100},
     ]
-
-
-# Problems
-
-
-@pytest.mark.skip
-def test_pipeline_pprint_1029():
-    pipeline = Pipeline(
-        {
-            "steps": [
-                {"code": "table-normalize"},
-                {"code": "table-melt", "fieldName": "name"},
-            ],
-        }
-    )
-    expected = """'steps': [{'code': 'table-normalize'},
-                      {'code': 'table-melt', 'fieldName': 'name'}]"""
-    assert repr(pipeline) == expected

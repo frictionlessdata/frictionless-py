@@ -1,3 +1,4 @@
+import pytest
 from frictionless import Pipeline, steps
 
 
@@ -23,3 +24,21 @@ def test_pipeline_from_descriptor():
     assert pipeline.limit_memory == 100
     assert pipeline.allow_parallel is True
     assert isinstance(pipeline.steps[0], steps.table_normalize)
+
+
+# Problems
+
+
+@pytest.mark.skip
+def test_pipeline_pprint_1029():
+    pipeline = Pipeline(
+        {
+            "steps": [
+                {"code": "table-normalize"},
+                {"code": "table-melt", "fieldName": "name"},
+            ],
+        }
+    )
+    expected = """'steps': [{'code': 'table-normalize'},
+                      {'code': 'table-melt', 'fieldName': 'name'}]"""
+    assert repr(pipeline) == expected

@@ -308,7 +308,6 @@ def test_validate_custom_check():
     ]
 
 
-@pytest.mark.skip
 def test_validate_custom_check_with_arguments():
 
     # Create check
@@ -328,29 +327,11 @@ def test_validate_custom_check_with_arguments():
     # Validate resource
     resource = Resource("data/table.csv")
     checklist = Checklist(checks=[custom(row_position=1)])
-    report = resource.validate()
+    report = resource.validate(checklist)
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [1, None, "blank-row"],
         [1, None, "blank-row"],
     ]
-
-
-@pytest.mark.skip
-def test_validate_custom_check_bad_name():
-    resource = Resource("data/table.csv")
-    checklist = Checklist({"checks": [{"code": "bad"}]})
-    report = resource.validate(checklist)
-    assert report.flatten(["code", "note"]) == [
-        ["check-error", 'cannot create check "bad". Try installing "frictionless-bad"'],
-    ]
-
-
-# TODO: move to general validate
-@pytest.mark.skip
-def test_validate_resource_descriptor_type_invalid():
-    resource = Resource(descriptor="data/table.csv")
-    report = resource.validate()
-    assert report.flatten() == [[1, None, None, "resource-error"]]
 
 
 # Problems

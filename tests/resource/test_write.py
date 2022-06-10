@@ -35,4 +35,4 @@ def test_resource_write_format_error_bad_format(tmpdir):
         source.write(target)
     error = excinfo.value.error
     assert error.code == "format-error"
-    assert error.note == 'cannot create parser "bad". Try installing "frictionless-bad"'
+    assert error.note.count('format "bad" is not supported')

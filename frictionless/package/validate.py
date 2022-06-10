@@ -11,10 +11,7 @@ if TYPE_CHECKING:
     from .package import Package
 
 
-def validate(
-    package: "Package",
-    checklist: Optional[Checklist] = None,
-):
+def validate(package: "Package", checklist: Optional[Checklist] = None):
     """Validate package
 
     Parameters:

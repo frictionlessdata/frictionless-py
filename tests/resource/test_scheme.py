@@ -36,7 +36,7 @@ def test_resource_scheme_error_bad_scheme():
         resource.open()
     error = excinfo.value.error
     assert error.code == "scheme-error"
-    assert error.note == 'cannot create loader "bad". Try installing "frictionless-bad"'
+    assert error.note.count('scheme "bad" is not supported')
 
 
 def test_resource_scheme_error_bad_scheme_and_format():
@@ -45,7 +45,7 @@ def test_resource_scheme_error_bad_scheme_and_format():
         resource.open()
     error = excinfo.value.error
     assert error.code == "scheme-error"
-    assert error.note == 'cannot create loader "bad". Try installing "frictionless-bad"'
+    assert error.note.count('scheme "bad" is not supported')
 
 
 def test_resource_scheme_error_file_not_found():
