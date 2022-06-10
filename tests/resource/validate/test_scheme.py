@@ -14,5 +14,8 @@ def test_validate_scheme_invalid():
     resource = Resource("bad://data/table.csv")
     report = resource.validate()
     assert report.flatten(["code", "note"]) == [
-        ["scheme-error", 'cannot create loader "bad". Try installing "frictionless-bad"'],
+        [
+            "scheme-error",
+            'scheme "bad" is not supported. Try installing "frictionless-bad"',
+        ],
     ]
