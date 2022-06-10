@@ -212,24 +212,30 @@ def test_program_extract_valid_rows_1004():
     )
 
 
+def test_program_extract_json_valid_rows_1004():
+    result = runner.invoke(program, "extract data/countries.csv --valid --json")
+    assert result.exit_code == 0
+    assert json.loads(result.stdout) == [
+        {"id": 1, "neighbor_id": "Ireland", "name": "Britain", "population": "67"},
+        {"id": 3, "neighbor_id": "22", "name": "Germany", "population": "83"},
+        {"id": 4, "neighbor_id": None, "name": "Italy", "population": "60"},
+    ]
+
+
+def test_program_extract_yaml_valid_rows_1004():
+    result = runner.invoke(program, "extract data/countries.csv --valid --yaml")
+    assert result.exit_code == 0
+    with open("data/fixtures/issue-1004/valid-countries.yaml", "r") as stream:
+        expected = yaml.safe_load(stream)
+    assert yaml.safe_load(result.stdout) == expected
+
+
 def test_program_extract_invalid_rows_1004():
     result = runner.invoke(program, "extract data/countries.csv --no-valid")
     assert result.exit_code == 0
     assert result.stdout.count("2  3            France  n/a") and result.stdout.count(
         "5                          "
     )
-
-
-# Here test with other existing args to ensure it works as expected with other arguments
-# def test_program_extract_without_valid_flag_1004():
-#     result = runner.invoke(program, "extract data/countries.csv")
-#     assert result.exit_code == 0
-#     assert (
-#         result.stdout.count("1  Ireland      Britain  67")
-#         and result.stdout.count("2  3            France   n/a")
-#         and result.stdout.count("3  22           Germany  83")
-#         and result.stdout.count("4               Italy    60")
-#     )
 
 
 def test_program_extract_valid_rows_with_no_valid_rows_1004():
@@ -283,4 +289,14 @@ def test_program_extract_invalid_rows_from_datapackage_with_multiple_resources_1
         and result.stdout.count("1  english               ")
         and result.stdout.count("                         ")
         and result.stdout.count("2  german         1     2")
+    )
+
+
+def test_program_extract_valid_rows_extract_dialect_sheet_option():
+    result = runner.invoke(
+        program, "extract data/sheet2.xls --sheet Sheet2 --json --valid"
+    )
+    assert result.exit_code == 0
+    assert json.loads(result.stdout) == extract(
+        "data/sheet2.xls", dialect={"sheet": "Sheet2"}
     )

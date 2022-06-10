@@ -57,3 +57,58 @@ def test_extract_package_descriptor_type_package():
     package = Package(descriptor="data/package/datapackage.json")
     data = package.extract()
     assert isinstance(data, dict)
+
+
+def test_extract_package_valid_rows_1004():
+    package = Package("data/issue-1004/issue-1004.package.json")
+    output = package.extract(valid=True)
+    assert output == {
+        "data/issue-1004/issue-1004-data1.csv": [
+            {"id": 1, "neighbor_id": "Ireland", "name": "Britain", "population": "67"},
+            {"id": 3, "neighbor_id": "22", "name": "Germany", "population": "83"},
+            {"id": 4, "neighbor_id": None, "name": "Italy", "population": "60"},
+        ],
+        "data/issue-1004/issue-1004-data2.csv": [],
+    }
+
+
+def test_extract_package_invalid_rows_1004():
+    package = Package("data/issue-1004/issue-1004.package.json")
+    output = package.extract(valid=False)
+    assert output == {
+        "data/issue-1004/issue-1004-data1.csv": [
+            {"id": 2, "neighbor_id": "3", "name": "France", "population": "n/a"},
+            {"id": 5, "neighbor_id": None, "name": None, "population": None},
+        ],
+        "data/issue-1004/issue-1004-data2.csv": [
+            {"id": 1, "name": "english", "country": None, "city": None},
+            {"id": 1, "name": "english", "country": None, "city": None},
+            {"id": None, "name": None, "country": None, "city": None},
+            {"id": 2, "name": "german", "country": 1, "city": 2},
+        ],
+    }
+
+
+def test_extract_package_process_stream_valid_rows_1004():
+    process = lambda row: row.to_list()
+    package = Package("data/issue-1004/issue-1004.package.json")
+    list_streams = package.extract(process=process, stream=True, valid=True)
+    list_stream = list_streams["data/issue-1004/issue-1004-data1.csv"]
+    assert isinstance(list_stream, types.GeneratorType)
+    assert list(list_stream) == [
+        [1, "Ireland", "Britain", "67"],
+        [3, "22", "Germany", "83"],
+        [4, None, "Italy", "60"],
+    ]
+
+
+def test_extract_package_no_valid_rows_1004():
+    package = Package("data/issue-1004/issue-1004.package.json")
+    output = package.extract(valid=True)
+    assert output["data/issue-1004/issue-1004-data2.csv"] == []
+
+
+def test_extract_package_no_invalid_rows_1004():
+    package = Package("data/package.json")
+    output = package.extract(valid=False)
+    assert output["data/table.csv"] == []
