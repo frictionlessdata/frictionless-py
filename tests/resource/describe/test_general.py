@@ -186,3 +186,16 @@ def test_describe_resource_with_json_format_issue_827():
 def test_describe_resource_with_years_in_the_header_issue_825():
     resource = Resource.describe("data/issue-825.csv")
     assert resource.schema.field_names == ["Musei", "2011", "2010"]
+
+
+def test_describe_resource_schema_summary():
+    resource = Resource.describe("data/countries.csv")
+    resource.infer()
+    output = resource.schema.to_summary()
+    assert (
+        output.count("| name        | type    | required   |")
+        and output.count("| id          | integer |            |")
+        and output.count("| neighbor_id | string  |            |")
+        and output.count("| name        | string  |            |")
+        and output.count("| population  | string  |            |")
+    )
