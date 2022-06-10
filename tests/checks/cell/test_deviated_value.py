@@ -39,7 +39,6 @@ def test_value_deviated_value_not_enough_data():
     assert report.flatten(["code", "note"]) == []
 
 
-@pytest.mark.skip
 def test_validate_deviated_value_not_a_number():
     source = [
         ["row", "name"],
@@ -53,7 +52,6 @@ def test_validate_deviated_value_not_a_number():
     ]
 
 
-@pytest.mark.skip
 def test_validate_deviated_value_non_existent_field():
     source = [
         ["row", "name"],
@@ -67,7 +65,6 @@ def test_validate_deviated_value_non_existent_field():
     ]
 
 
-@pytest.mark.skip
 def test_validate_deviated_value_incorrect_average():
     source = [
         ["row", "name"],

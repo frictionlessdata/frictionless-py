@@ -28,6 +28,21 @@ def test_validate_invalid_resource():
     assert note.count("[Errno 2]") and note.count("bad")
 
 
+@pytest.mark.skip
+def test_validate_forbidden_value_task_error():
+    report = validate(
+        "data/table.csv",
+        checklist={
+            "checks": [
+                {"code": "forbidden-value", "fieldName": "bad", "forbidden": [2]},
+            ]
+        },
+    )
+    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
+        [None, None, "task-error"],
+    ]
+
+
 def test_validate_invalid_resource_original():
     report = validate({"path": "data/table.csv"}, keep_original=True)
     assert report.flatten(["code", "note"]) == [

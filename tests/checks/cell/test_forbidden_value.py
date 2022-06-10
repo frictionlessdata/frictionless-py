@@ -18,18 +18,6 @@ def test_validate_forbidden_value():
     ]
 
 
-@pytest.mark.skip
-def test_validate_forbidden_value_task_error():
-    resource = Resource("data/table.csv")
-    checklist = Checklist(
-        {"checks": [{"code": "forbidden-value", "fieldName": "bad", "forbidden": [2]}]}
-    )
-    report = resource.validate(checklist)
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [None, None, "task-error"],
-    ]
-
-
 def test_validate_forbidden_value_many_rules():
     source = [
         ["row", "name"],
@@ -58,7 +46,6 @@ def test_validate_forbidden_value_many_rules():
     ]
 
 
-@pytest.mark.skip
 def test_validate_forbidden_value_many_rules_with_non_existent_field():
     source = [
         ["row", "name"],

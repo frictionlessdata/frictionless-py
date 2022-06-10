@@ -1,9 +1,11 @@
+import pytest
 from frictionless import Resource, Checklist, checks
 
 
 # General
 
 
+@pytest.mark.ci
 def test_validate_deviated_cell_1066():
     resource = Resource("data/issue-1066.csv")
     checklist = Checklist(checks=[checks.deviated_cell()])
@@ -13,6 +15,7 @@ def test_validate_deviated_cell_1066():
     ]
 
 
+@pytest.mark.ci
 def test_validate_deviated_cell_using_descriptor():
     resource = Resource("data/issue-1066.csv")
     checklist = Checklist(

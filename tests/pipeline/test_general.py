@@ -26,11 +26,7 @@ def test_pipeline_from_descriptor():
     assert isinstance(pipeline.steps[0], steps.table_normalize)
 
 
-# Problems
-
-
-@pytest.mark.skip
-def test_pipeline_pprint_1029():
+def test_pipeline_pprint():
     pipeline = Pipeline(
         {
             "steps": [
@@ -39,6 +35,6 @@ def test_pipeline_pprint_1029():
             ],
         }
     )
-    expected = """'steps': [{'code': 'table-normalize'},
-                      {'code': 'table-melt', 'fieldName': 'name'}]"""
+    expected = """{'steps': [{'code': 'table-normalize'},
+           {'code': 'table-melt', 'fieldName': 'name'}]}"""
     assert repr(pipeline) == expected

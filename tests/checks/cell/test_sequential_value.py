@@ -30,7 +30,6 @@ def test_validate_sequential_value():
     ]
 
 
-@pytest.mark.skip
 def test_validate_sequential_value_non_existent_field():
     source = [
         ["row", "name"],
