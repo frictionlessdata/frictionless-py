@@ -255,35 +255,33 @@ def test_program_extract_invalid_rows_with_no_invalid_rows_1004():
 
 
 def test_program_extract_valid_rows_from_datapackage_with_multiple_resources_1004():
-    result = runner.invoke(
-        program, "extract data/issue-1004/issue-1004.package.json --valid"
-    )
+    path1 = "data/issue-1004-data1.csv" if IS_UNIX else "data\\issue-1004-data1.csv"
+    path2 = "data/issue-1004-data2.csv" if IS_UNIX else "data\\issue-1004-data2.csv"
+    result = runner.invoke(program, "extract data/issue-1004.package.json --valid")
     assert result.exit_code == 0
     assert (
-        result.stdout.count("data: data/issue-1004/issue-1004-data1.csv")
+        result.stdout.count(f"data: {path1}")
         and result.stdout.count("id  neighbor_id  name     population")
         and result.stdout.count("1  Ireland      Britain  67")
         and result.stdout.count("3  22           Germany  83")
         and result.stdout.count("4               Italy    60")
     )
-    assert result.stdout.count(
-        "data: data/issue-1004/issue-1004-data2.csv"
-    ) and result.stdout.count("No valid rows")
+    assert result.stdout.count(f"data: {path2}") and result.stdout.count("No valid rows")
 
 
 def test_program_extract_invalid_rows_from_datapackage_with_multiple_resources_1004():
-    result = runner.invoke(
-        program, "extract data/issue-1004/issue-1004.package.json --no-valid"
-    )
+    path1 = "data/issue-1004-data1.csv" if IS_UNIX else "data\\issue-1004-data1.csv"
+    path2 = "data/issue-1004-data2.csv" if IS_UNIX else "data\\issue-1004-data2.csv"
+    result = runner.invoke(program, "extract data/issue-1004.package.json --no-valid")
     assert result.exit_code == 0
     assert (
-        result.stdout.count("data: data/issue-1004/issue-1004-data1.csv")
+        result.stdout.count(f"data: {path1}")
         and result.stdout.count("id  neighbor_id  name    population")
         and result.stdout.count("2  3            France  n/a")
         and result.stdout.count("5                          ")
     )
     assert (
-        result.stdout.count("data: data/issue-1004/issue-1004-data2.csv")
+        result.stdout.count(f"data: {path2}")
         and result.stdout.count("id  name     country  city")
         and result.stdout.count("1  english               ")
         and result.stdout.count("1  english               ")

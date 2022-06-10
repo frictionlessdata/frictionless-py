@@ -113,7 +113,7 @@ def test_extract_resource_basepath_and_abspath_issue_856():
 def test_extract_resource_valid_rows_1004():
     descriptor = {
         "name": "data1-resource",
-        "path": "data/issue-1004/issue-1004-data1.csv",
+        "path": "data/issue-1004-data1.csv",
     }
     resource = Resource(descriptor)
     output = resource.extract(valid=True)
@@ -127,7 +127,7 @@ def test_extract_resource_valid_rows_1004():
 def test_extract_resource_invalid_rows_1004():
     descriptor = {
         "name": "data1-resource",
-        "path": "data/issue-1004/issue-1004-data1.csv",
+        "path": "data/issue-1004-data1.csv",
     }
     resource = Resource(descriptor)
     output = resource.extract(valid=False)
@@ -140,7 +140,7 @@ def test_extract_resource_invalid_rows_1004():
 def test_extract_resource_no_valid_rows_1004():
     descriptor = {
         "name": "data1-resource",
-        "path": "data/issue-1004/issue-1004-data2.csv",
+        "path": "data/issue-1004-data2.csv",
     }
     resource = Resource(descriptor)
     output = resource.extract(valid=True)

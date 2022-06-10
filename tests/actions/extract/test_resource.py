@@ -102,7 +102,7 @@ def test_extract_resource_basepath_and_abspath_issue_856():
 def test_extract_resource_valid_rows_1004():
     descriptor = {
         "name": "data1-resource",
-        "path": "data/issue-1004/issue-1004-data1.csv",
+        "path": "data/issue-1004-data1.csv",
     }
     output = extract(descriptor, valid=True)
     assert output == [
@@ -115,7 +115,7 @@ def test_extract_resource_valid_rows_1004():
 def test_extract_resource_invalid_rows_1004():
     descriptor = {
         "name": "data1-resource",
-        "path": "data/issue-1004/issue-1004-data1.csv",
+        "path": "data/issue-1004-data1.csv",
     }
     output = extract(descriptor, valid=False)
     assert output == [
@@ -125,7 +125,7 @@ def test_extract_resource_invalid_rows_1004():
 
 
 def test_extract_resource_with_resource_path_valid_rows_1004():
-    assert extract("data/issue-1004/issue-1004-data1.csv", valid=True) == [
+    assert extract("data/issue-1004-data1.csv", valid=True) == [
         {"id": 1, "neighbor_id": "Ireland", "name": "Britain", "population": "67"},
         {"id": 3, "neighbor_id": "22", "name": "Germany", "population": "83"},
         {"id": 4, "neighbor_id": None, "name": "Italy", "population": "60"},
@@ -133,7 +133,7 @@ def test_extract_resource_with_resource_path_valid_rows_1004():
 
 
 def test_extract_resource_valid_rows_with_resource_file_path_1004():
-    output = extract("data/issue-1004/issue-1004-resource.json", valid=True)
+    output = extract("data/issue-1004-resource.json", valid=True)
     assert output == [
         {"id": 1, "neighbor_id": "Ireland", "name": "Britain", "population": "67"},
         {"id": 3, "neighbor_id": "22", "name": "Germany", "population": "83"},
@@ -145,7 +145,7 @@ def test_extract_resource_process_valid_rows_1004():
     process = lambda row: row.to_list()
     descriptor = {
         "name": "data1-resource",
-        "path": "data/issue-1004/issue-1004-data1.csv",
+        "path": "data/issue-1004-data1.csv",
     }
     assert extract(descriptor, process=process, valid=True) == [
         [1, "Ireland", "Britain", "67"],
@@ -158,7 +158,7 @@ def test_extract_resource_process_stream_valid_rows_1004():
     process = lambda row: row.to_list()
     descriptor = {
         "name": "data1-resource",
-        "path": "data/issue-1004/issue-1004-data1.csv",
+        "path": "data/issue-1004-data1.csv",
     }
     list_stream = extract(descriptor, process=process, stream=True, valid=True)
     assert isinstance(list_stream, types.GeneratorType)
