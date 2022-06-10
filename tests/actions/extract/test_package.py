@@ -54,7 +54,7 @@ def test_extract_package_descriptor_type_package():
     assert isinstance(data, dict)
 
 
-def test_extract_packages_valid_rows_1004():
+def test_extract_package_valid_rows_1004():
     path = "data/table.csv"
     assert extract("data/package.json", valid=True) == {
         path: [{"id": 1, "name": "english"}, {"id": 2, "name": "中国人"}]
