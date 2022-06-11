@@ -1,12 +1,11 @@
-import stringcase
+# type: ignore
 from copy import deepcopy
 from multiprocessing import Pool
-from importlib import import_module
 from ..metadata import Metadata
 from ..errors import InquiryError
-from ..system import system
 from ..report import Report
 from .validate import validate
+from .task import InquiryTask
 from .. import settings
 from .. import helpers
 
@@ -96,54 +95,6 @@ class Inquiry(Metadata):
         # Tasks
         for task in self.tasks:
             yield from task.metadata_errors
-
-
-class InquiryTask(Metadata):
-    """Inquiry task representation.
-
-    Parameters:
-        descriptor? (str|dict): descriptor
-
-    Raises:
-        FrictionlessException: raise any error that occurs during the process
-
-    """
-
-    def __init__(self, descriptor=None, *, source=None, type=None, **options):
-        self.setinitial("source", source)
-        self.setinitial("type", type)
-        for key, value in options.items():
-            self.setinitial(stringcase.camelcase(key), value)
-        super().__init__(descriptor)
-
-    @property
-    def source(self):
-        """
-        Returns:
-            any: source
-        """
-        return self["source"]
-
-    @property
-    def type(self):
-        """
-        Returns:
-            string?: type
-        """
-        return self.get("type") or system.create_file(self.source).type
-
-    # Run
-
-    def run(self):
-        validate = import_module("frictionless").validate
-        # NOTE: review usage of trusted
-        report = validate(trusted=True, **helpers.create_options(self))
-        return report
-
-    # Metadata
-
-    metadata_Error = InquiryError
-    metadata_profile = settings.INQUIRY_PROFILE["properties"]["tasks"]["items"]
 
 
 # Internal

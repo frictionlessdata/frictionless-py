@@ -4,7 +4,6 @@ from ..resource import Resource
 from ..package import Package
 from ..exception import FrictionlessException
 from ..system import system
-from .. import errors
 
 if TYPE_CHECKING:
     from ..interfaces import ProcessFunction

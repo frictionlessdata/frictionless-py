@@ -1,6 +1,6 @@
 import pytest
 import pathlib
-from frictionless import Resource, Detector, Layout, Check, Checklist, errors, helpers
+from frictionless import Resource, Detector, Layout, Check, Checklist, errors
 
 
 # General

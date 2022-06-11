@@ -1,4 +1,4 @@
-from frictionless import Package, helpers
+from frictionless import Package
 
 
 # General

@@ -1,7 +1,7 @@
 import os
 import json
 import yaml
-from frictionless import Resource, helpers
+from frictionless import Resource
 
 
 # General

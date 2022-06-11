@@ -1,7 +1,6 @@
 # type: ignore
 import sys
 import typer
-from ..exception import FrictionlessException
 from ..pipeline import Pipeline
 from ..actions import transform
 from .main import program
@@ -30,6 +29,9 @@ def program_transform(
         if not sys.stdin.isatty():
             is_stdin = True
             source = [sys.stdin.buffer.read()]
+
+    # TODO: implement
+    assert not is_stdin
 
     # Validate input
     if not source:

@@ -1,6 +1,6 @@
 import os
 import pytest
-from frictionless import Resource, Detector, FrictionlessException, helpers
+from frictionless import Resource, Detector, FrictionlessException
 
 
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"

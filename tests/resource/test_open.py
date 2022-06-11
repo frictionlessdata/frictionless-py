@@ -1,5 +1,5 @@
 import pytest
-from frictionless import Resource, Layout, Detector, FrictionlessException, helpers
+from frictionless import Resource, Layout, Detector, FrictionlessException
 
 
 # General

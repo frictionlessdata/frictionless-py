@@ -7,10 +7,8 @@ from ..checklist import Checklist
 from ..inquiry import Inquiry
 from ..system import system
 from ..resource import Resource
-from ..report import Report
 from ..exception import FrictionlessException
 from .. import settings
-from .. import errors
 
 
 def validate(

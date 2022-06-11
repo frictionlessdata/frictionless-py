@@ -1,5 +1,5 @@
 import pytest
-from frictionless import Resource, Schema, Field, Layout, helpers
+from frictionless import Resource, Schema, Field, Layout
 from frictionless import FrictionlessException
 from frictionless.plugins.excel import ExcelDialect
 

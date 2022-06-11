@@ -1,5 +1,5 @@
 import pytest
-from frictionless import Resource, Detector, helpers, FrictionlessException
+from frictionless import Resource, Detector, FrictionlessException
 from frictionless.plugins.remote import RemoteControl
 
 

@@ -1,6 +1,6 @@
 import os
 import pytest
-from frictionless import Resource, FrictionlessException, helpers
+from frictionless import Resource, FrictionlessException
 from frictionless.plugins.json import JsonDialect
 
 

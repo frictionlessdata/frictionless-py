@@ -1,11 +1,8 @@
 from __future__ import annotations
-import os
-import functools
 import textwrap
 from copy import deepcopy
-from importlib import import_module
-from typing import TYPE_CHECKING, Optional, List, Any
 from tabulate import tabulate
+from typing import TYPE_CHECKING, Optional, List, Any
 from ..metadata import Metadata
 from ..errors import Error, ReportError
 from ..exception import FrictionlessException

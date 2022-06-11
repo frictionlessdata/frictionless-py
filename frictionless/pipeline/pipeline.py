@@ -1,6 +1,5 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Optional, List, Any
-from ..helpers import cached_property
+from typing import Optional, List, Any
 from ..metadata import Metadata
 from .validate import validate
 from ..system import system
@@ -8,9 +7,6 @@ from ..step import Step
 from .. import settings
 from .. import helpers
 from .. import errors
-
-if TYPE_CHECKING:
-    from ..resource import Resource
 
 
 # TODO: raise an exception if we try export a pipeline with function based steps

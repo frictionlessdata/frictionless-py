@@ -1,4 +1,4 @@
-from frictionless import Resource, helpers
+from frictionless import Resource
 
 
 # General

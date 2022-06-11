@@ -1,7 +1,4 @@
-import types
-from typing import TYPE_CHECKING, Optional, List
-from ..step import Step
-from ..system import system
+from typing import TYPE_CHECKING
 from ..helpers import get_name
 from ..pipeline import Pipeline
 from ..exception import FrictionlessException

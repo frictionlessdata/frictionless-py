@@ -1,7 +1,6 @@
 import uvicorn
 from ..server import server
 from .main import program
-from .. import settings
 from . import common
 
 

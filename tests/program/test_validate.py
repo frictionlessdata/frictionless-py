@@ -1,4 +1,3 @@
-import re
 import json
 import yaml
 import pytest

@@ -5,7 +5,6 @@ from ..package import Package
 from ..schema import Schema
 from ..system import system
 from ..exception import FrictionlessException
-from .. import errors
 
 
 def describe(

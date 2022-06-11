@@ -1,4 +1,4 @@
-from typing import Optional, List, Any
+from typing import Optional, Any
 from ..metadata import Metadata
 from ..errors import InquiryError
 from ..dialect import Dialect

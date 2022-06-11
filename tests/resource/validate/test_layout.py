@@ -1,4 +1,4 @@
-from frictionless import Layout, Resource, helpers
+from frictionless import Layout, Resource
 
 
 # General

@@ -1,4 +1,4 @@
-from frictionless import Resource, Detector, helpers
+from frictionless import Resource, Detector
 
 
 # General

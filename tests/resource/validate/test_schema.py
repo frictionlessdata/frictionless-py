@@ -1,5 +1,4 @@
-import pytest
-from frictionless import Resource, Checklist, helpers
+from frictionless import Resource, Checklist
 
 
 # General

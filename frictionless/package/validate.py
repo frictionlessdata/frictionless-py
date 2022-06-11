@@ -1,6 +1,6 @@
+# type: ignore
 import warnings
-from typing import TYPE_CHECKING, Optional, List
-from ..check import Check
+from typing import TYPE_CHECKING, Optional
 from ..report import Report
 from ..checklist import Checklist
 from ..inquiry import Inquiry, InquiryTask

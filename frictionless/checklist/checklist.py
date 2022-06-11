@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Optional, List, Any, cast
+from typing import TYPE_CHECKING, Optional, List, Any
 from ..helpers import cached_property
 from ..metadata import Metadata
 from .validate import validate
@@ -11,7 +11,6 @@ from .. import helpers
 from .. import errors
 
 if TYPE_CHECKING:
-    from ..error import Error
     from ..resource import Resource
 
 
@@ -105,7 +104,7 @@ class Checklist(Metadata):
 
     # Match
 
-    def match(self, error: Error) -> bool:
+    def match(self, error: errors.Error) -> bool:
         if error.tags.count("#data"):
             if error.code not in self.scope:
                 return False

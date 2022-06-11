@@ -248,6 +248,7 @@ def is_type(object, name):
     return type(object).__name__ == name
 
 
+# TODO: move to system (public API)?
 def is_platform(name):
     current = platform.system()
     if name == "linux":

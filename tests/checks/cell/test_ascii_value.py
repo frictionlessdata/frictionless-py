@@ -1,6 +1,6 @@
-from frictionless import Resource, Checklist, checks
-import pytest
 import sys
+import pytest
+from frictionless import Resource, Checklist, checks
 
 
 # General

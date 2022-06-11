@@ -1,21 +1,12 @@
 from __future__ import annotations
-import functools
-from copy import deepcopy
 from tabulate import tabulate
 from importlib import import_module
-from typing import TYPE_CHECKING, Optional, List, Any
+from typing import Optional, List, Any
 from ..metadata import Metadata
 from ..errors import Error, ReportError
 from ..exception import FrictionlessException
-from .validate import validate
 from .. import settings
 from .. import helpers
-
-if TYPE_CHECKING:
-    from ..resource import Resource
-
-
-# TODO: rebase on this implementation (not in the report file)
 
 
 class ReportTask(Metadata):

@@ -5,7 +5,6 @@ from ..package import Package
 from ..resource import Resource
 from ..pipeline import Pipeline
 from ..exception import FrictionlessException
-from .. import errors
 
 
 # TODO: here we'd like to accept both pipeline + individual options

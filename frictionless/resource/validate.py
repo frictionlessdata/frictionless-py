@@ -1,12 +1,8 @@
 from __future__ import annotations
-import types
-from typing import TYPE_CHECKING, List, Union, Optional
-from ..check import Check
-from ..system import system
+from typing import TYPE_CHECKING, Optional
 from ..checklist import Checklist
 from ..exception import FrictionlessException
-from ..report import Report, ReportTask
-from .. import settings
+from ..report import Report
 from .. import helpers
 
 if TYPE_CHECKING:

@@ -1,5 +1,5 @@
 import pytest
-from frictionless import Package, Resource, Layout, helpers
+from frictionless import Package, Resource, Layout
 from frictionless import FrictionlessException
 
 

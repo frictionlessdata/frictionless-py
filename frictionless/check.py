@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Optional, Iterable, List, Type
+from typing import TYPE_CHECKING, Iterable, List, Type
 from .metadata import Metadata
 from . import errors
 

@@ -1,6 +1,6 @@
 import json
 import pytest
-from frictionless import Package, Checklist, helpers
+from frictionless import Package, Checklist
 
 
 # General

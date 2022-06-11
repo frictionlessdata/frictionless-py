@@ -76,7 +76,7 @@ def test_validate_package_with_non_tabular():
 @pytest.mark.skip
 def test_validate_package_invalid_descriptor_path():
     with pytest.raises(FrictionlessException) as excinfo:
-        report = validate("bad/datapackage.json")
+        validate("bad/datapackage.json")
     error = excinfo.value.error
     assert error.code == "package-error"
     assert error.note.count("[Errno 2]")
