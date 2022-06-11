@@ -1143,7 +1143,7 @@ class Resource(Metadata):
         parser.write_row_stream(self.to_copy())
         return target
 
-    # Export/Import
+    # Import/Export
 
     def to_dict(self):
         """Create a dict from the resource

@@ -151,7 +151,7 @@ class ReportTask(Metadata):
             result.append([context.get(prop) for prop in spec])
         return result
 
-    # Export/Import
+    # Import/Export
 
     @staticmethod
     def from_descriptor(descriptor: IDescriptor):

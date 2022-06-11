@@ -1,13 +1,13 @@
-# type: ignore
 from copy import deepcopy
-from multiprocessing import Pool
+from typing import TYPE_CHECKING, List
 from ..metadata import Metadata
 from ..errors import InquiryError
-from ..report import Report
 from .validate import validate
 from .task import InquiryTask
 from .. import settings
-from .. import helpers
+
+if TYPE_CHECKING:
+    from ..interfaces import IDescriptor
 
 
 class Inquiry(Metadata):
@@ -23,9 +23,9 @@ class Inquiry(Metadata):
 
     validate = validate
 
-    def __init__(self, descriptor=None, *, tasks=None):
+    def __init__(self, tasks: List[InquiryTask]):
         self.setinitial("tasks", tasks)
-        super().__init__(descriptor)
+        super().__init__()
 
     @property
     def tasks(self):
@@ -35,39 +35,13 @@ class Inquiry(Metadata):
         """
         return self["tasks"]
 
-    # Run
+    # Export/Import
 
-    def run(self, *, parallel=False):
-
-        # Create state
-        reports = []
-        timer = helpers.Timer()
-
-        # Validate inquiry
-        if self.metadata_errors:
-            return Report(time=timer.time, errors=self.metadata_errors, tasks=[])
-
-        # Validate sequentially
-        if not parallel:
-            for task in self.tasks:
-                report = task.run()
-                reports.append(report)
-
-        # Validate in-parallel
-        else:
-            with Pool() as pool:
-                task_descriptors = [task.to_dict() for task in self.tasks]
-                report_descriptors = pool.map(run_task_in_parallel, task_descriptors)
-                for report_descriptor in report_descriptors:
-                    reports.append(Report(report_descriptor))
-
-        # Return report
-        tasks = []
-        errors = []
-        for report in reports:
-            tasks.extend(report.tasks)
-            errors.extend(report.errors)
-        return Report(time=timer.time, errors=errors, tasks=tasks)
+    @staticmethod
+    def from_descriptor(descriptor: IDescriptor):
+        metadata = Metadata(descriptor)
+        tasks = [InquiryTask.from_descriptor(task) for task in metadata.get("tasks", [])]
+        return Inquiry(tasks=tasks)
 
     # Metadata
 
@@ -75,33 +49,9 @@ class Inquiry(Metadata):
     metadata_profile = deepcopy(settings.INQUIRY_PROFILE)
     metadata_profile["properties"]["tasks"] = {"type": "array"}
 
-    def metadata_process(self):
-
-        # Tasks
-        tasks = self.get("tasks")
-        if isinstance(tasks, list):
-            for index, task in enumerate(tasks):
-                if not isinstance(task, InquiryTask):
-                    task = InquiryTask(task)
-                    list.__setitem__(tasks, index, task)
-            if not isinstance(tasks, helpers.ControlledList):
-                tasks = helpers.ControlledList(tasks)
-                tasks.__onchange__(self.metadata_process)
-                dict.__setitem__(self, "tasks", tasks)
-
     def metadata_validate(self):
         yield from super().metadata_validate()
 
         # Tasks
         for task in self.tasks:
             yield from task.metadata_errors
-
-
-# Internal
-
-
-def run_task_in_parallel(task_descriptor):
-    task = InquiryTask(task_descriptor)
-    report = task.run()
-    report_descriptor = report.to_dict()
-    return report_descriptor

@@ -232,7 +232,7 @@ class Schema(Metadata):
             result_notes.append(notes)
         return result_cells, result_notes
 
-    # Export/Import
+    # Import/Export
 
     @staticmethod
     def from_jsonschema(profile):

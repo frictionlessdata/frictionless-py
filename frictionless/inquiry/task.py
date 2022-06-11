@@ -1,10 +1,12 @@
-from typing import Optional, Any
+from typing import TYPE_CHECKING, Optional
 from ..metadata import Metadata
-from ..errors import InquiryError
 from ..dialect import Dialect
 from ..schema import Schema
 from .. import settings
+from .. import errors
 
+if TYPE_CHECKING:
+    from ..interfaces import IDescriptor
 
 # TODO: split into ResourceInquiryTask/PackageInqiuryTask?
 
@@ -22,10 +24,8 @@ class InquiryTask(Metadata):
 
     def __init__(
         self,
-        descriptor: Optional[Any] = None,
-        *,
+        path: str,
         name: Optional[str] = None,
-        path: Optional[str] = None,
         scheme: Optional[str] = None,
         format: Optional[str] = None,
         hashing: Optional[str] = None,
@@ -35,8 +35,8 @@ class InquiryTask(Metadata):
         dialect: Optional[Dialect] = None,
         schema: Optional[Schema] = None,
     ):
-        self.setinitial("name", name)
         self.setinitial("path", path)
+        self.setinitial("name", name)
         self.setinitial("scheme", scheme)
         self.setinitial("format", format)
         self.setinitial("hashing", hashing)
@@ -45,7 +45,7 @@ class InquiryTask(Metadata):
         self.setinitial("compression", compression)
         self.setinitial("dialect", dialect)
         self.setinitial("schema", schema)
-        super().__init__(descriptor)
+        super().__init__()
 
     @property
     def name(self):
@@ -127,7 +127,27 @@ class InquiryTask(Metadata):
         """
         return self.get("schema")
 
+    # Import/Export
+
+    @staticmethod
+    def from_descriptor(descriptor: IDescriptor):
+        metadata = Metadata(descriptor)
+        dialect = Dialect(metadata.get("dialect", {}))
+        schema = Schema(metadata.get("schema", {}))
+        return InquiryTask(
+            name=metadata.get("name"),  # type: ignore
+            path=metadata.get("path"),  # type: ignore
+            scheme=metadata.get("scheme"),  # type: ignore
+            format=metadata.get("format"),  # type: ignore
+            hashing=metadata.get("hashing"),  # type: ignore
+            encoding=metadata.get("encoding"),  # type: ignore
+            innerpath=metadata.get("innerpath"),  # type: ignore
+            compression=metadata.get("compression"),  # type: ignore
+            dialect=dialect or None,
+            schema=schema or None,
+        )
+
     # Metadata
 
-    metadata_Error = InquiryError
+    metadata_Error = errors.InquiryError
     metadata_profile = settings.INQUIRY_PROFILE["properties"]["tasks"]["items"]
