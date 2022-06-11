@@ -69,7 +69,7 @@ class ReportTask(Metadata):
         Returns:
             str: name
         """
-        return self["name"]
+        return self.get("name")
 
     @property
     def path(self):
@@ -109,7 +109,7 @@ class ReportTask(Metadata):
         Returns:
             float: validation time
         """
-        return self["time"]
+        return self.get("time")
 
     @property
     def valid(self):
@@ -117,7 +117,7 @@ class ReportTask(Metadata):
         Returns:
             bool: validation result
         """
-        return self["valid"]
+        return self.get("valid")
 
     @property
     def scope(self):
@@ -125,7 +125,7 @@ class ReportTask(Metadata):
         Returns:
             str[]: validation scope
         """
-        return self["scope"]
+        return self.get("scope", [])
 
     @property
     def warning(self):
@@ -141,7 +141,7 @@ class ReportTask(Metadata):
         Returns:
             dict: validation stats
         """
-        return self["stats"]
+        return self.get("stats", {})
 
     @property
     def errors(self):
@@ -149,7 +149,7 @@ class ReportTask(Metadata):
         Returns:
             Error[]: validation errors
         """
-        return self["errors"]
+        return self.get("errors", [])
 
     @property
     def error(self):

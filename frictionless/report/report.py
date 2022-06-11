@@ -73,7 +73,7 @@ class Report(Metadata):
         Returns:
             str: frictionless version
         """
-        return self["version"]
+        return self.get("version")
 
     @property
     def time(self):
@@ -81,7 +81,7 @@ class Report(Metadata):
         Returns:
             float: validation time
         """
-        return self["time"]
+        return self.get("time")
 
     @property
     def valid(self):
@@ -89,7 +89,7 @@ class Report(Metadata):
         Returns:
             bool: validation result
         """
-        return self["valid"]
+        return self.get("valid")
 
     @property
     def stats(self):
@@ -97,7 +97,7 @@ class Report(Metadata):
         Returns:
             dict: validation stats
         """
-        return self["stats"]
+        return self.get("stats", {})
 
     @property
     def warning(self):
@@ -105,7 +105,7 @@ class Report(Metadata):
         Returns:
             Error[]: validation warning
         """
-        return self["warning"]
+        return self.get("warning")
 
     @property
     def errors(self):
@@ -113,7 +113,7 @@ class Report(Metadata):
         Returns:
             Error[]: validation errors
         """
-        return self["errors"]
+        return self.get("errors", [])
 
     @property
     def tasks(self):
@@ -121,7 +121,7 @@ class Report(Metadata):
         Returns:
             ReportTask[]: validation tasks
         """
-        return self["tasks"]
+        return self.get("tasks", [])
 
     @property
     def task(self):
