@@ -1,7 +1,7 @@
 {
-  "title": "Frictionless Pipeline",
+  "title": "Frictionless Dialect",
   "$schema": "http://json-schema.org/draft-06/schema#",
-  "$id": "https://github.com/frictionlessdata/frictionless-py/tree/main/frictionless/assets/profiles/pipeline.json",
+  "$id": "https://github.com/frictionlessdata/frictionless-py/tree/main/frictionless/assets/profiles/checklist.json",
   "type": "object",
   "properties": {
     "version": {

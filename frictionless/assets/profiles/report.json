@@ -1,7 +1,7 @@
 {
   "title": "Frictionless Report",
   "$schema": "http://json-schema.org/draft-06/schema#",
-  "$id": "https://github.com/frictionlessdata/frictionless-py/tree/master/frictionless/assets/profiles/report.json",
+  "$id": "https://github.com/frictionlessdata/frictionless-py/tree/main/frictionless/assets/profiles/report.json",
   "type": "object",
   "required": [
     "version",
@@ -35,6 +35,11 @@
         "errors": {"type": "number"},
         "tasks": {"type": "number"}
       }
+    },
+    "warning": {
+      "type": "string",
+      "title": "Warning",
+      "description": "A warning message"
     },
     "errors": {
       "type": "array",
@@ -92,19 +97,28 @@
       "items": {
         "type": "object",
         "required": [
-          "resource",
+          "name",
           "time",
           "valid",
           "scope",
-          "partial",
           "stats",
           "errors"
         ],
         "properties": {
-          "resource": {
-            "type": "object",
-            "title": "Resource",
-            "description": "Validated resource."
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Resource name."
+          },
+          "path": {
+            "type": "string",
+            "title": "Path",
+            "description": "Resource path."
+          },
+          "innerpath": {
+            "type": "string",
+            "title": "Innerpath",
+            "description": "Resource compression path."
           },
           "time": {
             "type": "number",

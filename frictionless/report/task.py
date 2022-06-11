@@ -1,6 +1,5 @@
 from __future__ import annotations
 from tabulate import tabulate
-from importlib import import_module
 from typing import Optional, List, Any
 from ..metadata import Metadata
 from ..errors import Error, ReportError
@@ -223,12 +222,3 @@ class ReportTask(Metadata):
 
     metadata_Error = ReportError
     metadata_profile = settings.REPORT_PROFILE["properties"]["tasks"]["items"]
-
-    def metadata_process(self):
-        Resource = import_module("frictionless.resource").Resource
-
-        # Resource
-        resource = self.get("resource")
-        if not isinstance(resource, Resource):
-            resource = Resource(resource)
-            dict.__setitem__(self, "resource", resource)
