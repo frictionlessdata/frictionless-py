@@ -246,13 +246,12 @@ def test_program_validate_zipped_resources_979():
     with open(output_file_path, encoding="utf-8") as file:
         expected = file.read()
     assert result.exit_code == 1
-    assert result.stdout.count("valid: ogd10_energieforschungstatistik_ch.csv")
-    assert result.stdout.count("valid: ogd10_catalogs.zip => finanzquellen.csv")
-    assert result.stdout.count("invalid: ogd10_catalogs.zip => capital-invalid.csv")
-    assert result.stdout.count("Schema is not valid")
-    # remove timetaken floating point number which varies
-    output = re.sub(r"(\d+)\.(.*)\d", "", result.stdout)
-    assert output.strip() == expected.strip()
+    assert (
+        result.stdout.count("valid: ogd10_energieforschungstatistik_ch.csv")
+        and result.stdout.count("valid: ogd10_catalogs.zip => finanzquellen.csv")
+        and result.stdout.count("invalid: ogd10_catalogs.zip => capital-invalid.csv")
+        and result.stdout.count(expected.strip())
+    )
 
 
 @pytest.mark.skip  # TODO: recover after main merge
@@ -261,9 +260,8 @@ def test_program_validate_long_error_messages_976():
     output_file_path = "data/fixtures/cli/long-error-messages-976.txt"
     with open(output_file_path, encoding="utf-8") as file:
         expected = file.read()
-    output = re.sub(r"(\d+)\.(.*)\d", "", result.stdout)
     assert result.exit_code == 1
-    assert output.strip() == expected.strip()
+    assert result.stdout.count(expected.strip())
 
 
 @pytest.mark.skip  # TODO: recover after main merge

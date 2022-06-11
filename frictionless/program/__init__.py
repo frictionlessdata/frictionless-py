@@ -4,5 +4,6 @@ from .main import program
 from . import api
 from . import describe
 from . import extract
+from . import summary
 from . import transform
 from . import validate

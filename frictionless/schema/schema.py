@@ -1,5 +1,6 @@
 # type: ignore
 from copy import copy, deepcopy
+from tabulate import tabulate
 from ..exception import FrictionlessException
 from ..metadata import Metadata
 from ..field import Field
@@ -289,6 +290,21 @@ class Schema(Metadata):
             "tableschema_to_template", plugin="excel"
         )
         return tableschema_to_template.create_xlsx(self, path)
+
+    # Summary
+
+    def to_summary(self):
+        """Summary of the schema in table format
+
+        Returns:
+            str: schema summary
+        """
+
+        content = [
+            [field.name, field.type, True if field.required else ""]
+            for field in self.fields
+        ]
+        return tabulate(content, headers=["name", "type", "required"], tablefmt="grid")
 
     # Metadata
 

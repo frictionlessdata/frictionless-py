@@ -1,8 +1,6 @@
 # type: ignore
 import sys
-import os
 import typer
-import textwrap
 from typing import List
 from tabulate import tabulate
 from ..actions import validate
@@ -226,7 +224,7 @@ def program_validate(
         typer.secho(content)
         raise typer.Exit()
 
-    # Return report
+    # Return validation report errors
     if report.errors:
         content = []
         if is_stdin:
@@ -241,136 +239,8 @@ def program_validate(
             str(tabulate(content, headers=["code", "message"], tablefmt="simple"))
         )
 
-    # Return tables
-    prev_invalid = False
-    for number, task in enumerate(report.tasks, start=1):
-        tabular = task.resource.profile == "tabular-data-resource"
-        if number != 1 and prev_invalid:
-            typer.secho("")
-        prefix = "valid" if task.valid else "invalid"
-        suffix = "" if tabular else "(non-tabular)"
-        source = task.resource.path or task.resource.name
-        # for zipped resources append file name
-        if task.resource.innerpath:
-            source = f"{source} => {task.resource.innerpath}"
-        if is_stdin:
-            source = "stdin"
-        typer.secho(f"# {'-'*len(prefix)}", bold=True)
-        typer.secho(f"# {prefix}: {source} {suffix}", bold=True)
-        typer.secho(f"# {'-'*len(prefix)}", bold=True)
-        error_list = {}
-        if task.errors:
-            prev_invalid = True
-            typer.secho("")
-            content = []
-            for error in task.errors:
-                content.append(
-                    [
-                        error.get("rowPosition", ""),
-                        error.get("fieldPosition", ""),
-                        error.code,
-                        error.message,
-                    ]
-                )
-                # error list for summary
-                error_title = f"{error.name} ({error.code})"
-                if error_title not in error_list:
-                    error_list[error_title] = 0
-                error_list[error_title] += 1
-                if task.partial:
-                    last_row_checked = error.get("rowPosition", "")
-            content = _wrap_text_to_colwidths(content)
-        # summary
-        rows_checked = last_row_checked if task.partial else None
-        summary_content = _validation_summary(
-            source,
-            basepath=task.resource.basepath,
-            time_taken=task.time,
-            rows_checked=rows_checked,
-            error_list=error_list,
-        )
-        typer.echo("\n# Summary \n")
-        if task.partial:
-            typer.echo(
-                "The document was partially validated because of one of the limits"
-            )
-            typer.echo("* limit errors")
-            typer.echo("* memory Limit \n")
-        typer.secho(
-            str(
-                tabulate(
-                    summary_content,
-                    headers=["Description", "Size/Name/Count"],
-                    tablefmt="simple",
-                )
-            )
-        )
-        # errors
-        if task.errors:
-            typer.echo("\n# Errors \n")
-            typer.secho(
-                str(
-                    tabulate(
-                        content,
-                        headers=["row", "field", "code", "message"],
-                        tablefmt="simple",
-                    )
-                )
-            )
+    # Return validation report summary and tables
+    typer.secho(str(report.to_summary()))
 
     # Return retcode
     raise typer.Exit(code=int(not report.valid))
-
-
-# TODO:This is a temporary function to use with tabulate as
-# tabulate 0.8.9 does not support text wrap
-def _wrap_text_to_colwidths(
-    list_of_lists: List, colwidths: List = [5, 5, 10, 50]
-) -> List:
-    """Create new list with wrapped text with different column width.
-    Args:
-        list_of_lists (List): List of lines
-        colwidths (List): width for each column
-
-    Returns:
-        List: list of lines with wrapped text
-
-    """
-    result = []
-    for row in list_of_lists:
-        new_row = []
-        for cell, width in zip(row, colwidths):
-            cell = str(cell)
-            wrapped = textwrap.wrap(cell, width=width)
-            new_row.append("\n".join(wrapped))
-        result.append(new_row)
-    return result
-
-
-def _validation_summary(
-    source: str,
-    time_taken: str,
-    basepath: str = None,
-    rows_checked: int = None,
-    error_list: List = None,
-) -> List:
-    """Generate summary for validation task"""
-    file_path = os.path.join(basepath, source) if basepath else source
-    file_size = "N/A"
-    unit = None
-    if os.path.exists(file_path):
-        file_size = os.path.getsize(file_path)
-        unit = helpers.format_bytes(file_size)
-    content = [
-        [f"File name { '' if unit else '(Not Found)' }", source],
-        [f"File size { f'({unit})' if unit else '' }", file_size],
-        ["Total Time Taken (sec)", time_taken],
-    ]
-    if rows_checked:
-        content.append(["Rows Checked(Partial)**", rows_checked])
-    if error_list:
-        content.append(["Total Errors", sum(error_list.values())])
-    for code, count in error_list.items():
-        content.append([code, count])
-
-    return content

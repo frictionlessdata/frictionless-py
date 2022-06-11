@@ -3,6 +3,7 @@
 +-------+---------+---------+---------------------------------------------------+
 | row   | field   | code    | message                                           |
 +=======+=========+=========+===================================================+
-|       |         | schema- | Schema is not valid: Schemas with duplicate field |
-|       |         | error   | names are not supported                           |
+|       |         | scheme- | The data source could not be successfully loaded: |
+|       |         | error   | [Errno 2] No such file or directory:              |
+|       |         |         | 'data/countriess.csv'                             |
 +-------+---------+---------+---------------------------------------------------+

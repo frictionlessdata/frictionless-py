@@ -566,3 +566,29 @@ def test_resource_pprint_1029():
  'path': 'data/table.csv',
  'title': 'My Resource'}"""
     assert repr(resource) == expected
+
+
+def test_resource_summary_valid_resource():
+    resource = Resource("data/capital-valid.csv")
+    output = resource.to_view()
+    assert (
+        output.count("| id | name     |")
+        and output.count("|  1 | 'London' |")
+        and output.count("|  2 | 'Berlin' |")
+        and output.count("|  3 | 'Paris'  |")
+        and output.count("|  4 | 'Madrid' |")
+        and output.count("|  5 | 'Rome'   |")
+    )
+
+
+def test_resource_summary_invalid_resource():
+    resource = Resource("data/countries.csv")
+    output = resource.to_view()
+    assert (
+        output.count("| id | neighbor_id | name      | population |")
+        and output.count("|  1 | 'Ireland'   | 'Britain' | '67'       |")
+        and output.count("|  2 | '3'         | 'France'  | 'n/a'      |")
+        and output.count("|  3 | '22'        | 'Germany' | '83'       |")
+        and output.count("|  4 | None        | 'Italy'   | '60'       |")
+        and output.count("|  5 | None        | None      | None       |")
+    )

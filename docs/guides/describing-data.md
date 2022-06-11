@@ -32,7 +32,7 @@ Now that we have a general understanding of what "describing data" is, we can di
 - **data validation**: metadata helps to reveal problems in your data during early stages of your workflow
 - **data publication**: metadata provides additional information that your data doesn't include
 
-These are not the only positives of having metadata, but they are two of the most important. Please continue reading to learn how Frictionless helps to achieve these advantages by describing your data. This guide will discuss the main `describe` functions (`describe`, `describe_schema`, `describe_resource`, `describe_package`) and will then go into more detail about how to create and edit metadata in Frictionless.
+These are not the only positives of having metadata, but they are two of the most important. Please continue reading to learn how Frictionless helps to achieve these advantages by describing your data. This guide will discuss the main `describe` functions (`describe`, `Schema.describe`, `Resource.describe`, `Package.describe`) and will then go into more detail about how to create and edit metadata in Frictionless.
 
 For the following examples, you will need to have Frictionless installed. See our [Quick Start Guide](https://framework.frictionlessdata.io/docs/guides/quick-start) if you need help.
 
@@ -46,9 +46,9 @@ The `describe` functions are the main Frictionless tool for describing data. In 
 
 The frictionless framework provides 4 different `describe` functions in Python:
 - `describe`: detects the source type and returns Data Resource or Data Package metadata
-- `describe_schema`: always returns Table Schema metadata
-- `describe_resource`: always returns Data Resource metadata
-- `describe_package`: always returns Data Package metadata
+- `Schema.describe`: always returns Table Schema metadata
+- `Resource.describe`: always returns Data Resource metadata
+- `Package.describe`: always returns Data Package metadata
 
 As described in more detail in the [Introduction](https://framework.frictionlessdata.io/docs/guides/introduction), a resource is a single file, such as a data file, and a package is a set of files, such as a data file and a schema.
 
@@ -115,9 +115,9 @@ id,neighbor_id,name,population
 Let's get a Table Schema using the Frictionless framework (note: this example uses YAML for the schema format, but Frictionless also supports JSON format):
 
 ```python script title="Python"
-from frictionless import describe_schema
+from frictionless import Schema
 
-schema = describe_schema("country-1.csv")
+schema = Schema.describe("country-1.csv")
 schema.to_yaml("country.schema.yaml") # use schema.to_json for JSON
 ```
 
@@ -141,9 +141,9 @@ fields:
 As we can see, we were able to infer basic metadata from our data file. But describing data doesn't end here - we can provide additional information that we discussed earlier:
 
 ```python script title="Python"
-from frictionless import describe_schema
+from frictionless import Schema
 
-schema = describe_schema("country-1.csv")
+schema = Schema.describe("country-1.csv")
 schema.get_field("id").title = "Identifier"
 schema.get_field("neighbor_id").title = "Identifier of the neighbor"
 schema.get_field("name").title = "Name of the country"

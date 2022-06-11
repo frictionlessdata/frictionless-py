@@ -1,4 +1,5 @@
 # TODO: rename into program
+import sys
 import typer
 from typing import Optional
 from .. import settings
@@ -6,7 +7,17 @@ from .. import settings
 
 # Program
 
-program = typer.Typer()
+
+# TODO: remove this hack when Typer supports not-found commands catching
+# https://github.com/tiangolo/typer/issues/18
+class Program(typer.Typer):
+    def __call__(self, *args, **kwargs):
+        if sys.argv[1].count("."):
+            sys.argv = [sys.argv[0], "summary", sys.argv[1]]
+        return super().__call__(*args, **kwargs)
+
+
+program = Program()
 
 
 # Helpers

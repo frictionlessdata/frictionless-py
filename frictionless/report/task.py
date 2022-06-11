@@ -1,6 +1,7 @@
 from __future__ import annotations
 import functools
 from copy import deepcopy
+from tabulate import tabulate
 from importlib import import_module
 from typing import TYPE_CHECKING, Optional, List, Any
 from ..metadata import Metadata
@@ -191,6 +192,41 @@ class ReportTask(Metadata):
             context.update(error)
             result.append([context.get(prop) for prop in spec])
         return result
+
+    # Export/Import
+
+    def to_summary(self) -> str:
+        """Generate summary for validation task"
+
+        Returns:
+            str: validation summary
+        """
+        source = self.path or self.name
+        # For zipped resources append file name
+        if self.innerpath:
+            source = f"{source} => {self.innerpath}"
+        # Prepare error lists and last row checked(in case of partial validation)
+        error_list = {}
+        for error in self.errors:
+            error_title = f"{error.name} ({error.code})"
+            if error_title not in error_list:
+                error_list[error_title] = 0
+            error_list[error_title] += 1
+        content = [
+            ["File name", source],
+            ["File size", helpers.format_bytes(self.stats["bytes"])],
+            ["Total Time", self.time],
+            ["Rows Checked", self.stats["rows"]],
+        ]
+        if error_list:
+            content.append(["Total Errors", sum(error_list.values())])
+        for code, count in error_list.items():
+            content.append([code, count])
+        output = ""
+        if self.warning:
+            output += f">> {self.warning}\n\n"
+        output += tabulate(content, headers=["Name", "Value"], tablefmt="grid")
+        return output
 
     # Metadata
 
