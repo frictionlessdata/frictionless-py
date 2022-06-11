@@ -9,6 +9,7 @@ if TYPE_CHECKING:
     from ..interfaces import IDescriptor
 
 
+# TODO: support data?
 # TODO: support descriptor
 # TODO: split into ResourceInquiryTask/PackageInqiuryTask?
 
