@@ -8,7 +8,6 @@ if TYPE_CHECKING:
     from .inquiry import Inquiry
 
 
-# TODO: return data validation
 def validate(inquiry: "Inquiry", *, parallel=False):
     """Validate inquiry
 
