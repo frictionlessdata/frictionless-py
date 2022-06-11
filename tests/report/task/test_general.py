@@ -5,6 +5,14 @@ from frictionless import ReportTask
 
 
 def test_report_task():
-    task = ReportTask(name="name", path="path", errors=[])
+    task = ReportTask(
+        valid=True,
+        name="name",
+        place="place",
+        tabular=True,
+        stats={"time": 1},
+    )
     assert task.name == "name"
-    assert task.path == "path"
+    assert task.place == "place"
+    assert task.tabular is True
+    assert task.stats == {"time": 1}

@@ -11,6 +11,7 @@ if TYPE_CHECKING:
 # General
 
 
+IDescriptor = Union[str, dict]
 IByteStream = BinaryIO
 ITextStream = TextIO
 IListStream = Iterable[List[Any]]

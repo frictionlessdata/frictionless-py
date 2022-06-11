@@ -5,7 +5,6 @@
   "type": "object",
   "required": [
     "version",
-    "time",
     "valid",
     "stats",
     "errors",
@@ -17,11 +16,6 @@
       "title": "Version",
       "description": "Frictionless version"
     },
-    "time": {
-      "type": "number",
-      "title": "Time",
-      "description": "The overall time it took to run validation"
-    },
     "valid": {
       "type": "boolean",
       "title": "Valid",
@@ -32,6 +26,7 @@
       "title": "Stats",
       "description": "Validation stats",
       "properties": {
+        "time": {"type": "number"},
         "errors": {"type": "number"},
         "tasks": {"type": "number"}
       }
@@ -97,39 +92,32 @@
       "items": {
         "type": "object",
         "required": [
-          "name",
-          "time",
           "valid",
+          "name",
           "scope",
           "stats",
           "errors"
         ],
         "properties": {
+          "valid": {
+            "type": "boolean",
+            "title": "Valid",
+            "description": "The validation result."
+          },
           "name": {
             "type": "string",
             "title": "Name",
             "description": "Resource name."
           },
-          "path": {
+          "place": {
             "type": "string",
-            "title": "Path",
-            "description": "Resource path."
+            "title": "Place",
+            "description": "Resource place."
           },
-          "innerpath": {
-            "type": "string",
-            "title": "Innerpath",
-            "description": "Resource compression path."
-          },
-          "time": {
-            "type": "number",
-            "title": "Time",
-            "description": "The time it took to validate this table.",
-            "minimum": 0
-          },
-          "valid": {
+          "tabular": {
             "type": "boolean",
-            "title": "Valid",
-            "description": "The validation result."
+            "title": "Tabular",
+            "description": "Whether resource is tabular."
           },
           "scope": {
             "type": "array",
@@ -137,16 +125,16 @@
             "description": "List of errors codes the table has been checked for.",
             "items": {"type": "string"}
           },
-          "partial": {
-            "type": "boolean",
-            "title": "Partial",
-            "description": "Whether the validation was stopped because of an error limit."
-          },
           "stats": {
             "type": "object",
             "title": "Stats",
             "description": "Validation task stats",
             "properties": {
+              "time": {"type": "number"},
+              "hash": {"type": "string"},
+              "bytes": {"type": "number"},
+              "fields": {"type": "number"},
+              "rows": {"type": "number"},
               "errors": {"type": "number"}
             }
           },

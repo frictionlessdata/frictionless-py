@@ -103,9 +103,10 @@ def ensure_open(thing):
             thing.close()
 
 
-def copy_merge(source, patch):
+def copy_merge(source, patch={}, **kwargs):
     source = (source or {}).copy()
     source.update(patch)
+    source.update(kwargs)
     return source
 
 

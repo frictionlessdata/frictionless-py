@@ -9,16 +9,24 @@ from frictionless import validate, helpers
 def test_report():
     report = validate("data/table.csv")
     # Report
-    assert report.version.startswith("3") or report.version.startswith("4")
-    assert report.time
+    assert report.version
     assert report.valid is True
-    assert report.stats == {"errors": 0, "tasks": 1}
+    assert report.stats["time"]
+    assert report.stats["errors"] == 0
+    assert report.stats["tasks"] == 1
     assert report.errors == []
     # Task
-    assert report.task.path == "data/table.csv"
-    assert report.task.innerpath == ""
-    assert report.task.time
     assert report.task.valid is True
+    assert report.task.name == "table"
+    assert report.task.place == "data/table.csv"
+    assert report.task.tabular is True
+    assert report.task.stats["time"]
+    assert report.task.stats["errors"] == 0
+    assert report.task.stats["bytes"] == 30
+    assert report.task.stats["fields"] == 2
+    assert report.task.stats["rows"] == 2
+    if not helpers.is_platform("windows"):
+        assert report.task.stats["hash"] == "6c2c61dd9b0e9c6876139a449ed87933"
     assert report.task.scope == [
         # File
         "hash-count",
@@ -45,14 +53,7 @@ def test_report():
         "constraint-error",
         "unique-error",
     ]
-    if not helpers.is_platform("windows"):
-        assert report.task.stats == {
-            "errors": 0,
-            "hash": "6c2c61dd9b0e9c6876139a449ed87933",
-            "bytes": 30,
-            "fields": 2,
-            "rows": 2,
-        }
+    assert report.warning is None
     assert report.errors == []
 
 

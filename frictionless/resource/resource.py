@@ -8,6 +8,7 @@ from copy import deepcopy
 from itertools import zip_longest, chain
 from typing import Optional
 from ..exception import FrictionlessException
+from ..helpers import cached_property
 from ..detector import Detector
 from ..metadata import Metadata
 from ..layout import Layout
@@ -383,6 +384,18 @@ class Resource(Metadata):
         if self.tabular:
             default = settings.DEFAULT_TABULAR_RESOURCE_PROFILE
         return self.get("profile", default)
+
+    @cached_property
+    def place(self):
+        """
+        Returns
+            str: resource place
+        """
+        if self.memory:
+            return "<memory>"
+        if self.innerpath:
+            return f"{self.path}:{self.innerpath}"
+        return self.path
 
     @Metadata.property
     def path(self):

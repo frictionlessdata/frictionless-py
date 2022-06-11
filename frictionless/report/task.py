@@ -1,11 +1,15 @@
 from __future__ import annotations
 from tabulate import tabulate
-from typing import Optional, List, Any
+from importlib import import_module
+from typing import TYPE_CHECKING, Optional, List
 from ..metadata import Metadata
 from ..errors import Error, ReportError
 from ..exception import FrictionlessException
 from .. import settings
 from .. import helpers
+
+if TYPE_CHECKING:
+    from ..interfaces import IDescriptor
 
 
 class ReportTask(Metadata):
@@ -30,38 +34,34 @@ class ReportTask(Metadata):
 
     def __init__(
         self,
-        descriptor: Optional[Any] = None,
-        *,
-        name: Optional[str] = None,
-        path: Optional[str] = None,
-        innerpath: Optional[str] = None,
-        memory: Optional[bool] = None,
-        tabular: Optional[bool] = None,
-        stats: Optional[dict] = None,
-        time: Optional[float] = None,
+        valid: bool,
+        name: str,
+        place: str,
+        tabular: bool,
+        stats: dict,
         scope: Optional[List[str]] = None,
-        errors: Optional[List[Error]] = None,
         warning: Optional[str] = None,
+        errors: Optional[List[Error]] = None,
     ):
-
-        # Store provided
+        scope = scope or []
+        errors = errors or []
+        self.setinitial("valid", valid)
         self.setinitial("name", name)
-        self.setinitial("path", path)
-        self.setinitial("innerpath", innerpath)
-        self.setinitial("memory", memory)
+        self.setinitial("place", place)
         self.setinitial("tabular", tabular)
-        self.setinitial("time", time)
+        self.setinitial("stats", stats)
         self.setinitial("scope", scope)
-        self.setinitial("errors", errors)
         self.setinitial("warning", warning)
-        super().__init__(descriptor)
+        self.setinitial("errors", errors)
+        super().__init__()
 
-        # Store computed
-        merged_stats = {"errors": len(self.errors)}
-        if stats:
-            merged_stats.update(stats)
-        self.setinitial("stats", merged_stats)
-        self.setinitial("valid", not self.errors)
+    @property
+    def valid(self) -> bool:
+        """
+        Returns:
+            bool: validation result
+        """
+        return self.get("valid")  # type: ignore
 
     @property
     def name(self):
@@ -72,28 +72,12 @@ class ReportTask(Metadata):
         return self.get("name")
 
     @property
-    def path(self):
+    def place(self):
         """
         Returns:
-            str: path
+            str: place
         """
-        return self.get("path")
-
-    @property
-    def innerpath(self):
-        """
-        Returns:
-            str: innerpath
-        """
-        return self.get("innerpath")
-
-    @property
-    def memory(self):
-        """
-        Returns:
-            bool: memory
-        """
-        return self.get("memory")
+        return self.get("place")
 
     @property
     def tabular(self):
@@ -104,20 +88,12 @@ class ReportTask(Metadata):
         return self.get("tabular")
 
     @property
-    def time(self):
+    def stats(self):
         """
         Returns:
-            float: validation time
+            dict: validation stats
         """
-        return self.get("time")
-
-    @property
-    def valid(self):
-        """
-        Returns:
-            bool: validation result
-        """
-        return self.get("valid")
+        return self.get("stats", {})
 
     @property
     def scope(self):
@@ -134,14 +110,6 @@ class ReportTask(Metadata):
             bool: if validation warning
         """
         return self.get("warning")
-
-    @property
-    def stats(self):
-        """
-        Returns:
-            dict: validation stats
-        """
-        return self.get("stats", {})
 
     @property
     def errors(self):
@@ -185,16 +153,28 @@ class ReportTask(Metadata):
 
     # Export/Import
 
+    @staticmethod
+    def from_descriptor(descriptor: IDescriptor):
+        metadata = Metadata(descriptor)
+        system = import_module("frictionless").system
+        errors = [system.create_error(error) for error in metadata.get("errors", [])]
+        return ReportTask(
+            valid=metadata.get("valid"),  # type: ignore
+            name=metadata.get("name"),  # type: ignore
+            place=metadata.get("place"),  # type: ignore
+            tabular=metadata.get("tabular"),  # type: ignore
+            stats=metadata.get("stats"),  # type: ignore
+            scope=metadata.get("scope"),  # type: ignore
+            warning=metadata.get("warning"),  # type: ignore
+            errors=errors,
+        )
+
     def to_summary(self) -> str:
         """Generate summary for validation task"
 
         Returns:
             str: validation summary
         """
-        source = self.path or self.name
-        # For zipped resources append file name
-        if self.innerpath:
-            source = f"{source} => {self.innerpath}"
         # Prepare error lists and last row checked(in case of partial validation)
         error_list = {}
         for error in self.errors:
@@ -203,10 +183,10 @@ class ReportTask(Metadata):
                 error_list[error_title] = 0
             error_list[error_title] += 1
         content = [
-            ["File name", source],
+            ["File place", self.place],
             ["File size", helpers.format_bytes(self.stats["bytes"])],
-            ["Total Time", self.time],
-            ["Rows Checked", self.stats["rows"]],
+            ["Total Time", self.stats.get("time")],
+            ["Rows Checked", self.stats.get("rows")],
         ]
         if error_list:
             content.append(["Total Errors", sum(error_list.values())])
@@ -222,3 +202,13 @@ class ReportTask(Metadata):
 
     metadata_Error = ReportError
     metadata_profile = settings.REPORT_PROFILE["properties"]["tasks"]["items"]
+
+    def metadata_validate(self):
+        yield from super().metadata_validate()
+
+        # Stats
+        # TODO: validate valid/errors count
+        # TODO: validate stats when the class is added
+
+        # Errors
+        # TODO: validate errors when metadata is reworked

@@ -2,7 +2,8 @@ from __future__ import annotations
 import textwrap
 from copy import deepcopy
 from tabulate import tabulate
-from typing import TYPE_CHECKING, Optional, List, Any
+from importlib import import_module
+from typing import TYPE_CHECKING, Optional, List
 from ..metadata import Metadata
 from ..errors import Error, ReportError
 from ..exception import FrictionlessException
@@ -12,6 +13,7 @@ from .. import settings
 from .. import helpers
 
 if TYPE_CHECKING:
+    from ..interfaces import IDescriptor
     from ..resource import Resource
 
 
@@ -42,30 +44,20 @@ class Report(Metadata):
 
     def __init__(
         self,
-        descriptor: Optional[Any] = None,
-        *,
-        time: Optional[float] = None,
+        version: str,
+        valid: bool,
+        stats: dict,
+        tasks: Optional[List[ReportTask]] = None,
         errors: Optional[List[Error]] = None,
         warning: Optional[str] = None,
-        tasks: Optional[List[ReportTask]] = None,
     ):
-
-        # Store provided
-        self.setinitial("version", settings.VERSION)
-        self.setinitial("time", time)
+        self.setinitial("version", version)
+        self.setinitial("valid", valid)
+        self.setinitial("stats", stats)
+        self.setinitial("tasks", tasks)
         self.setinitial("errors", errors)
         self.setinitial("warning", warning)
-        self.setinitial("tasks", tasks)
-        super().__init__(descriptor)
-
-        # TODO: remove after metadata rework
-        self.setdefault("errors", [])
-        self.setdefault("tasks", [])
-
-        # Store computed
-        error_count = len(self.errors) + sum(task.stats["errors"] for task in self.tasks)
-        self.setinitial("stats", {"errors": error_count, "tasks": len(self.tasks)})
-        self.setinitial("valid", not error_count)
+        super().__init__()
 
     @property
     def version(self):
@@ -74,14 +66,6 @@ class Report(Metadata):
             str: frictionless version
         """
         return self.get("version")
-
-    @property
-    def time(self):
-        """
-        Returns:
-            float: validation time
-        """
-        return self.get("time")
 
     @property
     def valid(self):
@@ -170,31 +154,73 @@ class Report(Metadata):
     # Export/Import
 
     @staticmethod
-    def from_resource(
+    def from_descriptor(descriptor: IDescriptor):
+        metadata = Metadata(descriptor)
+        system = import_module("frictionless").system
+        errors = [system.create_error(error) for error in metadata.get("errors", [])]
+        tasks = [ReportTask.from_descriptor(task) for task in metadata.get("tasks", [])]
+        return Report(
+            version=metadata.get("version"),  # type: ignore
+            valid=metadata.get("valid"),  # type: ignore
+            stats=metadata.get("stats"),  # type: ignore
+            scope=metadata.get("scope"),  # type: ignore
+            warning=metadata.get("warning"),  # type: ignore
+            errors=errors,
+            tasks=tasks,
+        )
+
+    @staticmethod
+    def from_validate(
+        time: float,
+        tasks: Optional[List[ReportTask]] = None,
+        errors: Optional[List[Error]] = None,
+        warning: Optional[str] = None,
+    ):
+        """Create a report from a validation"""
+        tasks = tasks or []
+        errors = errors or []
+        error_count = len(errors) + sum(task.stats["errors"] for task in tasks)
+        stats = {"time": time, "errors": error_count}
+        return Report(
+            version=settings.VERSION,
+            valid=not error_count,
+            stats=stats,
+            tasks=tasks,
+            errors=errors,
+            warning=warning,
+        )
+
+    @staticmethod
+    def from_validate_task(
         resource: Resource,
         *,
         time: float,
-        scope: List[str] = [],
-        errors: List[Error] = [],
+        scope: Optional[List[str]] = None,
+        errors: Optional[List[Error]] = None,
         warning: Optional[str] = None,
     ):
-        """Create a report from a task"""
+        """Create a report from a validation task"""
+        scope = scope or []
+        errors = errors or []
+        task_stats = helpers.copy_merge(resource.stats, time=time, errors=len(errors))
+        report_stats = {"time": time, "tasks": 1, "errors": len(errors)}
         return Report(
+            version=settings.VERSION,
+            valid=not errors,
+            stats=report_stats,
+            errors=[],
             tasks=[
                 ReportTask(
+                    valid=not errors,
                     name=resource.name,  # type: ignore
-                    path=resource.path,  # type: ignore
-                    innerpath=resource.innerpath,  # type: ignore
-                    memory=resource.memory,  # type: ignore
+                    place=resource.place,  # type: ignore
                     tabular=resource.tabular,  # type: ignore
-                    stats=resource.stats,  # type: ignore
+                    stats=task_stats,
+                    scope=scope,
                     warning=warning,
                     errors=errors,
-                    scope=scope,
-                    time=time,
                 )
             ],
-            time=time,
         )
 
     def to_summary(self):
@@ -253,26 +279,19 @@ class Report(Metadata):
     metadata_profile = deepcopy(settings.REPORT_PROFILE)
     metadata_profile["properties"]["tasks"] = {"type": "array"}
 
-    def metadata_process(self):
-
-        # Tasks
-        tasks = self.get("tasks")
-        if isinstance(tasks, list):
-            for index, task in enumerate(tasks):
-                if not isinstance(task, ReportTask):
-                    task = ReportTask(task)
-                    list.__setitem__(tasks, index, task)
-            if not isinstance(tasks, helpers.ControlledList):
-                tasks = helpers.ControlledList(tasks)
-                tasks.__onchange__(self.metadata_process)
-                dict.__setitem__(self, "tasks", tasks)
-
     def metadata_validate(self):
         yield from super().metadata_validate()
+
+        # Stats
+        # TODO: validate valid/errors count
+        # TODO: validate stats when the class is added
 
         # Tasks
         for task in self.tasks:
             yield from task.metadata_errors
+
+        # Errors
+        # TODO: validate errors when metadata is reworked
 
 
 # TODO: Temporary function to use with tabulate  tabulate 0.8.9 does not support text wrap
