@@ -55,7 +55,6 @@ EXTRAS_REQUIRE = {
     "ods": ["ezodf>=0.3", "lxml>=4.0"],
     "pandas": ["pandas>=1.0"],
     "s3": ["boto3>=1.9"],
-    "server": ["gunicorn>=20.0", "flask>=1.1"],
     "spss": ["savReaderWriter>=3.0"],
     "sql": ["sqlalchemy>=1.3"],
     "dev": TESTS_REQUIRE,
@@ -63,11 +62,15 @@ EXTRAS_REQUIRE = {
 INSTALL_REQUIRES = [
     "petl>=1.6",
     "marko>=1.0",
+    "jinja2>=3.0",
     "pyyaml>=5.3",
     "isodate>=0.6",
     "rfc3986>=1.4",
     "chardet>=3.0",
+    "fastapi>=0.78",
+    "uvicorn>=0.17",
     "requests>=2.10",
+    "tabulate>=0.8.9",
     "jsonschema>=2.5",
     "simpleeval>=0.9.11",
     "stringcase>=1.2",
@@ -75,9 +78,6 @@ INSTALL_REQUIRES = [
     "validators>=0.18",
     "python-slugify>=1.2",
     "python-dateutil>=2.8",
-    "tableschema-to-template>=0.0.12",
-    "tabulate>=0.8.9",
-    "jinja2>=3.0.3",
 ]
 README = read("README.md")
 VERSION = read(PACKAGE, "assets", "VERSION")

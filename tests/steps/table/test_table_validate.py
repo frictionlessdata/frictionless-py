@@ -1,5 +1,5 @@
 import pytest
-from frictionless import Resource, FrictionlessException, steps
+from frictionless import Resource, Pipeline, FrictionlessException, steps
 
 
 # General
@@ -7,12 +7,13 @@ from frictionless import Resource, FrictionlessException, steps
 
 def test_step_table_validate():
     source = Resource("data/transform.csv")
-    target = source.transform(
+    pipeline = Pipeline(
         steps=[
             steps.cell_set(field_name="population", value="bad"),
             steps.table_validate(),
         ],
     )
+    target = source.transform(pipeline)
     assert target.schema == {
         "fields": [
             {"name": "id", "type": "integer"},

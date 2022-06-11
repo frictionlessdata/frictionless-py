@@ -1,4 +1,4 @@
-from frictionless import Package, steps
+from frictionless import Package, Pipeline, steps
 
 
 # General
@@ -6,19 +6,21 @@ from frictionless import Package, steps
 
 def test_step_resource_update():
     source = Package("data/package/datapackage.json")
-    target = source.transform(
+    pipeline = Pipeline(
         steps=[
             steps.resource_update(name="data", title="New title"),
         ],
     )
+    target = source.transform(pipeline)
     assert target.get_resource("data").title == "New title"
 
 
 def test_step_resource_update_new_name():
     source = Package("data/package/datapackage.json")
-    target = source.transform(
+    pipeline = Pipeline(
         steps=[
             steps.resource_update(name="data", new_name="new-name"),
         ],
     )
+    target = source.transform(pipeline)
     assert target.get_resource("new-name").path == "data.csv"

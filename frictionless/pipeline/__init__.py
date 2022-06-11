@@ -1,1 +1,1 @@
-from .pipeline import Pipeline, PipelineTask
+from .pipeline import Pipeline

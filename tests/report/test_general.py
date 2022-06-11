@@ -1,8 +1,6 @@
+import pytest
 import pprint
 from frictionless import validate, helpers
-
-
-IS_UNIX = not helpers.is_platform("windows")
 
 
 # General
@@ -17,38 +15,17 @@ def test_report():
     assert report.stats == {"errors": 0, "tasks": 1}
     assert report.errors == []
     # Task
-    assert report.task.resource.path == "data/table.csv"
-    assert report.task.resource.scheme == "file"
-    assert report.task.resource.format == "csv"
-    assert report.task.resource.hashing == "md5"
-    assert report.task.resource.encoding == "utf-8"
-    assert report.task.resource.innerpath == ""
-    assert report.task.resource.compression == ""
-    assert report.task.resource.dialect == {}
-    assert report.task.resource.layout == {}
-    assert report.task.resource.header == ["id", "name"]
-    assert report.task.resource.schema == {
-        "fields": [
-            {"name": "id", "type": "integer"},
-            {"name": "name", "type": "string"},
-        ],
-    }
-    if IS_UNIX:
-        assert report.task.resource.stats == {
-            "hash": "6c2c61dd9b0e9c6876139a449ed87933",
-            "bytes": 30,
-            "fields": 2,
-            "rows": 2,
-        }
+    assert report.task.path == "data/table.csv"
+    assert report.task.innerpath == ""
     assert report.task.time
     assert report.task.valid is True
     assert report.task.scope == [
         # File
-        "hash-count-error",
-        "byte-count-error",
+        "hash-count",
+        "byte-count",
         # Table
-        "field-count-error",
-        "row-count-error",
+        "field-count",
+        "row-count",
         # Header
         "blank-header",
         # Label
@@ -59,8 +36,8 @@ def test_report():
         "incorrect-label",
         # Row
         "blank-row",
-        "primary-key-error",
-        "foreign-key-error",
+        "primary-key",
+        "foreign-key",
         # Cell
         "extra-cell",
         "missing-cell",
@@ -68,25 +45,25 @@ def test_report():
         "constraint-error",
         "unique-error",
     ]
-    assert report.task.stats == {
-        "errors": 0,
-    }
+    if not helpers.is_platform("windows"):
+        assert report.task.stats == {
+            "errors": 0,
+            "hash": "6c2c61dd9b0e9c6876139a449ed87933",
+            "bytes": 30,
+            "fields": 2,
+            "rows": 2,
+        }
     assert report.errors == []
 
 
+# TODO: do we need report.expand?
+@pytest.mark.skip
 def test_report_expand():
     report = validate("data/table.csv")
     report.expand()
-    assert report.task.resource.schema == {
-        "fields": [
-            {"name": "id", "type": "integer", "format": "default", "bareNumber": True},
-            {"name": "name", "type": "string", "format": "default"},
-        ],
-        "missingValues": [""],
-    }
 
 
-# Import/Export
+# Export/Import
 
 
 def test_report_to_json_with_bytes_serialization_issue_836():
@@ -103,7 +80,7 @@ def test_report_to_yaml_with_bytes_serialization_issue_836():
     assert "binary" not in descriptor
 
 
-# Issues
+# Problems
 
 
 def test_report_pprint_1029():

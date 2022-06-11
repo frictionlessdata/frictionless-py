@@ -1,4 +1,4 @@
-from frictionless import Resource, steps
+from frictionless import Resource, Pipeline, steps
 
 
 # General
@@ -6,12 +6,13 @@ from frictionless import Resource, steps
 
 def test_step_field_unpack():
     source = Resource(path="data/transform.csv")
-    target = source.transform(
+    pipeline = Pipeline(
         steps=[
             steps.field_update(name="id", type="array", value=[1, 1]),
             steps.field_unpack(name="id", to_names=["id2", "id3"]),
         ],
     )
+    target = source.transform(pipeline)
     assert target.schema == {
         "fields": [
             {"name": "name", "type": "string"},
@@ -29,12 +30,13 @@ def test_step_field_unpack():
 
 def test_step_field_unpack_with_preserve():
     source = Resource(path="data/transform.csv")
-    target = source.transform(
+    pipeline = Pipeline(
         steps=[
             steps.field_update(name="id", type="array", value=[1, 1]),
             steps.field_unpack(name="id", to_names=["id2", "id3"], preserve=True),
         ],
     )
+    target = source.transform(pipeline)
     assert target.schema == {
         "fields": [
             {"name": "id", "type": "array"},
@@ -53,12 +55,13 @@ def test_step_field_unpack_with_preserve():
 
 def test_step_field_unpack_source_is_object():
     source = Resource(path="data/transform.csv")
-    target = source.transform(
+    pipeline = Pipeline(
         steps=[
             steps.field_update(name="id", type="object", value={"note": "eu"}),
             steps.field_unpack(name="id", to_names=["note"]),
         ],
     )
+    target = source.transform(pipeline)
     assert target.schema == {
         "fields": [
             {"name": "name", "type": "string"},

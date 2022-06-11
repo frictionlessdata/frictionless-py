@@ -1,11 +1,7 @@
 from frictionless import Package, helpers
 
 
-IS_UNIX = not helpers.is_platform("windows")
-BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
-
-
-# Schema
+# General
 
 
 DESCRIPTOR_FK = {
@@ -80,7 +76,7 @@ def test_package_schema_foreign_key_invalid():
     rows = resource.read_rows()
     assert rows[0].valid
     assert rows[1].valid
-    assert rows[2].errors[0].code == "foreign-key-error"
+    assert rows[2].errors[0].code == "foreign-key"
     assert rows[0].to_dict() == {
         "id": "1",
         "name": "Alex",
@@ -123,7 +119,7 @@ def test_package_schema_foreign_key_self_reference_invalid():
     rows = resource.read_rows()
     assert rows[0].valid
     assert rows[1].valid
-    assert rows[2].errors[0].code == "foreign-key-error"
+    assert rows[2].errors[0].code == "foreign-key"
 
 
 def test_package_schema_foreign_key_multifield():
@@ -154,4 +150,4 @@ def test_package_schema_foreign_key_multifield_invalid():
     rows = resource.read_rows()
     assert rows[0].valid
     assert rows[1].valid
-    assert rows[2].errors[0].code == "foreign-key-error"
+    assert rows[2].errors[0].code == "foreign-key"

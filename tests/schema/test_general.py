@@ -305,7 +305,7 @@ def test_schema_standard_specs_properties(create_descriptor):
     assert schema.foreign_keys == []
 
 
-# Issues
+# Problems
 
 
 def test_schema_field_date_format_issue_177():

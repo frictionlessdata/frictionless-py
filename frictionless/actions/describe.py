@@ -49,5 +49,4 @@ def describe(
         return Schema.describe(source, expand=expand, **options)
 
     # Not supported
-    note = f"Not supported describe type: {type}"
-    raise FrictionlessException(errors.GeneralError(note=note))
+    raise FrictionlessException(f"Not supported describe type: {type}")

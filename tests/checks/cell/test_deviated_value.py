@@ -1,4 +1,5 @@
-from frictionless import Resource, checks
+import pytest
+from frictionless import Resource, Checklist, checks
 
 
 # General
@@ -7,15 +8,16 @@ from frictionless import Resource, checks
 def test_validate_deviated_value():
     source = [["temperature"], [1], [-2], [7], [0], [1], [2], [5], [-4], [100], [8], [3]]
     resource = Resource(source)
-    report = resource.validate(
+    checklist = Checklist(
         checks=[
             checks.deviated_value(
                 field_name="temperature",
                 average="median",
                 interval=3,
             )
-        ],
+        ]
     )
+    report = resource.validate(checklist)
     assert report.flatten(["code", "note"]) == [
         [
             "deviated-value",
@@ -30,9 +32,10 @@ def test_value_deviated_value_not_enough_data():
         [1],
     ]
     resource = Resource(source)
-    report = resource.validate(
-        checks=[{"code": "deviated-value", "fieldName": "temperature"}]
+    checklist = Checklist(
+        {"checks": [{"code": "deviated-value", "fieldName": "temperature"}]}
     )
+    report = resource.validate(checklist)
     assert report.flatten(["code", "note"]) == []
 
 
@@ -41,8 +44,9 @@ def test_validate_deviated_value_not_a_number():
         ["row", "name"],
         [2, "Alex"],
     ]
+    checklist = Checklist({"checks": [{"code": "deviated-value", "fieldName": "name"}]})
     resource = Resource(source)
-    report = resource.validate(checks=[{"code": "deviated-value", "fieldName": "name"}])
+    report = resource.validate(checklist)
     assert report.flatten(["code", "note"]) == [
         ["check-error", 'deviated value check requires field "name" to be numeric'],
     ]
@@ -53,8 +57,9 @@ def test_validate_deviated_value_non_existent_field():
         ["row", "name"],
         [2, "Alex"],
     ]
+    checklist = Checklist({"checks": [{"code": "deviated-value", "fieldName": "bad"}]})
     resource = Resource(source)
-    report = resource.validate(checks=[{"code": "deviated-value", "fieldName": "bad"}])
+    report = resource.validate(checklist)
     assert report.flatten(["code", "note"]) == [
         ["check-error", 'deviated value check requires field "bad" to exist'],
     ]
@@ -66,11 +71,14 @@ def test_validate_deviated_value_incorrect_average():
         [2, "Alex"],
     ]
     resource = Resource(source)
-    report = resource.validate(
-        checks=[
-            {"code": "deviated-value", "fieldName": "row", "average": "bad"},
-        ]
+    checklist = Checklist(
+        {
+            "checks": [
+                {"code": "deviated-value", "fieldName": "row", "average": "bad"},
+            ]
+        }
     )
+    report = resource.validate(checklist)
     assert report.flatten(["code", "note"]) == [
         [
             "check-error",

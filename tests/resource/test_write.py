@@ -2,11 +2,7 @@ import pytest
 from frictionless import Resource, FrictionlessException, helpers
 
 
-IS_UNIX = not helpers.is_platform("windows")
-BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
-
-
-# Write
+# General
 
 
 def test_resource_write(tmpdir):
@@ -39,4 +35,4 @@ def test_resource_write_format_error_bad_format(tmpdir):
         source.write(target)
     error = excinfo.value.error
     assert error.code == "format-error"
-    assert error.note == 'cannot create parser "bad". Try installing "frictionless-bad"'
+    assert error.note.count('format "bad" is not supported')

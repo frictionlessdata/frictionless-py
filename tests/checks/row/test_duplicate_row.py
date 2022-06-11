@@ -1,4 +1,4 @@
-from frictionless import Resource, checks
+from frictionless import Resource, Checklist, checks
 
 
 # General
@@ -6,7 +6,8 @@ from frictionless import Resource, checks
 
 def test_validate_duplicate_row():
     resource = Resource("data/duplicate-rows.csv")
-    report = resource.validate(checks=[checks.duplicate_row()])
+    checklist = Checklist(checks=[checks.duplicate_row()])
+    report = resource.validate(checklist)
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [4, None, "duplicate-row"],
     ]
@@ -14,5 +15,6 @@ def test_validate_duplicate_row():
 
 def test_validate_duplicate_row_valid():
     resource = Resource("data/table.csv")
-    report = resource.validate(checks=[{"code": "duplicate-row"}])
+    checklist = Checklist({"checks": [{"code": "duplicate-row"}]})
+    report = resource.validate(checklist)
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == []

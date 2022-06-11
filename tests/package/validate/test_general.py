@@ -1,10 +1,7 @@
 import json
 import pytest
 import pathlib
-from frictionless import Package, Resource, Schema, Field, Detector, helpers
-
-
-IS_UNIX = not helpers.is_platform("windows")
+from frictionless import Package, Resource, Schema, Field, Detector, Checklist, helpers
 
 
 # General
@@ -31,7 +28,7 @@ def test_validate_package_from_dict_invalid():
             ["taskPosition", "rowPosition", "fieldPosition", "code"]
         ) == [
             [1, 3, None, "blank-row"],
-            [1, 3, None, "primary-key-error"],
+            [1, 3, None, "primary-key"],
             [2, 4, None, "blank-row"],
         ]
 
@@ -47,7 +44,7 @@ def test_validate_package_from_path_invalid():
     report = package.validate()
     assert report.flatten(["taskPosition", "rowPosition", "fieldPosition", "code"]) == [
         [1, 3, None, "blank-row"],
-        [1, 3, None, "primary-key-error"],
+        [1, 3, None, "primary-key"],
         [2, 4, None, "blank-row"],
     ]
 
@@ -63,7 +60,7 @@ def test_validate_package_from_zip_invalid():
     report = package.validate()
     assert report.flatten(["taskPosition", "rowPosition", "fieldPosition", "code"]) == [
         [1, 3, None, "blank-row"],
-        [1, 3, None, "primary-key-error"],
+        [1, 3, None, "primary-key"],
         [2, 4, None, "blank-row"],
     ]
 
@@ -81,31 +78,10 @@ def test_validate_package_with_non_tabular():
     assert report.valid
 
 
-# TODO: move to actions.validate
-@pytest.mark.skip
-def test_validate_package_invalid_descriptor_path():
-    package = Package("bad/datapackage.json")
-    report = package.validate()
-    assert report["stats"]["errors"] == 1
-    error = report["errors"][0]
-    assert error["code"] == "package-error"
-    assert error["note"].count("[Errno 2]") and error["note"].count(
-        "bad/datapackage.json"
-    )
-
-
-def test_validate_package_invalid_package():
-    package = Package({"resources": [{"path": "data/table.csv", "schema": "bad"}]})
-    report = package.validate()
-    assert report["stats"]["errors"] == 1
-    error = report["errors"][0]
-    assert error["code"] == "schema-error"
-    assert error["note"].count("[Errno 2]") and error["note"].count("'bad'")
-
-
 def test_validate_package_invalid_package_original():
     package = Package({"resources": [{"path": "data/table.csv"}]})
-    report = package.validate(original=True)
+    checklist = Checklist(keep_original=True)
+    report = package.validate(checklist)
     assert report.flatten(["code", "note"]) == [
         [
             "resource-error",
@@ -167,23 +143,6 @@ def test_validate_package_with_schema_as_string():
     assert report.valid
 
 
-def test_validate_package_single_resource():
-    package = Package("data/datapackage.json")
-    report = package.validate(resource_name="number-two")
-    assert report.valid
-
-
-def test_validate_package_single_resource_wrong_resource_name():
-    package = Package("data/datapackage.json")
-    report = package.validate(resource_name="number-twoo")
-    assert report.flatten(["code", "message"]) == [
-        [
-            "package-error",
-            'The data package has an error: resource "number-twoo" does not exist',
-        ]
-    ]
-
-
 # Problems
 
 
@@ -191,19 +150,6 @@ def test_validate_package_mixed_issue_170():
     package = Package("data/infer/datapackage.json")
     report = package.validate()
     assert report.valid
-
-
-# TODO: move to actions.validate
-@pytest.mark.skip
-def test_validate_package_invalid_json_issue_192():
-    package = Package("data/invalid.json")
-    report = package.validate()
-    assert report.flatten(["code", "note"]) == [
-        [
-            "package-error",
-            'cannot extract metadata "data/invalid.json" because "Expecting property name enclosed in double quotes: line 2 column 5 (char 6)"',
-        ]
-    ]
 
 
 def test_validate_package_composite_primary_key_unique_issue_215():
@@ -238,9 +184,10 @@ def test_validate_package_composite_primary_key_not_unique_issue_215():
         ],
     }
     package = Package(descriptor)
-    report = package.validate(skip_errors=["duplicate-row"])
+    checklist = Checklist(skip_errors=["duplicate-row"])
+    report = package.validate(checklist)
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [3, None, "primary-key-error"],
+        [3, None, "primary-key"],
     ]
 
 
@@ -298,8 +245,8 @@ def test_validate_package_uppercase_format_issue_494():
         assert report.stats["tasks"] == 1
 
 
-# See also: https://github.com/frictionlessdata/project/discussions/678
 # TODO: recover
+# See also: https://github.com/frictionlessdata/project/discussions/678
 @pytest.mark.skip
 def test_validate_package_using_detector_schema_sync_issue_847():
     package = Package(
@@ -311,7 +258,7 @@ def test_validate_package_using_detector_schema_sync_issue_847():
         ]
     )
     report = package.validate()
-    for resource in package.resources:
+    for resource in package.resources:  # type: ignore
         resource.detector = Detector(schema_sync=True)
     package = Package(package)
     assert report.valid
@@ -328,7 +275,7 @@ def test_validate_package_descriptor_type_package_invalid():
     report = package.validate()
     assert report.flatten() == [
         [1, 3, None, "blank-row"],
-        [1, 3, None, "primary-key-error"],
+        [1, 3, None, "primary-key"],
         [2, 4, None, "blank-row"],
     ]
 

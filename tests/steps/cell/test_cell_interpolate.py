@@ -1,4 +1,4 @@
-from frictionless import Resource, steps
+from frictionless import Resource, Pipeline, steps
 
 
 # General
@@ -6,13 +6,14 @@ from frictionless import Resource, steps
 
 def test_step_cell_interpolate():
     source = Resource(path="data/transform.csv")
-    target = source.transform(
+    pipeline = Pipeline(
         steps=[
             steps.field_update(name="id", type="string"),
             steps.field_update(name="population", type="string"),
             steps.cell_interpolate(template="Prefix: %s"),
         ],
     )
+    target = source.transform(pipeline)
     assert target.schema == {
         "fields": [
             {"name": "id", "type": "string"},
@@ -29,11 +30,12 @@ def test_step_cell_interpolate():
 
 def test_step_cell_interpolate_with_name():
     source = Resource(path="data/transform.csv")
-    target = source.transform(
+    pipeline = Pipeline(
         steps=[
             steps.cell_interpolate(template="Prefix: %s", field_name="name"),
         ],
     )
+    target = source.transform(pipeline)
     assert target.schema == {
         "fields": [
             {"name": "id", "type": "integer"},

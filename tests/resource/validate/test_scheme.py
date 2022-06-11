@@ -1,7 +1,7 @@
 from frictionless import Resource, helpers
 
 
-IS_UNIX = not helpers.is_platform("windows")
+# General
 
 
 def test_validate_scheme():
@@ -14,5 +14,8 @@ def test_validate_scheme_invalid():
     resource = Resource("bad://data/table.csv")
     report = resource.validate()
     assert report.flatten(["code", "note"]) == [
-        ["scheme-error", 'cannot create loader "bad". Try installing "frictionless-bad"'],
+        [
+            "scheme-error",
+            'scheme "bad" is not supported. Try installing "frictionless-bad"',
+        ],
     ]

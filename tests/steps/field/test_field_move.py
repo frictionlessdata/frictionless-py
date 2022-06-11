@@ -1,4 +1,4 @@
-from frictionless import Resource, steps
+from frictionless import Resource, Pipeline, steps
 
 
 # General
@@ -6,11 +6,12 @@ from frictionless import Resource, steps
 
 def test_step_field_move():
     source = Resource(path="data/transform.csv")
-    target = source.transform(
+    pipeline = Pipeline(
         steps=[
             steps.field_move(name="id", position=3),
         ],
     )
+    target = source.transform(pipeline)
     assert target.schema == {
         "fields": [
             {"name": "name", "type": "string"},
@@ -25,7 +26,7 @@ def test_step_field_move():
     ]
 
 
-# Issues
+# Problems
 
 
 def test_transform_rename_move_field_issue_953():
@@ -36,13 +37,14 @@ def test_transform_rename_move_field_issue_953():
             {"id": 3, "name": "spain", "population": 47},
         ]
     )
-    target = source.transform(
+    pipeline = Pipeline(
         steps=[
             steps.table_normalize(),
             steps.field_update(name="name", new_name="country"),
             steps.field_move(name="country", position=3),
         ],
     )
+    target = source.transform(pipeline)
     assert target.schema == {
         "fields": [
             {"name": "id", "type": "integer"},

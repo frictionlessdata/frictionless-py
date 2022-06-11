@@ -17,7 +17,7 @@ class RowError(TableError):
 
     code = "row-error"
     name = "Row Error"
-    tags = ["#table", "#row"]
+    tags = ["#data", "#table", "#row"]
     template = "Row Error"
     description = "Row Error"
 
@@ -57,14 +57,14 @@ class BlankRowError(RowError):
 
 
 class PrimaryKeyError(RowError):
-    code = "primary-key-error"
+    code = "primary-key"
     name = "PrimaryKey Error"
     template = 'Row at position "{rowPosition}" violates the primary key: {note}'
     description = "Values in the primary key fields should be unique for every row"
 
 
 class ForeignKeyError(RowError):
-    code = "foreign-key-error"
+    code = "foreign-key"
     name = "ForeignKey Error"
     template = 'Row at position "{rowPosition}" violates the foreign key: {note}'
     description = "Values in the foreign key fields should exist in the reference table"

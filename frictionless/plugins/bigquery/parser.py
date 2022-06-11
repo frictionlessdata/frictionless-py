@@ -1,7 +1,6 @@
 # type: ignore
 from ...exception import FrictionlessException
 from ...parser import Parser
-from ... import errors
 from .storage import BigqueryStorage
 
 
@@ -37,6 +36,6 @@ class BigqueryParser(Parser):
         storage = BigqueryStorage(self.resource.data, dialect=target.dialect)
         if not target.dialect.table:
             note = 'Please provide "dialect.table" for writing'
-            raise FrictionlessException(errors.StorageError(note=note))
+            raise FrictionlessException(note)
         source.name = target.dialect.table
         storage.write_resource(source, force=True)

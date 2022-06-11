@@ -42,9 +42,12 @@ class baseline(Check):
         errors.UniqueError,
     ]
 
-    def __init__(self, descriptor=None, *, stats=None):
-        self.setinitial("stats", stats)
+    def __init__(self, descriptor=None):
         super().__init__(descriptor)
+
+    def connect(self, resource):
+        self.__stats = resource.stats.copy()
+        super().connect(resource)
 
     # Validate
 
@@ -59,50 +62,43 @@ class baseline(Check):
         yield from row.errors  # type: ignore
 
     def validate_end(self):
-        stats = self.get("stats", {})
+        hash = self.__stats.get("hash")
+        bytes = self.__stats.get("bytes")
+        fields = self.__stats.get("fields")
+        rows = self.__stats.get("rows")
 
         # Hash
-        if stats.get("hash"):
+        if hash:
             hashing = self.resource.hashing
-            if stats["hash"] != self.resource.stats["hash"]:  # type: ignore
+            if hash != self.resource.stats["hash"]:  # type: ignore
                 note = 'expected %s is "%s" and actual is "%s"'
-                note = note % (hashing, stats["hash"], self.resource.stats["hash"])  # type: ignore
+                note = note % (hashing, hash, self.resource.stats["hash"])  # type: ignore
                 yield errors.HashCountError(note=note)
 
         # Bytes
-        if stats.get("bytes"):
-            if stats["bytes"] != self.resource.stats["bytes"]:  # type: ignore
+        if bytes:
+            if bytes != self.resource.stats["bytes"]:  # type: ignore
                 note = 'expected is "%s" and actual is "%s"'
-                note = note % (stats["bytes"], self.resource.stats["bytes"])  # type: ignore
+                note = note % (bytes, self.resource.stats["bytes"])  # type: ignore
                 yield errors.ByteCountError(note=note)
 
         # Fields
-        if stats.get("fields"):
-            if stats["fields"] != self.resource.stats["fields"]:  # type: ignore
+        if fields:
+            if fields != self.resource.stats["fields"]:  # type: ignore
                 note = 'expected is "%s" and actual is "%s"'
-                note = note % (stats["fields"], self.resource.stats["fields"])  # type: ignore
+                note = note % (fields, self.resource.stats["fields"])  # type: ignore
                 yield errors.FieldCountError(note=note)
 
         # Rows
-        if stats.get("rows"):
-            if stats["rows"] != self.resource.stats["rows"]:  # type: ignore
+        if rows:
+            if rows != self.resource.stats["rows"]:  # type: ignore
                 note = 'expected is "%s" and actual is "%s"'
-                note = note % (stats["rows"], self.resource.stats["rows"])  # type: ignore
+                note = note % (rows, self.resource.stats["rows"])  # type: ignore
                 yield errors.RowCountError(note=note)
 
     # Metadata
 
     metadata_profile = {  # type: ignore
         "type": "object",
-        "properties": {
-            "stats": {
-                "type": "object",
-                "properties": {
-                    "hash": {"type": "string"},
-                    "bytes": {"type": "number"},
-                    "fields": {"type": "number"},
-                    "rows": {"type": "number"},
-                },
-            }
-        },
+        "properties": {},
     }

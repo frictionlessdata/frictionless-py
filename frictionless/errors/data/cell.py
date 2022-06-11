@@ -1,5 +1,4 @@
-from ..exception import FrictionlessException
-from .general import GeneralError
+from ...exception import FrictionlessException
 from .row import RowError
 
 
@@ -24,7 +23,7 @@ class CellError(RowError):
 
     code = "cell-error"
     name = "Cell Error"
-    tags = ["#table", "#row", "#cell"]
+    tags = ["#data", "#table", "#row", "#cell"]
     template = "Cell Error"
     description = "Cell Error"
 
@@ -84,8 +83,7 @@ class CellError(RowError):
                     field_number=field_number,
                     field_position=field_position,
                 )
-        error = GeneralError(note=f"Field {field_name} is not in the row")
-        raise FrictionlessException(error)
+        raise FrictionlessException(f"Field {field_name} is not in the row")
 
 
 class ExtraCellError(CellError):
@@ -98,7 +96,6 @@ class ExtraCellError(CellError):
 class MissingCellError(CellError):
     code = "missing-cell"
     name = "Missing Cell"
-    tags = ["#table", "#row", "#cell"]
     template = 'Row at position "{rowPosition}" has a missing cell in field "{fieldName}" at position "{fieldPosition}"'
     description = "This row has less values compared to the header row (the first row in the data source). A key concept is that all the rows in tabular data must have the same number of columns."
 
@@ -146,7 +143,7 @@ class SequentialValueError(CellError):
 
 
 class AsciiValueError(CellError):
-    code = "non-ascii"
-    name = "Non Ascii Value"
+    code = "ascii-value"
+    name = "Ascii Value"
     template = "The cell {cell} in row at position {rowPosition} and field {fieldName} at position {fieldPosition} has an error: {note}"
     description = "The cell contains non-ascii characters."

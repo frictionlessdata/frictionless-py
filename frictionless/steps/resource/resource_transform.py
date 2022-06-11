@@ -1,4 +1,5 @@
 from ...step import Step
+from ...pipeline import Pipeline
 from ...exception import FrictionlessException
 from ... import errors
 
@@ -28,7 +29,7 @@ class resource_transform(Step):
         if not resource:
             error = errors.ResourceError(note=f'No resource "{name}"')
             raise FrictionlessException(error=error)
-        package.resources[index] = resource.transform(steps=steps)  # type: ignore
+        package.resources[index] = resource.transform(Pipeline(steps=steps))  # type: ignore
 
     # Metadata
 

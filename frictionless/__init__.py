@@ -1,5 +1,6 @@
 from .actions import describe, extract, transform, validate
 from .check import Check
+from .checklist import Checklist
 from .control import Control
 from .detector import Detector
 from .dialect import Dialect
@@ -15,15 +16,14 @@ from .metadata import Metadata
 from .package import Package
 from .plugin import Plugin
 from .parser import Parser
-from .pipeline import Pipeline, PipelineTask
+from .pipeline import Pipeline
 from .program import program
 from .report import Report, ReportTask
 from .resource import Resource
 from .row import Row
 from .schema import Schema
+from .server import server
 from .settings import VERSION as __version__
-from .server import Server
-from .status import Status, StatusTask
 from .step import Step
 from .storage import Storage
 from .system import system
@@ -32,6 +32,3 @@ from . import errors
 from . import checks
 from . import steps
 from . import types
-
-# TODO: remove in v5
-from .actions import *

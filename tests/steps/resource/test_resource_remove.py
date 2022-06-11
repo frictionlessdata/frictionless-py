@@ -1,4 +1,4 @@
-from frictionless import Package, steps
+from frictionless import Package, Pipeline, steps
 
 
 # General
@@ -6,9 +6,10 @@ from frictionless import Package, steps
 
 def test_step_resource_remove():
     source = Package("data/package/datapackage.json")
-    target = source.transform(
+    pipeline = Pipeline(
         steps=[
             steps.resource_remove(name="data2"),
         ],
     )
+    target = source.transform(pipeline)
     assert target.resource_names == ["data"]

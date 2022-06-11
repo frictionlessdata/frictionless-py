@@ -1,9 +1,6 @@
 import pytest
 import pathlib
-from frictionless import Resource, Detector, Layout, Check, errors, helpers
-
-
-IS_UNIX = not helpers.is_platform("windows")
+from frictionless import Resource, Detector, Layout, Check, Checklist, errors, helpers
 
 
 # General
@@ -13,17 +10,6 @@ def test_validate():
     resource = Resource({"path": "data/table.csv"})
     report = resource.validate()
     assert report.valid
-
-
-# TODO: move to general validate
-@pytest.mark.skip
-def test_validate_invalid_source():
-    resource = Resource("bad.json")
-    report = resource.validate()
-    assert report["stats"]["errors"] == 1
-    [[code, note]] = report.flatten(["code", "note"])
-    assert code == "resource-error"
-    assert note.count("[Errno 2]") and note.count("bad.json")
 
 
 def test_validate_invalid_resource():
@@ -37,7 +23,8 @@ def test_validate_invalid_resource():
 
 def test_validate_invalid_resource_original():
     resource = Resource({"path": "data/table.csv"})
-    report = resource.validate(original=True)
+    checklist = Checklist(keep_original=True)
+    report = resource.validate(checklist)
     assert report.flatten(["code", "note"]) == [
         [
             "resource-error",
@@ -166,18 +153,20 @@ def test_validate_no_rows_with_compression():
     assert report.valid
 
 
-def test_validate_task_error():
-    resource = Resource("data/table.csv")
-    report = resource.validate(limit_errors="bad")
-    assert report.flatten(["code"]) == [
-        ["task-error"],
-    ]
-
-
 def test_validate_source_invalid():
     # Reducing sample size to get raise on iter, not on open
     detector = Detector(sample_size=1)
     resource = Resource([["h"], [1], "bad"], detector=detector)
+    report = resource.validate()
+    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
+        [None, None, "source-error"],
+    ]
+
+
+def test_validate_source_invalid_many_rows():
+    # Reducing sample size to get raise on iter, not on open
+    detector = Detector(sample_size=1)
+    resource = Resource([["h"], [1], "bad", "bad"], detector=detector)
     report = resource.validate()
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [None, None, "source-error"],
@@ -192,7 +181,8 @@ def test_validate_source_pathlib_path_table():
 
 def test_validate_pick_errors():
     resource = Resource("data/invalid.csv")
-    report = resource.validate(pick_errors=["blank-label", "blank-row"])
+    checklist = Checklist(pick_errors=["blank-label", "blank-row"])
+    report = resource.validate(checklist)
     assert report.task.scope == ["blank-label", "blank-row"]
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [None, 3, "blank-label"],
@@ -202,7 +192,8 @@ def test_validate_pick_errors():
 
 def test_validate_pick_errors_tags():
     resource = Resource("data/invalid.csv")
-    report = resource.validate(pick_errors=["#header"])
+    checklist = Checklist(pick_errors=["#header"])
+    report = resource.validate(checklist)
     assert report.task.scope == [
         "blank-header",
         "extra-label",
@@ -219,7 +210,8 @@ def test_validate_pick_errors_tags():
 
 def test_validate_skip_errors():
     resource = Resource("data/invalid.csv")
-    report = resource.validate(skip_errors=["blank-label", "blank-row"])
+    checklist = Checklist(skip_errors=["blank-label", "blank-row"])
+    report = resource.validate(checklist)
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [None, 4, "duplicate-label"],
         [2, 3, "missing-cell"],
@@ -232,7 +224,8 @@ def test_validate_skip_errors():
 
 def test_validate_skip_errors_tags():
     resource = Resource("data/invalid.csv")
-    report = resource.validate(skip_errors=["#header"])
+    checklist = Checklist(skip_errors=["#header"])
+    report = resource.validate(checklist)
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [2, 3, "missing-cell"],
         [2, 4, "missing-cell"],
@@ -245,8 +238,9 @@ def test_validate_skip_errors_tags():
 
 def test_validate_invalid_limit_errors():
     resource = Resource("data/invalid.csv")
-    report = resource.validate(limit_errors=3)
-    assert report.task.partial
+    checklist = Checklist(limit_errors=3)
+    report = resource.validate(checklist)
+    assert report.task.warning == "reached error limit: 3"
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [None, 3, "blank-label"],
         [None, 4, "duplicate-label"],
@@ -256,8 +250,9 @@ def test_validate_invalid_limit_errors():
 
 def test_validate_structure_errors_with_limit_errors():
     resource = Resource("data/structure-errors.csv")
-    report = resource.validate(limit_errors=3)
-    assert report.task.partial
+    checklist = Checklist(limit_errors=3)
+    report = resource.validate(checklist)
+    assert report.task.warning == "reached error limit: 3"
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [4, None, "blank-row"],
         [5, 4, "extra-cell"],
@@ -271,7 +266,8 @@ def test_validate_limit_memory():
     schema = {"fields": [{"name": "integer", "type": "integer"}], "primaryKey": "integer"}
     layout = Layout(header=False)
     resource = Resource(source, schema=schema, layout=layout)
-    report = resource.validate(limit_memory=50)
+    checklist = Checklist(limit_memory=50)
+    report = resource.validate(checklist)
     assert report.flatten(["code", "note"]) == [
         ["task-error", 'exceeded memory limit "50MB"']
     ]
@@ -283,7 +279,8 @@ def test_validate_limit_memory_small():
     schema = {"fields": [{"name": "integer", "type": "integer"}], "primaryKey": "integer"}
     layout = Layout(header=False)
     resource = Resource(source, schema=schema, layout=layout)
-    report = resource.validate(limit_memory=1)
+    checklist = Checklist(limit_memory=1)
+    report = resource.validate(checklist)
     assert report.flatten(["code", "note"]) == [
         ["task-error", 'exceeded memory limit "1MB"']
     ]
@@ -303,7 +300,8 @@ def test_validate_custom_check():
 
     # Validate resource
     resource = Resource("data/table.csv")
-    report = resource.validate(checks=[custom()])
+    checklist = Checklist(checks=[custom()])
+    report = resource.validate(checklist)
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [2, None, "blank-row"],
         [3, None, "blank-row"],
@@ -328,50 +326,15 @@ def test_validate_custom_check_with_arguments():
 
     # Validate resource
     resource = Resource("data/table.csv")
-    report = resource.validate(checks=[custom(row_position=1)])
+    checklist = Checklist(checks=[custom(row_position=1)])
+    report = resource.validate(checklist)
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [1, None, "blank-row"],
         [1, None, "blank-row"],
     ]
 
 
-def test_validate_custom_check_function_based():
-
-    # Create check
-    def custom(row):
-        yield errors.BlankRowError(
-            note="",
-            cells=list(map(str, row.values())),
-            row_number=row.row_number,
-            row_position=row.row_position,
-        )
-
-    # Validate resource
-    resource = Resource("data/table.csv")
-    report = resource.validate(checks=[custom])
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [2, None, "blank-row"],
-        [3, None, "blank-row"],
-    ]
-
-
-def test_validate_custom_check_bad_name():
-    resource = Resource("data/table.csv")
-    report = resource.validate(checks=[{"code": "bad"}])
-    assert report.flatten(["code", "note"]) == [
-        ["check-error", 'cannot create check "bad". Try installing "frictionless-bad"'],
-    ]
-
-
-# TODO: move to general validate
-@pytest.mark.skip
-def test_validate_resource_descriptor_type_invalid():
-    resource = Resource(descriptor="data/table.csv")
-    report = resource.validate()
-    assert report.flatten() == [[1, None, None, "resource-error"]]
-
-
-# Issues
+# Problems
 
 
 def test_validate_infer_fields_issue_223():
@@ -505,6 +468,7 @@ def test_validate_resource_array_path_issue_991():
     ]
 
 
+# TODO: review if the error type is correct
 def test_validate_resource_duplicate_labels_with_sync_schema_issue_910():
     detector = Detector(schema_sync=True)
     resource = Resource(
@@ -515,7 +479,7 @@ def test_validate_resource_duplicate_labels_with_sync_schema_issue_910():
     report = resource.validate()
     assert report.flatten(["code", "note"]) == [
         [
-            "general-error",
+            "schema-error",
             'Duplicate labels in header is not supported with "schema_sync"',
         ],
     ]

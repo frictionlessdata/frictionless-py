@@ -3,7 +3,6 @@ from typer.testing import CliRunner
 from frictionless import program, helpers
 
 runner = CliRunner()
-IS_UNIX = not helpers.is_platform("windows")
 
 
 # General
@@ -11,11 +10,11 @@ IS_UNIX = not helpers.is_platform("windows")
 
 
 @pytest.mark.skip
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="Fix on Windows")
 def test_program_transform():
     result = runner.invoke(program, "transform data/pipeline.yaml")
     assert result.exit_code == 0
-    if IS_UNIX:
-        assert result.stdout.count("success: data/pipeline.yaml")
+    assert result.stdout.count("success: data/pipeline.yaml")
 
 
 @pytest.mark.skip

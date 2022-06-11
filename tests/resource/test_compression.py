@@ -3,11 +3,7 @@ import pytest
 from frictionless import Resource, FrictionlessException, helpers
 
 
-IS_UNIX = not helpers.is_platform("windows")
-BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
-
-
-# Compression
+# General
 
 
 def test_resource_compression_local_csv_zip():

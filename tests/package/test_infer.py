@@ -1,67 +1,64 @@
+import pytest
 from frictionless import Package, Resource, helpers
 
 
-IS_UNIX = not helpers.is_platform("windows")
-BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
+# General
 
 
-# Infer
-
-
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="Fix on Windows")
 def test_package_infer():
     package = Package("data/infer/*.csv")
     package.infer(stats=True)
     assert package.metadata_valid
-    if IS_UNIX:
-        assert package == {
-            "profile": "data-package",
-            "resources": [
-                {
-                    "path": "data/infer/data.csv",
-                    "profile": "tabular-data-resource",
-                    "name": "data",
-                    "scheme": "file",
-                    "format": "csv",
-                    "hashing": "md5",
-                    "encoding": "utf-8",
-                    "schema": {
-                        "fields": [
-                            {"name": "id", "type": "string"},
-                            {"name": "name", "type": "string"},
-                            {"name": "description", "type": "string"},
-                            {"name": "amount", "type": "number"},
-                        ]
-                    },
-                    "stats": {
-                        "hash": "c028f525f314c49ea48ed09e82292ed2",
-                        "bytes": 114,
-                        "fields": 4,
-                        "rows": 2,
-                    },
+    assert package == {
+        "profile": "data-package",
+        "resources": [
+            {
+                "path": "data/infer/data.csv",
+                "profile": "tabular-data-resource",
+                "name": "data",
+                "scheme": "file",
+                "format": "csv",
+                "hashing": "md5",
+                "encoding": "utf-8",
+                "schema": {
+                    "fields": [
+                        {"name": "id", "type": "string"},
+                        {"name": "name", "type": "string"},
+                        {"name": "description", "type": "string"},
+                        {"name": "amount", "type": "number"},
+                    ]
                 },
-                {
-                    "path": "data/infer/data2.csv",
-                    "profile": "tabular-data-resource",
-                    "name": "data2",
-                    "scheme": "file",
-                    "format": "csv",
-                    "hashing": "md5",
-                    "encoding": "utf-8",
-                    "schema": {
-                        "fields": [
-                            {"name": "parent", "type": "string"},
-                            {"name": "comment", "type": "string"},
-                        ]
-                    },
-                    "stats": {
-                        "hash": "cb4a683d8eecb72c9ac9beea91fd592e",
-                        "bytes": 60,
-                        "fields": 2,
-                        "rows": 3,
-                    },
+                "stats": {
+                    "hash": "c028f525f314c49ea48ed09e82292ed2",
+                    "bytes": 114,
+                    "fields": 4,
+                    "rows": 2,
                 },
-            ],
-        }
+            },
+            {
+                "path": "data/infer/data2.csv",
+                "profile": "tabular-data-resource",
+                "name": "data2",
+                "scheme": "file",
+                "format": "csv",
+                "hashing": "md5",
+                "encoding": "utf-8",
+                "schema": {
+                    "fields": [
+                        {"name": "parent", "type": "string"},
+                        {"name": "comment", "type": "string"},
+                    ]
+                },
+                "stats": {
+                    "hash": "cb4a683d8eecb72c9ac9beea91fd592e",
+                    "bytes": 60,
+                    "fields": 2,
+                    "rows": 3,
+                },
+            },
+        ],
+    }
 
 
 def test_package_infer_with_basepath():

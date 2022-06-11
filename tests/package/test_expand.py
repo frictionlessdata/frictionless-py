@@ -1,11 +1,7 @@
 from frictionless import Package, helpers
 
 
-IS_UNIX = not helpers.is_platform("windows")
-BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
-
-
-# Expand
+# General
 
 
 def test_package_expand():

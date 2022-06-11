@@ -1,4 +1,5 @@
-from frictionless import Resource, checks
+import pytest
+from frictionless import Resource, Checklist, checks
 
 
 # General
@@ -6,23 +7,14 @@ from frictionless import Resource, checks
 
 def test_validate_forbidden_value():
     resource = Resource("data/table.csv")
-    report = resource.validate(
+    checklist = Checklist(
         checks=[
             checks.forbidden_value(field_name="id", values=[2]),
         ]
     )
+    report = resource.validate(checklist)
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [3, 1, "forbidden-value"],
-    ]
-
-
-def test_validate_forbidden_value_task_error():
-    resource = Resource("data/table.csv")
-    report = resource.validate(
-        checks=[{"code": "forbidden-value", "fieldName": "bad", "forbidden": [2]}],
-    )
-    assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
-        [None, None, "task-error"],
     ]
 
 
@@ -36,14 +28,17 @@ def test_validate_forbidden_value_many_rules():
         [6],
     ]
     resource = Resource(source)
-    report = resource.validate(
-        checks=[
-            {"code": "forbidden-value", "fieldName": "row", "values": [10]},
-            {"code": "forbidden-value", "fieldName": "name", "values": ["mistake"]},
-            {"code": "forbidden-value", "fieldName": "row", "values": [10]},
-            {"code": "forbidden-value", "fieldName": "name", "values": ["error"]},
-        ],
+    checklist = Checklist(
+        {
+            "checks": [
+                {"code": "forbidden-value", "fieldName": "row", "values": [10]},
+                {"code": "forbidden-value", "fieldName": "name", "values": ["mistake"]},
+                {"code": "forbidden-value", "fieldName": "row", "values": [10]},
+                {"code": "forbidden-value", "fieldName": "name", "values": ["error"]},
+            ]
+        }
     )
+    report = resource.validate(checklist)
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [4, 2, "forbidden-value"],
         [5, 2, "forbidden-value"],
@@ -57,12 +52,15 @@ def test_validate_forbidden_value_many_rules_with_non_existent_field():
         [2, "Alex"],
     ]
     resource = Resource(source)
-    report = resource.validate(
-        checks=[
-            {"code": "forbidden-value", "fieldName": "row", "values": [10]},
-            {"code": "forbidden-value", "fieldName": "bad", "values": ["mistake"]},
-        ],
+    checklist = Checklist(
+        {
+            "checks": [
+                {"code": "forbidden-value", "fieldName": "row", "values": [10]},
+                {"code": "forbidden-value", "fieldName": "bad", "values": ["mistake"]},
+            ]
+        }
     )
+    report = resource.validate(checklist)
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [None, None, "check-error"],
     ]

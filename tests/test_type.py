@@ -38,7 +38,7 @@ def custom_plugin():
 
     # Plugin
     class CustomPlugin(Plugin):
-        def create_candidates(self, candidates):
+        def create_field_candidates(self, candidates):
             candidates.insert(0, {"type": "custom"})
 
         def create_type(self, field):

@@ -6,8 +6,6 @@ if TYPE_CHECKING:
     from .schema import Schema
 
 
-# TODO: move exception handling to high-level actions?
-@Report.from_validate
 def validate(schema: "Schema"):
     """Validate schema
 
@@ -15,4 +13,5 @@ def validate(schema: "Schema"):
         Report: validation report
     """
     timer = helpers.Timer()
-    return Report(time=timer.time, errors=schema.metadata_errors, tasks=[])
+    errors = schema.metadata_errors
+    return Report(errors=errors, time=timer.time)

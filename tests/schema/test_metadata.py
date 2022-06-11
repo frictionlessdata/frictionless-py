@@ -1,6 +1,9 @@
 from frictionless import Schema, Field
 
 
+# General
+
+
 def test_schema_metadata_bad_schema_format():
     schema = Schema(
         fields=[

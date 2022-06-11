@@ -3,11 +3,7 @@ from frictionless import Package, Resource, Layout, helpers
 from frictionless import FrictionlessException
 
 
-IS_UNIX = not helpers.is_platform("windows")
-BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
-
-
-# Resources
+# General
 
 
 def test_package_resources():

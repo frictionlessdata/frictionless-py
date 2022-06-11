@@ -10,7 +10,6 @@ from ...schema import Schema
 from ...field import Field
 from .dialect import SqlDialect
 from ... import helpers
-from ... import errors
 
 
 class SqlStorage(Storage):
@@ -74,7 +73,7 @@ class SqlStorage(Storage):
         sql_table = self.__read_sql_table(name)
         if sql_table is None:
             note = f'Resource "{name}" does not exist'
-            raise FrictionlessException(errors.StorageError(note=note))
+            raise FrictionlessException(note)
         schema = self.__read_convert_schema(sql_table)
         data = partial(self.__read_convert_data, name, order_by=order_by, where=where)
         resource = Resource(name=name, schema=schema, data=data)
@@ -203,7 +202,7 @@ class SqlStorage(Storage):
             if resource.name in existent_names:
                 if not force:
                     note = f'Resource "{resource.name}" already exists'
-                    raise FrictionlessException(errors.StorageError(note=note))
+                    raise FrictionlessException(note)
                 delete_names.append(resource.name)
 
         # Wrap into a transaction
@@ -387,7 +386,7 @@ class SqlStorage(Storage):
             if name not in existent_names:
                 if not ignore:
                     note = f'Resource "{name}" does not exist'
-                    raise FrictionlessException(errors.StorageError(note=note))
+                    raise FrictionlessException(note)
                 continue
 
             # Add table for removal

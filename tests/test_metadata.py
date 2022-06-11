@@ -1,5 +1,6 @@
 from frictionless import Metadata
 
+
 # General
 
 
@@ -13,7 +14,7 @@ def test_descriptor_from_path():
     assert metadata["primaryKey"] == "id"
 
 
-# Issues
+# Problems
 
 
 def test_metadata_pprint_1029():

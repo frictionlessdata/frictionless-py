@@ -1,4 +1,4 @@
-from frictionless import Resource, steps
+from frictionless import Resource, Pipeline, steps
 
 
 # General
@@ -6,11 +6,12 @@ from frictionless import Resource, steps
 
 def test_step_row_ungroup_first():
     source = Resource("data/transform-groups.csv")
-    target = source.transform(
+    pipeline = Pipeline(
         steps=[
             steps.row_ungroup(group_name="name", selection="first"),
         ],
     )
+    target = source.transform(pipeline)
     assert target.schema == {
         "fields": [
             {"name": "id", "type": "integer"},
@@ -28,11 +29,12 @@ def test_step_row_ungroup_first():
 
 def test_step_row_ungroup_last():
     source = Resource("data/transform-groups.csv")
-    target = source.transform(
+    pipeline = Pipeline(
         steps=[
             steps.row_ungroup(group_name="name", selection="last"),
         ],
     )
+    target = source.transform(pipeline)
     assert target.schema == {
         "fields": [
             {"name": "id", "type": "integer"},
@@ -50,13 +52,14 @@ def test_step_row_ungroup_last():
 
 def test_step_row_ungroup_min():
     source = Resource("data/transform-groups.csv")
-    target = source.transform(
+    pipeline = Pipeline(
         steps=[
             steps.row_ungroup(
                 group_name="name", selection="min", value_name="population"
             ),
         ],
     )
+    target = source.transform(pipeline)
     assert target.schema == {
         "fields": [
             {"name": "id", "type": "integer"},
@@ -74,13 +77,14 @@ def test_step_row_ungroup_min():
 
 def test_step_row_ungroup_max():
     source = Resource("data/transform-groups.csv")
-    target = source.transform(
+    pipeline = Pipeline(
         steps=[
             steps.row_ungroup(
                 group_name="name", selection="max", value_name="population"
             ),
         ],
     )
+    target = source.transform(pipeline)
     assert target.schema == {
         "fields": [
             {"name": "id", "type": "integer"},

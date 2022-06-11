@@ -6,7 +6,7 @@ if TYPE_CHECKING:
     from .inquiry import Inquiry
 
 
-@Report.from_validate
+# TODO: return data validation
 def validate(inquiry: "Inquiry", *, parallel=False):
     """Validate inquiry
 
@@ -18,4 +18,5 @@ def validate(inquiry: "Inquiry", *, parallel=False):
 
     """
     timer = helpers.Timer()
-    return Report(time=timer.time, errors=inquiry.metadata_errors, tasks=[])
+    errors = inquiry.metadata_errors
+    return Report(errors=errors, time=timer.time)

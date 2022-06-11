@@ -6,7 +6,6 @@ from frictionless import FrictionlessException
 from frictionless.plugins.excel import ExcelDialect
 
 
-IS_UNIX = not helpers.is_platform("windows")
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
 
 
@@ -18,7 +17,11 @@ def test_resource():
     assert resource.name == "name"
     assert resource.path == "table.csv"
     assert resource.basepath == "data"
-    assert resource.fullpath == "data/table.csv" if IS_UNIX else "data\\table.csv"
+    assert (
+        resource.fullpath == "data/table.csv"
+        if not helpers.is_platform("windows")
+        else "data\\table.csv"
+    )
     assert resource.profile == "tabular-data-resource"
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
@@ -107,7 +110,7 @@ def test_resource_source_non_tabular():
         assert resource.tabular is False
         assert resource.multipart is False
         assert resource.fullpath == path
-        if IS_UNIX:
+        if not helpers.is_platform("windows"):
             assert resource.read_bytes() == b"text\n"
             assert resource.stats == {
                 "hash": "e1cbb0c3879af8347246f12c559a86b5",
@@ -126,7 +129,7 @@ def test_resource_source_non_tabular_remote():
         assert resource.multipart is False
         assert resource.basepath == ""
         assert resource.fullpath == path
-        if IS_UNIX:
+        if not helpers.is_platform("windows"):
             assert resource.read_bytes() == b"text\n"
             assert resource.stats == {
                 "hash": "e1cbb0c3879af8347246f12c559a86b5",
@@ -154,7 +157,7 @@ def test_resource_source_path():
     assert resource.multipart is False
     assert resource.basepath == ""
     assert resource.fullpath == path
-    if IS_UNIX:
+    if not helpers.is_platform("windows"):
         assert (
             resource.read_bytes()
             == b"id,name\n1,english\n2,\xe4\xb8\xad\xe5\x9b\xbd\xe4\xba\xba\n"
@@ -167,7 +170,7 @@ def test_resource_source_path():
     assert resource.fragment == [["1", "english"], ["2", "中国人"]]
     assert resource.labels == ["id", "name"]
     assert resource.header == ["id", "name"]
-    if IS_UNIX:
+    if not helpers.is_platform("windows"):
         assert resource.stats == {
             "hash": "6c2c61dd9b0e9c6876139a449ed87933",
             "bytes": 30,
@@ -180,7 +183,11 @@ def test_resource_source_path_and_basepath():
     resource = Resource(path="table.csv", basepath="data")
     assert resource.path == "table.csv"
     assert resource.basepath == "data"
-    assert resource.fullpath == "data/table.csv" if IS_UNIX else "data\\table.csv"
+    assert (
+        resource.fullpath == "data/table.csv"
+        if not helpers.is_platform("windows")
+        else "data\\table.csv"
+    )
     assert resource.read_rows() == [
         {"id": 1, "name": "english"},
         {"id": 2, "name": "中国人"},
@@ -226,7 +233,13 @@ def test_resource_source_path_error_bad_path_not_safe_absolute():
 
 def test_resource_source_path_error_bad_path_not_safe_traversing():
     with pytest.raises(FrictionlessException) as excinfo:
-        Resource({"path": "data/../data/table.csv" if IS_UNIX else "data\\..\\table.csv"})
+        Resource(
+            {
+                "path": "data/../data/table.csv"
+                if not helpers.is_platform("windows")
+                else "data\\..\\table.csv"
+            }
+        )
     error = excinfo.value.error
     assert error.code == "resource-error"
     assert error.note.count("table.csv")
@@ -381,7 +394,7 @@ def test_resource_metadata_bad_schema_format():
     assert resource.metadata_errors[0].code == "field-error"
 
 
-# Issues
+# Problems
 
 
 def test_resource_reset_on_close_issue_190():
@@ -456,7 +469,11 @@ def test_resource_skip_rows_non_string_cell_issue_322():
 
 
 def test_resource_relative_parent_path_with_trusted_option_issue_171():
-    path = "data/../data/table.csv" if IS_UNIX else "data\\..\\data\\table.csv"
+    path = (
+        "data/../data/table.csv"
+        if not helpers.is_platform("windows")
+        else "data\\..\\data\\table.csv"
+    )
     # trusted=false (default)
     with pytest.raises(FrictionlessException) as excinfo:
         Resource({"path": path})
@@ -471,31 +488,31 @@ def test_resource_relative_parent_path_with_trusted_option_issue_171():
     ]
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="Fix on Windows")
 def test_resource_preserve_format_from_descriptor_on_infer_issue_188():
     resource = Resource({"path": "data/table.csvformat", "format": "csv"})
     resource.infer(stats=True)
-    if IS_UNIX:
-        assert resource == {
-            "path": "data/table.csvformat",
-            "format": "csv",
-            "profile": "tabular-data-resource",
-            "name": "table",
-            "scheme": "file",
-            "hashing": "md5",
-            "encoding": "utf-8",
-            "schema": {
-                "fields": [
-                    {"name": "city", "type": "string"},
-                    {"name": "population", "type": "integer"},
-                ]
-            },
-            "stats": {
-                "hash": "f71969080b27963b937ca28cdd5f63b9",
-                "bytes": 58,
-                "fields": 2,
-                "rows": 3,
-            },
-        }
+    assert resource == {
+        "path": "data/table.csvformat",
+        "format": "csv",
+        "profile": "tabular-data-resource",
+        "name": "table",
+        "scheme": "file",
+        "hashing": "md5",
+        "encoding": "utf-8",
+        "schema": {
+            "fields": [
+                {"name": "city", "type": "string"},
+                {"name": "population", "type": "integer"},
+            ]
+        },
+        "stats": {
+            "hash": "f71969080b27963b937ca28cdd5f63b9",
+            "bytes": 58,
+            "fields": 2,
+            "rows": 3,
+        },
+    }
 
 
 def test_resource_set_base_path():

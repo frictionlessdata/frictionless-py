@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Optional, Any
+from typing import TYPE_CHECKING, Optional, List, Any
 
 if TYPE_CHECKING:
     from .file import File
@@ -10,7 +10,6 @@ if TYPE_CHECKING:
     from .field import Field
     from .loader import Loader
     from .parser import Parser
-    from .server import Server
     from .step import Step
     from .storage import Storage
     from .type import Type
@@ -34,13 +33,7 @@ class Plugin:
     code = "plugin"
     status = "stable"
 
-    def create_candidates(self, candidates):
-        """Create candidates
-
-        Returns:
-            dict[]: an ordered by priority list of type descriptors for type detection
-        """
-        pass
+    # Hooks
 
     def create_check(self, descriptor: dict) -> Optional[Check]:
         """Create check
@@ -89,6 +82,14 @@ class Plugin:
         """
         pass
 
+    def create_field_candidates(self, candidates: List[dict]) -> Optional[List[dict]]:
+        """Create candidates
+
+        Returns:
+            dict[]: an ordered by priority list of type descriptors for type detection
+        """
+        pass
+
     def create_file(self, source: Any, **options) -> Optional[File]:
         """Create file
 
@@ -120,18 +121,6 @@ class Plugin:
 
         Returns:
             Parser: parser
-        """
-        pass
-
-    # TODO: rebase from name to descriptor?
-    def create_server(self, name: str) -> Optional[Server]:
-        """Create server
-
-        Parameters:
-            name (str): server name
-
-        Returns:
-            Server: server
         """
         pass
 

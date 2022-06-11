@@ -486,7 +486,7 @@ class Detector:
             # Prepare runners
             runners = []
             runner_fields = []  # we use shared fields
-            for candidate in system.create_candidates():
+            for candidate in system.create_field_candidates():
                 field = Field(candidate)
                 if field.type == "number" and self.__field_float_numbers:
                     field.float_number = True  # type: ignore
@@ -557,7 +557,7 @@ class Detector:
         if len(schema.field_names) != len(set(schema.field_names)):  # type: ignore
             if self.__schema_sync:
                 note = 'Duplicate labels in header is not supported with "schema_sync"'
-                raise FrictionlessException(errors.GeneralError(note=note))
+                raise FrictionlessException(errors.SchemaError(note=note))
             note = "Schemas with duplicate field names are not supported"
             raise FrictionlessException(errors.SchemaError(note=note))
 

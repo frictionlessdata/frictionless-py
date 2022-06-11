@@ -2,11 +2,10 @@ import pytest
 from frictionless import Resource, FrictionlessException, helpers
 
 
-IS_UNIX = not helpers.is_platform("windows")
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
 
 
-# Scheme
+# General
 
 
 def test_resource_scheme_file():
@@ -37,7 +36,7 @@ def test_resource_scheme_error_bad_scheme():
         resource.open()
     error = excinfo.value.error
     assert error.code == "scheme-error"
-    assert error.note == 'cannot create loader "bad". Try installing "frictionless-bad"'
+    assert error.note.count('scheme "bad" is not supported')
 
 
 def test_resource_scheme_error_bad_scheme_and_format():
@@ -46,7 +45,7 @@ def test_resource_scheme_error_bad_scheme_and_format():
         resource.open()
     error = excinfo.value.error
     assert error.code == "scheme-error"
-    assert error.note == 'cannot create loader "bad". Try installing "frictionless-bad"'
+    assert error.note.count('scheme "bad" is not supported')
 
 
 def test_resource_scheme_error_file_not_found():

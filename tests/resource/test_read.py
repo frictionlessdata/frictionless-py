@@ -3,26 +3,22 @@ import pytest
 from frictionless import Resource, helpers
 
 
-IS_UNIX = not helpers.is_platform("windows")
-BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
+# General
 
 
-# Read
-
-
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="Fix on Windows")
 @pytest.mark.skipif(sys.version_info < (3, 7), reason="Requires Python3.7+")
 def test_resource_read_bytes():
     resource = Resource(path="data/text.txt")
     bytes = resource.read_bytes()
-    if IS_UNIX:
-        assert bytes == b"text\n"
+    assert bytes == b"text\n"
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="Fix on Windows")
 def test_resource_read_text():
     resource = Resource(path="data/text.txt")
     text = resource.read_text()
-    if IS_UNIX:
-        assert text == "text\n"
+    assert text == "text\n"
 
 
 def test_resource_read_data():

@@ -6,11 +6,10 @@ from frictionless import Package, Resource, helpers
 from frictionless.plugins.sql import SqlDialect
 
 
-IS_UNIX = not helpers.is_platform("windows")
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
 
 
-# Export/Import
+# General
 
 
 def test_package_to_copy():
@@ -96,18 +95,18 @@ def test_package_to_zip_resource_memory_inline(tmpdir):
     ]
 
 
+@pytest.mark.skipif(helpers.is_platform("windows"), reason="Fix on Windows")
 def test_package_to_zip_resource_memory_function(tmpdir):
     path = os.path.join(tmpdir, "package.zip")
     data = lambda: [["id", "name"], [1, "english"], [2, "中国人"]]
     source = Package(resources=[Resource(name="table", data=data)])
-    if IS_UNIX:
-        source.to_zip(path)
-        target = Package.from_zip(path)
-        assert target.get_resource("table").path == "table.csv"
-        assert target.get_resource("table").read_rows() == [
-            {"id": 1, "name": "english"},
-            {"id": 2, "name": "中国人"},
-        ]
+    source.to_zip(path)
+    target = Package.from_zip(path)
+    assert target.get_resource("table").path == "table.csv"
+    assert target.get_resource("table").read_rows() == [
+        {"id": 1, "name": "english"},
+        {"id": 2, "name": "中国人"},
+    ]
 
 
 def test_package_to_zip_resource_sql(tmpdir, database_url):

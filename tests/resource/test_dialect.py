@@ -4,11 +4,10 @@ from frictionless import Resource, FrictionlessException, helpers
 from frictionless.plugins.json import JsonDialect
 
 
-IS_UNIX = not helpers.is_platform("windows")
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
 
 
-# Dialect
+# General
 
 
 def test_resource_dialect():

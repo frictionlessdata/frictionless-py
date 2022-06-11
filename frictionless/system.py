@@ -4,7 +4,7 @@ import pkgutil
 from collections import OrderedDict
 from importlib import import_module
 from contextlib import contextmanager
-from typing import TYPE_CHECKING, Any, Dict
+from typing import TYPE_CHECKING, List, Any, Dict
 from .exception import FrictionlessException
 from .helpers import cached_property
 from .control import Control
@@ -21,7 +21,6 @@ if TYPE_CHECKING:
     from .parser import Parser
     from .plugin import Plugin
     from .resource import Resource
-    from .server import Server
     from .step import Step
     from .storage import Storage
     from .type import Type
@@ -72,35 +71,21 @@ class System:
             del self.__dict__["plugins"]
             del self.__dict__["methods"]
 
-    # Actions
+    # Hooks
 
-    actions = [
-        "create_candidates",
+    hooks = [
         "create_check",
         "create_control",
         "create_dialect",
         "create_error",
+        "create_field_candidates",
         "create_file",
         "create_loader",
         "create_parser",
-        "create_server",
         "create_step",
         "create_storage",
         "create_type",
     ]
-
-    # Detection
-
-    def create_candidates(self):
-        """Create candidates
-
-        Returns:
-            dict[]: an ordered by priority list of type descriptors for type detection
-        """
-        candidates = settings.DEFAULT_CANDIDATES.copy()
-        for func in self.methods["create_candidates"].values():
-            func(candidates)
-        return candidates
 
     def create_check(self, descriptor: dict) -> Check:
         """Create check
@@ -119,7 +104,7 @@ class System:
         for Class in vars(import_module("frictionless.checks")).values():
             if getattr(Class, "code", None) == code:
                 return Class(descriptor)
-        note = f'cannot create check "{code}". Try installing "frictionless-{code}"'
+        note = f'check "{code}" is not supported. Try installing "frictionless-{code}"'
         raise FrictionlessException(errors.CheckError(note=note))
 
     def create_control(self, resource: Resource, *, descriptor: dict) -> Control:
@@ -173,8 +158,19 @@ class System:
         for Class in vars(import_module("frictionless.errors")).values():
             if getattr(Class, "code", None) == code:
                 return Class(descriptor)
-        note = f'cannot create error "{code}". Try installing "frictionless-{code}"'
-        raise FrictionlessException(errors.Error(note=note))
+        note = f'error "{code}" is not supported. Try installing "frictionless-{code}"'
+        raise FrictionlessException(note)
+
+    def create_field_candidates(self) -> List[dict]:
+        """Create candidates
+
+        Returns:
+            dict[]: an ordered by priority list of type descriptors for type detection
+        """
+        candidates = settings.DEFAULT_FIELD_CANDIDATES.copy()
+        for func in self.methods["create_field_candidates"].values():
+            func(candidates)
+        return candidates
 
     def create_file(self, source: Any, **options) -> File:
         """Create file
@@ -208,7 +204,7 @@ class System:
             loader = func(resource)
             if loader is not None:
                 return loader
-        note = f'cannot create loader "{name}". Try installing "frictionless-{name}"'
+        note = f'scheme "{name}" is not supported. Try installing "frictionless-{name}"'
         raise FrictionlessException(errors.SchemeError(note=note))
 
     def create_parser(self, resource: Resource) -> Parser:
@@ -226,26 +222,8 @@ class System:
             parser = func(resource)
             if parser is not None:
                 return parser
-        note = f'cannot create parser "{name}". Try installing "frictionless-{name}"'
+        note = f'format "{name}" is not supported. Try installing "frictionless-{name}"'
         raise FrictionlessException(errors.FormatError(note=note))
-
-    def create_server(self, name: str, **options) -> Server:
-        """Create server
-
-        Parameters:
-            name (str): server name
-            options (str): server options
-
-        Returns:
-            Server: server
-        """
-        server = None
-        for func in self.methods["create_server"].values():
-            server = func(name, **options)
-            if server is not None:
-                return server
-        note = f'cannot create server "{name}". Try installing "frictionless-{name}"'
-        raise FrictionlessException(errors.GeneralError(note=note))
 
     def create_step(self, descriptor: dict) -> Step:
         """Create step
@@ -264,7 +242,7 @@ class System:
         for Class in vars(import_module("frictionless.steps")).values():
             if getattr(Class, "code", None) == code:
                 return Class(descriptor)
-        note = f'cannot create check "{code}". Try installing "frictionless-{code}"'
+        note = f'step "{code}" is not supported. Try installing "frictionless-{code}"'
         raise FrictionlessException(errors.StepError(note=note))
 
     def create_storage(self, name: str, source: Any, **options) -> Storage:
@@ -281,8 +259,8 @@ class System:
             storage = func(name, source, **options)
             if storage is not None:
                 return storage
-        note = f'cannot create storage "{name}". Try installing "frictionless-{name}"'
-        raise FrictionlessException(errors.GeneralError(note=note))
+        note = f'storage "{name}" is not supported. Try installing "frictionless-{name}"'
+        raise FrictionlessException(note)
 
     def create_type(self, field: Field) -> Type:
         """Create type
@@ -301,7 +279,7 @@ class System:
         for Class in vars(import_module("frictionless.types")).values():
             if getattr(Class, "code", None) == code:
                 return Class(field)
-        note = f'cannot create type "{code}". Try installing "frictionless-{code}"'
+        note = f'type "{code}" is not supported. Try installing "frictionless-{code}"'
         raise FrictionlessException(errors.FieldError(note=note))
 
     # Requests
@@ -335,7 +313,7 @@ class System:
         """
         if self.__http_session:
             note = f"There is already HTTP session in use: {self.__http_session}"
-            raise FrictionlessException(errors.Error(note=note))
+            raise FrictionlessException(note)
         self.__http_session = http_session or self.get_http_session()
         yield self.__http_session
         self.__http_session = None
@@ -343,9 +321,9 @@ class System:
     # Methods
 
     @cached_property
-    def methods(self) -> Dict[str, Any]:  # TODO: improve type
+    def methods(self) -> Dict[str, Any]:
         methods = {}
-        for action in self.actions:
+        for action in self.hooks:
             methods[action] = OrderedDict()
             for name, plugin in self.plugins.items():
                 if action in vars(type(plugin)):

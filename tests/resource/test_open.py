@@ -2,11 +2,7 @@ import pytest
 from frictionless import Resource, Layout, Detector, FrictionlessException, helpers
 
 
-IS_UNIX = not helpers.is_platform("windows")
-BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
-
-
-# Open/Close
+# General
 
 
 def test_resource_open():

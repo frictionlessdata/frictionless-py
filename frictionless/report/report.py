@@ -1,12 +1,17 @@
+from __future__ import annotations
 import functools
 from copy import deepcopy
 from importlib import import_module
+from typing import TYPE_CHECKING, Optional, List, Any
 from ..metadata import Metadata
-from ..errors import Error, TaskError, ReportError
+from ..errors import Error, ReportError
 from ..exception import FrictionlessException
 from .validate import validate
 from .. import settings
 from .. import helpers
+
+if TYPE_CHECKING:
+    from ..resource import Resource
 
 
 # NOTE:
@@ -34,14 +39,27 @@ class Report(Metadata):
 
     validate = validate
 
-    def __init__(self, descriptor=None, *, time=None, errors=None, tasks=None):
+    def __init__(
+        self,
+        descriptor: Optional[Any] = None,
+        *,
+        time: Optional[float] = None,
+        errors: Optional[List[Error]] = None,
+        warning: Optional[str] = None,
+        tasks: Optional[List[ReportTask]] = None,
+    ):
 
         # Store provided
         self.setinitial("version", settings.VERSION)
         self.setinitial("time", time)
         self.setinitial("errors", errors)
+        self.setinitial("warning", warning)
         self.setinitial("tasks", tasks)
         super().__init__(descriptor)
+
+        # TODO: remove after metadata rework
+        self.setdefault("errors", [])
+        self.setdefault("tasks", [])
 
         # Store computed
         error_count = len(self.errors) + sum(task.stats["errors"] for task in self.tasks)
@@ -79,6 +97,14 @@ class Report(Metadata):
             dict: validation stats
         """
         return self["stats"]
+
+    @property
+    def warning(self):
+        """
+        Returns:
+            Error[]: validation warning
+        """
+        return self["warning"]
 
     @property
     def errors(self):
@@ -143,28 +169,32 @@ class Report(Metadata):
     # Import/Export
 
     @staticmethod
-    def from_validate(validate):
-        """Validate function wrapper
-
-        Parameters:
-            validate (func): validate
-
-        Returns:
-            func: wrapped validate
-        """
-
-        @functools.wraps(validate)
-        def wrapper(*args, **kwargs):
-            timer = helpers.Timer()
-            try:
-                return validate(*args, **kwargs)
-            except Exception as exception:
-                error = TaskError(note=str(exception))
-                if isinstance(exception, FrictionlessException):
-                    error = exception.error
-                return Report(time=timer.time, errors=[error], tasks=[])
-
-        return wrapper
+    def from_resource(
+        resource: Resource,
+        *,
+        time: float,
+        scope: List[str] = [],
+        errors: List[Error] = [],
+        warning: Optional[str] = None,
+    ):
+        """Create a report from a task"""
+        return Report(
+            tasks=[
+                ReportTask(
+                    name=resource.name,  # type: ignore
+                    path=resource.path,  # type: ignore
+                    innerpath=resource.innerpath,  # type: ignore
+                    memory=resource.memory,  # type: ignore
+                    tabular=resource.tabular,  # type: ignore
+                    stats=resource.stats,  # type: ignore
+                    warning=warning,
+                    errors=errors,
+                    scope=scope,
+                    time=time,
+                )
+            ],
+            time=time,
+        )
 
     # Metadata
 
@@ -203,11 +233,11 @@ class ReportTask(Metadata):
 
     Parameters:
         descriptor? (str|dict): schema descriptor
+        resource? (Resource): resource
         time (float): validation time
         scope (str[]): validation scope
-        partial (bool): wehter validation was partial
         errors (Error[]): validation errors
-        task (Task): validation task
+        warning (str): validation warning
 
     # Raises
         FrictionlessException: raise any error that occurs during the process
@@ -216,34 +246,78 @@ class ReportTask(Metadata):
 
     def __init__(
         self,
-        descriptor=None,
+        descriptor: Optional[Any] = None,
         *,
-        resource=None,
-        time=None,
-        scope=None,
-        partial=None,
-        errors=None
+        name: Optional[str] = None,
+        path: Optional[str] = None,
+        innerpath: Optional[str] = None,
+        memory: Optional[bool] = None,
+        tabular: Optional[bool] = None,
+        stats: Optional[dict] = None,
+        time: Optional[float] = None,
+        scope: Optional[List[str]] = None,
+        errors: Optional[List[Error]] = None,
+        warning: Optional[str] = None,
     ):
 
         # Store provided
-        self.setinitial("resource", resource)
+        self.setinitial("name", name)
+        self.setinitial("path", path)
+        self.setinitial("innerpath", innerpath)
+        self.setinitial("memory", memory)
+        self.setinitial("tabular", tabular)
         self.setinitial("time", time)
         self.setinitial("scope", scope)
-        self.setinitial("partial", partial)
         self.setinitial("errors", errors)
+        self.setinitial("warning", warning)
         super().__init__(descriptor)
 
         # Store computed
-        self.setinitial("stats", {"errors": len(self.errors)})
+        merged_stats = {"errors": len(self.errors)}
+        if stats:
+            merged_stats.update(stats)
+        self.setinitial("stats", merged_stats)
         self.setinitial("valid", not self.errors)
 
     @property
-    def resource(self):
+    def name(self):
         """
         Returns:
-            Resource: resource
+            str: name
         """
-        return self["resource"]
+        return self["name"]
+
+    @property
+    def path(self):
+        """
+        Returns:
+            str: path
+        """
+        return self.get("path")
+
+    @property
+    def innerpath(self):
+        """
+        Returns:
+            str: innerpath
+        """
+        return self.get("innerpath")
+
+    @property
+    def memory(self):
+        """
+        Returns:
+            bool: memory
+        """
+        return self.get("memory")
+
+    @property
+    def tabular(self):
+        """
+        Returns:
+            bool: tabular
+        """
+        return self.get("tabular")
 
     @property
     def time(self):
@@ -270,12 +344,12 @@ class ReportTask(Metadata):
         return self["scope"]
 
     @property
-    def partial(self):
+    def warning(self):
         """
         Returns:
-            bool: if validation partial
+            bool: if validation warning
         """
-        return self["partial"]
+        return self.get("warning")
 
     @property
     def stats(self):
@@ -306,12 +380,6 @@ class ReportTask(Metadata):
             error = Error(note='The "task.error" is available for single error tasks')
             raise FrictionlessException(error)
         return self.errors[0]
-
-    # Expand
-
-    def expand(self):
-        """Expand metadata"""
-        self.resource.expand()
 
     # Flatten
 

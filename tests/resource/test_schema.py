@@ -3,11 +3,10 @@ import pytest
 from frictionless import Resource, Detector, FrictionlessException, helpers
 
 
-IS_UNIX = not helpers.is_platform("windows")
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
 
 
-# Schema
+# General
 
 
 DESCRIPTOR_FK = {
@@ -200,7 +199,7 @@ def test_resource_schema_primary_key_error():
         for row in resource:
             if row.row_number == 3:
                 assert row.valid is False
-                assert row.errors[0].code == "primary-key-error"
+                assert row.errors[0].code == "primary-key"
                 continue
             assert row.valid
 
@@ -225,7 +224,7 @@ def test_resource_schema_foreign_keys_invalid():
     assert rows[1].valid
     assert rows[2].valid
     assert rows[3].valid
-    assert rows[4].errors[0].code == "foreign-key-error"
+    assert rows[4].errors[0].code == "foreign-key"
     assert rows[0].to_dict() == {"id": 1, "cat": None, "name": "England"}
     assert rows[1].to_dict() == {"id": 2, "cat": None, "name": "France"}
     assert rows[2].to_dict() == {"id": 3, "cat": 1, "name": "London"}

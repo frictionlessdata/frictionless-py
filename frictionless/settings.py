@@ -21,10 +21,10 @@ UNDEFINED = object()
 VERSION = read_asset("VERSION")
 COMPRESSION_FORMATS = ["zip", "gz"]
 INQUIRY_PROFILE = json.loads(read_asset("profiles", "inquiry.json"))
+CHECKLIST_PROFILE = json.loads(read_asset("profiles", "checklist.json"))
 PIPELINE_PROFILE = json.loads(read_asset("profiles", "pipeline.json"))
 REPORT_PROFILE = json.loads(read_asset("profiles", "report.json"))
-STATUS_PROFILE = json.loads(read_asset("profiles", "status.json"))
-SCHEMA_PROFILE = json.loads(read_asset("profiles", "schema", "general.json"))
+SCHEMA_PROFILE = json.loads(read_asset("profiles", "schema.json"))
 RESOURCE_PROFILE = json.loads(read_asset("profiles", "resource", "general.json"))
 TABULAR_RESOURCE_PROFILE = json.loads(read_asset("profiles", "resource", "tabular.json"))
 PACKAGE_PROFILE = json.loads(read_asset("profiles", "package", "general.json"))
@@ -69,7 +69,7 @@ DEFAULT_FLOAT_NUMBER = False
 DEFAULT_GROUP_CHAR = ""
 DEFAULT_DECIMAL_CHAR = "."
 DEFAULT_SERVER_PORT = 8000
-DEFAULT_CANDIDATES = [
+DEFAULT_FIELD_CANDIDATES = [
     {"type": "yearmonth"},
     {"type": "geopoint"},
     {"type": "duration"},
