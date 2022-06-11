@@ -8,6 +8,8 @@ from .. import errors
 if TYPE_CHECKING:
     from ..interfaces import IDescriptor
 
+
+# TODO: support descriptor
 # TODO: split into ResourceInquiryTask/PackageInqiuryTask?
 
 
