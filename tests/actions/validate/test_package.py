@@ -358,6 +358,7 @@ def test_check_file_package_stats_hash_not_supported_algorithm():
 
 
 @pytest.mark.ci
+@pytest.mark.skip
 def test_validate_package_parallel_from_dict():
     with open("data/package/datapackage.json") as file:
         with pytest.warns(UserWarning):
@@ -366,6 +367,7 @@ def test_validate_package_parallel_from_dict():
 
 
 @pytest.mark.ci
+@pytest.mark.skip
 def test_validate_package_parallel_from_dict_invalid():
     with open("data/invalid/datapackage.json") as file:
         report = validate(json.load(file), basepath="data/invalid", parallel=True)
@@ -379,6 +381,7 @@ def test_validate_package_parallel_from_dict_invalid():
 
 
 @pytest.mark.ci
+@pytest.mark.skip
 def test_validate_package_with_parallel():
     report = validate("data/invalid/datapackage.json", parallel=True)
     assert report.flatten(["taskPosition", "rowPosition", "fieldPosition", "code"]) == [

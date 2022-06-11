@@ -7,6 +7,7 @@ from frictionless import Package, Checklist
 
 
 @pytest.mark.ci
+@pytest.mark.skip
 def test_validate_package_parallel_from_dict():
     with open("data/package/datapackage.json") as file:
         with pytest.warns(UserWarning):
@@ -17,6 +18,7 @@ def test_validate_package_parallel_from_dict():
 
 
 @pytest.mark.ci
+@pytest.mark.skip
 def test_validate_package_parallel_from_dict_invalid():
     with open("data/invalid/datapackage.json") as file:
         package = Package(json.load(file), basepath="data/invalid")
@@ -32,6 +34,7 @@ def test_validate_package_parallel_from_dict_invalid():
 
 
 @pytest.mark.ci
+@pytest.mark.skip
 def test_validate_package_with_parallel():
     package = Package("data/invalid/datapackage.json")
     checklist = Checklist(allow_parallel=True)
