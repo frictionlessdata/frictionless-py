@@ -30,7 +30,8 @@ def validate(resource: "Resource", checklist: Optional[Checklist] = None):
     checklist = checklist or Checklist()
     checks = checklist.connect(resource)
     if not checklist.metadata_valid:
-        return Report.from_validate(time=timer.time, errors=checklist.metadata_errors)
+        errors = checklist.metadata_errors
+        return Report.from_validation(time=timer.time, errors=errors)
 
     # Prepare resource
     try:
@@ -38,13 +39,13 @@ def validate(resource: "Resource", checklist: Optional[Checklist] = None):
     except FrictionlessException as exception:
         resource.close()
         errors = [exception.error]
-        return Report.from_validate_task(resource, time=timer.time, errors=errors)
+        return Report.from_validation_task(resource, time=timer.time, errors=errors)
 
     # Validate metadata
     metadata = original_resource if checklist.keep_original else resource
     if not metadata.metadata_valid:
         errors = metadata.metadata_errors
-        return Report.from_validate_task(resource, time=timer.time, errors=errors)
+        return Report.from_validation_task(resource, time=timer.time, errors=errors)
 
     # Validate data
     with resource:
@@ -101,7 +102,7 @@ def validate(resource: "Resource", checklist: Optional[Checklist] = None):
                         errors.append(error)
 
     # Return report
-    return Report.from_validate_task(
+    return Report.from_validation_task(
         resource,
         time=timer.time,
         scope=checklist.scope,

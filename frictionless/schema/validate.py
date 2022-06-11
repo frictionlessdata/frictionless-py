@@ -14,4 +14,4 @@ def validate(schema: "Schema"):
     """
     timer = helpers.Timer()
     errors = schema.metadata_errors
-    return Report(errors=errors, time=timer.time)
+    return Report.from_validation(time=timer.time, errors=errors)

@@ -19,4 +19,4 @@ def validate(inquiry: "Inquiry", *, parallel=False):
     """
     timer = helpers.Timer()
     errors = inquiry.metadata_errors
-    return Report(errors=errors, time=timer.time)
+    return Report.from_validation(time=timer.time, errors=errors)

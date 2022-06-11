@@ -14,4 +14,4 @@ def validate(dialect: "Dialect"):
     """
     timer = helpers.Timer()
     errors = dialect.metadata_errors
-    return Report(errors=errors, time=timer.time)
+    return Report.from_validation(time=timer.time, errors=errors)

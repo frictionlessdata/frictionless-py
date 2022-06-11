@@ -15,4 +15,4 @@ def validate(detector: "Detector"):
     timer = helpers.Timer()
     # TODO: enable when Detector is Metadata
     errors = detector.metadata_errors  # type: ignore
-    return Report(errors=errors, time=timer.time)
+    return Report.from_validation(time=timer.time, errors=errors)

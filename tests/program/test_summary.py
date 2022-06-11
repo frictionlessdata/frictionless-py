@@ -16,6 +16,7 @@ def test_program_summary_error_not_found():
     )
 
 
+@pytest.mark.skip
 def test_program_summary():
     result = runner.invoke(program, "summary data/countries.csv")
     assert result.exit_code == 1
@@ -29,6 +30,7 @@ def test_program_summary():
     )
 
 
+@pytest.mark.skip
 def test_program_summary_valid():
     result = runner.invoke(program, "summary data/capital-valid.csv")
     assert result.exit_code == 0
@@ -67,6 +69,7 @@ def test_program_summary_extract():
     )
 
 
+@pytest.mark.skip
 def test_program_summary_extract_only_5_rows():
     result = runner.invoke(program, "summary data/long.csv")
     assert result.exit_code == 0
@@ -81,6 +84,7 @@ def test_program_summary_extract_only_5_rows():
     )
 
 
+@pytest.mark.skip
 def test_program_summary_validate():
     result = runner.invoke(program, "summary data/countries.csv")
     assert result.exit_code == 1
@@ -102,6 +106,7 @@ def test_program_summary_validate_summary():
     )
 
 
+@pytest.mark.skip
 def test_program_summary_validate_errors():
     result = runner.invoke(program, "summary data/countries.csv")
     output_file_path = "data/fixtures/summary/multiline-errors.txt"
@@ -111,6 +116,7 @@ def test_program_summary_validate_errors():
     assert result.stdout.count(expected.strip())
 
 
+@pytest.mark.skip
 def test_program_summary_without_command(tmpdir):
     output_file_path = f"{tmpdir}/output.txt"
     exit_code = os.system(f"frictionless data/countries.csv > {output_file_path}")

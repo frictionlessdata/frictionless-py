@@ -15,4 +15,4 @@ def validate(checklist: Checklist):
     """
     timer = helpers.Timer()
     errors = checklist.metadata_errors
-    return Report(errors=errors, time=timer.time)
+    return Report.from_validation(time=timer.time, errors=errors)

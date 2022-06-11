@@ -170,7 +170,7 @@ class Report(Metadata):
         )
 
     @staticmethod
-    def from_validate(
+    def from_validation(
         time: float,
         tasks: Optional[List[ReportTask]] = None,
         errors: Optional[List[Error]] = None,
@@ -180,7 +180,7 @@ class Report(Metadata):
         tasks = tasks or []
         errors = errors or []
         error_count = len(errors) + sum(task.stats["errors"] for task in tasks)
-        stats = {"time": time, "errors": error_count}
+        stats = {"time": time, "tasks": len(tasks), "errors": error_count}
         return Report(
             version=settings.VERSION,
             valid=not error_count,
@@ -191,7 +191,7 @@ class Report(Metadata):
         )
 
     @staticmethod
-    def from_validate_task(
+    def from_validation_task(
         resource: Resource,
         *,
         time: float,

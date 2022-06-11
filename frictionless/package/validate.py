@@ -1,4 +1,3 @@
-# type: ignore
 import warnings
 from typing import TYPE_CHECKING, Optional
 from ..report import Report
@@ -32,12 +31,14 @@ def validate(package: "Package", checklist: Optional[Checklist] = None):
         for resource in package.resources:  # type: ignore
             package_stats.append({key: val for key, val in resource.stats.items() if val})
     except FrictionlessException as exception:
-        return Report(time=timer.time, errors=[exception.error], tasks=[])
+        errors = [exception.error]
+        return Report.from_validation(time=timer.time, errors=errors)
 
     # Prepare checklist
     checklist = checklist or Checklist()
     if not checklist.metadata_valid:
-        return Report(errors=checklist.metadata_errors, time=timer.time)
+        errors = checklist.metadata_errors
+        return Report.from_validation(time=timer.time, errors=errors)
 
     # Validate metadata
     metadata_errors = []
@@ -45,7 +46,7 @@ def validate(package: "Package", checklist: Optional[Checklist] = None):
         if error.code == "package-error":
             metadata_errors.append(error)
         if metadata_errors:
-            return Report(time=timer.time, errors=metadata_errors, tasks=[])
+            return Report.from_validation(time=timer.time, errors=metadata_errors)
 
     # Validate sequentially
     if not checklist.allow_parallel:
@@ -56,7 +57,7 @@ def validate(package: "Package", checklist: Optional[Checklist] = None):
             report = resource.validate(checklist)
             tasks.extend(report.tasks)
             errors.extend(report.errors)
-        return Report(time=timer.time, errors=errors, tasks=tasks)
+        return Report.from_validation(time=timer.time, errors=errors, tasks=tasks)
 
     # TODO: don't use inquiry for it (move code here)
     # Validate in-parallel
@@ -72,9 +73,9 @@ def validate(package: "Package", checklist: Optional[Checklist] = None):
             resource.stats = stats
             inquiry.tasks.append(
                 InquiryTask(
-                    source=resource,
-                    basepath=resource.basepath,
-                    original=checklist.keep_original,
+                    source=resource,  # type: ignore
+                    basepath=resource.basepath,  # type: ignore
+                    original=checklist.keep_original,  # type: ignore
                 )
             )
         return inquiry.run(parallel=checklist.allow_parallel)
