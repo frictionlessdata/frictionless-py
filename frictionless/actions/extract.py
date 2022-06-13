@@ -4,10 +4,11 @@ from ..package import Package
 from ..exception import FrictionlessException
 from ..system import system
 from .. import errors
-from .. import helpers
 
 
-def extract(source=None, *, type=None, process=None, stream=False, **options):
+def extract(
+    source=None, *, type=None, process=None, stream=False, filter_func=None, **options
+):
     """Extract resource rows
 
     API      | Usage
@@ -35,11 +36,24 @@ def extract(source=None, *, type=None, process=None, stream=False, **options):
     if extract is None:
         note = f"Not supported extract type: {type}"
         raise FrictionlessException(errors.GeneralError(note=note))
-    return extract(source, process=process, stream=stream, deprecate=False, **options)
+    return extract(
+        source,
+        process=process,
+        stream=stream,
+        deprecate=False,
+        filter_func=filter_func,
+        **options,
+    )
 
 
 def extract_package(
-    source=None, *, process=None, stream=False, deprecate=True, **options
+    source=None,
+    *,
+    process=None,
+    stream=False,
+    deprecate=True,
+    filter_func=None,
+    **options,
 ):
     """Extract package rows
 
@@ -61,20 +75,25 @@ def extract_package(
         message = 'Function "extract_package" is deprecated (use "package.extract").'
         warnings.warn(message, UserWarning)
     result = {}
-    valid = options.pop("valid") if "valid" in options else None
-    row_options = helpers.remove_non_values(dict(valid=valid))
     native = isinstance(source, Package)
     package = source.to_copy() if native else Package(source, **options)
     for number, resource in enumerate(package.resources, start=1):
         key = resource.fullpath if not resource.memory else f"memory{number}"
-        data = read_row_stream(resource, **row_options)
+        data = read_row_stream(resource)
+        data = filter(filter_func, data) if filter_func else data
         data = (process(row) for row in data) if process else data
         result[key] = data if stream else list(data)
     return result
 
 
 def extract_resource(
-    source=None, *, process=None, stream=False, deprecate=True, **options
+    source=None,
+    *,
+    process=None,
+    stream=False,
+    deprecate=True,
+    filter_func=None,
+    **options,
 ):
     """Extract resource rows
 
@@ -94,11 +113,10 @@ def extract_resource(
     if deprecate:
         message = 'Function "extract_resource" is deprecated (use "resource.extract").'
         warnings.warn(message, UserWarning)
-    valid = options.pop("valid") if "valid" in options else None
-    row_options = helpers.remove_non_values(dict(valid=valid))
     native = isinstance(source, Resource)
     resource = source.to_copy() if native else Resource(source, **options)
-    data = read_row_stream(resource, **row_options)
+    data = read_row_stream(resource)
+    data = filter(filter_func, data) if filter_func else data
     data = (process(row) for row in data) if process else data
     return data if stream else list(data)
 
@@ -106,10 +124,7 @@ def extract_resource(
 # Internal
 
 
-def read_row_stream(resource, **options):
+def read_row_stream(resource):
     with resource:
         for row in resource.row_stream:
-            if "valid" in options:
-                if options["valid"] != row.valid:
-                    continue
             yield row
