@@ -20,6 +20,7 @@ def extract(
         type (str): source type - package of resource (default: infer)
         process? (func): a row processor function
         stream? (bool): return a row stream(s) instead of loading into memory
+        filter_func? (bool): row processor function to filter valid/invalid rows
         **options (dict): options for the underlaying function
 
     Returns:
@@ -65,6 +66,8 @@ def extract_package(
         source (dict|str): data resource descriptor
         process? (func): a row processor function
         stream? (bool): return a row streams instead of loading into memory
+        deprecate? (bool): flag to check if the function is deprecated
+        filter_func? (bool): row processor function to filter valid/invalid rows
         **options (dict): Package constructor options
 
     Returns:
