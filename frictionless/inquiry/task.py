@@ -1,12 +1,9 @@
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 from ..metadata import Metadata
 from ..dialect import Dialect
 from ..schema import Schema
 from .. import settings
 from .. import errors
-
-if TYPE_CHECKING:
-    from ..interfaces import IDescriptor
 
 
 # TODO: support data?

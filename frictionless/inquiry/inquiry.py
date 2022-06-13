@@ -1,13 +1,10 @@
 from copy import deepcopy
-from typing import TYPE_CHECKING, List
+from typing import List
 from ..metadata import Metadata
 from ..errors import InquiryError
 from .validate import validate
 from .task import InquiryTask
 from .. import settings
-
-if TYPE_CHECKING:
-    from ..interfaces import IDescriptor
 
 
 class Inquiry(Metadata):
