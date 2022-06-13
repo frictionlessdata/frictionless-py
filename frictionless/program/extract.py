@@ -172,12 +172,12 @@ def program_extract(
     # Extract data
     try:
         process = (lambda row: row.to_dict(json=True)) if json or yaml else None
-        filter_func = None
+        filter = None
         if valid:
-            filter_func = lambda row: row.valid
+            filter = lambda row: row.valid
         if invalid:
-            filter_func = lambda row: not row.valid
-        data = extract(source, process=process, filter=filter_func, **options)
+            filter = lambda row: not row.valid
+        data = extract(source, process=process, filter=filter, **options)
     except Exception as exception:
         typer.secho(str(exception), err=True, fg=typer.colors.RED, bold=True)
         raise typer.Exit(1)
