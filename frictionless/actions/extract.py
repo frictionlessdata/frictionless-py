@@ -108,6 +108,9 @@ def extract_resource(
     Parameters:
         source (any|Resource): data resource
         process? (func): a row processor function
+        stream? (bool): return a row streams instead of loading into memory
+        deprecate? (bool): flag to check if the function is deprecated
+        filter? (bool): row processor function to filter valid/invalid rows
         **options (dict): Resource constructor options
 
     Returns:
