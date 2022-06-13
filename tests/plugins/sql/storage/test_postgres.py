@@ -38,6 +38,7 @@ def test_sql_storage_postgresql_types(postgresql_url):
     }
 
     # Assert data
+    utc_timezone = datetime.timezone.utc
     assert target.get_resource("types").read_rows() == [
         {
             "any": "中国人",
@@ -45,7 +46,7 @@ def test_sql_storage_postgresql_types(postgresql_url):
             "boolean": True,
             "date": datetime.date(2015, 1, 1),
             "date_year": datetime.date(2015, 1, 1),
-            "datetime": datetime.datetime(2015, 1, 1, 3, 0, tzinfo=datetime.timezone.utc),
+            "datetime": datetime.datetime(2015, 1, 1, 3, 0, tzinfo=utc_timezone),
             "duration": "P1Y1M",
             "geojson": {"type": "Point", "coordinates": [33, 33.33]},
             "geopoint": "30,70",
