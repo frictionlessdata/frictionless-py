@@ -1,4 +1,5 @@
 import pytest
+from decimal import Decimal
 import datetime
 import sqlalchemy as sa
 from frictionless import Package, Resource
@@ -44,19 +45,12 @@ def test_sql_storage_postgresql_types(postgresql_url):
             "boolean": True,
             "date": datetime.date(2015, 1, 1),
             "date_year": datetime.date(2015, 1, 1),
-            "datetime": datetime.datetime(
-                2015,
-                1,
-                1,
-                3,
-                0,
-                tzinfo=datetime.timezone(datetime.timedelta(seconds=3600)),
-            ),
+            "datetime": datetime.datetime(2015, 1, 1, 3, 0, tzinfo=datetime.timezone.utc),
             "duration": "P1Y1M",
             "geojson": {"type": "Point", "coordinates": [33, 33.33]},
             "geopoint": "30,70",
             "integer": 1,
-            "number": 7,
+            "number": Decimal(7),
             "object": {"chars": 560},
             "string": "english",
             "time": datetime.time(3, 0),
