@@ -22,7 +22,8 @@ def test_report():
     assert report.task.tabular is True
     assert report.task.stats["time"]
     assert report.task.stats["errors"] == 0
-    assert report.task.stats["bytes"] == 30
+    if not helpers.is_platform("windows"):
+        assert report.task.stats["bytes"] == 30
     assert report.task.stats["fields"] == 2
     assert report.task.stats["rows"] == 2
     if not helpers.is_platform("windows"):
