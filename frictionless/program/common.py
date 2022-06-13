@@ -290,6 +290,11 @@ resource_name = Option(
 # Row
 
 valid_rows = Option(
-    default=None,
-    help="Return valid or invalid rows",
+    default=False,
+    help="Return valid rows",
+)
+
+invalid_rows = Option(
+    default=False,
+    help="Return invalid rows",
 )

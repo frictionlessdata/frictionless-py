@@ -203,16 +203,6 @@ def test_program_extract_dialect_keys_option():
 
 
 def test_program_extract_valid_rows_1004():
-    result = runner.invoke(program, "extract data/countries.csv --valid")
-    assert result.exit_code == 0
-    assert (
-        result.stdout.count("1  Ireland      Britain  67")
-        and result.stdout.count("3  22           Germany  83")
-        and result.stdout.count("4               Italy    60")
-    )
-
-
-def test_program_extract_json_valid_rows_1004():
     result = runner.invoke(program, "extract data/countries.csv --valid --json")
     assert result.exit_code == 0
     assert json.loads(result.stdout) == [
@@ -231,11 +221,12 @@ def test_program_extract_yaml_valid_rows_1004():
 
 
 def test_program_extract_invalid_rows_1004():
-    result = runner.invoke(program, "extract data/countries.csv --no-valid")
+    result = runner.invoke(program, "extract data/countries.csv --invalid --json")
     assert result.exit_code == 0
-    assert result.stdout.count("2  3            France  n/a") and result.stdout.count(
-        "5                          "
-    )
+    assert json.loads(result.stdout) == [
+        {"id": 2, "neighbor_id": "3", "name": "France", "population": "n/a"},
+        {"id": 5, "neighbor_id": None, "name": None, "population": None},
+    ]
 
 
 def test_program_extract_valid_rows_with_no_valid_rows_1004():
@@ -247,7 +238,7 @@ def test_program_extract_valid_rows_with_no_valid_rows_1004():
 
 
 def test_program_extract_invalid_rows_with_no_invalid_rows_1004():
-    result = runner.invoke(program, "extract data/capital-valid.csv --no-valid")
+    result = runner.invoke(program, "extract data/capital-valid.csv --invalid")
     assert result.exit_code == 0
     assert result.stdout.count("data: data/capital-valid.csv") and result.stdout.count(
         "No invalid rows"
@@ -257,37 +248,37 @@ def test_program_extract_invalid_rows_with_no_invalid_rows_1004():
 def test_program_extract_valid_rows_from_datapackage_with_multiple_resources_1004():
     path1 = "data/issue-1004-data1.csv" if IS_UNIX else "data\\issue-1004-data1.csv"
     path2 = "data/issue-1004-data2.csv" if IS_UNIX else "data\\issue-1004-data2.csv"
-    result = runner.invoke(program, "extract data/issue-1004.package.json --valid")
+    result = runner.invoke(program, "extract data/issue-1004.package.json --valid --json")
     assert result.exit_code == 0
-    assert (
-        result.stdout.count(f"data: {path1}")
-        and result.stdout.count("id  neighbor_id  name     population")
-        and result.stdout.count("1  Ireland      Britain  67")
-        and result.stdout.count("3  22           Germany  83")
-        and result.stdout.count("4               Italy    60")
-    )
-    assert result.stdout.count(f"data: {path2}") and result.stdout.count("No valid rows")
+    assert json.loads(result.stdout) == {
+        path1: [
+            {"id": 1, "neighbor_id": "Ireland", "name": "Britain", "population": "67"},
+            {"id": 3, "neighbor_id": "22", "name": "Germany", "population": "83"},
+            {"id": 4, "neighbor_id": None, "name": "Italy", "population": "60"},
+        ],
+        path2: [],
+    }
 
 
 def test_program_extract_invalid_rows_from_datapackage_with_multiple_resources_1004():
     path1 = "data/issue-1004-data1.csv" if IS_UNIX else "data\\issue-1004-data1.csv"
     path2 = "data/issue-1004-data2.csv" if IS_UNIX else "data\\issue-1004-data2.csv"
-    result = runner.invoke(program, "extract data/issue-1004.package.json --no-valid")
+    result = runner.invoke(
+        program, "extract data/issue-1004.package.json --invalid --json"
+    )
     assert result.exit_code == 0
-    assert (
-        result.stdout.count(f"data: {path1}")
-        and result.stdout.count("id  neighbor_id  name    population")
-        and result.stdout.count("2  3            France  n/a")
-        and result.stdout.count("5                          ")
-    )
-    assert (
-        result.stdout.count(f"data: {path2}")
-        and result.stdout.count("id  name     country  city")
-        and result.stdout.count("1  english               ")
-        and result.stdout.count("1  english               ")
-        and result.stdout.count("                         ")
-        and result.stdout.count("2  german         1     2")
-    )
+    assert json.loads(result.stdout) == {
+        path1: [
+            {"id": 2, "neighbor_id": "3", "name": "France", "population": "n/a"},
+            {"id": 5, "neighbor_id": None, "name": None, "population": None},
+        ],
+        path2: [
+            {"id": 1, "name": "english", "country": None, "city": None},
+            {"id": 1, "name": "english", "country": None, "city": None},
+            {"id": None, "name": None, "country": None, "city": None},
+            {"id": 2, "name": "german", "country": 1, "city": 2},
+        ],
+    }
 
 
 def test_program_extract_valid_rows_extract_dialect_sheet_option():
@@ -295,6 +286,15 @@ def test_program_extract_valid_rows_extract_dialect_sheet_option():
         program, "extract data/sheet2.xls --sheet Sheet2 --json --valid"
     )
     assert result.exit_code == 0
-    assert json.loads(result.stdout) == extract(
-        "data/sheet2.xls", dialect={"sheet": "Sheet2"}
+    assert json.loads(result.stdout) == [
+        {"id": 1, "name": "english"},
+        {"id": 2, "name": "中国人"},
+    ]
+
+
+def test_program_extract_invalid_rows_extract_dialect_sheet_option():
+    result = runner.invoke(
+        program, "extract data/sheet2.xls --sheet Sheet2 --json --invalid"
     )
+    assert result.exit_code == 0
+    assert json.loads(result.stdout) == []

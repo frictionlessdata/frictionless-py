@@ -64,6 +64,7 @@ def program_extract(
     csv: bool = common.csv,
     # Row
     valid: bool = common.valid_rows,
+    invalid: bool = common.invalid_rows,
 ):
     """
     Extract a data source.
@@ -172,11 +173,11 @@ def program_extract(
     try:
         process = (lambda row: row.to_dict(json=True)) if json or yaml else None
         filter_func = None
-        if valid is not None:
-            filter_func = (
-                (lambda row: row.valid) if valid else (lambda row: not row.valid)
-            )
-        data = extract(source, process=process, filter_func=filter_func, **options)
+        if valid:
+            filter_func = lambda row: row.valid
+        if invalid:
+            filter_func = lambda row: not row.valid
+        data = extract(source, process=process, filter=filter_func, **options)
     except Exception as exception:
         typer.secho(str(exception), err=True, fg=typer.colors.RED, bold=True)
         raise typer.Exit(1)
