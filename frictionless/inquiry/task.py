@@ -133,7 +133,9 @@ class InquiryTask(Metadata):
     # Import/Export
 
     @staticmethod
-    def from_descriptor(descriptor: IDescriptor):
+    # TODO: recover after a cyclic dep is resolved
+    #  def from_descriptor(descriptor: IDescriptor):
+    def from_descriptor(descriptor: dict):
         metadata = Metadata(descriptor)
         dialect = Dialect(metadata.get("dialect", {}))
         schema = Schema(metadata.get("schema", {}))

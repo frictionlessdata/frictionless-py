@@ -38,7 +38,9 @@ class Inquiry(Metadata):
     # Export/Import
 
     @staticmethod
-    def from_descriptor(descriptor: IDescriptor):
+    # TODO: recover after a cyclic dep is resolved
+    #  def from_descriptor(descriptor: IDescriptor):
+    def from_descriptor(descriptor: dict):
         metadata = Metadata(descriptor)
         tasks = [InquiryTask.from_descriptor(task) for task in metadata.get("tasks", [])]
         return Inquiry(tasks=tasks)

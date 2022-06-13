@@ -78,4 +78,4 @@ def validate(package: "Package", checklist: Optional[Checklist] = None):
                     original=checklist.keep_original,  # type: ignore
                 )
             )
-        return inquiry.run(parallel=checklist.allow_parallel)
+        return inquiry.run(parallel=checklist.allow_parallel)  # type: ignore

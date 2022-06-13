@@ -72,8 +72,8 @@ def validate(
         return source.validate()
     elif type == "inquiry":
         if not isinstance(source, Inquiry):
-            source = Inquiry(source, **options)
-        return source.validate()
+            source = Inquiry(source, **options)  # type: ignore
+        return source.validate()  # type: ignore
     elif type == "package":
         if not isinstance(source, Package):
             source = Package(source, **options)
