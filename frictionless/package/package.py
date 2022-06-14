@@ -1,5 +1,6 @@
 import os
 import json
+import jinja2
 import zipfile
 import tempfile
 from pathlib import Path
@@ -508,6 +509,28 @@ class Package(Metadata):
             trusted=self.__trusted,
         )
 
+    def to_er_diagram(self, path=None) -> str:
+        """Generate ERD(Entity Relationship Diagram) from package resources
+        and exports it as .dot file
+
+        Parameters:
+            path (str): target path
+
+        Returns:
+            path(str): location of the .dot file
+
+        Raises:
+            FrictionlessException: on any error
+        """
+        text = to_dot(self)
+        path = path if path else "package.dot"
+        try:
+            helpers.write_file(path, text)
+        except Exception as exc:
+            raise FrictionlessException(self.__Error(note=str(exc))) from exc
+
+        return path
+
     @staticmethod
     def from_bigquery(source, *, dialect=None):
         """Import package from Bigquery
@@ -754,3 +777,44 @@ class Package(Metadata):
                     if not cell:
                         note = f'property "{name}[].email" is not valid "email"'
                         yield errors.PackageError(note=note)
+
+
+def to_dot(package: dict) -> str:
+    """Generate graphviz from package, using jinja2 template"""
+
+    template_dir = os.path.join(os.path.dirname(__file__), "../assets/templates/erd")
+    environ = jinja2.Environment(
+        loader=jinja2.FileSystemLoader(template_dir),
+        lstrip_blocks=True,
+        trim_blocks=True,
+    )
+    table_template = environ.get_template("table.html")
+    field_template = environ.get_template("field.html")
+    primary_key_template = environ.get_template("primary_key_field.html")
+    graph = environ.get_template("graph.html")
+    edges = []
+    nodes = []
+    for t_name in package.resource_names:
+        resource = package.get_resource(t_name)
+        templates = {k: primary_key_template for k in resource.schema.primary_key}
+        t_fields = [
+            templates.get(f.name, field_template).render(name=f.name, type=f.type)
+            for f in resource.schema.fields
+        ]
+        nodes.append(table_template.render(name=t_name, rows="".join(t_fields)))
+        child_table = t_name
+        for fk in resource.schema.foreign_keys:
+            for foreign_key in fk["fields"]:
+                if fk["reference"]["resource"] == "":
+                    continue
+                parent_table = fk["reference"]["resource"]
+                for parent_primary_key in fk["reference"]["fields"]:
+                    edges.append(
+                        f'"{parent_table}":{parent_primary_key}n -> "{child_table}":{foreign_key}n;'
+                    )
+    output_text = graph.render(
+        name=package.name,
+        tables="\n\t".join(nodes),
+        edges="\n\t".join(edges),
+    )
+    return output_text

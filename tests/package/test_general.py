@@ -1,3 +1,4 @@
+import os
 import pytest
 import zipfile
 from collections.abc import Mapping
@@ -313,3 +314,44 @@ def test_package_pprint_1029():
     expected = """{'resources': [{'data': [['id', 'name'], ['1', 'english'], ['2', '中国人']],
                 'name': 'name'}]}"""
     assert repr(package) == expected
+
+
+def test_package_to_erd_1118(tmpdir):
+    package = Package("data/package-storage.json")
+    output_file = os.path.join(tmpdir, "output.dot")
+    with open("data/fixtures/dot-files/package.dot") as file:
+        expected = file.read()
+    package.to_er_diagram(output_file)
+    with open(output_file) as file:
+        output = file.read()
+    assert expected.strip() == output.strip()
+
+
+def test_package_to_erd_table_names_with_dash_1118(tmpdir):
+    # graphviz shows error if the table/field name has "-" so need to
+    # wrap names with quotes ""
+    package = Package("data/datapackage.json")
+    output_file = os.path.join(tmpdir, "output.dot")
+    with open(
+        "data/fixtures/dot-files/package-resource-names-including-dash.dot"
+    ) as file:
+        expected = file.read()
+    package.to_er_diagram(output_file)
+    with open(output_file) as file:
+        output = file.read()
+    assert expected.strip() == output.strip()
+    assert output.count('"number-two"')
+
+
+def test_package_to_erd_without_table_relationships_1118(tmpdir):
+    package = Package("data/datapackage.json")
+    output_file = os.path.join(tmpdir, "output.dot")
+    with open(
+        "data/fixtures/dot-files/package-resource-names-including-dash.dot"
+    ) as file:
+        expected = file.read()
+    package.to_er_diagram(output_file)
+    with open(output_file) as file:
+        output = file.read()
+    assert expected.strip() == output.strip()
+    assert output.count("->") == 0
