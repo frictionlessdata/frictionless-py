@@ -779,6 +779,7 @@ class Package(Metadata):
                         yield errors.PackageError(note=note)
 
 
+# https://github.com/frictionlessdata/frictionless-py/issues/1118
 def to_dot(package: dict) -> str:
     """Generate graphviz from package, using jinja2 template"""
 
