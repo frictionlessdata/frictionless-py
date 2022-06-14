@@ -2,6 +2,7 @@ from multiprocessing import Pool
 from typing import TYPE_CHECKING, cast
 from .task import InquiryTask
 from ..resource import Resource
+from ..package import Package
 from ..report import Report
 from .. import helpers
 
@@ -57,16 +58,30 @@ def validate(inquiry: "Inquiry", *, parallel=False):
 
 
 def validate_task(task: InquiryTask) -> Report:
-    resource = Resource(
-        path=task.path,
-        scheme=task.scheme,
-        format=task.format,
-        hashing=task.hashing,
-        encoding=task.encoding,
-        innerpath=task.innerpath,
-        compression=task.compression,
-        dialect=task.dialect,
-        schema=task.schema,
+
+    # Package
+    if task.type == "package":
+        package = Package(descriptor=task.descriptor)
+        report = package.validate(task.checklist)
+        return report
+
+    # Resource
+    resource = (
+        Resource(
+            path=task.path,
+            scheme=task.scheme,
+            format=task.format,
+            hashing=task.hashing,
+            encoding=task.encoding,
+            innerpath=task.innerpath,
+            compression=task.compression,
+            dialect=task.dialect,
+            schema=task.schema,
+            # TODO: pass checklist here
+        )
+        if not task.descriptor
+        # TODO: rebase on Resource.from_descriptor
+        else Resource(descriptor=task.descriptor)
     )
     report = resource.validate(task.checklist)
     return report

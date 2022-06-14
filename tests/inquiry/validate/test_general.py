@@ -91,22 +91,36 @@ def test_inquiry_validate_multiple_invalid_with_schema():
     ]
 
 
-@pytest.mark.skip
-def test_inquiry_validate_with_one_package():
-    inquiry = Inquiry(
-        {"tasks": [{"source": "data/package/datapackage.json"}]},
+def test_inquiry_validate_with_one_resource_from_descriptor():
+    inquiry = Inquiry.from_descriptor(
+        {
+            "tasks": [
+                {"descriptor": "data/resource.json"},
+            ]
+        },
     )
     report = inquiry.validate()
     assert report.valid
 
 
-@pytest.mark.skip
-def test_inquiry_validate_with_multiple_packages():
-    inquiry = Inquiry(
+def test_inquiry_validate_with_one_package_from_descriptor():
+    inquiry = Inquiry.from_descriptor(
         {
             "tasks": [
-                {"source": "data/package/datapackage.json"},
-                {"source": "data/invalid/datapackage.json"},
+                {"descriptor": "data/package/datapackage.json"},
+            ]
+        },
+    )
+    report = inquiry.validate()
+    assert report.valid
+
+
+def test_inquiry_validate_with_multiple_packages():
+    inquiry = Inquiry.from_descriptor(
+        {
+            "tasks": [
+                {"descriptor": "data/package/datapackage.json"},
+                {"descriptor": "data/invalid/datapackage.json"},
             ]
         },
     )

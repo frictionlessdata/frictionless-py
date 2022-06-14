@@ -3,6 +3,7 @@ from ..metadata import Metadata
 from ..checklist import Checklist
 from ..dialect import Dialect
 from ..schema import Schema
+from ..file import File
 from .. import settings
 from .. import errors
 
@@ -25,7 +26,9 @@ class InquiryTask(Metadata):
 
     def __init__(
         self,
-        path: str,
+        descriptor: Optional[str] = None,
+        type: Optional[str] = None,
+        path: Optional[str] = None,
         name: Optional[str] = None,
         scheme: Optional[str] = None,
         format: Optional[str] = None,
@@ -37,6 +40,8 @@ class InquiryTask(Metadata):
         schema: Optional[Schema] = None,
         checklist: Optional[Checklist] = None,
     ):
+        self.setinitial("descriptor", descriptor)
+        self.setinitial("type", type)
         self.setinitial("path", path)
         self.setinitial("name", name)
         self.setinitial("scheme", scheme)
@@ -49,6 +54,28 @@ class InquiryTask(Metadata):
         self.setinitial("schema", schema)
         self.setinitial("checklist", checklist)
         super().__init__()
+
+    @property
+    def descriptor(self):
+        """
+        Returns:
+            any: descriptor
+        """
+        return self.get("descriptor")
+
+    @property
+    def type(self) -> str:
+        """
+        Returns:
+            any: type
+        """
+        type = self.get("type")
+        if not type:
+            type = "resource"
+            if self.descriptor:
+                file = File(self.descriptor)
+                type = "package" if file.type == "package" else "resource"
+        return type
 
     @property
     def name(self):
@@ -149,6 +176,8 @@ class InquiryTask(Metadata):
         schema = Schema(metadata.get("schema", {}))
         checklist = Checklist(metadata.get("checklist", {}))
         return InquiryTask(
+            descriptor=metadata.get("descriptor"),  # type: ignore
+            type=metadata.get("type"),  # type: ignore
             name=metadata.get("name"),  # type: ignore
             path=metadata.get("path"),  # type: ignore
             scheme=metadata.get("scheme"),  # type: ignore
@@ -166,3 +195,8 @@ class InquiryTask(Metadata):
 
     metadata_Error = errors.InquiryError
     metadata_profile = settings.INQUIRY_PROFILE["properties"]["tasks"]["items"]
+
+    def metadata_validate(self):
+        yield from super().metadata_validate()
+
+        # TODO: validate type/descriptor

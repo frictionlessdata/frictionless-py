@@ -1,8 +1,8 @@
 import warnings
 from typing import TYPE_CHECKING, Optional
+from importlib import import_module
 from ..report import Report
 from ..checklist import Checklist
-from ..inquiry import Inquiry, InquiryTask
 from ..exception import FrictionlessException
 from .. import helpers
 
@@ -21,6 +21,9 @@ def validate(package: "Package", checklist: Optional[Checklist] = None):
         Report: validation report
 
     """
+    # TODO: remove this dependency
+    Inquiry = import_module("frictionless").Inquiry
+    InquiryTask = import_module("frictionless").InquiryTask
 
     # Create state
     timer = helpers.Timer()
