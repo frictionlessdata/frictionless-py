@@ -6,13 +6,14 @@ from ..exception import FrictionlessException
 from ..system import system
 
 if TYPE_CHECKING:
-    from ..interfaces import ProcessFunction
+    from ..interfaces import FilterFunction, ProcessFunction
 
 
 def extract(
     source: Optional[Any] = None,
     *,
     type: Optional[str] = None,
+    filter: Optional[FilterFunction] = None,
     process: Optional[ProcessFunction] = None,
     stream: bool = False,
     **options,
@@ -26,6 +27,7 @@ def extract(
     Parameters:
         source (dict|str): data source
         type (str): source type - package of resource (default: infer)
+        filter? (bool): a row filter function
         process? (func): a row processor function
         stream? (bool): return a row stream(s) instead of loading into memory
         **options (dict): options for the underlaying function
@@ -47,11 +49,11 @@ def extract(
     if type == "package":
         if not isinstance(source, Package):
             source = Package(source, **options)
-        return source.extract(process=process, stream=stream)
+        return source.extract(filter=filter, process=process, stream=stream)
     elif type == "resource":
         if not isinstance(source, Resource):
             source = Resource(source, **options)
-        return source.extract(process=process, stream=stream)
+        return source.extract(filter=filter, process=process, stream=stream)
 
     # Not supported
     raise FrictionlessException(f"Not supported extract type: {type}")

@@ -309,3 +309,22 @@ csv = Option(
     default=False,
     help="Return in CSV format",
 )
+
+# Resource
+
+resource_name = Option(
+    default=None,
+    help="Name of resource to validate",
+)
+
+# Row
+
+valid_rows = Option(
+    default=False,
+    help="Return valid rows",
+)
+
+invalid_rows = Option(
+    default=False,
+    help="Return invalid rows",
+)

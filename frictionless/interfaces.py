@@ -32,6 +32,11 @@ class EncodingFunction(Protocol):
         ...
 
 
+class FilterFunction(Protocol):
+    def __call__(self, row: Row) -> bool:
+        ...
+
+
 class ProcessFunction(Protocol):
     def __call__(self, row: Row) -> Iterable[Any]:
         ...

@@ -1,20 +1,24 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, Optional
+import builtins
 
 if TYPE_CHECKING:
-    from ..interfaces import ProcessFunction
+    from ..interfaces import FilterFunction, ProcessFunction
     from .package import Package
 
 
+# TODO: we need to re-use resource.extract more?
 def extract(
     package: "Package",
     *,
+    filter: Optional[FilterFunction] = None,
     process: Optional[ProcessFunction] = None,
     stream: bool = False,
 ):
     """Extract package rows
 
     Parameters:
+        filter? (bool): a row filter function
         process? (func): a row processor function
         stream? (bool): return a row streams instead of loading into memory
 
@@ -26,6 +30,7 @@ def extract(
     for number, resource in enumerate(package.resources, start=1):  # type: ignore
         key = resource.fullpath if not resource.memory else f"memory{number}"
         data = read_row_stream(resource)
+        data = builtins.filter(filter, data) if filter else data
         data = (process(row) for row in data) if process else data
         result[key] = data if stream else list(data)
     return result
