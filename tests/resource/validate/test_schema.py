@@ -42,7 +42,7 @@ def test_validate_schema_multiple_errors():
     resource = Resource(source, schema=schema)
     checklist = Checklist(pick_errors=["#row"], limit_errors=3)
     report = resource.validate(checklist)
-    assert report.task.warning == "reached error limit: 3"
+    assert report.task.warnings == ["reached error limit: 3"]
     assert report.task.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [4, 1, "type-error"],
         [4, 2, "constraint-error"],

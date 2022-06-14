@@ -1,11 +1,12 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Optional, List
 from ..checklist import Checklist
 from ..exception import FrictionlessException
 from ..report import Report
 from .. import helpers
 
 if TYPE_CHECKING:
+    from ..error import Error
     from .resource import Resource
 
 
@@ -21,9 +22,9 @@ def validate(resource: "Resource", checklist: Optional[Checklist] = None):
     """
 
     # Create state
-    errors = []
-    warning = None
     timer = helpers.Timer()
+    errors: List[Error] = []
+    warnings: List[str] = []
     original_resource = resource.to_copy()
 
     # Prepare checklist
@@ -82,6 +83,7 @@ def validate(resource: "Resource", checklist: Optional[Checklist] = None):
                     if len(errors) >= checklist.limit_errors:
                         errors = errors[: checklist.limit_errors]
                         warning = f"reached error limit: {checklist.limit_errors}"
+                        warnings.append(warning)
                         break
 
                 # Limit memory
@@ -90,10 +92,11 @@ def validate(resource: "Resource", checklist: Optional[Checklist] = None):
                         memory = helpers.get_current_memory_usage()
                         if memory and memory >= checklist.limit_memory:
                             warning = f"reached memory limit: {checklist.limit_memory}MB"
+                            warnings.append(warning)
                             break
 
         # Validate end
-        if not warning:
+        if not warnings:
             if not resource.tabular:
                 helpers.pass_through(resource.byte_stream)
             for check in checks:
@@ -107,5 +110,5 @@ def validate(resource: "Resource", checklist: Optional[Checklist] = None):
         time=timer.time,
         scope=checklist.scope,
         errors=errors,
-        warning=warning,
+        warnings=warnings,
     )

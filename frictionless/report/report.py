@@ -49,14 +49,14 @@ class Report(Metadata):
         stats: dict,
         tasks: Optional[List[ReportTask]] = None,
         errors: Optional[List[Error]] = None,
-        warning: Optional[str] = None,
+        warnings: Optional[List[str]] = None,
     ):
         self.setinitial("version", version)
         self.setinitial("valid", valid)
         self.setinitial("stats", stats)
         self.setinitial("tasks", tasks)
         self.setinitial("errors", errors)
-        self.setinitial("warning", warning)
+        self.setinitial("warnings", warnings)
         super().__init__()
 
     @property
@@ -84,12 +84,12 @@ class Report(Metadata):
         return self.get("stats", {})
 
     @property
-    def warning(self):
+    def warnings(self):
         """
         Returns:
-            Error[]: validation warning
+            str[]: validation warnings
         """
-        return self.get("warning")
+        return self.get("warnings", [])
 
     @property
     def errors(self):
@@ -164,7 +164,7 @@ class Report(Metadata):
             valid=metadata.get("valid"),  # type: ignore
             stats=metadata.get("stats"),  # type: ignore
             scope=metadata.get("scope"),  # type: ignore
-            warning=metadata.get("warning"),  # type: ignore
+            warnings=metadata.get("warnings"),  # type: ignore
             errors=errors,
             tasks=tasks,
         )
@@ -174,7 +174,7 @@ class Report(Metadata):
         time: float,
         tasks: Optional[List[ReportTask]] = None,
         errors: Optional[List[Error]] = None,
-        warning: Optional[str] = None,
+        warnings: Optional[List[str]] = None,
     ):
         """Create a report from a validation"""
         tasks = tasks or []
@@ -187,7 +187,7 @@ class Report(Metadata):
             stats=stats,
             tasks=tasks,
             errors=errors,
-            warning=warning,
+            warnings=warnings,
         )
 
     @staticmethod
@@ -197,7 +197,7 @@ class Report(Metadata):
         time: float,
         scope: Optional[List[str]] = None,
         errors: Optional[List[Error]] = None,
-        warning: Optional[str] = None,
+        warnings: Optional[List[str]] = None,
     ):
         """Create a report from a validation task"""
         scope = scope or []
@@ -217,8 +217,8 @@ class Report(Metadata):
                     tabular=resource.tabular,  # type: ignore
                     stats=task_stats,
                     scope=scope,
-                    warning=warning,
                     errors=errors,
+                    warnings=warnings,
                 )
             ],
         )

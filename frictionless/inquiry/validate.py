@@ -47,10 +47,17 @@ def validate(inquiry: "Inquiry", *, parallel=False):
     # Return report
     tasks = []
     errors = []
+    warnings = []
     for report in reports:
         tasks.extend(report.tasks)
         errors.extend(report.errors)
-    return Report.from_validation(time=timer.time, tasks=tasks, errors=errors)
+        warnings.extend(report.warnings)
+    return Report.from_validation(
+        time=timer.time,
+        tasks=tasks,
+        errors=errors,
+        warnings=warnings,
+    )
 
 
 # Internal

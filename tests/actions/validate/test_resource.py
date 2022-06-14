@@ -529,7 +529,7 @@ def test_validate_schema_multiple_errors():
     source = "data/schema-errors.csv"
     schema = "data/schema-valid.json"
     report = validate(source, schema=schema, pick_errors=["#row"], limit_errors=3)
-    assert report.task.warning == "reached error limit: 3"
+    assert report.task.warnings == ["reached error limit: 3"]
     assert report.task.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [4, 1, "type-error"],
         [4, 2, "constraint-error"],
@@ -1002,7 +1002,7 @@ def test_validate_skip_errors_tags():
 
 def test_validate_invalid_limit_errors():
     report = validate("data/invalid.csv", limit_errors=3)
-    assert report.task.warning == "reached error limit: 3"
+    assert report.task.warnings == ["reached error limit: 3"]
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [None, 3, "blank-label"],
         [None, 4, "duplicate-label"],
@@ -1012,7 +1012,7 @@ def test_validate_invalid_limit_errors():
 
 def test_validate_structure_errors_with_limit_errors():
     report = validate("data/structure-errors.csv", limit_errors=3)
-    assert report.task.warning == "reached error limit: 3"
+    assert report.task.warnings == ["reached error limit: 3"]
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [4, None, "blank-row"],
         [5, 4, "extra-cell"],

@@ -240,7 +240,7 @@ def test_validate_invalid_limit_errors():
     resource = Resource("data/invalid.csv")
     checklist = Checklist(limit_errors=3)
     report = resource.validate(checklist)
-    assert report.task.warning == "reached error limit: 3"
+    assert report.task.warnings == ["reached error limit: 3"]
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [None, 3, "blank-label"],
         [None, 4, "duplicate-label"],
@@ -252,7 +252,7 @@ def test_validate_structure_errors_with_limit_errors():
     resource = Resource("data/structure-errors.csv")
     checklist = Checklist(limit_errors=3)
     report = resource.validate(checklist)
-    assert report.task.warning == "reached error limit: 3"
+    assert report.task.warnings == ["reached error limit: 3"]
     assert report.flatten(["rowPosition", "fieldPosition", "code"]) == [
         [4, None, "blank-row"],
         [5, 4, "extra-cell"],

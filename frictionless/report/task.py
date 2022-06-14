@@ -40,7 +40,7 @@ class ReportTask(Metadata):
         tabular: bool,
         stats: dict,
         scope: Optional[List[str]] = None,
-        warning: Optional[str] = None,
+        warnings: Optional[List[str]] = None,
         errors: Optional[List[Error]] = None,
     ):
         scope = scope or []
@@ -51,7 +51,7 @@ class ReportTask(Metadata):
         self.setinitial("tabular", tabular)
         self.setinitial("stats", stats)
         self.setinitial("scope", scope)
-        self.setinitial("warning", warning)
+        self.setinitial("warnings", warnings)
         self.setinitial("errors", errors)
         super().__init__()
 
@@ -104,12 +104,12 @@ class ReportTask(Metadata):
         return self.get("scope", [])
 
     @property
-    def warning(self):
+    def warnings(self):
         """
         Returns:
             bool: if validation warning
         """
-        return self.get("warning")
+        return self.get("warnings", [])
 
     @property
     def errors(self):
@@ -193,8 +193,8 @@ class ReportTask(Metadata):
         for code, count in error_list.items():
             content.append([code, count])
         output = ""
-        if self.warning:
-            output += f">> {self.warning}\n\n"
+        for warning in self.warnings:
+            output += f">> {warning}\n\n"
         output += tabulate(content, headers=["Name", "Value"], tablefmt="grid")
         return output
 
