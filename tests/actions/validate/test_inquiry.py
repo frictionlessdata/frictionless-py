@@ -5,24 +5,31 @@ from frictionless import validate
 # General
 
 
-@pytest.mark.skip
 def test_validate_inquiry():
-    report = validate({"tasks": [{"source": "data/table.csv"}]})
+    report = validate({"tasks": [{"path": "data/table.csv"}]})
     assert report.valid
 
 
-@pytest.mark.skip
 def test_validate_inquiry_multiple():
     report = validate(
-        {"tasks": [{"source": "data/table.csv"}, {"source": "data/matrix.csv"}]},
+        {
+            "tasks": [
+                {"path": "data/table.csv"},
+                {"path": "data/matrix.csv"},
+            ]
+        },
     )
     assert report.valid
 
 
-@pytest.mark.skip
 def test_validate_inquiry_multiple_invalid():
     report = validate(
-        {"tasks": [{"source": "data/table.csv"}, {"source": "data/invalid.csv"}]},
+        {
+            "tasks": [
+                {"path": "data/table.csv"},
+                {"path": "data/invalid.csv"},
+            ]
+        },
     )
     assert report.flatten(["taskPosition", "rowPosition", "fieldPosition", "code"]) == [
         [2, None, 3, "blank-label"],
@@ -36,13 +43,12 @@ def test_validate_inquiry_multiple_invalid():
     ]
 
 
-@pytest.mark.skip
 def test_validate_inquiry_multiple_invalid_limit_errors():
     report = validate(
         {
             "tasks": [
-                {"source": "data/table.csv"},
-                {"source": "data/invalid.csv", "limitErrors": 1},
+                {"path": "data/table.csv"},
+                {"path": "data/invalid.csv", "checklist": {"limitErrors": 1}},
             ]
         },
     )
@@ -55,16 +61,15 @@ def test_validate_inquiry_multiple_invalid_limit_errors():
     ]
 
 
-@pytest.mark.skip
 def test_validate_inquiry_multiple_invalid_with_schema():
     report = validate(
         {
             "tasks": [
                 {
-                    "source": "data/table.csv",
+                    "path": "data/table.csv",
                     "schema": {"fields": [{"name": "bad"}, {"name": "name"}]},
                 },
-                {"source": "data/invalid.csv"},
+                {"path": "data/invalid.csv"},
             ],
         },
     )
@@ -82,9 +87,25 @@ def test_validate_inquiry_multiple_invalid_with_schema():
 
 
 @pytest.mark.skip
-def test_validate_inquiry_with_one_package():
+def test_validate_inquiry_with_one_resource_from_descriptor():
     report = validate(
-        {"tasks": [{"source": "data/package/datapackage.json"}]},
+        {
+            "tasks": [
+                {"descriptor": "data/package/resource.json"},
+            ]
+        },
+    )
+    assert report.valid
+
+
+@pytest.mark.skip
+def test_validate_inquiry_with_one_package_from_descriptor():
+    report = validate(
+        {
+            "tasks": [
+                {"descriptor": "data/package/datapackage.json"},
+            ]
+        },
     )
     assert report.valid
 
@@ -109,21 +130,29 @@ def test_validate_inquiry_with_multiple_packages():
 # Parallel
 
 
-@pytest.mark.skip
 @pytest.mark.ci
 def test_validate_inquiry_parallel_multiple():
     report = validate(
-        {"tasks": [{"source": "data/table.csv"}, {"source": "data/matrix.csv"}]},
+        {
+            "tasks": [
+                {"path": "data/table.csv"},
+                {"path": "data/matrix.csv"},
+            ]
+        },
         parallel=True,
     )
     assert report.valid
 
 
-@pytest.mark.skip
 @pytest.mark.ci
 def test_validate_inquiry_parallel_multiple_invalid():
     report = validate(
-        {"tasks": [{"source": "data/table.csv"}, {"source": "data/invalid.csv"}]},
+        {
+            "tasks": [
+                {"path": "data/table.csv"},
+                {"path": "data/invalid.csv"},
+            ]
+        },
         parallel=True,
     )
     assert report.flatten(["taskPosition", "rowPosition", "fieldPosition", "code"]) == [
@@ -138,14 +167,13 @@ def test_validate_inquiry_parallel_multiple_invalid():
     ]
 
 
-@pytest.mark.skip
 @pytest.mark.ci
 def test_validate_inquiry_with_multiple_packages_with_parallel():
     report = validate(
         {
             "tasks": [
-                {"source": "data/package/datapackage.json"},
-                {"source": "data/invalid/datapackage.json"},
+                {"descriptor": "data/package/datapackage.json"},
+                {"descriptor": "data/invalid/datapackage.json"},
             ]
         },
         parallel=True,

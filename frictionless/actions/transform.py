@@ -44,15 +44,19 @@ def transform(
     if not pipeline:
         pipeline = Pipeline(steps=steps)
 
-    # Transform source
+    # Transform package
     if type == "package":
-        if not isinstance(source, Package):
-            source = Package(source, **options)
-        return source.transform(pipeline)
+        package = source
+        if not isinstance(package, Package):
+            package = Package(package, **options)
+        return package.transform(pipeline)
+
+    # Transform resource
     elif type == "resource":
-        if not isinstance(source, Resource):
-            source = Resource(source, **options)
-        return source.transform(pipeline)
+        resource = source
+        if not isinstance(resource, Resource):
+            resource = Resource(resource, **options)
+        return resource.transform(pipeline)
 
     # Not supported
     raise FrictionlessException(f"Not supported transform type: {type}")

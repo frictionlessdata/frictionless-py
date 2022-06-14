@@ -1,18 +1,20 @@
 from typing import Optional, List, Any
 from ..check import Check
 from ..schema import Schema
+from ..report import Report
 from ..package import Package
 from ..pipeline import Pipeline
+from ..resource import Resource
 from ..checklist import Checklist
 from ..inquiry import Inquiry
 from ..system import system
-from ..resource import Resource
 from ..exception import FrictionlessException
 from .. import settings
 
 
+# TODO: support detector type when it's converted to metadata
 def validate(
-    source: Optional[Any] = None,
+    source: Any,
     *,
     type: Optional[str] = None,
     # Checklist
@@ -63,35 +65,57 @@ def validate(
             keep_original=keep_original,
         )
 
-    # TODO: support detector type when it's converted to metadata
-    # Validate object
+    # Validate checklist
     if type == "checklist":
-        if not isinstance(source, Checklist):
-            source = Checklist(source, **options)
-        return source.validate()
+        checklist = source
+        if not isinstance(checklist, Checklist):
+            checklist = Checklist(checklist, **options)
+        return checklist.validate()
+
+    # Validate inquiry
     elif type == "inquiry":
-        if not isinstance(source, Inquiry):
-            source = Inquiry(source, **options)  # type: ignore
-        return source.validate()  # type: ignore
+        inquiry = source
+        if not isinstance(inquiry, Inquiry):
+            inquiry = Inquiry.from_descriptor(inquiry)
+        return inquiry.validate()
+
+    # Validate package
     elif type == "package":
-        if not isinstance(source, Package):
-            source = Package(source, **options)
+        package = source
+        if not isinstance(package, Package):
+            package = Package(package, **options)
         if resource_name:
-            resource = source.get_resource(resource_name)
+            resource = package.get_resource(resource_name)
             return resource.validate(checklist)
-        return source.validate(checklist, parallel=parallel)
+        return package.validate(checklist, parallel=parallel)
+
+    # Validate pipeline
     elif type == "pipeline":
-        if not isinstance(source, Pipeline):
-            source = Pipeline(source, **options)
-        return source.validate()
+        pipeline = source
+        if not isinstance(pipeline, Pipeline):
+            pipeline = Pipeline(pipeline, **options)
+        return pipeline.validate()
+
+    # Validate report
+    elif type == "report":
+        report = source
+        if not isinstance(report, Inquiry):
+            report = Report.from_descriptor(report)
+        return report.validate()
+
+    # Validate resource
     elif type == "resource":
-        if not isinstance(source, Resource):
-            source = Resource(source, **options)
-        return source.validate(checklist)
+        resource = source
+        if not isinstance(resource, Resource):
+            resource = Resource(resource, **options)
+        return resource.validate(checklist)
+
+    # Validate schema
     elif type == "schema":
-        if not isinstance(source, Schema):
-            source = Schema(source, **options)
-        return source.validate()
+        schema = source
+        if not isinstance(schema, Schema):
+            schema = Schema(schema, **options)
+        return schema.validate()
 
     # Not supported
     raise FrictionlessException(f"Not supported validate type: {type}")
