@@ -8,7 +8,6 @@ from .. import helpers
 
 if TYPE_CHECKING:
     from .inquiry import Inquiry
-    from .task import InquiryTask
 
 
 def validate(inquiry: "Inquiry", *, parallel=False):
