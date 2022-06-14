@@ -24,9 +24,9 @@ def validate(
     skip_errors: Optional[List[str]] = None,
     limit_errors: int = settings.DEFAULT_LIMIT_ERRORS,
     limit_memory: int = settings.DEFAULT_LIMIT_MEMORY,
-    keep_original: bool = False,
     # Validate
     resource_name: Optional[str] = None,
+    original: bool = False,
     parallel: bool = False,
     **options,
 ):
@@ -62,7 +62,6 @@ def validate(
             skip_errors=skip_errors,
             limit_errors=limit_errors,
             limit_memory=limit_memory,
-            keep_original=keep_original,
         )
 
     # Validate checklist
@@ -86,8 +85,8 @@ def validate(
             package = Package(package, **options)
         if resource_name:
             resource = package.get_resource(resource_name)
-            return resource.validate(checklist)
-        return package.validate(checklist, parallel=parallel)
+            return resource.validate(checklist, original=original)
+        return package.validate(checklist, original=original, parallel=parallel)
 
     # Validate pipeline
     elif type == "pipeline":
@@ -108,7 +107,7 @@ def validate(
         resource = source
         if not isinstance(resource, Resource):
             resource = Resource(resource, **options)
-        return resource.validate(checklist)
+        return resource.validate(checklist, original=original)
 
     # Validate schema
     elif type == "schema":

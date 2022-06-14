@@ -27,14 +27,12 @@ class Checklist(Metadata):
         skip_errors: Optional[List[str]] = None,
         limit_errors: Optional[int] = None,
         limit_memory: Optional[int] = None,
-        keep_original: Optional[bool] = None,
     ):
         self.setinitial("checks", checks)
         self.setinitial("pickErrors", pick_errors)
         self.setinitial("skipErrors", skip_errors)
         self.setinitial("limitErrors", limit_errors)
         self.setinitial("limitMemory", limit_memory)
-        self.setinitial("keepOriginal", keep_original)
         super().__init__(descriptor)
 
     @property
@@ -60,10 +58,6 @@ class Checklist(Metadata):
     @property
     def limit_memory(self) -> int:
         return self.get("limitMemory", settings.DEFAULT_LIMIT_MEMORY)
-
-    @property
-    def keep_original(self) -> bool:
-        return self.get("keepOriginal", False)
 
     @cached_property
     def scope(self) -> List[str]:

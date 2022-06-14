@@ -1,18 +1,21 @@
-import warnings
-from typing import TYPE_CHECKING, Optional
-from importlib import import_module
-from ..report import Report
+from __future__ import annotations
+from multiprocessing import Pool
+from typing import TYPE_CHECKING, Optional, List
 from ..checklist import Checklist
-from ..exception import FrictionlessException
+from ..report import Report
 from .. import helpers
 
 if TYPE_CHECKING:
     from .package import Package
+    from ..resource import Resource
+    from ..interfaces import IDescriptor
 
 
 def validate(
     package: "Package",
     checklist: Optional[Checklist] = None,
+    *,
+    original: Optional[bool] = None,
     parallel: Optional[bool] = None,
 ):
     """Validate package
@@ -25,21 +28,11 @@ def validate(
         Report: validation report
 
     """
-    # TODO: remove this dependency
-    Inquiry = import_module("frictionless").Inquiry
-    InquiryTask = import_module("frictionless").InquiryTask
 
     # Create state
     timer = helpers.Timer()
-
-    # Prepare package
-    try:
-        package_stats = []
-        for resource in package.resources:  # type: ignore
-            package_stats.append({key: val for key, val in resource.stats.items() if val})
-    except FrictionlessException as exception:
-        errors = [exception.error]
-        return Report.from_validation(time=timer.time, errors=errors)
+    reports: List[Report] = []
+    with_fks = any(resource.schema.foreign_keys for resource in package.resources)  # type: ignore
 
     # Prepare checklist
     checklist = checklist or Checklist()
@@ -52,37 +45,39 @@ def validate(
     for error in package.metadata_errors:
         if error.code == "package-error":
             metadata_errors.append(error)
-        if metadata_errors:
-            return Report.from_validation(time=timer.time, errors=metadata_errors)
+    if metadata_errors:
+        return Report.from_validation(time=timer.time, errors=metadata_errors)
 
-    # Validate sequentially
-    if not parallel:
-        tasks = []
-        errors = []
-        for resource, stats in zip(package.resources, package_stats):  # type: ignore
-            resource.stats = stats
-            report = resource.validate(checklist)
-            tasks.extend(report.tasks)
-            errors.extend(report.errors)
-        return Report.from_validation(time=timer.time, errors=errors, tasks=tasks)
+    # Validate sequential
+    if not parallel or with_fks:
+        for resource in package.resources:  # type: ignore
+            report = validate_sequential(resource)
+            reports.append(report)
 
-    # TODO: don't use inquiry for it (move code here)
-    # Validate in-parallel
+    # Validate parallel
     else:
-        inquiry = Inquiry(tasks=[])
-        for resource, stats in zip(package.resources, package_stats):  # type: ignore
-            for fk in resource.schema.foreign_keys:
-                # TODO: don't do in parallel if there are FKs!!!
-                if fk["reference"]["resource"]:
-                    message = "Foreign keys validation is ignored in the parallel mode"
-                    warnings.warn(message, UserWarning)
-                    break
-            resource.stats = stats
-            inquiry.tasks.append(
-                InquiryTask(
-                    source=resource,  # type: ignore
-                    basepath=resource.basepath,  # type: ignore
-                    original=checklist.keep_original,  # type: ignore
-                )
-            )
-        return inquiry.run(parallel=parallel)  # type: ignore
+        with Pool() as pool:
+            resource_descriptors = [resource.to_dict() for resource in package.resources]  # type: ignore
+            report_descriptors = pool.map(validate_parallel, resource_descriptors)
+            for report_descriptor in report_descriptors:
+                reports.append(Report.from_descriptor(report_descriptor))  # type: ignore
+
+    # Return report
+    return Report.from_validation_reports(
+        time=timer.time,
+        reports=reports,
+    )
+
+
+# Internal
+
+
+def validate_sequential(resource: Resource) -> Report:
+    return resource.validate()
+
+
+# TODO: rebase on from/to_descriptor
+def validate_parallel(descriptor: IDescriptor) -> IDescriptor:
+    resource = Resource(descriptor=descriptor)
+    report = resource.validate()
+    return report.to_dict()  # type: ignore

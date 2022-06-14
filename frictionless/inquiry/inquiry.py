@@ -1,10 +1,14 @@
+from __future__ import annotations
 from copy import deepcopy
-from typing import List
+from typing import TYPE_CHECKING, List
 from ..metadata import Metadata
 from ..errors import InquiryError
 from .validate import validate
 from .task import InquiryTask
 from .. import settings
+
+if TYPE_CHECKING:
+    from ..interfaces import IDescriptor
 
 
 class Inquiry(Metadata):
@@ -35,9 +39,7 @@ class Inquiry(Metadata):
     # Export/Import
 
     @staticmethod
-    # TODO: recover after a cyclic dep is resolved
-    #  def from_descriptor(descriptor: IDescriptor):
-    def from_descriptor(descriptor: dict):
+    def from_descriptor(descriptor: IDescriptor):
         metadata = Metadata(descriptor)
         tasks = [InquiryTask.from_descriptor(task) for task in metadata.get("tasks", [])]
         return Inquiry(tasks=tasks)

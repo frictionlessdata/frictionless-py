@@ -223,6 +223,23 @@ class Report(Metadata):
             ],
         )
 
+    @staticmethod
+    def from_validation_reports(time: float, reports: List[Report]):
+        """Create a report from a set of validation reports"""
+        tasks = []
+        errors = []
+        warnings = []
+        for report in reports:
+            tasks.extend(report.tasks)
+            errors.extend(report.errors)
+            warnings.extend(report.warnings)
+        return Report.from_validation(
+            time=time,
+            tasks=tasks,
+            errors=errors,
+            warnings=warnings,
+        )
+
     def to_summary(self):
         """Summary of the report
 

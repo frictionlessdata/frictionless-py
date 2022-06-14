@@ -23,8 +23,7 @@ def test_validate_invalid_resource():
 
 def test_validate_invalid_resource_original():
     resource = Resource({"path": "data/table.csv"})
-    checklist = Checklist(keep_original=True)
-    report = resource.validate(checklist)
+    report = resource.validate(original=True)
     assert report.flatten(["code", "note"]) == [
         [
             "resource-error",

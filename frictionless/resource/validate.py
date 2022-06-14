@@ -10,12 +10,16 @@ if TYPE_CHECKING:
     from .resource import Resource
 
 
-def validate(resource: "Resource", checklist: Optional[Checklist] = None):
+def validate(
+    resource: "Resource",
+    checklist: Optional[Checklist] = None,
+    original: Optional[bool] = None,
+):
     """Validate resource
 
     Parameters:
         checklist? (checklist): a Checklist object
-        checks? (list): a list of checks
+        original? (bool): validate metadata as it is
 
     Returns:
         Report: validation report
@@ -43,7 +47,7 @@ def validate(resource: "Resource", checklist: Optional[Checklist] = None):
         return Report.from_validation_task(resource, time=timer.time, errors=errors)
 
     # Validate metadata
-    metadata = original_resource if checklist.keep_original else resource
+    metadata = original_resource if original else resource
     if not metadata.metadata_valid:
         errors = metadata.metadata_errors
         return Report.from_validation_task(resource, time=timer.time, errors=errors)

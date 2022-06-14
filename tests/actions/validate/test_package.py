@@ -94,7 +94,7 @@ def test_validate_package_invalid_package():
 
 
 def test_validate_package_invalid_package_original():
-    report = validate({"resources": [{"path": "data/table.csv"}]}, keep_original=True)
+    report = validate({"resources": [{"path": "data/table.csv"}]}, original=True)
     assert report.flatten(["code", "note"]) == [
         [
             "resource-error",

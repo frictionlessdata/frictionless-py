@@ -47,7 +47,7 @@ def test_validate_forbidden_value_task_error():
 
 
 def test_validate_invalid_resource_original():
-    report = validate({"path": "data/table.csv"}, keep_original=True)
+    report = validate({"path": "data/table.csv"}, original=True)
     assert report.flatten(["code", "note"]) == [
         [
             "resource-error",

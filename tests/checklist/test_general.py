@@ -11,7 +11,6 @@ def test_checklist():
     assert checklist.skip_errors == []
     assert checklist.limit_errors == 1000
     assert checklist.limit_memory == 1000
-    assert checklist.keep_original is False
     assert checklist.scope == [
         "hash-count",
         "byte-count",
@@ -41,7 +40,6 @@ def test_checklist_from_descriptor():
             "checks": [{"code": "ascii-value"}],
             "limitErrors": 100,
             "limitMemory": 100,
-            "keepOriginal": True,
         }
     )
     assert checklist.check_codes == ["ascii-value"]
@@ -49,7 +47,6 @@ def test_checklist_from_descriptor():
     assert checklist.skip_errors == []
     assert checklist.limit_errors == 100
     assert checklist.limit_memory == 100
-    assert checklist.keep_original is True
     assert checklist.scope.count("ascii-value")
     assert isinstance(checklist.checks[0], checks.ascii_value)
 

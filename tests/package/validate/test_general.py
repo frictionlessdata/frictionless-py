@@ -80,8 +80,7 @@ def test_validate_package_with_non_tabular():
 
 def test_validate_package_invalid_package_original():
     package = Package({"resources": [{"path": "data/table.csv"}]})
-    checklist = Checklist(keep_original=True)
-    report = package.validate(checklist)
+    report = package.validate(original=True)
     assert report.flatten(["code", "note"]) == [
         [
             "resource-error",
