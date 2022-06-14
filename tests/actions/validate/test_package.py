@@ -93,6 +93,7 @@ def test_validate_package_invalid_package():
     assert error["note"].count("[Errno 2]") and error["note"].count("'bad'")
 
 
+@pytest.mark.skip
 def test_validate_package_invalid_package_original():
     report = validate({"resources": [{"path": "data/table.csv"}]}, original=True)
     assert report.flatten(["code", "note"]) == [
@@ -532,6 +533,7 @@ def test_validate_package_with_diacritic_symbol_issue_905():
     assert report.stats["tasks"] == 3
 
 
+@pytest.mark.skip
 def test_validate_package_with_resource_data_is_a_string_issue_977():
     report = validate(descriptor="data/issue-977.json", type="package")
     assert report.flatten() == [

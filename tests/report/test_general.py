@@ -54,7 +54,7 @@ def test_report():
         "constraint-error",
         "unique-error",
     ]
-    assert report.warning is None
+    assert report.warnings == []
     assert report.errors == []
 
 
@@ -63,9 +63,6 @@ def test_report():
 def test_report_expand():
     report = validate("data/table.csv")
     report.expand()
-
-
-# Problems
 
 
 def test_report_pprint_1029():

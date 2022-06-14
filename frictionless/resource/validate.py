@@ -13,7 +13,8 @@ if TYPE_CHECKING:
 def validate(
     resource: "Resource",
     checklist: Optional[Checklist] = None,
-    original: Optional[bool] = None,
+    *,
+    original: bool = False,
 ):
     """Validate resource
 

@@ -14,7 +14,7 @@ from .. import settings
 
 # TODO: support detector type when it's converted to metadata
 def validate(
-    source: Any,
+    source: Optional[Any] = None,
     *,
     type: Optional[str] = None,
     # Checklist
@@ -75,7 +75,8 @@ def validate(
     elif type == "inquiry":
         inquiry = source
         if not isinstance(inquiry, Inquiry):
-            inquiry = Inquiry.from_descriptor(inquiry)
+            # TODO: fix it
+            inquiry = Inquiry.from_descriptor(inquiry)  # type: ignore
         return inquiry.validate()
 
     # Validate package
@@ -99,7 +100,8 @@ def validate(
     elif type == "report":
         report = source
         if not isinstance(report, Inquiry):
-            report = Report.from_descriptor(report)
+            # TODO: fix it
+            report = Report.from_descriptor(report)  # type: ignore
         return report.validate()
 
     # Validate resource

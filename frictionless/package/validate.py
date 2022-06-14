@@ -8,15 +8,14 @@ from .. import helpers
 if TYPE_CHECKING:
     from .package import Package
     from ..resource import Resource
-    from ..interfaces import IDescriptor
 
 
 def validate(
     package: "Package",
     checklist: Optional[Checklist] = None,
     *,
-    original: Optional[bool] = None,
-    parallel: Optional[bool] = None,
+    original: bool = False,
+    parallel: bool = False,
 ):
     """Validate package
 
@@ -51,13 +50,19 @@ def validate(
     # Validate sequential
     if not parallel or with_fks:
         for resource in package.resources:  # type: ignore
-            report = validate_sequential(resource)
+            report = validate_sequential(resource, original=original)
             reports.append(report)
 
     # Validate parallel
     else:
         with Pool() as pool:
-            resource_descriptors = [resource.to_dict() for resource in package.resources]  # type: ignore
+            resource_descriptors: List[dict] = []
+            for resource in package.resources:  # type: ignore
+                descriptor = resource.to_dict()
+                descriptor["basepath"] = resource.basepath
+                descriptor["trusted"] = resource.trusted
+                descriptor["original"] = original
+                resource_descriptors.append(descriptor)
             report_descriptors = pool.map(validate_parallel, resource_descriptors)
             for report_descriptor in report_descriptors:
                 reports.append(Report.from_descriptor(report_descriptor))  # type: ignore
@@ -72,12 +77,15 @@ def validate(
 # Internal
 
 
-def validate_sequential(resource: Resource) -> Report:
-    return resource.validate()
+def validate_sequential(resource: Resource, *, original=False) -> Report:
+    return resource.validate(original=original)
 
 
 # TODO: rebase on from/to_descriptor
-def validate_parallel(descriptor: IDescriptor) -> IDescriptor:
-    resource = Resource(descriptor=descriptor)
-    report = resource.validate()
+def validate_parallel(descriptor: dict) -> dict:
+    basepath = descriptor.pop("basepath")
+    trusted = descriptor.pop("trusted")
+    original = descriptor.pop("original")
+    resource = Resource(descriptor=descriptor, basepath=basepath, trusted=trusted)
+    report = resource.validate(original=original)
     return report.to_dict()  # type: ignore

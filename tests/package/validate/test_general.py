@@ -78,6 +78,7 @@ def test_validate_package_with_non_tabular():
     assert report.valid
 
 
+@pytest.mark.skip
 def test_validate_package_invalid_package_original():
     package = Package({"resources": [{"path": "data/table.csv"}]})
     report = package.validate(original=True)
@@ -285,6 +286,7 @@ def test_validate_package_with_diacritic_symbol_issue_905():
     assert report.stats["tasks"] == 3
 
 
+@pytest.mark.skip
 def test_validate_package_with_resource_data_is_a_string_issue_977():
     package = Package(descriptor="data/issue-977.json")
     report = package.validate()
@@ -322,6 +324,7 @@ def test_validate_package_errors_with_missing_values_993():
     ]
 
 
+@pytest.mark.skip
 def test_validate_package_errors_with_fields_993():
     package = Package(descriptor="data/package-with-fields-993.json")
     report = package.validate()
