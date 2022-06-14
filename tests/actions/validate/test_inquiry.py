@@ -86,19 +86,17 @@ def test_validate_inquiry_multiple_invalid_with_schema():
     ]
 
 
-@pytest.mark.skip
 def test_validate_inquiry_with_one_resource_from_descriptor():
     report = validate(
         {
             "tasks": [
-                {"descriptor": "data/package/resource.json"},
+                {"descriptor": "data/resource.json"},
             ]
         },
     )
     assert report.valid
 
 
-@pytest.mark.skip
 def test_validate_inquiry_with_one_package_from_descriptor():
     report = validate(
         {
@@ -110,13 +108,12 @@ def test_validate_inquiry_with_one_package_from_descriptor():
     assert report.valid
 
 
-@pytest.mark.skip
 def test_validate_inquiry_with_multiple_packages():
     report = validate(
         {
             "tasks": [
-                {"source": "data/package/datapackage.json"},
-                {"source": "data/invalid/datapackage.json"},
+                {"descriptor": "data/package/datapackage.json"},
+                {"descriptor": "data/invalid/datapackage.json"},
             ]
         },
     )
