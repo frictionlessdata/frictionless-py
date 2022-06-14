@@ -23,9 +23,9 @@ def validate(
     limit_errors: int = settings.DEFAULT_LIMIT_ERRORS,
     limit_memory: int = settings.DEFAULT_LIMIT_MEMORY,
     keep_original: bool = False,
-    allow_parallel: bool = False,
-    # Package
+    # Validate
     resource_name: Optional[str] = None,
+    parallel: bool = False,
     **options,
 ):
     """Validate resource
@@ -61,7 +61,6 @@ def validate(
             limit_errors=limit_errors,
             limit_memory=limit_memory,
             keep_original=keep_original,
-            allow_parallel=allow_parallel,
         )
 
     # TODO: support detector type when it's converted to metadata
@@ -80,7 +79,7 @@ def validate(
         if resource_name:
             resource = source.get_resource(resource_name)
             return resource.validate(checklist)
-        return source.validate(checklist)
+        return source.validate(checklist, parallel=parallel)
     elif type == "pipeline":
         if not isinstance(source, Pipeline):
             source = Pipeline(source, **options)

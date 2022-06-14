@@ -20,11 +20,9 @@ class Pipeline(Metadata):
         steps: Optional[List[Step]] = None,
         # TODO: implement
         limit_memory: Optional[int] = None,
-        allow_parallel: Optional[bool] = None,
     ):
         self.setinitial("steps", steps)
         self.setinitial("limitMemory", limit_memory)
-        self.setinitial("allowParallel", allow_parallel)
         super().__init__(descriptor)
 
     @property
@@ -38,10 +36,6 @@ class Pipeline(Metadata):
     @property
     def limit_memory(self) -> bool:
         return self.get("limitMemory", settings.DEFAULT_LIMIT_MEMORY)
-
-    @property
-    def allow_parallel(self) -> bool:
-        return self.get("allowParallel", False)
 
     # Metadata
 

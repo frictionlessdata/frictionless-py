@@ -17,7 +17,6 @@ def transform(
     # Pipeline
     pipeline: Optional[Pipeline] = None,
     steps: Optional[List[Step]] = None,
-    allow_parallel: Optional[bool] = False,
     **options,
 ):
     """Transform resource
@@ -43,10 +42,7 @@ def transform(
 
     # Create pipeline
     if not pipeline:
-        pipeline = Pipeline(
-            steps=steps,
-            allow_parallel=allow_parallel,
-        )
+        pipeline = Pipeline(steps=steps)
 
     # Transform source
     if type == "package":

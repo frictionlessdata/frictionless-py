@@ -10,12 +10,16 @@ if TYPE_CHECKING:
     from .package import Package
 
 
-def validate(package: "Package", checklist: Optional[Checklist] = None):
+def validate(
+    package: "Package",
+    checklist: Optional[Checklist] = None,
+    parallel: Optional[bool] = None,
+):
     """Validate package
 
     Parameters:
         checklist? (checklist): a Checklist object
-        checks? (list): a list of checks
+        parallel? (bool): run in parallel if possible
 
     Returns:
         Report: validation report
@@ -52,7 +56,7 @@ def validate(package: "Package", checklist: Optional[Checklist] = None):
             return Report.from_validation(time=timer.time, errors=metadata_errors)
 
     # Validate sequentially
-    if not checklist.allow_parallel:
+    if not parallel:
         tasks = []
         errors = []
         for resource, stats in zip(package.resources, package_stats):  # type: ignore
@@ -81,4 +85,4 @@ def validate(package: "Package", checklist: Optional[Checklist] = None):
                     original=checklist.keep_original,  # type: ignore
                 )
             )
-        return inquiry.run(parallel=checklist.allow_parallel)  # type: ignore
+        return inquiry.run(parallel=parallel)  # type: ignore
