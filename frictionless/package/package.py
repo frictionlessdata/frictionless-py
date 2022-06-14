@@ -21,7 +21,6 @@ from .. import helpers
 from .. import errors
 
 
-# TODO: support package.checklist/pipeline?
 class Package(Metadata):
     """Package representation
 
