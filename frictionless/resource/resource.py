@@ -11,6 +11,8 @@ from ..exception import FrictionlessException
 from ..helpers import cached_property
 from ..detector import Detector
 from ..metadata import Metadata
+from ..checklist import Checklist
+from ..pipeline import Pipeline
 from ..layout import Layout
 from ..schema import Schema
 from ..header import Header
@@ -170,6 +172,8 @@ class Resource(Metadata):
         dialect=None,
         layout=None,
         schema=None,
+        checklist=None,
+        pipeline=None,
         stats=None,
         # Extra
         basepath="",
@@ -242,6 +246,8 @@ class Resource(Metadata):
         self.setinitial("dialect", dialect)
         self.setinitial("layout", layout)
         self.setinitial("schema", schema)
+        self.setinitial("checklist", checklist)
+        self.setinitial("pipeline", pipeline)
         self.setinitial("stats", stats)
         super().__init__(descriptor)
 
@@ -528,6 +534,22 @@ class Resource(Metadata):
             schema = Schema(helpers.join_path(self.basepath, schema))
             schema = self.metadata_attach("schema", schema)
         return schema
+
+    @property
+    def checklist(self) -> Checklist:
+        """
+        Returns
+            Checklist: resource checklist
+        """
+        return self.get("checklist")
+
+    @property
+    def pipeline(self) -> Pipeline:
+        """
+        Returns
+            Pipeline: resource pipeline
+        """
+        return self.get("pipeline")
 
     # NOTE: updating this Metadata.propertyc reates a huge overheader
     # Once it's fixed we might return to stats updating during reading
@@ -1285,8 +1307,22 @@ class Resource(Metadata):
             schema = Schema(schema)
             dict.__setitem__(self, "schema", schema)
 
+        # Checklist
+        checklist = self.get("checklist")
+        if not isinstance(checklist, (str, type(None), Checklist)):
+            checklist = Checklist(checklist)
+            dict.__setitem__(self, "checklist", schema)
+
+        # Schema
+        pipeline = self.get("pipeline")
+        if not isinstance(pipeline, (str, type(None), Pipeline)):
+            pipeline = Pipeline(pipeline)
+            dict.__setitem__(self, "pipeline", pipeline)
+
         # Security
+        # TODO: move safety checks to other places?
         if not self.trusted:
+            # TODO: add checklist/pipeline when they support a string form?
             for name in ["path", "control", "dialect", "schema"]:
                 path = self.get(name)
                 if not isinstance(path, (str, list)):
@@ -1319,6 +1355,12 @@ class Resource(Metadata):
             yield from self.layout.metadata_errors
         if self.schema:
             yield from self.schema.metadata_errors
+
+        # Checklist/Pipeline
+        if self.checklist:
+            yield from self.checklist.metadata_errors
+        if self.pipeline:
+            yield from self.pipeline.metadata_errors
 
         # Contributors/Sources
         for name in ["contributors", "sources"]:

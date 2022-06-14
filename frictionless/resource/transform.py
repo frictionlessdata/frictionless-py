@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 from ..helpers import get_name
 from ..pipeline import Pipeline
 from ..exception import FrictionlessException
@@ -9,7 +9,7 @@ if TYPE_CHECKING:
 
 
 # TODO: save transform info into resource.stats?
-def transform(resource: "Resource", pipeline: Pipeline):
+def transform(resource: "Resource", pipeline: Optional[Pipeline] = None):
     """Transform resource
 
     Parameters:
@@ -23,6 +23,7 @@ def transform(resource: "Resource", pipeline: Pipeline):
     resource.infer()
 
     # Prepare pipeline
+    pipeline = pipeline or resource.pipeline or Pipeline()
     if not pipeline.metadata_valid:
         raise FrictionlessException(pipeline.metadata_errors[0])
 

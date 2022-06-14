@@ -33,7 +33,7 @@ def validate(
     original_resource = resource.to_copy()
 
     # Prepare checklist
-    checklist = checklist or Checklist()
+    checklist = checklist or resource.checklist or Checklist()
     checks = checklist.connect(resource)
     if not checklist.metadata_valid:
         errors = checklist.metadata_errors
