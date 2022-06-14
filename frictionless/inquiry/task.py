@@ -1,5 +1,6 @@
 from typing import Optional
 from ..metadata import Metadata
+from ..checklist import Checklist
 from ..dialect import Dialect
 from ..schema import Schema
 from .. import settings
@@ -34,6 +35,7 @@ class InquiryTask(Metadata):
         compression: Optional[str] = None,
         dialect: Optional[Dialect] = None,
         schema: Optional[Schema] = None,
+        checklist: Optional[Checklist] = None,
     ):
         self.setinitial("path", path)
         self.setinitial("name", name)
@@ -45,6 +47,7 @@ class InquiryTask(Metadata):
         self.setinitial("compression", compression)
         self.setinitial("dialect", dialect)
         self.setinitial("schema", schema)
+        self.setinitial("checklist", checklist)
         super().__init__()
 
     @property
@@ -104,12 +107,12 @@ class InquiryTask(Metadata):
         return self.get("innerpath")
 
     @property
-    def compresion(self):
+    def compression(self):
         """
         Returns:
-            any: compresion
+            any: compression
         """
-        return self.get("compresion")
+        return self.get("compression")
 
     @property
     def dialect(self):
@@ -127,6 +130,14 @@ class InquiryTask(Metadata):
         """
         return self.get("schema")
 
+    @property
+    def checklist(self):
+        """
+        Returns:
+            any: checklist
+        """
+        return self.get("checklist")
+
     # Import/Export
 
     @staticmethod
@@ -136,6 +147,7 @@ class InquiryTask(Metadata):
         metadata = Metadata(descriptor)
         dialect = Dialect(metadata.get("dialect", {}))
         schema = Schema(metadata.get("schema", {}))
+        checklist = Checklist(metadata.get("checklist", {}))
         return InquiryTask(
             name=metadata.get("name"),  # type: ignore
             path=metadata.get("path"),  # type: ignore
@@ -147,6 +159,7 @@ class InquiryTask(Metadata):
             compression=metadata.get("compression"),  # type: ignore
             dialect=dialect or None,
             schema=schema or None,
+            checklist=checklist or None,
         )
 
     # Metadata

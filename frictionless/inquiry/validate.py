@@ -1,11 +1,13 @@
 from multiprocessing import Pool
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 from .task import InquiryTask
+from ..resource import Resource
 from ..report import Report
 from .. import helpers
 
 if TYPE_CHECKING:
     from .inquiry import Inquiry
+    from .task import InquiryTask
 
 
 def validate(inquiry: "Inquiry", *, parallel=False):
@@ -25,19 +27,20 @@ def validate(inquiry: "Inquiry", *, parallel=False):
 
     # Validate inquiry
     if inquiry.metadata_errors:
-        return Report.from_validation(time=timer.time, errors=inquiry.metadata_errors)
+        errors = inquiry.metadata_errors
+        return Report.from_validation(time=timer.time, errors=errors)
 
     # Validate sequentially
     if not parallel:
         for task in inquiry.tasks:
-            report = task.run()
+            report = validate_task(task)
             reports.append(report)
 
     # Validate in-parallel
     else:
         with Pool() as pool:
             task_descriptors = [task.to_dict() for task in inquiry.tasks]
-            report_descriptors = pool.map(run_task_in_parallel, task_descriptors)
+            report_descriptors = pool.map(validate_task_in_parallel, task_descriptors)
             for report_descriptor in report_descriptors:
                 reports.append(Report.from_descriptor(report_descriptor))
 
@@ -47,14 +50,31 @@ def validate(inquiry: "Inquiry", *, parallel=False):
     for report in reports:
         tasks.extend(report.tasks)
         errors.extend(report.errors)
-    return Report.from_validation(time=timer.time, errors=errors)
+    return Report.from_validation(time=timer.time, tasks=tasks, errors=errors)
 
 
 # Internal
 
 
-def run_task_in_parallel(task_descriptor):
-    task = InquiryTask.from_descriptor(task_descriptor)
-    report = task.run()  # type: ignore
-    report_descriptor = report.to_dict()
-    return report_descriptor
+def validate_task(task: InquiryTask) -> Report:
+    resource = Resource(
+        path=task.path,
+        scheme=task.scheme,
+        format=task.format,
+        hashing=task.hashing,
+        encoding=task.encoding,
+        innerpath=task.innerpath,
+        compression=task.compression,
+        dialect=task.dialect,
+        schema=task.schema,
+    )
+    report = resource.validate(task.checklist)
+    return report
+
+
+# TODO: rebase on IDescriptor
+def validate_task_in_parallel(descriptor: dict) -> dict:
+    task = InquiryTask.from_descriptor(descriptor)
+    report = validate_task(task)
+    # TODO: rebase on report.[to_]descriptor
+    return cast(dict, report.to_dict())

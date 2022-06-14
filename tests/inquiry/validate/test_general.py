@@ -5,26 +5,33 @@ from frictionless import Inquiry
 # General
 
 
-@pytest.mark.skip
-def test_validate_inquiry():
-    inquiry = Inquiry({"tasks": [{"source": "data/table.csv"}]})
+def test_inquiry_validate():
+    inquiry = Inquiry.from_descriptor({"tasks": [{"path": "data/table.csv"}]})
     report = inquiry.validate()
     assert report.valid
 
 
-@pytest.mark.skip
-def test_validate_inquiry_multiple():
-    inquiry = Inquiry(
-        {"tasks": [{"source": "data/table.csv"}, {"source": "data/matrix.csv"}]},
+def test_inquiry_validate_multiple():
+    inquiry = Inquiry.from_descriptor(
+        {
+            "tasks": [
+                {"path": "data/table.csv"},
+                {"path": "data/matrix.csv"},
+            ]
+        },
     )
     report = inquiry.validate()
     assert report.valid
 
 
-@pytest.mark.skip
-def test_validate_inquiry_multiple_invalid():
-    inquiry = Inquiry(
-        {"tasks": [{"source": "data/table.csv"}, {"source": "data/invalid.csv"}]},
+def test_inquiry_validate_multiple_invalid():
+    inquiry = Inquiry.from_descriptor(
+        {
+            "tasks": [
+                {"path": "data/table.csv"},
+                {"path": "data/invalid.csv"},
+            ]
+        },
     )
     report = inquiry.validate()
     assert report.flatten(["taskPosition", "rowPosition", "fieldPosition", "code"]) == [
@@ -39,13 +46,12 @@ def test_validate_inquiry_multiple_invalid():
     ]
 
 
-@pytest.mark.skip
-def test_validate_inquiry_multiple_invalid_limit_errors():
-    inquiry = Inquiry(
+def test_inquiry_validate_multiple_invalid_limit_errors():
+    inquiry = Inquiry.from_descriptor(
         {
             "tasks": [
-                {"source": "data/table.csv"},
-                {"source": "data/invalid.csv", "limitErrors": 1},
+                {"path": "data/table.csv"},
+                {"path": "data/invalid.csv", "checklist": {"limitErrors": 1}},
             ]
         },
     )
@@ -59,16 +65,15 @@ def test_validate_inquiry_multiple_invalid_limit_errors():
     ]
 
 
-@pytest.mark.skip
-def test_validate_inquiry_multiple_invalid_with_schema():
-    inquiry = Inquiry(
+def test_inquiry_validate_multiple_invalid_with_schema():
+    inquiry = Inquiry.from_descriptor(
         {
             "tasks": [
                 {
-                    "source": "data/table.csv",
+                    "path": "data/table.csv",
                     "schema": {"fields": [{"name": "bad"}, {"name": "name"}]},
                 },
-                {"source": "data/invalid.csv"},
+                {"path": "data/invalid.csv"},
             ],
         },
     )
@@ -87,7 +92,7 @@ def test_validate_inquiry_multiple_invalid_with_schema():
 
 
 @pytest.mark.skip
-def test_validate_inquiry_with_one_package():
+def test_inquiry_validate_with_one_package():
     inquiry = Inquiry(
         {"tasks": [{"source": "data/package/datapackage.json"}]},
     )
@@ -96,7 +101,7 @@ def test_validate_inquiry_with_one_package():
 
 
 @pytest.mark.skip
-def test_validate_inquiry_with_multiple_packages():
+def test_inquiry_validate_with_multiple_packages():
     inquiry = Inquiry(
         {
             "tasks": [
@@ -118,7 +123,7 @@ def test_validate_inquiry_with_multiple_packages():
 
 @pytest.mark.skip
 @pytest.mark.ci
-def test_validate_inquiry_parallel_multiple():
+def test_inquiry_validate_parallel_multiple():
     inquiry = Inquiry(
         {"tasks": [{"source": "data/table.csv"}, {"source": "data/matrix.csv"}]},
     )
@@ -128,7 +133,7 @@ def test_validate_inquiry_parallel_multiple():
 
 @pytest.mark.skip
 @pytest.mark.ci
-def test_validate_inquiry_parallel_multiple_invalid():
+def test_inquiry_validate_parallel_multiple_invalid():
     inquiry = Inquiry(
         {"tasks": [{"source": "data/table.csv"}, {"source": "data/invalid.csv"}]},
     )
@@ -147,7 +152,7 @@ def test_validate_inquiry_parallel_multiple_invalid():
 
 @pytest.mark.skip
 @pytest.mark.ci
-def test_validate_inquiry_with_multiple_packages_with_parallel():
+def test_inquiry_validate_with_multiple_packages_with_parallel():
     inquiry = Inquiry(
         {
             "tasks": [
