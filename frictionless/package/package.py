@@ -185,7 +185,7 @@ class Package(Metadata):
         if helpers.is_zip_descriptor(descriptor):
             descriptor = helpers.unzip_descriptor(descriptor, innerpath)
 
-        # Set attributess
+        # Set attributes
         self.setinitial("resources", resources)
         self.setinitial("name", name)
         self.setinitial("id", id)
