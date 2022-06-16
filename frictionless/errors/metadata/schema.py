@@ -1,7 +1,7 @@
-from .resource import ResourceError
+from .metadata import MetadataError
 
 
-class SchemaError(ResourceError):
+class SchemaError(MetadataError):
     code = "schema-error"
     name = "Schema Error"
     template = "Schema is not valid: {note}"

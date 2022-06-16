@@ -1,7 +1,7 @@
-from ..error import Error
+from .metadata import MetadataError
 
 
-class InquiryError(Error):
+class InquiryError(MetadataError):
     code = "inquiry-error"
     name = "Inquiry Error"
     template = "Inquiry is not valid: {note}"

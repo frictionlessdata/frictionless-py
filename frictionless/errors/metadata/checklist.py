@@ -1,7 +1,7 @@
-from ..error import Error
+from .metadata import MetadataError
 
 
-class ChecklistError(Error):
+class ChecklistError(MetadataError):
     code = "checklist-error"
     name = "Checklist Error"
     template = "Checklist is not valid: {note}"

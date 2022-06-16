@@ -1,5 +1,17 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Protocol, BinaryIO, TextIO, Iterable, List, Any, Union
+from pathlib import Path
+from collections.abc import Mapping
+from typing import (
+    TYPE_CHECKING,
+    Protocol,
+    BinaryIO,
+    TextIO,
+    Iterable,
+    List,
+    Dict,
+    Any,
+    Union,
+)
 
 if TYPE_CHECKING:
     from .row import Row
@@ -11,7 +23,8 @@ if TYPE_CHECKING:
 # General
 
 
-IDescriptor = Union[str, dict]
+IDescriptor = Union[str, Path, Mapping]
+IResolvedDescriptor = Dict[str, Any]
 IByteStream = BinaryIO
 ITextStream = TextIO
 IListStream = Iterable[List[Any]]

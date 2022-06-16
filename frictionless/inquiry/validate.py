@@ -41,7 +41,7 @@ def validate(inquiry: "Inquiry", *, parallel=False):
     # Validate parallel
     else:
         with Pool() as pool:
-            task_descriptors = [task.to_dict() for task in inquiry.tasks]
+            task_descriptors = [task.to_descriptor() for task in inquiry.tasks]
             report_descriptors = pool.map(validate_parallel, task_descriptors)
             for report_descriptor in report_descriptors:
                 reports.append(Report.from_descriptor(report_descriptor))

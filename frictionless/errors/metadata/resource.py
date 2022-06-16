@@ -1,7 +1,7 @@
-from ..error import Error
+from .metadata import MetadataError
 
 
-class ResourceError(Error):
+class ResourceError(MetadataError):
     code = "resource-error"
     name = "Resource Error"
     template = "The data resource has an error: {note}"

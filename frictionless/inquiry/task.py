@@ -1,23 +1,19 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, Optional
-from ..metadata import Metadata
+from ..metadata2 import Metadata2
 from ..checklist import Checklist
 from ..dialect import Dialect
 from ..schema import Schema
 from ..file import File
 from .. import settings
+from .. import helpers
 from .. import errors
 
 if TYPE_CHECKING:
-    from ..interfaces import IDescriptor
+    from ..interfaces import IDescriptor, IResolvedDescriptor
 
 
-# TODO: support data?
-# TODO: support descriptor
-# TODO: split into ResourceInquiryTask/PackageInqiuryTask?
-
-
-class InquiryTask(Metadata):
+class InquiryTask(Metadata2):
     """Inquiry task representation.
 
     Parameters:
@@ -44,28 +40,55 @@ class InquiryTask(Metadata):
         schema: Optional[Schema] = None,
         checklist: Optional[Checklist] = None,
     ):
-        self.setinitial("descriptor", descriptor)
-        self.setinitial("type", type)
-        self.setinitial("path", path)
-        self.setinitial("name", name)
-        self.setinitial("scheme", scheme)
-        self.setinitial("format", format)
-        self.setinitial("hashing", hashing)
-        self.setinitial("encoding", encoding)
-        self.setinitial("innerpath", innerpath)
-        self.setinitial("compression", compression)
-        self.setinitial("dialect", dialect)
-        self.setinitial("schema", schema)
-        self.setinitial("checklist", checklist)
-        super().__init__()
+        self.descriptor = descriptor
+        self.path = path
+        self.name = name
+        self.scheme = scheme
+        self.format = format
+        self.hashing = hashing
+        self.encoding = encoding
+        self.innerpath = innerpath
+        self.compression = compression
+        self.dialect = dialect
+        self.schema = schema
+        self.checklist = checklist
+        self.__type = type
 
-    @property
-    def descriptor(self):
-        """
-        Returns:
-            any: descriptor
-        """
-        return self.get("descriptor")
+    descriptor: Optional[str]
+    """# TODO: add docs"""
+
+    path: Optional[str]
+    """# TODO: add docs"""
+
+    name: Optional[str]
+    """# TODO: add docs"""
+
+    scheme: Optional[str]
+    """# TODO: add docs"""
+
+    format: Optional[str]
+    """# TODO: add docs"""
+
+    hashing: Optional[str]
+    """# TODO: add docs"""
+
+    encoding: Optional[str]
+    """# TODO: add docs"""
+
+    innerpath: Optional[str]
+    """# TODO: add docs"""
+
+    compression: Optional[str]
+    """# TODO: add docs"""
+
+    dialect: Optional[Dialect]
+    """# TODO: add docs"""
+
+    schema: Optional[Schema]
+    """# TODO: add docs"""
+
+    checklist: Optional[Checklist]
+    """# TODO: add docs"""
 
     @property
     def type(self) -> str:
@@ -73,7 +96,7 @@ class InquiryTask(Metadata):
         Returns:
             any: type
         """
-        type = self.get("type")
+        type = self.__type
         if not type:
             type = "resource"
             if self.descriptor:
@@ -81,117 +104,54 @@ class InquiryTask(Metadata):
                 type = "package" if file.type == "package" else "resource"
         return type
 
-    @property
-    def name(self):
-        """
-        Returns:
-            any: name
-        """
-        return self.get("name")
-
-    @property
-    def path(self):
-        """
-        Returns:
-            any: path
-        """
-        return self.get("path")
-
-    @property
-    def scheme(self):
-        """
-        Returns:
-            any: scheme
-        """
-        return self.get("scheme")
-
-    @property
-    def format(self):
-        """
-        Returns:
-            any: format
-        """
-        return self.get("format")
-
-    @property
-    def hashing(self):
-        """
-        Returns:
-            any: hashing
-        """
-        return self.get("hashing")
-
-    @property
-    def encoding(self):
-        """
-        Returns:
-            any: encoding
-        """
-        return self.get("encoding")
-
-    @property
-    def innerpath(self):
-        """
-        Returns:
-            any: innerpath
-        """
-        return self.get("innerpath")
-
-    @property
-    def compression(self):
-        """
-        Returns:
-            any: compression
-        """
-        return self.get("compression")
-
-    @property
-    def dialect(self):
-        """
-        Returns:
-            any: dialect
-        """
-        return self.get("dialect")
-
-    @property
-    def schema(self):
-        """
-        Returns:
-            any: schema
-        """
-        return self.get("schema")
-
-    @property
-    def checklist(self):
-        """
-        Returns:
-            any: checklist
-        """
-        return self.get("checklist")
+    @type.setter
+    def type(self, value: str):
+        self.__type = value
 
     # Import/Export
 
-    @staticmethod
-    def from_descriptor(descriptor: IDescriptor):
-        metadata = Metadata(descriptor)
-        dialect = Dialect(metadata.get("dialect", {}))
-        schema = Schema(metadata.get("schema", {}))
-        checklist = Checklist(metadata.get("checklist", {}))
+    @classmethod
+    def from_descriptor(cls, descriptor: IDescriptor):
+        mapping = cls.metadata_extract(descriptor)
+        dialect = Dialect(mapping.get("dialect", {}))
+        schema = Schema(mapping.get("schema", {}))
+        checklist = Checklist(mapping.get("checklist", {}))
         return InquiryTask(
-            descriptor=metadata.get("descriptor"),  # type: ignore
-            type=metadata.get("type"),  # type: ignore
-            name=metadata.get("name"),  # type: ignore
-            path=metadata.get("path"),  # type: ignore
-            scheme=metadata.get("scheme"),  # type: ignore
-            format=metadata.get("format"),  # type: ignore
-            hashing=metadata.get("hashing"),  # type: ignore
-            encoding=metadata.get("encoding"),  # type: ignore
-            innerpath=metadata.get("innerpath"),  # type: ignore
-            compression=metadata.get("compression"),  # type: ignore
+            descriptor=mapping.get("descriptor"),  # type: ignore
+            type=mapping.get("type"),  # type: ignore
+            name=mapping.get("name"),  # type: ignore
+            path=mapping.get("path"),  # type: ignore
+            scheme=mapping.get("scheme"),  # type: ignore
+            format=mapping.get("format"),  # type: ignore
+            hashing=mapping.get("hashing"),  # type: ignore
+            encoding=mapping.get("encoding"),  # type: ignore
+            innerpath=mapping.get("innerpath"),  # type: ignore
+            compression=mapping.get("compression"),  # type: ignore
             dialect=dialect or None,
             schema=schema or None,
             checklist=checklist or None,
         )
+
+    def to_descriptor(self) -> IResolvedDescriptor:
+        descriptor: IResolvedDescriptor = dict(
+            type=self.type,
+            name=self.name,
+            path=self.path,
+            scheme=self.scheme,
+            format=self.format,
+            hashing=self.hashing,
+            encoding=self.encoding,
+            innerpath=self.innerpath,
+            compression=self.compression,
+        )
+        # TODO: rebase on to_descriptor
+        if self.dialect:
+            descriptor["dialect"] = self.dialect.to_dict()
+        if self.schema:
+            descriptor["schema"] = self.schema.to_dict()
+        if self.checklist:
+            descriptor["checklist"] = self.checklist.to_dict()
+        return helpers.remove_non_values(descriptor)
 
     # Metadata
 

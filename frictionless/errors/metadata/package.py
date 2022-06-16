@@ -1,7 +1,7 @@
-from ..error import Error
+from .metadata import MetadataError
 
 
-class PackageError(Error):
+class PackageError(MetadataError):
     code = "package-error"
     name = "Package Error"
     template = "The data package has an error: {note}"

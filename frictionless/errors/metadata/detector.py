@@ -1,7 +1,7 @@
-from ..error import Error
+from .metadata import MetadataError
 
 
-class DetectorError(Error):
+class DetectorError(MetadataError):
     code = "detector-error"
     name = "Detector Error"
     template = "Detector is not valid: {note}"

@@ -1,7 +1,7 @@
-from ..error import Error
+from .metadata import MetadataError
 
 
-class PipelineError(Error):
+class PipelineError(MetadataError):
     code = "pipeline-error"
     name = "Pipeline Error"
     template = "Pipeline is not valid: {note}"
