@@ -5,7 +5,7 @@ if TYPE_CHECKING:
     from ..interfaces import IDescriptor
 
 
-class Dialect2:
+class Dialect:
     delimiter: Optional[str]
 
     def __init__(self, *, delimiter: Optional[str] = None):
@@ -16,6 +16,6 @@ class Dialect2:
     @staticmethod
     def from_descriptor(descriptor: IDescriptor):
         metadata = Metadata(descriptor)
-        return Dialect2(
+        return Dialect(
             delimiter=metadata.get("delimiter"),  # type: ignore
         )
