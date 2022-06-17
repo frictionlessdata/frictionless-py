@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import List
+from importlib import import_module
 from .metadata import Metadata
 from . import helpers
 
@@ -58,3 +59,11 @@ class Error(Metadata):
             str: message
         """
         return self["message"]
+
+    # Convert
+
+    # TODO: review
+    @classmethod
+    def from_descriptor(cls, descriptor):
+        system = import_module("frictionless").system
+        return system.create_error(descriptor)

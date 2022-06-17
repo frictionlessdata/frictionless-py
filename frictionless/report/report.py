@@ -95,30 +95,6 @@ class Report(Metadata2):
 
     # Convert
 
-    convert_properties = [
-        "version",
-        "valid",
-        "stats",
-        "tasks",
-        "errors",
-        "warnings",
-    ]
-
-    # TODO: why system is circular dependency?
-    @classmethod
-    def from_descriptor(cls, descriptor):
-        system = import_module("frictionless").system
-        metadata = super().from_descriptor(descriptor)
-        metadata.errors = [system.create_error(error) for error in metadata.errors]
-        metadata.tasks = [ReportTask.from_descriptor(task) for task in metadata.tasks]  # type: ignore
-        return metadata
-
-    def to_descriptor(self):
-        descriptor = super().to_descriptor()
-        descriptor["errors"] = [error.to_dict() for error in self.errors]
-        descriptor["tasks"] = [task.to_descriptor() for task in self.tasks]
-        return descriptor
-
     @staticmethod
     def from_validation(
         time: float,
@@ -242,17 +218,21 @@ class Report(Metadata2):
     metadata_Error = ReportError
     metadata_profile = deepcopy(settings.REPORT_PROFILE)
     metadata_profile["properties"]["tasks"] = {"type": "array"}
+    metadata_properties = [
+        {"name": "version"},
+        {"name": "valid"},
+        {"name": "stats"},
+        {"name": "tasks", "type": ReportTask},
+        {"name": "errors", "type": Error},
+        {"name": "warnings"},
+    ]
 
+    # TODO: validate valid/errors count
+    # TODO: validate stats when the class is added
+    # TODO: validate errors when metadata is reworked
     def metadata_validate(self):
         yield from super().metadata_validate()
-
-        # Stats
-        # TODO: validate valid/errors count
-        # TODO: validate stats when the class is added
 
         # Tasks
         for task in self.tasks:
             yield from task.metadata_errors
-
-        # Errors
-        # TODO: validate errors when metadata is reworked

@@ -1,4 +1,5 @@
 from __future__ import annotations
+from importlib import import_module
 from typing import TYPE_CHECKING, Iterable, List, Type
 from .metadata import Metadata
 from . import errors
@@ -79,6 +80,14 @@ class Check(Metadata):
             Error: found errors
         """
         yield from []
+
+    # Convert
+
+    # TODO: review
+    @classmethod
+    def from_descriptor(cls, descriptor):
+        system = import_module("frictionless").system
+        return system.create_check(descriptor)
 
     # Metadata
 

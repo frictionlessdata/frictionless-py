@@ -58,13 +58,6 @@ def test_report():
     assert report.errors == []
 
 
-# TODO: do we need report.expand?
-@pytest.mark.skip
-def test_report_expand():
-    report = validate("data/table.csv")
-    report.expand()
-
-
 def test_report_pprint_1029():
     report = validate("data/capital-invalid.csv", pick_errors=["duplicate-label"])
     assert repr(report) == pprint.pformat(report)

@@ -46,7 +46,7 @@ def create_descriptor(**options):
     return {stringcase.camelcase(key): value for key, value in options.items()}
 
 
-def remove_default(descriptor, key, default=[]):
+def remove_default(descriptor, key, default):
     if descriptor.get(key) == default:
         descriptor.pop(key)
 

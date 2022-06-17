@@ -8,6 +8,7 @@ from frictionless import validate, helpers
 def test_report_to_json_with_bytes_serialization_issue_836():
     source = b"header1,header2\nvalue1,value2\nvalue3,value4"
     report = validate(source)
+    print(report.to_descriptor())
     descriptor = report.to_json()
     assert descriptor
 

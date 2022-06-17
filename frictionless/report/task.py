@@ -92,31 +92,6 @@ class ReportTask(Metadata2):
 
     # Convert
 
-    convert_properties = [
-        "valid",
-        "name",
-        "place",
-        "tabular",
-        "stats",
-        "scope",
-        "warnings",
-        "errors",
-    ]
-
-    # TODO: why system is circular dependency?
-    @classmethod
-    def from_descriptor(cls, descriptor):
-        system = import_module("frictionless").system
-        metadata = super().from_descriptor(descriptor)
-        metadata.errors = [system.create_error(error) for error in metadata.errors]
-        return metadata
-
-    # TODO: rebase on to_descriptor
-    def to_descriptor(self):
-        descriptor = super().to_descriptor()
-        descriptor["errors"] = [error.to_dict() for error in self.errors]
-        return descriptor
-
     def to_summary(self) -> str:
         """Generate summary for validation task"
 
@@ -150,6 +125,16 @@ class ReportTask(Metadata2):
 
     metadata_Error = ReportError
     metadata_profile = settings.REPORT_PROFILE["properties"]["tasks"]["items"]
+    metadata_properties = [
+        {"name": "valid"},
+        {"name": "name"},
+        {"name": "place"},
+        {"name": "tabular"},
+        {"name": "stats"},
+        {"name": "scope"},
+        {"name": "warnings"},
+        {"name": "errors", "type": Error},
+    ]
 
     # TODO: validate valid/errors count
     # TODO: validate stats when the class is added

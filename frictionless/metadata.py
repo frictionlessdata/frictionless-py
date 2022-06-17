@@ -105,6 +105,9 @@ class Metadata(helpers.ControlledDict):
 
     # Import/Export
 
+    def to_descriptor(self):
+        return self.to_dict()
+
     def to_copy(self):
         """Create a copy of the metadata
 

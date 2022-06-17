@@ -138,12 +138,16 @@ class Metadata2:
         source = cls.metadata_normalize(descriptor)
         for property in cls.metadata_properties:
             name = property["name"]
+            type = property.get("type")
             value = source.get(name)
-            if value is not None:
-                type = property.get("type")
-                if type:
+            if value is None:
+                continue
+            if type:
+                if isinstance(value, list):
+                    value = [type.from_descriptor(item) for item in value]
+                else:
                     value = type.from_descriptor(value)
-                target[stringcase.snakecase(name)] = value
+            target[stringcase.snakecase(name)] = value
         return cls(**target)  # type: ignore
 
     def metadata_export(self) -> IPlainDescriptor:
@@ -151,12 +155,17 @@ class Metadata2:
         descriptor = {}
         for property in self.metadata_properties:
             name = property["name"]
+            type = property.get("type")
+            default = property.get("default")
             value = getattr(self, stringcase.camelcase(name), None)
-            if value is not None:
-                default = property.get("default")
-                if default is None or value != default:
-                    if isinstance(value, Metadata2):
-                        value = value.metadata_export()
+            if value is None:
+                continue
+            if type:
+                if isinstance(value, list):
+                    value = [item.metadata_export() for item in value]
+                else:
+                    value = value.metadata_export()
+            if default is None or value != default:
                 descriptor[name] = value
         return descriptor
 
