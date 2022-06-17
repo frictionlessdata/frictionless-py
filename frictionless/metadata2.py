@@ -9,12 +9,13 @@ import jsonschema
 from pathlib import Path
 from collections.abc import Mapping
 from importlib import import_module
-from typing import TYPE_CHECKING, Optional, Union, List
+from typing import TYPE_CHECKING, Iterator, Optional, Union, List, Dict, Any
 from .exception import FrictionlessException
 from . import helpers
 
 if TYPE_CHECKING:
     from .interfaces import IDescriptor, IPlainDescriptor
+    from .error import Error
 
 
 class Metadata2:
@@ -35,20 +36,17 @@ class Metadata2:
 
     @classmethod
     def from_descriptor(cls, descriptor: IDescriptor):
-        descriptor = cls.metadata_extract(descriptor)
-        return cls(**{name: descriptor.get(name) for name in cls.convert_properties})  # type: ignore
+        """Import metadata from a descriptor"""
+        options = helpers.create_options(cls.metadata_extract(descriptor))
+        return cls(**{name: options.get(name) for name in cls.convert_properties})  # type: ignore
 
     def to_descriptor(self) -> IPlainDescriptor:
-        return helpers.remove_non_values(
-            {name: getattr(self, name) for name in self.convert_properties}
-        )
+        """Export metadata as a plain descriptor"""
+        descriptor = {name: getattr(self, name) for name in self.convert_properties}
+        return helpers.create_descriptor(**helpers.remove_non_values(descriptor))
 
-    def to_dict(self):
-        """Convert metadata to a plain dict
-
-        Returns:
-            dict: metadata as a plain dict
-        """
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert metadata to a plain dict"""
         return self.to_descriptor()
 
     def to_json(self, path=None, encoder_class=None):
@@ -56,9 +54,6 @@ class Metadata2:
 
         Parameters:
             path (str): target path
-
-        Raises:
-            FrictionlessException: on any error
         """
         frictionless = import_module("frictionless")
         Error = self.metadata_Error or frictionless.errors.MetadataError
@@ -75,9 +70,6 @@ class Metadata2:
 
         Parameters:
             path (str): target path
-
-        Raises:
-            FrictionlessException: on any error
         """
         frictionless = import_module("frictionless")
         Error = self.metadata_Error or frictionless.errors.MetadataError
@@ -103,9 +95,6 @@ class Metadata2:
         Parameters:
             path (str): target path
             table (bool): if true converts markdown to tabular format
-
-        Raises:
-            FrictionlessException: on any error
         """
         frictionless = import_module("frictionless")
         Error = self.metadata_Error or frictionless.errors.MetadataError
@@ -125,23 +114,17 @@ class Metadata2:
     metadata_profile = None
 
     @property
-    def metadata_valid(self):
-        """
-        Returns:
-            bool: whether the metadata is valid
-        """
+    def metadata_valid(self) -> bool:
+        """Whether metadata is valid"""
         return not len(self.metadata_errors)
 
     @property
-    def metadata_errors(self):
-        """
-        Returns:
-            Errors[]: a list of the metadata errors
-        """
+    def metadata_errors(self) -> List[Error]:
+        """List of metadata errors"""
         return list(self.metadata_validate())
 
-    def metadata_validate(self):
-        """Validate metadata"""
+    def metadata_validate(self) -> Iterator[Error]:
+        """Validate metadata and emit validation errors"""
         if self.metadata_profile:
             frictionless = import_module("frictionless")
             Error = self.metadata_Error or frictionless.errors.MetadataError

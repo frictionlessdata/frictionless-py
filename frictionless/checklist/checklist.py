@@ -1,13 +1,11 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Optional, List, Any
-from ..helpers import cached_property
-from ..metadata import Metadata
+from typing import TYPE_CHECKING, Optional, List
+from ..metadata2 import Metadata2
 from .validate import validate
 from ..checks import baseline
 from ..system import system
 from ..check import Check
 from .. import settings
-from .. import helpers
 from .. import errors
 
 if TYPE_CHECKING:
@@ -15,12 +13,11 @@ if TYPE_CHECKING:
 
 
 # TODO: raise an exception if we try export a checklist with function based checks
-class Checklist(Metadata):
+class Checklist(Metadata2):
     validate = validate
 
     def __init__(
         self,
-        descriptor: Optional[Any] = None,
         *,
         checks: Optional[List[Check]] = None,
         pick_errors: Optional[List[str]] = None,
@@ -28,38 +25,34 @@ class Checklist(Metadata):
         limit_errors: Optional[int] = None,
         limit_memory: Optional[int] = None,
     ):
-        self.setinitial("checks", checks)
-        self.setinitial("pickErrors", pick_errors)
-        self.setinitial("skipErrors", skip_errors)
-        self.setinitial("limitErrors", limit_errors)
-        self.setinitial("limitMemory", limit_memory)
-        super().__init__(descriptor)
+        self.checks = checks or []
+        self.pick_errors = pick_errors
+        self.skip_errors = skip_errors
+        self.limit_errors = limit_errors
+        self.limit_memory = limit_memory
 
-    @property
-    def checks(self) -> List[Check]:
-        return self.get("checks", [])
+    # Properties
+
+    checks: List[Check]
+    """# TODO: add docs"""
+
+    pick_errors: Optional[List[str]]
+    """# TODO: add docs"""
+
+    skip_errors: Optional[List[str]]
+    """# TODO: add docs"""
+
+    limit_errors: Optional[int]
+    """# TODO: add docs"""
+
+    limit_memory: Optional[int]
+    """# TODO: add docs"""
 
     @property
     def check_codes(self) -> List[str]:
         return [check.code for check in self.checks]
 
     @property
-    def pick_errors(self) -> List[str]:
-        return self.get("pickErrors", [])
-
-    @property
-    def skip_errors(self) -> List[str]:
-        return self.get("skipErrors", [])
-
-    @property
-    def limit_errors(self) -> int:
-        return self.get("limitErrors", settings.DEFAULT_LIMIT_ERRORS)
-
-    @property
-    def limit_memory(self) -> int:
-        return self.get("limitMemory", settings.DEFAULT_LIMIT_MEMORY)
-
-    @cached_property
     def scope(self) -> List[str]:
         scope = []
         basics: List[Check] = [baseline()]
@@ -98,24 +91,32 @@ class Checklist(Metadata):
                 return False
         return True
 
+    # Convert
+
+    convert_properties = [
+        "checks",
+        "pick_errors",
+        "skip_errors",
+        "limit_errors",
+        "limit_memory",
+    ]
+
+    @classmethod
+    def from_descriptor(cls, descriptor):
+        metadata = super().from_descriptor(descriptor)
+        metadata.checks = [system.create_check(check) for check in metadata.checks]  # type: ignore
+        return metadata
+
+    # TODO: rebase on to_descriptor
+    def to_descriptor(self):
+        descriptor = super().to_descriptor()
+        descriptor["checks"] = [check.to_dict() for check in self.checks]
+        return descriptor
+
     # Metadata
 
     metadata_Error = errors.ChecklistError
     metadata_profile = settings.CHECKLIST_PROFILE
-
-    def metadata_process(self):
-
-        # Checks
-        checks = self.get("checks")
-        if isinstance(checks, list):
-            for index, check in enumerate(checks):
-                if not isinstance(check, Check):
-                    check = system.create_check(check)
-                    list.__setitem__(checks, index, check)
-            if not isinstance(checks, helpers.ControlledList):
-                checks = helpers.ControlledList(checks)
-                checks.__onchange__(self.metadata_process)
-                dict.__setitem__(self, "checks", checks)
 
     def metadata_validate(self):
         yield from super().metadata_validate()

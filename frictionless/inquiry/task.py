@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 from ..metadata2 import Metadata2
 from ..checklist import Checklist
 from ..dialect import Dialect
@@ -7,9 +7,6 @@ from ..schema import Schema
 from ..file import File
 from .. import settings
 from .. import errors
-
-if TYPE_CHECKING:
-    from ..interfaces import IDescriptor, IPlainDescriptor
 
 
 class InquiryTask(Metadata2):

@@ -1,14 +1,11 @@
 from __future__ import annotations
 from copy import deepcopy
-from typing import TYPE_CHECKING, List
+from typing import List
 from ..metadata2 import Metadata2
 from ..errors import InquiryError
 from .validate import validate
 from .task import InquiryTask
 from .. import settings
-
-if TYPE_CHECKING:
-    from ..interfaces import IDescriptor, IPlainDescriptor
 
 
 class Inquiry(Metadata2):

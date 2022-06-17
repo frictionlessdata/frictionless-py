@@ -35,7 +35,7 @@ def test_checklist():
 
 
 def test_checklist_from_descriptor():
-    checklist = Checklist(
+    checklist = Checklist.from_descriptor(
         {
             "checks": [{"code": "ascii-value"}],
             "limitErrors": 100,
