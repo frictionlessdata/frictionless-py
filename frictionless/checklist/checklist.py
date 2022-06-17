@@ -6,6 +6,7 @@ from ..checks import baseline
 from ..system import system
 from ..check import Check
 from .. import settings
+from .. import helpers
 from .. import errors
 
 if TYPE_CHECKING:
@@ -26,26 +27,26 @@ class Checklist(Metadata2):
         limit_memory: Optional[int] = None,
     ):
         self.checks = checks or []
-        self.pick_errors = pick_errors
-        self.skip_errors = skip_errors
-        self.limit_errors = limit_errors
-        self.limit_memory = limit_memory
+        self.pick_errors = pick_errors or []
+        self.skip_errors = skip_errors or []
+        self.limit_errors = limit_errors or settings.DEFAULT_LIMIT_ERRORS
+        self.limit_memory = limit_memory or settings.DEFAULT_LIMIT_ERRORS
 
     # Properties
 
     checks: List[Check]
     """# TODO: add docs"""
 
-    pick_errors: Optional[List[str]]
+    pick_errors: List[str]
     """# TODO: add docs"""
 
-    skip_errors: Optional[List[str]]
+    skip_errors: List[str]
     """# TODO: add docs"""
 
-    limit_errors: Optional[int]
+    limit_errors: int
     """# TODO: add docs"""
 
-    limit_memory: Optional[int]
+    limit_memory: int
     """# TODO: add docs"""
 
     @property
@@ -108,9 +109,14 @@ class Checklist(Metadata2):
         return metadata
 
     # TODO: rebase on to_descriptor
+    # TODO: make remove defaults nicer / support expand
     def to_descriptor(self):
         descriptor = super().to_descriptor()
         descriptor["checks"] = [check.to_dict() for check in self.checks]
+        helpers.remove_default(descriptor, "pickErrors", [])
+        helpers.remove_default(descriptor, "skipErrors", [])
+        helpers.remove_default(descriptor, "limitErrors", settings.DEFAULT_LIMIT_ERRORS)
+        helpers.remove_default(descriptor, "limitMemory", settings.DEFAULT_LIMIT_ERRORS)
         return descriptor
 
     # Metadata

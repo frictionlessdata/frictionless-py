@@ -46,6 +46,11 @@ def create_descriptor(**options):
     return {stringcase.camelcase(key): value for key, value in options.items()}
 
 
+def remove_default(descriptor, key, default=[]):
+    if descriptor.get(key) == default:
+        descriptor.pop(key)
+
+
 def stringify_label(cells):
     return ["" if cell is None else str(cell).strip() for cell in cells]
 
