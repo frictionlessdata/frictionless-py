@@ -123,6 +123,13 @@ class Checklist(Metadata2):
 
     metadata_Error = errors.ChecklistError
     metadata_profile = settings.CHECKLIST_PROFILE
+    metadata_properties = [
+        {"name": "checks", "type": Check},
+        {"name": "pickErrors", "default": []},
+        {"name": "skipErrors", "default": []},
+        {"name": "limitErrors", "default": settings.DEFAULT_LIMIT_ERRORS},
+        {"name": "limitMemory", "default": settings.DEFAULT_LIMIT_MEMORY},
+    ]
 
     def metadata_validate(self):
         yield from super().metadata_validate()

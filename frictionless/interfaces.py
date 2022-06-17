@@ -23,6 +23,7 @@ if TYPE_CHECKING:
 # General
 
 
+# TODO: rename to IDescriptor, IDescriptorSource
 IDescriptor = Union[str, Path, Mapping]
 IPlainDescriptor = Dict[str, Any]
 IByteStream = BinaryIO

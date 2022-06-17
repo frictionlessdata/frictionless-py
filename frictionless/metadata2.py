@@ -6,6 +6,7 @@ import json
 import yaml
 import jinja2
 import jsonschema
+import stringcase
 from pathlib import Path
 from collections.abc import Mapping
 from importlib import import_module
@@ -37,7 +38,7 @@ class Metadata2:
     @classmethod
     def from_descriptor(cls, descriptor: IDescriptor):
         """Import metadata from a descriptor"""
-        options = helpers.create_options(cls.metadata_extract(descriptor))
+        options = helpers.create_options(cls.metadata_normalize(descriptor))
         return cls(**{name: options.get(name) for name in cls.convert_properties})  # type: ignore
 
     def to_descriptor(self) -> IPlainDescriptor:
@@ -112,6 +113,7 @@ class Metadata2:
 
     metadata_Error = None
     metadata_profile = None
+    metadata_properties: List[dict] = []  # TODO: improve type
 
     @property
     def metadata_valid(self) -> bool:
@@ -144,7 +146,37 @@ class Metadata2:
         yield from []
 
     @classmethod
-    def metadata_extract(cls, descriptor: IDescriptor) -> Mapping:
+    def metadata_import(cls, descriptor: IDescriptor):
+        """Import metadata from a descriptor source"""
+        target = {}
+        source = cls.metadata_normalize(descriptor)
+        for property in cls.metadata_properties:
+            name = property["name"]
+            value = source.get(name)
+            if value is not None:
+                type = property.get("type")
+                if type:
+                    value = type.from_descriptor(value)
+                target[stringcase.snakecase(name)] = value
+        return cls(**target)  # type: ignore
+
+    def metadata_export(self) -> IPlainDescriptor:
+        """Export metadata as a descriptor"""
+        descriptor = {}
+        for property in self.metadata_properties:
+            name = property["name"]
+            value = getattr(self, stringcase.camelcase(name), None)
+            if value is not None:
+                default = property.get("default")
+                if default is None or value != default:
+                    if isinstance(value, Metadata2):
+                        value = value.metadata_export()
+                descriptor[name] = value
+        return descriptor
+
+    # TODO: return plain descriptor?
+    @classmethod
+    def metadata_normalize(cls, descriptor: IDescriptor) -> Mapping:
         """Extract metadata"""
         try:
             if isinstance(descriptor, Mapping):
@@ -171,7 +203,7 @@ class Metadata2:
         except Exception as exception:
             frictionless = import_module("frictionless")
             Error = cls.metadata_Error or frictionless.errors.MetadataError
-            note = f'cannot extract metadata "{descriptor}" because "{exception}"'
+            note = f'cannot normalize metadata "{descriptor}" because "{exception}"'
             raise FrictionlessException(Error(note=note)) from exception
 
 
