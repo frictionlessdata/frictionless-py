@@ -5,14 +5,14 @@ import json
 import yaml
 import jsonschema
 from pathlib import Path
-from typing import TYPE_CHECKING
 from collections.abc import Mapping
 from importlib import import_module
+from typing import TYPE_CHECKING, List
 from .exception import FrictionlessException
 from . import helpers
 
 if TYPE_CHECKING:
-    from .interfaces import IDescriptor, IResolvedDescriptor
+    from .interfaces import IDescriptor, IPlainDescriptor
 
 
 class Metadata2:
@@ -23,13 +23,14 @@ class Metadata2:
     def from_descriptor(cls, descriptor: IDescriptor) -> Metadata2:
         raise NotImplementedError()
 
-    def to_descriptor(self) -> IResolvedDescriptor:
+    def to_descriptor(self) -> IPlainDescriptor:
         raise NotImplementedError()
 
     # Metadata
 
     metadata_Error = None
     metadata_profile = None
+    metadata_properties: List[str] = []
 
     @property
     def metadata_valid(self):

@@ -8,7 +8,7 @@ from .task import InquiryTask
 from .. import settings
 
 if TYPE_CHECKING:
-    from ..interfaces import IDescriptor, IResolvedDescriptor
+    from ..interfaces import IDescriptor, IPlainDescriptor
 
 
 class Inquiry(Metadata2):
@@ -30,9 +30,9 @@ class Inquiry(Metadata2):
         tasks = [InquiryTask.from_descriptor(task) for task in mapping.get("tasks", [])]
         return Inquiry(tasks=tasks)
 
-    def to_descriptor(self) -> IResolvedDescriptor:
+    def to_descriptor(self) -> IPlainDescriptor:
         tasks = [task.to_descriptor() for task in self.tasks]
-        descriptor: IResolvedDescriptor = dict(tasks=tasks)
+        descriptor: IPlainDescriptor = dict(tasks=tasks)
         return descriptor
 
     # Metadata

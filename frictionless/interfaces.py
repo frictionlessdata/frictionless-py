@@ -24,7 +24,7 @@ if TYPE_CHECKING:
 
 
 IDescriptor = Union[str, Path, Mapping]
-IResolvedDescriptor = Dict[str, Any]
+IPlainDescriptor = Dict[str, Any]
 IByteStream = BinaryIO
 ITextStream = TextIO
 IListStream = Iterable[List[Any]]

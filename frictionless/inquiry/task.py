@@ -10,7 +10,7 @@ from .. import helpers
 from .. import errors
 
 if TYPE_CHECKING:
-    from ..interfaces import IDescriptor, IResolvedDescriptor
+    from ..interfaces import IDescriptor, IPlainDescriptor
 
 
 class InquiryTask(Metadata2):
@@ -132,8 +132,8 @@ class InquiryTask(Metadata2):
             checklist=checklist or None,
         )
 
-    def to_descriptor(self) -> IResolvedDescriptor:
-        descriptor: IResolvedDescriptor = dict(
+    def to_descriptor(self) -> IPlainDescriptor:
+        descriptor: IPlainDescriptor = dict(
             type=self.type,
             name=self.name,
             path=self.path,
