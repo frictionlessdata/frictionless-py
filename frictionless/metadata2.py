@@ -157,7 +157,7 @@ class Metadata2:
             name = property["name"]
             type = property.get("type")
             default = property.get("default")
-            value = getattr(self, stringcase.camelcase(name), None)
+            value = getattr(self, stringcase.snakecase(name), None)
             if value is None:
                 continue
             if type:
