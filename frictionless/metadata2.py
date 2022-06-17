@@ -5,6 +5,7 @@ import re
 import json
 import yaml
 import jinja2
+import pprint
 import jsonschema
 import stringcase
 from pathlib import Path
@@ -20,6 +21,9 @@ if TYPE_CHECKING:
 
 
 class Metadata2:
+    def __repr__(self) -> str:
+        """Returns string representation for metadata."""
+        return pprint.pformat(self.to_descriptor())
 
     # Convert
 
@@ -111,6 +115,7 @@ class Metadata2:
         """List of metadata errors"""
         return list(self.metadata_validate())
 
+    # TODO: automate metadata_validate of the children using metadata_properties!!!
     def metadata_validate(self) -> Iterator[Error]:
         """Validate metadata and emit validation errors"""
         if self.metadata_profile:

@@ -5,7 +5,7 @@ from frictionless import Pipeline
 
 
 def test_pipeline_resource():
-    pipeline = Pipeline(
+    pipeline = Pipeline.from_descriptor(
         {
             "steps": [
                 {"code": "cell-set", "fieldName": "population", "value": 100},

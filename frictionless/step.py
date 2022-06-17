@@ -1,4 +1,5 @@
 from __future__ import annotations
+from importlib import import_module
 from typing import TYPE_CHECKING
 from .metadata import Metadata
 from . import errors
@@ -50,6 +51,14 @@ class Step(Metadata):
             package (Package): package
         """
         pass
+
+    # Convert
+
+    # TODO: review
+    @classmethod
+    def from_descriptor(cls, descriptor):
+        system = import_module("frictionless").system
+        return system.create_step(descriptor)
 
     # Metadata
 

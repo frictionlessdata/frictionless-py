@@ -1,60 +1,45 @@
 from __future__ import annotations
-from typing import Optional, List, Any
-from ..metadata import Metadata
+from typing import List
+from ..metadata2 import Metadata2
 from .validate import validate
-from ..system import system
 from ..step import Step
 from .. import settings
-from .. import helpers
 from .. import errors
 
 
 # TODO: raise an exception if we try export a pipeline with function based steps
-class Pipeline(Metadata):
+class Pipeline(Metadata2):
+    """Pipeline representation"""
+
     validate = validate
 
     def __init__(
         self,
-        descriptor: Optional[Any] = None,
         *,
-        steps: Optional[List[Step]] = None,
-        # TODO: implement
-        limit_memory: Optional[int] = None,
+        steps: List[Step] = [],
+        limit_memory: int = settings.DEFAULT_LIMIT_MEMORY,
     ):
-        self.setinitial("steps", steps)
-        self.setinitial("limitMemory", limit_memory)
-        super().__init__(descriptor)
+        self.steps = steps.copy()
+        self.limit_memory = limit_memory
 
-    @property
-    def steps(self) -> List[Step]:
-        return self.get("steps", [])
+    steps: List[Step]
+    """List of transform steps"""
+
+    limit_memory: int
+    """TODO: add docs"""
 
     @property
     def step_codes(self) -> List[str]:
         return [step.code for step in self.steps]
 
-    @property
-    def limit_memory(self) -> bool:
-        return self.get("limitMemory", settings.DEFAULT_LIMIT_MEMORY)
-
     # Metadata
 
     metadata_Error = errors.PipelineError
     metadata_profile = settings.PIPELINE_PROFILE
-
-    def metadata_process(self):
-
-        # Steps
-        steps = self.get("steps")
-        if isinstance(steps, list):
-            for index, step in enumerate(steps):
-                if not isinstance(step, Step):
-                    step = system.create_step(step)
-                    list.__setitem__(steps, index, step)
-            if not isinstance(steps, helpers.ControlledList):
-                steps = helpers.ControlledList(steps)
-                steps.__onchange__(self.metadata_process)
-                dict.__setitem__(self, "steps", steps)
+    metadata_properties = [
+        {"name": "steps", "type": Step},
+        {"name": "limitMemory", "default": settings.DEFAULT_LIMIT_MEMORY},
+    ]
 
     def metadata_validate(self):
         yield from super().metadata_validate()

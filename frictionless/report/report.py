@@ -21,6 +21,7 @@ class Report(Metadata2):
 
     def __init__(
         self,
+        *,
         version: str,
         valid: bool,
         stats: dict,
@@ -96,6 +97,7 @@ class Report(Metadata2):
 
     @staticmethod
     def from_validation(
+        *,
         time: float,
         tasks: List[ReportTask] = [],
         errors: List[Error] = [],
@@ -151,7 +153,11 @@ class Report(Metadata2):
         )
 
     @staticmethod
-    def from_validation_reports(time: float, reports: List[Report]):
+    def from_validation_reports(
+        *,
+        time: float,
+        reports: List[Report],
+    ):
         """Create a report from a set of validation reports"""
         tasks = []
         errors = []

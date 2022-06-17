@@ -22,6 +22,7 @@ class InquiryTask(Metadata2):
 
     def __init__(
         self,
+        *,
         descriptor: Optional[str] = None,
         type: Optional[str] = None,
         path: Optional[str] = None,
@@ -88,6 +89,7 @@ class InquiryTask(Metadata2):
     checklist: Optional[Checklist]
     """# TODO: add docs"""
 
+    # TODO: review
     @property
     def type(self) -> str:
         """

@@ -1,5 +1,4 @@
 from __future__ import annotations
-from importlib import import_module
 from tabulate import tabulate
 from typing import Optional, List
 from ..metadata2 import Metadata2
@@ -14,6 +13,7 @@ class ReportTask(Metadata2):
 
     def __init__(
         self,
+        *,
         valid: bool,
         name: str,
         place: str,

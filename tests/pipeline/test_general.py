@@ -11,7 +11,7 @@ def test_pipeline():
 
 
 def test_pipeline_from_descriptor():
-    pipeline = Pipeline(
+    pipeline = Pipeline.from_descriptor(
         {
             "steps": [{"code": "table-normalize"}],
             "limitMemory": 100,
@@ -23,7 +23,7 @@ def test_pipeline_from_descriptor():
 
 
 def test_pipeline_pprint():
-    pipeline = Pipeline(
+    pipeline = Pipeline.from_descriptor(
         {
             "steps": [
                 {"code": "table-normalize"},
