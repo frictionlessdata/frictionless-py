@@ -19,20 +19,26 @@ class Inquiry(Metadata2):
     def __init__(self, *, tasks: List[InquiryTask]):
         self.tasks = tasks
 
+    # Properties
+
     tasks: List[InquiryTask]
     """List of underlaying tasks"""
 
-    # Export/Import
+    # Convert
+
+    convert_properties = [
+        "tasks",
+    ]
 
     @classmethod
     def from_descriptor(cls, descriptor: IDescriptor):
-        mapping = cls.metadata_extract(descriptor)
-        tasks = [InquiryTask.from_descriptor(task) for task in mapping.get("tasks", [])]
-        return Inquiry(tasks=tasks)
+        metadata = super().from_descriptor(descriptor)
+        metadata.tasks = [InquiryTask.from_descriptor(task) for task in metadata.tasks]  # type: ignore
+        return metadata
 
     def to_descriptor(self) -> IPlainDescriptor:
-        tasks = [task.to_descriptor() for task in self.tasks]
-        descriptor: IPlainDescriptor = dict(tasks=tasks)
+        descriptor = super().to_descriptor()
+        descriptor["tasks"] = [task.to_descriptor() for task in self.tasks]
         return descriptor
 
     # Metadata

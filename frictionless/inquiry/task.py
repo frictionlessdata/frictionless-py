@@ -6,7 +6,6 @@ from ..dialect import Dialect
 from ..schema import Schema
 from ..file import File
 from .. import settings
-from .. import helpers
 from .. import errors
 
 if TYPE_CHECKING:
@@ -53,6 +52,8 @@ class InquiryTask(Metadata2):
         self.schema = schema
         self.checklist = checklist
         self.__type = type
+
+    # Properties
 
     descriptor: Optional[str]
     """# TODO: add docs"""
@@ -108,57 +109,54 @@ class InquiryTask(Metadata2):
     def type(self, value: str):
         self.__type = value
 
-    # Import/Export
+    # Convert
 
+    convert_properties = [
+        "descriptor",
+        "type",
+        "path",
+        "name",
+        "scheme",
+        "format",
+        "hashing",
+        "encoding",
+        "innerpath",
+        "compression",
+        "dialect",
+        "schema",
+        "checklist",
+    ]
+
+    # TODO: rebase on from_descriptor
     @classmethod
     def from_descriptor(cls, descriptor: IDescriptor):
-        mapping = cls.metadata_extract(descriptor)
-        dialect = Dialect(mapping.get("dialect", {}))
-        schema = Schema(mapping.get("schema", {}))
-        checklist = Checklist(mapping.get("checklist", {}))
-        return InquiryTask(
-            descriptor=mapping.get("descriptor"),  # type: ignore
-            type=mapping.get("type"),  # type: ignore
-            name=mapping.get("name"),  # type: ignore
-            path=mapping.get("path"),  # type: ignore
-            scheme=mapping.get("scheme"),  # type: ignore
-            format=mapping.get("format"),  # type: ignore
-            hashing=mapping.get("hashing"),  # type: ignore
-            encoding=mapping.get("encoding"),  # type: ignore
-            innerpath=mapping.get("innerpath"),  # type: ignore
-            compression=mapping.get("compression"),  # type: ignore
-            dialect=dialect or None,
-            schema=schema or None,
-            checklist=checklist or None,
-        )
+        metadata = super().from_descriptor(descriptor)
+        if metadata.dialect:
+            metadata.dialect = Dialect(metadata.dialect)
+        if metadata.schema:
+            metadata.schema = Schema(metadata.schema)
+        if metadata.checklist:
+            metadata.checklist = Checklist(metadata.checklist)
+        return metadata
 
+    # TODO: rebase on to_descriptor
     def to_descriptor(self) -> IPlainDescriptor:
-        descriptor: IPlainDescriptor = dict(
-            type=self.type,
-            name=self.name,
-            path=self.path,
-            scheme=self.scheme,
-            format=self.format,
-            hashing=self.hashing,
-            encoding=self.encoding,
-            innerpath=self.innerpath,
-            compression=self.compression,
-        )
-        # TODO: rebase on to_descriptor
+        descriptor = super().to_descriptor()
         if self.dialect:
             descriptor["dialect"] = self.dialect.to_dict()
         if self.schema:
             descriptor["schema"] = self.schema.to_dict()
         if self.checklist:
             descriptor["checklist"] = self.checklist.to_dict()
-        return helpers.remove_non_values(descriptor)
+        if not self.__type:
+            descriptor.pop("type")
+        return descriptor
 
     # Metadata
 
     metadata_Error = errors.InquiryError
     metadata_profile = settings.INQUIRY_PROFILE["properties"]["tasks"]["items"]
 
+    # TODO: validate type/descriptor
     def metadata_validate(self):
         yield from super().metadata_validate()
-
-        # TODO: validate type/descriptor

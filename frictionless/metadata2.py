@@ -17,20 +17,24 @@ if TYPE_CHECKING:
 
 class Metadata2:
 
-    # Import/Export
+    # Convert
+
+    convert_properties: List[str] = []
 
     @classmethod
-    def from_descriptor(cls, descriptor: IDescriptor) -> Metadata2:
-        raise NotImplementedError()
+    def from_descriptor(cls, descriptor: IDescriptor):
+        descriptor = cls.metadata_extract(descriptor)
+        return cls(**{name: descriptor.get(name) for name in cls.convert_properties})  # type: ignore
 
     def to_descriptor(self) -> IPlainDescriptor:
-        raise NotImplementedError()
+        return helpers.remove_non_values(
+            {name: getattr(self, name) for name in self.convert_properties}
+        )
 
     # Metadata
 
     metadata_Error = None
     metadata_profile = None
-    metadata_properties: List[str] = []
 
     @property
     def metadata_valid(self):
