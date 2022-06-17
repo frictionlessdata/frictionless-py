@@ -105,6 +105,10 @@ class Metadata(helpers.ControlledDict):
 
     # Import/Export
 
+    @classmethod
+    def from_descriptor(cls, descriptor):
+        return cls(descriptor)
+
     def metadata_export(self):
         return self.to_dict()
 

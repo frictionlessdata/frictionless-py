@@ -108,52 +108,32 @@ class InquiryTask(Metadata2):
 
     # Convert
 
-    convert_properties = [
-        "descriptor",
-        "type",
-        "path",
-        "name",
-        "scheme",
-        "format",
-        "hashing",
-        "encoding",
-        "innerpath",
-        "compression",
-        "dialect",
-        "schema",
-        "checklist",
-    ]
-
-    # TODO: rebase on from_descriptor
-    @classmethod
-    def from_descriptor(cls, descriptor):
-        metadata = super().from_descriptor(descriptor)
-        if metadata.dialect:
-            metadata.dialect = Dialect(metadata.dialect)
-        if metadata.schema:
-            metadata.schema = Schema(metadata.schema)
-        if metadata.checklist:
-            metadata.checklist = Checklist(metadata.checklist)
-        return metadata
-
-    # TODO: rebase on to_descriptor
-    def to_descriptor(self):
-        descriptor = super().to_descriptor()
-        if self.dialect:
-            descriptor["dialect"] = self.dialect.to_dict()
-        if self.schema:
-            descriptor["schema"] = self.schema.to_dict()
-        if self.checklist:
-            descriptor["checklist"] = self.checklist.to_dict()
-        if not self.__type:
-            descriptor.pop("type")
-        return descriptor
-
     # Metadata
 
     metadata_Error = errors.InquiryError
     metadata_profile = settings.INQUIRY_PROFILE["properties"]["tasks"]["items"]
+    metadata_properties = [
+        {"name": "descriptor"},
+        {"name": "type"},
+        {"name": "path"},
+        {"name": "name"},
+        {"name": "scheme"},
+        {"name": "format"},
+        {"name": "hashing"},
+        {"name": "encoding"},
+        {"name": "innerpath"},
+        {"name": "compression"},
+        {"name": "dialect", "type": Dialect},
+        {"name": "schema", "type": Schema},
+        {"name": "checklist", "type": Checklist},
+    ]
 
     # TODO: validate type/descriptor
     def metadata_validate(self):
         yield from super().metadata_validate()
+
+    def metadata_export(self):
+        descriptor = super().metadata_export()
+        if not self.__type:
+            descriptor.pop("type")
+        return descriptor
