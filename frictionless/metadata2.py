@@ -1,13 +1,15 @@
 from __future__ import annotations
+import os
 import io
 import re
 import json
 import yaml
+import jinja2
 import jsonschema
 from pathlib import Path
 from collections.abc import Mapping
 from importlib import import_module
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING, Optional, Union, List
 from .exception import FrictionlessException
 from . import helpers
 
@@ -16,6 +18,16 @@ if TYPE_CHECKING:
 
 
 class Metadata2:
+
+    # Expand
+
+    def expand(self):
+        pass
+
+    # Infer
+
+    def infer(self):
+        pass
 
     # Convert
 
@@ -30,6 +42,82 @@ class Metadata2:
         return helpers.remove_non_values(
             {name: getattr(self, name) for name in self.convert_properties}
         )
+
+    def to_dict(self):
+        """Convert metadata to a plain dict
+
+        Returns:
+            dict: metadata as a plain dict
+        """
+        return self.to_descriptor()
+
+    def to_json(self, path=None, encoder_class=None):
+        """Save metadata as a json
+
+        Parameters:
+            path (str): target path
+
+        Raises:
+            FrictionlessException: on any error
+        """
+        frictionless = import_module("frictionless")
+        Error = self.metadata_Error or frictionless.errors.MetadataError
+        text = json.dumps(self.to_dict(), indent=2, ensure_ascii=False, cls=encoder_class)
+        if path:
+            try:
+                helpers.write_file(path, text)
+            except Exception as exc:
+                raise FrictionlessException(Error(note=str(exc))) from exc
+        return text
+
+    def to_yaml(self, path=None):
+        """Save metadata as a yaml
+
+        Parameters:
+            path (str): target path
+
+        Raises:
+            FrictionlessException: on any error
+        """
+        frictionless = import_module("frictionless")
+        Error = self.metadata_Error or frictionless.errors.MetadataError
+        text = yaml.dump(
+            self.to_dict(),
+            sort_keys=False,
+            allow_unicode=True,
+            Dumper=IndentDumper,
+        )
+        if path:
+            try:
+                helpers.write_file(path, text)
+            except Exception as exc:
+                raise FrictionlessException(Error(note=str(exc))) from exc
+        return text
+
+    def to_markdown(self, path: Optional[str] = None, table: bool = False) -> str:
+        """Convert metadata as a markdown
+
+        This feature has been contributed to the framwork by Ethan Welty (@ezwelty):
+        - https://github.com/frictionlessdata/frictionless-py/issues/837
+
+        Parameters:
+            path (str): target path
+            table (bool): if true converts markdown to tabular format
+
+        Raises:
+            FrictionlessException: on any error
+        """
+        frictionless = import_module("frictionless")
+        Error = self.metadata_Error or frictionless.errors.MetadataError
+        filename = self.__class__.__name__.lower()
+        template = f"{filename}-table.md" if table is True else f"{filename}.md"
+        md_output = render_markdown(f"{template}", {filename: self}).strip()
+        if path:
+            try:
+                helpers.write_file(path, md_output)
+            except Exception as exc:
+                raise FrictionlessException(Error(note=str(exc))) from exc
+        return md_output
 
     # Metadata
 
@@ -102,3 +190,106 @@ class Metadata2:
             Error = cls.metadata_Error or frictionless.errors.MetadataError
             note = f'cannot extract metadata "{descriptor}" because "{exception}"'
             raise FrictionlessException(Error(note=note)) from exception
+
+
+# Internal
+
+
+class IndentDumper(yaml.SafeDumper):
+    def increase_indent(self, flow=False, indentless=False):
+        return super().increase_indent(flow, False)
+
+
+def render_markdown(path: str, data: dict) -> str:
+    """Render any JSON-like object as Markdown, using jinja2 template"""
+
+    template_dir = os.path.join(os.path.dirname(__file__), "assets/templates")
+    environ = jinja2.Environment(
+        loader=jinja2.FileSystemLoader(template_dir), lstrip_blocks=True, trim_blocks=True
+    )
+    environ.filters["filter_dict"] = filter_dict
+    environ.filters["dict_to_markdown"] = json_to_markdown
+    environ.filters["tabulate"] = dicts_to_markdown_table
+    template = environ.get_template(path)
+    return template.render(**data)
+
+
+def filter_dict(
+    x: dict,
+    include: Optional[list] = None,
+    exclude: Optional[list] = None,
+    order: Optional[list] = None,
+) -> dict:
+    """Filter and order dictionary by key names"""
+
+    if include:
+        x = {key: x[key] for key in x if key in include}
+    if exclude:
+        x = {key: x[key] for key in x if key not in exclude}
+    if order:
+        index = [
+            (order.index(key) if key in order else len(order), i)
+            for i, key in enumerate(x)
+        ]
+        sorted_keys = [key for _, key in sorted(zip(index, x.keys()))]
+        x = {key: x[key] for key in sorted_keys}
+    return x
+
+
+def json_to_markdown(
+    x: Union[dict, list, int, float, str, bool],
+    level: int = 0,
+    tab: int = 2,
+    flatten_scalar_lists: bool = True,
+) -> str:
+    """Render any JSON-like object as Markdown, using nested bulleted lists"""
+
+    def _scalar_list(x) -> bool:
+        return isinstance(x, list) and all(not isinstance(xi, (dict, list)) for xi in x)
+
+    def _iter(x: Union[dict, list, int, float, str, bool], level: int = 0) -> str:
+        if isinstance(x, (dict, list)):
+            if isinstance(x, dict):
+                labels = [f"- `{key}`" for key in x]
+            elif isinstance(x, list):
+                labels = [f"- [{i + 1}]" for i in range(len(x))]
+            values = x if isinstance(x, list) else list(x.values())
+            if isinstance(x, list) and flatten_scalar_lists:
+                scalar = [not isinstance(value, (dict, list)) for value in values]
+                if all(scalar):
+                    values = [f"{values}"]
+            lines = []
+            for label, value in zip(labels, values):
+                if isinstance(value, (dict, list)) and (
+                    not flatten_scalar_lists or not _scalar_list(value)
+                ):
+                    lines.append(f"{label}\n{_iter(value, level=level + 1)}")
+                else:
+                    if isinstance(value, str):
+                        # Indent to align following lines with '- '
+                        value = jinja2.filters.do_indent(value, width=2, first=False)  # type: ignore
+                    lines.append(f"{label} {value}")
+            txt = "\n".join(lines)
+        else:
+            txt = str(x)
+        if level > 0:
+            txt = jinja2.filters.do_indent(txt, width=tab, first=True, blank=False)  # type: ignore
+        return txt
+
+    return jinja2.filters.do_indent(  # type: ignore
+        _iter(x, level=0), width=tab * level, first=True, blank=False
+    )
+
+
+def dicts_to_markdown_table(dicts: List[dict], **kwargs) -> str:
+    """Tabulate dictionaries and render as a Markdown table"""
+
+    if kwargs:
+        dicts = [filter_dict(x, **kwargs) for x in dicts]
+    try:
+        pandas = import_module("pandas")
+        df = pandas.DataFrame(dicts)
+    except ImportError:
+        module = import_module("frictionless.exception")
+        raise module.FrictionlessException("Please install `pandas` package")
+    return df.where(df.notnull(), None).to_markdown(index=False)

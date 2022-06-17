@@ -12,7 +12,8 @@ from importlib import import_module
 from collections.abc import Mapping
 from typing import Optional
 from .exception import FrictionlessException
-from .helpers import cached_property, render_markdown
+from .helpers import cached_property
+from .metadata2 import render_markdown
 from . import helpers
 import pprint as pp
 

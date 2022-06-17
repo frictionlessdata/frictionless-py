@@ -1,36 +1,16 @@
 from __future__ import annotations
-from tabulate import tabulate
 from importlib import import_module
-from typing import TYPE_CHECKING, Optional, List
-from ..metadata import Metadata
+from tabulate import tabulate
+from typing import Optional, List
+from ..metadata2 import Metadata2
 from ..errors import Error, ReportError
 from ..exception import FrictionlessException
 from .. import settings
 from .. import helpers
 
-if TYPE_CHECKING:
-    from ..interfaces import IDescriptor
 
-
-class ReportTask(Metadata):
-    """Report task representation.
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless import ReportTask`
-
-    Parameters:
-        descriptor? (str|dict): schema descriptor
-        resource? (Resource): resource
-        time (float): validation time
-        scope (str[]): validation scope
-        errors (Error[]): validation errors
-        warning (str): validation warning
-
-    # Raises
-        FrictionlessException: raise any error that occurs during the process
-
-    """
+class ReportTask(Metadata2):
+    """Report task representation."""
 
     def __init__(
         self,
@@ -43,81 +23,40 @@ class ReportTask(Metadata):
         warnings: Optional[List[str]] = None,
         errors: Optional[List[Error]] = None,
     ):
-        scope = scope or []
-        errors = errors or []
-        self.setinitial("valid", valid)
-        self.setinitial("name", name)
-        self.setinitial("place", place)
-        self.setinitial("tabular", tabular)
-        self.setinitial("stats", stats)
-        self.setinitial("scope", scope)
-        self.setinitial("warnings", warnings)
-        self.setinitial("errors", errors)
-        super().__init__()
+        self.valid = valid
+        self.name = name
+        self.place = place
+        self.tabular = tabular
+        self.stats = stats
+        self.scope = scope or []
+        self.warnings = warnings or []
+        self.errors = errors or []
 
-    @property
-    def valid(self) -> bool:
-        """
-        Returns:
-            bool: validation result
-        """
-        return self.get("valid")  # type: ignore
+    # Properties
 
-    @property
-    def name(self):
-        """
-        Returns:
-            str: name
-        """
-        return self.get("name")
+    valid: bool
+    """# TODO: add docs"""
 
-    @property
-    def place(self):
-        """
-        Returns:
-            str: place
-        """
-        return self.get("place")
+    name: str
+    """# TODO: add docs"""
 
-    @property
-    def tabular(self):
-        """
-        Returns:
-            bool: tabular
-        """
-        return self.get("tabular")
+    place: str
+    """# TODO: add docs"""
 
-    @property
-    def stats(self):
-        """
-        Returns:
-            dict: validation stats
-        """
-        return self.get("stats", {})
+    tabular: bool
+    """# TODO: add docs"""
 
-    @property
-    def scope(self):
-        """
-        Returns:
-            str[]: validation scope
-        """
-        return self.get("scope", [])
+    stats: dict
+    """# TODO: add docs"""
 
-    @property
-    def warnings(self):
-        """
-        Returns:
-            bool: if validation warning
-        """
-        return self.get("warnings", [])
+    scope: List[str]
+    """# TODO: add docs"""
 
-    @property
-    def errors(self):
-        """
-        Returns:
-            Error[]: validation errors
-        """
-        return self.get("errors", [])
+    warnings: List[str]
+    """# TODO: add docs"""
+
+    errors: List[Error]
+    """# TODO: add docs"""
 
     @property
     def error(self):
@@ -151,23 +90,32 @@ class ReportTask(Metadata):
             result.append([context.get(prop) for prop in spec])
         return result
 
-    # Import/Export
+    # Convert
 
-    @staticmethod
-    def from_descriptor(descriptor: IDescriptor):
-        metadata = Metadata(descriptor)
+    convert_properties = [
+        "valid",
+        "name",
+        "place",
+        "tabular",
+        "stats",
+        "scope",
+        "warnings",
+        "errors",
+    ]
+
+    # TODO: why system is circular dependency?
+    @classmethod
+    def from_descriptor(cls, descriptor):
         system = import_module("frictionless").system
-        errors = [system.create_error(error) for error in metadata.get("errors", [])]
-        return ReportTask(
-            valid=metadata.get("valid"),  # type: ignore
-            name=metadata.get("name"),  # type: ignore
-            place=metadata.get("place"),  # type: ignore
-            tabular=metadata.get("tabular"),  # type: ignore
-            stats=metadata.get("stats"),  # type: ignore
-            scope=metadata.get("scope"),  # type: ignore
-            warning=metadata.get("warning"),  # type: ignore
-            errors=errors,
-        )
+        metadata = super().from_descriptor(descriptor)
+        metadata.errors = [system.create_error(error) for error in metadata.errors]
+        return metadata
+
+    # TODO: rebase on to_descriptor
+    def to_descriptor(self):
+        descriptor = super().to_descriptor()
+        descriptor["errors"] = [error.to_dict() for error in self.errors]
+        return descriptor
 
     def to_summary(self) -> str:
         """Generate summary for validation task"
@@ -203,12 +151,8 @@ class ReportTask(Metadata):
     metadata_Error = ReportError
     metadata_profile = settings.REPORT_PROFILE["properties"]["tasks"]["items"]
 
+    # TODO: validate valid/errors count
+    # TODO: validate stats when the class is added
+    # TODO: validate errors when metadata is reworked
     def metadata_validate(self):
         yield from super().metadata_validate()
-
-        # Stats
-        # TODO: validate valid/errors count
-        # TODO: validate stats when the class is added
-
-        # Errors
-        # TODO: validate errors when metadata is reworked

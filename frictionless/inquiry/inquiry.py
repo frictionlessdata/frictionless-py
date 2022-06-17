@@ -31,12 +31,12 @@ class Inquiry(Metadata2):
     ]
 
     @classmethod
-    def from_descriptor(cls, descriptor: IDescriptor):
+    def from_descriptor(cls, descriptor):
         metadata = super().from_descriptor(descriptor)
         metadata.tasks = [InquiryTask.from_descriptor(task) for task in metadata.tasks]  # type: ignore
         return metadata
 
-    def to_descriptor(self) -> IPlainDescriptor:
+    def to_descriptor(self):
         descriptor = super().to_descriptor()
         descriptor["tasks"] = [task.to_descriptor() for task in self.tasks]
         return descriptor

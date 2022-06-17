@@ -1,10 +1,9 @@
 from __future__ import annotations
-import textwrap
 from copy import deepcopy
 from tabulate import tabulate
 from importlib import import_module
 from typing import TYPE_CHECKING, Optional, List
-from ..metadata import Metadata
+from ..metadata2 import Metadata2
 from ..errors import Error, ReportError
 from ..exception import FrictionlessException
 from .validate import validate
@@ -13,32 +12,11 @@ from .. import settings
 from .. import helpers
 
 if TYPE_CHECKING:
-    from ..interfaces import IDescriptor
     from ..resource import Resource
 
 
-# NOTE:
-# We can allow some Report/ReportTask constructor kwargs be None
-# We need to review how we validate Report/ReportTask (strict mode is disabled)
-
-
-class Report(Metadata):
-    """Report representation.
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless import Report`
-
-    Parameters:
-        descriptor? (str|dict): report descriptor
-        time (float): validation time
-        errors (Error[]): validation errors
-        tasks (ReportTask[]): validation tasks
-
-    Raises:
-        FrictionlessException: raise any error that occurs during the process
-
-    """
+class Report(Metadata2):
+    """Report representation."""
 
     validate = validate
 
@@ -51,61 +29,32 @@ class Report(Metadata):
         errors: Optional[List[Error]] = None,
         warnings: Optional[List[str]] = None,
     ):
-        self.setinitial("version", version)
-        self.setinitial("valid", valid)
-        self.setinitial("stats", stats)
-        self.setinitial("tasks", tasks)
-        self.setinitial("errors", errors)
-        self.setinitial("warnings", warnings)
-        super().__init__()
+        self.version = version
+        self.valid = valid
+        self.stats = stats
+        self.tasks = tasks or []
+        self.errors = errors or []
+        self.warnings = warnings or []
 
-    @property
-    def version(self):
-        """
-        Returns:
-            str: frictionless version
-        """
-        return self.get("version")
+    # Properties
 
-    @property
-    def valid(self):
-        """
-        Returns:
-            bool: validation result
-        """
-        return self.get("valid")
+    version: str
+    """# TODO: add docs"""
 
-    @property
-    def stats(self):
-        """
-        Returns:
-            dict: validation stats
-        """
-        return self.get("stats", {})
+    valid: bool
+    """# TODO: add docs"""
 
-    @property
-    def warnings(self):
-        """
-        Returns:
-            str[]: validation warnings
-        """
-        return self.get("warnings", [])
+    stats: dict
+    """# TODO: add docs"""
 
-    @property
-    def errors(self):
-        """
-        Returns:
-            Error[]: validation errors
-        """
-        return self.get("errors", [])
+    tasks: List[ReportTask]
+    """# TODO: add docs"""
 
-    @property
-    def tasks(self):
-        """
-        Returns:
-            ReportTask[]: validation tasks
-        """
-        return self.get("tasks", [])
+    errors: List[Error]
+    """# TODO: add docs"""
+
+    warnings: List[str]
+    """# TODO: add docs"""
 
     @property
     def task(self):
@@ -120,13 +69,6 @@ class Report(Metadata):
             error = Error(note='The "report.task" is available for single task reports')
             raise FrictionlessException(error)
         return self.tasks[0]
-
-    # Expand
-
-    def expand(self):
-        """Expand metadata"""
-        for task in self.tasks:
-            task.expand()
 
     # Flatten
 
@@ -151,23 +93,31 @@ class Report(Metadata):
                 result.append([context.get(prop) for prop in spec])
         return result
 
-    # Import/Export
+    # Convert
 
-    @staticmethod
-    def from_descriptor(descriptor: IDescriptor):
-        metadata = Metadata(descriptor)
+    convert_properties = [
+        "version",
+        "valid",
+        "stats",
+        "tasks",
+        "errors",
+        "warnings",
+    ]
+
+    # TODO: why system is circular dependency?
+    @classmethod
+    def from_descriptor(cls, descriptor):
         system = import_module("frictionless").system
-        errors = [system.create_error(error) for error in metadata.get("errors", [])]
-        tasks = [ReportTask.from_descriptor(task) for task in metadata.get("tasks", [])]
-        return Report(
-            version=metadata.get("version"),  # type: ignore
-            valid=metadata.get("valid"),  # type: ignore
-            stats=metadata.get("stats"),  # type: ignore
-            scope=metadata.get("scope"),  # type: ignore
-            warnings=metadata.get("warnings"),  # type: ignore
-            errors=errors,
-            tasks=tasks,
-        )
+        metadata = super().from_descriptor(descriptor)
+        metadata.errors = [system.create_error(error) for error in metadata.errors]
+        metadata.tasks = [ReportTask.from_descriptor(task) for task in metadata.tasks]  # type: ignore
+        return metadata
+
+    def to_descriptor(self):
+        descriptor = super().to_descriptor()
+        descriptor["errors"] = [error.to_dict() for error in self.errors]
+        descriptor["tasks"] = [task.to_descriptor() for task in self.tasks]
+        return descriptor
 
     @staticmethod
     def from_validation(
@@ -240,6 +190,7 @@ class Report(Metadata):
             warnings=warnings,
         )
 
+    # TODO: move to ReportTask
     def to_summary(self):
         """Summary of the report
 
@@ -251,12 +202,8 @@ class Report(Metadata):
         for task in self.tasks:
             prefix = "valid" if task.valid else "invalid"
             suffix = "" if task.tabular else "(non-tabular)"
-            source = task.path or task.name
-            # for zipped resources append file name
-            if task.innerpath:
-                source = f"{source} => {task.resource.innerpath}"
             validation_content += f"\n# {'-'*len(prefix)}"
-            validation_content += f"\n# {prefix}: {source} {suffix}"
+            validation_content += f"\n# {prefix}: {task.place} {suffix}"
             validation_content += f"\n# {'-'*len(prefix)}"
             error_content = []
             if task.errors:
@@ -270,7 +217,7 @@ class Report(Metadata):
                         ]
                     )
             # Validate
-            error_content = wrap_text_to_colwidths(error_content)
+            error_content = helpers.wrap_text_to_colwidths(error_content)
             validation_content += "\n\n"
             validation_content += "## Summary "
             validation_content += "\n\n"
@@ -309,25 +256,3 @@ class Report(Metadata):
 
         # Errors
         # TODO: validate errors when metadata is reworked
-
-
-# TODO: Temporary function to use with tabulate  tabulate 0.8.9 does not support text wrap
-def wrap_text_to_colwidths(list_of_lists: List, colwidths: List = [5, 5, 10, 50]) -> List:
-    """Create new list with wrapped text with different column width.
-    Args:
-        list_of_lists (List): List of lines
-        colwidths (List): width for each column
-
-    Returns:
-        List: list of lines with wrapped text
-
-    """
-    result = []
-    for row in list_of_lists:
-        new_row = []
-        for cell, width in zip(row, colwidths):
-            cell = str(cell)
-            wrapped = textwrap.wrap(cell, width=width)
-            new_row.append("\n".join(wrapped))
-        result.append(new_row)
-    return result

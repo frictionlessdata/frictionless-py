@@ -391,6 +391,7 @@ class Resource(Metadata):
             default = settings.DEFAULT_TABULAR_RESOURCE_PROFILE
         return self.get("profile", default)
 
+    # TODO: add asteriks for user/pass in url
     @cached_property
     def place(self):
         """

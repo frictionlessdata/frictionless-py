@@ -129,7 +129,7 @@ class InquiryTask(Metadata2):
 
     # TODO: rebase on from_descriptor
     @classmethod
-    def from_descriptor(cls, descriptor: IDescriptor):
+    def from_descriptor(cls, descriptor):
         metadata = super().from_descriptor(descriptor)
         if metadata.dialect:
             metadata.dialect = Dialect(metadata.dialect)
@@ -140,7 +140,7 @@ class InquiryTask(Metadata2):
         return metadata
 
     # TODO: rebase on to_descriptor
-    def to_descriptor(self) -> IPlainDescriptor:
+    def to_descriptor(self):
         descriptor = super().to_descriptor()
         if self.dialect:
             descriptor["dialect"] = self.dialect.to_dict()
