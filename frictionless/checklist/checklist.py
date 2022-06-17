@@ -77,7 +77,8 @@ class Checklist(Metadata2):
         basics: List[Check] = [baseline()]
         for check in basics + self.checks:
             if check.metadata_valid:
-                check = check.to_copy()
+                # TODO: review
+                #  check = check.to_copy()
                 check.connect(resource)
                 checks.append(check)
         return checks

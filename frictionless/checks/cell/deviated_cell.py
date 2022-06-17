@@ -2,53 +2,52 @@ from __future__ import annotations
 import statistics
 from ... import errors
 from ...check import Check
-from typing import TYPE_CHECKING, List, Iterable, Optional
+from typing import TYPE_CHECKING, List, Iterable
 
 if TYPE_CHECKING:
     from ...row import Row
     from ...error import Error
 
 
+DEFAULT_INTERVAL = 3
+
+
 class deviated_cell(Check):
-    """Check if the cell size is deviated
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless import checks`
-    Implicit | `validate(checks=([{"code": "deviated-cell", **descriptor}])`
-
-    This check can be enabled using the `checks` parameter
-    for the `validate` function.
-
-    Parameters:
-       descriptor (dict): check's descriptor
-       ignore_fields? (str[]): list of field names to ignore
-       interval? (int): statistical interval (default: 3)
-
-    """
+    """Check if the cell size is deviated"""
 
     code = "deviated-cell"
     Errors = [errors.DeviatedCellError]
 
     def __init__(
         self,
-        descriptor=None,
         *,
-        ignore_fields: Optional[List[str]] = None,
-        interval: Optional[int] = None,
+        interval: int = DEFAULT_INTERVAL,
+        ignore_fields: List[str] = [],
     ):
-        self.setinitial("ignoreFields", ignore_fields)
-        self.setinitial("interval", interval)
-        super().__init__(descriptor)
+        self.interval = interval
+        self.ignore_fields = ignore_fields
+
+    # Properties
+
+    interval: int
+    """# TODO: add docs"""
+
+    ignore_fields: List[str]
+    """# TODO: add docs"""
+
+    # Connect
+
+    def connect(self, resource):
+        super().connect(resource)
         self.__cell_sizes = {}
         self.__fields = {}
-        self.__ignore_fields = self.get("ignoreFields")
-        self.__interval = self.get("interval", 3)
+
+    # Validate
 
     def validate_row(self, row: Row) -> Iterable[Error]:
         for field_idx, field in enumerate(row.fields):  # type: ignore
             cell = row[field.name]
-            if self.__ignore_fields and field.name in self.__ignore_fields:
+            if self.ignore_fields and field.name in self.ignore_fields:
                 continue
             if cell and field.type == "string":
                 if field_idx not in self.__cell_sizes:
@@ -66,7 +65,7 @@ class deviated_cell(Check):
             try:
                 stdev = statistics.stdev(col_cell_sizes.values())
                 average = statistics.median(col_cell_sizes.values())
-                maximum = average + stdev * self.__interval
+                maximum = average + stdev * self.interval
                 # Use threshold or maximum value whichever is higher
                 threshold = threshold if threshold > maximum else maximum
                 for row_position, cell in col_cell_sizes.items():
@@ -83,7 +82,11 @@ class deviated_cell(Check):
     metadata_profile = {
         "type": "object",
         "properties": {
-            "ignore_fields": {"type": ["string", "null"]},
-            "interval": {"type": ["number", "null"]},
+            "interval": {"type": "number"},
+            "ignoreFields": {"type": "array"},
         },
     }
+    metadata_properties = [
+        {"name": "interval", "default": DEFAULT_INTERVAL},
+        {"name": "ignoreFields", "default": []},
+    ]

@@ -36,6 +36,11 @@ class Metadata2:
         """Export metadata as a plain descriptor"""
         return self.metadata_export()
 
+    # TODO: review
+    def to_copy(self):
+        """Create a copy of the metadata"""
+        return type(self).from_descriptor(self.metadata_export())
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert metadata to a plain dict"""
         return self.metadata_export()

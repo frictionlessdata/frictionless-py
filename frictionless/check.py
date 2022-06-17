@@ -1,7 +1,6 @@
 from __future__ import annotations
-from importlib import import_module
 from typing import TYPE_CHECKING, Iterable, List, Type
-from .metadata import Metadata
+from .metadata2 import Metadata2
 from . import errors
 
 if TYPE_CHECKING:
@@ -10,9 +9,9 @@ if TYPE_CHECKING:
     from .resource import Resource
 
 
-# TODO: sync API with Step (like "check.validate_resource_row")?
 # TODO: add support for validate_package/etc?
-class Check(Metadata):
+# TODO: sync API with Step (like "check.validate_resource_row")?
+class Check(Metadata2):
     """Check representation.
 
     API      | Usage
@@ -30,11 +29,10 @@ class Check(Metadata):
     """
 
     code: str = "check"
-    Errors: List[Type[Error]] = []  # type: ignore
+    # TODO: can it be just codes not objects?
+    Errors: List[Type[Error]] = []
 
-    def __init__(self, descriptor=None):
-        super().__init__(descriptor)
-        self.setinitial("code", self.code)
+    # Properties
 
     @property
     def resource(self) -> Resource:
@@ -43,6 +41,8 @@ class Check(Metadata):
             Resource?: resource object available after the `check.connect` call
         """
         return self.__resource
+
+    # Connect
 
     def connect(self, resource: Resource):
         """Connect to the given resource
@@ -80,14 +80,6 @@ class Check(Metadata):
             Error: found errors
         """
         yield from []
-
-    # Convert
-
-    # TODO: review
-    @classmethod
-    def from_descriptor(cls, descriptor):
-        system = import_module("frictionless").system
-        return system.create_check(descriptor)
 
     # Metadata
 

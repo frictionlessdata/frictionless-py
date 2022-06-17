@@ -42,12 +42,11 @@ class baseline(Check):
         errors.UniqueError,
     ]
 
-    def __init__(self, descriptor=None):
-        super().__init__(descriptor)
+    # Connect
 
     def connect(self, resource):
-        self.__stats = resource.stats.copy()
         super().connect(resource)
+        self.__stats = resource.stats.copy()
 
     # Validate
 
