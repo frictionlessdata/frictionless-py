@@ -1,8 +1,7 @@
 from __future__ import annotations
 from copy import deepcopy
 from tabulate import tabulate
-from importlib import import_module
-from typing import TYPE_CHECKING, Optional, List
+from typing import TYPE_CHECKING, List
 from ..metadata2 import Metadata2
 from ..errors import Error, ReportError
 from ..exception import FrictionlessException
@@ -25,16 +24,16 @@ class Report(Metadata2):
         version: str,
         valid: bool,
         stats: dict,
-        tasks: Optional[List[ReportTask]] = None,
-        errors: Optional[List[Error]] = None,
-        warnings: Optional[List[str]] = None,
+        tasks: List[ReportTask] = [],
+        errors: List[Error] = [],
+        warnings: List[str] = [],
     ):
         self.version = version
         self.valid = valid
         self.stats = stats
-        self.tasks = tasks or []
-        self.errors = errors or []
-        self.warnings = warnings or []
+        self.tasks = tasks.copy()
+        self.errors = errors.copy()
+        self.warnings = warnings.copy()
 
     # Properties
 
@@ -98,13 +97,14 @@ class Report(Metadata2):
     @staticmethod
     def from_validation(
         time: float,
-        tasks: Optional[List[ReportTask]] = None,
-        errors: Optional[List[Error]] = None,
-        warnings: Optional[List[str]] = None,
+        tasks: List[ReportTask] = [],
+        errors: List[Error] = [],
+        warnings: List[str] = [],
     ):
         """Create a report from a validation"""
-        tasks = tasks or []
-        errors = errors or []
+        tasks = tasks.copy()
+        errors = errors.copy()
+        warnings = warnings.copy()
         error_count = len(errors) + sum(task.stats["errors"] for task in tasks)
         stats = {"time": time, "tasks": len(tasks), "errors": error_count}
         return Report(
@@ -121,13 +121,14 @@ class Report(Metadata2):
         resource: Resource,
         *,
         time: float,
-        scope: Optional[List[str]] = None,
-        errors: Optional[List[Error]] = None,
-        warnings: Optional[List[str]] = None,
+        scope: List[str] = [],
+        errors: List[Error] = [],
+        warnings: List[str] = [],
     ):
         """Create a report from a validation task"""
-        scope = scope or []
-        errors = errors or []
+        scope = scope.copy()
+        errors = errors.copy()
+        warnings = warnings.copy()
         task_stats = helpers.copy_merge(resource.stats, time=time, errors=len(errors))
         report_stats = {"time": time, "tasks": 1, "errors": len(errors)}
         return Report(

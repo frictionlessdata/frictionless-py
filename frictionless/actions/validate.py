@@ -19,9 +19,9 @@ def validate(
     type: Optional[str] = None,
     # Checklist
     checklist: Optional[Checklist] = None,
-    checks: Optional[List[Check]] = None,
-    pick_errors: Optional[List[str]] = None,
-    skip_errors: Optional[List[str]] = None,
+    checks: List[Check] = [],
+    pick_errors: List[str] = [],
+    skip_errors: List[str] = [],
     limit_errors: int = settings.DEFAULT_LIMIT_ERRORS,
     limit_memory: int = settings.DEFAULT_LIMIT_MEMORY,
     # Validate
@@ -68,7 +68,7 @@ def validate(
     if type == "checklist":
         checklist = source
         if not isinstance(checklist, Checklist):
-            checklist = Checklist(checklist, **options)
+            checklist = Checklist.from_descriptor(checklist)  # type: ignore
         return checklist.validate()
 
     # Validate inquiry
