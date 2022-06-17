@@ -21,34 +21,20 @@ if TYPE_CHECKING:
 
 class Metadata2:
 
-    # Expand
-
-    def expand(self):
-        pass
-
-    # Infer
-
-    def infer(self):
-        pass
-
     # Convert
-
-    convert_properties: List[str] = []
 
     @classmethod
     def from_descriptor(cls, descriptor: IDescriptor):
         """Import metadata from a descriptor"""
-        options = helpers.create_options(cls.metadata_normalize(descriptor))
-        return cls(**{name: options.get(name) for name in cls.convert_properties})  # type: ignore
+        return cls.metadata_import(descriptor)
 
     def to_descriptor(self) -> IPlainDescriptor:
         """Export metadata as a plain descriptor"""
-        descriptor = {name: getattr(self, name) for name in self.convert_properties}
-        return helpers.create_descriptor(**helpers.remove_non_values(descriptor))
+        return self.metadata_export()
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert metadata to a plain dict"""
-        return self.to_descriptor()
+        return self.metadata_export()
 
     def to_json(self, path=None, encoder_class=None):
         """Save metadata as a json
