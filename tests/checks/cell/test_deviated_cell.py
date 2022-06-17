@@ -18,7 +18,7 @@ def test_validate_deviated_cell_1066():
 @pytest.mark.ci
 def test_validate_deviated_cell_using_descriptor():
     resource = Resource("data/issue-1066.csv")
-    checklist = Checklist(
+    checklist = Checklist.from_descriptor(
         {
             "checks": [
                 {
