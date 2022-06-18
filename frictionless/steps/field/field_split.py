@@ -1,4 +1,5 @@
 import petl
+from typing import Optional, List
 from ...step import Step
 from ...field import Field
 
@@ -15,41 +16,49 @@ class field_split(Step):
 
     def __init__(
         self,
-        descriptor=None,
         *,
-        name=None,
-        to_names=None,
-        pattern=None,
-        preserve=False,
+        name: str,
+        to_names: List[str],
+        pattern: Optional[str] = None,
+        preserve: bool = False,
     ):
-        self.setinitial("name", name)
-        self.setinitial("toNames", to_names)
-        self.setinitial("pattern", pattern)
-        self.setinitial("preserve", preserve)
-        super().__init__(descriptor)
+        self.name = name
+        self.to_names = to_names
+        self.pattern = pattern
+        self.preserve = preserve
+
+    # Properties
+
+    name: str
+    """TODO: add docs"""
+
+    to_names: List[str]
+    """TODO: add docs"""
+
+    pattern: Optional[str]
+    """TODO: add docs"""
+
+    preserve: bool
+    """TODO: add docs"""
 
     # Transform
 
     def transform_resource(self, resource):
         table = resource.to_petl()
-        name = self.get("name")
-        to_names = self.get("toNames")
-        pattern = self.get("pattern")
-        preserve = self.get("preserve")
-        for to_name in to_names:  # type: ignore
+        for to_name in self.to_names:  # type: ignore
             resource.schema.add_field(Field(name=to_name, type="string"))
-        if not preserve:
-            resource.schema.remove_field(name)
+        if not self.preserve:
+            resource.schema.remove_field(self.name)
         processor = petl.split
         # NOTE: this condition needs to be improved
-        if "(" in pattern:  # type: ignore
+        if "(" in self.pattern:  # type: ignore
             processor = petl.capture
         resource.data = processor(  # type: ignore
             table,
-            name,
-            pattern,
-            to_names,
-            include_original=preserve,  # type: ignore
+            self.name,
+            self.pattern,
+            self.to_names,
+            include_original=self.preserve,  # type: ignore
         )
 
     # Metadata
@@ -58,6 +67,7 @@ class field_split(Step):
         "type": "object",
         "required": ["name", "toNames", "pattern"],
         "properties": {
+            "code": {},
             "name": {"type": "string"},
             "toNames": {},
             "pattern": {},
