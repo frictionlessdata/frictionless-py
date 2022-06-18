@@ -1,3 +1,4 @@
+from typing import Any
 from ...step import Step
 
 
@@ -14,7 +15,7 @@ class cell_set(Step):
     def __init__(
         self,
         *,
-        value: str,
+        value: Any,
         field_name: str,
     ):
         self.value = value
@@ -22,7 +23,7 @@ class cell_set(Step):
 
     # Properties
 
-    value: str
+    value: Any
     """TODO: add docs"""
 
     field_name: str
