@@ -1,4 +1,5 @@
 import simpleeval
+from typing import Optional, Any
 from ...step import Step
 from ... import helpers
 
@@ -15,47 +16,59 @@ class field_update(Step):
 
     def __init__(
         self,
-        descriptor=None,
         *,
-        name=None,
-        value=None,
-        formula=None,
-        function=None,
-        new_name=None,
+        name: str,
+        value: Optional[Any] = None,
+        formula: Optional[Any] = None,
+        function: Optional[Any] = None,
+        new_name: Optional[str] = None,
         **options,
     ):
-        self.setinitial("name", name)
-        self.setinitial("value", value)
-        self.setinitial("formula", formula)
-        self.setinitial("function", function)
-        self.setinitial("newName", new_name)
-        for key, value in helpers.create_descriptor(**options).items():
-            self.setinitial(key, value)
-        super().__init__(descriptor)
+        self.name = name
+        self.value = value
+        self.formula = formula
+        self.function = function
+        self.new_name = new_name
+        self.descriptor = helpers.create_descriptor(**options)
+
+    # Properties
+
+    name: str
+    """TODO: add docs"""
+
+    value: Optional[Any]
+    """TODO: add docs"""
+
+    formula: Optional[Any]
+    """TODO: add docs"""
+
+    function: Optional[Any]
+    """TODO: add docs"""
+
+    new_name: Optional[str]
+    """TODO: add docs"""
+
+    descriptor: dict
+    """TODO: add docs"""
 
     # Transform
 
     def transform_resource(self, resource):
+        function = self.function
         table = resource.to_petl()
-        descriptor = self.to_dict()
-        descriptor.pop("code", None)  # type: ignore
-        name = descriptor.pop("name", None)  # type: ignore
-        value = descriptor.pop("value", None)  # type: ignore
-        formula = descriptor.pop("formula", None)  # type: ignore
-        function = descriptor.pop("function", None)  # type: ignore
-        new_name = descriptor.pop("newName", None)  # type: ignore
-        if new_name:
-            descriptor["name"] = new_name  # type: ignore
-        field = resource.schema.get_field(name)
+        descriptor = self.descriptor.copy()
+        if self.new_name:
+            descriptor["name"] = self.new_name  # type: ignore
+        field = resource.schema.get_field(self.name)
         field.update(descriptor)
-        if formula:
-            function = lambda val, row: simpleeval.simple_eval(formula, names=row)
+        if self.formula:
+            function = lambda _, row: simpleeval.simple_eval(self.formula, names=row)
         if function:
-            resource.data = table.convert(name, function)  # type: ignore
-        elif new_name:
-            resource.data = table.rename({name: new_name})  # type: ignore
-        elif "value" in self:
-            resource.data = table.update(name, value)  # type: ignore
+            resource.data = table.convert(self.name, function)  # type: ignore
+        elif self.new_name:
+            resource.data = table.rename({self.name: self.new_name})  # type: ignore
+        elif "value" in self.descriptor:
+            resource.data = table.update(self.name, self.value)  # type: ignore
 
     # Metadata
 
