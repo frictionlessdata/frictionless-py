@@ -32,37 +32,45 @@ class field_pack(Step):
 
     def __init__(
         self,
-        descriptor=None,
         *,
-        name: Optional[str] = None,
-        from_names: Optional[List[str]] = None,
+        name: str,
+        from_names: List[str],
         field_type: Optional[str] = None,
         preserve: bool = False,
     ):
-        self.setinitial("name", name)
-        self.setinitial("fromNames", from_names)
-        self.setinitial("fieldType", field_type)
-        self.setinitial("preserve", preserve)
-        super().__init__(descriptor)
+        self.name = name
+        self.from_names = from_names
+        self.field_type = field_type
+        self.preserve = preserve
+
+    # Properties
+
+    name: str
+    """TODO: add docs"""
+
+    from_names: List[str]
+    """TODO: add docs"""
+
+    field_type: Optional[str]
+    """TODO: add docs"""
+
+    preserve: bool
+    """TODO: add docs"""
 
     # Transform
 
     def transform_resource(self, resource: Resource) -> None:
         table = resource.to_petl()
-        name = self.get("name")
-        from_names = self.get("fromNames")
-        field_type = self.get("fieldType", "array")
-        preserve = self.get("preserve")
-        resource.schema.add_field(Field(name=name, type=field_type))
-        if not preserve:
-            for name in from_names:  # type: ignore
+        resource.schema.add_field(Field(name=self.name, type=self.field_type))
+        if not self.preserve:
+            for name in self.from_names:  # type: ignore
                 resource.schema.remove_field(name)
-        if field_type == "object":
+        if self.field_type == "object":
             resource.data = iterpackdict(  # type: ignore
-                table, "detail", ["name", "population"], preserve  # type: ignore
+                table, self.name, self.from_names, self.preserve  # type: ignore
             )
         else:
-            resource.data = iterpack(table, "detail", ["name", "population"], preserve)  # type: ignore
+            resource.data = iterpack(table, self.name, self.from_names, self.preserve)  # type: ignore
 
     # Metadata
 
@@ -70,6 +78,7 @@ class field_pack(Step):
         "type": "object",
         "required": ["name", "fromNames"],
         "properties": {
+            "code": {},
             "name": {"type": "string"},
             "fromNames": {"type": "array"},
             "fieldType": {"type": "string"},
