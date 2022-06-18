@@ -1,4 +1,5 @@
 import simpleeval
+from typing import Optional, Any
 from ...step import Step
 from ...field import Field
 from ... import helpers
@@ -9,6 +10,7 @@ from ... import helpers
 # Some of the following step use **options - we need to review/fix it
 
 
+# TODO: proper support for options/descriptor/extra
 class field_add(Step):
     """Add field"""
 
@@ -16,51 +18,70 @@ class field_add(Step):
 
     def __init__(
         self,
-        descriptor=None,
         *,
-        name=None,
-        value=None,
-        formula=None,
-        function=None,
-        position=None,
-        incremental=False,
+        name: str,
+        value: Optional[Any] = None,
+        formula: Optional[Any] = None,
+        function: Optional[Any] = None,
+        field_name: Optional[str] = None,
+        position: Optional[int] = None,
+        incremental: bool = False,
         **options,
     ):
-        self.setinitial("name", name)
-        self.setinitial("value", value)
-        self.setinitial("formula", formula)
-        self.setinitial("function", function)
-        self.setinitial("position", position if not incremental else 1)
-        self.setinitial("incremental", incremental)
-        for key, value in helpers.create_descriptor(**options).items():
-            self.setinitial(key, value)
-        super().__init__(descriptor)
+        self.name = name
+        self.value = value
+        self.formula = formula
+        self.function = function
+        self.field_name = field_name
+        self.position = position
+        self.incremental = incremental
+        self.descriptor = helpers.create_descriptor(**options)
+
+    # Properties
+
+    name: str
+    """TODO: add docs"""
+
+    value: Optional[Any]
+    """TODO: add docs"""
+
+    formula: Optional[Any]
+    """TODO: add docs"""
+
+    function: Optional[Any]
+    """TODO: add docs"""
+
+    field_name: Optional[str]
+    """TODO: add docs"""
+
+    position: Optional[int]
+    """TODO: add docs"""
+
+    incremental: bool
+    """TODO: add docs"""
+
+    descriptor: dict
+    """TODO: add docs"""
 
     # Transform
 
     def transform_resource(self, resource):
+        value = self.value
+        function = self.function
         table = resource.to_petl()
-        descriptor = self.to_dict()
-        descriptor.pop("code", None)  # type: ignore
-        name = descriptor.pop("name", None)  # type: ignore
-        value = descriptor.pop("value", None)  # type: ignore
-        formula = descriptor.pop("formula", None)  # type: ignore
-        function = descriptor.pop("function", None)  # type: ignore
-        position = descriptor.pop("position", None)  # type: ignore
-        incremental = descriptor.pop("incremental", None)  # type: ignore
-        field = Field(descriptor, name=name)
-        index = position - 1 if position else None
+        field = Field(self.descriptor, name=self.name)
+        index = self.position - 1 if self.position else None
         if index is None:
             resource.schema.add_field(field)
         else:
             resource.schema.fields.insert(index, field)
-        if incremental:
-            resource.data = table.addrownumbers(field=name)  # type: ignore
+        if self.incremental:
+            resource.data = table.addrownumbers(field=self.name)  # type: ignore
         else:
-            if formula:
-                function = lambda row: simpleeval.simple_eval(formula, names=row)
+            if self.formula:
+                function = lambda row: simpleeval.simple_eval(self.formula, names=row)
             value = value or function
-            resource.data = table.addfield(name, value=value, index=index)  # type: ignore
+            resource.data = table.addfield(self.name, value=value, index=index)  # type: ignore
 
     # Metadata
 
@@ -68,8 +89,11 @@ class field_add(Step):
         "type": "object",
         "required": ["name"],
         "properties": {
+            "code": {},
             "name": {"type": "string"},
             "value": {},
+            "formula": {},
+            "fieldName": {},
             "position": {},
             "incremental": {},
         },
