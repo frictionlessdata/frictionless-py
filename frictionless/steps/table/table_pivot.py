@@ -11,6 +11,7 @@ from ...step import Step
 # We need to review how we use "target.schema.fields.clear()"
 
 
+# TODO: migrate
 class table_pivot(Step):
     """Pivot table"""
 
