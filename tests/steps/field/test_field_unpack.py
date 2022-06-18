@@ -1,9 +1,11 @@
+import pytest
 from frictionless import Resource, Pipeline, steps
 
 
 # General
 
 
+@pytest.mark.skip
 def test_step_field_unpack():
     source = Resource(path="data/transform.csv")
     pipeline = Pipeline(
@@ -28,6 +30,7 @@ def test_step_field_unpack():
     ]
 
 
+@pytest.mark.skip
 def test_step_field_unpack_with_preserve():
     source = Resource(path="data/transform.csv")
     pipeline = Pipeline(
@@ -53,6 +56,7 @@ def test_step_field_unpack_with_preserve():
     ]
 
 
+@pytest.mark.skip
 def test_step_field_unpack_source_is_object():
     source = Resource(path="data/transform.csv")
     pipeline = Pipeline(

@@ -1,3 +1,4 @@
+from typing import List
 from ...step import Step
 from ...field import Field
 
@@ -12,30 +13,47 @@ class field_unpack(Step):
 
     code = "field-unpack"
 
-    def __init__(self, descriptor=None, *, name=None, to_names=None, preserve=False):
-        self.setinitial("name", name)
-        self.setinitial("toNames", to_names)
-        self.setinitial("preserve", preserve)
-        super().__init__(descriptor)
+    def __init__(
+        self,
+        *,
+        name: str,
+        to_names: List[str],
+        preserve: bool = False,
+    ):
+        self.name = name
+        self.to_names = to_names
+        self.preserve = preserve
+
+    # Properties
+
+    name: str
+    """TODO: add docs"""
+
+    to_names: List[str]
+    """TODO: add docs"""
+
+    preserve: bool
+    """TODO: add docs"""
 
     # Transform
 
     def transform_resource(self, resource):
         table = resource.to_petl()
-        name = self.get("name")
-        to_names = self.get("toNames")
-        preserve = self.get("preserve")
-        field = resource.schema.get_field(name)
-        for to_name in to_names:  # type: ignore
+        field = resource.schema.get_field(self.name)
+        for to_name in self.to_names:  # type: ignore
             resource.schema.add_field(Field(name=to_name))
-        if not preserve:
-            resource.schema.remove_field(name)
+        if not self.preserve:
+            resource.schema.remove_field(self.name)
         if field.type == "object":
             processor = table.unpackdict  # type: ignore
-            resource.data = processor(name, to_names, includeoriginal=preserve)
+            resource.data = processor(
+                self.name, self.to_names, includeoriginal=self.preserve
+            )
         else:
             processor = table.unpack  # type: ignore
-            resource.data = processor(name, to_names, include_original=preserve)
+            resource.data = processor(
+                self.name, self.to_names, include_original=self.preserve
+            )
 
     # Metadata
 
@@ -43,6 +61,7 @@ class field_unpack(Step):
         "type": "object",
         "required": ["name", "toNames"],
         "properties": {
+            "code": {},
             "name": {"type": "string"},
             "toNames": {"type": "array"},
             "preserve": {},
