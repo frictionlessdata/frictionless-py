@@ -82,12 +82,8 @@ class deviated_cell(Check):
     metadata_profile = {
         "type": "object",
         "properties": {
+            "code": {},
             "interval": {"type": "number"},
             "ignoreFields": {"type": "array"},
         },
     }
-    metadata_properties = [
-        {"name": "code"},
-        {"name": "interval", "default": DEFAULT_INTERVAL},
-        {"name": "ignoreFields", "default": []},
-    ]

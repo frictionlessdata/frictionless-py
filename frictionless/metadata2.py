@@ -6,6 +6,8 @@ import json
 import yaml
 import jinja2
 import pprint
+import typing
+import inspect
 import jsonschema
 import stringcase
 from pathlib import Path
@@ -110,7 +112,6 @@ class Metadata2:
     # TODO: add/improve types
     metadata_Error = None
     metadata_profile = None
-    metadata_properties: List[dict] = []
 
     @property
     def metadata_valid(self) -> bool:
@@ -148,40 +149,61 @@ class Metadata2:
         """Import metadata from a descriptor source"""
         target = {}
         source = cls.metadata_normalize(descriptor)
-        for property in cls.metadata_properties:
+        for property in cls.metadata_properties():
             name = property["name"]
-            type = property.get("type")
+            Type = property.get("type")
             value = source.get(name)
             if name == "code":
                 continue
             if value is None:
                 continue
-            if type:
+            if Type:
                 if isinstance(value, list):
-                    value = [type.from_descriptor(item) for item in value]
+                    value = [Type.from_descriptor(item) for item in value]
                 else:
-                    value = type.from_descriptor(value)
+                    value = Type.from_descriptor(value)
             target[stringcase.snakecase(name)] = value
         return cls(**target)  # type: ignore
 
     def metadata_export(self) -> IPlainDescriptor:
         """Export metadata as a descriptor"""
         descriptor = {}
-        for property in self.metadata_properties:
+        for property in self.metadata_properties():
             name = property["name"]
-            type = property.get("type")
+            Type = property.get("type")
             default = property.get("default")
             value = getattr(self, stringcase.snakecase(name), None)
             if value is None:
                 continue
-            if type:
+            if Type:
                 if isinstance(value, list):
-                    value = [item.metadata_export() for item in value]
+                    value = [item.metadata_export() for item in value]  # type: ignore
                 else:
                     value = value.metadata_export()
             if default is None or value != default:
                 descriptor[name] = value
         return descriptor
+
+    @classmethod
+    def metadata_properties(cls):
+        """Extract metadata properties"""
+        properties = []
+        if cls.metadata_profile:
+            signature = inspect.signature(cls.__init__)
+            type_hints = typing.get_type_hints(cls.__init__)
+            for name in cls.metadata_profile.get("properties", []):
+                property = {"name": name}
+                parameter = signature.parameters.get(stringcase.snakecase(name))
+                if parameter and parameter.default is not parameter.empty:
+                    property["default"] = parameter.default
+                type_hint = type_hints.get(stringcase.snakecase(name))
+                if type_hint:
+                    args = typing.get_args(type_hint)
+                    Type = args[0] if args else type_hint
+                    if isinstance(Type, type) and issubclass(Type, Metadata2):
+                        property["type"] = Type
+                properties.append(property)
+        return properties
 
     # TODO: return plain descriptor?
     @classmethod

@@ -43,12 +43,8 @@ class forbidden_value(Check):
         "type": "object",
         "requred": ["fieldName", "values"],
         "properties": {
+            "code": {},
             "fieldName": {"type": "string"},
             "values": {"type": "array"},
         },
     }
-    metadata_properties = [
-        {"name": "code"},
-        {"name": "fieldName"},
-        {"name": "values"},
-    ]

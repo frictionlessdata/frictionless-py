@@ -5,7 +5,6 @@ from ..checklist import Checklist
 from ..dialect import Dialect
 from ..schema import Schema
 from ..file import File
-from .. import settings
 from .. import errors
 
 
@@ -38,6 +37,7 @@ class InquiryTask(Metadata2):
         checklist: Optional[Checklist] = None,
     ):
         self.descriptor = descriptor
+        self.__type = type
         self.path = path
         self.name = name
         self.scheme = scheme
@@ -49,12 +49,30 @@ class InquiryTask(Metadata2):
         self.dialect = dialect
         self.schema = schema
         self.checklist = checklist
-        self.__type = type
 
     # Properties
 
     descriptor: Optional[str]
     """# TODO: add docs"""
+
+    # TODO: review
+    @property
+    def type(self) -> str:
+        """
+        Returns:
+            any: type
+        """
+        type = self.__type
+        if not type:
+            type = "resource"
+            if self.descriptor:
+                file = File(self.descriptor)
+                type = "package" if file.type == "package" else "resource"
+        return type
+
+    @type.setter
+    def type(self, value: str):
+        self.__type = value
 
     path: Optional[str]
     """# TODO: add docs"""
@@ -89,46 +107,28 @@ class InquiryTask(Metadata2):
     checklist: Optional[Checklist]
     """# TODO: add docs"""
 
-    # TODO: review
-    @property
-    def type(self) -> str:
-        """
-        Returns:
-            any: type
-        """
-        type = self.__type
-        if not type:
-            type = "resource"
-            if self.descriptor:
-                file = File(self.descriptor)
-                type = "package" if file.type == "package" else "resource"
-        return type
-
-    @type.setter
-    def type(self, value: str):
-        self.__type = value
-
     # Convert
 
     # Metadata
 
     metadata_Error = errors.InquiryError
-    metadata_profile = settings.INQUIRY_PROFILE["properties"]["tasks"]["items"]
-    metadata_properties = [
-        {"name": "descriptor"},
-        {"name": "type"},
-        {"name": "path"},
-        {"name": "name"},
-        {"name": "scheme"},
-        {"name": "format"},
-        {"name": "hashing"},
-        {"name": "encoding"},
-        {"name": "innerpath"},
-        {"name": "compression"},
-        {"name": "dialect", "type": Dialect},
-        {"name": "schema", "type": Schema},
-        {"name": "checklist", "type": Checklist},
-    ]
+    metadata_profile = {
+        "properties": {
+            "descriptor": {},
+            "type": {},
+            "path": {},
+            "name": {},
+            "scheme": {},
+            "format": {},
+            "hashing": {},
+            "encoding": {},
+            "innerpath": {},
+            "compression": {},
+            "dialect": {},
+            "schema": {},
+            "checklist": {},
+        }
+    }
 
     # TODO: validate type/descriptor
     def metadata_validate(self):

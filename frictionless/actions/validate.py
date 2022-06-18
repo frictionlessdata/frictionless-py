@@ -93,7 +93,7 @@ def validate(
     elif type == "pipeline":
         pipeline = source
         if not isinstance(pipeline, Pipeline):
-            pipeline = Pipeline(pipeline, **options)
+            pipeline = Pipeline.from_descriptor(pipeline)  # type: ignore
         return pipeline.validate()
 
     # Validate report

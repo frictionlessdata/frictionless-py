@@ -96,14 +96,9 @@ class deviated_value(Check):
         "type": "object",
         "requred": ["fieldName"],
         "properties": {
+            "code": {},
             "fieldName": {"type": "string"},
             "interval": {"type": ["number", "null"]},
             "average": {"type": ["string", "null"]},
         },
     }
-    metadata_properties = [
-        {"name": "code"},
-        {"name": "fieldName"},
-        {"name": "interval", "default": DEFAULT_INTERVAL},
-        {"name": "average", "default": DEFAULT_AVERAGE},
-    ]

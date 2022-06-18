@@ -1,5 +1,4 @@
 from __future__ import annotations
-from copy import deepcopy
 from tabulate import tabulate
 from typing import TYPE_CHECKING, List
 from ..metadata2 import Metadata2
@@ -223,16 +222,16 @@ class Report(Metadata2):
     # Metadata
 
     metadata_Error = ReportError
-    metadata_profile = deepcopy(settings.REPORT_PROFILE)
-    metadata_profile["properties"]["tasks"] = {"type": "array"}
-    metadata_properties = [
-        {"name": "version"},
-        {"name": "valid"},
-        {"name": "stats"},
-        {"name": "tasks", "type": ReportTask},
-        {"name": "errors", "type": Error},
-        {"name": "warnings"},
-    ]
+    metadata_profile = {
+        "properties": {
+            "version": {},
+            "valid": {},
+            "stats": {},
+            "tasks": {},
+            "errors": {},
+            "warnings": {},
+        }
+    }
 
     # TODO: validate valid/errors count
     # TODO: validate stats when the class is added

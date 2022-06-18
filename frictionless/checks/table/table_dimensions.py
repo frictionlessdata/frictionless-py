@@ -133,6 +133,7 @@ class table_dimensions(Check):
             ]
         },
         "properties": {
+            "code": {},
             "numRows": {"type": "number"},
             "minRows": {"type": "number"},
             "maxRows": {"type": "number"},
@@ -141,12 +142,3 @@ class table_dimensions(Check):
             "maxFields": {"type": "number"},
         },
     }
-    metadata_properties = [
-        {"name": "code"},
-        {"name": "numRows"},
-        {"name": "minRows"},
-        {"name": "maxRows"},
-        {"name": "numFields"},
-        {"name": "minFields"},
-        {"name": "maxFields"},
-    ]

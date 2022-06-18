@@ -47,11 +47,10 @@ class truncated_value(Check):
 
     metadata_profile = {  # type: ignore
         "type": "object",
-        "properties": {},
+        "properties": {
+            "code": {},
+        },
     }
-    metadata_properties = [
-        {"name": "code"},
-    ]
 
 
 # Internal

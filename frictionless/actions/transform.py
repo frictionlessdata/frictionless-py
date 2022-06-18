@@ -42,7 +42,7 @@ def transform(
 
     # Create pipeline
     if not pipeline:
-        pipeline = Pipeline(steps=steps)
+        pipeline = Pipeline(steps=steps or [])
 
     # Transform package
     if type == "package":

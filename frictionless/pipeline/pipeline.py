@@ -35,11 +35,12 @@ class Pipeline(Metadata2):
     # Metadata
 
     metadata_Error = errors.PipelineError
-    metadata_profile = settings.PIPELINE_PROFILE
-    metadata_properties = [
-        {"name": "steps", "type": Step},
-        {"name": "limitMemory", "default": settings.DEFAULT_LIMIT_MEMORY},
-    ]
+    metadata_profile = {
+        "properties": {
+            "steps": {},
+            "limitMemory": {},
+        }
+    }
 
     def metadata_validate(self):
         yield from super().metadata_validate()

@@ -37,9 +37,8 @@ class row_constraint(Check):
     metadata_profile = {  # type: ignore
         "type": "object",
         "requred": ["formula"],
-        "properties": {"formula": {"type": "string"}},
+        "properties": {
+            "code": {},
+            "formula": {"type": "string"},
+        },
     }
-    metadata_properties = [
-        {"name": "code"},
-        {"name": "formula"},
-    ]

@@ -50,9 +50,8 @@ class sequential_value(Check):
     metadata_profile = {  # type: ignore
         "type": "object",
         "requred": ["fieldName"],
-        "properties": {"fieldName": {"type": "string"}},
+        "properties": {
+            "code": {},
+            "fieldName": {"type": "string"},
+        },
     }
-    metadata_properties = [
-        {"name": "code"},
-        {"name": "fieldName"},
-    ]

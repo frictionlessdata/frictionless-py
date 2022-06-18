@@ -4,7 +4,6 @@ from typing import Optional, List
 from ..metadata2 import Metadata2
 from ..errors import Error, ReportError
 from ..exception import FrictionlessException
-from .. import settings
 from .. import helpers
 
 
@@ -124,17 +123,18 @@ class ReportTask(Metadata2):
     # Metadata
 
     metadata_Error = ReportError
-    metadata_profile = settings.REPORT_PROFILE["properties"]["tasks"]["items"]
-    metadata_properties = [
-        {"name": "valid"},
-        {"name": "name"},
-        {"name": "place"},
-        {"name": "tabular"},
-        {"name": "stats"},
-        {"name": "scope"},
-        {"name": "warnings"},
-        {"name": "errors", "type": Error},
-    ]
+    metadata_profile = {
+        "properties": {
+            "valid": {},
+            "name": {},
+            "place": {},
+            "tabular": {},
+            "stats": {},
+            "scope": {},
+            "warnings": {},
+            "errors": {},
+        }
+    }
 
     # TODO: validate valid/errors count
     # TODO: validate stats when the class is added

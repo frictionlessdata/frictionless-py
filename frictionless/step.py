@@ -1,7 +1,7 @@
 from __future__ import annotations
-from importlib import import_module
 from typing import TYPE_CHECKING
 from .metadata import Metadata
+from .system import system
 from . import errors
 
 if TYPE_CHECKING:
@@ -57,7 +57,6 @@ class Step(Metadata):
     # TODO: review
     @classmethod
     def from_descriptor(cls, descriptor):
-        system = import_module("frictionless").system
         return system.create_step(descriptor)
 
     # Metadata

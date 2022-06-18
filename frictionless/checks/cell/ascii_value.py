@@ -40,8 +40,7 @@ class ascii_value(Check):
 
     metadata_profile = {
         "type": "object",
-        "properties": {},
+        "properties": {
+            "code": {},
+        },
     }
-    metadata_properties = [
-        {"name": "code"},
-    ]

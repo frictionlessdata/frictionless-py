@@ -1,5 +1,4 @@
 from __future__ import annotations
-from importlib import import_module
 from typing import TYPE_CHECKING, Iterable, List, Type
 from .metadata2 import Metadata2
 from .system import system
