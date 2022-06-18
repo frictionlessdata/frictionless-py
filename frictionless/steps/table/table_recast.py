@@ -1,3 +1,4 @@
+from typing import List
 from ...step import Step
 
 
@@ -18,26 +19,30 @@ class table_recast(Step):
 
     def __init__(
         self,
-        descriptor=None,
         *,
-        field_name,
-        from_field_names=None,
+        field_name: str,
+        from_field_names: List[str] = ["variable", "value"],
     ):
-        self.setinitial("fieldName", field_name)
-        self.setinitial("fromFieldNames", from_field_names)
-        super().__init__(descriptor)
+        self.field_name = field_name
+        self.from_field_names = from_field_names.copy()
+
+    # Properties
+
+    field_name: str
+    """TODO: add docs"""
+
+    from_field_names: List[str]
+    """TODO: add docs"""
 
     # Transform
 
     def transform_resource(self, resource):
         table = resource.to_petl()
-        field_name = self.get("fieldName")
-        from_field_names = self.get("fromFieldNames", ["variable", "value"])
         resource.pop("schema", None)
         resource.data = table.recast(  # type: ignore
-            key=field_name,
-            variablefield=from_field_names[0],
-            valuefield=from_field_names[1],
+            key=self.field_name,
+            variablefield=self.from_field_names[0],
+            valuefield=self.from_field_names[1],
         )
         resource.infer()
 
@@ -47,6 +52,7 @@ class table_recast(Step):
         "type": "object",
         "required": ["fieldName"],
         "properties": {
+            "code": {},
             "fieldName": {"type": "string"},
             "fromFieldNames": {"type": "array", "minItems": 2, "maxItems": 2},
         },
