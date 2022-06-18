@@ -13,6 +13,7 @@ from ...resource import Resource
 # We need to review how we use "target.schema.fields.clear()"
 
 
+# TODO: migrate
 class table_intersect(Step):
     """Intersect tables"""
 

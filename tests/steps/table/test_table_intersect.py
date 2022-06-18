@@ -1,9 +1,11 @@
+import pytest
 from frictionless import Resource, Pipeline, steps
 
 
 # General
 
 
+@pytest.mark.skip
 def test_step_table_intersect():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(
@@ -35,6 +37,7 @@ def test_step_table_intersect():
     ]
 
 
+@pytest.mark.skip
 def test_step_table_intersect_from_dict():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(
@@ -66,6 +69,7 @@ def test_step_table_intersect_from_dict():
     ]
 
 
+@pytest.mark.skip
 def test_step_table_intersect_with_use_hash():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(
