@@ -1,3 +1,4 @@
+from typing import Optional
 from ...step import Step
 
 
@@ -11,21 +12,31 @@ class cell_format(Step):
 
     code = "cell-format"
 
-    def __init__(self, descriptor=None, *, template=None, field_name=None):
-        self.setinitial("template", template)
-        self.setinitial("fieldName", field_name)
-        super().__init__(descriptor)
+    def __init__(
+        self,
+        *,
+        template: str,
+        field_name: Optional[str] = None,
+    ):
+        self.template = template
+        self.field_name = field_name
+
+    # Properties
+
+    template: str
+    """TODO: add docs"""
+
+    field_name: Optional[str]
+    """TODO: add docs"""
 
     # Transform
 
     def transform_resource(self, resource):
         table = resource.to_petl()
-        field_name = self.get("fieldName")
-        template = self.get("template")
-        if not field_name:
-            resource.data = table.formatall(template)  # type: ignore
+        if not self.field_name:
+            resource.data = table.formatall(self.template)  # type: ignore
         else:
-            resource.data = table.format(field_name, template)  # type: ignore
+            resource.data = table.format(self.field_name, self.template)  # type: ignore
 
     # Metadata
 
@@ -33,6 +44,7 @@ class cell_format(Step):
         "type": "object",
         "required": ["template"],
         "properties": {
+            "code": {},
             "template": {"type": "string"},
             "fieldName": {"type": "string"},
         },
