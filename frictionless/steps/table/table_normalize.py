@@ -36,5 +36,7 @@ class table_normalize(Step):
     metadata_profile = {  # type: ignore
         "type": "object",
         "required": [],
-        "properties": {},
+        "properties": {
+            "code": {},
+        },
     }
