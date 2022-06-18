@@ -39,7 +39,7 @@ class cell_fill(Step):
     def transform_resource(self, resource):
         table = resource.to_petl()
         if self.value:
-            resource.data = table.convert(field_name, {None: value})  # type: ignore
+            resource.data = table.convert(self.field_name, {None: self.value})  # type: ignore
         elif self.direction == "down":
             if self.field_name:
                 resource.data = table.filldown(self.field_name)  # type: ignore
