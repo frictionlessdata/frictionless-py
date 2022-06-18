@@ -1,4 +1,5 @@
 import simpleeval
+from typing import Optional, Any
 from ...step import Step
 
 
@@ -12,21 +13,32 @@ class row_filter(Step):
 
     code = "row-filter"
 
-    def __init__(self, descriptor=None, *, formula=None, function=None):
-        self.setinitial("formula", formula)
-        self.setinitial("function", function)
-        super().__init__(descriptor)
+    def __init__(
+        self,
+        *,
+        formula: Optional[Any] = None,
+        function: Optional[Any] = None,
+    ):
+        self.formula = formula
+        self.function = function
+
+    # Properties
+
+    formula: Optional[Any]
+    """TODO: add docs"""
+
+    function: Optional[Any]
+    """TODO: add docs"""
 
     # Transform
 
     def transform_resource(self, resource):
+        function = self.function
         table = resource.to_petl()
-        formula = self.get("formula")
-        function = self.get("function")
-        if formula:
+        if self.formula:
             # NOTE: review EvalWithCompoundTypes/sync with checks
             evalclass = simpleeval.EvalWithCompoundTypes
-            function = lambda row: evalclass(names=row).eval(formula)
+            function = lambda row: evalclass(names=row).eval(self.formula)
         resource.data = table.select(function)  # type: ignore
 
     # Metadata
@@ -35,6 +47,7 @@ class row_filter(Step):
         "type": "object",
         "required": [],
         "properties": {
+            "code": {},
             "formula": {type: "string"},
             "function": {},
         },
