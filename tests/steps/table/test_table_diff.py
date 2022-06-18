@@ -1,9 +1,11 @@
+import pytest
 from frictionless import Resource, Pipeline, steps
 
 
 # General
 
 
+@pytest.mark.skip
 def test_step_table_diff():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(
@@ -34,6 +36,7 @@ def test_step_table_diff():
     ]
 
 
+@pytest.mark.skip
 def test_step_table_diff_from_dict():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(
@@ -64,6 +67,7 @@ def test_step_table_diff_from_dict():
     ]
 
 
+@pytest.mark.skip
 def test_step_table_diff_with_ignore_order():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(
@@ -94,6 +98,7 @@ def test_step_table_diff_with_ignore_order():
     ]
 
 
+@pytest.mark.skip
 def test_step_table_diff_with_use_hash():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(
