@@ -1,4 +1,5 @@
 import petl
+from typing import Optional
 from ...step import Step
 
 
@@ -12,24 +13,37 @@ class row_search(Step):
 
     code = "row-search"
 
-    def __init__(self, descriptor=None, *, regex=None, field_name=None, negate=False):
-        self.setinitial("regex", regex)
-        self.setinitial("fieldName", field_name)
-        self.setinitial("negate", negate)
-        super().__init__(descriptor)
+    def __init__(
+        self,
+        *,
+        regex: str,
+        field_name: Optional[str] = None,
+        negate: bool = False,
+    ):
+        self.regex = regex
+        self.field_name = field_name
+        self.negate = negate
+
+    # Properties
+
+    regex: str
+    """TODO: add docs"""
+
+    field_name: Optional[str]
+    """TODO: add docs"""
+
+    negate: bool
+    """TODO: add docs"""
 
     # Transform
 
     def transform_resource(self, resource):
         table = resource.to_petl()
-        regex = self.get("regex")
-        field_name = self.get("fieldName")
-        negate = self.get("negate")
-        search = petl.searchcomplement if negate else petl.search
-        if field_name:
-            resource.data = search(table, field_name, regex)  # type: ignore
+        search = petl.searchcomplement if self.negate else petl.search
+        if self.field_name:
+            resource.data = search(table, self.field_name, self.regex)  # type: ignore
         else:
-            resource.data = search(table, regex)
+            resource.data = search(table, self.regex)  # type: ignore
 
     # Metadata
 
@@ -37,6 +51,7 @@ class row_search(Step):
         "type": "object",
         "required": ["regex"],
         "properties": {
+            "code": {},
             "regex": {},
             "fieldName": {"type": "string"},
             "negate": {},
