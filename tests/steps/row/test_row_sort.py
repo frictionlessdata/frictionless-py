@@ -1,3 +1,4 @@
+import pytest
 from frictionless import Resource, Pipeline, steps
 
 
@@ -48,6 +49,7 @@ def test_step_row_sort_with_reverse():
     ]
 
 
+@pytest.mark.skip
 def test_step_row_sort_with_reverse_in_desriptor_issue_996():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(

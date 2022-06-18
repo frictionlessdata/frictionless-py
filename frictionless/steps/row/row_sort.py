@@ -1,3 +1,4 @@
+from typing import List
 from ...step import Step
 
 
@@ -11,18 +12,28 @@ class row_sort(Step):
 
     code = "row-sort"
 
-    def __init__(self, descriptor=None, *, field_names=None, reverse=None):
-        self.setinitial("fieldNames", field_names)
-        self.setinitial("reverse", reverse)
-        super().__init__(descriptor)
+    def __init__(
+        self,
+        *,
+        field_names: List[str],
+        reverse: bool = False,
+    ):
+        self.field_names = field_names
+        self.reverse = reverse
+
+    # Properties
+
+    field_names: List[str]
+    """TODO: add docs"""
+
+    reverse: bool
+    """TODO: add docs"""
 
     # Transform
 
     def transform_resource(self, resource):
         table = resource.to_petl()
-        field_names = self.get("fieldNames")
-        reverse = self.get("reverse", False)
-        resource.data = table.sort(field_names, reverse=reverse)  # type: ignore
+        resource.data = table.sort(self.field_names, reverse=self.reverse)  # type: ignore
 
     # Metadata
 
@@ -30,6 +41,7 @@ class row_sort(Step):
         "type": "object",
         "required": ["fieldNames"],
         "properties": {
+            "code": {},
             "fieldNames": {"type": "array"},
             "reverse": {},
         },
