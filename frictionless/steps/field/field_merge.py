@@ -33,35 +33,47 @@ class field_merge(Step):
 
     def __init__(
         self,
-        descriptor: Any = None,
         *,
-        name: Optional[str] = None,
-        from_names: Optional[List[str]] = None,
+        name: str,
+        from_names: List[str],
         field_type: Optional[str] = None,
-        separator: str = "-",
+        separator: Optional[str] = None,
         preserve: bool = False,
     ):
-        self.setinitial("name", name)
-        self.setinitial("fromNames", from_names)
-        self.setinitial("fieldType", field_type)
-        self.setinitial("separator", separator)
-        self.setinitial("preserve", preserve)
-        super().__init__(descriptor)
+        self.name = name
+        self.from_names = from_names
+        self.field_type = field_type
+        self.separator = separator
+        self.preserve = preserve
+
+    # Properties
+
+    name: str
+    """TODO: add docs"""
+
+    from_names: List[str]
+    """TODO: add docs"""
+
+    field_type: Optional[str]
+    """TODO: add docs"""
+
+    separator: Optional[str]
+    """TODO: add docs"""
+
+    preserve: bool
+    """TODO: add docs"""
 
     # Transform
 
     def transform_resource(self, resource: Resource) -> None:
         table = resource.to_petl()
-        name = self.get("name")
-        from_names = self.get("fromNames")
-        field_type = self.get("fieldType", "string")
-        separator = self.get("separator")
-        preserve = self.get("preserve")
-        resource.schema.add_field(Field(name=name, type=field_type))
-        if not preserve:
-            for name in from_names:  # type: ignore
+        resource.schema.add_field(Field(name=self.name, type=self.field_type))
+        if not self.preserve:
+            for name in self.from_names:
                 resource.schema.remove_field(name)
-        resource.data = merge(table, name, from_names, separator, preserve)  # type: ignore
+        resource.data = merge(  # type: ignore
+            table, self.name, self.from_names, self.separator, self.preserve  # type: ignore
+        )
 
     # Metadata
 
@@ -69,6 +81,7 @@ class field_merge(Step):
         "type": "object",
         "required": ["name", "fromNames"],
         "properties": {
+            "code": {},
             "name": {"type": "string"},
             "fromNames": {"type": "array"},
             "fieldType": {"type": "string"},

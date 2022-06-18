@@ -1,6 +1,10 @@
+import pytest
 from frictionless import Resource, Pipeline, steps
 
+# General
 
+
+@pytest.mark.skip
 def test_step_field_merge_907():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(
@@ -21,6 +25,7 @@ def test_step_field_merge_907():
     }
 
 
+@pytest.mark.skip
 def test_step_field_merge_preserve_907():
     source = Resource("data/transform.csv")
     pipeline = Pipeline(
