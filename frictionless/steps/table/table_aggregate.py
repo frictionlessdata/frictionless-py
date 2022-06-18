@@ -17,23 +17,33 @@ class table_aggregate(Step):
 
     code = "table-aggregate"
 
-    def __init__(self, descriptor=None, *, group_name=None, aggregation=None):
-        self.setinitial("groupName", group_name)
-        self.setinitial("aggregation", aggregation)
-        super().__init__(descriptor)
+    def __init__(
+        self,
+        *,
+        aggregation: str,
+        group_name: str,
+    ):
+        self.aggregation = aggregation
+        self.group_name = group_name
+
+    # Properties
+
+    aggregation: str
+    """TODO: add docs"""
+
+    group_name: str
+    """TODO: add docs"""
 
     # Transform
 
     def transform_resource(self, resource):
         table = resource.to_petl()
-        group_name = self.get("groupName")
-        aggregation = self.get("aggregation")
-        field = resource.schema.get_field(group_name)
+        field = resource.schema.get_field(self.group_name)
         resource.schema.fields.clear()
         resource.schema.add_field(field)
-        for name in aggregation.keys():  # type: ignore
+        for name in self.aggregation.keys():  # type: ignore
             resource.schema.add_field(Field(name=name))
-        resource.data = table.aggregate(group_name, aggregation)  # type: ignore
+        resource.data = table.aggregate(self.group_name, self.aggregation)  # type: ignore
 
     # Metadata
 
@@ -41,6 +51,7 @@ class table_aggregate(Step):
         "type": "object",
         "required": ["groupName", "aggregation"],
         "properties": {
+            "code": {},
             "groupName": {"type": "string"},
             "aggregation": {},
         },
