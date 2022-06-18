@@ -1,3 +1,4 @@
+from typing import List
 from ...step import Step
 
 
@@ -11,18 +12,25 @@ class field_remove(Step):
 
     code = "field-remove"
 
-    def __init__(self, descriptor=None, *, names=None):
-        self.setinitial("names", names)
-        super().__init__(descriptor)
+    def __init__(
+        self,
+        *,
+        names: List[str],
+    ):
+        self.names = names
+
+    # Properties
+
+    names: List[str]
+    """TODO: add docs"""
 
     # Transform
 
     def transform_resource(self, resource):
         table = resource.to_petl()
-        names = self.get("names")
-        for name in names:  # type: ignore
+        for name in self.names:  # type: ignore
             resource.schema.remove_field(name)
-        resource.data = table.cutout(*names)  # type: ignore
+        resource.data = table.cutout(*self.names)  # type: ignore
 
     # Metadata
 
@@ -30,6 +38,7 @@ class field_remove(Step):
         "type": "object",
         "required": ["names"],
         "properties": {
+            "code": {},
             "names": {"type": "array"},
         },
     }
