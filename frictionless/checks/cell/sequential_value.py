@@ -3,42 +3,36 @@ from ...check import Check
 
 
 class sequential_value(Check):
-    """Check that a column having sequential values
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless import checks`
-    Implicit | `validate(checks=[{"code": "sequential-value", **descriptor}])`
-
-    This check can be enabled using the `checks` parameter
-    for the `validate` function.
-
-    Parameters:
-       descriptor (dict): check's descriptor
-       field_name (str): a field name to check
-
-    """
+    """Check that a column having sequential values"""
 
     code = "sequential-value"
     Errors = [errors.SequentialValueError]
 
-    def __init__(self, descriptor=None, *, field_name=None):
-        self.setinitial("fieldName", field_name)
-        super().__init__(descriptor)
-        self.__field_name = self.get("fieldName")
+    def __init__(self, *, field_name=None):
+        self.field_name = field_name
+
+    # Properties
+
+    field_name: str
+    """# TODO: add docs"""
+
+    # Connect
+
+    def connect(self, resource):
+        super().connect(resource)
         self.__cursor = None
         self.__exited = False
 
     # Validate
 
     def validate_start(self):
-        if self.__field_name not in self.resource.schema.field_names:
-            note = 'sequential value check requires field "%s"' % self.__field_name
+        if self.field_name not in self.resource.schema.field_names:
+            note = 'sequential value check requires field "%s"' % self.field_name
             yield errors.CheckError(note=note)
 
     def validate_row(self, row):
         if not self.__exited:
-            cell = row[self.__field_name]
+            cell = row[self.field_name]
             try:
                 self.__cursor = self.__cursor or cell
                 assert self.__cursor == cell
@@ -48,7 +42,7 @@ class sequential_value(Check):
                 yield errors.SequentialValueError.from_row(
                     row,
                     note="the value is not sequential",
-                    field_name=self.__field_name,
+                    field_name=self.field_name,
                 )
 
     # Metadata
@@ -58,3 +52,7 @@ class sequential_value(Check):
         "requred": ["fieldName"],
         "properties": {"fieldName": {"type": "string"}},
     }
+    metadata_properties = [
+        {"name": "code"},
+        {"name": "fieldName"},
+    ]

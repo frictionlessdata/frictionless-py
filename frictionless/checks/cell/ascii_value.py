@@ -42,3 +42,6 @@ class ascii_value(Check):
         "type": "object",
         "properties": {},
     }
+    metadata_properties = [
+        {"name": "code"},
+    ]

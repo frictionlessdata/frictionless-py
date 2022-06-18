@@ -18,6 +18,8 @@ class truncated_value(Check):
     code = "truncated-value"
     Errors = [errors.TruncatedValueError]
 
+    # Validate
+
     def validate_row(self, row):
         for field_name, cell in row.items():
             truncated = False
@@ -47,6 +49,9 @@ class truncated_value(Check):
         "type": "object",
         "properties": {},
     }
+    metadata_properties = [
+        {"name": "code"},
+    ]
 
 
 # Internal

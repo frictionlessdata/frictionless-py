@@ -4,30 +4,18 @@ from ...check import Check
 
 
 class row_constraint(Check):
-    """Check that every row satisfies a provided Python expression
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless import checks`
-    Implicit | `validate(checks=([{"code": "row-constraint", **descriptor}])`
-
-    This check can be enabled using the `checks` parameter
-    for the `validate` function. The syntax for the row constraint
-    check can be found here - https://github.com/danthedeckie/simpleeval
-
-    Parameters:
-       descriptor (dict): check's descriptor
-       formula (str): a python expression to evaluate against a row
-
-    """
+    """Check that every row satisfies a provided Python expression"""
 
     code = "row-constraint"
     Errors = [errors.RowConstraintError]
 
-    def __init__(self, descriptor=None, *, formula=None):
-        self.setinitial("formula", formula)
-        super().__init__(descriptor)
-        self.__formula = self["formula"]
+    def __init__(self, *, formula: str):
+        self.formula = formula
+
+    # Properties
+
+    formula: str
+    """# TODO: add docs"""
 
     # Validate
 
@@ -37,11 +25,11 @@ class row_constraint(Check):
             # https://github.com/danthedeckie/simpleeval
             # NOTE: review EvalWithCompoundTypes/sync with steps
             evalclass = simpleeval.EvalWithCompoundTypes
-            assert evalclass(names=row).eval(self.__formula)
+            assert evalclass(names=row).eval(self.formula)
         except Exception:
             yield errors.RowConstraintError.from_row(
                 row,
-                note='the row constraint to conform is "%s"' % self.__formula,
+                note='the row constraint to conform is "%s"' % self.formula,
             )
 
     # Metadata
@@ -51,3 +39,7 @@ class row_constraint(Check):
         "requred": ["formula"],
         "properties": {"formula": {"type": "string"}},
     }
+    metadata_properties = [
+        {"name": "code"},
+        {"name": "formula"},
+    ]

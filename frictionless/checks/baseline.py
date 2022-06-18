@@ -101,3 +101,6 @@ class baseline(Check):
         "type": "object",
         "properties": {},
     }
+    metadata_properties = [
+        {"name": "code"},
+    ]

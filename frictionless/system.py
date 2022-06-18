@@ -103,7 +103,7 @@ class System:
                 return check
         for Class in vars(import_module("frictionless.checks")).values():
             if getattr(Class, "code", None) == code:
-                return Class(descriptor)
+                return Class.from_descriptor(descriptor)
         note = f'check "{code}" is not supported. Try installing "frictionless-{code}"'
         raise FrictionlessException(errors.CheckError(note=note))
 

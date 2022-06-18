@@ -1,6 +1,8 @@
 from __future__ import annotations
+from importlib import import_module
 from typing import TYPE_CHECKING, Iterable, List, Type
 from .metadata2 import Metadata2
+from .system import system
 from . import errors
 
 if TYPE_CHECKING:
@@ -11,6 +13,7 @@ if TYPE_CHECKING:
 
 # TODO: add support for validate_package/etc?
 # TODO: sync API with Step (like "check.validate_resource_row")?
+# TODO: API proposal: validate_package/resource=connect/resource_open/resource_row/resource_close
 class Check(Metadata2):
     """Check representation.
 
@@ -80,6 +83,16 @@ class Check(Metadata2):
             Error: found errors
         """
         yield from []
+
+    # Convert
+
+    # TODO: review
+    @classmethod
+    def from_descriptor(cls, descriptor):
+        if cls is Check:
+            descriptor = cls.metadata_normalize(descriptor)
+            return system.create_check(descriptor)  # type: ignore
+        return super().from_descriptor(descriptor)
 
     # Metadata
 

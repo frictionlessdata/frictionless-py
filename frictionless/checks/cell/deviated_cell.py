@@ -87,6 +87,7 @@ class deviated_cell(Check):
         },
     }
     metadata_properties = [
+        {"name": "code"},
         {"name": "interval", "default": DEFAULT_INTERVAL},
         {"name": "ignoreFields", "default": []},
     ]

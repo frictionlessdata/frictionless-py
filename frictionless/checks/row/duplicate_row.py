@@ -19,9 +19,13 @@ class duplicate_row(Check):
     code = "duplicate-row"
     Errors = [errors.DuplicateRowError]
 
-    def __init__(self, descriptor=None):
-        super().__init__(descriptor)
+    # Connect
+
+    def connect(self, resource):
+        super().connect(resource)
         self.__memory = {}
+
+    # Validate
 
     def validate_row(self, row):
         text = ",".join(map(str, row.values()))
@@ -34,7 +38,10 @@ class duplicate_row(Check):
 
     # Metadata
 
-    metadata_profile = {  # type: ignore
+    metadata_profile = {
         "type": "object",
         "properties": {},
     }
+    metadata_properties = [
+        {"name": "code"},
+    ]

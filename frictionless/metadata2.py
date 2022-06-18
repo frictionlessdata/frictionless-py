@@ -20,6 +20,7 @@ if TYPE_CHECKING:
     from .error import Error
 
 
+# TODO: insert __init__ params docs using instance properties data?
 class Metadata2:
     def __repr__(self) -> str:
         """Returns string representation for metadata."""
@@ -106,9 +107,10 @@ class Metadata2:
 
     # Metadata
 
+    # TODO: add/improve types
     metadata_Error = None
     metadata_profile = None
-    metadata_properties: List[dict] = []  # TODO: improve type
+    metadata_properties: List[dict] = []
 
     @property
     def metadata_valid(self) -> bool:
@@ -150,6 +152,8 @@ class Metadata2:
             name = property["name"]
             type = property.get("type")
             value = source.get(name)
+            if name == "code":
+                continue
             if value is None:
                 continue
             if type:

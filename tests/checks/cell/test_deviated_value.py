@@ -1,3 +1,4 @@
+import pytest
 from frictionless import Resource, Checklist, checks
 
 

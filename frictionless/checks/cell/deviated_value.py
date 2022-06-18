@@ -102,6 +102,7 @@ class deviated_value(Check):
         },
     }
     metadata_properties = [
+        {"name": "code"},
         {"name": "fieldName"},
         {"name": "interval", "default": DEFAULT_INTERVAL},
         {"name": "average", "default": DEFAULT_AVERAGE},
