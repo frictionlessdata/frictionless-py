@@ -11,18 +11,28 @@ class row_split(Step):
 
     code = "row-add"
 
-    def __init__(self, descriptor=None, *, pattern=None, field_name=None):
-        self.setinitial("pattern", pattern)
-        self.setinitial("fieldName", field_name)
-        super().__init__(descriptor)
+    def __init__(
+        self,
+        *,
+        pattern: str,
+        field_name: str,
+    ):
+        self.pattern = pattern
+        self.field_name = field_name
+
+    # Properties
+
+    pattern: str
+    """TODO: add docs"""
+
+    field_name: str
+    """TODO: add docs"""
 
     # Transform
 
     def transform_resource(self, resource):
         table = resource.to_petl()
-        pattern = self.get("pattern")
-        field_name = self.get("fieldName")
-        resource.data = table.splitdown(field_name, pattern)  # type: ignore
+        resource.data = table.splitdown(self.field_name, self.pattern)  # type: ignore
 
     # Metadata
 
@@ -30,6 +40,7 @@ class row_split(Step):
         "type": "object",
         "required": ["fieldName", "pattern"],
         "properties": {
+            "code": {},
             "fieldName": {"type": "string"},
             "pattern": {"type": "string"},
         },
