@@ -13,19 +13,26 @@ class resource_remove(Step):
 
     code = "resource-remove"
 
-    def __init__(self, descriptor=None, *, name=None):
-        self.setinitial("name", name)
-        super().__init__(descriptor)
+    def __init__(
+        self,
+        *,
+        name: str,
+    ):
+        self.name = name
+
+    # Properties
+
+    name: str
+    """TODO: add docs"""
 
     # Transform
 
     def transform_package(self, package):
-        name = self.get("name")
-        resource = package.get_resource(name)
+        resource = package.get_resource(self.name)
         if not resource:
-            error = errors.ResourceError(note=f'No resource "{name}"')
+            error = errors.ResourceError(note=f'No resource "{self.name}"')
             raise FrictionlessException(error=error)
-        package.remove_resource(name)
+        package.remove_resource(self.name)
 
     # Metadata
 
@@ -33,6 +40,7 @@ class resource_remove(Step):
         "type": "object",
         "required": ["name"],
         "properties": {
+            "code": {},
             "name": {"type": "string"},
         },
     }
