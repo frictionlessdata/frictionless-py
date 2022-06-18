@@ -1,3 +1,4 @@
+from typing import Optional
 from ...step import Step
 
 
@@ -11,21 +12,31 @@ class cell_interpolate(Step):
 
     code = "cell-interpolate"
 
-    def __init__(self, descriptor=None, *, template=None, field_name=None):
-        self.setinitial("template", template)
-        self.setinitial("fieldName", field_name)
-        super().__init__(descriptor)
+    def __init__(
+        self,
+        *,
+        template: str,
+        field_name: Optional[str] = None,
+    ):
+        self.template = template
+        self.field_name = field_name
+
+    # Properties
+
+    template: str
+    """TODO: add docs"""
+
+    field_name: Optional[str]
+    """TODO: add docs"""
 
     # Transform
 
     def transform_resource(self, resource):
-        template = self.get("template")
-        field_name = self.get("fieldName")
         table = resource.to_petl()
-        if not field_name:
-            resource.data = table.interpolateall(template)  # type: ignore
+        if not self.field_name:
+            resource.data = table.interpolateall(self.template)  # type: ignore
         else:
-            resource.data = table.interpolate(field_name, template)  # type: ignore
+            resource.data = table.interpolate(self.field_name, self.template)  # type: ignore
 
     # Metadata
 
@@ -33,6 +44,7 @@ class cell_interpolate(Step):
         "type": "object",
         "required": ["template"],
         "properties": {
+            "code": {},
             "template": {"type": "string"},
             "fieldName": {"type": "string"},
         },
