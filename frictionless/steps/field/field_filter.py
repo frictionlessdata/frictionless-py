@@ -1,3 +1,4 @@
+from typing import List
 from ...step import Step
 
 
@@ -11,19 +12,26 @@ class field_filter(Step):
 
     code = "field-filter"
 
-    def __init__(self, descriptor=None, *, names=None):
-        self.setinitial("names", names)
-        super().__init__(descriptor)
+    def __init__(
+        self,
+        *,
+        names: List[str],
+    ):
+        self.names = names
+
+    # Properties
+
+    names: List[str]
+    """TODO: add docs"""
 
     # Transform
 
     def transform_resource(self, resource):
         table = resource.to_petl()
-        names = self.get("names")
         for name in resource.schema.field_names:
-            if name not in names:
+            if name not in self.names:
                 resource.schema.remove_field(name)
-        resource.data = table.cut(*names)  # type: ignore
+        resource.data = table.cut(*self.names)  # type: ignore
 
     # Metadata
 
@@ -31,6 +39,7 @@ class field_filter(Step):
         "type": "object",
         "required": ["names"],
         "properties": {
+            "code": {},
             "names": {"type": "array"},
         },
     }
