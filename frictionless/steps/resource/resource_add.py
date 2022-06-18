@@ -13,18 +13,27 @@ class resource_add(Step):
 
     code = "resource-add"
 
-    def __init__(self, descriptor=None, *, name=None, **options):
-        self.setinitial("name", name)
-        for key, value in helpers.create_descriptor(**options).items():
-            self.setinitial(key, value)
-        super().__init__(descriptor)
-        self.__options = options
+    def __init__(
+        self,
+        *,
+        name: str,
+        **options,
+    ):
+        self.name = name
+        self.descriptor = helpers.create_descriptor(**options)
+
+    # Properties
+
+    name: str
+    """TODO: add docs"""
+
+    descriptor: dict
+    """TODO: add docs"""
 
     # Transform
 
     def transform_package(self, package):
-        descriptor = self.to_dict()
-        descriptor.pop("code", None)  # type: ignore
+        descriptor = self.descriptor.copy()
         resource = Resource(descriptor, basepath=package.basepath)
         resource.infer()
         package.add_resource(resource)
@@ -35,6 +44,7 @@ class resource_add(Step):
         "type": "object",
         "required": ["name"],
         "properties": {
+            "code": {},
             "name": {"type": "string"},
         },
     }
