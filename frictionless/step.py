@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-from .metadata import Metadata
+from .metadata2 import Metadata2
 from .system import system
 from . import errors
 
@@ -19,14 +19,10 @@ if TYPE_CHECKING:
 
 
 # TODO: support something like "step.transform_resource_row"
-class Step(Metadata):
+class Step(Metadata2):
     """Step representation"""
 
     code: str = "step"
-
-    def __init__(self, descriptor=None):
-        super().__init__(descriptor)
-        self.setinitial("code", self.code)
 
     # Transform
 
@@ -57,7 +53,10 @@ class Step(Metadata):
     # TODO: review
     @classmethod
     def from_descriptor(cls, descriptor):
-        return system.create_step(descriptor)
+        if cls is Step:
+            descriptor = cls.metadata_normalize(descriptor)
+            return system.create_step(descriptor)  # type: ignore
+        return super().from_descriptor(descriptor)
 
     # Metadata
 

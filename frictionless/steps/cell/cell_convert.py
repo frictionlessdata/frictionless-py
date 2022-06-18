@@ -1,3 +1,4 @@
+from typing import Optional, Any
 from ...step import Step
 
 
@@ -11,34 +12,49 @@ class cell_convert(Step):
 
     code = "cell-convert"
 
-    def __init__(self, descriptor=None, *, value=None, function=None, field_name=None):
-        self.setinitial("value", value)
-        self.setinitial("function", function)
-        self.setinitial("fieldName", field_name)
-        super().__init__(descriptor)
+    def __init__(
+        self,
+        *,
+        value: Optional[Any] = None,
+        function: Optional[Any] = None,
+        field_name: Optional[str] = None,
+    ):
+        self.value = value
+        self.function = function
+        self.field_name = field_name
+
+    # Properties
+
+    value: Optional[Any]
+    """TODO: add docs"""
+
+    function: Optional[Any]
+    """TODO: add docs"""
+
+    field_name: Optional[str]
+    """TODO: add docs"""
 
     # Transform
 
     def transform_resource(self, resource):
         table = resource.to_petl()
-        field_name = self.get("fieldName")
-        function = self.get("function")
-        value = self.get("value")
-        if not field_name:
+        function = self.function
+        if not self.field_name:
             if not function:
-                function = lambda input: value
+                function = lambda _: self.value
             resource.data = table.convertall(function)  # type: ignore
-        elif function:
-            resource.data = table.convert(field_name, function)  # type: ignore
+        elif self.function:
+            resource.data = table.convert(self.field_name, function)  # type: ignore
         else:
-            resource.data = table.update(field_name, value)  # type: ignore
+            resource.data = table.update(self.field_name, self.value)  # type: ignore
 
     # Metadata
 
-    metadata_profile = {  # type: ignore
+    metadata_profile = {
         "type": "object",
         "required": [],
         "properties": {
+            "code": {},
             "value": {},
             "fieldName": {"type": "string"},
         },
