@@ -3,6 +3,7 @@ import codecs
 import chardet
 from copy import copy, deepcopy
 from typing import TYPE_CHECKING, Optional, List
+from ..metadata2 import Metadata2
 from ..exception import FrictionlessException
 from ..system import system
 from ..layout import Layout
@@ -16,70 +17,8 @@ if TYPE_CHECKING:
     from ..interfaces import IBuffer, EncodingFunction
 
 
-# NOTE:
-# We might consider making this class instalce of Metadata
-# It will alow providing detector options declaratively e.g. in validation Inquiry
-
-
-class Detector:
-    """Detector representation
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless import Detector`
-
-    Parameters:
-
-        buffer_size? (int): The amount of bytes to be extracted as a buffer.
-            It defaults to 10000
-
-        sample_size? (int): The amount of rows to be extracted as a sample.
-            It defaults to 100
-
-        encoding_function? (func): A custom encoding function for the file.
-
-        encoding_confidence? (float): Confidence value for encoding function.
-
-        field_type? (str): Enforce all the inferred types to be this type.
-            For more information, please check "Describing  Data" guide.
-
-        field_names? (str[]): Enforce all the inferred fields to have provided names.
-            For more information, please check "Describing  Data" guide.
-
-        field_confidence? (float): A number from 0 to 1 setting the infer confidence.
-            If  1 the data is guaranteed to be valid against the inferred schema.
-            For more information, please check "Describing  Data" guide.
-            It defaults to 0.9
-
-        field_float_numbers? (bool): Flag to indicate desired number type.
-            By default numbers will be `Decimal`; if `True` - `float`.
-            For more information, please check "Describing  Data" guide.
-            It defaults to `False`
-
-        field_missing_values? (str[]): String to be considered as missing values.
-            For more information, please check "Describing  Data" guide.
-            It defaults to `['']`
-
-        field_true_values? (str[]): String to be considered as true values.
-            For more information, please check "Describing  Data" guide.
-            It defaults to `["true", "True", "TRUE", "1"]`
-
-        field_false_values? (str[]): String to be considered as false values.
-            For more information, please check "Describing  Data" guide.
-            It defaults to `["false", "False", "FALSE", "0"]`
-
-        schema_sync? (bool): Whether to sync the schema.
-            If it sets to `True` the provided schema will be mapped to
-            the inferred schema. It means that, for example, you can
-            provide a subset of fileds to be applied on top of the inferred
-            fields or the provided schema can have different order of fields.
-
-        schema_patch? (dict): A dictionary to be used as an inferred schema patch.
-            The form of this dictionary should follow the Schema descriptor form
-            except for the `fields` property which should be a mapping with the
-            key named after a field name and the values being a field patch.
-            For more information, please check "Extracting Data" guide.
-    """
+class Detector(Metadata2):
+    """Detector representation"""
 
     validate = validate
 
@@ -99,256 +38,110 @@ class Detector:
         schema_sync: bool = False,
         schema_patch: Optional[dict] = None,
     ):
-        self.__buffer_size = buffer_size
-        self.__sample_size = sample_size
-        self.__encoding_function = encoding_function
-        self.__encoding_confidence = encoding_confidence
-        self.__field_type = field_type
-        self.__field_names = field_names
-        self.__field_confidence = field_confidence
-        self.__field_float_numbers = field_float_numbers
-        self.__field_missing_values = field_missing_values
-        self.__field_true_values = field_true_values
-        self.__field_false_values = field_false_values
-        self.__schema_sync = schema_sync
-        self.__schema_patch = schema_patch
+        self.buffer_size = buffer_size
+        self.sample_size = sample_size
+        self.encoding_function = encoding_function
+        self.encoding_confidence = encoding_confidence
+        self.field_type = field_type
+        self.field_names = field_names
+        self.field_confidence = field_confidence
+        self.field_float_numbers = field_float_numbers
+        self.field_missing_values = field_missing_values
+        self.field_true_values = field_true_values
+        self.field_false_values = field_false_values
+        self.schema_sync = schema_sync
+        self.schema_patch = schema_patch
 
-    @property
-    def buffer_size(self) -> int:
-        """Returns buffer size of the detector. Default value is 10000.
+    # Properties
 
-        Returns:
-            int: detector buffer size
-        """
-        return self.__buffer_size
+    buffer_size: int
+    """
+    The amount of bytes to be extracted as a buffer.
+    It defaults to 10000
+    """
 
-    @buffer_size.setter
-    def buffer_size(self, value: int):
-        """Sets buffer size for detector.
+    sample_size: int
+    """
+    The amount of rows to be extracted as a sample.
+    It defaults to 100
+    """
 
-        Parameters:
-            value (int): detector buffer size
-        """
-        self.__buffer_size = value
+    encoding_function: Optional[EncodingFunction]
+    """
+    A custom encoding function for the file.
+    """
 
-    @property
-    def sample_size(self) -> int:
-        """Returns sample size of the detector. Default value is 100.
+    encoding_confidence: float
+    """
+    Confidence value for encoding function.
+    """
 
-        Returns:
-            int: detector sample size
-        """
-        return self.__sample_size
+    field_type: Optional[str]
+    """
+    Enforce all the inferred types to be this type.
+    For more information, please check "Describing  Data" guide.
+    """
 
-    @sample_size.setter
-    def sample_size(self, value: int):
-        """Sets sample size for detector.
+    field_names: Optional[List[str]]
+    """
+    Enforce all the inferred fields to have provided names.
+    For more information, please check "Describing  Data" guide.
+    """
 
-        Parameters:
-            value (int): detector sample size
-        """
-        self.__sample_size = value
+    field_confidence: float
+    """
+    A number from 0 to 1 setting the infer confidence.
+    If  1 the data is guaranteed to be valid against the inferred schema.
+    For more information, please check "Describing  Data" guide.
+    It defaults to 0.9
+    """
 
-    @property
-    def encoding_function(self) -> Optional["EncodingFunction"]:
-        """Returns detector custom encoding function
+    field_float_numbers: bool
+    """
+    Flag to indicate desired number type.
+    By default numbers will be `Decimal`; if `True` - `float`.
+    For more information, please check "Describing  Data" guide.
+    It defaults to `False`
+    """
 
-        Returns:
-            any: detector custom encoding function
-        """
-        return self.__encoding_function
+    field_missing_values: List[str]
+    """
+    String to be considered as missing values.
+    For more information, please check "Describing  Data" guide.
+    It defaults to `['']`
+    """
 
-    @encoding_function.setter
-    def encoding_function(self, value: "EncodingFunction"):
-        """Sets detector custom encoding function for the resource to be read.
+    field_true_values: List[str]
+    """
+    String to be considered as true values.
+    For more information, please check "Describing  Data" guide.
+    It defaults to `["true", "True", "TRUE", "1"]`
+    """
 
-        Parameters:
-            value (any): detector custom encoding function
-        """
-        self.__encoding_function = value
+    field_false_values: List[str]
+    """
+    String to be considered as false values.
+    For more information, please check "Describing  Data" guide.
+    It defaults to `["false", "False", "FALSE", "0"]`
+    """
 
-    @property
-    def encoding_confidence(self) -> float:
-        """Returns confidence value for detector encoding function.
+    schema_sync: bool
+    """
+    Whether to sync the schema.
+    If it sets to `True` the provided schema will be mapped to
+    the inferred schema. It means that, for example, you can
+    provide a subset of fileds to be applied on top of the inferred
+    fields or the provided schema can have different order of fields.
+    """
 
-        Returns:
-            float: detector encoding function confidence
-        """
-        return self.__encoding_confidence
-
-    @encoding_confidence.setter
-    def encoding_confidence(self, value: float):
-        """Sets confidence value for detector encoding function. Default value
-        is None.
-
-        Parameters:
-            value (float): detector encoding function confidence
-        """
-        self.__encoding_confidence = value
-
-    @property
-    def field_type(self) -> Optional[str]:
-        """Returns field type of the detector. Default value is None.
-
-        Returns:
-            str: detector inferred field types
-        """
-        return self.__field_type
-
-    @field_type.setter
-    def field_type(self, value: str):
-        """Sets field type for all inferred fields by the detector.
-
-        Parameters:
-            value (str): detector inferred field types
-        """
-        self.__field_type = value
-
-    @property
-    def field_names(self) -> Optional[List[str]]:
-        """Returns inferred field names list.
-
-        Returns:
-            str[]: detector inferred field names
-        """
-        return self.__field_names
-
-    @field_names.setter
-    def field_names(self, value: List[str]):
-        """Sets field names for all inferred fields by the detector.
-
-        Parameters:
-            value (str[]): detector inferred field names
-        """
-        self.__field_names = value
-
-    @property
-    def field_confidence(self) -> float:
-        """Returns detector inference confidence value. Default value is 0.9.
-
-        Returns:
-            float: detector inference confidence value
-        """
-        return self.__field_confidence
-
-    @field_confidence.setter
-    def field_confidence(self, value: float):
-        """Sets inference confidence value for detector. Default value is 0.9.
-
-        Parameters:
-            value (float): detector inference confidence value
-        """
-        self.__field_confidence = value
-
-    @property
-    def field_float_numbers(self) -> bool:
-        """Returns detector convert decimal to float flag value.
-
-        Returns:
-            bool: detector convert decimal to float flag
-        """
-        return self.__field_float_numbers
-
-    @field_float_numbers.setter
-    def field_float_numbers(self, value: bool):
-        """Sets detector convert decimal to float flag.
-
-        Parameters:
-            value (bool): detector convert decimal to float flag
-        """
-        self.__field_float_numbers = value
-
-    @property
-    def field_missing_values(self) -> List[str]:
-        """Returns detector fields missing values list.
-
-        Returns:
-            str[]: detector fields missing values list
-        """
-        return self.__field_missing_values
-
-    @field_missing_values.setter
-    def field_missing_values(self, value: List[str]):
-        """Sets detector fields missing values list.
-
-        Parameters:
-            value (str[]): detector fields missing values list
-        """
-        self.__field_missing_values = value
-
-    @property
-    def field_true_values(self) -> List[str]:
-        """Returns detector fields true values list.
-
-        Returns:
-            str[]: detector fields true values list
-        """
-        return self.__field_true_values
-
-    @field_true_values.setter
-    def field_true_values(self, value: List[str]):
-        """Sets detector fields true values list.
-
-        Parameters:
-            value (str[]): detector fields true values list
-        """
-        self.__field_true_values = value
-
-    @property
-    def field_false_values(self) -> List[str]:
-        """Returns detector fields false values list.
-
-        Returns:
-            str[]: detector fields false values list
-        """
-        return self.__field_false_values
-
-    @field_false_values.setter
-    def field_false_values(self, value: List[str]):
-        """Sets detector fields false values list.
-
-        Parameters:
-            value (str[]): detector fields false values list
-        """
-        self.__field_false_values = value
-
-    @property
-    def schema_sync(self) -> bool:
-        """Returns detector schema_sync flag value.
-
-        Returns:
-            bool: detector schema_sync flag value
-        """
-        return self.__schema_sync
-
-    @schema_sync.setter
-    def schema_sync(self, value: bool):
-        """Sets detector schema_sync flag value. If set to true, it
-        syncs provided schema's field order based on the header's
-        field order.
-
-        Parameters:
-            value (bool): detector schema_sync flag value
-        """
-        self.__schema_sync = value
-
-    @property
-    def schema_patch(self) -> Optional[dict]:
-        """Returns detector resource fields to change.
-
-        Returns:
-            Dict: detector resource fields to change
-        """
-        return self.__schema_patch
-
-    @schema_patch.setter
-    def schema_patch(self, value: dict):
-        """Sets detector resource fields to change.
-
-        Parameters:
-            value (Dict): detector resource fields to change
-        """
-        self.__schema_patch = value
+    schema_patch: Optional[dict]
+    """
+    A dictionary to be used as an inferred schema patch.
+    The form of this dictionary should follow the Schema descriptor form
+    except for the `fields` property which should be a mapping with the
+    key named after a field name and the values being a field patch.
+    For more information, please check "Extracting Data" guide.
+    """
 
     # Detect
 
@@ -363,8 +156,8 @@ class Detector:
         """
 
         # User defined
-        if self.__encoding_function:
-            return self.__encoding_function(buffer)
+        if self.encoding_function:
+            return self.encoding_function(buffer)
 
         # Detect encoding
         if not encoding:
@@ -374,7 +167,7 @@ class Detector:
             detector.close()
             encoding = detector.result["encoding"] or settings.DEFAULT_ENCODING
             confidence = detector.result["confidence"] or 0
-            if confidence < self.__encoding_confidence:
+            if confidence < self.encoding_confidence:
                 encoding = settings.DEFAULT_ENCODING
             if encoding == "ascii":
                 encoding = settings.DEFAULT_ENCODING
@@ -453,11 +246,11 @@ class Detector:
             schema = Schema()
 
             # Missing values
-            if self.__field_missing_values != settings.DEFAULT_MISSING_VALUES:
-                schema.missing_values = self.__field_missing_values  # type: ignore
+            if self.field_missing_values != settings.DEFAULT_MISSING_VALUES:
+                schema.missing_values = self.field_missing_values  # type: ignore
 
             # Prepare names
-            names = copy(self.__field_names or labels or [])
+            names = copy(self.field_names or labels or [])
             names = list(map(lambda cell: cell.replace("\n", " ").strip(), names))
             if not names:
                 if not fragment:
@@ -478,8 +271,8 @@ class Detector:
                     seen_names.append(name)
 
             # Handle type/empty
-            if self.__field_type or not fragment:
-                type = self.__field_type
+            if self.field_type or not fragment:
+                type = self.field_type
                 schema.fields = [{"name": name, "type": type or "any"} for name in names]  # type: ignore
                 return schema
 
@@ -488,13 +281,13 @@ class Detector:
             runner_fields = []  # we use shared fields
             for candidate in system.create_field_candidates():
                 field = Field(candidate)
-                if field.type == "number" and self.__field_float_numbers:
+                if field.type == "number" and self.field_float_numbers:
                     field.float_number = True  # type: ignore
                 elif field.type == "boolean":
-                    if self.__field_true_values != settings.DEFAULT_TRUE_VALUES:
-                        field.true_values = self.__field_true_values  # type: ignore
-                    if self.__field_false_values != settings.DEFAULT_FALSE_VALUES:
-                        field.false_values = self.__field_false_values  # type: ignore
+                    if self.field_true_values != settings.DEFAULT_TRUE_VALUES:
+                        field.true_values = self.field_true_values  # type: ignore
+                    if self.field_false_values != settings.DEFAULT_FALSE_VALUES:
+                        field.false_values = self.field_false_values  # type: ignore
                 runner_fields.append(field)
             for index, name in enumerate(names):
                 runners.append([])
@@ -504,23 +297,23 @@ class Detector:
             # Infer fields
             fields = [None] * len(names)
             max_score = [len(fragment)] * len(names)
-            threshold = len(fragment) * (self.__field_confidence - 1)
+            threshold = len(fragment) * (self.field_confidence - 1)
             for cells in fragment:
                 for index, name in enumerate(names):
                     if fields[index] is not None:
                         continue
                     source = cells[index] if len(cells) > index else None
-                    is_field_missing_value = source in self.__field_missing_values
+                    is_field_missing_value = source in self.field_missing_values
                     if is_field_missing_value:
                         max_score[index] -= 1
                     for runner in runners[index]:
                         if runner["score"] < threshold:
                             continue
                         if not is_field_missing_value:
-                            target, notes = runner["field"].read_cell(source)
+                            _, notes = runner["field"].read_cell(source)
                             runner["score"] += 1 if not notes else -1
                         if max_score[index] > 0 and runner["score"] >= (
-                            max_score[index] * self.__field_confidence
+                            max_score[index] * self.field_confidence
                         ):
                             field = runner["field"].to_copy()
                             field.name = name
@@ -536,7 +329,7 @@ class Detector:
             schema.fields = fields  # type: ignore
 
         # Sync schema
-        if self.__schema_sync:
+        if self.schema_sync:
             if labels:
                 fields = []
                 mapping = {field.get("name"): field for field in schema.fields}  # type: ignore
@@ -545,8 +338,8 @@ class Detector:
                 schema.fields = fields  # type: ignore
 
         # Patch schema
-        if self.__schema_patch:
-            schema_patch = deepcopy(self.__schema_patch)
+        if self.schema_patch:
+            schema_patch = deepcopy(self.schema_patch)
             fields = schema_patch.pop("fields", {})
             schema.update(schema_patch)
             for field in schema.fields:  # type: ignore
@@ -555,10 +348,31 @@ class Detector:
         # Validate schema
         # NOTE: at some point we might need to remove it for transform needs
         if len(schema.field_names) != len(set(schema.field_names)):  # type: ignore
-            if self.__schema_sync:
+            if self.schema_sync:
                 note = 'Duplicate labels in header is not supported with "schema_sync"'
                 raise FrictionlessException(errors.SchemaError(note=note))
             note = "Schemas with duplicate field names are not supported"
             raise FrictionlessException(errors.SchemaError(note=note))
 
         return schema
+
+    # Metadata
+
+    metadata_Error = errors.DetectorError
+    metadata_profile = {
+        "properties": {
+            "bufferSize": {},
+            "samleSize": {},
+            "encodingFunction": {},
+            "encodingConfidence": {},
+            "fieldType": {},
+            "fieldNames": {},
+            "fieldConfidence": {},
+            "fieldFloatNumbers": {},
+            "fieldMissingValues": {},
+            "fieldTrueValues": {},
+            "fieldFalseValues": {},
+            "schemaSync": {},
+            "schemaPatch": {},
+        }
+    }
