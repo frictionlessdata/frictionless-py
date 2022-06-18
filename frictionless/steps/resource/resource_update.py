@@ -1,3 +1,4 @@
+from typing import Optional
 from ...step import Step
 from ... import helpers
 
@@ -12,23 +13,35 @@ class resource_update(Step):
 
     code = "resource-update"
 
-    def __init__(self, descriptor=None, *, name=None, new_name=None, **options):
-        self.setinitial("name", name)
-        self.setinitial("newName", new_name)
-        for key, value in helpers.create_descriptor(**options).items():
-            self.setinitial(key, value)
-        super().__init__(descriptor)
+    def __init__(
+        self,
+        *,
+        name: str,
+        new_name: Optional[str] = None,
+        **options,
+    ):
+        self.name = name
+        self.new_name = new_name
+        self.descriptor = helpers.create_descriptor(**options)
+
+    # Properties
+
+    name: str
+    """TODO: add docs"""
+
+    new_name: Optional[str]
+    """TODO: add docs"""
+
+    descriptor: dict
+    """TODO: add docs"""
 
     # Transform
 
     def transform_package(self, package):
-        descriptor = self.to_dict()
-        descriptor.pop("code", None)  # type: ignore
-        name = descriptor.pop("name", None)  # type: ignore
-        new_name = descriptor.pop("newName", None)  # type: ignore
-        if new_name:
-            descriptor["name"] = new_name  # type: ignore
-        resource = package.get_resource(name)
+        descriptor = self.descriptor.copy()
+        if self.new_name:
+            descriptor["name"] = self.new_name  # type: ignore
+        resource = package.get_resource(self.name)
         resource.update(descriptor)
 
     # Metadata
@@ -37,6 +50,7 @@ class resource_update(Step):
         "type": "object",
         "required": ["name"],
         "properties": {
+            "code": {},
             "name": {"type": "string"},
             "newName": {"type": "string"},
         },
