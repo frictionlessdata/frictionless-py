@@ -11,16 +11,26 @@ class cell_set(Step):
 
     code = "cell-set"
 
-    def __init__(self, descriptor=None, *, value=None, field_name=None):
-        self.setinitial("value", value)
-        self.setinitial("fieldName", field_name)
-        super().__init__(descriptor)
+    def __init__(
+        self,
+        *,
+        value: str,
+        field_name: str,
+    ):
+        self.value = value
+        self.field_name = field_name
+
+    # Properties
+
+    value: str
+    """TODO: add docs"""
+
+    field_name: str
+    """TODO: add docs"""
 
     def transform_resource(self, resource):
         table = resource.to_petl()
-        value = self.get("value")
-        field_name = self.get("fieldName")
-        resource.data = table.update(field_name, value)  # type: ignore
+        resource.data = table.update(self.field_name, self.value)  # type: ignore
 
     # Metadata
 
@@ -28,6 +38,7 @@ class cell_set(Step):
         "type": "object",
         "required": [],
         "properties": {
+            "code": {},
             "fieldName": {"type": "string"},
             "value": {},
         },
