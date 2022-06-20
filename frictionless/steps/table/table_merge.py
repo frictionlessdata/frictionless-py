@@ -1,3 +1,4 @@
+# type: ignore
 import petl
 from ...step import Step
 from ...resource import Resource

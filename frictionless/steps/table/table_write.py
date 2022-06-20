@@ -1,3 +1,4 @@
+# type: ignore
 from ...step import Step
 from ...resource import Resource
 
