@@ -2,6 +2,10 @@
 
 Here described only the breaking and most significant changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/frictionless-py/commits/main).
 
+## v4.40.0
+
+- Added Dialect support to packages (#1137)
+
 ## v4.39.0
 
 - Fixed processing of incompatible decimal char in table schema and data   (#1089)
@@ -10,7 +14,7 @@ Here described only the breaking and most significant changes. The full changelo
 - Implemented new feature `summary`   (#1127)
     - `schema.to_summary`
     - `report.to_summary`
-    - Added CLI command `summary` 
+    - Added CLI command `summary`
 - Fixed file compression `package.to_zip`   (#1104)
 - Implemented feature to validate single resource   (#1112)
 - Improved error message to notify about invalid fields   (#1117)
