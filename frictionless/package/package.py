@@ -119,6 +119,9 @@ class Package(Metadata):
         hashing? (str): a hashing algorithm for resources
             It defaults to 'md5'.
 
+        dialect? (dict|Dialect): Table dialect.
+            For more information, please check the Dialect documentation.
+
     Raises:
         FrictionlessException: raise any error that occurs during the process
     """
@@ -155,6 +158,7 @@ class Package(Metadata):
         onerror="ignore",
         trusted=False,
         hashing=None,
+        dialect=None,
     ):
 
         # Handle source
@@ -198,6 +202,7 @@ class Package(Metadata):
         self.setinitial("created", created)
         self.__basepath = basepath or helpers.parse_basepath(descriptor)
         self.__detector = detector or Detector()
+        self.__dialect = dialect
         self.__onerror = onerror
         self.__trusted = trusted
         self.__hashing = hashing
@@ -713,6 +718,7 @@ class Package(Metadata):
                         resource = {"name": f"resource{index+1}"}
                     resource = Resource(
                         resource,
+                        dialect=self.__dialect,
                         basepath=self.__basepath,
                         detector=self.__detector,
                         hashing=self.__hashing,
