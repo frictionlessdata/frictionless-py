@@ -171,3 +171,69 @@ def test_program_describe_basepath():
     result = runner.invoke(program, "describe --basepath data *-3.csv")
     assert result.exit_code == 0
     assert yaml.safe_load(result.stdout) == describe("*-3.csv", basepath="data")
+
+
+def test_program_describe_package_with_dialect_1126():
+    result = runner.invoke(
+        program,
+        'describe data/country-2.csv --json --dialect \'{"delimiter": ";"}\' --type package',
+    )
+    assert result.exit_code == 0
+    output = json.loads(result.stdout)
+    assert output["resources"][0]["schema"] == {
+        "fields": [
+            {"type": "integer", "name": "id"},
+            {"type": "integer", "name": "neighbor_id"},
+            {"type": "string", "name": "name"},
+            {"type": "integer", "name": "population"},
+        ]
+    }
+
+
+def test_program_describe_package_with_dialect_path_1126():
+    result = runner.invoke(
+        program,
+        "describe data/country-2.csv --json --dialect data/dialect.json --type package",
+    )
+    assert result.exit_code == 0
+    output = json.loads(result.stdout)
+    assert output["resources"][0]["schema"] == {
+        "fields": [
+            {"type": "integer", "name": "id"},
+            {"type": "integer", "name": "neighbor_id"},
+            {"type": "string", "name": "name"},
+            {"type": "integer", "name": "population"},
+        ]
+    }
+
+
+def test_program_describe_package_with_incorrect_dialect_1126():
+    result = runner.invoke(
+        program,
+        'describe data/country-2.csv --json --dialect \'{"delimiter": ","}\' --type package',
+    )
+    assert result.exit_code == 0
+    output = json.loads(result.stdout)
+    assert output["resources"][0]["schema"] == {
+        "fields": [{"type": "string", "name": "# Author: the scientist"}]
+    }
+
+
+def test_program_describe_package_with_glob_having_one_incorrect_dialect_1126():
+    result = runner.invoke(
+        program,
+        'describe data/country-*.csv --json --dialect \'{"delimiter": ","}\' --type package',
+    )
+    assert result.exit_code == 0
+    output = json.loads(result.stdout)
+    assert output["resources"][0]["schema"] == {
+        "fields": [
+            {"type": "integer", "name": "id"},
+            {"type": "integer", "name": "neighbor_id"},
+            {"type": "string", "name": "name"},
+            {"type": "integer", "name": "population"},
+        ]
+    }
+    assert output["resources"][1]["schema"] == {
+        "fields": [{"type": "string", "name": "# Author: the scientist"}]
+    }
