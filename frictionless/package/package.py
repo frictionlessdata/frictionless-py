@@ -71,9 +71,6 @@ class Package(Metadata):
             Each Source object MUST have a title and
             MAY have path and/or email properties.
 
-        dialect? (dict|Dialect): Table dialect.
-            For more information, please check the Dialect documentation.
-
         profile? (str): A string identifying the profile of this descriptor.
             For example, `fiscal-data-package`.
 
@@ -122,6 +119,9 @@ class Package(Metadata):
         hashing? (str): a hashing algorithm for resources
             It defaults to 'md5'.
 
+        dialect? (dict|Dialect): Table dialect.
+            For more information, please check the Dialect documentation.
+
     Raises:
         FrictionlessException: raise any error that occurs during the process
     """
@@ -145,7 +145,6 @@ class Package(Metadata):
         licenses=None,
         sources=None,
         profile=None,
-        dialect=None,
         homepage=None,
         version=None,
         contributors=None,
@@ -159,6 +158,7 @@ class Package(Metadata):
         onerror="ignore",
         trusted=False,
         hashing=None,
+        dialect=None,
     ):
 
         # Handle source
@@ -190,7 +190,6 @@ class Package(Metadata):
         self.setinitial("name", name)
         self.setinitial("id", id)
         self.setinitial("licenses", licenses)
-        self.setinitial("dialect", dialect)
         self.setinitial("profile", profile)
         self.setinitial("title", title)
         self.setinitial("description", description)
@@ -203,6 +202,7 @@ class Package(Metadata):
         self.setinitial("created", created)
         self.__basepath = basepath or helpers.parse_basepath(descriptor)
         self.__detector = detector or Detector()
+        self.__dialect = dialect
         self.__onerror = onerror
         self.__trusted = trusted
         self.__hashing = hashing
@@ -245,14 +245,6 @@ class Package(Metadata):
         """
         licenses = self.get("licenses", [])
         return self.metadata_attach("licenses", licenses)
-
-    @Metadata.property
-    def dialect(self):
-        """
-        Returns
-            Dialect[any]: package dialect
-        """
-        return self.get("dialect", None)
 
     @Metadata.property
     def profile(self):
@@ -726,7 +718,7 @@ class Package(Metadata):
                         resource = {"name": f"resource{index+1}"}
                     resource = Resource(
                         resource,
-                        dialect=self.dialect,
+                        dialect=self.__dialect,
                         basepath=self.__basepath,
                         detector=self.__detector,
                         hashing=self.__hashing,
