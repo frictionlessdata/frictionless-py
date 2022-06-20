@@ -1,7 +1,7 @@
 from frictionless import Inquiry, InquiryTask
 
 
-# General
+# Inquiry
 
 
 def test_inquiry_to_descriptor():
@@ -17,3 +17,11 @@ def test_inquiry_to_descriptor():
             {"path": "data/matrix.csv"},
         ]
     }
+
+
+# InquiryTask
+
+
+def test_inquiry_task_to_descriptor():
+    task = InquiryTask(path="data/table.csv")
+    assert task.to_descriptor() == {"path": "data/table.csv"}

@@ -1,8 +1,8 @@
 import pprint
-from frictionless import validate, helpers
+from frictionless import ReportTask, validate, helpers
 
 
-# General
+# Report
 
 
 def test_report():
@@ -60,3 +60,20 @@ def test_report():
 def test_report_pprint_1029():
     report = validate("data/capital-invalid.csv", pick_errors=["duplicate-label"])
     assert repr(report) == pprint.pformat(report)
+
+
+# ReportTask
+
+
+def test_report_task():
+    task = ReportTask(
+        valid=True,
+        name="name",
+        place="place",
+        tabular=True,
+        stats={"time": 1},
+    )
+    assert task.name == "name"
+    assert task.place == "place"
+    assert task.tabular is True
+    assert task.stats == {"time": 1}
