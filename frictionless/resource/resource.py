@@ -1311,13 +1311,13 @@ class Resource(Metadata):
         # Checklist
         checklist = self.get("checklist")
         if not isinstance(checklist, (str, type(None), Checklist)):
-            checklist = Checklist(checklist)
+            checklist = Checklist.from_descriptor(checklist)
             dict.__setitem__(self, "checklist", schema)
 
-        # Schema
+        # Pipeline
         pipeline = self.get("pipeline")
         if not isinstance(pipeline, (str, type(None), Pipeline)):
-            pipeline = Pipeline(pipeline)
+            pipeline = Pipeline.from_descriptor(pipeline)
             dict.__setitem__(self, "pipeline", pipeline)
 
         # Security

@@ -241,7 +241,7 @@ class System:
                 return step
         for Class in vars(import_module("frictionless.steps")).values():
             if getattr(Class, "code", None) == code:
-                return Class(descriptor)
+                return Class.from_descriptor(descriptor)
         note = f'step "{code}" is not supported. Try installing "frictionless-{code}"'
         raise FrictionlessException(errors.StepError(note=note))
 

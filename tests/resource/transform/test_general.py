@@ -32,7 +32,7 @@ def test_resource_transform():
 
 def test_resource_transform_cell_set():
     source = Resource("data/transform.csv")
-    pipeline = Pipeline(
+    pipeline = Pipeline.from_descriptor(
         {
             "steps": [
                 {"code": "cell-set", "fieldName": "population", "value": 100},
