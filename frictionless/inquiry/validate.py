@@ -1,15 +1,15 @@
 from __future__ import annotations
 from multiprocessing import Pool
+from importlib import import_module
 from typing import TYPE_CHECKING, List
-from .task import InquiryTask
 from ..resource import Resource
 from ..package import Package
 from ..report import Report
 from .. import helpers
 
 if TYPE_CHECKING:
-    from .inquiry import Inquiry
     from ..interfaces import IDescriptor
+    from .inquiry import Inquiry, InquiryTask
 
 
 def validate(inquiry: "Inquiry", *, parallel=False):
@@ -86,8 +86,8 @@ def validate_sequential(task: InquiryTask) -> Report:
     return report
 
 
-# TODO: rebase on report.[to_]descriptor
 def validate_parallel(descriptor: IDescriptor) -> IDescriptor:
+    InquiryTask = import_module("frictionless").InquiryTask
     task = InquiryTask.from_descriptor(descriptor)
     report = validate_sequential(task)
-    return report.to_dict()  # type: ignore
+    return report.to_descriptor()
