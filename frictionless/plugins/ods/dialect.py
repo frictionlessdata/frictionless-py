@@ -1,41 +1,16 @@
-# type: ignore
-from ...metadata import Metadata
+from typing import Union
+from dataclasses import dataclass
 from ...dialect import Dialect
 
 
+@dataclass
 class OdsDialect(Dialect):
-    """Ods dialect representation
+    """Ods dialect representation"""
 
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless.plugins.ods import OdsDialect`
+    # Properties
 
-    Parameters:
-        descriptor? (str|dict): descriptor
-        sheet? (str): sheet
-
-    Raises:
-        FrictionlessException: raise any error that occurs during the process
-
-    """
-
-    def __init__(self, descriptor=None, *, sheet=None):
-        self.setinitial("sheet", sheet)
-        super().__init__(descriptor)
-
-    @Metadata.property
-    def sheet(self):
-        """
-        Returns:
-            int|str: sheet
-        """
-        return self.get("sheet", 1)
-
-    # Expand
-
-    def expand(self):
-        """Expand metadata"""
-        self.setdefault("sheet", self.sheet)
+    sheet: Union[str, int] = 1
+    """TODO: add docs"""
 
     # Metadata
 

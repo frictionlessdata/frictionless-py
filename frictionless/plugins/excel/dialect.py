@@ -7,6 +7,8 @@ from ...dialect import Dialect
 class ExcelDialect(Dialect):
     """Excel dialect representation"""
 
+    # Properties
+
     sheet: Union[str, int] = 1
     """TODO: add docs"""
 
