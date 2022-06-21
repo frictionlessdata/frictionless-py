@@ -270,6 +270,18 @@ def test_program_validate_single_invalid_resource_221():
     assert result.stdout.count("invalid: data/datapackage.json")
 
 
+def test_program_validate_multipart_resource_1140():
+    result = runner.invoke(program, "validate data/multipart.package.json")
+    assert result.exit_code == 0
+    assert result.stdout.count("chunk1.csv,chunk2.csv")
+
+
+def test_program_validate_multipart_zipped_resource_1140():
+    result = runner.invoke(program, "validate data/multipart-zipped.package.json")
+    assert result.exit_code == 0
+    assert result.stdout.count("chunk1.csv.zip,chunk2.csv.zip")
+
+
 # Helpers
 
 

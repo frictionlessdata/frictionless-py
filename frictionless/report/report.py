@@ -1,4 +1,3 @@
-import os
 import functools
 import textwrap
 from copy import deepcopy
@@ -408,15 +407,10 @@ class ReportTask(Metadata):
         """
         source = self.resource.path or self.resource.name
         if source and isinstance(source, list):
-            source = source[0]
+            source = ",".join(source)
         # For zipped resources append file name
         if self.resource.innerpath:
             source = f"{source} => {self.resource.innerpath}"
-        file_path = (
-            os.path.join(self.resource.basepath, source)
-            if self.resource.basepath
-            else source
-        )
         # Prepare error lists and last row checked(in case of partial validation)
         error_list = {}
         for error in self.errors:
@@ -427,10 +421,9 @@ class ReportTask(Metadata):
             if self.partial:
                 last_row_checked = error.get("rowPosition", "")
         rows_checked = last_row_checked if self.partial else None
-        file_size = "N/A"
         unit = None
-        if os.path.exists(file_path):
-            file_size = os.path.getsize(file_path)
+        file_size = self.resource.stats["bytes"]
+        if file_size > 0:
             unit = helpers.format_bytes(file_size)
         not_found_text = ""
         if not unit:
@@ -438,7 +431,7 @@ class ReportTask(Metadata):
                 not_found_text = "(Not Found)"
         content = [
             [f"File name {not_found_text}", source],
-            [f"File size { f'({unit})' if unit else '' }", file_size],
+            [f"File size { f'({unit})' if unit else '' }", file_size or "N/A"],
             ["Total Time Taken (sec)", self.time],
         ]
         if rows_checked:
