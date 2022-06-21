@@ -1,4 +1,3 @@
-# type: ignore
 from ...dialect import Dialect
 
 

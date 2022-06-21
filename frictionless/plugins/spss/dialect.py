@@ -1,21 +1,8 @@
-# type: ignore
 from ...dialect import Dialect
 
 
 class SpssDialect(Dialect):
-    """Spss dialect representation
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless.plugins.spss import SpssDialect`
-
-    Parameters:
-        descriptor? (str|dict): descriptor
-
-    Raises:
-        FrictionlessException: raise any error that occurs during the process
-
-    """
+    """Spss dialect representation"""
 
     # Metadata
 
