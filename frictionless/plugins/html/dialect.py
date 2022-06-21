@@ -1,41 +1,15 @@
-# type: ignore
-from ...metadata import Metadata
+from dataclasses import dataclass
 from ...dialect import Dialect
 
 
+@dataclass
 class HtmlDialect(Dialect):
-    """Html dialect representation
+    """Html dialect representation"""
 
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless.plugins.html import HtmlDialect`
+    # Properties
 
-    Parameters:
-        descriptor? (str|dict): descriptor
-        selector? (str): HTML selector
-
-    Raises:
-        FrictionlessException: raise any error that occurs during the process
-
-    """
-
-    def __init__(self, descriptor=None, *, selector=None):
-        self.setinitial("selector", selector)
-        super().__init__(descriptor)
-
-    @Metadata.property
-    def selector(self):
-        """
-        Returns:
-            str: selector
-        """
-        return self.get("selector", "table")
-
-    # Expand
-
-    def expand(self):
-        """Expand metadata"""
-        self.setdefault("selector", self.selector)
+    credentials: str = "table"
+    """TODO: add docs"""
 
     # Metadata
 
