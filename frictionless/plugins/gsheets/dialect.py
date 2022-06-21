@@ -1,34 +1,16 @@
-# type: ignore
+from typing import Optional
+from dataclasses import dataclass
 from ...dialect import Dialect
-from ...metadata import Metadata
 
 
+@dataclass
 class GsheetsDialect(Dialect):
-    """Gsheets dialect representation
+    """Gsheets dialect representation"""
 
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless.plugins.gsheets import GsheetsDialect`
+    # Properties
 
-    Parameters:
-        descriptor? (str|dict): descriptor
-
-    Raises:
-        FrictionlessException: raise any error that occurs during the process
-
-    """
-
-    def __init__(self, descriptor=None, *, credentials=None):
-        self.setinitial("credentials", credentials)
-        super().__init__(descriptor)
-
-    @Metadata.property
-    def credentials(self):
-        """
-        Returns:
-            str: credentials
-        """
-        return self.get("credentials")
+    credentials: Optional[str] = None
+    """TODO: add docs"""
 
     # Metadata
 
