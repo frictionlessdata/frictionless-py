@@ -1,8 +1,9 @@
 from __future__ import annotations
 import statistics
-from ... import errors
-from ...check import Check
+from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, List, Iterable
+from ...check import Check
+from ... import errors
 
 if TYPE_CHECKING:
     from ...row import Row
@@ -12,27 +13,19 @@ if TYPE_CHECKING:
 DEFAULT_INTERVAL = 3
 
 
+@dataclass
 class deviated_cell(Check):
     """Check if the cell size is deviated"""
 
     code = "deviated-cell"
     Errors = [errors.DeviatedCellError]
 
-    def __init__(
-        self,
-        *,
-        interval: int = DEFAULT_INTERVAL,
-        ignore_fields: List[str] = [],
-    ):
-        self.interval = interval
-        self.ignore_fields = ignore_fields
-
     # Properties
 
-    interval: int
+    interval: int = DEFAULT_INTERVAL
     """# TODO: add docs"""
 
-    ignore_fields: List[str]
+    ignore_fields: List[str] = field(default_factory=list)
     """# TODO: add docs"""
 
     # Connect

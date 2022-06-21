@@ -2,6 +2,22 @@ from ... import errors
 from ...check import Check
 
 
+TRUNCATED_STRING_LENGTHS = [255]
+TRUNCATED_INTEGER_VALUES = [
+    # BigInt
+    18446744073709551616,
+    9223372036854775807,
+    # Int
+    4294967295,
+    2147483647,
+    # SummedInt
+    2097152,
+    # SmallInt
+    65535,
+    32767,
+]
+
+
 class truncated_value(Check):
     """Check for possible truncated values
 
@@ -51,25 +67,3 @@ class truncated_value(Check):
             "code": {},
         },
     }
-
-
-# Internal
-
-
-# TODO: move to root settings?
-TRUNCATED_STRING_LENGTHS = [
-    255,
-]
-TRUNCATED_INTEGER_VALUES = [
-    # BigInt
-    18446744073709551616,
-    9223372036854775807,
-    # Int
-    4294967295,
-    2147483647,
-    # SummedInt
-    2097152,
-    # SmallInt
-    65535,
-    32767,
-]

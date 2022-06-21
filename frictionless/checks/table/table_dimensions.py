@@ -1,59 +1,34 @@
 from typing import Optional
+from dataclasses import dataclass
 from ... import errors
 from ...check import Check
 
 
+@dataclass
 class table_dimensions(Check):
-    """Check for minimum and maximum table dimensions
-
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless import checks`
-    Implicit | `validate(checks=[{"code": "table-dimensions", numRows, minRows, maxRows, numFields, minFields, maxFields}])`
-
-    Parameters:
-       descriptor (dict): check's descriptor
-
-    """
+    """Check for minimum and maximum table dimensions"""
 
     code = "table-dimensions"
     Errors = [errors.TableDimensionsError]
 
-    def __init__(
-        self,
-        *,
-        num_rows: Optional[int] = None,
-        min_rows: Optional[int] = None,
-        max_rows: Optional[int] = None,
-        num_fields: Optional[int] = None,
-        min_fields: Optional[int] = None,
-        max_fields: Optional[int] = None
-    ):
-        self.num_rows = num_rows
-        self.min_rows = min_rows
-        self.max_rows = max_rows
-        self.num_fields = num_fields
-        self.min_fields = min_fields
-        self.max_fields = max_fields
-
     # Properties
 
-    num_rows: Optional[int]
+    num_rows: Optional[int] = None
     """# TODO: add docs"""
 
-    min_rows: Optional[int]
+    min_rows: Optional[int] = None
     """# TODO: add docs"""
 
-    max_rows: Optional[int]
+    max_rows: Optional[int] = None
     """# TODO: add docs"""
 
-    num_fields: Optional[int]
+    num_fields: Optional[int] = None
     """# TODO: add docs"""
 
-    min_fields: Optional[int]
+    min_fields: Optional[int] = None
     """# TODO: add docs"""
 
-    max_fields: Optional[int]
+    max_fields: Optional[int] = None
     """# TODO: add docs"""
 
     # Validate

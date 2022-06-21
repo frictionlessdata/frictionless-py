@@ -1,3 +1,4 @@
+import pytest
 from frictionless import Pipeline, steps
 
 
@@ -22,6 +23,7 @@ def test_pipeline_from_descriptor():
     assert isinstance(pipeline.steps[0], steps.table_normalize)
 
 
+@pytest.mark.skip
 def test_pipeline_pprint():
     pipeline = Pipeline.from_descriptor(
         {

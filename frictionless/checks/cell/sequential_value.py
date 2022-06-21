@@ -1,15 +1,14 @@
+from dataclasses import dataclass
 from ... import errors
 from ...check import Check
 
 
+@dataclass
 class sequential_value(Check):
     """Check that a column having sequential values"""
 
     code = "sequential-value"
     Errors = [errors.SequentialValueError]
-
-    def __init__(self, *, field_name=None):
-        self.field_name = field_name
 
     # Properties
 

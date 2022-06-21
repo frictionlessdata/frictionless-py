@@ -1,17 +1,15 @@
 from typing import List, Any
+from dataclasses import dataclass
 from ... import errors
 from ...check import Check
 
 
+@dataclass
 class forbidden_value(Check):
     """Check for forbidden values in a field"""
 
     code = "forbidden-value"
     Errors = [errors.ForbiddenValueError]
-
-    def __init__(self, *, field_name: str, values: List[Any]):
-        self.field_name = field_name
-        self.values = values
 
     # Properties
 

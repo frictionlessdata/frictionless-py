@@ -1,4 +1,5 @@
 import statistics
+from dataclasses import dataclass
 from ...check import Check
 from ... import errors
 
@@ -12,33 +13,25 @@ AVERAGE_FUNCTIONS = {
 }
 
 
+@dataclass
 class deviated_value(Check):
     """Check for deviated values in a field"""
 
     code = "deviated-value"
     Errors = [errors.DeviatedValueError]
 
-    def __init__(
-        self,
-        *,
-        field_name: str,
-        interval: int = DEFAULT_INTERVAL,
-        average: str = DEFAULT_AVERAGE,
-    ):
-        self.field_name = field_name
-        self.interval = interval
-        self.average = average
-
     # Properties
 
     field_name: str
     """# TODO: add docs"""
 
-    interval: int
+    interval: int = DEFAULT_INTERVAL
     """# TODO: add docs"""
 
-    average: str
+    average: str = DEFAULT_AVERAGE
     """# TODO: add docs"""
+
+    # Connect
 
     def connect(self, resource):
         super().connect(resource)

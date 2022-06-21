@@ -1,16 +1,15 @@
 import simpleeval
+from dataclasses import dataclass
 from ... import errors
 from ...check import Check
 
 
+@dataclass
 class row_constraint(Check):
     """Check that every row satisfies a provided Python expression"""
 
     code = "row-constraint"
     Errors = [errors.RowConstraintError]
-
-    def __init__(self, *, formula: str):
-        self.formula = formula
 
     # Properties
 
