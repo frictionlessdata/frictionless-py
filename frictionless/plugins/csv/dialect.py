@@ -1,130 +1,38 @@
-# type: ignore
 import csv
-from ...metadata import Metadata
+from typing import Optional
+from dataclasses import dataclass
 from ...dialect import Dialect
 
 
+@dataclass
 class CsvDialect(Dialect):
-    """Csv dialect representation
+    """Csv dialect representation"""
 
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless.plugins.csv import CsvDialect`
+    delimiter: str = ","
+    """TODO: add docs"""
 
-    Parameters:
-        descriptor? (str|dict): descriptor
-        delimiter? (str): csv delimiter
-        line_terminator? (str): csv line terminator
-        quote_char? (str): csv quote char
-        double_quote? (bool): csv double quote
-        escape_char? (str): csv escape char
-        null_sequence? (str): csv null sequence
-        skip_initial_space? (bool): csv skip initial space
-        comment_char? (str): csv comment char
+    line_terminator: str = "\r\n"
+    """TODO: add docs"""
 
-    Raises:
-        FrictionlessException: raise any error that occurs during the process
+    quote_char: str = '"'
+    """TODO: add docs"""
 
-    """
+    double_quote: bool = True
+    """TODO: add docs"""
 
-    def __init__(
-        self,
-        descriptor=None,
-        *,
-        delimiter=None,
-        line_terminator=None,
-        quote_char=None,
-        double_quote=None,
-        escape_char=None,
-        null_sequence=None,
-        skip_initial_space=None,
-        comment_char=None,
-    ):
-        self.setinitial("delimiter", delimiter)
-        self.setinitial("lineTerminator", line_terminator)
-        self.setinitial("quoteChar", quote_char)
-        self.setinitial("doubleQuote", double_quote)
-        self.setinitial("escapeChar", escape_char)
-        self.setinitial("nullSequence", null_sequence)
-        self.setinitial("skipInitialSpace", skip_initial_space)
-        self.setinitial("commentChar", comment_char)
-        super().__init__(descriptor)
+    escape_char: Optional[str] = None
+    """TODO: add docs"""
 
-    @Metadata.property
-    def delimiter(self):
-        """
-        Returns:
-            str: delimiter
-        """
-        return self.get("delimiter", ",")
+    null_sequence: Optional[str] = None
+    """TODO: add docs"""
 
-    @Metadata.property
-    def line_terminator(self):
-        """
-        Returns:
-            str: line terminator
-        """
-        return self.get("lineTerminator", "\r\n")
+    skip_initial_space: bool = False
+    """TODO: add docs"""
 
-    @Metadata.property
-    def quote_char(self):
-        """
-        Returns:
-            str: quote char
-        """
-        return self.get("quoteChar", '"')
+    comment_char: Optional[str] = None
+    """TODO: add docs"""
 
-    @Metadata.property
-    def double_quote(self):
-        """
-        Returns:
-            bool: double quote
-        """
-        return self.get("doubleQuote", True)
-
-    @Metadata.property
-    def escape_char(self):
-        """
-        Returns:
-            str?: escape char
-        """
-        return self.get("escapeChar")
-
-    @Metadata.property
-    def null_sequence(self):
-        """
-        Returns:
-            str?: null sequence
-        """
-        return self.get("nullSequence")
-
-    @Metadata.property
-    def skip_initial_space(self):
-        """
-        Returns:
-            bool: if skipping initial space
-        """
-        return self.get("skipInitialSpace", False)
-
-    @Metadata.property
-    def comment_char(self):
-        """
-        Returns:
-            str?: comment char
-        """
-        return self.get("commentChar")
-
-    # Expand
-
-    def expand(self):
-        """Expand metadata"""
-        self.setdefault("delimiter", self.delimiter)
-        self.setdefault("lineTerminator", self.line_terminator)
-        self.setdefault("quoteChar", self.quote_char)
-        self.setdefault("doubleQuote", self.double_quote)
-        self.setdefault("skipInitialSpace", self.skip_initial_space)
-
-    # Import/Export
+    # Convert
 
     def to_python(self):
         """Conver to Python's `csv.Dialect`"""

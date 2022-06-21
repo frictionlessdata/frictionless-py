@@ -4,6 +4,7 @@ from .validate import validate
 from .. import errors
 
 
+# TODO: controls should have code
 class Dialect(Metadata2):
     """Dialect representation"""
 

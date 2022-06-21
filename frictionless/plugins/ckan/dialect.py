@@ -1,7 +1,9 @@
+from dataclasses import dataclass
 from typing import Optional, List
 from ...dialect import Dialect
 
 
+@dataclass
 class CkanDialect(Dialect):
     """Ckan dialect representation"""
 
