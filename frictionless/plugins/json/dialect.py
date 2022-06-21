@@ -1,68 +1,20 @@
-# type: ignore
-from ...metadata import Metadata
+from typing import Optional, List
+from dataclasses import dataclass
 from ...dialect import Dialect
 
 
+@dataclass
 class JsonDialect(Dialect):
-    """Json dialect representation
+    """Json dialect representation"""
 
-    API      | Usage
-    -------- | --------
-    Public   | `from frictionless.plugins.json import JsonDialect`
+    keys: Optional[List[str]] = None
+    """TODO: add docs"""
 
-    Parameters:
-        descriptor? (str|dict): descriptor
-        keys? (str[]): a list of strings to use as data keys
-        keyed? (bool): whether data rows are keyed
-        property? (str): a path within JSON to the data
+    keyed: bool = False
+    """TODO: add docs"""
 
-    Raises:
-        FrictionlessException: raise any error that occurs during the process
-
-    """
-
-    def __init__(
-        self,
-        descriptor=None,
-        *,
-        keys=None,
-        keyed=None,
-        property=None,
-    ):
-        self.setinitial("keys", keys)
-        self.setinitial("keyed", keyed)
-        self.setinitial("property", property)
-        super().__init__(descriptor)
-
-    @Metadata.property
-    def keys(self):
-        """
-        Returns:
-            str[]?: keys
-        """
-        return self.get("keys")
-
-    @Metadata.property
-    def keyed(self):
-        """
-        Returns:
-            bool: keyed
-        """
-        return self.get("keyed", False)
-
-    @Metadata.property
-    def property(self):
-        """
-        Returns:
-            str?: property
-        """
-        return self.get("property")
-
-    # Expand
-
-    def expand(self):
-        """Expand metadata"""
-        self.setdefault("keyed", self.keyed)
+    property: Optional[str] = None
+    """TODO: add docs"""
 
     # Metadata
 
